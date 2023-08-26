@@ -40,7 +40,7 @@ class NCNetworkingE2EEUpload: NSObject {
 
     let networkingE2EE = NCNetworkingE2EE()
 
-    func upload(metadata: tableMetadata, uploadE2EEDelegate: uploadE2EEDelegate? = nil) async -> (NKError) {
+    func upload(metadata: tableMetadata, uploadE2EEDelegate: uploadE2EEDelegate? = nil) async -> NKError {
 
         var metadata = metadata
         let ocIdTemp = metadata.ocId

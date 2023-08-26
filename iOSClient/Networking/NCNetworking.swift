@@ -1326,7 +1326,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
         }
     }
 
-    func deleteMetadataPlain(_ metadata: tableMetadata, customHeader: [String: String]? = nil) async -> (NKError) {
+    func deleteMetadataPlain(_ metadata: tableMetadata, customHeader: [String: String]? = nil) async -> NKError {
 
         // verify permission
         let permission = NCUtility.shared.permissionsContainsString(metadata.permissions, permissions: NCGlobal.shared.permissionCanDelete)
@@ -1543,7 +1543,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
 
     // MARK: - WebDav Move
 
-    func moveMetadata(_ metadata: tableMetadata, serverUrlTo: String, overwrite: Bool) async -> (NKError) {
+    func moveMetadata(_ metadata: tableMetadata, serverUrlTo: String, overwrite: Bool) async -> NKError {
 
         if let metadataLive = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata) {
             let error = await moveMetadataPlain(metadataLive, serverUrlTo: serverUrlTo, overwrite: overwrite)
@@ -1556,7 +1556,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
         return await moveMetadataPlain(metadata, serverUrlTo: serverUrlTo, overwrite: overwrite)
     }
 
-    private func moveMetadataPlain(_ metadata: tableMetadata, serverUrlTo: String, overwrite: Bool) async -> (NKError) {
+    private func moveMetadataPlain(_ metadata: tableMetadata, serverUrlTo: String, overwrite: Bool) async -> NKError {
 
         let permission = NCUtility.shared.permissionsContainsString(metadata.permissions, permissions: NCGlobal.shared.permissionCanRename)
         if !(metadata.permissions == "") && !permission {
@@ -1579,7 +1579,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
 
     // MARK: - WebDav Copy
 
-    func copyMetadata(_ metadata: tableMetadata, serverUrlTo: String, overwrite: Bool) async -> (NKError) {
+    func copyMetadata(_ metadata: tableMetadata, serverUrlTo: String, overwrite: Bool) async -> NKError {
 
         if let metadataLive = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata) {
             let error = await copyMetadataPlain(metadataLive, serverUrlTo: serverUrlTo, overwrite: overwrite)
@@ -1592,7 +1592,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
         return await copyMetadataPlain(metadata, serverUrlTo: serverUrlTo, overwrite: overwrite)
     }
 
-    private func copyMetadataPlain(_ metadata: tableMetadata, serverUrlTo: String, overwrite: Bool) async -> (NKError) {
+    private func copyMetadataPlain(_ metadata: tableMetadata, serverUrlTo: String, overwrite: Bool) async -> NKError {
 
         let permission = NCUtility.shared.permissionsContainsString(metadata.permissions, permissions: NCGlobal.shared.permissionCanRename)
         if !(metadata.permissions == "") && !permission {

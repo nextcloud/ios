@@ -24,7 +24,7 @@ import Foundation
 
 class NCNetworkingE2EERename: NSObject {
 
-    func rename(metadata: tableMetadata, fileNameNew: String, indexPath: IndexPath) async -> (NKError) {
+    func rename(metadata: tableMetadata, fileNameNew: String, indexPath: IndexPath) async -> NKError {
 
         let networkingE2EE = NCNetworkingE2EE()
 

@@ -24,7 +24,7 @@ import NextcloudKit
 
 class NCNetworkingE2EEDelete: NSObject {
 
-    func delete(metadata: tableMetadata) async -> (NKError) {
+    func delete(metadata: tableMetadata) async -> NKError {
 
         let networkingE2EE = NCNetworkingE2EE()
 
