@@ -24,9 +24,9 @@ import Foundation
 
 class NCNetworkingE2EERename: NSObject {
 
+    let networkingE2EE = NCNetworkingE2EE()
+    
     func rename(metadata: tableMetadata, fileNameNew: String, indexPath: IndexPath) async -> NKError {
-
-        let networkingE2EE = NCNetworkingE2EE()
 
         // verify if exists the new fileName
         if NCManageDatabase.shared.getE2eEncryption(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileName == %@", metadata.account, metadata.serverUrl, fileNameNew)) != nil {
@@ -45,7 +45,7 @@ class NCNetworkingE2EERename: NSObject {
         //
         let errorDownloadMetadata = await networkingE2EE.downloadMetadata(account: metadata.account, serverUrl: metadata.serverUrl, urlBase: metadata.urlBase, userId: metadata.userId, fileId: fileId, e2eToken: e2eToken)
         guard errorDownloadMetadata == .success else {
-            await NCNetworkingE2EE().unlock(account: metadata.account, serverUrl: metadata.serverUrl)
+            await networkingE2EE.unlock(account: metadata.account, serverUrl: metadata.serverUrl)
             return errorDownloadMetadata
         }
 
@@ -63,7 +63,7 @@ class NCNetworkingE2EERename: NSObject {
                                                                       userId: metadata.userId,
                                                                       e2eToken: e2eToken)
         guard uploadMetadataError == .success else {
-            await NCNetworkingE2EE().unlock(account: metadata.account, serverUrl: metadata.serverUrl)
+            await networkingE2EE.unlock(account: metadata.account, serverUrl: metadata.serverUrl)
             return uploadMetadataError
         }
 
@@ -81,7 +81,7 @@ class NCNetworkingE2EERename: NSObject {
 
         // UNLOCK
         //
-        await NCNetworkingE2EE().unlock(account: metadata.account, serverUrl: metadata.serverUrl)
+        await networkingE2EE.unlock(account: metadata.account, serverUrl: metadata.serverUrl)
         
         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterRenameFile, userInfo: ["ocId": metadata.ocId, "account": metadata.account, "indexPath": indexPath])
 

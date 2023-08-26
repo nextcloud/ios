@@ -107,7 +107,7 @@ class NCNetworkingE2EECreateFolder: NSObject {
         //
         let sendE2eeError = await sendE2ee(e2eToken: e2eToken, fileId: fileId)
         guard sendE2eeError == .success else {
-            await NCNetworkingE2EE().unlock(account: account, serverUrl: serverUrl)
+            await networkingE2EE.unlock(account: account, serverUrl: serverUrl)
             return sendE2eeError
         }
 
@@ -115,7 +115,7 @@ class NCNetworkingE2EECreateFolder: NSObject {
         //
         let resultsCreateFolder = await NextcloudKit.shared.createFolder(serverUrlFileName: serverUrlFileName, options: NKRequestOptions(customHeader: ["e2e-token": e2eToken]))
         guard resultsCreateFolder.error == .success, let ocId = resultsCreateFolder.ocId else {
-            await NCNetworkingE2EE().unlock(account: account, serverUrl: serverUrl)
+            await networkingE2EE.unlock(account: account, serverUrl: serverUrl)
             return resultsCreateFolder.error
         }
 

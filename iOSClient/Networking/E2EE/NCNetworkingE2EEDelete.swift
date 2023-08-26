@@ -24,9 +24,9 @@ import NextcloudKit
 
 class NCNetworkingE2EEDelete: NSObject {
 
-    func delete(metadata: tableMetadata) async -> NKError {
+    let networkingE2EE = NCNetworkingE2EE()
 
-        let networkingE2EE = NCNetworkingE2EE()
+    func delete(metadata: tableMetadata) async -> NKError {
 
         guard let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", metadata.account, metadata.serverUrl)) else {
             return NKError(errorCode: NCGlobal.shared.errorUnexpectedResponseFromDB, errorDescription: "_e2e_error_")
@@ -41,7 +41,7 @@ class NCNetworkingE2EEDelete: NSObject {
         //
         let deleteMetadataPlainError = await NCNetworking.shared.deleteMetadataPlain(metadata, customHeader: ["e2e-token": e2eToken])
         guard deleteMetadataPlainError == .success else {
-            await NCNetworkingE2EE().unlock(account: metadata.account, serverUrl: metadata.serverUrl)
+            await networkingE2EE.unlock(account: metadata.account, serverUrl: metadata.serverUrl)
             return deleteMetadataPlainError
         }
 
@@ -49,7 +49,7 @@ class NCNetworkingE2EEDelete: NSObject {
         //
         let errorDownloadMetadata = await networkingE2EE.downloadMetadata(account: metadata.account, serverUrl: metadata.serverUrl, urlBase: metadata.urlBase, userId: metadata.userId, fileId: fileId, e2eToken: e2eToken)
         guard errorDownloadMetadata == .success else {
-            await NCNetworkingE2EE().unlock(account: metadata.account, serverUrl: metadata.serverUrl)
+            await networkingE2EE.unlock(account: metadata.account, serverUrl: metadata.serverUrl)
             return errorDownloadMetadata
         }
 
@@ -66,13 +66,13 @@ class NCNetworkingE2EEDelete: NSObject {
                                                                       userId: metadata.userId,
                                                                       e2eToken: e2eToken)
         guard uploadMetadataError == .success else {
-            await NCNetworkingE2EE().unlock(account: metadata.account, serverUrl: metadata.serverUrl)
+            await networkingE2EE.unlock(account: metadata.account, serverUrl: metadata.serverUrl)
             return uploadMetadataError
         }
 
         // UNLOCK
         //
-        await NCNetworkingE2EE().unlock(account: metadata.account, serverUrl: metadata.serverUrl)
+        await networkingE2EE.unlock(account: metadata.account, serverUrl: metadata.serverUrl)
 
         return NKError()
     }

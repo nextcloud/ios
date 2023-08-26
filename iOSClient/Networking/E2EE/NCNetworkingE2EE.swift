@@ -77,13 +77,13 @@ class NCNetworkingE2EE: NSObject {
                                                        addCertificate: addCertificate,
                                                        removeUserId: removeUserId)
         guard uploadMetadataError == .success else {
-            await NCNetworkingE2EE().unlock(account: account, serverUrl: serverUrl)
+            await unlock(account: account, serverUrl: serverUrl)
             return uploadMetadataError
         }
 
         // UNLOCK
         //
-        await NCNetworkingE2EE().unlock(account: account, serverUrl: serverUrl)
+        await unlock(account: account, serverUrl: serverUrl)
 
         return NKError()
     }

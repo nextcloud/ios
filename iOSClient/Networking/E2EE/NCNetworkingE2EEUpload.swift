@@ -133,13 +133,13 @@ class NCNetworkingE2EEUpload: NSObject {
         guard sendE2eeError == .success else {
             NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", ocIdTemp))
             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUploadedFile, userInfo: ["ocId": metadata.ocId, "serverUrl": metadata.serverUrl, "account": metadata.account, "fileName": metadata.fileName, "ocIdTemp": ocIdTemp, "error": sendE2eeError])
-            await NCNetworkingE2EE().unlock(account: metadata.account, serverUrl: metadata.serverUrl)
+            await networkingE2EE.unlock(account: metadata.account, serverUrl: metadata.serverUrl)
             return sendE2eeError
         }
 
         // UNLOCK
         //
-        await NCNetworkingE2EE().unlock(account: metadata.account, serverUrl: metadata.serverUrl)
+        await networkingE2EE.unlock(account: metadata.account, serverUrl: metadata.serverUrl)
 
         // UPLOAD
         //
