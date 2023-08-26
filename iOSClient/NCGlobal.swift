@@ -360,7 +360,7 @@ class NCGlobal: NSObject {
 
     let notificationCenterProgressTask                          = "progressTask"                    // userInfo: account, ocId, serverUrl, status, chunk, e2eEncrypted, progress, totalBytes, totalBytesExpected
 
-    let notificationCenterCreateFolder                          = "createFolder"                    // userInfo: ocId, serverUrl, account, e2ee, withPush
+    let notificationCenterCreateFolder                          = "createFolder"                    // userInfo: ocId, serverUrl, account, withPush
     let notificationCenterDeleteFile                            = "deleteFile"                      // userInfo: [ocId], [indexPath], onlyLocalCache, error, hud?
     let notificationCenterMoveFile                              = "moveFile"                        // userInfo: [ocId], [indexPath], error, hud?
     let notificationCenterCopyFile                              = "copyFile"                        // userInfo: [ocId], [indexPath], error, hud?

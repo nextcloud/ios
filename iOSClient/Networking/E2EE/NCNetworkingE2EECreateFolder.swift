@@ -114,16 +114,35 @@ class NCNetworkingE2EECreateFolder: NSObject {
         // CREATE FOLDER
         //
         let resultsCreateFolder = await NextcloudKit.shared.createFolder(serverUrlFileName: serverUrlFileName, options: NKRequestOptions(customHeader: ["e2e-token": e2eToken]))
-        guard resultsCreateFolder.error == .success, let ocId = resultsCreateFolder.ocId else {
+        guard resultsCreateFolder.error == .success, let ocId = resultsCreateFolder.ocId, let fileId = NCUtility.shared.ocIdToFileId(ocId: ocId) else {
             await networkingE2EE.unlock(account: account, serverUrl: serverUrl)
             return resultsCreateFolder.error
+        }
+
+        // MARK FOLDER AS E2EE
+        //
+        let resultsMarkE2EEFolder = await NextcloudKit.shared.markE2EEFolder(fileId: fileId, delete: false)
+        guard resultsMarkE2EEFolder.error == .success  else {
+            await networkingE2EE.unlock(account: account, serverUrl: serverUrl)
+            return resultsMarkE2EEFolder.error
         }
 
         // UNLOCK
         //
         await networkingE2EE.unlock(account: account, serverUrl: serverUrl)
 
-        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterCreateFolder, userInfo: ["ocId": ocId, "serverUrl": serverUrl, "account": account, "e2ee": true, "withPush": withPush])
+        //
+        //
+        let resultsReadFileOrFolder = await NextcloudKit.shared.readFileOrFolder(serverUrlFileName: serverUrlFileName, depth: "0")
+        guard resultsReadFileOrFolder.error == .success, let file = resultsReadFileOrFolder.files.first else {
+            await networkingE2EE.unlock(account: account, serverUrl: serverUrl)
+            return resultsReadFileOrFolder.error
+        }
+        let metadata = NCManageDatabase.shared.convertFileToMetadata(file, isDirectoryE2EE: true)
+        NCManageDatabase.shared.addMetadata(metadata)
+        NCManageDatabase.shared.addDirectory(encrypted: true, favorite: metadata.favorite, ocId: metadata.ocId, fileId: metadata.fileId, etag: nil, permissions: metadata.permissions, serverUrl: serverUrlFileName, account: metadata.account)
+
+        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterCreateFolder, userInfo: ["ocId": ocId, "serverUrl": serverUrl, "account": account, "withPush": withPush])
 
         return NKError()
     }

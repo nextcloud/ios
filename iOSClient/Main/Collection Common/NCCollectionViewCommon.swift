@@ -413,13 +413,10 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
               serverUrl == self.serverUrl,
               let account = userInfo["account"] as? String,
               account == appDelegate.account,
-              let e2ee = userInfo["e2ee"] as? Bool,
               let withPush = userInfo["withPush"] as? Bool
         else { return }
 
-        if e2ee {
-            reloadDataSourceNetwork(isForced: true)
-        } else if let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
+        if let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
             reloadDataSource()
             if withPush {
                 pushMetadata(metadata)
