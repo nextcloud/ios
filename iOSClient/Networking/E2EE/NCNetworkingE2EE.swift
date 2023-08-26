@@ -85,7 +85,11 @@ class NCNetworkingE2EE: NSObject {
         return NKError()
     }
 
-    func downloadMetadata(metadata: tableMetadata,
+    func downloadMetadata(account: String,
+                          serverUrl: String,
+                          urlBase: String,
+                          userId: String,
+                          ownerId: String,
                           fileId: String,
                           e2eToken: String) async -> NKError {
 
@@ -94,7 +98,7 @@ class NCNetworkingE2EE: NSObject {
             return resultsGetE2EEMetadata.error
         }
 
-        let resultsDecodeMetadataError = NCEndToEndMetadata().decodeMetadata(e2eMetadata, signature: resultsGetE2EEMetadata.signature, serverUrl: metadata.serverUrl, account: metadata.account, urlBase: metadata.urlBase, userId: metadata.userId, ownerId: metadata.ownerId)
+        let resultsDecodeMetadataError = NCEndToEndMetadata().decodeMetadata(e2eMetadata, signature: resultsGetE2EEMetadata.signature, serverUrl: serverUrl, account: account, urlBase: urlBase, userId: userId, ownerId: ownerId)
         guard resultsDecodeMetadataError == .success else {
             return resultsDecodeMetadataError
         }

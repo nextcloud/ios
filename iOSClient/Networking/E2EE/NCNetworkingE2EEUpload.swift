@@ -84,11 +84,13 @@ class NCNetworkingE2EEUpload: NSObject {
             NCManageDatabase.shared.updateCounterE2eMetadataV2(account: metadata.account, ocIdServerUrl: directory.ocId, counter: resultsSendE2ee.counter)
         }
 
+        // UNLOCK
+        //
+        await NCNetworkingE2EE().unlock(account: metadata.account, serverUrl: metadata.serverUrl)
+
         // UPLOAD
         //
         let resultsSendFile = await sendFile(metadata: metadata, e2eToken: e2eToken, uploadE2EEDelegate: uploadE2EEDelegate)
-
-        await NCNetworkingE2EE().unlock(account: metadata.account, serverUrl: metadata.serverUrl)
 
         if let afError = resultsSendFile.afError, afError.isExplicitlyCancelledError {
 
@@ -138,7 +140,7 @@ class NCNetworkingE2EEUpload: NSObject {
 
         // DOWNLOAD METADATA
         //
-        let errorDownloadMetadata = await networkingE2EE.downloadMetadata(metadata: metadata, fileId: fileId, e2eToken: e2eToken)
+        let errorDownloadMetadata = await networkingE2EE.downloadMetadata(account: metadata.account, serverUrl: metadata.serverUrl, urlBase: metadata.urlBase, userId: metadata.userId, ownerId: metadata.ocId, fileId: fileId, e2eToken: e2eToken)
         if errorDownloadMetadata == .success {
             method = "PUT"
         } else if errorDownloadMetadata.errorCode != NCGlobal.shared.errorResourceNotFound {
@@ -169,7 +171,6 @@ class NCNetworkingE2EEUpload: NSObject {
         //
         let resultsUploadMetadata = await networkingE2EE.uploadMetadata(account: metadata.account, serverUrl: metadata.serverUrl, fileId: fileId, userId: metadata.userId, e2eToken: e2eToken, method: method)
         guard resultsUploadMetadata.error == .success else {
-            await NCNetworkingE2EE().unlock(account: metadata.account, serverUrl: metadata.serverUrl)
             return (0, resultsUploadMetadata.error)
         }
 
