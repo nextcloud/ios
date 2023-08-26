@@ -327,20 +327,21 @@ extension NCEndToEndMetadata {
                 }
 
                 print("\n\nCOUNTER -------------------------------")
+                print("Counter: \(json.counter)")
 
                 // Check "counter"
                 if let resultCounter = NCManageDatabase.shared.getCounterE2eMetadataV2(account: account, ocIdServerUrl: ocIdServerUrl) {
+                    print("Counter saved: \(resultCounter)")
                     if json.counter > resultCounter {
                         return NKError(errorCode: NCGlobal.shared.errorE2EECounter, errorDescription: NSLocalizedString("_e2e_error_", comment: ""))
                     }
                 } else {
+                    print("Counter RESET")
                     NCManageDatabase.shared.updateCounterE2eMetadataV2(account: account, ocIdServerUrl: ocIdServerUrl, counter: json.counter)
                 }
-                print("Counter: \(json.counter)")
 
                 // Check "deleted"
-                if let deleted = json.deleted,
-                    deleted {
+                if let deleted = json.deleted, deleted {
                     // TODO: We need to check deleted, id yes ???
                 }
 
