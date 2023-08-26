@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="21701" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="21507" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina4_7" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21678"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21505"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -133,7 +133,7 @@
                 <constraint firstItem="85m-50-8yp" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" constant="20" id="5H2-Gg-PEb"/>
                 <constraint firstAttribute="trailing" secondItem="85m-50-8yp" secondAttribute="trailing" constant="20" id="BXT-Qo-qFl"/>
                 <constraint firstItem="ncM-9U-phl" firstAttribute="centerY" secondItem="iN0-l3-epB" secondAttribute="centerY" id="DAA-xj-35k"/>
-                <constraint firstAttribute="bottom" secondItem="85m-50-8yp" secondAttribute="bottom" constant="15" id="N7Q-PF-7lb"/>
+                <constraint firstItem="vUN-kp-3ea" firstAttribute="bottom" secondItem="85m-50-8yp" secondAttribute="bottom" constant="15" id="N7Q-PF-7lb"/>
                 <constraint firstAttribute="trailing" secondItem="orv-9i-XUs" secondAttribute="trailing" constant="20" id="Nnr-hx-a2V"/>
                 <constraint firstItem="ncM-9U-phl" firstAttribute="centerX" secondItem="iN0-l3-epB" secondAttribute="centerX" id="dPB-Kf-Ad7"/>
                 <constraint firstItem="orv-9i-XUs" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" constant="20" id="xBn-BF-JVz"/>
