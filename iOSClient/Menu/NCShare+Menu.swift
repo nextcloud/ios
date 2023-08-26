@@ -65,7 +65,7 @@ extension NCShare {
                     Task {
                         if let metadata = self.metadata, metadata.e2eEncrypted && NCGlobal.shared.capabilityE2EEApiVersion == NCGlobal.shared.e2eeVersionV20 {
                             let serverUrl = metadata.serverUrl + "/" + metadata.fileName
-                            let error = await NCNetworkingE2EE.shared.uploadMetadata(account: metadata.account, serverUrl: serverUrl, userId: metadata.userId, addUserId: nil, removeUserId: share.shareWith)
+                            let error = await NCNetworkingE2EE().uploadMetadata(account: metadata.account, serverUrl: serverUrl, userId: metadata.userId, addUserId: nil, removeUserId: share.shareWith)
                             if error != .success {
                                 NCContentPresenter.shared.showError(error: error)
                                 return

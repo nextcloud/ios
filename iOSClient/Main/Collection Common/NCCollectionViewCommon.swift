@@ -413,13 +413,10 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
               serverUrl == self.serverUrl,
               let account = userInfo["account"] as? String,
               account == appDelegate.account,
-              let e2ee = userInfo["e2ee"] as? Bool,
               let withPush = userInfo["withPush"] as? Bool
         else { return }
 
-        if e2ee {
-            reloadDataSourceNetwork(isForced: true)
-        } else if let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
+        if let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
             reloadDataSource()
             if withPush {
                 pushMetadata(metadata)
@@ -1060,7 +1057,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             if let metadataFolder = metadataFolder {
                 tableDirectory = NCManageDatabase.shared.setDirectory(serverUrl: self.serverUrl, richWorkspace: metadataFolder.richWorkspace, account: account)
             }
-            if isForced || tableDirectory?.etag != metadataFolder?.etag || metadataFolder?.e2eEncrypted ?? false {
+
+            if isForced || tableDirectory?.etag != metadataFolder?.etag || metadataFolder?.e2eEncrypted ?? true {
                 NCNetworking.shared.readFolder(serverUrl: self.serverUrl, account: self.appDelegate.account) { _, metadataFolder, metadatas, metadatasUpdate, _, metadatasDelete, error in
                     guard error == .success else {
                         completion(tableDirectory, nil, nil, nil, error)
@@ -1071,7 +1069,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                     if let metadataFolder = metadataFolder, metadataFolder.e2eEncrypted, CCUtility.isEnd(toEndEnabled: self.appDelegate.account) {
                         NextcloudKit.shared.getE2EEMetadata(fileId: metadataFolder.ocId, e2eToken: nil) { _, e2eMetadata, signature, _, error in
                             if error == .success, let e2eMetadata = e2eMetadata {
-                                let error = NCEndToEndMetadata().decodeMetadata(e2eMetadata, signature: signature, serverUrl: self.serverUrl, account: self.appDelegate.account, urlBase: self.appDelegate.urlBase, userId: self.appDelegate.userId, ownerId: metadataFolder.ownerId)
+                                let error = NCEndToEndMetadata().decodeMetadata(e2eMetadata, signature: signature, serverUrl: self.serverUrl, account: self.appDelegate.account, urlBase: self.appDelegate.urlBase, userId: self.appDelegate.userId)
                                 if error == .success {
                                     self.reloadDataSource()
                                 } else {

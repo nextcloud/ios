@@ -86,7 +86,7 @@ extension NCEndToEndMetadata {
     // MARK: Ecode JSON Metadata V1.2
     // --------------------------------------------------------------------------------------------
 
-    func encodeMetadataV12(account: String, serverUrl: String, ocIdServerUrl: String) -> (metadata: String?, signature: String?, error: NKError) {
+    func encodeMetadataV12(account: String, serverUrl: String, ocIdServerUrl: String) -> (metadata: String?, signature: String?, counter: Int, error: NKError) {
 
         let encoder = JSONEncoder()
         var metadataKey: String = ""
@@ -133,7 +133,7 @@ extension NCEndToEndMetadata {
                     }
                     fileNameIdentifiers.append(e2eEncryption.fileNameIdentifier)
                 } catch let error {
-                    return (nil, nil, NKError(errorCode: NCGlobal.shared.errorE2EEJSon, errorDescription: error.localizedDescription))
+                    return (nil, nil, 0, NKError(errorCode: NCGlobal.shared.errorE2EEJSon, errorDescription: error.localizedDescription))
                 }
             }
 
@@ -160,7 +160,7 @@ extension NCEndToEndMetadata {
                         filedrop.updateValue(record, forKey: e2eEncryption.fileNameIdentifier)
                     }
                 } catch let error {
-                    return (nil, nil, NKError(errorCode: NCGlobal.shared.errorE2EEJSon, errorDescription: error.localizedDescription))
+                    return (nil, nil, 0, NKError(errorCode: NCGlobal.shared.errorE2EEJSon, errorDescription: error.localizedDescription))
                 }
             }
         }
@@ -183,9 +183,9 @@ extension NCEndToEndMetadata {
             if NCManageDatabase.shared.getE2eMetadata(account: account, serverUrl: serverUrl) == nil {
                 NCManageDatabase.shared.setE2eMetadata(account: account, serverUrl: serverUrl, metadataKey: metadataKey, version: metadataVersion)
             }
-            return (jsonString, nil, NKError())
+            return (jsonString, nil, 0, NKError())
         } catch let error {
-            return (nil, nil, NKError(errorCode: NCGlobal.shared.errorE2EEJSon, errorDescription: error.localizedDescription))
+            return (nil, nil, 0, NKError(errorCode: NCGlobal.shared.errorE2EEJSon, errorDescription: error.localizedDescription))
         }
     }
 
@@ -193,7 +193,7 @@ extension NCEndToEndMetadata {
     // MARK: Decode JSON Metadata V1.2
     // --------------------------------------------------------------------------------------------
 
-    func decodeMetadataV12(_ json: String, serverUrl: String, account: String, ocIdServerUrl: String, urlBase: String, userId: String, ownerId: String?) -> NKError {
+    func decodeMetadataV12(_ json: String, serverUrl: String, account: String, ocIdServerUrl: String, urlBase: String, userId: String) -> NKError {
 
         guard let data = json.data(using: .utf8) else {
             return NKError(errorCode: NCGlobal.shared.errorE2EEJSon, errorDescription: "_e2e_error_")

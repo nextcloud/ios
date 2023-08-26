@@ -1170,7 +1170,7 @@
     if (contentInfo == nil)
         return nil;
 
-    CMS_ContentInfo_print_ctx(printBIO, contentInfo, 0, NULL);
+    // DEBUG CMS_ContentInfo_print_ctx(printBIO, contentInfo, 0, NULL);
     PEM_write_bio_CMS(printBIO, contentInfo);
 
     BIO *i2dCmsBioOut = BIO_new(BIO_s_mem());
@@ -1204,7 +1204,7 @@
     BIO *publicKeyBIO = BIO_new_mem_buf(publicKeyUTF8, -1);
     EVP_PKEY *pkey = PEM_read_bio_PUBKEY(publicKeyBIO, NULL, NULL, NULL);
 
-    CMS_ContentInfo_print_ctx(printBIO, contentInfo, 0, NULL);
+    // DEBUG CMS_ContentInfo_print_ctx(printBIO, contentInfo, 0, NULL);
 
     BOOL verifyResult = CMS_verify(contentInfo, NULL, NULL, dataBIO, NULL, CMS_DETACHED | CMS_NO_SIGNER_CERT_VERIFY);
 
@@ -1256,7 +1256,7 @@
     BIO *cmsBIO = BIO_new_mem_buf(cmsContent.bytes, (int)cmsContent.length);
 
     CMS_ContentInfo *contentInfo = d2i_CMS_bio(cmsBIO, NULL);
-    CMS_ContentInfo_print_ctx(printBIO, contentInfo, 0, NULL);
+    // DEBUG CMS_ContentInfo_print_ctx(printBIO, contentInfo, 0, NULL);
 
     BOOL verifyResult = CMS_verify(contentInfo, NULL, NULL, dataBIO, NULL, CMS_DETACHED | CMS_NO_SIGNER_CERT_VERIFY);
 

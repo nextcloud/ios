@@ -34,6 +34,8 @@ class NCManageDatabase: NSObject {
         return instance
     }()
 
+    let serialQueue = DispatchQueue(label: "realmSerialQueue")
+
     override init() {
 
         let dirGroup = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: NCBrandOptions.shared.capabilitiesGroups)
@@ -207,6 +209,7 @@ class NCManageDatabase: NSObject {
         self.clearTable(tableE2eMetadata.self, account: account)
         self.clearTable(tableE2eMetadataV2.self, account: account)
         self.clearTable(tableE2eUsersV2.self, account: account)
+        self.clearTable(tableE2eCounterV2.self, account: account)
         self.clearTable(tableExternalSites.self, account: account)
         self.clearTable(tableGPS.self, account: nil)
         self.clearTable(TableGroupfolders.self, account: account)

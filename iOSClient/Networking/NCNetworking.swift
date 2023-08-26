@@ -412,7 +412,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
         if metadata.isDirectoryE2EE {
 #if !EXTENSION_FILE_PROVIDER_EXTENSION && !EXTENSION_WIDGET
             Task {
-                let error = await NCNetworkingE2EEUpload.shared.upload(metadata: metadata, uploadE2EEDelegate: uploadE2EEDelegate)
+                let error = await NCNetworkingE2EEUpload().upload(metadata: metadata, uploadE2EEDelegate: uploadE2EEDelegate)
                 completion(error)
             }
 #endif
@@ -1153,7 +1153,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
         if isDirectoryEncrypted {
 #if !EXTENSION
             Task {
-                let error = await NCNetworkingE2EECreateFolder.shared.createFolder(fileName: fileName, serverUrl: serverUrl, account: account, urlBase: urlBase, userId: userId, withPush: withPush)
+                let error = await NCNetworkingE2EECreateFolder().createFolder(fileName: fileName, serverUrl: serverUrl, account: account, urlBase: urlBase, userId: userId, withPush: withPush)
                 completion(error)
             }
 #endif
@@ -1192,7 +1192,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
                         NCManageDatabase.shared.addDirectory(encrypted: metadata.e2eEncrypted, favorite: metadata.favorite, ocId: metadata.ocId, fileId: metadata.fileId, etag: nil, permissions: metadata.permissions, serverUrl: fileNameFolderUrl, account: account)
                     }
                     if let metadata = NCManageDatabase.shared.getMetadataFromOcId(metadataFolder?.ocId) {
-                        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterCreateFolder, userInfo: ["ocId": metadata.ocId, "serverUrl": metadata.serverUrl, "account": metadata.account, "e2ee": false, "withPush": withPush])
+                        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterCreateFolder, userInfo: ["ocId": metadata.ocId, "serverUrl": metadata.serverUrl, "account": metadata.account, "withPush": withPush])
                     }
                 }
                 completion(error)
@@ -1300,14 +1300,14 @@ class NCNetworking: NSObject, NKCommonDelegate {
         if metadata.isDirectoryE2EE {
 #if !EXTENSION
             if let metadataLive = metadataLive {
-                let error = await NCNetworkingE2EEDelete.shared.delete(metadata: metadataLive)
+                let error = await NCNetworkingE2EEDelete().delete(metadata: metadataLive)
                 if error == .success {
-                    return await NCNetworkingE2EEDelete.shared.delete(metadata: metadata)
+                    return await NCNetworkingE2EEDelete().delete(metadata: metadata)
                 } else {
                     return error
                 }
             } else {
-                return await NCNetworkingE2EEDelete.shared.delete(metadata: metadata)
+                return await NCNetworkingE2EEDelete().delete(metadata: metadata)
             }
 #else
             return NKError()
@@ -1326,7 +1326,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
         }
     }
 
-    func deleteMetadataPlain(_ metadata: tableMetadata, customHeader: [String: String]? = nil) async -> (NKError) {
+    func deleteMetadataPlain(_ metadata: tableMetadata, customHeader: [String: String]? = nil) async -> NKError {
 
         // verify permission
         let permission = NCUtility.shared.permissionsContainsString(metadata.permissions, permissions: NCGlobal.shared.permissionCanDelete)
@@ -1448,15 +1448,15 @@ class NCNetworking: NSObject, NKCommonDelegate {
 #if !EXTENSION
             Task {
                 if let metadataLive = metadataLive {
-                    let error = await NCNetworkingE2EERename.shared.rename(metadata: metadataLive, fileNameNew: fileNameNew, indexPath: indexPath)
+                    let error = await NCNetworkingE2EERename().rename(metadata: metadataLive, fileNameNew: fileNameNew, indexPath: indexPath)
                     if error == .success {
-                        let error = await NCNetworkingE2EERename.shared.rename(metadata: metadata, fileNameNew: fileNameNew, indexPath: indexPath)
+                        let error = await NCNetworkingE2EERename().rename(metadata: metadata, fileNameNew: fileNameNew, indexPath: indexPath)
                         DispatchQueue.main.async { completion(error) }
                     } else {
                         DispatchQueue.main.async { completion(error) }
                     }
                 } else {
-                    let error = await NCNetworkingE2EERename.shared.rename(metadata: metadata, fileNameNew: fileNameNew, indexPath: indexPath)
+                    let error = await NCNetworkingE2EERename().rename(metadata: metadata, fileNameNew: fileNameNew, indexPath: indexPath)
                     DispatchQueue.main.async { completion(error) }
                 }
             }
@@ -1543,7 +1543,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
 
     // MARK: - WebDav Move
 
-    func moveMetadata(_ metadata: tableMetadata, serverUrlTo: String, overwrite: Bool) async -> (NKError) {
+    func moveMetadata(_ metadata: tableMetadata, serverUrlTo: String, overwrite: Bool) async -> NKError {
 
         if let metadataLive = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata) {
             let error = await moveMetadataPlain(metadataLive, serverUrlTo: serverUrlTo, overwrite: overwrite)
@@ -1556,7 +1556,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
         return await moveMetadataPlain(metadata, serverUrlTo: serverUrlTo, overwrite: overwrite)
     }
 
-    private func moveMetadataPlain(_ metadata: tableMetadata, serverUrlTo: String, overwrite: Bool) async -> (NKError) {
+    private func moveMetadataPlain(_ metadata: tableMetadata, serverUrlTo: String, overwrite: Bool) async -> NKError {
 
         let permission = NCUtility.shared.permissionsContainsString(metadata.permissions, permissions: NCGlobal.shared.permissionCanRename)
         if !(metadata.permissions == "") && !permission {
@@ -1579,7 +1579,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
 
     // MARK: - WebDav Copy
 
-    func copyMetadata(_ metadata: tableMetadata, serverUrlTo: String, overwrite: Bool) async -> (NKError) {
+    func copyMetadata(_ metadata: tableMetadata, serverUrlTo: String, overwrite: Bool) async -> NKError {
 
         if let metadataLive = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata) {
             let error = await copyMetadataPlain(metadataLive, serverUrlTo: serverUrlTo, overwrite: overwrite)
@@ -1592,7 +1592,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
         return await copyMetadataPlain(metadata, serverUrlTo: serverUrlTo, overwrite: overwrite)
     }
 
-    private func copyMetadataPlain(_ metadata: tableMetadata, serverUrlTo: String, overwrite: Bool) async -> (NKError) {
+    private func copyMetadataPlain(_ metadata: tableMetadata, serverUrlTo: String, overwrite: Bool) async -> NKError {
 
         let permission = NCUtility.shared.permissionsContainsString(metadata.permissions, permissions: NCGlobal.shared.permissionCanRename)
         if !(metadata.permissions == "") && !permission {

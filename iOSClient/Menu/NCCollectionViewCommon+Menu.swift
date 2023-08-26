@@ -145,7 +145,7 @@ extension NCCollectionViewCommon {
         }
 
         //
-        // SET FOLDER E2EE -- IF > (ONLY ROOT) metadata.serverUrl == serverUrlHome,
+        // SET FOLDER E2EE
         //
         if metadata.isDirectoySettableE2EE {
             actions.append(
@@ -155,7 +155,7 @@ extension NCCollectionViewCommon {
                     order: 30,
                     action: { _ in
                         Task {
-                            let error = await NCNetworkingE2EECreateFolder.shared.createFolderAndMarkE2EE(fileName: metadata.fileName, serverUrl: metadata.serverUrl, account: metadata.account, userId: metadata.userId, createFolder: false)
+                            let error = await NCNetworkingE2EEMarkFolder().markFolderE2ee(account: metadata.account, fileName: metadata.fileName, serverUrl: metadata.serverUrl, userId: metadata.userId, withPush: false)
                             if error != .success {
                                 NCContentPresenter.shared.showError(error: error)
                             }
