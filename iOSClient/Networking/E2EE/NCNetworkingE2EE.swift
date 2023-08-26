@@ -114,7 +114,7 @@ class NCNetworkingE2EE: NSObject {
                         fileId: String,
                         userId: String,
                         e2eToken: String,
-                        method: String = "PUT",
+                        method: String,
                         addUserId: String? = nil,
                         addCertificate: String? = nil,
                         removeUserId: String? = nil) async -> NKError {

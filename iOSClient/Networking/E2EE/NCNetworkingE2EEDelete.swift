@@ -64,7 +64,8 @@ class NCNetworkingE2EEDelete: NSObject {
                                                                       ocIdServerUrl: directory.ocId,
                                                                       fileId: fileId,
                                                                       userId: metadata.userId,
-                                                                      e2eToken: e2eToken)
+                                                                      e2eToken: e2eToken,
+                                                                      method: "PUT")
         guard uploadMetadataError == .success else {
             await networkingE2EE.unlock(account: metadata.account, serverUrl: metadata.serverUrl)
             return uploadMetadataError
