@@ -56,16 +56,15 @@ class NCNetworkingE2EERename: NSObject {
 
         // UPLOAD METADATA
         //
-        let resultsUploadMetadata = await networkingE2EE.uploadMetadata(account: metadata.account, serverUrl: metadata.serverUrl, fileId: fileId, userId: metadata.userId, e2eToken: e2eToken)
-        guard resultsUploadMetadata.error == .success else {
+        let uploadMetadataError = await networkingE2EE.uploadMetadata(account: metadata.account,
+                                                                      serverUrl: metadata.serverUrl,
+                                                                      ocIdServerUrl: directory.ocId,
+                                                                      fileId: fileId,
+                                                                      userId: metadata.userId,
+                                                                      e2eToken: e2eToken)
+        guard uploadMetadataError == .success else {
             await NCNetworkingE2EE().unlock(account: metadata.account, serverUrl: metadata.serverUrl)
-            return resultsUploadMetadata.error
-        }
-
-        // UPDATE COUNTER
-        //
-        if NCGlobal.shared.capabilityE2EEApiVersion == NCGlobal.shared.e2eeVersionV20 {
-            NCManageDatabase.shared.updateCounterE2eMetadataV2(account: metadata.account, ocIdServerUrl: directory.ocId, counter: resultsUploadMetadata.counter)
+            return uploadMetadataError
         }
 
         // UPDATE DB

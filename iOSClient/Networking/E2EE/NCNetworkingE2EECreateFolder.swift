@@ -43,7 +43,7 @@ class NCNetworkingE2EECreateFolder: NSObject {
             return NKError(errorCode: NCGlobal.shared.errorUnexpectedResponseFromDB, errorDescription: NSLocalizedString("_e2e_error_", comment: ""))
         }
 
-        func sendE2ee(e2eToken: String, fileId: String) async -> (counter: Int, error: NKError) {
+        func sendE2ee(e2eToken: String, fileId: String) async -> NKError {
 
             var key: NSString?
             var initializationVector: NSString?
@@ -55,12 +55,12 @@ class NCNetworkingE2EECreateFolder: NSObject {
             if errorDownloadMetadata == .success {
                 method = "PUT"
             } else if errorDownloadMetadata.errorCode != NCGlobal.shared.errorResourceNotFound {
-                return (0, errorDownloadMetadata)
+                return errorDownloadMetadata
             }
 
             NCEndToEndEncryption.sharedManager()?.encodedkey(&key, initializationVector: &initializationVector)
             guard let key = key as? String, let initializationVector = initializationVector as? String else {
-                return (0, NKError(errorCode: NCGlobal.shared.errorE2EEEncodedKey, errorDescription: NSLocalizedString("_e2e_error_", comment: "")))
+                return NKError(errorCode: NCGlobal.shared.errorE2EEEncodedKey, errorDescription: NSLocalizedString("_e2e_error_", comment: ""))
             }
 
             let object = tableE2eEncryption.init(account: account, ocIdServerUrl: directory.ocId, fileNameIdentifier: fileNameIdentifier)
@@ -70,7 +70,7 @@ class NCNetworkingE2EECreateFolder: NSObject {
                 object.metadataKeyIndex = results.metadataKeyIndex
             } else {
                 guard let key = NCEndToEndEncryption.sharedManager()?.generateKey() as NSData? else {
-                    return (0, NKError(errorCode: NCGlobal.shared.errorE2EEGenerateKey, errorDescription: NSLocalizedString("_e2e_error_", comment: "")))
+                    return NKError(errorCode: NCGlobal.shared.errorE2EEGenerateKey, errorDescription: NSLocalizedString("_e2e_error_", comment: ""))
                 }
                 object.metadataKey = key.base64EncodedString()
                 object.metadataKeyIndex = 0
@@ -85,12 +85,15 @@ class NCNetworkingE2EECreateFolder: NSObject {
 
             // UPLOAD METADATA
             //
-            let resultsUploadMetadata = await networkingE2EE.uploadMetadata(account: account, serverUrl: serverUrl, fileId: fileId, userId: userId, e2eToken: e2eToken, method: method)
-            guard resultsUploadMetadata.error == .success else {
-                return (0, resultsUploadMetadata.error)
-            }
+            let uploadMetadataError = await networkingE2EE.uploadMetadata(account: account,
+                                                                          serverUrl: serverUrl,
+                                                                          ocIdServerUrl: directory.ocId,
+                                                                          fileId: fileId,
+                                                                          userId: userId,
+                                                                          e2eToken: e2eToken,
+                                                                          method: method)
 
-            return (resultsUploadMetadata.counter, resultsUploadMetadata.error)
+            return uploadMetadataError
         }
 
         // LOCK
@@ -100,26 +103,20 @@ class NCNetworkingE2EECreateFolder: NSObject {
             return NKError(errorCode: NCGlobal.shared.errorE2EELock, errorDescription: NSLocalizedString("_e2e_error_", comment: ""))
         }
 
+        // SEND NEW METADATA
+        //
+        let sendE2eeError = await sendE2ee(e2eToken: e2eToken, fileId: fileId)
+        guard sendE2eeError == .success else {
+            await NCNetworkingE2EE().unlock(account: account, serverUrl: serverUrl)
+            return sendE2eeError
+        }
+
         // CREATE FOLDER
         //
         let resultsCreateFolder = await NextcloudKit.shared.createFolder(serverUrlFileName: serverUrlFileName, options: NKRequestOptions(customHeader: ["e2e-token": e2eToken]))
         guard resultsCreateFolder.error == .success, let ocId = resultsCreateFolder.ocId else {
             await NCNetworkingE2EE().unlock(account: account, serverUrl: serverUrl)
             return resultsCreateFolder.error
-        }
-
-        // SEND NEW METADATA
-        //
-        let resultsSendE2ee = await sendE2ee(e2eToken: e2eToken, fileId: fileId)
-        guard resultsSendE2ee.error == .success else {
-            await NCNetworkingE2EE().unlock(account: account, serverUrl: serverUrl)
-            return resultsSendE2ee.error
-        }
-
-        // COUNTER
-        //
-        if NCGlobal.shared.capabilityE2EEApiVersion == NCGlobal.shared.e2eeVersionV20 {
-            NCManageDatabase.shared.updateCounterE2eMetadataV2(account: account, ocIdServerUrl: directory.ocId, counter: resultsSendE2ee.counter)
         }
 
         // UNLOCK

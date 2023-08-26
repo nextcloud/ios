@@ -66,16 +66,19 @@ class NCNetworkingE2EE: NSObject {
 
         // UPLOAD METADATA
         //
-        let resultsUploadMetadata = await uploadMetadata(account: account, serverUrl: serverUrl, fileId: fileId, userId: userId, e2eToken: e2eToken, method: method, addUserId: addUserId, addCertificate: addCertificate, removeUserId: removeUserId)
-        guard resultsUploadMetadata.error == .success else {
+        let uploadMetadataError = await uploadMetadata(account: account,
+                                                       serverUrl: serverUrl,
+                                                       ocIdServerUrl: directory.ocId,
+                                                       fileId: fileId,
+                                                       userId: userId,
+                                                       e2eToken: e2eToken,
+                                                       method: method,
+                                                       addUserId: addUserId,
+                                                       addCertificate: addCertificate,
+                                                       removeUserId: removeUserId)
+        guard uploadMetadataError == .success else {
             await NCNetworkingE2EE().unlock(account: account, serverUrl: serverUrl)
-            return resultsUploadMetadata.error
-        }
-
-        // UPDATE COUNTER
-        //
-        if NCGlobal.shared.capabilityE2EEApiVersion == NCGlobal.shared.e2eeVersionV20 {
-            NCManageDatabase.shared.updateCounterE2eMetadataV2(account: account, ocIdServerUrl: directory.ocId, counter: resultsUploadMetadata.counter)
+            return uploadMetadataError
         }
 
         // UNLOCK
@@ -107,25 +110,32 @@ class NCNetworkingE2EE: NSObject {
 
     func uploadMetadata(account: String,
                         serverUrl: String,
+                        ocIdServerUrl: String,
                         fileId: String,
                         userId: String,
                         e2eToken: String,
                         method: String = "PUT",
                         addUserId: String? = nil,
                         addCertificate: String? = nil,
-                        removeUserId: String? = nil) async -> (counter: Int, error: NKError) {
+                        removeUserId: String? = nil) async -> NKError {
 
         let resultsEncodeMetadata = NCEndToEndMetadata().encodeMetadata(account: account, serverUrl: serverUrl, userId: userId, addCertificate: addCertificate, removeUserId: removeUserId)
         guard resultsEncodeMetadata.error == .success, let e2eMetadata = resultsEncodeMetadata.metadata else {
-            return (0, resultsEncodeMetadata.error)
+            return resultsEncodeMetadata.error
         }
 
         let putE2EEMetadataResults = await NextcloudKit.shared.putE2EEMetadata(fileId: fileId, e2eToken: e2eToken, e2eMetadata: e2eMetadata, signature: resultsEncodeMetadata.signature, method: method)
         guard putE2EEMetadataResults.error == .success else {
-            return (0, putE2EEMetadataResults.error)
+            return putE2EEMetadataResults.error
         }
 
-        return (resultsEncodeMetadata.counter, NKError())
+        // COUNTER
+        //
+        if NCGlobal.shared.capabilityE2EEApiVersion == NCGlobal.shared.e2eeVersionV20 {
+            NCManageDatabase.shared.updateCounterE2eMetadataV2(account: account, ocIdServerUrl: ocIdServerUrl, counter: resultsEncodeMetadata.counter)
+        }
+
+        return NKError()
     }
 
     func lock(account: String, serverUrl: String) async -> (fileId: String?, e2eToken: String?, error: NKError) {
