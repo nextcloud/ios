@@ -137,14 +137,14 @@ class NCNetworkingE2EEUpload: NSObject {
             return sendE2eeError
         }
 
-        // UNLOCK
-        //
-        await networkingE2EE.unlock(account: metadata.account, serverUrl: metadata.serverUrl)
-
         // UPLOAD
         //
         let resultsSendFile = await sendFile(metadata: metadata, e2eToken: e2eToken, uploadE2EEDelegate: uploadE2EEDelegate)
 
+        // UNLOCK
+        //
+        await networkingE2EE.unlock(account: metadata.account, serverUrl: metadata.serverUrl)
+        
         if let afError = resultsSendFile.afError, afError.isExplicitlyCancelledError {
 
             CCUtility.removeFile(atPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId))
