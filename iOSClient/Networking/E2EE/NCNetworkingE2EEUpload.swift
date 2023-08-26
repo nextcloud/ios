@@ -137,6 +137,9 @@ class NCNetworkingE2EEUpload: NSObject {
         if NCEndToEndEncryption.sharedManager()?.encryptFile(metadata.fileNameView, fileNameIdentifier: metadata.fileName, directory: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId), key: &key, initializationVector: &initializationVector, authenticationTag: &authenticationTag) == false {
             return (0, NKError(errorCode: NCGlobal.shared.errorE2EEEncryptFile, errorDescription: NSLocalizedString("_e2e_error_", comment: "")))
         }
+        guard let key = key as? String, let initializationVector = initializationVector as? String else {
+            return (0, NKError(errorCode: NCGlobal.shared.errorE2EEEncodedKey, errorDescription: NSLocalizedString("_e2e_error_", comment: "")))
+        }
 
         // DOWNLOAD METADATA
         //
@@ -151,18 +154,20 @@ class NCNetworkingE2EEUpload: NSObject {
         //
         NCManageDatabase.shared.deleteE2eEncryption(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileName == %@", metadata.account, metadata.serverUrl, metadata.fileNameView))
         let object = tableE2eEncryption.init(account: metadata.account, ocIdServerUrl: ocIdServerUrl, fileNameIdentifier: metadata.fileName)
-        if let result = NCManageDatabase.shared.getE2eEncryption(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", metadata.account, metadata.serverUrl)) {
-            object.metadataKey = result.metadataKey
-            object.metadataKeyIndex = result.metadataKeyIndex
+        if let results = NCManageDatabase.shared.getE2eEncryption(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", metadata.account, metadata.serverUrl)) {
+            object.metadataKey = results.metadataKey
+            object.metadataKeyIndex = results.metadataKeyIndex
         } else {
-            let key = NCEndToEndEncryption.sharedManager()?.generateKey() as NSData?
-            object.metadataKey = key!.base64EncodedString()
+            guard let key = NCEndToEndEncryption.sharedManager()?.generateKey() as NSData? else {
+                return (0, NKError(errorCode: NCGlobal.shared.errorE2EEGenerateKey, errorDescription: NSLocalizedString("_e2e_error_", comment: "")))
+            }
+            object.metadataKey = key.base64EncodedString()
             object.metadataKeyIndex = 0
         }
         object.authenticationTag = authenticationTag! as String
         object.fileName = metadata.fileNameView
-        object.key = key! as String
-        object.initializationVector = initializationVector! as String
+        object.key = key
+        object.initializationVector = initializationVector
         object.mimeType = metadata.contentType
         object.serverUrl = metadata.serverUrl
         NCManageDatabase.shared.addE2eEncryption(object)

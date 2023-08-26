@@ -60,22 +60,27 @@ class NCNetworkingE2EECreateFolder: NSObject {
                 return (0, errorDownloadMetadata)
             }
 
-            // Add new metadata
             NCEndToEndEncryption.sharedManager()?.encodedkey(&key, initializationVector: &initializationVector)
+            guard let key = key as? String, let initializationVector = initializationVector as? String else {
+                return (0, NKError(errorCode: NCGlobal.shared.errorE2EEEncodedKey, errorDescription: NSLocalizedString("_e2e_error_", comment: "")))
+            }
 
             let object = tableE2eEncryption.init(account: account, ocIdServerUrl: directory.ocId, fileNameIdentifier: fileNameIdentifier)
             object.blob = "folders"
-            object.authenticationTag = ""
-            object.fileName = fileNameFolder
-            object.key = key! as String
-            object.initializationVector = initializationVector! as String
-            if let result = NCManageDatabase.shared.getE2eEncryption(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", account, serverUrl)) {
-                object.metadataKey = result.metadataKey
-                object.metadataKeyIndex = result.metadataKeyIndex
+            if let results = NCManageDatabase.shared.getE2eEncryption(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", account, serverUrl)) {
+                object.metadataKey = results.metadataKey
+                object.metadataKeyIndex = results.metadataKeyIndex
             } else {
-                object.metadataKey = (NCEndToEndEncryption.sharedManager()?.generateKey()?.base64EncodedString(options: []))! as String // AES_KEY_128_LENGTH
+                guard let key = NCEndToEndEncryption.sharedManager()?.generateKey() as NSData? else {
+                    return (0, NKError(errorCode: NCGlobal.shared.errorE2EEGenerateKey, errorDescription: NSLocalizedString("_e2e_error_", comment: "")))
+                }
+                object.metadataKey = key.base64EncodedString()
                 object.metadataKeyIndex = 0
             }
+            object.authenticationTag = ""
+            object.fileName = fileNameFolder
+            object.key = key
+            object.initializationVector = initializationVector
             object.mimeType = "httpd/unix-directory"
             object.serverUrl = serverUrl
             NCManageDatabase.shared.addE2eEncryption(object)
