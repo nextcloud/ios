@@ -41,7 +41,7 @@ extension UIAlertController {
 
                     let createFolderResults = await NextcloudKit.shared.createFolder(serverUrlFileName: serverUrl + "/" + fileNameFolder)
                     if createFolderResults.error == .success {
-                        let error = await NCNetworkingE2EEMarkFolder().markFolderE2ee(account: urlBase.account, fileName: fileNameFolder, serverUrl: serverUrl, userId: urlBase.userId)
+                        let error = await NCNetworkingE2EEMarkFolder().markFolderE2ee(account: urlBase.account, fileName: fileNameFolder, serverUrl: serverUrl, userId: urlBase.userId, withPush: true)
                         if error != .success {
                             NCContentPresenter.shared.showError(error: error)
                         }

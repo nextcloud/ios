@@ -24,7 +24,7 @@ import NextcloudKit
 
 class NCNetworkingE2EEMarkFolder: NSObject {
 
-    func markFolderE2ee(account: String, fileName: String, serverUrl: String, userId: String) async -> NKError {
+    func markFolderE2ee(account: String, fileName: String, serverUrl: String, userId: String, withPush: Bool) async -> NKError {
 
         let serverUrlFileName = serverUrl + "/" + fileName
 
@@ -43,7 +43,12 @@ class NCNetworkingE2EEMarkFolder: NSObject {
         if NCGlobal.shared.capabilityE2EEApiVersion == NCGlobal.shared.e2eeVersionV20 {
             NCManageDatabase.shared.updateCounterE2eMetadataV2(account: account, ocIdServerUrl: metadata.ocId, counter: 0)
         }
-        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterChangeStatusFolderE2EE, userInfo: ["serverUrl": serverUrl])
+
+        if withPush {
+            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterCreateFolder, userInfo: ["ocId": metadata.ocId, "serverUrl": serverUrl, "account": account, "withPush": withPush])
+        } else {
+            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterChangeStatusFolderE2EE, userInfo: ["serverUrl": serverUrl])
+        }
 
         return NKError()
     }

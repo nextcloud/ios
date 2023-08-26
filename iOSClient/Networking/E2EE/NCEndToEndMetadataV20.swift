@@ -326,6 +326,8 @@ extension NCEndToEndMetadata {
                     return NKError(errorCode: NCGlobal.shared.errorE2EEKeyChecksums, errorDescription: NSLocalizedString("_e2e_error_", comment: ""))
                 }
 
+                print("\n\nCOUNTER -------------------------------")
+
                 // Check "counter"
                 if let resultCounter = NCManageDatabase.shared.getCounterE2eMetadataV2(account: account, ocIdServerUrl: ocIdServerUrl) {
                     if json.counter > resultCounter {
@@ -334,6 +336,7 @@ extension NCEndToEndMetadata {
                 } else {
                     NCManageDatabase.shared.updateCounterE2eMetadataV2(account: account, ocIdServerUrl: ocIdServerUrl, counter: json.counter)
                 }
+                print("Counter: \(json.counter)")
 
                 // Check "deleted"
                 if let deleted = json.deleted,
@@ -344,16 +347,29 @@ extension NCEndToEndMetadata {
                 NCManageDatabase.shared.addE2eMetadataV2(account: account, serverUrl: serverUrl, ocIdServerUrl: ocIdServerUrl, keyChecksums: json.keyChecksums, deleted: json.deleted ?? false, folders: json.folders, version: version)
 
                 if let files = json.files {
+                    print("\nFILES ---------------------------------\n")
                     for file in files {
                         addE2eEncryption(fileNameIdentifier: file.key, filename: file.value.filename, authenticationTag: file.value.authenticationTag, key: file.value.key, initializationVector: file.value.nonce, metadataKey: metadataKey, mimetype: file.value.mimetype, blob: "files")
+
+                        print("filename: \(file.value.filename)")
+                        print("fileNameIdentifier: \(file.key)")
+                        print("mimetype: \(file.value.mimetype)")
+                        print("\n")
                     }
                 }
 
                 if let folders = json.folders {
+                    print("FOLDERS--------------------------------\n")
                     for folder in folders {
                         addE2eEncryption(fileNameIdentifier: folder.key, filename: folder.value, authenticationTag: metadata.authenticationTag, key: metadataKey, initializationVector: metadata.nonce, metadataKey: metadataKey, mimetype: "httpd/unix-directory", blob: "folders")
+
+                        print("filename: \(folder.value)")
+                        print("fileNameIdentifier: \(folder.key)")
+                        print("\n")
                     }
                 }
+
+                print("---------------------------------------\n\n")
             }
         } catch let error {
             return NKError(errorCode: NCGlobal.shared.errorE2EEJSon, errorDescription: error.localizedDescription)
