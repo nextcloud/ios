@@ -53,7 +53,7 @@ class NCNetworkingE2EECreateFolder: NSObject {
 
             // DOWNLOAD METADATA
             //
-            let errorDownloadMetadata = await networkingE2EE.downloadMetadata(account: account, serverUrl: serverUrl, urlBase: urlBase, userId: userId, ownerId: userId, fileId: fileId, e2eToken: e2eToken)
+            let errorDownloadMetadata = await networkingE2EE.downloadMetadata(account: account, serverUrl: serverUrl, urlBase: urlBase, userId: userId, fileId: fileId, e2eToken: e2eToken)
             if errorDownloadMetadata == .success {
                 method = "PUT"
             } else if errorDownloadMetadata.errorCode != NCGlobal.shared.errorResourceNotFound {

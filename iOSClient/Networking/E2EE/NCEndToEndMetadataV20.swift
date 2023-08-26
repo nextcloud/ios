@@ -211,7 +211,7 @@ extension NCEndToEndMetadata {
     // MARK: Decode JSON Metadata V2.0
     // --------------------------------------------------------------------------------------------
 
-    func decodeMetadataV20(_ json: String, signature: String?, serverUrl: String, account: String, ocIdServerUrl: String, urlBase: String, userId: String, ownerId: String?) -> NKError {
+    func decodeMetadataV20(_ json: String, signature: String?, serverUrl: String, account: String, ocIdServerUrl: String, urlBase: String, userId: String) -> NKError {
 
         guard let data = json.data(using: .utf8),
               let directoryTop = NCUtility.shared.getDirectoryE2EETop(serverUrl: serverUrl, account: account) else {

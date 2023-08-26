@@ -43,7 +43,7 @@ class NCNetworkingE2EERename: NSObject {
 
         // DOWNLOAD METADATA
         //
-        let errorDownloadMetadata = await networkingE2EE.downloadMetadata(account: metadata.account, serverUrl: metadata.serverUrl, urlBase: metadata.urlBase, userId: metadata.userId, ownerId: metadata.ownerId, fileId: fileId, e2eToken: e2eToken)
+        let errorDownloadMetadata = await networkingE2EE.downloadMetadata(account: metadata.account, serverUrl: metadata.serverUrl, urlBase: metadata.urlBase, userId: metadata.userId, fileId: fileId, e2eToken: e2eToken)
         guard errorDownloadMetadata == .success else {
             await NCNetworkingE2EE().unlock(account: metadata.account, serverUrl: metadata.serverUrl)
             return errorDownloadMetadata

@@ -140,7 +140,7 @@ class NCNetworkingE2EEUpload: NSObject {
 
         // DOWNLOAD METADATA
         //
-        let errorDownloadMetadata = await networkingE2EE.downloadMetadata(account: metadata.account, serverUrl: metadata.serverUrl, urlBase: metadata.urlBase, userId: metadata.userId, ownerId: metadata.ocId, fileId: fileId, e2eToken: e2eToken)
+        let errorDownloadMetadata = await networkingE2EE.downloadMetadata(account: metadata.account, serverUrl: metadata.serverUrl, urlBase: metadata.urlBase, userId: metadata.userId, fileId: fileId, e2eToken: e2eToken)
         if errorDownloadMetadata == .success {
             method = "PUT"
         } else if errorDownloadMetadata.errorCode != NCGlobal.shared.errorResourceNotFound {
