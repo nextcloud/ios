@@ -333,7 +333,8 @@ extension NCEndToEndMetadata {
                 if let resultCounter = NCManageDatabase.shared.getCounterE2eMetadataV2(account: account, ocIdServerUrl: ocIdServerUrl) {
                     print("Counter saved: \(resultCounter)")
                     if json.counter > resultCounter {
-                        return NKError(errorCode: NCGlobal.shared.errorE2EECounter, errorDescription: NSLocalizedString("_e2e_error_", comment: ""))
+                        // TODO: whats happen with < ?
+                        NCContentPresenter.shared.showError(error: NKError(errorCode: NCGlobal.shared.errorE2EECounter, errorDescription: NSLocalizedString("_e2e_error_", comment: "")))
                     }
                 } else {
                     print("Counter RESET")
