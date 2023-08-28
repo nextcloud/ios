@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="21701" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="FkP-Lh-8zt">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="22113.3" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="FkP-Lh-8zt">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21678"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="22089.1"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
@@ -34,13 +34,13 @@
                         <segue destination="bSZ-tE-FEj" kind="relationship" relationship="viewControllers" id="qbu-nX-qCk"/>
                         <segue destination="hwM-4d-Afb" kind="relationship" relationship="viewControllers" id="tds-0Q-7Zf"/>
                         <segue destination="Cc7-4O-z6Q" kind="relationship" relationship="viewControllers" id="YKg-LH-tor"/>
-                        <segue destination="Npr-vu-PSD" kind="relationship" relationship="viewControllers" id="XeU-GF-etm"/>
+                        <segue destination="6Bv-4x-DiT" kind="relationship" relationship="viewControllers" id="iKW-2j-TQb"/>
                         <segue destination="1Z8-Bx-Dqo" kind="relationship" relationship="viewControllers" id="z6l-ei-IMY"/>
                     </connections>
                 </tabBarController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="d2B-Yg-rp2" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="7071" y="-556"/>
+            <point key="canvasLocation" x="6929" y="-527"/>
         </scene>
         <!--File-->
         <scene sceneID="dMv-43-hWy">
@@ -97,7 +97,7 @@
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="cZf-pk-3Bd" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="7771" y="327"/>
+            <point key="canvasLocation" x="7051" y="1203"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="cip-AF-Ks2">
@@ -262,6 +262,16 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="CL1-x1-23E" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="8458" y="899"/>
+        </scene>
+        <!--Media-->
+        <scene sceneID="Bay-KH-kar">
+            <objects>
+                <hostingController id="6Bv-4x-DiT" customClass="NCMediaUIHostingController" customModule="Nextcloud" customModuleProvider="target" sceneMemberID="viewController">
+                    <tabBarItem key="tabBarItem" title="Media" id="LeR-mF-Bik"/>
+                </hostingController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="Vin-YD-kF7" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="7770" y="327"/>
         </scene>
     </scenes>
     <resources>
