@@ -234,8 +234,6 @@ class NCViewerMedia: UIViewController {
 
         if UIDevice.current.orientation.isValidInterfaceOrientation {
             closeDetail()
-//            DispatchQue
-//            openDetail()
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
                 self.openDetail()
             }
@@ -252,11 +250,6 @@ class NCViewerMedia: UIViewController {
             // back to the original size
             self.scrollView.zoom(to: CGRect(x: 0, y: 0, width: self.scrollView.bounds.width, height: self.scrollView.bounds.height), animated: false)
             self.view.layoutIfNeeded()
-//            UIView.animate(withDuration: context.transitionDuration) {
-//                if self.detailView.isShown {
-//                    self.openDetail()
-//                }
-//            }
         }, completion: { _ in
             self.showTip()
             if self.metadata.isVideo {
