@@ -131,7 +131,7 @@ class NCNetworkingE2EECreateFolder: NSObject {
         //
         await networkingE2EE.unlock(account: account, serverUrl: serverUrl)
 
-        //
+        // WRITE DB (DIRECTORY - METADATA)
         //
         let resultsReadFileOrFolder = await NextcloudKit.shared.readFileOrFolder(serverUrlFileName: serverUrlFileName, depth: "0")
         guard resultsReadFileOrFolder.error == .success, let file = resultsReadFileOrFolder.files.first else {
