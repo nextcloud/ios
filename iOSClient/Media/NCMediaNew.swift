@@ -21,15 +21,9 @@ struct NCMediaNew: View {
     var body: some View {
         VStack {
             ScrollView {
-                LazyVGrid(columns: gridColumns) {
+                LazyVGrid(columns: gridColumns, alignment: .leading) {
                     ForEach(0...20, id: \.self) { value in
                         GeometryReader { geo in
-                            ZStack(alignment: .topTrailing) {
-                                //                                AsyncImage(url: URL(string: "https://picsum.photos/id/237/536/354")) { image in
-                                //                                    image
-                                //                                        .resizable()
-                                //                                        .frame(width: CGFloat.random(in: 20...50), height: 50)
-                                //                                }
                                 AsyncImage(url: URL(string: "https://picsum.photos/id/237/536/354")) { image in
                                     image
                                         .resizable()
@@ -38,11 +32,8 @@ struct NCMediaNew: View {
                                     ProgressView()
                                 }
                                 .frame(width: CGFloat.random(in: 20...200), height: 50)
-                            }
                         }
                         .cornerRadius(8.0)
-//                                                .aspectRatio(1, contentMode: .fit)
-                                                .aspectRatio(CGFloat.random(in: 1...5), contentMode: .fit)
                     }
                 }
             }
