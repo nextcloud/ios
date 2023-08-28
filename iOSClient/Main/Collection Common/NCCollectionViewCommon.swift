@@ -223,8 +223,10 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-
-        showTip()
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+            self.showTip()
+        }
     }
 
     override func viewWillDisappear(_ animated: Bool) {
