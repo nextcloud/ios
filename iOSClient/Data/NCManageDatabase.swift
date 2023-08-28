@@ -440,21 +440,17 @@ class NCManageDatabase: NSObject {
     // MARK: -
     // MARK: Table GPS
 
-    @objc func addGeocoderLocation(_ location: String, placemarkAdministrativeArea: String, placemarkCountry: String, placemarkLocality: String, placemarkPostalCode: String, placemarkThoroughfare: String, latitude: String, longitude: String) {
+    @objc func addGeocoderLocation(_ location: String, latitude: Double, longitude: Double) {
 
         do {
             let realm = try Realm()
+            realm.refresh()
             guard realm.objects(tableGPS.self).filter("latitude == %@ AND longitude == %@", latitude, longitude).first == nil else { return }
             try realm.write {
                 let addObject = tableGPS()
                 addObject.latitude = latitude
                 addObject.location = location
                 addObject.longitude = longitude
-                addObject.placemarkAdministrativeArea = placemarkAdministrativeArea
-                addObject.placemarkCountry = placemarkCountry
-                addObject.placemarkLocality = placemarkLocality
-                addObject.placemarkPostalCode = placemarkPostalCode
-                addObject.placemarkThoroughfare = placemarkThoroughfare
                 realm.add(addObject)
             }
         } catch let error as NSError {
@@ -462,8 +458,7 @@ class NCManageDatabase: NSObject {
         }
     }
 
-    @objc func getLocationFromGeoLatitude(_ latitude: String, longitude: String) -> String? {
-
+    @objc func getLocationFromLatAndLong(latitude: Double, longitude: Double) -> String? {
         do {
             let realm = try Realm()
             realm.refresh()

@@ -839,12 +839,19 @@ class NCUtility: NSObject {
         let geocoder = CLGeocoder()
         let llocation = CLLocation(latitude: latitude, longitude: longitude)
 
-        geocoder.reverseGeocodeLocation(llocation) { placemarks, error in
-            if error == nil, let placemark = placemarks?.first {
-                let locationComponents: [String] = [placemark.name, placemark.locality, placemark.country]
-                    .compactMap {$0}
+        if let location = NCManageDatabase.shared.getLocationFromLatAndLong(latitude: latitude, longitude: longitude) {
+            completion(location)
+        } else {
+            geocoder.reverseGeocodeLocation(llocation) { placemarks, error in
+                if error == nil, let placemark = placemarks?.first {
+                    let locationComponents: [String] = [placemark.name, placemark.locality, placemark.country]
+                        .compactMap {$0}
 
-                completion(locationComponents.joined(separator: ", "))
+                    let location = locationComponents.joined(separator: ", ")
+
+                    NCManageDatabase.shared.addGeocoderLocation(location, latitude: latitude, longitude: longitude)
+                    completion(location)
+                }
             }
         }
     }
