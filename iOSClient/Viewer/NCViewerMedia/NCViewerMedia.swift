@@ -233,7 +233,12 @@ class NCViewerMedia: UIViewController {
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
 
         if UIDevice.current.orientation.isValidInterfaceOrientation {
-            reloadDetail()
+            closeDetail()
+//            DispatchQue
+//            openDetail()
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                self.openDetail()
+            }
         }
 
         self.tipView?.dismiss()
@@ -247,11 +252,11 @@ class NCViewerMedia: UIViewController {
             // back to the original size
             self.scrollView.zoom(to: CGRect(x: 0, y: 0, width: self.scrollView.bounds.width, height: self.scrollView.bounds.height), animated: false)
             self.view.layoutIfNeeded()
-            UIView.animate(withDuration: context.transitionDuration) {
-                if self.detailView.isShown {
-                    self.openDetail()
-                }
-            }
+//            UIView.animate(withDuration: context.transitionDuration) {
+//                if self.detailView.isShown {
+//                    self.openDetail()
+//                }
+//            }
         }, completion: { _ in
             self.showTip()
             if self.metadata.isVideo {
