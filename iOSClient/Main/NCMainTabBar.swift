@@ -233,7 +233,7 @@ class NCMainTabBar: UITabBar {
         }
     }
 
-    func getHight() -> CGFloat {
+    func getHeight() -> CGFloat {
         return (frame.size.height - centerButtonY)
     }
 }

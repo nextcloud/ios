@@ -533,7 +533,7 @@ extension NCMedia {
             self.collectionView.reloadData()
             var bottom: CGFloat = 0
             if let mainTabBar = self.tabBarController?.tabBar as? NCMainTabBar {
-                bottom = -mainTabBar.getHight()
+                bottom = -mainTabBar.getHeight()
             }
             NCActivityIndicator.shared.start(backgroundView: self.view, bottom: bottom - 5, style: .medium)
         }
