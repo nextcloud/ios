@@ -86,7 +86,7 @@
                     <directionalEdgeInsets key="directionalLayoutMargins" top="5" leading="5" bottom="5" trailing="5"/>
                 </stackView>
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="85m-50-8yp">
-                    <rect key="frame" x="20" y="594" width="335" height="58"/>
+                    <rect key="frame" x="20" y="609" width="335" height="58"/>
                     <subviews>
                         <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" minValue="0.0" maxValue="1" translatesAutoresizingMaskIntoConstraints="NO" id="MY0-FC-j88">
                             <rect key="frame" x="-2" y="14" width="297" height="31"/>
@@ -133,7 +133,7 @@
                 <constraint firstItem="85m-50-8yp" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" constant="20" id="5H2-Gg-PEb"/>
                 <constraint firstAttribute="trailing" secondItem="85m-50-8yp" secondAttribute="trailing" constant="20" id="BXT-Qo-qFl"/>
                 <constraint firstItem="ncM-9U-phl" firstAttribute="centerY" secondItem="iN0-l3-epB" secondAttribute="centerY" id="DAA-xj-35k"/>
-                <constraint firstItem="vUN-kp-3ea" firstAttribute="bottom" secondItem="85m-50-8yp" secondAttribute="bottom" constant="15" id="N7Q-PF-7lb"/>
+                <constraint firstItem="vUN-kp-3ea" firstAttribute="bottom" secondItem="85m-50-8yp" secondAttribute="bottom" id="N7Q-PF-7lb"/>
                 <constraint firstAttribute="trailing" secondItem="orv-9i-XUs" secondAttribute="trailing" constant="20" id="Nnr-hx-a2V"/>
                 <constraint firstItem="ncM-9U-phl" firstAttribute="centerX" secondItem="iN0-l3-epB" secondAttribute="centerX" id="dPB-Kf-Ad7"/>
                 <constraint firstItem="orv-9i-XUs" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" constant="20" id="xBn-BF-JVz"/>
