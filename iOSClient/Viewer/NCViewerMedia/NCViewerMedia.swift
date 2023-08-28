@@ -233,7 +233,7 @@ class NCViewerMedia: UIViewController {
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
 
         if UIDevice.current.orientation.isValidInterfaceOrientation {
-            closeDetail()
+            reloadDetail()
         }
 
         self.tipView?.dismiss()
