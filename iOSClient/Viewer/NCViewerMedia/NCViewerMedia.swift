@@ -232,11 +232,10 @@ class NCViewerMedia: UIViewController {
 
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
 
+        let wasShown = detailView.isShown
+
         if UIDevice.current.orientation.isValidInterfaceOrientation {
             closeDetail()
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                self.openDetail()
-            }
         }
 
         self.tipView?.dismiss()
@@ -252,6 +251,9 @@ class NCViewerMedia: UIViewController {
             self.view.layoutIfNeeded()
         }, completion: { _ in
             self.showTip()
+
+            if wasShown { self.openDetail() }
+
             if self.metadata.isVideo {
                 self.imageVideoContainer.isHidden = false
             }
@@ -510,7 +512,7 @@ extension NCViewerMedia {
         }
     }
 
-    private func closeDetail() {
+    func closeDetail() {
         delegate?.didCloseDetail()
         self.detailView.hide()
         imageViewConstraint = 0
@@ -574,9 +576,6 @@ extension NCViewerMedia: UIScrollViewDelegate {
         } else {
             scrollView.contentInset = .zero
         }
-    }
-
-    func scrollViewDidScroll(_ scrollView: UIScrollView) {
     }
 }
 
