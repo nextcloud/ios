@@ -231,34 +231,31 @@ class NCViewerMedia: UIViewController {
     }
 
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
-
-
-        if UIDevice.current.orientation.isValidInterfaceOrientation {
-            let wasShown = detailView.isShown
-            closeDetail(animate: false)
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.01) { // Reopen closed view to fix bad layout. setNeedsLayout and layoutIfNeeded doesn't seem to work here, probably because of scroll view and panning.
-                if wasShown { self.openDetail(animate: false) }
-            }
-        }
-
-        self.tipView?.dismiss()
-        if metadata.isVideo {
-            self.imageVideoContainer.isHidden = true
-        }
-
         super.viewWillTransition(to: size, with: coordinator)
 
-        coordinator.animate(alongsideTransition: { context in
-            // back to the original size
-            self.scrollView.zoom(to: CGRect(x: 0, y: 0, width: self.scrollView.bounds.width, height: self.scrollView.bounds.height), animated: false)
-            self.view.layoutIfNeeded()
-        }, completion: { _ in
-            self.showTip()
+        let wasShown = detailView.isShown
 
-            if self.metadata.isVideo {
-                self.imageVideoContainer.isHidden = false
+        if UIDevice.current.orientation.isValidInterfaceOrientation {
+
+            if wasShown { closeDetail(animate: false) }
+            self.tipView?.dismiss()
+            if metadata.isVideo {
+                self.imageVideoContainer.isHidden = true
             }
-        })
+
+            coordinator.animate(alongsideTransition: { context in
+                // back to the original size
+                self.scrollView.zoom(to: CGRect(x: 0, y: 0, width: self.scrollView.bounds.width, height: self.scrollView.bounds.height), animated: false)
+                self.view.layoutIfNeeded()
+                // reopen detail
+                if wasShown { self.openDetail(animate: false) }
+            }, completion: { _ in
+                self.showTip()
+                if self.metadata.isVideo {
+                    self.imageVideoContainer.isHidden = false
+                }
+            })
+        }
     }
 
     // MARK: - Tip
