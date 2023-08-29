@@ -232,10 +232,13 @@ class NCViewerMedia: UIViewController {
 
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
 
-        let wasShown = detailView.isShown
 
         if UIDevice.current.orientation.isValidInterfaceOrientation {
-            closeDetail()
+            let wasShown = detailView.isShown
+            closeDetail(animate: false)
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.01) { // Reopen closed view to fix bad layout. setNeedsLayout and layoutIfNeeded doesn't seem to work here, probably because of scroll view and panning.
+                if wasShown { self.openDetail(animate: false) }
+            }
         }
 
         self.tipView?.dismiss()
@@ -251,8 +254,6 @@ class NCViewerMedia: UIViewController {
             self.view.layoutIfNeeded()
         }, completion: { _ in
             self.showTip()
-
-            if wasShown { self.openDetail() }
 
             if self.metadata.isVideo {
                 self.imageVideoContainer.isHidden = false
@@ -286,7 +287,7 @@ class NCViewerMedia: UIViewController {
             }
         }
 
-        if metadata.isImage, metadata.fileExtension == "gif", !CCUtility.fileProviderStorageExists(metadata) {
+        if metadata.isImage, metadata.fileExtension.lowercased() == "gif", !CCUtility.fileProviderStorageExists(metadata) {
             downloadImage()
         }
 
@@ -479,7 +480,7 @@ extension NCViewerMedia {
         detailView.isShown ? closeDetail() : openDetail()
     }
 
-    private func openDetail() {
+    private func openDetail(animate: Bool = true) {
         delegate?.didOpenDetail()
         self.dismissTip()
 
@@ -501,7 +502,7 @@ extension NCViewerMedia {
                 if self.imageViewConstraint < 0 { self.imageViewConstraint = 0 }
             }
 
-            UIView.animate(withDuration: 0.3) {
+            UIView.animate(withDuration: animate ? 0.3 : 0) {
                 self.imageViewTopConstraint.constant = -self.imageViewConstraint
                 self.imageViewBottomConstraint.constant = self.imageViewConstraint
                 self.detailViewTopConstraint.constant = self.detailView.frame.height
@@ -512,7 +513,7 @@ extension NCViewerMedia {
         }
     }
 
-    func closeDetail() {
+    func closeDetail(animate: Bool = true) {
         delegate?.didCloseDetail()
         self.detailView.hide()
         imageViewConstraint = 0
@@ -520,7 +521,7 @@ extension NCViewerMedia {
         statusLabel.isHidden = false
         statusViewImage.isHidden = false
 
-        UIView.animate(withDuration: 0.3) {
+        UIView.animate(withDuration: animate ? 0.3 : 0) {
             self.imageViewTopConstraint.constant = 0
             self.imageViewBottomConstraint.constant = 0
             self.detailViewTopConstraint.constant = 0
