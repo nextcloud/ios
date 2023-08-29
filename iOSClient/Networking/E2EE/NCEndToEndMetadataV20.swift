@@ -200,23 +200,23 @@ extension NCEndToEndMetadata {
             }
         }
 
-        let ciphertext = E2eeV20.ciphertext(counter: counter, deleted: false, keyChecksums: keyChecksums, files: filesCodable, folders: folders)
-        var authenticationTag: NSString?
-        var initializationVector: NSString?
-
         do {
-            let json = try JSONEncoder().encode(ciphertext)
+            var authenticationTag: NSString?
+            var initializationVector: NSString?
+            let ciphertextFiles = E2eeV20.ciphertext(counter: counter, deleted: false, keyChecksums: keyChecksums, files: filesCodable, folders: folders)
+            let json = try JSONEncoder().encode(ciphertextFiles)
             let jsonZip = try json.gzipped()
-            let ciphertext = NCEndToEndEncryption.sharedManager().encryptPayloadFile(jsonZip, key: metadataKey, initializationVector: &initializationVector, authenticationTag: &authenticationTag)
+            let ciphertextFilesEncrypted = NCEndToEndEncryption.sharedManager().encryptPayloadFile(jsonZip, key: metadataKey, initializationVector: &initializationVector, authenticationTag: &authenticationTag)
 
-            guard var ciphertext, let initializationVector = initializationVector as? String, let authenticationTag = authenticationTag as? String else {
+            guard var ciphertextFilesEncrypted, let initializationVector = initializationVector as? String, let authenticationTag = authenticationTag as? String else {
                 return (nil, nil, counter, NKError(errorCode: NCGlobal.shared.errorE2EEEncryptPayloadFile, errorDescription: "_e2e_error_"))
             }
 
             // Add initializationVector [ANDROID]
-            ciphertext = ciphertext + "|" + initializationVector
+            ciphertextFilesEncrypted = ciphertextFilesEncrypted + "|" + ciphertextFilesEncrypted
+            let metadataCodable = E2eeV20.Metadata(ciphertext: ciphertextFilesEncrypted, nonce: initializationVector, authenticationTag: authenticationTag)
 
-            let metadataCodable = E2eeV20.Metadata(ciphertext: ciphertext, nonce: initializationVector, authenticationTag: authenticationTag)
+            // Create METADATA
             let e2eeCodable = E2eeV20(metadata: metadataCodable, users: usersCodable, filedrop: filedropCodable, version: NCGlobal.shared.e2eeVersionV20)
             let e2eeData = try JSONEncoder().encode(e2eeCodable)
             e2eeData.printJson()
