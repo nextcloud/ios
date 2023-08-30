@@ -610,8 +610,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
     @objc func settingAccount(_ account: String, urlBase: String, user: String, userId: String, password: String, initialize: Bool = true) {
 
-        let accountTestBackup = self.account + "/" + self.userId
-        let accountTest = account + "/" + userId
+        let currentAccount = self.account + "/" + self.userId
+        let newAccount = account + "/" + userId
 
         self.account = account
         self.urlBase = urlBase
@@ -629,7 +629,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         }
 
         DispatchQueue.main.async {
-            if initialize, UIApplication.shared.applicationState != .background && accountTestBackup != accountTest {
+            if initialize, UIApplication.shared.applicationState != .background && currentAccount != newAccount && newAccount != "/" {
                 NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterInitialize, second: 0.2)
             }
         }
@@ -651,8 +651,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         CCUtility.clearAllKeysPushNotification(account)
         CCUtility.setPassword(account, password: nil)
 
+        settingAccount("", urlBase: "", user: "", userId: "", password: "")
+
         if wipe {
-            settingAccount("", urlBase: "", user: "", userId: "", password: "")
             let accounts = NCManageDatabase.shared.getAccounts()
             if accounts?.count ?? 0 > 0 {
                 if let newAccount = accounts?.first {
