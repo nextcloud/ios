@@ -84,15 +84,9 @@ class tableExternalSites: Object {
 }
 
 class tableGPS: Object {
-
-    @objc dynamic var latitude = ""
+    @objc dynamic var latitude: Double = 0
+    @objc dynamic var longitude: Double = 0
     @objc dynamic var location = ""
-    @objc dynamic var longitude = ""
-    @objc dynamic var placemarkAdministrativeArea = ""
-    @objc dynamic var placemarkCountry = ""
-    @objc dynamic var placemarkLocality = ""
-    @objc dynamic var placemarkPostalCode = ""
-    @objc dynamic var placemarkThoroughfare = ""
 }
 
 class tablePhotoLibrary: Object {

@@ -60,6 +60,8 @@ class NCViewerMedia: UIViewController {
     var isDetailViewInitializze: Bool = false
     weak var delegate: NCViewerMediaViewDelegate?
 
+    private var allowPanning = true
+
     // MARK: - View Life Cycle
 
     required init?(coder aDecoder: NSCoder) {
@@ -229,33 +231,30 @@ class NCViewerMedia: UIViewController {
     }
 
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
-
-        if UIDevice.current.orientation.isValidInterfaceOrientation {
-            closeDetail()
-        }
-
-        self.tipView?.dismiss()
-        if metadata.isVideo {
-            self.imageVideoContainer.isHidden = true
-        }
-
         super.viewWillTransition(to: size, with: coordinator)
 
-        coordinator.animate(alongsideTransition: { context in
-            // back to the original size
-            self.scrollView.zoom(to: CGRect(x: 0, y: 0, width: self.scrollView.bounds.width, height: self.scrollView.bounds.height), animated: false)
-            self.view.layoutIfNeeded()
-            UIView.animate(withDuration: context.transitionDuration) {
-                if self.detailView.isShown {
-                    self.openDetail()
+        let wasShown = detailView.isShown
+
+        if UIDevice.current.orientation.isValidInterfaceOrientation {
+
+            if wasShown { closeDetail(animate: false) }
+            self.tipView?.dismiss()
+            if metadata.isVideo {
+                self.imageVideoContainer.isHidden = true
+            }
+
+            coordinator.animate(alongsideTransition: { context in
+                // back to the original size
+                self.scrollView.zoom(to: CGRect(x: 0, y: 0, width: self.scrollView.bounds.width, height: self.scrollView.bounds.height), animated: false)
+                self.view.layoutIfNeeded()
+            }, completion: { _ in
+                self.showTip()
+                if self.metadata.isVideo {
+                    self.imageVideoContainer.isHidden = false
                 }
-            }
-        }, completion: { _ in
-            self.showTip()
-            if self.metadata.isVideo {
-                self.imageVideoContainer.isHidden = false
-            }
-        })
+                if wasShown { self.openDetail(animate: true) }
+            })
+        }
     }
 
     // MARK: - Tip
@@ -284,76 +283,92 @@ class NCViewerMedia: UIViewController {
             }
         }
 
+        if metadata.isImage, metadata.fileExtension.lowercased() == "gif", !CCUtility.fileProviderStorageExists(metadata) {
+            downloadImage()
+        }
+
         // Get image
         let image = getImageMetadata(metadata)
         if self.metadata.ocId == metadata.ocId {
             self.image = image
             self.imageVideoContainer.image = image
         }
+    }
 
-        func getImageMetadata(_ metadata: tableMetadata) -> UIImage? {
+    func getImageMetadata(_ metadata: tableMetadata) -> UIImage? {
 
-            if let image = getImage(metadata: metadata) {
-                return image
-            }
+        if let image = getImage(metadata: metadata) {
+            return image
+        }
 
-            if metadata.isVideo && !metadata.hasPreview {
-                NCUtility.shared.createImageFrom(fileNameView: metadata.fileNameView, ocId: metadata.ocId, etag: metadata.etag, classFile: metadata.classFile)
-            }
+        if metadata.isVideo && !metadata.hasPreview {
+            NCUtility.shared.createImageFrom(fileNameView: metadata.fileNameView, ocId: metadata.ocId, etag: metadata.etag, classFile: metadata.classFile)
+        }
 
-            if CCUtility.fileProviderStoragePreviewIconExists(metadata.ocId, etag: metadata.etag) {
-                if let imagePreviewPath = CCUtility.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag) {
-                    return UIImage(contentsOfFile: imagePreviewPath)
-                }
-            }
-
-            if metadata.isAudio {
-                return UIImage(named: "noPreviewAudio")!.image(color: .gray, size: view.frame.width)
-            } else if metadata.isImage {
-                return UIImage(named: "noPreview")!.image(color: .gray, size: view.frame.width)
-            } else {
-                return nil
+        if CCUtility.fileProviderStoragePreviewIconExists(metadata.ocId, etag: metadata.etag) {
+            if let imagePreviewPath = CCUtility.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag) {
+                return UIImage(contentsOfFile: imagePreviewPath)
             }
         }
 
-        func getImage(metadata: tableMetadata) -> UIImage? {
+        if metadata.isAudio {
+            return UIImage(named: "noPreviewAudio")!.image(color: .gray, size: view.frame.width)
+        } else if metadata.isImage {
+            return UIImage(named: "noPreview")!.image(color: .gray, size: view.frame.width)
+        } else {
+            return nil
+        }
+    }
 
-            let ext = CCUtility.getExtension(metadata.fileNameView)
-            var image: UIImage?
+    func getImage(metadata: tableMetadata) -> UIImage? {
 
-            if CCUtility.fileProviderStorageExists(metadata) && metadata.isImage {
+        let ext = CCUtility.getExtension(metadata.fileNameView)
+        var image: UIImage?
 
-                let previewPath = CCUtility.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)!
-                let imagePath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
+        if CCUtility.fileProviderStorageExists(metadata) && metadata.isImage {
 
-                if ext == "GIF" {
-                    if !FileManager().fileExists(atPath: previewPath) {
-                        NCUtility.shared.createImageFrom(fileNameView: metadata.fileNameView, ocId: metadata.ocId, etag: metadata.etag, classFile: metadata.classFile)
-                    }
-                    image = UIImage.animatedImage(withAnimatedGIFURL: URL(fileURLWithPath: imagePath))
-                } else if ext == "SVG" {
-                    if let svgImage = SVGKImage(contentsOfFile: imagePath) {
-                        svgImage.size = CGSize(width: NCGlobal.shared.sizePreview, height: NCGlobal.shared.sizePreview)
-                        if let image = svgImage.uiImage {
-                            if !FileManager().fileExists(atPath: previewPath) {
-                                do {
-                                    try image.pngData()?.write(to: URL(fileURLWithPath: previewPath), options: .atomic)
-                                } catch { }
-                            }
-                            return image
-                        } else {
-                            return nil
+            let previewPath = CCUtility.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)!
+            let imagePath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
+
+            if ext == "GIF" {
+                if !FileManager().fileExists(atPath: previewPath) {
+                    NCUtility.shared.createImageFrom(fileNameView: metadata.fileNameView, ocId: metadata.ocId, etag: metadata.etag, classFile: metadata.classFile)
+                }
+                image = UIImage.animatedImage(withAnimatedGIFURL: URL(fileURLWithPath: imagePath))
+            } else if ext == "SVG" {
+                if let svgImage = SVGKImage(contentsOfFile: imagePath) {
+                    svgImage.size = CGSize(width: NCGlobal.shared.sizePreview, height: NCGlobal.shared.sizePreview)
+                    if let image = svgImage.uiImage {
+                        if !FileManager().fileExists(atPath: previewPath) {
+                            do {
+                                try image.pngData()?.write(to: URL(fileURLWithPath: previewPath), options: .atomic)
+                            } catch { }
                         }
+                        return image
                     } else {
                         return nil
                     }
                 } else {
-                    NCUtility.shared.createImageFrom(fileNameView: metadata.fileNameView, ocId: metadata.ocId, etag: metadata.etag, classFile: metadata.classFile)
-                    image = UIImage(contentsOfFile: imagePath)
+                    return nil
                 }
+            } else {
+                NCUtility.shared.createImageFrom(fileNameView: metadata.fileNameView, ocId: metadata.ocId, etag: metadata.etag, classFile: metadata.classFile)
+                image = UIImage(contentsOfFile: imagePath)
             }
+        }
 
-            return image
+        return image
+    }
+    
+    func downloadImage(withSelector selector: String = "") {
+        NCNetworking.shared.download(metadata: metadata, selector: selector, progressHandler: { progress in
+            self.allowPanning = false
+        }) { _, _ in
+            let image = self.getImageMetadata(self.metadata)
+            self.image = image
+            self.imageVideoContainer.image = image
+
+            self.allowPanning = true
         }
     }
 
@@ -401,7 +416,7 @@ class NCViewerMedia: UIViewController {
 
     @objc func didPanWith(gestureRecognizer: UIPanGestureRecognizer) {
 
-        guard metadata.isImage else { return }
+        guard metadata.isImage, allowPanning else { return }
 
         let currentLocation = gestureRecognizer.translation(in: self.view)
 
@@ -461,7 +476,7 @@ extension NCViewerMedia {
         detailView.isShown ? closeDetail() : openDetail()
     }
 
-    private func openDetail() {
+    private func openDetail(animate: Bool = true) {
         delegate?.didOpenDetail()
         self.dismissTip()
 
@@ -483,7 +498,7 @@ extension NCViewerMedia {
                 if self.imageViewConstraint < 0 { self.imageViewConstraint = 0 }
             }
 
-            UIView.animate(withDuration: 0.3) {
+            UIView.animate(withDuration: animate ? 0.3 : 0) {
                 self.imageViewTopConstraint.constant = -self.imageViewConstraint
                 self.imageViewBottomConstraint.constant = self.imageViewConstraint
                 self.detailViewTopConstraint.constant = self.detailView.frame.height
@@ -494,7 +509,7 @@ extension NCViewerMedia {
         }
     }
 
-    private func closeDetail() {
+    func closeDetail(animate: Bool = true) {
         delegate?.didCloseDetail()
         self.detailView.hide()
         imageViewConstraint = 0
@@ -502,7 +517,7 @@ extension NCViewerMedia {
         statusLabel.isHidden = false
         statusViewImage.isHidden = false
 
-        UIView.animate(withDuration: 0.3) {
+        UIView.animate(withDuration: animate ? 0.3 : 0) {
             self.imageViewTopConstraint.constant = 0
             self.imageViewBottomConstraint.constant = 0
             self.detailViewTopConstraint.constant = 0
@@ -559,15 +574,11 @@ extension NCViewerMedia: UIScrollViewDelegate {
             scrollView.contentInset = .zero
         }
     }
-
-    func scrollViewDidScroll(_ scrollView: UIScrollView) {
-    }
 }
 
 extension NCViewerMedia: NCViewerMediaDetailViewDelegate {
-
     func downloadFullResolution() {
-        NCNetworking.shared.download(metadata: metadata, selector: NCGlobal.shared.selectorOpenDetail) { _, _ in }
+        downloadImage(withSelector: NCGlobal.shared.selectorOpenDetail)
     }
 }
 

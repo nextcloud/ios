@@ -571,6 +571,7 @@ extension NCViewerMediaPage: UIPageViewControllerDelegate, UIPageViewControllerD
             previousViewControllers.forEach { viewController in
                 let viewerMedia = viewController as! NCViewerMedia
                 viewerMedia.ncplayer?.playerStop()
+                viewerMedia.closeDetail()
             }
             currentIndex = nextIndex!
         }
