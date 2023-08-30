@@ -125,7 +125,7 @@ extension NCEndToEndMetadata {
             if let metadataKeyEncrypted = NCEndToEndEncryption.sharedManager().encryptAsymmetricData(keyGenerated, certificate: certificate) {
 
                 let encryptedMetadataKey = metadataKeyEncrypted.base64EncodedString()
-                NCManageDatabase.shared.addE2EUsersV2(account: account, serverUrl: serverUrl, ocIdServerUrl: ocIdServerUrl, userId: userId, certificate: certificate, encryptedFiledropKey: encryptedMetadataKey, encryptedMetadataKey: encryptedMetadataKey, decryptedFiledropKey: nil, decryptedMetadataKey: decryptedMetadataKey, filedropKey: nil, metadataKey: metadataKey)
+                NCManageDatabase.shared.addE2EUsersV2(account: account, serverUrl: serverUrl, ocIdServerUrl: ocIdServerUrl, userId: userId, certificate: certificate, encryptedFiledropKey: encryptedMetadataKey, encryptedMetadataKey: encryptedMetadataKey, decryptedFiledropKey: decryptedMetadataKey, decryptedMetadataKey: decryptedMetadataKey, filedropKey: metadataKey, metadataKey: metadataKey)
             }
         }
 
@@ -316,84 +316,89 @@ extension NCEndToEndMetadata {
                 }
             }
 
-            if let tableE2eUsersV2 = NCManageDatabase.shared.getE2EUsersV2(account: account, ocIdServerUrl: directoryTop.ocId, userId: userId),
-               let metadataKey = tableE2eUsersV2.metadataKey,
-               let decryptedMetadataKey = tableE2eUsersV2.decryptedMetadataKey {
-
-                // SIGNATURE CHECK
-                guard let signature,
-                      verifySignature(account: account, signature: signature, userId: tableE2eUsersV2.userId, metadata: metadata, users: users, version: version, certificate: tableE2eUsersV2.certificate) else {
-                    return NKError(errorCode: NCGlobal.shared.errorE2EEKeyVerifySignature, errorDescription: "_e2e_error_")
-
-                }
-
-                // CIPHERTEXT
-                guard let decrypted = NCEndToEndEncryption.sharedManager().decryptPayloadFile(metadata.ciphertext, key: metadataKey, initializationVector: metadata.nonce, authenticationTag: metadata.authenticationTag),
-                      decrypted.isGzipped else {
-                    return NKError(errorCode: NCGlobal.shared.errorE2EEKeyCiphertext, errorDescription: "_e2e_error_")
-                }
-
-                let data = try decrypted.gunzipped()
-                if let jsonText = String(data: data, encoding: .utf8) {
-                    print(jsonText)
-                }
-
-                let json = try JSONDecoder().decode(E2eeV20.ciphertext.self, from: data)
-
-                // Check "checksums"
-                guard let keyChecksums = json.keyChecksums,
-                      let hash = NCEndToEndEncryption.sharedManager().createSHA256(decryptedMetadataKey),
-                      keyChecksums.contains(hash) else {
-                    return NKError(errorCode: NCGlobal.shared.errorE2EEKeyChecksums, errorDescription: NSLocalizedString("_e2e_error_", comment: ""))
-                }
-
-                print("\n\nCOUNTER -------------------------------")
-                print("Counter: \(json.counter)")
-
-                // Check "counter"
-                if let resultCounter = NCManageDatabase.shared.getCounterE2eMetadataV2(account: account, ocIdServerUrl: ocIdServerUrl) {
-                    print("Counter saved: \(resultCounter)")
-                    if json.counter > resultCounter {
-                        // TODO: whats happen with < ?
-                        NCContentPresenter.shared.showError(error: NKError(errorCode: NCGlobal.shared.errorE2EECounter, errorDescription: NSLocalizedString("_e2e_error_", comment: "")))
-                    }
-                } else {
-                    print("Counter RESET")
-                    NCManageDatabase.shared.updateCounterE2eMetadataV2(account: account, ocIdServerUrl: ocIdServerUrl, counter: json.counter)
-                }
-
-                // Check "deleted"
-                if let deleted = json.deleted, deleted {
-                    // TODO: We need to check deleted, id yes ???
-                }
-
-                NCManageDatabase.shared.addE2eMetadataV2(account: account, serverUrl: serverUrl, ocIdServerUrl: ocIdServerUrl, keyChecksums: json.keyChecksums, deleted: json.deleted ?? false, folders: json.folders, version: version)
-
-                if let files = json.files {
-                    print("\nFILES ---------------------------------\n")
-                    for file in files {
-                        addE2eEncryption(fileNameIdentifier: file.key, filename: file.value.filename, authenticationTag: file.value.authenticationTag, key: file.value.key, initializationVector: file.value.nonce, metadataKey: metadataKey, mimetype: file.value.mimetype, blob: "files")
-
-                        print("filename: \(file.value.filename)")
-                        print("fileNameIdentifier: \(file.key)")
-                        print("mimetype: \(file.value.mimetype)")
-                        print("\n")
-                    }
-                }
-
-                if let folders = json.folders {
-                    print("FOLDERS--------------------------------\n")
-                    for folder in folders {
-                        addE2eEncryption(fileNameIdentifier: folder.key, filename: folder.value, authenticationTag: metadata.authenticationTag, key: metadataKey, initializationVector: metadata.nonce, metadataKey: metadataKey, mimetype: "httpd/unix-directory", blob: "folders")
-
-                        print("filename: \(folder.value)")
-                        print("fileNameIdentifier: \(folder.key)")
-                        print("\n")
-                    }
-                }
-
-                print("---------------------------------------\n\n")
+            guard let tableE2eUsersV2 = NCManageDatabase.shared.getE2EUsersV2(account: account, ocIdServerUrl: directoryTop.ocId, userId: userId),
+                  let metadataKey = tableE2eUsersV2.metadataKey,
+                  let decryptedMetadataKey = tableE2eUsersV2.decryptedMetadataKey else {
+                return NKError(errorCode: NCGlobal.shared.errorE2EENoUserFound, errorDescription: "_e2e_error_")
             }
+
+            // SIGNATURE CHECK
+            guard let signature,
+                  verifySignature(account: account, signature: signature, userId: tableE2eUsersV2.userId, metadata: metadata, users: users, version: version, certificate: tableE2eUsersV2.certificate) else {
+                return NKError(errorCode: NCGlobal.shared.errorE2EEKeyVerifySignature, errorDescription: "_e2e_error_")
+
+            }
+
+            // CIPHERTEXT METADATA
+            guard let decryptedMetadata = NCEndToEndEncryption.sharedManager().decryptPayloadFile(metadata.ciphertext, key: metadataKey, initializationVector: metadata.nonce, authenticationTag: metadata.authenticationTag),
+                  decryptedMetadata.isGzipped else {
+                return NKError(errorCode: NCGlobal.shared.errorE2EEKeyCiphertext, errorDescription: "_e2e_error_")
+            }
+
+            let data = try decryptedMetadata.gunzipped()
+            if let jsonText = String(data: data, encoding: .utf8) { print(jsonText) }
+            let jsonCiphertextMetadata = try JSONDecoder().decode(E2eeV20.ciphertext.self, from: data)
+
+            // CHECKSUM CHECK
+            guard let keyChecksums = jsonCiphertextMetadata.keyChecksums,
+                  let hash = NCEndToEndEncryption.sharedManager().createSHA256(decryptedMetadataKey),
+                  keyChecksums.contains(hash) else {
+                return NKError(errorCode: NCGlobal.shared.errorE2EEKeyChecksums, errorDescription: NSLocalizedString("_e2e_error_", comment: ""))
+            }
+
+            print("\n\nCOUNTER -------------------------------")
+            print("Counter: \(jsonCiphertextMetadata.counter)")
+
+            // COUNTER CHECK
+            if let resultCounter = NCManageDatabase.shared.getCounterE2eMetadataV2(account: account, ocIdServerUrl: ocIdServerUrl) {
+                print("Counter saved: \(resultCounter)")
+                if jsonCiphertextMetadata.counter > resultCounter {
+                    // TODO: whats happen with < ?
+                    NCContentPresenter.shared.showError(error: NKError(errorCode: NCGlobal.shared.errorE2EECounter, errorDescription: NSLocalizedString("_e2e_error_", comment: "")))
+                }
+            } else {
+                print("Counter RESET")
+                NCManageDatabase.shared.updateCounterE2eMetadataV2(account: account, ocIdServerUrl: ocIdServerUrl, counter: jsonCiphertextMetadata.counter)
+            }
+
+            // DELETE CHECK
+            if let deleted = jsonCiphertextMetadata.deleted, deleted {
+                // TODO: We need to check deleted, id yes ???
+            }
+
+            NCManageDatabase.shared.addE2eMetadataV2(account: account,
+                                                     serverUrl: serverUrl,
+                                                     ocIdServerUrl: ocIdServerUrl,
+                                                     keyChecksums: jsonCiphertextMetadata.keyChecksums,
+                                                     deleted: jsonCiphertextMetadata.deleted ?? false,
+                                                     folders: jsonCiphertextMetadata.folders,
+                                                     version: version)
+
+            if let files = jsonCiphertextMetadata.files {
+                print("\nFILES ---------------------------------\n")
+                for file in files {
+                    addE2eEncryption(fileNameIdentifier: file.key, filename: file.value.filename, authenticationTag: file.value.authenticationTag, key: file.value.key, initializationVector: file.value.nonce, metadataKey: metadataKey, mimetype: file.value.mimetype, blob: "files")
+
+                    print("filename: \(file.value.filename)")
+                    print("fileNameIdentifier: \(file.key)")
+                    print("mimetype: \(file.value.mimetype)")
+                    print("\n")
+                }
+            }
+
+            if let folders = jsonCiphertextMetadata.folders {
+                print("FOLDERS--------------------------------\n")
+                for folder in folders {
+                    addE2eEncryption(fileNameIdentifier: folder.key, filename: folder.value, authenticationTag: metadata.authenticationTag, key: metadataKey, initializationVector: metadata.nonce, metadataKey: metadataKey, mimetype: "httpd/unix-directory", blob: "folders")
+
+                    print("filename: \(folder.value)")
+                    print("fileNameIdentifier: \(folder.key)")
+                    print("\n")
+                }
+            }
+
+            print("---------------------------------------\n\n")
+
         } catch let error {
             return NKError(errorCode: NCGlobal.shared.errorE2EEJSon, errorDescription: error.localizedDescription)
         }

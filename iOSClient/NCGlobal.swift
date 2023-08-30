@@ -239,6 +239,8 @@ class NCGlobal: NSObject {
     @objc let errorE2EECounter: Int                 = -98011
     @objc let errorE2EEGenerateKey: Int             = -98012
     @objc let errorE2EEEncodedKey: Int              = -98013
+    @objc let errorE2EENoUserFound: Int             = -98014
+
 
     // Constants to identify the different permissions of a file
     //
