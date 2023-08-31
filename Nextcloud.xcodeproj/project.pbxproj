@@ -116,6 +116,7 @@
 		F343A4BF2A1E734600DDA874 /* Optional+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F343A4BA2A1E734600DDA874 /* Optional+Extension.swift */; };
 		F343A4C02A1E734600DDA874 /* Optional+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F343A4BA2A1E734600DDA874 /* Optional+Extension.swift */; };
 		F343A4C12A1E734600DDA874 /* Optional+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F343A4BA2A1E734600DDA874 /* Optional+Extension.swift */; };
+		F34624532AA08C5700FAA7B1 /* FlowGrid in Frameworks */ = {isa = PBXBuildFile; productRef = F34624522AA08C5700FAA7B1 /* FlowGrid */; };
 		F359D8672A7D03420023F405 /* NCUtility+Exif.swift in Sources */ = {isa = PBXBuildFile; fileRef = F359D8662A7D03420023F405 /* NCUtility+Exif.swift */; };
 		F359D8682A7D03420023F405 /* NCUtility+Exif.swift in Sources */ = {isa = PBXBuildFile; fileRef = F359D8662A7D03420023F405 /* NCUtility+Exif.swift */; };
 		F359D8692A7D03420023F405 /* NCUtility+Exif.swift in Sources */ = {isa = PBXBuildFile; fileRef = F359D8662A7D03420023F405 /* NCUtility+Exif.swift */; };
@@ -130,7 +131,6 @@
 		F3BB464F2A39EBE500461F6E /* NCMoreUserCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3BB464E2A39EBE500461F6E /* NCMoreUserCell.swift */; };
 		F3BB46522A39EC4900461F6E /* NCMoreAppSuggestionsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3BB46512A39EC4900461F6E /* NCMoreAppSuggestionsCell.swift */; };
 		F3BB46542A3A1E9D00461F6E /* CCCellMore.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3BB46532A3A1E9D00461F6E /* CCCellMore.swift */; };
-		F3D4CC952A9CF2270015E283 /* ExyteGrid in Frameworks */ = {isa = PBXBuildFile; productRef = F3D4CC942A9CF2270015E283 /* ExyteGrid */; };
 		F3F7ACFE2A98C56C00AE12CF /* NCMediaNew.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3F7ACFD2A98C56C00AE12CF /* NCMediaNew.swift */; };
 		F700222C1EC479840080073F /* Custom.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F700222B1EC479840080073F /* Custom.xcassets */; };
 		F700222D1EC479840080073F /* Custom.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F700222B1EC479840080073F /* Custom.xcassets */; };
@@ -1489,6 +1489,7 @@
 				F76DA966277B76F30082465B /* UICKeyChainStore in Frameworks */,
 				F7792DE529EEE02D005930CE /* MobileVLCKit.xcframework in Frameworks */,
 				F753BA93281FD8020015BFB6 /* EasyTipView in Frameworks */,
+				F34624532AA08C5700FAA7B1 /* FlowGrid in Frameworks */,
 				F76DA95B277B75A90082465B /* TOPasscodeViewController.xcframework in Frameworks */,
 				F76DA963277B760E0082465B /* Queuer in Frameworks */,
 				F72AD70D28C24B93006CB92D /* NextcloudKit in Frameworks */,
@@ -1497,7 +1498,6 @@
 				F76DA969277B77EA0082465B /* DropDown in Frameworks */,
 				F7F623B52A5EF4D30022D3D4 /* Gzip in Frameworks */,
 				F75EAED826D2552E00F4320E /* MarqueeLabel in Frameworks */,
-				F3D4CC952A9CF2270015E283 /* ExyteGrid in Frameworks */,
 				F710FC7A277B7D0000AA9FBF /* Realm in Frameworks */,
 				F72DA9B425F53E4E00B87DB1 /* SwiftRichString in Frameworks */,
 				F74E7720277A2EF40013B958 /* XLForm in Frameworks */,
@@ -2887,7 +2887,7 @@
 				F7A1050D29E587AF00FFD92B /* TagListView */,
 				F31F69632A2F929600162F76 /* PreviewSnapshots */,
 				F7F623B42A5EF4D30022D3D4 /* Gzip */,
-				F3D4CC942A9CF2270015E283 /* ExyteGrid */,
+				F34624522AA08C5700FAA7B1 /* FlowGrid */,
 			);
 			productName = "Crypto Cloud";
 			productReference = F7CE8AFA1DC1F8D8009CAE48 /* Nextcloud.app */;
@@ -3063,7 +3063,7 @@
 				F31F69622A2F929600162F76 /* XCRemoteSwiftPackageReference "swiftui-preview-snapshots" */,
 				F31F69672A2F92F000162F76 /* XCRemoteSwiftPackageReference "SnapshotTestingHEIC" */,
 				F7F623B32A5EF4D30022D3D4 /* XCRemoteSwiftPackageReference "GzipSwift" */,
-				F3D4CC932A9CF2270015E283 /* XCRemoteSwiftPackageReference "Grid" */,
+				F383599C2AA08AFE00FA0B98 /* XCRemoteSwiftPackageReference "FlowGrid" */,
 			);
 			productRefGroup = F7F67B9F1A24D27800EE80DA;
 			projectDirPath = "";
@@ -4908,12 +4908,12 @@
 				version = 1.4.0;
 			};
 		};
-		F3D4CC932A9CF2270015E283 /* XCRemoteSwiftPackageReference "Grid" */ = {
+		F383599C2AA08AFE00FA0B98 /* XCRemoteSwiftPackageReference "FlowGrid" */ = {
 			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/exyte/Grid";
+			repositoryURL = "https://github.com/rdev/FlowGrid.git";
 			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 1.5.0;
+				kind = exactVersion;
+				version = 1.0.0;
 			};
 		};
 		F70B86732642CE3B00ED5349 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
@@ -5208,10 +5208,10 @@
 			package = F31F69672A2F92F000162F76 /* XCRemoteSwiftPackageReference "SnapshotTestingHEIC" */;
 			productName = SnapshotTestingHEIC;
 		};
-		F3D4CC942A9CF2270015E283 /* ExyteGrid */ = {
+		F34624522AA08C5700FAA7B1 /* FlowGrid */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = F3D4CC932A9CF2270015E283 /* XCRemoteSwiftPackageReference "Grid" */;
-			productName = ExyteGrid;
+			package = F383599C2AA08AFE00FA0B98 /* XCRemoteSwiftPackageReference "FlowGrid" */;
+			productName = FlowGrid;
 		};
 		F70716F829881CFA00E72C1D /* UICKeyChainStore */ = {
 			isa = XCSwiftPackageProductDependency;
