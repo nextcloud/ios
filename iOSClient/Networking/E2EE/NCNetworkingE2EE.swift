@@ -119,7 +119,7 @@ class NCNetworkingE2EE: NSObject {
                         addCertificate: String? = nil,
                         removeUserId: String? = nil) async -> NKError {
 
-        let resultsEncodeMetadata = NCEndToEndMetadata().encodeMetadata(account: account, serverUrl: serverUrl, userId: userId, addCertificate: addCertificate, removeUserId: removeUserId)
+        let resultsEncodeMetadata = NCEndToEndMetadata().encodeMetadata(account: account, serverUrl: serverUrl, userId: userId, addUserId: addUserId, addCertificate: addCertificate, removeUserId: removeUserId)
         guard resultsEncodeMetadata.error == .success, let e2eMetadata = resultsEncodeMetadata.metadata else {
             return resultsEncodeMetadata.error
         }
