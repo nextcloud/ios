@@ -38,10 +38,10 @@ class NCNetworkingE2EECreateFolder: NSObject {
         if fileNameFolder.isEmpty {
             return NKError(errorCode: NCGlobal.shared.errorUnexpectedResponseFromDB, errorDescription: NSLocalizedString("_e2e_error_", comment: ""))
         }
-
         guard let directory = NCManageDatabase.shared.getTableDirectory(predicate:  NSPredicate(format: "account == %@ AND serverUrl == %@", account, serverUrl)) else {
             return NKError(errorCode: NCGlobal.shared.errorUnexpectedResponseFromDB, errorDescription: NSLocalizedString("_e2e_error_", comment: ""))
         }
+        let route = (NCGlobal.shared.capabilityE2EEApiVersion == NCGlobal.shared.e2eeVersionV20) ? "v2" : "v1"
 
         func sendE2ee(e2eToken: String, fileId: String) async -> NKError {
 
@@ -121,7 +121,7 @@ class NCNetworkingE2EECreateFolder: NSObject {
 
         // MARK FOLDER AS E2EE
         //
-        let resultsMarkE2EEFolder = await NextcloudKit.shared.markE2EEFolder(fileId: fileId, delete: false)
+        let resultsMarkE2EEFolder = await NextcloudKit.shared.markE2EEFolder(fileId: fileId, delete: false, route: route)
         guard resultsMarkE2EEFolder.error == .success  else {
             await networkingE2EE.unlock(account: account, serverUrl: serverUrl)
             return resultsMarkE2EEFolder.error
