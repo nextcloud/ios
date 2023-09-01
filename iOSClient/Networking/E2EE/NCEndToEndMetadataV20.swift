@@ -55,7 +55,6 @@ extension NCEndToEndMetadata {
             let userId: String
             let certificate: String
             let encryptedMetadataKey: String?
-            let encryptedFiledropKey: String?
         }
 
         struct Filedrop: Codable {
@@ -122,7 +121,7 @@ extension NCEndToEndMetadata {
             if let metadataKeyEncrypted = NCEndToEndEncryption.sharedManager().encryptAsymmetricData(key, certificate: certificate) {
                 let encryptedMetadataKey = metadataKeyEncrypted.base64EncodedString()
 
-                NCManageDatabase.shared.addE2EUsersV2(account: account, serverUrl: serverUrl, ocIdServerUrl: ocIdServerUrl, userId: userId, certificate: certificate, encryptedFiledropKey: encryptedMetadataKey, encryptedMetadataKey: encryptedMetadataKey, filedropKey: key, metadataKey: key)
+                NCManageDatabase.shared.addE2EUsersV2(account: account, serverUrl: serverUrl, ocIdServerUrl: ocIdServerUrl, userId: userId, certificate: certificate, encryptedMetadataKey: encryptedMetadataKey, metadataKey: key)
             }
         }
 
@@ -157,8 +156,8 @@ extension NCEndToEndMetadata {
         if let users = NCManageDatabase.shared.getE2EUsersV2(account: account, ocIdServerUrl: directoryTop.ocId) {
             for user in users {
                 if isDirectoryTop {
-                    usersCodable.append(E2eeV20.Users(userId: user.userId, certificate: user.certificate, encryptedMetadataKey: user.encryptedMetadataKey, encryptedFiledropKey: user.encryptedFiledropKey))
-                    usersFileDropCodable.append(E2eeV20.Filedrop.UsersFiledrop(userId: user.userId, encryptedFiledropKey: user.encryptedFiledropKey))
+                    usersCodable.append(E2eeV20.Users(userId: user.userId, certificate: user.certificate, encryptedMetadataKey: user.encryptedMetadataKey))
+                    //usersFileDropCodable.append(E2eeV20.Filedrop.UsersFiledrop(userId: user.userId, encryptedFiledropKey: user.encryptedFiledropKey))
                 }
                 if let hash = NCEndToEndEncryption.sharedManager().createSHA256(user.metadataKey) {
                     keyChecksums.append(hash)
@@ -291,7 +290,6 @@ extension NCEndToEndMetadata {
                 for user in users {
 
                     var metadataKey: Data?
-                    var filedropKey: Data?
 
                     if let encryptedMetadataKey = user.encryptedMetadataKey {
                         let data = Data(base64Encoded: encryptedMetadataKey)
@@ -300,14 +298,7 @@ extension NCEndToEndMetadata {
                         }
                     }
 
-                    if let encryptedFiledropKey = user.encryptedFiledropKey {
-                        let data = Data(base64Encoded: encryptedFiledropKey)
-                        if let decrypted = NCEndToEndEncryption.sharedManager().decryptAsymmetricData(data, privateKey: CCUtility.getEndToEndPrivateKey(account)) {
-                            filedropKey = decrypted
-                        }
-                    }
-
-                    NCManageDatabase.shared.addE2EUsersV2(account: account, serverUrl: serverUrl, ocIdServerUrl: ocIdServerUrl, userId: user.userId, certificate: user.certificate, encryptedFiledropKey: user.encryptedFiledropKey, encryptedMetadataKey: user.encryptedMetadataKey, filedropKey: filedropKey, metadataKey: metadataKey)
+                    NCManageDatabase.shared.addE2EUsersV2(account: account, serverUrl: serverUrl, ocIdServerUrl: ocIdServerUrl, userId: user.userId, certificate: user.certificate, encryptedMetadataKey: user.encryptedMetadataKey, metadataKey: metadataKey)
                 }
             }
 
@@ -325,6 +316,7 @@ extension NCEndToEndMetadata {
             }
 
             // FILEDROP
+            /*
             if let filesdrop, let filedropKey = tableE2eUsersV2.filedropKey?.base64EncodedString() {
                 for filedrop in filesdrop {
                     guard let decryptedFiledrop = NCEndToEndEncryption.sharedManager().decryptPayloadFile(filedrop.ciphertext, key: filedropKey, initializationVector: filedrop.nonce, authenticationTag: filedrop.authenticationTag),
@@ -338,6 +330,7 @@ extension NCEndToEndMetadata {
                     addE2eEncryption(fileNameIdentifier: file.key, filename: file.filename, authenticationTag: file.authenticationTag, key: file.key, initializationVector: file.nonce, metadataKey: filedropKey, mimetype: file.mimetype, blob: "filedrop")
                 }
             }
+            */
 
             // CIPHERTEXT METADATA
             guard let decryptedMetadata = NCEndToEndEncryption.sharedManager().decryptPayloadFile(metadata.ciphertext, key: metadataKey, initializationVector: metadata.nonce, authenticationTag: metadata.authenticationTag),

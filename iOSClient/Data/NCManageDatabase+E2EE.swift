@@ -116,10 +116,27 @@ class tableE2eUsersV2: Object {
     @Persisted(primaryKey: true) var primaryKey = ""
     @Persisted var account = ""
     @Persisted var certificate = ""
-    @Persisted var encryptedFiledropKey: String?
     @Persisted var encryptedMetadataKey: String?
-    @Persisted var filedropKey: Data?
     @Persisted var metadataKey: Data?
+    @Persisted var ocIdServerUrl: String = ""
+    @Persisted var serverUrl: String = ""
+    @Persisted var userId = ""
+
+    convenience init(account: String, ocIdServerUrl: String, userId: String) {
+        self.init()
+        self.primaryKey = account + ocIdServerUrl + userId
+        self.account = account
+        self.ocIdServerUrl = ocIdServerUrl
+        self.userId = userId
+     }
+}
+
+class tableE2eUsersFiledropV2: Object {
+
+    @Persisted(primaryKey: true) var primaryKey = ""
+    @Persisted var account = ""
+    @Persisted var certificate = ""
+    @Persisted var encryptedFiledropKey: String?
     @Persisted var ocIdServerUrl: String = ""
     @Persisted var serverUrl: String = ""
     @Persisted var userId = ""
@@ -309,9 +326,7 @@ extension NCManageDatabase {
                        ocIdServerUrl: String,
                        userId: String,
                        certificate: String,
-                       encryptedFiledropKey: String?,
                        encryptedMetadataKey: String?,
-                       filedropKey: Data?,
                        metadataKey: Data?) {
 
         do {
@@ -319,9 +334,7 @@ extension NCManageDatabase {
             try realm.write {
                 let object = tableE2eUsersV2.init(account: account, ocIdServerUrl: ocIdServerUrl, userId: userId)
                 object.certificate = certificate
-                object.encryptedFiledropKey = encryptedFiledropKey
                 object.encryptedMetadataKey = encryptedMetadataKey
-                object.filedropKey = filedropKey
                 object.metadataKey = metadataKey
                 object.serverUrl = serverUrl
                 realm.add(object, update: .all)
@@ -362,6 +375,18 @@ extension NCManageDatabase {
         do {
             let realm = try Realm()
             return realm.objects(tableE2eUsersV2.self).filter("account == %@ && ocIdServerUrl == %@ AND userId == %@", account, ocIdServerUrl, userId).first
+        } catch let error as NSError {
+            NextcloudKit.shared.nkCommonInstance.writeLog("Could not access database: \(error)")
+        }
+
+        return nil
+    }
+
+    func getE2EUsersFiledropV2(account: String, ocIdServerUrl: String, userId: String) -> tableE2eUsersFiledropV2? {
+
+        do {
+            let realm = try Realm()
+            return realm.objects(tableE2eUsersFiledropV2.self).filter("account == %@ && ocIdServerUrl == %@ AND userId == %@", account, ocIdServerUrl, userId).first
         } catch let error as NSError {
             NextcloudKit.shared.nkCommonInstance.writeLog("Could not access database: \(error)")
         }
