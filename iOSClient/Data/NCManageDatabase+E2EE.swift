@@ -118,10 +118,8 @@ class tableE2eUsersV2: Object {
     @Persisted var certificate = ""
     @Persisted var encryptedFiledropKey: String?
     @Persisted var encryptedMetadataKey: String?
-    @Persisted var decryptedFiledropKey: Data?
-    @Persisted var decryptedMetadataKey: Data?
-    @Persisted var filedropKey: String?
-    @Persisted var metadataKey: String?
+    @Persisted var filedropKey: Data?
+    @Persisted var metadataKey: Data?
     @Persisted var ocIdServerUrl: String = ""
     @Persisted var serverUrl: String = ""
     @Persisted var userId = ""
@@ -313,10 +311,8 @@ extension NCManageDatabase {
                        certificate: String,
                        encryptedFiledropKey: String?,
                        encryptedMetadataKey: String?,
-                       decryptedFiledropKey: Data?,
-                       decryptedMetadataKey: Data?,
-                       filedropKey: String?,
-                       metadataKey: String?) {
+                       filedropKey: Data?,
+                       metadataKey: Data?) {
 
         do {
             let realm = try Realm()
@@ -325,8 +321,6 @@ extension NCManageDatabase {
                 object.certificate = certificate
                 object.encryptedFiledropKey = encryptedFiledropKey
                 object.encryptedMetadataKey = encryptedMetadataKey
-                object.decryptedFiledropKey = decryptedFiledropKey
-                object.decryptedMetadataKey = decryptedMetadataKey
                 object.filedropKey = filedropKey
                 object.metadataKey = metadataKey
                 object.serverUrl = serverUrl
