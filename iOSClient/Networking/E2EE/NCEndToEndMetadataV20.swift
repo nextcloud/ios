@@ -131,17 +131,17 @@ extension NCEndToEndMetadata {
 
         if isDirectoryTop {
 
-            addUser(userId: userId, certificate: CCUtility.getEndToEndCertificate(account))
-            addUser(userId: addUserId, certificate: addCertificate)
-
+            // USERID
+            if NCManageDatabase.shared.getE2EUsersV2(account: account, ocIdServerUrl: directoryTop.ocId, userId: userId) == nil {
+                addUser(userId: userId, certificate: CCUtility.getEndToEndCertificate(account))
+            }
+            // ADDUSERID
+            if let addUserId, NCManageDatabase.shared.getE2EUsersV2(account: account, ocIdServerUrl: directoryTop.ocId, userId: addUserId) == nil {
+                addUser(userId: addUserId, certificate: addCertificate)
+            }
+            // REMOVEUSERID
             if let removeUserId {
                 NCManageDatabase.shared.deleteE2EUsersV2(account: account, ocIdServerUrl: ocIdServerUrl, userId: removeUserId)
-            }
-
-            if let users = NCManageDatabase.shared.getE2EUsersV2(account: account, ocIdServerUrl: ocIdServerUrl) {
-                for user in users {
-                    addUser(userId: user.userId, certificate: user.certificate)
-                }
             }
         }
 

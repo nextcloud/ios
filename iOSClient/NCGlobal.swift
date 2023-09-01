@@ -61,11 +61,6 @@ class NCGlobal: NSObject {
         return result.reduce(0, { $0 + $1 }) % maximum
     }
 
-    // Get E2ee Route
-    func getE2eeRoute() -> String {
-        return (capabilityE2EEApiVersion == e2eeVersionV20) ? e2eeRouteV1 : e2eeRouteV1
-    }
-
     // Directory on Group
     //
     @objc let directoryProviderStorage              = "File Provider Storage"
@@ -130,8 +125,6 @@ class NCGlobal: NSObject {
     let e2eeVersionV11                              = "1.1"
     let e2eeVersionV12                              = "1.2"
     let e2eeVersionV20                              = "2.0"
-    let e2eeRouteV1                                 = "v1"
-    let e2eeRouteV2                                 = "v2"
 
     // CHUNK
     let chunkSizeMBCellular                         = 10000000
