@@ -101,8 +101,7 @@ extension NCEndToEndMetadata {
 
     func encodeMetadataV20(account: String, serverUrl: String, ocIdServerUrl: String, userId: String, addUserId: String?, addCertificate: String?, removeUserId: String?) -> (metadata: String?, signature: String?, counter: Int, error: NKError) {
 
-        guard let keyGenerated = NCEndToEndEncryption.sharedManager()?.generateKey() as? Data,
-              let directoryTop = NCUtility.shared.getDirectoryE2EETop(serverUrl: serverUrl, account: account) else {
+        guard let directoryTop = NCUtility.shared.getDirectoryE2EETop(serverUrl: serverUrl, account: account) else {
             return (nil, nil, 0, NKError(errorCode: NCGlobal.shared.errorUnexpectedResponseFromDB, errorDescription: "_e2e_error_"))
         }
 
@@ -116,7 +115,7 @@ extension NCEndToEndMetadata {
         var folders: [String: String] = [:]
         var counter: Int = 1
 
-        func addUser(userId: String?, certificate: String?) {
+        func addUser(userId: String?, certificate: String?, keyGenerated: Data) {
 
             guard let userId, let certificate else { return }
             let decryptedMetadataKey = keyGenerated
@@ -131,14 +130,19 @@ extension NCEndToEndMetadata {
 
         if isDirectoryTop {
 
-            // USERID
-            if NCManageDatabase.shared.getE2EUsersV2(account: account, ocIdServerUrl: directoryTop.ocId, userId: userId) == nil {
-                addUser(userId: userId, certificate: CCUtility.getEndToEndCertificate(account))
+            guard var keyGenerated = NCEndToEndEncryption.sharedManager()?.generateKey() as? Data else {
+                return (nil, nil, 0, NKError(errorCode: NCGlobal.shared.errorUnexpectedResponseFromDB, errorDescription: "_e2e_error_"))
+            }
+
+            if let tableUserId = NCManageDatabase.shared.getE2EUsersV2(account: account, ocIdServerUrl: directoryTop.ocId, userId: userId),
+               let decryptedMetadataKey = tableUserId.decryptedMetadataKey {
+                keyGenerated = decryptedMetadataKey
+            } else {
+                addUser(userId: userId, certificate: CCUtility.getEndToEndCertificate(account), keyGenerated: keyGenerated)
             }
             // ADDUSERID
             if let addUserId {
-                addUser(userId: userId, certificate: CCUtility.getEndToEndCertificate(account))
-                addUser(userId: addUserId, certificate: addCertificate)
+                addUser(userId: addUserId, certificate: addCertificate, keyGenerated: keyGenerated)
             }
             // REMOVEUSERID
             if let removeUserId {
@@ -146,7 +150,7 @@ extension NCEndToEndMetadata {
                 if let users = NCManageDatabase.shared.getE2EUsersV2(account: account, ocIdServerUrl: ocIdServerUrl) {
                     for user in users {
                         if user.userId == userId { continue }
-                        addUser(userId: user.userId, certificate: user.certificate)
+                        addUser(userId: user.userId, certificate: user.certificate, keyGenerated: keyGenerated)
                     }
                 }
             }
