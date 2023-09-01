@@ -63,7 +63,7 @@ class NCGlobal: NSObject {
 
     // Get E2ee Route
     func getE2eeRoute() -> String {
-        return (capabilityE2EEApiVersion == e2eeVersionV20) ? NCGlobal.shared.e2eeRouteV2 : e2eeRouteV1
+        return (capabilityE2EEApiVersion == e2eeVersionV20) ? NCGlobal.shared.e2eeRouteV1 : e2eeRouteV1
     }
 
     // Directory on Group
