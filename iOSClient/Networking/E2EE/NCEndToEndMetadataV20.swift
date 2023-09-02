@@ -286,22 +286,23 @@ extension NCEndToEndMetadata {
             let filesdrop = json.filedrop
             let version = json.version as String? ?? NCGlobal.shared.e2eeVersionV20
 
+            // SAVE IN DB ALL USER
+            //
             if let users {
                 for user in users {
-
                     var metadataKey: Data?
-
                     if let encryptedMetadataKey = user.encryptedMetadataKey {
                         let data = Data(base64Encoded: encryptedMetadataKey)
                         if let decrypted = NCEndToEndEncryption.sharedManager().decryptAsymmetricData(data, privateKey: CCUtility.getEndToEndPrivateKey(account)) {
                             metadataKey = decrypted
                         }
                     }
-
                     NCManageDatabase.shared.addE2EUsersV2(account: account, serverUrl: serverUrl, ocIdServerUrl: ocIdServerUrl, userId: user.userId, certificate: user.certificate, encryptedMetadataKey: user.encryptedMetadataKey, metadataKey: metadataKey)
                 }
             }
 
+            // GET metadataKey, decryptedMetadataKey
+            //
             guard let tableE2eUsersV2 = NCManageDatabase.shared.getE2EUsersV2(account: account, ocIdServerUrl: directoryTop.ocId, userId: userId),
                   let metadataKey = tableE2eUsersV2.metadataKey?.base64EncodedString(),
                   let decryptedMetadataKey = tableE2eUsersV2.metadataKey else {
