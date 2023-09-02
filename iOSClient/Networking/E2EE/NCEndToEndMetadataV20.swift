@@ -153,6 +153,14 @@ extension NCEndToEndMetadata {
             }
 
             metadataKey = keyGenerated.base64EncodedString()
+
+        } else {
+
+            guard let tableUserId = NCManageDatabase.shared.getE2EUsersV2(account: account, ocIdServerUrl: directoryTop.ocId, userId: userId), let key = tableUserId.metadataKey else {
+                return (nil, nil, 0, NKError(errorCode: NCGlobal.shared.errorUnexpectedResponseFromDB, errorDescription: "_e2e_error_"))
+            }
+
+            metadataKey = key.base64EncodedString()
         }
 
         // USERS
