@@ -51,7 +51,6 @@ class NCNetworkingE2EERename: NSObject {
         //
         NCManageDatabase.shared.renameFileE2eEncryption(account: metadata.account, serverUrl: metadata.serverUrl, fileNameIdentifier: metadata.fileName, newFileName: fileNameNew, newFileNamePath: CCUtility.returnFileNamePath(fromFileName: fileNameNew, serverUrl: metadata.serverUrl, urlBase: metadata.urlBase, userId: metadata.userId, account: metadata.account))
 
-
         // UPLOAD METADATA
         //
         let uploadMetadataError = await NCNetworkingE2EE.shared.uploadMetadata(account: metadata.account,

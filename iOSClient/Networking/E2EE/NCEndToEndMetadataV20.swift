@@ -170,6 +170,8 @@ extension NCEndToEndMetadata {
             }
         }
 
+        // COUNTER + 1
+        //
         if let resultCounter = NCManageDatabase.shared.getCounterE2eMetadataV2(account: account, ocIdServerUrl: ocIdServerUrl) {
             counter = resultCounter + 1
         }
