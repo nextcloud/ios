@@ -151,8 +151,13 @@ extension NCEndToEndMetadata {
                     }
                 }
             }
+
+            metadataKey = keyGenerated.base64EncodedString()
         }
 
+        // USERS
+        // CHECKSUM
+        //
         if let users = NCManageDatabase.shared.getE2EUsersV2(account: account, ocIdServerUrl: directoryTop.ocId) {
             for user in users {
                 if isDirectoryTop {
@@ -162,11 +167,6 @@ extension NCEndToEndMetadata {
                 if let hash = NCEndToEndEncryption.sharedManager().createSHA256(user.metadataKey) {
                     keyChecksums.append(hash)
                 }
-                if let addUserId, user.userId == addUserId {
-                    metadataKey = user.metadataKey?.base64EncodedString()
-                } else if user.userId == userId {
-                    metadataKey = user.metadataKey?.base64EncodedString()
-                }
             }
         }
 
@@ -174,7 +174,8 @@ extension NCEndToEndMetadata {
             counter = resultCounter + 1
         }
 
-        // Create ciphertext
+        // CIPERTEXT
+        //
         let e2eEncryptions = NCManageDatabase.shared.getE2eEncryptions(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", account, serverUrl))
 
         for e2eEncryption in e2eEncryptions {
@@ -310,6 +311,7 @@ extension NCEndToEndMetadata {
             }
 
             // SIGNATURE CHECK
+            //
             guard let signature,
                   verifySignature(account: account, signature: signature, userId: tableE2eUsersV2.userId, metadata: metadata, users: users, version: version, certificate: tableE2eUsersV2.certificate) else {
                 return NKError(errorCode: NCGlobal.shared.errorE2EEKeyVerifySignature, errorDescription: "_e2e_error_")
@@ -334,6 +336,7 @@ extension NCEndToEndMetadata {
             */
 
             // CIPHERTEXT METADATA
+            //
             guard let decryptedMetadata = NCEndToEndEncryption.sharedManager().decryptPayloadFile(metadata.ciphertext, key: metadataKey, initializationVector: metadata.nonce, authenticationTag: metadata.authenticationTag),
                   decryptedMetadata.isGzipped else {
                 return NKError(errorCode: NCGlobal.shared.errorE2EEKeyCiphertext, errorDescription: "_e2e_error_")
@@ -344,6 +347,7 @@ extension NCEndToEndMetadata {
             let jsonCiphertextMetadata = try JSONDecoder().decode(E2eeV20.ciphertext.self, from: data)
 
             // CHECKSUM CHECK
+            //
             guard let keyChecksums = jsonCiphertextMetadata.keyChecksums,
                   let hash = NCEndToEndEncryption.sharedManager().createSHA256(decryptedMetadataKey),
                   keyChecksums.contains(hash) else {
@@ -354,6 +358,7 @@ extension NCEndToEndMetadata {
             print("Counter: \(jsonCiphertextMetadata.counter)")
 
             // COUNTER CHECK
+            //
             if let resultCounter = NCManageDatabase.shared.getCounterE2eMetadataV2(account: account, ocIdServerUrl: ocIdServerUrl) {
                 print("Counter saved: \(resultCounter)")
                 if jsonCiphertextMetadata.counter < resultCounter {
@@ -369,6 +374,7 @@ extension NCEndToEndMetadata {
             }
 
             // DELETE CHECK
+            //
             if let deleted = jsonCiphertextMetadata.deleted, deleted {
                 // TODO: We need to check deleted, id yes ???
             }
