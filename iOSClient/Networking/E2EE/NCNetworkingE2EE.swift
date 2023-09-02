@@ -42,7 +42,7 @@ class NCNetworkingE2EE: NSObject {
         return UUID
     }
 
-    func uploadMetadata(account: String, serverUrl: String, userId: String, addUserId: String?, removeUserId: String?) async -> NKError {
+    func uploadMetadata(account: String, serverUrl: String, userId: String, addUserId: String? = nil, removeUserId: String? = nil) async -> NKError {
 
         var addCertificate: String?
         var method = "POST"

@@ -1078,7 +1078,16 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                                 } else {
                                     NCContentPresenter.shared.showError(error: error)
                                 }
-                            } else if error.errorCode != NCGlobal.shared.errorResourceNotFound {
+                            } else if error.errorCode == NCGlobal.shared.errorResourceNotFound {
+                                // no metadata found, send a new metadata
+                                Task {
+                                    let serverUrl = metadataFolder.serverUrl + "/" + metadataFolder.fileName
+                                    let error = await NCNetworkingE2EE.shared.uploadMetadata(account: metadataFolder.account, serverUrl: serverUrl, userId: metadataFolder.userId)
+                                    if error != .success {
+                                        NCContentPresenter.shared.showError(error: error)
+                                    }
+                                }
+                            } else {
                                 NCContentPresenter.shared.showError(error: NKError(errorCode: NCGlobal.shared.errorE2EEKeyDecodeMetadata, errorDescription: "_e2e_error_"))
                             }
                             completion(tableDirectory, metadatas, metadatasUpdate, metadatasDelete, error)
