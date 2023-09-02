@@ -253,11 +253,10 @@ extension tableMetadata {
         guard NCGlobal.shared.capabilityFileSharingApiEnabled else { return false }
 
         if NCGlobal.shared.capabilityE2EEApiVersion == NCGlobal.shared.e2eeVersionV20, isDirectoryE2EE {
-            return !isDirectoryE2EETop
+            return e2eEncrypted
         } else if !e2eEncrypted && !isDirectoryE2EE {
             return true
         } else if NCGlobal.shared.capabilityServerVersionMajor >= NCGlobal.shared.nextcloudVersion26 && directory {
-            // E2EE DIRECTORY SECURE FILE DROP (SHARE AVAILABLE)
             return true
         } else {
             return false
