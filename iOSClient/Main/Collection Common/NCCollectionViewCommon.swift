@@ -1115,6 +1115,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             if let viewController = appDelegate.listFilesVC[serverUrlPush] {
 
                 if viewController.isViewLoaded {
+                    viewController.titleCurrentFolder = metadata.fileNameView
                     pushViewController(viewController: viewController)
                 }
 
