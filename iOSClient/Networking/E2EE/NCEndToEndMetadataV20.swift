@@ -144,6 +144,12 @@ extension NCEndToEndMetadata {
             if let removeUserId {
                 NCManageDatabase.shared.deleteE2EUsersV2(account: account, ocIdServerUrl: ocIdServerUrl, userId: removeUserId)
             }
+            // FOR SECURITY recreate all users with key
+            if let users = NCManageDatabase.shared.getE2EUsersV2(account: account, ocIdServerUrl: ocIdServerUrl) {
+                for user in users {
+                    addUser(userId: user.userId, certificate: user.certificate, key: key)
+                }
+            }
 
             metadataKey = key.base64EncodedString()
 
