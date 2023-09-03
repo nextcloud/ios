@@ -130,7 +130,6 @@ extension NCEndToEndMetadata {
             guard var key = NCEndToEndEncryption.sharedManager()?.generateKey() as? Data else {
                 return (nil, nil, 0, NKError(errorCode: NCGlobal.shared.errorUnexpectedResponseFromDB, errorDescription: "_e2e_error_"))
             }
-
             if let tableUserId = NCManageDatabase.shared.getE2EUsersV2(account: account, ocIdServerUrl: directoryTop.ocId, userId: userId),
                let metadataKey = tableUserId.metadataKey {
                 key = metadataKey
@@ -144,12 +143,6 @@ extension NCEndToEndMetadata {
             // REMOVEUSERID
             if let removeUserId {
                 NCManageDatabase.shared.deleteE2EUsersV2(account: account, ocIdServerUrl: ocIdServerUrl, userId: removeUserId)
-                if let users = NCManageDatabase.shared.getE2EUsersV2(account: account, ocIdServerUrl: ocIdServerUrl) {
-                    for user in users {
-                        if user.userId == userId { continue }
-                        addUser(userId: user.userId, certificate: user.certificate, key: key)
-                    }
-                }
             }
 
             metadataKey = key.base64EncodedString()
