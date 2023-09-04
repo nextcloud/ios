@@ -22,6 +22,7 @@
 //
 
 import Foundation
+import NextcloudKit
 
 extension NCShare {
     func toggleShareMenu(for share: tableShare) {
@@ -63,12 +64,15 @@ extension NCShare {
                 icon: NCUtility.shared.loadImage(named: "trash"),
                 action: { _ in
                     Task {
-                        if let metadata = self.metadata, metadata.e2eEncrypted && NCGlobal.shared.capabilityE2EEApiVersion == NCGlobal.shared.e2eeVersionV20 {
+                        if share.shareType != NCShareCommon.shared.SHARE_TYPE_LINK, let metadata = self.metadata, metadata.e2eEncrypted && NCGlobal.shared.capabilityE2EEApiVersion == NCGlobal.shared.e2eeVersionV20 {
                             let serverUrl = metadata.serverUrl + "/" + metadata.fileName
+                            if NCNetworkingE2EE.shared.isInUpload(account: metadata.account, serverUrl: serverUrl) {
+                                let error = NKError(errorCode: NCGlobal.shared.errorE2EEUploadInProgress, errorDescription: NSLocalizedString("_e2e_in_upload_", comment: ""))
+                                return NCContentPresenter.shared.showInfo(error: error)
+                            }
                             let error = await NCNetworkingE2EE().uploadMetadata(account: metadata.account, serverUrl: serverUrl, userId: metadata.userId, addUserId: nil, removeUserId: share.shareWith)
                             if error != .success {
-                                NCContentPresenter.shared.showError(error: error)
-                                return
+                                return NCContentPresenter.shared.showError(error: error)
                             }
                         }
                         self.networking?.unShare(idShare: share.idShare)

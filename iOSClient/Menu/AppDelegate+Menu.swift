@@ -118,16 +118,15 @@ extension AppDelegate {
         let imageCreateFolder = isDirectoryE2EE ? UIImage(named: "folderEncrypted")! : UIImage(named: "folder")!
         actions.append(
             NCMenuAction(title: titleCreateFolder,
-                icon: imageCreateFolder.image(color: NCBrandColor.shared.brandElement, size: 50), action: { _ in
-                    guard !appDelegate.activeServerUrl.isEmpty else { return }
-                    let alertController = UIAlertController.createFolder(serverUrl: appDelegate.activeServerUrl, urlBase: appDelegate)
-                    appDelegate.window?.rootViewController?.present(alertController, animated: true, completion: nil)
-                }
-            )
+                         icon: imageCreateFolder.image(color: NCBrandColor.shared.brandElement, size: 50), action: { _ in
+                             guard !appDelegate.activeServerUrl.isEmpty else { return }
+                             let alertController = UIAlertController.createFolder(serverUrl: appDelegate.activeServerUrl, urlBase: appDelegate)
+                             appDelegate.window?.rootViewController?.present(alertController, animated: true, completion: nil)
+                         }
+                        )
         )
 
-        // Folder encrypted (ONLY ROOT)
-        // if NCUtilityFileSystem.shared.getHomeServer(urlBase: appDelegate.urlBase, userId: appDelegate.userId) == appDelegate.activeServerUrl && CCUtility.isEnd(toEndEnabled: appDelegate.account) {
+        // Folder encrypted
         if !isDirectoryE2EE && CCUtility.isEnd(toEndEnabled: appDelegate.account) {
             actions.append(
                 NCMenuAction(title: NSLocalizedString("_create_folder_e2ee_", comment: ""),

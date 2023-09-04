@@ -38,8 +38,6 @@ extension uploadE2EEDelegate {
 
 class NCNetworkingE2EEUpload: NSObject {
 
-    let networkingE2EE = NCNetworkingE2EE()
-
     func upload(metadata: tableMetadata, uploadE2EEDelegate: uploadE2EEDelegate? = nil) async -> NKError {
 
         var metadata = metadata
@@ -48,7 +46,7 @@ class NCNetworkingE2EEUpload: NSObject {
         if let result = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "serverUrl == %@ AND fileNameView == %@ AND ocId != %@", metadata.serverUrl, metadata.fileNameView, metadata.ocId)) {
             metadata.fileName = result.fileName
         } else {
-            metadata.fileName = networkingE2EE.generateRandomIdentifier()
+            metadata.fileName = NCNetworkingE2EE.shared.generateRandomIdentifier()
         }
         metadata.session = NextcloudKit.shared.nkCommonInstance.sessionIdentifierUpload
         metadata.sessionError = ""
@@ -75,7 +73,7 @@ class NCNetworkingE2EEUpload: NSObject {
 
             // DOWNLOAD METADATA
             //
-            let errorDownloadMetadata = await networkingE2EE.downloadMetadata(account: metadata.account, serverUrl: metadata.serverUrl, urlBase: metadata.urlBase, userId: metadata.userId, fileId: fileId, e2eToken: e2eToken)
+            let errorDownloadMetadata = await NCNetworkingE2EE.shared.downloadMetadata(account: metadata.account, serverUrl: metadata.serverUrl, urlBase: metadata.urlBase, userId: metadata.userId, fileId: fileId, e2eToken: e2eToken)
             if errorDownloadMetadata == .success {
                 method = "PUT"
             } else if errorDownloadMetadata.errorCode != NCGlobal.shared.errorResourceNotFound {
@@ -106,13 +104,13 @@ class NCNetworkingE2EEUpload: NSObject {
 
             // UPLOAD METADATA
             //
-            let uploadMetadataError = await networkingE2EE.uploadMetadata(account: metadata.account,
-                                                                          serverUrl: metadata.serverUrl,
-                                                                          ocIdServerUrl: directory.ocId,
-                                                                          fileId: fileId,
-                                                                          userId: metadata.userId,
-                                                                          e2eToken: e2eToken,
-                                                                          method: method)
+            let uploadMetadataError = await NCNetworkingE2EE.shared.uploadMetadata(account: metadata.account,
+                                                                                   serverUrl: metadata.serverUrl,
+                                                                                   ocIdServerUrl: directory.ocId,
+                                                                                   fileId: fileId,
+                                                                                   userId: metadata.userId,
+                                                                                   e2eToken: e2eToken,
+                                                                                   method: method)
 
             return uploadMetadataError
         }
@@ -120,7 +118,7 @@ class NCNetworkingE2EEUpload: NSObject {
 
         // LOCK
         //
-        let resultsLock = await networkingE2EE.lock(account: metadata.account, serverUrl: metadata.serverUrl)
+        let resultsLock = await NCNetworkingE2EE.shared.lock(account: metadata.account, serverUrl: metadata.serverUrl)
         guard let e2eToken = resultsLock.e2eToken, let fileId = resultsLock.fileId, resultsLock.error == .success else {
             NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", ocIdTemp))
             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUploadedFile, userInfo: ["ocId": metadata.ocId, "serverUrl": metadata.serverUrl, "account": metadata.account, "fileName": metadata.fileName, "ocIdTemp": ocIdTemp, "error": NKError(errorCode: NCGlobal.shared.errorE2EELock, errorDescription: NSLocalizedString("_e2e_error_", comment: ""))])
@@ -133,7 +131,7 @@ class NCNetworkingE2EEUpload: NSObject {
         guard sendE2eeError == .success else {
             NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", ocIdTemp))
             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUploadedFile, userInfo: ["ocId": metadata.ocId, "serverUrl": metadata.serverUrl, "account": metadata.account, "fileName": metadata.fileName, "ocIdTemp": ocIdTemp, "error": sendE2eeError])
-            await networkingE2EE.unlock(account: metadata.account, serverUrl: metadata.serverUrl)
+            await NCNetworkingE2EE.shared.unlock(account: metadata.account, serverUrl: metadata.serverUrl)
             return sendE2eeError
         }
 
@@ -143,7 +141,7 @@ class NCNetworkingE2EEUpload: NSObject {
 
         // UNLOCK
         //
-        await networkingE2EE.unlock(account: metadata.account, serverUrl: metadata.serverUrl)
+        await NCNetworkingE2EE.shared.unlock(account: metadata.account, serverUrl: metadata.serverUrl)
         
         if let afError = resultsSendFile.afError, afError.isExplicitlyCancelledError {
 
@@ -180,6 +178,8 @@ class NCNetworkingE2EEUpload: NSObject {
         return (resultsSendFile.error)
     }
 
+    // BRIDGE for chunk
+    //
     private func sendFile(metadata: tableMetadata, e2eToken: String, uploadE2EEDelegate: uploadE2EEDelegate? = nil) async -> (ocId: String?, etag: String?, date: NSDate? ,afError: AFError?, error: NKError) {
 
         if metadata.chunk > 0 {

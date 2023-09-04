@@ -766,7 +766,7 @@ class NCUtility: NSObject {
 
     func isDirectoryE2EETop(account: String, serverUrl: String) -> Bool {
 
-        guard var serverUrl = serverUrl.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) else { return false }
+        guard let serverUrl = serverUrl.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) else { return false }
 
         if let url = URL(string: serverUrl)?.deletingLastPathComponent(),
            let serverUrl = String(url.absoluteString.dropLast()).removingPercentEncoding {

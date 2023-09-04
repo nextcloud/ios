@@ -103,6 +103,12 @@ class NCContentPresenter: NSObject {
         // No notification message for:
         if error.errorCode == NSURLErrorCancelled || error.errorCode == NCGlobal.shared.errorRequestExplicityCancelled { return } else if error == .success && type == messageType.error { return }
 
+        // Hardcode change type
+        var type = type
+        if error.errorCode == NCGlobal.shared.errorE2EEUploadInProgress {
+            type = .info
+        }
+
         DispatchQueue.main.async {
             switch error.errorCode {
             case Int(CFNetworkErrors.cfurlErrorNotConnectedToInternet.rawValue):

@@ -517,7 +517,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     @objc func uploadedFile(_ notification: NSNotification) {
 
         guard let userInfo = notification.userInfo as NSDictionary?,
-              let ocId = userInfo["ocId"] as? String,
               let ocIdTemp = userInfo["ocIdTemp"] as? String,
               let serverUrl = userInfo["serverUrl"] as? String,
               let account = userInfo["account"] as? String
@@ -528,12 +527,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             self.collectionView?.reloadData()
         }
 
-        if account == appDelegate.account, serverUrl == self.serverUrl, let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
-            if metadata.e2eEncrypted {
-                reloadDataSourceNetwork(isForced: true)
-            } else {
-                reloadDataSource()
-            }
+        if account == appDelegate.account, serverUrl == self.serverUrl {
+            reloadDataSource()
         }
     }
 
@@ -1072,8 +1067,12 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                     }
                     self.metadataFolder = metadataFolder
                     // E2EE
-                    if let metadataFolder = metadataFolder, metadataFolder.e2eEncrypted, CCUtility.isEnd(toEndEnabled: self.appDelegate.account) {
-                        NextcloudKit.shared.getE2EEMetadata(fileId: metadataFolder.ocId, e2eToken: nil) { _, e2eMetadata, signature, _, error in
+                    if let metadataFolder = metadataFolder,
+                        metadataFolder.e2eEncrypted,
+                        CCUtility.isEnd(toEndEnabled: self.appDelegate.account),
+                       !NCNetworkingE2EE.shared.isInUpload(account: self.appDelegate.account, serverUrl: self.serverUrl) {
+                        let lock = NCManageDatabase.shared.getE2ETokenLock(account: self.appDelegate.account, serverUrl: self.serverUrl)
+                        NextcloudKit.shared.getE2EEMetadata(fileId: metadataFolder.ocId, e2eToken: lock?.e2eToken, route: NCNetworkingE2EE.shared.getRoute()) { _, e2eMetadata, signature, _, error in
                             if error == .success, let e2eMetadata = e2eMetadata {
                                 let error = NCEndToEndMetadata().decodeMetadata(e2eMetadata, signature: signature, serverUrl: self.serverUrl, account: self.appDelegate.account, urlBase: self.appDelegate.urlBase, userId: self.appDelegate.userId)
                                 if error == .success {
@@ -1081,7 +1080,16 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                                 } else {
                                     NCContentPresenter.shared.showError(error: error)
                                 }
-                            } else if error.errorCode != NCGlobal.shared.errorResourceNotFound {
+                            } else if error.errorCode == NCGlobal.shared.errorResourceNotFound {
+                                // no metadata found, send a new metadata
+                                Task {
+                                    let serverUrl = metadataFolder.serverUrl + "/" + metadataFolder.fileName
+                                    let error = await NCNetworkingE2EE.shared.uploadMetadata(account: metadataFolder.account, serverUrl: serverUrl, userId: metadataFolder.userId)
+                                    if error != .success {
+                                        NCContentPresenter.shared.showError(error: error)
+                                    }
+                                }
+                            } else {
                                 NCContentPresenter.shared.showError(error: NKError(errorCode: NCGlobal.shared.errorE2EEKeyDecodeMetadata, errorDescription: "_e2e_error_"))
                             }
                             completion(tableDirectory, metadatas, metadatasUpdate, metadatasDelete, error)
@@ -1109,6 +1117,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             if let viewController = appDelegate.listFilesVC[serverUrlPush] {
 
                 if viewController.isViewLoaded {
+                    viewController.titleCurrentFolder = metadata.fileNameView
                     pushViewController(viewController: viewController)
                 }
 

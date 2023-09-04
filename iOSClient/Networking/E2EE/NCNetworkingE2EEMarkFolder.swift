@@ -24,14 +24,14 @@ import NextcloudKit
 
 class NCNetworkingE2EEMarkFolder: NSObject {
 
-    func markFolderE2ee(account: String, fileName: String, serverUrl: String, userId: String, withPush: Bool) async -> NKError {
+    func markFolderE2ee(account: String, fileName: String, serverUrl: String, userId: String) async -> NKError {
 
         let serverUrlFileName = serverUrl + "/" + fileName
 
         let resultsReadFileOrFolder = await NextcloudKit.shared.readFileOrFolder(serverUrlFileName: serverUrlFileName, depth: "0")
         guard resultsReadFileOrFolder.error == .success, let file = resultsReadFileOrFolder.files.first else { return resultsReadFileOrFolder.error }
 
-        let resultsMarkE2EEFolder = await NextcloudKit.shared.markE2EEFolder(fileId: file.fileId, delete: false)
+        let resultsMarkE2EEFolder = await NextcloudKit.shared.markE2EEFolder(fileId: file.fileId, delete: false, route: NCNetworkingE2EE.shared.getRoute())
         guard resultsMarkE2EEFolder.error == .success else { return resultsMarkE2EEFolder.error }
 
         file.e2eEncrypted = true
@@ -44,11 +44,7 @@ class NCNetworkingE2EEMarkFolder: NSObject {
             NCManageDatabase.shared.updateCounterE2eMetadataV2(account: account, ocIdServerUrl: metadata.ocId, counter: 0)
         }
 
-        if withPush {
-            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterCreateFolder, userInfo: ["ocId": metadata.ocId, "serverUrl": serverUrl, "account": account, "withPush": withPush])
-        } else {
-            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterChangeStatusFolderE2EE, userInfo: ["serverUrl": serverUrl])
-        }
+        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterCreateFolder, userInfo: ["ocId": metadata.ocId, "serverUrl": serverUrl, "account": account, "withPush": true])
 
         return NKError()
     }
