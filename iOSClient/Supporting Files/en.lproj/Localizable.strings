@@ -709,6 +709,7 @@
 "_e2e_remove_folder_encrypted_"     = "Decrypt";
 "_e2e_goto_settings_for_enable_"    = "This is an encrypted directory, go to \"Settings\" and enable end-to-end encryption";
 "_e2e_error_"                       = "Serious internal error end-to-end encryption";
+"_e2e_in_upload_"                   = "Upload in progress, please wait for all files to be transferred";
 "_scans_document_"                  = "Scan document";
 "_scanned_images_"                  = "Scanned images";
 "_scan_document_pdf_page_"          = "Page";

@@ -34,6 +34,12 @@ class NCNetworkingE2EERename: NSObject {
             return NKError(errorCode: NCGlobal.shared.errorUnexpectedResponseFromDB, errorDescription: "_e2e_error_")
         }
 
+        // TEST UPLOAD IN PROGRESS
+        //
+        if NCNetworkingE2EE.shared.isInUpload(account: metadata.account, serverUrl: metadata.serverUrl) {
+            return NKError(errorCode: NCGlobal.shared.errorE2EEUploadInProgress, errorDescription: NSLocalizedString("_e2e_in_upload_", comment: ""))
+        }
+
         // LOCK
         //
         let resultsLock = await NCNetworkingE2EE.shared.lock(account: metadata.account, serverUrl: metadata.serverUrl)

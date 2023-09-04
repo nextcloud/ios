@@ -40,6 +40,12 @@ class NCNetworkingE2EECreateFolder: NSObject {
             return NKError(errorCode: NCGlobal.shared.errorUnexpectedResponseFromDB, errorDescription: NSLocalizedString("_e2e_error_", comment: ""))
         }
 
+        // TEST UPLOAD IN PROGRESS
+        //
+        if NCNetworkingE2EE.shared.isInUpload(account: account, serverUrl: serverUrl) {
+            return NKError(errorCode: NCGlobal.shared.errorE2EEUploadInProgress, errorDescription: NSLocalizedString("_e2e_in_upload_", comment: ""))
+        }
+
         func sendE2ee(e2eToken: String, fileId: String) async -> NKError {
 
             var key: NSString?
@@ -118,7 +124,7 @@ class NCNetworkingE2EECreateFolder: NSObject {
 
         // MARK FOLDER AS E2EE
         //
-        let resultsMarkE2EEFolder = await NextcloudKit.shared.markE2EEFolder(fileId: fileId, delete: false, route: NCNetworkingE2EE.shared.getE2eeRoute())
+        let resultsMarkE2EEFolder = await NextcloudKit.shared.markE2EEFolder(fileId: fileId, delete: false, route: NCNetworkingE2EE.shared.getRoute())
         guard resultsMarkE2EEFolder.error == .success  else {
             await NCNetworkingE2EE.shared.unlock(account: account, serverUrl: serverUrl)
             return resultsMarkE2EEFolder.error

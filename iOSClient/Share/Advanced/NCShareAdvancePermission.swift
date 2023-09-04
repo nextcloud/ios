@@ -47,8 +47,10 @@ class NCShareAdvancePermission: UITableViewController, NCShareAdvanceFotterDeleg
         }
         Task {
             if isNewShare {
-                if share.shareType != NCShareCommon.shared.SHARE_TYPE_LINK, metadata.e2eEncrypted && NCGlobal.shared.capabilityE2EEApiVersion == NCGlobal.shared.e2eeVersionV20 {
-                    let serverUrl = metadata.serverUrl + "/" + metadata.fileName
+                let serverUrl = metadata.serverUrl + "/" + metadata.fileName
+                if share.shareType != NCShareCommon.shared.SHARE_TYPE_LINK, metadata.e2eEncrypted,
+                   NCGlobal.shared.capabilityE2EEApiVersion == NCGlobal.shared.e2eeVersionV20,
+                   !NCNetworkingE2EE.shared.isInUpload(account: metadata.account, serverUrl: serverUrl) {
                     let error = await NCNetworkingE2EE().uploadMetadata(account: metadata.account, serverUrl: serverUrl, userId: metadata.userId, addUserId: share.shareWith, removeUserId: nil)
                     if error != .success {
                         NCContentPresenter.shared.showError(error: error)
