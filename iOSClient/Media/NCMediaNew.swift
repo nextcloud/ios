@@ -41,53 +41,18 @@ struct NCMediaNew: View {
     @State private var minHeight: CGFloat = 0
 
     var body: some View {
-        VStack {
-//            StaggeredGrid(list: viewModel.metadatas, columns: 2, content: { metadata in
-//                MediaCellView(metadata: metadata)
-//            })
-//            FlowGrid(items: viewModel.metadatas, rowHeight: 200) { metadata in
-//                MediaCellView(metadata: metadata)
-//            }
+        //            StaggeredGrid(list: viewModel.metadatas, columns: 2, content: { metadata in
+        //                MediaCellView(metadata: metadata)
+        //            })
+        //            FlowGrid(items: viewModel.metadatas, rowHeight: 200) { metadata in
+        //                MediaCellView(metadata: metadata)
+        //            }
+        GeometryReader { proxy in
             ScrollView {
-//                HStack(alignment: .top) {
-//                    LazyVStack(spacing: 8) {
-//                        ForEach(viewModel.metadatas.chunked(into: viewModel.metadatas.count / 2), id: \.self) { rowMetadatas in
-//                            ForEach(rowMetadatas, id: \.self) { metadata in
-//                                MediaCellView(metadata: metadata)
-//                                //                                            .frame(width: CGFloat(metadata.width == 0 ? 500 : metadata.width) * viewModel.getSize(rowMetadatas: rowMetadatas))
-//                            }
-//                        }
-//                    }
-//
-//                    LazyVStack(spacing: 8) {
-//                        ForEach(viewModel.metadatas.chunked(into: gridColumns.count), id: \.self) { rowMetadatas in
-//                            ForEach(rowMetadatas, id: \.self) { metadata in
-//                                MediaCellView(metadata: metadata)
-//                                //                                            .frame(width: CGFloat(metadata.width == 0 ? 500 : metadata.width) * viewModel.getSize(rowMetadatas: rowMetadatas))
-//                            }
-//                        }
-//                    }
-//                }
-//                LazyVGrid(columns: gridColumns, alignment: .leading) {
-//                    ForEach(viewModel.metadatas.chunked(into: gridColumns.count), id: \.self) { rowMetadatas in
-//                        ForEach(rowMetadatas, id: \.self) { metadata in
-//                            MediaCellView(metadata: metadata)
-////                                .frame(width: CGFloat(metadata.width == 0 ? 500 : metadata.width * 2) * viewModel.getSize(rowMetadatas: rowMetadatas))
-//                                .frame(height: 300)
-//                        }
-//                    }
-//                }
-
                 LazyVStack(alignment: .leading, spacing: 0) {
                     ForEach(viewModel.metadatas.chunked(into: 2), id: \.self) { rowMetadatas in
-                        HStack(spacing: 0) {
-                            ForEach(rowMetadatas, id: \.self) { metadata in
-                                MediaCellView(shrinkRatio: viewModel.getSize(rowMetadatas: rowMetadatas), metadata: metadata)
-    //                                .frame(width: CGFloat(metadata.width == 0 ? 500 : metadata.width * 2) * viewModel.getSize(rowMetadatas: rowMetadatas))
-//                                    .frame(height: 300)
-                            }
-                        }
 
+                        MediaRow(metadatas: rowMetadatas)
                     }
                 }
             }
@@ -110,89 +75,153 @@ struct NCMediaNew: View {
 //    }
 // }
 
-struct MediaCellView: View {
-    let shrinkRatio: CGFloat
-    let metadata: tableMetadata
+struct MediaRow: View {
+    let metadatas: [tableMetadata]
     @StateObject private var viewModel = MediaCellViewModel()
 
     var body: some View {
-        Image(uiImage: viewModel.thumbnail)
-            .resizable()
-//            .scaledToFit()
-            .frame(width: CGFloat(metadata.width) * shrinkRatio, height: CGFloat(metadata.height) * shrinkRatio)
-//            .scaledToFit()
-            .onAppear {
-                viewModel.configure(metadata: metadata)
-                viewModel.downloadThumbnail()
+        HStack(spacing: 0) {
+            if viewModel.thumbnails.isEmpty {
+                ProgressView()
+            } else {
+                ForEach(viewModel.thumbnails, id: \.self) { thumbnail in
+                    let _ = print(viewModel.thumbnails)
+                    MediaCellView(shrinkRatio: viewModel.shrinkRatio, thumbnail: thumbnail)
+                    // get image here using async await and pass it to the MediaCellView
+    //                MediaCellView(shrinkRatio: viewModel.getSize(), metadata: metadata)
+                }
             }
+        }
+        .onAppear {
+            viewModel.configure(metadatas: metadatas)
+            viewModel.downloadThumbnails()
+        }
+    }
+}
 
-        let wtf = CGFloat(metadata.width) * shrinkRatio
-        let _ = print(wtf)
+struct MediaCellView: View {
+    let shrinkRatio: CGFloat
+    let thumbnail: UIImage
+//    let metadata: tableMetadata
+//    @StateObject private var viewModel = MediaCellViewModel()
+
+    var body: some View {
+        Image(uiImage: thumbnail)
+            .resizable()
+//            .scaledToFill()
+            .frame(width: CGFloat(thumbnail.size.width * shrinkRatio), height: CGFloat(thumbnail.size.height * shrinkRatio))
+
+//        let wtf = CGFloat(metadata.width) * shrinkRatio
+//        let _ = print(viewModel.thumbnail.size.width)
+//        let _ = print(viewModel.thumbnail.size.height)
     }
 }
 
 @MainActor class MediaCellViewModel: ObservableObject {
-    @Published private(set) var thumbnail: UIImage = UIImage()
-    private var metadata: tableMetadata = tableMetadata()
+    @Published private(set) var thumbnails: [UIImage] = []
+    private var metadatas: [tableMetadata] = []
+    var shrinkRatio: CGFloat = 0
 
-    func configure(metadata: tableMetadata) {
-        self.metadata = metadata
+    func configure(metadatas: [tableMetadata]) {
+        self.metadatas = metadatas
     }
 
-    func downloadThumbnail() {
-        let thumbnailPath = CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)
+    func downloadThumbnails() {
+        var thumbnails: [UIImage] = []
 
-        if let thumbnailPath, FileManager.default.fileExists(atPath: thumbnailPath) {
-            // Load thumbnail from file
-            if let image = UIImage(contentsOfFile: thumbnailPath) {
-                thumbnail = image
-            }
-        } else {
-            thumbnail = UIImage(systemName: "plus")!
+        metadatas.enumerated().forEach { index, metadata in
+            let thumbnailPath = CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)
 
-            let fileNamePath = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, urlBase: metadata.urlBase, userId: metadata.userId, account: metadata.account)!
-            let fileNamePreviewLocalPath = CCUtility.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)!
-            let fileNameIconLocalPath = CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)!
+            if let thumbnailPath, FileManager.default.fileExists(atPath: thumbnailPath) {
+                // Load thumbnail from file
+                if let image = UIImage(contentsOfFile: thumbnailPath) {
+                    thumbnails.append(image)
 
-            var etagResource: String?
-            if FileManager.default.fileExists(atPath: fileNameIconLocalPath) && FileManager.default.fileExists(atPath: fileNamePreviewLocalPath) {
-                etagResource = metadata.etagResource
-            }
-            let options = NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
-
-            NextcloudKit.shared.downloadPreview(
-                fileNamePathOrFileId: fileNamePath,
-                fileNamePreviewLocalPath: fileNamePreviewLocalPath,
-                widthPreview: Int(UIScreen.main.bounds.width),
-                heightPreview: Int(UIScreen.main.bounds.height) / 2,
-                fileNameIconLocalPath: fileNameIconLocalPath,
-                sizeIcon: NCGlobal.shared.sizeIcon,
-                etag: etagResource,
-                options: options) { _, _, imageIcon, _, etag, error in
-
-                    if error == .success, let imageIcon = imageIcon {
-                        NCManageDatabase.shared.setMetadataEtagResource(ocId: self.metadata.ocId, etagResource: etag)
-                        DispatchQueue.main.async {
-//                            if self.metadata.ocId == self.cell?.fileObjectId, let filePreviewImageView = self.cell?.filePreviewImageView {
-//                                UIView.transition(with: filePreviewImageView,
-//                                                  duration: 0.75,
-//                                                  options: .transitionCrossDissolve,
-//                                                  animations: { filePreviewImageView.image = imageIcon },
-//                                                  completion: nil)
-                            self.thumbnail = imageIcon
-//                            } else {
-//                                if self.view is UICollectionView {
-//                                    (self.view as? UICollectionView)?.reloadData()
-//                                } else if self.view is UITableView {
-//                                    (self.view as? UITableView)?.reloadData()
-//                                }
-//                            }
-                            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDownloadedThumbnail, userInfo: ["ocId": self.metadata.ocId])
-                        }
+                    if thumbnails.count == self.metadatas.count {
+                        self.thumbnails = thumbnails
+                        shrinkRatio = getSize(rowMetadatas: thumbnails, fullWidth: UIScreen.main.bounds.width)
                     }
-//                    self.finish()
                 }
+            } else {
+                let fileNamePath = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, urlBase: metadata.urlBase, userId: metadata.userId, account: metadata.account)!
+                let fileNamePreviewLocalPath = CCUtility.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)!
+                let fileNameIconLocalPath = CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)!
+
+                var etagResource: String?
+                if FileManager.default.fileExists(atPath: fileNameIconLocalPath) && FileManager.default.fileExists(atPath: fileNamePreviewLocalPath) {
+                    etagResource = metadata.etagResource
+                }
+                let options = NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
+
+                NextcloudKit.shared.downloadPreview(
+                    fileNamePathOrFileId: fileNamePath,
+                    fileNamePreviewLocalPath: fileNamePreviewLocalPath,
+                    widthPreview: Int(UIScreen.main.bounds.width) / 2,
+                    heightPreview: Int(UIScreen.main.bounds.height) / 2,
+                    fileNameIconLocalPath: fileNameIconLocalPath,
+                    sizeIcon: NCGlobal.shared.sizeIcon,
+                    etag: etagResource,
+                    options: options) { _, _, imageIcon, _, etag, error in
+
+                        if error == .success, let image = imageIcon {
+                            NCManageDatabase.shared.setMetadataEtagResource(ocId: metadata.ocId, etagResource: etag)
+                            DispatchQueue.main.async {
+    //                            if self.metadata.ocId == self.cell?.fileObjectId, let filePreviewImageView = self.cell?.filePreviewImageView {
+    //                                UIView.transition(with: filePreviewImageView,
+    //                                                  duration: 0.75,
+    //                                                  options: .transitionCrossDissolve,
+    //                                                  animations: { filePreviewImageView.image = imageIcon },
+    //                                                  completion: nil)
+                                thumbnails.append(image)
+    //                            } else {
+    //                                if self.view is UICollectionView {
+    //                                    (self.view as? UICollectionView)?.reloadData()
+    //                                } else if self.view is UITableView {
+    //                                    (self.view as? UITableView)?.reloadData()
+    //                                }
+    //                            }
+
+//                                self.metadata.height = Int(self.thumbnail.size.height)
+//                                self.metadata.width = Int(self.thumbnail.size.width)
+//                                print(self.thumbnail.size.width)
+//                                print(self.thumbnail.size.height)
+//                                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDownloadedThumbnail, userInfo: ["ocId": self.metadata.ocId])
+
+                                print("------------")
+                                print(thumbnails.count)
+
+                                if thumbnails.count == self.metadatas.count {
+                                    self.thumbnails = thumbnails
+                                    self.shrinkRatio = self.getSize(rowMetadatas: thumbnails, fullWidth: UIScreen.main.bounds.width)
+                                }
+                            }
+
+
+                        }
+    //                    self.finish()
+                    }
+            }
         }
+
+    }
+
+    func getSize(rowMetadatas: [UIImage], fullWidth: CGFloat) -> CGFloat {
+        var newSummedWidth: CGFloat = 0
+        let maxHeight = rowMetadatas.compactMap { CGFloat($0.size.height) }.max() ?? 0
+        for metadata in rowMetadatas {
+            let height1 = metadata.size.height
+            let width1 = metadata.size.width
+
+            let scaleFactor1 = maxHeight / height1
+//            let newHeight1 = height1 * scaleFactor1
+            let newWidth1 = width1 * scaleFactor1
+
+            newSummedWidth += CGFloat(newWidth1)
+        }
+
+        let shrinkRatio: CGFloat = fullWidth / newSummedWidth
+
+        return shrinkRatio
     }
 }
 
@@ -289,26 +318,6 @@ struct MediaCellView: View {
 //
 //        return CGFloat(metadata.height * scaleFactor)
 //    }
-
-    func getSize(rowMetadatas: [tableMetadata]) -> CGFloat {
-        let screenWidth = UIScreen.main.bounds.width
-        var newSummedWidth: CGFloat = 0
-
-        for metadata in rowMetadatas {
-            let height1 = CGFloat(metadata.height == 0 ? 500 : metadata.height)
-            let width1 = CGFloat(metadata.width == 0 ? 500 : metadata.width)
-
-            let scaleFactor1 = (rowMetadatas.compactMap { CGFloat($0.height) }.max() ?? 0) / height1
-            let newHeight1 = height1 * scaleFactor1
-            let newWidth1 = width1 * scaleFactor1
-
-            newSummedWidth += CGFloat(newWidth1)
-        }
-
-        let shrinkRatio: CGFloat = screenWidth / newSummedWidth
-
-        return shrinkRatio
-    }
 }
 
 struct NCMediaNew_Previews: PreviewProvider {
@@ -331,56 +340,6 @@ extension Array {
     func chunked(into size: Int) -> [[Element]] {
         return stride(from: 0, to: count, by: size).map {
             Array(self[$0..<Swift.min($0 + size, count)])
-        }
-    }
-}
-
-struct StaggeredGrid<Content: View, T>: View where T: Hashable {
-
-    // MARK: - Properties
-    var content: (T) -> Content
-    var list: [T]
-    var columns: Int
-    var showIndicators: Bool
-    var spacing: CGFloat
-
-    init(list: [T], columns: Int, showIndicators: Bool = false, spacing: CGFloat = 10, @ViewBuilder content: @escaping (T) -> Content) {
-        self.content = content
-        self.list = list
-        self.columns = columns
-        self.showIndicators = showIndicators
-        self.spacing = spacing
-    }
-
-    func setUpList() -> [[T]] {
-        var gridArray: [[T]] = Array(repeating: [], count: columns)
-        var currentIndex: Int = 0
-        for object in list {
-            gridArray[currentIndex].append(object)
-            if currentIndex == (columns - 1) {
-                currentIndex = 0
-            } else {
-                currentIndex += 1
-            }
-        }
-        return gridArray
-    }
-
-    // MARK: - Body
-    var body: some View {
-        ScrollView(.vertical, showsIndicators: showIndicators) {
-            HStack(alignment: .top, spacing: 0) {
-                ForEach(setUpList(), id: \.self) { columnData in
-                    LazyVStack(spacing: 0) {
-                        ForEach(columnData, id: \.self) { object  in
-                            let _ = print(columnData)
-                            content(object)
-                        }
-                    }
-
-                }
-            }
-            .padding(.vertical)
         }
     }
 }
