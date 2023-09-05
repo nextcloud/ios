@@ -26,7 +26,6 @@ import Foundation
 
 // https://stackoverflow.com/questions/33861036/unique-objects-inside-a-array-swift/45023247#45023247
 extension Array {
-
     func unique<T: Hashable>(map: ((Element) -> (T))) -> [Element] {
         var set = Set<T>() // the unique list kept in a Set for fast retrieval
         var arrayOrdered = [Element]() // keeping the unique list of elements but ordered
@@ -36,5 +35,11 @@ extension Array {
         }
 
         return arrayOrdered
+    }
+
+    func chunked(into size: Int) -> [[Element]] {
+        return stride(from: 0, to: count, by: size).map {
+            Array(self[$0..<Swift.min($0 + size, count)])
+        }
     }
 }
