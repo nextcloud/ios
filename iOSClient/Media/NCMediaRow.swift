@@ -11,10 +11,13 @@ import PreviewSnapshots
 
 struct NCMediaRow: View {
     let metadatas: [tableMetadata]
+    let geometryProxy: GeometryProxy
+    
     @StateObject private var viewModel = NCMediaRowViewModel()
+    private let spacing: CGFloat = 2
 
     var body: some View {
-        HStack() {
+        HStack(spacing: spacing) {
             if viewModel.rowData.scaledThumbnails.isEmpty {
                 ProgressView()
             } else {
@@ -25,7 +28,7 @@ struct NCMediaRow: View {
         }
         .onAppear {
             viewModel.configure(metadatas: metadatas)
-            viewModel.downloadThumbnails()
+            viewModel.downloadThumbnails(rowWidth: geometryProxy.size.width, spacing: spacing)
         }
     }
 }
