@@ -121,13 +121,6 @@ class NCContextMenu: NSObject {
             }
         }
 
-        /*
-        let copy = UIAction(title: NSLocalizedString("_copy_file_", comment: ""),
-                            image: UIImage(systemName: "doc.on.doc")) { _ in
-            NCActionCenter.shared.copyPasteboard(pasteboardOcIds: [metadata.ocId], hudView: viewController.view)
-        }
-        */
-
         let modify = UIAction(title: NSLocalizedString("_modify_", comment: ""),
                               image: UIImage(systemName: "pencil.tip.crop.circle")) { _ in
             if CCUtility.fileProviderStorageExists(metadata) {

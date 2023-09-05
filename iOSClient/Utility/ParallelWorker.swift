@@ -96,10 +96,7 @@ class ParallelWorker {
     func completeWork(completion: (() -> Void)? = nil) {
         completionGroup.notify(queue: .main) {
             guard !self.isCancelled else { return }
-            self.hud?.indicatorView = JGProgressHUDSuccessIndicatorView()
-            self.hud?.textLabel.text = NSLocalizedString("_done_", comment: "")
-            self.hud?.detailTextLabel.text = ""
-            self.hud?.dismiss(afterDelay: 1)
+            self.hud?.dismiss()
             completion?()
         }
     }

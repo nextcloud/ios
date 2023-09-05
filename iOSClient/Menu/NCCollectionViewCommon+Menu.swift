@@ -334,7 +334,7 @@ extension NCCollectionViewCommon {
         // COPY IN PASTEBOARD
         //
         if metadata.isCopyableInPasteboard {
-            actions.append(.copyAction(selectOcId: [metadata.ocId], hudView: self.view, order: 140))
+            actions.append(.copyAction(selectOcId: [metadata.ocId], order: 140))
         }
 
         //

@@ -214,7 +214,7 @@ extension NCMedia {
             //
             // COPY
             //
-            actions.append(.copyAction(selectOcId: selectOcId, hudView: self.view, completion: tapSelect))
+            actions.append(.copyAction(selectOcId: selectOcId, completion: tapSelect))
 
             //
             // DELETE
