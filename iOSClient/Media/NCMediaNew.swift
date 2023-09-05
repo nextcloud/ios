@@ -22,14 +22,25 @@ struct NCMediaNew: View {
     @State var columns = 2
 
     var body: some View {
-        GeometryReader { proxy in
-            ScrollView {
-                LazyVStack(alignment: .leading, spacing: 2) {
-                    ForEach(viewModel.metadatas.chunked(into: columns), id: \.self) { rowMetadatas in
-                        NCMediaRow(metadatas: rowMetadatas, geometryProxy: proxy)
+        GeometryReader { geometry in
+            ZStack(alignment: .top) {
+                ScrollView {
+                    LazyVStack(alignment: .leading, spacing: 2) {
+                        ForEach(viewModel.metadatas.chunked(into: columns), id: \.self) { rowMetadatas in
+                            NCMediaRow(metadatas: rowMetadatas, geometryProxy: geometry)
+                        }
                     }
                 }
-            }.onRotate { orientation in
+
+                HStack(content: {
+                    Text("Placeholder")
+                        .font(.system(size: 20, weight: .bold))
+                        .foregroundStyle(.white)
+                })
+                .frame(maxWidth: .infinity)
+                .background(LinearGradient(gradient: Gradient(colors: [.black.opacity(0.8), .black.opacity(0.0)]), startPoint: .top, endPoint: .bottom).edgesIgnoringSafeArea(.top))
+            }
+            .onRotate { orientation in
                 if orientation.isLandscapeHardCheck {
                     columns = 6
                 } else {
