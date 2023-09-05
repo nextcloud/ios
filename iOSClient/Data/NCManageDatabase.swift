@@ -71,7 +71,26 @@ class NCManageDatabase: NSObject {
             let config = Realm.Configuration(
                 fileURL: dirGroup?.appendingPathComponent(NCGlobal.shared.appDatabaseNextcloud + "/" + databaseName),
                 schemaVersion: databaseSchemaVersion,
-                objectTypes: [tableMetadata.self, tableLocalFile.self, tableDirectory.self, tableTag.self, tableAccount.self, tableCapabilities.self, tablePhotoLibrary.self, tableE2eEncryption.self, tableE2eEncryptionLock.self, tableE2eMetadata.self, tableShare.self, tableChunk.self, tableAvatar.self, tableDashboardWidget.self, tableDashboardWidgetButton.self, NCDBLayoutForView.self]
+                objectTypes: [tableMetadata.self,
+                              tableLocalFile.self,
+                              tableDirectory.self,
+                              tableTag.self,
+                              tableAccount.self,
+                              tableCapabilities.self,
+                              tablePhotoLibrary.self,
+                              tableE2eEncryption.self,
+                              tableE2eEncryptionLock.self,
+                              tableE2eMetadata12.self,
+                              tableE2eMetadata.self,
+                              tableE2eUsers.self,
+                              tableE2eCounter.self,
+                              tableE2eUsersFiledrop.self,
+                              tableShare.self,
+                              tableChunk.self,
+                              tableAvatar.self,
+                              tableDashboardWidget.self,
+                              tableDashboardWidgetButton.self,
+                              NCDBLayoutForView.self]
             )
 
             Realm.Configuration.defaultConfiguration = config
@@ -104,8 +123,6 @@ class NCManageDatabase: NSObject {
                         migration.deleteData(forType: tableChunk.className())
                         migration.deleteData(forType: tableMetadata.className())
                         migration.deleteData(forType: tableE2eEncryptionLock.className())
-                        migration.deleteData(forType: tableE2eEncryption.className())
-                        migration.deleteData(forType: tableE2eMetadata.className())
                     }
 
                 }, shouldCompactOnLaunch: { totalBytes, usedBytes in
@@ -204,12 +221,6 @@ class NCManageDatabase: NSObject {
         self.clearTable(tableDirectEditingCreators.self, account: account)
         self.clearTable(tableDirectEditingEditors.self, account: account)
         self.clearTable(tableDirectory.self, account: account)
-        self.clearTable(tableE2eEncryption.self, account: account)
-        self.clearTable(tableE2eEncryptionLock.self, account: account)
-        self.clearTable(tableE2eMetadata.self, account: account)
-        self.clearTable(tableE2eMetadataV2.self, account: account)
-        self.clearTable(tableE2eUsersV2.self, account: account)
-        self.clearTable(tableE2eCounterV2.self, account: account)
         self.clearTable(tableExternalSites.self, account: account)
         self.clearTable(tableGPS.self, account: nil)
         self.clearTable(TableGroupfolders.self, account: account)
@@ -224,10 +235,22 @@ class NCManageDatabase: NSObject {
         self.clearTable(tableTrash.self, account: account)
         self.clearTable(tableUserStatus.self, account: account)
         self.clearTable(tableVideo.self, account: account)
+        self.clearTablesE2EE(account: account)
 
         if removeAccount {
             self.clearTable(tableAccount.self, account: account)
         }
+    }
+
+    func clearTablesE2EE(account: String?) {
+
+        self.clearTable(tableE2eEncryption.self, account: account)
+        self.clearTable(tableE2eEncryptionLock.self, account: account)
+        self.clearTable(tableE2eMetadata12.self, account: account)
+        self.clearTable(tableE2eMetadata.self, account: account)
+        self.clearTable(tableE2eUsers.self, account: account)
+        self.clearTable(tableE2eCounter.self, account: account)
+        self.clearTable(tableE2eUsersFiledrop.self, account: account)
     }
 
     @objc func removeDB() {

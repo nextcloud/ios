@@ -174,14 +174,7 @@ class NCEndToEndInitialize: NSObject {
                         if error == .success && account == self.appDelegate.account {
 
                             CCUtility.setEndToEndPublicKey(account, publicKey: publicKey)
-
-                            // Clear Table
-                            NCManageDatabase.shared.clearTable(tableDirectory.self, account: account)
-                            NCManageDatabase.shared.clearTable(tableE2eEncryption.self, account: account)
-                            NCManageDatabase.shared.clearTable(tableE2eEncryptionLock.self, account: account)
-                            NCManageDatabase.shared.clearTable(tableE2eMetadata.self, account: account)
-                            NCManageDatabase.shared.clearTable(tableE2eMetadataV2.self, account: account)
-                            NCManageDatabase.shared.clearTable(tableE2eUsersV2.self, account: account)
+                            NCManageDatabase.shared.clearTablesE2EE(account: account)
 
                             self.delegate?.endToEndInitializeSuccess()
 
@@ -285,14 +278,7 @@ class NCEndToEndInitialize: NSObject {
                     if error == .success && account == self.appDelegate.account {
 
                         CCUtility.setEndToEndPublicKey(account, publicKey: publicKey)
-
-                        // Clear Table
-                        NCManageDatabase.shared.clearTable(tableDirectory.self, account: account)
-                        NCManageDatabase.shared.clearTable(tableE2eEncryption.self, account: account)
-                        NCManageDatabase.shared.clearTable(tableE2eEncryptionLock.self, account: account)
-                        NCManageDatabase.shared.clearTable(tableE2eMetadata.self, account: account)
-                        NCManageDatabase.shared.clearTable(tableE2eMetadataV2.self, account: account)
-                        NCManageDatabase.shared.clearTable(tableE2eUsersV2.self, account: account)
+                        NCManageDatabase.shared.clearTablesE2EE(account: account)
 
                         if copyPassphrase {
                             UIPasteboard.general.string = e2ePassphrase
