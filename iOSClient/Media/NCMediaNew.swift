@@ -36,20 +36,14 @@ struct MinHeightPreferenceKey: PreferenceKey {
 struct NCMediaNew: View {
     @StateObject private var viewModel = NCMediaViewModel()
 
-    @State private var gridColumns = Array(repeating: GridItem(.flexible(minimum: 50)), count: 2)
+//    @State private var gridColumns = Array(repeating: GridItem(.flexible(minimum: 50)), count: 5)
 
     @State private var minHeight: CGFloat = 0
 
     var body: some View {
-        //            StaggeredGrid(list: viewModel.metadatas, columns: 2, content: { metadata in
-        //                MediaCellView(metadata: metadata)
-        //            })
-        //            FlowGrid(items: viewModel.metadatas, rowHeight: 200) { metadata in
-        //                MediaCellView(metadata: metadata)
-        //            }
         GeometryReader { proxy in
             ScrollView {
-                LazyVStack(alignment: .leading, spacing: 0) {
+                LazyVStack(alignment: .leading) {
                     ForEach(viewModel.metadatas.chunked(into: 2), id: \.self) { rowMetadatas in
 
                         MediaRow(metadatas: rowMetadatas)
@@ -75,20 +69,32 @@ struct NCMediaNew: View {
 //    }
 // }
 
+struct RowData {
+    var scaledThumbnails: [ScaledThumbnail] = []
+    var shrinkRatio: CGFloat = 0
+}
+
+struct ScaledThumbnail: Hashable {
+    let image: UIImage
+    var scaledSize: CGSize = .zero
+    let metadata: tableMetadata
+
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(image)
+    }
+}
+
 struct MediaRow: View {
     let metadatas: [tableMetadata]
     @StateObject private var viewModel = MediaCellViewModel()
 
     var body: some View {
-        HStack(spacing: 0) {
-            if viewModel.thumbnails.isEmpty {
+        HStack() {
+            if viewModel.rowData.scaledThumbnails.isEmpty {
                 ProgressView()
             } else {
-                ForEach(viewModel.thumbnails, id: \.self) { thumbnail in
-                    let _ = print(viewModel.thumbnails)
-                    MediaCellView(shrinkRatio: viewModel.shrinkRatio, thumbnail: thumbnail)
-                    // get image here using async await and pass it to the MediaCellView
-    //                MediaCellView(shrinkRatio: viewModel.getSize(), metadata: metadata)
+                ForEach(viewModel.rowData.scaledThumbnails, id: \.self) { thumbnail in
+                    MediaCellView(thumbnail: thumbnail, shrinkRatio: viewModel.rowData.shrinkRatio)
                 }
             }
         }
@@ -100,16 +106,17 @@ struct MediaRow: View {
 }
 
 struct MediaCellView: View {
+    let thumbnail: ScaledThumbnail
     let shrinkRatio: CGFloat
-    let thumbnail: UIImage
+//    let thumbnail: UIImage
 //    let metadata: tableMetadata
 //    @StateObject private var viewModel = MediaCellViewModel()
 
     var body: some View {
-        Image(uiImage: thumbnail)
+        Image(uiImage: thumbnail.image)
             .resizable()
 //            .scaledToFill()
-            .frame(width: CGFloat(thumbnail.size.width * shrinkRatio), height: CGFloat(thumbnail.size.height * shrinkRatio))
+            .frame(width: CGFloat(thumbnail.scaledSize.width * shrinkRatio), height: CGFloat(thumbnail.scaledSize.height * shrinkRatio))
 
 //        let wtf = CGFloat(metadata.width) * shrinkRatio
 //        let _ = print(viewModel.thumbnail.size.width)
@@ -118,16 +125,18 @@ struct MediaCellView: View {
 }
 
 @MainActor class MediaCellViewModel: ObservableObject {
-    @Published private(set) var thumbnails: [UIImage] = []
+//    @Published private(set) var thumbnails: [UIImage] = []
+    @Published private(set) var rowData = RowData()
+
     private var metadatas: [tableMetadata] = []
-    var shrinkRatio: CGFloat = 0
+//    var shrinkRatio: CGFloat = 0
 
     func configure(metadatas: [tableMetadata]) {
         self.metadatas = metadatas
     }
 
     func downloadThumbnails() {
-        var thumbnails: [UIImage] = []
+        var thumbnails: [ScaledThumbnail] = []
 
         metadatas.enumerated().forEach { index, metadata in
             let thumbnailPath = CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)
@@ -135,11 +144,17 @@ struct MediaCellView: View {
             if let thumbnailPath, FileManager.default.fileExists(atPath: thumbnailPath) {
                 // Load thumbnail from file
                 if let image = UIImage(contentsOfFile: thumbnailPath) {
-                    thumbnails.append(image)
+                    thumbnails.append(ScaledThumbnail(image: image, metadata: metadata))
 
                     if thumbnails.count == self.metadatas.count {
-                        self.thumbnails = thumbnails
-                        shrinkRatio = getSize(rowMetadatas: thumbnails, fullWidth: UIScreen.main.bounds.width)
+                        thumbnails.enumerated().forEach { index, thumbnail in
+                            thumbnails[index].scaledSize = getScaledThumbnailSize(of: thumbnail, thumbnailsInRow: thumbnails)
+                        }
+
+                        let shrinkRatio = getShrinkRatio(thumbnailsInRow: thumbnails, fullWidth: UIScreen.main.bounds.width)
+
+                        rowData.scaledThumbnails = thumbnails
+                        rowData.shrinkRatio = shrinkRatio
                     }
                 }
             } else {
@@ -168,61 +183,79 @@ struct MediaCellView: View {
                             DispatchQueue.main.async {
     //                            if self.metadata.ocId == self.cell?.fileObjectId, let filePreviewImageView = self.cell?.filePreviewImageView {
     //                                UIView.transition(with: filePreviewImageView,
-    //                                                  duration: 0.75,
-    //                                                  options: .transitionCrossDissolve,
-    //                                                  animations: { filePreviewImageView.image = imageIcon },
-    //                                                  completion: nil)
-                                thumbnails.append(image)
-    //                            } else {
-    //                                if self.view is UICollectionView {
-    //                                    (self.view as? UICollectionView)?.reloadData()
-    //                                } else if self.view is UITableView {
-    //                                    (self.view as? UITableView)?.reloadData()
-    //                                }
-    //                            }
-
-//                                self.metadata.height = Int(self.thumbnail.size.height)
-//                                self.metadata.width = Int(self.thumbnail.size.width)
-//                                print(self.thumbnail.size.width)
-//                                print(self.thumbnail.size.height)
-//                                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDownloadedThumbnail, userInfo: ["ocId": self.metadata.ocId])
-
-                                print("------------")
-                                print(thumbnails.count)
+                                //                                                  duration: 0.75,
+                                //                                                  options: .transitionCrossDissolve,
+                                //                                                  animations: { filePreviewImageView.image = imageIcon },
+                                //                                                  completion: nil)
+                                thumbnails.append(ScaledThumbnail(image: image, metadata: metadata))
 
                                 if thumbnails.count == self.metadatas.count {
-                                    self.thumbnails = thumbnails
-                                    self.shrinkRatio = self.getSize(rowMetadatas: thumbnails, fullWidth: UIScreen.main.bounds.width)
+                                    thumbnails.enumerated().forEach { index, thumbnail in
+                                        thumbnails[index].scaledSize = self.getScaledThumbnailSize(of: thumbnail, thumbnailsInRow: thumbnails)
+                                    }
+
+                                    let shrinkRatio = self.getShrinkRatio(thumbnailsInRow: thumbnails, fullWidth: 1000)
+
+                                    self.rowData.scaledThumbnails = thumbnails
+                                    self.rowData.shrinkRatio = shrinkRatio
                                 }
                             }
-
-
                         }
-    //                    self.finish()
                     }
             }
         }
 
     }
 
-    func getSize(rowMetadatas: [UIImage], fullWidth: CGFloat) -> CGFloat {
+    func getScaledThumbnailSize(of thumbnail: ScaledThumbnail, thumbnailsInRow thumbnails: [ScaledThumbnail]) -> CGSize {
+        let maxHeight = thumbnails.compactMap { CGFloat($0.image.size.height) }.max() ?? 0
+
+        let height = thumbnail.image.size.height
+        let width = thumbnail.image.size.width
+
+        let scaleFactor = maxHeight / height
+        let newHeight = height * scaleFactor
+        let newWidth = width * scaleFactor
+
+//        return .init(image: thumbnail, scaledSize: .init(width: newWidth, height: newHeight))
+
+
+        return .init(width: newWidth, height: newHeight)
+    }
+
+    func getShrinkRatio(thumbnailsInRow thumbnails: [ScaledThumbnail], fullWidth: CGFloat) -> CGFloat {
         var newSummedWidth: CGFloat = 0
-        let maxHeight = rowMetadatas.compactMap { CGFloat($0.size.height) }.max() ?? 0
-        for metadata in rowMetadatas {
-            let height1 = metadata.size.height
-            let width1 = metadata.size.width
-
-            let scaleFactor1 = maxHeight / height1
-//            let newHeight1 = height1 * scaleFactor1
-            let newWidth1 = width1 * scaleFactor1
-
-            newSummedWidth += CGFloat(newWidth1)
+//        let maxHeight = rowMetadatas.compactMap { CGFloat($0.size.height) }.max() ?? 0
+        for thumbnail in thumbnails {
+            newSummedWidth += CGFloat(thumbnail.scaledSize.width)
         }
 
         let shrinkRatio: CGFloat = fullWidth / newSummedWidth
 
         return shrinkRatio
     }
+
+//    func getShrinkRatio(rowMetadatas: [UIImage], fullWidth: CGFloat) -> (height: CGFloat, shrinkRatio: CGFloat) {
+//        var newSummedWidth: CGFloat = 0
+//        let maxHeight = rowMetadatas.compactMap { CGFloat($0.size.height) }.max() ?? 0
+//        for metadata in rowMetadatas {
+//            let height1 = metadata.size.height
+//            let width1 = metadata.size.width
+//
+//            let scaleFactor1 = maxHeight / height1
+//            let newHeight1 = height1 * scaleFactor1
+//            let newWidth1 = width1 * scaleFactor1
+//
+////            scaledThumbnails.append(.init(image: metadata, scaledSize: .init(width: newWidth1, height: newHeight1)))
+//
+//            newSummedWidth += CGFloat(newWidth1)
+//        }
+//
+//        let shrinkRatio: CGFloat = fullWidth / newSummedWidth
+//
+//        return shrinkRatio
+//    }
+
 }
 
 @MainActor class NCMediaViewModel: ObservableObject {
