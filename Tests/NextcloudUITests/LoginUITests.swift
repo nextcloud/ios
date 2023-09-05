@@ -47,7 +47,7 @@ final class LoginUITests: BaseUIXCTestCase {
         usernameTextField.typeText(user)
         let passwordTextField = element.children(matching: .other).element(boundBy: 4).children(matching: .secureTextField).element
         passwordTextField.tap()
-        passwordTextField.typeText(user)
+        passwordTextField.typeText(password)
         let loginButton3 = webViewsQuery/*@START_MENU_TOKEN@*/.buttons["Log in"]/*[[".otherElements[\"Login – Nextcloud\"]",".otherElements[\"main\"].buttons[\"Log in\"]",".buttons[\"Log in\"]"],[[[-1,2],[-1,1],[-1,0,1]],[[-1,2],[-1,1]]],[0]]@END_MENU_TOKEN@*/
         XCTAssert(loginButton3.waitForExistence(timeout: timeoutSeconds))
         loginButton3.tap()
