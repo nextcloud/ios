@@ -19,32 +19,24 @@ class NCMediaUIHostingController: UIHostingController<NCMediaNew> {
 
 struct NCMediaNew: View {
     @StateObject private var viewModel = NCMediaViewModel()
+    @State var columns = 2
 
     var body: some View {
         GeometryReader { proxy in
             ScrollView {
-                LazyVStack(alignment: .leading) {
-                    ForEach(viewModel.metadatas.chunked(into: 2), id: \.self) { rowMetadatas in
-                        NCMediaRow(metadatas: rowMetadatas)
+                LazyVStack(alignment: .leading, spacing: 2) {
+                    ForEach(viewModel.metadatas.chunked(into: columns), id: \.self) { rowMetadatas in
+                        NCMediaRow(metadatas: rowMetadatas, geometryProxy: proxy)
                     }
+                }
+            }.onRotate { orientation in
+                if orientation.isLandscapeHardCheck {
+                    columns = 6
+                } else {
+                    columns = 2
                 }
             }
         }
-    }
-}
-
-struct RowData {
-    var scaledThumbnails: [ScaledThumbnail] = []
-    var shrinkRatio: CGFloat = 0
-}
-
-struct ScaledThumbnail: Hashable {
-    let image: UIImage
-    var scaledSize: CGSize = .zero
-    let metadata: tableMetadata
-
-    func hash(into hasher: inout Hasher) {
-        hasher.combine(image)
     }
 }
 
