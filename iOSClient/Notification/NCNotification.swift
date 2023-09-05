@@ -113,12 +113,19 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmpty
 
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
 
-        let notification = notifications[indexPath.row]
+        guard let notification = NCApplicationHandle().didSelectNotification(notifications[indexPath.row], viewController: self) else { return }
 
-        if notification.app == "files_sharing" {
-            NCActionCenter.shared.viewerFile(account: appDelegate.account, fileId: notification.objectId, viewController: self)
-        } else {
-            NCApplicationHandle().didSelectNotification(notification, viewController: self)
+        do {
+            if let subjectRichParameters = notification.subjectRichParameters,
+               let json = try JSONSerialization.jsonObject(with: subjectRichParameters, options: .mutableContainers) as? [String: Any],
+               let file = json["file"] as? [String: Any],
+               file["type"] as? String == "file" {
+                if let id = file["id"] {
+                    NCActionCenter.shared.viewerFile(account: appDelegate.account, fileId: ("\(id)"), viewController: self)
+                }
+            }
+        } catch {
+            print("Something went wrong")
         }
     }
 
