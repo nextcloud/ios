@@ -204,7 +204,7 @@ extension NCViewer {
         // COPY IN PASTEBOARD
         //
         if !webView, metadata.isCopyableInPasteboard {
-            actions.append(.copyAction(selectOcId: [metadata.ocId], hudView: viewController.view))
+            actions.append(.copyAction(selectOcId: [metadata.ocId]))
         }
 
         //
