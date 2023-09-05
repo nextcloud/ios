@@ -9,6 +9,21 @@
 import Foundation
 import NextcloudKit
 
+struct RowData {
+    var scaledThumbnails: [ScaledThumbnail] = []
+    var shrinkRatio: CGFloat = 0
+}
+
+struct ScaledThumbnail: Hashable {
+    let image: UIImage
+    var scaledSize: CGSize = .zero
+    let metadata: tableMetadata
+
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(image)
+    }
+}
+
 @MainActor class NCMediaRowViewModel: ObservableObject {
     @Published private(set) var rowData = RowData()
 
@@ -18,7 +33,7 @@ import NextcloudKit
         self.metadatas = metadatas
     }
 
-    func downloadThumbnails() {
+    func downloadThumbnails(rowWidth: CGFloat, spacing: CGFloat) {
         var thumbnails: [ScaledThumbnail] = []
 
         metadatas.enumerated().forEach { index, metadata in
@@ -34,7 +49,7 @@ import NextcloudKit
                             thumbnails[index].scaledSize = getScaledThumbnailSize(of: thumbnail, thumbnailsInRow: thumbnails)
                         }
 
-                        let shrinkRatio = getShrinkRatio(thumbnailsInRow: thumbnails, fullWidth: UIScreen.main.bounds.width)
+                        let shrinkRatio = getShrinkRatio(thumbnailsInRow: thumbnails, fullWidth: rowWidth, spacing: spacing)
 
                         rowData.scaledThumbnails = thumbnails
                         rowData.shrinkRatio = shrinkRatio
@@ -70,7 +85,7 @@ import NextcloudKit
                                         thumbnails[index].scaledSize = self.getScaledThumbnailSize(of: thumbnail, thumbnailsInRow: thumbnails)
                                     }
 
-                                    let shrinkRatio = self.getShrinkRatio(thumbnailsInRow: thumbnails, fullWidth: UIScreen.main.bounds.width)
+                                    let shrinkRatio = self.getShrinkRatio(thumbnailsInRow: thumbnails, fullWidth: rowWidth, spacing: spacing)
 
                                     self.rowData.scaledThumbnails = thumbnails
                                     self.rowData.shrinkRatio = shrinkRatio
@@ -96,14 +111,15 @@ import NextcloudKit
         return .init(width: newWidth, height: newHeight)
     }
 
-    func getShrinkRatio(thumbnailsInRow thumbnails: [ScaledThumbnail], fullWidth: CGFloat) -> CGFloat {
+    func getShrinkRatio(thumbnailsInRow thumbnails: [ScaledThumbnail], fullWidth: CGFloat, spacing: CGFloat) -> CGFloat {
         var newSummedWidth: CGFloat = 0
 
         for thumbnail in thumbnails {
             newSummedWidth += CGFloat(thumbnail.scaledSize.width)
         }
 
-        let shrinkRatio: CGFloat = fullWidth / newSummedWidth
+        let spacingWidth = spacing * CGFloat(thumbnails.count - 1)
+        let shrinkRatio: CGFloat = (fullWidth - spacingWidth) / newSummedWidth
 
         return shrinkRatio
     }
