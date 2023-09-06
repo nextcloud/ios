@@ -86,6 +86,7 @@ class NCApplicationHandle: NSObject {
     }
 
     // class: NCNotification
-    func didSelectNotification(_ notification: NKNotifications, viewController: UIViewController) {
+    func didSelectNotification(_ notification: NKNotifications, viewController: UIViewController) -> NKNotifications? {
+        return notification
     }
 }
