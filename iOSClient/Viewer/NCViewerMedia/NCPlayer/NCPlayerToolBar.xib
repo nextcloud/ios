@@ -86,7 +86,7 @@
                     <directionalEdgeInsets key="directionalLayoutMargins" top="5" leading="5" bottom="5" trailing="5"/>
                 </stackView>
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="85m-50-8yp">
-                    <rect key="frame" x="0.0" y="742" width="375" height="70"/>
+                    <rect key="frame" x="0.0" y="722" width="375" height="90"/>
                     <subviews>
                         <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" minValue="0.0" maxValue="1" translatesAutoresizingMaskIntoConstraints="NO" id="MY0-FC-j88">
                             <rect key="frame" x="18" y="10" width="307" height="31"/>
@@ -115,7 +115,7 @@
                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     <constraints>
                         <constraint firstItem="OHB-2J-Gqb" firstAttribute="leading" secondItem="MY0-FC-j88" secondAttribute="leading" id="6n7-If-xdS"/>
-                        <constraint firstAttribute="height" constant="70" id="9Uv-dV-to4"/>
+                        <constraint firstAttribute="height" constant="90" id="9Uv-dV-to4"/>
                         <constraint firstItem="svM-TQ-AyQ" firstAttribute="top" secondItem="MY0-FC-j88" secondAttribute="bottom" id="Aan-ac-nr9"/>
                         <constraint firstItem="MY0-FC-j88" firstAttribute="leading" secondItem="85m-50-8yp" secondAttribute="leading" constant="20" id="Hjo-k0-bpn"/>
                         <constraint firstItem="VLW-it-fXU" firstAttribute="centerY" secondItem="MY0-FC-j88" secondAttribute="centerY" id="OYO-ej-jdC"/>
@@ -154,7 +154,7 @@
                 <outlet property="subtitleButton" destination="qqZ-QN-TsW" id="XCP-hb-eZB"/>
                 <outlet property="utilityView" destination="orv-9i-XUs" id="AGX-4E-dOr"/>
             </connections>
-            <point key="canvasLocation" x="136.80000000000001" y="152.47376311844079"/>
+            <point key="canvasLocation" x="136.80000000000001" y="152.21674876847291"/>
         </view>
     </objects>
     <resources>
