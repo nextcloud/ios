@@ -697,6 +697,7 @@
 "_e2e_settings_start_"              = "Start end-to-end encryption";
 "_e2e_settings_not_available_"      = "End-to-end encryption not available";
 "_e2e_settings_activated_"          = "End-to-end encryption activated";
+"_e2e_server_disabled_"             = "End-to-end encryption app disabled on server";
 "_e2e_settings_view_passphrase_"    = "All 12 words together make a very strong password, letting only you view and make use of your encrypted files. Please write it down and keep it somewhere safe.";
 "_e2e_settings_read_passphrase_"    = "Read passphrase";
 "_e2e_settings_lock_not_active_"    = "Lock not active, go back to \"Settings\" and activate it";

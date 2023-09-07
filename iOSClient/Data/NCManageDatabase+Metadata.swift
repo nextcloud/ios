@@ -251,16 +251,11 @@ extension tableMetadata {
     // Return if is sharable
     func isSharable() -> Bool {
         guard NCGlobal.shared.capabilityFileSharingApiEnabled else { return false }
-
-        if NCGlobal.shared.capabilityE2EEApiVersion == NCGlobal.shared.e2eeVersionV20, isDirectoryE2EE {
-            return e2eEncrypted
-        } else if !e2eEncrypted && !isDirectoryE2EE {
+        if isDirectoryE2EE || e2eEncrypted {
+            guard directory, NCGlobal.shared.capabilityE2EEEnabled else { return false }
             return true
-        } else if NCGlobal.shared.capabilityServerVersionMajor >= NCGlobal.shared.nextcloudVersion26 && directory {
-            return true
-        } else {
-            return false
         }
+        return true
     }
 }
 

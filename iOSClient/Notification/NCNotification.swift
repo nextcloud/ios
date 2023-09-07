@@ -65,28 +65,12 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmpty
         super.viewWillAppear(animated)
 
         appDelegate.activeViewController = self
-
         navigationController?.setFileAppreance()
-
-        NotificationCenter.default.addObserver(self, selector: #selector(initialize), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterInitialize), object: nil)
-
         getNetwokingNotification()
-    }
-
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-
-        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterInitialize), object: nil)
     }
 
     @objc func viewClose() {
         self.dismiss(animated: true, completion: nil)
-    }
-
-    // MARK: - NotificationCenter
-
-    @objc func initialize() {
-        getNetwokingNotification()
     }
 
     // MARK: - Empty

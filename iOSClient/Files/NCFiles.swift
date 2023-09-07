@@ -46,6 +46,19 @@ class NCFiles: NCCollectionViewCommon {
         emptyDescription = "_no_file_pull_down_"
     }
 
+    override func viewDidLoad() {
+        super.viewDidLoad()
+
+        if isRoot {
+            NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterInitialize), object: nil, queue: nil) { _ in
+                self.serverUrl = NCUtilityFileSystem.shared.getHomeServer(urlBase: self.appDelegate.urlBase, userId: self.appDelegate.userId)
+                self.titleCurrentFolder = self.getNavigationTitle()
+                super.initialize()
+                self.reloadDataSource(isForced: false)
+                self.reloadDataSourceNetwork()
+            }
+        }
+    }
     override func viewWillAppear(_ animated: Bool) {
 
         if isRoot {
@@ -53,7 +66,6 @@ class NCFiles: NCCollectionViewCommon {
             titleCurrentFolder = getNavigationTitle()
         }
         super.viewWillAppear(animated)
-
         navigationController?.setFileAppreance()
     }
 
@@ -62,20 +74,6 @@ class NCFiles: NCCollectionViewCommon {
 
         fileNameBlink = nil
         fileNameOpen = nil
-    }
-
-    // MARK: - NotificationCenter
-
-    override func initialize() {
-
-        if isRoot {
-            serverUrl = NCUtilityFileSystem.shared.getHomeServer(urlBase: appDelegate.urlBase, userId: appDelegate.userId)
-            titleCurrentFolder = getNavigationTitle()
-        }
-        super.initialize()
-
-        reloadDataSource(isForced: false)
-        reloadDataSourceNetwork()
     }
 
     // MARK: - DataSource + NC Endpoint

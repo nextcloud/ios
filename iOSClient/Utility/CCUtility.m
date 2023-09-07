@@ -364,7 +364,6 @@
 
 + (BOOL)isEndToEndEnabled:(NSString *)account
 {
-    BOOL isE2EEEnabled = [[NCGlobal shared] capabilityE2EEEnabled];
     NSString* versionE2EE = [[NCGlobal shared] capabilityE2EEApiVersion];
 
     NSString *certificate = [self getEndToEndCertificate:account];
@@ -372,7 +371,7 @@
     NSString *privateKey = [self getEndToEndPrivateKey:account];
     NSString *passphrase = [self getEndToEndPassphrase:account];
             
-    if (passphrase.length > 0 && privateKey.length > 0 && certificate.length > 0 && publicKey.length > 0 && isE2EEEnabled && [NCGlobal.shared.e2eeVersions containsObject:versionE2EE]) {
+    if (passphrase.length > 0 && privateKey.length > 0 && certificate.length > 0 && publicKey.length > 0 && [NCGlobal.shared.e2eeVersions containsObject:versionE2EE]) {
         return YES;
     } else {
         return NO;

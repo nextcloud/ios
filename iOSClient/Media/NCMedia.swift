@@ -91,9 +91,6 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate, NCSelectDelegate {
         // Empty
         emptyDataSet = NCEmptyDataSet(view: collectionView, offset: 0, delegate: self)
 
-        // Notification
-        NotificationCenter.default.addObserver(self, selector: #selector(initialize), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterInitialize), object: nil)
-
         mediaCommandView = Bundle.main.loadNibNamed("NCMediaCommandView", owner: self, options: nil)?.first as? NCMediaCommandView
         self.view.addSubview(mediaCommandView!)
         mediaCommandView?.mediaView = self
@@ -159,17 +156,6 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate, NCSelectDelegate {
     }
 
     // MARK: - NotificationCenter
-
-    @objc func initialize() {
-
-        self.reloadDataSourceWithCompletion { _ in
-            self.timerSearchNewMedia?.invalidate()
-            self.timerSearchNewMedia = Timer.scheduledTimer(timeInterval: self.timeIntervalSearchNewMedia, target: self, selector: #selector(self.searchNewMediaTimer), userInfo: nil, repeats: false)
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                self.mediaCommandTitle()
-            }
-        }
-    }
 
     @objc func deleteFile(_ notification: NSNotification) {
 

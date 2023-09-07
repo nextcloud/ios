@@ -74,9 +74,6 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         let tapQuota = UITapGestureRecognizer(target: self, action: #selector(tapLabelQuotaExternalSite))
         labelQuotaExternalSite.isUserInteractionEnabled = true
         labelQuotaExternalSite.addGestureRecognizer(tapQuota)
-
-        // Notification
-        NotificationCenter.default.addObserver(self, selector: #selector(initialize), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterInitialize), object: nil)
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -87,12 +84,6 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         appDelegate.activeViewController = self
         loadItems()
         tableView.reloadData()
-    }
-
-    // MARK: - NotificationCenter
-
-    @objc func initialize() {
-        loadItems()
     }
 
     // MARK: -

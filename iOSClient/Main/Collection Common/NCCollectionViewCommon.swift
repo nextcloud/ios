@@ -156,8 +156,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
         tipView = EasyTipView(text: NSLocalizedString("_tip_accountrequest_", comment: ""), preferences: preferences, delegate: self)
 
-        // Notification
-        NotificationCenter.default.addObserver(self, selector: #selector(initialize), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterInitialize), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeTheming), object: nil)
     }
 
@@ -299,8 +297,9 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                 appDelegate.activeServerUrl = serverUrl
             }
 
-            appDelegate.listFilesVC.removeAll()
             appDelegate.listFavoriteVC.removeAll()
+            appDelegate.listFilesVC.removeAll()
+            appDelegate.listGroupfoldersVC.removeAll()
             appDelegate.listOfflineVC.removeAll()
         }
 
@@ -1294,11 +1293,18 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
             return
         }
 
-        if metadata.e2eEncrypted && !CCUtility.isEnd(toEndEnabled: appDelegate.account) {
-            let e2ee = NCEndToEndInitialize()
-            e2ee.delegate = self
-            e2ee.initEndToEndEncryption()
-            return
+        if metadata.e2eEncrypted {
+            if NCGlobal.shared.capabilityE2EEEnabled {
+                if !CCUtility.isEnd(toEndEnabled: appDelegate.account) {
+                    let e2ee = NCEndToEndInitialize()
+                    e2ee.delegate = self
+                    e2ee.initEndToEndEncryption()
+                    return
+                }
+            } else {
+                NCContentPresenter.shared.showInfo(error: NKError(errorCode: NCGlobal.shared.errorE2EENotEnabled, errorDescription: "_e2e_server_disabled_"))
+                return
+            }
         }
 
         if metadata.directory {
