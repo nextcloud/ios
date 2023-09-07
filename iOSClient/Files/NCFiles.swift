@@ -59,6 +59,7 @@ class NCFiles: NCCollectionViewCommon {
             }
         }
     }
+
     override func viewWillAppear(_ animated: Bool) {
 
         if isRoot {
