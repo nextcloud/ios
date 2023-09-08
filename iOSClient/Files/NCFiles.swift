@@ -49,7 +49,6 @@ class NCFiles: NCCollectionViewCommon {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        guard !appDelegate.account.isEmpty else { return }
         if isRoot {
             NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterInitialize), object: nil, queue: nil) { _ in
 
