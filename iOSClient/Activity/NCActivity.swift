@@ -101,13 +101,11 @@ class NCActivity: UIViewController, NCSharePagingContent {
 
         navigationController?.setFileAppreance()
 
-        NotificationCenter.default.addObserver(self, selector: #selector(initialize), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterInitialize), object: nil)
-        initialize()
+        fetchAll(isInitial: true)
     }
 
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterInitialize), object: nil)
     }
 
     override func viewWillLayoutSubviews() {
@@ -117,14 +115,6 @@ class NCActivity: UIViewController, NCSharePagingContent {
         commentView?.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
         commentView?.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
         viewContainerConstraint.constant = height
-    }
-
-    // MARK: - NotificationCenter
-
-    @objc func initialize() {
-        loadDataSource()
-        fetchAll(isInitial: true)
-        view.setNeedsLayout()
     }
 
     func makeTableFooterView() -> UIView {

@@ -156,8 +156,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
         tipView = EasyTipView(text: NSLocalizedString("_tip_accountrequest_", comment: ""), preferences: preferences, delegate: self)
 
-        // Notification
-        NotificationCenter.default.addObserver(self, selector: #selector(initialize), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterInitialize), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeTheming), object: nil)
     }
 
@@ -275,49 +273,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     }
 
     // MARK: - NotificationCenter
-
-    @objc func initialize() {
-        guard !appDelegate.account.isEmpty else { return }
-
-        // Search
-        if searchController?.isActive ?? false || isSearchingMode {
-            searchController?.isActive = false
-            isSearchingMode = false
-        }
-
-        // Select
-        if isEditMode {
-            isEditMode = !isEditMode
-            selectOcId.removeAll()
-            selectIndexPath.removeAll()
-        }
-
-        if self.view?.window != nil {
-            if serverUrl == "" {
-                appDelegate.activeServerUrl = NCUtilityFileSystem.shared.getHomeServer(urlBase: appDelegate.urlBase, userId: appDelegate.userId)
-            } else {
-                appDelegate.activeServerUrl = serverUrl
-            }
-
-            appDelegate.listFilesVC.removeAll()
-            appDelegate.listFavoriteVC.removeAll()
-            appDelegate.listOfflineVC.removeAll()
-        }
-
-        if serverUrl != "" {
-            self.navigationController?.popToRootViewController(animated: false)
-        }
-
-        layoutForView = NCManageDatabase.shared.getLayoutForView(account: appDelegate.account, key: layoutKey, serverUrl: serverUrl)
-        gridLayout.itemForLine = CGFloat(layoutForView?.itemForLine ?? 3)
-        if layoutForView?.layout == NCGlobal.shared.layoutList {
-            collectionView?.collectionViewLayout = listLayout
-        } else {
-            collectionView?.collectionViewLayout = gridLayout
-        }
-
-        setNavigationItem()
-    }
 
     @objc func applicationWillResignActive(_ notification: NSNotification) {
         self.refreshControl.endRefreshing()
@@ -1294,11 +1249,18 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
             return
         }
 
-        if metadata.e2eEncrypted && !CCUtility.isEnd(toEndEnabled: appDelegate.account) {
-            let e2ee = NCEndToEndInitialize()
-            e2ee.delegate = self
-            e2ee.initEndToEndEncryption()
-            return
+        if metadata.e2eEncrypted {
+            if NCGlobal.shared.capabilityE2EEEnabled {
+                if !CCUtility.isEnd(toEndEnabled: appDelegate.account) {
+                    let e2ee = NCEndToEndInitialize()
+                    e2ee.delegate = self
+                    e2ee.initEndToEndEncryption()
+                    return
+                }
+            } else {
+                NCContentPresenter.shared.showInfo(error: NKError(errorCode: NCGlobal.shared.errorE2EENotEnabled, errorDescription: "_e2e_server_disabled_"))
+                return
+            }
         }
 
         if metadata.directory {

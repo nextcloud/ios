@@ -46,6 +46,39 @@ class NCFiles: NCCollectionViewCommon {
         emptyDescription = "_no_file_pull_down_"
     }
 
+    override func viewDidLoad() {
+        super.viewDidLoad()
+
+        if isRoot {
+            NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterInitialize), object: nil, queue: nil) { _ in
+
+                self.navigationController?.popToRootViewController(animated: false)
+
+                self.serverUrl = NCUtilityFileSystem.shared.getHomeServer(urlBase: self.appDelegate.urlBase, userId: self.appDelegate.userId)
+                self.appDelegate.activeServerUrl = self.serverUrl
+
+                self.isSearchingMode = false
+                self.isEditMode = false
+                self.selectOcId.removeAll()
+                self.selectIndexPath.removeAll()
+
+                self.layoutForView = NCManageDatabase.shared.getLayoutForView(account: self.appDelegate.account, key: self.layoutKey, serverUrl: self.serverUrl)
+                self.gridLayout.itemForLine = CGFloat(self.layoutForView?.itemForLine ?? 3)
+                if self.layoutForView?.layout == NCGlobal.shared.layoutList {
+                    self.collectionView?.collectionViewLayout = self.listLayout
+                } else {
+                    self.collectionView?.collectionViewLayout = self.gridLayout
+                }
+
+                self.titleCurrentFolder = self.getNavigationTitle()
+                self.setNavigationItem()
+
+                self.reloadDataSource(isForced: false)
+                self.reloadDataSourceNetwork()
+            }
+        }
+    }
+
     override func viewWillAppear(_ animated: Bool) {
 
         if isRoot {
@@ -53,7 +86,6 @@ class NCFiles: NCCollectionViewCommon {
             titleCurrentFolder = getNavigationTitle()
         }
         super.viewWillAppear(animated)
-
         navigationController?.setFileAppreance()
     }
 
@@ -62,20 +94,6 @@ class NCFiles: NCCollectionViewCommon {
 
         fileNameBlink = nil
         fileNameOpen = nil
-    }
-
-    // MARK: - NotificationCenter
-
-    override func initialize() {
-
-        if isRoot {
-            serverUrl = NCUtilityFileSystem.shared.getHomeServer(urlBase: appDelegate.urlBase, userId: appDelegate.userId)
-            titleCurrentFolder = getNavigationTitle()
-        }
-        super.initialize()
-
-        reloadDataSource(isForced: false)
-        reloadDataSourceNetwork()
     }
 
     // MARK: - DataSource + NC Endpoint
