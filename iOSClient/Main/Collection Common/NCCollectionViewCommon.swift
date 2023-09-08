@@ -274,50 +274,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
     // MARK: - NotificationCenter
 
-    @objc func initialize() {
-        guard !appDelegate.account.isEmpty else { return }
-
-        // Search
-        if searchController?.isActive ?? false || isSearchingMode {
-            searchController?.isActive = false
-            isSearchingMode = false
-        }
-
-        // Select
-        if isEditMode {
-            isEditMode = !isEditMode
-            selectOcId.removeAll()
-            selectIndexPath.removeAll()
-        }
-
-        if self.view?.window != nil {
-            if serverUrl == "" {
-                appDelegate.activeServerUrl = NCUtilityFileSystem.shared.getHomeServer(urlBase: appDelegate.urlBase, userId: appDelegate.userId)
-            } else {
-                appDelegate.activeServerUrl = serverUrl
-            }
-
-            appDelegate.listFavoriteVC.removeAll()
-            appDelegate.listFilesVC.removeAll()
-            appDelegate.listGroupfoldersVC.removeAll()
-            appDelegate.listOfflineVC.removeAll()
-        }
-
-        if serverUrl != "" {
-            self.navigationController?.popToRootViewController(animated: false)
-        }
-
-        layoutForView = NCManageDatabase.shared.getLayoutForView(account: appDelegate.account, key: layoutKey, serverUrl: serverUrl)
-        gridLayout.itemForLine = CGFloat(layoutForView?.itemForLine ?? 3)
-        if layoutForView?.layout == NCGlobal.shared.layoutList {
-            collectionView?.collectionViewLayout = listLayout
-        } else {
-            collectionView?.collectionViewLayout = gridLayout
-        }
-
-        setNavigationItem()
-    }
-
     @objc func applicationWillResignActive(_ notification: NSNotification) {
         self.refreshControl.endRefreshing()
     }

@@ -49,11 +49,31 @@ class NCFiles: NCCollectionViewCommon {
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        guard !appDelegate.account.isEmpty else { return }
         if isRoot {
             NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterInitialize), object: nil, queue: nil) { _ in
+
+                self.navigationController?.popToRootViewController(animated: false)
+
                 self.serverUrl = NCUtilityFileSystem.shared.getHomeServer(urlBase: self.appDelegate.urlBase, userId: self.appDelegate.userId)
+                self.appDelegate.activeServerUrl = self.serverUrl
+
+                self.isSearchingMode = false
+                self.isEditMode = false
+                self.selectOcId.removeAll()
+                self.selectIndexPath.removeAll()
+
+                self.layoutForView = NCManageDatabase.shared.getLayoutForView(account: self.appDelegate.account, key: self.layoutKey, serverUrl: self.serverUrl)
+                self.gridLayout.itemForLine = CGFloat(self.layoutForView?.itemForLine ?? 3)
+                if self.layoutForView?.layout == NCGlobal.shared.layoutList {
+                    self.collectionView?.collectionViewLayout = self.listLayout
+                } else {
+                    self.collectionView?.collectionViewLayout = self.gridLayout
+                }
+
                 self.titleCurrentFolder = self.getNavigationTitle()
-                super.initialize()
+                self.setNavigationItem()
+
                 self.reloadDataSource(isForced: false)
                 self.reloadDataSourceNetwork()
             }
