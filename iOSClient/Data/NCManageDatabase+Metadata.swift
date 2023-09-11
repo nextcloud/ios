@@ -1074,6 +1074,7 @@ extension NCManageDatabase {
 
         do {
             let realm = try Realm()
+            realm.refresh()
             try realm.write {
                 let sortProperties = [SortDescriptor(keyPath: "serverUrl", ascending: false), SortDescriptor(keyPath: "fileNameView", ascending: false)]
                 let results = realm.objects(tableMetadata.self).filter(predicate).sorted(by: sortProperties)
