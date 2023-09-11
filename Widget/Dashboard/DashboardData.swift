@@ -143,7 +143,7 @@ func getDashboardDataEntry(configuration: DashboardIntent?, isPreview: Bool, dis
         userId: account.userId,
         password: password,
         urlBase: account.urlBase,
-        userAgent: CCUtility.getUserAgent(),
+        userAgent: userAgent,
         nextcloudVersion: 0,
         delegate: NCNetworking.shared)
 

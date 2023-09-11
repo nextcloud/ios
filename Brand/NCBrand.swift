@@ -23,7 +23,11 @@
 
 import UIKit
 
-// MARK: - Options
+let userAgent: String = {
+    let appVersion: String = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as! String
+    // Original Nextcloud useragent "Mozilla/5.0 (iOS) Nextcloud-iOS/\(appVersion)"
+    return "Mozilla/5.0 (iOS) Nextcloud-iOS/\(appVersion)"
+}()
 
 @objc class NCBrandOptions: NSObject {
     @objc static let shared: NCBrandOptions = {
@@ -54,11 +58,8 @@ import UIKit
     @objc public var capabilitiesGroups: String = "group.it.twsweb.Crypto-Cloud"
     @objc public var capabilitiesGroupApps: String = "group.com.nextcloud.apps"
 
-    // User Agent
-    @objc public var userAgent: String = "Nextcloud-iOS"                                                            // Don't touch me !!
-
     // BRAND ONLY
-    @objc public var use_login_web_personalized: Bool = false                                                // Don't touch me !!
+    @objc public var use_login_web_personalized: Bool = false                                   // Don't touch me !!
     @objc public var use_AppConfig: Bool = false                                                // Don't touch me !!
     @objc public var use_GroupApps: Bool = true                                                 // Don't touch me !!
 
@@ -67,21 +68,21 @@ import UIKit
     @objc public var use_themingColor: Bool = true
     @objc public var use_themingLogo: Bool = false
     @objc public var use_storeLocalAutoUploadAll: Bool = false
-    @objc public var use_loginflowv2: Bool = false                                                // Don't touch me !!
+    @objc public var use_loginflowv2: Bool = false                                              // Don't touch me !!
 
     @objc public var disable_intro: Bool = false
     @objc public var disable_request_login_url: Bool = false
     @objc public var disable_multiaccount: Bool = false
     @objc public var disable_manage_account: Bool = false
     @objc public var disable_more_external_site: Bool = false
-    @objc public var disable_openin_file: Bool = false                                                // Don't touch me !!
+    @objc public var disable_openin_file: Bool = false                                          // Don't touch me !!
     @objc public var disable_crash_service: Bool = false
     @objc public var disable_log: Bool = false
     @objc public var disable_mobileconfig: Bool = false
     @objc public var disable_show_more_nextcloud_apps_in_settings: Bool = false
 
     // Internal option behaviour
-    @objc public var cleanUpDay: Int = 0                                                     // Set default "Delete, in the cache, all files older than" possible days value are: 0, 1, 7, 30, 90, 180, 365
+    @objc public var cleanUpDay: Int = 0                                                        // Set default "Delete, in the cache, all files older than" possible days value are: 0, 1, 7, 30, 90, 180, 365
 
     // Info Paging
     enum NCInfoPagingTab: Int, CaseIterable {
@@ -123,9 +124,11 @@ import UIKit
             }
         }
     }
-}
 
-// MARK: - Color
+    @objc func getUserAgent() -> String {
+        return userAgent
+    }
+}
 
 class NCBrandColor: NSObject {
     @objc static let shared: NCBrandColor = {

@@ -31,6 +31,22 @@ extension NCTrash {
     var selectActions: [NCMenuAction] {
         [
             NCMenuAction(
+                title: NSLocalizedString("_cancel_", comment: ""),
+                icon: NCUtility.shared.loadImage(named: "xmark"),
+                action: { _ in
+                    self.tapSelect()
+                }
+            ),
+            NCMenuAction(
+                title: NSLocalizedString("_select_all_", comment: ""),
+                icon: NCUtility.shared.loadImage(named: "checkmark.circle.fill"),
+                action: { _ in
+                    self.selectOcId = self.datasource.map { $0.fileId }
+                    self.collectionView.reloadData()
+                }
+            ),
+            NCMenuAction.seperator(),
+            NCMenuAction(
                 title: NSLocalizedString("_trash_restore_selected_", comment: ""),
                 icon: NCUtility.shared.loadImage(named: "restore"),
                 action: { _ in

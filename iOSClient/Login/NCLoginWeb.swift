@@ -171,7 +171,7 @@ class NCLoginWeb: UIViewController {
             let deviceUserAgent = String(cString: deviceName, encoding: .ascii) {
             webView.customUserAgent = deviceUserAgent
         } else {
-            webView.customUserAgent = CCUtility.getUserAgent()
+            webView.customUserAgent = userAgent
         }
 
         request.addValue("true", forHTTPHeaderField: "OCS-APIRequest")

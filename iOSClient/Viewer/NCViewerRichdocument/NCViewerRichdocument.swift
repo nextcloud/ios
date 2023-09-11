@@ -71,7 +71,7 @@ class NCViewerRichdocument: UIViewController, WKNavigationDelegate, WKScriptMess
         let language = NSLocale.preferredLanguages[0] as String
         request.addValue(language, forHTTPHeaderField: "Accept-Language")
 
-        webView.customUserAgent = CCUtility.getUserAgent()
+        webView.customUserAgent = userAgent
 
         webView.load(request)
     }

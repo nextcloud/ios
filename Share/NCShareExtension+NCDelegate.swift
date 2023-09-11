@@ -90,7 +90,7 @@ extension NCShareExtension: NCEmptyDataSetDelegate, NCAccountRequestDelegate {
             userId: activeAccount.userId,
             password: CCUtility.getPassword(activeAccount.account),
             urlBase: activeAccount.urlBase,
-            userAgent: CCUtility.getUserAgent(),
+            userAgent: userAgent,
             nextcloudVersion: 0,
             delegate: NCNetworking.shared)
 
