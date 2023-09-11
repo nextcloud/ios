@@ -23,8 +23,6 @@
 
 import UIKit
 
-// MARK: - Options
-
 let userAgent: String = {
     let appVersion: String = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as! String
     let userAget = "Mozilla/5.0 (iOS) Nextcloud-iOS/%version%".replacingOccurrences(of: "%version%", with: appVersion)
@@ -131,8 +129,6 @@ let userAgent: String = {
         return userAgent
     }
 }
-
-// MARK: - Color
 
 class NCBrandColor: NSObject {
     @objc static let shared: NCBrandColor = {
