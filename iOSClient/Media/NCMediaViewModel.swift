@@ -23,6 +23,20 @@ import NextcloudKit
 
     init() {
         reloadDataSourceWithCompletion { _ in }
+
+        NotificationCenter.default.addObserver(self, selector: #selector(deleteFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDeleteFile), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(moveFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterMoveFile), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(copyFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterCopyFile), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(renameFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterRenameFile), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(uploadedFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUploadedFile), object: nil)
+    }
+
+    deinit {
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDeleteFile), object: nil)
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterMoveFile), object: nil)
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterCopyFile), object: nil)
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterRenameFile), object: nil)
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUploadedFile), object: nil)
     }
 
     @objc func reloadDataSourceWithCompletion(_ completion: @escaping (_ metadatas: [tableMetadata]) -> Void) {
@@ -33,7 +47,7 @@ import NextcloudKit
             account = appDelegate.account
         }
 
-            self.queryDB(isForced: true)
+        self.queryDB(isForced: true)
     }
 
     func queryDB(isForced: Bool = false) {
@@ -71,5 +85,71 @@ import NextcloudKit
         default:
             break
         }
+    }
+}
+
+// MARK: Notifications
+
+extension NCMediaViewModel {
+    @objc func deleteFile(_ notification: NSNotification) {
+
+        guard let userInfo = notification.userInfo as NSDictionary?,
+              let error = userInfo["error"] as? NKError else { return }
+        let onlyLocalCache: Bool = userInfo["onlyLocalCache"] as? Bool ?? false
+
+        self.queryDB(isForced: true)
+
+        if error == .success, let indexPath = userInfo["indexPath"] as? [IndexPath], !indexPath.isEmpty, !onlyLocalCache {
+            //            collectionView?.performBatchUpdates({
+            //                collectionView?.deleteItems(at: indexPath)
+            //            }, completion: { _ in
+            //                self.collectionView?.reloadData()
+            //            })
+        } else {
+            if error != .success {
+                NCContentPresenter.shared.showError(error: error)
+            }
+            //            self.collectionView?.reloadData()
+        }
+
+        //        if let hud = userInfo["hud"] as? JGProgressHUD {
+        //            hud.dismiss()
+        //        }
+    }
+
+    @objc func moveFile(_ notification: NSNotification) {
+
+        guard let userInfo = notification.userInfo as NSDictionary? else { return }
+
+        //        if let hud = userInfo["hud"] as? JGProgressHUD {
+        //            hud.dismiss()
+        //        }
+    }
+
+    @objc func copyFile(_ notification: NSNotification) {
+
+        moveFile(notification)
+    }
+
+    @objc func renameFile(_ notification: NSNotification) {
+
+        guard let userInfo = notification.userInfo as NSDictionary?,
+              let account = userInfo["account"] as? String,
+              account == appDelegate?.account
+        else { return }
+
+        self.reloadDataSourceWithCompletion { _ in }
+    }
+
+    @objc func uploadedFile(_ notification: NSNotification) {
+
+        guard let userInfo = notification.userInfo as NSDictionary?,
+              let error = userInfo["error"] as? NKError,
+              error == .success,
+              let account = userInfo["account"] as? String,
+              account == appDelegate?.account
+        else { return }
+
+        self.reloadDataSourceWithCompletion { _ in }
     }
 }
