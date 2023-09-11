@@ -25,8 +25,8 @@ import UIKit
 
 let userAgent: String = {
     let appVersion: String = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as! String
-    let userAget = "Mozilla/5.0 (iOS) Nextcloud-iOS/%version%".replacingOccurrences(of: "%version%", with: appVersion)
-    return userAget
+    // Original Nextcloud useragent "Mozilla/5.0 (iOS) Nextcloud-iOS/\(appVersion)"
+    return "Mozilla/5.0 (iOS) Nextcloud-iOS/\(appVersion)"
 }()
 
 @objc class NCBrandOptions: NSObject {
