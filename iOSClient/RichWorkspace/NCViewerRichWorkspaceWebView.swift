@@ -37,8 +37,6 @@ class NCViewerRichWorkspaceWebView: UIViewController, WKNavigationDelegate, WKSc
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        let userAgent: String = CCUtility.getUserAgent()
-
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardDidShow), name: UIResponder.keyboardDidShowNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
 

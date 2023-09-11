@@ -182,8 +182,6 @@
 
 + (BOOL)addSkipBackupAttributeToItemAtURL:(NSURL *)URL;
 
-+ (NSString *)getUserAgent;
-
 + (NSString *)dateDiff:(NSDate *)convertedDate;
 + (NSString *)transformedSize:(int64_t)value;
 

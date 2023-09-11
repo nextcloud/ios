@@ -240,7 +240,7 @@ class NCViewerProviderContextMenu: UIViewController {
     private func viewVideo(metadata: tableMetadata) {
 
         NCNetworking.shared.getVideoUrl(metadata: metadata) { url, _, _ in
-            if let url = url, let userAgent = CCUtility.getUserAgent() {
+            if let url = url {
                 self.player.media = VLCMedia(url: url)
                 self.player.delegate = self
                 self.player.media?.addOption(":http-user-agent=\(userAgent)")

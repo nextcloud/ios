@@ -723,14 +723,6 @@
     return success;
 }
 
-+ (NSString *)getUserAgent
-{
-    NSString *appVersion = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"];
-    NSString *userAgent = [[NCBrandOptions shared] userAgent];
-
-    return [NSString stringWithFormat:@"Mozilla/5.0 (iOS) %@/%@", userAgent, appVersion];
-}
-
 + (NSString *)dateDiff:(NSDate *) convertedDate
 {
     NSDate *todayDate = [NSDate date];

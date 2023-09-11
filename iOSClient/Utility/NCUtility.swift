@@ -235,7 +235,6 @@ class NCUtility: NSObject {
     }
 
     @objc func getCustomUserAgentNCText() -> String {
-        let userAgent: String = CCUtility.getUserAgent()
         if UIDevice.current.userInterfaceIdiom == .phone {
             // NOTE: Hardcoded (May 2022)
             // Tested for iPhone SE (1st), iOS 12 iPhone Pro Max, iOS 15.4
