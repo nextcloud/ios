@@ -248,11 +248,14 @@ class NCViewerMedia: UIViewController {
                 self.scrollView.zoom(to: CGRect(x: 0, y: 0, width: self.scrollView.bounds.width, height: self.scrollView.bounds.height), animated: false)
                 self.view.layoutIfNeeded()
             }, completion: { _ in
-                self.showTip()
                 if self.metadata.isVideo {
                     self.imageVideoContainer.isHidden = false
+                } else if self.metadata.isImage {
+                    self.showTip()
                 }
-                if wasShown { self.openDetail(animate: true) }
+                if wasShown {
+                    self.openDetail(animate: true)
+                }
             })
         }
     }
