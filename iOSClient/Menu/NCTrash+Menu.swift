@@ -34,10 +34,7 @@ extension NCTrash {
                 title: NSLocalizedString("_cancel_", comment: ""),
                 icon: NCUtility.shared.loadImage(named: "xmark"),
                 action: { _ in
-                    self.selectOcId = []
-                    self.isEditMode = false
-                    self.setNavigationRightItems()
-                    self.collectionView.reloadData()
+                    self.tapSelect()
                 }
             ),
             NCMenuAction(
@@ -45,7 +42,6 @@ extension NCTrash {
                 icon: NCUtility.shared.loadImage(named: "checkmark.circle.fill"),
                 action: { _ in
                     self.selectOcId = self.datasource.map { $0.fileId }
-                    self.isEditMode = true
                     self.collectionView.reloadData()
                 }
             ),
