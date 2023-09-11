@@ -45,6 +45,7 @@ extension NCTrash {
                     self.collectionView.reloadData()
                 }
             ),
+            NCMenuAction.seperator(),
             NCMenuAction(
                 title: NSLocalizedString("_trash_restore_selected_", comment: ""),
                 icon: NCUtility.shared.loadImage(named: "restore"),
