@@ -20,20 +20,28 @@ class NCMediaUIHostingController: UIHostingController<NCMediaNew> {
 struct NCMediaNew: View {
     @StateObject private var viewModel = NCMediaViewModel()
     @State var columns = 2
+    @State var title = ""
+
+    public static let scrollViewCoordinateSpace = "scrollView"
 
     var body: some View {
-        GeometryReader { geometry in
+        GeometryReader { outerProxy in
             ZStack(alignment: .top) {
                 ScrollView {
                     LazyVStack(alignment: .leading, spacing: 2) {
                         ForEach(viewModel.metadatas.chunked(into: columns), id: \.self) { rowMetadatas in
-                            NCMediaRow(metadatas: rowMetadatas, geometryProxy: geometry)
+                                NCMediaRow(metadatas: rowMetadatas, geometryProxy: outerProxy, title: $title)
+//                                    .onChange(of: geometry.frame(in: .local)) { rect in
+//                                        if isInView(innerRect: rect, isIn: outerProxy) {
+//                                            print("WOW")
+//                                        }
+//                                    }
                         }
                     }
-                }
+                }.coordinateSpace(name: NCMediaNew.scrollViewCoordinateSpace)
 
                 HStack(content: {
-                    Text("Placeholder")
+                    Text(title)
                         .font(.system(size: 20, weight: .bold))
                         .foregroundStyle(.white)
                 })
@@ -49,7 +57,9 @@ struct NCMediaNew: View {
             }
         }
     }
+
 }
+
 
 struct NCMediaNew_Previews: PreviewProvider {
     static var previews: some View {

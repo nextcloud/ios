@@ -12,7 +12,8 @@ import PreviewSnapshots
 struct NCMediaRow: View {
     let metadatas: [tableMetadata]
     let geometryProxy: GeometryProxy
-    
+    @Binding var title: String
+
     @StateObject private var viewModel = NCMediaRowViewModel()
     private let spacing: CGFloat = 2
 
@@ -22,7 +23,7 @@ struct NCMediaRow: View {
                 ProgressView()
             } else {
                 ForEach(viewModel.rowData.scaledThumbnails, id: \.self) { thumbnail in
-                    NCMediaCellView(thumbnail: thumbnail, shrinkRatio: viewModel.rowData.shrinkRatio)
+                    NCMediaCellView(thumbnail: thumbnail, shrinkRatio: viewModel.rowData.shrinkRatio, outerProxy: geometryProxy, title: $title)
                 }
             }
         }
