@@ -40,22 +40,23 @@ struct NCMediaNew: View {
                     }
                 }
 
-//                HStack(content: {
-//                    Text(title)
-//                        .font(.system(size: 20, weight: .bold))
-//                        .foregroundStyle(.white)
-//                })
-//                .frame(maxWidth: .infinity)
-//                .background(LinearGradient(gradient: Gradient(colors: [.black.opacity(0.8), .black.opacity(0.0)]), startPoint: .top, endPoint: .bottom).edgesIgnoringSafeArea(.top))
-            }
-            .onRotate { orientation in
-                if orientation.isLandscapeHardCheck {
-                    columns = 6
-                } else {
-                    columns = 2
-                }
+                HStack(content: {
+                    Text(title)
+                        .font(.system(size: 20, weight: .bold))
+                        .foregroundStyle(.white)
+                })
+                .frame(maxWidth: .infinity)
+                .background(LinearGradient(gradient: Gradient(colors: [.black.opacity(0.8), .black.opacity(0.0)]), startPoint: .top, endPoint: .bottom).edgesIgnoringSafeArea(.top))
             }
         }
+        .onRotate { orientation in
+            if orientation.isLandscapeHardCheck {
+                columns = 6
+            } else {
+                columns = 2
+            }
+        }
+        .onAppear { vm.reloadDataSourceWithCompletion {_ in } }
     }
 
     func handleVisibilityChanged(_ id: String, change: VisibilityChange, tracker: VisibilityTracker<String>) {
