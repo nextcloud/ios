@@ -33,7 +33,7 @@ struct NCMediaNew: View {
                 VisibilityTrackingScrollView(action: handleVisibilityChanged) {
                     LazyVStack(alignment: .leading, spacing: 2) {
                         ForEach(viewModel.metadatas.chunked(into: columns), id: \.self) { rowMetadatas in
-                            NCMediaRow(metadatas: rowMetadatas, geometryProxy: outerProxy, title: $title)
+                            NCMediaRow(metadatas: rowMetadatas, geometryProxy: outerProxy)
                         }
                     }
                 }
