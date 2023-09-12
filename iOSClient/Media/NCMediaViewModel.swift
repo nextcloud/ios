@@ -21,6 +21,8 @@ import NextcloudKit
     internal var filterClassTypeImage = false
     internal var filterClassTypeVideo = false
 
+    internal var needsLoadingMoreItems = true
+
     init() {
         reloadDataSourceWithCompletion { _ in }
 
@@ -85,6 +87,10 @@ import NextcloudKit
         default:
             break
         }
+    }
+
+    func loadMoreItems() {
+        
     }
 }
 
