@@ -33,6 +33,8 @@ enum SortType: String {
 
     internal var needsLoadingMoreItems = true
 
+    internal var needsLoadingMoreItems = true
+
     init() {
         NotificationCenter.default.addObserver(self, selector: #selector(deleteFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDeleteFile), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(moveFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterMoveFile), object: nil)
@@ -141,6 +143,10 @@ enum SortType: String {
 //                completion?()
 
         }
+    }
+
+    func loadMoreItems() {
+        
     }
 }
 
