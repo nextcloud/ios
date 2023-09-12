@@ -132,8 +132,9 @@
 		F3BB464F2A39EBE500461F6E /* NCMoreUserCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3BB464E2A39EBE500461F6E /* NCMoreUserCell.swift */; };
 		F3BB46522A39EC4900461F6E /* NCMoreAppSuggestionsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3BB46512A39EC4900461F6E /* NCMoreAppSuggestionsCell.swift */; };
 		F3BB46542A3A1E9D00461F6E /* CCCellMore.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3BB46532A3A1E9D00461F6E /* CCCellMore.swift */; };
+		F3C0FB702AB06AB9007E7E30 /* VisibilityTrackingScrollView in Frameworks */ = {isa = PBXBuildFile; productRef = F3C0FB6F2AB06AB9007E7E30 /* VisibilityTrackingScrollView */; };
 		F3E3B3B92AA73925006D08F5 /* NCMediaRowViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3E3B3B82AA73925006D08F5 /* NCMediaRowViewModel.swift */; };
-		F3E3B3BB2AA7396F006D08F5 /* NCMediaCellView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3E3B3BA2AA7396F006D08F5 /* NCMediaCellView.swift */; };
+		F3E3B3BB2AA7396F006D08F5 /* NCMediaCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3E3B3BA2AA7396F006D08F5 /* NCMediaCell.swift */; };
 		F3E3B3BD2AA73D9E006D08F5 /* NCMediaViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3E3B3BC2AA73D9E006D08F5 /* NCMediaViewModel.swift */; };
 		F3F7ACFE2A98C56C00AE12CF /* NCMediaNew.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3F7ACFD2A98C56C00AE12CF /* NCMediaNew.swift */; };
 		F700222C1EC479840080073F /* Custom.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F700222B1EC479840080073F /* Custom.xcassets */; };
@@ -858,7 +859,7 @@
 		F3BB46512A39EC4900461F6E /* NCMoreAppSuggestionsCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCMoreAppSuggestionsCell.swift; sourceTree = "<group>"; };
 		F3BB46532A3A1E9D00461F6E /* CCCellMore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CCCellMore.swift; sourceTree = "<group>"; };
 		F3E3B3B82AA73925006D08F5 /* NCMediaRowViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCMediaRowViewModel.swift; sourceTree = "<group>"; };
-		F3E3B3BA2AA7396F006D08F5 /* NCMediaCellView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCMediaCellView.swift; sourceTree = "<group>"; };
+		F3E3B3BA2AA7396F006D08F5 /* NCMediaCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCMediaCell.swift; sourceTree = "<group>"; };
 		F3E3B3BC2AA73D9E006D08F5 /* NCMediaViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCMediaViewModel.swift; sourceTree = "<group>"; };
 		F3F7ACFD2A98C56C00AE12CF /* NCMediaNew.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCMediaNew.swift; sourceTree = "<group>"; };
 		F700222B1EC479840080073F /* Custom.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Custom.xcassets; sourceTree = "<group>"; };
@@ -1495,6 +1496,7 @@
 				F7BB7E4727A18C56009B9F29 /* Parchment in Frameworks */,
 				F734B06628E75C0100E180D5 /* TLPhotoPicker in Frameworks */,
 				F787AC09298BCB4A0001BB00 /* SVGKitSwift in Frameworks */,
+				F3C0FB702AB06AB9007E7E30 /* VisibilityTrackingScrollView in Frameworks */,
 				F770768E263A8C3400A1BA94 /* FloatingPanel in Frameworks */,
 				F710FC7C277B7D0000AA9FBF /* RealmSwift in Frameworks */,
 				F758A01227A7F03E0069468B /* JGProgressHUD in Frameworks */,
@@ -1758,7 +1760,7 @@
 			children = (
 				F77444F322281649000D5EB0 /* NCGridMediaCell.swift */,
 				F77444F422281649000D5EB0 /* NCGridMediaCell.xib */,
-				F3E3B3BA2AA7396F006D08F5 /* NCMediaCellView.swift */,
+				F3E3B3BA2AA7396F006D08F5 /* NCMediaCell.swift */,
 			);
 			path = Cell;
 			sourceTree = "<group>";
@@ -2907,6 +2909,7 @@
 				F31F69632A2F929600162F76 /* PreviewSnapshots */,
 				F7F623B42A5EF4D30022D3D4 /* Gzip */,
 				F34624522AA08C5700FAA7B1 /* FlowGrid */,
+				F3C0FB6F2AB06AB9007E7E30 /* VisibilityTrackingScrollView */,
 			);
 			productName = "Crypto Cloud";
 			productReference = F7CE8AFA1DC1F8D8009CAE48 /* Nextcloud.app */;
@@ -3083,6 +3086,7 @@
 				F31F69672A2F92F000162F76 /* XCRemoteSwiftPackageReference "SnapshotTestingHEIC" */,
 				F7F623B32A5EF4D30022D3D4 /* XCRemoteSwiftPackageReference "GzipSwift" */,
 				F383599C2AA08AFE00FA0B98 /* XCRemoteSwiftPackageReference "FlowGrid" */,
+				F3C0FB6E2AB06AB9007E7E30 /* XCRemoteSwiftPackageReference "VisibilityTrackingScrollView" */,
 			);
 			productRefGroup = F7F67B9F1A24D27800EE80DA;
 			projectDirPath = "";
@@ -3722,7 +3726,7 @@
 				AF817EF1274BC781009ED85B /* NCUserBaseUrl.swift in Sources */,
 				F39298972A3B12CB00509762 /* BaseNCMoreCell.swift in Sources */,
 				AF2D7C7C2742556F00ADF566 /* NCShareLinkCell.swift in Sources */,
-				F3E3B3BB2AA7396F006D08F5 /* NCMediaCellView.swift in Sources */,
+				F3E3B3BB2AA7396F006D08F5 /* NCMediaCell.swift in Sources */,
 				F7E41316294A19B300839300 /* UIView+Extension.swift in Sources */,
 				F31F69502A2F707E00162F76 /* SwiftUIView+Extensions.swift in Sources */,
 				F7C30E00291BD2610017149B /* NCNetworkingE2EERename.swift in Sources */,
@@ -4941,6 +4945,14 @@
 				version = 1.0.0;
 			};
 		};
+		F3C0FB6E2AB06AB9007E7E30 /* XCRemoteSwiftPackageReference "VisibilityTrackingScrollView" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/elegantchaos/VisibilityTrackingScrollView";
+			requirement = {
+				kind = exactVersion;
+				version = 1.0.3;
+			};
+		};
 		F70B86732642CE3B00ED5349 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
@@ -5237,6 +5249,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = F383599C2AA08AFE00FA0B98 /* XCRemoteSwiftPackageReference "FlowGrid" */;
 			productName = FlowGrid;
+		};
+		F3C0FB6F2AB06AB9007E7E30 /* VisibilityTrackingScrollView */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F3C0FB6E2AB06AB9007E7E30 /* XCRemoteSwiftPackageReference "VisibilityTrackingScrollView" */;
+			productName = VisibilityTrackingScrollView;
 		};
 		F70716F829881CFA00E72C1D /* UICKeyChainStore */ = {
 			isa = XCSwiftPackageProductDependency;

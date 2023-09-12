@@ -8,6 +8,7 @@
 
 import SwiftUI
 import PreviewSnapshots
+import VisibilityTrackingScrollView
 
 struct NCMediaRow: View {
     let metadatas: [tableMetadata]
@@ -23,7 +24,7 @@ struct NCMediaRow: View {
                 ProgressView()
             } else {
                 ForEach(viewModel.rowData.scaledThumbnails, id: \.self) { thumbnail in
-                    NCMediaCellView(thumbnail: thumbnail, shrinkRatio: viewModel.rowData.shrinkRatio, outerProxy: geometryProxy, title: $title)
+                    NCMediaCell(thumbnail: thumbnail, shrinkRatio: viewModel.rowData.shrinkRatio, outerProxy: geometryProxy, title: $title)
                 }
             }
         }
