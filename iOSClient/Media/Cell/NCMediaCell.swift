@@ -22,7 +22,7 @@ struct NCMediaCell: View {
             .trackVisibility(id: CCUtility.getTitleSectionDate(thumbnail.metadata.date as Date) ?? "")
             .frame(width: CGFloat(thumbnail.scaledSize.width * shrinkRatio), height: CGFloat(thumbnail.scaledSize.height * shrinkRatio))
 
-            Text(thumbnail.metadata.fileName).lineLimit(1).foregroundColor(.white)
+//            Text(thumbnail.metadata.fileName).lineLimit(1).foregroundColor(.white)
         }
     }
 }
