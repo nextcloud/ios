@@ -54,24 +54,43 @@ class NCShares: NCCollectionViewCommon {
         let sharess = NCManageDatabase.shared.getTableShares(account: self.appDelegate.account)
         var metadatas: [tableMetadata] = []
 
+        func reload() {
+            self.dataSource = NCDataSource(metadatas: metadatas,
+                                           account: self.appDelegate.account,
+                                           sort: self.layoutForView?.sort,
+                                           ascending: self.layoutForView?.ascending,
+                                           directoryOnTop: self.layoutForView?.directoryOnTop,
+                                           favoriteOnTop: true,
+                                           filterLivePhoto: true,
+                                           groupByField: self.groupByField,
+                                           providers: self.providers,
+                                           searchResults: self.searchResults)
+            DispatchQueue.main.async {
+                self.refreshControl.endRefreshing()
+                self.collectionView.reloadData()
+            }
+        }
+
         for share in sharess {
             if let metadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileName == %@", self.appDelegate.account, share.serverUrl, share.fileName)) {
                 if !(metadatas.contains { $0.ocId == metadata.ocId }) {
                     metadatas.append(metadata)
                 }
+            } else {
+                let serverUrlFileName = share.serverUrl + "/" + share.fileName
+                NCNetworking.shared.readFile(serverUrlFileName: serverUrlFileName) { _, metadata, _ in
+                    if let metadata {
+                        NCManageDatabase.shared.addMetadata(metadata)
+                        if !(metadatas.contains { $0.ocId == metadata.ocId }) {
+                            metadatas.append(metadata)
+                            reload()
+                        }
+                    }
+                }
             }
         }
 
-        self.dataSource = NCDataSource(metadatas: metadatas,
-                                       account: self.appDelegate.account,
-                                       sort: self.layoutForView?.sort,
-                                       ascending: self.layoutForView?.ascending,
-                                       directoryOnTop: self.layoutForView?.directoryOnTop,
-                                       favoriteOnTop: true,
-                                       filterLivePhoto: true,
-                                       groupByField: self.groupByField,
-                                       providers: self.providers,
-                                       searchResults: self.searchResults)
+        reload()
     }
 
     override func reloadDataSource(isForced: Bool = true) {
@@ -79,10 +98,6 @@ class NCShares: NCCollectionViewCommon {
 
         DispatchQueue.global().async {
             self.queryDB(isForced: isForced)
-            DispatchQueue.main.async {
-                self.refreshControl.endRefreshing()
-                self.collectionView.reloadData()
-            }
         }
     }
 
