@@ -20,10 +20,8 @@ struct NCMediaRow: View {
     var body: some View {
         HStack(spacing: spacing) {
             if viewModel.rowData.scaledThumbnails.isEmpty {
-                let randomHeight = CGFloat.random(in: 150...300)
-
                 ForEach(metadatas, id: \.self) { metadata in
-                    NCMediaLoadingCell(height: randomHeight, itemsInRow: metadatas.count, metadata: metadata)
+                    NCMediaLoadingCell(itemsInRow: metadatas.count, metadata: metadata, geometryProxy: geometryProxy, spacing: spacing)
                 }
             } else {
                 ForEach(viewModel.rowData.scaledThumbnails, id: \.self) { thumbnail in

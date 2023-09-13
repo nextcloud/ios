@@ -20,7 +20,7 @@ class NCMediaUIHostingController: UIHostingController<NCMediaNew> {
 struct NCMediaNew: View {
     @StateObject private var vm = NCMediaViewModel()
     @State var columns = 2
-    @State var title = ""
+    @State var title = "Placeholder"
 
     var body: some View {
         GeometryReader { outerProxy in
@@ -37,14 +37,27 @@ struct NCMediaNew: View {
                                 .onAppear { vm.loadMoreItems() }
                         }
                     }
+                    .padding(.top, 70)
+                    .padding(.bottom, 30)
                 }
 
                 HStack(content: {
-                    Text(title)
-                        .font(.system(size: 20, weight: .bold))
-                        .foregroundStyle(.white)
+                    HStack {
+                        Text(title)
+                            .font(.system(size: 20, weight: .bold))
+                            .foregroundStyle(.white)
+                        Spacer()
+                        Button(action: /*@START_MENU_TOKEN@*/{}/*@END_MENU_TOKEN@*/, label: {
+                            Text("Select")
+                        })
+                        Button(action: /*@START_MENU_TOKEN@*/{}/*@END_MENU_TOKEN@*/, label: {
+                            Image(systemName: "ellipsis")
+                        })
+                    }
                 })
-                .frame(maxWidth: .infinity )
+                .frame(maxWidth: .infinity)
+                .padding(.horizontal, 10)
+                .padding(.vertical, 20)
                 .background(LinearGradient(gradient: Gradient(colors: [.black.opacity(0.8), .black.opacity(0.0)]), startPoint: .top, endPoint: .bottom).edgesIgnoringSafeArea(.top))
             }
         }
