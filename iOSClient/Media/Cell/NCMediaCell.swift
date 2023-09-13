@@ -21,15 +21,16 @@ struct NCMediaCell: View {
                 .trackVisibility(id: CCUtility.getTitleSectionDate(thumbnail.metadata.date as Date) ?? "")
                 .frame(width: CGFloat(thumbnail.scaledSize.width * shrinkRatio), height: CGFloat(thumbnail.scaledSize.height * shrinkRatio))
 
-//            Text(CCUtility.getTitleSectionDate(thumbnail.metadata.date as Date)).lineLimit(1).foregroundColor(.white)
+            //            Text(CCUtility.getTitleSectionDate(thumbnail.metadata.date as Date)).lineLimit(1).foregroundColor(.white)
         }
     }
 }
 
 struct NCMediaLoadingCell: View {
-    let height: CGFloat
     let itemsInRow: Int
     let metadata: tableMetadata
+    let geometryProxy: GeometryProxy
+    let spacing: CGFloat
 
     let gradient = Gradient(colors: [
         .black.opacity(0.4),
@@ -41,8 +42,8 @@ struct NCMediaLoadingCell: View {
         ZStack {
             Image(uiImage: UIImage())
                 .resizable()
-                .trackVisibility(id: CCUtility.getTitleSectionDate(metadata.date as Date) ?? "")
-                .frame(width: UIScreen.main.bounds.width / CGFloat(itemsInRow), height: 130)
+                .trackVisibility(id: CCUtility.getTitleSectionDate(metadata.date as Date) ?? "")// TODO: Fix spacing
+                .frame(width: (geometryProxy.size.width - spacing) / CGFloat(itemsInRow), height: 130)
                 .redacted(reason: .placeholder)
                 .shimmering(gradient: gradient, bandSize: 0.7)
         }
