@@ -280,14 +280,15 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
     @objc func reloadAvatar(_ notification: NSNotification) {
 
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+            self.showTip()
+        }
+
         guard let userInfo = notification.userInfo as NSDictionary?,
               let error = userInfo["error"] as? NKError,
               error.errorCode != NCGlobal.shared.errorNotModified else { return }
 
         setNavigationItem()
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-            self.showTip()
-        }
     }
 
     @objc func changeTheming() {
