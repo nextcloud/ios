@@ -51,28 +51,28 @@ class NCShares: NCCollectionViewCommon {
 
     override func queryDB(isForced: Bool) {
 
-        let sharess = NCManageDatabase.shared.getTableShares(account: self.appDelegate.account)
         var metadatas: [tableMetadata] = []
 
         func reload() {
             self.dataSource = NCDataSource(metadatas: metadatas,
-                                           account: self.appDelegate.account,
-                                           sort: self.layoutForView?.sort,
-                                           ascending: self.layoutForView?.ascending,
-                                           directoryOnTop: self.layoutForView?.directoryOnTop,
+                                           account: appDelegate.account,
+                                           sort: layoutForView?.sort,
+                                           ascending: layoutForView?.ascending,
+                                           directoryOnTop: layoutForView?.directoryOnTop,
                                            favoriteOnTop: true,
                                            filterLivePhoto: true,
-                                           groupByField: self.groupByField,
-                                           providers: self.providers,
-                                           searchResults: self.searchResults)
+                                           groupByField: groupByField,
+                                           providers: providers,
+                                           searchResults: searchResults)
             DispatchQueue.main.async {
                 self.refreshControl.endRefreshing()
                 self.collectionView.reloadData()
             }
         }
 
+        let sharess = NCManageDatabase.shared.getTableShares(account: appDelegate.account)
         for share in sharess {
-            if let metadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileName == %@", self.appDelegate.account, share.serverUrl, share.fileName)) {
+            if let metadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileName == %@", appDelegate.account, share.serverUrl, share.fileName)) {
                 if !(metadatas.contains { $0.ocId == metadata.ocId }) {
                     metadatas.append(metadata)
                 }
