@@ -493,19 +493,22 @@ extension NCViewerMedia {
             if let image = self.imageVideoContainer.image {
                 let ratioW = self.imageVideoContainer.frame.width / image.size.width
                 let ratioH = self.imageVideoContainer.frame.height / image.size.height
+                
                 let ratio = min(ratioW, ratioH)
+                
                 let imageHeight = image.size.height * ratio
-                print("detailView.frame.height : \(self.detailView.frame.height)")
                 var imageContainerHeight = self.imageVideoContainer.frame.height * ratio
-                print("imageContainerHeight : \(imageContainerHeight)")
+                
                 let height = max(imageHeight, imageContainerHeight)
                 self.imageViewConstraint = self.detailView.frame.height - ((self.view.frame.height - height) / 2) + self.view.safeAreaInsets.bottom
-                if self.imageViewConstraint < 0 { self.imageViewConstraint = 0 }
-                print("imageViewConstraints : \(self.imageViewConstraint)")
-                self.imageViewConstraint = min(self.imageViewConstraint, self.detailView.frame.height+30)
+                
+                if self.imageViewConstraint < 0 {
+                    self.imageViewConstraint = 0
+                }
+                
+                self.imageViewConstraint = min(self.imageViewConstraint, self.detailView.frame.height + 30)
                 imageContainerHeight = self.imageViewConstraint.truncatingRemainder(dividingBy: 1000)
-                print("imageContainerHeight : \(imageContainerHeight)")
-                print("imageViewConstraints : \(self.imageViewConstraint)")
+                
             }
 
             UIView.animate(withDuration: animate ? 0.3 : 0) {
