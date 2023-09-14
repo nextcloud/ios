@@ -15,14 +15,35 @@ struct NCMediaCell: View {
     let shrinkRatio: CGFloat
 
     var body: some View {
-        ZStack {
-            Image(uiImage: thumbnail.image)
-                .resizable()
-                .trackVisibility(id: CCUtility.getTitleSectionDate(thumbnail.metadata.date as Date) ?? "")
-                .frame(width: CGFloat(thumbnail.scaledSize.width * shrinkRatio), height: CGFloat(thumbnail.scaledSize.height * shrinkRatio))
+        var image = Image(uiImage: thumbnail.image)
+            .resizable()
+            .trackVisibility(id: CCUtility.getTitleSectionDate(thumbnail.metadata.date as Date) ?? "")
 
-            //            Text(CCUtility.getTitleSectionDate(thumbnail.metadata.date as Date)).lineLimit(1).foregroundColor(.white)
+        ZStack(alignment: .bottomLeading) {
+            ZStack(alignment: .center) {
+                if thumbnail.isDefaultImage {
+                    image
+                        .foregroundColor(Color(uiColor: .systemGray4))
+                        .scaledToFit()
+                        .frame(width: 40)
+                } else {
+                    image
+                }
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+
+            if thumbnail.metadata.isVideo {
+                Image(systemName: "play.fill")
+                    .resizable()
+                    .foregroundColor(Color(uiColor: .systemGray4))
+                    .scaledToFit()
+                    .frame(width: 20)
+                    .padding(.leading, 10)
+                    .padding(.bottom, 10)
+            }
         }
+        .frame(width: CGFloat(thumbnail.scaledSize.width * shrinkRatio), height: CGFloat(thumbnail.scaledSize.height * shrinkRatio))
+        .background(Color(uiColor: .systemGray6))
     }
 }
 

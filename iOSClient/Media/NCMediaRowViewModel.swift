@@ -16,6 +16,7 @@ struct RowData {
 
 struct ScaledThumbnail: Hashable {
     let image: UIImage
+    var isDefaultImage = false
     var scaledSize: CGSize = .zero
     let metadata: tableMetadata
 
@@ -75,27 +76,29 @@ struct ScaledThumbnail: Hashable {
                     sizeIcon: NCGlobal.shared.sizeIcon,
                     etag: etagResource,
                     options: options) { _, _, imageIcon, _, etag, error in
+                        print(metadata.isVideo.description + " " + metadata.fileName)
                         if error == .success, let image = imageIcon {
                             NCManageDatabase.shared.setMetadataEtagResource(ocId: metadata.ocId, etagResource: etag)
-                            DispatchQueue.main.async {
-                                thumbnails.append(ScaledThumbnail(image: image, metadata: metadata))
+                            thumbnails.append(ScaledThumbnail(image: image, metadata: metadata))
+                        } else {
+                            thumbnails.append(ScaledThumbnail(image: UIImage(systemName: metadata.isVideo ? "video.fill" : "photo.fill")!.withRenderingMode(.alwaysTemplate), isDefaultImage: true, metadata: metadata))
+                        }
 
-                                if thumbnails.count == self.metadatas.count {
-                                    thumbnails.enumerated().forEach { index, thumbnail in
-                                        thumbnails[index].scaledSize = self.getScaledThumbnailSize(of: thumbnail, thumbnailsInRow: thumbnails)
-                                    }
-
-                                    let shrinkRatio = self.getShrinkRatio(thumbnailsInRow: thumbnails, fullWidth: rowWidth, spacing: spacing)
-
-                                    self.rowData.scaledThumbnails = thumbnails
-                                    self.rowData.shrinkRatio = shrinkRatio
+                        DispatchQueue.main.async {
+                            if thumbnails.count == self.metadatas.count {
+                                thumbnails.enumerated().forEach { index, thumbnail in
+                                    thumbnails[index].scaledSize = self.getScaledThumbnailSize(of: thumbnail, thumbnailsInRow: thumbnails)
                                 }
+
+                                let shrinkRatio = self.getShrinkRatio(thumbnailsInRow: thumbnails, fullWidth: rowWidth, spacing: spacing)
+
+                                self.rowData.scaledThumbnails = thumbnails
+                                self.rowData.shrinkRatio = shrinkRatio
                             }
                         }
                     }
             }
         }
-
     }
 
     func getScaledThumbnailSize(of thumbnail: ScaledThumbnail, thumbnailsInRow thumbnails: [ScaledThumbnail]) -> CGSize {
