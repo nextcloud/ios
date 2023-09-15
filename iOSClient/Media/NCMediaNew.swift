@@ -36,24 +36,19 @@ struct NCViewerMediaPageController: UIViewControllerRepresentable {
 
             return UINavigationController(rootViewController: viewController)
         } else {
-            // Handle the case where the cast fails, such as returning a default view controller or showing an error.
-            // You can also return an empty UIViewController() as a fallback.
-            return UINavigationController() // Replace with your fallback or error handling logic
+            return UINavigationController()
         }
     }
 
-    func updateUIViewController(_ uiViewController: UINavigationController, context: UIViewControllerRepresentableContext<NCViewerMediaPageController>) {
-
-    }
+    func updateUIViewController(_ uiViewController: UINavigationController, context: UIViewControllerRepresentableContext<NCViewerMediaPageController>) {}
 }
 
 struct NCMediaNew: View {
     @StateObject private var vm = NCMediaViewModel()
     @State private var columns = 2
     @State private var title = ""
-
+    @State private var isScrolledToTop = true
     @State private var isMediaViewControllerPresented = false
-
     @State private var selectedMetadata = tableMetadata()
 
     var body: some View {
@@ -76,17 +71,27 @@ struct NCMediaNew: View {
                     }
                     .padding(.top, 70)
                     .padding(.bottom, 30)
+                    .background(GeometryReader { geometry in
+                        Color.clear
+                            .preference(key: ScrollOffsetPreferenceKey.self, value: geometry.frame(in: .named("scroll")).origin)
+                    })
+                    .onPreferenceChange(ScrollOffsetPreferenceKey.self) { value in
+                        withAnimation(.easeInOut) {
+                            isScrolledToTop = value.y >= 0
+                        }
+                    }
 
                 }
                 .refreshable {
                     vm.onPullToRefresh()
                 }
+                .coordinateSpace(name: "scroll")
 
                 HStack(content: {
                     HStack {
                         Text(title)
                             .font(.system(size: 20, weight: .bold))
-                            .foregroundStyle(.white)
+                            .foregroundStyle(isScrolledToTop ? .black : .white)
                         Spacer()
                         Button(action: {}, label: {
                             Text("Select")
@@ -97,9 +102,9 @@ struct NCMediaNew: View {
                     }
                 })
                 .frame(maxWidth: .infinity)
-                .padding(.horizontal, 10)
-                .padding(.vertical, 20)
-                .background(LinearGradient(gradient: Gradient(colors: [.black.opacity(0.8), .black.opacity(0.0)]), startPoint: .top, endPoint: .bottom).edgesIgnoringSafeArea(.top))
+                .padding([.horizontal, .top], 10)
+                .padding(.bottom, 20)
+                .background(LinearGradient(gradient: Gradient(colors: isScrolledToTop ? [.clear] : [.black.opacity(0.8), .black.opacity(0.0)]), startPoint: .top, endPoint: .bottom).edgesIgnoringSafeArea(.top))
             }
         }
         .onRotate { orientation in
