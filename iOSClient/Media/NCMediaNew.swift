@@ -77,7 +77,7 @@ struct NCMediaNew: View {
                     })
                     .onPreferenceChange(ScrollOffsetPreferenceKey.self) { value in
                         withAnimation(.easeInOut) {
-                            isScrolledToTop = value.y >= 0
+                            isScrolledToTop = value.y >= -10
                         }
                     }
 
