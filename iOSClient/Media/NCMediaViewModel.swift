@@ -93,6 +93,7 @@ import NextcloudKit
 
     func loadMoreItems() {
         searchOldMedia()
+//        needsLoadingMoreItems = false
     }
 
     func onPullToRefresh() {
