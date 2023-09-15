@@ -29,6 +29,8 @@ import NextcloudKit
         NotificationCenter.default.addObserver(self, selector: #selector(copyFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterCopyFile), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(renameFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterRenameFile), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(uploadedFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUploadedFile), object: nil)
+
+        searchNewMedia()
     }
 
     deinit {
@@ -91,7 +93,14 @@ import NextcloudKit
 
     func loadMoreItems() {
         searchOldMedia()
+    }
+
+    func onPullToRefresh() {
         searchNewMedia()
+    }
+
+    func onCellTapped(metadata: tableMetadata) {
+        appDelegate?.activeServerUrl = metadata.serverUrl
     }
 }
 

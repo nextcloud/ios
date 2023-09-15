@@ -74,6 +74,8 @@ class NCViewerMediaPage: UIViewController {
     private lazy var moreNavigationItem = UIBarButtonItem(image: UIImage(named: "more")!.image(color: .label, size: 25), style: .plain, target: self, action: #selector(openMenuMore))
     private lazy var imageDetailNavigationItem = UIBarButtonItem(image: UIImage(systemName: "info.circle")!.image(color: .label, size: 22), style: .plain, target: self, action: #selector(toggleDetail))
 
+    var dismissAction: (() -> Void)?
+
     // MARK: - View Life Cycle
 
     override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {

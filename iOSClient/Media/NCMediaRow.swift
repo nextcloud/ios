@@ -13,25 +13,26 @@ import VisibilityTrackingScrollView
 struct NCMediaRow: View {
     let metadatas: [tableMetadata]
     let geometryProxy: GeometryProxy
+    let onCellTap: (ScaledThumbnail) -> Void
 
-    @StateObject private var viewModel = NCMediaRowViewModel()
+    @StateObject private var vm = NCMediaRowViewModel()
     private let spacing: CGFloat = 2
 
     var body: some View {
         HStack(spacing: spacing) {
-            if viewModel.rowData.scaledThumbnails.isEmpty {
+            if vm.rowData.scaledThumbnails.isEmpty {
                 ForEach(metadatas, id: \.self) { metadata in
                     NCMediaLoadingCell(itemsInRow: metadatas.count, metadata: metadata, geometryProxy: geometryProxy, spacing: spacing)
                 }
             } else {
-                ForEach(viewModel.rowData.scaledThumbnails, id: \.self) { thumbnail in
-                    NCMediaCell(thumbnail: thumbnail, shrinkRatio: viewModel.rowData.shrinkRatio)
+                ForEach(vm.rowData.scaledThumbnails, id: \.self) { thumbnail in
+                    NCMediaCell(thumbnail: thumbnail, shrinkRatio: vm.rowData.shrinkRatio, onTap: onCellTap)
                 }
             }
         }
         .onAppear {
-            viewModel.configure(metadatas: metadatas)
-            viewModel.downloadThumbnails(rowWidth: geometryProxy.size.width, spacing: spacing)
+            vm.configure(metadatas: metadatas)
+            vm.downloadThumbnails(rowWidth: geometryProxy.size.width, spacing: spacing)
         }
     }
 }
