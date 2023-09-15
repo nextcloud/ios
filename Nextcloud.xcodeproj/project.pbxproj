@@ -77,6 +77,13 @@
 		D575039F27146F93008DC9DC /* String+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7A0D1342591FBC5008F8A13 /* String+Extension.swift */; };
 		D5B6AA7827200C7200D49C24 /* NCActivityTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5B6AA7727200C7200D49C24 /* NCActivityTableViewCell.swift */; };
 		F30A6BF02AB4AAB700148857 /* Refreshable in Frameworks */ = {isa = PBXBuildFile; productRef = F30A6BEF2AB4AAB700148857 /* Refreshable */; };
+		F30A6BF22AB4B31200148857 /* PreferenceKeys.swift in Sources */ = {isa = PBXBuildFile; fileRef = F30A6BF12AB4B31200148857 /* PreferenceKeys.swift */; };
+		F30A6BF32AB4B31200148857 /* PreferenceKeys.swift in Sources */ = {isa = PBXBuildFile; fileRef = F30A6BF12AB4B31200148857 /* PreferenceKeys.swift */; };
+		F30A6BF42AB4B31200148857 /* PreferenceKeys.swift in Sources */ = {isa = PBXBuildFile; fileRef = F30A6BF12AB4B31200148857 /* PreferenceKeys.swift */; };
+		F30A6BF52AB4B31200148857 /* PreferenceKeys.swift in Sources */ = {isa = PBXBuildFile; fileRef = F30A6BF12AB4B31200148857 /* PreferenceKeys.swift */; };
+		F30A6BF62AB4B31200148857 /* PreferenceKeys.swift in Sources */ = {isa = PBXBuildFile; fileRef = F30A6BF12AB4B31200148857 /* PreferenceKeys.swift */; };
+		F30A6BF72AB4B31200148857 /* PreferenceKeys.swift in Sources */ = {isa = PBXBuildFile; fileRef = F30A6BF12AB4B31200148857 /* PreferenceKeys.swift */; };
+		F30A6BF82AB4B31200148857 /* PreferenceKeys.swift in Sources */ = {isa = PBXBuildFile; fileRef = F30A6BF12AB4B31200148857 /* PreferenceKeys.swift */; };
 		F30A962F2A27ADF900D7BCFE /* EnvVars.stencil in Resources */ = {isa = PBXBuildFile; fileRef = F30A962E2A27ADF900D7BCFE /* EnvVars.stencil */; };
 		F30A96312A27AEBF00D7BCFE /* EnvVars.generated.swift in Sources */ = {isa = PBXBuildFile; fileRef = F30A96302A27AEBF00D7BCFE /* EnvVars.generated.swift */; };
 		F30A96322A27AEDD00D7BCFE /* EnvVars.generated.swift in Sources */ = {isa = PBXBuildFile; fileRef = F30A96302A27AEBF00D7BCFE /* EnvVars.generated.swift */; };
@@ -840,6 +847,7 @@
 		C04E2F202A17BB4D001BAD85 /* NextcloudIntegrationTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = NextcloudIntegrationTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		C04E2F222A17BB4D001BAD85 /* FilesIntegrationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilesIntegrationTests.swift; sourceTree = "<group>"; };
 		D5B6AA7727200C7200D49C24 /* NCActivityTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCActivityTableViewCell.swift; sourceTree = "<group>"; };
+		F30A6BF12AB4B31200148857 /* PreferenceKeys.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreferenceKeys.swift; sourceTree = "<group>"; };
 		F30A96042A27299D00D7BCFE /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Platforms/iPhoneOS.platform/Developer/Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
 		F30A962E2A27ADF900D7BCFE /* EnvVars.stencil */ = {isa = PBXFileReference; lastKnownFileType = text; path = EnvVars.stencil; sourceTree = "<group>"; };
 		F30A96302A27AEBF00D7BCFE /* EnvVars.generated.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = EnvVars.generated.swift; path = Sourcery/EnvVars.generated.swift; sourceTree = "<group>"; };
@@ -2262,6 +2270,7 @@
 				F702F2FC25EE5D2C008F8E80 /* NYMnemonic */,
 				AF36077027BFA4E8001A243D /* ParallelWorker.swift */,
 				F7245923289BB50B00474787 /* ThreadSafeDictionary.swift */,
+				F30A6BF12AB4B31200148857 /* PreferenceKeys.swift */,
 			);
 			path = Utility;
 			sourceTree = "<group>";
@@ -3368,6 +3377,7 @@
 				D575039F27146F93008DC9DC /* String+Extension.swift in Sources */,
 				F769CA1A2966EA3C00039397 /* ComponentView.swift in Sources */,
 				F757CC8829E7F88B00F31428 /* NCManageDatabase+Groupfolders.swift in Sources */,
+				F30A6BF82AB4B31200148857 /* PreferenceKeys.swift in Sources */,
 				F79B646326CA661600838ACA /* UIControl+Extension.swift in Sources */,
 				F78A10C429322E8A008499B8 /* NCManageDatabase+Directory.swift in Sources */,
 				F75CA1482962F13700B01130 /* HUDView.swift in Sources */,
@@ -3436,6 +3446,7 @@
 				F7490E6E29882B56009DCE94 /* NCBrand.swift in Sources */,
 				F7490E8129882C79009DCE94 /* NCManageDatabase+DashboardWidget.swift in Sources */,
 				F7490E8629882C99009DCE94 /* NCUtilityFileSystem.swift in Sources */,
+				F30A6BF72AB4B31200148857 /* PreferenceKeys.swift in Sources */,
 				F763D2A22A249C4500A3C901 /* NCManageDatabase+Capabilities.swift in Sources */,
 				F343A4C02A1E734600DDA874 /* Optional+Extension.swift in Sources */,
 				F7490E8529882C8C009DCE94 /* NCManageDatabase+Video.swift in Sources */,
@@ -3502,6 +3513,7 @@
 				F7F878AF1FB9E3B900599E4F /* NCEndToEndMetadata.swift in Sources */,
 				AF22B218277D196700DAB0CC /* NCShareExtension+Files.swift in Sources */,
 				F702F2D025EE5B5C008F8E80 /* NCGlobal.swift in Sources */,
+				F30A6BF52AB4B31200148857 /* PreferenceKeys.swift in Sources */,
 				F343A4BE2A1E734600DDA874 /* Optional+Extension.swift in Sources */,
 				F7EDE4DB262D7BA200414FE6 /* NCCellProtocol.swift in Sources */,
 				F72944F62A8424F800246839 /* NCEndToEndMetadataV1.swift in Sources */,
@@ -3577,6 +3589,7 @@
 				F77ED59328C9CEA000E24ED0 /* ToolbarWidgetProvider.swift in Sources */,
 				F72A17D828B221E300F3F159 /* DashboardWidgetView.swift in Sources */,
 				F77ED59528C9CEA400E24ED0 /* ToolbarWidgetView.swift in Sources */,
+				F30A6BF32AB4B31200148857 /* PreferenceKeys.swift in Sources */,
 				F78302FB28B4C3EE00B84583 /* NCManageDatabase+Video.swift in Sources */,
 				F72EA95228B7BA2A00C88F0C /* DashboardWidgetProvider.swift in Sources */,
 				F343A4BC2A1E734600DDA874 /* Optional+Extension.swift in Sources */,
@@ -3619,6 +3632,7 @@
 				F7D68FCF28CB9051009139F3 /* NCManageDatabase+DashboardWidget.swift in Sources */,
 				F359D86B2A7D03420023F405 /* NCUtility+Exif.swift in Sources */,
 				F7864AD02A78FE73004870E0 /* NCManageDatabase+LocalFile.swift in Sources */,
+				F30A6BF62AB4B31200148857 /* PreferenceKeys.swift in Sources */,
 				AF4BF61B27562A4B0081CEEF /* NCManageDatabase+Metadata.swift in Sources */,
 				F70460542499095400BB98A7 /* NotificationCenter+MainThread.swift in Sources */,
 				F78A10C329322E8A008499B8 /* NCManageDatabase+Directory.swift in Sources */,
@@ -3686,6 +3700,7 @@
 				F769454622E9F1B0000A798A /* NCShareCommon.swift in Sources */,
 				F70753F12542A9A200972D44 /* NCViewerMedia.swift in Sources */,
 				F78A18B823CDE2B300F681F3 /* NCViewerRichWorkspace.swift in Sources */,
+				F30A6BF22AB4B31200148857 /* PreferenceKeys.swift in Sources */,
 				F7A60F86292D215000FCE1F2 /* NCShareAccounts.swift in Sources */,
 				F77910AB25DD53C700CEDB9E /* NCSettingsBundleHelper.swift in Sources */,
 				AF4BF61927562A4B0081CEEF /* NCManageDatabase+Metadata.swift in Sources */,
@@ -3862,6 +3877,7 @@
 				F343A4BD2A1E734600DDA874 /* Optional+Extension.swift in Sources */,
 				F7A8D73528F17E16008BBE1C /* NCManageDatabase.swift in Sources */,
 				F7A8D74428F1827B008BBE1C /* ThreadSafeDictionary.swift in Sources */,
+				F30A6BF42AB4B31200148857 /* PreferenceKeys.swift in Sources */,
 				F7C9739528F17131002C43E2 /* IntentHandler.swift in Sources */,
 				F7A8D73D28F181D3008BBE1C /* NCUtilityFileSystem.swift in Sources */,
 				F7A8D74528F1828E008BBE1C /* CCUtility.m in Sources */,
