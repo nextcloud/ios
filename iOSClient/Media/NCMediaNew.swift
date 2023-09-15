@@ -17,10 +17,44 @@ class NCMediaUIHostingController: UIHostingController<NCMediaNew> {
     }
 }
 
+struct NCViewerMediaPageController: UIViewControllerRepresentable {
+    let metadatas: [tableMetadata]
+    let selectedMetadata: tableMetadata
+
+    func makeUIViewController(context: UIViewControllerRepresentableContext<NCViewerMediaPageController>) -> UINavigationController {
+
+        if let viewController = UIStoryboard(name: "NCViewerMediaPage", bundle: nil).instantiateInitialViewController() as? NCViewerMediaPage {
+            var index = 0
+            for medatasImage in metadatas {
+                if medatasImage.ocId == selectedMetadata.ocId {
+                    viewController.currentIndex = index
+                    break
+                }
+                index += 1
+            }
+            viewController.metadatas = metadatas
+
+            return UINavigationController(rootViewController: viewController)
+        } else {
+            // Handle the case where the cast fails, such as returning a default view controller or showing an error.
+            // You can also return an empty UIViewController() as a fallback.
+            return UINavigationController() // Replace with your fallback or error handling logic
+        }
+    }
+
+    func updateUIViewController(_ uiViewController: UINavigationController, context: UIViewControllerRepresentableContext<NCViewerMediaPageController>) {
+
+    }
+}
+
 struct NCMediaNew: View {
     @StateObject private var vm = NCMediaViewModel()
-    @State var columns = 2
-    @State var title = "Placeholder"
+    @State private var columns = 2
+    @State private var title = ""
+
+    @State private var isMediaViewControllerPresented = false
+
+    @State private var selectedMetadata = tableMetadata()
 
     var body: some View {
         GeometryReader { outerProxy in
@@ -28,7 +62,10 @@ struct NCMediaNew: View {
                 VisibilityTrackingScrollView(action: cellVisibilityDidChange) {
                     LazyVStack(alignment: .leading, spacing: 2) {
                         ForEach(vm.metadatas.chunked(into: columns), id: \.self) { rowMetadatas in
-                            NCMediaRow(metadatas: rowMetadatas, geometryProxy: outerProxy)
+                            NCMediaRow(metadatas: rowMetadatas, geometryProxy: outerProxy) { tappedThumbnail in
+                                selectedMetadata = tappedThumbnail.metadata
+                                isMediaViewControllerPresented = true
+                            }
                         }
 
                         if vm.needsLoadingMoreItems {
@@ -39,6 +76,10 @@ struct NCMediaNew: View {
                     }
                     .padding(.top, 70)
                     .padding(.bottom, 30)
+
+                }
+                .refreshable {
+                    vm.onPullToRefresh()
                 }
 
                 HStack(content: {
@@ -47,10 +88,10 @@ struct NCMediaNew: View {
                             .font(.system(size: 20, weight: .bold))
                             .foregroundStyle(.white)
                         Spacer()
-                        Button(action: /*@START_MENU_TOKEN@*/{}/*@END_MENU_TOKEN@*/, label: {
+                        Button(action: {}, label: {
                             Text("Select")
                         })
-                        Button(action: /*@START_MENU_TOKEN@*/{}/*@END_MENU_TOKEN@*/, label: {
+                        Button(action: {}, label: {
                             Image(systemName: "ellipsis")
                         })
                     }
@@ -69,6 +110,9 @@ struct NCMediaNew: View {
             }
         }
         .onAppear { vm.loadData() }
+        .fullScreenCover(isPresented: $isMediaViewControllerPresented) {
+            NCViewerMediaPageController(metadatas: vm.metadatas, selectedMetadata: selectedMetadata)
+        }
     }
 
     func cellVisibilityDidChange(_ id: String, change: VisibilityChange, tracker: VisibilityTracker<String>) {
