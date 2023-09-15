@@ -9,13 +9,16 @@
 import SwiftUI
 import VisibilityTrackingScrollView
 import Shimmer
+import NextcloudKit
 
 struct NCMediaCell: View {
     let thumbnail: ScaledThumbnail
     let shrinkRatio: CGFloat
 
+    let onTap: (ScaledThumbnail) -> Void
+
     var body: some View {
-        var image = Image(uiImage: thumbnail.image)
+        let image = Image(uiImage: thumbnail.image)
             .resizable()
             .trackVisibility(id: CCUtility.getTitleSectionDate(thumbnail.metadata.date as Date) ?? "")
 
@@ -38,12 +41,22 @@ struct NCMediaCell: View {
                     .foregroundColor(Color(uiColor: .systemGray4))
                     .scaledToFit()
                     .frame(width: 20)
-                    .padding(.leading, 10)
-                    .padding(.bottom, 10)
+                    .padding([.leading, .bottom], 10)
             }
         }
         .frame(width: CGFloat(thumbnail.scaledSize.width * shrinkRatio), height: CGFloat(thumbnail.scaledSize.height * shrinkRatio))
         .background(Color(uiColor: .systemGray6))
+        .onTapGesture {
+            onTap(thumbnail)
+        }
+    }
+}
+
+struct NCMediaCell_Previews: PreviewProvider {
+    static var previews: some View {
+        let mockMetadata = tableMetadata()
+
+        NCMediaCell(thumbnail: .init(image: UIImage(systemName: "video.fill")!, metadata: mockMetadata), shrinkRatio: 1, onTap: { _ in })
     }
 }
 
@@ -67,6 +80,16 @@ struct NCMediaLoadingCell: View {
                 .frame(width: (geometryProxy.size.width - spacing) / CGFloat(itemsInRow), height: 130)
                 .redacted(reason: .placeholder)
                 .shimmering(gradient: gradient, bandSize: 0.7)
+        }
+    }
+}
+
+struct NCMediaLoadingCell_Previews: PreviewProvider {
+    static var previews: some View {
+        let mockMetadata = tableMetadata()
+
+        GeometryReader { proxy in
+            NCMediaLoadingCell(itemsInRow: 1, metadata: tableMetadata(), geometryProxy: proxy, spacing: 2)
         }
     }
 }
