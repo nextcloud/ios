@@ -67,10 +67,11 @@ struct NCMediaNew: View {
                             ProgressView()
                                 .frame(maxWidth: .infinity)
                                 .onAppear { vm.loadMoreItems() }
+                                .padding(.top, 10)
                         }
                     }
                     .padding(.top, 70)
-                    .padding(.bottom, 30)
+                    .padding(.bottom, 40)
                     .background(GeometryReader { geometry in
                         Color.clear
                             .preference(key: ScrollOffsetPreferenceKey.self, value: geometry.frame(in: .named("scroll")).origin)
