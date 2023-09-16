@@ -249,6 +249,19 @@ class NCScan: UIViewController, NCScanCellCellDelegate {
         }
     }
 
+    /*
+     func applyGrayScaleFilter(image: UIImage?) -> UIImage? {
+             guard let ciImage = image?.ciImage else { return nil }
+             let filter = CIFilter(name: "CIColorControls",
+                                   parameters: ["inputImage" : ciImage,
+                                                "inputContrast": NSNumber(1.0),
+                                                "inputSaturation": NSNumber(0.0),
+                                                "inputBrightness": NSNumber(0.0)])
+             guard let out = filter?.outputImage else { return nil }
+             return UIImage(ciImage: out)
+         }
+     */
+    
     func filter(image: UIImage) -> UIImage? {
 
         guard let ciImage = CIImage(image: image) else { return image }
