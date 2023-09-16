@@ -254,8 +254,7 @@ class NCScan: UIViewController, NCScanCellCellDelegate {
         guard let ciImage = CIImage(image: image) else { return image }
 
         if filter == .document {
-            var imageFilter = ciImage.applyingFilter("CIColorControls", parameters: ["inputSaturation": 0, "inputContrast": 1])
-            imageFilter = ciImage.applyingFilter("CIDocumentEnhancer", parameters: ["inputAmount": 5])
+            let imageFilter = ciImage.applyingFilter("CIColorControls", parameters: ["inputSaturation": 0, "inputContrast": 1.1]).applyingFilter("CIDocumentEnhancer", parameters: ["inputAmount": 5])
             let context: CIContext = CIContext(options: nil)
             let cgImage: CGImage = context.createCGImage(imageFilter, from: imageFilter.extent)!
             let image: UIImage = UIImage(cgImage: cgImage)
