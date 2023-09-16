@@ -187,15 +187,15 @@ class NCUploadScanDocument: ObservableObject {
 
         switch quality {
         case 0:
-            compressionQuality = 0.3
+            compressionQuality = 0.1
         case 1:
-            compressionQuality = 0.4
+            compressionQuality = 0.3
         case 2:
             compressionQuality = 0.5
         case 3:
-            compressionQuality = 0.6
+            compressionQuality = 0.7
         case 4:
-            compressionQuality = 0.8
+            compressionQuality = 0.9
         default:
             break
         }
