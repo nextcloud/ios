@@ -182,30 +182,20 @@ class NCUploadScanDocument: ObservableObject {
     private func changeCompressionImage(_ image: UIImage, quality: Double) -> UIImage {
 
         var compressionQuality: CGFloat = 0.0
-        var baseHeight: Float = 595.2    // A4
-        var baseWidth: Float = 841.8     // A4
+        let baseHeight: Float = 595.2    // A4
+        let baseWidth: Float = 841.8     // A4
 
         switch quality {
         case 0:
-            baseHeight *= 2
-            baseWidth *= 2
             compressionQuality = 0.3
         case 1:
-            baseHeight *= 3
-            baseWidth *= 3
             compressionQuality = 0.4
         case 2:
-            baseHeight *= 4
-            baseWidth *= 4
             compressionQuality = 0.5
         case 3:
-            baseHeight *= 5
-            baseWidth *= 5
             compressionQuality = 0.6
         case 4:
-            baseHeight = Float(image.size.height)
-            baseWidth = Float(image.size.width)
-            compressionQuality = 0.6
+            compressionQuality = 0.8
         default:
             break
         }
