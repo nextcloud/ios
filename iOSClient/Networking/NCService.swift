@@ -49,6 +49,7 @@ class NCService: NSObject {
                 requestServerCapabilities()
                 requestDashboardWidget()
                 NCNetworkingE2EE().unlockAll(account: tableAccount.account)
+                NCNetworkingProcessUpload.shared.verifyUploadZombie()
             }
         }
     }
