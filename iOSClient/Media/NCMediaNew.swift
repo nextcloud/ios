@@ -46,7 +46,7 @@ struct NCViewerMediaPageController: UIViewControllerRepresentable {
 struct NCMediaNew: View {
     @StateObject private var vm = NCMediaViewModel()
     @State private var columns = 2
-    @State private var title = ""
+    @State private var title = "Media"
     @State private var isScrolledToTop = true
     @State private var isMediaViewControllerPresented = false
     @State private var selectedMetadata = tableMetadata()
@@ -93,11 +93,16 @@ struct NCMediaNew: View {
                     HStack {
                         Text(title)
                             .font(.system(size: 20, weight: .bold))
-                            .foregroundStyle(isScrolledToTop ? .black : .white)
+                            .foregroundStyle(isScrolledToTop ? Color.primary : .white)
                         Spacer()
                         Button(action: {}, label: {
-                            Text("Select")
+                            Text("Select").font(.system(size: 14))
+                                .foregroundStyle(isScrolledToTop ? .blue : .white)
                         })
+                        .padding(.horizontal, 6)
+                        .padding(.vertical, 3)
+                        .background(.ultraThinMaterial)
+                        .cornerRadius(.infinity)
                         Menu {
                             Section {
                                 Button(action: {
@@ -132,10 +137,15 @@ struct NCMediaNew: View {
                                 Label(NSLocalizedString("_media_by_upload_date_", comment: ""), systemImage: "circle.grid.cross.right.fill").tag(2)
                             }
                             .pickerStyle(.menu)
-
                         } label: {
-                            Image(systemName: "ellipsis")
-                        }
+                            Image(systemName: "ellipsis").font(.system(size: 15))
+                                    .padding(.horizontal, 2)
+                                    .padding(.vertical, 8)
+                                    .background(.ultraThinMaterial)
+                                    .cornerRadius(.infinity)
+                                    .foregroundColor(isScrolledToTop ? Color.blue : .white)
+
+                            }
                     }
                 })
                 .frame(maxWidth: .infinity)
