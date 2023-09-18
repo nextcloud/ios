@@ -50,7 +50,7 @@ class NCFiles: NCCollectionViewCommon {
         super.viewDidLoad()
 
         if isRoot {
-            NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterInitialize), object: nil, queue: nil) { _ in
+            NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeUser), object: nil, queue: nil) { _ in
 
                 self.navigationController?.popToRootViewController(animated: false)
 

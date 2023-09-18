@@ -213,7 +213,7 @@
     appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationDidEnterBackground) name:NCGlobal.shared.notificationCenterApplicationDidEnterBackground object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(initialize) name:NCGlobal.shared.notificationCenterInitialize object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeUser) name:NCGlobal.shared.notificationCenterChangeUser object:nil];
 
     [self initializeForm];
     [self reloadForm];
@@ -232,7 +232,7 @@
 
 #pragma mark - NotificationCenter
 
-- (void)initialize
+- (void)changeUser
 {
     [self initializeForm];
     [self reloadForm];
