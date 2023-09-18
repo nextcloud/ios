@@ -50,6 +50,7 @@ struct NCMediaNew: View {
     @State private var isScrolledToTop = true
     @State private var isMediaViewControllerPresented = false
     @State private var selectedMetadata = tableMetadata()
+    @State private var sort: Int = 0
 
     var body: some View {
         GeometryReader { outerProxy in
@@ -97,9 +98,44 @@ struct NCMediaNew: View {
                         Button(action: {}, label: {
                             Text("Select")
                         })
-                        Button(action: {}, label: {
+                        Menu {
+                            Section {
+                                Button(action: {
+                                    vm.filterClassTypeImage = !vm.filterClassTypeImage
+                                    vm.filterClassTypeVideo = false
+                                }, label: {
+                                    Label(NSLocalizedString(vm.filterClassTypeImage ? "_media_viewimage_show_" : "_media_viewimage_hide_", comment: ""), systemImage: "photo.fill")
+                                })
+                                Button(action: {
+                                    vm.filterClassTypeVideo = !vm.filterClassTypeVideo
+                                    vm.filterClassTypeImage = false
+                                }, label: {
+                                    Label(NSLocalizedString(vm.filterClassTypeVideo ? "_media_viewvideo_show_" : "_media_viewvideo_hide_", comment: ""), systemImage: "video.fill")
+                                })
+                                Button(action: {}, label: {
+                                    Label(NSLocalizedString("_select_media_folder_", comment: ""), systemImage: "folder")
+                                })
+                            }
+
+                            Section {
+                                Button(action: {}, label: {
+                                    Label(NSLocalizedString("_play_from_files_", comment: ""), systemImage: "play.circle")
+                                })
+                                Button(action: {}, label: {
+                                    Label(NSLocalizedString("_play_from_url_", comment: ""), systemImage: "link")
+                                })
+                            }
+
+                            Picker("Sorting options", selection: $sort) {
+                                Label(NSLocalizedString("_media_by_modified_date_", comment: ""), systemImage: "circle.grid.cross.up.fill").tag(0)
+                                Label(NSLocalizedString("_media_by_created_date_", comment: ""), systemImage: "circle.grid.cross.down.fill").tag(1)
+                                Label(NSLocalizedString("_media_by_upload_date_", comment: ""), systemImage: "circle.grid.cross.right.fill").tag(2)
+                            }
+                            .pickerStyle(.menu)
+
+                        } label: {
                             Image(systemName: "ellipsis")
-                        })
+                        }
                     }
                 })
                 .frame(maxWidth: .infinity)

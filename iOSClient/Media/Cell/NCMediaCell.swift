@@ -21,6 +21,11 @@ struct NCMediaCell: View {
         let image = Image(uiImage: thumbnail.image)
             .resizable()
             .trackVisibility(id: CCUtility.getTitleSectionDate(thumbnail.metadata.date as Date) ?? "")
+            .contextMenu(ContextMenu(menuItems: {
+                Text("Menu Item 1")
+                Text("Menu Item 2")
+                Text("Menu Item 3")
+            }))
 
         ZStack(alignment: .bottomLeading) {
             ZStack(alignment: .center) {
