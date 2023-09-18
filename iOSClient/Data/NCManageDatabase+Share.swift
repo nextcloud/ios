@@ -239,6 +239,24 @@ extension NCManageDatabase {
         }
     }
 
+    /// Delete shares of specific file
+    /// - Parameters:
+    ///   - account: account url for specific user
+    ///   - filePath: file path of media which shares need to delete
+    func deleteTableShare(account: String, filePath: String) {
+
+        do {
+            let realm = try Realm()
+
+            try realm.write {
+                let result = realm.objects(tableShare.self).filter("account == %@ AND path == %@", account, "/"+filePath)
+                realm.delete(result)
+            }
+        } catch let error as NSError {
+            NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
+        }
+    }
+    
     // There is currently only one share attribute “download” from the scope “permissions”. This attribute is only valid for user and group shares, not for public link shares.
     func setAttibuteDownload(state: Bool) -> String? {
         if state {
