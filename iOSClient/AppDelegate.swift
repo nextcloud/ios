@@ -117,7 +117,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         // Activate user account
         if let activeAccount = NCManageDatabase.shared.getActiveAccount() {
 
-            settingAccount(activeAccount.account, urlBase: activeAccount.urlBase, user: activeAccount.user, userId: activeAccount.userId, password: CCUtility.getPassword(activeAccount.account))
+            account = activeAccount.account
+            urlBase = activeAccount.urlBase
+            user = activeAccount.user
+            userId = activeAccount.userId
+            password = CCUtility.getPassword(account)
+
+            NextcloudKit.shared.setup(account: account, user: user, userId: userId, password: password, urlBase: urlBase)
+            NCManageDatabase.shared.setCapabilities(account: account)
+
             NCBrandColor.shared.settingThemingColor(account: activeAccount.account)
 
         } else {
@@ -194,7 +202,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             hidePrivacyProtectionWindow()
         }
 
-        // Start Auto Upload
+        NCService.shared.startRequestServicesServer()
+
         NCAutoUpload.shared.initAutoUpload(viewController: nil) { items in
             NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Initialize Auto upload with \(items) uploads")
         }
@@ -235,8 +244,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Application will enter in foreground")
 
         guard !account.isEmpty else { return }
-
-        NCService.shared.startRequestServicesServer()
 
         enableTouchFaceID()
 
