@@ -561,7 +561,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
     // MARK: - Account
 
-    func settingAccount(_ account: String, urlBase: String, user: String, userId: String, password: String) {
+    func settingAccount(_ account: String, urlBase: String, user: String, userId: String, password: String, userProfile: NKUserProfile?) {
 
         let currentAccount = self.account + "/" + self.userId
         let newAccount = account + "/" + userId
@@ -576,6 +576,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
         NextcloudKit.shared.setup(account: account, user: user, userId: userId, password: password, urlBase: urlBase)
         NCManageDatabase.shared.setCapabilities(account: account)
+
+        if let userProfile {
+            NCManageDatabase.shared.setAccountUserProfile(account: account, userProfile: userProfile)
+        }
 
         if NCGlobal.shared.capabilityServerVersionMajor > 0 {
             NextcloudKit.shared.setup(nextcloudVersion: NCGlobal.shared.capabilityServerVersionMajor)
@@ -619,7 +623,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         CCUtility.clearAllKeysPushNotification(account)
         CCUtility.setPassword(account, password: nil)
 
-        settingAccount("", urlBase: "", user: "", userId: "", password: "")
+        settingAccount("", urlBase: "", user: "", userId: "", password: "", userProfile: nil)
 
         if wipe {
             let accounts = NCManageDatabase.shared.getAccounts()
@@ -648,7 +652,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             NCOperationQueue.shared.cancelAllQueue()
             NCNetworking.shared.cancelAllTask()
 
-            settingAccount(tableAccount.account, urlBase: tableAccount.urlBase, user: tableAccount.user, userId: tableAccount.userId, password: CCUtility.getPassword(tableAccount.account))
+            settingAccount(tableAccount.account, urlBase: tableAccount.urlBase, user: tableAccount.user, userId: tableAccount.userId, password: CCUtility.getPassword(tableAccount.account), userProfile: nil)
         }
     }
 

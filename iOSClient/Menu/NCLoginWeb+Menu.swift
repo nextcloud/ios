@@ -54,7 +54,7 @@ extension NCLoginWeb {
                         if self.appDelegate.account != account.account {
                             NCManageDatabase.shared.setAccountActive(account.account)
                             self.dismiss(animated: true) {
-                                self.appDelegate.settingAccount(account.account, urlBase: account.urlBase, user: account.user, userId: account.userId, password: CCUtility.getPassword(account.account))
+                                self.appDelegate.settingAccount(account.account, urlBase: account.urlBase, user: account.user, userId: account.userId, password: CCUtility.getPassword(account.account), userProfile: nil)
                             }
                         }
                     }

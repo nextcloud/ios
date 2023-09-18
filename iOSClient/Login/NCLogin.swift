@@ -387,31 +387,46 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
             if let host = URL(string: url)?.host {
                 NCNetworking.shared.writeCertificate(host: host)
             }
+            let urlBase = url
+            let account = user + " " + user
 
-            let account = user + " " + url
+            NextcloudKit.shared.setup(account: account, user: user, userId: user, password: password, urlBase: urlBase)
+            NextcloudKit.shared.getUserProfile { _, userProfile, data, error in
 
-            if NCManageDatabase.shared.getAccounts() == nil {
-                NCUtility.shared.removeAllSettings()
-            }
+                if error == .success, let userProfile {
 
-            NCManageDatabase.shared.deleteAccount(account)
-            NCManageDatabase.shared.addAccount(account, urlBase: url, user: user, password: password)
+                    if NCManageDatabase.shared.getAccounts() == nil {
+                        NCUtility.shared.removeAllSettings()
+                    }
 
-            if let activeAccount = NCManageDatabase.shared.setAccountActive(account) {
-                appDelegate.settingAccount(activeAccount.account, urlBase: activeAccount.urlBase, user: activeAccount.user, userId: activeAccount.userId, password: CCUtility.getPassword(activeAccount.account))
-            }
+                    NCManageDatabase.shared.deleteAccount(account)
+                    NCManageDatabase.shared.addAccount(account, urlBase: url, user: user, userId: userProfile.userId, password: password)
 
-            if CCUtility.getIntro() {
-                self.dismiss(animated: true)
-            } else {
-                CCUtility.setIntro(true)
-                if self.presentingViewController == nil {
-                    let viewController = UIStoryboard(name: "Main", bundle: nil).instantiateInitialViewController()
-                    viewController?.modalPresentationStyle = .fullScreen
-                    self.appDelegate.window?.rootViewController = viewController
-                    self.appDelegate.window?.makeKey()
+                    guard let tableAccount = NCManageDatabase.shared.setAccountActive(account) else {
+                        self.dismiss(animated: true, completion: nil)
+                        return
+                    }
+
+                    self.appDelegate.settingAccount(account, urlBase: urlBase, user: user, userId: userProfile.userId, password: password, userProfile: userProfile)
+
+                    if CCUtility.getIntro() {
+                        self.dismiss(animated: true)
+                    } else {
+                        CCUtility.setIntro(true)
+                        if self.presentingViewController == nil {
+                            let viewController = UIStoryboard(name: "Main", bundle: nil).instantiateInitialViewController()
+                            viewController?.modalPresentationStyle = .fullScreen
+                            self.appDelegate.window?.rootViewController = viewController
+                            self.appDelegate.window?.makeKey()
+                        } else {
+                            self.dismiss(animated: true)
+                        }
+                    }
                 } else {
-                    self.dismiss(animated: true)
+
+                    let alertController = UIAlertController(title: NSLocalizedString("_error_", comment: ""), message: error.errorDescription, preferredStyle: .alert)
+                    alertController.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { _ in }))
+                    self.present(alertController, animated: true)
                 }
             }
 
@@ -439,9 +454,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
 
             let message = NSLocalizedString("_not_possible_connect_to_server_", comment: "") + ".\n" + error.errorDescription
             let alertController = UIAlertController(title: NSLocalizedString("_error_", comment: ""), message: message, preferredStyle: .alert)
-
             alertController.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { _ in }))
-
             self.present(alertController, animated: true, completion: { })
         }
     }
