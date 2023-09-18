@@ -52,9 +52,8 @@ extension NCLoginWeb {
                     on: account.active == true,
                     action: { _ in
                         if self.appDelegate.account != account.account {
-                            NCManageDatabase.shared.setAccountActive(account.account)
                             self.dismiss(animated: true) {
-                                self.appDelegate.settingAccount(account.account, urlBase: account.urlBase, user: account.user, userId: account.userId, password: CCUtility.getPassword(account.account), userProfile: nil)
+                                self.appDelegate.changeAccount(account.account, userProfile: nil)
                             }
                         }
                     }
@@ -75,7 +74,7 @@ extension NCLoginWeb {
                     self.dismiss(animated: true) {
                         let accounts = NCManageDatabase.shared.getAllAccount()
                         if accounts.count > 0 {
-                            self.appDelegate.changeAccount(accounts.first!.account)
+                            self.appDelegate.changeAccount(accounts.first!.account, userProfile: nil)
                         } else {
                             self.appDelegate.openLogin(viewController: nil, selector: NCGlobal.shared.introLogin, openLoginWeb: false)
                         }

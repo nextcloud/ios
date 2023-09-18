@@ -402,12 +402,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
                     NCManageDatabase.shared.deleteAccount(account)
                     NCManageDatabase.shared.addAccount(account, urlBase: url, user: user, userId: userProfile.userId, password: password)
 
-                    guard let tableAccount = NCManageDatabase.shared.setAccountActive(account) else {
-                        self.dismiss(animated: true, completion: nil)
-                        return
-                    }
-
-                    self.appDelegate.settingAccount(account, urlBase: urlBase, user: user, userId: userProfile.userId, password: password, userProfile: userProfile)
+                    self.appDelegate.changeAccount(account, userProfile: userProfile)
 
                     if CCUtility.getIntro() {
                         self.dismiss(animated: true)

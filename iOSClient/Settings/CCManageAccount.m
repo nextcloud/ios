@@ -329,7 +329,7 @@
         for (tableAccount *account in accounts) {
             if ([rowDescriptor.tag isEqualToString:account.account]) {
                 if (![account.account isEqualToString:activeAccount.account]) {
-                    [appDelegate changeAccount:account.account];
+                    [appDelegate changeAccount:account.account userProfile:nil];
                 }
             }
         }
@@ -364,7 +364,7 @@
             NSArray *listAccount = [[NCManageDatabase shared] getAccounts];
             if ([listAccount count] > 0) {
                 if ([accountForDelete isEqualToString:activeAccount]) {
-                    [appDelegate changeAccount:listAccount[0]];
+                    [appDelegate changeAccount:listAccount[0] userProfile:nil];
                 }
             }
             

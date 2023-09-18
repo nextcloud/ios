@@ -406,7 +406,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                 let accounts = NCManageDatabase.shared.getAllAccount()
                 for account in accounts {
                     if account.account == accountPush {
-                        self.changeAccount(account.account)
+                        self.changeAccount(account.account, userProfile: nil)
                         findAccount = true
                     }
                 }
@@ -561,49 +561,46 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
     // MARK: - Account
 
-    func settingAccount(_ account: String, urlBase: String, user: String, userId: String, password: String, userProfile: NKUserProfile?) {
-
-        let currentAccount = self.account + "/" + self.userId
-        let newAccount = account + "/" + userId
-
-        self.account = account
-        self.urlBase = urlBase
-        self.user = user
-        self.userId = userId
-        self.password = password
+    @objc func changeAccount(_ account: String, userProfile: NKUserProfile?) {
 
         _ = NCActionCenter.shared
 
-        NextcloudKit.shared.setup(account: account, user: user, userId: userId, password: password, urlBase: urlBase)
-        NCManageDatabase.shared.setCapabilities(account: account)
+        if let tableAccount = NCManageDatabase.shared.setAccountActive(account) {
 
-        if let userProfile {
-            NCManageDatabase.shared.setAccountUserProfile(account: account, userProfile: userProfile)
-        }
+            NCOperationQueue.shared.cancelAllQueue()
+            NCNetworking.shared.cancelAllTask()
 
-        if NCGlobal.shared.capabilityServerVersionMajor > 0 {
-            NextcloudKit.shared.setup(nextcloudVersion: NCGlobal.shared.capabilityServerVersionMajor)
-        }
+            self.account = tableAccount.account
+            self.urlBase = tableAccount.urlBase
+            self.user = tableAccount.user
+            self.userId = tableAccount.userId
+            self.password = CCUtility.getPassword(tableAccount.account)
 
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+            NextcloudKit.shared.setup(account: account, user: user, userId: userId, password: password, urlBase: urlBase)
+            NCManageDatabase.shared.setCapabilities(account: account)
 
-            if currentAccount != newAccount && !account.isEmpty {
-
-                NCPushNotification.shared().pushNotification()
-
-                NCService.shared.startRequestServicesServer()
-
-                NCAutoUpload.shared.initAutoUpload(viewController: nil) { items in
-                    NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Initialize Auto upload with \(items) uploads")
-                }
-
-                // Registeration domain File Provider
-                // FileProviderDomain *fileProviderDomain = [FileProviderDomain new];
-                // [fileProviderDomain removeAllDomains];
-                // [fileProviderDomain registerDomains];
-
-                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterChangeUser)
+            if let userProfile {
+                NCManageDatabase.shared.setAccountUserProfile(account: account, userProfile: userProfile)
             }
+
+            if NCGlobal.shared.capabilityServerVersionMajor > 0 {
+                NextcloudKit.shared.setup(nextcloudVersion: NCGlobal.shared.capabilityServerVersionMajor)
+            }
+
+            NCPushNotification.shared().pushNotification()
+
+            NCService.shared.startRequestServicesServer()
+
+            NCAutoUpload.shared.initAutoUpload(viewController: nil) { items in
+                NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Initialize Auto upload with \(items) uploads")
+            }
+
+            // Registeration domain File Provider
+            // FileProviderDomain *fileProviderDomain = [FileProviderDomain new];
+            // [fileProviderDomain removeAllDomains];
+            // [fileProviderDomain registerDomains];
+
+            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterChangeUser)
         }
     }
 
@@ -623,13 +620,17 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         CCUtility.clearAllKeysPushNotification(account)
         CCUtility.setPassword(account, password: nil)
 
-        settingAccount("", urlBase: "", user: "", userId: "", password: "", userProfile: nil)
+        self.account = ""
+        self.urlBase = ""
+        self.user = ""
+        self.userId = ""
+        self.password = ""
 
         if wipe {
             let accounts = NCManageDatabase.shared.getAccounts()
             if accounts?.count ?? 0 > 0 {
                 if let newAccount = accounts?.first {
-                    self.changeAccount(newAccount)
+                    self.changeAccount(newAccount, userProfile: nil)
                 }
             } else {
                 openLogin(viewController: window?.rootViewController, selector: NCGlobal.shared.introLogin, openLoginWeb: false)
@@ -642,18 +643,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         accounts?.forEach({ account in
             deleteAccount(account, wipe: true)
         })
-    }
-
-    @objc func changeAccount(_ account: String) {
-
-        NCManageDatabase.shared.setAccountActive(account)
-        if let tableAccount = NCManageDatabase.shared.getActiveAccount() {
-
-            NCOperationQueue.shared.cancelAllQueue()
-            NCNetworking.shared.cancelAllTask()
-
-            settingAccount(tableAccount.account, urlBase: tableAccount.urlBase, user: tableAccount.user, userId: tableAccount.userId, password: CCUtility.getPassword(tableAccount.account), userProfile: nil)
-        }
     }
 
     func updateShareAccounts() -> Error? {
@@ -675,7 +664,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     // MARK: - Account Request
 
     func accountRequestChangeAccount(account: String) {
-        changeAccount(account)
+        changeAccount(account, userProfile: nil)
     }
 
     func requestAccount() {
@@ -990,7 +979,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                 for account in accounts {
                     let urlBase = URL(string: account.urlBase)
                     if url.contains(urlBase?.host ?? "") && userId == account.userId {
-                        changeAccount(account.account)
+                        changeAccount(account.account, userProfile: nil)
                         return account
                     }
                 }
