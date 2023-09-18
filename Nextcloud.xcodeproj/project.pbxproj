@@ -2395,8 +2395,8 @@
 			children = (
 				F720B5B72507B9A5008C94E5 /* Cell */,
 				F7501C302212E57400FB1415 /* NCMedia.storyboard */,
-				F7501C312212E57400FB1415 /* NCMedia.swift */,
 				F7F1E54B2492369A00E42386 /* NCMediaCommandView.xib */,
+				F7501C312212E57400FB1415 /* NCMedia.swift */,
 				F3F7ACFD2A98C56C00AE12CF /* NCMediaNew.swift */,
 				F3E3B3BC2AA73D9E006D08F5 /* NCMediaViewModel.swift */,
 				F3AEDCA62AA720F800FDFA44 /* NCMediaRow.swift */,

@@ -7,6 +7,7 @@
 //
 
 import NextcloudKit
+import Combine
 
 @MainActor class NCMediaViewModel: ObservableObject {
     @Published var metadatas: [tableMetadata] = []
@@ -18,8 +19,10 @@ import NextcloudKit
     private var predicateDefault: NSPredicate?
     private var predicate: NSPredicate?
     private let appDelegate = UIApplication.shared.delegate as? AppDelegate
-    internal var filterClassTypeImage = false
-    internal var filterClassTypeVideo = false
+    @Published internal var filterClassTypeImage = false
+    @Published internal var filterClassTypeVideo = false
+
+    private var cancellables: Set<AnyCancellable> = []
 
     internal var needsLoadingMoreItems = true
 
@@ -31,6 +34,9 @@ import NextcloudKit
         NotificationCenter.default.addObserver(self, selector: #selector(uploadedFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUploadedFile), object: nil)
 
         searchNewMedia()
+
+        $filterClassTypeImage.sink { _ in self.loadData() }.store(in: &cancellables)
+        $filterClassTypeVideo.sink{ _ in self.loadData() }.store(in: &cancellables)
     }
 
     deinit {
@@ -93,7 +99,7 @@ import NextcloudKit
 
     func loadMoreItems() {
         searchOldMedia()
-//        needsLoadingMoreItems = false
+        needsLoadingMoreItems = false
     }
 
     func onPullToRefresh() {
