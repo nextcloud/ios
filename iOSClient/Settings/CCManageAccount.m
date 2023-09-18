@@ -278,7 +278,7 @@
     
     self.tableView.backgroundColor = UIColor.systemGroupedBackgroundColor;
     
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(initialize) name:NCGlobal.shared.notificationCenterInitialize object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeUser) name:NCGlobal.shared.notificationCenterChangeUser object:nil];
     
     [self initializeForm];
 }
@@ -292,7 +292,7 @@
 
 #pragma mark - NotificationCenter
 
-- (void)initialize
+- (void)changeUser
 {
     [self initializeForm];
 }
