@@ -286,6 +286,10 @@ extension NCManageDatabase {
             NCGlobal.shared.capabilityServerVersion = json.ocs.data.version.string
             NCGlobal.shared.capabilityServerVersionMajor = json.ocs.data.version.major
 
+            if NCGlobal.shared.capabilityServerVersionMajor > 0 {
+                NextcloudKit.shared.setup(nextcloudVersion: NCGlobal.shared.capabilityServerVersionMajor)
+            }
+
             NCGlobal.shared.capabilityFileSharingApiEnabled = json.ocs.data.capabilities.filessharing?.apienabled ?? false
             NCGlobal.shared.capabilityFileSharingDefaultPermission = json.ocs.data.capabilities.filessharing?.defaultpermissions ?? 0
             NCGlobal.shared.capabilityFileSharingPubPasswdEnforced = json.ocs.data.capabilities.filessharing?.ncpublic?.password?.enforced ?? false

@@ -40,6 +40,8 @@ class NCService: NSObject {
         NCManageDatabase.shared.clearAllAvatarLoaded()
         guard !appDelegate.account.isEmpty else { return }
 
+        NCPushNotification.shared().pushNotification()
+        
         Task {
             addInternalTypeIdentifier()
             let result = await requestServerStatus()
