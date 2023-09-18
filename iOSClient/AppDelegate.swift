@@ -74,9 +74,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
         let versionNextcloudiOS = String(format: NCBrandOptions.shared.textCopyrightNextcloudiOS, NCUtility.shared.getVersionApp())
 
-        // Register initialize
-        NotificationCenter.default.addObserver(self, selector: #selector(initialize), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterInitialize), object: nil)
-
         UserDefaults.standard.register(defaults: ["UserAgent": userAgent])
         if !CCUtility.getDisableCrashservice() && !NCBrandOptions.shared.disable_crash_service {
             FirebaseApp.configure()
@@ -120,9 +117,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         // Activate user account
         if let activeAccount = NCManageDatabase.shared.getActiveAccount() {
 
-            settingAccount(activeAccount.account, urlBase: activeAccount.urlBase, user: activeAccount.user, userId: activeAccount.userId, password: CCUtility.getPassword(activeAccount.account), initialize: false)
+            settingAccount(activeAccount.account, urlBase: activeAccount.urlBase, user: activeAccount.user, userId: activeAccount.userId, password: CCUtility.getPassword(activeAccount.account))
             NCBrandColor.shared.settingThemingColor(account: activeAccount.account)
-            initialize()
 
         } else {
 
@@ -148,9 +144,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             review.showStoreReview()
         }
 
-        // Background task: register
+        // Background task register
         BGTaskScheduler.shared.register(forTaskWithIdentifier: NCGlobal.shared.refreshTask, using: nil) { task in
-            self.handleRefreshTask(task)
+            self.handleAppRefresh(task)
         }
         BGTaskScheduler.shared.register(forTaskWithIdentifier: NCGlobal.shared.processingTask, using: nil) { task in
             self.handleProcessingTask(task)
@@ -198,10 +194,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             hidePrivacyProtectionWindow()
         }
 
-        if !account.isEmpty {
-            NCNetworkingProcessUpload.shared.verifyUploadZombie()
-        }
-
         // Start Auto Upload
         NCAutoUpload.shared.initAutoUpload(viewController: nil) { items in
             NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Initialize Auto upload with \(items) uploads")
@@ -210,36 +202,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterApplicationDidBecomeActive)
     }
 
-    // L' applicazione entrerà in primo piano (dopo il background)
-    func applicationWillEnterForeground(_ application: UIApplication) {
-        guard !account.isEmpty, let activeAccount = NCManageDatabase.shared.getActiveAccount() else { return }
-
-        NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Application will enter in foreground")
-
-        if activeAccount.account != account {
-            settingAccount(activeAccount.account, urlBase: activeAccount.urlBase, user: activeAccount.user, userId: activeAccount.userId, password: CCUtility.getPassword(activeAccount.account))
-        } else {
-            // Request Service Server Nextcloud
-            NCService.shared.startRequestServicesServer()
-        }
-
-        // Required unsubscribing / subscribing
-        NCPushNotification.shared().pushNotification()
-
-        // Request TouchID, FaceID
-        enableTouchFaceID()
-
-        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterRichdocumentGrabFocus)
-        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSourceNetwork, second: 2)
-    }
-
     // L' applicazione si dimetterà dallo stato di attivo
     func applicationWillResignActive(_ application: UIApplication) {
-        // Nextcloud update share accounts
-        if let error = updateShareAccounts() {
-            NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Create share accounts \(error.localizedDescription)")
-        }
+
         NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Application will resign active")
+
         guard !account.isEmpty else { return }
 
         // STOP OBSERVE/TIMER UPLOAD PROCESS
@@ -247,17 +214,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         NCNetworkingProcessUpload.shared.stopTimer()
 
         if CCUtility.getPrivacyScreenEnabled() {
-            // Privacy
             showPrivacyProtectionWindow()
         }
 
         // Reload Widget
         WidgetCenter.shared.reloadAllTimelines()
-
-        // Clear operation queue
-        NCOperationQueue.shared.cancelAllQueue()
-        // Clear download
-        NCNetworking.shared.cancelAllDownloadTransfer()
 
         // Clear older files
         let days = CCUtility.getCleanUpDay()
@@ -268,16 +229,35 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterApplicationWillResignActive)
     }
 
+    // L' applicazione entrerà in primo piano (dopo il background)
+    func applicationWillEnterForeground(_ application: UIApplication) {
+
+        NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Application will enter in foreground")
+
+        guard !account.isEmpty else { return }
+
+        NCService.shared.startRequestServicesServer()
+
+        enableTouchFaceID()
+
+        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterRichdocumentGrabFocus)
+        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSourceNetwork, second: 2)
+    }
+
     // L' applicazione è entrata nello sfondo
     func applicationDidEnterBackground(_ application: UIApplication) {
-        guard !account.isEmpty else { return }
 
         NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Application did enter in background")
 
-        scheduleAppRefresh()
-        scheduleAppProcessing()
+        guard !account.isEmpty else { return }
 
-        // Passcode
+        if let error = updateShareAccounts() {
+            NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Create share accounts \(error.localizedDescription)")
+        }
+
+        NCOperationQueue.shared.cancelAllQueue()
+        NCNetworking.shared.cancelAllDownloadTransfer()
+
         presentPasscode { }
 
         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterApplicationDidEnterBackground)
@@ -301,34 +281,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         NextcloudKit.shared.nkCommonInstance.writeLog("bye bye")
     }
 
-    // MARK: -
-
-    @objc private func initialize() {
-        guard !account.isEmpty else { return }
-
-        NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] initialize Main")
-
-        // Registeration push notification
-        NCPushNotification.shared().pushNotification()
-
-        // Unlock E2EE
-        NCNetworkingE2EE().unlockAll(account: account)
-
-        // Start services
-        NCService.shared.startRequestServicesServer()
-
-        // close detail
-        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterMenuDetailClose)
-
-        // Reload Widget
-        WidgetCenter.shared.reloadAllTimelines()
-
-        // Registeration domain File Provider
-        // FileProviderDomain *fileProviderDomain = [FileProviderDomain new];
-        // [fileProviderDomain removeAllDomains];
-        // [fileProviderDomain registerDomains];
-    }
-
     // MARK: - Background Task
 
     /*
@@ -341,7 +293,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         request.earliestBeginDate = Date(timeIntervalSinceNow: 60) // Refresh after 60 seconds.
         do {
             try BGTaskScheduler.shared.submit(request)
-            NextcloudKit.shared.nkCommonInstance.writeLog("[SUCCESS] Refresh task success submit request 60 seconds \(request)")
         } catch {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Refresh task failed to submit request: \(error)")
         }
@@ -359,13 +310,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         request.requiresExternalPower = false
         do {
             try BGTaskScheduler.shared.submit(request)
-            NextcloudKit.shared.nkCommonInstance.writeLog("[SUCCESS] Background Processing task success submit request 5 minutes \(request)")
         } catch {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Background Processing task failed to submit request: \(error)")
         }
     }
 
-    func handleRefreshTask(_ task: BGTask) {
+    func handleAppRefresh(_ task: BGTask) {
         scheduleAppRefresh()
 
         guard !account.isEmpty else {
@@ -604,7 +554,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
     // MARK: - Account
 
-    @objc func settingAccount(_ account: String, urlBase: String, user: String, userId: String, password: String, initialize: Bool = true) {
+    func settingAccount(_ account: String, urlBase: String, user: String, userId: String, password: String) {
 
         let currentAccount = self.account + "/" + self.userId
         let newAccount = account + "/" + userId
@@ -624,9 +574,24 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             NextcloudKit.shared.setup(nextcloudVersion: NCGlobal.shared.capabilityServerVersionMajor)
         }
 
-        DispatchQueue.main.async {
-            if initialize, UIApplication.shared.applicationState != .background && currentAccount != newAccount && newAccount != "/" {
-                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterInitialize, second: 0.2)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+
+            if currentAccount != newAccount && !account.isEmpty {
+
+                NCPushNotification.shared().pushNotification()
+
+                NCService.shared.startRequestServicesServer()
+
+                NCAutoUpload.shared.initAutoUpload(viewController: nil) { items in
+                    NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Initialize Auto upload with \(items) uploads")
+                }
+
+                // Registeration domain File Provider
+                // FileProviderDomain *fileProviderDomain = [FileProviderDomain new];
+                // [fileProviderDomain removeAllDomains];
+                // [fileProviderDomain registerDomains];
+
+                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterChangeUser)
             }
         }
     }
