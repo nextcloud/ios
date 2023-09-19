@@ -89,12 +89,11 @@ class NCShares: NCCollectionViewCommon {
             self.isReloadDataSourceNetworkInProgress = false
 
             if error == .success {
+                NCManageDatabase.shared.deleteTableShare(account: account)
                 if let shares = shares, !shares.isEmpty {
                     let home = NCUtilityFileSystem.shared.getHomeServer(urlBase: self.appDelegate.urlBase, userId: self.appDelegate.userId)
                     NCManageDatabase.shared.addShare(account: self.appDelegate.account, home: home, shares: shares)
-                } else {
-                    NCManageDatabase.shared.deleteTableShare(account: account)
-                }
+                } 
                 self.reloadDataSource()
 
             } else {

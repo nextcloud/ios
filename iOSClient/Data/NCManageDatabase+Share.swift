@@ -81,8 +81,6 @@ extension NCManageDatabase {
         do {
             let realm = try Realm()
             try realm.write {
-                let result = realm.objects(tableShare.self).filter("account == %@", account)
-                realm.delete(result)
                 for share in shares {
                     let serverUrlPath = home + share.path
                     guard let serverUrl = NCUtilityFileSystem.shared.deleteLastPath(serverUrlPath: serverUrlPath, home: home) else { continue }
