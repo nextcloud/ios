@@ -13,8 +13,8 @@ import VisibilityTrackingScrollView
 struct NCMediaRow: View {
     let metadatas: [tableMetadata]
     let geometryProxy: GeometryProxy
-    let onCellTap: (ScaledThumbnail) -> Void
-
+    @Binding var isInSelectMode: Bool
+    let onCellTap: (ScaledThumbnail, Bool) -> Void
     @StateObject private var vm = NCMediaRowViewModel()
     private let spacing: CGFloat = 2
 
@@ -26,7 +26,7 @@ struct NCMediaRow: View {
                 }
             } else {
                 ForEach(vm.rowData.scaledThumbnails, id: \.self) { thumbnail in
-                    NCMediaCell(thumbnail: thumbnail, shrinkRatio: vm.rowData.shrinkRatio, onTap: onCellTap)
+                    NCMediaCell(thumbnail: thumbnail, shrinkRatio: vm.rowData.shrinkRatio, isInSelectMode: $isInSelectMode, onTap: onCellTap)
                 }
             }
         }
