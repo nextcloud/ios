@@ -87,25 +87,6 @@ class NCViewerMediaPage: UIViewController {
         viewerMediaScreenMode = .normal
     }
 
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-
-        if currentViewController.metadata.isImage {
-            self.navigationController?.navigationItem.rightBarButtonItems = [moreNavigationItem, imageDetailNavigationItem]
-        } else {
-            self.navigationController?.navigationItem.rightBarButtonItems = [moreNavigationItem]
-        }
-
-        self.tabBarController?.tabBar.isHidden = true
-
-        view.setNeedsLayout()
-        view.layoutIfNeeded()
-    }
-
-    override func viewWillDisappear(_ animated: Bool) {
-        self.tabBarController?.tabBar.isHidden = false
-    }
-
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -147,12 +128,6 @@ class NCViewerMediaPage: UIViewController {
         NotificationCenter.default.addObserver(self, selector: #selector(uploadedFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUploadedFile), object: nil)
 
         NotificationCenter.default.addObserver(self, selector: #selector(applicationDidBecomeActive(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationDidBecomeActive), object: nil)
-
-        if currentViewController.metadata.isImage {
-            navigationItem.rightBarButtonItems = [moreNavigationItem, imageDetailNavigationItem]
-        } else {
-            navigationItem.rightBarButtonItems = [moreNavigationItem]
-        }
     }
 
     deinit {
@@ -175,6 +150,20 @@ class NCViewerMediaPage: UIViewController {
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationDidBecomeActive), object: nil)
     }
 
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+
+        guard let navigationController = self.navigationController else { return }
+
+        if currentViewController.metadata.isImage {
+            self.navigationController?.navigationItem.rightBarButtonItems = [moreNavigationItem, imageDetailNavigationItem]
+        } else {
+            self.navigationController?.navigationItem.rightBarButtonItems = [moreNavigationItem]
+        }
+
+        self.tabBarController?.tabBar.isHidden = true
+    }
+
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
@@ -187,6 +176,12 @@ class NCViewerMediaPage: UIViewController {
         currentViewController.ncplayer?.playerStop()
         timerAutoHide?.invalidate()
         clearCommandCenter()
+    }
+
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+
+        self.tabBarController?.tabBar.isHidden = false
     }
 
     override var preferredStatusBarStyle: UIStatusBarStyle {
