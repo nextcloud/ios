@@ -34,11 +34,11 @@ class NCMediaUIHostingController: UIHostingController<NCMediaNew>, DataDelegate 
             }
             viewController.metadatas = metadatas
 
-//            NCViewer.shared.view(viewController: UINavigationController(rootViewController: self), metadata: selectedMetadata, metadatas: metadatas, imageIcon: image)
-            
+            NCViewer.shared.view(viewController: self, metadata: selectedMetadata, metadatas: metadatas, imageIcon: image)
+
 //            let navController = UINavigationController(rootViewController: self)
 //            self.navigationController!.pushViewController(viewController, animated: true)
-            self.present(UINavigationController(rootViewController: viewController), animated: true, completion: nil)
+//            self.present(UINavigationController(rootViewController: viewController), animated: true, completion: nil)
         }
     }
 }
@@ -59,6 +59,7 @@ struct NCViewerMediaPageController: UIViewControllerRepresentable {
                 index += 1
             }
             viewController.metadatas = metadatas
+            viewController.hidesBottomBarWhenPushed = true
 
             return viewController
         } else {
@@ -213,7 +214,7 @@ struct NCMediaNew: View {
             .fullScreenCover(isPresented: $isMediaViewControllerPresented) {
                 NCViewerMediaPageController(metadatas: vm.metadatas, selectedMetadata: tappedMetadata)
             }
-        }.navigationBarHidden(true)
+        }
     }
 
     func cellVisibilityDidChange(_ id: String, change: VisibilityChange, tracker: VisibilityTracker<String>) {
