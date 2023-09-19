@@ -624,7 +624,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         }
     }
 
-    @objc func deleteAllAccounts() {
+    func deleteAllAccounts() {
         let accounts = NCManageDatabase.shared.getAccounts()
         accounts?.forEach({ account in
             deleteAccount(account, wipe: true)
