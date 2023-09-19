@@ -110,7 +110,7 @@ class NCViewerMediaPage: UIViewController {
         pageViewController.setViewControllers([viewerMedia], direction: .forward, animated: true, completion: nil)
         changeScreenMode(mode: viewerMediaScreenMode)
 
-        NotificationCenter.default.addObserver(self, selector: #selector(viewUnload), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterMenuDetailClose), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(viewUnload), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeUser), object: nil)
 
         NotificationCenter.default.addObserver(self, selector: #selector(pageViewController.enableSwipeGesture), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterEnableSwipeGesture), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(pageViewController.disableSwipeGesture), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDisableSwipeGesture), object: nil)

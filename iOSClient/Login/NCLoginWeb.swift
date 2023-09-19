@@ -243,22 +243,6 @@ extension NCLoginWeb: WKNavigationDelegate {
         }
     }
 
-    func webView(_ webView: WKWebView, didFailProvisionalNavigation navigation: WKNavigation!, withError error: Error) {
-
-        var errorMessage = error.localizedDescription
-
-        for (key, value) in (error as NSError).userInfo {
-            let message = "\(key) \(value)\n"
-            errorMessage += message
-        }
-
-        let alertController = UIAlertController(title: NSLocalizedString("_error_", comment: ""), message: errorMessage, preferredStyle: .alert)
-
-        alertController.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { _ in }))
-
-        self.present(alertController, animated: true)
-    }
-
     func webView(_ webView: WKWebView, didReceive challenge: URLAuthenticationChallenge, completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
         DispatchQueue.global().async {
             if let serverTrust = challenge.protectionSpace.serverTrust {
@@ -297,47 +281,48 @@ extension NCLoginWeb: WKNavigationDelegate {
     func createAccount(server: String, username: String, password: String) {
 
         var urlBase = server
-
-        // Normalized
-        if urlBase.last == "/" {
-            urlBase = String(urlBase.dropLast())
-        }
-
-        // Create account
+        if urlBase.last == "/" { urlBase = String(urlBase.dropLast()) }
         let account: String = "\(username) \(urlBase)"
+        let user = username
 
-        // NO account found, clear all
-        if NCManageDatabase.shared.getAccounts() == nil {
-            NCUtility.shared.removeAllSettings()
-        }
+        NextcloudKit.shared.setup(account: account, user: user, userId: user, password: password, urlBase: urlBase)
+        NextcloudKit.shared.getUserProfile { _, userProfile, data, error in
 
-        // Add new account
-        NCManageDatabase.shared.deleteAccount(account)
-        NCManageDatabase.shared.addAccount(account, urlBase: urlBase, user: username, password: password)
+            if error == .success, let userProfile {
 
-        guard let tableAccount = NCManageDatabase.shared.setAccountActive(account) else {
-            self.dismiss(animated: true, completion: nil)
-            return
-        }
+                if NCManageDatabase.shared.getAccounts() == nil {
+                    NCUtility.shared.removeAllSettings()
+                }
 
-        appDelegate.settingAccount(account, urlBase: urlBase, user: username, userId: tableAccount.userId, password: password)
+                NCManageDatabase.shared.deleteAccount(account)
+                NCManageDatabase.shared.addAccount(account, urlBase: urlBase, user: user, userId: userProfile.userId, password: password)
 
-        if CCUtility.getIntro() {
-            self.dismiss(animated: true)
-        } else {
-            CCUtility.setIntro(true)
-            if self.presentingViewController == nil {
-                if let viewController = UIStoryboard(name: "Main", bundle: nil).instantiateInitialViewController() {
-                    viewController.modalPresentationStyle = .fullScreen
-                    viewController.view.alpha = 0
-                    appDelegate.window?.rootViewController = viewController
-                    appDelegate.window?.makeKeyAndVisible()
-                    UIView.animate(withDuration: 0.5) {
-                        viewController.view.alpha = 1
+                self.appDelegate.changeAccount(account, userProfile: userProfile)
+
+                if CCUtility.getIntro() {
+                    self.dismiss(animated: true)
+                } else {
+                    CCUtility.setIntro(true)
+                    if self.presentingViewController == nil {
+                        if let viewController = UIStoryboard(name: "Main", bundle: nil).instantiateInitialViewController() {
+                            viewController.modalPresentationStyle = .fullScreen
+                            viewController.view.alpha = 0
+                            self.appDelegate.window?.rootViewController = viewController
+                            self.appDelegate.window?.makeKeyAndVisible()
+                            UIView.animate(withDuration: 0.5) {
+                                viewController.view.alpha = 1
+                            }
+                        }
+                    } else {
+                        self.dismiss(animated: true)
                     }
                 }
+
             } else {
-                self.dismiss(animated: true)
+
+                let alertController = UIAlertController(title: NSLocalizedString("_error_", comment: ""), message: error.errorDescription, preferredStyle: .alert)
+                alertController.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { _ in }))
+                self.present(alertController, animated: true)
             }
         }
     }

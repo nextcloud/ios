@@ -337,10 +337,10 @@ class NCGlobal: NSObject {
     // Notification Center
     //
     @objc let notificationCenterApplicationDidEnterBackground   = "applicationDidEnterBackground"
-    let notificationCenterApplicationDidBecomeActive            = "applicationDidBecomeActive"
-    let notificationCenterApplicationWillResignActive           = "applicationWillResignActive"
+    @objc let notificationCenterApplicationDidBecomeActive      = "applicationDidBecomeActive"
+    @objc let notificationCenterApplicationWillResignActive     = "applicationWillResignActive"
 
-    @objc let notificationCenterInitialize                      = "initialize"
+    @objc let notificationCenterChangeUser                      = "changeUser"
     @objc let notificationCenterChangeTheming                   = "changeTheming"
     let notificationCenterRichdocumentGrabFocus                 = "richdocumentGrabFocus"
     let notificationCenterReloadDataNCShare                     = "reloadDataNCShare"
@@ -375,7 +375,6 @@ class NCGlobal: NSObject {
 
     let notificationCenterMenuSearchTextPDF                     = "menuSearchTextPDF"
     let notificationCenterMenuGotToPageInPDF                    = "menuGotToPageInPDF"
-    let notificationCenterMenuDetailClose                       = "menuDetailClose"
 
     let notificationCenterDownloadedThumbnail                   = "DownloadedThumbnail"             // userInfo: ocId
 

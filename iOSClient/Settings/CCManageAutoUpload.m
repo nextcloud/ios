@@ -193,9 +193,9 @@
     self.view.backgroundColor = UIColor.systemGroupedBackgroundColor;
     
     self.tableView.backgroundColor = UIColor.systemGroupedBackgroundColor;
-    
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(initialize) name:NCGlobal.shared.notificationCenterInitialize object:nil];
-    
+
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeUser) name:NCGlobal.shared.notificationCenterChangeUser object:nil];
+
     [self initializeForm];
     [self reloadForm];
 }
@@ -208,9 +208,11 @@
     [[NCAskAuthorization shared] askAuthorizationPhotoLibraryWithViewController:self completion:^(BOOL status) { }];
 }
 
-- (void)initialize
+- (void)changeUser
 {
-    [[self navigationController] popViewControllerAnimated:YES];
+    // [[self navigationController] popViewControllerAnimated:YES];
+    [self initializeForm];
+    [self reloadForm];
 }
 
 #pragma mark - NotificationCenter
