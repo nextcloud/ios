@@ -43,30 +43,30 @@ class NCMediaUIHostingController: UIHostingController<NCMediaNew>, DataDelegate 
     }
 }
 
-struct NCViewerMediaPageController: UIViewControllerRepresentable {
-    let metadatas: [tableMetadata]
-    let selectedMetadata: tableMetadata
-
-    func makeUIViewController(context: UIViewControllerRepresentableContext<NCViewerMediaPageController>) -> NCViewerMediaPage {
-
-        if let viewController = UIStoryboard(name: "NCViewerMediaPage", bundle: nil).instantiateInitialViewController() as? NCViewerMediaPage {
-            var index = 0
-            for medatasImage in metadatas {
-                if medatasImage.ocId == selectedMetadata.ocId {
-                    viewController.currentIndex = index
-                    break
-                }
-                index += 1
-            }
-            viewController.metadatas = metadatas
-
-            return viewController
-        } else {
-            return NCViewerMediaPage()
-        }
-    }
-
-    func updateUIViewController(_ uiViewController: NCViewerMediaPage, context: UIViewControllerRepresentableContext<NCViewerMediaPageController>) {}
+//struct NCViewerMediaPageController: UIViewControllerRepresentable {
+//    let metadatas: [tableMetadata]
+//    let selectedMetadata: tableMetadata
+//
+//    func makeUIViewController(context: UIViewControllerRepresentableContext<NCViewerMediaPageController>) -> NCViewerMediaPage {
+//
+//        if let viewController = UIStoryboard(name: "NCViewerMediaPage", bundle: nil).instantiateInitialViewController() as? NCViewerMediaPage {
+//            var index = 0
+//            for medatasImage in metadatas {
+//                if medatasImage.ocId == selectedMetadata.ocId {
+//                    viewController.currentIndex = index
+//                    break
+//                }
+//                index += 1
+//            }
+//            viewController.metadatas = metadatas
+//
+//            return viewController
+//        } else {
+//            return NCViewerMediaPage()
+//        }
+//    }
+//
+//    func updateUIViewController(_ uiViewController: NCViewerMediaPage, context: UIViewControllerRepresentableContext<NCViewerMediaPageController>) {}
 }
 
 struct NCMediaNew: View {
