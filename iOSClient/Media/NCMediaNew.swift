@@ -67,7 +67,7 @@ class NCMediaUIHostingController: UIHostingController<NCMediaNew>, DataDelegate 
 //    }
 //
 //    func updateUIViewController(_ uiViewController: NCViewerMediaPage, context: UIViewControllerRepresentableContext<NCViewerMediaPageController>) {}
-}
+//}
 
 struct NCMediaNew: View {
     @StateObject private var vm = NCMediaViewModel()
