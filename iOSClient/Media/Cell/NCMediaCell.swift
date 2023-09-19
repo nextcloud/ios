@@ -14,8 +14,9 @@ import NextcloudKit
 struct NCMediaCell: View {
     let thumbnail: ScaledThumbnail
     let shrinkRatio: CGFloat
-
-    let onTap: (ScaledThumbnail) -> Void
+    @Binding var isInSelectMode: Bool
+    let onTap: (ScaledThumbnail, Bool) -> Void
+    @State private var isTappedInSelectMode = false
 
     var body: some View {
         let image = Image(uiImage: thumbnail.image)
@@ -27,42 +28,57 @@ struct NCMediaCell: View {
                 Text("Menu Item 3")
             }))
 
-        ZStack(alignment: .bottomLeading) {
-            ZStack(alignment: .center) {
-                if thumbnail.isDefaultImage {
-                    image
-                        .foregroundColor(Color(uiColor: .systemGray4))
-                        .scaledToFit()
-                        .frame(width: 40)
-                } else {
-                    image
-                }
+        ZStack(alignment: .center) {
+//                NavigationLink(destination: NCViewerMediaPageController(metadatas: [thumbnail.metadata], selectedMetadata: thumbnail.metadata)) {
+                    if thumbnail.isDefaultImage {
+                        image
+                            .foregroundColor(Color(uiColor: .systemGray4))
+                            .scaledToFit()
+                            .frame(width: 40)
+                    } else {
+                        image
+                    }
+//                }
+
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
-
-            if thumbnail.metadata.isVideo {
-                Image(systemName: "play.fill")
-                    .resizable()
-                    .foregroundColor(Color(uiColor: .systemGray4))
-                    .scaledToFit()
-                    .frame(width: 20)
-                    .padding([.leading, .bottom], 10)
+            .overlay(alignment: .bottomLeading) {
+                if thumbnail.metadata.isVideo, !thumbnail.isDefaultImage {
+                    Image(systemName: "play.fill")
+                        .resizable()
+                        .foregroundColor(Color(uiColor: .systemGray4))
+                        .scaledToFit()
+                        .frame(width: 20)
+                        .padding([.leading, .bottom], 10)
+                }
+            }
+            .overlay {
+                if isInSelectMode, isTappedInSelectMode {
+                    Color.black.opacity(0.6).frame(maxWidth: .infinity)
+                }
+            }
+            .overlay(alignment: .bottomTrailing) {
+                if isInSelectMode, isTappedInSelectMode {
+                    Image(systemName: "checkmark.circle.fill")
+                        .resizable()
+                        .foregroundColor(.blue)
+                        .background(.white)
+                        .clipShape(Circle())
+                        .scaledToFit()
+                        .frame(width: 20)
+                        .padding([.trailing, .bottom], 10)
+                }
+            }
+            .frame(width: CGFloat(thumbnail.scaledSize.width * shrinkRatio), height: CGFloat(thumbnail.scaledSize.height * shrinkRatio))
+            .background(Color(uiColor: .systemGray6))
+            .onTapGesture {
+                if isInSelectMode { isTappedInSelectMode.toggle() }
+                onTap(thumbnail, isTappedInSelectMode)
+            }
+            .onChange(of: isInSelectMode) { newValue in
+                isTappedInSelectMode = !newValue
             }
         }
-        .frame(width: CGFloat(thumbnail.scaledSize.width * shrinkRatio), height: CGFloat(thumbnail.scaledSize.height * shrinkRatio))
-        .background(Color(uiColor: .systemGray6))
-        .onTapGesture {
-            onTap(thumbnail)
-        }
-    }
-}
-
-struct NCMediaCell_Previews: PreviewProvider {
-    static var previews: some View {
-        let mockMetadata = tableMetadata()
-
-        NCMediaCell(thumbnail: .init(image: UIImage(systemName: "video.fill")!, metadata: mockMetadata), shrinkRatio: 1, onTap: { _ in })
-    }
 }
 
 struct NCMediaLoadingCell: View {
@@ -85,16 +101,6 @@ struct NCMediaLoadingCell: View {
                 .frame(width: (geometryProxy.size.width - spacing) / CGFloat(itemsInRow), height: 130)
                 .redacted(reason: .placeholder)
                 .shimmering(gradient: gradient, bandSize: 0.7)
-        }
-    }
-}
-
-struct NCMediaLoadingCell_Previews: PreviewProvider {
-    static var previews: some View {
-        let mockMetadata = tableMetadata()
-
-        GeometryReader { proxy in
-            NCMediaLoadingCell(itemsInRow: 1, metadata: tableMetadata(), geometryProxy: proxy, spacing: 2)
         }
     }
 }
