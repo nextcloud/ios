@@ -87,7 +87,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
         startTimerErrorNetworking()
 
-        // LOG
         var levelLog = 0
         if let pathDirectoryGroup = CCUtility.getDirectoryGroup()?.path {
             NextcloudKit.shared.nkCommonInstance.pathLog = pathDirectoryGroup
@@ -103,10 +102,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             levelLog = CCUtility.getLogLevel()
             NextcloudKit.shared.nkCommonInstance.levelLog = levelLog
             NextcloudKit.shared.nkCommonInstance.copyLogToDocumentDirectory = true
-            NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Start session with level \(levelLog) " + versionNextcloudiOS + " in state \(UIApplication.shared.applicationState.rawValue) where (0 active, 1 inactive, 2 background).")
+            NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Start session with level \(levelLog) " + versionNextcloudiOS)
         }
 
-        // LOG Account
         if let account = NCManageDatabase.shared.getActiveAccount() {
             NextcloudKit.shared.nkCommonInstance.writeLog("Account active \(account.account)")
             if CCUtility.getPassword(account.account).isEmpty {
@@ -114,7 +112,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             }
         }
 
-        // Activate user account
         if let activeAccount = NCManageDatabase.shared.getActiveAccount() {
 
             account = activeAccount.account
@@ -134,10 +131,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             if let bundleID = Bundle.main.bundleIdentifier {
                 UserDefaults.standard.removePersistentDomain(forName: bundleID)
             }
+
             NCBrandColor.shared.createImagesThemingColor()
         }
 
-        // Create user color
         NCBrandColor.shared.createUserColors()
 
         // Push Notification & display notification
@@ -145,7 +142,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         UNUserNotificationCenter.current().delegate = self
         UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge, .sound]) { _, _ in }
 
-        // Store review
         if !NCUtility.shared.isSimulatorOrTestFlight() {
             let review = NCStoreReview()
             review.incrementAppRuns()
@@ -176,7 +172,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             }
         }
 
-        // Passcode
         self.presentPasscode {
             self.enableTouchFaceID()
         }
@@ -349,7 +344,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             return
         }
 
-        NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Processing task")
+        NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Processing task: none")
         task.setTaskCompleted(success: true)
     }
 
