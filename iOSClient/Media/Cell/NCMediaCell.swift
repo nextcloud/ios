@@ -29,7 +29,7 @@ struct NCMediaCell: View {
             }))
 
         ZStack(alignment: .center) {
-//                NavigationLink(destination: NCViewerMediaPageController(metadatas: [thumbnail.metadata], selectedMetadata: thumbnail.metadata)) {
+                NavigationLink(destination: NCViewerMediaPageController(metadatas: [thumbnail.metadata], selectedMetadata: thumbnail.metadata)) {
                     if thumbnail.isDefaultImage {
                         image
                             .foregroundColor(Color(uiColor: .systemGray4))
@@ -38,7 +38,7 @@ struct NCMediaCell: View {
                     } else {
                         image
                     }
-//                }
+                }
 
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)

@@ -212,8 +212,8 @@ struct NCMediaNew: View {
             .onAppear { vm.loadData() }
             .fullScreenCover(isPresented: $isMediaViewControllerPresented) {
                 NCViewerMediaPageController(metadatas: vm.metadatas, selectedMetadata: tappedMetadata)
-        }
-        }
+            }
+        }.navigationBarHidden(true)
     }
 
     func cellVisibilityDidChange(_ id: String, change: VisibilityChange, tracker: VisibilityTracker<String>) {
