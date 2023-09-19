@@ -563,45 +563,37 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
     @objc func changeAccount(_ account: String, userProfile: NKUserProfile?) {
 
-        _ = NCActionCenter.shared
+        guard let tableAccount = NCManageDatabase.shared.setAccountActive(account) else { return }
 
-        if let tableAccount = NCManageDatabase.shared.setAccountActive(account) {
+        NCOperationQueue.shared.cancelAllQueue()
+        NCNetworking.shared.cancelAllTask()
 
-            NCOperationQueue.shared.cancelAllQueue()
-            NCNetworking.shared.cancelAllTask()
+        self.account = tableAccount.account
+        self.urlBase = tableAccount.urlBase
+        self.user = tableAccount.user
+        self.userId = tableAccount.userId
+        self.password = CCUtility.getPassword(tableAccount.account)
 
-            self.account = tableAccount.account
-            self.urlBase = tableAccount.urlBase
-            self.user = tableAccount.user
-            self.userId = tableAccount.userId
-            self.password = CCUtility.getPassword(tableAccount.account)
+        NextcloudKit.shared.setup(account: account, user: user, userId: userId, password: password, urlBase: urlBase)
+        NCManageDatabase.shared.setCapabilities(account: account)
 
-            NextcloudKit.shared.setup(account: account, user: user, userId: userId, password: password, urlBase: urlBase)
-            NCManageDatabase.shared.setCapabilities(account: account)
-
-            if let userProfile {
-                NCManageDatabase.shared.setAccountUserProfile(account: account, userProfile: userProfile)
-            }
-
-            if NCGlobal.shared.capabilityServerVersionMajor > 0 {
-                NextcloudKit.shared.setup(nextcloudVersion: NCGlobal.shared.capabilityServerVersionMajor)
-            }
-
-            NCPushNotification.shared().pushNotification()
-
-            NCService.shared.startRequestServicesServer()
-
-            NCAutoUpload.shared.initAutoUpload(viewController: nil) { items in
-                NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Initialize Auto upload with \(items) uploads")
-            }
-
-            // Registeration domain File Provider
-            // FileProviderDomain *fileProviderDomain = [FileProviderDomain new];
-            // [fileProviderDomain removeAllDomains];
-            // [fileProviderDomain registerDomains];
-
-            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterChangeUser)
+        if let userProfile {
+            NCManageDatabase.shared.setAccountUserProfile(account: account, userProfile: userProfile)
         }
+
+        if NCGlobal.shared.capabilityServerVersionMajor > 0 {
+            NextcloudKit.shared.setup(nextcloudVersion: NCGlobal.shared.capabilityServerVersionMajor)
+        }
+
+        NCPushNotification.shared().pushNotification()
+
+        NCService.shared.startRequestServicesServer()
+
+        NCAutoUpload.shared.initAutoUpload(viewController: nil) { items in
+            NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Initialize Auto upload with \(items) uploads")
+        }
+
+        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterChangeUser)
     }
 
     @objc func deleteAccount(_ account: String, wipe: Bool) {

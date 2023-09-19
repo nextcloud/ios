@@ -283,8 +283,7 @@ extension NCManageDatabase {
         return NCGlobal.shared.subfolderGranularityMonthly
     }
 
-    @discardableResult
-    @objc func setAccountActive(_ account: String) -> tableAccount? {
+    func setAccountActive(_ account: String) -> tableAccount? {
 
         var accountReturn = tableAccount()
 
