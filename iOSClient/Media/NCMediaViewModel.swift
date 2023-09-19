@@ -9,6 +9,10 @@
 import NextcloudKit
 import Combine
 
+enum SortType: String {
+     case modifiedDate = "date", creationDate = "creationDate", uploadDate = "uploadDate"
+}
+
 @MainActor class NCMediaViewModel: ObservableObject {
     @Published var metadatas: [tableMetadata] = []
 
@@ -21,6 +25,8 @@ import Combine
     private let appDelegate = UIApplication.shared.delegate as? AppDelegate
     @Published internal var filterClassTypeImage = false
     @Published internal var filterClassTypeVideo = false
+
+    @Published internal var sortType: SortType = SortType(rawValue: CCUtility.getMediaSortDate()) ?? .modifiedDate
 
     private var cancellables: Set<AnyCancellable> = []
 
@@ -36,7 +42,13 @@ import Combine
         searchNewMedia()
 
         $filterClassTypeImage.sink { _ in self.loadData() }.store(in: &cancellables)
-        $filterClassTypeVideo.sink{ _ in self.loadData() }.store(in: &cancellables)
+        $filterClassTypeVideo.sink { _ in self.loadData() }.store(in: &cancellables)
+        $sortType.sink { sortType in
+            print(sortType.rawValue)
+            CCUtility.setMediaSortDate(sortType.rawValue)
+            self.loadData()
+        }
+        .store(in: &cancellables)
     }
 
     deinit {
