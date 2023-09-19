@@ -35,10 +35,6 @@ class NCMediaUIHostingController: UIHostingController<NCMediaNew>, DataDelegate 
             viewController.metadatas = metadatas
 
             NCViewer.shared.view(viewController: self, metadata: selectedMetadata, metadatas: metadatas, imageIcon: image)
-
-//            let navController = UINavigationController(rootViewController: self)
-//            self.navigationController!.pushViewController(viewController, animated: true)
-//            self.present(UINavigationController(rootViewController: viewController), animated: true, completion: nil)
         }
     }
 }
@@ -77,7 +73,6 @@ struct NCMediaNew: View {
     @State private var isScrolledToTop = true
     @State private var isMediaViewControllerPresented = false
     @State private var tappedMetadata = tableMetadata()
-    @State private var sort: Int = 0
     @State private var isInSelectMode = false
     @State private var selectedMetadataInSelectMode: [tableMetadata] = []
 
@@ -179,10 +174,10 @@ struct NCMediaNew: View {
                                         })
                                     }
 
-                                    Picker("Sorting options", selection: $sort) {
-                                        Label(NSLocalizedString("_media_by_modified_date_", comment: ""), systemImage: "circle.grid.cross.up.fill").tag(0)
-                                        Label(NSLocalizedString("_media_by_created_date_", comment: ""), systemImage: "circle.grid.cross.down.fill").tag(1)
-                                        Label(NSLocalizedString("_media_by_upload_date_", comment: ""), systemImage: "circle.grid.cross.right.fill").tag(2)
+                                    Picker("Sorting options", selection: $vm.sortType) {
+                                        Label(NSLocalizedString("_media_by_modified_date_", comment: ""), systemImage: "circle.grid.cross.up.fill").tag(SortType.modifiedDate)
+                                        Label(NSLocalizedString("_media_by_created_date_", comment: ""), systemImage: "circle.grid.cross.down.fill").tag(SortType.creationDate)
+                                        Label(NSLocalizedString("_media_by_upload_date_", comment: ""), systemImage: "circle.grid.cross.right.fill").tag(SortType.uploadDate)
                                     }
                                     .pickerStyle(.menu)
                                 } label: {
