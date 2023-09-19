@@ -90,25 +90,6 @@ class NCViewerMediaPage: UIViewController {
         viewerMediaScreenMode = .normal
     }
 
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-
-        if currentViewController.metadata.isImage {
-            self.navigationController?.navigationItem.rightBarButtonItems = [moreNavigationItem, imageDetailNavigationItem]
-        } else {
-            self.navigationController?.navigationItem.rightBarButtonItems = [moreNavigationItem]
-        }
-
-        self.tabBarController?.tabBar.isHidden = true
-
-        view.setNeedsLayout()
-        view.layoutIfNeeded()
-    }
-
-    override func viewWillDisappear(_ animated: Bool) {
-        self.tabBarController?.tabBar.isHidden = false
-    }
-
     override func viewDidLoad() {
         super.viewDidLoad()
 
