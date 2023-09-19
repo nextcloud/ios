@@ -59,6 +59,7 @@ struct NCViewerMediaPageController: UIViewControllerRepresentable {
                 index += 1
             }
             viewController.metadatas = metadatas
+            viewController.hidesBottomBarWhenPushed = true
 
             return viewController
         } else {
