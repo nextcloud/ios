@@ -45,7 +45,7 @@ class NCPlayerToolBar: UIView {
     @IBOutlet weak var forwardButton: UIButton!
 
     @IBOutlet weak var playbackSliderView: UIView!
-    @IBOutlet weak var playbackSlider: UISlider!
+    @IBOutlet weak var playbackSlider: NCPlayerToolBarSlider!
     @IBOutlet weak var labelLeftTime: UILabel!
     @IBOutlet weak var labelCurrentTime: UILabel!
     @IBOutlet weak var repeatButton: UIButton!
@@ -95,6 +95,7 @@ class NCPlayerToolBar: UIView {
         playButton.setImage(NCUtility.shared.loadImage(named: "play.fill", color: .white, symbolConfiguration: UIImage.SymbolConfiguration(pointSize: pointSize)), for: .normal)
         forwardButton.setImage(NCUtility.shared.loadImage(named: "goforward.10", color: .white, symbolConfiguration: UIImage.SymbolConfiguration(pointSize: pointSize)), for: .normal)
 
+        playbackSlider.addTapGesture()
         playbackSlider.setThumbImage(UIImage(systemName: "circle.fill", withConfiguration: UIImage.SymbolConfiguration(pointSize: 15)), for: .normal)
         playbackSlider.value = 0
         playbackSlider.tintColor = .white
@@ -103,6 +104,7 @@ class NCPlayerToolBar: UIView {
 
         utilityView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(tap(gestureRecognizer:))))
         playbackSliderView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(tap(gestureRecognizer:))))
+        playbackSliderView.addGestureRecognizer(UIPanGestureRecognizer(target: self, action: #selector(tap(gestureRecognizer:))))
         playerButtonView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(tap(gestureRecognizer:))))
 
         labelCurrentTime.textColor = .white
@@ -137,7 +139,7 @@ class NCPlayerToolBar: UIView {
         }
 
         playerButtonView.isHidden = true
-        
+
         playButton.setImage(NCUtility.shared.loadImage(named: "play.fill", color: .white, symbolConfiguration: UIImage.SymbolConfiguration(pointSize: pointSize)), for: .normal)
 
         playbackSlider.value = position
@@ -216,27 +218,29 @@ class NCPlayerToolBar: UIView {
 
     @objc func playbackValChanged(slider: UISlider, event: UIEvent) {
 
-        guard let touchEvent = event.allTouches?.first,
-              let ncplayer = ncplayer
-        else { return }
-
+        guard let ncplayer = ncplayer else { return }
         let newPosition = playbackSlider.value
 
-        switch touchEvent.phase {
-        case .began:
-            viewerMediaPage?.timerAutoHide?.invalidate()
-            playbackSliderEvent = .began
-        case .moved:
-            ncplayer.playerPosition(newPosition)
-            playbackSliderEvent = .moved
-        case .ended:
-            ncplayer.playerPosition(newPosition)
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                self.playbackSliderEvent = .ended
-                self.viewerMediaPage?.startTimerAutoHide()
+        if let touchEvent = event.allTouches?.first {
+            switch touchEvent.phase {
+            case .began:
+                viewerMediaPage?.timerAutoHide?.invalidate()
+                playbackSliderEvent = .began
+            case .moved:
+                ncplayer.playerPosition(newPosition)
+                playbackSliderEvent = .moved
+            case .ended:
+                ncplayer.playerPosition(newPosition)
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                    self.playbackSliderEvent = .ended
+                    self.viewerMediaPage?.startTimerAutoHide()
+                }
+            default:
+                break
             }
-        default:
-            break
+        } else {
+            ncplayer.playerPosition(newPosition)
+            self.viewerMediaPage?.startTimerAutoHide()
         }
     }
 
@@ -481,7 +485,7 @@ extension NCPlayerToolBar: NCSelectDelegate {
                 }, taskHandler: { _ in
                 }, progressHandler: { progress in
                     self.hud.progress = Float(progress.fractionCompleted)
-                }) { account, _, _, _, _, _, error in
+                }) { _, _, _, _, _, _, error in
                     self.hud.dismiss()
                     if error == .success {
                         self.addPlaybackSlave(type: type, metadata: metadata)
@@ -502,5 +506,40 @@ extension NCPlayerToolBar: NCSelectDelegate {
         } else if type == "audio" {
             self.ncplayer?.player.addPlaybackSlave(URL(fileURLWithPath: fileNameLocalPath), type: .audio, enforce: true)
         }
+    }
+}
+
+// https://stackoverflow.com/questions/13196263/custom-uislider-increase-hot-spot-size
+//
+class NCPlayerToolBarSlider: UISlider {
+
+    private var thumbTouchSize = CGSize(width: 100, height: 100)
+
+    override func point(inside point: CGPoint, with event: UIEvent?) -> Bool {
+        let increasedBounds = bounds.insetBy(dx: -thumbTouchSize.width, dy: -thumbTouchSize.height)
+        let containsPoint = increasedBounds.contains(point)
+        return containsPoint
+    }
+
+    override func beginTracking(_ touch: UITouch, with event: UIEvent?) -> Bool {
+        let percentage = CGFloat((value - minimumValue) / (maximumValue - minimumValue))
+        let thumbSizeHeight = thumbRect(forBounds: bounds, trackRect:trackRect(forBounds: bounds), value:0).size.height
+        let thumbPosition = thumbSizeHeight + (percentage * (bounds.size.width - (2 * thumbSizeHeight)))
+        let touchLocation = touch.location(in: self)
+        return touchLocation.x <= (thumbPosition + thumbTouchSize.width) && touchLocation.x >= (thumbPosition - thumbTouchSize.width)
+    }
+
+    public func addTapGesture() {
+
+        let tap = UITapGestureRecognizer(target: self, action: #selector(handleTap(_:)))
+        addGestureRecognizer(tap)
+    }
+
+    @objc private func handleTap(_ sender: UITapGestureRecognizer) {
+
+        let location = sender.location(in: self)
+        let percent = minimumValue + Float(location.x / bounds.width) * (maximumValue - minimumValue)
+        setValue(percent, animated: true)
+        sendActions(for: .valueChanged)
     }
 }

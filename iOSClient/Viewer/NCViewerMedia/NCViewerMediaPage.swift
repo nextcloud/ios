@@ -112,7 +112,7 @@ class NCViewerMediaPage: UIViewController {
         pageViewController.setViewControllers([viewerMedia], direction: .forward, animated: true, completion: nil)
         changeScreenMode(mode: viewerMediaScreenMode)
 
-        NotificationCenter.default.addObserver(self, selector: #selector(viewUnload), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterMenuDetailClose), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(viewUnload), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeUser), object: nil)
 
         NotificationCenter.default.addObserver(self, selector: #selector(pageViewController.enableSwipeGesture), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterEnableSwipeGesture), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(pageViewController.disableSwipeGesture), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDisableSwipeGesture), object: nil)
@@ -120,6 +120,7 @@ class NCViewerMediaPage: UIViewController {
         NotificationCenter.default.addObserver(self, selector: #selector(deleteFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDeleteFile), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(renameFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterRenameFile), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(moveFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterMoveFile), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(copyFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterCopyFile), object: nil)
 
         NotificationCenter.default.addObserver(self, selector: #selector(downloadedFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDownloadedFile), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(triggerProgressTask(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterProgressTask), object: nil)
@@ -140,6 +141,7 @@ class NCViewerMediaPage: UIViewController {
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDeleteFile), object: nil)
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterRenameFile), object: nil)
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterMoveFile), object: nil)
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterCopyFile), object: nil)
 
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDownloadedFile), object: nil)
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterProgressTask), object: nil)
@@ -202,7 +204,7 @@ class NCViewerMediaPage: UIViewController {
     }
 
     func getViewerMedia(index: Int, metadata: tableMetadata) -> NCViewerMedia {
-    
+
         let viewerMedia = UIStoryboard(name: "NCViewerMediaPage", bundle: nil).instantiateViewController(withIdentifier: "NCViewerMedia") as! NCViewerMedia
         viewerMedia.index = index
         viewerMedia.metadata = metadata
@@ -402,6 +404,15 @@ class NCViewerMediaPage: UIViewController {
         deleteFile(notification)
     }
 
+    @objc func copyFile(_ notification: NSNotification) {
+
+        guard let userInfo = notification.userInfo as NSDictionary? else { return }
+
+        if let hud = userInfo["hud"] as? JGProgressHUD {
+            hud.dismiss()
+        }
+    }
+    
     @objc func renameFile(_ notification: NSNotification) {
 
         guard let userInfo = notification.userInfo as NSDictionary?,
@@ -587,6 +598,7 @@ extension NCViewerMediaPage: UIPageViewControllerDelegate, UIPageViewControllerD
             previousViewControllers.forEach { viewController in
                 let viewerMedia = viewController as! NCViewerMedia
                 viewerMedia.ncplayer?.playerStop()
+                viewerMedia.closeDetail()
             }
             currentIndex = nextIndex!
         }
@@ -694,5 +706,3 @@ extension NCViewerMediaPage: NCViewerMediaViewDelegate {
         imageDetailNavigationItem.image = UIImage(systemName: "info.circle")
     }
 }
-
-

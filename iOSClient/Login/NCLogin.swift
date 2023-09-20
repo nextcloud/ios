@@ -153,7 +153,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
         if self.shareAccounts != nil, let image = UIImage(systemName: "person.badge.plus")?.withTintColor(.white, renderingMode: .alwaysOriginal), let backgroundColor = NCBrandColor.shared.brandElement.lighter(by: 10) {
             let title = String(format: NSLocalizedString("_apps_nextcloud_detect_", comment: ""), NCBrandOptions.shared.brand)
             let description = String(format: NSLocalizedString("_add_existing_account_", comment: ""), NCBrandOptions.shared.brand)
-            NCContentPresenter.shared.alertAction(image: image, contentModeImage: .scaleAspectFit, sizeImage: CGSize(width: 45, height: 45),backgroundColor: backgroundColor, textColor: textColor, title: title, description: description, textCancelButton: "_cancel_", textOkButton: "_ok_", attributes: EKAttributes.topFloat) { identifier in
+            NCContentPresenter.shared.alertAction(image: image, contentModeImage: .scaleAspectFit, sizeImage: CGSize(width: 45, height: 45), backgroundColor: backgroundColor, textColor: textColor, title: title, description: description, textCancelButton: "_cancel_", textOkButton: "_ok_", attributes: EKAttributes.topFloat) { identifier in
                 if identifier == "ok" {
                     self.openShareAccountsViewController()
                 }
@@ -244,11 +244,11 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
             vc.dismissDidEnterBackground = false
             vc.delegate = self
 
-            let screenHeighMax = UIScreen.main.bounds.height - (UIScreen.main.bounds.height/5)
+            let screenHeighMax = UIScreen.main.bounds.height - (UIScreen.main.bounds.height / 5)
             let numberCell = shareAccounts.count
             let height = min(CGFloat(numberCell * Int(vc.heightCell) + 45), screenHeighMax)
 
-            let popup = NCPopupViewController(contentController: vc, popupWidth: 300, popupHeight: height+20)
+            let popup = NCPopupViewController(contentController: vc, popupWidth: 300, popupHeight: height + 20)
 
             self.present(popup, animated: true)
         }
@@ -269,7 +269,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
                     NCNetworking.shared.writeCertificate(host: host)
                 }
 
-                NextcloudKit.shared.getLoginFlowV2(serverUrl: url) { token, endpoint, login, data, error in
+                NextcloudKit.shared.getLoginFlowV2(serverUrl: url) { token, endpoint, login, _, error in
 
                     self.loginButton.isEnabled = true
 
@@ -387,31 +387,41 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
             if let host = URL(string: url)?.host {
                 NCNetworking.shared.writeCertificate(host: host)
             }
+            let urlBase = url
+            let account = user + " " + user
 
-            let account = user + " " + url
+            NextcloudKit.shared.setup(account: account, user: user, userId: user, password: password, urlBase: urlBase)
+            NextcloudKit.shared.getUserProfile { _, userProfile, data, error in
 
-            if NCManageDatabase.shared.getAccounts() == nil {
-                NCUtility.shared.removeAllSettings()
-            }
-                           
-            NCManageDatabase.shared.deleteAccount(account)
-            NCManageDatabase.shared.addAccount(account, urlBase: url, user: user, password: password)
+                if error == .success, let userProfile {
 
-            if let activeAccount = NCManageDatabase.shared.setAccountActive(account) {
-                appDelegate.settingAccount(activeAccount.account, urlBase: activeAccount.urlBase, user: activeAccount.user, userId: activeAccount.userId, password: CCUtility.getPassword(activeAccount.account))
-            }
+                    if NCManageDatabase.shared.getAccounts() == nil {
+                        NCUtility.shared.removeAllSettings()
+                    }
 
-            if CCUtility.getIntro() {
-                self.dismiss(animated: true)
-            } else {
-                CCUtility.setIntro(true)
-                if self.presentingViewController == nil {
-                    let viewController = UIStoryboard(name: "Main", bundle: nil).instantiateInitialViewController()
-                    viewController?.modalPresentationStyle = .fullScreen
-                    self.appDelegate.window?.rootViewController = viewController
-                    self.appDelegate.window?.makeKey()
+                    NCManageDatabase.shared.deleteAccount(account)
+                    NCManageDatabase.shared.addAccount(account, urlBase: url, user: user, userId: userProfile.userId, password: password)
+
+                    self.appDelegate.changeAccount(account, userProfile: userProfile)
+
+                    if CCUtility.getIntro() {
+                        self.dismiss(animated: true)
+                    } else {
+                        CCUtility.setIntro(true)
+                        if self.presentingViewController == nil {
+                            let viewController = UIStoryboard(name: "Main", bundle: nil).instantiateInitialViewController()
+                            viewController?.modalPresentationStyle = .fullScreen
+                            self.appDelegate.window?.rootViewController = viewController
+                            self.appDelegate.window?.makeKey()
+                        } else {
+                            self.dismiss(animated: true)
+                        }
+                    }
                 } else {
-                    self.dismiss(animated: true)
+
+                    let alertController = UIAlertController(title: NSLocalizedString("_error_", comment: ""), message: error.errorDescription, preferredStyle: .alert)
+                    alertController.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { _ in }))
+                    self.present(alertController, animated: true)
                 }
             }
 
@@ -439,9 +449,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
 
             let message = NSLocalizedString("_not_possible_connect_to_server_", comment: "") + ".\n" + error.errorDescription
             let alertController = UIAlertController(title: NSLocalizedString("_error_", comment: ""), message: message, preferredStyle: .alert)
-
             alertController.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { _ in }))
-
             self.present(alertController, animated: true, completion: { })
         }
     }

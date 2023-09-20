@@ -45,7 +45,6 @@ class NCEmptyDataSet: NSObject {
     private var centerXAnchor: NSLayoutConstraint?
     private var centerYAnchor: NSLayoutConstraint?
 
-
     init(view: UIView, offset: CGFloat = 0, delegate: NCEmptyDataSetDelegate?) {
         super.init()
 

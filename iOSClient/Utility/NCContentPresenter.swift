@@ -101,8 +101,13 @@ class NCContentPresenter: NSObject {
     func messageNotification(_ title: String, error: NKError, delay: TimeInterval, type: messageType, priority: EKAttributes.Precedence.Priority = .normal, dropEnqueuedEntries: Bool = false) {
 
         // No notification message for:
-        if error.errorCode == NSURLErrorCancelled || error.errorCode == NCGlobal.shared.errorRequestExplicityCancelled { return }
-        else if error == .success && type == messageType.error { return }
+        if error.errorCode == NSURLErrorCancelled || error.errorCode == NCGlobal.shared.errorRequestExplicityCancelled { return } else if error == .success && type == messageType.error { return }
+
+        // Hardcode change type
+        var type = type
+        if error.errorCode == NCGlobal.shared.errorE2EEUploadInProgress {
+            type = .info
+        }
 
         DispatchQueue.main.async {
             switch error.errorCode {
@@ -113,7 +118,7 @@ class NCContentPresenter: NSObject {
                 var responseMessage = ""
                 if let data = error.responseData {
                     do {
-                        if let json = try JSONSerialization.jsonObject(with: data, options: .mutableContainers) as? [String:Any],
+                        if let json = try JSONSerialization.jsonObject(with: data, options: .mutableContainers) as? [String: Any],
                            let message = json["message"] as? String {
                             responseMessage = "\n\n" + message
                         }
@@ -201,7 +206,7 @@ class NCContentPresenter: NSObject {
             }
 
         let okButton = EKProperty.ButtonContent(
-            label: EKProperty.LabelContent(text: NSLocalizedString(textOkButton, comment: ""),style: EKProperty.LabelStyle(font: MainFont.medium.with(size: 16), color: EKColor(textColor))),
+            label: EKProperty.LabelContent(text: NSLocalizedString(textOkButton, comment: ""), style: EKProperty.LabelStyle(font: MainFont.medium.with(size: 16), color: EKColor(textColor))),
             backgroundColor: .clear,
             highlightedBackgroundColor: EKColor(UIColor.lightGray),
             displayMode: EKAttributes.DisplayMode.inferred,
@@ -216,7 +221,6 @@ class NCContentPresenter: NSObject {
 
         SwiftEntryKit.display(entry: contentView, using: buttonAttributes)
     }
-
 
     // MARK: - Note Message
 

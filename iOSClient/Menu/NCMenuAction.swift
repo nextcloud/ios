@@ -93,13 +93,13 @@ extension NCMenuAction {
     }
 
     /// Copy files to pasteboard
-    static func copyAction(selectOcId: [String], hudView: UIView, order: Int = 0, completion: (() -> Void)? = nil) -> NCMenuAction {
+    static func copyAction(selectOcId: [String], order: Int = 0, completion: (() -> Void)? = nil) -> NCMenuAction {
         NCMenuAction(
             title: NSLocalizedString("_copy_file_", comment: ""),
             icon: NCUtility.shared.loadImage(named: "doc.on.doc"),
             order: order,
             action: { _ in
-                NCActionCenter.shared.copyPasteboard(pasteboardOcIds: selectOcId, hudView: hudView)
+                NCActionCenter.shared.copyPasteboard(pasteboardOcIds: selectOcId)
                 completion?()
             }
         )

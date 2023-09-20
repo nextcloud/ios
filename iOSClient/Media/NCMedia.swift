@@ -91,9 +91,6 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate, NCSelectDelegate {
         // Empty
         emptyDataSet = NCEmptyDataSet(view: collectionView, offset: 0, delegate: self)
 
-        // Notification
-        NotificationCenter.default.addObserver(self, selector: #selector(initialize), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterInitialize), object: nil)
-
         mediaCommandView = Bundle.main.loadNibNamed("NCMediaCommandView", owner: self, options: nil)?.first as? NCMediaCommandView
         self.view.addSubview(mediaCommandView!)
         mediaCommandView?.mediaView = self
@@ -134,10 +131,10 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate, NCSelectDelegate {
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        
+
         mediaCommandTitle()
     }
-    
+
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
 
@@ -159,17 +156,6 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate, NCSelectDelegate {
     }
 
     // MARK: - NotificationCenter
-
-    @objc func initialize() {
-
-        self.reloadDataSourceWithCompletion { _ in
-            self.timerSearchNewMedia?.invalidate()
-            self.timerSearchNewMedia = Timer.scheduledTimer(timeInterval: self.timeIntervalSearchNewMedia, target: self, selector: #selector(self.searchNewMediaTimer), userInfo: nil, repeats: false)
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                self.mediaCommandTitle()
-            }
-        }
-    }
 
     @objc func deleteFile(_ notification: NSNotification) {
 
@@ -325,7 +311,7 @@ extension NCMedia: UICollectionViewDelegate {
                 selectOcId.append(metadata.ocId)
                 selectIndexPath.append(indexPath)
             }
-            if indexPath.section <  collectionView.numberOfSections && indexPath.row < collectionView.numberOfItems(inSection: indexPath.section) {
+            if indexPath.section < collectionView.numberOfSections && indexPath.row < collectionView.numberOfItems(inSection: indexPath.section) {
                 collectionView.reloadItems(at: [indexPath])
             }
         } else {
@@ -477,11 +463,11 @@ extension NCMedia {
 
         switch CCUtility.getMediaSortDate() {
         case "date":
-            self.metadatas = self.metadatas.sorted(by: {($0.date as Date) > ($1.date as Date)} )
+            self.metadatas = self.metadatas.sorted(by: {($0.date as Date) > ($1.date as Date)})
         case "creationDate":
-            self.metadatas = self.metadatas.sorted(by: {($0.creationDate as Date) > ($1.creationDate as Date)} )
+            self.metadatas = self.metadatas.sorted(by: {($0.creationDate as Date) > ($1.creationDate as Date)})
         case "uploadDate":
-            self.metadatas = self.metadatas.sorted(by: {($0.uploadDate as Date) > ($1.uploadDate as Date)} )
+            self.metadatas = self.metadatas.sorted(by: {($0.uploadDate as Date) > ($1.uploadDate as Date)})
         default:
             break
         }
@@ -533,7 +519,7 @@ extension NCMedia {
             self.collectionView.reloadData()
             var bottom: CGFloat = 0
             if let mainTabBar = self.tabBarController?.tabBar as? NCMainTabBar {
-                bottom = -mainTabBar.getHight()
+                bottom = -mainTabBar.getHeight()
             }
             NCActivityIndicator.shared.start(backgroundView: self.view, bottom: bottom - 5, style: .medium)
         }
@@ -553,8 +539,8 @@ extension NCMedia {
         }
 
         let options = NKRequestOptions(timeout: 300, queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
-        
-        NextcloudKit.shared.searchMedia(path: mediaPath, lessDate: lessDate, greaterDate: greaterDate, elementDate: "d:getlastmodified/", limit: limit, showHiddenFiles: CCUtility.getShowHiddenFiles(), options: options) { account, files, data, error in
+
+        NextcloudKit.shared.searchMedia(path: mediaPath, lessDate: lessDate, greaterDate: greaterDate, elementDate: "d:getlastmodified/", limit: limit, showHiddenFiles: CCUtility.getShowHiddenFiles(), options: options) { account, files, _, error in
 
             self.oldInProgress = false
             DispatchQueue.main.async {
@@ -636,8 +622,8 @@ extension NCMedia {
         reloadDataThenPerform {
 
             let options = NKRequestOptions(timeout: 300, queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
-            
-            NextcloudKit.shared.searchMedia(path: self.mediaPath, lessDate: lessDate, greaterDate: greaterDate, elementDate: "d:getlastmodified/", limit: limit, showHiddenFiles: CCUtility.getShowHiddenFiles(), options: options) { account, files, data, error in
+
+            NextcloudKit.shared.searchMedia(path: self.mediaPath, lessDate: lessDate, greaterDate: greaterDate, elementDate: "d:getlastmodified/", limit: limit, showHiddenFiles: CCUtility.getShowHiddenFiles(), options: options) { account, files, _, error in
 
                 self.newInProgress = false
                 DispatchQueue.main.async {
@@ -670,7 +656,7 @@ extension NCMedia: UIScrollViewDelegate {
 
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
 
-        if lastContentOffsetY == 0 || lastContentOffsetY + cellHeigth/2 <= scrollView.contentOffset.y  || lastContentOffsetY - cellHeigth/2 >= scrollView.contentOffset.y {
+        if lastContentOffsetY == 0 || lastContentOffsetY + cellHeigth / 2 <= scrollView.contentOffset.y || lastContentOffsetY - cellHeigth / 2 >= scrollView.contentOffset.y {
 
             mediaCommandTitle()
             lastContentOffsetY = scrollView.contentOffset.y

@@ -130,7 +130,7 @@ extension NCCollectionViewCommon {
                     title: NSLocalizedString("_view_in_folder_", comment: ""),
                     icon: NCUtility.shared.loadImage(named: "questionmark.folder"),
                     order: 21,
-                    action: { menuAction in
+                    action: { _ in
                         NCActionCenter.shared.openFileViewInFolder(serverUrl: metadata.serverUrl, fileNameBlink: metadata.fileName, fileNameOpen: nil)
                     }
                 )
@@ -145,7 +145,7 @@ extension NCCollectionViewCommon {
         }
 
         //
-        // SET FOLDER E2EE -- IF > (ONLY ROOT) metadata.serverUrl == serverUrlHome,
+        // SET FOLDER E2EE
         //
         if metadata.isDirectoySettableE2EE {
             actions.append(
@@ -155,7 +155,7 @@ extension NCCollectionViewCommon {
                     order: 30,
                     action: { _ in
                         Task {
-                            let error = await NCNetworkingE2EECreateFolder.shared.createFolderAndMarkE2EE(fileName: metadata.fileName, serverUrl: metadata.serverUrl, account: metadata.account, userId: metadata.userId, createFolder: false)
+                            let error = await NCNetworkingE2EEMarkFolder().markFolderE2ee(account: metadata.account, fileName: metadata.fileName, serverUrl: metadata.serverUrl, userId: metadata.userId)
                             if error != .success {
                                 NCContentPresenter.shared.showError(error: error)
                             }
@@ -175,7 +175,7 @@ extension NCCollectionViewCommon {
                     icon: NCUtility.shared.loadImage(named: "lock"),
                     order: 30,
                     action: { _ in
-                        NextcloudKit.shared.markE2EEFolder(fileId: metadata.fileId, delete: true) { account, error in
+                        NextcloudKit.shared.markE2EEFolder(fileId: metadata.fileId, delete: true) { _, error in
                             if error == .success {
                                 NCManageDatabase.shared.deleteE2eEncryption(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", self.appDelegate.account, serverUrl))
                                 NCManageDatabase.shared.setDirectory(serverUrl: serverUrl, serverUrlTo: nil, etag: nil, ocId: nil, fileId: nil, encrypted: false, richWorkspace: nil, account: metadata.account)
@@ -334,9 +334,9 @@ extension NCCollectionViewCommon {
         // COPY IN PASTEBOARD
         //
         if metadata.isCopyableInPasteboard {
-            actions.append(.copyAction(selectOcId: [metadata.ocId], hudView: self.view, order: 140))
+            actions.append(.copyAction(selectOcId: [metadata.ocId], order: 140))
         }
-        
+
         //
         // MODIFY WITH QUICK LOOK
         //
@@ -346,7 +346,7 @@ extension NCCollectionViewCommon {
                     title: NSLocalizedString("_modify_", comment: ""),
                     icon: NCUtility.shared.loadImage(named: "pencil.tip.crop.circle"),
                     order: 150,
-                    action: { menuAction in
+                    action: { _ in
                         if CCUtility.fileProviderStorageExists(metadata) {
                             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDownloadedFile, userInfo: ["ocId": metadata.ocId, "selector": NCGlobal.shared.selectorLoadFileQuickLook, "error": NKError(), "account": metadata.account])
                         } else {
@@ -377,7 +377,7 @@ extension NCCollectionViewCommon {
                 )
             )
         }
-        
+
         //
         // DELETE
         //

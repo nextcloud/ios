@@ -84,12 +84,17 @@ class NCShare: UIViewController, NCShareNetworkingDelegate, NCSharePagingContent
 
         guard let metadata = metadata else { return }
 
-        if metadata.e2eEncrypted && NCGlobal.shared.capabilityE2EEApiVersion == NCGlobal.shared.e2eeVersionV12 {
-            searchFieldTopConstraint.constant = -50
-            searchField.isHidden = true
-         } else {
+        if metadata.e2eEncrypted {
+            let direcrory = NCManageDatabase.shared.getTableDirectory(account: metadata.account, serverUrl: metadata.serverUrl)
+            if NCGlobal.shared.capabilityE2EEApiVersion == NCGlobal.shared.e2eeVersionV12 ||
+                (NCGlobal.shared.capabilityE2EEApiVersion == NCGlobal.shared.e2eeVersionV20 && direcrory?.e2eEncrypted ?? false) {
+                // searchField.isEnabled = false
+                searchFieldTopConstraint.constant = -50
+                searchField.isHidden = true
+            }
+        } else {
             checkSharedWithYou()
-         }
+        }
 
         reloadData()
 

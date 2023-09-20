@@ -181,7 +181,7 @@ import NextcloudKit
     // MARK: - Unified Search
 
     func unifiedSearchAddSection(collectionViewCommon: NCCollectionViewCommon, metadatas: [tableMetadata], searchResult: NKSearchResult) {
-        unifiedSearchQueue.addOperation(NCOperationUnifiedSearch.init(collectionViewCommon: collectionViewCommon, metadatas: metadatas, searchResult: searchResult))
+        unifiedSearchQueue.addOperation(NCOperationUnifiedSearch(collectionViewCommon: collectionViewCommon, metadatas: metadatas, searchResult: searchResult))
     }
 
     func unifiedSearchCancelAll() {
@@ -481,7 +481,7 @@ class NCOperationDownloadAvatar: ConcurrentOperation {
         if isCancelled {
             self.finish()
         } else {
-            
+
             let options = NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
 
             NextcloudKit.shared.downloadAvatar(user: user, fileNameLocalPath: fileNameLocalPath, sizeImage: NCGlobal.shared.avatarSize, avatarSizeRounded: NCGlobal.shared.avatarSizeRounded, etag: self.etag, options: options) { _, imageAvatar, _, etag, error in

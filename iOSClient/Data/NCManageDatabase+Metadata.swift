@@ -251,17 +251,11 @@ extension tableMetadata {
     // Return if is sharable
     func isSharable() -> Bool {
         guard NCGlobal.shared.capabilityFileSharingApiEnabled else { return false }
-
-        if NCGlobal.shared.capabilityE2EEApiVersion == NCGlobal.shared.e2eeVersionV20, isDirectoryE2EE {
-            return !isDirectoryE2EETop
-        } else if !e2eEncrypted && !isDirectoryE2EE {
+        if isDirectoryE2EE || e2eEncrypted {
+            guard directory, NCGlobal.shared.capabilityE2EEEnabled else { return false }
             return true
-        } else if NCGlobal.shared.capabilityServerVersionMajor >= NCGlobal.shared.nextcloudVersion26 && directory {
-            // E2EE DIRECTORY SECURE FILE DROP (SHARE AVAILABLE)
-            return true
-        } else {
-            return false
         }
+        return true
     }
 }
 
@@ -1080,6 +1074,7 @@ extension NCManageDatabase {
 
         do {
             let realm = try Realm()
+            realm.refresh()
             try realm.write {
                 let sortProperties = [SortDescriptor(keyPath: "serverUrl", ascending: false), SortDescriptor(keyPath: "fileNameView", ascending: false)]
                 let results = realm.objects(tableMetadata.self).filter(predicate).sorted(by: sortProperties)

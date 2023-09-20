@@ -143,7 +143,7 @@ class NCAudioRecorderViewController: UIViewController, NCAudioRecorderDelegate {
 
         voiceRecordHUD.update(CGFloat(rate))
         voiceRecordHUD.fillColor = UIColor.green
-        
+
         let formatter = DateComponentsFormatter()
         formatter.allowedUnits = [.second]
         formatter.unitsStyle = .full

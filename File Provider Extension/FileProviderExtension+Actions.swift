@@ -37,11 +37,11 @@ extension FileProviderExtension {
         let directoryName = NCUtilityFileSystem.shared.createFileName(directoryName, serverUrl: tableDirectory.serverUrl, account: fileProviderData.shared.account)
         let serverUrlFileName = tableDirectory.serverUrl + "/" + directoryName
 
-        NextcloudKit.shared.createFolder(serverUrlFileName: serverUrlFileName) { account, ocId, _, error in
+        NextcloudKit.shared.createFolder(serverUrlFileName: serverUrlFileName) { _, ocId, _, error in
 
             if error == .success {
 
-                NextcloudKit.shared.readFileOrFolder(serverUrlFileName: serverUrlFileName, depth: "0", showHiddenFiles: CCUtility.getShowHiddenFiles()) { account, files, _, error in
+                NextcloudKit.shared.readFileOrFolder(serverUrlFileName: serverUrlFileName, depth: "0", showHiddenFiles: CCUtility.getShowHiddenFiles()) { _, files, _, error in
 
                     if error == .success && files.count > 0 {
 

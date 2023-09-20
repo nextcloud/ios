@@ -228,6 +228,19 @@ extension NCManageDatabase {
         }
     }
 
+    func deleteTableShare(account: String, path: String) {
+
+        do {
+            let realm = try Realm()
+            try realm.write {
+                let result = realm.objects(tableShare.self).filter("account == %@ AND path == %@", account, path)
+                realm.delete(result)
+            }
+        } catch let error as NSError {
+            NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
+        }
+    }
+
     func deleteTableShare(account: String) {
 
         do {

@@ -144,7 +144,7 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
         NotificationCenter.default.addObserver(self, selector: #selector(uploadStartFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUploadStartFile), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(uploadedFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUploadedFile), object: nil)
 
-        NotificationCenter.default.addObserver(self, selector: #selector(viewUnload), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterMenuDetailClose), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(viewUnload), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeUser), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(searchText), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterMenuSearchTextPDF), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(goToPage), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterMenuGotToPageInPDF), object: nil)
 
@@ -159,7 +159,7 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterMoveFile), object: nil)
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUploadedFile), object: nil)
 
-        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterMenuDetailClose), object: nil)
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeUser), object: nil)
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterMenuSearchTextPDF), object: nil)
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterMenuGotToPageInPDF), object: nil)
 
@@ -280,10 +280,10 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
 
         tipView?.dismiss()
 
-        coordinator.animate(alongsideTransition: { context in
+        coordinator.animate(alongsideTransition: { _ in
             self.pdfThumbnailScrollViewTrailingAnchor?.constant = self.thumbnailViewWidth + (self.window?.safeAreaInsets.right ?? 0)
             self.pdfThumbnailScrollView.isHidden = true
-        }, completion: { context in
+        }, completion: { _ in
             self.pdfView.autoScales = true
         })
     }
@@ -384,7 +384,6 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
         }
     }
 
-
     @objc func renameFile(_ notification: NSNotification) {
 
         guard let userInfo = notification.userInfo as NSDictionary?,
@@ -481,7 +480,6 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
         OpenPdfThumbnail()
     }
 
-
     // MARK: - OPEN / CLOSE Thumbnail
 
     func OpenPdfThumbnail() {
@@ -533,7 +531,7 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
         guard let totalPages = pdfView.document?.pageCount else { return }
 
         let visibleRect = CGRect(x: pdfThumbnailScrollView.contentOffset.x, y: pdfThumbnailScrollView.contentOffset.y, width: pdfThumbnailScrollView.bounds.size.width, height: pdfThumbnailScrollView.bounds.size.height)
-        let centerPoint = CGPoint(x: visibleRect.size.width/2, y: visibleRect.size.height/2)
+        let centerPoint = CGPoint(x: visibleRect.size.width / 2, y: visibleRect.size.height / 2)
         let currentPageY = CGFloat(curPage) * thumbnailViewHeight + CGFloat(curPage) * thumbnailPadding
         var gotoY = currentPageY - centerPoint.y
 

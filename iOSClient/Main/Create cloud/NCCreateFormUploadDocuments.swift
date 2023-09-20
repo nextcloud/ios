@@ -83,8 +83,6 @@ import XLForm
         getTemplate()
     }
 
-
-
     // MARK: - Tableview (XLForm)
 
     func initializeForm() {
@@ -105,7 +103,7 @@ import XLForm
         row.value = fileNameFolder
         row.cellConfig["backgroundColor"] = tableView.backgroundColor
 
-        row.cellConfig["imageView.image"] =  UIImage(named: "folder")!.image(color: NCBrandColor.shared.brandElement, size: 25)
+        row.cellConfig["imageView.image"] = UIImage(named: "folder")!.image(color: NCBrandColor.shared.brandElement, size: 25)
 
         row.cellConfig["textLabel.textAlignment"] = NSTextAlignment.right.rawValue
         row.cellConfig["textLabel.font"] = UIFont.systemFont(ofSize: 15.0)
@@ -133,8 +131,8 @@ import XLForm
         section.addFormRow(row)
 
         self.form = form
-        //tableView.reloadData()
-        //collectionView.reloadData()
+        // tableView.reloadData()
+        // collectionView.reloadData()
     }
 
     override func tableView(_ tableView: UITableView, willDisplayHeaderView view: UIView, forSection section: Int) {
@@ -224,7 +222,7 @@ import XLForm
             fileNameFolder = (serverUrl as NSString).lastPathComponent
         }
 
-        let buttonDestinationFolder: XLFormRowDescriptor  = self.form.formRow(withTag: "ButtonDestinationFolder")!
+        let buttonDestinationFolder: XLFormRowDescriptor = self.form.formRow(withTag: "ButtonDestinationFolder")!
         buttonDestinationFolder.title = fileNameFolder
 
         self.tableView.reloadData()
@@ -251,7 +249,7 @@ import XLForm
         }
         templateIdentifier = selectTemplate.identifier
 
-        let rowFileName: XLFormRowDescriptor  = self.form.formRow(withTag: "fileName")!
+        let rowFileName: XLFormRowDescriptor = self.form.formRow(withTag: "fileName")!
         guard var fileNameForm = rowFileName.value else {
             return
         }
@@ -260,7 +258,7 @@ import XLForm
             return
         } else {
 
-            //Trim whitespaces after checks above
+            // Trim whitespaces after checks above
             fileNameForm = (fileNameForm as! String).trimmingCharacters(in: .whitespacesAndNewlines)
 
             let result = NextcloudKit.shared.nkCommonInstance.getInternalType(fileName: fileNameForm as! String, mimeType: "", directory: false)
@@ -314,7 +312,7 @@ import XLForm
         UUID = "TEMP" + UUID.replacingOccurrences(of: "-", with: "")
 
         if self.editorId == NCGlobal.shared.editorText || self.editorId == NCGlobal.shared.editorOnlyoffice {
-            
+
             var options = NKRequestOptions()
             if self.editorId == NCGlobal.shared.editorOnlyoffice {
                 options = NKRequestOptions(customUserAgent: NCUtility.shared.getCustomUserAgentOnlyOffice())
@@ -322,7 +320,7 @@ import XLForm
                 options = NKRequestOptions(customUserAgent: NCUtility.shared.getCustomUserAgentNCText())
             }
 
-            NextcloudKit.shared.NCTextCreateFile(fileNamePath: fileNamePath, editorId: editorId, creatorId: creatorId, templateId: templateIdentifier, options: options) { account, url, data, error in
+            NextcloudKit.shared.NCTextCreateFile(fileNamePath: fileNamePath, editorId: editorId, creatorId: creatorId, templateId: templateIdentifier, options: options) { account, url, _, error in
                 guard error == .success, account == self.appDelegate.account, let url = url else {
                     self.navigationItem.rightBarButtonItem?.isEnabled = true
                     NCContentPresenter.shared.showError(error: error)
@@ -330,7 +328,7 @@ import XLForm
                 }
 
                 var results = NextcloudKit.shared.nkCommonInstance.getInternalType(fileName: fileName, mimeType: "", directory: false)
-                //FIXME: iOS 12.0,* don't detect UTI text/markdown, text/x-markdown
+                // FIXME: iOS 12.0,* don't detect UTI text/markdown, text/x-markdown
                 if results.mimeType.isEmpty {
                     results.mimeType = "text/x-markdown"
                 }
@@ -346,7 +344,7 @@ import XLForm
 
         if self.editorId == NCGlobal.shared.editorCollabora {
 
-            NextcloudKit.shared.createRichdocuments(path: fileNamePath, templateId: templateIdentifier) { account, url, data, error in
+            NextcloudKit.shared.createRichdocuments(path: fileNamePath, templateId: templateIdentifier) { account, url, _, error in
                 guard error == .success, account == self.appDelegate.account, let url = url else {
                     self.navigationItem.rightBarButtonItem?.isEnabled = true
                     NCContentPresenter.shared.showError(error: error)
@@ -385,7 +383,7 @@ import XLForm
                 options = NKRequestOptions(customUserAgent: NCUtility.shared.getCustomUserAgentNCText())
             }
 
-            NextcloudKit.shared.NCTextGetListOfTemplates(options: options) { account, templates, data, error in
+            NextcloudKit.shared.NCTextGetListOfTemplates(options: options) { account, templates, _, error in
 
                 self.indicator.stopAnimating()
 
@@ -442,7 +440,7 @@ import XLForm
 
         if self.editorId == NCGlobal.shared.editorCollabora {
 
-            NextcloudKit.shared.getTemplatesRichdocuments(typeTemplate: typeTemplate) { account, templates, data, error in
+            NextcloudKit.shared.getTemplatesRichdocuments(typeTemplate: typeTemplate) { account, templates, _, error in
 
                 self.indicator.stopAnimating()
 

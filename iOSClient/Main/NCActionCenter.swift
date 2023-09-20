@@ -516,11 +516,11 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
 
     // MARK: - Copy & Paste
 
-    func copyPasteboard(pasteboardOcIds: [String], hudView: UIView) {
+    func copyPasteboard(pasteboardOcIds: [String]) {
         var items = [[String: Any]]()
-        let hud = JGProgressHUD()
-        hud.textLabel.text = NSLocalizedString("_wait_", comment: "")
-        hud.show(in: hudView)
+        guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else { return }
+        let hudView = appDelegate.window?.rootViewController?.view
+        var fractionCompleted: Float = 0
 
         // getting file data can take some time and block the main queue
         DispatchQueue.global(qos: .userInitiated).async {
@@ -534,14 +534,21 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
                 }
             }
 
-            DispatchQueue.main.async(execute: hud.dismiss)
-
             // do 5 downloads in parallel to optimize efficiency
             let processor = ParallelWorker(n: 5, titleKey: "_downloading_", totalTasks: downloadMetadatas.count, hudView: hudView)
 
             for metadata in downloadMetadatas {
                 processor.execute { completion in
-                    NCNetworking.shared.download(metadata: metadata, selector: "", notificationCenterProgressTask: false) { _, _ in completion() }
+                    NCNetworking.shared.download(metadata: metadata, selector: "", notificationCenterProgressTask: false) { _ in
+                    } progressHandler: { progress in
+                        if Float(progress.fractionCompleted) > fractionCompleted || fractionCompleted == 0 {
+                            processor.hud?.progress = Float(progress.fractionCompleted)
+                            fractionCompleted = Float(progress.fractionCompleted)
+                        }
+                    } completion: { _, _ in
+                        fractionCompleted = 0
+                        completion()
+                    }
                 }
             }
             processor.completeWork {
@@ -553,13 +560,18 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
 
     func pastePasteboard(serverUrl: String) {
         guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else { return }
+        var fractionCompleted: Float = 0
 
         let processor = ParallelWorker(n: 5, titleKey: "_uploading_", totalTasks: nil, hudView: appDelegate.window?.rootViewController?.view)
 
         func uploadPastePasteboard(fileName: String, serverUrlFileName: String, fileNameLocalPath: String, serverUrl: String, completion: @escaping () -> Void) {
             NextcloudKit.shared.upload(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath) { request in
                 NCNetworking.shared.uploadRequest[fileNameLocalPath] = request
-            } progressHandler: { _ in
+            } progressHandler: { progress in
+                if Float(progress.fractionCompleted) > fractionCompleted || fractionCompleted == 0 {
+                    processor.hud?.progress = Float(progress.fractionCompleted)
+                    fractionCompleted = Float(progress.fractionCompleted)
+                }
             } completionHandler: { account, ocId, etag, _, _, _, afError, error in
                 NCNetworking.shared.uploadRequest.removeValue(forKey: fileNameLocalPath)
                 if error == .success && etag != nil && ocId != nil {
@@ -572,6 +584,7 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
                 } else {
                     NCContentPresenter.shared.showError(error: error)
                 }
+                fractionCompleted = 0
                 completion()
             }
         }

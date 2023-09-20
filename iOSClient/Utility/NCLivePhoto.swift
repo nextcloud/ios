@@ -257,7 +257,7 @@ class NCLivePhoto {
                     while videoWriterInput.isReadyForMoreMediaData {
                         if let sampleBuffer = videoReaderOutput.copyNextSampleBuffer() {
                             currentFrameCount += 1
-                            let percent: CGFloat = CGFloat(currentFrameCount)/CGFloat(frameCount)
+                            let percent: CGFloat = CGFloat(currentFrameCount) / CGFloat(frameCount)
                             progress(percent)
                             if !videoWriterInput.append(sampleBuffer) {
                                 print("Cannot write: \(String(describing: self.assetWriter?.error?.localizedDescription))")
@@ -299,7 +299,7 @@ class NCLivePhoto {
 
     private func metadataForAssetID(_ assetIdentifier: String) -> AVMetadataItem {
         let item = AVMutableMetadataItem()
-        let keyContentIdentifier =  "com.apple.quicktime.content.identifier"
+        let keyContentIdentifier = "com.apple.quicktime.content.identifier"
         let keySpaceQuickTimeMetadata = "mdta"
         item.key = keyContentIdentifier as (NSCopying & NSObjectProtocol)?
         item.keySpace = AVMetadataKeySpace(rawValue: keySpaceQuickTimeMetadata)

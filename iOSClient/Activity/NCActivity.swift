@@ -101,13 +101,11 @@ class NCActivity: UIViewController, NCSharePagingContent {
 
         navigationController?.setFileAppreance()
 
-        NotificationCenter.default.addObserver(self, selector: #selector(initialize), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterInitialize), object: nil)
-        initialize()
+        fetchAll(isInitial: true)
     }
 
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterInitialize), object: nil)
     }
 
     override func viewWillLayoutSubviews() {
@@ -117,14 +115,6 @@ class NCActivity: UIViewController, NCSharePagingContent {
         commentView?.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
         commentView?.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
         viewContainerConstraint.constant = height
-    }
-
-    // MARK: - NotificationCenter
-
-    @objc func initialize() {
-        loadDataSource()
-        fetchAll(isInitial: true)
-        view.setNeedsLayout()
     }
 
     func makeTableFooterView() -> UIView {
@@ -172,7 +162,7 @@ extension NCActivity: UITableViewDelegate {
         label.textAlignment = .center
         label.layer.cornerRadius = 11
         label.layer.masksToBounds = true
-        label.layer.backgroundColor = UIColor(red: 152.0/255.0, green: 167.0/255.0, blue: 181.0/255.0, alpha: 0.8).cgColor
+        label.layer.backgroundColor = UIColor(red: 152.0 / 255.0, green: 167.0 / 255.0, blue: 181.0 / 255.0, alpha: 0.8).cgColor
         let widthFrame = label.intrinsicContentSize.width + 30
         let xFrame = tableView.bounds.width / 2 - widthFrame / 2
         label.frame = CGRect(x: xFrame, y: 10, width: widthFrame, height: 22)
@@ -359,7 +349,7 @@ extension NCActivity {
 
         var bottom: CGFloat = 0
         if let mainTabBar = self.tabBarController?.tabBar as? NCMainTabBar {
-            bottom = -mainTabBar.getHight()
+            bottom = -mainTabBar.getHeight()
         }
         NCActivityIndicator.shared.start(backgroundView: self.view, bottom: bottom - 5, style: .medium)
 
@@ -408,7 +398,7 @@ extension NCActivity {
         guard showComments, let metadata = metadata else { return }
         disptachGroup?.enter()
 
-        NextcloudKit.shared.getComments(fileId: metadata.fileId) { account, comments, data, error in
+        NextcloudKit.shared.getComments(fileId: metadata.fileId) { _, comments, _, error in
             if error == .success, let comments = comments {
                 NCManageDatabase.shared.addComments(comments, account: metadata.account, objectId: metadata.fileId)
             } else if error.errorCode != NCGlobal.shared.errorResourceNotFound {
@@ -437,7 +427,7 @@ extension NCActivity {
             limit: 1,
             objectId: nil,
             objectType: objectType,
-            previews: true) { account, _, activityFirstKnown, activityLastGiven, data, error in
+            previews: true) { account, _, activityFirstKnown, activityLastGiven, _, error in
                 defer { disptachGroup.leave() }
 
                 let largestActivityId = max(activityFirstKnown, activityLastGiven)
@@ -464,7 +454,7 @@ extension NCActivity {
             limit: min(limit, 200),
             objectId: metadata?.fileId,
             objectType: objectType,
-            previews: true) { account, activities, activityFirstKnown, activityLastGiven, data, error in
+            previews: true) { account, activities, activityFirstKnown, activityLastGiven, _, error in
                 defer { disptachGroup.leave() }
                 guard error == .success,
                       account == self.appDelegate.account,

@@ -26,4 +26,4 @@ import Foundation
 // Database Realm
 //
 let databaseName                    = "nextcloud.realm"
-let databaseSchemaVersion: UInt64   = 307
+let databaseSchemaVersion: UInt64   = 318

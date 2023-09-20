@@ -30,7 +30,7 @@ extension NCViewer {
     func toggleMenu(viewController: UIViewController, metadata: tableMetadata, webView: Bool, imageIcon: UIImage?, indexPath: IndexPath = IndexPath()) {
 
         guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(metadata.ocId) else { return }
-        
+
         var actions = [NCMenuAction]()
         var titleFavorite = NSLocalizedString("_add_favorites_", comment: "")
         if metadata.favorite { titleFavorite = NSLocalizedString("_remove_favorites_", comment: "") }
@@ -60,7 +60,7 @@ extension NCViewer {
                 NCMenuAction(
                     title: NSLocalizedString("_view_in_folder_", comment: ""),
                     icon: NCUtility.shared.loadImage(named: "questionmark.folder"),
-                    action: { menuAction in
+                    action: { _ in
                         NCActionCenter.shared.openFileViewInFolder(serverUrl: metadata.serverUrl, fileNameBlink: metadata.fileName, fileNameOpen: nil)
                     }
                 )
@@ -119,7 +119,7 @@ extension NCViewer {
                 )
             )
         }
-        
+
         //
         // CONVERSION VIDEO TO MPEG4 (MFFF Lib)
         //
@@ -204,7 +204,7 @@ extension NCViewer {
         // COPY IN PASTEBOARD
         //
         if !webView, metadata.isCopyableInPasteboard {
-            actions.append(.copyAction(selectOcId: [metadata.ocId], hudView: viewController.view))
+            actions.append(.copyAction(selectOcId: [metadata.ocId]))
         }
 
         //

@@ -298,7 +298,7 @@ extension NCSelect: UICollectionViewDataSource {
         // Thumbnail
         if !metadata.directory {
             if FileManager().fileExists(atPath: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)) {
-                (cell as! NCCellProtocol).filePreviewImageView?.image =  UIImage(contentsOfFile: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag))
+                (cell as! NCCellProtocol).filePreviewImageView?.image = UIImage(contentsOfFile: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag))
             } else {
                 NCOperationQueue.shared.downloadThumbnail(metadata: metadata, placeholder: true, cell: cell, view: collectionView)
             }
@@ -463,13 +463,13 @@ extension NCSelect: UICollectionViewDataSource {
 
 extension NCSelect: UICollectionViewDelegateFlowLayout {
 
-    func getHeaderHeight(section:Int) -> (heightHeaderCommands: CGFloat, heightHeaderRichWorkspace: CGFloat, heightHeaderSection: CGFloat) {
+    func getHeaderHeight(section: Int) -> (heightHeaderCommands: CGFloat, heightHeaderRichWorkspace: CGFloat, heightHeaderSection: CGFloat) {
 
         var headerRichWorkspace: CGFloat = 0
 
         if let richWorkspaceText = richWorkspaceText {
             let trimmed = richWorkspaceText.trimmingCharacters(in: .whitespaces)
-            if trimmed.count > 0  {
+            if trimmed.count > 0 {
                 headerRichWorkspace = UIScreen.main.bounds.size.height / 6
             }
         }
@@ -702,5 +702,3 @@ struct SelectView: UIViewControllerRepresentable {
         Coordinator(self)
     }
 }
-
-

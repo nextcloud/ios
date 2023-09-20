@@ -39,7 +39,7 @@ import NextcloudKit
         var urlRequest = URLRequest(url: url)
         urlRequest.headers = NextcloudKit.shared.nkCommonInstance.getStandardHeaders()
 
-        let dataTask = defaultSession.dataTask(with: urlRequest) { (data, response, error) in
+        let dataTask = defaultSession.dataTask(with: urlRequest) { data, _, error in
             if let error = error {
                 NCContentPresenter.shared.showInfo(error: NKError(error: error))
             } else if let data = data {
@@ -103,7 +103,7 @@ import NextcloudKit
     // MARK: - Private functions
 
     private func setupHandlers() {
-        localServer?["/install"] = { request in
+        localServer?["/install"] = { _ in
             switch self.serverState {
             case .Stopped:
                 return .notFound()

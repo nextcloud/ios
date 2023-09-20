@@ -386,9 +386,6 @@
 
     [[NCAutoUpload shared] alignPhotoLibraryWithViewController:self];
 
-    // Inizialized home
-    [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:NCGlobal.shared.notificationCenterInitialize object:nil userInfo:nil];
-    
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
         [[NCActivityIndicator shared] stop];
         [self calculateSize];

@@ -27,9 +27,9 @@ import WidgetKit
 struct DashboardWidgetView: View {
 
     var entry: DashboardDataEntry
-    
+
     var body: some View {
-        
+
         GeometryReader { geo in
 
             if entry.isEmpty {
@@ -49,14 +49,14 @@ struct DashboardWidgetView: View {
 
             ZStack(alignment: .topLeading) {
 
-                HStack() {
+                HStack {
 
                     Image(uiImage: entry.titleImage)
                         .renderingMode(.template)
                         .resizable()
                         .scaledToFill()
                         .frame(width: 20, height: 20)
-                    
+
                     Text(entry.title)
                         .font(.system(size: 15))
                         .fontWeight(.bold)
@@ -160,8 +160,8 @@ struct DashboardWidgetView: View {
                         let brandTextColor = Color(NCBrandColor.shared.brandText)
 
                         ForEach(buttons, id: \.index) { element in
-                            Link(destination: URL(string: element.link)! , label: {
-                                
+                            Link(destination: URL(string: element.link)!, label: {
+
                                 Text(element.text)
                                     .font(.system(size: 15))
                                     .padding(7)
@@ -174,7 +174,7 @@ struct DashboardWidgetView: View {
                     }
                     .frame(width: geo.size.width - 10, height: geo.size.height - 25, alignment: .bottomTrailing)
                 }
-                
+
                 HStack {
 
                     Image(systemName: entry.footerImage)

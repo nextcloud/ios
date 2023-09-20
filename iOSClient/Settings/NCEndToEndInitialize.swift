@@ -87,7 +87,7 @@ class NCEndToEndInitialize: NSObject {
                         return
                     }
 
-                    NextcloudKit.shared.signE2EECertificate(certificate: csr) { account, certificate, data, error in
+                    NextcloudKit.shared.signE2EECertificate(certificate: csr) { account, certificate, _, error in
 
                         if error == .success && account == self.appDelegate.account {
 
@@ -137,7 +137,7 @@ class NCEndToEndInitialize: NSObject {
     func getPrivateKeyCipher() {
 
         // Request PrivateKey chiper to Server
-        NextcloudKit.shared.getE2EEPrivateKey { account, privateKeyChiper, data, error in
+        NextcloudKit.shared.getE2EEPrivateKey { account, privateKeyChiper, _, error in
 
             if error == .success && account == self.appDelegate.account {
 
@@ -169,19 +169,12 @@ class NCEndToEndInitialize: NSObject {
                     CCUtility.setEndToEndPassphrase(self.appDelegate.account, passphrase: passphrase)
 
                     // request server publicKey
-                    NextcloudKit.shared.getE2EEPublicKey { account, publicKey, data, error in
+                    NextcloudKit.shared.getE2EEPublicKey { account, publicKey, _, error in
 
                         if error == .success && account == self.appDelegate.account {
 
                             CCUtility.setEndToEndPublicKey(account, publicKey: publicKey)
-
-                            // Clear Table
-                            NCManageDatabase.shared.clearTable(tableDirectory.self, account: account)
-                            NCManageDatabase.shared.clearTable(tableE2eEncryption.self, account: account)
-                            NCManageDatabase.shared.clearTable(tableE2eEncryptionLock.self, account: account)
-                            NCManageDatabase.shared.clearTable(tableE2eMetadata.self, account: account)
-                            NCManageDatabase.shared.clearTable(tableE2eMetadataV2.self, account: account)
-                            NCManageDatabase.shared.clearTable(tableE2eUsersV2.self, account: account)
+                            NCManageDatabase.shared.clearTablesE2EE(account: account)
 
                             self.delegate?.endToEndInitializeSuccess()
 
@@ -272,7 +265,7 @@ class NCEndToEndInitialize: NSObject {
         // privateKeyChiper
         print(privateKeyChiper)
 
-        NextcloudKit.shared.storeE2EEPrivateKey(privateKey: privateKeyChiper) { account, privateKey, data, error in
+        NextcloudKit.shared.storeE2EEPrivateKey(privateKey: privateKeyChiper) { account, _, _, error in
 
             if error == .success && account == self.appDelegate.account {
 
@@ -280,19 +273,12 @@ class NCEndToEndInitialize: NSObject {
                 CCUtility.setEndToEndPassphrase(account, passphrase: e2ePassphrase)
 
                 // request server publicKey
-                NextcloudKit.shared.getE2EEPublicKey { account, publicKey, data, error in
+                NextcloudKit.shared.getE2EEPublicKey { account, publicKey, _, error in
 
                     if error == .success && account == self.appDelegate.account {
 
                         CCUtility.setEndToEndPublicKey(account, publicKey: publicKey)
-
-                        // Clear Table
-                        NCManageDatabase.shared.clearTable(tableDirectory.self, account: account)
-                        NCManageDatabase.shared.clearTable(tableE2eEncryption.self, account: account)
-                        NCManageDatabase.shared.clearTable(tableE2eEncryptionLock.self, account: account)
-                        NCManageDatabase.shared.clearTable(tableE2eMetadata.self, account: account)
-                        NCManageDatabase.shared.clearTable(tableE2eMetadataV2.self, account: account)
-                        NCManageDatabase.shared.clearTable(tableE2eUsersV2.self, account: account)
+                        NCManageDatabase.shared.clearTablesE2EE(account: account)
 
                         if copyPassphrase {
                             UIPasteboard.general.string = e2ePassphrase

@@ -88,7 +88,7 @@ class tableAccount: Object, NCUserBaseUrl {
 
 extension NCManageDatabase {
 
-    @objc func addAccount(_ account: String, urlBase: String, user: String, password: String) {
+    func addAccount(_ account: String, urlBase: String, user: String, userId: String, password: String) {
 
         do {
             let realm = try Realm()
@@ -110,7 +110,7 @@ extension NCManageDatabase {
 
                 addObject.urlBase = urlBase
                 addObject.user = user
-                addObject.userId = user
+                addObject.userId = userId
 
                 realm.add(addObject, update: .all)
             }
@@ -283,8 +283,7 @@ extension NCManageDatabase {
         return NCGlobal.shared.subfolderGranularityMonthly
     }
 
-    @discardableResult
-    @objc func setAccountActive(_ account: String) -> tableAccount? {
+    func setAccountActive(_ account: String) -> tableAccount? {
 
         var accountReturn = tableAccount()
 
@@ -389,7 +388,7 @@ extension NCManageDatabase {
         }
     }
 
-    @objc func setAccountUserProfile(account: String, userProfile: NKUserProfile) -> tableAccount? {
+    @objc func setAccountUserProfile(account: String, userProfile: NKUserProfile) {
 
         do {
             let realm = try Realm()
@@ -420,14 +419,9 @@ extension NCManageDatabase {
                     result.website = userProfile.website
                 }
             }
-            if let result = realm.objects(tableAccount.self).filter("account == %@", account).first {
-                return tableAccount.init(value: result)
-            }
         } catch let error {
             NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
         }
-
-        return nil
     }
 
     @objc func setAccountMediaPath(_ path: String, account: String) {

@@ -139,13 +139,11 @@ class NCAutoUpload: NSObject {
                 }
 
                 if account.autoUploadCreateSubfolder {
-                    if (autoUploadSubfolderGranularity == NCGlobal.shared.subfolderGranularityYearly) {
+                    if autoUploadSubfolderGranularity == NCGlobal.shared.subfolderGranularityYearly {
                         serverUrl = autoUploadPath + "/" + year
-                    }
-                    else if (autoUploadSubfolderGranularity == NCGlobal.shared.subfolderGranularityDaily) {
+                    } else if autoUploadSubfolderGranularity == NCGlobal.shared.subfolderGranularityDaily {
                         serverUrl = autoUploadPath + "/" + year + "/" + month + "/" + day
-                    }
-                    else {  // Month Granularity is default
+                    } else {  // Month Granularity is default
                         serverUrl = autoUploadPath + "/" + year + "/" + month
                     }
                 } else {
@@ -159,7 +157,7 @@ class NCAutoUpload: NSObject {
                 if ext == "HEIC" && CCUtility.getFormatCompatibility() {
                     fileNameSearchMetadata = (fileNameSearchMetadata as NSString).deletingPathExtension + ".jpg"
                 }
-                
+
                 if NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView == %@", account.account, serverUrl, fileNameSearchMetadata)) != nil {
                     if selector == NCGlobal.shared.selectorUploadAutoUpload {
                         NCManageDatabase.shared.addPhotoLibrary([asset], account: account.account)

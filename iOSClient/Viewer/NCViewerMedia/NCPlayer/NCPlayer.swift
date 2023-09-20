@@ -82,7 +82,7 @@ class NCPlayer: NSObject {
     func openAVPlayer(url: URL, autoplay: Bool = false) {
 
         var position: Float = 0
-        let userAgent = CCUtility.getUserAgent()!
+        let userAgent = userAgent
 
         self.url = url
         self.singleTapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(didSingleTapWith(gestureRecognizer:)))
