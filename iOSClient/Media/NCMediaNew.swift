@@ -10,6 +10,7 @@ import SwiftUI
 import PreviewSnapshots
 import NextcloudKit
 import VisibilityTrackingScrollView
+import JGProgressHUD_SwiftUI
 
 protocol DataDelegate: AnyObject {
     func updateData(metadatas: [tableMetadata], selectedMetadata: tableMetadata, image: UIImage)
@@ -74,30 +75,30 @@ struct NCMediaNew: View {
     @State private var isMediaViewControllerPresented = false
     @State private var tappedMetadata = tableMetadata()
     @State private var isInSelectMode = false
-    @State private var selectedMetadataInSelectMode: [tableMetadata] = []
 
-    @State var titleColor = Color.primary
-    @State var toolbarItemsColor = Color.blue
-    @State var toolbarColors = [Color.clear]
+    @State private var titleColor = Color.primary
+    @State private var toolbarItemsColor = Color.blue
+    @State private var toolbarColors = [Color.clear]
+
+    @State private var showDeleteConfirmation = false
 
     weak var dataModelDelegate: DataDelegate?
 
+    @EnvironmentObject var hudCoordinator: JGProgressHUDCoordinator
+
     var body: some View {
-            GeometryReader { outerProxy in
-                        NavigationView {
+        GeometryReader { outerProxy in
+            NavigationView {
                 ZStack(alignment: .top) {
                     VisibilityTrackingScrollView(action: cellVisibilityDidChange) {
                         LazyVStack(alignment: .leading, spacing: 2) {
                             ForEach(vm.metadatas.chunked(into: columns), id: \.self) { rowMetadatas in
                                 NCMediaRow(metadatas: rowMetadatas, geometryProxy: outerProxy, isInSelectMode: $isInSelectMode) { tappedThumbnail, isSelected in
 
-                                    // TODO: Only do selection here
                                     if isSelected {
-                                        selectedMetadataInSelectMode.append(tappedThumbnail.metadata)
-                                        print(selectedMetadataInSelectMode)
+                                        vm.selectedMetadatas.append(tappedThumbnail.metadata)
                                     } else {
-                                        selectedMetadataInSelectMode.removeAll(where: { $0.ocId == tappedThumbnail.metadata.ocId })
-                                        print(selectedMetadataInSelectMode)
+                                        vm.selectedMetadatas.removeAll(where: { $0.ocId == tappedThumbnail.metadata.ocId })
                                     }
                                 }
                             }
@@ -152,8 +153,17 @@ struct NCMediaNew: View {
                             .background(.ultraThinMaterial)
                             .cornerRadius(.infinity)
 
-                            if isInSelectMode, !selectedMetadataInSelectMode.isEmpty {
+                            if isInSelectMode, !vm.selectedMetadatas.isEmpty {
                                 ToolbarCircularButton(imageSystemName: "trash.fill", toolbarItemsColor: $toolbarItemsColor)
+                                    .onTapGesture {
+                                        showDeleteConfirmation = true
+                                    }
+                                    .confirmationDialog("", isPresented: $showDeleteConfirmation) {
+                                        Button("Delete selected media", role: .destructive) {
+                                            vm.deleteSelectedMetadata()
+                                            isInSelectMode = false
+                                        }
+                                    }
                             }
 
                             Menu {
