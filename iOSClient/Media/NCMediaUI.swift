@@ -11,8 +11,13 @@ import SwiftUI
 
 class NCMediaUI: UIViewController, ObservableObject {
 
+    override func viewWillAppear(_ animated: Bool) {
+        navigationController?.navigationBar.isHidden = true
+    }
+
     override func viewDidLoad() {
         super.viewDidLoad()
+        navigationController?.navigationBar.isHidden = true
         addView()
     }
 
@@ -23,6 +28,7 @@ class NCMediaUI: UIViewController, ObservableObject {
         controller.view.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(controller.view)
         controller.didMove(toParent: self)
+
 
         NSLayoutConstraint.activate([
             controller.view.widthAnchor.constraint(equalTo: view.widthAnchor),

@@ -83,20 +83,42 @@ struct NCMediaNew: View {
 
     var body: some View {
             GeometryReader { outerProxy in
-                        NavigationView {
+//                        NavigationView {
                 ZStack(alignment: .top) {
                     VisibilityTrackingScrollView(action: cellVisibilityDidChange) {
                         LazyVStack(alignment: .leading, spacing: 2) {
                             ForEach(vm.metadatas.chunked(into: columns), id: \.self) { rowMetadatas in
                                 NCMediaRow(metadatas: rowMetadatas, geometryProxy: outerProxy, isInSelectMode: $isInSelectMode) { tappedThumbnail, isSelected in
 
-                                    // TODO: Only do selection here
-                                    if isSelected {
+                                    if isInSelectMode, isSelected {
                                         selectedMetadataInSelectMode.append(tappedThumbnail.metadata)
                                         print(selectedMetadataInSelectMode)
                                     } else {
                                         selectedMetadataInSelectMode.removeAll(where: { $0.ocId == tappedThumbnail.metadata.ocId })
                                         print(selectedMetadataInSelectMode)
+                                    }
+
+                                    let selectedMetadata = tappedThumbnail.metadata
+
+                                    if !isInSelectMode {
+                                        if let viewController = UIStoryboard(name: "NCViewerMediaPage", bundle: nil).instantiateInitialViewController() as? NCViewerMediaPage {
+                                            var index = 0
+                                            for medatasImage in vm.metadatas {
+                                                if medatasImage.ocId == selectedMetadata.ocId {
+                                                    viewController.currentIndex = index
+                                                    break
+                                                }
+                                                index += 1
+                                            }
+                                            viewController.metadatas = vm.metadatas
+
+//                                            NCViewer.shared.view(viewController: self, metadata: selectedMetadata, metadatas: metadatas, imageIcon: image)
+                                            parent.navigationController?.pushViewController(viewController, animated: true)
+                                        }
+
+//                                        dataModelDelegate?.updateData(metadatas: vm.metadatas, selectedMetadata: tappedMetadata, image: tappedThumbnail.image)
+                                        //                                        isMediaViewControllerPresented = true
+//                                        print(selectedMetadataInSelectMode)
                                     }
                                 }
                             }
@@ -208,10 +230,13 @@ struct NCMediaNew: View {
                 }
             }
             .onAppear { vm.loadData() }
-            .fullScreenCover(isPresented: $isMediaViewControllerPresented) {
-                NCViewerMediaPageController(metadatas: vm.metadatas, selectedMetadata: tappedMetadata)
+//            .fullScreenCover(isPresented: $isMediaViewControllerPresented) {
+//                NCViewerMediaPageController(metadatas: vm.metadatas, selectedMetadata: tappedMetadata)
+//            }
+            .onChange(of: isInSelectMode) { newValue in
+                selectedMetadataInSelectMode.removeAll()
             }
-        }
+//        }
     }
 
     func cellVisibilityDidChange(_ id: String, change: VisibilityChange, tracker: VisibilityTracker<String>) {
