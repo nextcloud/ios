@@ -10,7 +10,6 @@ import Foundation
 import SwiftUI
 
 class NCMediaUI: UIViewController, ObservableObject {
-
     override func viewWillAppear(_ animated: Bool) {
         navigationController?.navigationBar.isHidden = true
     }

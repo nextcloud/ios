@@ -79,6 +79,8 @@ struct NCMediaNew: View {
 
     @State private var showDeleteConfirmation = false
 
+    @State private var showDeleteConfirmation = false
+
     weak var dataModelDelegate: DataDelegate?
 
     var body: some View {
