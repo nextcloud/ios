@@ -10,7 +10,6 @@ import SwiftUI
 import PreviewSnapshots
 import NextcloudKit
 import VisibilityTrackingScrollView
-import JGProgressHUD_SwiftUI
 
 protocol DataDelegate: AnyObject {
     func updateData(metadatas: [tableMetadata], selectedMetadata: tableMetadata, image: UIImage)
@@ -73,7 +72,6 @@ struct NCMediaNew: View {
     @State private var title = "Media"
     @State private var isScrolledToTop = true
     @State private var isMediaViewControllerPresented = false
-    @State private var tappedMetadata = tableMetadata()
     @State private var isInSelectMode = false
 
     @State private var titleColor = Color.primary
@@ -83,8 +81,6 @@ struct NCMediaNew: View {
     @State private var showDeleteConfirmation = false
 
     weak var dataModelDelegate: DataDelegate?
-
-    @EnvironmentObject var hudCoordinator: JGProgressHUDCoordinator
 
     var body: some View {
         GeometryReader { outerProxy in
@@ -219,9 +215,9 @@ struct NCMediaNew: View {
                 }
             }
             .onAppear { vm.loadData() }
-            .fullScreenCover(isPresented: $isMediaViewControllerPresented) {
-                NCViewerMediaPageController(metadatas: vm.metadatas, selectedMetadata: tappedMetadata)
-            }
+//            .fullScreenCover(isPresented: $isMediaViewControllerPresented) {
+//                NCViewerMediaPageController(metadatas: vm.metadatas, selectedMetadata: tappedMetadata)
+//            }
         }
     }
 
