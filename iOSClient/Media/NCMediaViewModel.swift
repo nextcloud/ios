@@ -15,7 +15,8 @@ enum SortType: String {
 
 @MainActor class NCMediaViewModel: ObservableObject {
     @Published var metadatas: [tableMetadata] = []
-
+    @Published var selectedMetadatas: [tableMetadata] = []
+    
     private var account: String = ""
     private var lastContentOffsetY: CGFloat = 0
     private var mediaPath = ""
@@ -121,6 +122,26 @@ enum SortType: String {
     func onCellTapped(metadata: tableMetadata) {
         appDelegate?.activeServerUrl = metadata.serverUrl
     }
+
+    func deleteSelectedMetadata() {
+        let notLocked = selectedMetadatas.allSatisfy { !$0.lock }
+
+        if notLocked {
+                Task {
+                    var error = NKError()
+                    var ocId: [String] = []
+                    for metadata in selectedMetadatas where error == .success {
+                        error = await NCNetworking.shared.deleteMetadata(metadata, onlyLocalCache: false)
+                        if error == .success {
+                            ocId.append(metadata.ocId)
+                        }
+                    }
+                    NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDeleteFile, userInfo: ["ocId": ocId, "onlyLocalCache": false, "error": error])
+                }
+//                completion?()
+
+        }
+    }
 }
 
 // MARK: Notifications
@@ -129,21 +150,11 @@ extension NCMediaViewModel {
     @objc func deleteFile(_ notification: NSNotification) {
         guard let userInfo = notification.userInfo as NSDictionary?,
               let error = userInfo["error"] as? NKError else { return }
-        let onlyLocalCache: Bool = userInfo["onlyLocalCache"] as? Bool ?? false
 
-        self.queryDB(isForced: true)
+        loadData()
 
-        if error == .success, let indexPath = userInfo["indexPath"] as? [IndexPath], !indexPath.isEmpty, !onlyLocalCache {
-            //            collectionView?.performBatchUpdates({
-            //                collectionView?.deleteItems(at: indexPath)
-            //            }, completion: { _ in
-            //                self.collectionView?.reloadData()
-            //            })
-        } else {
-            if error != .success {
-                NCContentPresenter.shared.showError(error: error)
-            }
-            //            self.collectionView?.reloadData()
+        if error != .success {
+            NCContentPresenter.shared.showError(error: error)
         }
 
         //        if let hud = userInfo["hud"] as? JGProgressHUD {
@@ -154,9 +165,7 @@ extension NCMediaViewModel {
     @objc func moveFile(_ notification: NSNotification) {
         guard let userInfo = notification.userInfo as NSDictionary? else { return }
 
-        //        if let hud = userInfo["hud"] as? JGProgressHUD {
-        //            hud.dismiss()
-        //        }
+        loadData()
     }
 
     @objc func copyFile(_ notification: NSNotification) {
