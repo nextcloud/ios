@@ -261,7 +261,7 @@ class NCScan: UIViewController, NCScanCellCellDelegate {
              return UIImage(ciImage: out)
          }
      */
-    
+
     func filter(image: UIImage) -> UIImage? {
 
         guard let ciImage = CIImage(image: image) else { return image }

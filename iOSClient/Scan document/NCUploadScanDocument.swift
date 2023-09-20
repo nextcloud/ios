@@ -492,7 +492,7 @@ struct UploadScanDocumentView: View {
                 }
                 HUDView(showHUD: $uploadScanDocument.showHUD, textLabel: NSLocalizedString("_wait_", comment: ""), image: "doc.badge.arrow.up")
                     .offset(y: uploadScanDocument.showHUD ? 5 : -200)
-                    .animation(.easeOut)
+                    .animation(.easeOut, value: UUID())
             }
         }
         .background(Color(UIColor.systemGroupedBackground))
@@ -502,7 +502,7 @@ struct UploadScanDocumentView: View {
         .sheet(isPresented: $isPresentedUploadConflict) {
             UploadConflictView(delegate: uploadScanDocument, serverUrl: uploadScanDocument.serverUrl, metadatasUploadInConflict: [uploadScanDocument.metadata], metadatasNOConflict: [])
         }.onTapGesture {
-            UIApplication.shared.windows.filter { $0.isKeyWindow }.first?.endEditing(true)
+            UIApplication.shared.connectedScenes.flatMap { ($0 as? UIWindowScene)?.windows ?? [] }.filter { $0.isKeyWindow }.first?.endEditing(true)
         }
     }
 }
