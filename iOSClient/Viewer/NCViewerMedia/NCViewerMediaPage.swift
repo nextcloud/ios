@@ -71,8 +71,6 @@ class NCViewerMediaPage: UIViewController {
     private lazy var moreNavigationItem = UIBarButtonItem(image: UIImage(named: "more")!.image(color: .label, size: 25), style: .plain, target: self, action: #selector(openMenuMore))
     private lazy var imageDetailNavigationItem = UIBarButtonItem(image: UIImage(systemName: "info.circle")!.image(color: .label, size: 22), style: .plain, target: self, action: #selector(toggleDetail))
 
-    var dismissAction: (() -> Void)?
-
     // MARK: - View Life Cycle
 
     override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
@@ -129,6 +127,12 @@ class NCViewerMediaPage: UIViewController {
         NotificationCenter.default.addObserver(self, selector: #selector(uploadedFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUploadedFile), object: nil)
 
         NotificationCenter.default.addObserver(self, selector: #selector(applicationDidBecomeActive(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationDidBecomeActive), object: nil)
+
+        if currentViewController.metadata.isImage {
+            navigationItem.rightBarButtonItems = [moreNavigationItem, imageDetailNavigationItem]
+        } else {
+            navigationItem.rightBarButtonItems = [moreNavigationItem]
+        }
     }
 
     deinit {
@@ -152,20 +156,6 @@ class NCViewerMediaPage: UIViewController {
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationDidBecomeActive), object: nil)
     }
 
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-
-        guard let navigationController = self.navigationController else { return }
-
-        if currentViewController.metadata.isImage {
-            navigationController.navigationItem.rightBarButtonItems = [moreNavigationItem, imageDetailNavigationItem]
-        } else {
-            navigationController.navigationItem.rightBarButtonItems = [moreNavigationItem]
-        }
-
-        tabBarController?.tabBar.isHidden = true
-    }
-
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
@@ -178,10 +168,6 @@ class NCViewerMediaPage: UIViewController {
         currentViewController.ncplayer?.playerStop()
         timerAutoHide?.invalidate()
         clearCommandCenter()
-    }
-
-    override func viewDidLayoutSubviews() {
-        super.viewDidLayoutSubviews()
     }
 
     override var preferredStatusBarStyle: UIStatusBarStyle {

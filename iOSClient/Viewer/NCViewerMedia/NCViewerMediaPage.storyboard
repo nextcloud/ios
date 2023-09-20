@@ -49,6 +49,7 @@
                     <navigationItem key="navigationItem" id="azh-DM-TLz"/>
                     <nil key="simulatedBottomBarMetrics"/>
                     <connections>
+                        <outlet property="bottomConstraint" destination="4Xy-Dl-e47" id="KY8-ew-IOh"/>
                         <outlet property="progressView" destination="sD9-1i-ZdY" id="nag-cc-Up3"/>
                     </connections>
                 </viewController>
