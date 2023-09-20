@@ -76,6 +76,7 @@
 		C04E2F232A17BB4D001BAD85 /* FilesIntegrationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C04E2F222A17BB4D001BAD85 /* FilesIntegrationTests.swift */; };
 		D575039F27146F93008DC9DC /* String+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7A0D1342591FBC5008F8A13 /* String+Extension.swift */; };
 		D5B6AA7827200C7200D49C24 /* NCActivityTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5B6AA7727200C7200D49C24 /* NCActivityTableViewCell.swift */; };
+		F30A6BF02AB4AAB700148857 /* Refreshable in Frameworks */ = {isa = PBXBuildFile; productRef = F30A6BEF2AB4AAB700148857 /* Refreshable */; };
 		F30A6BF22AB4B31200148857 /* PreferenceKeys.swift in Sources */ = {isa = PBXBuildFile; fileRef = F30A6BF12AB4B31200148857 /* PreferenceKeys.swift */; };
 		F30A6BF32AB4B31200148857 /* PreferenceKeys.swift in Sources */ = {isa = PBXBuildFile; fileRef = F30A6BF12AB4B31200148857 /* PreferenceKeys.swift */; };
 		F30A6BF42AB4B31200148857 /* PreferenceKeys.swift in Sources */ = {isa = PBXBuildFile; fileRef = F30A6BF12AB4B31200148857 /* PreferenceKeys.swift */; };
@@ -346,6 +347,8 @@
 		F7501C322212E57500FB1415 /* NCMedia.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7501C302212E57400FB1415 /* NCMedia.storyboard */; };
 		F7501C332212E57500FB1415 /* NCMedia.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7501C312212E57400FB1415 /* NCMedia.swift */; };
 		F753BA93281FD8020015BFB6 /* EasyTipView in Frameworks */ = {isa = PBXBuildFile; productRef = F753BA92281FD8020015BFB6 /* EasyTipView */; };
+		F7556ED62ABB3A5F00350BD4 /* NCMediaUI.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7556ED52ABB3A5F00350BD4 /* NCMediaUI.storyboard */; };
+		F7556ED82ABB3C2100350BD4 /* NCMediaUI.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7556ED72ABB3C2100350BD4 /* NCMediaUI.swift */; };
 		F755BD9B20594AC7008C5FBB /* NCService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F755BD9A20594AC7008C5FBB /* NCService.swift */; };
 		F757CC8229E7F88B00F31428 /* NCManageDatabase+Groupfolders.swift in Sources */ = {isa = PBXBuildFile; fileRef = F757CC8129E7F88B00F31428 /* NCManageDatabase+Groupfolders.swift */; };
 		F757CC8329E7F88B00F31428 /* NCManageDatabase+Groupfolders.swift in Sources */ = {isa = PBXBuildFile; fileRef = F757CC8129E7F88B00F31428 /* NCManageDatabase+Groupfolders.swift */; };
@@ -1050,6 +1053,8 @@
 		F753701822723D620041C76C /* gl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = gl; path = gl.lproj/Localizable.strings; sourceTree = "<group>"; };
 		F753701922723E0D0041C76C /* ca */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ca; path = ca.lproj/Localizable.strings; sourceTree = "<group>"; };
 		F753701A22723EC80041C76C /* da */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = da; path = da.lproj/Localizable.strings; sourceTree = "<group>"; };
+		F7556ED52ABB3A5F00350BD4 /* NCMediaUI.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = NCMediaUI.storyboard; sourceTree = "<group>"; };
+		F7556ED72ABB3C2100350BD4 /* NCMediaUI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCMediaUI.swift; sourceTree = "<group>"; };
 		F755BD9A20594AC7008C5FBB /* NCService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCService.swift; sourceTree = "<group>"; };
 		F757CC8129E7F88B00F31428 /* NCManageDatabase+Groupfolders.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NCManageDatabase+Groupfolders.swift"; sourceTree = "<group>"; };
 		F757CC8A29E82D0500F31428 /* NCGroupfolders.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = NCGroupfolders.storyboard; sourceTree = "<group>"; };
@@ -1523,6 +1528,7 @@
 				F3EFBF5F2AB2100E00B5724C /* Shimmer in Frameworks */,
 				F76DA95B277B75A90082465B /* TOPasscodeViewController.xcframework in Frameworks */,
 				F76DA963277B760E0082465B /* Queuer in Frameworks */,
+				F30A6BF02AB4AAB700148857 /* Refreshable in Frameworks */,
 				F72AD70D28C24B93006CB92D /* NextcloudKit in Frameworks */,
 				F70B86752642CE3B00ED5349 /* FirebaseCrashlytics in Frameworks */,
 				F7A1050E29E587AF00FFD92B /* TagListView in Frameworks */,
@@ -2408,6 +2414,8 @@
 			children = (
 				F720B5B72507B9A5008C94E5 /* Cell */,
 				F7501C302212E57400FB1415 /* NCMedia.storyboard */,
+				F7556ED52ABB3A5F00350BD4 /* NCMediaUI.storyboard */,
+				F7556ED72ABB3C2100350BD4 /* NCMediaUI.swift */,
 				F7F1E54B2492369A00E42386 /* NCMediaCommandView.xib */,
 				F7501C312212E57400FB1415 /* NCMedia.swift */,
 				F3F7ACFD2A98C56C00AE12CF /* NCMediaNew.swift */,
@@ -2928,6 +2936,7 @@
 				F7F623B42A5EF4D30022D3D4 /* Gzip */,
 				F3C0FB6F2AB06AB9007E7E30 /* VisibilityTrackingScrollView */,
 				F3EFBF5E2AB2100E00B5724C /* Shimmer */,
+				F30A6BEF2AB4AAB700148857 /* Refreshable */,
 			);
 			productName = "Crypto Cloud";
 			productReference = F7CE8AFA1DC1F8D8009CAE48 /* Nextcloud.app */;
@@ -3105,6 +3114,7 @@
 				F7F623B32A5EF4D30022D3D4 /* XCRemoteSwiftPackageReference "GzipSwift" */,
 				F3C0FB6E2AB06AB9007E7E30 /* XCRemoteSwiftPackageReference "VisibilityTrackingScrollView" */,
 				F3EFBF5D2AB20B9100B5724C /* XCRemoteSwiftPackageReference "SwiftUI-Shimmer" */,
+				F30A6BEE2AB4AAB700148857 /* XCRemoteSwiftPackageReference "Refreshable" */,
 			);
 			productRefGroup = F7F67B9F1A24D27800EE80DA;
 			projectDirPath = "";
@@ -3218,6 +3228,7 @@
 			files = (
 				F7362A1F220C853A005101B5 /* LaunchScreen.storyboard in Resources */,
 				F77444F622281649000D5EB0 /* NCGridMediaCell.xib in Resources */,
+				F7556ED62ABB3A5F00350BD4 /* NCMediaUI.storyboard in Resources */,
 				F78ACD4421903CF20088454D /* NCListCell.xib in Resources */,
 				F3BB464D2A39ADCC00461F6E /* NCMoreAppSuggestionsCell.xib in Resources */,
 				F7F4F10727ECDBDB008676F9 /* Inconsolata-Black.ttf in Resources */,
@@ -3869,6 +3880,7 @@
 				F79FFB262A97C24A0055EEA4 /* NCNetworkingE2EEMarkFolder.swift in Sources */,
 				F70D8D8124A4A9BF000A5756 /* NCNetworkingProcessUpload.swift in Sources */,
 				F7D96FCC246ED7E200536D73 /* NCNetworkingCheckRemoteUser.swift in Sources */,
+				F7556ED82ABB3C2100350BD4 /* NCMediaUI.swift in Sources */,
 				F7E4D9C422ED929B003675FD /* NCShareCommentsCell.swift in Sources */,
 				F717402E24F699A5000C87D5 /* NCFavorite.swift in Sources */,
 				AF2D7C7E2742559100ADF566 /* NCShareUserCell.swift in Sources */,
@@ -4945,6 +4957,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		F30A6BEE2AB4AAB700148857 /* XCRemoteSwiftPackageReference "Refreshable" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/c-villain/Refreshable";
+			requirement = {
+				kind = exactVersion;
+				version = 0.2.0;
+			};
+		};
 		F31F694B2A2F6EFA00162F76 /* XCRemoteSwiftPackageReference "swift-snapshot-testing" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/pointfreeco/swift-snapshot-testing.git";
@@ -5191,6 +5211,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = F76DA964277B76F10082465B /* XCRemoteSwiftPackageReference "UICKeyChainStore" */;
 			productName = UICKeyChainStore;
+		};
+		F30A6BEF2AB4AAB700148857 /* Refreshable */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F30A6BEE2AB4AAB700148857 /* XCRemoteSwiftPackageReference "Refreshable" */;
+			productName = Refreshable;
 		};
 		F30A96332A2DFCD000D7BCFE /* Realm */ = {
 			isa = XCSwiftPackageProductDependency;

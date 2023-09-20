@@ -3,10 +3,20 @@
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="22129"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="22130"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
+        <!--NCMediaUI.storyboard-->
+        <scene sceneID="udp-lL-CYh">
+            <objects>
+                <viewControllerPlaceholder storyboardName="NCMediaUI" referencedIdentifier="NCMediaUI.storyboard" id="kO6-hz-Gsq" sceneMemberID="viewController">
+                    <navigationItem key="navigationItem" id="3mJ-L2-Cmt"/>
+                </viewControllerPlaceholder>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="6gG-SV-Hvv" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="7770" y="899"/>
+        </scene>
         <!--Tab Bar Controller-->
         <scene sceneID="gY3-Ur-rTC">
             <objects>

@@ -55,8 +55,6 @@ struct NCViewerMediaPageController: UIViewControllerRepresentable {
                 index += 1
             }
             viewController.metadatas = metadatas
-            viewController.hidesBottomBarWhenPushed = true
-
             return viewController
         } else {
             return NCViewerMediaPage()
@@ -68,33 +66,59 @@ struct NCViewerMediaPageController: UIViewControllerRepresentable {
 
 struct NCMediaNew: View {
     @StateObject private var vm = NCMediaViewModel()
+    @EnvironmentObject var parent: NCMediaUI
     @State private var columns = 2
     @State private var title = "Media"
     @State private var isScrolledToTop = true
     @State private var isMediaViewControllerPresented = false
+    @State private var tappedMetadata = tableMetadata()
     @State private var isInSelectMode = false
+    @State private var selectedMetadataInSelectMode: [tableMetadata] = []
 
-    @State private var titleColor = Color.primary
-    @State private var toolbarItemsColor = Color.blue
-    @State private var toolbarColors = [Color.clear]
-
-    @State private var showDeleteConfirmation = false
+    @State var titleColor = Color.primary
+    @State var toolbarItemsColor = Color.blue
+    @State var toolbarColors = [Color.clear]
 
     weak var dataModelDelegate: DataDelegate?
 
     var body: some View {
-        GeometryReader { outerProxy in
-            NavigationView {
+            GeometryReader { outerProxy in
+//                        NavigationView {
                 ZStack(alignment: .top) {
                     VisibilityTrackingScrollView(action: cellVisibilityDidChange) {
                         LazyVStack(alignment: .leading, spacing: 2) {
                             ForEach(vm.metadatas.chunked(into: columns), id: \.self) { rowMetadatas in
                                 NCMediaRow(metadatas: rowMetadatas, geometryProxy: outerProxy, isInSelectMode: $isInSelectMode) { tappedThumbnail, isSelected in
 
-                                    if isSelected {
-                                        vm.selectedMetadatas.append(tappedThumbnail.metadata)
+                                    if isInSelectMode, isSelected {
+                                        selectedMetadataInSelectMode.append(tappedThumbnail.metadata)
+                                        print(selectedMetadataInSelectMode)
                                     } else {
-                                        vm.selectedMetadatas.removeAll(where: { $0.ocId == tappedThumbnail.metadata.ocId })
+                                        selectedMetadataInSelectMode.removeAll(where: { $0.ocId == tappedThumbnail.metadata.ocId })
+                                        print(selectedMetadataInSelectMode)
+                                    }
+
+                                    let selectedMetadata = tappedThumbnail.metadata
+
+                                    if !isInSelectMode {
+                                        if let viewController = UIStoryboard(name: "NCViewerMediaPage", bundle: nil).instantiateInitialViewController() as? NCViewerMediaPage {
+                                            var index = 0
+                                            for medatasImage in vm.metadatas {
+                                                if medatasImage.ocId == selectedMetadata.ocId {
+                                                    viewController.currentIndex = index
+                                                    break
+                                                }
+                                                index += 1
+                                            }
+                                            viewController.metadatas = vm.metadatas
+
+//                                            NCViewer.shared.view(viewController: self, metadata: selectedMetadata, metadatas: metadatas, imageIcon: image)
+                                            parent.navigationController?.pushViewController(viewController, animated: true)
+                                        }
+
+//                                        dataModelDelegate?.updateData(metadatas: vm.metadatas, selectedMetadata: tappedMetadata, image: tappedThumbnail.image)
+                                        //                                        isMediaViewControllerPresented = true
+//                                        print(selectedMetadataInSelectMode)
                                     }
                                 }
                             }
@@ -149,17 +173,8 @@ struct NCMediaNew: View {
                             .background(.ultraThinMaterial)
                             .cornerRadius(.infinity)
 
-                            if isInSelectMode, !vm.selectedMetadatas.isEmpty {
+                            if isInSelectMode, !selectedMetadataInSelectMode.isEmpty {
                                 ToolbarCircularButton(imageSystemName: "trash.fill", toolbarItemsColor: $toolbarItemsColor)
-                                    .onTapGesture {
-                                        showDeleteConfirmation = true
-                                    }
-                                    .confirmationDialog("", isPresented: $showDeleteConfirmation) {
-                                        Button("Delete selected media", role: .destructive) {
-                                            vm.deleteSelectedMetadata()
-                                            isInSelectMode = false
-                                        }
-                                    }
                             }
 
                             Menu {
@@ -218,7 +233,10 @@ struct NCMediaNew: View {
 //            .fullScreenCover(isPresented: $isMediaViewControllerPresented) {
 //                NCViewerMediaPageController(metadatas: vm.metadatas, selectedMetadata: tappedMetadata)
 //            }
-        }
+            .onChange(of: isInSelectMode) { newValue in
+                selectedMetadataInSelectMode.removeAll()
+            }
+//        }
     }
 
     func cellVisibilityDidChange(_ id: String, change: VisibilityChange, tracker: VisibilityTracker<String>) {
