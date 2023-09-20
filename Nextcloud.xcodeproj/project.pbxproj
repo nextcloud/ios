@@ -336,6 +336,7 @@
 		F75379202AE2AD9400C0250E /* JGProgressHUD in Frameworks */ = {isa = PBXBuildFile; productRef = F753791F2AE2AD9400C0250E /* JGProgressHUD */; };
 		F75379222AE2ADA100C0250E /* JGProgressHUD in Frameworks */ = {isa = PBXBuildFile; productRef = F75379212AE2ADA100C0250E /* JGProgressHUD */; };
 		F753BA93281FD8020015BFB6 /* EasyTipView in Frameworks */ = {isa = PBXBuildFile; productRef = F753BA92281FD8020015BFB6 /* EasyTipView */; };
+		F7556ED62ABB3A5F00350BD4 /* NCMediaUI.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7556ED52ABB3A5F00350BD4 /* NCMediaUI.storyboard */; };
 		F755BD9B20594AC7008C5FBB /* NCService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F755BD9A20594AC7008C5FBB /* NCService.swift */; };
 		F757CC8229E7F88B00F31428 /* NCManageDatabase+Groupfolders.swift in Sources */ = {isa = PBXBuildFile; fileRef = F757CC8129E7F88B00F31428 /* NCManageDatabase+Groupfolders.swift */; };
 		F757CC8329E7F88B00F31428 /* NCManageDatabase+Groupfolders.swift in Sources */ = {isa = PBXBuildFile; fileRef = F757CC8129E7F88B00F31428 /* NCManageDatabase+Groupfolders.swift */; };
@@ -1049,6 +1050,7 @@
 		F753701822723D620041C76C /* gl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = gl; path = gl.lproj/Localizable.strings; sourceTree = "<group>"; };
 		F753701922723E0D0041C76C /* ca */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ca; path = ca.lproj/Localizable.strings; sourceTree = "<group>"; };
 		F753701A22723EC80041C76C /* da */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = da; path = da.lproj/Localizable.strings; sourceTree = "<group>"; };
+		F7556ED52ABB3A5F00350BD4 /* NCMediaUI.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = NCMediaUI.storyboard; sourceTree = "<group>"; };
 		F755BD9A20594AC7008C5FBB /* NCService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCService.swift; sourceTree = "<group>"; };
 		F757CC8129E7F88B00F31428 /* NCManageDatabase+Groupfolders.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NCManageDatabase+Groupfolders.swift"; sourceTree = "<group>"; };
 		F757CC8A29E82D0500F31428 /* NCGroupfolders.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = NCGroupfolders.storyboard; sourceTree = "<group>"; };
@@ -2414,6 +2416,7 @@
 			children = (
 				F720B5B72507B9A5008C94E5 /* Cell */,
 				F7501C302212E57400FB1415 /* NCMedia.storyboard */,
+				F7556ED52ABB3A5F00350BD4 /* NCMediaUI.storyboard */,
 				F7F1E54B2492369A00E42386 /* NCMediaCommandView.xib */,
 				F7501C312212E57400FB1415 /* NCMedia.swift */,
 				F3F7ACFD2A98C56C00AE12CF /* NCMediaNew.swift */,
@@ -3229,6 +3232,7 @@
 			files = (
 				F7362A1F220C853A005101B5 /* LaunchScreen.storyboard in Resources */,
 				F77444F622281649000D5EB0 /* NCGridMediaCell.xib in Resources */,
+				F7556ED62ABB3A5F00350BD4 /* NCMediaUI.storyboard in Resources */,
 				F78ACD4421903CF20088454D /* NCListCell.xib in Resources */,
 				F3BB464D2A39ADCC00461F6E /* NCMoreAppSuggestionsCell.xib in Resources */,
 				F7F4F10727ECDBDB008676F9 /* Inconsolata-Black.ttf in Resources */,
