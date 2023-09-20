@@ -66,6 +66,7 @@ struct NCViewerMediaPageController: UIViewControllerRepresentable {
 
 struct NCMediaNew: View {
     @StateObject private var vm = NCMediaViewModel()
+    @EnvironmentObject var parent: NCMediaUI
     @State private var columns = 2
     @State private var title = "Media"
     @State private var isScrolledToTop = true
