@@ -90,7 +90,6 @@
 		F30A6BFE2ABAE84A00148857 /* Binding+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F30A6BF92ABAE84900148857 /* Binding+Extension.swift */; };
 		F30A6BFF2ABAE84A00148857 /* Binding+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F30A6BF92ABAE84900148857 /* Binding+Extension.swift */; };
 		F30A6C002ABAE84A00148857 /* Binding+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F30A6BF92ABAE84900148857 /* Binding+Extension.swift */; };
-		F30A6C032ABB1BDE00148857 /* JGProgressHUD-SwiftUI in Frameworks */ = {isa = PBXBuildFile; productRef = F30A6C022ABB1BDE00148857 /* JGProgressHUD-SwiftUI */; };
 		F30A962F2A27ADF900D7BCFE /* EnvVars.stencil in Resources */ = {isa = PBXBuildFile; fileRef = F30A962E2A27ADF900D7BCFE /* EnvVars.stencil */; };
 		F30A96312A27AEBF00D7BCFE /* EnvVars.generated.swift in Sources */ = {isa = PBXBuildFile; fileRef = F30A96302A27AEBF00D7BCFE /* EnvVars.generated.swift */; };
 		F30A96322A27AEDD00D7BCFE /* EnvVars.generated.swift in Sources */ = {isa = PBXBuildFile; fileRef = F30A96302A27AEBF00D7BCFE /* EnvVars.generated.swift */; };
@@ -1527,7 +1526,6 @@
 				F72AD70D28C24B93006CB92D /* NextcloudKit in Frameworks */,
 				F70B86752642CE3B00ED5349 /* FirebaseCrashlytics in Frameworks */,
 				F7A1050E29E587AF00FFD92B /* TagListView in Frameworks */,
-				F30A6C032ABB1BDE00148857 /* JGProgressHUD-SwiftUI in Frameworks */,
 				F76DA969277B77EA0082465B /* DropDown in Frameworks */,
 				F7F623B52A5EF4D30022D3D4 /* Gzip in Frameworks */,
 				F75EAED826D2552E00F4320E /* MarqueeLabel in Frameworks */,
@@ -2930,7 +2928,6 @@
 				F7F623B42A5EF4D30022D3D4 /* Gzip */,
 				F3C0FB6F2AB06AB9007E7E30 /* VisibilityTrackingScrollView */,
 				F3EFBF5E2AB2100E00B5724C /* Shimmer */,
-				F30A6C022ABB1BDE00148857 /* JGProgressHUD-SwiftUI */,
 			);
 			productName = "Crypto Cloud";
 			productReference = F7CE8AFA1DC1F8D8009CAE48 /* Nextcloud.app */;
@@ -3108,7 +3105,6 @@
 				F7F623B32A5EF4D30022D3D4 /* XCRemoteSwiftPackageReference "GzipSwift" */,
 				F3C0FB6E2AB06AB9007E7E30 /* XCRemoteSwiftPackageReference "VisibilityTrackingScrollView" */,
 				F3EFBF5D2AB20B9100B5724C /* XCRemoteSwiftPackageReference "SwiftUI-Shimmer" */,
-				F30A6C012ABB1BDE00148857 /* XCRemoteSwiftPackageReference "JGProgressHUD-SwiftUI" */,
 			);
 			productRefGroup = F7F67B9F1A24D27800EE80DA;
 			projectDirPath = "";
@@ -4949,14 +4945,6 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		F30A6C012ABB1BDE00148857 /* XCRemoteSwiftPackageReference "JGProgressHUD-SwiftUI" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/JonasGessner/JGProgressHUD-SwiftUI.git";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 0.1.1;
-			};
-		};
 		F31F694B2A2F6EFA00162F76 /* XCRemoteSwiftPackageReference "swift-snapshot-testing" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/pointfreeco/swift-snapshot-testing.git";
@@ -5203,11 +5191,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = F76DA964277B76F10082465B /* XCRemoteSwiftPackageReference "UICKeyChainStore" */;
 			productName = UICKeyChainStore;
-		};
-		F30A6C022ABB1BDE00148857 /* JGProgressHUD-SwiftUI */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = F30A6C012ABB1BDE00148857 /* XCRemoteSwiftPackageReference "JGProgressHUD-SwiftUI" */;
-			productName = "JGProgressHUD-SwiftUI";
 		};
 		F30A96332A2DFCD000D7BCFE /* Realm */ = {
 			isa = XCSwiftPackageProductDependency;
