@@ -1,12 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="22154" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="FkP-Lh-8zt">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="21701" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="FkP-Lh-8zt">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="22130"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21678"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
+        <!--NCMedia.storyboard-->
+        <scene sceneID="udp-lL-CYh">
+            <objects>
+                <viewControllerPlaceholder storyboardName="NCMedia" referencedIdentifier="NCMedia.storyboard" id="kO6-hz-Gsq" sceneMemberID="viewController">
+                    <navigationItem key="navigationItem" id="3mJ-L2-Cmt"/>
+                </viewControllerPlaceholder>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="6gG-SV-Hvv" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="7770" y="899"/>
+        </scene>
         <!--Tab Bar Controller-->
         <scene sceneID="gY3-Ur-rTC">
             <objects>
@@ -82,7 +92,7 @@
                     </navigationBar>
                     <nil name="viewControllers"/>
                     <connections>
-                        <segue destination="9qD-Kn-cLv" kind="relationship" relationship="rootViewController" id="uuO-nx-YKv"/>
+                        <segue destination="kO6-hz-Gsq" kind="relationship" relationship="rootViewController" id="9zw-1n-Dhk"/>
                     </connections>
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="cZf-pk-3Bd" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -252,16 +262,6 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="CL1-x1-23E" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="8458" y="899"/>
-        </scene>
-        <!--MediaUI Hosting Controller-->
-        <scene sceneID="LW7-Qu-YUg">
-            <objects>
-                <hostingController id="9qD-Kn-cLv" customClass="NCMediaUIHostingController" customModule="Nextcloud" customModuleProvider="target" sceneMemberID="viewController">
-                    <navigationItem key="navigationItem" id="25z-kt-9a7"/>
-                </hostingController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="tN1-xH-LM8" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="7770" y="1219"/>
         </scene>
     </scenes>
     <resources>
