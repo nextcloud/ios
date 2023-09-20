@@ -79,6 +79,8 @@ struct NCMediaNew: View {
     @State var toolbarItemsColor = Color.blue
     @State var toolbarColors = [Color.clear]
 
+    @State private var showDeleteConfirmation = false
+
     weak var dataModelDelegate: DataDelegate?
 
     var body: some View {
@@ -175,6 +177,15 @@ struct NCMediaNew: View {
 
                             if isInSelectMode, !selectedMetadataInSelectMode.isEmpty {
                                 ToolbarCircularButton(imageSystemName: "trash.fill", toolbarItemsColor: $toolbarItemsColor)
+                                    .onTapGesture {
+                                        showDeleteConfirmation = true
+                                    }
+                                    .confirmationDialog("", isPresented: $showDeleteConfirmation) {
+                                        Button("Delete selected media", role: .destructive) {
+                                            vm.deleteSelectedMetadata()
+                                            isInSelectMode = false
+                                        }
+                                    }
                             }
 
                             Menu {

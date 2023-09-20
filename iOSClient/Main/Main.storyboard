@@ -3,7 +3,7 @@
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="22130"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="22129"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
@@ -247,7 +247,7 @@
         <!--Media-->
         <scene sceneID="Bay-KH-kar">
             <objects>
-                <hostingController id="6Bv-4x-DiT" customClass="NCMediaUIHostingController" customModule="Nextcloud" customModuleProvider="target" sceneMemberID="viewController">
+                <hostingController id="6Bv-4x-DiT" customClass="NCMediaUI" customModule="Nextcloud" customModuleProvider="target" sceneMemberID="viewController">
                     <tabBarItem key="tabBarItem" title="Media" id="LeR-mF-Bik"/>
                 </hostingController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Vin-YD-kF7" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
