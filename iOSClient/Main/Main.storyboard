@@ -3,7 +3,7 @@
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="22129"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="22130"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
@@ -24,13 +24,13 @@
                         <segue destination="bSZ-tE-FEj" kind="relationship" relationship="viewControllers" id="qbu-nX-qCk"/>
                         <segue destination="hwM-4d-Afb" kind="relationship" relationship="viewControllers" id="tds-0Q-7Zf"/>
                         <segue destination="Cc7-4O-z6Q" kind="relationship" relationship="viewControllers" id="YKg-LH-tor"/>
-                        <segue destination="6Bv-4x-DiT" kind="relationship" relationship="viewControllers" id="iKW-2j-TQb"/>
+                        <segue destination="Npr-vu-PSD" kind="relationship" relationship="viewControllers" id="XeU-GF-etm"/>
                         <segue destination="1Z8-Bx-Dqo" kind="relationship" relationship="viewControllers" id="z6l-ei-IMY"/>
                     </connections>
                 </tabBarController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="d2B-Yg-rp2" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="6929" y="-527"/>
+            <point key="canvasLocation" x="7071" y="-556"/>
         </scene>
         <!--File-->
         <scene sceneID="dMv-43-hWy">
@@ -69,6 +69,25 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="NME-vT-pfd" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="6367" y="327"/>
+        </scene>
+        <!--Media-->
+        <scene sceneID="IuY-Iu-oAm">
+            <objects>
+                <navigationController extendedLayoutIncludesOpaqueBars="YES" automaticallyAdjustsScrollViewInsets="NO" id="Npr-vu-PSD" sceneMemberID="viewController">
+                    <tabBarItem key="tabBarItem" title="Media" id="5cw-bP-7It"/>
+                    <toolbarItems/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" largeTitles="YES" id="ixg-Pw-TNO">
+                        <rect key="frame" x="0.0" y="48" width="414" height="96"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <nil name="viewControllers"/>
+                    <connections>
+                        <segue destination="9qD-Kn-cLv" kind="relationship" relationship="rootViewController" id="uuO-nx-YKv"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="cZf-pk-3Bd" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="7771" y="327"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="cip-AF-Ks2">
@@ -234,15 +253,15 @@
             </objects>
             <point key="canvasLocation" x="8458" y="899"/>
         </scene>
-        <!--Media-->
-        <scene sceneID="Bay-KH-kar">
+        <!--MediaUI Hosting Controller-->
+        <scene sceneID="LW7-Qu-YUg">
             <objects>
-                <hostingController id="6Bv-4x-DiT" customClass="NCMediaUIHostingController" customModule="Nextcloud" customModuleProvider="target" sceneMemberID="viewController">
-                    <tabBarItem key="tabBarItem" title="Media" id="LeR-mF-Bik"/>
+                <hostingController id="9qD-Kn-cLv" customClass="NCMediaUIHostingController" customModule="Nextcloud" customModuleProvider="target" sceneMemberID="viewController">
+                    <navigationItem key="navigationItem" id="25z-kt-9a7"/>
                 </hostingController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="Vin-YD-kF7" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="tN1-xH-LM8" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="7770" y="327"/>
+            <point key="canvasLocation" x="7770" y="1219"/>
         </scene>
     </scenes>
     <resources>
