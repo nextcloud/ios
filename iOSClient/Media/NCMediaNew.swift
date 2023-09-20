@@ -73,7 +73,6 @@ struct NCMediaNew: View {
     @State private var isMediaViewControllerPresented = false
     @State private var tappedMetadata = tableMetadata()
     @State private var isInSelectMode = false
-    @State private var selectedMetadataInSelectMode: [tableMetadata] = []
 
     @State var titleColor = Color.primary
     @State var toolbarItemsColor = Color.blue
@@ -93,11 +92,9 @@ struct NCMediaNew: View {
                                 NCMediaRow(metadatas: rowMetadatas, geometryProxy: outerProxy, isInSelectMode: $isInSelectMode) { tappedThumbnail, isSelected in
 
                                     if isInSelectMode, isSelected {
-                                        selectedMetadataInSelectMode.append(tappedThumbnail.metadata)
-                                        print(selectedMetadataInSelectMode)
+                                        vm.selectedMetadatas.append(tappedThumbnail.metadata)
                                     } else {
-                                        selectedMetadataInSelectMode.removeAll(where: { $0.ocId == tappedThumbnail.metadata.ocId })
-                                        print(selectedMetadataInSelectMode)
+                                        vm.selectedMetadatas.removeAll(where: { $0.ocId == tappedThumbnail.metadata.ocId })
                                     }
 
                                     let selectedMetadata = tappedThumbnail.metadata
@@ -175,7 +172,7 @@ struct NCMediaNew: View {
                             .background(.ultraThinMaterial)
                             .cornerRadius(.infinity)
 
-                            if isInSelectMode, !selectedMetadataInSelectMode.isEmpty {
+                            if isInSelectMode, !vm.selectedMetadatas.isEmpty {
                                 ToolbarCircularButton(imageSystemName: "trash.fill", toolbarItemsColor: $toolbarItemsColor)
                                     .onTapGesture {
                                         showDeleteConfirmation = true
@@ -245,7 +242,7 @@ struct NCMediaNew: View {
 //                NCViewerMediaPageController(metadatas: vm.metadatas, selectedMetadata: tappedMetadata)
 //            }
             .onChange(of: isInSelectMode) { newValue in
-                selectedMetadataInSelectMode.removeAll()
+//                if newValue == false { vm.selectedMetadatas.removeAll() }
             }
 //        }
     }

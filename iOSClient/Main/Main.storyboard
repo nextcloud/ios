@@ -7,16 +7,6 @@
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
-        <!--NCMediaUI.storyboard-->
-        <scene sceneID="udp-lL-CYh">
-            <objects>
-                <viewControllerPlaceholder storyboardName="NCMediaUI" referencedIdentifier="NCMediaUI.storyboard" id="kO6-hz-Gsq" sceneMemberID="viewController">
-                    <navigationItem key="navigationItem" id="3mJ-L2-Cmt"/>
-                </viewControllerPlaceholder>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="6gG-SV-Hvv" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="7770" y="899"/>
-        </scene>
         <!--Tab Bar Controller-->
         <scene sceneID="gY3-Ur-rTC">
             <objects>
@@ -34,7 +24,7 @@
                         <segue destination="bSZ-tE-FEj" kind="relationship" relationship="viewControllers" id="qbu-nX-qCk"/>
                         <segue destination="hwM-4d-Afb" kind="relationship" relationship="viewControllers" id="tds-0Q-7Zf"/>
                         <segue destination="Cc7-4O-z6Q" kind="relationship" relationship="viewControllers" id="YKg-LH-tor"/>
-                        <segue destination="6Bv-4x-DiT" kind="relationship" relationship="viewControllers" id="iKW-2j-TQb"/>
+                        <segue destination="RF7-gD-gsF" kind="relationship" relationship="viewControllers" id="rvt-kL-0eL"/>
                         <segue destination="1Z8-Bx-Dqo" kind="relationship" relationship="viewControllers" id="z6l-ei-IMY"/>
                     </connections>
                 </tabBarController>
@@ -244,15 +234,34 @@
             </objects>
             <point key="canvasLocation" x="8458" y="899"/>
         </scene>
-        <!--Media-->
-        <scene sceneID="Bay-KH-kar">
+        <!--NCMediaUI.storyboard-->
+        <scene sceneID="dFB-0S-apF">
             <objects>
-                <hostingController id="6Bv-4x-DiT" customClass="NCMediaUI" customModule="Nextcloud" customModuleProvider="target" sceneMemberID="viewController">
-                    <tabBarItem key="tabBarItem" title="Media" id="LeR-mF-Bik"/>
-                </hostingController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="Vin-YD-kF7" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+                <viewControllerPlaceholder storyboardName="NCMediaUI" referencedIdentifier="NCMediaUI.storyboard" id="kHp-3i-www" sceneMemberID="viewController">
+                    <navigationItem key="navigationItem" id="I2u-br-UCh"/>
+                </viewControllerPlaceholder>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="mcs-2s-RF8" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="7770" y="327"/>
+            <point key="canvasLocation" x="7854" y="1088"/>
+        </scene>
+        <!--Media-->
+        <scene sceneID="cqe-8g-lRj">
+            <objects>
+                <navigationController extendedLayoutIncludesOpaqueBars="YES" automaticallyAdjustsScrollViewInsets="NO" id="RF7-gD-gsF" sceneMemberID="viewController">
+                    <tabBarItem key="tabBarItem" title="Media" id="Zte-Jp-EJV"/>
+                    <toolbarItems/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" largeTitles="YES" id="Qwq-ub-joD">
+                        <rect key="frame" x="0.0" y="48" width="414" height="96"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <nil name="viewControllers"/>
+                    <connections>
+                        <segue destination="kHp-3i-www" kind="relationship" relationship="rootViewController" id="dzV-s6-uE5"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="L2K-7e-6T0" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="7768" y="327"/>
         </scene>
     </scenes>
     <resources>
