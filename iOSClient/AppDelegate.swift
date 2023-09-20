@@ -259,6 +259,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
         NCOperationQueue.shared.cancelAllQueue()
         NCNetworking.shared.cancelAllDownloadTransfer()
+        NextcloudKit.shared.sessionManager.cancelAllRequests()
 
         presentPasscode { }
 
