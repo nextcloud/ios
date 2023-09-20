@@ -158,12 +158,12 @@ class NCViewerMediaPage: UIViewController {
         guard let navigationController = self.navigationController else { return }
 
         if currentViewController.metadata.isImage {
-            self.navigationController?.navigationItem.rightBarButtonItems = [moreNavigationItem, imageDetailNavigationItem]
+            navigationController.navigationItem.rightBarButtonItems = [moreNavigationItem, imageDetailNavigationItem]
         } else {
-            self.navigationController?.navigationItem.rightBarButtonItems = [moreNavigationItem]
+            navigationController.navigationItem.rightBarButtonItems = [moreNavigationItem]
         }
 
-        self.tabBarController?.tabBar.isHidden = true
+        tabBarController?.tabBar.isHidden = true
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -180,10 +180,8 @@ class NCViewerMediaPage: UIViewController {
         clearCommandCenter()
     }
 
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-
-        self.tabBarController?.tabBar.isHidden = false
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
     }
 
     override var preferredStatusBarStyle: UIStatusBarStyle {

@@ -39,7 +39,6 @@ struct NCMediaCell: View {
                         image
                     }
                 }.disabled(isInSelectMode)
-
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .overlay(alignment: .bottomLeading) {
