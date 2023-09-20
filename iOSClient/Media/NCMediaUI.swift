@@ -17,7 +17,7 @@ class NCMediaUI: UIViewController, ObservableObject {
     }
 
     func addView() {
-        let testView = SwiftUIView()
+        let testView = NCMediaNew()
         let controller = UIHostingController(rootView: testView.environmentObject(self))
         addChild(controller)
         controller.view.translatesAutoresizingMaskIntoConstraints = false
@@ -33,6 +33,7 @@ class NCMediaUI: UIViewController, ObservableObject {
     }
 }
 
+/*
 struct SwiftUIView: View {
     @EnvironmentObject var parent: NCMediaUI
     var body: some View {
@@ -44,3 +45,4 @@ struct SwiftUIView: View {
         }
     }
 }
+*/
