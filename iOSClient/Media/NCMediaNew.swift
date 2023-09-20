@@ -76,29 +76,28 @@ struct NCMediaNew: View {
     @State private var isInSelectMode = false
     @State private var selectedMetadataInSelectMode: [tableMetadata] = []
 
+    @State var titleColor = Color.primary
+    @State var toolbarItemsColor = Color.blue
+    @State var toolbarColors = [Color.clear]
+
     weak var dataModelDelegate: DataDelegate?
 
     var body: some View {
-        NavigationView {
             GeometryReader { outerProxy in
+                        NavigationView {
                 ZStack(alignment: .top) {
                     VisibilityTrackingScrollView(action: cellVisibilityDidChange) {
                         LazyVStack(alignment: .leading, spacing: 2) {
                             ForEach(vm.metadatas.chunked(into: columns), id: \.self) { rowMetadatas in
-                                NCMediaRow(metadatas: rowMetadatas, geometryProxy: outerProxy, isInSelectMode: $isInSelectMode) { tappedThumbnail, tappedInSelectMode in
+                                NCMediaRow(metadatas: rowMetadatas, geometryProxy: outerProxy, isInSelectMode: $isInSelectMode) { tappedThumbnail, isSelected in
 
-                                    if tappedInSelectMode {
+                                    // TODO: Only do selection here
+                                    if isSelected {
                                         selectedMetadataInSelectMode.append(tappedThumbnail.metadata)
+                                        print(selectedMetadataInSelectMode)
                                     } else {
                                         selectedMetadataInSelectMode.removeAll(where: { $0.ocId == tappedThumbnail.metadata.ocId })
-                                    }
-
-                                    print(selectedMetadataInSelectMode)
-
-                                    if !isInSelectMode {
-                                        tappedMetadata = tappedThumbnail.metadata
-                                        dataModelDelegate?.updateData(metadatas: vm.metadatas, selectedMetadata: tappedMetadata, image: tappedThumbnail.image)
-//                                        isMediaViewControllerPresented = true
+                                        print(selectedMetadataInSelectMode)
                                     }
                                 }
                             }
@@ -117,8 +116,12 @@ struct NCMediaNew: View {
                                 .preference(key: ScrollOffsetPreferenceKey.self, value: geometry.frame(in: .named("scroll")).origin)
                         })
                         .onPreferenceChange(ScrollOffsetPreferenceKey.self) { value in
-                            withAnimation(.easeInOut) {
-                                isScrolledToTop = value.y >= -10
+                            let isScrolledToTop = value.y >= -10
+
+                            withAnimation(.default) {
+                                titleColor = isScrolledToTop ? Color.primary : .white
+                                toolbarItemsColor = isScrolledToTop ? .blue : .white
+                                toolbarColors = isScrolledToTop ? [.clear] : [.black.opacity(0.8), .black.opacity(0.0)]
                             }
                         }
 
@@ -128,74 +131,74 @@ struct NCMediaNew: View {
                     }
                     .coordinateSpace(name: "scroll")
 
+                    // Toolbar
+
                     HStack(content: {
                         HStack {
                             Text(title)
                                 .font(.system(size: 20, weight: .bold))
-                                .foregroundStyle(isScrolledToTop ? Color.primary : .white)
+                                .foregroundStyle(titleColor)
+
                             Spacer()
+
                             Button(action: {
                                 isInSelectMode.toggle()
                             }, label: {
                                 Text(NSLocalizedString(isInSelectMode ? "_cancel_" : "_select_", comment: "")).font(.system(size: 14))
-                                    .foregroundStyle(isScrolledToTop ? .blue : .white)
+                                    .foregroundStyle(toolbarItemsColor)
                             })
                             .padding(.horizontal, 6)
                             .padding(.vertical, 3)
                             .background(.ultraThinMaterial)
                             .cornerRadius(.infinity)
 
-                            if !isInSelectMode {
-                                Menu {
-                                    Section {
-                                        Button(action: {
-                                            vm.filterClassTypeImage = !vm.filterClassTypeImage
-                                            vm.filterClassTypeVideo = false
-                                        }, label: {
-                                            Label(NSLocalizedString(vm.filterClassTypeImage ? "_media_viewimage_show_" : "_media_viewimage_hide_", comment: ""), systemImage: "photo.fill")
-                                        })
-                                        Button(action: {
-                                            vm.filterClassTypeVideo = !vm.filterClassTypeVideo
-                                            vm.filterClassTypeImage = false
-                                        }, label: {
-                                            Label(NSLocalizedString(vm.filterClassTypeVideo ? "_media_viewvideo_show_" : "_media_viewvideo_hide_", comment: ""), systemImage: "video.fill")
-                                        })
-                                        Button(action: {}, label: {
-                                            Label(NSLocalizedString("_select_media_folder_", comment: ""), systemImage: "folder")
-                                        })
-                                    }
+                            if isInSelectMode, !selectedMetadataInSelectMode.isEmpty {
+                                ToolbarCircularButton(imageSystemName: "trash.fill", toolbarItemsColor: $toolbarItemsColor)
+                            }
 
-                                    Section {
-                                        Button(action: {}, label: {
-                                            Label(NSLocalizedString("_play_from_files_", comment: ""), systemImage: "play.circle")
-                                        })
-                                        Button(action: {}, label: {
-                                            Label(NSLocalizedString("_play_from_url_", comment: ""), systemImage: "link")
-                                        })
-                                    }
-
-                                    Picker("Sorting options", selection: $vm.sortType) {
-                                        Label(NSLocalizedString("_media_by_modified_date_", comment: ""), systemImage: "circle.grid.cross.up.fill").tag(SortType.modifiedDate)
-                                        Label(NSLocalizedString("_media_by_created_date_", comment: ""), systemImage: "circle.grid.cross.down.fill").tag(SortType.creationDate)
-                                        Label(NSLocalizedString("_media_by_upload_date_", comment: ""), systemImage: "circle.grid.cross.right.fill").tag(SortType.uploadDate)
-                                    }
-                                    .pickerStyle(.menu)
-                                } label: {
-                                    Image(systemName: "ellipsis").font(.system(size: 15))
-                                        .padding(.horizontal, 2)
-                                        .padding(.vertical, 8)
-                                        .background(.ultraThinMaterial)
-                                        .cornerRadius(.infinity)
-                                        .foregroundColor(isScrolledToTop ? Color.blue : .white)
-
+                            Menu {
+                                Section {
+                                    Button(action: {
+                                        vm.filterClassTypeImage = !vm.filterClassTypeImage
+                                        vm.filterClassTypeVideo = false
+                                    }, label: {
+                                        Label(NSLocalizedString(vm.filterClassTypeImage ? "_media_viewimage_show_" : "_media_viewimage_hide_", comment: ""), systemImage: "photo.fill")
+                                    })
+                                    Button(action: {
+                                        vm.filterClassTypeVideo = !vm.filterClassTypeVideo
+                                        vm.filterClassTypeImage = false
+                                    }, label: {
+                                        Label(NSLocalizedString(vm.filterClassTypeVideo ? "_media_viewvideo_show_" : "_media_viewvideo_hide_", comment: ""), systemImage: "video.fill")
+                                    })
+                                    Button(action: {}, label: {
+                                        Label(NSLocalizedString("_select_media_folder_", comment: ""), systemImage: "folder")
+                                    })
                                 }
+
+                                Section {
+                                    Button(action: {}, label: {
+                                        Label(NSLocalizedString("_play_from_files_", comment: ""), systemImage: "play.circle")
+                                    })
+                                    Button(action: {}, label: {
+                                        Label(NSLocalizedString("_play_from_url_", comment: ""), systemImage: "link")
+                                    })
+                                }
+
+                                Picker("Sorting options", selection: $vm.sortType) {
+                                    Label(NSLocalizedString("_media_by_modified_date_", comment: ""), systemImage: "circle.grid.cross.up.fill").tag(SortType.modifiedDate)
+                                    Label(NSLocalizedString("_media_by_created_date_", comment: ""), systemImage: "circle.grid.cross.down.fill").tag(SortType.creationDate)
+                                    Label(NSLocalizedString("_media_by_upload_date_", comment: ""), systemImage: "circle.grid.cross.right.fill").tag(SortType.uploadDate)
+                                }
+                                .pickerStyle(.menu)
+                            } label: {
+                                ToolbarCircularButton(imageSystemName: "ellipsis", toolbarItemsColor: $toolbarItemsColor)
                             }
                         }
                     })
                     .frame(maxWidth: .infinity)
                     .padding([.horizontal, .top], 10)
                     .padding(.bottom, 20)
-                    .background(LinearGradient(gradient: Gradient(colors: isScrolledToTop ? [.clear] : [.black.opacity(0.8), .black.opacity(0.0)]), startPoint: .top, endPoint: .bottom).edgesIgnoringSafeArea(.top))
+                    .background(LinearGradient(gradient: Gradient(colors: toolbarColors), startPoint: .top, endPoint: .bottom).edgesIgnoringSafeArea(.top))
                 }
             }
             .onRotate { orientation in
@@ -218,6 +221,22 @@ struct NCMediaNew: View {
                 title = date
             }
         }
+    }
+}
+
+struct ToolbarCircularButton: View {
+    let imageSystemName: String
+    @Binding var toolbarItemsColor: Color
+
+    var body: some View {
+        Image(systemName: imageSystemName)
+            .resizable()
+            .scaledToFit()
+            .frame(width: 13, height: 12)
+            .padding(5)
+            .background(.ultraThinMaterial)
+            .clipShape(Circle())
+            .foregroundColor(toolbarItemsColor)
     }
 }
 

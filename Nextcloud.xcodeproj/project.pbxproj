@@ -84,6 +84,13 @@
 		F30A6BF62AB4B31200148857 /* PreferenceKeys.swift in Sources */ = {isa = PBXBuildFile; fileRef = F30A6BF12AB4B31200148857 /* PreferenceKeys.swift */; };
 		F30A6BF72AB4B31200148857 /* PreferenceKeys.swift in Sources */ = {isa = PBXBuildFile; fileRef = F30A6BF12AB4B31200148857 /* PreferenceKeys.swift */; };
 		F30A6BF82AB4B31200148857 /* PreferenceKeys.swift in Sources */ = {isa = PBXBuildFile; fileRef = F30A6BF12AB4B31200148857 /* PreferenceKeys.swift */; };
+		F30A6BFA2ABAE84900148857 /* Binding+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F30A6BF92ABAE84900148857 /* Binding+Extension.swift */; };
+		F30A6BFB2ABAE84900148857 /* Binding+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F30A6BF92ABAE84900148857 /* Binding+Extension.swift */; };
+		F30A6BFC2ABAE84900148857 /* Binding+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F30A6BF92ABAE84900148857 /* Binding+Extension.swift */; };
+		F30A6BFD2ABAE84A00148857 /* Binding+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F30A6BF92ABAE84900148857 /* Binding+Extension.swift */; };
+		F30A6BFE2ABAE84A00148857 /* Binding+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F30A6BF92ABAE84900148857 /* Binding+Extension.swift */; };
+		F30A6BFF2ABAE84A00148857 /* Binding+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F30A6BF92ABAE84900148857 /* Binding+Extension.swift */; };
+		F30A6C002ABAE84A00148857 /* Binding+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F30A6BF92ABAE84900148857 /* Binding+Extension.swift */; };
 		F30A962F2A27ADF900D7BCFE /* EnvVars.stencil in Resources */ = {isa = PBXBuildFile; fileRef = F30A962E2A27ADF900D7BCFE /* EnvVars.stencil */; };
 		F30A96312A27AEBF00D7BCFE /* EnvVars.generated.swift in Sources */ = {isa = PBXBuildFile; fileRef = F30A96302A27AEBF00D7BCFE /* EnvVars.generated.swift */; };
 		F30A96322A27AEDD00D7BCFE /* EnvVars.generated.swift in Sources */ = {isa = PBXBuildFile; fileRef = F30A96302A27AEBF00D7BCFE /* EnvVars.generated.swift */; };
@@ -845,6 +852,7 @@
 		C04E2F222A17BB4D001BAD85 /* FilesIntegrationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilesIntegrationTests.swift; sourceTree = "<group>"; };
 		D5B6AA7727200C7200D49C24 /* NCActivityTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCActivityTableViewCell.swift; sourceTree = "<group>"; };
 		F30A6BF12AB4B31200148857 /* PreferenceKeys.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreferenceKeys.swift; sourceTree = "<group>"; };
+		F30A6BF92ABAE84900148857 /* Binding+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Binding+Extension.swift"; sourceTree = "<group>"; };
 		F30A96042A27299D00D7BCFE /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Platforms/iPhoneOS.platform/Developer/Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
 		F30A962E2A27ADF900D7BCFE /* EnvVars.stencil */ = {isa = PBXFileReference; lastKnownFileType = text; path = EnvVars.stencil; sourceTree = "<group>"; };
 		F30A96302A27AEBF00D7BCFE /* EnvVars.generated.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = EnvVars.generated.swift; path = Sourcery/EnvVars.generated.swift; sourceTree = "<group>"; };
@@ -2149,6 +2157,7 @@
 				F77BB745289984CA0090FC19 /* UIViewController+Extension.swift */,
 				F7E8A390295DC5E0006CB2D0 /* View+Extension.swift */,
 				F7EE66AC2A20B226009AE765 /* UILabel+Extension.swift */,
+				F30A6BF92ABAE84900148857 /* Binding+Extension.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -3374,6 +3383,7 @@
 				F79B646326CA661600838ACA /* UIControl+Extension.swift in Sources */,
 				F78A10C429322E8A008499B8 /* NCManageDatabase+Directory.swift in Sources */,
 				F75CA1482962F13700B01130 /* HUDView.swift in Sources */,
+				F30A6C002ABAE84A00148857 /* Binding+Extension.swift in Sources */,
 				AF4BF61C27562A4B0081CEEF /* NCManageDatabase+Metadata.swift in Sources */,
 				AF817EF4274BC781009ED85B /* NCUserBaseUrl.swift in Sources */,
 				F78E2D6B29AF02DB0024D4F3 /* Database.swift in Sources */,
@@ -3457,6 +3467,7 @@
 				F7490E7529882BE2009DCE94 /* NCManageDatabase+Directory.swift in Sources */,
 				F7864AD12A78FE73004870E0 /* NCManageDatabase+LocalFile.swift in Sources */,
 				F7490E8729882CA8009DCE94 /* ThreadSafeDictionary.swift in Sources */,
+				F30A6BFF2ABAE84A00148857 /* Binding+Extension.swift in Sources */,
 				F757CC8729E7F88B00F31428 /* NCManageDatabase+Groupfolders.swift in Sources */,
 				F7490E8229882C80009DCE94 /* NCManageDatabase+E2EE.swift in Sources */,
 				F7490E7829882C28009DCE94 /* NCUtility.swift in Sources */,
@@ -3529,6 +3540,7 @@
 				AF22B217277D196700DAB0CC /* NCShareExtension+DataSource.swift in Sources */,
 				F76D364728A4F8BF00214537 /* NCActivityIndicator.swift in Sources */,
 				F749B654297B0F2400087535 /* NCManageDatabase+Avatar.swift in Sources */,
+				F30A6BFD2ABAE84A00148857 /* Binding+Extension.swift in Sources */,
 				F780710A1EDAB65800EAFFF6 /* NSNotificationCenter+MainThread.m in Sources */,
 				F79EC77F26316193004E59D6 /* NCRenameFile.swift in Sources */,
 				AF22B208277B4E4C00DAB0CC /* NCCreateFormUploadConflictCell.swift in Sources */,
@@ -3574,6 +3586,7 @@
 				F793E59D28B761E7005E4B02 /* NCNetworking.swift in Sources */,
 				F7BF9D832934CA21009EE9A6 /* NCManageDatabase+LayoutForView.swift in Sources */,
 				F757CC8329E7F88B00F31428 /* NCManageDatabase+Groupfolders.swift in Sources */,
+				F30A6BFB2ABAE84900148857 /* Binding+Extension.swift in Sources */,
 				F74B6D962A7E239A00F03C5F /* NCManageDatabase+Chunk.swift in Sources */,
 				F749B652297B0F2400087535 /* NCManageDatabase+Avatar.swift in Sources */,
 				F783030628B4C51E00B84583 /* String+Extension.swift in Sources */,
@@ -3617,6 +3630,7 @@
 				F771E3D320E2392D00AFB62D /* FileProviderExtension.swift in Sources */,
 				F771E3D520E2392D00AFB62D /* FileProviderItem.swift in Sources */,
 				AF4BF616275629E20081CEEF /* NCManageDatabase+Account.swift in Sources */,
+				F30A6BFE2ABAE84A00148857 /* Binding+Extension.swift in Sources */,
 				F343A4B72A1E084300DDA874 /* PHAsset+Extension.swift in Sources */,
 				F7434B3620E23FE000417916 /* NCManageDatabase.swift in Sources */,
 				F798F0E725880609000DAFFD /* UIColor+Extension.swift in Sources */,
@@ -3751,6 +3765,7 @@
 				F74B6D952A7E239A00F03C5F /* NCManageDatabase+Chunk.swift in Sources */,
 				F702F2F725EE5CED008F8E80 /* NCLogin.swift in Sources */,
 				F7E98C1627E0D0FC001F9F19 /* NCManageDatabase+Video.swift in Sources */,
+				F30A6BFA2ABAE84900148857 /* Binding+Extension.swift in Sources */,
 				F7F4F11227ECDC52008676F9 /* UIFont+Extension.swift in Sources */,
 				AF93471A27E2361E002537EE /* NCShareAdvancePermissionHeader.swift in Sources */,
 				F7F878AE1FB9E3B900599E4F /* NCEndToEndMetadata.swift in Sources */,
@@ -3898,6 +3913,7 @@
 				F78E2D6729AF02DB0024D4F3 /* Database.swift in Sources */,
 				F7A8D73628F17E1A008BBE1C /* NCManageDatabase+Activity.swift in Sources */,
 				F7A8D73E28F181E2008BBE1C /* NCUserBaseUrl.swift in Sources */,
+				F30A6BFC2ABAE84900148857 /* Binding+Extension.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

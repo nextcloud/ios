@@ -15,8 +15,8 @@ struct NCMediaCell: View {
     let thumbnail: ScaledThumbnail
     let shrinkRatio: CGFloat
     @Binding var isInSelectMode: Bool
-    let onTap: (ScaledThumbnail, Bool) -> Void
-    @State private var isTappedInSelectMode = false
+    let onSelected: (ScaledThumbnail, Bool) -> Void
+    @State private var isSelected = false
 
     var body: some View {
         let image = Image(uiImage: thumbnail.image)
@@ -38,7 +38,7 @@ struct NCMediaCell: View {
                     } else {
                         image
                     }
-                }
+                }.disabled(isInSelectMode)
 
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -53,12 +53,12 @@ struct NCMediaCell: View {
                 }
             }
             .overlay {
-                if isInSelectMode, isTappedInSelectMode {
+                if isInSelectMode, isSelected {
                     Color.black.opacity(0.6).frame(maxWidth: .infinity)
                 }
             }
             .overlay(alignment: .bottomTrailing) {
-                if isInSelectMode, isTappedInSelectMode {
+                if isInSelectMode, isSelected {
                     Image(systemName: "checkmark.circle.fill")
                         .resizable()
                         .foregroundColor(.blue)
@@ -72,11 +72,12 @@ struct NCMediaCell: View {
             .frame(width: CGFloat(thumbnail.scaledSize.width * shrinkRatio), height: CGFloat(thumbnail.scaledSize.height * shrinkRatio))
             .background(Color(uiColor: .systemGray6))
             .onTapGesture {
-                if isInSelectMode { isTappedInSelectMode.toggle() }
-                onTap(thumbnail, isTappedInSelectMode)
+                if isInSelectMode { isSelected.toggle() }
+                onSelected(thumbnail, isSelected)
             }
             .onChange(of: isInSelectMode) { newValue in
-                isTappedInSelectMode = !newValue
+                isSelected = !newValue
+                onSelected(thumbnail, isSelected)
             }
         }
 }
