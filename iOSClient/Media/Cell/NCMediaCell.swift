@@ -29,55 +29,53 @@ struct NCMediaCell: View {
             }))
 
         ZStack(alignment: .center) {
-//                NavigationLink(destination: NCViewerMediaPageController(metadatas: [thumbnail.metadata], selectedMetadata: thumbnail.metadata)) {
-                    if thumbnail.isDefaultImage {
-                        image
-                            .foregroundColor(Color(uiColor: .systemGray4))
-                            .scaledToFit()
-                            .frame(width: 40)
-                    } else {
-                        image
-                    }
-//                }.disabled(isInSelectMode)
-            }
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .overlay(alignment: .bottomLeading) {
-                if thumbnail.metadata.isVideo, !thumbnail.isDefaultImage {
-                    Image(systemName: "play.fill")
-                        .resizable()
-                        .foregroundColor(Color(uiColor: .systemGray4))
-                        .scaledToFit()
-                        .frame(width: 20)
-                        .padding([.leading, .bottom], 10)
-                }
-            }
-            .overlay {
-                if isInSelectMode, isSelected {
-                    Color.black.opacity(0.6).frame(maxWidth: .infinity)
-                }
-            }
-            .overlay(alignment: .bottomTrailing) {
-                if isInSelectMode, isSelected {
-                    Image(systemName: "checkmark.circle.fill")
-                        .resizable()
-                        .foregroundColor(.blue)
-                        .background(.white)
-                        .clipShape(Circle())
-                        .scaledToFit()
-                        .frame(width: 20)
-                        .padding([.trailing, .bottom], 10)
-                }
-            }
-            .frame(width: CGFloat(thumbnail.scaledSize.width * shrinkRatio), height: CGFloat(thumbnail.scaledSize.height * shrinkRatio))
-            .background(Color(uiColor: .systemGray6))
-            .onTapGesture {
-                if isInSelectMode { isSelected.toggle() }
-                onSelected(thumbnail, isSelected)
-            }
-            .onChange(of: isInSelectMode) { newValue in
-                isSelected = !newValue
+            if thumbnail.isDefaultImage {
+                image
+                    .foregroundColor(Color(uiColor: .systemGray4))
+                    .scaledToFit()
+                    .frame(width: 40)
+            } else {
+                image
             }
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .overlay(alignment: .bottomLeading) {
+            if thumbnail.metadata.isVideo, !thumbnail.isDefaultImage {
+                Image(systemName: "play.fill")
+                    .resizable()
+                    .foregroundColor(Color(uiColor: .white))
+                    .scaledToFit()
+                    .frame(width: 16)
+                    .padding([.leading, .bottom], 10)
+            }
+        }
+        .overlay {
+            if isInSelectMode, isSelected {
+                Color.black.opacity(0.6).frame(maxWidth: .infinity)
+            }
+        }
+        .overlay(alignment: .bottomTrailing) {
+            if isInSelectMode, isSelected {
+                Image(systemName: "checkmark.circle.fill")
+                    .resizable()
+                    .foregroundColor(.blue)
+                    .background(.white)
+                    .clipShape(Circle())
+                    .scaledToFit()
+                    .frame(width: 20)
+                    .padding([.trailing, .bottom], 10)
+            }
+        }
+        .frame(width: CGFloat(thumbnail.scaledSize.width * shrinkRatio), height: CGFloat(thumbnail.scaledSize.height * shrinkRatio))
+        .background(Color(uiColor: .systemGray6))
+        .onTapGesture {
+            if isInSelectMode { isSelected.toggle() }
+            onSelected(thumbnail, isSelected)
+        }
+        .onChange(of: isInSelectMode) { newValue in
+            isSelected = !newValue
+        }
+    }
 }
 
 struct NCMediaLoadingCell: View {
