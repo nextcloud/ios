@@ -14,9 +14,10 @@ enum SortType: String {
 }
 
 @MainActor class NCMediaViewModel: ObservableObject {
-    @Published var metadatas: [tableMetadata] = []
-    @Published var selectedMetadatas: [tableMetadata] = []
-    
+    @Published private(set) var metadatas: [tableMetadata] = []
+    @Published internal var selectedMetadatas: [tableMetadata] = []
+    @Published internal var isInSelectMode = false
+
     private var account: String = ""
     private var lastContentOffsetY: CGFloat = 0
     private var mediaPath = ""
@@ -24,6 +25,7 @@ enum SortType: String {
     private var predicateDefault: NSPredicate?
     private var predicate: NSPredicate?
     private let appDelegate = UIApplication.shared.delegate as? AppDelegate
+
     @Published internal var filterClassTypeImage = false
     @Published internal var filterClassTypeVideo = false
 
@@ -45,7 +47,6 @@ enum SortType: String {
         $filterClassTypeImage.sink { _ in self.loadData() }.store(in: &cancellables)
         $filterClassTypeVideo.sink { _ in self.loadData() }.store(in: &cancellables)
         $sortType.sink { sortType in
-            print(sortType.rawValue)
             CCUtility.setMediaSortDate(sortType.rawValue)
             self.loadData()
         }
@@ -137,6 +138,8 @@ enum SortType: String {
                         }
                     }
                     NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDeleteFile, userInfo: ["ocId": ocId, "onlyLocalCache": false, "error": error])
+
+                    isInSelectMode = false
                 }
 //                completion?()
 

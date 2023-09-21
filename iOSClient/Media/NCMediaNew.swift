@@ -11,58 +11,58 @@ import PreviewSnapshots
 import NextcloudKit
 import VisibilityTrackingScrollView
 
-protocol DataDelegate: AnyObject {
-    func updateData(metadatas: [tableMetadata], selectedMetadata: tableMetadata, image: UIImage)
-}
+//protocol DataDelegate: AnyObject {
+//    func updateData(metadatas: [tableMetadata], selectedMetadata: tableMetadata, image: UIImage)
+//}
 
-class NCMediaUIHostingController: UIHostingController<NCMediaNew>, DataDelegate {
-    required init?(coder aDecoder: NSCoder) {
-        let view = NCMediaNew()
-        super.init(coder: aDecoder, rootView: view)
-        rootView.dataModelDelegate = self
-    }
-
-    func updateData(metadatas: [tableMetadata], selectedMetadata: tableMetadata, image: UIImage) {
-        if let viewController = UIStoryboard(name: "NCViewerMediaPage", bundle: nil).instantiateInitialViewController() as? NCViewerMediaPage {
-            var index = 0
-            for medatasImage in metadatas {
-                if medatasImage.ocId == selectedMetadata.ocId {
-                    viewController.currentIndex = index
-                    break
-                }
-                index += 1
-            }
-            viewController.metadatas = metadatas
-
-            NCViewer.shared.view(viewController: self, metadata: selectedMetadata, metadatas: metadatas, imageIcon: image)
-        }
-    }
-}
-
-struct NCViewerMediaPageController: UIViewControllerRepresentable {
-    let metadatas: [tableMetadata]
-    let selectedMetadata: tableMetadata
-
-    func makeUIViewController(context: UIViewControllerRepresentableContext<NCViewerMediaPageController>) -> NCViewerMediaPage {
-
-        if let viewController = UIStoryboard(name: "NCViewerMediaPage", bundle: nil).instantiateInitialViewController() as? NCViewerMediaPage {
-            var index = 0
-            for medatasImage in metadatas {
-                if medatasImage.ocId == selectedMetadata.ocId {
-                    viewController.currentIndex = index
-                    break
-                }
-                index += 1
-            }
-            viewController.metadatas = metadatas
-            return viewController
-        } else {
-            return NCViewerMediaPage()
-        }
-    }
-
-    func updateUIViewController(_ uiViewController: NCViewerMediaPage, context: UIViewControllerRepresentableContext<NCViewerMediaPageController>) {}
-}
+//class NCMediaUIHostingController: UIHostingController<NCMediaNew>, DataDelegate {
+//    required init?(coder aDecoder: NSCoder) {
+//        let view = NCMediaNew()
+//        super.init(coder: aDecoder, rootView: view)
+//        rootView.dataModelDelegate = self
+//    }
+//
+//    func updateData(metadatas: [tableMetadata], selectedMetadata: tableMetadata, image: UIImage) {
+//        if let viewController = UIStoryboard(name: "NCViewerMediaPage", bundle: nil).instantiateInitialViewController() as? NCViewerMediaPage {
+//            var index = 0
+//            for medatasImage in metadatas {
+//                if medatasImage.ocId == selectedMetadata.ocId {
+//                    viewController.currentIndex = index
+//                    break
+//                }
+//                index += 1
+//            }
+//            viewController.metadatas = metadatas
+//
+//            NCViewer.shared.view(viewController: self, metadata: selectedMetadata, metadatas: metadatas, imageIcon: image)
+//        }
+//    }
+//}
+//
+//struct NCViewerMediaPageController: UIViewControllerRepresentable {
+//    let metadatas: [tableMetadata]
+//    let selectedMetadata: tableMetadata
+//
+//    func makeUIViewController(context: UIViewControllerRepresentableContext<NCViewerMediaPageController>) -> NCViewerMediaPage {
+//
+//        if let viewController = UIStoryboard(name: "NCViewerMediaPage", bundle: nil).instantiateInitialViewController() as? NCViewerMediaPage {
+//            var index = 0
+//            for medatasImage in metadatas {
+//                if medatasImage.ocId == selectedMetadata.ocId {
+//                    viewController.currentIndex = index
+//                    break
+//                }
+//                index += 1
+//            }
+//            viewController.metadatas = metadatas
+//            return viewController
+//        } else {
+//            return NCViewerMediaPage()
+//        }
+//    }
+//
+//    func updateUIViewController(_ uiViewController: NCViewerMediaPage, context: UIViewControllerRepresentableContext<NCViewerMediaPageController>) {}
+//}
 
 struct NCMediaNew: View {
     @StateObject private var vm = NCMediaViewModel()
@@ -70,9 +70,7 @@ struct NCMediaNew: View {
     @State private var columns = 2
     @State private var title = "Media"
     @State private var isScrolledToTop = true
-    @State private var isMediaViewControllerPresented = false
     @State private var tappedMetadata = tableMetadata()
-    @State private var isInSelectMode = false
 
     @State var titleColor = Color.primary
     @State var toolbarItemsColor = Color.blue
@@ -80,18 +78,15 @@ struct NCMediaNew: View {
 
     @State private var showDeleteConfirmation = false
 
-    weak var dataModelDelegate: DataDelegate?
-
     var body: some View {
             GeometryReader { outerProxy in
-//                        NavigationView {
                 ZStack(alignment: .top) {
                     VisibilityTrackingScrollView(action: cellVisibilityDidChange) {
                         LazyVStack(alignment: .leading, spacing: 2) {
                             ForEach(vm.metadatas.chunked(into: columns), id: \.self) { rowMetadatas in
-                                NCMediaRow(metadatas: rowMetadatas, geometryProxy: outerProxy, isInSelectMode: $isInSelectMode) { tappedThumbnail, isSelected in
+                                NCMediaRow(metadatas: rowMetadatas, geometryProxy: outerProxy, isInSelectMode: $vm.isInSelectMode) { tappedThumbnail, isSelected in
 
-                                    if isInSelectMode, isSelected {
+                                    if vm.isInSelectMode, isSelected {
                                         vm.selectedMetadatas.append(tappedThumbnail.metadata)
                                     } else {
                                         vm.selectedMetadatas.removeAll(where: { $0.ocId == tappedThumbnail.metadata.ocId })
@@ -99,7 +94,7 @@ struct NCMediaNew: View {
 
                                     let selectedMetadata = tappedThumbnail.metadata
 
-                                    if !isInSelectMode {
+                                    if !vm.isInSelectMode {
                                         if let viewController = UIStoryboard(name: "NCViewerMediaPage", bundle: nil).instantiateInitialViewController() as? NCViewerMediaPage {
                                             var index = 0
                                             for medatasImage in vm.metadatas {
@@ -111,13 +106,8 @@ struct NCMediaNew: View {
                                             }
                                             viewController.metadatas = vm.metadatas
 
-//                                            NCViewer.shared.view(viewController: self, metadata: selectedMetadata, metadatas: metadatas, imageIcon: image)
                                             parent.navigationController?.pushViewController(viewController, animated: true)
                                         }
-
-//                                        dataModelDelegate?.updateData(metadatas: vm.metadatas, selectedMetadata: tappedMetadata, image: tappedThumbnail.image)
-                                        //                                        isMediaViewControllerPresented = true
-//                                        print(selectedMetadataInSelectMode)
                                     }
                                 }
                             }
@@ -162,9 +152,9 @@ struct NCMediaNew: View {
                             Spacer()
 
                             Button(action: {
-                                isInSelectMode.toggle()
+                                vm.isInSelectMode.toggle()
                             }, label: {
-                                Text(NSLocalizedString(isInSelectMode ? "_cancel_" : "_select_", comment: "")).font(.system(size: 14))
+                                Text(NSLocalizedString(vm.isInSelectMode ? "_cancel_" : "_select_", comment: "")).font(.system(size: 14))
                                     .foregroundStyle(toolbarItemsColor)
                             })
                             .padding(.horizontal, 6)
@@ -172,7 +162,7 @@ struct NCMediaNew: View {
                             .background(.ultraThinMaterial)
                             .cornerRadius(.infinity)
 
-                            if isInSelectMode, !vm.selectedMetadatas.isEmpty {
+                            if vm.isInSelectMode, !vm.selectedMetadatas.isEmpty {
                                 ToolbarCircularButton(imageSystemName: "trash.fill", toolbarItemsColor: $toolbarItemsColor)
                                     .onTapGesture {
                                         showDeleteConfirmation = true
@@ -180,7 +170,6 @@ struct NCMediaNew: View {
                                     .confirmationDialog("", isPresented: $showDeleteConfirmation) {
                                         Button("Delete selected media", role: .destructive) {
                                             vm.deleteSelectedMetadata()
-                                            isInSelectMode = false
                                         }
                                     }
                             }
@@ -238,13 +227,9 @@ struct NCMediaNew: View {
                 }
             }
             .onAppear { vm.loadData() }
-//            .fullScreenCover(isPresented: $isMediaViewControllerPresented) {
-//                NCViewerMediaPageController(metadatas: vm.metadatas, selectedMetadata: tappedMetadata)
-//            }
-            .onChange(of: isInSelectMode) { newValue in
-//                if newValue == false { vm.selectedMetadatas.removeAll() }
+            .onChange(of: vm.isInSelectMode) { newValue in
+                if newValue == false { vm.selectedMetadatas.removeAll() }
             }
-//        }
     }
 
     func cellVisibilityDidChange(_ id: String, change: VisibilityChange, tracker: VisibilityTracker<String>) {
