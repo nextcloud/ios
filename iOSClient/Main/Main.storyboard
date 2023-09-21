@@ -234,16 +234,6 @@
             </objects>
             <point key="canvasLocation" x="8458" y="899"/>
         </scene>
-        <!--NCMediaUI.storyboard-->
-        <scene sceneID="dFB-0S-apF">
-            <objects>
-                <viewControllerPlaceholder storyboardName="NCMediaUI" referencedIdentifier="NCMediaUI.storyboard" id="kHp-3i-www" sceneMemberID="viewController">
-                    <navigationItem key="navigationItem" id="I2u-br-UCh"/>
-                </viewControllerPlaceholder>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="mcs-2s-RF8" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="7854" y="1088"/>
-        </scene>
         <!--Media-->
         <scene sceneID="cqe-8g-lRj">
             <objects>
@@ -256,12 +246,22 @@
                     </navigationBar>
                     <nil name="viewControllers"/>
                     <connections>
-                        <segue destination="kHp-3i-www" kind="relationship" relationship="rootViewController" id="dzV-s6-uE5"/>
+                        <segue destination="CW8-KW-0pe" kind="relationship" relationship="rootViewController" id="Vb9-OI-DkF"/>
                     </connections>
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="L2K-7e-6T0" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="7768" y="327"/>
+        </scene>
+        <!--MediaUI Kit Wrapper-->
+        <scene sceneID="MtR-w7-Wmy">
+            <objects>
+                <viewController id="CW8-KW-0pe" customClass="NCMediaUIKitWrapper" customModule="Nextcloud" customModuleProvider="target" sceneMemberID="viewController">
+                    <navigationItem key="navigationItem" id="oRV-lm-zC3"/>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="alF-L6-HqO" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="7852" y="1447"/>
         </scene>
     </scenes>
     <resources>

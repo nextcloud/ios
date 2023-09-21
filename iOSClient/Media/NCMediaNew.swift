@@ -66,7 +66,7 @@ import VisibilityTrackingScrollView
 
 struct NCMediaNew: View {
     @StateObject private var vm = NCMediaViewModel()
-    @EnvironmentObject var parent: NCMediaUI
+    @EnvironmentObject var parent: NCMediaUIKitWrapper
     @State private var columns = 2
     @State private var title = "Media"
     @State private var isScrolledToTop = true
@@ -92,22 +92,11 @@ struct NCMediaNew: View {
                                         vm.selectedMetadatas.removeAll(where: { $0.ocId == tappedThumbnail.metadata.ocId })
                                     }
 
-                                    let selectedMetadata = tappedThumbnail.metadata
 
                                     if !vm.isInSelectMode {
-                                        if let viewController = UIStoryboard(name: "NCViewerMediaPage", bundle: nil).instantiateInitialViewController() as? NCViewerMediaPage {
-                                            var index = 0
-                                            for medatasImage in vm.metadatas {
-                                                if medatasImage.ocId == selectedMetadata.ocId {
-                                                    viewController.currentIndex = index
-                                                    break
-                                                }
-                                                index += 1
-                                            }
-                                            viewController.metadatas = vm.metadatas
-
-                                            parent.navigationController?.pushViewController(viewController, animated: true)
-                                        }
+                                        let selectedMetadata = tappedThumbnail.metadata
+                                        vm.onCellTapped(metadata: selectedMetadata)
+                                        NCViewer.shared.view(viewController: parent, metadata: selectedMetadata, metadatas: vm.metadatas, imageIcon: tappedThumbnail.image)
                                     }
                                 }
                             }
@@ -226,7 +215,7 @@ struct NCMediaNew: View {
                     columns = 2
                 }
             }
-            .onAppear { vm.loadData() }
+            .onAppear { vm.loadMediaFromDB() }
             .onChange(of: vm.isInSelectMode) { newValue in
                 if newValue == false { vm.selectedMetadatas.removeAll() }
             }

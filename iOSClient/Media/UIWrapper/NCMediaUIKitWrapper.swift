@@ -9,7 +9,10 @@
 import Foundation
 import SwiftUI
 
-class NCMediaUI: UIViewController, ObservableObject {
+/**
+ Wraps the SwiftUI view to a ViewController with a NavigationViewController
+ */
+class NCMediaUIKitWrapper: UIViewController, ObservableObject {
     override func viewWillAppear(_ animated: Bool) {
         navigationController?.navigationBar.isHidden = true
     }
@@ -21,8 +24,8 @@ class NCMediaUI: UIViewController, ObservableObject {
     }
 
     func addView() {
-        let testView = NCMediaNew()
-        let controller = UIHostingController(rootView: testView.environmentObject(self))
+        let mediaView = NCMediaNew()
+        let controller = UIHostingController(rootView: mediaView.environmentObject(self))
         addChild(controller)
         controller.view.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(controller.view)
@@ -37,17 +40,3 @@ class NCMediaUI: UIViewController, ObservableObject {
         ])
     }
 }
-
-/*
-struct SwiftUIView: View {
-    @EnvironmentObject var parent: NCMediaUI
-    var body: some View {
-        Button {
-            // push new view controller
-            // parent.navigationController?.pushViewController(<#T##viewController: UIViewController##UIViewController#>, animated: <#T##Bool#>)
-        } label: {
-            Text("go")
-        }
-    }
-}
-*/
