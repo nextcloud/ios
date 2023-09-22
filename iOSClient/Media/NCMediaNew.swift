@@ -10,59 +10,7 @@ import SwiftUI
 import PreviewSnapshots
 import NextcloudKit
 import VisibilityTrackingScrollView
-
-//protocol DataDelegate: AnyObject {
-//    func updateData(metadatas: [tableMetadata], selectedMetadata: tableMetadata, image: UIImage)
-//}
-
-//class NCMediaUIHostingController: UIHostingController<NCMediaNew>, DataDelegate {
-//    required init?(coder aDecoder: NSCoder) {
-//        let view = NCMediaNew()
-//        super.init(coder: aDecoder, rootView: view)
-//        rootView.dataModelDelegate = self
-//    }
-//
-//    func updateData(metadatas: [tableMetadata], selectedMetadata: tableMetadata, image: UIImage) {
-//        if let viewController = UIStoryboard(name: "NCViewerMediaPage", bundle: nil).instantiateInitialViewController() as? NCViewerMediaPage {
-//            var index = 0
-//            for medatasImage in metadatas {
-//                if medatasImage.ocId == selectedMetadata.ocId {
-//                    viewController.currentIndex = index
-//                    break
-//                }
-//                index += 1
-//            }
-//            viewController.metadatas = metadatas
-//
-//            NCViewer.shared.view(viewController: self, metadata: selectedMetadata, metadatas: metadatas, imageIcon: image)
-//        }
-//    }
-//}
-//
-//struct NCViewerMediaPageController: UIViewControllerRepresentable {
-//    let metadatas: [tableMetadata]
-//    let selectedMetadata: tableMetadata
-//
-//    func makeUIViewController(context: UIViewControllerRepresentableContext<NCViewerMediaPageController>) -> NCViewerMediaPage {
-//
-//        if let viewController = UIStoryboard(name: "NCViewerMediaPage", bundle: nil).instantiateInitialViewController() as? NCViewerMediaPage {
-//            var index = 0
-//            for medatasImage in metadatas {
-//                if medatasImage.ocId == selectedMetadata.ocId {
-//                    viewController.currentIndex = index
-//                    break
-//                }
-//                index += 1
-//            }
-//            viewController.metadatas = metadatas
-//            return viewController
-//        } else {
-//            return NCViewerMediaPage()
-//        }
-//    }
-//
-//    func updateUIViewController(_ uiViewController: NCViewerMediaPage, context: UIViewControllerRepresentableContext<NCViewerMediaPageController>) {}
-//}
+@_spi(Advanced) import SwiftUIIntrospect
 
 struct NCMediaNew: View {
     @StateObject private var vm = NCMediaViewModel()
@@ -91,7 +39,6 @@ struct NCMediaNew: View {
                                     } else {
                                         vm.selectedMetadatas.removeAll(where: { $0.ocId == tappedThumbnail.metadata.ocId })
                                     }
-
 
                                     if !vm.isInSelectMode {
                                         let selectedMetadata = tappedThumbnail.metadata
@@ -126,7 +73,15 @@ struct NCMediaNew: View {
 
                     }
                     .refreshable {
+                        try? await Task.sleep(nanoseconds: 1_000_000_000)
                         vm.onPullToRefresh()
+                    }
+                    // Not possible to move the refresh control view via SwiftUI, so we have to introspect the internal UIKit views to move it.
+                    // TODO: Maybe .contentMargins() will resolve this but it's iOS 17+
+                    .introspect(.scrollView, on: .iOS(.v15...)) { scrollView in
+                        scrollView.refreshControl?.translatesAutoresizingMaskIntoConstraints = false
+                        scrollView.refreshControl?.topAnchor.constraint(equalTo: parent.view.topAnchor, constant: 120).isActive = true
+                        scrollView.refreshControl?.centerXAnchor.constraint(equalTo: scrollView.centerXAnchor).isActive = true
                     }
                     .coordinateSpace(name: "scroll")
 
@@ -191,12 +146,12 @@ struct NCMediaNew: View {
                                     })
                                 }
 
-                                Picker("Sorting options", selection: $vm.sortType) {
-                                    Label(NSLocalizedString("_media_by_modified_date_", comment: ""), systemImage: "circle.grid.cross.up.fill").tag(SortType.modifiedDate)
-                                    Label(NSLocalizedString("_media_by_created_date_", comment: ""), systemImage: "circle.grid.cross.down.fill").tag(SortType.creationDate)
-                                    Label(NSLocalizedString("_media_by_upload_date_", comment: ""), systemImage: "circle.grid.cross.right.fill").tag(SortType.uploadDate)
-                                }
-                                .pickerStyle(.menu)
+//                                Picker("Sorting options", selection: $vm.sortType) {
+//                                    Label(NSLocalizedString("_media_by_modified_date_", comment: ""), systemImage: "circle.grid.cross.up.fill").tag(SortType.modifiedDate)
+//                                    Label(NSLocalizedString("_media_by_created_date_", comment: ""), systemImage: "circle.grid.cross.down.fill").tag(SortType.creationDate)
+//                                    Label(NSLocalizedString("_media_by_upload_date_", comment: ""), systemImage: "circle.grid.cross.right.fill").tag(SortType.uploadDate)
+//                                }
+//                                .pickerStyle(.menu)
                             } label: {
                                 ToolbarCircularButton(imageSystemName: "ellipsis", toolbarItemsColor: $toolbarItemsColor)
                             }

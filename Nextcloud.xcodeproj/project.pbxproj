@@ -91,6 +91,9 @@
 		F30A6BFE2ABAE84A00148857 /* Binding+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F30A6BF92ABAE84900148857 /* Binding+Extension.swift */; };
 		F30A6BFF2ABAE84A00148857 /* Binding+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F30A6BF92ABAE84900148857 /* Binding+Extension.swift */; };
 		F30A6C002ABAE84A00148857 /* Binding+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F30A6BF92ABAE84900148857 /* Binding+Extension.swift */; };
+		F30A6C072ABCA34200148857 /* SwiftUIIntrospect in Frameworks */ = {isa = PBXBuildFile; productRef = F30A6C062ABCA34200148857 /* SwiftUIIntrospect */; };
+		F30A6C092ABCA34200148857 /* SwiftUIIntrospect-Dynamic in Frameworks */ = {isa = PBXBuildFile; productRef = F30A6C082ABCA34200148857 /* SwiftUIIntrospect-Dynamic */; };
+		F30A6C0B2ABCA34200148857 /* SwiftUIIntrospect-Static in Frameworks */ = {isa = PBXBuildFile; productRef = F30A6C0A2ABCA34200148857 /* SwiftUIIntrospect-Static */; };
 		F30A962F2A27ADF900D7BCFE /* EnvVars.stencil in Resources */ = {isa = PBXBuildFile; fileRef = F30A962E2A27ADF900D7BCFE /* EnvVars.stencil */; };
 		F30A96312A27AEBF00D7BCFE /* EnvVars.generated.swift in Sources */ = {isa = PBXBuildFile; fileRef = F30A96302A27AEBF00D7BCFE /* EnvVars.generated.swift */; };
 		F30A96322A27AEDD00D7BCFE /* EnvVars.generated.swift in Sources */ = {isa = PBXBuildFile; fileRef = F30A96302A27AEBF00D7BCFE /* EnvVars.generated.swift */; };
@@ -1509,14 +1512,17 @@
 			buildActionMask = 2147483647;
 			files = (
 				F7D56B1A2972405500FA46C4 /* Mantis in Frameworks */,
+				F30A6C092ABCA34200148857 /* SwiftUIIntrospect-Dynamic in Frameworks */,
 				F7ED547C25EEA65400956C55 /* QRCodeReader in Frameworks */,
 				F788ECC7263AAAFA00ADC67F /* MarkdownKit in Frameworks */,
 				F77BC3EB293E5268005F2B08 /* Swifter in Frameworks */,
+				F30A6C072ABCA34200148857 /* SwiftUIIntrospect in Frameworks */,
 				F7BB7E4727A18C56009B9F29 /* Parchment in Frameworks */,
 				F734B06628E75C0100E180D5 /* TLPhotoPicker in Frameworks */,
 				F787AC09298BCB4A0001BB00 /* SVGKitSwift in Frameworks */,
 				F3C0FB702AB06AB9007E7E30 /* VisibilityTrackingScrollView in Frameworks */,
 				F770768E263A8C3400A1BA94 /* FloatingPanel in Frameworks */,
+				F30A6C0B2ABCA34200148857 /* SwiftUIIntrospect-Static in Frameworks */,
 				F710FC7C277B7D0000AA9FBF /* RealmSwift in Frameworks */,
 				F758A01227A7F03E0069468B /* JGProgressHUD in Frameworks */,
 				F77333882927A72100466E35 /* OpenSSL in Frameworks */,
@@ -2942,6 +2948,9 @@
 				F3C0FB6F2AB06AB9007E7E30 /* VisibilityTrackingScrollView */,
 				F3EFBF5E2AB2100E00B5724C /* Shimmer */,
 				F30A6BEF2AB4AAB700148857 /* Refreshable */,
+				F30A6C062ABCA34200148857 /* SwiftUIIntrospect */,
+				F30A6C082ABCA34200148857 /* SwiftUIIntrospect-Dynamic */,
+				F30A6C0A2ABCA34200148857 /* SwiftUIIntrospect-Static */,
 			);
 			productName = "Crypto Cloud";
 			productReference = F7CE8AFA1DC1F8D8009CAE48 /* Nextcloud.app */;
@@ -3120,6 +3129,7 @@
 				F3C0FB6E2AB06AB9007E7E30 /* XCRemoteSwiftPackageReference "VisibilityTrackingScrollView" */,
 				F3EFBF5D2AB20B9100B5724C /* XCRemoteSwiftPackageReference "SwiftUI-Shimmer" */,
 				F30A6BEE2AB4AAB700148857 /* XCRemoteSwiftPackageReference "Refreshable" */,
+				F30A6C052ABCA34200148857 /* XCRemoteSwiftPackageReference "SwiftUI-Introspect" */,
 			);
 			productRefGroup = F7F67B9F1A24D27800EE80DA;
 			projectDirPath = "";
@@ -4969,6 +4979,14 @@
 				version = 0.2.0;
 			};
 		};
+		F30A6C052ABCA34200148857 /* XCRemoteSwiftPackageReference "SwiftUI-Introspect" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/siteline/SwiftUI-Introspect";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.0.0;
+			};
+		};
 		F31F694B2A2F6EFA00162F76 /* XCRemoteSwiftPackageReference "swift-snapshot-testing" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/pointfreeco/swift-snapshot-testing.git";
@@ -5220,6 +5238,21 @@
 			isa = XCSwiftPackageProductDependency;
 			package = F30A6BEE2AB4AAB700148857 /* XCRemoteSwiftPackageReference "Refreshable" */;
 			productName = Refreshable;
+		};
+		F30A6C062ABCA34200148857 /* SwiftUIIntrospect */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F30A6C052ABCA34200148857 /* XCRemoteSwiftPackageReference "SwiftUI-Introspect" */;
+			productName = SwiftUIIntrospect;
+		};
+		F30A6C082ABCA34200148857 /* SwiftUIIntrospect-Dynamic */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F30A6C052ABCA34200148857 /* XCRemoteSwiftPackageReference "SwiftUI-Introspect" */;
+			productName = "SwiftUIIntrospect-Dynamic";
+		};
+		F30A6C0A2ABCA34200148857 /* SwiftUIIntrospect-Static */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F30A6C052ABCA34200148857 /* XCRemoteSwiftPackageReference "SwiftUI-Introspect" */;
+			productName = "SwiftUIIntrospect-Static";
 		};
 		F30A96332A2DFCD000D7BCFE /* Realm */ = {
 			isa = XCSwiftPackageProductDependency;
