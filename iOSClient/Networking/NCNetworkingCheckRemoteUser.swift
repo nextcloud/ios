@@ -27,24 +27,16 @@ class NCNetworkingCheckRemoteUser {
 
     func checkRemoteUser(account: String, error: NKError) {
 
-        guard let tableAccount = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", account)) else {
-            return
-        }
+        guard let tableAccount = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", account)),  
+            let token = CCUtility.getPassword(account), !token.isEmpty,
+            let appDelegate = UIApplication.shared.delegate as? AppDelegate else { return }
 
         NCNetworking.shared.cancelSessions(inBackground: true)
 
-        // -----------------------
-
         if NCGlobal.shared.capabilityServerVersionMajor >= NCGlobal.shared.nextcloudVersion17 {
-
-            let token = CCUtility.getPassword(account)!
-            if token.isEmpty {
-                return
-            }
 
             NextcloudKit.shared.getRemoteWipeStatus(serverUrl: tableAccount.urlBase, token: token) { account, wipe, _, error in
 
-                let appDelegate = UIApplication.shared.delegate as! AppDelegate
                 if wipe {
 
                     appDelegate.deleteAccount(account, wipe: true)
@@ -64,7 +56,7 @@ class NCNetworkingCheckRemoteUser {
                 }
             }
 
-        } else if CCUtility.getPassword(account) != "" {
+        } else {
 
             if UIApplication.shared.applicationState == .active && NextcloudKit.shared.isNetworkReachable() {
                 let description = String.localizedStringWithFormat(NSLocalizedString("_error_check_remote_user_", comment: ""), tableAccount.user, tableAccount.urlBase)
