@@ -9,9 +9,9 @@
 import NextcloudKit
 import Combine
 
-enum SortType: String {
-    case modifiedDate = "date", creationDate = "creationDate", uploadDate = "uploadDate"
-}
+//enum SortType: String {
+//    case modifiedDate = "date", creationDate = "creationDate", uploadDate = "uploadDate"
+//}
 
 @MainActor class NCMediaViewModel: ObservableObject {
     @Published private(set) var metadatas: [tableMetadata] = []
@@ -29,7 +29,7 @@ enum SortType: String {
     @Published internal var filterClassTypeImage = false
     @Published internal var filterClassTypeVideo = false
 
-    @Published internal var sortType: SortType = SortType(rawValue: CCUtility.getMediaSortDate()) ?? .modifiedDate
+//    @Published internal var sortType: SortType = SortType(rawValue: CCUtility.getMediaSortDate()) ?? .modifiedDate
 
     private var cancellables: Set<AnyCancellable> = []
 
@@ -43,16 +43,19 @@ enum SortType: String {
         NotificationCenter.default.addObserver(self, selector: #selector(copyFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterCopyFile), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(renameFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterRenameFile), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(uploadedFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUploadedFile), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(userChanged(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeUser), object: nil)
 
-        loadNewMedia()
+        Task {
+            await loadNewMedia()
+        }
 
         $filterClassTypeImage.sink { _ in self.loadMediaFromDB() }.store(in: &cancellables)
         $filterClassTypeVideo.sink { _ in self.loadMediaFromDB() }.store(in: &cancellables)
-        $sortType.sink { sortType in
-            CCUtility.setMediaSortDate(sortType.rawValue)
-            self.loadMediaFromDB()
-        }
-        .store(in: &cancellables)
+//        $sortType.sink { sortType in
+//            CCUtility.setMediaSortDate(sortType.rawValue)
+//            self.loadMediaFromDB()
+//        }
+//        .store(in: &cancellables)
     }
 
     deinit {
@@ -107,8 +110,8 @@ enum SortType: String {
         needsLoadingMoreItems = false
     }
 
-    func onPullToRefresh() {
-        loadNewMedia()
+    func onPullToRefresh() async {
+        await loadNewMedia()
     }
 
     func onCellTapped(metadata: tableMetadata) {
@@ -188,6 +191,12 @@ extension NCMediaViewModel {
 
         self.loadMediaFromDB()
     }
+
+    @objc func userChanged(_ notification: NSNotification) {
+        Task {
+            await loadNewMedia()
+        }
+    }
 }
 
 // MARK: - Load media
@@ -261,29 +270,33 @@ extension NCMediaViewModel {
         }
     }
 
-    @objc func loadNewMedia() {
-        var limit: Int = 1000
-        guard var lessDate = Calendar.current.date(byAdding: .second, value: 1, to: Date()) else { return }
-        guard var greaterDate = Calendar.current.date(byAdding: .day, value: -30, to: Date()) else { return }
+    private func loadNewMedia() async {
+        let limit: Int = 1000
+        guard let lessDate = Calendar.current.date(byAdding: .second, value: 1, to: Date()) else { return }
+        guard let greaterDate = Calendar.current.date(byAdding: .day, value: -30, to: Date()) else { return }
 
         let options = NKRequestOptions(timeout: 300, queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
 
-        NextcloudKit.shared.searchMedia(path: self.mediaPath, lessDate: lessDate, greaterDate: greaterDate, elementDate: "d:getlastmodified/", limit: limit, showHiddenFiles: CCUtility.getShowHiddenFiles(), options: options) { account, files, data, error in
+        return await withCheckedContinuation { continuation in
+            NextcloudKit.shared.searchMedia(path: self.mediaPath, lessDate: lessDate, greaterDate: greaterDate, elementDate: "d:getlastmodified/", limit: limit, showHiddenFiles: CCUtility.getShowHiddenFiles(), options: options) { account, files, _, error in
 
-            if error == .success && account == self.appDelegate?.account && files.count > 0 {
-                NCManageDatabase.shared.convertFilesToMetadatas(files, useMetadataFolder: false) { _, _, metadatas in
-                    let predicate = NSPredicate(format: "date > %@ AND date < %@", greaterDate as NSDate, lessDate as NSDate)
-                    let predicateResult = NSCompoundPredicate(andPredicateWithSubpredicates: [predicate, self.predicate!])
-                    let metadatasResult = NCManageDatabase.shared.getMetadatas(predicate: predicateResult)
-                    let updateMetadatas = NCManageDatabase.shared.updateMetadatas(metadatas, metadatasResult: metadatasResult, addCompareLivePhoto: false)
-                    if updateMetadatas.metadatasUpdate.count > 0 || updateMetadatas.metadatasDelete.count > 0 {
-                        self.loadMediaFromDB()
+                if error == .success && account == self.appDelegate?.account && !files.isEmpty {
+                    NCManageDatabase.shared.convertFilesToMetadatas(files, useMetadataFolder: false) { _, _, metadatas in
+                        let predicate = NSPredicate(format: "date > %@ AND date < %@", greaterDate as NSDate, lessDate as NSDate)
+                        let predicateResult = NSCompoundPredicate(andPredicateWithSubpredicates: [predicate, self.predicate!])
+                        let metadatasResult = NCManageDatabase.shared.getMetadatas(predicate: predicateResult)
+                        let updateMetadatas = NCManageDatabase.shared.updateMetadatas(metadatas, metadatasResult: metadatasResult, addCompareLivePhoto: false)
+                        if !updateMetadatas.metadatasUpdate.isEmpty || !updateMetadatas.metadatasDelete.isEmpty {
+                            self.loadMediaFromDB()
+                        }
                     }
+                } else if error == .success && files.isEmpty && self.metadatas.isEmpty {
+                    self.loadOldMedia()
+                } else if error != .success {
+                    NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Media search new media error code \(error.errorCode) " + error.errorDescription)
                 }
-            } else if error == .success && files.count == 0 && self.metadatas.count == 0 {
-                self.loadOldMedia()
-            } else if error != .success {
-                NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Media search new media error code \(error.errorCode) " + error.errorDescription)
+
+                continuation.resume()
             }
         }
     }
