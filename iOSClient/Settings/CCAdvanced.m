@@ -418,7 +418,11 @@
 - (void)clearAllCacheRequest:(XLFormRowDescriptor *)sender
 {
     [self deselectFormRow:sender];
-    [self clearCache:nil];
+
+    [[NCActivityIndicator shared] startActivityWithBackgroundView:nil style: UIActivityIndicatorViewStyleLarge blurEffect:true];
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
+        [self clearCache:nil];
+    });
 }
 
 - (void)calculateSize
@@ -444,20 +448,25 @@
     
     [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_ok_", nil) style:UIAlertActionStyleDestructive handler:^(UIAlertAction *action) {
                 
-        [[NSURLCache sharedURLCache] setMemoryCapacity:0];
-        [[NSURLCache sharedURLCache] setDiskCapacity:0];
+        [[NCNetworking shared] cancelSessionsInBackground:true];
 
-        [CCUtility removeGroupDirectoryProviderStorage];
-        [CCUtility removeGroupApplicationSupport];
-        
-        [CCUtility removeDocumentsDirectory];
-        [CCUtility removeTemporaryDirectory];
-        
-        [CCUtility deleteAllChainStore];
-        
-        [[NCManageDatabase shared] removeDB];
-        
-        exit(0);
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
+
+            [[NCManageDatabase shared] removeDB];
+
+            [[NSURLCache sharedURLCache] setMemoryCapacity:0];
+            [[NSURLCache sharedURLCache] setDiskCapacity:0];
+
+            [CCUtility removeGroupDirectoryProviderStorage];
+            [CCUtility removeGroupApplicationSupport];
+
+            [CCUtility removeDocumentsDirectory];
+            [CCUtility removeTemporaryDirectory];
+
+            [CCUtility deleteAllChainStore];
+
+            exit(0);
+        });
     }]];
     
     [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_cancel_", nil) style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) {
