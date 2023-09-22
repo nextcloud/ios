@@ -73,8 +73,7 @@ struct NCMediaNew: View {
 
                     }
                     .refreshable {
-                        try? await Task.sleep(nanoseconds: 1_000_000_000)
-                        vm.onPullToRefresh()
+                        await vm.onPullToRefresh()
                     }
                     // Not possible to move the refresh control view via SwiftUI, so we have to introspect the internal UIKit views to move it.
                     // TODO: Maybe .contentMargins() will resolve this but it's iOS 17+
