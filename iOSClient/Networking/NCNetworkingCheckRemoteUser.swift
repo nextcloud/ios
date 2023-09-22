@@ -31,11 +31,7 @@ class NCNetworkingCheckRemoteUser {
             return
         }
 
-        // remove all process ----
-
-        NCNetworking.shared.cancelAllTransfer(account: account) { }
-        NCOperationQueue.shared.cancelAllQueue()
-        NCNetworking.shared.cancelAllTask()
+        NCNetworking.shared.cancelAllTransfers(upload: true)
 
         // -----------------------
 

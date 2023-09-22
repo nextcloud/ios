@@ -257,9 +257,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Create share accounts \(error.localizedDescription)")
         }
 
-        NCOperationQueue.shared.cancelAllQueue()
-        NCNetworking.shared.cancelAllDownloadTransfer()
-        NextcloudKit.shared.sessionManager.cancelAllRequests()
+        NCNetworking.shared.cancelAllTransfers(upload: false)
 
         presentPasscode { }
 
@@ -269,7 +267,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     // L'applicazione terminerà
     func applicationWillTerminate(_ application: UIApplication) {
 
-        NCNetworking.shared.cancelAllDownloadTransfer()
+        NCNetworking.shared.cancelAllTransfers(upload: false)
 
         if UIApplication.shared.backgroundRefreshStatus == .available {
 
@@ -560,8 +558,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
         guard let tableAccount = NCManageDatabase.shared.setAccountActive(account) else { return }
 
-        NCOperationQueue.shared.cancelAllQueue()
-        NCNetworking.shared.cancelAllTask()
+        NCNetworking.shared.cancelAllTransfers(upload: false)
 
         self.account = tableAccount.account
         self.urlBase = tableAccount.urlBase

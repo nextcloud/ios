@@ -106,7 +106,8 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
 
         alertController.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel, handler: nil))
         alertController.addAction(UIAlertAction(title: NSLocalizedString("_cancel_all_task_", comment: ""), style: .default, handler: { _ in
-            NCNetworking.shared.cancelAllTransfer(account: self.appDelegate.account) {
+            Task {
+                await NCNetworking.shared.cancelAllTransfers(upload: true)
                 self.reloadDataSource()
             }
         }))
@@ -269,8 +270,10 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
         super.reloadDataSource()
 
         self.queryDB(isForced: isForced)
-        self.refreshControl.endRefreshing()
-        self.collectionView.reloadData()
+        DispatchQueue.main.async {
+            self.refreshControl.endRefreshing()
+            self.collectionView.reloadData()
+        }
     }
 
     override func reloadDataSourceNetwork(isForced: Bool = false) {

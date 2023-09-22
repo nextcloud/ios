@@ -367,26 +367,25 @@
 
 - (void)clearCache:(NSString *)account
 {
-    [[NCNetworking shared] cancelAllTransferWithAccount:account completion:^{ }];
-    [[NCOperationQueue shared] cancelAllQueue];
-    [[NCNetworking shared] cancelAllTask];
-    
-    [[NSURLCache sharedURLCache] setMemoryCapacity:0];
-    [[NSURLCache sharedURLCache] setDiskCapacity:0];
-    
-    [[NCManageDatabase shared] clearDatabaseWithAccount:account removeAccount:false];
-    
-    [CCUtility removeGroupDirectoryProviderStorage];
-    [CCUtility removeGroupLibraryDirectory];
-
-    [CCUtility removeDocumentsDirectory];
-    [CCUtility removeTemporaryDirectory];
-    
-    [CCUtility createDirectoryStandard];
-
-    [[NCAutoUpload shared] alignPhotoLibraryWithViewController:self];
+    [[NCNetworking shared] cancelAllTransfersWithUpload: true];
 
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
+
+        [[NSURLCache sharedURLCache] setMemoryCapacity:0];
+        [[NSURLCache sharedURLCache] setDiskCapacity:0];
+
+        [[NCManageDatabase shared] clearDatabaseWithAccount:account removeAccount:false];
+
+        [CCUtility removeGroupDirectoryProviderStorage];
+        [CCUtility removeGroupLibraryDirectory];
+
+        [CCUtility removeDocumentsDirectory];
+        [CCUtility removeTemporaryDirectory];
+
+        [CCUtility createDirectoryStandard];
+
+        [[NCAutoUpload shared] alignPhotoLibraryWithViewController:self];
+
         [[NCActivityIndicator shared] stop];
         [self calculateSize];
     });

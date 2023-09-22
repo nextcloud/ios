@@ -348,8 +348,8 @@ class NCGlobal: NSObject {
     let notificationCenterUpdateBadgeNumber                     = "updateBadgeNumber"               // userInfo: counter
     let notificationCenterReloadAvatar                          = "reloadAvatar"
 
-    @objc let notificationCenterReloadDataSource                = "reloadDataSource"                // userInfo: serverUrl?
-    let notificationCenterReloadDataSourceNetwork               = "reloadDataSourceNetwork"         // userInfo: serverUrl?
+    @objc let notificationCenterReloadDataSource                = "reloadDataSource"
+    let notificationCenterReloadDataSourceNetwork               = "reloadDataSourceNetwork"
     let notificationCenterReloadDataSourceNetworkForced         = "reloadDataSourceNetworkForced"
 
     let notificationCenterChangeStatusFolderE2EE                = "changeStatusFolderE2EE"          // userInfo: serverUrl
