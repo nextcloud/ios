@@ -31,7 +31,7 @@ class NCNetworkingCheckRemoteUser {
             return
         }
 
-        NCNetworking.shared.cancelSessions(inBackground: true, account: account)
+        NCNetworking.shared.cancelSessions(inBackground: true)
 
         // -----------------------
 
