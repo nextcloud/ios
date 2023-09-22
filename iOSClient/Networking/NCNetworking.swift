@@ -731,11 +731,11 @@ class NCNetworking: NSObject, NKCommonDelegate {
 
     func cancelSessions(inBackground: Bool) {
         Task {
-            await cancelSessions(inBackground: inBackground)
+            await cancel(inBackground: inBackground)
         }
     }
 
-    func cancelSessions(inBackground: Bool) async {
+    func cancel(inBackground: Bool) async {
 
 #if !EXTENSION
         NCOperationQueue.shared.downloadCancelAll()
@@ -781,7 +781,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSource)
     }
 
-    func cancelTransferMetadata(_ metadata: tableMetadata) async {
+    func cancel(metadata: tableMetadata) async {
 
         let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
         CCUtility.removeFile(atPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId))
@@ -803,7 +803,6 @@ class NCNetworking: NSObject, NKCommonDelegate {
                 NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId, session: "", sessionError: "", sessionSelector: "", sessionTaskIdentifier: 0, status: NCGlobal.shared.metadataStatusNormal)
                 NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDownloadCancelFile, userInfo: ["ocId": metadata.ocId, "serverUrl": metadata.serverUrl, "account": metadata.account])
             }
-
             return
         }
 
@@ -815,7 +814,6 @@ class NCNetworking: NSObject, NKCommonDelegate {
             }
             NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUploadCancelFile, userInfo: ["ocId": metadata.ocId, "serverUrl": metadata.serverUrl, "account": metadata.account])
-
             return
         }
 
