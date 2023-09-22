@@ -729,13 +729,13 @@ class NCNetworking: NSObject, NKCommonDelegate {
     // sessionIdentifierBackgroundWWan: String = "com.nextcloud.session.upload.backgroundWWan"
     // sessionIdentifierBackgroundExtension: String = "com.nextcloud.session.upload.extension"
 
-    func cancelSessions(inBackground: Bool) {
+    func cancelSessions(inBackground: Bool, account: String? = nil) {
         Task {
-            await cancel(inBackground: inBackground)
+            await cancel(inBackground: inBackground, account: account)
         }
     }
 
-    func cancel(inBackground: Bool) async {
+    func cancel(inBackground: Bool, account: String? = nil) async {
 
 #if !EXTENSION
         NCOperationQueue.shared.downloadCancelAll()
