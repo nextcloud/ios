@@ -789,6 +789,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
         // No session found
         if metadata.session.isEmpty {
             uploadRequest.removeValue(forKey: fileNameLocalPath)
+            downloadRequest.removeValue(forKey: fileNameLocalPath)
             NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSource)
             return
