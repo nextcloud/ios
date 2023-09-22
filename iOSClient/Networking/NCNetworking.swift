@@ -778,7 +778,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
             task.cancel()
         }
 
-        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSource, second: 0.3)
+        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSource)
     }
 
     func cancelTransferMetadata(_ metadata: tableMetadata) async {
@@ -790,13 +790,12 @@ class NCNetworking: NSObject, NKCommonDelegate {
         if metadata.session.isEmpty {
             uploadRequest.removeValue(forKey: fileNameLocalPath)
             NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
-            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUploadCancelFile, userInfo: ["ocId": metadata.ocId, "serverUrl": metadata.serverUrl, "account": metadata.account])
+            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSource)
             return
         }
 
         // Download
         if metadata.session == NextcloudKit.shared.nkCommonInstance.sessionIdentifierDownload {
-
             if let request = downloadRequest[fileNameLocalPath] {
                 request.cancel()
             } else if let metadata = NCManageDatabase.shared.getMetadataFromOcId(metadata.ocId) {
@@ -808,7 +807,6 @@ class NCNetworking: NSObject, NKCommonDelegate {
         }
 
         if metadata.session == NextcloudKit.shared.nkCommonInstance.sessionIdentifierUpload || metadata.chunk > 0 {
-
             if let request = uploadRequest[fileNameLocalPath] {
                 request.cancel()
                 uploadRequest.removeValue(forKey: fileNameLocalPath)
@@ -828,12 +826,9 @@ class NCNetworking: NSObject, NKCommonDelegate {
         if let tasks = await session?.tasks {
             for task in tasks.1 { // ([URLSessionDataTask], [URLSessionUploadTask], [URLSessionDownloadTask])
                 if task.taskIdentifier == metadata.sessionTaskIdentifier {
-                    do {
-                        task.cancel()
-                        NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
-                        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUploadCancelFile, userInfo: ["ocId": metadata.ocId, "serverUrl": metadata.serverUrl, "account": metadata.account])
-                        try FileManager.default.removeItem(atPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId))
-                    } catch { }
+                    task.cancel()
+                    NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
+                    NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUploadCancelFile, userInfo: ["ocId": metadata.ocId, "serverUrl": metadata.serverUrl, "account": metadata.account])
                 }
             }
         }
