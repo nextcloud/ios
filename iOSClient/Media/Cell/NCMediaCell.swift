@@ -15,8 +15,8 @@ struct NCMediaCell: View {
     let thumbnail: ScaledThumbnail
     let shrinkRatio: CGFloat
     @Binding var isInSelectMode: Bool
-    let onSelected: (ScaledThumbnail, Bool) -> Void
     @State private var isSelected = false
+    let onSelected: (ScaledThumbnail, Bool) -> Void
 
     var body: some View {
         let image = Image(uiImage: thumbnail.image)
