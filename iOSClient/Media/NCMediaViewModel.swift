@@ -28,7 +28,6 @@ import Combine
     private var cancellables: Set<AnyCancellable> = []
 
     @Published internal var needsLoadingMoreItems = true
-    @Published internal var firstTimeLoadingNewMedia = false
 
     init() {
         NotificationCenter.default.addObserver(self, selector: #selector(deleteFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDeleteFile), object: nil)
@@ -270,8 +269,6 @@ extension NCMediaViewModel {
 
         let options = NKRequestOptions(timeout: 300, queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
 
-        firstTimeLoadingNewMedia = true
-
         return await withCheckedContinuation { continuation in
             NextcloudKit.shared.searchMedia(path: self.mediaPath, lessDate: lessDate, greaterDate: greaterDate, elementDate: "d:getlastmodified/", limit: limit, showHiddenFiles: CCUtility.getShowHiddenFiles(), options: options) { account, files, _, error in
 
@@ -289,10 +286,6 @@ extension NCMediaViewModel {
                     self.loadOldMedia()
                 } else if error != .success {
                     NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Media search new media error code \(error.errorCode) " + error.errorDescription)
-                }
-
-                DispatchQueue.main.async {
-                    self.firstTimeLoadingNewMedia = false
                 }
 
                 continuation.resume()

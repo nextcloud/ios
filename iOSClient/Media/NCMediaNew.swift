@@ -27,151 +27,145 @@ struct NCMediaNew: View {
     @State private var showDeleteConfirmation = false
 
     var body: some View {
-            GeometryReader { outerProxy in
-                ZStack(alignment: .top) {
-                    VisibilityTrackingScrollView(action: cellVisibilityDidChange) {
-                        LazyVStack(alignment: .leading, spacing: 2) {
-                            if vm.firstTimeLoadingNewMedia {
-                                Text("Checking for new photos...").font(.system(size: 13))
-                                    .frame(maxWidth: .infinity)
-                                    .blinking()
-                            }
+        GeometryReader { outerProxy in
+            ZStack(alignment: .top) {
+                VisibilityTrackingScrollView(action: cellVisibilityDidChange) {
+                    LazyVStack(alignment: .leading, spacing: 2) {
+                        ForEach(vm.metadatas.chunked(into: columns), id: \.self) { rowMetadatas in
+                            NCMediaRow(metadatas: rowMetadatas, geometryProxy: outerProxy, isInSelectMode: $vm.isInSelectMode) { tappedThumbnail, isSelected in
 
-                            ForEach(vm.metadatas.chunked(into: columns), id: \.self) { rowMetadatas in
-                                NCMediaRow(metadatas: rowMetadatas, geometryProxy: outerProxy, isInSelectMode: $vm.isInSelectMode) { tappedThumbnail, isSelected in
-
-                                    if vm.isInSelectMode, isSelected {
-                                        vm.selectedMetadatas.append(tappedThumbnail.metadata)
-                                    } else {
-                                        vm.selectedMetadatas.removeAll(where: { $0.ocId == tappedThumbnail.metadata.ocId })
-                                    }
-
-                                    if !vm.isInSelectMode {
-                                        let selectedMetadata = tappedThumbnail.metadata
-                                        vm.onCellTapped(metadata: selectedMetadata)
-                                        NCViewer.shared.view(viewController: parent, metadata: selectedMetadata, metadatas: vm.metadatas, imageIcon: tappedThumbnail.image)
-                                    }
+                                if vm.isInSelectMode, isSelected {
+                                    vm.selectedMetadatas.append(tappedThumbnail.metadata)
+                                } else {
+                                    vm.selectedMetadatas.removeAll(where: { $0.ocId == tappedThumbnail.metadata.ocId })
                                 }
-                            }
 
-                            if vm.needsLoadingMoreItems {
-                                ProgressView()
-                                    .frame(maxWidth: .infinity)
-                                    .onAppear { vm.loadMoreItems() }
-                                    .padding(.top, 10)
-                            }
-                        }
-                        .padding(.top, 70)
-                        .padding(.bottom, 40)
-                        .background(GeometryReader { geometry in
-                            Color.clear
-                                .preference(key: ScrollOffsetPreferenceKey.self, value: geometry.frame(in: .named("scroll")).origin)
-                        })
-                        .onPreferenceChange(ScrollOffsetPreferenceKey.self) { value in
-                            let isScrolledToTop = value.y >= -10
-
-                            withAnimation(.default) {
-                                titleColor = isScrolledToTop ? Color.primary : .white
-                                toolbarItemsColor = isScrolledToTop ? .blue : .white
-                                toolbarColors = isScrolledToTop ? [.clear] : [.black.opacity(0.8), .black.opacity(0.0)]
+                                if !vm.isInSelectMode {
+                                    let selectedMetadata = tappedThumbnail.metadata
+                                    vm.onCellTapped(metadata: selectedMetadata)
+                                    NCViewer.shared.view(viewController: parent, metadata: selectedMetadata, metadatas: vm.metadatas, imageIcon: tappedThumbnail.image)
+                                }
                             }
                         }
 
-                    }
-                    .refreshable {
-                        await vm.onPullToRefresh()
-                    }
-                    // Not possible to move the refresh control view via SwiftUI, so we have to introspect the internal UIKit views to move it.
-                    // TODO: Maybe .contespontMargins() will resolve this but it's iOS 17+
-                    .introspect(.scrollView, on: .iOS(.v15...)) { scrollView in
-                        scrollView.refreshControl?.translatesAutoresizingMaskIntoConstraints = false
-                        scrollView.refreshControl?.topAnchor.constraint(equalTo: scrollView.superview!.topAnchor, constant: 120).isActive = true
-                        scrollView.refreshControl?.centerXAnchor.constraint(equalTo: scrollView.centerXAnchor).isActive = true
-                    }
-                    .coordinateSpace(name: "scroll")
-
-                    // Toolbar
-
-                    HStack(content: {
-                        HStack {
-                            Text(title)
-                                .font(.system(size: 20, weight: .bold))
-                                .foregroundStyle(titleColor)
-
-                            Spacer()
-
-                            Button(action: {
-                                vm.isInSelectMode.toggle()
-                            }, label: {
-                                Text(NSLocalizedString(vm.isInSelectMode ? "_cancel_" : "_select_", comment: "")).font(.system(size: 14))
-                                    .foregroundStyle(toolbarItemsColor)
-                            })
-                            .padding(.horizontal, 6)
-                            .padding(.vertical, 3)
-                            .background(.ultraThinMaterial)
-                            .cornerRadius(.infinity)
-
-                            if vm.isInSelectMode, !vm.selectedMetadatas.isEmpty {
-                                ToolbarCircularButton(imageSystemName: "trash.fill", toolbarItemsColor: $toolbarItemsColor)
-                                    .onTapGesture {
-                                        showDeleteConfirmation = true
-                                    }
-                                    .confirmationDialog("", isPresented: $showDeleteConfirmation) {
-                                        Button("Delete selected media", role: .destructive) {
-                                            vm.deleteSelectedMetadata()
-                                        }
-                                    }
-                            }
-
-                            Menu {
-                                Section {
-                                    Button(action: {
-                                        vm.filterClassTypeImage = !vm.filterClassTypeImage
-                                        vm.filterClassTypeVideo = false
-                                    }, label: {
-                                        Label(NSLocalizedString(vm.filterClassTypeImage ? "_media_viewimage_show_" : "_media_viewimage_hide_", comment: ""), systemImage: "photo.fill")
-                                    })
-                                    Button(action: {
-                                        vm.filterClassTypeVideo = !vm.filterClassTypeVideo
-                                        vm.filterClassTypeImage = false
-                                    }, label: {
-                                        Label(NSLocalizedString(vm.filterClassTypeVideo ? "_media_viewvideo_show_" : "_media_viewvideo_hide_", comment: ""), systemImage: "video.fill")
-                                    })
-                                    Button(action: {}, label: {
-                                        Label(NSLocalizedString("_select_media_folder_", comment: ""), systemImage: "folder")
-                                    })
-                                }
-
-                                Section {
-                                    Button(action: {}, label: {
-                                        Label(NSLocalizedString("_play_from_files_", comment: ""), systemImage: "play.circle")
-                                    })
-                                    Button(action: {}, label: {
-                                        Label(NSLocalizedString("_play_from_url_", comment: ""), systemImage: "link")
-                                    })
-                                }
-                            } label: {
-                                ToolbarCircularButton(imageSystemName: "ellipsis", toolbarItemsColor: $toolbarItemsColor)
-                            }
+                        if vm.needsLoadingMoreItems {
+                            ProgressView()
+                                .frame(maxWidth: .infinity)
+                                .onAppear { vm.loadMoreItems() }
+                                .padding(.top, 10)
                         }
+                    }
+                    .padding(.top, 70)
+                    .padding(.bottom, 40)
+                    .background(GeometryReader { geometry in
+                        Color.clear
+                            .preference(key: ScrollOffsetPreferenceKey.self, value: geometry.frame(in: .named("scroll")).origin)
                     })
-                    .frame(maxWidth: .infinity)
-                    .padding([.horizontal, .top], 10)
-                    .padding(.bottom, 20)
-                    .background(LinearGradient(gradient: Gradient(colors: toolbarColors), startPoint: .top, endPoint: .bottom).edgesIgnoringSafeArea(.top))
+                    .onPreferenceChange(ScrollOffsetPreferenceKey.self) { value in
+                        let isScrolledToTop = value.y >= -10
+
+                        withAnimation(.default) {
+                            titleColor = isScrolledToTop ? Color.primary : .white
+                            toolbarItemsColor = isScrolledToTop ? .blue : .white
+                            toolbarColors = isScrolledToTop ? [.clear] : [.black.opacity(0.8), .black.opacity(0.0)]
+                        }
+                    }
+
                 }
-            }
-            .onRotate { orientation in
-                if orientation.isLandscapeHardCheck {
-                    columns = 6
-                } else {
-                    columns = 2
+                .refreshable {
+                    await vm.onPullToRefresh()
                 }
+                // Not possible to move the refresh control view via SwiftUI, so we have to introspect the internal UIKit views to move it.
+                // TODO: Maybe .contespontMargins() will resolve this but it's iOS 17+
+                .introspect(.scrollView, on: .iOS(.v15...)) { scrollView in
+                    scrollView.refreshControl?.translatesAutoresizingMaskIntoConstraints = false
+                    scrollView.refreshControl?.topAnchor.constraint(equalTo: scrollView.superview!.topAnchor, constant: 120).isActive = true
+                    scrollView.refreshControl?.centerXAnchor.constraint(equalTo: scrollView.centerXAnchor).isActive = true
+                }
+                .coordinateSpace(name: "scroll")
+
+                // Toolbar
+
+                HStack(content: {
+                    HStack {
+                        Text(title)
+                            .font(.system(size: 20, weight: .bold))
+                            .foregroundStyle(titleColor)
+
+                        Spacer()
+
+                        Button(action: {
+                            vm.isInSelectMode.toggle()
+                        }, label: {
+                            Text(NSLocalizedString(vm.isInSelectMode ? "_cancel_" : "_select_", comment: "")).font(.system(size: 14))
+                                .foregroundStyle(toolbarItemsColor)
+                        })
+                        .padding(.horizontal, 6)
+                        .padding(.vertical, 3)
+                        .background(.ultraThinMaterial)
+                        .cornerRadius(.infinity)
+
+                        if vm.isInSelectMode, !vm.selectedMetadatas.isEmpty {
+                            ToolbarCircularButton(imageSystemName: "trash.fill", toolbarItemsColor: $toolbarItemsColor)
+                                .onTapGesture {
+                                    showDeleteConfirmation = true
+                                }
+                                .confirmationDialog("", isPresented: $showDeleteConfirmation) {
+                                    Button("Delete selected media", role: .destructive) {
+                                        vm.deleteSelectedMetadata()
+                                    }
+                                }
+                        }
+
+                        Menu {
+                            Section {
+                                Button(action: {
+                                    vm.filterClassTypeImage = !vm.filterClassTypeImage
+                                    vm.filterClassTypeVideo = false
+                                }, label: {
+                                    Label(NSLocalizedString(vm.filterClassTypeImage ? "_media_viewimage_show_" : "_media_viewimage_hide_", comment: ""), systemImage: "photo.fill")
+                                })
+                                Button(action: {
+                                    vm.filterClassTypeVideo = !vm.filterClassTypeVideo
+                                    vm.filterClassTypeImage = false
+                                }, label: {
+                                    Label(NSLocalizedString(vm.filterClassTypeVideo ? "_media_viewvideo_show_" : "_media_viewvideo_hide_", comment: ""), systemImage: "video.fill")
+                                })
+                                Button(action: {}, label: {
+                                    Label(NSLocalizedString("_select_media_folder_", comment: ""), systemImage: "folder")
+                                })
+                            }
+
+                            Section {
+                                Button(action: {}, label: {
+                                    Label(NSLocalizedString("_play_from_files_", comment: ""), systemImage: "play.circle")
+                                })
+                                Button(action: {}, label: {
+                                    Label(NSLocalizedString("_play_from_url_", comment: ""), systemImage: "link")
+                                })
+                            }
+                        } label: {
+                            ToolbarCircularButton(imageSystemName: "ellipsis", toolbarItemsColor: $toolbarItemsColor)
+                        }
+                    }
+                })
+                .frame(maxWidth: .infinity)
+                .padding([.horizontal, .top], 10)
+                .padding(.bottom, 20)
+                .background(LinearGradient(gradient: Gradient(colors: toolbarColors), startPoint: .top, endPoint: .bottom).edgesIgnoringSafeArea(.top))
             }
-            .onAppear { vm.loadMediaFromDB() }
-            .onChange(of: vm.isInSelectMode) { newValue in
-                if newValue == false { vm.selectedMetadatas.removeAll() }
+        }
+        .onRotate { orientation in
+            if orientation.isLandscapeHardCheck {
+                columns = 6
+            } else {
+                columns = 2
             }
+        }
+        .onAppear { vm.loadMediaFromDB() }
+        .onChange(of: vm.isInSelectMode) { newValue in
+            if newValue == false { vm.selectedMetadatas.removeAll() }
+        }
     }
 
     func cellVisibilityDidChange(_ id: String, change: VisibilityChange, tracker: VisibilityTracker<String>) {
