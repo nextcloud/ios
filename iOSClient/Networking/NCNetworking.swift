@@ -722,24 +722,39 @@ class NCNetworking: NSObject, NKCommonDelegate {
 
     // MARK: - Cancel (Download Upload)
 
-    func cancelTransfers(inBackground: Bool) {
+    func cancelSessions(inBackground: Bool) {
         Task {
-            await cancelTransfers(inBackground: inBackground)
+            await cancelSessions(inBackground: inBackground)
         }
     }
 
-    func cancelTransfers(inBackground: Bool) async {
+    // sessionIdentifierDownload: String = "com.nextcloud.nextcloudkit.session.download"
+    // sessionIdentifierUpload: String = "com.nextcloud.nextcloudkit.session.upload"
+
+    // sessionIdentifierBackground: String = "com.nextcloud.session.upload.background"
+    // sessionIdentifierBackgroundWWan: String = "com.nextcloud.session.upload.backgroundWWan"
+    // sessionIdentifierBackgroundExtension: String = "com.nextcloud.session.upload.extension"
+
+    func cancelSessions(inBackground: Bool) async {
 
         NextcloudKit.shared.sessionManager.cancelAllRequests()
 
         downloadRequest.removeAll()
         uploadRequest.removeAll()
 
-        // DOWNLOAD ( < 0)
         let metadatasDownload = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "status < 0"))
+        let metadatasUpload = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "status > 0 AND session == %@", NextcloudKit.shared.nkCommonInstance.sessionIdentifierUpload))
+        let metadatasUploadBackground = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "status > 0 AND (session == %@ || session == %@", NCNetworking.shared.sessionManagerBackground, NCNetworking.shared.sessionManagerBackgroundWWan))
+
+        // DOWNLOAD
         for metadata in metadatasDownload {
             CCUtility.removeFile(atPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId))
             NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId, session: "", sessionError: "", sessionSelector: "", sessionTaskIdentifier: 0, status: NCGlobal.shared.metadataStatusNormal)
+        }
+        // UPLOAD
+        for metadata in metadatasUpload {
+            CCUtility.removeFile(atPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId))
+            NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
         }
 
 #if !EXTENSION
@@ -748,11 +763,10 @@ class NCNetworking: NSObject, NKCommonDelegate {
 
         guard inBackground else { return }
 
-        // UPLOAD ( > 0)
-        let metadatasUpload = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "status > 0"))
+        // BACKGROUND ( > 0)
         for metadata in metadatasUpload {
             CCUtility.removeFile(atPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId))
-            NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId, session: "", sessionError: "", sessionSelector: "", sessionTaskIdentifier: 0, status: NCGlobal.shared.metadataStatusNormal)
+            NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
         }
 
         let tasksBackground = await NCNetworking.shared.sessionManagerBackground.tasks

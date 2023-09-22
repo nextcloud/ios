@@ -31,7 +31,7 @@ class NCNetworkingCheckRemoteUser {
             return
         }
 
-        NCNetworking.shared.cancelTransfers(inBackground: true)
+        NCNetworking.shared.cancelSessions(inBackground: true)
 
         // -----------------------
 
