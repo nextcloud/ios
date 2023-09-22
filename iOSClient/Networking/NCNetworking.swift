@@ -795,7 +795,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
             return
         }
 
-        // Download
+        // DOWNLOAD
         if metadata.session == NextcloudKit.shared.nkCommonInstance.sessionIdentifierDownload {
             if let request = downloadRequest[fileNameLocalPath] {
                 request.cancel()
@@ -807,7 +807,8 @@ class NCNetworking: NSObject, NKCommonDelegate {
             return
         }
 
-        if metadata.session == NextcloudKit.shared.nkCommonInstance.sessionIdentifierUpload || metadata.chunk > 0 {
+        // UPLOAD FOREGROUND
+        if metadata.session == NextcloudKit.shared.nkCommonInstance.sessionIdentifierUpload {
             if let request = uploadRequest[fileNameLocalPath] {
                 request.cancel()
                 uploadRequest.removeValue(forKey: fileNameLocalPath)
@@ -818,6 +819,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
             return
         }
 
+        // UPLOAD BACKGROUND
         var session: URLSession?
         if metadata.session == NCNetworking.shared.sessionIdentifierBackground {
             session = NCNetworking.shared.sessionManagerBackground
