@@ -9,10 +9,6 @@
 import NextcloudKit
 import Combine
 
-//enum SortType: String {
-//    case modifiedDate = "date", creationDate = "creationDate", uploadDate = "uploadDate"
-//}
-
 @MainActor class NCMediaViewModel: ObservableObject {
     @Published private(set) var metadatas: [tableMetadata] = []
     @Published internal var selectedMetadatas: [tableMetadata] = []
@@ -29,11 +25,10 @@ import Combine
     @Published internal var filterClassTypeImage = false
     @Published internal var filterClassTypeVideo = false
 
-//    @Published internal var sortType: SortType = SortType(rawValue: CCUtility.getMediaSortDate()) ?? .modifiedDate
-
     private var cancellables: Set<AnyCancellable> = []
 
-    internal var needsLoadingMoreItems = true
+    @Published internal var needsLoadingMoreItems = true
+    @Published internal var firstTimeLoadingNewMedia = false
 
     init() {
         NotificationCenter.default.addObserver(self, selector: #selector(deleteFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDeleteFile), object: nil)
@@ -49,11 +44,6 @@ import Combine
 
         $filterClassTypeImage.sink { _ in self.loadMediaFromDB() }.store(in: &cancellables)
         $filterClassTypeVideo.sink { _ in self.loadMediaFromDB() }.store(in: &cancellables)
-//        $sortType.sink { sortType in
-//            CCUtility.setMediaSortDate(sortType.rawValue)
-//            self.loadMediaFromDB()
-//        }
-//        .store(in: &cancellables)
     }
 
     deinit {
@@ -62,6 +52,7 @@ import Combine
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterCopyFile), object: nil)
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterRenameFile), object: nil)
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUploadedFile), object: nil)
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeUser), object: nil)
     }
 
     private func queryDB(isForced: Bool = false) {
@@ -134,6 +125,10 @@ import Combine
                 isInSelectMode = false
             }
         }
+    }
+
+    func chunkMetadatas(into columns: Int) -> [[tableMetadata]] {
+        return metadatas.chunked(into: columns)
     }
 }
 
@@ -245,6 +240,10 @@ extension NCMediaViewModel {
             } else if error != .success {
                 NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Media search old media error code \(error.errorCode) " + error.errorDescription)
             }
+
+            DispatchQueue.main.async {
+                self.needsLoadingMoreItems = false
+            }
         }
     }
 
@@ -271,6 +270,8 @@ extension NCMediaViewModel {
 
         let options = NKRequestOptions(timeout: 300, queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
 
+        firstTimeLoadingNewMedia = true
+
         return await withCheckedContinuation { continuation in
             NextcloudKit.shared.searchMedia(path: self.mediaPath, lessDate: lessDate, greaterDate: greaterDate, elementDate: "d:getlastmodified/", limit: limit, showHiddenFiles: CCUtility.getShowHiddenFiles(), options: options) { account, files, _, error in
 
@@ -288,6 +289,10 @@ extension NCMediaViewModel {
                     self.loadOldMedia()
                 } else if error != .success {
                     NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Media search new media error code \(error.errorCode) " + error.errorDescription)
+                }
+
+                DispatchQueue.main.async {
+                    self.firstTimeLoadingNewMedia = false
                 }
 
                 continuation.resume()

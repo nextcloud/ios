@@ -31,6 +31,12 @@ struct NCMediaNew: View {
                 ZStack(alignment: .top) {
                     VisibilityTrackingScrollView(action: cellVisibilityDidChange) {
                         LazyVStack(alignment: .leading, spacing: 2) {
+                            if vm.firstTimeLoadingNewMedia {
+                                Text("Checking for new photos...").font(.system(size: 13))
+                                    .frame(maxWidth: .infinity)
+                                    .blinking()
+                            }
+
                             ForEach(vm.metadatas.chunked(into: columns), id: \.self) { rowMetadatas in
                                 NCMediaRow(metadatas: rowMetadatas, geometryProxy: outerProxy, isInSelectMode: $vm.isInSelectMode) { tappedThumbnail, isSelected in
 
@@ -76,10 +82,10 @@ struct NCMediaNew: View {
                         await vm.onPullToRefresh()
                     }
                     // Not possible to move the refresh control view via SwiftUI, so we have to introspect the internal UIKit views to move it.
-                    // TODO: Maybe .contentMargins() will resolve this but it's iOS 17+
+                    // TODO: Maybe .contespontMargins() will resolve this but it's iOS 17+
                     .introspect(.scrollView, on: .iOS(.v15...)) { scrollView in
                         scrollView.refreshControl?.translatesAutoresizingMaskIntoConstraints = false
-                        scrollView.refreshControl?.topAnchor.constraint(equalTo: parent.view.topAnchor, constant: 120).isActive = true
+                        scrollView.refreshControl?.topAnchor.constraint(equalTo: scrollView.superview!.topAnchor, constant: 120).isActive = true
                         scrollView.refreshControl?.centerXAnchor.constraint(equalTo: scrollView.centerXAnchor).isActive = true
                     }
                     .coordinateSpace(name: "scroll")
@@ -144,13 +150,6 @@ struct NCMediaNew: View {
                                         Label(NSLocalizedString("_play_from_url_", comment: ""), systemImage: "link")
                                     })
                                 }
-
-//                                Picker("Sorting options", selection: $vm.sortType) {
-//                                    Label(NSLocalizedString("_media_by_modified_date_", comment: ""), systemImage: "circle.grid.cross.up.fill").tag(SortType.modifiedDate)
-//                                    Label(NSLocalizedString("_media_by_created_date_", comment: ""), systemImage: "circle.grid.cross.down.fill").tag(SortType.creationDate)
-//                                    Label(NSLocalizedString("_media_by_upload_date_", comment: ""), systemImage: "circle.grid.cross.right.fill").tag(SortType.uploadDate)
-//                                }
-//                                .pickerStyle(.menu)
                             } label: {
                                 ToolbarCircularButton(imageSystemName: "ellipsis", toolbarItemsColor: $toolbarItemsColor)
                             }
@@ -212,6 +211,7 @@ struct NCMediaNew_Previews: PreviewProvider {
             ],
             configure: { _ in
                 NCMediaNew()
+                    .environmentObject(NCMediaUIKitWrapper())
             })
     }
 }
