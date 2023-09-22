@@ -722,12 +722,6 @@ class NCNetworking: NSObject, NKCommonDelegate {
 
     // MARK: - Cancel (Download Upload)
 
-    func cancelSessions(inBackground: Bool) {
-        Task {
-            await cancelSessions(inBackground: inBackground)
-        }
-    }
-
     // sessionIdentifierDownload: String = "com.nextcloud.nextcloudkit.session.download"
     // sessionIdentifierUpload: String = "com.nextcloud.nextcloudkit.session.upload"
 
@@ -735,7 +729,17 @@ class NCNetworking: NSObject, NKCommonDelegate {
     // sessionIdentifierBackgroundWWan: String = "com.nextcloud.session.upload.backgroundWWan"
     // sessionIdentifierBackgroundExtension: String = "com.nextcloud.session.upload.extension"
 
+    func cancelSessions(inBackground: Bool) {
+        Task {
+            await cancelSessions(inBackground: inBackground)
+        }
+    }
+
     func cancelSessions(inBackground: Bool) async {
+
+#if !EXTENSION
+        NCOperationQueue.shared.downloadCancelAll()
+#endif
 
         NextcloudKit.shared.sessionManager.cancelAllRequests()
 
@@ -757,14 +761,10 @@ class NCNetworking: NSObject, NKCommonDelegate {
             NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
         }
 
-#if !EXTENSION
-        NCOperationQueue.shared.downloadCancelAll()
-#endif
-
         guard inBackground else { return }
 
-        // BACKGROUND ( > 0)
-        for metadata in metadatasUpload {
+        // BACKGROUND
+        for metadata in metadatasUploadBackground {
             CCUtility.removeFile(atPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId))
             NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
         }
@@ -773,7 +773,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
         for task in tasksBackground.1 { // ([URLSessionDataTask], [URLSessionUploadTask], [URLSessionDownloadTask])
             task.cancel()
         }
-        let tasksBackgroundWWan = await NCNetworking.shared.sessionManagerBackground.tasks
+        let tasksBackgroundWWan = await NCNetworking.shared.sessionManagerBackgroundWWan.tasks
         for task in tasksBackgroundWWan.1 { // ([URLSessionDataTask], [URLSessionUploadTask], [URLSessionDownloadTask])
             task.cancel()
         }
