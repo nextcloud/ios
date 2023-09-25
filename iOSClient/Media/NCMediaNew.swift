@@ -32,8 +32,10 @@ struct NCMediaNew: View {
                 VisibilityTrackingScrollView(action: cellVisibilityDidChange) {
                     LazyVStack(alignment: .leading, spacing: 2) {
                         ForEach(vm.metadatas.chunked(into: columns), id: \.self) { rowMetadatas in
-                            NCMediaRow(metadatas: rowMetadatas, geometryProxy: outerProxy, isInSelectMode: $vm.isInSelectMode) { tappedThumbnail, isSelected in
+                            NCMediaRow(metadatas: rowMetadatas, geometryProxy: outerProxy, isInSelectMode: $vm.isInSelectMode)
+                            { tappedThumbnail, isSelected in
 
+                                //TODO: Put in VM
                                 if vm.isInSelectMode, isSelected {
                                     vm.selectedMetadatas.append(tappedThumbnail.metadata)
                                 } else {
@@ -45,14 +47,23 @@ struct NCMediaNew: View {
                                     vm.onCellTapped(metadata: selectedMetadata)
                                     NCViewer.shared.view(viewController: parent, metadata: selectedMetadata, metadatas: vm.metadatas, imageIcon: tappedThumbnail.image)
                                 }
+                            } onCellContextMenuItemSelected: { thumbnail, selection in
+                                let selectedMetadata = thumbnail.metadata
+                                
+                                switch selection {
+                                case .detail:
+                                    NCActionCenter.shared.openShare(viewController: parent, metadata: selectedMetadata, page: .activity)
+                                case .openIn:
+                                    vm.openIn(metadata: selectedMetadata)
+                                }
                             }
-                        }
 
-                        if vm.needsLoadingMoreItems {
-                            ProgressView()
-                                .frame(maxWidth: .infinity)
-                                .onAppear { vm.loadMoreItems() }
-                                .padding(.top, 10)
+                            if vm.needsLoadingMoreItems {
+                                ProgressView()
+                                    .frame(maxWidth: .infinity)
+                                    .onAppear { vm.loadMoreItems() }
+                                    .padding(.top, 10)
+                            }
                         }
                     }
                     .padding(.top, 70)
@@ -119,21 +130,70 @@ struct NCMediaNew: View {
 
                         Menu {
                             Section {
-                                Button(action: {
-                                    vm.filterClassTypeImage = !vm.filterClassTypeImage
-                                    vm.filterClassTypeVideo = false
-                                }, label: {
-                                    Label(NSLocalizedString(vm.filterClassTypeImage ? "_media_viewimage_show_" : "_media_viewimage_hide_", comment: ""), systemImage: "photo.fill")
-                                })
-                                Button(action: {
-                                    vm.filterClassTypeVideo = !vm.filterClassTypeVideo
-                                    vm.filterClassTypeImage = false
-                                }, label: {
-                                    Label(NSLocalizedString(vm.filterClassTypeVideo ? "_media_viewvideo_show_" : "_media_viewvideo_hide_", comment: ""), systemImage: "video.fill")
-                                })
-                                Button(action: {}, label: {
+//                                Button {
+//                                    vm.filterClassTypeImage = !vm.filterClassTypeImage
+//                                    vm.filterClassTypeVideo = false
+//                                } label: {
+//                                    HStack {
+//                                        Image(systemName: "photo.fill")
+//                                        
+//                                        Spacer()
+//                                        Label(NSLocalizedString(vm.filterClassTypeImage ? "_media_viewimage_show_" : "_media_viewimage_hide_", comment: ""), systemImage: "photo.fill")
+//                                    }
+//                                }
+
+                                Picker("View options", selection: $vm.filter) {
+                                    Label(NSLocalizedString("_media_viewimage_show_", comment: ""), systemImage: "photo.fill").tag(Filter.onlyPhotos)
+
+                                    Label(NSLocalizedString("_media_viewvideo_show_", comment: ""), systemImage: "video.fill").tag(Filter.onlyVideos)
+
+                                    Text(NSLocalizedString("_media_show_all_", comment: "")).tag(Filter.all)
+                                }.pickerStyle(.menu)
+
+//                                Toggle(isOn: $vm.showImages) {
+//                                    Label(NSLocalizedString("_media_viewimage_show_", comment: ""), systemImage: "photo.fill")
+//                                }
+//                                .onChange(of: vm.showImages) { _ in
+//                                    vm.showVideo = true
+//                                }
+//                                .onTapGesture {
+////                                    vm.showImages = !vm.showImages
+//                                    vm.showVideo = true
+//                                }
+
+//                                Toggle(isOn: $vm.showVideo) {
+//                                    Label(NSLocalizedString("_media_viewvideo_show_", comment: ""), systemImage: "video.fill")
+//                                }
+//                                .onChange(of: vm.showVideo) { _ in
+//                                    vm.showImages = true
+//                                }
+
+//                                .onTapGesture {
+////                                    vm.showVideo = !vm.showVideo
+//                                    vm.showImages = true
+//                                }
+
+//                                Button {
+//                                    vm.filterClassTypeVideo = !vm.filterClassTypeVideo
+//                                    vm.filterClassTypeImage = false
+//                                } label: {
+//                                    Label(NSLocalizedString(vm.filterClassTypeVideo ? "_media_viewvideo_show_" : "_media_viewvideo_hide_", comment: ""), systemImage: "video.fill")
+//                                }
+
+                                Button {
+                                    guard let navigationController = UIStoryboard(name: "NCSelect", bundle: nil).instantiateInitialViewController() as? UINavigationController,
+                                          let viewController = navigationController.topViewController as? NCSelect
+                                    else { return }
+
+//                                    viewController.delegate = self
+                                    viewController.typeOfCommandView = .select
+                                    viewController.type = "mediaFolder"
+//                                    viewController.selectIndexPath = self.selectIndexPath
+
+                                    parent.present(navigationController, animated: true, completion: nil)
+                                } label: {
                                     Label(NSLocalizedString("_select_media_folder_", comment: ""), systemImage: "folder")
-                                })
+                                }
                             }
 
                             Section {

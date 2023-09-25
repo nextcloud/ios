@@ -22,12 +22,13 @@ import Combine
     private var predicate: NSPredicate?
     private let appDelegate = UIApplication.shared.delegate as? AppDelegate
 
-    @Published internal var filterClassTypeImage = false
-    @Published internal var filterClassTypeVideo = false
+//    @Published internal var showImages = true
+//    @Published internal var showVideo = true
 
     private var cancellables: Set<AnyCancellable> = []
 
     @Published internal var needsLoadingMoreItems = true
+    @Published internal var filter = Filter.all
 
     init() {
         NotificationCenter.default.addObserver(self, selector: #selector(deleteFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDeleteFile), object: nil)
@@ -41,8 +42,19 @@ import Combine
             await loadNewMedia()
         }
 
-        $filterClassTypeImage.sink { _ in self.loadMediaFromDB() }.store(in: &cancellables)
-        $filterClassTypeVideo.sink { _ in self.loadMediaFromDB() }.store(in: &cancellables)
+        $filter
+            .dropFirst()
+            .sink { filter in
+                switch filter {
+                case .all:
+                    self.loadMediaFromDB(showPhotos: true, showVideos: true)
+                case .onlyPhotos:
+                    self.loadMediaFromDB(showPhotos: true, showVideos: false)
+                case .onlyVideos:
+                    self.loadMediaFromDB(showPhotos: false, showVideos: true)
+                }
+            }
+            .store(in: &cancellables)
     }
 
     deinit {
@@ -54,7 +66,7 @@ import Combine
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeUser), object: nil)
     }
 
-    private func queryDB(isForced: Bool = false) {
+    private func queryDB(isForced: Bool = false, showPhotos: Bool = true, showVideos: Bool = true) {
         guard let appDelegate else { return }
 
         livePhoto = CCUtility.getLivePhoto()
@@ -67,12 +79,12 @@ import Combine
 
         predicateDefault = NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND (classFile == %@ OR classFile == %@) AND NOT (session CONTAINS[c] 'upload')", appDelegate.account, startServerUrl, NKCommon.TypeClassFile.image.rawValue, NKCommon.TypeClassFile.video.rawValue)
 
-        if filterClassTypeImage {
-            predicate = NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND classFile == %@ AND NOT (session CONTAINS[c] 'upload')", appDelegate.account, startServerUrl, NKCommon.TypeClassFile.video.rawValue)
-        } else if filterClassTypeVideo {
-            predicate = NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND classFile == %@ AND NOT (session CONTAINS[c] 'upload')", appDelegate.account, startServerUrl, NKCommon.TypeClassFile.image.rawValue)
-        } else {
+        if showPhotos, showVideos {
             predicate = predicateDefault
+        } else if showPhotos {
+            predicate = NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND classFile == %@ AND NOT (session CONTAINS[c] 'upload')", appDelegate.account, startServerUrl, NKCommon.TypeClassFile.image.rawValue)
+        } else if showVideos {
+            predicate = NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND classFile == %@ AND NOT (session CONTAINS[c] 'upload')", appDelegate.account, startServerUrl, NKCommon.TypeClassFile.video.rawValue)
         }
 
         guard let predicate = predicate else { return }
@@ -126,8 +138,27 @@ import Combine
         }
     }
 
-    func chunkMetadatas(into columns: Int) -> [[tableMetadata]] {
-        return metadatas.chunked(into: columns)
+    func openIn(metadata: tableMetadata) {
+        if CCUtility.fileProviderStorageExists(metadata) {
+            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDownloadedFile, userInfo: ["ocId": metadata.ocId, "selector": NCGlobal.shared.selectorOpenIn, "error": NKError(), "account": metadata.account])
+        } else {
+//            hud.show(in: viewController.view)
+            NCNetworking.shared.download(metadata: metadata, selector: NCGlobal.shared.selectorOpenIn, notificationCenterProgressTask: false)
+//            { request in
+//                downloadRequest = request
+//            } progressHandler: { progress in
+//                hud.progress = Float(progress.fractionCompleted)
+//            } completion:
+            { afError, error in
+                if error == .success || afError?.isExplicitlyCancelledError ?? false {
+//                    hud.dismiss()
+                } else {
+//                    hud.indicatorView = JGProgressHUDErrorIndicatorView()
+//                    hud.textLabel.text = error.description
+//                    hud.dismiss(afterDelay: NCGlobal.shared.dismissAfterSecond)
+                }
+            }
+        }
     }
 }
 
@@ -190,7 +221,7 @@ extension NCMediaViewModel {
 // MARK: - Load media
 
 extension NCMediaViewModel {
-    func loadMediaFromDB() {
+    func loadMediaFromDB(showPhotos: Bool = true, showVideos: Bool = true) {
         guard let appDelegate, !appDelegate.account.isEmpty else { return }
 
         if account != appDelegate.account {
@@ -198,7 +229,7 @@ extension NCMediaViewModel {
             account = appDelegate.account
         }
 
-        self.queryDB(isForced: true)
+        self.queryDB(isForced: true, showImages: showPhotos, showVideos: showVideos)
     }
 
     private func loadOldMedia(value: Int = -30, limit: Int = 300) {
@@ -292,4 +323,8 @@ extension NCMediaViewModel {
             }
         }
     }
+}
+
+enum Filter {
+    case onlyPhotos, onlyVideos, all
 }
