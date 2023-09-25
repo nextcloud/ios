@@ -16,7 +16,7 @@ struct RowData {
 
 struct ScaledThumbnail: Hashable {
     let image: UIImage
-    var isDefaultImage = false
+    var isPlaceholderImage = false
     var scaledSize: CGSize = .zero
     let metadata: tableMetadata
 
@@ -81,7 +81,7 @@ struct ScaledThumbnail: Hashable {
                             NCManageDatabase.shared.setMetadataEtagResource(ocId: metadata.ocId, etagResource: etag)
                             thumbnails.append(ScaledThumbnail(image: image, metadata: metadata))
                         } else {
-                            thumbnails.append(ScaledThumbnail(image: UIImage(systemName: metadata.isVideo ? "video.fill" : "photo.fill")!.withRenderingMode(.alwaysTemplate), isDefaultImage: true, metadata: metadata))
+                            thumbnails.append(ScaledThumbnail(image: UIImage(systemName: metadata.isVideo ? "video.fill" : "photo.fill")!.withRenderingMode(.alwaysTemplate), isPlaceholderImage: true, metadata: metadata))
                         }
 
                         DispatchQueue.main.async {

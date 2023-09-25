@@ -15,6 +15,7 @@ struct NCMediaRow: View {
     let geometryProxy: GeometryProxy
     @Binding var isInSelectMode: Bool
     let onCellSelected: (ScaledThumbnail, Bool) -> Void
+    let onCellContextMenuItemSelected: (ScaledThumbnail, ContextMenuSelection) -> Void
     @StateObject private var vm = NCMediaRowViewModel()
     private let spacing: CGFloat = 2
 
@@ -26,7 +27,7 @@ struct NCMediaRow: View {
                 }
             } else {
                 ForEach(vm.rowData.scaledThumbnails, id: \.self) { thumbnail in
-                    NCMediaCell(thumbnail: thumbnail, shrinkRatio: vm.rowData.shrinkRatio, isInSelectMode: $isInSelectMode, onSelected: onCellSelected)
+                    NCMediaCell(thumbnail: thumbnail, shrinkRatio: vm.rowData.shrinkRatio, isInSelectMode: $isInSelectMode, onSelected: onCellSelected, onContextMenuItemSelected: onCellContextMenuItemSelected)
                 }
             }
         }

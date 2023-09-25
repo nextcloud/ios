@@ -11,25 +11,38 @@ import VisibilityTrackingScrollView
 import Shimmer
 import NextcloudKit
 
+enum ContextMenuSelection {
+    case detail, openIn
+}
+
 struct NCMediaCell: View {
     let thumbnail: ScaledThumbnail
     let shrinkRatio: CGFloat
     @Binding var isInSelectMode: Bool
     @State private var isSelected = false
     let onSelected: (ScaledThumbnail, Bool) -> Void
+    let onContextMenuItemSelected: (ScaledThumbnail, ContextMenuSelection) -> Void
 
     var body: some View {
         let image = Image(uiImage: thumbnail.image)
             .resizable()
             .trackVisibility(id: CCUtility.getTitleSectionDate(thumbnail.metadata.date as Date) ?? "")
             .contextMenu(ContextMenu(menuItems: {
-                Text("Menu Item 1")
-                Text("Menu Item 2")
-                Text("Menu Item 3")
+                Button {
+                    onContextMenuItemSelected(thumbnail, .detail)
+                } label: {
+                    Label("Details", systemImage: "info")
+                }
+
+                Button {
+                    onContextMenuItemSelected(thumbnail, .openIn)
+                } label: {
+                    Label("Open in", systemImage: "info")
+                }
             }))
 
         ZStack(alignment: .center) {
-            if thumbnail.isDefaultImage {
+            if thumbnail.isPlaceholderImage {
                 image
                     .foregroundColor(Color(uiColor: .systemGray4))
                     .scaledToFit()
@@ -40,7 +53,7 @@ struct NCMediaCell: View {
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .overlay(alignment: .bottomLeading) {
-            if thumbnail.metadata.isVideo, !thumbnail.isDefaultImage {
+            if thumbnail.metadata.isVideo, !thumbnail.isPlaceholderImage {
                 Image(systemName: "play.fill")
                     .resizable()
                     .foregroundColor(Color(uiColor: .white))
