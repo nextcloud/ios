@@ -31,7 +31,6 @@ class NCMediaUIKitWrapper: UIViewController, ObservableObject {
         view.addSubview(controller.view)
         controller.didMove(toParent: self)
 
-
         NSLayoutConstraint.activate([
             controller.view.widthAnchor.constraint(equalTo: view.widthAnchor),
             controller.view.heightAnchor.constraint(equalTo: view.heightAnchor),

@@ -22,9 +22,6 @@ import Combine
     private var predicate: NSPredicate?
     private let appDelegate = UIApplication.shared.delegate as? AppDelegate
 
-//    @Published internal var showImages = true
-//    @Published internal var showVideo = true
-
     private var cancellables: Set<AnyCancellable> = []
 
     @Published internal var needsLoadingMoreItems = true
@@ -229,7 +226,7 @@ extension NCMediaViewModel {
             account = appDelegate.account
         }
 
-        self.queryDB(isForced: true, showImages: showPhotos, showVideos: showVideos)
+        self.queryDB(isForced: true, showPhotos: showPhotos, showVideos: showVideos)
     }
 
     private func loadOldMedia(value: Int = -30, limit: Int = 300) {
@@ -321,6 +318,21 @@ extension NCMediaViewModel {
 
                 continuation.resume()
             }
+        }
+    }
+}
+
+extension NCMediaViewModel: NCSelectDelegate {
+    func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String, items: [Any], indexPath: [IndexPath], overwrite: Bool, copy: Bool, move: Bool) {
+        guard let serverUrl = serverUrl, let appDelegate else { return }
+
+        let path = CCUtility.returnPathfromServerUrl(serverUrl, urlBase: appDelegate.urlBase, userId: appDelegate.userId, account: appDelegate.account) ?? ""
+            NCManageDatabase.shared.setAccountMediaPath(path, account: appDelegate.account)
+
+        self.loadMediaFromDB()
+
+        Task {
+            await loadNewMedia()
         }
     }
 }

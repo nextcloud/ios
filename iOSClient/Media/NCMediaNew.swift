@@ -81,7 +81,6 @@ struct NCMediaNew: View {
                             toolbarColors = isScrolledToTop ? [.clear] : [.black.opacity(0.8), .black.opacity(0.0)]
                         }
                     }
-
                 }
                 .refreshable {
                     await vm.onPullToRefresh()
@@ -130,19 +129,7 @@ struct NCMediaNew: View {
 
                         Menu {
                             Section {
-//                                Button {
-//                                    vm.filterClassTypeImage = !vm.filterClassTypeImage
-//                                    vm.filterClassTypeVideo = false
-//                                } label: {
-//                                    HStack {
-//                                        Image(systemName: "photo.fill")
-//                                        
-//                                        Spacer()
-//                                        Label(NSLocalizedString(vm.filterClassTypeImage ? "_media_viewimage_show_" : "_media_viewimage_hide_", comment: ""), systemImage: "photo.fill")
-//                                    }
-//                                }
-
-                                Picker("View options", selection: $vm.filter) {
+                                Picker(NSLocalizedString("_media_view_options_", comment: ""), selection: $vm.filter) {
                                     Label(NSLocalizedString("_media_viewimage_show_", comment: ""), systemImage: "photo.fill").tag(Filter.onlyPhotos)
 
                                     Label(NSLocalizedString("_media_viewvideo_show_", comment: ""), systemImage: "video.fill").tag(Filter.onlyVideos)
@@ -150,47 +137,8 @@ struct NCMediaNew: View {
                                     Text(NSLocalizedString("_media_show_all_", comment: "")).tag(Filter.all)
                                 }.pickerStyle(.menu)
 
-//                                Toggle(isOn: $vm.showImages) {
-//                                    Label(NSLocalizedString("_media_viewimage_show_", comment: ""), systemImage: "photo.fill")
-//                                }
-//                                .onChange(of: vm.showImages) { _ in
-//                                    vm.showVideo = true
-//                                }
-//                                .onTapGesture {
-////                                    vm.showImages = !vm.showImages
-//                                    vm.showVideo = true
-//                                }
-
-//                                Toggle(isOn: $vm.showVideo) {
-//                                    Label(NSLocalizedString("_media_viewvideo_show_", comment: ""), systemImage: "video.fill")
-//                                }
-//                                .onChange(of: vm.showVideo) { _ in
-//                                    vm.showImages = true
-//                                }
-
-//                                .onTapGesture {
-////                                    vm.showVideo = !vm.showVideo
-//                                    vm.showImages = true
-//                                }
-
-//                                Button {
-//                                    vm.filterClassTypeVideo = !vm.filterClassTypeVideo
-//                                    vm.filterClassTypeImage = false
-//                                } label: {
-//                                    Label(NSLocalizedString(vm.filterClassTypeVideo ? "_media_viewvideo_show_" : "_media_viewvideo_hide_", comment: ""), systemImage: "video.fill")
-//                                }
-
                                 Button {
-                                    guard let navigationController = UIStoryboard(name: "NCSelect", bundle: nil).instantiateInitialViewController() as? UINavigationController,
-                                          let viewController = navigationController.topViewController as? NCSelect
-                                    else { return }
-
-//                                    viewController.delegate = self
-                                    viewController.typeOfCommandView = .select
-                                    viewController.type = "mediaFolder"
-//                                    viewController.selectIndexPath = self.selectIndexPath
-
-                                    parent.present(navigationController, animated: true, completion: nil)
+                                    selectMediaFolder()
                                 } label: {
                                     Label(NSLocalizedString("_select_media_folder_", comment: ""), systemImage: "folder")
                                 }
@@ -228,12 +176,24 @@ struct NCMediaNew: View {
         }
     }
 
-    func cellVisibilityDidChange(_ id: String, change: VisibilityChange, tracker: VisibilityTracker<String>) {
+    private func cellVisibilityDidChange(_ id: String, change: VisibilityChange, tracker: VisibilityTracker<String>) {
         DispatchQueue.main.async {
             if let date = tracker.topVisibleView, !date.isEmpty {
                 title = date
             }
         }
+    }
+
+    private func selectMediaFolder() {
+        guard let navigationController = UIStoryboard(name: "NCSelect", bundle: nil).instantiateInitialViewController() as? UINavigationController,
+              let viewController = navigationController.topViewController as? NCSelect
+        else { return }
+
+        viewController.delegate = vm
+        viewController.typeOfCommandView = .select
+        viewController.type = "mediaFolder"
+
+        parent.present(navigationController, animated: true, completion: nil)
     }
 }
 
