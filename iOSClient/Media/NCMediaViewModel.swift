@@ -119,18 +119,14 @@ import Combine
         let notLocked = selectedMetadatas.allSatisfy { !$0.lock }
 
         if notLocked {
-            Task {
-                var error = NKError()
-                var ocId: [String] = []
-                for metadata in selectedMetadatas where error == .success {
-                    error = await NCNetworking.shared.deleteMetadata(metadata, onlyLocalCache: false)
-                    if error == .success {
-                        ocId.append(metadata.ocId)
-                    }
-                }
-                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDeleteFile, userInfo: ["ocId": ocId, "onlyLocalCache": false, "error": error])
+            delete(metadatas: selectedMetadatas)
+        }
+    }
 
-                isInSelectMode = false
+    func addToFavorites(metadata: tableMetadata) {
+        NCNetworking.shared.favoriteMetadata(metadata) { error in
+            if error != .success {
+                NCContentPresenter.shared.showError(error: error)
             }
         }
     }
@@ -155,6 +151,73 @@ import Combine
 //                    hud.dismiss(afterDelay: NCGlobal.shared.dismissAfterSecond)
                 }
             }
+        }
+    }
+
+    func saveToPhotos(metadata: tableMetadata) {
+        if let livePhoto = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata) {
+            NCActionCenter.shared.saveLivePhoto(metadata: metadata, metadataMOV: livePhoto)
+        } else if CCUtility.fileProviderStorageExists(metadata) {
+            NCActionCenter.shared.saveAlbum(metadata: metadata)
+        } else {
+            NCNetworking.shared.download(metadata: metadata, selector: NCGlobal.shared.selectorSaveAlbum, notificationCenterProgressTask: false) { request in
+//                downloadRequest = request
+            } progressHandler: { progress in
+//                hud.progress = Float(progress.fractionCompleted)
+            } completion: { afError, error in
+//                if error == .success || afError?.isExplicitlyCancelledError ?? false {
+//                    hud.dismiss()
+//                } else {
+//                    hud.indicatorView = JGProgressHUDErrorIndicatorView()
+//                    hud.textLabel.text = error.description
+//                    hud.dismiss(afterDelay: NCGlobal.shared.dismissAfterSecond)
+//                }
+            }
+        }
+    }
+
+    func viewInFolder(metadata: tableMetadata) {
+        NCActionCenter.shared.openFileViewInFolder(serverUrl: metadata.serverUrl, fileNameBlink: metadata.fileName, fileNameOpen: nil)
+    }
+
+    func modify(metadata: tableMetadata) {
+        if CCUtility.fileProviderStorageExists(metadata) {
+            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDownloadedFile, userInfo: ["ocId": metadata.ocId, "selector": NCGlobal.shared.selectorLoadFileQuickLook, "error": NKError(), "account": metadata.account])
+        } else {
+//            hud.show(in: viewController.view)
+            NCNetworking.shared.download(metadata: metadata, selector: NCGlobal.shared.selectorLoadFileQuickLook, notificationCenterProgressTask: false) { request in
+//                downloadRequest = request
+            } progressHandler: { progress in
+//                hud.progress = Float(progress.fractionCompleted)
+            } completion: { afError, error in
+//                if error == .success || afError?.isExplicitlyCancelledError ?? false {
+//                    hud.dismiss()
+//                } else {
+//                    hud.indicatorView = JGProgressHUDErrorIndicatorView()
+//                    hud.textLabel.text = error.description
+//                    hud.dismiss(afterDelay: NCGlobal.shared.dismissAfterSecond)
+//                }
+            }
+        }
+    }
+
+    func delete(metadatas: tableMetadata...) {
+        delete(metadatas: metadatas)
+    }
+
+    func delete(metadatas: [tableMetadata]) {
+        Task {
+            var error = NKError()
+            var ocId: [String] = []
+            for metadata in metadatas where error == .success {
+                error = await NCNetworking.shared.deleteMetadata(metadata, onlyLocalCache: false)
+                if error == .success {
+                    ocId.append(metadata.ocId)
+                }
+            }
+            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDeleteFile, userInfo: ["ocId": ocId, "onlyLocalCache": false, "error": error])
+
+            isInSelectMode = false
         }
     }
 }

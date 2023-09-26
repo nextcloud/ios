@@ -32,8 +32,7 @@ struct NCMediaNew: View {
                 VisibilityTrackingScrollView(action: cellVisibilityDidChange) {
                     LazyVStack(alignment: .leading, spacing: 2) {
                         ForEach(vm.metadatas.chunked(into: columns), id: \.self) { rowMetadatas in
-                            NCMediaRow(metadatas: rowMetadatas, geometryProxy: outerProxy, isInSelectMode: $vm.isInSelectMode)
-                            { tappedThumbnail, isSelected in
+                            NCMediaRow(metadatas: rowMetadatas, geometryProxy: outerProxy, isInSelectMode: $vm.isInSelectMode) { tappedThumbnail, isSelected in
 
                                 //TODO: Put in VM
                                 if vm.isInSelectMode, isSelected {
@@ -49,12 +48,22 @@ struct NCMediaNew: View {
                                 }
                             } onCellContextMenuItemSelected: { thumbnail, selection in
                                 let selectedMetadata = thumbnail.metadata
-                                
+
                                 switch selection {
+                                case .addToFavorites:
+                                    vm.addToFavorites(metadata: selectedMetadata)
                                 case .detail:
                                     NCActionCenter.shared.openShare(viewController: parent, metadata: selectedMetadata, page: .activity)
                                 case .openIn:
                                     vm.openIn(metadata: selectedMetadata)
+                                case .saveToPhotos:
+                                    vm.saveToPhotos(metadata: selectedMetadata)
+                                case .viewInFolder:
+                                    vm.viewInFolder(metadata: selectedMetadata)
+                                case .modify:
+                                    vm.modify(metadata: selectedMetadata)
+                                case .delete:
+                                    vm.delete(metadatas: selectedMetadata)
                                 }
                             }
 
