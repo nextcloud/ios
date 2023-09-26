@@ -27,7 +27,7 @@ struct NCMediaRow: View {
                 }
             } else {
                 ForEach(vm.rowData.scaledThumbnails, id: \.self) { thumbnail in
-                    NCMediaCell(thumbnail: thumbnail, shrinkRatio: vm.rowData.shrinkRatio, isInSelectMode: $isInSelectMode, onSelected: onCellSelected, onContextMenuItemSelected: onCellContextMenuItemSelected)
+                    NCMediaCell(thumbnail: thumbnail, shrinkRatio: vm.rowData.shrinkRatio, isInSelectMode: $isInSelectMode, onSelected: onCellSelected, onContextMenuItemSelected: onCellContextMenuItemSelected, isFavorite: thumbnail.metadata.favorite)
                 }
             }
         }
