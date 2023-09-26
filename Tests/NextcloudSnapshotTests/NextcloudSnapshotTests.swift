@@ -21,4 +21,8 @@ final class NextcloudSnapshotTests: XCTestCase {
     func test_CapalitiesView() {
         NCCapabilitiesView_Previews.snapshots.assertSnapshots(as: .imageHEIC)
     }
+
+    func test_MediaView() {
+        NCMediaNew_Previews.snapshots.assertSnapshots(as: .imageHEIC)
+    }
 }
