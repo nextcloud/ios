@@ -153,40 +153,38 @@ struct NCMediaNew: View {
                                         Label(NSLocalizedString("_copy_file_", comment: ""), systemImage: "doc.on.doc")
                                     }
                                 }
-                            }
+                            } else {
+                                Section {
+                                    Picker(NSLocalizedString("_media_view_options_", comment: ""), selection: $vm.filter) {
+                                        Label(NSLocalizedString("_media_viewimage_show_", comment: ""), systemImage: "photo.fill").tag(Filter.onlyPhotos)
 
-                            Section {
-                                Picker(NSLocalizedString("_media_view_options_", comment: ""), selection: $vm.filter) {
-                                    Label(NSLocalizedString("_media_viewimage_show_", comment: ""), systemImage: "photo.fill").tag(Filter.onlyPhotos)
+                                        Label(NSLocalizedString("_media_viewvideo_show_", comment: ""), systemImage: "video.fill").tag(Filter.onlyVideos)
 
-                                    Label(NSLocalizedString("_media_viewvideo_show_", comment: ""), systemImage: "video.fill").tag(Filter.onlyVideos)
+                                        Text(NSLocalizedString("_media_show_all_", comment: "")).tag(Filter.all)
+                                    }.pickerStyle(.menu)
 
-                                    Text(NSLocalizedString("_media_show_all_", comment: "")).tag(Filter.all)
-                                }.pickerStyle(.menu)
-
-                                Button {
-                                    selectMediaFolder()
-                                } label: {
-                                    Label(NSLocalizedString("_select_media_folder_", comment: ""), systemImage: "folder")
-                                }
-                            }
-
-                            Section {
-                                Button(action: {
-                                    var documentPickerViewController: NCDocumentPickerViewController?
-
-                                    if let tabBarController = vm.appDelegate?.window?.rootViewController as? UITabBarController {
-                                        documentPickerViewController = NCDocumentPickerViewController(tabBarController: tabBarController, isViewerMedia: true, allowsMultipleSelection: false, viewController: parent)
+                                    Button {
+                                        selectMediaFolder()
+                                    } label: {
+                                        Label(NSLocalizedString("_select_media_folder_", comment: ""), systemImage: "folder")
                                     }
-                                }, label: {
-                                    Label(NSLocalizedString("_play_from_files_", comment: ""), systemImage: "play.circle")
-                                })
+                                }
 
-                                Button(action: {
-                                    showPlayFromURLAlert = true
-                                }, label: {
-                                    Label(NSLocalizedString("_play_from_url_", comment: ""), systemImage: "link")
-                                })
+                                Section {
+                                    Button(action: {
+                                        if let tabBarController = vm.appDelegate?.window?.rootViewController as? UITabBarController {
+                                            NCDocumentPickerViewController(tabBarController: tabBarController, isViewerMedia: true, allowsMultipleSelection: false, viewController: parent)
+                                        }
+                                    }, label: {
+                                        Label(NSLocalizedString("_play_from_files_", comment: ""), systemImage: "play.circle")
+                                    })
+
+                                    Button(action: {
+                                        showPlayFromURLAlert = true
+                                    }, label: {
+                                        Label(NSLocalizedString("_play_from_url_", comment: ""), systemImage: "link")
+                                    })
+                                }
                             }
                         } label: {
                             ToolbarCircularButton(imageSystemName: "ellipsis", color: $toolbarItemsColor)
