@@ -51,7 +51,7 @@ import Combine
                     self.loadMediaFromDB(showPhotos: false, showVideos: true)
                 }
 
-                cancelSelection()
+                self.cancelSelection()
             }
             .store(in: &cancellables)
     }
