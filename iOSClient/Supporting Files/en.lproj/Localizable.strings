@@ -584,14 +584,12 @@
 "_status_in_upload_"            = "In upload";
 "_status_uploading_"            = "Uploading";
 "_status_upload_error_"         = "Error, waiting for upload";
-"_select_media_folder_"         = "Select the \"Media\" folder";
+"_select_media_folder_"         = "Set Media folder";
 "_media_viewimage_show_"        = "Show only images";
 "_media_viewvideo_show_"        = "Show only videos";
 "_media_show_all_"              = "Show both";
 "_media_view_options_"          = "View options";
-"_media_by_created_date_"       = "Sort by created date";
-"_media_by_upload_date_"        = "Sort by upload date";
-"_media_by_modified_date_"      = "Sort by modified date";
+"_delete_selected_media_"        = "Delete selected media";
 "_insert_password_pfd_"         = "Secured PDF. Enter password";
 "_password_pdf_error_"          = "Wrong password";
 "_error_download_photobrowser_" = "Error: Unable to download photo";
@@ -929,8 +927,8 @@
 "_creation_"                = "Creation";
 "_modified_"                = "Modified";
 "_group_folders_"           = "Group folders";
-"_play_from_files_"         = "Play movie by Files";
-"_play_from_url_"           = "Play movie by URL";
+"_play_from_files_"         = "Play video from files";
+"_play_from_url_"           = "Play video from URL";
 "_valid_video_url_"         = "Insert a valid URL";
 "_deletion_progess_"        = "Deletion in progress";
 "_copying_progess_"         = "Copying in progress";

@@ -25,6 +25,8 @@ struct NCMediaNew: View {
     @State var toolbarColors = [Color.clear]
 
     @State private var showDeleteConfirmation = false
+    @State private var showPlayFromURLAlert = false
+    @State private var playFromUrlString = ""
 
     var body: some View {
         GeometryReader { outerProxy in
@@ -130,7 +132,7 @@ struct NCMediaNew: View {
                                     showDeleteConfirmation = true
                                 }
                                 .confirmationDialog("", isPresented: $showDeleteConfirmation) {
-                                    Button("Delete selected media", role: .destructive) {
+                                    Button(NSLocalizedString("_delete_selected_media_", comment: ""), role: .destructive) {
                                         vm.deleteSelectedMetadata()
                                     }
                                 }
@@ -170,10 +172,19 @@ struct NCMediaNew: View {
                             }
 
                             Section {
-                                Button(action: {}, label: {
+                                Button(action: {
+                                    var documentPickerViewController: NCDocumentPickerViewController?
+
+                                    if let tabBarController = vm.appDelegate?.window?.rootViewController as? UITabBarController {
+                                        documentPickerViewController = NCDocumentPickerViewController(tabBarController: tabBarController, isViewerMedia: true, allowsMultipleSelection: false, viewController: parent)
+                                    }
+                                }, label: {
                                     Label(NSLocalizedString("_play_from_files_", comment: ""), systemImage: "play.circle")
                                 })
-                                Button(action: {}, label: {
+
+                                Button(action: {
+                                    showPlayFromURLAlert = true
+                                }, label: {
                                     Label(NSLocalizedString("_play_from_url_", comment: ""), systemImage: "link")
                                 })
                             }
@@ -199,6 +210,18 @@ struct NCMediaNew: View {
         .onChange(of: vm.isInSelectMode) { newValue in
             if newValue == false { vm.selectedMetadatas.removeAll() }
         }
+        .alert("", isPresented: $showPlayFromURLAlert) {
+            TextField("https://...", text: $playFromUrlString)
+                .keyboardType(.URL)
+                .textContentType(.URL)
+
+            Button(NSLocalizedString("_cancel_", comment: ""), role: .cancel) {}
+            Button(NSLocalizedString("_ok_", comment: "")) {
+                playVideoFromUrl()
+            }
+        } message: {
+            Text(NSLocalizedString("_valid_video_url_", comment: ""))
+        }
     }
 
     private func cellVisibilityDidChange(_ id: String, change: VisibilityChange, tracker: VisibilityTracker<String>) {
@@ -219,6 +242,11 @@ struct NCMediaNew: View {
         viewController.type = "mediaFolder"
 
         parent.present(navigationController, animated: true, completion: nil)
+    }
+
+    private func playVideoFromUrl() {
+        guard let metadata = vm.getMetadataFromUrl(playFromUrlString) else { return }
+        NCViewer.shared.view(viewController: parent, metadata: metadata, metadatas: [metadata], imageIcon: nil)
     }
 }
 
