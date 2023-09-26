@@ -24,7 +24,7 @@ import Combine
     private var livePhoto: Bool = false
     private var predicateDefault: NSPredicate?
     private var predicate: NSPredicate?
-    private let appDelegate = UIApplication.shared.delegate as? AppDelegate
+    internal let appDelegate = UIApplication.shared.delegate as? AppDelegate
 
     @Published internal var filterClassTypeImage = false
     @Published internal var filterClassTypeVideo = false
@@ -183,6 +183,17 @@ import Combine
 //                }
             }
         }
+    }
+
+    func getMetadataFromUrl(_ urlString: String) -> tableMetadata? {
+        guard let url = URL(string: urlString), let appDelegate else { return nil }
+
+        let fileName = url.lastPathComponent
+        let metadata = NCManageDatabase.shared.createMetadata(account: appDelegate.account, user: appDelegate.user, userId: appDelegate.userId, fileName: fileName, fileNameView: fileName, ocId: NSUUID().uuidString, serverUrl: "", urlBase: appDelegate.urlBase, url: urlString, contentType: "")
+
+        NCManageDatabase.shared.addMetadata(metadata)
+
+        return metadata
     }
 
     func delete(metadatas: tableMetadata...) {
