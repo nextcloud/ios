@@ -52,7 +52,7 @@ struct NCMediaNew: View {
                                 switch selection {
                                 case .addToFavorites:
                                     vm.addToFavorites(metadata: selectedMetadata)
-                                case .detail:
+                                case .details:
                                     NCActionCenter.shared.openShare(viewController: parent, metadata: selectedMetadata, page: .activity)
                                 case .openIn:
                                     vm.openIn(metadata: selectedMetadata)
@@ -125,7 +125,7 @@ struct NCMediaNew: View {
                         .cornerRadius(.infinity)
 
                         if vm.isInSelectMode, !vm.selectedMetadatas.isEmpty {
-                            ToolbarCircularButton(imageSystemName: "trash.fill", toolbarItemsColor: $toolbarItemsColor)
+                            ToolbarCircularButton(imageSystemName: "trash.fill", color: .red)
                                 .onTapGesture {
                                     showDeleteConfirmation = true
                                 }
@@ -137,6 +137,22 @@ struct NCMediaNew: View {
                         }
 
                         Menu {
+                            if vm.isInSelectMode, !vm.selectedMetadatas.isEmpty {
+                                Section {
+                                    Button {
+                                        vm.copyOrMoveSelectedMetadataInApp()
+                                    } label: {
+                                        Label(NSLocalizedString("_move_selected_files_", comment: ""), systemImage: "arrow.up.right.square")
+                                    }
+
+                                    Button {
+                                        vm.copySelectedMetadata()
+                                    } label: {
+                                        Label(NSLocalizedString("_copy_file_", comment: ""), systemImage: "doc.on.doc")
+                                    }
+                                }
+                            }
+
                             Section {
                                 Picker(NSLocalizedString("_media_view_options_", comment: ""), selection: $vm.filter) {
                                     Label(NSLocalizedString("_media_viewimage_show_", comment: ""), systemImage: "photo.fill").tag(Filter.onlyPhotos)
@@ -162,7 +178,7 @@ struct NCMediaNew: View {
                                 })
                             }
                         } label: {
-                            ToolbarCircularButton(imageSystemName: "ellipsis", toolbarItemsColor: $toolbarItemsColor)
+                            ToolbarCircularButton(imageSystemName: "ellipsis", color: $toolbarItemsColor)
                         }
                     }
                 })
@@ -208,7 +224,17 @@ struct NCMediaNew: View {
 
 struct ToolbarCircularButton: View {
     let imageSystemName: String
-    @Binding var toolbarItemsColor: Color
+    @Binding var color: Color
+
+    init(imageSystemName: String, color: Binding<Color>) {
+        self.imageSystemName = imageSystemName
+        self._color = color
+    }
+
+    init(imageSystemName: String, color: Color) {
+        self.imageSystemName = imageSystemName
+        self._color = .constant(color)
+    }
 
     var body: some View {
         Image(systemName: imageSystemName)
@@ -218,7 +244,7 @@ struct ToolbarCircularButton: View {
             .padding(5)
             .background(.ultraThinMaterial)
             .clipShape(Circle())
-            .foregroundColor(toolbarItemsColor)
+            .foregroundColor(color)
     }
 }
 

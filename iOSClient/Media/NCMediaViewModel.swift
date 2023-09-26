@@ -50,6 +50,8 @@ import Combine
                 case .onlyVideos:
                     self.loadMediaFromDB(showPhotos: false, showVideos: true)
                 }
+
+                cancelSelection()
             }
             .store(in: &cancellables)
     }
@@ -121,6 +123,16 @@ import Combine
         if notLocked {
             delete(metadatas: selectedMetadatas)
         }
+    }
+
+    func copyOrMoveSelectedMetadataInApp() {
+        NCActionCenter.shared.openSelectView(items: selectedMetadatas, indexPath: [])
+        cancelSelection()
+    }
+
+    func copySelectedMetadata() {
+        copy(metadatas: selectedMetadatas)
+        cancelSelection()
     }
 
     func addToFavorites(metadata: tableMetadata) {
@@ -219,6 +231,19 @@ import Combine
 
             isInSelectMode = false
         }
+    }
+
+    func copy(metadatas: tableMetadata...) {
+        copy(metadatas: metadatas)
+    }
+
+    func copy(metadatas: [tableMetadata]) {
+        NCActionCenter.shared.copyPasteboard(pasteboardOcIds: metadatas.compactMap({ $0.ocId }))
+    }
+
+    private func cancelSelection() {
+        self.isInSelectMode = false
+        self.selectedMetadatas.removeAll()
     }
 }
 

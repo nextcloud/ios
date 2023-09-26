@@ -12,7 +12,7 @@ import Shimmer
 import NextcloudKit
 
 enum ContextMenuSelection {
-    case addToFavorites, detail, openIn, saveToPhotos, viewInFolder, modify, delete
+    case addToFavorites, details, openIn, saveToPhotos, viewInFolder, modify, delete
 }
 
 struct NCMediaCell: View {
@@ -31,57 +31,6 @@ struct NCMediaCell: View {
         let image = Image(uiImage: thumbnail.image)
             .resizable()
             .trackVisibility(id: CCUtility.getTitleSectionDate(thumbnail.metadata.date as Date) ?? "")
-            .contextMenu(menuItems: {
-                Button {
-                    isFavorite.toggle()
-                    onContextMenuItemSelected(thumbnail, .addToFavorites)
-                } label: {
-                    Label(isFavorite ?
-                          NSLocalizedString("_remove_favorites_", comment: "") :
-                          NSLocalizedString("_add_favorites_", comment: ""), systemImage: "star.fill")
-                }
-
-                Button {
-                    onContextMenuItemSelected(thumbnail, .detail)
-                } label: {
-                    Label(NSLocalizedString("_details_", comment: ""), systemImage: "info")
-                }
-
-                Button {
-                    onContextMenuItemSelected(thumbnail, .openIn)
-                } label: {
-                    Label(NSLocalizedString("_open_in_", comment: ""), systemImage: "info")
-                }
-
-                Button {
-                    onContextMenuItemSelected(thumbnail, .saveToPhotos)
-                } label: {
-                    Label(NSLocalizedString("_save_selected_files_", comment: ""), systemImage: "square.and.arrow.down")
-                }
-
-                Button {
-                    onContextMenuItemSelected(thumbnail, .viewInFolder)
-                } label: {
-                    Label(NSLocalizedString("_view_in_folder_", comment: ""), systemImage: "folder.fill")
-                }
-
-                Button {
-                    onContextMenuItemSelected(thumbnail, .modify)
-                } label: {
-                    Label(NSLocalizedString("_modify_", comment: ""), systemImage: "pencil.tip.crop.circle")
-                }
-
-                Button(role: .destructive) {
-                    showDeleteConfirmation = true
-                } label: {
-                    Label(NSLocalizedString("_delete_file_", comment: ""), systemImage: "pencil.tip.crop.circle")
-                }
-            })
-            .confirmationDialog("", isPresented: $showDeleteConfirmation) {
-                Button(NSLocalizedString("_delete_file_", comment: ""), role: .destructive) {
-                    onContextMenuItemSelected(thumbnail, .delete)
-                }
-            }
 
         ZStack(alignment: .center) {
             if thumbnail.isPlaceholderImage {
@@ -130,7 +79,57 @@ struct NCMediaCell: View {
         .onChange(of: isInSelectMode) { newValue in
             isSelected = !newValue
         }
+        .contextMenu(menuItems: {
+            Button {
+                onContextMenuItemSelected(thumbnail, .details)
+            } label: {
+                Label(NSLocalizedString("_details_", comment: ""), systemImage: "info")
+            }
 
+            Button {
+                isFavorite.toggle()
+                onContextMenuItemSelected(thumbnail, .addToFavorites)
+            } label: {
+                Label(isFavorite ?
+                      NSLocalizedString("_remove_favorites_", comment: "") :
+                      NSLocalizedString("_add_favorites_", comment: ""), systemImage: "star.fill")
+            }
+
+            Button {
+                onContextMenuItemSelected(thumbnail, .openIn)
+            } label: {
+                Label(NSLocalizedString("_open_in_", comment: ""), systemImage: "square.and.arrow.up")
+            }
+
+            Button {
+                onContextMenuItemSelected(thumbnail, .saveToPhotos)
+            } label: {
+                Label(NSLocalizedString("_save_selected_files_", comment: ""), systemImage: "square.and.arrow.down")
+            }
+
+            Button {
+                onContextMenuItemSelected(thumbnail, .viewInFolder)
+            } label: {
+                Label(NSLocalizedString("_view_in_folder_", comment: ""), systemImage: "folder.fill")
+            }
+
+            Button {
+                onContextMenuItemSelected(thumbnail, .modify)
+            } label: {
+                Label(NSLocalizedString("_modify_", comment: ""), systemImage: "pencil.tip.crop.circle")
+            }
+
+            Button(role: .destructive) {
+                showDeleteConfirmation = true
+            } label: {
+                Label(NSLocalizedString("_delete_file_", comment: ""), systemImage: "trash")
+            }
+        })
+        .confirmationDialog("", isPresented: $showDeleteConfirmation) {
+            Button(NSLocalizedString("_delete_file_", comment: ""), role: .destructive) {
+                onContextMenuItemSelected(thumbnail, .delete)
+            }
+        }
     }
 }
 
