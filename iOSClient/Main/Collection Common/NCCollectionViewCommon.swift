@@ -801,7 +801,9 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         if namedButtonMore == NCGlobal.shared.buttonMoreMore || namedButtonMore == NCGlobal.shared.buttonMoreLock {
             toggleMenu(metadata: metadata, indexPath: indexPath, imageIcon: image)
         } else if namedButtonMore == NCGlobal.shared.buttonMoreStop {
-            NCNetworking.shared.cancelTransferMetadata(metadata) { }
+            Task {
+                await NCNetworking.shared.cancel(metadata: metadata)
+            }
         }
     }
 
@@ -826,7 +828,9 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     func tapButtonTransfer(_ sender: Any) {
         if let ocId = NCNetworking.shared.transferInForegorund?.ocId,
            let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
-            NCNetworking.shared.cancelTransferMetadata(metadata) { }
+            Task {
+                await NCNetworking.shared.cancel(metadata: metadata)
+            }
         }
     }
 

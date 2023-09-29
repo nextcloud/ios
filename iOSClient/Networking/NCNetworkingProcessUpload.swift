@@ -190,7 +190,16 @@ class NCNetworkingProcessUpload: NSObject {
                 if counterUpload == 0 {
                     let metadatas = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND status == %d", self.appDelegate.account, NCGlobal.shared.metadataStatusUploadError))
                     for metadata in metadatas {
-                        NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId, session: NCNetworking.shared.sessionIdentifierBackground, sessionError: "", sessionTaskIdentifier: 0, status: NCGlobal.shared.metadataStatusWaitUpload)
+                        // Verify QUOTA
+                        if metadata.sessionError.contains("\(NCGlobal.shared.errorQuota)") {
+                            NextcloudKit.shared.getUserProfile { account, userProfile, _, error in
+                                if error == .success, let userProfile, userProfile.quotaFree > 0, userProfile.quotaFree > metadata.size {
+                                    NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId, session: NCNetworking.shared.sessionIdentifierBackground, sessionError: "", sessionTaskIdentifier: 0, status: NCGlobal.shared.metadataStatusWaitUpload)
+                                }
+                            }
+                        } else {
+                            NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId, session: NCNetworking.shared.sessionIdentifierBackground, sessionError: "", sessionTaskIdentifier: 0, status: NCGlobal.shared.metadataStatusWaitUpload)
+                        }
                     }
 
                     // verify delete Asset Local Identifiers in auto upload (DELETE Photos album)

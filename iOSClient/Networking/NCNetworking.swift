@@ -284,55 +284,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
         }
     }
 
-    // MARK: - Utility
-
-    func cancelTaskWithUrl(_ url: URL) {
-        NextcloudKit.shared.getSessionManager().getAllTasks { tasks in
-            tasks.filter { $0.state == .running }.filter { $0.originalRequest?.url == url }.first?.cancel()
-        }
-    }
-
-    func cancelAllTask() {
-        NextcloudKit.shared.getSessionManager().getAllTasks { tasks in
-            for task in tasks {
-                task.cancel()
-            }
-        }
-    }
-
-    func isInTaskUploadBackground(fileName: String, completion: @escaping (_ exists: Bool) -> Void) {
-
-        let sessions: [URLSession] = [NCNetworking.shared.sessionManagerBackground, NCNetworking.shared.sessionManagerBackgroundWWan]
-
-        for session in sessions {
-            session.getAllTasks(completionHandler: { tasks in
-                for task in tasks {
-                    let url = task.originalRequest?.url
-                    let urlFileName = url?.lastPathComponent
-                    if urlFileName == fileName {
-                        completion(true)
-                    }
-                }
-                if session == sessions.last {
-                    completion(false)
-                }
-            })
-        }
-    }
-
     // MARK: - Download
-
-    func cancelDownload(ocId: String, serverUrl: String, fileName: String) {
-
-        guard let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(ocId, fileNameView: fileName) else { return }
-
-        if let request = downloadRequest[fileNameLocalPath] {
-            request.cancel()
-        } else if let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
-            NCManageDatabase.shared.setMetadataSession(ocId: ocId, session: "", sessionError: "", sessionSelector: "", sessionTaskIdentifier: 0, status: NCGlobal.shared.metadataStatusNormal)
-            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDownloadCancelFile, userInfo: ["ocId": metadata.ocId, "serverUrl": metadata.serverUrl, "account": metadata.account])
-        }
-    }
 
     func download(metadata: tableMetadata, selector: String, notificationCenterProgressTask: Bool = true,
                   requestHandler: @escaping (_ request: DownloadRequest) -> Void = { _ in },
@@ -768,113 +720,119 @@ class NCNetworking: NSObject, NKCommonDelegate {
         })
     }
 
-    // MARK: - Transfer (Download Upload)
+    // MARK: - Cancel (Download Upload)
 
-    func cancelTransferMetadata(_ metadata: tableMetadata, completion: @escaping () -> Void) {
+    // sessionIdentifierDownload: String = "com.nextcloud.nextcloudkit.session.download"
+    // sessionIdentifierUpload: String = "com.nextcloud.nextcloudkit.session.upload"
 
-        let metadata = tableMetadata.init(value: metadata)
+    // sessionIdentifierBackground: String = "com.nextcloud.session.upload.background"
+    // sessionIdentifierBackgroundWWan: String = "com.nextcloud.session.upload.backgroundWWan"
+    // sessionIdentifierBackgroundExtension: String = "com.nextcloud.session.upload.extension"
 
-        if metadata.session.count == 0 {
-            NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
-            return completion()
+    func cancelSessions(inBackground: Bool) {
+        Task {
+            await cancel(inBackground: inBackground)
         }
+    }
 
-        if metadata.session == NextcloudKit.shared.nkCommonInstance.sessionIdentifierDownload {
+    func cancel(inBackground: Bool) async {
 
-            NCNetworking.shared.cancelDownload(ocId: metadata.ocId, serverUrl: metadata.serverUrl, fileName: metadata.fileName)
-            return completion()
-        }
+#if !EXTENSION
+        NCOperationQueue.shared.downloadCancelAll()
+#endif
 
-        if metadata.session == NextcloudKit.shared.nkCommonInstance.sessionIdentifierUpload || metadata.chunk > 0 {
+        NextcloudKit.shared.sessionManager.cancelAllRequests()
 
+        downloadRequest.removeAll()
+        uploadRequest.removeAll()
+
+        let metadatasDownload = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "status < 0"))
+        let metadatasUpload = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "status > 0 AND session == %@", NextcloudKit.shared.nkCommonInstance.sessionIdentifierUpload))
+        let metadatasUploadBackground = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "status > 0 AND (session == %@ || session == %@)", NCNetworking.shared.sessionIdentifierBackground, NCNetworking.shared.sessionIdentifierBackgroundWWan))
+
+        // DOWNLOAD
+        for metadata in metadatasDownload {
             CCUtility.removeFile(atPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId))
-            if let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView),
-               let request = uploadRequest[fileNameLocalPath] {
+            NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId, session: "", sessionError: "", sessionSelector: "", sessionTaskIdentifier: 0, status: NCGlobal.shared.metadataStatusNormal)
+        }
+        // UPLOAD
+        for metadata in metadatasUpload {
+            CCUtility.removeFile(atPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId))
+            NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
+        }
+
+        guard inBackground else { return }
+
+        // BACKGROUND
+        for metadata in metadatasUploadBackground {
+            CCUtility.removeFile(atPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId))
+            NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
+        }
+
+        let tasksBackground = await NCNetworking.shared.sessionManagerBackground.tasks
+        for task in tasksBackground.1 { // ([URLSessionDataTask], [URLSessionUploadTask], [URLSessionDownloadTask])
+            task.cancel()
+        }
+        let tasksBackgroundWWan = await NCNetworking.shared.sessionManagerBackgroundWWan.tasks
+        for task in tasksBackgroundWWan.1 { // ([URLSessionDataTask], [URLSessionUploadTask], [URLSessionDownloadTask])
+            task.cancel()
+        }
+
+        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSource)
+    }
+
+    func cancel(metadata: tableMetadata) async {
+
+        let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
+        CCUtility.removeFile(atPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId))
+
+        // No session found
+        if metadata.session.isEmpty {
+            uploadRequest.removeValue(forKey: fileNameLocalPath)
+            downloadRequest.removeValue(forKey: fileNameLocalPath)
+            NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
+            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSource)
+            return
+        }
+
+        // DOWNLOAD
+        if metadata.session == NextcloudKit.shared.nkCommonInstance.sessionIdentifierDownload {
+            if let request = downloadRequest[fileNameLocalPath] {
                 request.cancel()
+            } else if let metadata = NCManageDatabase.shared.getMetadataFromOcId(metadata.ocId) {
+                NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId, session: "", sessionError: "", sessionSelector: "", sessionTaskIdentifier: 0, status: NCGlobal.shared.metadataStatusNormal)
+                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDownloadCancelFile, userInfo: ["ocId": metadata.ocId, "serverUrl": metadata.serverUrl, "account": metadata.account])
+            }
+            return
+        }
+
+        // UPLOAD FOREGROUND
+        if metadata.session == NextcloudKit.shared.nkCommonInstance.sessionIdentifierUpload {
+            if let request = uploadRequest[fileNameLocalPath] {
+                request.cancel()
+                uploadRequest.removeValue(forKey: fileNameLocalPath)
             }
             NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUploadCancelFile, userInfo: ["ocId": metadata.ocId, "serverUrl": metadata.serverUrl, "account": metadata.account])
-
-            return completion()
+            return
         }
 
+        // UPLOAD BACKGROUND
         var session: URLSession?
         if metadata.session == NCNetworking.shared.sessionIdentifierBackground {
             session = NCNetworking.shared.sessionManagerBackground
         } else if metadata.session == NCNetworking.shared.sessionIdentifierBackgroundWWan {
             session = NCNetworking.shared.sessionManagerBackgroundWWan
         }
-        if session == nil {
-            NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
-            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUploadCancelFile, userInfo: ["ocId": metadata.ocId, "serverUrl": metadata.serverUrl, "account": metadata.account])
-            return completion()
-        }
-
-        session?.getTasksWithCompletionHandler { _, uploadTasks, _ in
-
-            var cancel = false
-            if metadata.session.count > 0 && metadata.session.contains("upload") {
-                for task in uploadTasks {
-                    if task.taskIdentifier == metadata.sessionTaskIdentifier {
-                        task.cancel()
-                        cancel = true
-                    }
-                }
-                if cancel == false {
-                    do {
-                        try FileManager.default.removeItem(atPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId))
-                    } catch { }
+        if let tasks = await session?.tasks {
+            for task in tasks.1 { // ([URLSessionDataTask], [URLSessionUploadTask], [URLSessionDownloadTask])
+                if task.taskIdentifier == metadata.sessionTaskIdentifier {
+                    task.cancel()
                     NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
                     NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUploadCancelFile, userInfo: ["ocId": metadata.ocId, "serverUrl": metadata.serverUrl, "account": metadata.account])
                 }
             }
-            completion()
         }
-    }
-
-    func cancelAllTransfer(account: String, completion: @escaping () -> Void) {
-
-        NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "status == %d OR status == %d", account, NCGlobal.shared.metadataStatusWaitUpload, NCGlobal.shared.metadataStatusUploadError))
-
-        let metadatas = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "status != %d", NCGlobal.shared.metadataStatusNormal))
-
-        var counter = 0
-        for metadata in metadatas {
-            counter += 1
-            if metadata.status == NCGlobal.shared.metadataStatusWaitDownload || metadata.status == NCGlobal.shared.metadataStatusDownloadError {
-                NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId, session: "", sessionError: "", sessionSelector: "", sessionTaskIdentifier: 0, status: NCGlobal.shared.metadataStatusNormal)
-            }
-            if metadata.status == NCGlobal.shared.metadataStatusDownloading || metadata.status == NCGlobal.shared.metadataStatusUploading {
-                self.cancelTransferMetadata(metadata) {
-                    if counter == metadatas.count {
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                            completion()
-                        }
-                    }
-                }
-            }
-        }
-
-#if !EXTENSION
-        NCOperationQueue.shared.downloadCancelAll()
-#endif
-    }
-
-    func cancelAllDownloadTransfer() {
-
-        let metadatas = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "status != %d", NCGlobal.shared.metadataStatusNormal))
-        for metadata in metadatas {
-            if metadata.status == NCGlobal.shared.metadataStatusWaitDownload || metadata.status == NCGlobal.shared.metadataStatusDownloadError {
-                NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId, session: "", sessionError: "", sessionSelector: "", sessionTaskIdentifier: 0, status: NCGlobal.shared.metadataStatusNormal)
-            }
-            if metadata.status == NCGlobal.shared.metadataStatusDownloading && metadata.session == NextcloudKit.shared.nkCommonInstance.sessionIdentifierDownload {
-                cancelDownload(ocId: metadata.ocId, serverUrl: metadata.serverUrl, fileName: metadata.fileName)
-            }
-        }
-
-#if !EXTENSION
-        NCOperationQueue.shared.downloadCancelAll()
-#endif
     }
 
     // MARK: - WebDav Read file, folder
@@ -1176,7 +1134,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
 
         NextcloudKit.shared.createFolder(serverUrlFileName: fileNameFolderUrl) { account, _, _, error in
             guard error == .success else {
-                if error.errorCode == NCGlobal.shared.errordMethodNotSupported && overwrite {
+                if error.errorCode == NCGlobal.shared.errorMethodNotSupported && overwrite {
                     completion(NKError())
                 } else {
                     completion(error)

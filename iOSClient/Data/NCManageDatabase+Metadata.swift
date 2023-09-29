@@ -631,28 +631,29 @@ extension NCManageDatabase {
         do {
             let realm = try Realm()
             try realm.write {
-                let result = realm.objects(tableMetadata.self).filter("ocId == %@", ocId).first
-                if let newFileName = newFileName {
-                    result?.fileName = newFileName
-                    result?.fileNameView = newFileName
-                }
-                if let session = session {
-                    result?.session = session
-                }
-                if let sessionError = sessionError {
-                    result?.sessionError = sessionError
-                }
-                if let sessionSelector = sessionSelector {
-                    result?.sessionSelector = sessionSelector
-                }
-                if let sessionTaskIdentifier = sessionTaskIdentifier {
-                    result?.sessionTaskIdentifier = sessionTaskIdentifier
-                }
-                if let status = status {
-                    result?.status = status
-                }
-                if let etag = etag {
-                    result?.etag = etag
+                if let result = realm.objects(tableMetadata.self).filter("ocId == %@", ocId).first {
+                    if let newFileName = newFileName {
+                        result.fileName = newFileName
+                        result.fileNameView = newFileName
+                    }
+                    if let session = session {
+                        result.session = session
+                    }
+                    if let sessionError = sessionError {
+                        result.sessionError = sessionError
+                    }
+                    if let sessionSelector = sessionSelector {
+                        result.sessionSelector = sessionSelector
+                    }
+                    if let sessionTaskIdentifier = sessionTaskIdentifier {
+                        result.sessionTaskIdentifier = sessionTaskIdentifier
+                    }
+                    if let status = status {
+                        result.status = status
+                    }
+                    if let etag = etag {
+                        result.etag = etag
+                    }
                 }
             }
         } catch let error {

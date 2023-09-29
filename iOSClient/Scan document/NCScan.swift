@@ -48,11 +48,10 @@ class NCScan: UIViewController, NCScanCellCellDelegate {
     private var tipView: EasyTipView?
 
     enum TypeFilter {
+        case document
         case original
-        case grayScale
-        case bn
     }
-    internal var filter: TypeFilter = TypeFilter.original
+    internal var filter: TypeFilter = TypeFilter.document
 
     // MARK: - View Life Cycle
 
@@ -80,9 +79,8 @@ class NCScan: UIViewController, NCScanCellCellDelegate {
         labelTitlePDFzone.backgroundColor = .systemGray6
         labelTitlePDFzone.textColor = .label
 
-        segmentControlFilter.setTitle(NSLocalizedString("_filter_original_", comment: ""), forSegmentAt: 0)
-        segmentControlFilter.setTitle(NSLocalizedString("_filter_grayscale_", comment: ""), forSegmentAt: 1)
-        segmentControlFilter.setTitle(NSLocalizedString("_filter_bn_", comment: ""), forSegmentAt: 2)
+        segmentControlFilter.setTitle(NSLocalizedString("_filter_document_", comment: ""), forSegmentAt: 0)
+        segmentControlFilter.setTitle(NSLocalizedString("_filter_original_", comment: ""), forSegmentAt: 1)
 
         add.setImage(UIImage(systemName: "plus")?.image(color: .label, size: 25), for: .normal)
         transferDown.setImage(UIImage(systemName: "arrow.down")?.image(color: .label, size: 25), for: .normal)
@@ -215,11 +213,9 @@ class NCScan: UIViewController, NCScanCellCellDelegate {
 
         switch segmentControlFilter.selectedSegmentIndex {
         case 0:
-            filter = .original
+            filter = .document
         case 1:
-            filter = .grayScale
-        case 2:
-            filter = .bn
+            filter = .original
         default:
             break
         }
@@ -253,28 +249,31 @@ class NCScan: UIViewController, NCScanCellCellDelegate {
         }
     }
 
+    /*
+     func applyGrayScaleFilter(image: UIImage?) -> UIImage? {
+             guard let ciImage = image?.ciImage else { return nil }
+             let filter = CIFilter(name: "CIColorControls",
+                                   parameters: ["inputImage" : ciImage,
+                                                "inputContrast": NSNumber(1.0),
+                                                "inputSaturation": NSNumber(0.0),
+                                                "inputBrightness": NSNumber(0.0)])
+             guard let out = filter?.outputImage else { return nil }
+             return UIImage(ciImage: out)
+         }
+     */
+
     func filter(image: UIImage) -> UIImage? {
 
-        var inputContrast: Double = 0
+        guard let ciImage = CIImage(image: image) else { return image }
 
-        if filter == .original {
+        if filter == .document {
+            let imageFilter = ciImage.applyingFilter("CIColorControls", parameters: ["inputSaturation": 0, "inputContrast": 1.1]).applyingFilter("CIDocumentEnhancer", parameters: ["inputAmount": 5])
+            let context: CIContext = CIContext(options: nil)
+            let cgImage: CGImage = context.createCGImage(imageFilter, from: imageFilter.extent)!
+            let image: UIImage = UIImage(cgImage: cgImage)
             return image
         }
 
-        if filter == .grayScale {
-            inputContrast = 1
-        }
-
-        if filter == .bn {
-            inputContrast = 4
-        }
-
-        let ciImage = CIImage(image: image)!
-        let imageFilter = ciImage.applyingFilter("CIColorControls", parameters: ["inputSaturation": 0, "inputContrast": inputContrast])
-
-        let context: CIContext = CIContext(options: nil)
-        let cgImage: CGImage = context.createCGImage(imageFilter, from: imageFilter.extent)!
-        let image: UIImage = UIImage(cgImage: cgImage)
         return image
     }
 
