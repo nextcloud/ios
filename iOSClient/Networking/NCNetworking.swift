@@ -1134,7 +1134,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
 
         NextcloudKit.shared.createFolder(serverUrlFileName: fileNameFolderUrl) { account, _, _, error in
             guard error == .success else {
-                if error.errorCode == NCGlobal.shared.errordMethodNotSupported && overwrite {
+                if error.errorCode == NCGlobal.shared.errorMethodNotSupported && overwrite {
                     completion(NKError())
                 } else {
                     completion(error)
