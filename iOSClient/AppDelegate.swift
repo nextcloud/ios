@@ -82,6 +82,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         CCUtility.createDirectoryStandard()
         CCUtility.emptyTemporaryDirectory()
 
+        // Activated singleton
+        _ = NCActionCenter.shared
+        _ = NCNetworking.shared
+
         NextcloudKit.shared.setup(delegate: NCNetworking.shared)
         NextcloudKit.shared.setup(userAgent: userAgent)
 

@@ -458,6 +458,7 @@ class NCGlobal: NSObject {
     var capabilityFilesUndelete: Bool                           = false
     var capabilityFilesLockVersion: String                      = ""    // NC 24
     var capabilityFilesComments: Bool                           = false // NC 20
+    var capabilityFilesBigfilechunking: Bool                    = false
 
     @objc var capabilityUserStatusEnabled: Bool                 = false
     var capabilityExternalSites: Bool                           = false

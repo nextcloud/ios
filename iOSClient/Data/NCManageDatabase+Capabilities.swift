@@ -333,6 +333,7 @@ extension NCManageDatabase {
             NCGlobal.shared.capabilityFilesUndelete = json.ocs.data.capabilities.files?.undelete ?? false
             NCGlobal.shared.capabilityFilesLockVersion = json.ocs.data.capabilities.files?.locking ?? ""
             NCGlobal.shared.capabilityFilesComments = json.ocs.data.capabilities.files?.comments ?? false
+            NCGlobal.shared.capabilityFilesBigfilechunking = json.ocs.data.capabilities.files?.bigfilechunking ?? false
 
             NCGlobal.shared.capabilityUserStatusEnabled = json.ocs.data.capabilities.files?.undelete ?? false
             if json.ocs.data.capabilities.external != nil {
