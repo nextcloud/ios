@@ -182,6 +182,7 @@ struct FilesWidgetView: View {
                 .frame(maxWidth: geo.size.width, maxHeight: geo.size.height - 2, alignment: .bottomTrailing)
             }
         }
+        .widgetBackground(Color(UIColor.systemBackground))
     }
 }
 
