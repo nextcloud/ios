@@ -102,6 +102,8 @@ class NCOffline: NCCollectionViewCommon {
             return
         }
 
+        NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Reload data source network offline forced \(isForced)")
+
         isReloadDataSourceNetworkInProgress = true
         collectionView?.reloadData()
 

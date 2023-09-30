@@ -135,6 +135,8 @@ class NCService: NSObject {
 
     func synchronize() {
 
+        NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] start synchronize")
+
         NCNetworking.shared.listingFavoritescompletion(selector: NCGlobal.shared.selectorReadFile) { _, _, _ in }
         self.synchronizeOffline(account: appDelegate.account)
     }

@@ -156,6 +156,9 @@ class NCFiles: NCCollectionViewCommon {
             networkSearch()
             return
         }
+
+        NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Reload data source network files forced \(isForced)")
+
         isReloadDataSourceNetworkInProgress = true
         collectionView?.reloadData()
 

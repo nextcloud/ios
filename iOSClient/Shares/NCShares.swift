@@ -104,6 +104,8 @@ class NCShares: NCCollectionViewCommon {
     override func reloadDataSourceNetwork(isForced: Bool = false) {
         super.reloadDataSourceNetwork(isForced: isForced)
 
+        NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Reload data source network shares forced \(isForced)")
+
         isReloadDataSourceNetworkInProgress = true
         collectionView?.reloadData()
 

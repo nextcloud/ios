@@ -86,6 +86,8 @@ class NCFavorite: NCCollectionViewCommon {
     override func reloadDataSourceNetwork(isForced: Bool = false) {
         super.reloadDataSourceNetwork(isForced: isForced)
 
+        NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Reload data source network favorite forced \(isForced)")
+
         isReloadDataSourceNetworkInProgress = true
         collectionView?.reloadData()
 

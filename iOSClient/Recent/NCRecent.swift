@@ -144,6 +144,8 @@ class NCRecent: NCCollectionViewCommon {
         let lessDateString = dateFormatter.string(from: Date())
         let requestBody = String(format: requestBodyRecent, "/files/" + appDelegate.userId, lessDateString)
 
+        NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Reload data source network recent forced \(isForced)")
+
         isReloadDataSourceNetworkInProgress = true
         collectionView?.reloadData()
 
