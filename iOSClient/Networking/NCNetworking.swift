@@ -839,9 +839,12 @@ class NCNetworking: NSObject, NKCommonDelegate {
 
     func readFolder(serverUrl: String, account: String, completion: @escaping (_ account: String, _ metadataFolder: tableMetadata?, _ metadatas: [tableMetadata]?, _ metadatasUpdate: [tableMetadata]?, _ metadatasLocalUpdate: [tableMetadata]?, _ metadatasDelete: [tableMetadata]?, _ error: NKError) -> Void) {
 
-        let options = NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
+        NextcloudKit.shared.readFileOrFolder(serverUrlFileName: serverUrl, 
+                                             depth: "1",
+                                             showHiddenFiles: CCUtility.getShowHiddenFiles(),
+                                             includeHiddenFiles: NCGlobal.shared.includeHiddenFiles,
+                                             options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { account, files, _, error in
 
-        NextcloudKit.shared.readFileOrFolder(serverUrlFileName: serverUrl, depth: "1", showHiddenFiles: CCUtility.getShowHiddenFiles(), includeHiddenFiles: NCGlobal.shared.includeHiddenFiles, options: options) { account, files, _, error in
             guard error == .success else {
                 completion(account, nil, nil, nil, nil, nil, error)
                 return
@@ -912,9 +915,12 @@ class NCNetworking: NSObject, NKCommonDelegate {
             <d:prop></d:prop>
         </d:propfind>
         """
-        let options = NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
 
-        NextcloudKit.shared.readFileOrFolder(serverUrlFileName: serverUrlFileName, depth: "0", requestBody: requestBody.data(using: .utf8), options: options) { account, files, _, error in
+        NextcloudKit.shared.readFileOrFolder(serverUrlFileName: serverUrlFileName, 
+                                             depth: "0",
+                                             requestBody: requestBody.data(using: .utf8),
+                                             options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { account, files, _, error in
+
             if error == .success, let file = files.first {
                 completion(account, true, file, error)
             } else if error.errorCode == NCGlobal.shared.errorResourceNotFound {
@@ -927,12 +933,15 @@ class NCNetworking: NSObject, NKCommonDelegate {
 
     // MARK: - Synchronization ServerUrl
 
-#if !EXTENSION
+
     func synchronizationServerUrl(_ serverUrl: String, account: String, selector: String) {
 
-        let options = NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
+#if !EXTENSION
+        NextcloudKit.shared.readFileOrFolder(serverUrlFileName: serverUrl, 
+                                             depth: "infinity",
+                                             showHiddenFiles: CCUtility.getShowHiddenFiles(),
+                                             options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { account, files, _, error in
 
-        NextcloudKit.shared.readFileOrFolder(serverUrlFileName: serverUrl, depth: "infinity", showHiddenFiles: CCUtility.getShowHiddenFiles(), options: options) { account, files, _, error in
             if error == .success {
                 NCManageDatabase.shared.convertFilesToMetadatas(files, useMetadataFolder: true) { metadataFolder, metadatasFolder, metadatas in
                     NCManageDatabase.shared.addDirectory(encrypted: metadataFolder.e2eEncrypted, favorite: metadataFolder.favorite, ocId: metadataFolder.ocId, fileId: metadataFolder.fileId, etag: metadataFolder.etag, permissions: metadataFolder.permissions, serverUrl: metadataFolder.serverUrl + "/" + metadataFolder.fileName, account: metadataFolder.account)
@@ -942,24 +951,28 @@ class NCNetworking: NSObject, NKCommonDelegate {
                         if metadata.directory {
                             let serverUrl = metadata.serverUrl + "/" + metadata.fileName
                             NCManageDatabase.shared.addDirectory(encrypted: metadata.e2eEncrypted, favorite: metadata.favorite, ocId: metadata.ocId, fileId: metadata.fileId, etag: metadata.etag, permissions: metadata.permissions, serverUrl: serverUrl, account: metadata.account)
-                        } else if selector == NCGlobal.shared.selectorDownloadFile, NCManageDatabase.shared.isDownloadMetadata(metadata, download: true) {
+                        } else if selector == NCGlobal.shared.selectorSynchronizationOffline, NCManageDatabase.shared.isDownloadMetadata(metadata, download: true) {
                             NCOperationQueue.shared.download(metadata: metadata, selector: selector)
                         }
                     }
                 }
             }
         }
-    }
 #endif
+    }
+
 
     // MARK: - Search
 
     /// WebDAV search
     func searchFiles(urlBase: NCUserBaseUrl, literal: String, completion: @escaping (_ metadatas: [tableMetadata]?, _ error: NKError) -> Void) {
 
-        let options = NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
+        NextcloudKit.shared.searchLiteral(serverUrl: urlBase.urlBase,
+                                          depth: "infinity",
+                                          literal: literal,
+                                          showHiddenFiles: CCUtility.getShowHiddenFiles(),
+                                          options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { account, files, _, error in
 
-        NextcloudKit.shared.searchLiteral(serverUrl: urlBase.urlBase, depth: "infinity", literal: literal, showHiddenFiles: CCUtility.getShowHiddenFiles(), options: options) { account, files, _, error in
             guard error == .success else {
                 return completion(nil, error)
             }
@@ -1368,40 +1381,13 @@ class NCNetworking: NSObject, NKCommonDelegate {
         NextcloudKit.shared.setFavorite(fileName: fileName, favorite: favorite) { account, error in
             if error == .success && metadata.account == account {
                 NCManageDatabase.shared.setMetadataFavorite(ocId: metadata.ocId, favorite: favorite)
-#if !EXTENSION
                 if favorite, metadata.directory {
                     let serverUrl = metadata.serverUrl + "/" + metadata.fileName
-                    self.synchronizationServerUrl(serverUrl, account: metadata.account, selector: "")
+                    self.synchronizationServerUrl(serverUrl, account: metadata.account, selector: NCGlobal.shared.selectorSynchronizationFavorite)
                 }
-#endif
                 NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterFavoriteFile, userInfo: ["ocId": ocId, "serverUrl": metadata.serverUrl])
             }
             completion(error)
-        }
-    }
-
-    func listingFavoritescompletion(selector: String, completion: @escaping (_ account: String, _ metadatas: [tableMetadata]?, _ error: NKError) -> Void) {
-
-        let options = NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
-
-        NextcloudKit.shared.listingFavorites(showHiddenFiles: CCUtility.getShowHiddenFiles(), options: options) { account, files, _, error in
-            guard error == .success else {
-                completion(account, nil, error)
-                return
-            }
-
-            NCManageDatabase.shared.convertFilesToMetadatas(files, useMetadataFolder: false) { _, _, metadatas in
-                NCManageDatabase.shared.updateMetadatasFavorite(account: account, metadatas: metadatas)
-                if selector != NCGlobal.shared.selectorListingFavorite {
-#if !EXTENSION
-                    for metadata in metadatas where metadata.directory {
-                        let serverUrl = metadata.serverUrl + "/" + metadata.fileName
-                        self.synchronizationServerUrl(serverUrl, account: metadata.account, selector: "")
-                    }
-#endif
-                }
-                completion(account, metadatas, error)
-            }
         }
     }
 

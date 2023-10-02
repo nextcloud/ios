@@ -35,7 +35,7 @@ class NCFavorite: NCCollectionViewCommon {
         layoutKey = NCGlobal.shared.layoutViewFavorite
         enableSearchBar = false
         headerMenuButtonsView = true
-        headerRichWorkspaceDisable = true
+        headerRichWorkspaceDisable = false
         emptyImage = UIImage(named: "star.fill")?.image(color: NCBrandColor.shared.yellowFavorite, size: UIScreen.main.bounds.width)
         emptyTitle = "_favorite_no_files_"
         emptyDescription = "_tutorial_favorite_view_"
@@ -93,37 +93,33 @@ class NCFavorite: NCCollectionViewCommon {
 
         if serverUrl.isEmpty {
 
-            NCNetworking.shared.listingFavoritescompletion(selector: NCGlobal.shared.selectorListingFavorite) { _, _, error in
-                if error != .success {
-                    NCContentPresenter.shared.showError(error: error)
-                }
+            NextcloudKit.shared.listingFavorites(showHiddenFiles: CCUtility.getShowHiddenFiles(),
+                                                 options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { account, files, _, error in
 
-                DispatchQueue.main.async {
-                    self.refreshControl.endRefreshing()
-                    self.isReloadDataSourceNetworkInProgress = false
+                self.isReloadDataSourceNetworkInProgress = false
+                if error == .success {
+                    NCManageDatabase.shared.convertFilesToMetadatas(files, useMetadataFolder: false) { _, _, metadatas in
+                        NCManageDatabase.shared.updateMetadatasFavorite(account: account, metadatas: metadatas)
+                        self.reloadDataSource()
+                    }
+                } else {
+                    NCContentPresenter.shared.showError(error: error)
                     self.reloadDataSource()
                 }
             }
 
         } else {
 
-            networkReadFolder(isForced: isForced) { tableDirectory, metadatas, metadatasUpdate, metadatasDelete, error in
-                if error == .success, let metadatas = metadatas {
+            networkReadFolder(isForced: isForced) { tableDirectory, metadatas, _, _, error in
+
+                self.isReloadDataSourceNetworkInProgress = false
+                if error == .success, let metadatas {
                     for metadata in metadatas where (!metadata.directory && NCManageDatabase.shared.isDownloadMetadata(metadata, download: false)) {
                         NCOperationQueue.shared.download(metadata: metadata, selector: NCGlobal.shared.selectorDownloadFile)
                     }
                 }
-
-                DispatchQueue.main.async {
-                    self.refreshControl.endRefreshing()
-                    self.isReloadDataSourceNetworkInProgress = false
-                    self.richWorkspaceText = tableDirectory?.richWorkspace
-                    if metadatasUpdate?.count ?? 0 > 0 || metadatasDelete?.count ?? 0 > 0 || isForced {
-                        self.reloadDataSource()
-                    } else {
-                        self.collectionView?.reloadData()
-                    }
-                }
+                self.richWorkspaceText = tableDirectory?.richWorkspace
+                self.reloadDataSource()
             }
         }
     }

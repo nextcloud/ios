@@ -121,7 +121,7 @@ class NCGlobal: NSObject {
     // E2EE
     //
     let e2eePassphraseTest                          = "more over television factory tendency independence international intellectual impress interest sentence pony"
-    @objc let e2eeVersions                          = ["1.1", "1.2", "2.0"]
+    @objc let e2eeVersions                          = ["1.1", "1.2"] // ["1.1", "1.2", "2.0"]
     let e2eeVersionV11                              = "1.1"
     let e2eeVersionV12                              = "1.2"
     let e2eeVersionV20                              = "2.0"
@@ -304,6 +304,8 @@ class NCGlobal: NSObject {
     let selectorSaveAlbumLivePhotoMOV               = "saveAlbumLivePhotoMOV"
     let selectorSaveAsScan                          = "saveAsScan"
     let selectorOpenDetail                          = "openDetail"
+    let selectorSynchronizationOffline              = "synchronizationOffline"
+    let selectorSynchronizationFavorite             = "synchronizationFavorite"
 
     // Metadata : Status
     //

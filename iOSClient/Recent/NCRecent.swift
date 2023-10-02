@@ -149,9 +149,10 @@ class NCRecent: NCCollectionViewCommon {
         isReloadDataSourceNetworkInProgress = true
         collectionView?.reloadData()
 
-        let options = NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
-
-        NextcloudKit.shared.searchBodyRequest(serverUrl: appDelegate.urlBase, requestBody: requestBody, showHiddenFiles: CCUtility.getShowHiddenFiles(), options: options) { account, files, _, error in
+        NextcloudKit.shared.searchBodyRequest(serverUrl: appDelegate.urlBase, 
+                                              requestBody: requestBody,
+                                              showHiddenFiles: CCUtility.getShowHiddenFiles(),
+                                              options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { account, files, _, error in
 
             if error == .success {
                 NCManageDatabase.shared.convertFilesToMetadatas(files, useMetadataFolder: false) { _, metadatasFolder, metadatas in

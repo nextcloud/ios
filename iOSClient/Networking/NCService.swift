@@ -94,9 +94,7 @@ class NCService: NSObject {
 
     private func requestServerStatus() async -> Bool {
 
-        let options = NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
-
-        switch await NextcloudKit.shared.getServerStatus(serverUrl: appDelegate.urlBase, options: options) {
+        switch await NextcloudKit.shared.getServerStatus(serverUrl: appDelegate.urlBase, options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) {
         case .success(let serverInfo):
             if serverInfo.maintenance {
                 let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_maintenance_mode_")
@@ -114,7 +112,7 @@ class NCService: NSObject {
             return false
         }
 
-        let resultUserProfile = await NextcloudKit.shared.getUserProfile(options: options)
+        let resultUserProfile = await NextcloudKit.shared.getUserProfile(options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue))
         if resultUserProfile.error == .success, let userProfile = resultUserProfile.userProfile {
             NCManageDatabase.shared.setAccountUserProfile(account: resultUserProfile.account, userProfile: userProfile)
             return true
@@ -135,10 +133,18 @@ class NCService: NSObject {
 
     func synchronize() {
 
-        NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] start synchronize")
+        NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] start synchronize Favorite")
+        NextcloudKit.shared.listingFavorites(showHiddenFiles: CCUtility.getShowHiddenFiles(),
+                                             options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { account, files, _, error in
 
-        NCNetworking.shared.listingFavoritescompletion(selector: NCGlobal.shared.selectorReadFile) { _, _, _ in }
-        self.synchronizeOffline(account: appDelegate.account)
+            guard error == .success else { return }
+            NCManageDatabase.shared.convertFilesToMetadatas(files, useMetadataFolder: false) { _, _, metadatas in
+                NCManageDatabase.shared.updateMetadatasFavorite(account: account, metadatas: metadatas)
+            }
+            NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] end synchronize Favorite")
+            NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] start synchronize Offline")
+            self.synchronizeOffline(account: account)
+        }
     }
 
     func getAvatar() {
@@ -146,9 +152,13 @@ class NCService: NSObject {
         let fileName = appDelegate.userBaseUrl + "-" + self.appDelegate.user + ".png"
         let fileNameLocalPath = String(CCUtility.getDirectoryUserData()) + "/" + fileName
         let etag = NCManageDatabase.shared.getTableAvatar(fileName: fileName)?.etag
-        let options = NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
 
-        NextcloudKit.shared.downloadAvatar(user: appDelegate.userId, fileNameLocalPath: fileNameLocalPath, sizeImage: NCGlobal.shared.avatarSize, avatarSizeRounded: NCGlobal.shared.avatarSizeRounded, etag: etag, options: options) { _, _, _, etag, error in
+        NextcloudKit.shared.downloadAvatar(user: appDelegate.userId, 
+                                           fileNameLocalPath: fileNameLocalPath,
+                                           sizeImage: NCGlobal.shared.avatarSize,
+                                           avatarSizeRounded: NCGlobal.shared.avatarSizeRounded,
+                                           etag: etag,
+                                           options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { _, _, _, etag, error in
 
             if let etag = etag, error == .success {
                 NCManageDatabase.shared.addAvatar(fileName: fileName, etag: etag)
@@ -162,9 +172,7 @@ class NCService: NSObject {
     private func requestServerCapabilities() {
         guard !appDelegate.account.isEmpty else { return }
 
-        let options = NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
-
-        NextcloudKit.shared.getCapabilities(options: options) { account, data, error in
+        NextcloudKit.shared.getCapabilities(options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { account, data, error in
             guard error == .success, let data = data else {
                 NCBrandColor.shared.settingThemingColor(account: account)
                 return
@@ -204,7 +212,7 @@ class NCService: NSObject {
 
             // External file Server
             if NCGlobal.shared.capabilityExternalSites {
-                NextcloudKit.shared.getExternalSite(options: options) { account, externalSites, _, error in
+                NextcloudKit.shared.getExternalSite(options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { account, externalSites, _, error in
                     if error == .success && account == self.appDelegate.account {
                         NCManageDatabase.shared.deleteExternalSites(account: account)
                         for externalSite in externalSites {
@@ -218,7 +226,7 @@ class NCService: NSObject {
 
             // User Status
             if NCGlobal.shared.capabilityUserStatusEnabled {
-                NextcloudKit.shared.getUserStatus(options: options) { account, clearAt, icon, message, messageId, messageIsPredefined, status, statusIsUserDefined, userId, _, error in
+                NextcloudKit.shared.getUserStatus(options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { account, clearAt, icon, message, messageId, messageIsPredefined, status, statusIsUserDefined, userId, _, error in
                     if error == .success && account == self.appDelegate.account && userId == self.appDelegate.userId {
                         NCManageDatabase.shared.setAccountUserStatus(userStatusClearAt: clearAt, userStatusIcon: icon, userStatusMessage: message, userStatusMessageId: messageId, userStatusMessageIsPredefined: messageIsPredefined, userStatusStatus: status, userStatusStatusIsUserDefined: statusIsUserDefined, account: account)
                     }
@@ -264,9 +272,7 @@ class NCService: NSObject {
             }
         }
 
-        let options = NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
-
-        NextcloudKit.shared.getDashboardWidget(options: options) { account, dashboardWidgets, data, error in
+        NextcloudKit.shared.getDashboardWidget(options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { account, dashboardWidgets, data, error in
             Task {
                 if error == .success, let dashboardWidgets = dashboardWidgets {
                     NCManageDatabase.shared.addDashboardWidget(account: account, dashboardWidgets: dashboardWidgets)
@@ -287,26 +293,21 @@ class NCService: NSObject {
 
     @objc func synchronizeOffline(account: String) {
 
-        // Synchronize Offline Directory
+        // Synchronize Directory
         if let directories = NCManageDatabase.shared.getTablesDirectory(predicate: NSPredicate(format: "account == %@ AND offline == true", account), sorted: "serverUrl", ascending: true) {
             for directory: tableDirectory in directories {
-                guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(directory.ocId) else {
-                    continue
-                }
-                let serverUrl = metadata.serverUrl + "/" + metadata.fileName
-                NCNetworking.shared.synchronizationServerUrl(serverUrl, account: metadata.account, selector: NCGlobal.shared.selectorDownloadFile)
+                NCNetworking.shared.synchronizationServerUrl(directory.serverUrl, account: account, selector: NCGlobal.shared.selectorSynchronizationOffline)
             }
         }
 
-        // Synchronize Offline Files
+        // Synchronize Files
         let files = NCManageDatabase.shared.getTableLocalFiles(predicate: NSPredicate(format: "account == %@ AND offline == true", account), sorted: "fileName", ascending: true)
         for file: tableLocalFile in files {
-            guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(file.ocId) else {
-                continue
-            }
+            guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(file.ocId) else { continue }
             if NCManageDatabase.shared.isDownloadMetadata(metadata, download: true) {
                 NCOperationQueue.shared.download(metadata: metadata, selector: NCGlobal.shared.selectorDownloadFile)
             }
         }
+        NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] end synchronize offline")
     }
 }

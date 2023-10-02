@@ -94,9 +94,8 @@ class NCGroupfolders: NCCollectionViewCommon {
         if serverUrl.isEmpty {
 
             let homeServerUrl = NCUtilityFileSystem.shared.getHomeServer(urlBase: self.appDelegate.urlBase, userId: self.appDelegate.userId)
-            let options = NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
 
-            NextcloudKit.shared.getGroupfolders(options: options) { account, results, _, error in
+            NextcloudKit.shared.getGroupfolders(options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { account, results, _, error in
 
                 if error == .success, let groupfolders = results {
 

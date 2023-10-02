@@ -57,6 +57,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     var documentPickerViewController: NCDocumentPickerViewController?
     var timerErrorNetworking: Timer?
 
+    var isAppRefresh: Bool = false
+    var isAppProcessing: Bool = false
+
     private var privacyProtectionWindow: UIWindow?
 
     var isUiTestingEnabled: Bool {
@@ -323,11 +326,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     func handleAppRefresh(_ task: BGTask) {
         scheduleAppRefresh()
 
-        guard !account.isEmpty else {
-            task.setTaskCompleted(success: true)
-            return
+        guard !account.isEmpty, !isAppProcessing else {
+            return task.setTaskCompleted(success: true)
         }
 
+        isAppRefresh = true
         NextcloudKit.shared.setup(delegate: NCNetworking.shared)
 
         NCAutoUpload.shared.initAutoUpload(viewController: nil) { items in
@@ -335,6 +338,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             NCNetworkingProcessUpload.shared.start { items in
                 NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Refresh task upload process with \(items) uploads")
                 task.setTaskCompleted(success: true)
+                self.isAppRefresh = false
             }
         }
     }
@@ -342,13 +346,21 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     func handleProcessingTask(_ task: BGTask) {
         scheduleAppProcessing()
 
-        guard !account.isEmpty else {
-            task.setTaskCompleted(success: true)
-            return
+        guard !account.isEmpty, !isAppRefresh else {
+            return task.setTaskCompleted(success: true)
         }
 
-        NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Processing task: none")
-        task.setTaskCompleted(success: true)
+        isAppProcessing = true
+        NextcloudKit.shared.setup(delegate: NCNetworking.shared)
+
+        NCAutoUpload.shared.initAutoUpload(viewController: nil) { items in
+            NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Processing task auto upload with \(items) uploads")
+            NCNetworkingProcessUpload.shared.start { items in
+                NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Processing task upload process with \(items) uploads")
+                task.setTaskCompleted(success: true)
+                self.isAppProcessing = false
+            }
+        }
     }
 
     // MARK: - Background Networking Session
