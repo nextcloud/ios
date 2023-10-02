@@ -91,40 +91,29 @@ class NCGroupfolders: NCCollectionViewCommon {
         isReloadDataSourceNetworkInProgress = true
         collectionView?.reloadData()
 
-        if serverUrl.isEmpty {
+        let homeServerUrl = NCUtilityFileSystem.shared.getHomeServer(urlBase: self.appDelegate.urlBase, userId: self.appDelegate.userId)
 
-            let homeServerUrl = NCUtilityFileSystem.shared.getHomeServer(urlBase: self.appDelegate.urlBase, userId: self.appDelegate.userId)
+        NextcloudKit.shared.getGroupfolders(options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { account, results, _, error in
 
-            NextcloudKit.shared.getGroupfolders(options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { account, results, _, error in
-
-                if error == .success, let groupfolders = results {
-
-                    NCManageDatabase.shared.addGroupfolders(account: account, groupfolders: groupfolders)
-
-                    Task {
-                        for groupfolder in groupfolders {
-                            let mountPoint = groupfolder.mountPoint.hasPrefix("/") ? groupfolder.mountPoint : "/" + groupfolder.mountPoint
-                            let serverUrlFileName = homeServerUrl + mountPoint
-                            if NCManageDatabase.shared.getMetadataFromDirectory(account: self.appDelegate.account, serverUrl: serverUrlFileName) == nil {
-                                let results = await NextcloudKit.shared.readFileOrFolder(serverUrlFileName: serverUrlFileName, depth: "0", showHiddenFiles: CCUtility.getShowHiddenFiles())
-                                if results.error == .success, let file = results.files.first {
-                                    let isDirectoryE2EE = NCUtility.shared.isDirectoryE2EE(file: file)
-                                    let metadata = NCManageDatabase.shared.convertFileToMetadata(file, isDirectoryE2EE: isDirectoryE2EE)
-                                    NCManageDatabase.shared.addMetadata(metadata)
-                                    NCManageDatabase.shared.addDirectory(encrypted: isDirectoryE2EE, favorite: metadata.favorite, ocId: metadata.ocId, fileId: metadata.fileId, etag: nil, permissions: metadata.permissions, serverUrl: serverUrlFileName, account: metadata.account)
-                                }
+            if error == .success, let groupfolders = results {
+                NCManageDatabase.shared.addGroupfolders(account: account, groupfolders: groupfolders)
+                Task {
+                    for groupfolder in groupfolders {
+                        let mountPoint = groupfolder.mountPoint.hasPrefix("/") ? groupfolder.mountPoint : "/" + groupfolder.mountPoint
+                        let serverUrlFileName = homeServerUrl + mountPoint
+                        if NCManageDatabase.shared.getMetadataFromDirectory(account: self.appDelegate.account, serverUrl: serverUrlFileName) == nil {
+                            let results = await NextcloudKit.shared.readFileOrFolder(serverUrlFileName: serverUrlFileName, depth: "0", showHiddenFiles: CCUtility.getShowHiddenFiles())
+                            if results.error == .success, let file = results.files.first {
+                                let isDirectoryE2EE = NCUtility.shared.isDirectoryE2EE(file: file)
+                                let metadata = NCManageDatabase.shared.convertFileToMetadata(file, isDirectoryE2EE: isDirectoryE2EE)
+                                NCManageDatabase.shared.addMetadata(metadata)
+                                NCManageDatabase.shared.addDirectory(encrypted: isDirectoryE2EE, favorite: metadata.favorite, ocId: metadata.ocId, fileId: metadata.fileId, etag: nil, permissions: metadata.permissions, serverUrl: serverUrlFileName, account: metadata.account)
                             }
                         }
-                        self.reloadDataSource()
                     }
-                } else if error != .success {
                     self.reloadDataSource()
-                    NCContentPresenter.shared.showError(error: error)
                 }
-            }
-        } else {
-
-            networkReadFolder(isForced: isForced) { _, _, _, _, _ in
+            } else if error != .success {
                 self.reloadDataSource()
             }
         }

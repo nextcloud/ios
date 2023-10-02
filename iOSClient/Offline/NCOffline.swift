@@ -97,33 +97,6 @@ class NCOffline: NCCollectionViewCommon {
     override func reloadDataSourceNetwork(isForced: Bool = false) {
         super.reloadDataSourceNetwork(isForced: isForced)
 
-        guard !serverUrl.isEmpty else {
-            self.reloadDataSource()
-            return
-        }
-
-        NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Reload data source network offline forced \(isForced)")
-
-        isReloadDataSourceNetworkInProgress = true
-        collectionView?.reloadData()
-
-        networkReadFolder(isForced: isForced) { tableDirectory, metadatas, metadatasUpdate, metadatasDelete, error in
-            if error == .success, let metadatas = metadatas {
-                for metadata in metadatas where (!metadata.directory && NCManageDatabase.shared.isDownloadMetadata(metadata, download: true)) {
-                    NCOperationQueue.shared.download(metadata: metadata, selector: NCGlobal.shared.selectorDownloadFile)
-                }
-            }
-
-            DispatchQueue.main.async {
-                self.refreshControl.endRefreshing()
-                self.isReloadDataSourceNetworkInProgress = false
-                self.richWorkspaceText = tableDirectory?.richWorkspace
-                if metadatasUpdate?.count ?? 0 > 0 || metadatasDelete?.count ?? 0 > 0 || isForced {
-                    self.reloadDataSource()
-                } else {
-                    self.collectionView?.reloadData()
-                }
-            }
-        }
+        return self.reloadDataSource()
     }
 }

@@ -149,14 +149,14 @@ class NCRecent: NCCollectionViewCommon {
         isReloadDataSourceNetworkInProgress = true
         collectionView?.reloadData()
 
-        NextcloudKit.shared.searchBodyRequest(serverUrl: appDelegate.urlBase, 
+        NextcloudKit.shared.searchBodyRequest(serverUrl: appDelegate.urlBase,
                                               requestBody: requestBody,
                                               showHiddenFiles: CCUtility.getShowHiddenFiles(),
                                               options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { account, files, _, error in
 
+            self.isReloadDataSourceNetworkInProgress = false
             if error == .success {
                 NCManageDatabase.shared.convertFilesToMetadatas(files, useMetadataFolder: false) { _, metadatasFolder, metadatas in
-
                     // Update sub directories
                     for metadata in metadatasFolder {
                         let serverUrl = metadata.serverUrl + "/" + metadata.fileName
@@ -164,18 +164,10 @@ class NCRecent: NCCollectionViewCommon {
                     }
                     // Add metadatas
                     NCManageDatabase.shared.addMetadatas(metadatas)
-
                     self.reloadDataSource()
                 }
             } else {
-                DispatchQueue.main.async {
-                    self.collectionView?.reloadData()
-                }
-            }
-
-            DispatchQueue.main.async {
-                self.refreshControl.endRefreshing()
-                self.isReloadDataSourceNetworkInProgress = false
+                self.reloadDataSource()
             }
         }
     }

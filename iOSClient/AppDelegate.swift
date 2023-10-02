@@ -47,11 +47,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     @objc var activeViewController: UIViewController?
     var mainTabBar: NCMainTabBar?
     var activeMetadata: tableMetadata?
-
     let listFilesVC = ThreadSafeDictionary<String, NCFiles>()
-    let listFavoriteVC = ThreadSafeDictionary<String, NCFavorite>()
-    let listOfflineVC = ThreadSafeDictionary<String, NCOffline>()
-    let listGroupfoldersVC = ThreadSafeDictionary<String, NCGroupfolders>()
 
     var disableSharesView: Bool = false
     var documentPickerViewController: NCDocumentPickerViewController?

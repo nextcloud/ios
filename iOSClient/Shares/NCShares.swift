@@ -120,13 +120,8 @@ class NCShares: NCCollectionViewCommon {
                     let home = NCUtilityFileSystem.shared.getHomeServer(urlBase: self.appDelegate.urlBase, userId: self.appDelegate.userId)
                     NCManageDatabase.shared.addShare(account: self.appDelegate.account, home: home, shares: shares)
                 }
-                self.reloadDataSource()
-
-            } else {
-
-                self.collectionView?.reloadData()
-                NCContentPresenter.shared.showError(error: error)
             }
+            self.reloadDataSource()
         }
     }
 }
