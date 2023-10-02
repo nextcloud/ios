@@ -15,7 +15,6 @@ import VisibilityTrackingScrollView
 struct NCMediaNew: View {
     @StateObject private var vm = NCMediaViewModel()
     @EnvironmentObject var parent: NCMediaUIKitWrapper
-    @State private var columns = 2
     @State private var title = "Media"
     @State private var isScrolledToTop = true
     @State private var tappedMetadata = tableMetadata()
@@ -28,12 +27,16 @@ struct NCMediaNew: View {
     @State private var showPlayFromURLAlert = false
     @State private var playFromUrlString = ""
 
+    @State private var columnCountStages = [2, 3, 4]
+    @State private var columnCountStagesIndex = 0
+    @State private var columnCountChanged = false
+
     var body: some View {
         GeometryReader { outerProxy in
             ZStack(alignment: .top) {
                 VisibilityTrackingScrollView(action: cellVisibilityDidChange) {
                     LazyVStack(alignment: .leading, spacing: 2) {
-                        ForEach(vm.metadatas.chunked(into: columns), id: \.self) { rowMetadatas in
+                        ForEach(vm.metadatas.chunked(into: columnCountStages[columnCountStagesIndex]), id: \.self) { rowMetadatas in
                             NCMediaRow(metadatas: rowMetadatas, geometryProxy: outerProxy, isInSelectMode: $vm.isInSelectMode) { tappedThumbnail, isSelected in
 
                                 //TODO: Put in VM
@@ -199,14 +202,17 @@ struct NCMediaNew: View {
         }
         .onRotate { orientation in
             if orientation.isLandscapeHardCheck {
-                columns = 6
+                columnCountStages = [4, 6, 8]
             } else {
-                columns = 2
+                columnCountStages = [2, 3, 4]
             }
         }
         .onAppear { vm.loadMediaFromDB() }
         .onChange(of: vm.isInSelectMode) { newValue in
             if newValue == false { vm.selectedMetadatas.removeAll() }
+        }
+        .onChange(of: columnCountStagesIndex) { _ in
+            columnCountChanged = true
         }
         .alert("", isPresented: $showPlayFromURLAlert) {
             TextField("https://...", text: $playFromUrlString)
@@ -220,14 +226,33 @@ struct NCMediaNew: View {
         } message: {
             Text(NSLocalizedString("_valid_video_url_", comment: ""))
         }
+        .gesture(
+            MagnificationGesture(minimumScaleDelta: 0)
+                .onChanged { scale in
+                    print(scale)
+                    if !columnCountChanged {
+                        let newZoom = Double(columnCountStages[columnCountStagesIndex]) * 1 / scale
+                        let newZoomIndex = findClosestZoomIndex(value: newZoom)
+                        columnCountStagesIndex = newZoomIndex
+                    }
+                }
+                .onEnded({ _ in
+                    columnCountChanged = false
+                })
+        )
     }
-
+x
     private func cellVisibilityDidChange(_ id: String, change: VisibilityChange, tracker: VisibilityTracker<String>) {
         DispatchQueue.main.async {
             if let date = tracker.topVisibleView, !date.isEmpty {
                 title = date
             }
         }
+    }
+
+    func findClosestZoomIndex(value: Double) -> Int {
+        let distanceArray = columnCountStages.map { abs(Double($0) - value) } // absolute difference between zoom stages and actual pinch zoom
+        return distanceArray.indices.min(by: {distanceArray[$0] < distanceArray[$1]}) ?? 0 // return index of element that is "closest"
     }
 
     private func selectMediaFolder() {

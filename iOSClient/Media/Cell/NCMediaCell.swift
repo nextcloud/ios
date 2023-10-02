@@ -30,7 +30,6 @@ struct NCMediaCell: View {
     var body: some View {
         let image = Image(uiImage: thumbnail.image)
             .resizable()
-            .trackVisibility(id: CCUtility.getTitleSectionDate(thumbnail.metadata.date as Date) ?? "")
 
         ZStack(alignment: .center) {
             if thumbnail.isPlaceholderImage {
@@ -150,7 +149,8 @@ struct NCMediaLoadingCell: View {
             Image(uiImage: UIImage())
                 .resizable()
                 .trackVisibility(id: CCUtility.getTitleSectionDate(metadata.date as Date) ?? "")// TODO: Fix spacing
-                .frame(width: (geometryProxy.size.width - spacing) / CGFloat(itemsInRow), height: 130)
+                .aspectRatio(1.5, contentMode: .fit)
+                .frame(width: (geometryProxy.size.width - spacing) / CGFloat(itemsInRow))
                 .redacted(reason: .placeholder)
                 .shimmering(gradient: gradient, bandSize: 0.7)
         }
