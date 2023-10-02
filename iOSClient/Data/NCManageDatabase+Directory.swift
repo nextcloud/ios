@@ -52,9 +52,8 @@ extension NCManageDatabase {
             let realm = try Realm()
             try realm.write {
                 var addObject = tableDirectory()
-                let result = realm.objects(tableDirectory.self).filter("ocId == %@", ocId).first
-                if result != nil {
-                    addObject = result!
+                if let result = realm.objects(tableDirectory.self).filter("ocId == %@", ocId).first {
+                    addObject = result
                 } else {
                     addObject.ocId = ocId
                 }

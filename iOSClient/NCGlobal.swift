@@ -287,7 +287,6 @@ class NCGlobal: NSObject {
     // Selector
     //
     let selectorDownloadFile                        = "downloadFile"
-    let selectorDownloadAllFile                     = "downloadAllFile"
     let selectorReadFile                            = "readFile"
     let selectorListingFavorite                     = "listingFavorite"
     let selectorLoadFileView                        = "loadFileView"
