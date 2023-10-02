@@ -48,7 +48,6 @@ class NCMainTabBar: UITabBar {
         appDelegate.mainTabBar = self
 
         NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeTheming), object: nil)
-
         NotificationCenter.default.addObserver(self, selector: #selector(updateBadgeNumber(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUpdateBadgeNumber), object: nil)
 
         barTintColor = .secondarySystemBackground
@@ -212,15 +211,28 @@ class NCMainTabBar: UITabBar {
     @objc func updateBadgeNumber(_ notification: NSNotification) {
 
         guard let userInfo = notification.userInfo as NSDictionary?,
-              let counter = userInfo["counter"] as? Int
+              let counterDownload = userInfo["counterDownload"] as? Int,
+              let counterUpload = userInfo["counterUpload"] as? Int
         else { return }
 
-        UIApplication.shared.applicationIconBadgeNumber = counter
+        UIApplication.shared.applicationIconBadgeNumber = counterUpload
         if let item = self.items?[0] {
-            if counter > 0 {
-                item.badgeValue = String(counter)
-            } else {
+            if counterDownload == 0, counterUpload == 0 {
                 item.badgeValue = nil
+            } else if counterDownload > 0, counterUpload == 0 {
+                var badgeValue = String("↓ \(counterDownload)")
+                if counterDownload >= NCGlobal.shared.maxConcurrentOperationCountDownload {
+                    badgeValue = String("↓ 10+")
+                }
+                item.badgeValue = badgeValue
+            } else if counterDownload == 0, counterUpload > 0 {
+                item.badgeValue = String("↑ \(counterUpload)")
+            } else {
+                var badgeValue = String("↓ \(counterDownload) ↑ \(counterUpload)")
+                if counterDownload >= NCGlobal.shared.maxConcurrentOperationCountDownload {
+                    badgeValue = String("↓ 10+ ↑ \(counterUpload)")
+                }
+                item.badgeValue = badgeValue
             }
         }
     }

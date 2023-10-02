@@ -326,6 +326,9 @@ class NCGlobal: NSObject {
     let metadataStatusUploading: Int                = 3
     let metadataStatusUploadError: Int              = 4
 
+    // Queue Concurrent Operation Download
+    let maxConcurrentOperationCountDownload: Int    = 10
+
     //  Hidden files included in the read
     //
     let includeHiddenFiles: [String] = [".LivePhoto"]
@@ -347,7 +350,7 @@ class NCGlobal: NSObject {
     let notificationCenterRichdocumentGrabFocus                 = "richdocumentGrabFocus"
     let notificationCenterReloadDataNCShare                     = "reloadDataNCShare"
     let notificationCenterCloseRichWorkspaceWebView             = "closeRichWorkspaceWebView"
-    let notificationCenterUpdateBadgeNumber                     = "updateBadgeNumber"               // userInfo: counter
+    let notificationCenterUpdateBadgeNumber                     = "updateBadgeNumber"               // userInfo: counterDownload, counterUpload
     let notificationCenterReloadAvatar                          = "reloadAvatar"
 
     @objc let notificationCenterReloadDataSource                = "reloadDataSource"

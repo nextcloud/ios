@@ -111,8 +111,9 @@ class NCNetworkingProcessUpload: NSObject {
             let sessionSelectors = [NCGlobal.shared.selectorUploadFileNODelete, NCGlobal.shared.selectorUploadFile, NCGlobal.shared.selectorUploadAutoUpload, NCGlobal.shared.selectorUploadAutoUploadAll]
 
             // Update Badge
-            let counterBadge = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND (status == %d OR status == %d OR status == %d)", self.appDelegate.account, NCGlobal.shared.metadataStatusWaitUpload, NCGlobal.shared.metadataStatusInUpload, NCGlobal.shared.metadataStatusUploading))
-            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUpdateBadgeNumber, userInfo: ["counter": counterBadge.count])
+            let counterBadgeDownload = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "status < 0"))
+            let counterBadgeUpload = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "status > 0"))
+            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUpdateBadgeNumber, userInfo: ["counterDownload": counterBadgeDownload.count, "counterUpload": counterBadgeUpload.count])
 
             // ** TEST ONLY ONE **
             // E2EE
