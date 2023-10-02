@@ -738,7 +738,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
     func cancel(inBackground: Bool) async {
 
 #if !EXTENSION
-        NCOperationQueue.shared.downloadCancelAll()
+        NCOperationQueue.shared.cancelAllQueue()
 #endif
 
         NextcloudKit.shared.sessionManager.cancelAllRequests()
@@ -924,6 +924,33 @@ class NCNetworking: NSObject, NKCommonDelegate {
             }
         }
     }
+
+    // MARK: - Synchronization ServerUrl
+
+#if !EXTENSION
+    func synchronizationServerUrl(_ serverUrl: String, account: String, selector: String) {
+
+        let options = NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
+
+        NextcloudKit.shared.readFileOrFolder(serverUrlFileName: serverUrl, depth: "infinity", showHiddenFiles: CCUtility.getShowHiddenFiles(), options: options) { account, files, _, error in
+            if error == .success {
+                NCManageDatabase.shared.convertFilesToMetadatas(files, useMetadataFolder: true) { metadataFolder, metadatasFolder, metadatas in
+                    NCManageDatabase.shared.addDirectory(encrypted: metadataFolder.e2eEncrypted, favorite: metadataFolder.favorite, ocId: metadataFolder.ocId, fileId: metadataFolder.fileId, etag: metadataFolder.etag, permissions: metadataFolder.permissions, serverUrl: metadataFolder.serverUrl + "/" + metadataFolder.fileName, account: metadataFolder.account)
+                    let metadatasResult = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND status == %d", account, serverUrl, NCGlobal.shared.metadataStatusNormal))
+                    NCManageDatabase.shared.updateMetadatas(metadatas, metadatasResult: metadatasResult)
+                    for metadata in metadatas {
+                        if metadata.directory {
+                            let serverUrl = metadata.serverUrl + "/" + metadata.fileName
+                            NCManageDatabase.shared.addDirectory(encrypted: metadata.e2eEncrypted, favorite: metadata.favorite, ocId: metadata.ocId, fileId: metadata.fileId, etag: metadata.etag, permissions: metadata.permissions, serverUrl: serverUrl, account: metadata.account)
+                        } else if selector == NCGlobal.shared.selectorDownloadFile, NCManageDatabase.shared.isDownloadMetadata(metadata, download: true) {
+                            NCOperationQueue.shared.download(metadata: metadata, selector: selector)
+                        }
+                    }
+                }
+            }
+        }
+    }
+#endif
 
     // MARK: - Search
 
@@ -1342,8 +1369,9 @@ class NCNetworking: NSObject, NKCommonDelegate {
             if error == .success && metadata.account == account {
                 NCManageDatabase.shared.setMetadataFavorite(ocId: metadata.ocId, favorite: favorite)
 #if !EXTENSION
-                if favorite {
-                    NCOperationQueue.shared.synchronizationMetadata(metadata, selector: NCGlobal.shared.selectorReadFile)
+                if favorite, metadata.directory {
+                    let serverUrl = metadata.serverUrl + "/" + metadata.fileName
+                    self.synchronizationServerUrl(serverUrl, account: metadata.account, selector: "")
                 }
 #endif
                 NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterFavoriteFile, userInfo: ["ocId": ocId, "serverUrl": metadata.serverUrl])
@@ -1366,8 +1394,9 @@ class NCNetworking: NSObject, NKCommonDelegate {
                 NCManageDatabase.shared.updateMetadatasFavorite(account: account, metadatas: metadatas)
                 if selector != NCGlobal.shared.selectorListingFavorite {
 #if !EXTENSION
-                    for metadata in metadatas {
-                        NCOperationQueue.shared.synchronizationMetadata(metadata, selector: selector)
+                    for metadata in metadatas where metadata.directory {
+                        let serverUrl = metadata.serverUrl + "/" + metadata.fileName
+                        self.synchronizationServerUrl(serverUrl, account: metadata.account, selector: "")
                     }
 #endif
                 }

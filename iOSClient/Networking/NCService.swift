@@ -293,7 +293,8 @@ class NCService: NSObject {
                 guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(directory.ocId) else {
                     continue
                 }
-                NCOperationQueue.shared.synchronizationMetadata(metadata, selector: NCGlobal.shared.selectorDownloadFile)
+                let serverUrl = metadata.serverUrl + "/" + metadata.fileName
+                NCNetworking.shared.synchronizationServerUrl(serverUrl, account: metadata.account, selector: NCGlobal.shared.selectorDownloadFile)
             }
         }
 
@@ -303,7 +304,9 @@ class NCService: NSObject {
             guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(file.ocId) else {
                 continue
             }
-            NCOperationQueue.shared.synchronizationMetadata(metadata, selector: NCGlobal.shared.selectorDownloadFile)
+            if NCManageDatabase.shared.isDownloadMetadata(metadata, download: true) {
+                NCOperationQueue.shared.download(metadata: metadata, selector: NCGlobal.shared.selectorDownloadFile)
+            }
         }
     }
 }

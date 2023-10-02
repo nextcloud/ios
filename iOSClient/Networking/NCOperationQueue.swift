@@ -32,7 +32,6 @@ import NextcloudKit
     }()
 
     private var downloadQueue = Queuer(name: "downloadQueue", maxConcurrentOperationCount: 5, qualityOfService: .default)
-    private let synchronizationQueue = Queuer(name: "synchronizationQueue", maxConcurrentOperationCount: 1, qualityOfService: .default)
     private let downloadThumbnailQueue = Queuer(name: "downloadThumbnailQueue", maxConcurrentOperationCount: 10, qualityOfService: .default)
     private let downloadThumbnailActivityQueue = Queuer(name: "downloadThumbnailActivityQueue", maxConcurrentOperationCount: 10, qualityOfService: .default)
     private let downloadAvatarQueue = Queuer(name: "downloadAvatarQueue", maxConcurrentOperationCount: 10, qualityOfService: .default)
@@ -41,7 +40,6 @@ import NextcloudKit
 
     @objc func cancelAllQueue() {
         downloadCancelAll()
-        synchronizationCancelAll()
         downloadThumbnailCancelAll()
         downloadThumbnailActivityCancelAll()
         downloadAvatarCancelAll()
@@ -71,19 +69,6 @@ import NextcloudKit
             return true
         }
         return false
-    }
-
-    // MARK: - Synchronization
-
-    func synchronizationMetadata(_ metadata: tableMetadata, selector: String) {
-        for case let operation as NCOperationSynchronization in synchronizationQueue.operations where operation.metadata.ocId == metadata.ocId {
-            return
-        }
-        synchronizationQueue.addOperation(NCOperationSynchronization(metadata: metadata, selector: selector))
-    }
-
-    func synchronizationCancelAll() {
-        synchronizationQueue.cancelAll()
     }
 
     // MARK: - Download Thumbnail
@@ -221,114 +206,6 @@ class NCOperationDownload: ConcurrentOperation {
             self.finish()
         } else {
             NCNetworking.shared.download(metadata: metadata, selector: self.selector) { _, _ in
-                self.finish()
-            }
-        }
-    }
-}
-
-// MARK: -
-
-class NCOperationSynchronization: ConcurrentOperation {
-
-    var metadata: tableMetadata
-    var selector: String
-    var download: Bool
-
-    init(metadata: tableMetadata, selector: String) {
-        self.metadata = tableMetadata.init(value: metadata)
-        self.selector = selector
-        if selector == NCGlobal.shared.selectorDownloadFile || selector == NCGlobal.shared.selectorDownloadAllFile {
-            self.download = true
-        } else {
-            self.download = false
-        }
-    }
-
-    override func start() {
-        if isCancelled {
-            self.finish()
-        } else {
-            if metadata.directory {
-
-                let serverUrl = metadata.serverUrl + "/" + metadata.fileName
-                let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", metadata.account, serverUrl))
-
-                NextcloudKit.shared.readFileOrFolder(serverUrlFileName: serverUrl, depth: "0", showHiddenFiles: CCUtility.getShowHiddenFiles()) { account, files, _, error in
-
-                    if (error == .success) && (directory?.etag != files.first?.etag || self.selector == NCGlobal.shared.selectorDownloadAllFile) {
-
-                        let options = NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
-
-                        NextcloudKit.shared.readFileOrFolder(serverUrlFileName: serverUrl, depth: "1", showHiddenFiles: CCUtility.getShowHiddenFiles(), options: options) { account, files, _, error in
-
-                            if error == .success {
-
-                                NCManageDatabase.shared.convertFilesToMetadatas(files, useMetadataFolder: true) { metadataFolder, _, metadatas in
-
-                                    let metadatasResult = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND status == %d", account, serverUrl, NCGlobal.shared.metadataStatusNormal))
-
-                                    if self.selector == NCGlobal.shared.selectorDownloadAllFile {
-
-                                        NCManageDatabase.shared.updateMetadatas(metadatas, metadatasResult: metadatasResult)
-
-                                        for metadata in metadatas {
-                                            if metadata.directory {
-                                                NCOperationQueue.shared.synchronizationMetadata(metadata, selector: self.selector)
-                                            } else {
-                                                if NCManageDatabase.shared.isDownloadMetadata(metadata, download: true) {
-                                                    NCOperationQueue.shared.download(metadata: metadata, selector: self.selector)
-                                                }
-                                            }
-                                        }
-
-                                    } else {
-
-                                        let metadatasChanged = NCManageDatabase.shared.updateMetadatas(metadatas, metadatasResult: metadatasResult, addExistsInLocal: self.download, addCompareEtagLocal: true, addDirectorySynchronized: true)
-
-                                        for metadata in metadatasChanged.metadatasUpdate {
-                                            if metadata.directory {
-                                                NCOperationQueue.shared.synchronizationMetadata(metadata, selector: self.selector)
-                                            }
-                                        }
-
-                                        for metadata in metadatasChanged.metadatasLocalUpdate {
-                                            NCOperationQueue.shared.download(metadata: metadata, selector: self.selector)
-                                        }
-                                    }
-
-                                    // Update etag directory
-                                    NCManageDatabase.shared.addDirectory(encrypted: metadataFolder.e2eEncrypted, favorite: metadataFolder.favorite, ocId: metadataFolder.ocId, fileId: metadataFolder.fileId, etag: metadataFolder.etag, permissions: metadataFolder.permissions, serverUrl: serverUrl, account: metadataFolder.account)
-                                }
-
-                            } else if error.errorCode == NCGlobal.shared.errorResourceNotFound && self.metadata.directory {
-                                NCManageDatabase.shared.deleteDirectoryAndSubDirectory(serverUrl: self.metadata.serverUrl, account: self.metadata.account)
-                            }
-
-                            self.finish()
-                        }
-
-                    } else {
-
-                        let metadatas = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", account, serverUrl))
-                        for metadata in metadatas {
-                            if metadata.directory {
-                                NCOperationQueue.shared.synchronizationMetadata(metadata, selector: self.selector)
-                            } else {
-                                if NCManageDatabase.shared.isDownloadMetadata(metadata, download: self.download) {
-                                    NCOperationQueue.shared.download(metadata: metadata, selector: self.selector)
-                                }
-                            }
-                        }
-
-                        self.finish()
-                    }
-                }
-
-            } else {
-                if NCManageDatabase.shared.isDownloadMetadata(metadata, download: self.download) {
-                    NCOperationQueue.shared.download(metadata: metadata, selector: self.selector)
-                }
                 self.finish()
             }
         }
