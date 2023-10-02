@@ -241,7 +241,7 @@ struct NCMediaNew: View {
                 })
         )
     }
-x
+
     private func cellVisibilityDidChange(_ id: String, change: VisibilityChange, tracker: VisibilityTracker<String>) {
         DispatchQueue.main.async {
             if let date = tracker.topVisibleView, !date.isEmpty {
