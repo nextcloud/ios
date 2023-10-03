@@ -29,7 +29,10 @@ import MarkdownKit
 
     @IBOutlet weak var textView: UITextView!
 
+    // swiftlint:disable force_cast
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
+    // swiftlint:enable force_cast
+
     private let richWorkspaceCommon = NCRichWorkspaceCommon()
     private var markdownParser = MarkdownParser()
     private var textViewColor: UIColor?

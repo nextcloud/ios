@@ -49,9 +49,6 @@ excluded:
 
   - Brand/NCBrand.swift
   - iOSClient/NCGlobal.swift
-  - iOSClient/RichWorkspace/NCRichWorkspaceCommon.swift
-  - iOSClient/RichWorkspace/NCViewerRichWorkspace.swift
-  - iOSClient/ScanDocument/ScanCollectionView.swift
   - iOSClient/Security/NCEndToEndMetadata.swift
   - iOSClient/Security/NCViewCertificateDetails.swift
   - iOSClient/Settings/NCEndToEndInitialize.swift
@@ -60,8 +57,6 @@ excluded:
   - iOSClient/Share/NCShareCommon.swift
   - iOSClient/Share/NCShareNetworking.swift
   - iOSClient/Shares/NCShares.swift
-  - iOSClient/Transfers/NCTransferCell.swift
-  - iOSClient/Transfers/NCTransfers.swift
   - iOSClient/UserStatus/NCUserStatus.swift
   - iOSClient/Utility/NCAskAuthorization.swift
   - iOSClient/Utility/NCContentPresenter.swift
