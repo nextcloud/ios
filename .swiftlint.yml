@@ -57,7 +57,6 @@ excluded:
   - iOSClient/Share/NCShareCommon.swift
   - iOSClient/Share/NCShareNetworking.swift
   - iOSClient/Shares/NCShares.swift
-  - iOSClient/UserStatus/NCUserStatus.swift
   - iOSClient/Utility/NCAskAuthorization.swift
   - iOSClient/Utility/NCContentPresenter.swift
   - iOSClient/Utility/NCLivePhoto.swift
