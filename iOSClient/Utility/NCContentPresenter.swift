@@ -126,7 +126,7 @@ class NCContentPresenter: NSObject {
                         print("Something went wrong")
                     }
                 }
-                if error.errorDescription.trimmingCharacters(in: .whitespacesAndNewlines) == "" { return }
+                if error.errorDescription.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty { return }
                 let description = NSLocalizedString(error.errorDescription, comment: "")
                 self.flatTop(title: NSLocalizedString(title, comment: ""), description: description + responseMessage + " \(error.errorCode)", delay: delay, imageName: nil, type: type, priority: priority, dropEnqueuedEntries: dropEnqueuedEntries)
             }

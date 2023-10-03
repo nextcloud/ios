@@ -49,13 +49,6 @@ excluded:
 
   - Brand/NCBrand.swift
   - iOSClient/NCGlobal.swift
-  - iOSClient/Utility/NCAskAuthorization.swift
-  - iOSClient/Utility/NCContentPresenter.swift
   - iOSClient/Utility/NCLivePhoto.swift
-  - iOSClient/Utility/NCPopupViewController.swift
-  - iOSClient/Utility/NCStoreReview.swift
-  - iOSClient/Utility/NCUtility.swift
-  - iOSClient/Utility/NCUtilityFileSystem.swift
-  - iOSClient/Utility/NCUtilityGUI.swift
 
 reporter: "xcode"

@@ -36,7 +36,7 @@ class NCStoreReview: NSObject {
 
         var runs = 0
         if savedRuns != nil {
-            runs = savedRuns as! Int
+            runs = savedRuns as? Int ?? 0
         }
 
         print("Nextcloud iOS run Counts are \(runs)")
