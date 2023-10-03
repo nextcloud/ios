@@ -29,7 +29,11 @@ import FloatingPanel
 class NCLoginWeb: UIViewController {
 
     var webView: WKWebView?
+
+    // swiftlint:disable force_cast
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
+    // swiftlint:enable force_cast
+
     var titleView: String = ""
 
     var urlBase = ""
@@ -232,7 +236,7 @@ extension NCLoginWeb: WKNavigationDelegate {
                 if value.contains("password:") { password = value }
             }
 
-            if server != "" && user != "" && password != "" {
+            if !server.isEmpty, !user.isEmpty, !password.isEmpty {
 
                 let server: String = server.replacingOccurrences(of: "/server:", with: "")
                 let username: String = user.replacingOccurrences(of: "user:", with: "").replacingOccurrences(of: "+", with: " ")
@@ -286,7 +290,7 @@ extension NCLoginWeb: WKNavigationDelegate {
         let user = username
 
         NextcloudKit.shared.setup(account: account, user: user, userId: user, password: password, urlBase: urlBase)
-        NextcloudKit.shared.getUserProfile { _, userProfile, data, error in
+        NextcloudKit.shared.getUserProfile { _, userProfile, _, error in
 
             if error == .success, let userProfile {
 

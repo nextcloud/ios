@@ -47,15 +47,6 @@ excluded:
   # iOS Files Quarantine
 
   - Brand/NCBrand.swift
-  - iOSClient/BackgroundImageColor/NCBackgroundImageColor.swift
-  - iOSClient/Diagnostics/NCCapabilitiesViewController.swift
-  - iOSClient/EmptyView/NCEmptyDataSet.swift
-  - iOSClient/Extensions/UIColor+Extensions.swift
-  - iOSClient/Extensions/UIImage+Extensions.swift
-  - iOSClient/FileViewInFolder/NCFileViewInFolder.swift
-  - iOSClient/Login/NCAppConfigView.swift
-  - iOSClient/Login/NCLogin.swift
-  - iOSClient/Login/NCLoginWeb.swift
   - iOSClient/Main/Account Request/NCAccountRequest.swift
   - iOSClient/Main/AudioRecorder/NCAudioRecorderViewController.swift
   - iOSClient/Main/Collection Common/NCCollectionViewCommon.swift
