@@ -44,9 +44,6 @@ excluded:
   - Carthage
   - Pods
   - Tests
-
-  # iOS Files Quarantine
-
   - Brand/NCBrand.swift
   - iOSClient/NCGlobal.swift
   - iOSClient/Utility/NCLivePhoto.swift
