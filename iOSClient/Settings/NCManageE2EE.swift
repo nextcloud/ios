@@ -29,7 +29,11 @@ import LocalAuthentication
 @objc class NCManageE2EEInterface: NSObject {
 
     @objc func makeShipDetailsUI(account: String) -> UIViewController {
+
+        // swiftlint:disable force_cast
         let account = (UIApplication.shared.delegate as! AppDelegate).account
+        // swiftlint:enable force_cast
+
         let details = NCViewE2EE(account: account)
         let vc = UIHostingController(rootView: details)
         vc.title = NSLocalizedString("_e2e_settings_", comment: "")
@@ -40,7 +44,11 @@ import LocalAuthentication
 class NCManageE2EE: NSObject, ObservableObject, NCEndToEndInitializeDelegate, TOPasscodeViewControllerDelegate {
 
     let endToEndInitialize = NCEndToEndInitialize()
+
+    // swiftlint:disable force_cast
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
+    // swiftlint:enable force_cast
+
     var passcodeType = ""
 
     @Published var isEndToEndEnabled: Bool = false
@@ -365,7 +373,10 @@ struct NCViewE2EETest: View {
 
 struct NCViewE2EE_Previews: PreviewProvider {
     static var previews: some View {
+
+        // swiftlint:disable force_cast
         let account = (UIApplication.shared.delegate as! AppDelegate).account
         NCViewE2EE(account: account)
+        // swiftlint:enable force_cast
     }
 }

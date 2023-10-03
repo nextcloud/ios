@@ -27,7 +27,10 @@ import NextcloudKit
 
 class NCManageAutoUploadFileName: XLFormViewController {
 
+    // swiftlint:disable force_cast
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
+    // swiftlint:enable force_cast
+
     let dateExample = Date()
 
     func initializeForm() {
@@ -73,7 +76,7 @@ class NCManageAutoUploadFileName: XLFormViewController {
 
         row = XLFormRowDescriptor(tag: "maskFileName", rowType: XLFormRowDescriptorTypeText, title: (NSLocalizedString("_filename_", comment: "")))
         let fileNameMask: String = CCUtility.getFileNameMask(NCGlobal.shared.keyFileNameAutoUploadMask)
-        if fileNameMask.count > 0 {
+        if !fileNameMask.isEmpty {
             row.value = fileNameMask
         }
         row.hidden = "$\("maintainOriginalFileName") == 1"
@@ -167,7 +170,7 @@ class NCManageAutoUploadFileName: XLFormViewController {
             // reload cell
             if fileName != nil {
 
-                if newValue as! String != formRow.value as! String {
+                if newValue as? String != formRow.value as? String {
 
                     self.reloadFormRow(formRow)
 
@@ -194,18 +197,18 @@ class NCManageAutoUploadFileName: XLFormViewController {
 
             let valueRenameTrimming = valueRename.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
 
-            if valueRenameTrimming.count > 0 {
+            if valueRenameTrimming.isEmpty {
+
+                CCUtility.setFileNameMask("", key: NCGlobal.shared.keyFileNameAutoUploadMask)
+                returnString = CCUtility.createFileName("IMG_0001.JPG", fileDate: dateExample, fileType: PHAssetMediaType.image, keyFileName: nil, keyFileNameType: NCGlobal.shared.keyFileNameAutoUploadType, keyFileNameOriginal: NCGlobal.shared.keyFileNameOriginalAutoUpload, forcedNewFileName: false)
+
+            } else {
 
                 self.form.delegate = nil
                 CCUtility.setFileNameMask(valueRename, key: NCGlobal.shared.keyFileNameAutoUploadMask)
                 self.form.delegate = self
 
                 returnString = CCUtility.createFileName("IMG_0001.JPG", fileDate: dateExample, fileType: PHAssetMediaType.image, keyFileName: NCGlobal.shared.keyFileNameAutoUploadMask, keyFileNameType: NCGlobal.shared.keyFileNameAutoUploadType, keyFileNameOriginal: NCGlobal.shared.keyFileNameOriginalAutoUpload, forcedNewFileName: false)
-
-            } else {
-
-                CCUtility.setFileNameMask("", key: NCGlobal.shared.keyFileNameAutoUploadMask)
-                returnString = CCUtility.createFileName("IMG_0001.JPG", fileDate: dateExample, fileType: PHAssetMediaType.image, keyFileName: nil, keyFileNameType: NCGlobal.shared.keyFileNameAutoUploadType, keyFileNameOriginal: NCGlobal.shared.keyFileNameOriginalAutoUpload, forcedNewFileName: false)
             }
 
         } else {

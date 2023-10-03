@@ -49,11 +49,6 @@ excluded:
 
   - Brand/NCBrand.swift
   - iOSClient/NCGlobal.swift
-  - iOSClient/Security/NCEndToEndMetadata.swift
-  - iOSClient/Security/NCViewCertificateDetails.swift
-  - iOSClient/Settings/NCEndToEndInitialize.swift
-  - iOSClient/Settings/NCManageAutoUploadFileName.swift
-  - iOSClient/Settings/NCManageE2EE.swift
   - iOSClient/Share/NCShareCommon.swift
   - iOSClient/Share/NCShareNetworking.swift
   - iOSClient/Shares/NCShares.swift
