@@ -31,7 +31,9 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
     @IBOutlet weak var collectionView: UICollectionView!
 
+    // swiftlint:disable force_cast
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
+    // swiftlint:enable force_cast
 
     internal let refreshControl = UIRefreshControl()
     internal var searchController: UISearchController?
@@ -198,7 +200,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
         NotificationCenter.default.addObserver(self, selector: #selector(triggerProgressTask(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterProgressTask), object: nil)
 
-        if serverUrl == "" {
+        if serverUrl.isEmpty {
             appDelegate.activeServerUrl = NCUtilityFileSystem.shared.getHomeServer(urlBase: appDelegate.urlBase, userId: appDelegate.userId)
         } else {
             appDelegate.activeServerUrl = serverUrl
@@ -566,7 +568,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     func showTip() {
 
         if self is NCFiles, self.view.window != nil, !NCBrandOptions.shared.disable_multiaccount, !NCBrandOptions.shared.disable_manage_account, self.serverUrl == NCUtilityFileSystem.shared.getHomeServer(urlBase: appDelegate.urlBase, userId: appDelegate.userId), let view = self.navigationItem.leftBarButtonItem?.customView {
-            if !NCManageDatabase.shared.tipExists(NCGlobal.shared.tipNCCollectionViewCommonAccountRequest), NCManageDatabase.shared.getAllAccountOrderAlias().count > 0 {
+            if !NCManageDatabase.shared.tipExists(NCGlobal.shared.tipNCCollectionViewCommonAccountRequest), !NCManageDatabase.shared.getAllAccountOrderAlias().isEmpty {
                 self.tipView?.show(forView: view)
             }
         }
@@ -612,7 +614,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         button.action(for: .touchUpInside) { _ in
 
             let accounts = NCManageDatabase.shared.getAllAccountOrderAlias()
-            if accounts.count > 0 && !NCBrandOptions.shared.disable_multiaccount && !NCBrandOptions.shared.disable_manage_account {
+            if !accounts.isEmpty, !NCBrandOptions.shared.disable_multiaccount, !NCBrandOptions.shared.disable_manage_account {
 
                 if let vcAccountRequest = UIStoryboard(name: "NCAccountRequest", bundle: nil).instantiateInitialViewController() as? NCAccountRequest {
 
@@ -673,7 +675,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             view.emptyTitle.text = NSLocalizedString("_request_in_progress_", comment: "")
             view.emptyDescription.text = ""
         } else {
-            if serverUrl == "" {
+            if serverUrl.isEmpty {
                 view.emptyImage.image = emptyImage
                 view.emptyTitle.text = NSLocalizedString(emptyTitle, comment: "")
                 view.emptyDescription.text = NSLocalizedString(emptyDescription, comment: "")
@@ -869,11 +871,11 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
         becomeFirstResponder()
 
-        if serverUrl != "" {
+        if !serverUrl.isEmpty {
             listMenuItems.append(UIMenuItem(title: NSLocalizedString("_paste_file_", comment: ""), action: #selector(pasteFilesMenu)))
         }
 
-        if listMenuItems.count > 0 {
+        if !listMenuItems.isEmpty {
             UIMenuController.shared.menuItems = listMenuItems
             UIMenuController.shared.showMenu(from: collectionView, rect: CGRect(x: touchPoint.x, y: touchPoint.y, width: 0, height: 0))
         }
@@ -946,7 +948,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                     providers: self.providers,
                     searchResults: self.searchResults)
             } update: { _, _, searchResult, metadatas in
-                guard let metadatas = metadatas, metadatas.count > 0, self.isSearchingMode, let searchResult = searchResult else { return }
+                guard let metadatas, !metadatas.isEmpty, self.isSearchingMode, let searchResult else { return }
                 NCOperationQueue.shared.unifiedSearchAddSection(collectionViewCommon: self, metadatas: metadatas, searchResult: searchResult)
             } completion: { _, _ in
                 self.refreshControl.endRefreshing()
@@ -1172,9 +1174,9 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
         var image: UIImage?
         let cell = collectionView.cellForItem(at: indexPath)
         if cell is NCListCell {
-            image = (cell as! NCListCell).imageItem.image
+            image = (cell as? NCListCell)?.imageItem.image
         } else if cell is NCGridCell {
-            image = (cell as! NCGridCell).imageItem.image
+            image = (cell as? NCGridCell)?.imageItem.image
         }
 
         return UIContextMenuConfiguration(identifier: identifier, previewProvider: {
@@ -1206,7 +1208,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         if !metadata.directory {
             if metadata.name == NCGlobal.shared.appName {
                     if let image = NCUtility.shared.createFilePreviewImage(ocId: metadata.ocId, etag: metadata.etag, fileNameView: metadata.fileNameView, classFile: metadata.classFile, status: metadata.status, createPreviewMedia: !metadata.hasPreview) {
-                    (cell as! NCCellProtocol).filePreviewImageView?.image = image
+                    (cell as? NCCellProtocol)?.filePreviewImageView?.image = image
                 } else {
                     NCOperationQueue.shared.downloadThumbnail(metadata: metadata, placeholder: true, cell: cell, view: collectionView)
                 }
@@ -1214,23 +1216,23 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                 // Unified search
                 switch metadata.iconName {
                 case let str where str.contains("contacts"):
-                    (cell as! NCCellProtocol).filePreviewImageView?.image = NCBrandColor.cacheImages.iconContacts
+                    (cell as? NCCellProtocol)?.filePreviewImageView?.image = NCBrandColor.cacheImages.iconContacts
                 case let str where str.contains("conversation"):
-                    (cell as! NCCellProtocol).filePreviewImageView?.image = NCBrandColor.cacheImages.iconTalk
+                    (cell as? NCCellProtocol)?.filePreviewImageView?.image = NCBrandColor.cacheImages.iconTalk
                 case let str where str.contains("calendar"):
-                    (cell as! NCCellProtocol).filePreviewImageView?.image = NCBrandColor.cacheImages.iconCalendar
+                    (cell as? NCCellProtocol)?.filePreviewImageView?.image = NCBrandColor.cacheImages.iconCalendar
                 case let str where str.contains("deck"):
-                    (cell as! NCCellProtocol).filePreviewImageView?.image = NCBrandColor.cacheImages.iconDeck
+                    (cell as? NCCellProtocol)?.filePreviewImageView?.image = NCBrandColor.cacheImages.iconDeck
                 case let str where str.contains("mail"):
-                    (cell as! NCCellProtocol).filePreviewImageView?.image = NCBrandColor.cacheImages.iconMail
+                    (cell as? NCCellProtocol)?.filePreviewImageView?.image = NCBrandColor.cacheImages.iconMail
                 case let str where str.contains("talk"):
-                    (cell as! NCCellProtocol).filePreviewImageView?.image = NCBrandColor.cacheImages.iconTalk
+                    (cell as? NCCellProtocol)?.filePreviewImageView?.image = NCBrandColor.cacheImages.iconTalk
                 case let str where str.contains("confirm"):
-                    (cell as! NCCellProtocol).filePreviewImageView?.image = NCBrandColor.cacheImages.iconConfirm
+                    (cell as? NCCellProtocol)?.filePreviewImageView?.image = NCBrandColor.cacheImages.iconConfirm
                 case let str where str.contains("pages"):
-                    (cell as! NCCellProtocol).filePreviewImageView?.image = NCBrandColor.cacheImages.iconPages
+                    (cell as? NCCellProtocol)?.filePreviewImageView?.image = NCBrandColor.cacheImages.iconPages
                 default:
-                    (cell as! NCCellProtocol).filePreviewImageView?.image = NCBrandColor.cacheImages.file
+                    (cell as? NCCellProtocol)?.filePreviewImageView?.image = NCBrandColor.cacheImages.file
                 }
 
                 if !metadata.iconUrl.isEmpty {
@@ -1243,7 +1245,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         }
 
         // Avatar
-        if metadata.ownerId.count > 0,
+        if !metadata.ownerId.isEmpty,
            metadata.ownerId != appDelegate.userId,
            appDelegate.account == metadata.account,
            let cell = cell as? NCCellProtocol {
@@ -1415,32 +1417,25 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         switch metadata.status {
         case NCGlobal.shared.metadataStatusWaitDownload:
             cell.fileInfoLabel?.text = CCUtility.transformedSize(metadata.size) + " - " + NSLocalizedString("_status_wait_download_", comment: "")
-            break
         case NCGlobal.shared.metadataStatusInDownload:
             cell.fileInfoLabel?.text = CCUtility.transformedSize(metadata.size) + " - " + NSLocalizedString("_status_in_download_", comment: "")
-            break
         case NCGlobal.shared.metadataStatusDownloading:
             cell.fileInfoLabel?.text = CCUtility.transformedSize(metadata.size) + " - ↓ …"
-            break
         case NCGlobal.shared.metadataStatusWaitUpload:
             cell.fileInfoLabel?.text = CCUtility.transformedSize(metadata.size) + " - " + NSLocalizedString("_status_wait_upload_", comment: "")
             cell.fileLocalImage?.image = nil
-            break
         case NCGlobal.shared.metadataStatusInUpload:
             cell.fileInfoLabel?.text = CCUtility.transformedSize(metadata.size) + " - " + NSLocalizedString("_status_in_upload_", comment: "")
             cell.fileLocalImage?.image = nil
-            break
         case NCGlobal.shared.metadataStatusUploading:
             cell.fileInfoLabel?.text = CCUtility.transformedSize(metadata.size) + " - ↑ …"
             cell.fileLocalImage?.image = nil
-            break
         case NCGlobal.shared.metadataStatusUploadError:
-            if metadata.sessionError != "" {
-                cell.fileInfoLabel?.text = NSLocalizedString("_status_wait_upload_", comment: "") + " " + metadata.sessionError
-            } else {
+            if metadata.sessionError.isEmpty {
                 cell.fileInfoLabel?.text = NSLocalizedString("_status_wait_upload_", comment: "")
+            } else {
+                cell.fileInfoLabel?.text = NSLocalizedString("_status_wait_upload_", comment: "") + " " + metadata.sessionError
             }
-            break
         default:
             break
         }
@@ -1511,7 +1506,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
 
             if indexPath.section == 0 {
 
-                let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionHeaderMenu", for: indexPath) as! NCSectionHeaderMenu
+                guard let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionHeaderMenu", for: indexPath) as? NCSectionHeaderMenu else { return UICollectionReusableView() }
                 let (_, heightHeaderRichWorkspace, heightHeaderSection) = getHeaderHeight(section: indexPath.section)
 
                 self.headerMenu = header
@@ -1556,7 +1551,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
 
             } else {
 
-                let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionHeader", for: indexPath) as! NCSectionHeader
+                guard let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionHeader", for: indexPath) as? NCSectionHeader else { return UICollectionReusableView() }
 
                 header.labelSection.text = self.dataSource.getSectionValueLocalization(indexPath: indexPath)
                 header.labelSection.textColor = .label
@@ -1566,7 +1561,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
 
         } else {
 
-            let footer = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionFooter", for: indexPath) as! NCSectionFooter
+            guard let footer = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionFooter", for: indexPath) as? NCSectionFooter else { return UICollectionReusableView() }
             let sections = dataSource.numberOfSections()
             let section = indexPath.section
             let metadataForSection = self.dataSource.getMetadataForSection(indexPath.section)
@@ -1644,7 +1639,7 @@ extension NCCollectionViewCommon: UICollectionViewDelegateFlowLayout {
 
         if let richWorkspaceText = richWorkspaceText, !headerRichWorkspaceDisable {
             let trimmed = richWorkspaceText.trimmingCharacters(in: .whitespaces)
-            if trimmed.count > 0 && !isSearchingMode {
+            if !trimmed.isEmpty && !isSearchingMode {
                 headerRichWorkspace = UIScreen.main.bounds.size.height / 6
             }
         }

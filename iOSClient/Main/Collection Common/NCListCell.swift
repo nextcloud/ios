@@ -54,7 +54,7 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
     var namedButtonMore = ""
 
     var fileAvatarImageView: UIImageView? {
-        get { return imageShared }
+        return imageShared
     }
     var fileObjectId: String? {
         get { return objectId }
