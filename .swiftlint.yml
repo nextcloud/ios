@@ -47,13 +47,6 @@ excluded:
   # iOS Files Quarantine
 
   - Brand/NCBrand.swift
-  - File Provider Extension/FileProviderData.swift
-  - File Provider Extension/FileProviderDomain.swift
-  - File Provider Extension/FileProviderEnumerator.swift
-  - File Provider Extension/FileProviderExtension+Actions.swift
-  - File Provider Extension/FileProviderExtension+Thumbnail.swift
-  - File Provider Extension/FileProviderExtension.swift
-  - File Provider Extension/FileProviderUtility.swift
   - Notification Service Extension/NotificationService.swift
   - iOSClient/Activity/NCActivity.swift
   - iOSClient/Activity/NCActivityTableViewCell.swift

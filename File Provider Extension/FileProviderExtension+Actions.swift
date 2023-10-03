@@ -43,9 +43,7 @@ extension FileProviderExtension {
 
                 NextcloudKit.shared.readFileOrFolder(serverUrlFileName: serverUrlFileName, depth: "0", showHiddenFiles: CCUtility.getShowHiddenFiles()) { _, files, _, error in
 
-                    if error == .success && files.count > 0 {
-
-                        let file = files.first!
+                    if error == .success, let file = files.first {
 
                         let isDirectoryEncrypted = NCUtility.shared.isDirectoryE2EE(file: file)
                         let metadata = NCManageDatabase.shared.convertFileToMetadata(file, isDirectoryE2EE: isDirectoryEncrypted)
