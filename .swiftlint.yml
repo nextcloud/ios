@@ -10,7 +10,7 @@ empty_count:
   severity: warning
 
 line_length:
-  warning: 400
+  warning: 500
   error: 5000
 
 function_body_length:
@@ -63,11 +63,8 @@ excluded:
   - Widget/Lockscreen/LockscreenData.swift
   - Widget/Lockscreen/LockscreenWidgetView.swift
   - Widget/Lockscreen/LockscreenWidgetProvider.swift
-  - iOSClient/GUI
-  - iOSClient/ExternalResources
   - iOSClient/Activity/NCActivity.swift
   - iOSClient/Activity/NCActivityTableViewCell.swift
-  - iOSClient/AppDelegate.swift
   - iOSClient/BackgroundImageColor/NCBackgroundImageColor.swift
   - iOSClient/BrowserWeb/NCBrowserWeb.swift
   - iOSClient/Diagnostics/NCCapabilitiesViewController.swift
