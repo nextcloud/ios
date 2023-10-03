@@ -36,15 +36,13 @@ import NextcloudKit
     private let downloadThumbnailActivityQueue = Queuer(name: "downloadThumbnailActivityQueue", maxConcurrentOperationCount: 10, qualityOfService: .default)
     private let downloadAvatarQueue = Queuer(name: "downloadAvatarQueue", maxConcurrentOperationCount: 10, qualityOfService: .default)
     private let unifiedSearchQueue = Queuer(name: "unifiedSearchQueue", maxConcurrentOperationCount: 1, qualityOfService: .default)
-    private let readFileQueue = Queuer(name: "readFileQueue", maxConcurrentOperationCount: 10, qualityOfService: .default)
 
     @objc func cancelAllQueue() {
-        downloadCancelAll()
-        downloadThumbnailCancelAll()
-        downloadThumbnailActivityCancelAll()
-        downloadAvatarCancelAll()
-        unifiedSearchCancelAll()
-        readFileCancelAll()
+        downloadQueue.cancelAll()
+        downloadThumbnailQueue.cancelAll()
+        downloadThumbnailActivityQueue.cancelAll()
+        downloadAvatarQueue.cancelAll()
+        unifiedSearchQueue.cancelAll()
     }
 
     // MARK: - Download file
@@ -54,21 +52,6 @@ import NextcloudKit
             return
         }
         downloadQueue.addOperation(NCOperationDownload(metadata: metadata, selector: selector))
-    }
-
-    func downloadCancelAll() {
-        downloadQueue.cancelAll()
-    }
-
-    func downloadQueueCount() -> Int {
-        return downloadQueue.operationCount
-    }
-
-    func downloadExists(metadata: tableMetadata) -> Bool {
-        for case let operation as NCOperationDownload in downloadQueue.operations where operation.metadata.ocId == metadata.ocId {
-            return true
-        }
-        return false
     }
 
     // MARK: - Download Thumbnail
@@ -99,10 +82,6 @@ import NextcloudKit
         }
     }
 
-    func downloadThumbnailCancelAll() {
-        downloadThumbnailQueue.cancelAll()
-    }
-
     // MARK: - Download Thumbnail Activity
 
     func downloadThumbnailActivity(fileNamePathOrFileId: String, fileNamePreviewLocalPath: String, fileId: String, cell: NCActivityCollectionViewCell, collectionView: UICollectionView?) {
@@ -116,16 +95,6 @@ import NextcloudKit
             }
             downloadThumbnailActivityQueue.addOperation(NCOperationDownloadThumbnailActivity(fileNamePathOrFileId: fileNamePathOrFileId, fileNamePreviewLocalPath: fileNamePreviewLocalPath, fileId: fileId, cell: cell, collectionView: collectionView))
         }
-    }
-
-    func cancelDownloadThumbnailActivity(fileId: String) {
-        for case let operation as NCOperationDownloadThumbnailActivity in downloadThumbnailActivityQueue.operations where operation.fileId == fileId {
-            operation.cancel()
-        }
-    }
-
-    func downloadThumbnailActivityCancelAll() {
-        downloadThumbnailActivityQueue.cancelAll()
     }
 
     // MARK: - Download Avatar
@@ -153,39 +122,10 @@ import NextcloudKit
         downloadAvatarQueue.addOperation(NCOperationDownloadAvatar(user: user, fileName: fileName, fileNameLocalPath: fileNameLocalPath, cell: cell, view: view, cellImageView: cellImageView))
     }
 
-    func cancelDownloadAvatar(user: String) {
-        for case let operation as NCOperationDownloadAvatar in downloadAvatarQueue.operations where operation.user == user {
-            operation.cancel()
-        }
-    }
-
-    func downloadAvatarCancelAll() {
-        downloadAvatarQueue.cancelAll()
-    }
-
     // MARK: - Unified Search
 
     func unifiedSearchAddSection(collectionViewCommon: NCCollectionViewCommon, metadatas: [tableMetadata], searchResult: NKSearchResult) {
         unifiedSearchQueue.addOperation(NCOperationUnifiedSearch(collectionViewCommon: collectionViewCommon, metadatas: metadatas, searchResult: searchResult))
-    }
-
-    func unifiedSearchCancelAll() {
-        unifiedSearchQueue.cancelAll()
-    }
-
-    // MARK: - Read file
-
-    func readFile(serverUrlFileName: String) {
-
-        for case let operation as NCOperationReadFile in readFileQueue.operations where operation.serverUrlFileName == serverUrlFileName {
-            return
-        }
-
-        readFileQueue.addOperation(NCOperationReadFile(serverUrlFileName: serverUrlFileName))
-    }
-
-    func readFileCancelAll() {
-        readFileQueue.cancelAll()
     }
 }
 
@@ -308,21 +248,21 @@ class NCOperationDownloadThumbnailActivity: ConcurrentOperation {
                 useInternalEndpoint: false,
                 options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { _, imagePreview, _, _, _, error in
 
-                    if error == .success, let imagePreview = imagePreview {
-                        DispatchQueue.main.async {
-                            if self.fileId == self.cell?.fileId, let imageView = self.cell?.imageView {
-                                UIView.transition(with: imageView,
-                                                  duration: 0.75,
-                                                  options: .transitionCrossDissolve,
-                                                  animations: { imageView.image = imagePreview },
-                                                  completion: nil)
-                            } else {
-                                self.collectionView?.reloadData()
-                            }
+                if error == .success, let imagePreview = imagePreview {
+                    DispatchQueue.main.async {
+                        if self.fileId == self.cell?.fileId, let imageView = self.cell?.imageView {
+                            UIView.transition(with: imageView,
+                                              duration: 0.75,
+                                              options: .transitionCrossDissolve,
+                                              animations: { imageView.image = imagePreview },
+                                              completion: nil)
+                        } else {
+                            self.collectionView?.reloadData()
                         }
                     }
-                    self.finish()
                 }
+                self.finish()
+            }
         }
     }
 }
@@ -424,31 +364,3 @@ class NCOperationUnifiedSearch: ConcurrentOperation {
     }
 }
 
-// MARK: -
-
-class NCOperationReadFile: ConcurrentOperation {
-
-    var serverUrlFileName: String
-
-    init(serverUrlFileName: String) {
-        self.serverUrlFileName = serverUrlFileName
-    }
-
-    override func start() {
-
-        if isCancelled {
-            self.finish()
-        } else {
-
-            NCNetworking.shared.readFile(serverUrlFileName: serverUrlFileName) { account, metadata, error in
-                if error == .success, let metadata = metadata {
-                    NCManageDatabase.shared.addMetadata(metadata)
-                    if metadata.directory {
-                        NCManageDatabase.shared.addDirectory(encrypted: metadata.e2eEncrypted, favorite: metadata.favorite, ocId: metadata.ocId, fileId: metadata.fileId, etag: nil, permissions: metadata.permissions, serverUrl: self.serverUrlFileName, account: account)
-                    }
-                    NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterOperationReadFile, userInfo: ["ocId": metadata.ocId])
-                }
-            }
-        }
-    }
-}
