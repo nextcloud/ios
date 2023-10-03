@@ -54,7 +54,6 @@ excluded:
   - iOSClient/Menu/NCMedia+Menu.swift
   - iOSClient/Menu/NCSortMenu.swift
   - iOSClient/Menu/NCViewer+Menu.swift
-  - iOSClient/More/NCMore.swift
   - iOSClient/NCGlobal.swift
   - iOSClient/Networking/NCNetworking.swift
   - iOSClient/Networking/NCNetworkingCheckRemoteUser.swift

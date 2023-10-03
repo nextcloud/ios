@@ -37,7 +37,10 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
     private var settingsMenu: [NKExternalSite] = []
     private var quotaMenu: [NKExternalSite] = []
 
+    // swiftlint:disable force_cast
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
+    // swiftlint:enable force_cast
+
     private let applicationHandle = NCApplicationHandle()
 
     private var tabAccount: tableAccount?
@@ -184,7 +187,7 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         item.url = "segueSettings"
         settingsMenu.append(item)
 
-        if quotaMenu.count > 0 {
+        if !quotaMenu.isEmpty {
             let item = quotaMenu[0]
             labelQuotaExternalSite.text = item.name
         }
@@ -221,7 +224,7 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         if NCBrandOptions.shared.disable_more_external_site == false {
             if let externalSites = NCManageDatabase.shared.getAllExternalSites(account: appDelegate.account) {
                 for externalSite in externalSites {
-                    if (externalSite.name != "" && externalSite.url != ""), let urlEncoded = externalSite.url.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) {
+                    if !externalSite.name.isEmpty, !externalSite.url.isEmpty, let urlEncoded = externalSite.url.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) {
                         item = NKExternalSite()
                         item.name = externalSite.name
                         item.url = urlEncoded
@@ -264,15 +267,15 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
 
     @objc func tapLabelQuotaExternalSite() {
 
-        if quotaMenu.count > 0 {
-
+        if !quotaMenu.isEmpty {
             let item = quotaMenu[0]
-            let browserWebVC = UIStoryboard(name: "NCBrowserWeb", bundle: nil).instantiateInitialViewController() as! NCBrowserWeb
-            browserWebVC.urlBase = item.url
-            browserWebVC.isHiddenButtonExit = true
+            if let browserWebVC = UIStoryboard(name: "NCBrowserWeb", bundle: nil).instantiateInitialViewController() as? NCBrowserWeb {
+                browserWebVC.urlBase = item.url
+                browserWebVC.isHiddenButtonExit = true
 
-            self.navigationController?.pushViewController(browserWebVC, animated: true)
-            self.navigationController?.navigationBar.isHidden = false
+                self.navigationController?.pushViewController(browserWebVC, animated: true)
+                self.navigationController?.navigationBar.isHidden = false
+            }
         }
     }
 
@@ -318,7 +321,7 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
 
         if section.type == .account {
 
-            let cell = tableView.dequeueReusableCell(withIdentifier: NCMoreUserCell.reuseIdentifier, for: indexPath) as! NCMoreUserCell
+            guard let cell = tableView.dequeueReusableCell(withIdentifier: NCMoreUserCell.reuseIdentifier, for: indexPath) as? NCMoreUserCell else { return UITableViewCell() }
 
             cell.avatar.image = nil
             cell.icon.image = nil
@@ -328,7 +331,7 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
             if let account = tabAccount {
                 cell.avatar.image = NCUtility.shared.loadUserImage(for: account.user, displayName: account.displayName, userBaseUrl: appDelegate)
 
-                if account.alias == "" {
+                if account.alias.isEmpty {
                     cell.displayName?.text = account.displayName
                 } else {
                     cell.displayName?.text = account.displayName + " (" + account.alias + ")"
@@ -355,11 +358,10 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
             return cell
 
         } else if section.type == .moreApps {
-            let cell = tableView.dequeueReusableCell(withIdentifier: NCMoreAppSuggestionsCell.reuseIdentifier, for: indexPath) as! NCMoreAppSuggestionsCell
-
+            guard let cell = tableView.dequeueReusableCell(withIdentifier: NCMoreAppSuggestionsCell.reuseIdentifier, for: indexPath) as? NCMoreAppSuggestionsCell else { return UITableViewCell() }
             return cell
         } else {
-            let cell = tableView.dequeueReusableCell(withIdentifier: CCCellMore.reuseIdentifier, for: indexPath) as! CCCellMore
+            guard let cell = tableView.dequeueReusableCell(withIdentifier: CCCellMore.reuseIdentifier, for: indexPath) as? CCCellMore else { return UITableViewCell() }
 
             let item = sections[indexPath.section].items[indexPath.row]
 
@@ -414,13 +416,13 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
                 present(controller, animated: true, completion: nil)
             }
         } else if item.url.contains("//") {
-            let browserWebVC = UIStoryboard(name: "NCBrowserWeb", bundle: nil).instantiateInitialViewController() as! NCBrowserWeb
-            browserWebVC.urlBase = item.url
-            browserWebVC.isHiddenButtonExit = true
-            browserWebVC.titleBrowser = item.name
-
-            self.navigationController?.pushViewController(browserWebVC, animated: true)
-            self.navigationController?.navigationBar.isHidden = false
+            if let browserWebVC = UIStoryboard(name: "NCBrowserWeb", bundle: nil).instantiateInitialViewController() as? NCBrowserWeb {
+                browserWebVC.urlBase = item.url
+                browserWebVC.isHiddenButtonExit = true
+                browserWebVC.titleBrowser = item.name
+                self.navigationController?.pushViewController(browserWebVC, animated: true)
+                self.navigationController?.navigationBar.isHidden = false
+            }
         } else if item.url == "logout" {
             let alertController = UIAlertController(title: "", message: NSLocalizedString("_want_delete_", comment: ""), preferredStyle: .alert)
 
