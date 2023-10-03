@@ -10,16 +10,16 @@ empty_count:
   severity: warning
 
 line_length:
-  warning: 500
+  warning: 1000
   error: 5000
 
 function_body_length:
    warning: 400
 
 type_body_length:
-  warning: 800
-  error: 1000
-  
+  warning: 1500
+  error: 2000
+
 file_length:
   warning: 2000
   error: 2500
@@ -49,18 +49,6 @@ excluded:
 
   - Brand/NCBrand.swift
   - iOSClient/NCGlobal.swift
-  - iOSClient/Networking/NCNetworking.swift
-  - iOSClient/Networking/NCNetworkingCheckRemoteUser.swift
-  - iOSClient/Networking/NCNetworkingChunkedUpload.swift
-  - iOSClient/Networking/E2EE/NCNetworkingE2EE.swift
-  - iOSClient/Networking/E2EE/NCNetworkingE2EEUpload.swift
-  - iOSClient/Networking/E2EE/NCNetworkingE2EEDelete.swift
-  - iOSClient/Networking/E2EE/NCNetworkingE2EERename.swift
-  - iOSClient/Networking/E2EE/NCNetworkingE2EECreateFolder.swift
-  - iOSClient/Networking/NCNetworkingProcessUpload.swift
-  - iOSClient/Networking/NCOperationQueue.swift
-  - iOSClient/Networking/NCService.swift
-  - iOSClient/Networking/NCConfigServer.swift
   - iOSClient/Notification/NCNotification.swift
   - iOSClient/Recent/NCRecent.swift
   - iOSClient/Rename file/NCRenameFile.swift

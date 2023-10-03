@@ -33,7 +33,10 @@ class NCNetworkingProcessUpload: NSObject {
         return instance
     }()
 
+    // swiftlint:disable force_cast
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
+    // swiftlint:enable force_cast
+
     private var notificationToken: NotificationToken?
     private var timerProcess: Timer?
     private var pauseProcess: Bool = false
@@ -47,7 +50,7 @@ class NCNetworkingProcessUpload: NSObject {
                 case .initial:
                     print("Initial")
                 case .update(_, let deletions, let insertions, let modifications):
-                    if deletions.count > 0 || insertions.count > 0 || modifications.count > 0 {
+                    if !deletions.isEmpty || !insertions.isEmpty || !modifications.isEmpty {
                         self?.invalidateObserveTableMetadata()
                         self?.start(completition: { items in
                             print("[LOG] PROCESS-UPLOAD-OBSERVE \(items)")
@@ -125,7 +128,7 @@ class NCNetworkingProcessUpload: NSObject {
                 }
             }
             // CHUNK
-            if metadatasUpload.filter({ $0.chunk > 0 }).count > 0 {
+            if !metadatasUpload.filter({ $0.chunk > 0 }).isEmpty {
                 self.pauseProcess = false
                 return completition(counterUpload)
             }
@@ -136,7 +139,7 @@ class NCNetworkingProcessUpload: NSObject {
 
                     let limit = maxConcurrentOperationUpload - counterUpload
                     let metadatas = NCManageDatabase.shared.getAdvancedMetadatas(predicate: NSPredicate(format: "account == %@ AND sessionSelector == %@ AND status == %d", self.appDelegate.account, sessionSelector, NCGlobal.shared.metadataStatusWaitUpload), page: 1, limit: limit, sorted: "date", ascending: true)
-                    if metadatas.count > 0 {
+                    if !metadatas.isEmpty {
                         NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] PROCESS-UPLOAD find \(metadatas.count) items")
                     }
 
@@ -193,7 +196,7 @@ class NCNetworkingProcessUpload: NSObject {
                     for metadata in metadatas {
                         // Verify QUOTA
                         if metadata.sessionError.contains("\(NCGlobal.shared.errorQuota)") {
-                            NextcloudKit.shared.getUserProfile { account, userProfile, _, error in
+                            NextcloudKit.shared.getUserProfile { _, userProfile, _, error in
                                 if error == .success, let userProfile, userProfile.quotaFree > 0, userProfile.quotaFree > metadata.size {
                                     NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId, session: NCNetworking.shared.sessionIdentifierBackground, sessionError: "", sessionTaskIdentifier: 0, status: NCGlobal.shared.metadataStatusWaitUpload)
                                 }

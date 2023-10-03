@@ -51,7 +51,7 @@ import JGProgressHUD
     // MARK: - Download file
 
     func download(metadata: tableMetadata, selector: String) {
-        
+
         for case let operation as NCOperationDownload in downloadQueue.operations where operation.metadata.ocId == metadata.ocId { return }
         downloadQueue.addOperation(NCOperationDownload(metadata: metadata, selector: selector))
     }
@@ -150,7 +150,7 @@ class NCOperationDownload: ConcurrentOperation {
     override func start() {
 
         guard !isCancelled else { return self.finish() }
-        
+
         NCNetworking.shared.download(metadata: metadata, selector: self.selector) { _, _ in
             self.finish()
         }
@@ -460,4 +460,3 @@ class NCOperationSaveLivePhoto: ConcurrentOperation {
         })
     }
 }
-

@@ -31,7 +31,9 @@ class NCService: NSObject {
         return instance
     }()
 
+    // swiftlint:disable force_cast
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
+    // swiftlint:enable force_cast
 
     // MARK: -
 
@@ -42,7 +44,7 @@ class NCService: NSObject {
         let account = appDelegate.account
 
         NCPushNotification.shared().pushNotification()
-        
+
         Task {
             addInternalTypeIdentifier()
             let result = await requestServerStatus()
@@ -153,7 +155,7 @@ class NCService: NSObject {
         let fileNameLocalPath = String(CCUtility.getDirectoryUserData()) + "/" + fileName
         let etag = NCManageDatabase.shared.getTableAvatar(fileName: fileName)?.etag
 
-        NextcloudKit.shared.downloadAvatar(user: appDelegate.userId, 
+        NextcloudKit.shared.downloadAvatar(user: appDelegate.userId,
                                            fileNameLocalPath: fileNameLocalPath,
                                            sizeImage: NCGlobal.shared.avatarSize,
                                            avatarSizeRounded: NCGlobal.shared.avatarSizeRounded,
