@@ -121,24 +121,6 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
         case NCGlobal.shared.selectorSaveAlbum:
             saveAlbum(metadata: metadata)
 
-        case NCGlobal.shared.selectorSaveAlbumLivePhotoIMG, NCGlobal.shared.selectorSaveAlbumLivePhotoMOV:
-
-            var metadata = metadata
-            var metadataMOV = metadata
-            guard let metadataTMP = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata) else { break }
-
-            if selector == NCGlobal.shared.selectorSaveAlbumLivePhotoIMG {
-                metadataMOV = metadataTMP
-            }
-
-            if selector == NCGlobal.shared.selectorSaveAlbumLivePhotoMOV {
-                metadata = metadataTMP
-            }
-
-            if CCUtility.fileProviderStorageExists(metadata) && CCUtility.fileProviderStorageExists(metadataMOV) {
-                saveLivePhotoToDisk(metadata: metadata, metadataMov: metadataMOV)
-            }
-
         case NCGlobal.shared.selectorSaveAsScan:
             saveAsScan(metadata: metadata)
 
@@ -458,60 +440,6 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
                 NCContentPresenter.shared.messageNotification("_save_selected_files_", error: errorSave, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error)
             }
         }
-    }
-
-    func saveLivePhoto(metadata: tableMetadata, metadataMOV: tableMetadata) {
-
-        if !CCUtility.fileProviderStorageExists(metadata) {
-            NCOperationQueue.shared.download(metadata: metadata, selector: NCGlobal.shared.selectorSaveAlbumLivePhotoIMG)
-        }
-
-        if !CCUtility.fileProviderStorageExists(metadataMOV) {
-            NCOperationQueue.shared.download(metadata: metadataMOV, selector: NCGlobal.shared.selectorSaveAlbumLivePhotoMOV)
-        }
-
-        if CCUtility.fileProviderStorageExists(metadata) && CCUtility.fileProviderStorageExists(metadataMOV) {
-            saveLivePhotoToDisk(metadata: metadata, metadataMov: metadataMOV)
-        }
-    }
-
-    func saveLivePhotoToDisk(metadata: tableMetadata, metadataMov: tableMetadata) {
-        guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else { return }
-
-        let fileNameImage = URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!)
-        let fileNameMov = URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadataMov.ocId, fileNameView: metadataMov.fileNameView)!)
-        let hud = JGProgressHUD()
-
-        hud.indicatorView = JGProgressHUDRingIndicatorView()
-        if let indicatorView = hud.indicatorView as? JGProgressHUDRingIndicatorView {
-            indicatorView.ringWidth = 1.5
-        }
-        hud.textLabel.text = NSLocalizedString("_saving_", comment: "")
-        hud.show(in: (appDelegate.window?.rootViewController?.view)!)
-
-        NCLivePhoto.generate(from: fileNameImage, videoURL: fileNameMov, progress: { progress in
-            hud.progress = Float(progress)
-        }, completion: { _, resources in
-
-            if resources != nil {
-                NCLivePhoto.saveToLibrary(resources!) { result in
-                    DispatchQueue.main.async {
-                        if !result {
-                            hud.indicatorView = JGProgressHUDErrorIndicatorView()
-                            hud.textLabel.text = NSLocalizedString("_livephoto_save_error_", comment: "")
-                        } else {
-                            hud.indicatorView = JGProgressHUDSuccessIndicatorView()
-                            hud.textLabel.text = NSLocalizedString("_success_", comment: "")
-                        }
-                        hud.dismiss(afterDelay: 1)
-                    }
-                }
-            } else {
-                hud.indicatorView = JGProgressHUDErrorIndicatorView()
-                hud.textLabel.text = NSLocalizedString("_livephoto_save_error_", comment: "")
-                hud.dismiss(afterDelay: 1)
-            }
-        })
     }
 
     // MARK: - Copy & Paste

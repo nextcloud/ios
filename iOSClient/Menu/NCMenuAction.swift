@@ -222,7 +222,7 @@ extension NCMenuAction {
             action: { _ in
                 for metadata in selectedMediaMetadatas {
                     if let metadataMOV = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata) {
-                        NCActionCenter.shared.saveLivePhoto(metadata: metadata, metadataMOV: metadataMOV)
+                        NCOperationQueue.shared.saveLivePhoto(metadata: metadata, metadataMOV: metadataMOV)
                     } else {
                         if CCUtility.fileProviderStorageExists(metadata) {
                             NCActionCenter.shared.saveAlbum(metadata: metadata)

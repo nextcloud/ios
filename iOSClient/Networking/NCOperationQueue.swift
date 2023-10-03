@@ -24,6 +24,7 @@
 import UIKit
 import Queuer
 import NextcloudKit
+import JGProgressHUD
 
 @objc class NCOperationQueue: NSObject {
     @objc public static let shared: NCOperationQueue = {
@@ -36,6 +37,7 @@ import NextcloudKit
     private let downloadThumbnailActivityQueue = Queuer(name: "downloadThumbnailActivityQueue", maxConcurrentOperationCount: 10, qualityOfService: .default)
     private let downloadAvatarQueue = Queuer(name: "downloadAvatarQueue", maxConcurrentOperationCount: 10, qualityOfService: .default)
     private let unifiedSearchQueue = Queuer(name: "unifiedSearchQueue", maxConcurrentOperationCount: 1, qualityOfService: .default)
+    private let saveLivePhotoQueue = Queuer(name: "saveLivePhotoQueue", maxConcurrentOperationCount: 1, qualityOfService: .default)
 
     @objc func cancelAllQueue() {
         downloadQueue.cancelAll()
@@ -43,14 +45,14 @@ import NextcloudKit
         downloadThumbnailActivityQueue.cancelAll()
         downloadAvatarQueue.cancelAll()
         unifiedSearchQueue.cancelAll()
+        saveLivePhotoQueue.cancelAll()
     }
 
     // MARK: - Download file
 
     func download(metadata: tableMetadata, selector: String) {
-        for case let operation as NCOperationDownload in downloadQueue.operations where operation.metadata.ocId == metadata.ocId {
-            return
-        }
+        
+        for case let operation as NCOperationDownload in downloadQueue.operations where operation.metadata.ocId == metadata.ocId { return }
         downloadQueue.addOperation(NCOperationDownload(metadata: metadata, selector: selector))
     }
 
@@ -69,9 +71,7 @@ import NextcloudKit
         }
 
         if metadata.hasPreview && metadata.status == NCGlobal.shared.metadataStatusNormal && (!CCUtility.fileProviderStoragePreviewIconExists(metadata.ocId, etag: metadata.etag)) {
-            for case let operation as NCOperationDownloadThumbnail in downloadThumbnailQueue.operations where operation.metadata.ocId == metadata.ocId {
-                return
-            }
+            for case let operation as NCOperationDownloadThumbnail in downloadThumbnailQueue.operations where operation.metadata.ocId == metadata.ocId { return }
             downloadThumbnailQueue.addOperation(NCOperationDownloadThumbnail(metadata: metadata, cell: cell, view: view))
         }
     }
@@ -116,9 +116,7 @@ import NextcloudKit
                    userBaseUrl: account)
         }
 
-        for case let operation as NCOperationDownloadAvatar in downloadAvatarQueue.operations where operation.fileName == fileName {
-            return
-        }
+        for case let operation as NCOperationDownloadAvatar in downloadAvatarQueue.operations where operation.fileName == fileName { return }
         downloadAvatarQueue.addOperation(NCOperationDownloadAvatar(user: user, fileName: fileName, fileNameLocalPath: fileNameLocalPath, cell: cell, view: view, cellImageView: cellImageView))
     }
 
@@ -126,6 +124,14 @@ import NextcloudKit
 
     func unifiedSearchAddSection(collectionViewCommon: NCCollectionViewCommon, metadatas: [tableMetadata], searchResult: NKSearchResult) {
         unifiedSearchQueue.addOperation(NCOperationUnifiedSearch(collectionViewCommon: collectionViewCommon, metadatas: metadatas, searchResult: searchResult))
+    }
+
+    // MARK: - Save Live Photo
+
+    func saveLivePhoto(metadata: tableMetadata, metadataMOV: tableMetadata) {
+
+        for case let operation as NCOperationSaveLivePhoto in saveLivePhotoQueue.operations where operation.metadata.fileName == metadata.fileName { return }
+        saveLivePhotoQueue.addOperation(NCOperationSaveLivePhoto(metadata: metadata, metadataMOV: metadataMOV))
     }
 }
 
@@ -142,12 +148,11 @@ class NCOperationDownload: ConcurrentOperation {
     }
 
     override func start() {
-        if isCancelled {
+
+        guard !isCancelled else { return self.finish() }
+        
+        NCNetworking.shared.download(metadata: metadata, selector: self.selector) { _, _ in
             self.finish()
-        } else {
-            NCNetworking.shared.download(metadata: metadata, selector: self.selector) { _, _ in
-                self.finish()
-            }
         }
     }
 }
@@ -174,44 +179,43 @@ class NCOperationDownloadThumbnail: ConcurrentOperation {
 
     override func start() {
 
-        if isCancelled {
-            self.finish()
-        } else {
-            var etagResource: String?
-            if FileManager.default.fileExists(atPath: fileNameIconLocalPath) && FileManager.default.fileExists(atPath: fileNamePreviewLocalPath) {
-                etagResource = metadata.etagResource
-            }
-            NextcloudKit.shared.downloadPreview(
-                fileNamePathOrFileId: fileNamePath,
-                fileNamePreviewLocalPath: fileNamePreviewLocalPath,
-                widthPreview: NCGlobal.shared.sizePreview,
-                heightPreview: NCGlobal.shared.sizePreview,
-                fileNameIconLocalPath: fileNameIconLocalPath,
-                sizeIcon: NCGlobal.shared.sizeIcon,
-                etag: etagResource,
-                options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { _, _, imageIcon, _, etag, error in
+        guard !isCancelled else { return self.finish() }
 
-                    if error == .success, let imageIcon = imageIcon {
-                        NCManageDatabase.shared.setMetadataEtagResource(ocId: self.metadata.ocId, etagResource: etag)
-                        DispatchQueue.main.async {
-                            if self.metadata.ocId == self.cell?.fileObjectId, let filePreviewImageView = self.cell?.filePreviewImageView {
-                                UIView.transition(with: filePreviewImageView,
-                                                  duration: 0.75,
-                                                  options: .transitionCrossDissolve,
-                                                  animations: { filePreviewImageView.image = imageIcon },
-                                                  completion: nil)
-                            } else {
-                                if self.view is UICollectionView {
-                                    (self.view as? UICollectionView)?.reloadData()
-                                } else if self.view is UITableView {
-                                    (self.view as? UITableView)?.reloadData()
-                                }
-                            }
-                            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDownloadedThumbnail, userInfo: ["ocId": self.metadata.ocId])
+        var etagResource: String?
+        if FileManager.default.fileExists(atPath: fileNameIconLocalPath) && FileManager.default.fileExists(atPath: fileNamePreviewLocalPath) {
+            etagResource = metadata.etagResource
+        }
+
+        NextcloudKit.shared.downloadPreview(
+            fileNamePathOrFileId: fileNamePath,
+            fileNamePreviewLocalPath: fileNamePreviewLocalPath,
+            widthPreview: NCGlobal.shared.sizePreview,
+            heightPreview: NCGlobal.shared.sizePreview,
+            fileNameIconLocalPath: fileNameIconLocalPath,
+            sizeIcon: NCGlobal.shared.sizeIcon,
+            etag: etagResource,
+            options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { _, _, imageIcon, _, etag, error in
+
+            if error == .success, let imageIcon = imageIcon {
+                NCManageDatabase.shared.setMetadataEtagResource(ocId: self.metadata.ocId, etagResource: etag)
+                DispatchQueue.main.async {
+                    if self.metadata.ocId == self.cell?.fileObjectId, let filePreviewImageView = self.cell?.filePreviewImageView {
+                        UIView.transition(with: filePreviewImageView,
+                                          duration: 0.75,
+                                          options: .transitionCrossDissolve,
+                                          animations: { filePreviewImageView.image = imageIcon },
+                                          completion: nil)
+                    } else {
+                        if self.view is UICollectionView {
+                            (self.view as? UICollectionView)?.reloadData()
+                        } else if self.view is UITableView {
+                            (self.view as? UITableView)?.reloadData()
                         }
                     }
-                    self.finish()
+                    NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDownloadedThumbnail, userInfo: ["ocId": self.metadata.ocId])
                 }
+            }
+            self.finish()
         }
     }
 }
@@ -236,33 +240,31 @@ class NCOperationDownloadThumbnailActivity: ConcurrentOperation {
 
     override func start() {
 
-        if isCancelled {
-            self.finish()
-        } else {
-            NextcloudKit.shared.downloadPreview(
-                fileNamePathOrFileId: fileNamePathOrFileId,
-                fileNamePreviewLocalPath: fileNamePreviewLocalPath,
-                widthPreview: 0,
-                heightPreview: 0,
-                etag: nil,
-                useInternalEndpoint: false,
-                options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { _, imagePreview, _, _, _, error in
+        guard !isCancelled else { return self.finish() }
 
-                if error == .success, let imagePreview = imagePreview {
-                    DispatchQueue.main.async {
-                        if self.fileId == self.cell?.fileId, let imageView = self.cell?.imageView {
-                            UIView.transition(with: imageView,
-                                              duration: 0.75,
-                                              options: .transitionCrossDissolve,
-                                              animations: { imageView.image = imagePreview },
-                                              completion: nil)
-                        } else {
-                            self.collectionView?.reloadData()
-                        }
+        NextcloudKit.shared.downloadPreview(
+            fileNamePathOrFileId: fileNamePathOrFileId,
+            fileNamePreviewLocalPath: fileNamePreviewLocalPath,
+            widthPreview: 0,
+            heightPreview: 0,
+            etag: nil,
+            useInternalEndpoint: false,
+            options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { _, imagePreview, _, _, _, error in
+
+            if error == .success, let imagePreview = imagePreview {
+                DispatchQueue.main.async {
+                    if self.fileId == self.cell?.fileId, let imageView = self.cell?.imageView {
+                        UIView.transition(with: imageView,
+                                          duration: 0.75,
+                                          options: .transitionCrossDissolve,
+                                          animations: { imageView.image = imagePreview },
+                                          completion: nil)
+                    } else {
+                        self.collectionView?.reloadData()
                     }
                 }
-                self.finish()
             }
+            self.finish()
         }
     }
 }
@@ -291,38 +293,36 @@ class NCOperationDownloadAvatar: ConcurrentOperation {
 
     override func start() {
 
-        if isCancelled {
-            self.finish()
-        } else {
-            NextcloudKit.shared.downloadAvatar(user: user, 
-                                               fileNameLocalPath: fileNameLocalPath,
-                                               sizeImage: NCGlobal.shared.avatarSize,
-                                               avatarSizeRounded: NCGlobal.shared.avatarSizeRounded,
-                                               etag: self.etag,
-                                               options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { _, imageAvatar, _, etag, error in
+        guard !isCancelled else { return self.finish() }
 
-                if error == .success, let imageAvatar = imageAvatar, let etag = etag {
-                    NCManageDatabase.shared.addAvatar(fileName: self.fileName, etag: etag)
-                    DispatchQueue.main.async {
-                        if self.user == self.cell.fileUser, let avatarImageView = self.cellImageView {
-                            UIView.transition(with: avatarImageView,
-                                              duration: 0.75,
-                                              options: .transitionCrossDissolve,
-                                              animations: { avatarImageView.image = imageAvatar },
-                                              completion: nil)
-                        } else {
-                            if self.view is UICollectionView {
-                                (self.view as? UICollectionView)?.reloadData()
-                            } else if self.view is UITableView {
-                                (self.view as? UITableView)?.reloadData()
-                            }
+        NextcloudKit.shared.downloadAvatar(user: user,
+                                           fileNameLocalPath: fileNameLocalPath,
+                                           sizeImage: NCGlobal.shared.avatarSize,
+                                           avatarSizeRounded: NCGlobal.shared.avatarSizeRounded,
+                                           etag: self.etag,
+                                           options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { _, imageAvatar, _, etag, error in
+
+            if error == .success, let imageAvatar = imageAvatar, let etag = etag {
+                NCManageDatabase.shared.addAvatar(fileName: self.fileName, etag: etag)
+                DispatchQueue.main.async {
+                    if self.user == self.cell.fileUser, let avatarImageView = self.cellImageView {
+                        UIView.transition(with: avatarImageView,
+                                          duration: 0.75,
+                                          options: .transitionCrossDissolve,
+                                          animations: { avatarImageView.image = imageAvatar },
+                                          completion: nil)
+                    } else {
+                        if self.view is UICollectionView {
+                            (self.view as? UICollectionView)?.reloadData()
+                        } else if self.view is UITableView {
+                            (self.view as? UITableView)?.reloadData()
                         }
                     }
-                } else if error.errorCode == NCGlobal.shared.errorNotModified {
-                    NCManageDatabase.shared.setAvatarLoaded(fileName: self.fileName)
                 }
-                self.finish()
+            } else if error.errorCode == NCGlobal.shared.errorNotModified {
+                NCManageDatabase.shared.setAvatarLoaded(fileName: self.fileName)
             }
+            self.finish()
         }
     }
 }
@@ -352,15 +352,112 @@ class NCOperationUnifiedSearch: ConcurrentOperation {
 
     override func start() {
 
-        if isCancelled {
+        guard !isCancelled else { return self.finish() }
+
+        self.collectionViewCommon.dataSource.addSection(metadatas: metadatas, searchResult: searchResult)
+        self.collectionViewCommon.searchResults?.append(self.searchResult)
+        reloadDataThenPerform {
             self.finish()
-        } else {
-            self.collectionViewCommon.dataSource.addSection(metadatas: metadatas, searchResult: searchResult)
-            self.collectionViewCommon.searchResults?.append(self.searchResult)
-            reloadDataThenPerform {
-                self.finish()
+        }
+    }
+}
+
+// MARK: -
+
+class NCOperationSaveLivePhoto: ConcurrentOperation {
+
+    var metadata: tableMetadata
+    var metadataMOV: tableMetadata
+    let hud = JGProgressHUD()
+    let appDelegate = UIApplication.shared.delegate as? AppDelegate
+
+    init(metadata: tableMetadata, metadataMOV: tableMetadata) {
+        self.metadata = tableMetadata.init(value: metadata)
+        self.metadataMOV = tableMetadata.init(value: metadataMOV)
+    }
+
+    override func start() {
+        guard !isCancelled else { return self.finish() }
+
+        DispatchQueue.main.async {
+            self.hud.indicatorView = JGProgressHUDRingIndicatorView()
+            if let indicatorView = self.hud.indicatorView as? JGProgressHUDRingIndicatorView {
+                indicatorView.ringWidth = 1.5
+            }
+            self.hud.textLabel.text = NSLocalizedString("_download_image_", comment: "")
+            self.hud.detailTextLabel.text = self.metadata.fileName
+            self.hud.show(in: (self.appDelegate?.window?.rootViewController?.view)!)
+        }
+
+        NCNetworking.shared.download(metadata: metadata, selector: "", notificationCenterProgressTask: false, checkfileProviderStorageExists: true) { _ in
+        } progressHandler: { progress in
+            self.hud.progress = Float(progress.fractionCompleted)
+        } completion: { _, error in
+            guard error == .success else {
+                DispatchQueue.main.async {
+                    self.hud.indicatorView = JGProgressHUDErrorIndicatorView()
+                    self.hud.textLabel.text = NSLocalizedString("_livephoto_save_error_", comment: "")
+                    self.hud.dismiss()
+                }
+                return self.finish()
+            }
+            NCNetworking.shared.download(metadata: self.metadataMOV, selector: "", notificationCenterProgressTask: false, checkfileProviderStorageExists: true) { _ in
+                DispatchQueue.main.async {
+                    self.hud.textLabel.text = NSLocalizedString("_download_video_", comment: "")
+                    self.hud.detailTextLabel.text = self.metadataMOV.fileName
+                }
+            } progressHandler: { progress in
+                self.hud.progress = Float(progress.fractionCompleted)
+            } completion: { _, error in
+                guard error == .success else {
+                    DispatchQueue.main.async {
+                        self.hud.indicatorView = JGProgressHUDErrorIndicatorView()
+                        self.hud.textLabel.text = NSLocalizedString("_livephoto_save_error_", comment: "")
+                        self.hud.dismiss()
+                    }
+                    return self.finish()
+                }
+                self.saveLivePhotoToDisk(metadata: self.metadata, metadataMov: self.metadataMOV)
             }
         }
+    }
+
+    func saveLivePhotoToDisk(metadata: tableMetadata, metadataMov: tableMetadata) {
+
+        let fileNameImage = URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!)
+        let fileNameMov = URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadataMov.ocId, fileNameView: metadataMov.fileNameView)!)
+
+        DispatchQueue.main.async {
+            self.hud.textLabel.text = NSLocalizedString("_livephoto_save_", comment: "")
+            self.hud.detailTextLabel.text = ""
+        }
+
+        NCLivePhoto.generate(from: fileNameImage, videoURL: fileNameMov, progress: { progress in
+            self.hud.progress = Float(progress)
+        }, completion: { _, resources in
+            if resources != nil {
+                NCLivePhoto.saveToLibrary(resources!) { result in
+                    DispatchQueue.main.async {
+                        if !result {
+                            self.hud.indicatorView = JGProgressHUDErrorIndicatorView()
+                            self.hud.textLabel.text = NSLocalizedString("_livephoto_save_error_", comment: "")
+                        } else {
+                            self.hud.indicatorView = JGProgressHUDSuccessIndicatorView()
+                            self.hud.textLabel.text = NSLocalizedString("_success_", comment: "")
+                        }
+                        self.hud.dismiss()
+                    }
+                    return self.finish()
+                }
+            } else {
+                DispatchQueue.main.async {
+                    self.hud.indicatorView = JGProgressHUDErrorIndicatorView()
+                    self.hud.textLabel.text = NSLocalizedString("_livephoto_save_error_", comment: "")
+                    self.hud.dismiss()
+                }
+                return self.finish()
+            }
+        })
     }
 }
 

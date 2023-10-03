@@ -98,7 +98,7 @@ class NCContextMenu: NSObject {
         let save = UIAction(title: titleSave,
                             image: UIImage(systemName: "square.and.arrow.down")) { _ in
             if let metadataMOV = metadataMOV {
-                NCActionCenter.shared.saveLivePhoto(metadata: metadata, metadataMOV: metadataMOV)
+                NCOperationQueue.shared.saveLivePhoto(metadata: metadata, metadataMOV: metadataMOV)
             } else {
                 if CCUtility.fileProviderStorageExists(metadata) {
                     NCActionCenter.shared.saveAlbum(metadata: metadata)

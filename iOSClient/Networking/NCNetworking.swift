@@ -286,10 +286,15 @@ class NCNetworking: NSObject, NKCommonDelegate {
 
     // MARK: - Download
 
-    func download(metadata: tableMetadata, selector: String, notificationCenterProgressTask: Bool = true,
+    func download(metadata: tableMetadata, selector: String, notificationCenterProgressTask: Bool = true, checkfileProviderStorageExists: Bool = false,
                   requestHandler: @escaping (_ request: DownloadRequest) -> Void = { _ in },
                   progressHandler: @escaping (_ progress: Progress) -> Void = { _ in },
                   completion: @escaping (_ afError: AFError?, _ error: NKError) -> Void) {
+
+        guard !metadata.isInTransfer else { return completion(nil, NKError()) }
+        if checkfileProviderStorageExists, CCUtility.fileProviderStorageExists(metadata) {
+            return completion(nil, NKError())
+        }
 
         let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
         let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileName)!
@@ -297,8 +302,6 @@ class NCNetworking: NSObject, NKCommonDelegate {
         if NCManageDatabase.shared.getMetadataFromOcId(metadata.ocId) == nil {
             NCManageDatabase.shared.addMetadata(tableMetadata.init(value: metadata))
         }
-
-        if metadata.isInTransfer { return }
 
         NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId, session: NextcloudKit.shared.nkCommonInstance.sessionIdentifierDownload, sessionError: "", sessionSelector: selector, sessionTaskIdentifier: 0, status: NCGlobal.shared.metadataStatusInDownload)
 
