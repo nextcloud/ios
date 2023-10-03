@@ -47,11 +47,7 @@ excluded:
   # iOS Files Quarantine
 
   - Brand/NCBrand.swift
-  - Notification Service Extension/NotificationService.swift
-  - iOSClient/Activity/NCActivity.swift
-  - iOSClient/Activity/NCActivityTableViewCell.swift
   - iOSClient/BackgroundImageColor/NCBackgroundImageColor.swift
-  - iOSClient/BrowserWeb/NCBrowserWeb.swift
   - iOSClient/Diagnostics/NCCapabilitiesViewController.swift
   - iOSClient/EmptyView/NCEmptyDataSet.swift
   - iOSClient/Extensions/UIColor+Extensions.swift

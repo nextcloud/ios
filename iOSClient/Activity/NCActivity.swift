@@ -39,7 +39,9 @@ class NCActivity: UIViewController, NCSharePagingContent {
     var metadata: tableMetadata?
     var showComments: Bool = false
 
+    // swiftlint:disable force_cast
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
+    // swiftlint:enable force_cast
 
     var allItems: [DateCompareable] = []
     var sectionDates: [Date] = []
@@ -247,7 +249,7 @@ extension NCActivity: UITableViewDataSource {
         cell.viewController = self
 
         // icon
-        if activity.icon.count > 0 {
+        if !activity.icon.isEmpty {
 
             let fileNameIcon = (activity.icon as NSString).lastPathComponent
             let fileNameLocalPath = CCUtility.getDirectoryUserData() + "/" + fileNameIcon
@@ -269,7 +271,7 @@ extension NCActivity: UITableViewDataSource {
         }
 
         // avatar
-        if activity.user.count > 0 && activity.user != appDelegate.userId {
+        if !activity.user.isEmpty && activity.user != appDelegate.userId {
 
             cell.subjectTrailingConstraint.constant = 50
             cell.avatar.isHidden = false
@@ -282,7 +284,7 @@ extension NCActivity: UITableViewDataSource {
 
         // subject
         cell.subject.text = activity.subject
-        if activity.subjectRich.count > 0 {
+        if !activity.subjectRich.isEmpty {
 
             var subject = activity.subjectRich
             var keys: [String] = []
@@ -316,7 +318,7 @@ extension NCActivity: UITableViewDataSource {
 
         // CollectionView
         cell.activityPreviews = NCManageDatabase.shared.getActivityPreview(account: activity.account, idActivity: activity.idActivity, orderKeysId: orderKeysId)
-        if cell.activityPreviews.count == 0 {
+        if cell.activityPreviews.isEmpty {
             cell.collectionViewHeightConstraint.constant = 0
         } else {
             cell.collectionViewHeightConstraint.constant = 60

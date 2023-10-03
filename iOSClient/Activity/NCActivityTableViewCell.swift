@@ -40,7 +40,9 @@ class NCActivityCollectionViewCell: UICollectionViewCell {
 
 class NCActivityTableViewCell: UITableViewCell, NCCellProtocol {
 
+    // swiftlint:disable force_cast
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
+    // swiftlint:enable force_cast
 
     @IBOutlet weak var collectionView: UICollectionView!
     @IBOutlet weak var icon: UIImageView!
@@ -62,7 +64,7 @@ class NCActivityTableViewCell: UITableViewCell, NCCellProtocol {
         set { index = newValue }
     }
     var fileAvatarImageView: UIImageView? {
-        get { return avatar }
+        return avatar
     }
     var fileUser: String? {
         get { return user }
@@ -94,8 +96,6 @@ extension NCActivityTableViewCell: UICollectionViewDelegate {
         if !didSelectItemEnable {
             return
         }
-
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "collectionCell", for: indexPath) as? NCActivityCollectionViewCell
 
         let activityPreview = activityPreviews[indexPath.row]
 
@@ -148,7 +148,9 @@ extension NCActivityTableViewCell: UICollectionViewDataSource {
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
 
-        let cell: NCActivityCollectionViewCell = collectionView.dequeueReusableCell(withReuseIdentifier: "collectionCell", for: indexPath) as! NCActivityCollectionViewCell
+        guard let cell: NCActivityCollectionViewCell = collectionView.dequeueReusableCell(withReuseIdentifier: "collectionCell", for: indexPath) as? NCActivityCollectionViewCell else {
+            return UICollectionViewCell()
+        }
 
         cell.imageView.image = nil
         cell.indexPath = indexPath
