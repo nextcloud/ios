@@ -104,7 +104,6 @@ excluded:
   - iOSClient/Menu/NCViewer+Menu.swift
   - iOSClient/More/NCMore.swift
   - iOSClient/NCGlobal.swift
-  - iOSClient/Networking/NCAutoUpload.swift
   - iOSClient/Networking/NCNetworking.swift
   - iOSClient/Networking/NCNetworkingCheckRemoteUser.swift
   - iOSClient/Networking/NCNetworkingChunkedUpload.swift

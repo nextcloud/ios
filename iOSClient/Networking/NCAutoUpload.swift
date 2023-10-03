@@ -48,10 +48,9 @@ class NCAutoUpload: NSObject {
         NCAskAuthorization.shared.askAuthorizationPhotoLibrary(viewController: viewController) { hasPermission in
             guard hasPermission else {
                 NCManageDatabase.shared.setAccountAutoUploadProperty("autoUpload", state: false)
-                completion(0)
-                return
+                return completion(0)
             }
-            DispatchQueue.global().async {
+            Task {
                 self.uploadAssetsNewAndFull(viewController: viewController, selector: NCGlobal.shared.selectorUploadAutoUpload, log: "Init Auto Upload") { items in
                     completion(items)
                 }
@@ -68,7 +67,7 @@ class NCAutoUpload: NSObject {
             let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_create_full_upload_")
             NCContentPresenter.shared.showWarning(error: error, priority: .max)
             NCActivityIndicator.shared.start()
-            DispatchQueue.global().async {
+            Task {
                 self.uploadAssetsNewAndFull(viewController: viewController, selector: NCGlobal.shared.selectorUploadAutoUploadAll, log: log) { _ in
                     NCActivityIndicator.shared.stop()
                 }
@@ -77,21 +76,19 @@ class NCAutoUpload: NSObject {
     }
 
     private func uploadAssetsNewAndFull(viewController: UIViewController?, selector: String, log: String, completion: @escaping (_ items: Int) -> Void) {
-        guard let account = NCManageDatabase.shared.getActiveAccount() else {
-            completion(0)
-            return
-        }
 
+        guard let account = NCManageDatabase.shared.getActiveAccount() else { return completion(0) }
         let autoUploadPath = NCManageDatabase.shared.getAccountAutoUploadPath(urlBase: account.urlBase, userId: account.userId, account: account.account)
         let autoUploadSubfolderGranularity = NCManageDatabase.shared.getAccountAutoUploadSubfolderGranularity()
         var metadatas: [tableMetadata] = []
 
         self.getCameraRollAssets(viewController: viewController, account: account, selector: selector, alignPhotoLibrary: false) { assets in
-            guard let assets = assets, !assets.isEmpty else {
+
+            guard let assets, !assets.isEmpty else {
                 NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Automatic upload, no new assets found [" + log + "]")
-                completion(0)
-                return
+                return completion(0)
             }
+
             NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Automatic upload, new \(assets.count) assets found [" + log + "]")
             // Create the folder for auto upload & if request the subfolders
             if !NCNetworking.shared.createFolder(assets: assets, selector: selector, useSubFolder: account.autoUploadCreateSubfolder, account: account.account, urlBase: account.urlBase, userId: account.userId, withPush: false) {
@@ -191,6 +188,7 @@ class NCAutoUpload: NSObject {
     // MARK: -
 
     @objc func alignPhotoLibrary(viewController: UIViewController?) {
+
         guard let activeAccount = NCManageDatabase.shared.getActiveAccount() else { return }
 
         getCameraRollAssets(viewController: viewController, account: activeAccount, selector: NCGlobal.shared.selectorUploadAutoUploadAll, alignPhotoLibrary: true) { assets in
@@ -205,15 +203,11 @@ class NCAutoUpload: NSObject {
     private func getCameraRollAssets(viewController: UIViewController?, account: tableAccount, selector: String, alignPhotoLibrary: Bool, completion: @escaping (_ assets: [PHAsset]?) -> Void) {
 
         NCAskAuthorization.shared.askAuthorizationPhotoLibrary(viewController: viewController) { hasPermission in
-            guard hasPermission else {
-                completion(nil)
-                return
-            }
+
             let assetCollection = PHAssetCollection.fetchAssetCollections(with: PHAssetCollectionType.smartAlbum, subtype: PHAssetCollectionSubtype.smartAlbumUserLibrary, options: nil)
-            if assetCollection.count == 0 {
-                completion(nil)
-                return
-            }
+            // swiftlint:disable empty_count
+            guard hasPermission, assetCollection.count != 0 else { return completion(nil) }
+            // swiftlint:enable empty_count
 
             let predicateImage = NSPredicate(format: "mediaType == %i", PHAssetMediaType.image.rawValue)
             let predicateVideo = NSPredicate(format: "mediaType == %i", PHAssetMediaType.video.rawValue)
