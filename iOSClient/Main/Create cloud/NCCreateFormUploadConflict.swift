@@ -27,7 +27,7 @@ import NextcloudKit
 import Photos
 import JGProgressHUD
 
-protocol NCCreateFormUploadConflictDelegate {
+protocol NCCreateFormUploadConflictDelegate: AnyObject {
     func dismissCreateFormUploadConflict(metadatas: [tableMetadata]?)
 }
 
@@ -256,7 +256,7 @@ class NCCreateFormUploadConflict: UIViewController {
                 metadata.fileNameView = newFileName
 
                 // This is not an asset - [file]
-                if metadata.assetLocalIdentifier == "" || metadata.isExtractFile {
+                if metadata.assetLocalIdentifier.isEmpty || metadata.isExtractFile {
                     let newPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: newFileName)
                     CCUtility.moveFile(atPath: oldPath, toPath: newPath)
                 }
@@ -335,10 +335,10 @@ extension NCCreateFormUploadConflict: UITableViewDataSource {
                 }
 
             } else {
-                if metadataAlreadyExists.iconName.count > 0 {
-                    cell.imageAlreadyExistingFile.image = UIImage(named: metadataAlreadyExists.iconName)
-                } else {
+                if metadataAlreadyExists.iconName.isEmpty {
                     cell.imageAlreadyExistingFile.image = UIImage(named: "file")
+                } else {
+                    cell.imageAlreadyExistingFile.image = UIImage(named: metadataAlreadyExists.iconName)
                 }
             }
             cell.labelDetailAlreadyExistingFile.text = CCUtility.dateDiff(metadataAlreadyExists.date as Date) + "\n" + CCUtility.transformedSize(metadataAlreadyExists.size)
@@ -351,13 +351,13 @@ extension NCCreateFormUploadConflict: UITableViewDataSource {
 
             // -----> New File
 
-            if metadataNewFile.iconName.count > 0 {
-                cell.imageNewFile.image = UIImage(named: metadataNewFile.iconName)
-            } else {
+            if metadataNewFile.iconName.isEmpty {
                 cell.imageNewFile.image = UIImage(named: "file")
+            } else {
+                cell.imageNewFile.image = UIImage(named: metadataNewFile.iconName)
             }
             let filePathNewFile = CCUtility.getDirectoryProviderStorageOcId(metadataNewFile.ocId, fileNameView: metadataNewFile.fileNameView)!
-            if metadataNewFile.assetLocalIdentifier.count > 0 {
+            if !metadataNewFile.assetLocalIdentifier.isEmpty {
 
                 let result = PHAsset.fetchAssets(withLocalIdentifiers: [metadataNewFile.assetLocalIdentifier], options: nil)
                 let date = result.firstObject!.modificationDate
@@ -378,7 +378,7 @@ extension NCCreateFormUploadConflict: UITableViewDataSource {
                         }
 
                         let fileDictionary = try FileManager.default.attributesOfItem(atPath: fileNamePath)
-                        let fileSize = fileDictionary[FileAttributeKey.size] as! Int64
+                        let fileSize = fileDictionary[FileAttributeKey.size] as? Int64 ?? 0
 
                         cell.labelDetailNewFile.text = CCUtility.dateDiff(date) + "\n" + CCUtility.transformedSize(fileSize)
 
@@ -393,7 +393,7 @@ extension NCCreateFormUploadConflict: UITableViewDataSource {
                             self.fileNamesPath[metadataNewFile.fileNameView] = fileNamePath!
                             do {
                                 let fileDictionary = try FileManager.default.attributesOfItem(atPath: fileNamePath!)
-                                let fileSize = fileDictionary[FileAttributeKey.size] as! Int64
+                                let fileSize = fileDictionary[FileAttributeKey.size] as? Int64 ?? 0
                                 if mediaType == PHAssetMediaType.image {
                                     let data = try Data(contentsOf: URL(fileURLWithPath: fileNamePath!))
                                     if let image = UIImage(data: data) {
@@ -421,7 +421,7 @@ extension NCCreateFormUploadConflict: UITableViewDataSource {
                     }
 
                     let fileDictionary = try FileManager.default.attributesOfItem(atPath: filePathNewFile)
-                    let fileSize = fileDictionary[FileAttributeKey.size] as! Int64
+                    let fileSize = fileDictionary[FileAttributeKey.size] as? Int64 ?? 0
 
                     cell.labelDetailNewFile.text = CCUtility.dateDiff(metadataNewFile.date as Date) + "\n" + CCUtility.transformedSize(fileSize)
 

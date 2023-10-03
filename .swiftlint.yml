@@ -47,13 +47,6 @@ excluded:
   # iOS Files Quarantine
 
   - Brand/NCBrand.swift
-  - iOSClient/Main/Create cloud/NCCreateFormUploadAssets.swift
-  - iOSClient/Main/Create cloud/NCCreateFormUploadConflict.swift
-  - iOSClient/Main/Create cloud/NCCreateFormUploadConflictCell.swift
-  - iOSClient/Main/Create cloud/NCCreateFormUploadDocuments.swift
-  - iOSClient/Main/Create cloud/NCCreateFormUploadScanDocument.swift
-  - iOSClient/Main/Create cloud/NCCreateFormUploadVoiceNote.swift
-  - iOSClient/Main/Create cloud/NCCreateMenuAdd.swift
   - iOSClient/Main/NCFunctionCenter.swift
   - iOSClient/Main/NCMainTabBar.swift
   - iOSClient/Main/NCPickerViewController.swift
