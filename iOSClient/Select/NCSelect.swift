@@ -158,7 +158,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
         self.navigationItem.title = titleCurrentFolder
 
         // set the serverUrl
-        if serverUrl == "" {
+        if serverUrl.isEmpty {
             serverUrl = NCUtilityFileSystem.shared.getHomeServer(urlBase: activeAccount.urlBase, userId: activeAccount.userId)
         }
 
@@ -298,14 +298,14 @@ extension NCSelect: UICollectionViewDataSource {
         // Thumbnail
         if !metadata.directory {
             if FileManager().fileExists(atPath: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)) {
-                (cell as! NCCellProtocol).filePreviewImageView?.image = UIImage(contentsOfFile: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag))
+                (cell as? NCCellProtocol)?.filePreviewImageView?.image = UIImage(contentsOfFile: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag))
             } else {
                 NCOperationQueue.shared.downloadThumbnail(metadata: metadata, placeholder: true, cell: cell, view: collectionView)
             }
         }
 
         // Avatar
-        if metadata.ownerId.count > 0,
+        if !metadata.ownerId.isEmpty,
            metadata.ownerId != activeAccount.userId,
            activeAccount.account == metadata.account,
            let cell = cell as? NCCellProtocol {
@@ -330,17 +330,14 @@ extension NCSelect: UICollectionViewDataSource {
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
 
-        guard let metadata = dataSource.cellForItemAt(indexPath: indexPath) else {
-            return collectionView.dequeueReusableCell(withReuseIdentifier: "listCell", for: indexPath) as! NCListCell
-        }
-
+        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "listCell", for: indexPath) as? NCListCell,
+              let metadata = dataSource.cellForItemAt(indexPath: indexPath) else { return UICollectionViewCell() }
         var isShare = false
         var isMounted = false
 
         isShare = metadata.permissions.contains(NCGlobal.shared.permissionShared) && !metadataFolder.permissions.contains(NCGlobal.shared.permissionShared)
         isMounted = metadata.permissions.contains(NCGlobal.shared.permissionMounted) && !metadataFolder.permissions.contains(NCGlobal.shared.permissionMounted)
 
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "listCell", for: indexPath) as! NCListCell
         cell.delegate = self
 
         cell.fileObjectId = metadata.ocId
@@ -428,7 +425,7 @@ extension NCSelect: UICollectionViewDataSource {
 
         if kind == UICollectionView.elementKindSectionHeader {
 
-            let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionHeaderMenu", for: indexPath) as! NCSectionHeaderMenu
+            guard let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionHeaderMenu", for: indexPath) as? NCSectionHeaderMenu else { return UICollectionReusableView() }
             let (_, heightHeaderRichWorkspace, _) = getHeaderHeight(section: indexPath.section)
 
             self.headerMenu = header
@@ -442,7 +439,7 @@ extension NCSelect: UICollectionViewDataSource {
 
         } else {
 
-            let footer = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionFooter", for: indexPath) as! NCSectionFooter
+            guard let footer = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionFooter", for: indexPath) as? NCSectionFooter else { return UICollectionReusableView() }
             let sections = dataSource.numberOfSections()
             let section = indexPath.section
 
@@ -469,9 +466,11 @@ extension NCSelect: UICollectionViewDelegateFlowLayout {
 
         if let richWorkspaceText = richWorkspaceText {
             let trimmed = richWorkspaceText.trimmingCharacters(in: .whitespaces)
+            // swiftlint:disable empty_count
             if trimmed.count > 0 {
                 headerRichWorkspace = UIScreen.main.bounds.size.height / 6
             }
+            // swiftlint:enable empty_count
         }
 
         return (0, headerRichWorkspace, 0)

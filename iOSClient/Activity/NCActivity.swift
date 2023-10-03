@@ -509,7 +509,7 @@ extension NCActivity: NCShareCommentsCellDelegate {
                     })
 
                     alert.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { _ in
-                        guard let message = alert.textFields?.first?.text, message != "" else { return }
+                        guard let message = alert.textFields?.first?.text, !message.isEmpty else { return }
 
                         NextcloudKit.shared.updateComments(fileId: metadata.fileId, messageId: tableComments.messageId, message: message) { _, error in
                             if error == .success {

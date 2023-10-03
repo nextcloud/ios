@@ -27,7 +27,8 @@ file_length:
 
 identifier_name:
   min_length: 0
-  
+  max_length: 100
+
 disabled_rules:  
   - unused_setter_value
   - large_tuple
@@ -75,7 +76,6 @@ excluded:
   - iOSClient/ScanDocument/ScanCollectionView.swift
   - iOSClient/Security/NCEndToEndMetadata.swift
   - iOSClient/Security/NCViewCertificateDetails.swift
-  - iOSClient/Select/NCSelect.swift
   - iOSClient/Settings/NCEndToEndInitialize.swift
   - iOSClient/Settings/NCManageAutoUploadFileName.swift
   - iOSClient/Settings/NCManageE2EE.swift

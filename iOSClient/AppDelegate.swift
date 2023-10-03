@@ -59,9 +59,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     private var privacyProtectionWindow: UIWindow?
 
     var isUiTestingEnabled: Bool {
-         get {
-             return ProcessInfo.processInfo.arguments.contains("UI_TESTING")
-         }
+        return ProcessInfo.processInfo.arguments.contains("UI_TESTING")
      }
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {

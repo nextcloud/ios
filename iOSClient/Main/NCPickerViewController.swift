@@ -180,7 +180,7 @@ class NCDocumentPickerViewController: NSObject, UIDocumentPickerDelegate {
                 metadataForUpload.size = NCUtilityFileSystem.shared.getFileSize(filePath: toPath)
                 metadataForUpload.status = NCGlobal.shared.metadataStatusWaitUpload
 
-                if let _ = NCManageDatabase.shared.getMetadataConflict(account: appDelegate.account, serverUrl: serverUrl, fileNameView: fileName) {
+                if NCManageDatabase.shared.getMetadataConflict(account: appDelegate.account, serverUrl: serverUrl, fileNameView: fileName) != nil {
                     metadatasInConflict.append(metadataForUpload)
                 } else {
                     metadatas.append(metadataForUpload)

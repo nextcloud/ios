@@ -394,7 +394,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
             let account = user + " " + user
 
             NextcloudKit.shared.setup(account: account, user: user, userId: user, password: password, urlBase: urlBase)
-            NextcloudKit.shared.getUserProfile { _, userProfile, data, error in
+            NextcloudKit.shared.getUserProfile { _, userProfile, _, error in
 
                 if error == .success, let userProfile {
 

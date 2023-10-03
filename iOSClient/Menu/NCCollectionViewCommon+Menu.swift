@@ -38,7 +38,6 @@ extension NCCollectionViewCommon {
 
         guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(metadata.ocId) else { return }
         let serverUrl = metadata.serverUrl + "/" + metadata.fileName
-        let serverUrlHome = NCUtilityFileSystem.shared.getHomeServer(urlBase: appDelegate.urlBase, userId: appDelegate.userId)
         let isOffline: Bool
 
         if metadata.directory, let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", appDelegate.account, serverUrl)) {
