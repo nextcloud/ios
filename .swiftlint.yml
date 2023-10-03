@@ -49,8 +49,6 @@ excluded:
 
   - Brand/NCBrand.swift
   - iOSClient/NCGlobal.swift
-  - iOSClient/Recent/NCRecent.swift
-  - iOSClient/Rename file/NCRenameFile.swift
   - iOSClient/RichWorkspace/NCRichWorkspaceCommon.swift
   - iOSClient/RichWorkspace/NCViewerRichWorkspace.swift
   - iOSClient/ScanDocument/ScanCollectionView.swift
