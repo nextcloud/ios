@@ -39,7 +39,8 @@ disabled_rules:
   - nesting
   - shorthand_operator
   - type_name
-    
+  - void_function_in_ternary
+
 excluded:
   - Carthage
   - Pods
