@@ -48,12 +48,6 @@ excluded:
   # iOS Files Quarantine
 
   - Brand/NCBrand.swift
-  - iOSClient/Menu/AppDelegate+Menu.swift
-  - iOSClient/Menu/NCCollectionViewCommon+Menu.swift
-  - iOSClient/Menu/NCLoginWeb+Menu.swift
-  - iOSClient/Menu/NCMedia+Menu.swift
-  - iOSClient/Menu/NCSortMenu.swift
-  - iOSClient/Menu/NCViewer+Menu.swift
   - iOSClient/NCGlobal.swift
   - iOSClient/Networking/NCNetworking.swift
   - iOSClient/Networking/NCNetworkingCheckRemoteUser.swift

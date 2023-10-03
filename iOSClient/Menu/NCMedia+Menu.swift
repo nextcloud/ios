@@ -40,7 +40,7 @@ extension NCMedia {
         defer { presentMenu(with: actions) }
 
         if !isEditMode {
-            if metadatas.count > 0 {
+            if !metadatas.isEmpty {
                 actions.append(
                     NCMenuAction(
                         title: NSLocalizedString("_select_", comment: ""),
@@ -85,15 +85,16 @@ extension NCMedia {
                     title: NSLocalizedString("_select_media_folder_", comment: ""),
                     icon: NCUtility.shared.loadImage(named: "folder"),
                     action: { _ in
-                        let navigationController = UIStoryboard(name: "NCSelect", bundle: nil).instantiateInitialViewController() as! UINavigationController
-                        let viewController = navigationController.topViewController as! NCSelect
+                        if let navigationController = UIStoryboard(name: "NCSelect", bundle: nil).instantiateInitialViewController() as? UINavigationController,
+                           let viewController = navigationController.topViewController as? NCSelect {
 
-                        viewController.delegate = self
-                        viewController.typeOfCommandView = .select
-                        viewController.type = "mediaFolder"
-                        viewController.selectIndexPath = self.selectIndexPath
+                            viewController.delegate = self
+                            viewController.typeOfCommandView = .select
+                            viewController.type = "mediaFolder"
+                            viewController.selectIndexPath = self.selectIndexPath
 
-                        self.present(navigationController, animated: true, completion: nil)
+                            self.present(navigationController, animated: true, completion: nil)
+                        }
                     }
                 )
             )

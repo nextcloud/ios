@@ -38,13 +38,13 @@ extension NCCollectionViewCommon {
 
         guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(metadata.ocId) else { return }
         let serverUrl = metadata.serverUrl + "/" + metadata.fileName
-        let isOffline: Bool
+        var isOffline: Bool = false
 
         if metadata.directory, let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", appDelegate.account, serverUrl)) {
             isOffline = directory.offline
         } else if let localFile = NCManageDatabase.shared.getTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId)) {
             isOffline = localFile.offline
-        } else { isOffline = false }
+        }
 
         let editors = NCUtility.shared.isDirectEditing(account: metadata.account, contentType: metadata.contentType)
         let isRichDocument = NCUtility.shared.isRichDocument(metadata)
@@ -241,7 +241,7 @@ extension NCCollectionViewCommon {
                 icon = NCUtility.shared.loadImage(named: "collabora")
             }
 
-            if editor != "" {
+            if !editor.isEmpty {
                 actions.append(
                     NCMenuAction(
                         title: title,
