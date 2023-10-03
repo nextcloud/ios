@@ -34,7 +34,9 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate, NCSelectDelegate {
     private var gridLayout: NCGridMediaLayout!
     internal var documentPickerViewController: NCDocumentPickerViewController?
 
+    // swiftlint:disable force_cast
     internal let appDelegate = UIApplication.shared.delegate as! AppDelegate
+    // swiftlint:enable force_cast
 
     public var metadatas: [tableMetadata] = []
     private var account: String = ""
@@ -385,9 +387,10 @@ extension NCMedia: UICollectionViewDataSource {
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
 
+        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "gridCell", for: indexPath) as? NCGridMediaCell else { return UICollectionViewCell() }
+
         if indexPath.section < collectionView.numberOfSections && indexPath.row < collectionView.numberOfItems(inSection: indexPath.section) && indexPath.row < metadatas.count {
 
-            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "gridCell", for: indexPath) as! NCGridMediaCell
             let metadata = metadatas[indexPath.row]
 
             self.cellHeigth = cell.frame.size.height
@@ -418,7 +421,7 @@ extension NCMedia: UICollectionViewDataSource {
 
         } else {
 
-            return collectionView.dequeueReusableCell(withReuseIdentifier: "gridCell", for: indexPath) as! NCGridMediaCell
+            return cell
         }
     }
 }
@@ -496,7 +499,7 @@ extension NCMedia {
 
     func updateMediaControlVisibility() {
 
-        if self.metadatas.count == 0 {
+        if self.metadatas.isEmpty {
             if !self.filterClassTypeImage && !self.filterClassTypeVideo {
                 self.mediaCommandView?.toggleEmptyView(isEmpty: true)
                 self.mediaCommandView?.isHidden = false
@@ -549,13 +552,13 @@ extension NCMedia {
             }
 
             if error == .success && account == self.appDelegate.account {
-                if files.count > 0 {
+                if !files.isEmpty {
                     NCManageDatabase.shared.convertFilesToMetadatas(files, useMetadataFolder: false) { _, _, metadatas in
                         let predicateDate = NSPredicate(format: "date > %@ AND date < %@", greaterDate as NSDate, lessDate as NSDate)
                         let predicateResult = NSCompoundPredicate(andPredicateWithSubpredicates: [predicateDate, self.predicateDefault!])
                         let metadatasResult = NCManageDatabase.shared.getMetadatas(predicate: predicateResult)
                         let metadatasChanged = NCManageDatabase.shared.updateMetadatas(metadatas, metadatasResult: metadatasResult, addCompareLivePhoto: false)
-                        if metadatasChanged.metadatasUpdate.count == 0 {
+                        if metadatasChanged.metadatasUpdate.isEmpty {
                             self.researchOldMedia(value: value, limit: limit, withElseReloadDataSource: true)
                         } else {
                             self.reloadDataSourceWithCompletion { _ in }
@@ -630,17 +633,17 @@ extension NCMedia {
                     self.mediaCommandView?.activityIndicator.stopAnimating()
                 }
 
-                if error == .success && account == self.appDelegate.account && files.count > 0 {
+                if error == .success, account == self.appDelegate.account, !files.isEmpty {
                     NCManageDatabase.shared.convertFilesToMetadatas(files, useMetadataFolder: false) { _, _, metadatas in
                         let predicate = NSPredicate(format: "date > %@ AND date < %@", greaterDate as NSDate, lessDate as NSDate)
                         let predicateResult = NSCompoundPredicate(andPredicateWithSubpredicates: [predicate, self.predicate!])
                         let metadatasResult = NCManageDatabase.shared.getMetadatas(predicate: predicateResult)
                         let updateMetadatas = NCManageDatabase.shared.updateMetadatas(metadatas, metadatasResult: metadatasResult, addCompareLivePhoto: false)
-                        if updateMetadatas.metadatasUpdate.count > 0 || updateMetadatas.metadatasDelete.count > 0 {
+                        if !updateMetadatas.metadatasUpdate.isEmpty || !updateMetadatas.metadatasDelete.isEmpty {
                             self.reloadDataSourceWithCompletion { _ in }
                         }
                     }
-                } else if error == .success && files.count == 0 && self.metadatas.count == 0 {
+                } else if error == .success, files.isEmpty, self.metadatas.isEmpty {
                     self.searchOldMedia()
                 } else if error != .success {
                     NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Media search new media error code \(error.errorCode) " + error.errorDescription)

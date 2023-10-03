@@ -285,7 +285,7 @@ class NCCreateFormUploadVoiceNote: XLFormViewController, NCSelectDelegate, AVAud
             viewController.includeDirectoryE2EEncryption = true
 
             self.present(navigationController, animated: true, completion: nil)
-        }po
+        }
     }
 
     // MARK: Player - Timer
