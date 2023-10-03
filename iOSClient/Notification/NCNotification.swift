@@ -354,7 +354,7 @@ class NCNotificationCell: UITableViewCell, NCCellProtocol {
         set { index = newValue }
     }
     var fileAvatarImageView: UIImageView? {
-        get { return avatar }
+        return avatar
     }
     var fileUser: String? {
         get { return user }

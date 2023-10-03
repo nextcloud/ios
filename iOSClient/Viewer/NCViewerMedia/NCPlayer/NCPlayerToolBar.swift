@@ -370,17 +370,18 @@ extension NCPlayerToolBar {
 
                     guard let metadata = self.metadata else { return }
                     let storyboard = UIStoryboard(name: "NCSelect", bundle: nil)
-                    let navigationController = storyboard.instantiateInitialViewController() as! UINavigationController
-                    let viewController = navigationController.topViewController as! NCSelect
+                    if let navigationController = storyboard.instantiateInitialViewController() as? UINavigationController,
+                       let viewController = navigationController.topViewController as? NCSelect {
 
-                    viewController.delegate = self
-                    viewController.typeOfCommandView = .nothing
-                    viewController.includeDirectoryE2EEncryption = false
-                    viewController.enableSelectFile = true
-                    viewController.type = "subtitle"
-                    viewController.serverUrl = metadata.serverUrl
+                        viewController.delegate = self
+                        viewController.typeOfCommandView = .nothing
+                        viewController.includeDirectoryE2EEncryption = false
+                        viewController.enableSelectFile = true
+                        viewController.type = "subtitle"
+                        viewController.serverUrl = metadata.serverUrl
 
-                    self.viewerMediaPage?.present(navigationController, animated: true, completion: nil)
+                        self.viewerMediaPage?.present(navigationController, animated: true, completion: nil)
+                    }
                 }
             )
         )
@@ -435,17 +436,18 @@ extension NCPlayerToolBar {
 
                     guard let metadata = self.metadata else { return }
                     let storyboard = UIStoryboard(name: "NCSelect", bundle: nil)
-                    let navigationController = storyboard.instantiateInitialViewController() as! UINavigationController
-                    let viewController = navigationController.topViewController as! NCSelect
+                    if let navigationController = storyboard.instantiateInitialViewController() as? UINavigationController,
+                        let viewController = navigationController.topViewController as? NCSelect {
 
-                    viewController.delegate = self
-                    viewController.typeOfCommandView = .nothing
-                    viewController.includeDirectoryE2EEncryption = false
-                    viewController.enableSelectFile = true
-                    viewController.type = "audio"
-                    viewController.serverUrl = metadata.serverUrl
+                        viewController.delegate = self
+                        viewController.typeOfCommandView = .nothing
+                        viewController.includeDirectoryE2EEncryption = false
+                        viewController.enableSelectFile = true
+                        viewController.type = "audio"
+                        viewController.serverUrl = metadata.serverUrl
 
-                    self.viewerMediaPage?.present(navigationController, animated: true, completion: nil)
+                        self.viewerMediaPage?.present(navigationController, animated: true, completion: nil)
+                    }
                 }
             )
         )
@@ -497,7 +499,9 @@ extension NCPlayerToolBar: NCSelectDelegate {
         }
     }
 
+    // swiftlint:disable inclusive_language
     func addPlaybackSlave(type: String, metadata: tableMetadata) {
+    // swiftlint:enable inclusive_language
 
         let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
 
@@ -523,7 +527,7 @@ class NCPlayerToolBarSlider: UISlider {
 
     override func beginTracking(_ touch: UITouch, with event: UIEvent?) -> Bool {
         let percentage = CGFloat((value - minimumValue) / (maximumValue - minimumValue))
-        let thumbSizeHeight = thumbRect(forBounds: bounds, trackRect:trackRect(forBounds: bounds), value:0).size.height
+        let thumbSizeHeight = thumbRect(forBounds: bounds, trackRect: trackRect(forBounds: bounds), value: 0).size.height
         let thumbPosition = thumbSizeHeight + (percentage * (bounds.size.width - (2 * thumbSizeHeight)))
         let touchLocation = touch.location(in: self)
         return touchLocation.x <= (thumbPosition + thumbTouchSize.width) && touchLocation.x >= (thumbPosition - thumbTouchSize.width)

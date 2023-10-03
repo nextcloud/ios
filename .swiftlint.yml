@@ -49,7 +49,6 @@ excluded:
 
   - Brand/NCBrand.swift
   - iOSClient/NCGlobal.swift
-  - iOSClient/Shares/NCShares.swift
   - iOSClient/Utility/NCAskAuthorization.swift
   - iOSClient/Utility/NCContentPresenter.swift
   - iOSClient/Utility/NCLivePhoto.swift
@@ -58,15 +57,5 @@ excluded:
   - iOSClient/Utility/NCUtility.swift
   - iOSClient/Utility/NCUtilityFileSystem.swift
   - iOSClient/Utility/NCUtilityGUI.swift
-  - iOSClient/Viewer/NCViewer.swift
-  - iOSClient/Viewer/NCViewerMedia/NCPlayer/NCPlayer.swift
-  - iOSClient/Viewer/NCViewerMedia/NCPlayer/NCPlayerToolBar.swift
-  - iOSClient/Viewer/NCViewerMedia/NCViewerMedia.swift
-  - iOSClient/Viewer/NCViewerMedia/NCViewerMediaPage.swift
-  - iOSClient/Viewer/NCViewerNextcloudText/NCViewerNextcloudText.swift
-  - iOSClient/Viewer/NCViewerPDF/NCViewerPDF.swift
-  - iOSClient/Viewer/NCViewerPDF/NCViewerPDFSearch.swift
-  - iOSClient/Viewer/NCViewerProviderContextMenu.swift
-  - iOSClient/Viewer/NCViewerRichdocument/NCViewerRichdocument.swift
 
 reporter: "xcode"

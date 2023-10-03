@@ -48,7 +48,10 @@ class NCViewerMedia: UIViewController {
     private var tipView: EasyTipView?
     private let player = VLCMediaPlayer()
 
+    // swiftlint:disable force_cast
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
+    // swiftlint:enable force_cast
+
     weak var viewerMediaPage: NCViewerMediaPage?
     var playerToolBar: NCPlayerToolBar?
     var ncplayer: NCPlayer?
@@ -243,7 +246,7 @@ class NCViewerMedia: UIViewController {
                 self.imageVideoContainer.isHidden = true
             }
 
-            coordinator.animate(alongsideTransition: { context in
+            coordinator.animate(alongsideTransition: { _ in
                 // back to the original size
                 self.scrollView.zoom(to: CGRect(x: 0, y: 0, width: self.scrollView.bounds.width, height: self.scrollView.bounds.height), animated: false)
                 self.view.layoutIfNeeded()
@@ -276,7 +279,7 @@ class NCViewerMedia: UIViewController {
         self.metadata = metadata
 
         // Download image
-        if !CCUtility.fileProviderStorageExists(metadata) && metadata.isImage && metadata.session == "" {
+        if !CCUtility.fileProviderStorageExists(metadata) && metadata.isImage && metadata.session.isEmpty {
 
             if metadata.livePhoto {
                 let fileName = (metadata.fileNameView as NSString).deletingPathExtension + ".mov"
@@ -362,9 +365,9 @@ class NCViewerMedia: UIViewController {
 
         return image
     }
-    
+
     func downloadImage(withSelector selector: String = "") {
-        NCNetworking.shared.download(metadata: metadata, selector: selector, progressHandler: { progress in
+        NCNetworking.shared.download(metadata: metadata, selector: selector, progressHandler: { _ in
             self.allowPanning = false
         }) { _, _ in
             let image = self.getImageMetadata(self.metadata)

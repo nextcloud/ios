@@ -200,7 +200,7 @@ class NCNetworkingE2EEUpload: NSObject {
                     uploadE2EEDelegate?.start()
                 } progressHandler: { totalBytesExpected, totalBytes, fractionCompleted in
                     uploadE2EEDelegate?.uploadE2EEProgress(totalBytesExpected, totalBytes, fractionCompleted)
-                } completion: { account, ocId, etag, date, _, _, afError, error in
+                } completion: { _, ocId, etag, date, _, _, afError, error in
                     continuation.resume(returning: (ocId: ocId, etag: etag, date: date, afError: afError, error: error))
                 }
             })

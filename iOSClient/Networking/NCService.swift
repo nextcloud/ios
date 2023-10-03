@@ -167,7 +167,7 @@ class NCService: NSObject {
             } else if error.errorCode == NCGlobal.shared.errorNotModified {
                 NCManageDatabase.shared.setAvatarLoaded(fileName: fileName)
             }
-            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadAvatar, userInfo: ["error":error])
+            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadAvatar, userInfo: ["error": error])
         }
     }
 
