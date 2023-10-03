@@ -47,10 +47,6 @@ excluded:
   # iOS Files Quarantine
 
   - Brand/NCBrand.swift
-  - iOSClient/Main/NCFunctionCenter.swift
-  - iOSClient/Main/NCMainTabBar.swift
-  - iOSClient/Main/NCPickerViewController.swift
-  - iOSClient/Main/Section Header Footer/NCSectionHeaderFooter.swift
   - iOSClient/Menu/AppDelegate+Menu.swift
   - iOSClient/Menu/NCCollectionViewCommon+Menu.swift
   - iOSClient/Menu/NCLoginWeb+Menu.swift

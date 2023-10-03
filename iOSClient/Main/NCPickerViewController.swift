@@ -31,7 +31,10 @@ import NextcloudKit
 
 class NCPhotosPickerViewController: NSObject {
 
+    // swiftlint:disable force_cast
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
+    // swiftlint:enable force_cast
+
     var sourceViewController: UIViewController
     var maxSelectedAssets = 1
     var singleSelectedMode = false
@@ -115,7 +118,10 @@ class customPhotoPickerViewController: TLPhotosPickerViewController {
 
 class NCDocumentPickerViewController: NSObject, UIDocumentPickerDelegate {
 
+    // swiftlint:disable force_cast
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
+    // swiftlint:enable force_cast
+
     var isViewerMedia: Bool
     var viewController: UIViewController?
 
