@@ -1254,7 +1254,12 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         }
     }
 
-    func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) { }
+    func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) { 
+        if !collectionView.indexPathsForVisibleItems.contains(indexPath) {
+            guard let metadata = dataSource.cellForItemAt(indexPath: indexPath) else { return }
+            NCOperationQueue.shared.cancelDownloadThumbnail(metadata: metadata)
+        }
+    }
 
     func numberOfSections(in collectionView: UICollectionView) -> Int {
         return dataSource.numberOfSections()
