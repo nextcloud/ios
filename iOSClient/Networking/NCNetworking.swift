@@ -273,8 +273,8 @@ class NCNetworking: NSObject, NKCommonDelegate {
                     completion(error)
                 }))
                 alertController.addAction(UIAlertAction(title: NSLocalizedString("_certificate_details_", comment: ""), style: .default, handler: { _ in
-                    if let navigationController = UIStoryboard(name: "NCViewCertificateDetails", bundle: nil).instantiateInitialViewController() as? UINavigationController {
-                        let vcCertificateDetails = navigationController.topViewController as! NCViewCertificateDetails
+                    if let navigationController = UIStoryboard(name: "NCViewCertificateDetails", bundle: nil).instantiateInitialViewController() as? UINavigationController,
+                       let vcCertificateDetails = navigationController.topViewController as? NCViewCertificateDetails {
                         vcCertificateDetails.host = host
                         viewController?.present(navigationController, animated: true)
                     }
@@ -525,7 +525,6 @@ class NCNetworking: NSObject, NKCommonDelegate {
                 if let afError, !afError.isExplicitlyCancelledError {
                     NCContentPresenter.shared.messageNotification("_error_", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: .error)
                 }
-                break
             case NKError.chunkMoveFile:
                 NCManageDatabase.shared.deleteChunks(account: account, ocId: metadata.ocId, directory: directory)
                 NCContentPresenter.shared.messageNotification("_chunk_move_", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: .error)
@@ -655,7 +654,10 @@ class NCNetworking: NSObject, NKCommonDelegate {
                         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUploadCancelFile, userInfo: ["ocId": metadata.ocId, "serverUrl": metadata.serverUrl, "account": metadata.account])
                     }))
 
+                    // swiftlint:disable force_cast
                     let appDelegate = UIApplication.shared.delegate as! AppDelegate
+                    // swiftlint:enable force_cast
+
                     appDelegate.window?.rootViewController?.present(alertController, animated: true)
                 }
 #endif
@@ -843,7 +845,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
 
     func readFolder(serverUrl: String, account: String, completion: @escaping (_ account: String, _ metadataFolder: tableMetadata?, _ metadatas: [tableMetadata]?, _ metadatasUpdate: [tableMetadata]?, _ metadatasLocalUpdate: [tableMetadata]?, _ metadatasDelete: [tableMetadata]?, _ error: NKError) -> Void) {
 
-        NextcloudKit.shared.readFileOrFolder(serverUrlFileName: serverUrl, 
+        NextcloudKit.shared.readFileOrFolder(serverUrlFileName: serverUrl,
                                              depth: "1",
                                              showHiddenFiles: CCUtility.getShowHiddenFiles(),
                                              includeHiddenFiles: NCGlobal.shared.includeHiddenFiles,
@@ -920,7 +922,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
         </d:propfind>
         """
 
-        NextcloudKit.shared.readFileOrFolder(serverUrlFileName: serverUrlFileName, 
+        NextcloudKit.shared.readFileOrFolder(serverUrlFileName: serverUrlFileName,
                                              depth: "0",
                                              requestBody: requestBody.data(using: .utf8),
                                              options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { account, files, _, error in
@@ -937,17 +939,16 @@ class NCNetworking: NSObject, NKCommonDelegate {
 
     // MARK: - Synchronization ServerUrl
 
-
     func synchronizationServerUrl(_ serverUrl: String, account: String, selector: String) {
 
 #if !EXTENSION
-        NextcloudKit.shared.readFileOrFolder(serverUrlFileName: serverUrl, 
+        NextcloudKit.shared.readFileOrFolder(serverUrlFileName: serverUrl,
                                              depth: "infinity",
                                              showHiddenFiles: CCUtility.getShowHiddenFiles(),
                                              options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { account, files, _, error in
 
             if error == .success {
-                NCManageDatabase.shared.convertFilesToMetadatas(files, useMetadataFolder: true) { metadataFolder, metadatasFolder, metadatas in
+                NCManageDatabase.shared.convertFilesToMetadatas(files, useMetadataFolder: true) { metadataFolder, _, metadatas in
                     NCManageDatabase.shared.addDirectory(encrypted: metadataFolder.e2eEncrypted, favorite: metadataFolder.favorite, ocId: metadataFolder.ocId, fileId: metadataFolder.fileId, etag: metadataFolder.etag, permissions: metadataFolder.permissions, serverUrl: metadataFolder.serverUrl + "/" + metadataFolder.fileName, account: metadataFolder.account)
                     let metadatasResult = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND status == %d", account, serverUrl, NCGlobal.shared.metadataStatusNormal))
                     NCManageDatabase.shared.updateMetadatas(metadatas, metadatasResult: metadatasResult)
@@ -964,7 +965,6 @@ class NCNetworking: NSObject, NKCommonDelegate {
         }
 #endif
     }
-
 
     // MARK: - Search
 
@@ -1035,7 +1035,6 @@ class NCNetworking: NSObject, NKCommonDelegate {
                         semaphore.wait()
                     } else { print(#function, "[ERROR]: File search entry has no path: \(entry)") }
                 })
-                break
             case "fulltextsearch":
                 // NOTE: FTS could also return attributes like files
                 // https://github.com/nextcloud/files_fulltextsearch/issues/143
@@ -1094,7 +1093,6 @@ class NCNetworking: NSObject, NKCommonDelegate {
                         semaphore.wait()
                     } else { print(#function, "[ERROR]: File search entry has no path: \(entry)") }
                 })
-                break
             case "fulltextsearch":
                 // NOTE: FTS could also return attributes like files
                 // https://github.com/nextcloud/files_fulltextsearch/issues/143
@@ -1171,7 +1169,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
         if !overwrite {
             fileNameFolder = NCUtilityFileSystem.shared.createFileName(fileNameFolder, serverUrl: serverUrl, account: account)
         }
-        if fileNameFolder.count == 0 {
+        if fileNameFolder.isEmpty {
             return completion(NKError())
         }
         let fileNameFolderUrl = serverUrl + "/" + fileNameFolder
@@ -1332,7 +1330,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
 
         // verify permission
         let permission = NCUtility.shared.permissionsContainsString(metadata.permissions, permissions: NCGlobal.shared.permissionCanDelete)
-        if metadata.permissions != "" && permission == false {
+        if !metadata.permissions.isEmpty && permission == false {
             return NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_no_permission_delete_file_")
         }
 
@@ -1456,13 +1454,13 @@ class NCNetworking: NSObject, NKCommonDelegate {
     private func renameMetadataPlain(_ metadata: tableMetadata, fileNameNew: String, indexPath: IndexPath, completion: @escaping (_ error: NKError) -> Void) {
 
         let permission = NCUtility.shared.permissionsContainsString(metadata.permissions, permissions: NCGlobal.shared.permissionCanRename)
-        if !(metadata.permissions == "") && !permission {
+        if !metadata.permissions.isEmpty && !permission {
             return completion(NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_no_permission_modify_file_"))
         }
         guard let fileNameNew = CCUtility.removeForbiddenCharactersServer(fileNameNew) else {
             return completion(NKError())
         }
-        if fileNameNew.count == 0 || fileNameNew == metadata.fileNameView {
+        if fileNameNew.isEmpty || fileNameNew == metadata.fileNameView {
             return completion(NKError())
         }
 
@@ -1536,7 +1534,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
     private func moveMetadataPlain(_ metadata: tableMetadata, serverUrlTo: String, overwrite: Bool) async -> NKError {
 
         let permission = NCUtility.shared.permissionsContainsString(metadata.permissions, permissions: NCGlobal.shared.permissionCanRename)
-        if !(metadata.permissions == "") && !permission {
+        if !metadata.permissions.isEmpty && !permission {
             return NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_no_permission_modify_file_")
         }
 
@@ -1572,7 +1570,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
     private func copyMetadataPlain(_ metadata: tableMetadata, serverUrlTo: String, overwrite: Bool) async -> NKError {
 
         let permission = NCUtility.shared.permissionsContainsString(metadata.permissions, permissions: NCGlobal.shared.permissionCanRename)
-        if !(metadata.permissions == "") && !permission {
+        if !metadata.permissions.isEmpty && !permission {
             return NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_no_permission_modify_file_")
         }
 

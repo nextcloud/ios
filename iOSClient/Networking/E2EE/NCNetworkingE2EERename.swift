@@ -86,7 +86,7 @@ class NCNetworkingE2EERename: NSObject {
         // UNLOCK
         //
         await NCNetworkingE2EE.shared.unlock(account: metadata.account, serverUrl: metadata.serverUrl)
-        
+
         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterRenameFile, userInfo: ["ocId": metadata.ocId, "account": metadata.account, "indexPath": indexPath])
 
         return NKError()

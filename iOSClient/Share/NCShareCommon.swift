@@ -29,6 +29,7 @@ class NCShareCommon: NSObject {
         return instance
     }()
 
+    // swiftlint:disable identifier_name
     let SHARE_TYPE_USER = 0
     let SHARE_TYPE_GROUP = 1
     let SHARE_TYPE_LINK = 3
@@ -39,6 +40,7 @@ class NCShareCommon: NSObject {
     let SHARE_TYPE_GUEST = 8
     let SHARE_TYPE_REMOTE_GROUP = 9
     let SHARE_TYPE_ROOM = 10
+    // swiftlint:enable identifier_name
 
     func createLinkAvatar(imageName: String, colorCircle: UIColor) -> UIImage? {
 

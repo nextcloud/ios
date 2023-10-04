@@ -75,8 +75,7 @@ class NCUtility: NSObject {
                             let renderFormat = UIGraphicsImageRendererFormat.default()
                             renderFormat.opaque = false
                             let renderer = UIGraphicsImageRenderer(size: CGSize(width: newSize.width, height: newSize.height), format: renderFormat)
-                            newImage = renderer.image {
-                                _ in
+                            newImage = renderer.image { _ in
                                 image.draw(in: CGRect(x: 0, y: 0, width: newSize.width, height: newSize.height))
                             }
                         }
@@ -150,7 +149,7 @@ class NCUtility: NSObject {
         }
 
         // mimetype
-        if NCGlobal.shared.capabilityRichdocumentsMimetypes.count > 0 && mimeType.components(separatedBy: ".").count > 2 {
+        if !NCGlobal.shared.capabilityRichdocumentsMimetypes.isEmpty && mimeType.components(separatedBy: ".").count > 2 {
 
             let mimeTypeArray = mimeType.components(separatedBy: ".")
             let mimeType = mimeTypeArray[mimeTypeArray.count - 2] + "." + mimeTypeArray[mimeTypeArray.count - 1]
@@ -319,7 +318,7 @@ class NCUtility: NSObject {
             statusMessage += userMessage
         }
         statusMessage = statusMessage.trimmingCharacters(in: .whitespaces)
-        if statusMessage == "" {
+        if statusMessage.isEmpty {
             statusMessage = messageUserDefined
         }
 
@@ -619,72 +618,28 @@ class NCUtility: NSObject {
     }
 
     func getEncondingDataType(data: Data) -> String.Encoding? {
-        if let _ = String(data: data, encoding: .utf8) {
-            return .utf8
-        }
-        if let _ = String(data: data, encoding: .ascii) {
-            return .ascii
-        }
-        if let _ = String(data: data, encoding: .isoLatin1) {
-            return .isoLatin1
-        }
-        if let _ = String(data: data, encoding: .isoLatin2) {
-            return .isoLatin2
-        }
-        if let _ = String(data: data, encoding: .windowsCP1250) {
-            return .windowsCP1250
-        }
-        if let _ = String(data: data, encoding: .windowsCP1251) {
-            return .windowsCP1251
-        }
-        if let _ = String(data: data, encoding: .windowsCP1252) {
-            return .windowsCP1252
-        }
-        if let _ = String(data: data, encoding: .windowsCP1253) {
-            return .windowsCP1253
-        }
-        if let _ = String(data: data, encoding: .windowsCP1254) {
-            return .windowsCP1254
-        }
-        if let _ = String(data: data, encoding: .macOSRoman) {
-            return .macOSRoman
-        }
-        if let _ = String(data: data, encoding: .japaneseEUC) {
-            return .japaneseEUC
-        }
-        if let _ = String(data: data, encoding: .nextstep) {
-            return .nextstep
-        }
-        if let _ = String(data: data, encoding: .nonLossyASCII) {
-            return .nonLossyASCII
-        }
-        if let _ = String(data: data, encoding: .shiftJIS) {
-            return .shiftJIS
-        }
-        if let _ = String(data: data, encoding: .symbol) {
-            return .symbol
-        }
-        if let _ = String(data: data, encoding: .unicode) {
-            return .unicode
-        }
-        if let _ = String(data: data, encoding: .utf16) {
-            return .utf16
-        }
-        if let _ = String(data: data, encoding: .utf16BigEndian) {
-            return .utf16BigEndian
-        }
-        if let _ = String(data: data, encoding: .utf16LittleEndian) {
-            return .utf16LittleEndian
-        }
-        if let _ = String(data: data, encoding: .utf32) {
-            return .utf32
-        }
-        if let _ = String(data: data, encoding: .utf32BigEndian) {
-            return .utf32BigEndian
-        }
-        if let _ = String(data: data, encoding: .utf32LittleEndian) {
-            return .utf32LittleEndian
-        }
+        if String(data: data, encoding: .utf8) != nil { return .utf8 }
+        if String(data: data, encoding: .ascii) != nil { return .ascii }
+        if String(data: data, encoding: .isoLatin1) != nil { return .isoLatin1 }
+        if String(data: data, encoding: .isoLatin2) != nil { return .isoLatin2 }
+        if String(data: data, encoding: .windowsCP1250) != nil { return .windowsCP1250 }
+        if String(data: data, encoding: .windowsCP1251) != nil { return .windowsCP1251 }
+        if String(data: data, encoding: .windowsCP1252) != nil { return .windowsCP1252 }
+        if String(data: data, encoding: .windowsCP1253) != nil { return .windowsCP1253 }
+        if String(data: data, encoding: .windowsCP1254) != nil { return .windowsCP1254 }
+        if String(data: data, encoding: .macOSRoman) != nil { return .macOSRoman }
+        if String(data: data, encoding: .japaneseEUC) != nil { return .japaneseEUC }
+        if String(data: data, encoding: .nextstep) != nil { return .nextstep }
+        if String(data: data, encoding: .nonLossyASCII) != nil { return .nonLossyASCII }
+        if String(data: data, encoding: .shiftJIS) != nil { return .shiftJIS }
+        if String(data: data, encoding: .symbol) != nil { return .symbol }
+        if String(data: data, encoding: .unicode) != nil { return .unicode }
+        if String(data: data, encoding: .utf16) != nil { return .utf16 }
+        if String(data: data, encoding: .utf16BigEndian) != nil { return .utf16BigEndian }
+        if String(data: data, encoding: .utf16LittleEndian) != nil { return .utf16LittleEndian }
+        if String(data: data, encoding: .utf32) != nil { return .utf32 }
+        if String(data: data, encoding: .utf32BigEndian) != nil { return .utf32BigEndian }
+        if String(data: data, encoding: .utf32LittleEndian) != nil { return .utf32LittleEndian }
         return nil
     }
 

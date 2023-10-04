@@ -59,9 +59,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     private var privacyProtectionWindow: UIWindow?
 
     var isUiTestingEnabled: Bool {
-         get {
-             return ProcessInfo.processInfo.arguments.contains("UI_TESTING")
-         }
+        return ProcessInfo.processInfo.arguments.contains("UI_TESTING")
      }
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
@@ -500,7 +498,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             }
         } else if contextViewController is UINavigationController {
             if let contextViewController = contextViewController, let viewController = viewController {
-                (contextViewController as! UINavigationController).pushViewController(viewController, animated: true)
+                (contextViewController as? UINavigationController)?.pushViewController(viewController, animated: true)
             }
         } else {
             if let viewController = viewController, let contextViewController = contextViewController {
@@ -520,9 +518,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     }
 
     @objc private func checkErrorNetworking() {
-        if account != "" && CCUtility.getPassword(account)!.count == 0 {
-            openLogin(viewController: window?.rootViewController, selector: NCGlobal.shared.introLogin, openLoginWeb: true)
-        }
+        guard !account.isEmpty, CCUtility.getPassword(account)!.isEmpty else { return }
+        openLogin(viewController: window?.rootViewController, selector: NCGlobal.shared.introLogin, openLoginWeb: true)
     }
 
     func trustCertificateError(host: String) {
@@ -549,8 +546,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         alertController.addAction(UIAlertAction(title: NSLocalizedString("_no_", comment: ""), style: .default, handler: { _ in }))
 
         alertController.addAction(UIAlertAction(title: NSLocalizedString("_certificate_details_", comment: ""), style: .default, handler: { _ in
-            if let navigationController = UIStoryboard(name: "NCViewCertificateDetails", bundle: nil).instantiateInitialViewController() as? UINavigationController {
-                let viewController = navigationController.topViewController as! NCViewCertificateDetails
+            if let navigationController = UIStoryboard(name: "NCViewCertificateDetails", bundle: nil).instantiateInitialViewController() as? UINavigationController,
+               let viewController = navigationController.topViewController as? NCViewCertificateDetails {
                 viewController.delegate = self
                 viewController.host = host
                 self.window?.rootViewController?.present(navigationController, animated: true)
@@ -846,7 +843,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                 case NCGlobal.shared.actionUploadAsset:
 
                     NCAskAuthorization.shared.askAuthorizationPhotoLibrary(viewController: rootViewController) { hasPermission in
-                        if hasPermission {NCPhotosPickerViewController(viewController: rootViewController, maxSelectedAssets: 0, singleSelectedMode: false)
+                        if hasPermission {
+                            NCPhotosPickerViewController(viewController: rootViewController, maxSelectedAssets: 0, singleSelectedMode: false)
                         }
                     }
 
@@ -856,11 +854,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
                 case NCGlobal.shared.actionTextDocument:
 
-                    guard let navigationController = UIStoryboard(name: "NCCreateFormUploadDocuments", bundle: nil).instantiateInitialViewController(), let directEditingCreators = NCManageDatabase.shared.getDirectEditingCreators(account: account), let directEditingCreator = directEditingCreators.first(where: { $0.editor == NCGlobal.shared.editorText}) else { return false }
+                    guard let navigationController = UIStoryboard(name: "NCCreateFormUploadDocuments", bundle: nil).instantiateInitialViewController(),
+                          let directEditingCreators = NCManageDatabase.shared.getDirectEditingCreators(account: account),
+                          let directEditingCreator = directEditingCreators.first(where: { $0.editor == NCGlobal.shared.editorText}),
+                          let viewController = (navigationController as? UINavigationController)?.topViewController as? NCCreateFormUploadDocuments else { return false }
 
                     navigationController.modalPresentationStyle = UIModalPresentationStyle.formSheet
 
-                    let viewController = (navigationController as! UINavigationController).topViewController as! NCCreateFormUploadDocuments
                     viewController.editorId = NCGlobal.shared.editorText
                     viewController.creatorId = directEditingCreator.identifier
                     viewController.typeTemplate = NCGlobal.shared.templateDocument
@@ -874,14 +874,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                     NCAskAuthorization.shared.askAuthorizationAudioRecord(viewController: rootViewController) { hasPermission in
                         if hasPermission {
                             let fileName = CCUtility.createFileNameDate(NSLocalizedString("_voice_memo_filename_", comment: ""), extension: "m4a")!
-                            let viewController = UIStoryboard(name: "NCAudioRecorderViewController", bundle: nil).instantiateInitialViewController() as! NCAudioRecorderViewController
+                            if let viewController = UIStoryboard(name: "NCAudioRecorderViewController", bundle: nil).instantiateInitialViewController() as? NCAudioRecorderViewController {
 
-                            viewController.delegate = self
-                            viewController.createRecorder(fileName: fileName)
-                            viewController.modalTransitionStyle = .crossDissolve
-                            viewController.modalPresentationStyle = UIModalPresentationStyle.overCurrentContext
+                                viewController.delegate = self
+                                viewController.createRecorder(fileName: fileName)
+                                viewController.modalTransitionStyle = .crossDissolve
+                                viewController.modalPresentationStyle = UIModalPresentationStyle.overCurrentContext
 
-                            rootViewController.present(viewController, animated: true, completion: nil)
+                                rootViewController.present(viewController, animated: true, completion: nil)
+                            }
                         }
                     }
 

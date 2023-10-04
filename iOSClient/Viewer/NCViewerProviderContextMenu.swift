@@ -290,30 +290,23 @@ extension NCViewerProviderContextMenu: VLCMediaPlayerDelegate {
         switch player.state {
         case .stopped:
             print("Played mode: STOPPED")
-            break
         case .opening:
             NCActivityIndicator.shared.start(backgroundView: self.view)
             print("Played mode: OPENING")
-            break
         case .buffering:
             print("Played mode: BUFFERING")
-            break
         case .ended:
             print("Played mode: ENDED")
-            break
         case .error:
             NCActivityIndicator.shared.stop()
             let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_error_something_wrong_")
             NCContentPresenter.shared.showError(error: error, priority: .max)
             print("Played mode: ERROR")
-            break
         case .playing:
             NCActivityIndicator.shared.stop()
             print("Played mode: PLAYING")
-            break
         case .paused:
             print("Played mode: PAUSED")
-            break
         default: break
         }
     }

@@ -31,7 +31,9 @@ class NCCreateFormUploadVoiceNote: XLFormViewController, NCSelectDelegate, AVAud
     @IBOutlet weak var labelDuration: UILabel!
     @IBOutlet weak var progressView: UIProgressView!
 
+    // swiftlint:disable force_cast
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
+    // swiftlint:enable force_cast
 
     private var serverUrl = ""
     private var titleServerUrl = ""
@@ -182,10 +184,10 @@ class NCCreateFormUploadVoiceNote: XLFormViewController, NCSelectDelegate, AVAud
     // MARK: TableViewDelegate
 
     override func tableView(_ tableView: UITableView, willDisplayHeaderView view: UIView, forSection section: Int) {
-        let header: UITableViewHeaderFooterView = view as! UITableViewHeaderFooterView
-        header.textLabel?.font = UIFont.systemFont(ofSize: 13.0)
-        header.textLabel?.textColor = .gray
-        header.tintColor = cellBackgoundColor
+        let header = view as? UITableViewHeaderFooterView
+        header?.textLabel?.font = UIFont.systemFont(ofSize: 13.0)
+        header?.textLabel?.textColor = .gray
+        header?.tintColor = cellBackgoundColor
     }
 
     // MARK: - Action
@@ -212,16 +214,14 @@ class NCCreateFormUploadVoiceNote: XLFormViewController, NCSelectDelegate, AVAud
     @objc func save() {
 
         let rowFileName: XLFormRowDescriptor = self.form.formRow(withTag: "fileName")!
-        guard let name = rowFileName.value else {
-            return
-        }
-        let ext = (name as! NSString).pathExtension.uppercased()
+        guard let name = rowFileName.value as? String else { return }
+        let ext = (name as NSString).pathExtension.uppercased()
         var fileNameSave = ""
 
-        if ext == "" {
-            fileNameSave = name as! String + ".m4a"
+        if ext.isEmpty {
+            fileNameSave = name + ".m4a"
         } else {
-            fileNameSave = (name as! NSString).deletingPathExtension + ".m4a"
+            fileNameSave = (name as NSString).deletingPathExtension + ".m4a"
         }
 
         let metadataForUpload = NCManageDatabase.shared.createMetadata(account: self.appDelegate.account, user: self.appDelegate.user, userId: self.appDelegate.userId, fileName: fileNameSave, fileNameView: fileNameSave, ocId: UUID().uuidString, serverUrl: self.serverUrl, urlBase: self.appDelegate.urlBase, url: "", contentType: "")
@@ -250,10 +250,9 @@ class NCCreateFormUploadVoiceNote: XLFormViewController, NCSelectDelegate, AVAud
 
     func dismissCreateFormUploadConflict(metadatas: [tableMetadata]?) {
 
-        if metadatas != nil && metadatas!.count > 0 {
-
+        if let metadatas {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                self.dismissAndUpload(metadatas![0])
+                self.dismissAndUpload(metadatas[0])
             }
         }
     }
@@ -278,14 +277,15 @@ class NCCreateFormUploadVoiceNote: XLFormViewController, NCSelectDelegate, AVAud
         self.deselectFormRow(sender)
 
         let storyboard = UIStoryboard(name: "NCSelect", bundle: nil)
-        let navigationController = storyboard.instantiateInitialViewController() as! UINavigationController
-        let viewController = navigationController.topViewController as! NCSelect
+        if let navigationController = storyboard.instantiateInitialViewController() as? UINavigationController,
+           let viewController = navigationController.topViewController as? NCSelect {
 
-        viewController.delegate = self
-        viewController.typeOfCommandView = .selectCreateFolder
-        viewController.includeDirectoryE2EEncryption = true
+            viewController.delegate = self
+            viewController.typeOfCommandView = .selectCreateFolder
+            viewController.includeDirectoryE2EEncryption = true
 
-        self.present(navigationController, animated: true, completion: nil)
+            self.present(navigationController, animated: true, completion: nil)
+        }
     }
 
     // MARK: Player - Timer

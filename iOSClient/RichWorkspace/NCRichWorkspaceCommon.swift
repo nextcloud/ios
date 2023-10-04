@@ -26,7 +26,9 @@ import NextcloudKit
 
 @objc class NCRichWorkspaceCommon: NSObject {
 
+    // swiftlint:disable force_cast
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
+    // swiftlint:enable force_cast
 
     @objc func createViewerNextcloudText(serverUrl: String, viewController: UIViewController) {
 
@@ -71,7 +73,7 @@ import NextcloudKit
 
         if let metadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView LIKE[c] %@", appDelegate.account, serverUrl, NCGlobal.shared.fileNameRichWorkspace.lowercased())) {
 
-            if metadata.url == "" {
+            if metadata.url.isEmpty {
 
                 NCActivityIndicator.shared.start(backgroundView: viewController.view)
 

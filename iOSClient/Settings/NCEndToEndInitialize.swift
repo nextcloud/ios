@@ -33,7 +33,10 @@ class NCEndToEndInitialize: NSObject {
 
     @objc weak var delegate: NCEndToEndInitializeDelegate?
 
+    // swiftlint:disable force_cast
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
+    // swiftlint:enable force_cast
+
     var extractedPublicKey: String?
 
     override init() {

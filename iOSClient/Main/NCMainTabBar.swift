@@ -28,16 +28,17 @@ class NCMainTabBar: UITabBar {
 
     private var fillColor: UIColor!
     private var shapeLayer: CALayer?
+
+    // swiftlint:disable force_cast
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
+    // swiftlint:enable force_cast
+
     private let centerButtonY: CGFloat = -28
 
     public var menuRect: CGRect {
-        get {
-            let tabBarItemWidth = Int(self.frame.size.width) / (self.items?.count ?? 0)
-            let rect = CGRect(x: 0, y: -5, width: tabBarItemWidth, height: Int(self.frame.size.height))
-
-            return rect
-        }
+        let tabBarItemWidth = Int(self.frame.size.width) / (self.items?.count ?? 0)
+        let rect = CGRect(x: 0, y: -5, width: tabBarItemWidth, height: Int(self.frame.size.height))
+        return rect
     }
 
     // MARK: - Life Cycle

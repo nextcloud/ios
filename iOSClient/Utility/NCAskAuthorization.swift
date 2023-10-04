@@ -36,7 +36,6 @@ class NCAskAuthorization: NSObject {
         switch AVAudioSession.sharedInstance().recordPermission {
         case AVAudioSession.RecordPermission.granted:
             completion(true)
-            break
         case AVAudioSession.RecordPermission.denied:
             let alert = UIAlertController(title: NSLocalizedString("_error_", comment: ""), message: NSLocalizedString("_err_permission_microphone_", comment: ""), preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: NSLocalizedString("_open_settings_", comment: ""), style: .default, handler: { _ in
@@ -51,7 +50,6 @@ class NCAskAuthorization: NSObject {
             DispatchQueue.main.async {
                 viewController?.present(alert, animated: true, completion: nil)
             }
-            break
         case AVAudioSession.RecordPermission.undetermined:
             AVAudioSession.sharedInstance().requestRecordPermission { allowed in
                 DispatchQueue.main.async {
@@ -62,10 +60,8 @@ class NCAskAuthorization: NSObject {
                     }
                 }
             }
-            break
         default:
             completion(false)
-            break
         }
     }
 
@@ -74,7 +70,6 @@ class NCAskAuthorization: NSObject {
         switch PHPhotoLibrary.authorizationStatus() {
         case PHAuthorizationStatus.authorized:
             completion(true)
-            break
         case PHAuthorizationStatus.denied, PHAuthorizationStatus.limited, PHAuthorizationStatus.restricted:
             let alert = UIAlertController(title: NSLocalizedString("_error_", comment: ""), message: NSLocalizedString("_err_permission_photolibrary_", comment: ""), preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: NSLocalizedString("_open_settings_", comment: ""), style: .default, handler: { _ in
@@ -89,7 +84,6 @@ class NCAskAuthorization: NSObject {
             DispatchQueue.main.async {
                 viewController?.present(alert, animated: true, completion: nil)
             }
-            break
         case PHAuthorizationStatus.notDetermined:
             isRequesting = true
             PHPhotoLibrary.requestAuthorization { allowed in
@@ -105,10 +99,8 @@ class NCAskAuthorization: NSObject {
                     }
                 }
             }
-            break
         default:
             completion(false)
-            break
         }
     }
 

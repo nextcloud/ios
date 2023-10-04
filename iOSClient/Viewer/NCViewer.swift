@@ -31,7 +31,10 @@ class NCViewer: NSObject {
         return instance
     }()
 
+    // swiftlint:disable force_cast
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
+    // swiftlint:enable force_cast
+
     private var viewerQuickLook: NCViewerQuickLook?
     private var metadata = tableMetadata()
     private var metadatas: [tableMetadata] = []
@@ -70,9 +73,8 @@ class NCViewer: NSObject {
         // IMAGE AUDIO VIDEO
         if metadata.isImage || metadata.isAudioOrVideo {
 
-            if let navigationController = viewController.navigationController {
-
-                let viewerMediaPageContainer: NCViewerMediaPage = UIStoryboard(name: "NCViewerMediaPage", bundle: nil).instantiateInitialViewController() as! NCViewerMediaPage
+            if let navigationController = viewController.navigationController,
+               let viewerMediaPageContainer: NCViewerMediaPage = UIStoryboard(name: "NCViewerMediaPage", bundle: nil).instantiateInitialViewController() as? NCViewerMediaPage {
                 var index = 0
                 for medatasImage in metadatas {
                     if medatasImage.ocId == metadata.ocId {
@@ -94,9 +96,8 @@ class NCViewer: NSObject {
             // PDF
             if metadata.contentType == "application/pdf" || metadata.contentType == "com.adobe.pdf" {
 
-                if let navigationController = viewController.navigationController {
-
-                    let viewController: NCViewerPDF = UIStoryboard(name: "NCViewerPDF", bundle: nil).instantiateInitialViewController() as! NCViewerPDF
+                if let navigationController = viewController.navigationController,
+                   let viewController: NCViewerPDF = UIStoryboard(name: "NCViewerPDF", bundle: nil).instantiateInitialViewController() as? NCViewerPDF {
 
                     viewController.metadata = metadata
                     viewController.titleView = metadata.fileNameView
@@ -112,9 +113,9 @@ class NCViewer: NSObject {
             let availableRichDocument = NCUtility.shared.isRichDocument(metadata)
 
             // RichDocument: Collabora
-            if (isRichDocument || (availableRichDocument && editors.count == 0)) && NextcloudKit.shared.isNetworkReachable() {
+            if (isRichDocument || (availableRichDocument && editors.isEmpty)) && NextcloudKit.shared.isNetworkReachable() {
 
-                if metadata.url == "" {
+                if metadata.url.isEmpty {
 
                     NCActivityIndicator.shared.start(backgroundView: viewController.view)
                     NextcloudKit.shared.createUrlRichdocuments(fileID: metadata.fileId) { account, url, _, error in
@@ -123,9 +124,8 @@ class NCViewer: NSObject {
 
                         if error == .success && account == self.appDelegate.account && url != nil {
 
-                            if let navigationController = viewController.navigationController {
-
-                                let viewController: NCViewerRichdocument = UIStoryboard(name: "NCViewerRichdocument", bundle: nil).instantiateInitialViewController() as! NCViewerRichdocument
+                            if let navigationController = viewController.navigationController,
+                               let viewController: NCViewerRichdocument = UIStoryboard(name: "NCViewerRichdocument", bundle: nil).instantiateInitialViewController() as? NCViewerRichdocument {
 
                                 viewController.metadata = metadata
                                 viewController.link = url!
@@ -142,9 +142,8 @@ class NCViewer: NSObject {
 
                 } else {
 
-                    if let navigationController = viewController.navigationController {
-
-                        let viewController: NCViewerRichdocument = UIStoryboard(name: "NCViewerRichdocument", bundle: nil).instantiateInitialViewController() as! NCViewerRichdocument
+                    if let navigationController = viewController.navigationController,
+                       let viewController: NCViewerRichdocument = UIStoryboard(name: "NCViewerRichdocument", bundle: nil).instantiateInitialViewController() as? NCViewerRichdocument {
 
                         viewController.metadata = metadata
                         viewController.link = metadata.url
@@ -158,9 +157,9 @@ class NCViewer: NSObject {
             }
 
             // DirectEditing: Nextcloud Text - OnlyOffice
-            if editors.count > 0 && NextcloudKit.shared.isNetworkReachable() {
+            if !editors.isEmpty, NextcloudKit.shared.isNetworkReachable() {
 
-                if editor == "" {
+                if editor.isEmpty {
                     if editors.contains(NCGlobal.shared.editorText) {
                         editor = NCGlobal.shared.editorText
                     } else if editors.contains(NCGlobal.shared.editorOnlyoffice) {
@@ -170,7 +169,7 @@ class NCViewer: NSObject {
 
                 if editor == NCGlobal.shared.editorText || editor == NCGlobal.shared.editorOnlyoffice {
 
-                    if metadata.url == "" {
+                    if metadata.url.isEmpty {
 
                         let fileNamePath = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, urlBase: metadata.urlBase, userId: metadata.userId, account: metadata.account)!
 
@@ -188,9 +187,8 @@ class NCViewer: NSObject {
 
                             if error == .success && account == self.appDelegate.account && url != nil {
 
-                                if let navigationController = viewController.navigationController {
-
-                                    let viewController: NCViewerNextcloudText = UIStoryboard(name: "NCViewerNextcloudText", bundle: nil).instantiateInitialViewController() as! NCViewerNextcloudText
+                                if let navigationController = viewController.navigationController,
+                                   let viewController: NCViewerNextcloudText = UIStoryboard(name: "NCViewerNextcloudText", bundle: nil).instantiateInitialViewController() as? NCViewerNextcloudText {
 
                                     viewController.metadata = metadata
                                     viewController.editor = editor
@@ -208,9 +206,8 @@ class NCViewer: NSObject {
 
                     } else {
 
-                        if let navigationController = viewController.navigationController {
-
-                            let viewController: NCViewerNextcloudText = UIStoryboard(name: "NCViewerNextcloudText", bundle: nil).instantiateInitialViewController() as! NCViewerNextcloudText
+                        if let navigationController = viewController.navigationController,
+                           let viewController: NCViewerNextcloudText = UIStoryboard(name: "NCViewerNextcloudText", bundle: nil).instantiateInitialViewController() as? NCViewerNextcloudText {
 
                             viewController.metadata = metadata
                             viewController.editor = editor
@@ -248,8 +245,8 @@ class NCViewer: NSObject {
 
 extension NCViewer: NCSelectDelegate {
     func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String, items: [Any], indexPath: [IndexPath], overwrite: Bool, copy: Bool, move: Bool) {
-        if let serverUrl = serverUrl {
-            let metadata = items[0] as! tableMetadata
+        if let serverUrl = serverUrl,
+           let metadata = items[0] as? tableMetadata {
             if move {
                 Task {
                     let error = await NCNetworking.shared.moveMetadata(metadata, serverUrlTo: serverUrl, overwrite: overwrite)

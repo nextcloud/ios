@@ -27,7 +27,10 @@ import NextcloudKit
 
 class NCViewerRichdocument: UIViewController, WKNavigationDelegate, WKScriptMessageHandler, NCSelectDelegate {
 
+    // swiftlint:disable force_cast
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
+    // swiftlint:enable force_cast
+
     var webView = WKWebView()
     var bottomConstraint: NSLayoutConstraint?
     var documentController: UIDocumentInteractionController?
@@ -161,16 +164,17 @@ class NCViewerRichdocument: UIViewController, WKNavigationDelegate, WKScriptMess
             if message.body as? String == "insertGraphic" {
 
                 let storyboard = UIStoryboard(name: "NCSelect", bundle: nil)
-                let navigationController = storyboard.instantiateInitialViewController() as! UINavigationController
-                let viewController = navigationController.topViewController as! NCSelect
+                if let navigationController = storyboard.instantiateInitialViewController() as? UINavigationController,
+                   let viewController = navigationController.topViewController as? NCSelect {
 
-                viewController.delegate = self
-                viewController.typeOfCommandView = .select
-                viewController.enableSelectFile = true
-                viewController.includeImages = true
-                viewController.type = ""
+                    viewController.delegate = self
+                    viewController.typeOfCommandView = .select
+                    viewController.enableSelectFile = true
+                    viewController.includeImages = true
+                    viewController.type = ""
 
-                self.present(navigationController, animated: true, completion: nil)
+                    self.present(navigationController, animated: true, completion: nil)
+                }
             }
 
             if message.body as? String == "share" {
@@ -188,11 +192,12 @@ class NCViewerRichdocument: UIViewController, WKNavigationDelegate, WKScriptMess
 
                         if type == "slideshow" {
 
-                            let browserWebVC = UIStoryboard(name: "NCBrowserWeb", bundle: nil).instantiateInitialViewController() as! NCBrowserWeb
-                            browserWebVC.urlBase = urlString
-                            browserWebVC.isHiddenButtonExit = false
-                            self.present(browserWebVC, animated: true)
+                            if let browserWebVC = UIStoryboard(name: "NCBrowserWeb", bundle: nil).instantiateInitialViewController() as? NCBrowserWeb {
 
+                                browserWebVC.urlBase = urlString
+                                browserWebVC.isHiddenButtonExit = false
+                                self.present(browserWebVC, animated: true)
+                            }
                             return
 
                         } else {

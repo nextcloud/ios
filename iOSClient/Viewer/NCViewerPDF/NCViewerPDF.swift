@@ -398,12 +398,12 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
 
     @objc func searchText() {
 
-        let viewerPDFSearch = UIStoryboard(name: "NCViewerPDF", bundle: nil).instantiateViewController(withIdentifier: "NCViewerPDFSearch") as! NCViewerPDFSearch
-        viewerPDFSearch.delegate = self
-        viewerPDFSearch.pdfDocument = pdfDocument
-
-        let navigaionController = UINavigationController(rootViewController: viewerPDFSearch)
-        self.present(navigaionController, animated: true)
+        if let viewerPDFSearch = UIStoryboard(name: "NCViewerPDF", bundle: nil).instantiateViewController(withIdentifier: "NCViewerPDFSearch") as? NCViewerPDFSearch {
+            viewerPDFSearch.delegate = self
+            viewerPDFSearch.pdfDocument = pdfDocument
+            let navigaionController = UINavigationController(rootViewController: viewerPDFSearch)
+            self.present(navigaionController, animated: true)
+        }
     }
 
     @objc func goToPage() {
@@ -477,12 +477,12 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
     @objc func gestureOpenPdfThumbnail(_ recognizer: UIScreenEdgePanGestureRecognizer) {
 
         guard let pdfDocument = pdfView.document, !pdfDocument.isLocked else { return }
-        OpenPdfThumbnail()
+        openPdfThumbnail()
     }
 
     // MARK: - OPEN / CLOSE Thumbnail
 
-    func OpenPdfThumbnail() {
+    func openPdfThumbnail() {
 
         if let tipView = self.tipView {
             tipView.dismiss()

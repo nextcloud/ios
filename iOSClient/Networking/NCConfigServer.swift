@@ -53,9 +53,11 @@ import NextcloudKit
         NCNetworking.shared.checkTrustedChallenge(session, didReceive: challenge, completionHandler: completionHandler)
     }
 
+    // swiftlint:disable identifier_name
     private enum ConfigState: Int {
         case Stopped, Ready, InstalledConfig, BackToApp
     }
+    // swiftlint:enable identifier_name
 
     internal let listeningPort: in_port_t = 8080
     internal var configName: String = "Profile install"

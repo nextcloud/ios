@@ -156,6 +156,8 @@ class NCRenameFile: UIViewController, UITextFieldDelegate {
 
     @IBAction func renameFile(_ sender: Any) {
 
+        // swiftlint:disable empty_count
+
         var fileNameNoExtensionNew = ""
         var extNew = ""
         var fileNameNew = ""
@@ -165,8 +167,7 @@ class NCRenameFile: UIViewController, UITextFieldDelegate {
             let extCurrent = (metadata.fileNameView as NSString).pathExtension
 
             if fileNameNoExtension.text == nil || fileNameNoExtension.text?.count == 0 {
-                self.fileNameNoExtension.text = (metadata.fileNameView as NSString).deletingPathExtension
-                return
+                return self.fileNameNoExtension.text = (metadata.fileNameView as NSString).deletingPathExtension
             } else {
                 fileNameNoExtensionNew = fileNameNoExtension.text!
             }
@@ -179,8 +180,7 @@ class NCRenameFile: UIViewController, UITextFieldDelegate {
             } else {
 
                 if ext.text == nil || ext.text?.count == 0 {
-                    self.ext.text = metadata.fileExtension
-                    return
+                    return self.ext.text = metadata.fileExtension
                 } else {
                     extNew = ext.text!
                 }
@@ -214,11 +214,9 @@ class NCRenameFile: UIViewController, UITextFieldDelegate {
         } else if let fileName = self.fileName {
 
             if fileNameNoExtension.text == nil || fileNameNoExtension.text?.count == 0 {
-                fileNameNoExtension.text = (fileName as NSString).deletingPathExtension
-                return
+                return fileNameNoExtension.text = (fileName as NSString).deletingPathExtension
             } else if ext.text == nil || ext.text?.count == 0 {
-                ext.text = (fileName as NSString).pathExtension
-                return
+                return ext.text = (fileName as NSString).pathExtension
             }
 
             fileNameNew = (fileNameNoExtension.text ?? "") + "." + (ext.text ?? "")
@@ -226,6 +224,8 @@ class NCRenameFile: UIViewController, UITextFieldDelegate {
                 self.delegate?.rename(fileName: fileName, fileNameNew: fileNameNew)
             }
         }
+
+        // swiftlint:enable empty_count
     }
 
     // MARK: - Networking

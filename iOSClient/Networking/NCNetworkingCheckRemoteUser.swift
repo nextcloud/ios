@@ -27,9 +27,9 @@ class NCNetworkingCheckRemoteUser {
 
     func checkRemoteUser(account: String, error: NKError) {
 
-        guard let tableAccount = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", account)),  
-            let token = CCUtility.getPassword(account), !token.isEmpty,
-            let appDelegate = UIApplication.shared.delegate as? AppDelegate else { return }
+        guard let tableAccount = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", account)),
+              let token = CCUtility.getPassword(account), !token.isEmpty,
+              let appDelegate = UIApplication.shared.delegate as? AppDelegate else { return }
 
         NCNetworking.shared.cancelSessions(inBackground: true)
 

@@ -101,7 +101,7 @@ class fileProviderData: NSObject {
 
         // DOMAIN
         let accounts = NCManageDatabase.shared.getAllAccount()
-        if accounts.count == 0 { return nil }
+        if accounts.isEmpty { return nil }
 
         for activeAccount in accounts {
             guard let url = NSURL(string: activeAccount.urlBase) else { continue }

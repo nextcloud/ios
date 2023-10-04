@@ -29,7 +29,10 @@ import JGProgressHUD
 
 class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmptyDataSetDelegate {
 
+    // swiftlint:disable force_cast
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
+    // swiftlint:enable force_cast
+
     var notifications: [NKNotifications] = []
     var emptyDataSet: NCEmptyDataSet?
     var isReloadDataSourceNetworkInProgress: Bool = false
@@ -115,7 +118,7 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmpty
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
 
-        let cell = self.tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath) as! NCNotificationCell
+        guard let cell = self.tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath) as? NCNotificationCell else { return UITableViewCell() }
         cell.delegate = self
         cell.selectionStyle = .none
         cell.indexPath = indexPath
@@ -308,10 +311,12 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmpty
                 self.notifications.removeAll()
                 let sortedListOfNotifications = (notifications! as NSArray).sortedArray(using: [NSSortDescriptor(key: "date", ascending: false)])
                 for notification in sortedListOfNotifications {
-                    if let icon = (notification as! NKNotifications).icon {
+                    if let icon = (notification as? NKNotifications)?.icon {
                         NCUtility.shared.convertSVGtoPNGWriteToUserData(svgUrlString: icon, fileName: nil, width: 25, rewrite: false, account: self.appDelegate.account, completion: { _, _ in })
                     }
-                    self.notifications.append(notification as! NKNotifications)
+                    if let notification = (notification as? NKNotifications) {
+                        self.notifications.append(notification)
+                    }
                 }
                 self.refreshControl?.endRefreshing()
                 self.isReloadDataSourceNetworkInProgress = false
@@ -349,7 +354,7 @@ class NCNotificationCell: UITableViewCell, NCCellProtocol {
         set { index = newValue }
     }
     var fileAvatarImageView: UIImageView? {
-        get { return avatar }
+        return avatar
     }
     var fileUser: String? {
         get { return user }

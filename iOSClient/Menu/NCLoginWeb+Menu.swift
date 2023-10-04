@@ -73,10 +73,10 @@ extension NCLoginWeb {
                     self.appDelegate.deleteAccount(self.appDelegate.account, wipe: false)
                     self.dismiss(animated: true) {
                         let accounts = NCManageDatabase.shared.getAllAccount()
-                        if accounts.count > 0 {
-                            self.appDelegate.changeAccount(accounts.first!.account, userProfile: nil)
-                        } else {
+                        if accounts.isEmpty {
                             self.appDelegate.openLogin(viewController: nil, selector: NCGlobal.shared.introLogin, openLoginWeb: false)
+                        } else {
+                            self.appDelegate.changeAccount(accounts.first!.account, userProfile: nil)
                         }
                     }
                 }

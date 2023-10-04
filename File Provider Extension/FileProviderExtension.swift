@@ -190,26 +190,22 @@ class FileProviderExtension: NSFileProviderExtension, NCNetworkingDelegate {
         let pathComponents = url.pathComponents
         let identifier = NSFileProviderItemIdentifier(pathComponents[pathComponents.count - 2])
 
-        if let _ = outstandingSessionTasks[url] {
-            completionHandler(nil)
-            return
+        if outstandingSessionTasks[url] != nil {
+            return completionHandler(nil)
         }
 
         guard let metadata = fileProviderUtility.shared.getTableMetadataFromItemIdentifier(identifier) else {
-            completionHandler(NSFileProviderError(.noSuchItem))
-            return
+            return completionHandler(NSFileProviderError(.noSuchItem))
         }
 
         // Document VIEW ONLY
         if metadata.isDocumentViewableOnly {
-            completionHandler(NSFileProviderError(.noSuchItem))
-            return
+            return completionHandler(NSFileProviderError(.noSuchItem))
         }
 
         let tableLocalFile = NCManageDatabase.shared.getTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
         if tableLocalFile != nil && CCUtility.fileProviderStorageExists(metadata) && tableLocalFile?.etag == metadata.etag {
-            completionHandler(nil)
-            return
+            return completionHandler(nil)
         }
 
         let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
@@ -337,8 +333,8 @@ class FileProviderExtension: NSFileProviderExtension, NCNetworkingDelegate {
                 // typefile directory ? (NOT PERMITTED)
                 do {
                     let attributes = try fileProviderUtility.shared.fileManager.attributesOfItem(atPath: fileURL.path)
-                    size = attributes[FileAttributeKey.size] as! Int64
-                    let typeFile = attributes[FileAttributeKey.type] as! FileAttributeType
+                    size = attributes[FileAttributeKey.size] as? Int64 ?? 0
+                    let typeFile = attributes[FileAttributeKey.type] as? FileAttributeType
                     if typeFile == FileAttributeType.typeDirectory {
                         completionHandler(nil, NSFileProviderError(.noSuchItem))
                         return

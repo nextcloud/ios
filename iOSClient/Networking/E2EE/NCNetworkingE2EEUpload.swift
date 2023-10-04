@@ -51,9 +51,8 @@ class NCNetworkingE2EEUpload: NSObject {
         metadata.session = NextcloudKit.shared.nkCommonInstance.sessionIdentifierUpload
         metadata.sessionError = ""
         guard let result = NCManageDatabase.shared.addMetadata(metadata),
-              let directory = NCManageDatabase.shared.getTableDirectory(predicate:  NSPredicate(format: "account == %@ AND serverUrl == %@", metadata.account, metadata.serverUrl)) else {
+              let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", metadata.account, metadata.serverUrl)) else {
             return NKError(errorCode: NCGlobal.shared.errorUnexpectedResponseFromDB, errorDescription: NSLocalizedString("_e2e_error_", comment: ""))
-            
         }
         metadata = result
 
@@ -115,7 +114,6 @@ class NCNetworkingE2EEUpload: NSObject {
             return uploadMetadataError
         }
 
-
         // LOCK
         //
         let resultsLock = await NCNetworkingE2EE.shared.lock(account: metadata.account, serverUrl: metadata.serverUrl)
@@ -142,7 +140,7 @@ class NCNetworkingE2EEUpload: NSObject {
         // UNLOCK
         //
         await NCNetworkingE2EE.shared.unlock(account: metadata.account, serverUrl: metadata.serverUrl)
-        
+
         if let afError = resultsSendFile.afError, afError.isExplicitlyCancelledError {
 
             CCUtility.removeFile(atPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId))
@@ -180,7 +178,7 @@ class NCNetworkingE2EEUpload: NSObject {
 
     // BRIDGE for chunk
     //
-    private func sendFile(metadata: tableMetadata, e2eToken: String, uploadE2EEDelegate: uploadE2EEDelegate? = nil) async -> (ocId: String?, etag: String?, date: NSDate? ,afError: AFError?, error: NKError) {
+    private func sendFile(metadata: tableMetadata, e2eToken: String, uploadE2EEDelegate: uploadE2EEDelegate? = nil) async -> (ocId: String?, etag: String?, date: NSDate?, afError: AFError?, error: NKError) {
 
         if metadata.chunk > 0 {
 
@@ -189,8 +187,8 @@ class NCNetworkingE2EEUpload: NSObject {
                     uploadE2EEDelegate?.start()
                 } progressHandler: { totalBytesExpected, totalBytes, fractionCompleted in
                     uploadE2EEDelegate?.uploadE2EEProgress(totalBytesExpected, totalBytes, fractionCompleted)
-                } completion: { account, file, afError, error in
-                    continuation.resume(returning: (ocId: file?.ocId, etag: file?.etag, date: file?.date ,afError: afError, error: error))
+                } completion: { _, file, afError, error in
+                    continuation.resume(returning: (ocId: file?.ocId, etag: file?.etag, date: file?.date, afError: afError, error: error))
                 }
             })
 
@@ -202,8 +200,8 @@ class NCNetworkingE2EEUpload: NSObject {
                     uploadE2EEDelegate?.start()
                 } progressHandler: { totalBytesExpected, totalBytes, fractionCompleted in
                     uploadE2EEDelegate?.uploadE2EEProgress(totalBytesExpected, totalBytes, fractionCompleted)
-                } completion: { account, ocId, etag, date, size, allHeaderFields, afError, error in
-                    continuation.resume(returning: (ocId: ocId, etag: etag, date: date ,afError: afError, error: error))
+                } completion: { _, ocId, etag, date, _, _, afError, error in
+                    continuation.resume(returning: (ocId: ocId, etag: etag, date: date, afError: afError, error: error))
                 }
             })
         }

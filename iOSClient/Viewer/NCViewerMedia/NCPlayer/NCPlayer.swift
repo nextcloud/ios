@@ -28,7 +28,10 @@ import MobileVLCKit
 
 class NCPlayer: NSObject {
 
+    // swiftlint:disable force_cast
     internal let appDelegate = UIApplication.shared.delegate as! AppDelegate
+    // swiftlint:enable force_cast
+
     internal var url: URL?
     internal var player = VLCMediaPlayer()
     internal var dialogProvider: VLCDialogProvider?
@@ -246,13 +249,10 @@ extension NCPlayer: VLCMediaPlayerDelegate {
         case .stopped:
             playerToolBar?.playButtonPlay()
             print("Played mode: STOPPED")
-            break
         case .opening:
             print("Played mode: OPENING")
-            break
         case .buffering:
             print("Played mode: BUFFERING")
-            break
         case .ended:
             NCManageDatabase.shared.addVideo(metadata: self.metadata, position: 0)
             DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
@@ -262,10 +262,8 @@ extension NCPlayer: VLCMediaPlayerDelegate {
             }
             playerToolBar?.playButtonPlay()
             print("Played mode: ENDED")
-            break
         case .error:
             print("Played mode: ERROR")
-            break
         case .playing:
             guard let playerToolBar = playerToolBar else { return }
             if playerToolBar.playerButtonView.isHidden {
@@ -296,11 +294,9 @@ extension NCPlayer: VLCMediaPlayerDelegate {
             playerToolBar.updateTopToolBar(videoSubTitlesIndexes: player.videoSubTitlesIndexes, audioTrackIndexes: player.audioTrackIndexes)
             NCManageDatabase.shared.addVideo(metadata: metadata, width: self.width, height: self.height, length: self.length)
             print("Played mode: PLAYING")
-            break
         case .paused:
             playerToolBar?.playButtonPlay()
             print("Played mode: PAUSED")
-            break
         default: break
         }
     }

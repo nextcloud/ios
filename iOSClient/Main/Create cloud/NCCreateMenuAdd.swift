@@ -26,7 +26,10 @@ import Sheeeeeeeeet
 
 class NCCreateMenuAdd: NSObject {
 
+    // swiftlint:disable force_cast
     weak var appDelegate = UIApplication.shared.delegate as! AppDelegate
+    // swiftlint:enable force_cast
+
     var isNextcloudTextAvailable = false
 
     @objc init(viewController: UIViewController, view: UIView) {
@@ -68,7 +71,7 @@ class NCCreateMenuAdd: NSObject {
         items.append(MenuItem(title: NSLocalizedString("_create_folder_", comment: ""), value: 60, image: CCGraphics.changeThemingColorImage(UIImage(named: "folder"), width: 50, height: 50, color: NCBrandColor.sharedInstance.brandElement)))
 
         if let richdocumentsMimetypes = NCManageDatabase.sharedInstance.getRichdocumentsMimetypes(account: appDelegate.activeAccount) {
-            if richdocumentsMimetypes.count > 0 {
+            if !richdocumentsMimetypes.isEmpty {
                 items.append(MenuItem(title: NSLocalizedString("_create_new_document_", comment: ""), value: 70, image: UIImage(named: "create_file_document")))
                 items.append(MenuItem(title: NSLocalizedString("_create_new_spreadsheet_", comment: ""), value: 80, image: UIImage(named: "create_file_xls")))
                 items.append(MenuItem(title: NSLocalizedString("_create_new_presentation_", comment: ""), value: 90, image: UIImage(named: "create_file_ppt")))
@@ -96,7 +99,7 @@ class NCCreateMenuAdd: NSObject {
                 }
                 navigationController.modalPresentationStyle = UIModalPresentationStyle.formSheet
 
-                let viewController = (navigationController as! UINavigationController).topViewController as! NCCreateFormUploadDocuments
+                let viewController = (navigationController as? UINavigationController)?.topViewController as? NCCreateFormUploadDocuments
                 viewController.typeTemplate = k_template_document
                 viewController.serverUrl = self.appDelegate.activeMain.serverUrl
                 viewController.titleForm = NSLocalizedString("_create_nextcloudtext_document_", comment: "")
@@ -119,7 +122,7 @@ class NCCreateMenuAdd: NSObject {
                 }
                 navigationController.modalPresentationStyle = UIModalPresentationStyle.formSheet
 
-                let viewController = (navigationController as! UINavigationController).topViewController as! NCCreateFormUploadDocuments
+                let viewController = (navigationController as? UINavigationController).topViewController as? NCCreateFormUploadDocuments
                 viewController.typeTemplate = k_template_document
                 viewController.serverUrl = self.appDelegate.activeMain.serverUrl
                 viewController.titleForm = NSLocalizedString("_create_new_document_", comment: "")
@@ -132,7 +135,7 @@ class NCCreateMenuAdd: NSObject {
                 }
                 navigationController.modalPresentationStyle = UIModalPresentationStyle.formSheet
 
-                let viewController = (navigationController as! UINavigationController).topViewController as! NCCreateFormUploadDocuments
+                let viewController = (navigationController as? UINavigationController).topViewController as? NCCreateFormUploadDocuments
                 viewController.typeTemplate = k_template_spreadsheet
                 viewController.serverUrl = self.appDelegate.activeMain.serverUrl
                 viewController.titleForm = NSLocalizedString("_create_new_spreadsheet_", comment: "")
@@ -145,7 +148,7 @@ class NCCreateMenuAdd: NSObject {
                 }
                 navigationController.modalPresentationStyle = UIModalPresentationStyle.formSheet
 
-                let viewController = (navigationController as! UINavigationController).topViewController as! NCCreateFormUploadDocuments
+                let viewController = (navigationController as? UINavigationController).topViewController as? NCCreateFormUploadDocuments
                 viewController.typeTemplate = k_template_presentation
                 viewController.serverUrl = self.appDelegate.activeMain.serverUrl
                 viewController.titleForm = NSLocalizedString("_create_new_presentation_", comment: "")

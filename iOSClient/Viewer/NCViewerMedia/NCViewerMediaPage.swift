@@ -36,6 +36,7 @@ class NCViewerMediaPage: UIViewController {
 
     @IBOutlet weak var progressView: UIProgressView!
 
+    // swiftlint:disable force_cast
     var pageViewController: UIPageViewController {
         return self.children[0] as! UIPageViewController
     }
@@ -43,6 +44,7 @@ class NCViewerMediaPage: UIViewController {
     var currentViewController: NCViewerMedia {
         return self.pageViewController.viewControllers![0] as! NCViewerMedia
     }
+    // swiftlint:enable force_cast
 
     private var hideStatusBar: Bool = false {
         didSet {
@@ -189,7 +191,10 @@ class NCViewerMediaPage: UIViewController {
 
     func getViewerMedia(index: Int, metadata: tableMetadata) -> NCViewerMedia {
 
+        // swiftlint:disable force_cast
         let viewerMedia = UIStoryboard(name: "NCViewerMediaPage", bundle: nil).instantiateViewController(withIdentifier: "NCViewerMedia") as! NCViewerMedia
+        // swiftlint:enable force_cast
+
         viewerMedia.index = index
         viewerMedia.metadata = metadata
         viewerMedia.viewerMediaPage = self
@@ -396,7 +401,7 @@ class NCViewerMediaPage: UIViewController {
             hud.dismiss()
         }
     }
-    
+
     @objc func renameFile(_ notification: NSNotification) {
 
         guard let userInfo = notification.userInfo as NSDictionary?,
@@ -458,7 +463,7 @@ class NCViewerMediaPage: UIViewController {
         MPRemoteCommandCenter.shared().skipForwardCommand.isEnabled = true
         skipForwardCommand = MPRemoteCommandCenter.shared().skipForwardCommand.addTarget { event in
 
-            let seconds = Int32((event as! MPSkipIntervalCommandEvent).interval)
+            let seconds = Int32((event as? MPSkipIntervalCommandEvent)?.interval ?? 0)
             ncplayer.player.jumpForward(seconds)
             return.success
         }
@@ -467,7 +472,7 @@ class NCViewerMediaPage: UIViewController {
         MPRemoteCommandCenter.shared().skipBackwardCommand.isEnabled = true
         skipBackwardCommand = MPRemoteCommandCenter.shared().skipBackwardCommand.addTarget { event in
 
-            let seconds = Int32((event as! MPSkipIntervalCommandEvent).interval)
+            let seconds = Int32((event as? MPSkipIntervalCommandEvent)?.interval ?? 0)
             ncplayer.player.jumpBackward(seconds)
             return.success
         }
@@ -526,7 +531,7 @@ extension NCViewerMediaPage: UIPageViewControllerDelegate, UIPageViewControllerD
 
     func shiftCurrentPage() {
 
-        if metadatas.count == 0 {
+        if metadatas.isEmpty {
             self.viewUnload()
             return
         }
@@ -580,9 +585,9 @@ extension NCViewerMediaPage: UIPageViewControllerDelegate, UIPageViewControllerD
 
         if completed && nextIndex != nil {
             previousViewControllers.forEach { viewController in
-                let viewerMedia = viewController as! NCViewerMedia
-                viewerMedia.ncplayer?.playerStop()
-                viewerMedia.closeDetail()
+                let viewerMedia = viewController as? NCViewerMedia
+                viewerMedia?.ncplayer?.playerStop()
+                viewerMedia?.closeDetail()
             }
             currentIndex = nextIndex!
         }

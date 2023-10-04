@@ -51,12 +51,6 @@ struct DashboardData: Identifiable, Hashable {
     let imageColor: UIColor?
 }
 
-struct DashboardDataButton: Hashable {
-    let type: String
-    let Text: String
-    let link: String
-}
-
 let dashboardDatasTest: [DashboardData] = [
     .init(id: 0, title: "title0", subTitle: "subTitle-description0", link: URL(string: "https://nextcloud.com/")!, icon: UIImage(named: "widget")!, template: true, avatar: false, imageColor: nil),
     .init(id: 1, title: "title1", subTitle: "subTitle-description1", link: URL(string: "https://nextcloud.com/")!, icon: UIImage(named: "widget")!, template: true, avatar: false, imageColor: nil),
