@@ -516,8 +516,6 @@ extension NCViewerMedia {
 
                 self.scrollView.pinchGestureRecognizer?.isEnabled = false
             }
-        } completion: { _ in
-
         }
     }
 
