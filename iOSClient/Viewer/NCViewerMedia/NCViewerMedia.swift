@@ -485,6 +485,8 @@ extension NCViewerMedia {
     private func openDetail(animate: Bool = true) {
         delegate?.didOpenDetail()
         self.dismissTip()
+        
+        self.scrollView.setZoomScale(1.0, animated: false)
 
         statusLabel.isHidden = true
         statusViewImage.isHidden = true
