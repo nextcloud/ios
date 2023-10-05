@@ -90,7 +90,7 @@ enum NCUserPermission: CaseIterable, NCPermission {
 
     case reshare, edit, create, delete, download
     static let forDirectory: [NCUserPermission] = NCUserPermission.allCases
-    static let forDirectoryE2EE: [NCUserPermission] = []
+    static let forDirectoryE2EE: [NCUserPermission] = NCGlobal.shared.capabilityE2EEApiVersion == NCGlobal.shared.e2eeVersionV20 ? NCUserPermission.allCases : []
     static let forFile: [NCUserPermission] = [.reshare, .edit]
 
     var title: String {
@@ -310,7 +310,7 @@ class NCShareDateCell: UITableViewCell {
             self.resignFirstResponder()
             share.expirationDate = nil
             self.onReload?()
-        } completion: {
+        } onDone: {
             self.resignFirstResponder()
             share.expirationDate = self.picker.date as NSDate
             self.onReload?()

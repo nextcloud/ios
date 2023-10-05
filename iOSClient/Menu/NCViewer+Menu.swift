@@ -27,10 +27,10 @@ import NextcloudKit
 
 extension NCViewer {
 
-    func toggleMenu(viewController: UIViewController, metadata: tableMetadata, webView: Bool, imageIcon: UIImage?) {
+    func toggleMenu(viewController: UIViewController, metadata: tableMetadata, webView: Bool, imageIcon: UIImage?, indexPath: IndexPath = IndexPath()) {
 
         guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(metadata.ocId) else { return }
-        
+
         var actions = [NCMenuAction]()
         var titleFavorite = NSLocalizedString("_add_favorites_", comment: "")
         if metadata.favorite { titleFavorite = NSLocalizedString("_remove_favorites_", comment: "") }
@@ -60,7 +60,7 @@ extension NCViewer {
                 NCMenuAction(
                     title: NSLocalizedString("_view_in_folder_", comment: ""),
                     icon: NCUtility.shared.loadImage(named: "questionmark.folder"),
-                    action: { menuAction in
+                    action: { _ in
                         NCActionCenter.shared.openFileViewInFolder(serverUrl: metadata.serverUrl, fileNameBlink: metadata.fileName, fileNameOpen: nil)
                     }
                 )
@@ -119,7 +119,7 @@ extension NCViewer {
                 )
             )
         }
-        
+
         //
         // CONVERSION VIDEO TO MPEG4 (MFFF Lib)
         //
@@ -182,6 +182,7 @@ extension NCViewer {
                             vcRename.metadata = metadata
                             vcRename.disableChangeExt = true
                             vcRename.imagePreview = imageIcon
+                            vcRename.indexPath = indexPath
 
                             let popup = NCPopupViewController(contentController: vcRename, popupWidth: vcRename.width, popupHeight: vcRename.height)
 
@@ -196,14 +197,14 @@ extension NCViewer {
         // COPY - MOVE
         //
         if !webView, metadata.isCopyableMovable {
-            actions.append(.moveOrCopyAction(selectedMetadatas: [metadata]))
+            actions.append(.moveOrCopyAction(selectedMetadatas: [metadata], indexPath: []))
         }
 
         //
         // COPY IN PASTEBOARD
         //
         if !webView, metadata.isCopyableInPasteboard {
-            actions.append(.copyAction(selectOcId: [metadata.ocId], hudView: viewController.view))
+            actions.append(.copyAction(selectOcId: [metadata.ocId]))
         }
 
         //
@@ -269,7 +270,7 @@ extension NCViewer {
         // DELETE
         //
         if !webView, metadata.isDeletable {
-            actions.append(.deleteAction(selectedMetadatas: [metadata], metadataFolder: nil, viewController: viewController))
+            actions.append(.deleteAction(selectedMetadatas: [metadata], indexPath: [], metadataFolder: nil, viewController: viewController))
         }
 
         viewController.presentMenu(with: actions)

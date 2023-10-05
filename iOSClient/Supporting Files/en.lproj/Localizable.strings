@@ -47,7 +47,6 @@
 "_save_"                    = "Save";
 "_warning_"                 = "Warning";
 "_error_"                   = "Error";
-"_error_e2ee_"              = "Error E2EE";
 "_no_"                      = "No";
 "_yes_"                     = "Yes";
 "_select_"                  = "Select";
@@ -156,6 +155,7 @@
 "_professional_"            = "Professional";
 "_current_"                 = "Current";
 "_buy_"                     = "Buy";
+"_disabled_"                = "Disabled";
 
 /* MARK: Files lock */
 
@@ -192,8 +192,6 @@
 "_print_"                   = "Print";
 "_alias_"                   = "Alias";
 "_alias_footer_"            = "Give your account names a descriptive name such as Home, Office, School …";
-"_upload_chunk_"            = "The file you are uploading is large, keep the app in the foreground until complete";
-"_upload_e2ee_"             = "The file you are uploading is encrypted, keep the app in the foreground until complete";
 "_chunk_size_mb_"           = "Chunk size in MB";
 "_chunk_footer_title_"      = "Chunked file upload (0 is disabled)\nImportant: the chunked upload works only when the app is \"active\".";
 "_privacy_legal_"           = "Privacy and Legal Policy";
@@ -415,8 +413,8 @@
 "_capabilities_"                = "Capabilities";
 "_no_capabilities_found_"       = "Capabilities not found";
 "_diagnostics_"                 = "Diagnostics";
-"_view_log_"                    = "View Log file";
-"_clear_log_"                   = "Clear Log file";
+"_view_log_"                    = "View log file";
+"_clear_log_"                   = "Clear log file";
 "_level_log_"                   = "Set Log level (disabled, standard, maximum)";
 "_connect_server_anyway_"       = "Do you want to connect to the server anyway?";
 "_server_is_trusted_"           = "Do you consider this server trusted?";
@@ -444,7 +442,9 @@
 "_pull_down_"                               = "Pull down to refresh";
 "_no_photo_load_"                           = "No photo or video";
 "_tutorial_autoupload_view_"                = "You can enable auto uploads from \"Settings\"";
-"_no_date_"                                 = "No date";
+"_no_date_information_"                     = "No date information";
+"_no_camera_information_"                   = "No camera information";
+"_no_lens_information_"                     = "No lens information";
 "_today_"                                   = "Today";
 "_yesterday_"                               = "Yesterday";
 "_time_"                                    = "Time: %@\n\n%@";
@@ -697,6 +697,7 @@
 "_e2e_settings_start_"              = "Start end-to-end encryption";
 "_e2e_settings_not_available_"      = "End-to-end encryption not available";
 "_e2e_settings_activated_"          = "End-to-end encryption activated";
+"_e2e_server_disabled_"             = "End-to-end encryption app disabled on server";
 "_e2e_settings_view_passphrase_"    = "All 12 words together make a very strong password, letting only you view and make use of your encrypted files. Please write it down and keep it somewhere safe.";
 "_e2e_settings_read_passphrase_"    = "Read passphrase";
 "_e2e_settings_lock_not_active_"    = "Lock not active, go back to \"Settings\" and activate it";
@@ -708,28 +709,13 @@
 "_e2e_set_folder_encrypted_"        = "Encrypt";
 "_e2e_remove_folder_encrypted_"     = "Decrypt";
 "_e2e_goto_settings_for_enable_"    = "This is an encrypted directory, go to \"Settings\" and enable end-to-end encryption";
-"_e2e_delete_folder_not_permitted_" = "Deletion of the directory marked as \"encrypted\" is not allowed";
-"_e2e_error_encode_metadata_"       = "Serious internal error in encoding metadata";
-"_e2e_error_decode_metadata_"       = "Serious internal error in decoding metadata";
-"_e2e_error_create_encrypted_"      = "Could not create encrypted file";
-"_e2e_error_update_metadata_"       = "Update metadata error";
-"_e2e_error_store_metadata_"        = "Could not save metadata";
-"_e2e_error_send_metadata_"         = "Could not send metadata";
-"_e2e_error_delete_metadata_"       = "Could not delete metadata";
-"_e2e_error_get_metadata_"          = "Could not fetch metadata";
-"_e2e_error_not_enabled_"           = "Serious internal error. End-to-end encryption not enabled";
-"_e2e_error_record_not_found_"      = "Serious internal error. Records not found";
-"_e2e_error_unlock_"                = "Could not unlock folder";
-"_e2e_error_lock_"                  = "Could not lock folder";
-"_e2e_error_delete_mark_folder_"    = "Decrypt marked folder";
-"_e2e_error_mark_folder_"           = "Encrypt folder";
-"_e2e_error_directory_not_empty_"   = "The directory is not empty";
-"_e2e_error_not_move_"              = "It is not possible move files to encrypted directory";
-"_e2e_error_not_versionwriteable_"  = "The E2EE version of the server is not compatible with this client";
+"_e2e_error_"                       = "Serious internal error end-to-end encryption";
+"_e2e_in_upload_"                   = "Upload in progress, please wait for all files to be transferred";
 "_scans_document_"                  = "Scan document";
 "_scanned_images_"                  = "Scanned images";
 "_scan_document_pdf_page_"          = "Page";
 "_scan_label_document_zone_"        = "Drag images down for document creation";
+"_filter_document_"                 = "Document";
 "_filter_original_"                 = "Original";
 "_filter_bn_"                       = "Black & White";
 "_filter_grayscale_"                = "Grayscale";
@@ -882,7 +868,8 @@
 "_the_entered_page_number_does_not_exist_"   = "The entered page number does not exist";
 "_error_something_wrong_"   = "Something went wrong";
 "_resolution_"              = "Resolution";
-"_try_download_full_resolution_"            = "For more detail try to download the image in full resolution";
+"_try_download_full_resolution_"            = "Download full resolution image";
+"_full_resolution_image_info_"            = "This may reveal more information about the photo.";
 "_copied_path_"             = "Copied path";
 "_copy_path_"               = "Copy path";
 "_certificates_"            = "Certificates";
@@ -946,6 +933,15 @@
 "_play_from_files_"         = "Play movie by Files";
 "_play_from_url_"           = "Play movie by URL";
 "_valid_video_url_"         = "Insert a valid URL";
+"_deletion_progess_"        = "Deletion in progress";
+"_copying_progess_"         = "Copying in progress";
+"_moving_progess_"          = "Moving in progress";
+"_chunk_enough_memory_"     = "It seems there is not enough space to send the file";
+"_chunk_create_folder_"     = "The file could not be sent, please check the server log";
+"_chunk_files_null_"        = "The file for sending could not be created";
+"_chunk_move_"              = "The sent file could not be reassembled, please check the server log";
+"_download_image_"          = "Download image";
+"_download_video_"          = "Download video";
 
 // Video
 "_select_trace_"            = "Select the trace";
@@ -969,6 +965,7 @@
 "_add_subtitle_"            = "Add an external subtitle";
 "_add_audio_"               = "Add an external audio";
 "_maintenance_mode_"        = "Server is currently in maintenance mode";
+"_upload_foreground_msg_"   = "Do not close %@ to complete the transfer …";
 
 // Tip
 "_tip_pdf_thumbnails_"      = "Swipe left from the right edge of the screen to show the thumbnails.";

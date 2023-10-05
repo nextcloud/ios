@@ -49,19 +49,23 @@ class NCRecent: NCCollectionViewCommon {
 
     // MARK: - DataSource + NC Endpoint
 
-    override func reloadDataSource(forced: Bool = true) {
+    override func queryDB(isForced: Bool) {
+
+        let metadatas = NCManageDatabase.shared.getAdvancedMetadatas(predicate: NSPredicate(format: "account == %@", self.appDelegate.account), page: 1, limit: 100, sorted: "date", ascending: false)
+        self.dataSource = NCDataSource(metadatas: metadatas,
+                                       account: self.appDelegate.account,
+                                       directoryOnTop: false,
+                                       favoriteOnTop: false,
+                                       groupByField: self.groupByField,
+                                       providers: self.providers,
+                                       searchResults: self.searchResults)
+    }
+
+    override func reloadDataSource(isForced: Bool = true) {
         super.reloadDataSource()
 
         DispatchQueue.global().async {
-            let metadatas = NCManageDatabase.shared.getAdvancedMetadatas(predicate: NSPredicate(format: "account == %@", self.appDelegate.account), page: 1, limit: 100, sorted: "date", ascending: false)
-            self.dataSource = NCDataSource(metadatas: metadatas,
-                                           account: self.appDelegate.account,
-                                           directoryOnTop: false,
-                                           favoriteOnTop: false,
-                                           groupByField: self.groupByField,
-                                           providers: self.providers,
-                                           searchResults: self.searchResults)
-
+            self.queryDB(isForced: isForced)
             DispatchQueue.main.async {
                 self.refreshControl.endRefreshing()
                 self.collectionView.reloadData()
@@ -69,8 +73,8 @@ class NCRecent: NCCollectionViewCommon {
         }
     }
 
-    override func reloadDataSourceNetwork(forced: Bool = false) {
-        super.reloadDataSourceNetwork(forced: forced)
+    override func reloadDataSourceNetwork(isForced: Bool = false) {
+        super.reloadDataSourceNetwork(isForced: isForced)
 
         let requestBodyRecent =
         """
@@ -138,18 +142,21 @@ class NCRecent: NCCollectionViewCommon {
         dateFormatter.locale = Locale(identifier: "en_US_POSIX")
         dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ssZZZZZ"
         let lessDateString = dateFormatter.string(from: Date())
-        let requestBody = String(format: requestBodyRecent, "/files/"+appDelegate.userId, lessDateString)
+        let requestBody = String(format: requestBodyRecent, "/files/" + appDelegate.userId, lessDateString)
+
+        NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Reload data source network recent forced \(isForced)")
 
         isReloadDataSourceNetworkInProgress = true
         collectionView?.reloadData()
 
-        let options = NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
+        NextcloudKit.shared.searchBodyRequest(serverUrl: appDelegate.urlBase,
+                                              requestBody: requestBody,
+                                              showHiddenFiles: CCUtility.getShowHiddenFiles(),
+                                              options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { account, files, _, error in
 
-        NextcloudKit.shared.searchBodyRequest(serverUrl: appDelegate.urlBase, requestBody: requestBody, showHiddenFiles: CCUtility.getShowHiddenFiles(), options: options) { account, files, data, error in
-
+            self.isReloadDataSourceNetworkInProgress = false
             if error == .success {
                 NCManageDatabase.shared.convertFilesToMetadatas(files, useMetadataFolder: false) { _, metadatasFolder, metadatas in
-
                     // Update sub directories
                     for metadata in metadatasFolder {
                         let serverUrl = metadata.serverUrl + "/" + metadata.fileName
@@ -157,18 +164,10 @@ class NCRecent: NCCollectionViewCommon {
                     }
                     // Add metadatas
                     NCManageDatabase.shared.addMetadatas(metadatas)
-
                     self.reloadDataSource()
                 }
             } else {
-                DispatchQueue.main.async {
-                    self.collectionView?.reloadData()
-                }
-            }
-
-            DispatchQueue.main.async {
-                self.refreshControl.endRefreshing()
-                self.isReloadDataSourceNetworkInProgress = false
+                self.reloadDataSource()
             }
         }
     }

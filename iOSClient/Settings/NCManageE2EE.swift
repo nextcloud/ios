@@ -29,7 +29,11 @@ import LocalAuthentication
 @objc class NCManageE2EEInterface: NSObject {
 
     @objc func makeShipDetailsUI(account: String) -> UIViewController {
+
+        // swiftlint:disable force_cast
         let account = (UIApplication.shared.delegate as! AppDelegate).account
+        // swiftlint:enable force_cast
+
         let details = NCViewE2EE(account: account)
         let vc = UIHostingController(rootView: details)
         vc.title = NSLocalizedString("_e2e_settings_", comment: "")
@@ -40,7 +44,11 @@ import LocalAuthentication
 class NCManageE2EE: NSObject, ObservableObject, NCEndToEndInitializeDelegate, TOPasscodeViewControllerDelegate {
 
     let endToEndInitialize = NCEndToEndInitialize()
+
+    // swiftlint:disable force_cast
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
+    // swiftlint:enable force_cast
+
     var passcodeType = ""
 
     @Published var isEndToEndEnabled: Bool = false
@@ -82,10 +90,10 @@ class NCManageE2EE: NSObject, ObservableObject, NCEndToEndInitializeDelegate, TO
         passcodeViewController.keypadButtonShowLettering = false
         if CCUtility.getEnableTouchFaceID() && laContext.canEvaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, error: &error) {
             if error == nil {
-                if laContext.biometryType == .faceID  {
+                if laContext.biometryType == .faceID {
                     passcodeViewController.biometryType = .faceID
                     passcodeViewController.allowBiometricValidation = true
-                } else if laContext.biometryType == .touchID  {
+                } else if laContext.biometryType == .touchID {
                     passcodeViewController.biometryType = .touchID
                 }
                 passcodeViewController.allowBiometricValidation = true
@@ -107,19 +115,19 @@ class NCManageE2EE: NSObject, ObservableObject, NCEndToEndInitializeDelegate, TO
                 print("[LOG]Passphrase: " + e2ePassphrase)
                 let message = "\n" + NSLocalizedString("_e2e_settings_the_passphrase_is_", comment: "") + "\n\n\n" + e2ePassphrase
                 let alertController = UIAlertController(title: NSLocalizedString("_info_", comment: ""), message: message, preferredStyle: .alert)
-                alertController.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { action in }))
-                alertController.addAction(UIAlertAction(title: NSLocalizedString("_copy_passphrase_", comment: ""), style: .default, handler: { action in
+                alertController.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { _ in }))
+                alertController.addAction(UIAlertAction(title: NSLocalizedString("_copy_passphrase_", comment: ""), style: .default, handler: { _ in
                     UIPasteboard.general.string = e2ePassphrase
                 }))
                 appDelegate.window?.rootViewController?.present(alertController, animated: true)
             }
         case "removeLocallyEncryption":
             let alertController = UIAlertController(title: NSLocalizedString("_e2e_settings_remove_", comment: ""), message: NSLocalizedString("_e2e_settings_remove_message_", comment: ""), preferredStyle: .alert)
-            alertController.addAction(UIAlertAction(title: NSLocalizedString("_remove_", comment: ""), style: .default, handler: { action in
+            alertController.addAction(UIAlertAction(title: NSLocalizedString("_remove_", comment: ""), style: .default, handler: { _ in
                 CCUtility.clearAllKeysEnd(toEnd: self.appDelegate.account)
                 self.isEndToEndEnabled = CCUtility.isEnd(toEndEnabled: self.appDelegate.account)
             }))
-            alertController.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .default, handler: { action in }))
+            alertController.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .default, handler: { _ in }))
             appDelegate.window?.rootViewController?.present(alertController, animated: true)
         default:
             break
@@ -140,7 +148,7 @@ class NCManageE2EE: NSObject, ObservableObject, NCEndToEndInitializeDelegate, TO
 
     func didPerformBiometricValidationRequest(in passcodeViewController: TOPasscodeViewController) {
 
-        LAContext().evaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, localizedReason: NCBrandOptions.shared.brand) { (success, error) in
+        LAContext().evaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, localizedReason: NCBrandOptions.shared.brand) { success, _ in
             if success {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
                     passcodeViewController.dismiss(animated: true)
@@ -230,7 +238,7 @@ struct NCViewE2EE: View {
 
                 List {
 
-                    Section(header: Text(""), footer:Text(manageE2EE.statusOfService + "\n\n" + "End-to-End Encryption " + NCGlobal.shared.capabilityE2EEApiVersion)) {
+                    Section(header: Text(""), footer: Text(manageE2EE.statusOfService + "\n\n" + "End-to-End Encryption " + NCGlobal.shared.capabilityE2EEApiVersion)) {
                         HStack {
                             Label {
                                 Text(NSLocalizedString("_e2e_settings_start_", comment: ""))
@@ -281,7 +289,7 @@ struct DeleteCerificateSection: View {
             }
             .contentShape(Rectangle())
             .onTapGesture {
-                NextcloudKit.shared.deleteE2EECertificate { account, error in
+                NextcloudKit.shared.deleteE2EECertificate { _, error in
                     if error == .success {
                         NCContentPresenter.shared.messageNotification("E2E delete certificate", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: .success)
                     } else {
@@ -303,7 +311,7 @@ struct DeleteCerificateSection: View {
             }
             .contentShape(Rectangle())
             .onTapGesture {
-                NextcloudKit.shared.deleteE2EEPrivateKey { account, error in
+                NextcloudKit.shared.deleteE2EEPrivateKey { _, error in
                     if error == .success {
                         NCContentPresenter.shared.messageNotification("E2E delete privateKey", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: .success)
                     } else {
@@ -336,7 +344,7 @@ struct NCViewE2EETest: View {
 
         VStack {
             List {
-                Section(header:SectionView(height: 50, text: "Section Header View")) {
+                Section(header: SectionView(height: 50, text: "Section Header View")) {
                     Label {
                         Text(NSLocalizedString("_e2e_settings_activated_", comment: ""))
                     } icon: {
@@ -347,7 +355,7 @@ struct NCViewE2EETest: View {
                             .foregroundColor(.green)
                     }
                 }
-                Section(header:SectionView(text: "Section Header View 42")) {
+                Section(header: SectionView(text: "Section Header View 42")) {
                     Label {
                         Text(NSLocalizedString("_e2e_settings_activated_", comment: ""))
                     } icon: {
@@ -365,7 +373,10 @@ struct NCViewE2EETest: View {
 
 struct NCViewE2EE_Previews: PreviewProvider {
     static var previews: some View {
+
+        // swiftlint:disable force_cast
         let account = (UIApplication.shared.delegate as! AppDelegate).account
         NCViewE2EE(account: account)
+        // swiftlint:enable force_cast
     }
 }

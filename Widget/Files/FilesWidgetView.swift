@@ -25,7 +25,7 @@ import SwiftUI
 import WidgetKit
 
 struct FilesWidgetView: View {
-    
+
     var entry: FilesDataEntry
 
     var body: some View {
@@ -55,9 +55,9 @@ struct FilesWidgetView: View {
             }
 
             ZStack(alignment: .topLeading) {
-                
-                HStack() {
-                    
+
+                HStack {
+
                     Text(entry.tile)
                         .font(.system(size: 12))
                         .fontWeight(.bold)
@@ -172,7 +172,7 @@ struct FilesWidgetView: View {
                         .scaledToFit()
                         .frame(width: 15, height: 15)
                         .foregroundColor(entry.isPlaceholder ? Color(.systemGray4) : Color(NCBrandColor.shared.brand))
-                
+
                     Text(entry.footerText)
                         .font(.caption2)
                         .lineLimit(1)
@@ -182,6 +182,7 @@ struct FilesWidgetView: View {
                 .frame(maxWidth: geo.size.width, maxHeight: geo.size.height - 2, alignment: .bottomTrailing)
             }
         }
+        .widgetBackground(Color(UIColor.systemBackground))
     }
 }
 

@@ -33,7 +33,10 @@ class NCEndToEndInitialize: NSObject {
 
     @objc weak var delegate: NCEndToEndInitializeDelegate?
 
+    // swiftlint:disable force_cast
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
+    // swiftlint:enable force_cast
+
     var extractedPublicKey: String?
 
     override init() {
@@ -87,7 +90,7 @@ class NCEndToEndInitialize: NSObject {
                         return
                     }
 
-                    NextcloudKit.shared.signE2EECertificate(certificate: csr) { account, certificate, data, error in
+                    NextcloudKit.shared.signE2EECertificate(certificate: csr) { account, certificate, _, error in
 
                         if error == .success && account == self.appDelegate.account {
 
@@ -137,7 +140,7 @@ class NCEndToEndInitialize: NSObject {
     func getPrivateKeyCipher() {
 
         // Request PrivateKey chiper to Server
-        NextcloudKit.shared.getE2EEPrivateKey { account, privateKeyChiper, data, error in
+        NextcloudKit.shared.getE2EEPrivateKey { account, privateKeyChiper, _, error in
 
             if error == .success && account == self.appDelegate.account {
 
@@ -153,7 +156,7 @@ class NCEndToEndInitialize: NSObject {
 
                     let publicKey = CCUtility.getEndToEndCertificate(self.appDelegate.account)
 
-                    if let privateKeyData = (NCEndToEndEncryption.sharedManager().decryptPrivateKey(privateKeyChiper, passphrase: passphrase, publicKey: publicKey)),
+                    if let privateKeyData = (NCEndToEndEncryption.sharedManager().decryptPrivateKey(privateKeyChiper, passphrase: passphrase, publicKey: publicKey, iterationCount: 1024)),
                        let keyData = Data(base64Encoded: privateKeyData) {
                         let privateKey = String(data: keyData, encoding: .utf8)
                         CCUtility.setEndToEndPrivateKey(self.appDelegate.account, privateKey: privateKey)
@@ -169,15 +172,12 @@ class NCEndToEndInitialize: NSObject {
                     CCUtility.setEndToEndPassphrase(self.appDelegate.account, passphrase: passphrase)
 
                     // request server publicKey
-                    NextcloudKit.shared.getE2EEPublicKey { account, publicKey, data, error in
+                    NextcloudKit.shared.getE2EEPublicKey { account, publicKey, _, error in
 
                         if error == .success && account == self.appDelegate.account {
 
                             CCUtility.setEndToEndPublicKey(account, publicKey: publicKey)
-
-                            // Clear Table
-                            NCManageDatabase.shared.clearTable(tableDirectory.self, account: account)
-                            NCManageDatabase.shared.clearTable(tableE2eEncryption.self, account: account)
+                            NCManageDatabase.shared.clearTablesE2EE(account: account)
 
                             self.delegate?.endToEndInitializeSuccess()
 
@@ -259,7 +259,7 @@ class NCEndToEndInitialize: NSObject {
 
         var privateKeyString: NSString?
 
-        guard let privateKeyChiper = NCEndToEndEncryption.sharedManager().encryptPrivateKey(self.appDelegate.userId, directory: CCUtility.getDirectoryUserData(), passphrase: e2ePassphrase, privateKey: &privateKeyString) else {
+        guard let privateKeyChiper = NCEndToEndEncryption.sharedManager().encryptPrivateKey(self.appDelegate.userId, directory: CCUtility.getDirectoryUserData(), passphrase: e2ePassphrase, privateKey: &privateKeyString, iterationCount: 1024) else {
             let error = NKError(errorCode: error.errorCode, errorDescription: "Serious internal error to create PrivateKey chiper")
             NCContentPresenter.shared.messageNotification("E2E privateKey", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, priority: .max)
             return
@@ -268,7 +268,7 @@ class NCEndToEndInitialize: NSObject {
         // privateKeyChiper
         print(privateKeyChiper)
 
-        NextcloudKit.shared.storeE2EEPrivateKey(privateKey: privateKeyChiper) { account, privateKey, data, error in
+        NextcloudKit.shared.storeE2EEPrivateKey(privateKey: privateKeyChiper) { account, _, _, error in
 
             if error == .success && account == self.appDelegate.account {
 
@@ -276,15 +276,12 @@ class NCEndToEndInitialize: NSObject {
                 CCUtility.setEndToEndPassphrase(account, passphrase: e2ePassphrase)
 
                 // request server publicKey
-                NextcloudKit.shared.getE2EEPublicKey { account, publicKey, data, error in
+                NextcloudKit.shared.getE2EEPublicKey { account, publicKey, _, error in
 
                     if error == .success && account == self.appDelegate.account {
 
                         CCUtility.setEndToEndPublicKey(account, publicKey: publicKey)
-
-                        // Clear Table
-                        NCManageDatabase.shared.clearTable(tableDirectory.self, account: account)
-                        NCManageDatabase.shared.clearTable(tableE2eEncryption.self, account: account)
+                        NCManageDatabase.shared.clearTablesE2EE(account: account)
 
                         if copyPassphrase {
                             UIPasteboard.general.string = e2ePassphrase

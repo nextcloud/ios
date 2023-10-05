@@ -13,7 +13,7 @@
 //  (at your option) any later version.
 //
 //  This program is distributed in the hope that it will be useful,
-//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  but WITHOUT ANY WARRANTY without even the implied warranty of
 //  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 //  GNU General Public License for more details.
 //
@@ -27,6 +27,7 @@ import PDFKit
 import Accelerate
 import CoreMedia
 import Photos
+import Alamofire
 
 #if !EXTENSION
 import SVGKit
@@ -74,8 +75,7 @@ class NCUtility: NSObject {
                             let renderFormat = UIGraphicsImageRendererFormat.default()
                             renderFormat.opaque = false
                             let renderer = UIGraphicsImageRenderer(size: CGSize(width: newSize.width, height: newSize.height), format: renderFormat)
-                            newImage = renderer.image {
-                                _ in
+                            newImage = renderer.image { _ in
                                 image.draw(in: CGRect(x: 0, y: 0, width: newSize.width, height: newSize.height))
                             }
                         }
@@ -149,7 +149,7 @@ class NCUtility: NSObject {
         }
 
         // mimetype
-        if NCGlobal.shared.capabilityRichdocumentsMimetypes.count > 0 && mimeType.components(separatedBy: ".").count > 2 {
+        if !NCGlobal.shared.capabilityRichdocumentsMimetypes.isEmpty && mimeType.components(separatedBy: ".").count > 2 {
 
             let mimeTypeArray = mimeType.components(separatedBy: ".")
             let mimeType = mimeTypeArray[mimeTypeArray.count - 2] + "." + mimeTypeArray[mimeTypeArray.count - 1]
@@ -234,10 +234,9 @@ class NCUtility: NSObject {
     }
 
     @objc func getCustomUserAgentNCText() -> String {
-        let userAgent: String = CCUtility.getUserAgent()
         if UIDevice.current.userInterfaceIdiom == .phone {
             // NOTE: Hardcoded (May 2022)
-            // Tested for iPhone SE (1st), iOS 12; iPhone Pro Max, iOS 15.4
+            // Tested for iPhone SE (1st), iOS 12 iPhone Pro Max, iOS 15.4
             // 605.1.15 = WebKit build version
             // 15E148 = frozen iOS build number according to: https://chromestatus.com/feature/4558585463832576
             return userAgent + " " + "AppleWebKit/605.1.15 Mobile/15E148"
@@ -294,11 +293,11 @@ class NCUtility: NSObject {
         var messageUserDefined: String = ""
 
         if userStatus?.lowercased() == "online" {
-            onlineStatus = UIImage(named: "circle_fill")!.image(color: UIColor(red: 103.0/255.0, green: 176.0/255.0, blue: 134.0/255.0, alpha: 1.0), size: 50)
+            onlineStatus = UIImage(named: "circle_fill")!.image(color: UIColor(red: 103.0 / 255.0, green: 176.0 / 255.0, blue: 134.0 / 255.0, alpha: 1.0), size: 50)
             messageUserDefined = NSLocalizedString("_online_", comment: "")
         }
         if userStatus?.lowercased() == "away" {
-            onlineStatus = UIImage(named: "userStatusAway")!.image(color: UIColor(red: 233.0/255.0, green: 166.0/255.0, blue: 75.0/255.0, alpha: 1.0), size: 50)
+            onlineStatus = UIImage(named: "userStatusAway")!.image(color: UIColor(red: 233.0 / 255.0, green: 166.0 / 255.0, blue: 75.0 / 255.0, alpha: 1.0), size: 50)
             messageUserDefined = NSLocalizedString("_away_", comment: "")
         }
         if userStatus?.lowercased() == "dnd" {
@@ -319,7 +318,7 @@ class NCUtility: NSObject {
             statusMessage += userMessage
         }
         statusMessage = statusMessage.trimmingCharacters(in: .whitespaces)
-        if statusMessage == "" {
+        if statusMessage.isEmpty {
             statusMessage = messageUserDefined
         }
 
@@ -393,7 +392,7 @@ class NCUtility: NSObject {
 
         } else if classFile == NKCommon.TypeClassFile.video.rawValue {
 
-            let videoPath = NSTemporaryDirectory()+"tempvideo.mp4"
+            let videoPath = NSTemporaryDirectory() + "tempvideo.mp4"
             NCUtilityFileSystem.shared.linkItem(atPath: fileNamePath, toPath: videoPath)
 
             originalImage = imageFromVideo(url: URL(fileURLWithPath: videoPath), at: 0)
@@ -452,7 +451,7 @@ class NCUtility: NSObject {
     }
 
     func getDefaultUserIcon() -> UIImage {
-            
+
         let config = UIImage.SymbolConfiguration(pointSize: 30)
         return NCUtility.shared.loadImage(named: "person.crop.circle", symbolConfiguration: config)
     }
@@ -498,8 +497,8 @@ class NCUtility: NSObject {
     }
 
     /*
-    Facebook's comparison algorithm:
-    */
+     Facebook's comparison algorithm:
+     */
 
     func compare(tolerance: Float, expected: Data, observed: Data) throws -> Bool {
 
@@ -619,78 +618,34 @@ class NCUtility: NSObject {
     }
 
     func getEncondingDataType(data: Data) -> String.Encoding? {
-        if let _ = String(data: data, encoding: .utf8) {
-            return .utf8
-        }
-        if let _ = String(data: data, encoding: .ascii) {
-            return .ascii
-        }
-        if let _ = String(data: data, encoding: .isoLatin1) {
-            return .isoLatin1
-        }
-        if let _ = String(data: data, encoding: .isoLatin2) {
-            return .isoLatin2
-        }
-        if let _ = String(data: data, encoding: .windowsCP1250) {
-            return .windowsCP1250
-        }
-        if let _ = String(data: data, encoding: .windowsCP1251) {
-            return .windowsCP1251
-        }
-        if let _ = String(data: data, encoding: .windowsCP1252) {
-            return .windowsCP1252
-        }
-        if let _ = String(data: data, encoding: .windowsCP1253) {
-            return .windowsCP1253
-        }
-        if let _ = String(data: data, encoding: .windowsCP1254) {
-            return .windowsCP1254
-        }
-        if let _ = String(data: data, encoding: .macOSRoman) {
-            return .macOSRoman
-        }
-        if let _ = String(data: data, encoding: .japaneseEUC) {
-            return .japaneseEUC
-        }
-        if let _ = String(data: data, encoding: .nextstep) {
-            return .nextstep
-        }
-        if let _ = String(data: data, encoding: .nonLossyASCII) {
-            return .nonLossyASCII
-        }
-        if let _ = String(data: data, encoding: .shiftJIS) {
-            return .shiftJIS
-        }
-        if let _ = String(data: data, encoding: .symbol) {
-            return .symbol
-        }
-        if let _ = String(data: data, encoding: .unicode) {
-            return .unicode
-        }
-        if let _ = String(data: data, encoding: .utf16) {
-            return .utf16
-        }
-        if let _ = String(data: data, encoding: .utf16BigEndian) {
-            return .utf16BigEndian
-        }
-        if let _ = String(data: data, encoding: .utf16LittleEndian) {
-            return .utf16LittleEndian
-        }
-        if let _ = String(data: data, encoding: .utf32) {
-            return .utf32
-        }
-        if let _ = String(data: data, encoding: .utf32BigEndian) {
-            return .utf32BigEndian
-        }
-        if let _ = String(data: data, encoding: .utf32LittleEndian) {
-            return .utf32LittleEndian
-        }
+        if String(data: data, encoding: .utf8) != nil { return .utf8 }
+        if String(data: data, encoding: .ascii) != nil { return .ascii }
+        if String(data: data, encoding: .isoLatin1) != nil { return .isoLatin1 }
+        if String(data: data, encoding: .isoLatin2) != nil { return .isoLatin2 }
+        if String(data: data, encoding: .windowsCP1250) != nil { return .windowsCP1250 }
+        if String(data: data, encoding: .windowsCP1251) != nil { return .windowsCP1251 }
+        if String(data: data, encoding: .windowsCP1252) != nil { return .windowsCP1252 }
+        if String(data: data, encoding: .windowsCP1253) != nil { return .windowsCP1253 }
+        if String(data: data, encoding: .windowsCP1254) != nil { return .windowsCP1254 }
+        if String(data: data, encoding: .macOSRoman) != nil { return .macOSRoman }
+        if String(data: data, encoding: .japaneseEUC) != nil { return .japaneseEUC }
+        if String(data: data, encoding: .nextstep) != nil { return .nextstep }
+        if String(data: data, encoding: .nonLossyASCII) != nil { return .nonLossyASCII }
+        if String(data: data, encoding: .shiftJIS) != nil { return .shiftJIS }
+        if String(data: data, encoding: .symbol) != nil { return .symbol }
+        if String(data: data, encoding: .unicode) != nil { return .unicode }
+        if String(data: data, encoding: .utf16) != nil { return .utf16 }
+        if String(data: data, encoding: .utf16BigEndian) != nil { return .utf16BigEndian }
+        if String(data: data, encoding: .utf16LittleEndian) != nil { return .utf16LittleEndian }
+        if String(data: data, encoding: .utf32) != nil { return .utf32 }
+        if String(data: data, encoding: .utf32BigEndian) != nil { return .utf32BigEndian }
+        if String(data: data, encoding: .utf32LittleEndian) != nil { return .utf32LittleEndian }
         return nil
     }
 
     func SYSTEM_VERSION_LESS_THAN(version: String) -> Bool {
         return UIDevice.current.systemVersion.compare(version,
-         options: NSString.CompareOptions.numeric) == ComparisonResult.orderedAscending
+                                                      options: NSString.CompareOptions.numeric) == ComparisonResult.orderedAscending
     }
 
     func getAvatarFromIconUrl(metadata: tableMetadata) -> String? {
@@ -698,7 +653,7 @@ class NCUtility: NSObject {
         var ownerId: String?
         if metadata.iconUrl.contains("http") && metadata.iconUrl.contains("avatar") {
             let splitIconUrl = metadata.iconUrl.components(separatedBy: "/")
-            var found:Bool = false
+            var found: Bool = false
             for item in splitIconUrl {
                 if found {
                     ownerId = item
@@ -712,12 +667,12 @@ class NCUtility: NSObject {
 
     // https://stackoverflow.com/questions/25471114/how-to-validate-an-e-mail-address-in-swift
     func isValidEmail(_ email: String) -> Bool {
-        
+
         let emailRegEx = "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,64}"
-        let emailPred = NSPredicate(format:"SELF MATCHES %@", emailRegEx)
+        let emailPred = NSPredicate(format: "SELF MATCHES %@", emailRegEx)
         return emailPred.evaluate(with: email)
     }
-    
+
     func createFilePreviewImage(ocId: String, etag: String, fileNameView: String, classFile: String, status: Int, createPreviewMedia: Bool) -> UIImage? {
 
         var imagePreview: UIImage?
@@ -731,14 +686,14 @@ class NCUtility: NSObject {
         } else if createPreviewMedia && status >= NCGlobal.shared.metadataStatusNormal && classFile == NKCommon.TypeClassFile.image.rawValue && FileManager().fileExists(atPath: filePath) {
             if let image = UIImage(contentsOfFile: filePath), let image = image.resizeImage(size: CGSize(width: NCGlobal.shared.sizeIcon, height: NCGlobal.shared.sizeIcon)), let data = image.jpegData(compressionQuality: 0.5) {
                 do {
-                    try data.write(to: URL.init(fileURLWithPath: iconImagePath), options: .atomic)
+                    try data.write(to: URL(fileURLWithPath: iconImagePath), options: .atomic)
                     imagePreview = image
                 } catch { }
             }
         } else if createPreviewMedia && status >= NCGlobal.shared.metadataStatusNormal && classFile == NKCommon.TypeClassFile.video.rawValue && FileManager().fileExists(atPath: filePath) {
             if let image = NCUtility.shared.imageFromVideo(url: URL(fileURLWithPath: filePath), at: 0), let image = image.resizeImage(size: CGSize(width: NCGlobal.shared.sizeIcon, height: NCGlobal.shared.sizeIcon)), let data = image.jpegData(compressionQuality: 0.5) {
                 do {
-                    try data.write(to: URL.init(fileURLWithPath: iconImagePath), options: .atomic)
+                    try data.write(to: URL(fileURLWithPath: iconImagePath), options: .atomic)
                     imagePreview = image
                 } catch { }
             }
@@ -748,17 +703,53 @@ class NCUtility: NSObject {
     }
 
     func isDirectoryE2EE(serverUrl: String, userBase: NCUserBaseUrl) -> Bool {
-        return isDirectoryE2EE(serverUrl: serverUrl, account: userBase.account, urlBase: userBase.urlBase, userId: userBase.userId)
+        return isDirectoryE2EE(account: userBase.account, urlBase: userBase.urlBase, userId: userBase.userId, serverUrl: serverUrl)
     }
+
     func isDirectoryE2EE(file: NKFile) -> Bool {
-        return isDirectoryE2EE(serverUrl: file.serverUrl, account: file.account, urlBase: file.urlBase, userId: file.userId)
+        return isDirectoryE2EE(account: file.account, urlBase: file.urlBase, userId: file.userId, serverUrl: file.serverUrl)
     }
-    @objc func isDirectoryE2EE(serverUrl: String, account: String, urlBase: String, userId: String) -> Bool {
+
+    func isDirectoryE2EE(account: String, urlBase: String, userId: String, serverUrl: String) -> Bool {
         if serverUrl == NCUtilityFileSystem.shared.getHomeServer(urlBase: urlBase, userId: userId) || serverUrl == ".." { return false }
-        if let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", account, serverUrl)) {
+        if let directory = NCManageDatabase.shared.getTableDirectory(account: account, serverUrl: serverUrl) {
             return directory.e2eEncrypted
         }
         return false
+    }
+
+    func isDirectoryE2EETop(account: String, serverUrl: String) -> Bool {
+
+        guard let serverUrl = serverUrl.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) else { return false }
+
+        if let url = URL(string: serverUrl)?.deletingLastPathComponent(),
+           let serverUrl = String(url.absoluteString.dropLast()).removingPercentEncoding {
+            if let directory = NCManageDatabase.shared.getTableDirectory(account: account, serverUrl: serverUrl) {
+                return !directory.e2eEncrypted
+            }
+        }
+        return true
+    }
+
+    func getDirectoryE2EETop(serverUrl: String, account: String) -> tableDirectory? {
+
+        guard var serverUrl = serverUrl.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) else { return nil }
+        var top: tableDirectory?
+
+        while let url = URL(string: serverUrl)?.deletingLastPathComponent(),
+              let serverUrlencoding = serverUrl.removingPercentEncoding,
+              let directory = NCManageDatabase.shared.getTableDirectory(account: account, serverUrl: serverUrlencoding) {
+
+            if directory.e2eEncrypted {
+                top = directory
+            } else {
+                return top
+            }
+
+            serverUrl = String(url.absoluteString.dropLast())
+        }
+
+        return top
     }
 
     func createViewImageAndText(image: UIImage, title: String? = nil) -> UIView {
@@ -797,6 +788,25 @@ class NCUtility: NSObject {
 
         return titleView
     }
+
+    func getLocation(latitude: Double, longitude: Double, completion: @escaping (String?) -> Void) {
+        let geocoder = CLGeocoder()
+        let llocation = CLLocation(latitude: latitude, longitude: longitude)
+
+        if let location = NCManageDatabase.shared.getLocationFromLatAndLong(latitude: latitude, longitude: longitude) {
+            completion(location)
+        } else {
+            geocoder.reverseGeocodeLocation(llocation) { placemarks, error in
+                if error == nil, let placemark = placemarks?.first {
+                    let locationComponents: [String] = [placemark.name, placemark.locality, placemark.country]
+                        .compactMap {$0}
+
+                    let location = locationComponents.joined(separator: ", ")
+
+                    NCManageDatabase.shared.addGeocoderLocation(location, latitude: latitude, longitude: longitude)
+                    completion(location)
+                }
+            }
+        }
+    }
 }
-
-

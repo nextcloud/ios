@@ -51,7 +51,7 @@ extension UINavigationController {
         navigationBar.scrollEdgeAppearance = scrollEdgeAppearance
     }
 
-    func setGroupeAppreance() {
+    func setGroupAppearance() {
 
         navigationBar.tintColor = .systemBlue
 

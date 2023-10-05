@@ -51,6 +51,10 @@ class ParallelWorker {
 
         DispatchQueue.main.async {
             let hud = JGProgressHUD()
+            hud.indicatorView = JGProgressHUDRingIndicatorView()
+            if let indicatorView = hud.indicatorView as? JGProgressHUDRingIndicatorView {
+                indicatorView.ringWidth = 1.5
+            }
             hud.textLabel.text = NSLocalizedString(self.titleKey, comment: "")
             hud.detailTextLabel.text = NSLocalizedString("_tap_to_cancel_", comment: "")
             hud.show(in: hudView)
@@ -79,12 +83,7 @@ class ParallelWorker {
             task {
                 self.completedTasks += 1
                 DispatchQueue.main.async {
-                    self.hud?.textLabel.text = "\(NSLocalizedString(self.titleKey, comment: "")) \(self.completedTasks) "
-                    if let totalTasks = self.totalTasks {
-                        self.hud?.textLabel.text?.append("\(NSLocalizedString("_of_", comment: "")) \(totalTasks)")
-                    } else {
-                        self.hud?.textLabel.text?.append(NSLocalizedString("_files_", comment: ""))
-                    }
+                    self.hud?.textLabel.text = "\(NSLocalizedString(self.titleKey, comment: ""))"
                 }
                 self.semaphore.signal()
                 self.completionGroup.leave()
@@ -97,10 +96,7 @@ class ParallelWorker {
     func completeWork(completion: (() -> Void)? = nil) {
         completionGroup.notify(queue: .main) {
             guard !self.isCancelled else { return }
-            self.hud?.indicatorView = JGProgressHUDSuccessIndicatorView()
-            self.hud?.textLabel.text = NSLocalizedString("_done_", comment: "")
-            self.hud?.detailTextLabel.text = ""
-            self.hud?.dismiss(afterDelay: 1)
+            self.hud?.dismiss()
             completion?()
         }
     }

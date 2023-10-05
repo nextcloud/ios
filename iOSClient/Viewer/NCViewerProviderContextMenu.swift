@@ -51,10 +51,10 @@ class NCViewerProviderContextMenu: UIViewController {
 
         if metadata.directory {
 
-            var imageFolder = UIImage(named: "folder")!.image(color: NCBrandColor.shared.brandElement, size: sizeIcon*2)
+            var imageFolder = UIImage(named: "folder")!.image(color: NCBrandColor.shared.brandElement, size: sizeIcon * 2)
 
             if let image = self.image {
-                imageFolder =  image.image(color: NCBrandColor.shared.brandElement, size: sizeIcon*2)
+                imageFolder = image.image(color: NCBrandColor.shared.brandElement, size: sizeIcon * 2)
             }
 
             imageView.image = imageFolder.colorizeFolder(metadata: metadata)
@@ -63,7 +63,7 @@ class NCViewerProviderContextMenu: UIViewController {
         } else {
 
             // ICON
-            if let image = UIImage(named: metadata.iconName)?.resizeImage(size: CGSize(width: sizeIcon*2, height: sizeIcon*2)) {
+            if let image = UIImage(named: metadata.iconName)?.resizeImage(size: CGSize(width: sizeIcon * 2, height: sizeIcon * 2)) {
 
                 imageView.image = image
                 imageView.frame = resize(CGSize(width: sizeIcon, height: sizeIcon))
@@ -239,8 +239,8 @@ class NCViewerProviderContextMenu: UIViewController {
 
     private func viewVideo(metadata: tableMetadata) {
 
-        NCNetworking.shared.getVideoUrl(metadata: metadata) { url, autoplay, _ in
-            if let url = url, let userAgent = CCUtility.getUserAgent() {
+        NCNetworking.shared.getVideoUrl(metadata: metadata) { url, _, _ in
+            if let url = url {
                 self.player.media = VLCMedia(url: url)
                 self.player.delegate = self
                 self.player.media?.addOption(":http-user-agent=\(userAgent)")
@@ -290,30 +290,23 @@ extension NCViewerProviderContextMenu: VLCMediaPlayerDelegate {
         switch player.state {
         case .stopped:
             print("Played mode: STOPPED")
-            break
         case .opening:
             NCActivityIndicator.shared.start(backgroundView: self.view)
             print("Played mode: OPENING")
-            break
         case .buffering:
             print("Played mode: BUFFERING")
-            break
         case .ended:
             print("Played mode: ENDED")
-            break
         case .error:
             NCActivityIndicator.shared.stop()
             let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_error_something_wrong_")
             NCContentPresenter.shared.showError(error: error, priority: .max)
             print("Played mode: ERROR")
-            break
         case .playing:
             NCActivityIndicator.shared.stop()
             print("Played mode: PLAYING")
-            break
         case .paused:
             print("Played mode: PAUSED")
-            break
         default: break
         }
     }

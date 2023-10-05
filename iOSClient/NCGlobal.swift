@@ -61,14 +61,6 @@ class NCGlobal: NSObject {
         return result.reduce(0, { $0 + $1 }) % maximum
     }
 
-    // Struct for Progress
-    //
-    struct progressType {
-        var progress: Float
-        var totalBytes: Int64
-        var totalBytesExpected: Int64
-    }
-
     // Directory on Group
     //
     @objc let directoryProviderStorage              = "File Provider Storage"
@@ -108,7 +100,7 @@ class NCGlobal: NSObject {
 
     // Nextcloud unsupported
     //
-    let nextcloud_unsupported_version: Int          = 16
+    let nextcloud_unsupported_version: Int = 16
 
     // Intro selector
     //
@@ -117,7 +109,7 @@ class NCGlobal: NSObject {
 
     // Varie size GUI
     //
-    @objc let heightCellSettings: CGFloat           = 50
+    @objc let heightCellSettings: CGFloat = 50
 
     // Avatar & Preview size
     //
@@ -129,7 +121,14 @@ class NCGlobal: NSObject {
     // E2EE
     //
     let e2eePassphraseTest                          = "more over television factory tendency independence international intellectual impress interest sentence pony"
-    @objc let e2eeReadVersions                      = ["1.1", "1.2"]
+    @objc let e2eeVersions                          = ["1.1", "1.2"] // ["1.1", "1.2", "2.0"]
+    let e2eeVersionV11                              = "1.1"
+    let e2eeVersionV12                              = "1.2"
+    let e2eeVersionV20                              = "2.0"
+
+    // CHUNK
+    let chunkSizeMBCellular                         = 10000000
+    let chunkSizeMBEthernetOrWiFi                   = 100000000
 
     // Video
     //
@@ -146,12 +145,10 @@ class NCGlobal: NSObject {
     let layoutList                                  = "typeLayoutList"
     let layoutGrid                                  = "typeLayoutGrid"
 
-    let layoutViewMove                              = "LayoutMove"
     let layoutViewTrash                             = "LayoutTrash"
     let layoutViewOffline                           = "LayoutOffline"
     let layoutViewFavorite                          = "LayoutFavorite"
     let layoutViewFiles                             = "LayoutFiles"
-    let layoutViewViewInFolder                      = "LayoutViewInFolder"
     let layoutViewTransfers                         = "LayoutTransfers"
     let layoutViewRecent                            = "LayoutRecent"
     let layoutViewShares                            = "LayoutShares"
@@ -167,6 +164,7 @@ class NCGlobal: NSObject {
     // Standard height sections header/footer
     //
     let heightButtonsView: CGFloat                  = 50
+    let heightHeaderTransfer: CGFloat               = 50
     let heightSection: CGFloat                      = 30
     let heightFooter: CGFloat                       = 1
     let heightFooterButton: CGFloat                 = 30
@@ -191,11 +189,11 @@ class NCGlobal: NSObject {
 
     // Rich Workspace
     //
-    let fileNameRichWorkspace                       = "Readme.md"
+    let fileNameRichWorkspace = "Readme.md"
 
     // Extension
     //
-    @objc let extensionPreview                      = "ico"
+    @objc let extensionPreview = "ico"
 
     // ContentPresenter
     //
@@ -210,24 +208,42 @@ class NCGlobal: NSObject {
     @objc let errorUnauthorized401: Int             = 401
     @objc let errorForbidden: Int                   = 403
     @objc let errorResourceNotFound: Int            = 404
-    @objc let errordMethodNotSupported: Int         = 405
+    @objc let errorMethodNotSupported: Int          = 405
     @objc let errorConflict: Int                    = 409
     @objc let errorPreconditionFailed: Int          = 412
+    @objc let errorQuota: Int                       = 507
     @objc let errorUnauthorized997: Int             = 997
     @objc let errorConnectionLost: Int              = -1005
     @objc let errorNetworkNotAvailable: Int         = -1009
     @objc let errorBadServerResponse: Int           = -1011
     @objc let errorInternalError: Int               = -99999
     @objc let errorFileNotSaved: Int                = -99998
-    @objc let errorDecodeMetadata: Int              = -99997
-    @objc let errorE2EENotEnabled: Int              = -99996
-    @objc let errorE2EE: Int                        = -99995
-    @objc let errorOffline: Int                     = -99994
-    @objc let errorCharactersForbidden: Int         = -99993
-    @objc let errorCreationFile: Int                = -99992
-    @objc let errorReadFile: Int                    = -99991
-    @objc let errorUnauthorizedFilesPasscode: Int   = -99990
-    @objc let errorDisableFilesApp: Int             = -99989
+    @objc let errorOffline: Int                     = -99997
+    @objc let errorCharactersForbidden: Int         = -99996
+    @objc let errorCreationFile: Int                = -99995
+    @objc let errorReadFile: Int                    = -99994
+    @objc let errorUnauthorizedFilesPasscode: Int   = -99993
+    @objc let errorDisableFilesApp: Int             = -99992
+    @objc let errorUnexpectedResponseFromDB: Int    = -99991
+    // E2EE
+    @objc let errorE2EENotEnabled: Int              = -98000
+    @objc let errorE2EEVersion: Int                 = -98001
+    @objc let errorE2EEKeyChecksums: Int            = -98002
+    @objc let errorE2EEKeyEncodeMetadata: Int       = -98003
+    @objc let errorE2EEKeyDecodeMetadata: Int       = -98004
+    @objc let errorE2EEKeyVerifySignature: Int      = -98005
+    @objc let errorE2EEKeyCiphertext: Int           = -98006
+    @objc let errorE2EEKeyFiledropCiphertext: Int   = -98007
+    @objc let errorE2EEJSon: Int                    = -98008
+    @objc let errorE2EELock: Int                    = -98009
+    @objc let errorE2EEEncryptFile: Int             = -98010
+    @objc let errorE2EEEncryptPayloadFile: Int      = -98011
+    @objc let errorE2EECounter: Int                 = -98012
+    @objc let errorE2EEGenerateKey: Int             = -98013
+    @objc let errorE2EEEncodedKey: Int              = -98014
+    @objc let errorE2EENoUserFound: Int             = -98015
+    @objc let errorE2EEUploadInProgress: Int        = -98016
+
 
     // Constants to identify the different permissions of a file
     //
@@ -257,7 +273,7 @@ class NCGlobal: NSObject {
     @objc let permissionDefaultFileRemoteShareNoSupportShareOption: Int     = 3
     @objc let permissionDefaultFolderRemoteShareNoSupportShareOption: Int   = 15
     // ATTRIBUTES
-    @objc let permissionDownloadShare: Int          = 0
+    @objc let permissionDownloadShare: Int = 0
 
     // Filename Mask and Type
     //
@@ -271,7 +287,6 @@ class NCGlobal: NSObject {
     // Selector
     //
     let selectorDownloadFile                        = "downloadFile"
-    let selectorDownloadAllFile                     = "downloadAllFile"
     let selectorReadFile                            = "readFile"
     let selectorListingFavorite                     = "listingFavorite"
     let selectorLoadFileView                        = "loadFileView"
@@ -285,10 +300,10 @@ class NCGlobal: NSObject {
     let selectorUploadFileNODelete                  = "UploadFileNODelete"
     let selectorUploadFileShareExtension            = "uploadFileShareExtension"
     let selectorSaveAlbum                           = "saveAlbum"
-    let selectorSaveAlbumLivePhotoIMG               = "saveAlbumLivePhotoIMG"
-    let selectorSaveAlbumLivePhotoMOV               = "saveAlbumLivePhotoMOV"
     let selectorSaveAsScan                          = "saveAsScan"
     let selectorOpenDetail                          = "openDetail"
+    let selectorSynchronizationOffline              = "synchronizationOffline"
+    let selectorSynchronizationFavorite             = "synchronizationFavorite"
 
     // Metadata : Status
     //
@@ -309,9 +324,12 @@ class NCGlobal: NSObject {
     let metadataStatusUploading: Int                = 3
     let metadataStatusUploadError: Int              = 4
 
+    // Queue Concurrent Operation Download
+    let maxConcurrentOperationCountDownload: Int    = 10
+
     //  Hidden files included in the read
     //
-    let includeHiddenFiles: [String]                = [".LivePhoto"]
+    let includeHiddenFiles: [String] = [".LivePhoto"]
 
     // Auto upload subfolder granularity
     //
@@ -322,19 +340,19 @@ class NCGlobal: NSObject {
     // Notification Center
     //
     @objc let notificationCenterApplicationDidEnterBackground   = "applicationDidEnterBackground"
-    let notificationCenterApplicationDidBecomeActive            = "applicationDidBecomeActive"
-    let notificationCenterApplicationWillResignActive           = "applicationWillResignActive"
+    @objc let notificationCenterApplicationDidBecomeActive      = "applicationDidBecomeActive"
+    @objc let notificationCenterApplicationWillResignActive     = "applicationWillResignActive"
 
-    @objc let notificationCenterInitialize                      = "initialize"
+    @objc let notificationCenterChangeUser                      = "changeUser"
     @objc let notificationCenterChangeTheming                   = "changeTheming"
     let notificationCenterRichdocumentGrabFocus                 = "richdocumentGrabFocus"
     let notificationCenterReloadDataNCShare                     = "reloadDataNCShare"
     let notificationCenterCloseRichWorkspaceWebView             = "closeRichWorkspaceWebView"
-    let notificationCenterUpdateBadgeNumber                     = "updateBadgeNumber"               // userInfo: counter
+    let notificationCenterUpdateBadgeNumber                     = "updateBadgeNumber"               // userInfo: counterDownload, counterUpload
     let notificationCenterReloadAvatar                          = "reloadAvatar"
 
-    @objc let notificationCenterReloadDataSource                = "reloadDataSource"                // userInfo: serverUrl?
-    let notificationCenterReloadDataSourceNetwork               = "reloadDataSourceNetwork"         // userInfo: serverUrl?
+    @objc let notificationCenterReloadDataSource                = "reloadDataSource"
+    let notificationCenterReloadDataSourceNetwork               = "reloadDataSourceNetwork"
     let notificationCenterReloadDataSourceNetworkForced         = "reloadDataSourceNetworkForced"
 
     let notificationCenterChangeStatusFolderE2EE                = "changeStatusFolderE2EE"          // userInfo: serverUrl
@@ -347,25 +365,24 @@ class NCGlobal: NSObject {
     @objc let notificationCenterUploadedFile                    = "uploadedFile"                    // userInfo: ocId, serverUrl, account, fileName, ocIdTemp, error
     let notificationCenterUploadCancelFile                      = "uploadCancelFile"                // userInfo: ocId, serverUrl, account
 
-    let notificationCenterProgressTask                          = "progressTask"                    // userInfo: account, ocId, serverUrl, status, progress, totalBytes, totalBytesExpected
+    let notificationCenterProgressTask                          = "progressTask"                    // userInfo: account, ocId, serverUrl, status, chunk, e2eEncrypted, progress, totalBytes, totalBytesExpected
 
-    let notificationCenterCreateFolder                          = "createFolder"                    // userInfo: ocId, serverUrl, account, e2ee, withPush
-    let notificationCenterDeleteFile                            = "deleteFile"                      // userInfo: account, ocIds, error
-    let notificationCenterRenameFile                            = "renameFile"                      // userInfo: ocId, account
-    let notificationCenterMoveFile                              = "moveFile"                        // userInfo: ocId, account, serverUrlFrom
-    let notificationCenterCopyFile                              = "copyFile"                        // userInfo: ocId, serverUrlTo
+    let notificationCenterCreateFolder                          = "createFolder"                    // userInfo: ocId, serverUrl, account, withPush
+    let notificationCenterDeleteFile                            = "deleteFile"                      // userInfo: [ocId], [indexPath], onlyLocalCache, error, hud?
+    let notificationCenterMoveFile                              = "moveFile"                        // userInfo: [ocId], [indexPath], error, hud?
+    let notificationCenterCopyFile                              = "copyFile"                        // userInfo: [ocId], [indexPath], error, hud?
+    let notificationCenterRenameFile                            = "renameFile"                      // userInfo: ocId, account, indexPath
     let notificationCenterFavoriteFile                          = "favoriteFile"                    // userInfo: ocId, serverUrl
 
     let notificationCenterOperationReadFile                     = "operationReadFile"               // userInfo: ocId
 
     let notificationCenterMenuSearchTextPDF                     = "menuSearchTextPDF"
     let notificationCenterMenuGotToPageInPDF                    = "menuGotToPageInPDF"
-    let notificationCenterMenuDetailClose                       = "menuDetailClose"
 
     let notificationCenterDownloadedThumbnail                   = "DownloadedThumbnail"             // userInfo: ocId
 
     let notificationCenterOpenMediaDetail                       = "openMediaDetail"                 // userInfo: ocId
-    
+
     let notificationCenterDismissScanDocument                   = "dismissScanDocument"
     let notificationCenterDismissUploadAssets                   = "dismissUploadAssets"
 
@@ -378,7 +395,7 @@ class NCGlobal: NSObject {
     let tipNCCollectionViewCommonAccountRequest                 = "tipnccollectionviewcommonaccountrequest"
     let tipNCScanAddImage                                       = "tipncscanaddimage"
     let tipNCViewerMediaDetailView                              = "tipncviewermediadetailview"
-    
+
     // ACTION
     //
     let actionNoAction                                          = "no-action"
@@ -386,7 +403,7 @@ class NCGlobal: NSObject {
     let actionScanDocument                                      = "add-scan-document"
     let actionTextDocument                                      = "create-text-document"
     let actionVoiceMemo                                         = "create-voice-memo"
-    
+
     // WIDGET ACTION
     //
     let widgetActionNoAction                                    = "nextcloud://open-action?action=no-action"
@@ -394,7 +411,7 @@ class NCGlobal: NSObject {
     let widgetActionScanDocument                                = "nextcloud://open-action?action=add-scan-document"
     let widgetActionTextDocument                                = "nextcloud://open-action?action=create-text-document"
     let widgetActionVoiceMemo                                   = "nextcloud://open-action?action=create-voice-memo"
-    
+
     // APPCONFIG
     //
     let configuration_brand                                     = "brand"
@@ -403,7 +420,7 @@ class NCGlobal: NSObject {
     let configuration_username                                  = "username"
     let configuration_password                                  = "password"
     let configuration_apppassword                               = "apppassword"
-    
+
     let configuration_disable_intro                             = "disable_intro"
     let configuration_disable_multiaccount                      = "disable_multiaccount"
     let configuration_disable_crash_service                     = "disable_crash_service"
@@ -416,7 +433,7 @@ class NCGlobal: NSObject {
     //
     var capabilityServerVersionMajor: Int                       = 0
     @objc var capabilityServerVersion: String                   = ""
-    
+
     var capabilityFileSharingApiEnabled: Bool                   = false
     var capabilityFileSharingPubPasswdEnforced: Bool            = false
     var capabilityFileSharingPubExpireDateEnforced: Bool        = false
@@ -443,12 +460,13 @@ class NCGlobal: NSObject {
     var capabilityFilesUndelete: Bool                           = false
     var capabilityFilesLockVersion: String                      = ""    // NC 24
     var capabilityFilesComments: Bool                           = false // NC 20
+    var capabilityFilesBigfilechunking: Bool                    = false
 
     @objc var capabilityUserStatusEnabled: Bool                 = false
     var capabilityExternalSites: Bool                           = false
     var capabilityGroupfoldersEnabled: Bool                     = false // NC27
 
-    // MORE APPS
+    // MORE NEXTCLOUD APPS
     let talkSchemeUrl                                           = "nextcloudtalk://"
     let notesSchemeUrl                                          = "nextcloudnotes://"
     let talkAppStoreUrl                                         = "https://apps.apple.com/de/app/nextcloud-talk/id1296825574"
@@ -456,5 +474,5 @@ class NCGlobal: NSObject {
     let moreAppsUrl                                             = "https://www.apple.com/us/search/nextcloud?src=globalnav"
 
     // SNAPSHOT PREVIEW
-    let defaultSnapshotConfiguration                            = "DefaultPreviewConfiguration"
+    let defaultSnapshotConfiguration = "DefaultPreviewConfiguration"
 }

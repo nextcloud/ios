@@ -27,7 +27,10 @@ import NextcloudKit
 
 class NCViewerRichdocument: UIViewController, WKNavigationDelegate, WKScriptMessageHandler, NCSelectDelegate {
 
+    // swiftlint:disable force_cast
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
+    // swiftlint:enable force_cast
+
     var webView = WKWebView()
     var bottomConstraint: NSLayoutConstraint?
     var documentController: UIDocumentInteractionController?
@@ -71,7 +74,7 @@ class NCViewerRichdocument: UIViewController, WKNavigationDelegate, WKScriptMess
         let language = NSLocale.preferredLanguages[0] as String
         request.addValue(language, forHTTPHeaderField: "Accept-Language")
 
-        webView.customUserAgent = CCUtility.getUserAgent()
+        webView.customUserAgent = userAgent
 
         webView.load(request)
     }
@@ -83,7 +86,7 @@ class NCViewerRichdocument: UIViewController, WKNavigationDelegate, WKScriptMess
 
         NotificationCenter.default.addObserver(self, selector: #selector(favoriteFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterFavoriteFile), object: nil)
 
-        NotificationCenter.default.addObserver(self, selector: #selector(viewUnload), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterMenuDetailClose), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(viewUnload), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeUser), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.grabFocus), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterRichdocumentGrabFocus), object: nil)
 
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardDidShow), name: UIResponder.keyboardDidShowNotification, object: nil)
@@ -104,7 +107,7 @@ class NCViewerRichdocument: UIViewController, WKNavigationDelegate, WKScriptMess
 
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterFavoriteFile), object: nil)
 
-        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterMenuDetailClose), object: nil)
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeUser), object: nil)
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterRichdocumentGrabFocus), object: nil)
 
         NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardDidShowNotification, object: nil)
@@ -161,16 +164,17 @@ class NCViewerRichdocument: UIViewController, WKNavigationDelegate, WKScriptMess
             if message.body as? String == "insertGraphic" {
 
                 let storyboard = UIStoryboard(name: "NCSelect", bundle: nil)
-                let navigationController = storyboard.instantiateInitialViewController() as! UINavigationController
-                let viewController = navigationController.topViewController as! NCSelect
+                if let navigationController = storyboard.instantiateInitialViewController() as? UINavigationController,
+                   let viewController = navigationController.topViewController as? NCSelect {
 
-                viewController.delegate = self
-                viewController.typeOfCommandView = .select
-                viewController.enableSelectFile = true
-                viewController.includeImages = true
-                viewController.type = ""
+                    viewController.delegate = self
+                    viewController.typeOfCommandView = .select
+                    viewController.enableSelectFile = true
+                    viewController.includeImages = true
+                    viewController.type = ""
 
-                self.present(navigationController, animated: true, completion: nil)
+                    self.present(navigationController, animated: true, completion: nil)
+                }
             }
 
             if message.body as? String == "share" {
@@ -188,13 +192,14 @@ class NCViewerRichdocument: UIViewController, WKNavigationDelegate, WKScriptMess
 
                         if type == "slideshow" {
 
-                            let browserWebVC = UIStoryboard(name: "NCBrowserWeb", bundle: nil).instantiateInitialViewController() as! NCBrowserWeb
-                            browserWebVC.urlBase = urlString
-                            browserWebVC.isHiddenButtonExit = false
-                            self.present(browserWebVC, animated: true)
+                            if let browserWebVC = UIStoryboard(name: "NCBrowserWeb", bundle: nil).instantiateInitialViewController() as? NCBrowserWeb {
 
+                                browserWebVC.urlBase = urlString
+                                browserWebVC.isHiddenButtonExit = false
+                                self.present(browserWebVC, animated: true)
+                            }
                             return
-                            
+
                         } else {
 
                             // TYPE PRINT - DOWNLOAD
@@ -207,7 +212,7 @@ class NCViewerRichdocument: UIViewController, WKNavigationDelegate, WKScriptMess
 
                             }, progressHandler: { _ in
 
-                            }, completionHandler: { account, _, _, _, allHeaderFields, afError, error in
+                            }, completionHandler: { account, _, _, _, allHeaderFields, _, error in
 
                                 NCActivityIndicator.shared.stop()
 
@@ -286,13 +291,13 @@ class NCViewerRichdocument: UIViewController, WKNavigationDelegate, WKScriptMess
 
     // MARK: -
 
-    func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String, items: [Any], overwrite: Bool, copy: Bool, move: Bool) {
+    func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String, items: [Any], indexPath: [IndexPath], overwrite: Bool, copy: Bool, move: Bool) {
 
         if serverUrl != nil && metadata != nil {
 
             let path = CCUtility.returnFileNamePath(fromFileName: metadata!.fileName, serverUrl: serverUrl!, urlBase: appDelegate.urlBase, userId: appDelegate.userId, account: metadata!.account)!
 
-            NextcloudKit.shared.createAssetRichdocuments(path: path) { account, url, data, error in
+            NextcloudKit.shared.createAssetRichdocuments(path: path) { account, url, _, error in
                 if error == .success && account == self.appDelegate.account {
                     let functionJS = "OCA.RichDocuments.documentsMain.postAsset('\(metadata!.fileNameView)', '\(url!)')"
                     self.webView.evaluateJavaScript(functionJS, completionHandler: { _, _ in })
@@ -309,7 +314,7 @@ class NCViewerRichdocument: UIViewController, WKNavigationDelegate, WKScriptMess
 
         let path = CCUtility.returnFileNamePath(fromFileName: metadata!.fileName, serverUrl: serverUrl!, urlBase: appDelegate.urlBase, userId: appDelegate.userId, account: metadata!.account)!
 
-        NextcloudKit.shared.createAssetRichdocuments(path: path) { account, url, data, error in
+        NextcloudKit.shared.createAssetRichdocuments(path: path) { account, url, _, error in
             if error == .success && account == self.appDelegate.account {
                 let functionJS = "OCA.RichDocuments.documentsMain.postAsset('\(metadata.fileNameView)', '\(url!)')"
                 self.webView.evaluateJavaScript(functionJS, completionHandler: { _, _ in })

@@ -121,24 +121,6 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
         case NCGlobal.shared.selectorSaveAlbum:
             saveAlbum(metadata: metadata)
 
-        case NCGlobal.shared.selectorSaveAlbumLivePhotoIMG, NCGlobal.shared.selectorSaveAlbumLivePhotoMOV:
-
-            var metadata = metadata
-            var metadataMOV = metadata
-            guard let metadataTMP = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata) else { break }
-
-            if selector == NCGlobal.shared.selectorSaveAlbumLivePhotoIMG {
-                metadataMOV = metadataTMP
-            }
-
-            if selector == NCGlobal.shared.selectorSaveAlbumLivePhotoMOV {
-                metadata = metadataTMP
-            }
-
-            if CCUtility.fileProviderStorageExists(metadata) && CCUtility.fileProviderStorageExists(metadataMOV) {
-                saveLivePhotoToDisk(metadata: metadata, metadataMov: metadataMOV)
-            }
-
         case NCGlobal.shared.selectorSaveAsScan:
             saveAsScan(metadata: metadata)
 
@@ -162,7 +144,7 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
             }
         } else if metadata.directory {
             NCManageDatabase.shared.setDirectory(serverUrl: serverUrl, offline: true, account: appDelegate.account)
-            NCOperationQueue.shared.synchronizationMetadata(metadata, selector: NCGlobal.shared.selectorDownloadAllFile)
+            NCNetworking.shared.synchronizationServerUrl(serverUrl, account: metadata.account, selector: NCGlobal.shared.selectorSynchronizationOffline)
         } else {
             NCNetworking.shared.download(metadata: metadata, selector: NCGlobal.shared.selectorLoadOffline) { _, _ in }
             if let metadataLivePhoto = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata) {
@@ -339,10 +321,13 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
         let processor = ParallelWorker(n: 5, titleKey: "_downloading_", totalTasks: downloadMetadata.count, hudView: appDelegate.window?.rootViewController?.view)
         for (metadata, url) in downloadMetadata {
             processor.execute { completion in
-                NCNetworking.shared.download(metadata: metadata, selector: "", completion: { _, _ in
+                NCNetworking.shared.download(metadata: metadata, selector: "", notificationCenterProgressTask: false) { _ in
+                } progressHandler: { progress in
+                    processor.hud?.progress = Float(progress.fractionCompleted)
+                } completion: { _, _ in
                     if CCUtility.fileProviderStorageExists(metadata) { items.append(url) }
                     completion()
-                })
+                }
             }
         }
 
@@ -457,67 +442,13 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
         }
     }
 
-    func saveLivePhoto(metadata: tableMetadata, metadataMOV: tableMetadata) {
-
-        if !CCUtility.fileProviderStorageExists(metadata) {
-            NCOperationQueue.shared.download(metadata: metadata, selector: NCGlobal.shared.selectorSaveAlbumLivePhotoIMG)
-        }
-
-        if !CCUtility.fileProviderStorageExists(metadataMOV) {
-            NCOperationQueue.shared.download(metadata: metadataMOV, selector: NCGlobal.shared.selectorSaveAlbumLivePhotoMOV)
-        }
-
-        if CCUtility.fileProviderStorageExists(metadata) && CCUtility.fileProviderStorageExists(metadataMOV) {
-            saveLivePhotoToDisk(metadata: metadata, metadataMov: metadataMOV)
-        }
-    }
-
-    func saveLivePhotoToDisk(metadata: tableMetadata, metadataMov: tableMetadata) {
-        guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else { return }
-
-        let fileNameImage = URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!)
-        let fileNameMov = URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadataMov.ocId, fileNameView: metadataMov.fileNameView)!)
-        let hud = JGProgressHUD()
-
-        hud.indicatorView = JGProgressHUDRingIndicatorView()
-        if let indicatorView = hud.indicatorView as? JGProgressHUDRingIndicatorView {
-            indicatorView.ringWidth = 1.5
-        }
-        hud.textLabel.text = NSLocalizedString("_saving_", comment: "")
-        hud.show(in: (appDelegate.window?.rootViewController?.view)!)
-
-        NCLivePhoto.generate(from: fileNameImage, videoURL: fileNameMov, progress: { progress in
-            hud.progress = Float(progress)
-        }, completion: { _, resources in
-
-            if resources != nil {
-                NCLivePhoto.saveToLibrary(resources!) { result in
-                    DispatchQueue.main.async {
-                        if !result {
-                            hud.indicatorView = JGProgressHUDErrorIndicatorView()
-                            hud.textLabel.text = NSLocalizedString("_livephoto_save_error_", comment: "")
-                        } else {
-                            hud.indicatorView = JGProgressHUDSuccessIndicatorView()
-                            hud.textLabel.text = NSLocalizedString("_success_", comment: "")
-                        }
-                        hud.dismiss(afterDelay: 1)
-                    }
-                }
-            } else {
-                hud.indicatorView = JGProgressHUDErrorIndicatorView()
-                hud.textLabel.text = NSLocalizedString("_livephoto_save_error_", comment: "")
-                hud.dismiss(afterDelay: 1)
-            }
-        })
-    }
-
     // MARK: - Copy & Paste
 
-    func copyPasteboard(pasteboardOcIds: [String], hudView: UIView) {
+    func copyPasteboard(pasteboardOcIds: [String]) {
         var items = [[String: Any]]()
-        let hud = JGProgressHUD()
-        hud.textLabel.text = NSLocalizedString("_wait_", comment: "")
-        hud.show(in: hudView)
+        guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else { return }
+        let hudView = appDelegate.window?.rootViewController?.view
+        var fractionCompleted: Float = 0
 
         // getting file data can take some time and block the main queue
         DispatchQueue.global(qos: .userInitiated).async {
@@ -531,17 +462,24 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
                 }
             }
 
-            DispatchQueue.main.async(execute: hud.dismiss)
-
             // do 5 downloads in parallel to optimize efficiency
-            let parallelizer = ParallelWorker(n: 5, titleKey: "_downloading_", totalTasks: downloadMetadatas.count, hudView: hudView)
+            let processor = ParallelWorker(n: 5, titleKey: "_downloading_", totalTasks: downloadMetadatas.count, hudView: hudView)
 
             for metadata in downloadMetadatas {
-                parallelizer.execute { completion in
-                    NCNetworking.shared.download(metadata: metadata, selector: "") { _, _ in completion() }
+                processor.execute { completion in
+                    NCNetworking.shared.download(metadata: metadata, selector: "", notificationCenterProgressTask: false) { _ in
+                    } progressHandler: { progress in
+                        if Float(progress.fractionCompleted) > fractionCompleted || fractionCompleted == 0 {
+                            processor.hud?.progress = Float(progress.fractionCompleted)
+                            fractionCompleted = Float(progress.fractionCompleted)
+                        }
+                    } completion: { _, _ in
+                        fractionCompleted = 0
+                        completion()
+                    }
                 }
             }
-            parallelizer.completeWork {
+            processor.completeWork {
                 items.append(contentsOf: downloadMetadatas.compactMap({ $0.toPasteBoardItem() }))
                 UIPasteboard.general.setItems(items, options: [:])
             }
@@ -550,13 +488,18 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
 
     func pastePasteboard(serverUrl: String) {
         guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else { return }
+        var fractionCompleted: Float = 0
 
-        let parallelizer = ParallelWorker(n: 5, titleKey: "_uploading_", totalTasks: nil, hudView: appDelegate.window?.rootViewController?.view)
+        let processor = ParallelWorker(n: 5, titleKey: "_uploading_", totalTasks: nil, hudView: appDelegate.window?.rootViewController?.view)
 
         func uploadPastePasteboard(fileName: String, serverUrlFileName: String, fileNameLocalPath: String, serverUrl: String, completion: @escaping () -> Void) {
             NextcloudKit.shared.upload(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath) { request in
                 NCNetworking.shared.uploadRequest[fileNameLocalPath] = request
-            } progressHandler: { _ in
+            } progressHandler: { progress in
+                if Float(progress.fractionCompleted) > fractionCompleted || fractionCompleted == 0 {
+                    processor.hud?.progress = Float(progress.fractionCompleted)
+                    fractionCompleted = Float(progress.fractionCompleted)
+                }
             } completionHandler: { account, ocId, etag, _, _, _, afError, error in
                 NCNetworking.shared.uploadRequest.removeValue(forKey: fileNameLocalPath)
                 if error == .success && etag != nil && ocId != nil {
@@ -569,6 +512,7 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
                 } else {
                     NCContentPresenter.shared.showError(error: error)
                 }
+                fractionCompleted = 0
                 completion()
             }
         }
@@ -584,12 +528,12 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
                 let ocIdUpload = UUID().uuidString
                 let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(ocIdUpload, fileNameView: fileName)!
                 do { try data.write(to: URL(fileURLWithPath: fileNameLocalPath)) } catch { continue }
-                parallelizer.execute { completion in
+                processor.execute { completion in
                     uploadPastePasteboard(fileName: fileName, serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, serverUrl: serverUrl, completion: completion)
                 }
             }
         }
-        parallelizer.completeWork()
+        processor.completeWork()
     }
 
     // MARK: -
@@ -652,21 +596,49 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
 
     // MARK: - NCSelect + Delegate
 
-    func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String, items: [Any], overwrite: Bool, copy: Bool, move: Bool) {
-        if serverUrl != nil && !items.isEmpty {
+    func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String, items: [Any], indexPath: [IndexPath], overwrite: Bool, copy: Bool, move: Bool) {
+        if let serverUrl, !items.isEmpty {
+            let hud = JGProgressHUD()
+            hud.textLabel.text = copy ? NSLocalizedString("_copying_progess_", comment: "") : NSLocalizedString("_moving_progess_", comment: "")
+            if let appDelegate = UIApplication.shared.delegate as? AppDelegate,
+               let view = appDelegate.window?.rootViewController?.view {
+                hud.show(in: view)
+            }
             if copy {
-                for case let metadata as tableMetadata in items {
-                    NCOperationQueue.shared.copyMove(metadata: metadata, serverUrl: serverUrl!, overwrite: overwrite, move: false)
+                Task {
+                    var error = NKError()
+                    var ocId: [String] = []
+                    for case let metadata as tableMetadata in items where error == .success {
+                        error = await NCNetworking.shared.copyMetadata(metadata, serverUrlTo: serverUrl, overwrite: overwrite)
+                        if error == .success {
+                            ocId.append(metadata.ocId)
+                        }
+                    }
+                    if error != .success {
+                        NCContentPresenter.shared.showError(error: error)
+                    }
+                    NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterCopyFile, userInfo: ["ocId": ocId, "indexPath": indexPath, "error": error, "hud": hud])
                 }
-            } else if move {
-                for case let metadata as tableMetadata in items {
-                    NCOperationQueue.shared.copyMove(metadata: metadata, serverUrl: serverUrl!, overwrite: overwrite, move: true)
+            } else {
+                Task {
+                    var error = NKError()
+                    var ocId: [String] = []
+                    for case let metadata as tableMetadata in items where error == .success {
+                        error = await NCNetworking.shared.moveMetadata(metadata, serverUrlTo: serverUrl, overwrite: overwrite)
+                        if error == .success {
+                            ocId.append(metadata.ocId)
+                        }
+                    }
+                    if error != .success {
+                        NCContentPresenter.shared.showError(error: error)
+                    }
+                    NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterMoveFile, userInfo: ["ocId": ocId, "indexPath": indexPath, "error": error, "hud": hud])
                 }
             }
         }
     }
 
-    func openSelectView(items: [tableMetadata]) {
+    func openSelectView(items: [tableMetadata], indexPath: [IndexPath]) {
         guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else { return }
 
         let navigationController = UIStoryboard(name: "NCSelect", bundle: nil).instantiateInitialViewController() as? UINavigationController
@@ -701,6 +673,7 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
             vc.typeOfCommandView = .copyMove
             vc.items = copyItems
             vc.serverUrl = serverUrl
+            vc.selectIndexPath = indexPath
 
             vc.navigationItem.backButtonTitle = vc.titleCurrentFolder
             listViewController.insert(vc, at: 0)

@@ -29,6 +29,7 @@ extension NCMedia {
     func tapSelect() {
         self.isEditMode = false
         self.selectOcId.removeAll()
+        self.selectIndexPath.removeAll()
         self.reloadDataThenPerform { }
     }
 
@@ -39,7 +40,7 @@ extension NCMedia {
         defer { presentMenu(with: actions) }
 
         if !isEditMode {
-            if metadatas.count > 0 {
+            if !metadatas.isEmpty {
                 actions.append(
                     NCMenuAction(
                         title: NSLocalizedString("_select_", comment: ""),
@@ -84,14 +85,16 @@ extension NCMedia {
                     title: NSLocalizedString("_select_media_folder_", comment: ""),
                     icon: NCUtility.shared.loadImage(named: "folder"),
                     action: { _ in
-                        let navigationController = UIStoryboard(name: "NCSelect", bundle: nil).instantiateInitialViewController() as! UINavigationController
-                        let viewController = navigationController.topViewController as! NCSelect
+                        if let navigationController = UIStoryboard(name: "NCSelect", bundle: nil).instantiateInitialViewController() as? UINavigationController,
+                           let viewController = navigationController.topViewController as? NCSelect {
 
-                        viewController.delegate = self
-                        viewController.typeOfCommandView = .select
-                        viewController.type = "mediaFolder"
+                            viewController.delegate = self
+                            viewController.typeOfCommandView = .select
+                            viewController.type = "mediaFolder"
+                            viewController.selectIndexPath = self.selectIndexPath
 
-                        self.present(navigationController, animated: true, completion: nil)
+                            self.present(navigationController, animated: true, completion: nil)
+                        }
                     }
                 )
             )
@@ -103,7 +106,7 @@ extension NCMedia {
                     title: NSLocalizedString("_play_from_files_", comment: ""),
                     icon: NCUtility.shared.loadImage(named: "play.circle"),
                     action: { _ in
-                        if let tabBarController =  self.appDelegate.window?.rootViewController as? UITabBarController {
+                        if let tabBarController = self.appDelegate.window?.rootViewController as? UITabBarController {
                             self.documentPickerViewController = NCDocumentPickerViewController(tabBarController: tabBarController, isViewerMedia: true, allowsMultipleSelection: false, viewController: self)
                         }
                     }
@@ -207,18 +210,18 @@ extension NCMedia {
             //
             // COPY - MOVE
             //
-            actions.append(.moveOrCopyAction(selectedMetadatas: selectedMetadatas, completion: tapSelect))
+            actions.append(.moveOrCopyAction(selectedMetadatas: selectedMetadatas, indexPath: selectIndexPath, completion: tapSelect))
 
             //
             // COPY
             //
-            actions.append(.copyAction(selectOcId: selectOcId, hudView: self.view, completion: tapSelect))
+            actions.append(.copyAction(selectOcId: selectOcId, completion: tapSelect))
 
             //
             // DELETE
             // can't delete from cache because is needed for NCMedia view, and if locked can't delete from server either.
             if !selectedMetadatas.contains(where: { $0.lock && $0.lockOwner != appDelegate.userId }) {
-                actions.append(.deleteAction(selectedMetadatas: selectedMetadatas, metadataFolder: nil, viewController: self, completion: tapSelect))
+                actions.append(.deleteAction(selectedMetadatas: selectedMetadatas, indexPath: selectIndexPath, metadataFolder: nil, viewController: self, completion: tapSelect))
             }
         }
     }

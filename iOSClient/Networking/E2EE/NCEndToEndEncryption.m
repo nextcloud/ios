@@ -33,7 +33,6 @@
 
 #define IV_DELIMITER_ENCODED_OLD    @"fA=="
 #define IV_DELIMITER_ENCODED        @"|"
-#define PBKDF2_INTERACTION_COUNT    1024
 #define PBKDF2_KEY_LENGTH           256
 //#define PBKDF2_SALT                 @"$4$YmBjm3hk$Qb74D5IUYwghUmzsMqeNFx5z0/8$"
 
@@ -332,7 +331,7 @@
     return csr;
 }
 
-- (NSString *)encryptPrivateKey:(NSString *)userId directory:(NSString *)directory passphrase:(NSString *)passphrase privateKey:(NSString **)privateKey
+- (NSString *)encryptPrivateKey:(NSString *)userId directory:(NSString *)directory passphrase:(NSString *)passphrase privateKey:(NSString **)privateKey iterationCount:(unsigned int)iterationCount
 {
     NSMutableData *cipher = [NSMutableData new];
 
@@ -347,7 +346,7 @@
     // Remove all whitespaces from passphrase
     passphrase = [passphrase stringByReplacingOccurrencesOfString:@" " withString:@""];
     
-    CCKeyDerivationPBKDF(kCCPBKDF2, passphrase.UTF8String, passphrase.length, salt.bytes, salt.length, kCCPRFHmacAlgSHA1, PBKDF2_INTERACTION_COUNT, key.mutableBytes, key.length);
+    CCKeyDerivationPBKDF(kCCPBKDF2, passphrase.UTF8String, passphrase.length, salt.bytes, salt.length, kCCPRFHmacAlgSHA1, iterationCount, key.mutableBytes, key.length);
     
     NSData *initializationVector = [self generateIV:AES_IVEC_LENGTH];
     NSData *authenticationTag = [NSData new];
@@ -373,7 +372,7 @@
     }
 }
 
-- (NSData *)decryptPrivateKey:(NSString *)privateKey passphrase:(NSString *)passphrase publicKey:(NSString *)publicKey
+- (NSData *)decryptPrivateKey:(NSString *)privateKey passphrase:(NSString *)passphrase publicKey:(NSString *)publicKey iterationCount:(unsigned int)iterationCount
 {
     NSMutableData *plain = [NSMutableData new];
 
@@ -401,7 +400,7 @@
     // Remove all whitespaces from passphrase
     passphrase = [passphrase stringByReplacingOccurrencesOfString:@" " withString:@""];
     
-    CCKeyDerivationPBKDF(kCCPBKDF2, passphrase.UTF8String, passphrase.length, salt.bytes, salt.length, kCCPRFHmacAlgSHA1, PBKDF2_INTERACTION_COUNT, key.mutableBytes, key.length);
+    CCKeyDerivationPBKDF(kCCPBKDF2, passphrase.UTF8String, passphrase.length, salt.bytes, salt.length, kCCPRFHmacAlgSHA1, iterationCount, key.mutableBytes, key.length);
     
     BOOL result = [self decryptData:cipher plain:&plain key:key keyLen:AES_KEY_256_LENGTH initializationVector:initializationVector authenticationTag:authenticationTag];
     
@@ -416,41 +415,36 @@
 #pragma mark - Encrypt / Decrypt file material
 #
 
-- (NSString *)encryptPayloadFile:(NSString *)encrypted key:(NSString *)key
+- (NSString *)encryptPayloadFile:(NSData *)encrypted key:(NSString *)key
 {
     NSMutableData *cipher;
     NSData *authenticationTag = [NSData new];
-
-    NSData *encryptedData = [encrypted dataUsingEncoding:NSUTF8StringEncoding];
-    encryptedData = [[encryptedData base64EncodedStringWithOptions:0] dataUsingEncoding:NSUTF8StringEncoding];
 
     // Key
     NSData *keyData = [[NSData alloc] initWithBase64EncodedString:key options:0];
 
     // Initialization Vector
     NSData *initializationVector = [self generateIV:AES_IVEC_LENGTH];
-    
-    BOOL result = [self encryptData:encryptedData cipher:&cipher key:keyData keyLen:AES_KEY_128_LENGTH initializationVector:initializationVector authenticationTag:&authenticationTag];
-    
+
+    BOOL result = [self encryptData:encrypted cipher:&cipher key:keyData keyLen:AES_KEY_128_LENGTH initializationVector:initializationVector authenticationTag:&authenticationTag];
+
     if (cipher != nil && result) {
-        
+
         NSString *cipherString = [cipher base64EncodedStringWithOptions:0];
         NSString *initializationVectorString = [initializationVector base64EncodedStringWithOptions:0];
         NSString *payload = [NSString stringWithFormat:@"%@%@%@", cipherString, IV_DELIMITER_ENCODED, initializationVectorString];
-        
+
         return payload;
     }
-    
+
     return nil;
 }
 
-- (NSString *)encryptPayloadFile:(NSString *)encrypted key:(NSString *)key initializationVector:(NSString **)initializationVector authenticationTag:(NSString **)authenticationTag
+
+- (NSString *)encryptPayloadFile:(NSData *)encrypted key:(NSString *)key initializationVector:(NSString **)initializationVector authenticationTag:(NSString **)authenticationTag
 {
     NSMutableData *cipher;
     NSData *authenticationTagData = [NSData new];
-
-    NSData *encryptedData = [encrypted dataUsingEncoding:NSUTF8StringEncoding];
-    encryptedData = [[encryptedData base64EncodedStringWithOptions:0] dataUsingEncoding:NSUTF8StringEncoding];
 
     // Key
     NSData *keyData = [[NSData alloc] initWithBase64EncodedString:key options:0];
@@ -458,7 +452,7 @@
     // Initialization Vector
     NSData *initializationVectorData = [self generateIV:AES_IVEC_LENGTH];
 
-    BOOL result = [self encryptData:encryptedData cipher:&cipher key:keyData keyLen:AES_KEY_128_LENGTH initializationVector:initializationVectorData authenticationTag:&authenticationTagData];
+    BOOL result = [self encryptData:encrypted cipher:&cipher key:keyData keyLen:AES_KEY_128_LENGTH initializationVector:initializationVectorData authenticationTag:&authenticationTagData];
 
     if (cipher != nil && result) {
 
@@ -515,6 +509,10 @@
 {
     NSMutableData *plain;
 
+    // Remove initializationVector Tag if exists [ANDROID]
+    NSString *android = [@"|" stringByAppendingString: initializationVector];
+    encrypted = [encrypted stringByReplacingOccurrencesOfString:android withString:@""];
+
     NSData *cipher = [[NSData alloc] initWithBase64EncodedString:encrypted options:0];
     NSData *keyData = [[NSData alloc] initWithBase64EncodedString:key options:0];
     NSData *initializationVectorData = [[NSData alloc] initWithBase64EncodedString:initializationVector options:0];
@@ -525,7 +523,7 @@
 
     BOOL result = [self decryptData:cipher plain:&plain key:keyData keyLen:AES_KEY_128_LENGTH initializationVector:initializationVectorData authenticationTag:authenticationTagData];
 
-    if (plain != nil && result) {
+    if (plain != nil && result && plain.length > 0) {
         return plain;
     }
 
@@ -539,11 +537,6 @@
 - (BOOL)encryptFile:(NSString *)fileName fileNameIdentifier:(NSString *)fileNameIdentifier directory:(NSString *)directory key:(NSString **)key initializationVector:(NSString **)initializationVector authenticationTag:(NSString **)authenticationTag
 {
     NSData *authenticationTagData;
-   
-    NSData *plainData = [[NSFileManager defaultManager] contentsAtPath:[NSString stringWithFormat:@"%@/%@", directory, fileName]];
-    if (plainData == nil)
-        return false;
-    
     NSData *keyData = [self generateKey:AES_KEY_128_LENGTH];
     NSData *initializationVectorData = [self generateIV:AES_IVEC_LENGTH];
 
@@ -586,78 +579,112 @@
 #pragma mark - Encrypt/Decrypt asymmetric
 #
 
-- (NSData *)encryptAsymmetricString:(NSString *)plain publicKey:(NSString *)publicKey privateKey:(NSString *)privateKey
+- (NSData *)encryptAsymmetricData:(NSData *)plainData certificate:(NSString *)certificate
 {
     EVP_PKEY *key = NULL;
     int status = 0;
-    
-    if (publicKey != nil) {
-        
-        unsigned char *pKey = (unsigned char *)[publicKey UTF8String];
+    unsigned char *pKey = (unsigned char *)[certificate UTF8String];
 
-        // Extract real publicKey
-        BIO *bio = BIO_new_mem_buf(pKey, -1);
-        if (!bio)
-            return nil;
-        
-        X509 *x509 = PEM_read_bio_X509(bio, NULL, 0, NULL);
-        if (!x509)
-            return nil;
-        
-        key = X509_get_pubkey(x509);
-        if (!key)
-            return nil;
-    }
-    
-    if (privateKey != nil) {
-        
-        unsigned char *pKey = (unsigned char *)[privateKey UTF8String];
+    // Extract real publicKey
+    BIO *bio = BIO_new_mem_buf(pKey, -1);
+    if (!bio)
+        return nil;
 
-        BIO *bio = BIO_new_mem_buf(pKey, -1);
-        if (!bio)
-            return nil;
-        
-        key = PEM_read_bio_PrivateKey(bio, NULL, NULL, NULL);
-        if (!key)
-            return nil;
-    }
-    
+    X509 *x509 = PEM_read_bio_X509(bio, NULL, 0, NULL);
+    if (!x509)
+        return nil;
+
+    key = X509_get_pubkey(x509);
+    if (!key)
+        return nil;
+
     EVP_PKEY_CTX *ctx = EVP_PKEY_CTX_new(key, NULL);
     if (!ctx)
         return nil;
-    
+
     status = EVP_PKEY_encrypt_init(ctx);
     if (status <= 0)
         return nil;
-    
+
     status = EVP_PKEY_CTX_set_rsa_padding(ctx, RSA_PKCS1_OAEP_PADDING);
     if (status <= 0)
         return nil;
-    
+
     status = EVP_PKEY_CTX_set_rsa_oaep_md(ctx, EVP_sha256());
     if (status <= 0)
         return nil;
-    
+
     status = EVP_PKEY_CTX_set_rsa_mgf1_md(ctx, EVP_sha256());
     if (status <= 0)
         return nil;
-    
+
     unsigned long outLen = 0;
-    NSData *plainData = [plain dataUsingEncoding:NSUTF8StringEncoding];
     status = EVP_PKEY_encrypt(ctx, NULL, &outLen, [plainData bytes], (int)[plainData length]);
     if (status <= 0 || outLen == 0)
         return nil;
-    
+
     unsigned char *out = (unsigned char *) malloc(outLen);
     status = EVP_PKEY_encrypt(ctx, out, &outLen, [plainData bytes], (int)[plainData length]);
     if (status <= 0)
         return nil;
-    
+
     NSData *outData = [[NSData alloc] initWithBytes:out length:outLen];
-    
+
     if (out)
         free(out);
-    
+
+    return outData;
+}
+
+- (NSData *)encryptAsymmetricData:(NSData *)plainData privateKey:(NSString *)privateKey
+{
+    EVP_PKEY *key = NULL;
+    int status = 0;
+    unsigned char *pKey = (unsigned char *)[privateKey UTF8String];
+
+    BIO *bio = BIO_new_mem_buf(pKey, -1);
+    if (!bio)
+        return nil;
+
+    key = PEM_read_bio_PrivateKey(bio, NULL, NULL, NULL);
+    if (!key)
+        return nil;
+
+    EVP_PKEY_CTX *ctx = EVP_PKEY_CTX_new(key, NULL);
+    if (!ctx)
+        return nil;
+
+    status = EVP_PKEY_encrypt_init(ctx);
+    if (status <= 0)
+        return nil;
+
+    status = EVP_PKEY_CTX_set_rsa_padding(ctx, RSA_PKCS1_OAEP_PADDING);
+    if (status <= 0)
+        return nil;
+
+    status = EVP_PKEY_CTX_set_rsa_oaep_md(ctx, EVP_sha256());
+    if (status <= 0)
+        return nil;
+
+    status = EVP_PKEY_CTX_set_rsa_mgf1_md(ctx, EVP_sha256());
+    if (status <= 0)
+        return nil;
+
+    unsigned long outLen = 0;
+    status = EVP_PKEY_encrypt(ctx, NULL, &outLen, [plainData bytes], (int)[plainData length]);
+    if (status <= 0 || outLen == 0)
+        return nil;
+
+    unsigned char *out = (unsigned char *) malloc(outLen);
+    status = EVP_PKEY_encrypt(ctx, out, &outLen, [plainData bytes], (int)[plainData length]);
+    if (status <= 0)
+        return nil;
+
+    NSData *outData = [[NSData alloc] initWithBytes:out length:outLen];
+
+    if (out)
+        free(out);
+
     return outData;
 }
 
@@ -864,27 +891,27 @@
     unsigned char *cCipher;
 
     while ([inStream hasBytesAvailable]) {
+        @autoreleasepool {
+            NSInteger bytesRead = [inStream read:buffer maxLength:streamBuffer];
+            if (bytesRead > 0) {
 
-        NSInteger bytesRead = [inStream read:buffer maxLength:streamBuffer];
-
-        if (bytesRead > 0) {
-
-            cCipher = [[NSMutableData dataWithLength:bytesRead] mutableBytes];
-            status = EVP_EncryptUpdate(ctx, cCipher, &cCipherLen, [[NSData dataWithBytes:buffer length:bytesRead] bytes], (int)bytesRead);
-            if (status <= 0) {
-                [inStream close];
-                [outStream close];
-                EVP_CIPHER_CTX_free(ctx);
-                return NO;
-            }
-
-            if ([outStream hasSpaceAvailable]) {
-                totalNumberOfBytesWritten = [outStream write:cCipher maxLength:cCipherLen];
-                if (totalNumberOfBytesWritten != cCipherLen) {
+                cCipher = [[NSMutableData dataWithLength:bytesRead] mutableBytes];
+                status = EVP_EncryptUpdate(ctx, cCipher, &cCipherLen, [[NSData dataWithBytes:buffer length:bytesRead] bytes], (int)bytesRead);
+                if (status <= 0) {
                     [inStream close];
                     [outStream close];
                     EVP_CIPHER_CTX_free(ctx);
                     return NO;
+                }
+
+                if ([outStream hasSpaceAvailable]) {
+                    totalNumberOfBytesWritten = [outStream write:cCipher maxLength:cCipherLen];
+                    if (totalNumberOfBytesWritten != cCipherLen) {
+                        [inStream close];
+                        [outStream close];
+                        EVP_CIPHER_CTX_free(ctx);
+                        return NO;
+                    }
                 }
             }
         }
@@ -1071,27 +1098,27 @@
     unsigned char *cPlain;
 
     while ([inStream hasBytesAvailable]) {
+        @autoreleasepool {
+            NSInteger bytesRead = [inStream read:buffer maxLength:streamBuffer];
+            if (bytesRead > 0) {
 
-        NSInteger bytesRead = [inStream read:buffer maxLength:streamBuffer];
-
-        if (bytesRead > 0) {
-
-            cPlain = [[NSMutableData dataWithLength:bytesRead] mutableBytes];
-            status = EVP_DecryptUpdate(ctx, cPlain, &cPlainLen, [[NSData dataWithBytes:buffer length:bytesRead] bytes], (int)bytesRead);
-            if (status <= 0) {
-                [inStream close];
-                [outStream close];
-                EVP_CIPHER_CTX_free(ctx);
-                return NO;
-            }
-
-            if ([outStream hasSpaceAvailable]) {
-                totalNumberOfBytesWritten = [outStream write:cPlain maxLength:cPlainLen];
-                if (totalNumberOfBytesWritten != cPlainLen) {
+                cPlain = [[NSMutableData dataWithLength:bytesRead] mutableBytes];
+                status = EVP_DecryptUpdate(ctx, cPlain, &cPlainLen, [[NSData dataWithBytes:buffer length:bytesRead] bytes], (int)bytesRead);
+                if (status <= 0) {
                     [inStream close];
                     [outStream close];
                     EVP_CIPHER_CTX_free(ctx);
                     return NO;
+                }
+
+                if ([outStream hasSpaceAvailable]) {
+                    totalNumberOfBytesWritten = [outStream write:cPlain maxLength:cPlainLen];
+                    if (totalNumberOfBytesWritten != cPlainLen) {
+                        [inStream close];
+                        [outStream close];
+                        EVP_CIPHER_CTX_free(ctx);
+                        return NO;
+                    }
                 }
             }
         }
@@ -1118,7 +1145,7 @@
 #pragma mark - CMS
 #
 
-- (NSData *)generateSignatureCMS:(NSData *)data certificate:(NSString *)certificate privateKey:(NSString *)privateKey publicKey:(NSString *)publicKey userId:(NSString *)userId
+- (NSData *)generateSignatureCMS:(NSData *)data certificate:(NSString *)certificate privateKey:(NSString *)privateKey userId:(NSString *)userId
 {
     unsigned char *pKey = (unsigned char *)[privateKey UTF8String];
     unsigned char *certKey = (unsigned char *)[certificate UTF8String];
@@ -1143,7 +1170,7 @@
     if (contentInfo == nil)
         return nil;
 
-    CMS_ContentInfo_print_ctx(printBIO, contentInfo, 0, NULL);
+    // DEBUG CMS_ContentInfo_print_ctx(printBIO, contentInfo, 0, NULL);
     PEM_write_bio_CMS(printBIO, contentInfo);
 
     BIO *i2dCmsBioOut = BIO_new(BIO_s_mem());
@@ -1155,9 +1182,6 @@
     BIO_read(i2dCmsBioOut, keyBytes, len);
 
     NSData *i2dCmsData = [NSData dataWithBytes:keyBytes length:len];
-
-    // TEST
-    [self verifySignatureCMS:i2dCmsData data:data publicKey:publicKey userId:userId];
 
     BIO_free(printBIO);
     BIO_free(certKeyBIO);
@@ -1180,7 +1204,7 @@
     BIO *publicKeyBIO = BIO_new_mem_buf(publicKeyUTF8, -1);
     EVP_PKEY *pkey = PEM_read_bio_PUBKEY(publicKeyBIO, NULL, NULL, NULL);
 
-    CMS_ContentInfo_print_ctx(printBIO, contentInfo, 0, NULL);
+    // DEBUG CMS_ContentInfo_print_ctx(printBIO, contentInfo, 0, NULL);
 
     BOOL verifyResult = CMS_verify(contentInfo, NULL, NULL, dataBIO, NULL, CMS_DETACHED | CMS_NO_SIGNER_CERT_VERIFY);
 
@@ -1225,6 +1249,50 @@
     return verifyResult;
 }
 
+- (BOOL)verifySignatureCMS:(NSData *)cmsContent data:(NSData *)data certificates:(NSArray*)certificates
+{
+    BIO *dataBIO = BIO_new_mem_buf((void*)data.bytes, (int)data.length);
+    BIO *printBIO = BIO_new_fp(stdout, BIO_NOCLOSE);
+    BIO *cmsBIO = BIO_new_mem_buf(cmsContent.bytes, (int)cmsContent.length);
+
+    CMS_ContentInfo *contentInfo = d2i_CMS_bio(cmsBIO, NULL);
+    // DEBUG CMS_ContentInfo_print_ctx(printBIO, contentInfo, 0, NULL);
+
+    BOOL verifyResult = CMS_verify(contentInfo, NULL, NULL, dataBIO, NULL, CMS_DETACHED | CMS_NO_SIGNER_CERT_VERIFY);
+
+    BIO_free(dataBIO);
+    BIO_free(printBIO);
+    BIO_free(cmsBIO);
+
+    if (verifyResult) {
+
+        struct stack_st_CMS_SignerInfo* signerInfos = CMS_get0_SignerInfos(contentInfo);
+        STACK_OF(X509) *signers = CMS_get0_signers(contentInfo);
+        int numSigners = sk_X509_num(signers);
+
+        for (NSString *certificate in certificates) {
+
+            const char *ptrCertificate = [certificate cStringUsingEncoding:NSUTF8StringEncoding];
+            BIO *certBio = BIO_new(BIO_s_mem());
+            BIO_write(certBio, ptrCertificate,(unsigned int)strlen(ptrCertificate));
+            X509 *certX509 = PEM_read_bio_X509(certBio, NULL, NULL, NULL);
+            if (!certX509) {
+                continue;
+            }
+
+            for (int i = 0; i < numSigners; ++i) {
+                struct CMS_SignerInfo_st *signerInfo = sk_CMS_SignerInfo_value(signerInfos, i);
+                if (CMS_SignerInfo_cert_cmp(signerInfo, certX509) == 0) {
+                    BIO_free(certBio);
+                    return true;
+                }
+            }
+        }
+    }
+
+    return verifyResult;
+}
+
 #
 #pragma mark - Utility
 #
@@ -1238,10 +1306,8 @@
     *initializationVector = [ivData base64EncodedStringWithOptions:0];
 }
 
-- (NSString *)createSHA256:(NSString *)string
+- (NSString *)createSHA256:(NSData *)data
 {
-    const char *cstr = [string cStringUsingEncoding:NSASCIIStringEncoding];
-    NSData *data = [NSData dataWithBytes:cstr length:string.length];
     uint8_t digest[CC_SHA256_DIGEST_LENGTH];
     CC_SHA256(data.bytes, (unsigned int)data.length, digest);
     NSMutableString* output = [NSMutableString  stringWithCapacity:CC_SHA256_DIGEST_LENGTH * 2];
@@ -1255,6 +1321,7 @@
 {
     const char *cstr = [string cStringUsingEncoding:NSUTF8StringEncoding];
     NSData *data = [NSData dataWithBytes:cstr length:string.length];
+
     uint8_t digest[CC_SHA512_DIGEST_LENGTH];
     CC_SHA512(data.bytes, (unsigned int)data.length, digest);
     NSMutableString* output = [NSMutableString  stringWithCapacity:CC_SHA512_DIGEST_LENGTH * 2];

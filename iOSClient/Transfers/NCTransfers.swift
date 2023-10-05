@@ -39,6 +39,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
         enableSearchBar = false
         headerMenuButtonsView = false
         headerRichWorkspaceDisable = true
+        headerMenuTransferView = true
         emptyImage = NCUtility.shared.loadImage(named: "arrow.left.arrow.right", color: .gray, size: UIScreen.main.bounds.width)
         emptyTitle = "_no_transfer_"
         emptyDescription = "_no_transfer_sub_"
@@ -97,7 +98,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
 
     // MARK: TAP EVENT
 
-    override func longPressMoreListItem(with objectId: String, namedButtonMore: String, gestureRecognizer: UILongPressGestureRecognizer) {
+    override func longPressMoreListItem(with objectId: String, namedButtonMore: String, indexPath: IndexPath, gestureRecognizer: UILongPressGestureRecognizer) {
 
         if gestureRecognizer.state != .began { return }
 
@@ -105,15 +106,15 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
 
         alertController.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel, handler: nil))
         alertController.addAction(UIAlertAction(title: NSLocalizedString("_cancel_all_task_", comment: ""), style: .default, handler: { _ in
-            NCNetworking.shared.cancelAllTransfer(account: self.appDelegate.account) {
-                self.reloadDataSource()
+            Task {
+                await NCNetworking.shared.cancel(inBackground: true)
             }
         }))
 
         self.present(alertController, animated: true, completion: nil)
     }
 
-    override func longPressListItem(with objectId: String, gestureRecognizer: UILongPressGestureRecognizer) {
+    override func longPressListItem(with objectId: String, indexPath: IndexPath, gestureRecognizer: UILongPressGestureRecognizer) {
 
         if gestureRecognizer.state != .began { return }
 
@@ -169,14 +170,13 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
 
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
 
-        guard let metadata = dataSource.cellForItemAt(indexPath: indexPath) else {
-            return collectionView.dequeueReusableCell(withReuseIdentifier: "transferCell", for: indexPath) as! NCTransferCell
-        }
+        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "transferCell", for: indexPath) as? NCTransferCell,
+              let metadata = dataSource.cellForItemAt(indexPath: indexPath) else { return UICollectionViewCell() }
 
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "transferCell", for: indexPath) as! NCTransferCell
         cell.delegate = self
 
         cell.fileObjectId = metadata.ocId
+        cell.indexPath = indexPath
         cell.fileUser = metadata.ownerId
         cell.indexPath = indexPath
         cell.imageItem.image = NCBrandColor.cacheImages.file
@@ -185,7 +185,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
         cell.labelTitle.textColor = .label
         let serverUrlHome = NCUtilityFileSystem.shared.getHomeServer(urlBase: metadata.urlBase, userId: metadata.userId)
         var pathText = metadata.serverUrl.replacingOccurrences(of: serverUrlHome, with: "")
-        if pathText == "" { pathText = "/" }
+        if pathText.isEmpty { pathText = "/" }
         cell.labelPath.text = pathText
         cell.setButtonMore(named: NCGlobal.shared.buttonMoreStop, image: NCBrandColor.cacheImages.buttonStop)
         cell.progressView.progress = 0.0
@@ -207,40 +207,32 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
         case NCGlobal.shared.metadataStatusWaitDownload:
             cell.labelStatus.text = NSLocalizedString("_status_wait_download_", comment: "")
             cell.labelInfo.text = CCUtility.transformedSize(metadata.size)
-            break
         case NCGlobal.shared.metadataStatusInDownload:
             cell.labelStatus.text = NSLocalizedString("_status_in_download_", comment: "")
             cell.labelInfo.text = CCUtility.transformedSize(metadata.size)
-            break
         case NCGlobal.shared.metadataStatusDownloading:
             cell.labelStatus.text = NSLocalizedString("_status_downloading_", comment: "")
             cell.labelInfo.text = CCUtility.transformedSize(metadata.size) + " - ↓ …"
-            break
         case NCGlobal.shared.metadataStatusWaitUpload:
             cell.labelStatus.text = NSLocalizedString("_status_wait_upload_", comment: "")
             cell.labelInfo.text = ""
-            break
         case NCGlobal.shared.metadataStatusInUpload:
             cell.labelStatus.text = NSLocalizedString("_status_in_upload_", comment: "")
             cell.labelInfo.text = CCUtility.transformedSize(metadata.size)
-            break
         case NCGlobal.shared.metadataStatusUploading:
             cell.labelStatus.text = NSLocalizedString("_status_uploading_", comment: "")
             cell.labelInfo.text = CCUtility.transformedSize(metadata.size) + " - ↑ …"
-            break
         case NCGlobal.shared.metadataStatusUploadError:
             cell.labelStatus.text = NSLocalizedString("_status_upload_error_", comment: "")
             cell.labelInfo.text = metadata.sessionError
-            break
         default:
             cell.labelStatus.text = ""
             cell.labelInfo.text = ""
-            break
         }
         if self.appDelegate.account != metadata.account {
             cell.labelInfo.text = NSLocalizedString("_waiting_for_", comment: "") + " " + NSLocalizedString("_user_", comment: "").lowercased() + " \(metadata.userId) " + NSLocalizedString("_in_", comment: "") + " \(metadata.urlBase)"
         }
-        let isWiFi = NCNetworking.shared.networkReachability == NKCommon.TypeReachability.reachableEthernetOrWiFi
+        let isWiFi = NCNetworking.shared.networkReachability == .reachableEthernetOrWiFi
         if metadata.session == NCNetworking.shared.sessionIdentifierBackgroundWWan && !isWiFi {
             cell.labelInfo.text = NSLocalizedString("_waiting_for_", comment: "") + " " + NSLocalizedString("_reachable_wifi_", comment: "")
         }
@@ -257,23 +249,24 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
 
     // MARK: - DataSource + NC Endpoint
 
-    override func reloadDataSource(forced: Bool = true) {
+    override func queryDB(isForced: Bool) {
+
+        let metadatas = NCManageDatabase.shared.getAdvancedMetadatas(predicate: NSPredicate(format: "status != %i && status != %i", NCGlobal.shared.metadataStatusNormal, NCGlobal.shared.metadataStatusDownloadError), page: 1, limit: 50, sorted: "sessionTaskIdentifier", ascending: false)
+        self.dataSource = NCDataSource(metadatas: metadatas, account: self.appDelegate.account)
+    }
+
+    override func reloadDataSource(isForced: Bool = true) {
         super.reloadDataSource()
 
-        DispatchQueue.global().async {
-            let metadatas = NCManageDatabase.shared.getAdvancedMetadatas(predicate: NSPredicate(format: "status != %i", NCGlobal.shared.metadataStatusNormal), page: 1, limit: 100, sorted: "sessionTaskIdentifier", ascending: false)
-            self.dataSource = NCDataSource(metadatas: metadatas, account: self.appDelegate.account)
-
-            DispatchQueue.main.async {
-                self.refreshControl.endRefreshing()
-                self.collectionView.reloadData()
-            }
+        self.queryDB(isForced: isForced)
+        DispatchQueue.main.async {
+            self.refreshControl.endRefreshing()
+            self.collectionView.reloadData()
         }
     }
 
-    override func reloadDataSourceNetwork(forced: Bool = false) {
-        super.reloadDataSourceNetwork(forced: forced)
-
+    override func reloadDataSourceNetwork(isForced: Bool = false) {
+        super.reloadDataSourceNetwork(isForced: isForced)
         reloadDataSource()
     }
 }

@@ -33,7 +33,9 @@ import XLForm
     @IBOutlet weak var collectionView: UICollectionView!
     @IBOutlet weak var collectionViewHeigth: NSLayoutConstraint!
 
+    // swiftlint:disable force_cast
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
+    // swiftlint:enable force_cast
 
     var editorId = ""
     var creatorId = ""
@@ -83,8 +85,6 @@ import XLForm
         getTemplate()
     }
 
-
-
     // MARK: - Tableview (XLForm)
 
     func initializeForm() {
@@ -105,7 +105,7 @@ import XLForm
         row.value = fileNameFolder
         row.cellConfig["backgroundColor"] = tableView.backgroundColor
 
-        row.cellConfig["imageView.image"] =  UIImage(named: "folder")!.image(color: NCBrandColor.shared.brandElement, size: 25)
+        row.cellConfig["imageView.image"] = UIImage(named: "folder")!.image(color: NCBrandColor.shared.brandElement, size: 25)
 
         row.cellConfig["textLabel.textAlignment"] = NSTextAlignment.right.rawValue
         row.cellConfig["textLabel.font"] = UIFont.systemFont(ofSize: 15.0)
@@ -133,15 +133,15 @@ import XLForm
         section.addFormRow(row)
 
         self.form = form
-        //tableView.reloadData()
-        //collectionView.reloadData()
+        // tableView.reloadData()
+        // collectionView.reloadData()
     }
 
     override func tableView(_ tableView: UITableView, willDisplayHeaderView view: UIView, forSection section: Int) {
-        let header: UITableViewHeaderFooterView = view as! UITableViewHeaderFooterView
-        header.textLabel?.font = UIFont.systemFont(ofSize: 13.0)
-        header.textLabel?.textColor = .gray
-        header.tintColor = tableView.backgroundColor
+        let header = view as? UITableViewHeaderFooterView
+        header?.textLabel?.font = UIFont.systemFont(ofSize: 13.0)
+        header?.textLabel?.textColor = .gray
+        header?.tintColor = tableView.backgroundColor
     }
 
     // MARK: - CollectionView
@@ -167,13 +167,13 @@ import XLForm
         let template = listOfTemplate[indexPath.row]
 
         // image
-        let imagePreview = cell.viewWithTag(100) as! UIImageView
-        if template.preview != "" {
+        let imagePreview = cell.viewWithTag(100) as? UIImageView
+        if !template.preview.isEmpty {
             let fileNameLocalPath = String(CCUtility.getDirectoryUserData()) + "/" + template.name + ".png"
             if FileManager.default.fileExists(atPath: fileNameLocalPath) {
                 let imageURL = URL(fileURLWithPath: fileNameLocalPath)
                 if let image = UIImage(contentsOfFile: imageURL.path) {
-                    imagePreview.image = image
+                    imagePreview?.image = image
                 }
             } else {
                 getImageFromTemplate(name: template.name, preview: template.preview, indexPath: indexPath)
@@ -181,19 +181,19 @@ import XLForm
         }
 
         // name
-        let name = cell.viewWithTag(200) as! UILabel
-        name.text = template.name
-        name.textColor = .secondarySystemGroupedBackground
+        let name = cell.viewWithTag(200) as? UILabel
+        name?.text = template.name
+        name?.textColor = .secondarySystemGroupedBackground
 
         // select
-        let imageSelect = cell.viewWithTag(300) as! UIImageView
+        let imageSelect = cell.viewWithTag(300) as? UIImageView
         if selectTemplate != nil && selectTemplate?.name == template.name {
             cell.backgroundColor = .label
-            imageSelect.image = UIImage(named: "plus100")
-            imageSelect.isHidden = false
+            imageSelect?.image = UIImage(named: "plus100")
+            imageSelect?.isHidden = false
         } else {
             cell.backgroundColor = .secondarySystemGroupedBackground
-            imageSelect.isHidden = true
+            imageSelect?.isHidden = true
         }
 
         return cell
@@ -211,7 +211,7 @@ import XLForm
 
     // MARK: - Action
 
-    func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String, items: [Any], overwrite: Bool, copy: Bool, move: Bool) {
+    func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String, items: [Any], indexPath: [IndexPath], overwrite: Bool, copy: Bool, move: Bool) {
 
         guard let serverUrl = serverUrl else {
             return
@@ -224,7 +224,7 @@ import XLForm
             fileNameFolder = (serverUrl as NSString).lastPathComponent
         }
 
-        let buttonDestinationFolder: XLFormRowDescriptor  = self.form.formRow(withTag: "ButtonDestinationFolder")!
+        let buttonDestinationFolder: XLFormRowDescriptor = self.form.formRow(withTag: "ButtonDestinationFolder")!
         buttonDestinationFolder.title = fileNameFolder
 
         self.tableView.reloadData()
@@ -235,13 +235,14 @@ import XLForm
         self.deselectFormRow(sender)
 
         let storyboard = UIStoryboard(name: "NCSelect", bundle: nil)
-        let navigationController = storyboard.instantiateInitialViewController() as! UINavigationController
-        let viewController = navigationController.topViewController as! NCSelect
+        if let navigationController = storyboard.instantiateInitialViewController() as? UINavigationController,
+           let viewController = navigationController.topViewController as? NCSelect {
 
-        viewController.delegate = self
-        viewController.typeOfCommandView = .selectCreateFolder
+            viewController.delegate = self
+            viewController.typeOfCommandView = .selectCreateFolder
 
-        self.present(navigationController, animated: true, completion: nil)
+            self.present(navigationController, animated: true, completion: nil)
+        }
     }
 
     @objc func save() {
@@ -251,59 +252,48 @@ import XLForm
         }
         templateIdentifier = selectTemplate.identifier
 
-        let rowFileName: XLFormRowDescriptor  = self.form.formRow(withTag: "fileName")!
-        guard var fileNameForm = rowFileName.value else {
-            return
+        let rowFileName: XLFormRowDescriptor = self.form.formRow(withTag: "fileName")!
+        guard var fileNameForm: String = rowFileName.value as? String, !fileNameForm.isEmpty else { return }
+
+        // Trim whitespaces after checks above
+        fileNameForm = fileNameForm.trimmingCharacters(in: .whitespacesAndNewlines)
+
+        let result = NextcloudKit.shared.nkCommonInstance.getInternalType(fileName: fileNameForm, mimeType: "", directory: false)
+        if NCUtility.shared.isDirectEditing(account: appDelegate.account, contentType: result.mimeType).isEmpty {
+            fileNameForm = (fileNameForm as NSString).deletingPathExtension + "." + fileNameExtension
         }
 
-        if fileNameForm as! String == "" {
-            return
+        if NCManageDatabase.shared.getMetadataConflict(account: appDelegate.account, serverUrl: serverUrl, fileNameView: String(describing: fileNameForm)) != nil {
+
+            let metadataForUpload = NCManageDatabase.shared.createMetadata(account: appDelegate.account, user: appDelegate.user, userId: appDelegate.userId, fileName: String(describing: fileNameForm), fileNameView: String(describing: fileNameForm), ocId: "", serverUrl: serverUrl, urlBase: appDelegate.urlBase, url: "", contentType: "")
+
+            guard let conflict = UIStoryboard(name: "NCCreateFormUploadConflict", bundle: nil).instantiateInitialViewController() as? NCCreateFormUploadConflict else { return }
+
+            conflict.textLabelDetailNewFile = NSLocalizedString("_now_", comment: "")
+            conflict.alwaysNewFileNameNumber = true
+            conflict.serverUrl = serverUrl
+            conflict.metadatasUploadInConflict = [metadataForUpload]
+            conflict.delegate = self
+
+            self.present(conflict, animated: true, completion: nil)
+
         } else {
 
-            //Trim whitespaces after checks above
-            fileNameForm = (fileNameForm as! String).trimmingCharacters(in: .whitespacesAndNewlines)
-
-            let result = NextcloudKit.shared.nkCommonInstance.getInternalType(fileName: fileNameForm as! String, mimeType: "", directory: false)
-            if NCUtility.shared.isDirectEditing(account: appDelegate.account, contentType: result.mimeType).count == 0 {
-                fileNameForm = (fileNameForm as! NSString).deletingPathExtension + "." + fileNameExtension
-            }
-
-            if NCManageDatabase.shared.getMetadataConflict(account: appDelegate.account, serverUrl: serverUrl, fileNameView: String(describing: fileNameForm)) != nil {
-
-                let metadataForUpload = NCManageDatabase.shared.createMetadata(account: appDelegate.account, user: appDelegate.user, userId: appDelegate.userId, fileName: String(describing: fileNameForm), fileNameView: String(describing: fileNameForm), ocId: "", serverUrl: serverUrl, urlBase: appDelegate.urlBase, url: "", contentType: "")
-
-                guard let conflict = UIStoryboard(name: "NCCreateFormUploadConflict", bundle: nil).instantiateInitialViewController() as? NCCreateFormUploadConflict else { return }
-
-                conflict.textLabelDetailNewFile = NSLocalizedString("_now_", comment: "")
-                conflict.alwaysNewFileNameNumber = true
-                conflict.serverUrl = serverUrl
-                conflict.metadatasUploadInConflict = [metadataForUpload]
-                conflict.delegate = self
-
-                self.present(conflict, animated: true, completion: nil)
-
-            } else {
-
-                let fileNamePath = CCUtility.returnFileNamePath(fromFileName: String(describing: fileNameForm), serverUrl: serverUrl, urlBase: appDelegate.urlBase, userId: appDelegate.userId, account: appDelegate.account)!
-                createDocument(fileNamePath: fileNamePath, fileName: String(describing: fileNameForm))
-            }
+            let fileNamePath = CCUtility.returnFileNamePath(fromFileName: String(describing: fileNameForm), serverUrl: serverUrl, urlBase: appDelegate.urlBase, userId: appDelegate.userId, account: appDelegate.account)!
+            createDocument(fileNamePath: fileNamePath, fileName: String(describing: fileNameForm))
         }
     }
 
     func dismissCreateFormUploadConflict(metadatas: [tableMetadata]?) {
 
-        if metadatas == nil || metadatas?.count == 0 {
-
+        if let metadatas {
+            let fileName = metadatas[0].fileName
+            let fileNamePath = CCUtility.returnFileNamePath(fromFileName: fileName, serverUrl: serverUrl, urlBase: appDelegate.urlBase, userId: appDelegate.userId, account: appDelegate.account)!
+            createDocument(fileNamePath: fileNamePath, fileName: fileName)
+        } else {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
                 self.cancel()
             }
-
-        } else {
-
-            let fileName = metadatas![0].fileName
-            let fileNamePath = CCUtility.returnFileNamePath(fromFileName: fileName, serverUrl: serverUrl, urlBase: appDelegate.urlBase, userId: appDelegate.userId, account: appDelegate.account)!
-
-            createDocument(fileNamePath: fileNamePath, fileName: fileName)
         }
     }
 
@@ -314,7 +304,7 @@ import XLForm
         UUID = "TEMP" + UUID.replacingOccurrences(of: "-", with: "")
 
         if self.editorId == NCGlobal.shared.editorText || self.editorId == NCGlobal.shared.editorOnlyoffice {
-            
+
             var options = NKRequestOptions()
             if self.editorId == NCGlobal.shared.editorOnlyoffice {
                 options = NKRequestOptions(customUserAgent: NCUtility.shared.getCustomUserAgentOnlyOffice())
@@ -322,7 +312,7 @@ import XLForm
                 options = NKRequestOptions(customUserAgent: NCUtility.shared.getCustomUserAgentNCText())
             }
 
-            NextcloudKit.shared.NCTextCreateFile(fileNamePath: fileNamePath, editorId: editorId, creatorId: creatorId, templateId: templateIdentifier, options: options) { account, url, data, error in
+            NextcloudKit.shared.NCTextCreateFile(fileNamePath: fileNamePath, editorId: editorId, creatorId: creatorId, templateId: templateIdentifier, options: options) { account, url, _, error in
                 guard error == .success, account == self.appDelegate.account, let url = url else {
                     self.navigationItem.rightBarButtonItem?.isEnabled = true
                     NCContentPresenter.shared.showError(error: error)
@@ -330,7 +320,7 @@ import XLForm
                 }
 
                 var results = NextcloudKit.shared.nkCommonInstance.getInternalType(fileName: fileName, mimeType: "", directory: false)
-                //FIXME: iOS 12.0,* don't detect UTI text/markdown, text/x-markdown
+                // FIXME: iOS 12.0,* don't detect UTI text/markdown, text/x-markdown
                 if results.mimeType.isEmpty {
                     results.mimeType = "text/x-markdown"
                 }
@@ -346,7 +336,7 @@ import XLForm
 
         if self.editorId == NCGlobal.shared.editorCollabora {
 
-            NextcloudKit.shared.createRichdocuments(path: fileNamePath, templateId: templateIdentifier) { account, url, data, error in
+            NextcloudKit.shared.createRichdocuments(path: fileNamePath, templateId: templateIdentifier) { account, url, _, error in
                 guard error == .success, account == self.appDelegate.account, let url = url else {
                     self.navigationItem.rightBarButtonItem?.isEnabled = true
                     NCContentPresenter.shared.showError(error: error)
@@ -385,7 +375,7 @@ import XLForm
                 options = NKRequestOptions(customUserAgent: NCUtility.shared.getCustomUserAgentNCText())
             }
 
-            NextcloudKit.shared.NCTextGetListOfTemplates(options: options) { account, templates, data, error in
+            NextcloudKit.shared.NCTextGetListOfTemplates(options: options) { account, templates, _, error in
 
                 self.indicator.stopAnimating()
 
@@ -403,7 +393,7 @@ import XLForm
                         self.listOfTemplate.append(temp)
 
                         // default: template empty
-                        if temp.preview == "" {
+                        if temp.preview.isEmpty {
                             self.selectTemplate = temp
                             self.fileNameExtension = template.ext
                             self.navigationItem.rightBarButtonItem?.isEnabled = true
@@ -411,7 +401,7 @@ import XLForm
                     }
                 }
 
-                if self.listOfTemplate.count == 0 {
+                if self.listOfTemplate.isEmpty {
 
                     let temp = NKEditorTemplates()
 
@@ -442,7 +432,7 @@ import XLForm
 
         if self.editorId == NCGlobal.shared.editorCollabora {
 
-            NextcloudKit.shared.getTemplatesRichdocuments(typeTemplate: typeTemplate) { account, templates, data, error in
+            NextcloudKit.shared.getTemplatesRichdocuments(typeTemplate: typeTemplate) { account, templates, _, error in
 
                 self.indicator.stopAnimating()
 
@@ -462,7 +452,7 @@ import XLForm
                         self.listOfTemplate.append(temp)
 
                         // default: template empty
-                        if temp.preview == "" {
+                        if temp.preview.isEmpty {
                             self.selectTemplate = temp
                             self.fileNameExtension = temp.ext
                             self.navigationItem.rightBarButtonItem?.isEnabled = true
@@ -470,7 +460,7 @@ import XLForm
                     }
                 }
 
-                if self.listOfTemplate.count == 0 {
+                if self.listOfTemplate.isEmpty {
 
                     let temp = NKEditorTemplates()
 

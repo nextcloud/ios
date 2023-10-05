@@ -70,6 +70,7 @@ class NCShare: UIViewController, NCShareNetworkingDelegate, NCSharePagingContent
         searchFieldTopConstraint.constant = 10
 
         searchField.placeholder = NSLocalizedString("_shareLinksearch_placeholder_", comment: "")
+        searchField.autocorrectionType = .no
 
         tableView.dataSource = self
         tableView.delegate = self
@@ -84,8 +85,13 @@ class NCShare: UIViewController, NCShareNetworkingDelegate, NCSharePagingContent
         guard let metadata = metadata else { return }
 
         if metadata.e2eEncrypted {
-            searchFieldTopConstraint.constant = -50
-            searchField.isHidden = true
+            let direcrory = NCManageDatabase.shared.getTableDirectory(account: metadata.account, serverUrl: metadata.serverUrl)
+            if NCGlobal.shared.capabilityE2EEApiVersion == NCGlobal.shared.e2eeVersionV12 ||
+                (NCGlobal.shared.capabilityE2EEApiVersion == NCGlobal.shared.e2eeVersionV20 && direcrory?.e2eEncrypted ?? false) {
+                // searchField.isEnabled = false
+                searchFieldTopConstraint.constant = -50
+                searchField.isHidden = true
+            }
         } else {
             checkSharedWithYou()
         }
@@ -300,7 +306,7 @@ extension NCShare: UITableViewDataSource {
         guard let metadata = self.metadata else { return 0}
         var numRows = shares.share?.count ?? 0
         if section == 0 {
-            if metadata.e2eEncrypted {
+            if metadata.e2eEncrypted && NCGlobal.shared.capabilityE2EEApiVersion == NCGlobal.shared.e2eeVersionV12 {
                 numRows = 1
             } else {
                 // don't allow link creation if reshare is disabled
@@ -316,7 +322,7 @@ extension NCShare: UITableViewDataSource {
             guard let cell = tableView.dequeueReusableCell(withIdentifier: "cellLink", for: indexPath) as? NCShareLinkCell, let metadata = self.metadata
             else { return UITableViewCell() }
             cell.delegate = self
-            if metadata.e2eEncrypted {
+            if metadata.e2eEncrypted && NCGlobal.shared.capabilityE2EEApiVersion == NCGlobal.shared.e2eeVersionV12 {
                 cell.tableShare = shares.firstShareLink
             } else {
                 if indexPath.row == 0 {
@@ -334,6 +340,7 @@ extension NCShare: UITableViewDataSource {
         // LINK
         if tableShare.shareType == NCShareCommon.shared.SHARE_TYPE_LINK {
             if let cell = tableView.dequeueReusableCell(withIdentifier: "cellLink", for: indexPath) as? NCShareLinkCell {
+                cell.indexPath = indexPath
                 cell.tableShare = tableShare
                 cell.delegate = self
                 cell.setupCellUI()
@@ -342,6 +349,7 @@ extension NCShare: UITableViewDataSource {
         } else {
         // USER / GROUP etc.
             if let cell = tableView.dequeueReusableCell(withIdentifier: "cellUser", for: indexPath) as? NCShareUserCell {
+                cell.indexPath = indexPath
                 cell.tableShare = tableShare
                 cell.delegate = self
                 cell.setupCellUI(userId: appDelegate.userId)

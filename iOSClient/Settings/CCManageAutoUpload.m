@@ -193,9 +193,9 @@
     self.view.backgroundColor = UIColor.systemGroupedBackgroundColor;
     
     self.tableView.backgroundColor = UIColor.systemGroupedBackgroundColor;
-    
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(initialize) name:NCGlobal.shared.notificationCenterInitialize object:nil];
-    
+
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeUser) name:NCGlobal.shared.notificationCenterChangeUser object:nil];
+
     [self initializeForm];
     [self reloadForm];
 }
@@ -208,9 +208,11 @@
     [[NCAskAuthorization shared] askAuthorizationPhotoLibraryWithViewController:self completion:^(BOOL status) { }];
 }
 
-- (void)initialize
+- (void)changeUser
 {
-    [[self navigationController] popViewControllerAnimated:YES];
+    // [[self navigationController] popViewControllerAnimated:YES];
+    [self initializeForm];
+    [self reloadForm];
 }
 
 #pragma mark - NotificationCenter
@@ -416,7 +418,7 @@
     return sectionName;
 }
 
-- (void)dismissSelectWithServerUrl:(NSString *)serverUrl metadata:(tableMetadata *)metadata type:(NSString *)type items:(NSArray *)items overwrite:(BOOL)overwrite copy:(BOOL)copy move:(BOOL)move
+- (void)dismissSelectWithServerUrl:(NSString * _Nullable)serverUrl metadata:(tableMetadata * _Nullable)metadata type:(NSString * _Nonnull)type items:(NSArray * _Nonnull)items indexPath:(NSArray<NSIndexPath *> * _Nonnull)indexPath overwrite:(BOOL)overwrite copy:(BOOL)copy move:(BOOL)move 
 {
     if (serverUrl != nil) {
 

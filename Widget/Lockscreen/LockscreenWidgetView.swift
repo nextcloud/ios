@@ -43,6 +43,7 @@ struct LockscreenWidgetView: View {
                     }
                 )
                 .gaugeStyle(.accessoryCircularCapacity)
+                .widgetBackground(Color.clear)
             } else {
                 Gauge(
                     value: entry.quotaRelative,
@@ -56,6 +57,7 @@ struct LockscreenWidgetView: View {
                 )
                 .gaugeStyle(.accessoryCircular)
                 .redacted(reason: entry.isPlaceholder ? .placeholder : [])
+                .widgetBackground(Color.clear)
             }
         case .accessoryRectangular:
             VStack(alignment: .leading, spacing: 1) {
@@ -84,6 +86,7 @@ struct LockscreenWidgetView: View {
             }
             .widgetURL(entry.link)
             .redacted(reason: entry.isPlaceholder ? .placeholder : [])
+            .widgetBackground(Color.clear)
         default:
             Text("Not implemented")
         }

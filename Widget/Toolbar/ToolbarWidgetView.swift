@@ -41,9 +41,6 @@ struct ToolbarWidgetView: View {
 
             ZStack(alignment: .topLeading) {
 
-                Color(.black).opacity(0.9)
-                    .ignoresSafeArea()
-
                 HStack(spacing: 0) {
 
                     let sizeButton: CGFloat = 65
@@ -114,6 +111,7 @@ struct ToolbarWidgetView: View {
                 .frame(maxWidth: geo.size.width - 5, maxHeight: geo.size.height - 2, alignment: .bottomTrailing)
             }
         }
+        .widgetBackground(Color.black.opacity(0.9))
     }
 }
 

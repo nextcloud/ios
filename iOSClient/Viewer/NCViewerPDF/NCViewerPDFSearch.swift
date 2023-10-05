@@ -73,28 +73,25 @@ class NCViewerPDFSearch: UITableViewController, UISearchBarDelegate, PDFDocument
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
 
-        let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath) as! NCViewerPDFSearchCell
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath) as? NCViewerPDFSearchCell else { return UITableViewCell() }
         let pdfSelection = searchResultArray[indexPath.row] as PDFSelection
-
-        // if let pdfOutline = pdfDocument?.outlineItem(for: pdfSelection) {
-        //    cell.outlineLabel.text = pdfOutline.label
-        // }
 
         let pdfPage = pdfSelection.pages.first
         let pageNumber = pdfPage?.pageRef?.pageNumber ?? 0
         cell.pageNumberLabel.text = NSLocalizedString("_scan_document_pdf_page_", comment: "") + ": " + String(pageNumber)
 
-        let extendSelection = pdfSelection.copy() as! PDFSelection
-        extendSelection.extend(atStart: 10)
-        extendSelection.extend(atEnd: 90)
-        extendSelection.extendForLineBoundaries()
+        if let extendSelection = pdfSelection.copy() as? PDFSelection {
+            extendSelection.extend(atStart: 10)
+            extendSelection.extend(atEnd: 90)
+            extendSelection.extendForLineBoundaries()
 
-        let nsRange = NSString(string: extendSelection.string!).range(of: pdfSelection.string!, options: String.CompareOptions.caseInsensitive)
-        if nsRange.location != NSNotFound {
-            let attributedSubString = NSAttributedString(string: NSString(string: extendSelection.string!).substring(with: nsRange), attributes: [NSAttributedString.Key.font: UIFont.boldSystemFont(ofSize: 17), NSAttributedString.Key.foregroundColor : UIColor.systemBlue])
-            let attributedString = NSMutableAttributedString(string: extendSelection.string!)
-            attributedString.replaceCharacters(in: nsRange, with: attributedSubString)
-            cell.searchResultTextLabel.attributedText = attributedString
+            let nsRange = NSString(string: extendSelection.string!).range(of: pdfSelection.string!, options: String.CompareOptions.caseInsensitive)
+            if nsRange.location != NSNotFound {
+                let attributedSubString = NSAttributedString(string: NSString(string: extendSelection.string!).substring(with: nsRange), attributes: [NSAttributedString.Key.font: UIFont.boldSystemFont(ofSize: 17), NSAttributedString.Key.foregroundColor: UIColor.systemBlue])
+                let attributedString = NSMutableAttributedString(string: extendSelection.string!)
+                attributedString.replaceCharacters(in: nsRange, with: attributedSubString)
+                cell.searchResultTextLabel.attributedText = attributedString
+            }
         }
 
         return cell

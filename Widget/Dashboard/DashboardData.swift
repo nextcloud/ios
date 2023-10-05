@@ -51,12 +51,6 @@ struct DashboardData: Identifiable, Hashable {
     let imageColor: UIColor?
 }
 
-struct DashboardDataButton: Hashable {
-    let type: String
-    let Text: String
-    let link: String
-}
-
 let dashboardDatasTest: [DashboardData] = [
     .init(id: 0, title: "title0", subTitle: "subTitle-description0", link: URL(string: "https://nextcloud.com/")!, icon: UIImage(named: "widget")!, template: true, avatar: false, imageColor: nil),
     .init(id: 1, title: "title1", subTitle: "subTitle-description1", link: URL(string: "https://nextcloud.com/")!, icon: UIImage(named: "widget")!, template: true, avatar: false, imageColor: nil),
@@ -71,7 +65,7 @@ let dashboardDatasTest: [DashboardData] = [
 ]
 
 func getDashboardItems(displaySize: CGSize, withButton: Bool) -> Int {
-    
+
     if withButton {
         let height = Int((displaySize.height - 85) / 50)
         return height
@@ -81,7 +75,7 @@ func getDashboardItems(displaySize: CGSize, withButton: Bool) -> Int {
     }
 }
 
-func convertDataToImage(data: Data?, size:CGSize, fileNameToWrite: String?) -> UIImage? {
+func convertDataToImage(data: Data?, size: CGSize, fileNameToWrite: String?) -> UIImage? {
 
     guard let data = data else { return nil }
     var imageData: UIImage?
@@ -134,7 +128,7 @@ func getDashboardDataEntry(configuration: DashboardIntent?, isPreview: Bool, dis
     guard NCGlobal.shared.capabilityServerVersionMajor >= NCGlobal.shared.nextcloudVersion25 else {
         return completion(DashboardDataEntry(date: Date(), datas: datasPlaceholder, dashboard: nil, buttons: nil, isPlaceholder: true, isEmpty: false, titleImage: UIImage(named: "widget")!, title: "Dashboard", footerImage: "xmark.icloud", footerText: NSLocalizedString("_widget_available_nc25_", comment: "")))
     }
-        
+
     // NETWORKING
     let password = CCUtility.getPassword(account.account)!
     NextcloudKit.shared.setup(
@@ -143,7 +137,7 @@ func getDashboardDataEntry(configuration: DashboardIntent?, isPreview: Bool, dis
         userId: account.userId,
         password: password,
         urlBase: account.urlBase,
-        userAgent: CCUtility.getUserAgent(),
+        userAgent: userAgent,
         nextcloudVersion: 0,
         delegate: NCNetworking.shared)
 
@@ -161,7 +155,7 @@ func getDashboardDataEntry(configuration: DashboardIntent?, isPreview: Bool, dis
     } else {
         NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Start \(NCBrandOptions.shared.brand) dashboard widget session with level \(levelLog) " + versionNextcloudiOS)
     }
-    
+
     let (tableDashboard, tableButton) = NCManageDatabase.shared.getDashboardWidget(account: account.account, id: id)
     let existsButton = (tableButton?.isEmpty ?? true) ? false : true
     let title = tableDashboard?.title ?? id
@@ -215,7 +209,7 @@ func getDashboardDataEntry(configuration: DashboardIntent?, isPreview: Bool, dis
                                     if let item = CCUtility.value(forKey: "fileId", fromQueryItems: queryItems) {
                                         iconFileName = item
                                     } else if pathComponents.contains("avatar") {
-                                        iconFileName = pathComponents[pathComponents.count-2]
+                                        iconFileName = pathComponents[pathComponents.count - 2]
                                         imageAvatar = true
                                     } else if pathComponents.contains("getCalendarDotSvg") {
                                         imageColorized = true
@@ -257,7 +251,7 @@ func getDashboardDataEntry(configuration: DashboardIntent?, isPreview: Bool, dis
             }
 
             let alias = (account.alias.isEmpty) ? "" : (" (" + account.alias + ")")
-            let footerText = "Dashboard " + NSLocalizedString("_of_", comment: "") +  " " + account.displayName + alias
+            let footerText = "Dashboard " + NSLocalizedString("_of_", comment: "") + " " + account.displayName + alias
 
             if error != .success {
                 completion(DashboardDataEntry(date: Date(), datas: datasPlaceholder, dashboard: tableDashboard, buttons: buttons, isPlaceholder: true, isEmpty: false, titleImage: titleImage, title: title, footerImage: "xmark.icloud", footerText: error.errorDescription))

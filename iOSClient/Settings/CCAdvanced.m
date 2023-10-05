@@ -101,23 +101,6 @@
         [row.cellConfig setObject:UIColor.labelColor forKey:@"textLabel.textColor"];
         [section addFormRow:row];
     }
-    
-    // Section : Chunk --------------------------------------------------------------
-
-    section = [XLFormSectionDescriptor formSection];
-    [form addFormSection:section];
-    section.footerTitle = NSLocalizedString(@"_chunk_footer_title_", nil);
-    
-    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"chunk" rowType:XLFormRowDescriptorTypeStepCounter title:NSLocalizedString(@"_chunk_size_mb_", nil)];
-    row.cellConfigAtConfigure[@"backgroundColor"] = UIColor.secondarySystemGroupedBackgroundColor;
-    row.value = [NSString stringWithFormat:@"%ld", CCUtility.getChunkSize];
-    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
-    [row.cellConfig setObject:UIColor.labelColor forKey:@"textLabel.textColor"];
-    [row.cellConfigAtConfigure setObject:@YES forKey:@"stepControl.wraps"];
-    [row.cellConfigAtConfigure setObject:@1 forKey:@"stepControl.stepValue"];
-    [row.cellConfigAtConfigure setObject:@0 forKey:@"stepControl.minimumValue"];
-    [row.cellConfigAtConfigure setObject:@100 forKey:@"stepControl.maximumValue"];
-    [section addFormRow:row];
 
     // Section : Privacy --------------------------------------------------------------
 
@@ -254,7 +237,6 @@
                             [XLFormOptionsObject formOptionsObjectWithValue:@(90) displayText:NSLocalizedString(@"_3_months_", nil)],
                             [XLFormOptionsObject formOptionsObjectWithValue:@(30) displayText:NSLocalizedString(@"_1_month_", nil)],
                             [XLFormOptionsObject formOptionsObjectWithValue:@(7) displayText:NSLocalizedString(@"_1_week_", nil)],
-                            //[XLFormOptionsObject formOptionsObjectWithValue:@(1) displayText:NSLocalizedString(@"_1_day_", nil)],
                             ];
     [sectionSize addFormRow:row];
     
@@ -373,13 +355,7 @@
         [CCUtility setLogLevel:levelLog];
         [[[NextcloudKit shared] nkCommonInstance] setLevelLog:levelLog];
     }
-    
-    if ([rowDescriptor.tag isEqualToString:@"chunk"]) {
-        
-        NSInteger chunkSize = [[rowDescriptor.value valueData] intValue];
-        [CCUtility setChunkSize:chunkSize];
-    }
-    
+
     if ([rowDescriptor.tag isEqualToString:@"deleteoldfiles"]) {
         
         NSInteger days = [[rowDescriptor.value valueData] intValue];
@@ -391,29 +367,25 @@
 
 - (void)clearCache:(NSString *)account
 {
-    [[NCNetworking shared] cancelAllTransferWithAccount:account completion:^{ }];
-    [[NCOperationQueue shared] cancelAllQueue];
-    [[NCNetworking shared] cancelAllTask];
-    
-    [[NSURLCache sharedURLCache] setMemoryCapacity:0];
-    [[NSURLCache sharedURLCache] setDiskCapacity:0];
-    
-    [[NCManageDatabase shared] clearDatabaseWithAccount:account removeAccount:false];
-    
-    [CCUtility removeGroupDirectoryProviderStorage];
-    [CCUtility removeGroupLibraryDirectory];
+    [[NCNetworking shared] cancelSessionsInBackground:true];
 
-    [CCUtility removeDocumentsDirectory];
-    [CCUtility removeTemporaryDirectory];
-    
-    [CCUtility createDirectoryStandard];
-
-    [[NCAutoUpload shared] alignPhotoLibraryWithViewController:self];
-
-    // Inizialized home
-    [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:NCGlobal.shared.notificationCenterInitialize object:nil userInfo:nil];
-    
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
+
+        [[NSURLCache sharedURLCache] setMemoryCapacity:0];
+        [[NSURLCache sharedURLCache] setDiskCapacity:0];
+
+        [[NCManageDatabase shared] clearDatabaseWithAccount:account removeAccount:false];
+
+        [CCUtility removeGroupDirectoryProviderStorage];
+        [CCUtility removeGroupLibraryDirectory];
+
+        [CCUtility removeDocumentsDirectory];
+        [CCUtility removeTemporaryDirectory];
+
+        [CCUtility createDirectoryStandard];
+
+        [[NCAutoUpload shared] alignPhotoLibraryWithViewController:self];
+
         [[NCActivityIndicator shared] stop];
         [self calculateSize];
     });
@@ -446,7 +418,11 @@
 - (void)clearAllCacheRequest:(XLFormRowDescriptor *)sender
 {
     [self deselectFormRow:sender];
-    [self clearCache:nil];
+
+    [[NCActivityIndicator shared] startActivityWithBackgroundView:nil style: UIActivityIndicatorViewStyleLarge blurEffect:true];
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
+        [self clearCache:nil];
+    });
 }
 
 - (void)calculateSize
@@ -472,20 +448,25 @@
     
     [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_ok_", nil) style:UIAlertActionStyleDestructive handler:^(UIAlertAction *action) {
                 
-        [[NSURLCache sharedURLCache] setMemoryCapacity:0];
-        [[NSURLCache sharedURLCache] setDiskCapacity:0];
+        [[NCNetworking shared] cancelSessionsInBackground:true];
 
-        [CCUtility removeGroupDirectoryProviderStorage];
-        [CCUtility removeGroupApplicationSupport];
-        
-        [CCUtility removeDocumentsDirectory];
-        [CCUtility removeTemporaryDirectory];
-        
-        [CCUtility deleteAllChainStore];
-        
-        [[NCManageDatabase shared] removeDB];
-        
-        exit(0);
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
+
+            [[NCManageDatabase shared] removeDB];
+
+            [[NSURLCache sharedURLCache] setMemoryCapacity:0];
+            [[NSURLCache sharedURLCache] setDiskCapacity:0];
+
+            [CCUtility removeGroupDirectoryProviderStorage];
+            [CCUtility removeGroupApplicationSupport];
+
+            [CCUtility removeDocumentsDirectory];
+            [CCUtility removeTemporaryDirectory];
+
+            [CCUtility deleteAllChainStore];
+
+            exit(0);
+        });
     }]];
     
     [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_cancel_", nil) style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) {
@@ -503,7 +484,7 @@
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     
-    if (indexPath.section == 5 && indexPath.row == 2) {
+    if (indexPath.section == 4 && indexPath.row == 2) {
         return 80;
     } else {
         return NCGlobal.shared.heightCellSettings;

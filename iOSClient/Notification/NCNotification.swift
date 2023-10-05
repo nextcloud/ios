@@ -29,7 +29,10 @@ import JGProgressHUD
 
 class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmptyDataSetDelegate {
 
+    // swiftlint:disable force_cast
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
+    // swiftlint:enable force_cast
+
     var notifications: [NKNotifications] = []
     var emptyDataSet: NCEmptyDataSet?
     var isReloadDataSourceNetworkInProgress: Bool = false
@@ -65,28 +68,12 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmpty
         super.viewWillAppear(animated)
 
         appDelegate.activeViewController = self
-
         navigationController?.setFileAppreance()
-
-        NotificationCenter.default.addObserver(self, selector: #selector(initialize), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterInitialize), object: nil)
-
         getNetwokingNotification()
-    }
-
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-
-        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterInitialize), object: nil)
     }
 
     @objc func viewClose() {
         self.dismiss(animated: true, completion: nil)
-    }
-
-    // MARK: - NotificationCenter
-
-    @objc func initialize() {
-        getNetwokingNotification()
     }
 
     // MARK: - Empty
@@ -113,20 +100,28 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmpty
 
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
 
-        let notification = notifications[indexPath.row]
+        guard let notification = NCApplicationHandle().didSelectNotification(notifications[indexPath.row], viewController: self) else { return }
 
-        if notification.app == "files_sharing" {
-            NCActionCenter.shared.viewerFile(account: appDelegate.account, fileId: notification.objectId, viewController: self)
-        } else {
-            NCApplicationHandle().didSelectNotification(notification, viewController: self)
+        do {
+            if let subjectRichParameters = notification.subjectRichParameters,
+               let json = try JSONSerialization.jsonObject(with: subjectRichParameters, options: .mutableContainers) as? [String: Any],
+               let file = json["file"] as? [String: Any],
+               file["type"] as? String == "file" {
+                if let id = file["id"] {
+                    NCActionCenter.shared.viewerFile(account: appDelegate.account, fileId: ("\(id)"), viewController: self)
+                }
+            }
+        } catch {
+            print("Something went wrong")
         }
     }
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
 
-        let cell = self.tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath) as! NCNotificationCell
+        guard let cell = self.tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath) as? NCNotificationCell else { return UITableViewCell() }
         cell.delegate = self
         cell.selectionStyle = .none
+        cell.indexPath = indexPath
 
         let notification = notifications[indexPath.row]
         let urlIcon = URL(string: notification.icon)
@@ -151,10 +146,10 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmpty
            let user = json["user"]?["id"].stringValue {
             cell.avatar.isHidden = false
             cell.avatarLeadingMargin.constant = 50
-            
+
             let fileName = appDelegate.userBaseUrl + "-" + user + ".png"
             let fileNameLocalPath = String(CCUtility.getDirectoryUserData()) + "/" + fileName
-            
+
             if let image = UIImage(contentsOfFile: fileNameLocalPath) {
                 cell.avatar.image = image
             } else if !FileManager.default.fileExists(atPath: fileNameLocalPath) {
@@ -220,7 +215,7 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmpty
 
                 for action in jsonActions {
 
-                    let label =  action["label"].stringValue
+                    let label = action["label"].stringValue
                     let primary = action["primary"].boolValue
 
                     if primary {
@@ -249,10 +244,10 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmpty
 
     func tapRemove(with notification: NKNotifications) {
 
-        NextcloudKit.shared.setNotification(serverUrl: nil, idNotification: notification.idNotification , method: "DELETE") { (account, error) in
+        NextcloudKit.shared.setNotification(serverUrl: nil, idNotification: notification.idNotification, method: "DELETE") { account, error in
             if error == .success && account == self.appDelegate.account {
                 if let index = self.notifications
-                    .firstIndex(where: { $0.idNotification == notification.idNotification })  {
+                    .firstIndex(where: { $0.idNotification == notification.idNotification }) {
                     self.notifications.remove(at: index)
                 }
                 self.tableView.reloadData()
@@ -281,7 +276,7 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmpty
                 return
             }
 
-            NextcloudKit.shared.setNotification(serverUrl: serverUrl, idNotification: 0, method: method) { (account, error) in
+            NextcloudKit.shared.setNotification(serverUrl: serverUrl, idNotification: 0, method: method) { account, error in
                 if error == .success && account == self.appDelegate.account {
                     if let index = self.notifications.firstIndex(where: { $0.idNotification == notification.idNotification }) {
                         self.notifications.remove(at: index)
@@ -311,15 +306,17 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmpty
         isReloadDataSourceNetworkInProgress = true
         self.tableView.reloadData()
 
-        NextcloudKit.shared.getNotifications { account, notifications, data, error in
+        NextcloudKit.shared.getNotifications { account, notifications, _, error in
             if error == .success && account == self.appDelegate.account {
                 self.notifications.removeAll()
                 let sortedListOfNotifications = (notifications! as NSArray).sortedArray(using: [NSSortDescriptor(key: "date", ascending: false)])
                 for notification in sortedListOfNotifications {
-                    if let icon = (notification as! NKNotifications).icon {
+                    if let icon = (notification as? NKNotifications)?.icon {
                         NCUtility.shared.convertSVGtoPNGWriteToUserData(svgUrlString: icon, fileName: nil, width: 25, rewrite: false, account: self.appDelegate.account, completion: { _, _ in })
                     }
-                    self.notifications.append(notification as! NKNotifications)
+                    if let notification = (notification as? NKNotifications) {
+                        self.notifications.append(notification)
+                    }
                 }
                 self.refreshControl?.endRefreshing()
                 self.isReloadDataSourceNetworkInProgress = false
@@ -347,12 +344,17 @@ class NCNotificationCell: UITableViewCell, NCCellProtocol {
     @IBOutlet weak var secondaryWidth: NSLayoutConstraint!
 
     private var user = ""
+    private var index = IndexPath()
 
     weak var delegate: NCNotificationCellDelegate?
     var notification: NKNotifications?
 
+    var indexPath: IndexPath {
+        get { return index }
+        set { index = newValue }
+    }
     var fileAvatarImageView: UIImageView? {
-        get { return avatar }
+        return avatar
     }
     var fileUser: String? {
         get { return user }

@@ -40,9 +40,43 @@ class NCFiles: NCCollectionViewCommon {
         enableSearchBar = true
         headerMenuButtonsView = true
         headerRichWorkspaceDisable = false
+        headerMenuTransferView = true
         emptyImage = UIImage(named: "folder")?.image(color: NCBrandColor.shared.brandElement, size: UIScreen.main.bounds.width)
         emptyTitle = "_files_no_files_"
         emptyDescription = "_no_file_pull_down_"
+    }
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+
+        if isRoot {
+            NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeUser), object: nil, queue: nil) { _ in
+
+                self.navigationController?.popToRootViewController(animated: false)
+
+                self.serverUrl = NCUtilityFileSystem.shared.getHomeServer(urlBase: self.appDelegate.urlBase, userId: self.appDelegate.userId)
+                self.appDelegate.activeServerUrl = self.serverUrl
+
+                self.isSearchingMode = false
+                self.isEditMode = false
+                self.selectOcId.removeAll()
+                self.selectIndexPath.removeAll()
+
+                self.layoutForView = NCManageDatabase.shared.getLayoutForView(account: self.appDelegate.account, key: self.layoutKey, serverUrl: self.serverUrl)
+                self.gridLayout.itemForLine = CGFloat(self.layoutForView?.itemForLine ?? 3)
+                if self.layoutForView?.layout == NCGlobal.shared.layoutList {
+                    self.collectionView?.collectionViewLayout = self.listLayout
+                } else {
+                    self.collectionView?.collectionViewLayout = self.gridLayout
+                }
+
+                self.titleCurrentFolder = self.getNavigationTitle()
+                self.setNavigationItem()
+
+                self.reloadDataSource(isForced: false)
+                self.reloadDataSourceNetwork()
+            }
+        }
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -52,7 +86,6 @@ class NCFiles: NCCollectionViewCommon {
             titleCurrentFolder = getNavigationTitle()
         }
         super.viewWillAppear(animated)
-
         navigationController?.setFileAppreance()
     }
 
@@ -63,57 +96,47 @@ class NCFiles: NCCollectionViewCommon {
         fileNameOpen = nil
     }
 
-    // MARK: - NotificationCenter
-
-    override func initialize() {
-
-        if isRoot {
-            serverUrl = NCUtilityFileSystem.shared.getHomeServer(urlBase: appDelegate.urlBase, userId: appDelegate.userId)
-            titleCurrentFolder = getNavigationTitle()
-        }
-        super.initialize()
-
-        reloadDataSource(forced: false)
-        reloadDataSourceNetwork()
-    }
-
     // MARK: - DataSource + NC Endpoint
     //
     // forced: do no make the etag of directory test (default)
     //
 
-    override func reloadDataSource(forced: Bool = true) {
+    override func queryDB(isForced: Bool) {
+
+        let metadatas = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", self.appDelegate.account, self.serverUrl))
+        let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", self.appDelegate.account, self.serverUrl))
+        let metadataTransfer = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "status != %i AND serverUrl == %@", NCGlobal.shared.metadataStatusNormal, self.serverUrl))
+        if self.metadataFolder == nil {
+            self.metadataFolder = NCManageDatabase.shared.getMetadataFolder(account: self.appDelegate.account, urlBase: self.appDelegate.urlBase, userId: self.appDelegate.userId, serverUrl: self.serverUrl)
+        }
+
+        if !isForced, let directory, directory.etag == self.dataSource.directory?.etag, metadataTransfer == nil, self.fileNameBlink == nil, self.fileNameOpen == nil {
+            return
+        }
+
+        self.richWorkspaceText = directory?.richWorkspace
+        self.dataSource = NCDataSource(
+            metadatas: metadatas,
+            account: self.appDelegate.account,
+            directory: directory,
+            sort: self.layoutForView?.sort,
+            ascending: self.layoutForView?.ascending,
+            directoryOnTop: self.layoutForView?.directoryOnTop,
+            favoriteOnTop: true,
+            filterLivePhoto: true,
+            groupByField: self.groupByField,
+            providers: self.providers,
+            searchResults: self.searchResults)
+    }
+
+    override func reloadDataSource(isForced: Bool = true) {
         super.reloadDataSource()
 
         DispatchQueue.main.async { self.refreshControl.endRefreshing() }
         DispatchQueue.global().async {
             guard !self.isSearchingMode, !self.appDelegate.account.isEmpty, !self.appDelegate.urlBase.isEmpty, !self.serverUrl.isEmpty else { return }
 
-            let metadatas = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", self.appDelegate.account, self.serverUrl))
-            if self.metadataFolder == nil {
-                self.metadataFolder = NCManageDatabase.shared.getMetadataFolder(account: self.appDelegate.account, urlBase: self.appDelegate.urlBase, userId: self.appDelegate.userId, serverUrl: self.serverUrl)
-            }
-            let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", self.appDelegate.account, self.serverUrl))
-            let metadataTransfer = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "status != %i AND serverUrl == %@", NCGlobal.shared.metadataStatusNormal, self.serverUrl))
-            self.richWorkspaceText = directory?.richWorkspace
-
-            // FORCED false: test the directory.etag
-            if !forced, let directory = directory, directory.etag == self.dataSource.directory?.etag, metadataTransfer == nil, self.fileNameBlink == nil, self.fileNameOpen == nil {
-                return
-            }
-
-            self.dataSource = NCDataSource(
-                metadatas: metadatas,
-                account: self.appDelegate.account,
-                directory: directory,
-                sort: self.layoutForView?.sort,
-                ascending: self.layoutForView?.ascending,
-                directoryOnTop: self.layoutForView?.directoryOnTop,
-                favoriteOnTop: true,
-                filterLivePhoto: true,
-                groupByField: self.groupByField,
-                providers: self.providers,
-                searchResults: self.searchResults)
+            self.queryDB(isForced: isForced)
 
             DispatchQueue.main.async {
                 self.collectionView.reloadData()
@@ -127,16 +150,19 @@ class NCFiles: NCCollectionViewCommon {
         }
     }
 
-    override func reloadDataSourceNetwork(forced: Bool = false) {
-        super.reloadDataSourceNetwork(forced: forced)
+    override func reloadDataSourceNetwork(isForced: Bool = false) {
+        super.reloadDataSourceNetwork(isForced: isForced)
         guard !isSearchingMode else {
             networkSearch()
             return
         }
+
+        NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Reload data source network files forced \(isForced)")
+
         isReloadDataSourceNetworkInProgress = true
         collectionView?.reloadData()
 
-        networkReadFolder(forced: forced) { tableDirectory, metadatas, metadatasUpdate, metadatasDelete, error in
+        networkReadFolder(isForced: isForced) { tableDirectory, metadatas, metadatasUpdate, metadatasDelete, error in
             if error == .success {
                 for metadata in metadatas ?? [] where !metadata.directory && NCManageDatabase.shared.isDownloadMetadata(metadata, download: false) {
                     NCOperationQueue.shared.download(metadata: metadata, selector: NCGlobal.shared.selectorDownloadFile)
@@ -146,7 +172,7 @@ class NCFiles: NCCollectionViewCommon {
             self.isReloadDataSourceNetworkInProgress = false
             self.richWorkspaceText = tableDirectory?.richWorkspace
 
-            if metadatasUpdate?.count ?? 0 > 0 || metadatasDelete?.count ?? 0 > 0 || forced {
+            if metadatasUpdate?.count ?? 0 > 0 || metadatasDelete?.count ?? 0 > 0 || isForced {
                 self.reloadDataSource()
             } else if self.dataSource.getMetadataSourceForAllSections().isEmpty {
                 DispatchQueue.main.async {

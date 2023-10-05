@@ -33,7 +33,10 @@ class NCNetworkingProcessUpload: NSObject {
         return instance
     }()
 
+    // swiftlint:disable force_cast
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
+    // swiftlint:enable force_cast
+
     private var notificationToken: NotificationToken?
     private var timerProcess: Timer?
     private var pauseProcess: Bool = false
@@ -47,7 +50,7 @@ class NCNetworkingProcessUpload: NSObject {
                 case .initial:
                     print("Initial")
                 case .update(_, let deletions, let insertions, let modifications):
-                    if (deletions.count > 0 || insertions.count > 0 || modifications.count > 0) {
+                    if !deletions.isEmpty || !insertions.isEmpty || !modifications.isEmpty {
                         self?.invalidateObserveTableMetadata()
                         self?.start(completition: { items in
                             print("[LOG] PROCESS-UPLOAD-OBSERVE \(items)")
@@ -111,8 +114,9 @@ class NCNetworkingProcessUpload: NSObject {
             let sessionSelectors = [NCGlobal.shared.selectorUploadFileNODelete, NCGlobal.shared.selectorUploadFile, NCGlobal.shared.selectorUploadAutoUpload, NCGlobal.shared.selectorUploadAutoUploadAll]
 
             // Update Badge
-            let counterBadge = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND (status == %d OR status == %d OR status == %d)", self.appDelegate.account, NCGlobal.shared.metadataStatusWaitUpload, NCGlobal.shared.metadataStatusInUpload, NCGlobal.shared.metadataStatusUploading))
-            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUpdateBadgeNumber, userInfo: ["counter":counterBadge.count])
+            let counterBadgeDownload = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "status < 0"))
+            let counterBadgeUpload = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "status > 0"))
+            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUpdateBadgeNumber, userInfo: ["counterDownload": counterBadgeDownload.count, "counterUpload": counterBadgeUpload.count])
 
             // ** TEST ONLY ONE **
             // E2EE
@@ -124,7 +128,7 @@ class NCNetworkingProcessUpload: NSObject {
                 }
             }
             // CHUNK
-            if metadatasUpload.filter({ $0.chunk }).count > 0 {
+            if !metadatasUpload.filter({ $0.chunk > 0 }).isEmpty {
                 self.pauseProcess = false
                 return completition(counterUpload)
             }
@@ -135,7 +139,7 @@ class NCNetworkingProcessUpload: NSObject {
 
                     let limit = maxConcurrentOperationUpload - counterUpload
                     let metadatas = NCManageDatabase.shared.getAdvancedMetadatas(predicate: NSPredicate(format: "account == %@ AND sessionSelector == %@ AND status == %d", self.appDelegate.account, sessionSelector, NCGlobal.shared.metadataStatusWaitUpload), page: 1, limit: limit, sorted: "date", ascending: true)
-                    if metadatas.count > 0 {
+                    if !metadatas.isEmpty {
                         NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] PROCESS-UPLOAD find \(metadatas.count) items")
                     }
 
@@ -168,13 +172,13 @@ class NCNetworkingProcessUpload: NSObject {
                                     continue
                                 }
 
-                                if applicationState != .active && (isInDirectoryE2EE || metadata.chunk) {
+                                if applicationState != .active && (isInDirectoryE2EE || metadata.chunk > 0) {
                                     continue
                                 }
 
                                 if let metadata = NCManageDatabase.shared.setMetadataStatus(ocId: metadata.ocId, status: NCGlobal.shared.metadataStatusInUpload) {
                                     NCNetworking.shared.upload(metadata: metadata)
-                                    if isInDirectoryE2EE || metadata.chunk {
+                                    if isInDirectoryE2EE || metadata.chunk > 0 {
                                         maxConcurrentOperationUpload = 1
                                     }
                                     counterUpload += 1
@@ -190,7 +194,16 @@ class NCNetworkingProcessUpload: NSObject {
                 if counterUpload == 0 {
                     let metadatas = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND status == %d", self.appDelegate.account, NCGlobal.shared.metadataStatusUploadError))
                     for metadata in metadatas {
-                        NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId, session: NCNetworking.shared.sessionIdentifierBackground, sessionError: "", sessionTaskIdentifier: 0, status: NCGlobal.shared.metadataStatusWaitUpload)
+                        // Verify QUOTA
+                        if metadata.sessionError.contains("\(NCGlobal.shared.errorQuota)") {
+                            NextcloudKit.shared.getUserProfile { _, userProfile, _, error in
+                                if error == .success, let userProfile, userProfile.quotaFree > 0, userProfile.quotaFree > metadata.size {
+                                    NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId, session: NCNetworking.shared.sessionIdentifierBackground, sessionError: "", sessionTaskIdentifier: 0, status: NCGlobal.shared.metadataStatusWaitUpload)
+                                }
+                            }
+                        } else {
+                            NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId, session: NCNetworking.shared.sessionIdentifierBackground, sessionError: "", sessionTaskIdentifier: 0, status: NCGlobal.shared.metadataStatusWaitUpload)
+                        }
                     }
 
                     // verify delete Asset Local Identifiers in auto upload (DELETE Photos album)
@@ -263,7 +276,6 @@ class NCNetworkingProcessUpload: NSObject {
         for metadata in metadatasUploadShareExtension {
             let path = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId)!
             NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
-            NCManageDatabase.shared.deleteChunks(account: metadata.account, ocId: metadata.ocId)
             NCUtilityFileSystem.shared.deleteFile(filePath: path)
         }
 
@@ -312,6 +324,9 @@ class NCNetworkingProcessUpload: NSObject {
 
         // metadataStatusUploading OR metadataStatusInUpload (FOREGROUND)
         let metadatasUploading = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "session == %@ AND (status == %d OR status == %d)", NextcloudKit.shared.nkCommonInstance.sessionIdentifierUpload, NCGlobal.shared.metadataStatusUploading, NCGlobal.shared.metadataStatusInUpload))
+        if metadatasUploading.isEmpty {
+            NCNetworking.shared.transferInForegorund = nil
+        }
         for metadata in metadatasUploading {
             let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
             if NCNetworking.shared.uploadRequest[fileNameLocalPath] == nil {
@@ -326,4 +341,3 @@ class NCNetworkingProcessUpload: NSObject {
         }
     }
 }
-

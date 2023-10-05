@@ -26,7 +26,9 @@ import NextcloudKit
 
 @objc class NCRichWorkspaceCommon: NSObject {
 
+    // swiftlint:disable force_cast
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
+    // swiftlint:enable force_cast
 
     @objc func createViewerNextcloudText(serverUrl: String, viewController: UIViewController) {
 
@@ -41,7 +43,7 @@ import NextcloudKit
         NCActivityIndicator.shared.start(backgroundView: viewController.view)
 
         let fileNamePath = CCUtility.returnFileNamePath(fromFileName: NCGlobal.shared.fileNameRichWorkspace, serverUrl: serverUrl, urlBase: appDelegate.urlBase, userId: appDelegate.userId, account: appDelegate.account)!
-        NextcloudKit.shared.NCTextCreateFile(fileNamePath: fileNamePath, editorId: directEditingCreator.editor, creatorId: directEditingCreator.identifier, templateId: "") { account, url, data, error in
+        NextcloudKit.shared.NCTextCreateFile(fileNamePath: fileNamePath, editorId: directEditingCreator.editor, creatorId: directEditingCreator.identifier, templateId: "") { account, url, _, error in
 
             NCActivityIndicator.shared.stop()
 
@@ -71,12 +73,12 @@ import NextcloudKit
 
         if let metadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView LIKE[c] %@", appDelegate.account, serverUrl, NCGlobal.shared.fileNameRichWorkspace.lowercased())) {
 
-            if metadata.url == "" {
+            if metadata.url.isEmpty {
 
                 NCActivityIndicator.shared.start(backgroundView: viewController.view)
 
                 let fileNamePath = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, urlBase: appDelegate.urlBase, userId: appDelegate.userId, account: appDelegate.account)!
-                NextcloudKit.shared.NCTextOpenFile(fileNamePath: fileNamePath, editor: "text") { account, url, data, error in
+                NextcloudKit.shared.NCTextOpenFile(fileNamePath: fileNamePath, editor: "text") { account, url, _, error in
 
                     NCActivityIndicator.shared.stop()
 

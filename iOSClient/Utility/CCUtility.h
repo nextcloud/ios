@@ -169,9 +169,6 @@
 + (BOOL)getAccountRequest;
 + (void)setAccountRequest:(BOOL)set;
 
-+ (NSInteger)getChunkSize;
-+ (void)setChunkSize:(NSInteger)size;
-
 + (NSInteger)getCleanUpDay;
 + (void)setCleanUpDay:(NSInteger)days;
 
@@ -184,8 +181,6 @@
 // ===== Varius =====
 
 + (BOOL)addSkipBackupAttributeToItemAtURL:(NSURL *)URL;
-
-+ (NSString *)getUserAgent;
 
 + (NSString *)dateDiff:(NSDate *)convertedDate;
 + (NSString *)transformedSize:(int64_t)value;
@@ -246,10 +241,6 @@
 + (BOOL)isAnyPermissionToEdit:(NSInteger) permissionValue;
 + (BOOL)isPermissionToRead:(NSInteger) permissionValue;
 + (BOOL)isPermissionToReadCreateUpdate:(NSInteger) permissionValue;
-
-// ===== EXIF =====
-
-+ (void)setExif:(tableMetadata *)metadata withCompletionHandler:(void(^)(double latitude, double longitude, NSString *location, NSDate *date, NSString *lensModel))completition;
 
 // ===== Third parts =====
 

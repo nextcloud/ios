@@ -29,7 +29,10 @@ import MarkdownKit
 
     @IBOutlet weak var textView: UITextView!
 
+    // swiftlint:disable force_cast
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
+    // swiftlint:enable force_cast
+
     private let richWorkspaceCommon = NCRichWorkspaceCommon()
     private var markdownParser = MarkdownParser()
     private var textViewColor: UIColor?
@@ -61,7 +64,7 @@ import MarkdownKit
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
-        NCNetworking.shared.readFile(serverUrlFileName: serverUrl) { (account, metadata, error) in
+        NCNetworking.shared.readFile(serverUrlFileName: serverUrl) { account, metadata, error in
 
             if error == .success && account == self.appDelegate.account {
                 guard let metadata = metadata else { return }

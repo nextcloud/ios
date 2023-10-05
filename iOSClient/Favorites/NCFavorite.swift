@@ -49,29 +49,33 @@ class NCFavorite: NCCollectionViewCommon {
 
     // MARK: - DataSource + NC Endpoint
 
-    override func reloadDataSource(forced: Bool = true) {
+    override func queryDB(isForced: Bool) {
+
+        var metadatas: [tableMetadata] = []
+
+        if self.serverUrl.isEmpty {
+            metadatas = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND favorite == true", self.appDelegate.account))
+        } else {
+            metadatas = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", self.appDelegate.account, self.serverUrl))
+        }
+
+        self.dataSource = NCDataSource(metadatas: metadatas,
+                                       account: self.appDelegate.account,
+                                       sort: self.layoutForView?.sort,
+                                       ascending: self.layoutForView?.ascending,
+                                       directoryOnTop: self.layoutForView?.directoryOnTop,
+                                       favoriteOnTop: true,
+                                       filterLivePhoto: true,
+                                       groupByField: self.groupByField,
+                                       providers: self.providers,
+                                       searchResults: self.searchResults)
+    }
+
+    override func reloadDataSource(isForced: Bool = true) {
         super.reloadDataSource()
 
         DispatchQueue.global().async {
-            var metadatas: [tableMetadata] = []
-
-            if self.serverUrl.isEmpty {
-                metadatas = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND favorite == true", self.appDelegate.account))
-            } else {
-                metadatas = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", self.appDelegate.account, self.serverUrl))
-            }
-
-            self.dataSource = NCDataSource(metadatas: metadatas,
-                                           account: self.appDelegate.account,
-                                           sort: self.layoutForView?.sort,
-                                           ascending: self.layoutForView?.ascending,
-                                           directoryOnTop: self.layoutForView?.directoryOnTop,
-                                           favoriteOnTop: true,
-                                           filterLivePhoto: true,
-                                           groupByField: self.groupByField,
-                                           providers: self.providers,
-                                           searchResults: self.searchResults)
-
+            self.queryDB(isForced: isForced)
             DispatchQueue.main.async {
                 self.refreshControl.endRefreshing()
                 self.collectionView.reloadData()
@@ -79,46 +83,25 @@ class NCFavorite: NCCollectionViewCommon {
         }
     }
 
-    override func reloadDataSourceNetwork(forced: Bool = false) {
-        super.reloadDataSourceNetwork(forced: forced)
+    override func reloadDataSourceNetwork(isForced: Bool = false) {
+        super.reloadDataSourceNetwork(isForced: isForced)
+
+        NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Reload data source network favorite forced \(isForced)")
 
         isReloadDataSourceNetworkInProgress = true
         collectionView?.reloadData()
 
-        if serverUrl.isEmpty {
+        NextcloudKit.shared.listingFavorites(showHiddenFiles: CCUtility.getShowHiddenFiles(),
+                                             options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { account, files, _, error in
 
-            NCNetworking.shared.listingFavoritescompletion(selector: NCGlobal.shared.selectorListingFavorite) { _, _, error in
-                if error != .success {
-                    NCContentPresenter.shared.showError(error: error)
-                }
-
-                DispatchQueue.main.async {
-                    self.refreshControl.endRefreshing()
-                    self.isReloadDataSourceNetworkInProgress = false
+            self.isReloadDataSourceNetworkInProgress = false
+            if error == .success {
+                NCManageDatabase.shared.convertFilesToMetadatas(files, useMetadataFolder: false) { _, _, metadatas in
+                    NCManageDatabase.shared.updateMetadatasFavorite(account: account, metadatas: metadatas)
                     self.reloadDataSource()
                 }
             }
-
-        } else {
-
-            networkReadFolder(forced: forced) { tableDirectory, metadatas, metadatasUpdate, metadatasDelete, error in
-                if error == .success, let metadatas = metadatas {
-                    for metadata in metadatas where (!metadata.directory && NCManageDatabase.shared.isDownloadMetadata(metadata, download: false)) {
-                        NCOperationQueue.shared.download(metadata: metadata, selector: NCGlobal.shared.selectorDownloadFile)
-                    }
-                }
-
-                DispatchQueue.main.async {
-                    self.refreshControl.endRefreshing()
-                    self.isReloadDataSourceNetworkInProgress = false
-                    self.richWorkspaceText = tableDirectory?.richWorkspace
-                    if metadatasUpdate?.count ?? 0 > 0 || metadatasDelete?.count ?? 0 > 0 || forced {
-                        self.reloadDataSource()
-                    } else {
-                        self.collectionView?.reloadData()
-                    }
-                }
-            }
+            self.reloadDataSource()
         }
     }
 }

@@ -25,6 +25,7 @@
 import Foundation
 import UIKit
 import NextcloudKit
+import JGProgressHUD
 
 class NCMenuAction {
     let title: String
@@ -92,20 +93,20 @@ extension NCMenuAction {
     }
 
     /// Copy files to pasteboard
-    static func copyAction(selectOcId: [String], hudView: UIView, order: Int = 0, completion: (() -> Void)? = nil) -> NCMenuAction {
+    static func copyAction(selectOcId: [String], order: Int = 0, completion: (() -> Void)? = nil) -> NCMenuAction {
         NCMenuAction(
             title: NSLocalizedString("_copy_file_", comment: ""),
             icon: NCUtility.shared.loadImage(named: "doc.on.doc"),
             order: order,
             action: { _ in
-                NCActionCenter.shared.copyPasteboard(pasteboardOcIds: selectOcId, hudView: hudView)
+                NCActionCenter.shared.copyPasteboard(pasteboardOcIds: selectOcId)
                 completion?()
             }
         )
     }
 
     /// Delete files either from cache or from Nextcloud
-    static func deleteAction(selectedMetadatas: [tableMetadata], metadataFolder: tableMetadata? = nil, viewController: UIViewController, order: Int = 0, completion: (() -> Void)? = nil) -> NCMenuAction {
+    static func deleteAction(selectedMetadatas: [tableMetadata], indexPath: [IndexPath], metadataFolder: tableMetadata? = nil, viewController: UIViewController, order: Int = 0, completion: (() -> Void)? = nil) -> NCMenuAction {
         var titleDelete = NSLocalizedString("_delete_", comment: "")
         if selectedMetadatas.count > 1 {
             titleDelete = NSLocalizedString("_delete_selected_files_", comment: "")
@@ -145,20 +146,22 @@ extension NCMenuAction {
                     preferredStyle: .alert)
                 if canDeleteServer {
                     alertController.addAction(UIAlertAction(title: NSLocalizedString("_yes_delete_", comment: ""), style: .default) { (_: UIAlertAction) in
+                        let hud = JGProgressHUD()
+                        hud.textLabel.text = NSLocalizedString("_deletion_progess_", comment: "")
+                        if let appDelegate = UIApplication.shared.delegate as? AppDelegate,
+                           let view = appDelegate.window?.rootViewController?.view {
+                            hud.show(in: view)
+                        }
                         Task {
                             var error = NKError()
                             var ocId: [String] = []
-                            let account = selectedMetadatas.first?.account ?? ""
                             for metadata in selectedMetadatas where error == .success {
                                 error = await NCNetworking.shared.deleteMetadata(metadata, onlyLocalCache: false)
                                 if error == .success {
                                     ocId.append(metadata.ocId)
                                 }
                             }
-                            if error != .success {
-                                NCContentPresenter.shared.showError(error: error)
-                            }
-                            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDeleteFile, userInfo: ["account": account, "ocId": ocId, "error": error])
+                            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDeleteFile, userInfo: ["ocId": ocId, "indexPath": indexPath, "onlyLocalCache": false, "error": error, "hud": hud])
                         }
                         completion?()
                     })
@@ -170,7 +173,6 @@ extension NCMenuAction {
                         Task {
                             var error = NKError()
                             var ocId: [String] = []
-                            let account = selectedMetadatas.first?.account ?? ""
                             for metadata in selectedMetadatas where error == .success {
                                 error = await NCNetworking.shared.deleteMetadata(metadata, onlyLocalCache: true)
                                 if error == .success {
@@ -180,7 +182,7 @@ extension NCMenuAction {
                             if error != .success {
                                 NCContentPresenter.shared.showError(error: error)
                             }
-                            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDeleteFile, userInfo: ["account": account, "ocId": ocId, "error": error])
+                            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDeleteFile, userInfo: ["ocId": ocId, "indexPath": indexPath, "onlyLocalCache": true, "error": error])
                         }
                         completion?()
                     })
@@ -220,7 +222,7 @@ extension NCMenuAction {
             action: { _ in
                 for metadata in selectedMediaMetadatas {
                     if let metadataMOV = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata) {
-                        NCActionCenter.shared.saveLivePhoto(metadata: metadata, metadataMOV: metadataMOV)
+                        NCOperationQueue.shared.saveLivePhoto(metadata: metadata, metadataMOV: metadataMOV)
                     } else {
                         if CCUtility.fileProviderStorageExists(metadata) {
                             NCActionCenter.shared.saveAlbum(metadata: metadata)
@@ -261,13 +263,13 @@ extension NCMenuAction {
     }
 
     /// Open view that lets the user move or copy the files within Nextcloud
-    static func moveOrCopyAction(selectedMetadatas: [tableMetadata], order: Int = 0, completion: (() -> Void)? = nil) -> NCMenuAction {
+    static func moveOrCopyAction(selectedMetadatas: [tableMetadata], indexPath: [IndexPath], order: Int = 0, completion: (() -> Void)? = nil) -> NCMenuAction {
         NCMenuAction(
             title: NSLocalizedString("_move_or_copy_selected_files_", comment: ""),
             icon: NCUtility.shared.loadImage(named: "arrow.up.right.square"),
             order: order,
             action: { _ in
-                NCActionCenter.shared.openSelectView(items: selectedMetadatas)
+                NCActionCenter.shared.openSelectView(items: selectedMetadatas, indexPath: indexPath)
                 completion?()
             }
         )

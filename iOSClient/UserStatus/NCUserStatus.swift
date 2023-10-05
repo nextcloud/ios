@@ -170,7 +170,7 @@ class NCUserStatus: UIViewController {
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
 
-        NextcloudKit.shared.getUserStatus { account, clearAt, icon, message, messageId, messageIsPredefined, status, statusIsUserDefined, _, data, error in
+        NextcloudKit.shared.getUserStatus { account, clearAt, icon, message, messageId, messageIsPredefined, status, statusIsUserDefined, _, _, error in
 
             if error == .success {
 
@@ -335,7 +335,7 @@ class NCUserStatus: UIViewController {
 
     func getStatus() {
 
-        NextcloudKit.shared.getUserStatus { _, clearAt, icon, message, _, _, status, _, _, data, error in
+        NextcloudKit.shared.getUserStatus { _, clearAt, icon, message, _, _, status, _, _, _, error in
 
             if error == .success || error.errorCode == NCGlobal.shared.errorResourceNotFound {
 
@@ -368,7 +368,7 @@ class NCUserStatus: UIViewController {
                     print("No status")
                 }
 
-                NextcloudKit.shared.getUserStatusPredefinedStatuses { _, userStatuses, data, error in
+                NextcloudKit.shared.getUserStatusPredefinedStatuses { _, userStatuses, _, error in
 
                     if error == .success {
 
@@ -481,7 +481,7 @@ extension NCUserStatus: UITextFieldDelegate {
 
         if textField is emojiTextField {
 
-            if string.count == 0 {
+            if string.isEmpty {
                 textField.text = "😀"
                 return false
             }
@@ -585,20 +585,20 @@ extension NCUserStatus: UITableViewDataSource {
 
         let status = statusPredefinedStatuses[indexPath.row]
 
-        let icon = cell.viewWithTag(10) as! UILabel
-        let message = cell.viewWithTag(20) as! UILabel
+        let icon = cell.viewWithTag(10) as? UILabel
+        let message = cell.viewWithTag(20) as? UILabel
 
-        icon.text = status.icon
+        icon?.text = status.icon
         var timeString = getPredefinedClearStatusText(clearAt: status.clearAt, clearAtTime: status.clearAtTime, clearAtType: status.clearAtType)
 
         if let messageText = status.message {
 
-            message.text = messageText
+            message?.text = messageText
             timeString = " - " + timeString
 
             let attributedString: NSMutableAttributedString = NSMutableAttributedString(string: messageText + timeString)
             attributedString.setColor(color: .lightGray, font: UIFont.systemFont(ofSize: 15), forText: timeString)
-            message.attributedText = attributedString
+            message?.attributedText = attributedString
         }
 
         return cell

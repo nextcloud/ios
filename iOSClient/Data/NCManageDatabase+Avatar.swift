@@ -60,10 +60,11 @@ extension NCManageDatabase {
 
         do {
             let realm = try Realm()
+            realm.refresh()
             guard let result = realm.objects(tableAvatar.self).filter("fileName == %@", fileName).first else { return nil }
             return tableAvatar.init(value: result)
         } catch let error as NSError {
-            NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
+            NextcloudKit.shared.nkCommonInstance.writeLog("Could not access database: \(error)")
         }
 
         return nil
@@ -116,6 +117,7 @@ extension NCManageDatabase {
 
         do {
             let realm = try Realm()
+            realm.refresh()
             let result = realm.objects(tableAvatar.self).filter("fileName == %@", fileName).first
             if result == nil {
                 NCUtilityFileSystem.shared.deleteFile(filePath: fileNameLocalPath)
@@ -125,7 +127,7 @@ extension NCManageDatabase {
             }
             return UIImage(contentsOfFile: fileNameLocalPath)
         } catch let error as NSError {
-            NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
+            NextcloudKit.shared.nkCommonInstance.writeLog("Could not access database: \(error)")
         }
 
         NCUtilityFileSystem.shared.deleteFile(filePath: fileNameLocalPath)

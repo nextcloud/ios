@@ -25,6 +25,7 @@ import UIKit
 import PDFKit
 import EasyTipView
 import NextcloudKit
+import JGProgressHUD
 
 class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
 
@@ -143,7 +144,7 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
         NotificationCenter.default.addObserver(self, selector: #selector(uploadStartFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUploadStartFile), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(uploadedFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUploadedFile), object: nil)
 
-        NotificationCenter.default.addObserver(self, selector: #selector(viewUnload), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterMenuDetailClose), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(viewUnload), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeUser), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(searchText), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterMenuSearchTextPDF), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(goToPage), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterMenuGotToPageInPDF), object: nil)
 
@@ -158,7 +159,7 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterMoveFile), object: nil)
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUploadedFile), object: nil)
 
-        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterMenuDetailClose), object: nil)
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeUser), object: nil)
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterMenuSearchTextPDF), object: nil)
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterMenuGotToPageInPDF), object: nil)
 
@@ -279,10 +280,10 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
 
         tipView?.dismiss()
 
-        coordinator.animate(alongsideTransition: { context in
+        coordinator.animate(alongsideTransition: { _ in
             self.pdfThumbnailScrollViewTrailingAnchor?.constant = self.thumbnailViewWidth + (self.window?.safeAreaInsets.right ?? 0)
             self.pdfThumbnailScrollView.isHidden = true
-        }, completion: { context in
+        }, completion: { _ in
             self.pdfView.autoScales = true
         })
     }
@@ -353,29 +354,33 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
         self.metadata = metadata
     }
 
-    @objc func moveFile(_ notification: NSNotification) {
-
-        guard let userInfo = notification.userInfo as NSDictionary?,
-              let ocId = userInfo["ocId"] as? String,
-              ocId == self.metadata?.ocId,
-              let ocIdNew = userInfo["ocIdNew"] as? String,
-              let metadataNew = NCManageDatabase.shared.getMetadataFromOcId(ocIdNew)
-        else { return }
-
-        self.metadata = metadataNew
-    }
-
     @objc func deleteFile(_ notification: NSNotification) {
 
-        guard let userInfo = notification.userInfo as NSDictionary?,
-              let ocId = userInfo["ocId"] as? [String],
-              let error = userInfo["error"] as? NKError
-        else { return }
+        guard let userInfo = notification.userInfo as NSDictionary? else { return }
 
-        if error == .success,
+        if let ocId = userInfo["ocId"] as? [String],
            let ocId = ocId.first,
            metadata?.ocId == ocId {
             viewUnload()
+        }
+
+        if let hud = userInfo["hud"] as? JGProgressHUD {
+            hud.dismiss()
+        }
+    }
+
+    @objc func moveFile(_ notification: NSNotification) {
+
+        guard let userInfo = notification.userInfo as NSDictionary? else { return }
+
+        if let ocIds = userInfo["ocId"] as? [String],
+           let ocId = ocIds.first,
+           let metadataNew = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
+            self.metadata = metadataNew
+        }
+
+        if let hud = userInfo["hud"] as? JGProgressHUD {
+            hud.dismiss()
         }
     }
 
@@ -393,12 +398,12 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
 
     @objc func searchText() {
 
-        let viewerPDFSearch = UIStoryboard(name: "NCViewerPDF", bundle: nil).instantiateViewController(withIdentifier: "NCViewerPDFSearch") as! NCViewerPDFSearch
-        viewerPDFSearch.delegate = self
-        viewerPDFSearch.pdfDocument = pdfDocument
-
-        let navigaionController = UINavigationController(rootViewController: viewerPDFSearch)
-        self.present(navigaionController, animated: true)
+        if let viewerPDFSearch = UIStoryboard(name: "NCViewerPDF", bundle: nil).instantiateViewController(withIdentifier: "NCViewerPDFSearch") as? NCViewerPDFSearch {
+            viewerPDFSearch.delegate = self
+            viewerPDFSearch.pdfDocument = pdfDocument
+            let navigaionController = UINavigationController(rootViewController: viewerPDFSearch)
+            self.present(navigaionController, animated: true)
+        }
     }
 
     @objc func goToPage() {
@@ -472,13 +477,12 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
     @objc func gestureOpenPdfThumbnail(_ recognizer: UIScreenEdgePanGestureRecognizer) {
 
         guard let pdfDocument = pdfView.document, !pdfDocument.isLocked else { return }
-        OpenPdfThumbnail()
+        openPdfThumbnail()
     }
-
 
     // MARK: - OPEN / CLOSE Thumbnail
 
-    func OpenPdfThumbnail() {
+    func openPdfThumbnail() {
 
         if let tipView = self.tipView {
             tipView.dismiss()
@@ -527,7 +531,7 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
         guard let totalPages = pdfView.document?.pageCount else { return }
 
         let visibleRect = CGRect(x: pdfThumbnailScrollView.contentOffset.x, y: pdfThumbnailScrollView.contentOffset.y, width: pdfThumbnailScrollView.bounds.size.width, height: pdfThumbnailScrollView.bounds.size.height)
-        let centerPoint = CGPoint(x: visibleRect.size.width/2, y: visibleRect.size.height/2)
+        let centerPoint = CGPoint(x: visibleRect.size.width / 2, y: visibleRect.size.height / 2)
         let currentPageY = CGFloat(curPage) * thumbnailViewHeight + CGFloat(curPage) * thumbnailPadding
         var gotoY = currentPageY - centerPoint.y
 

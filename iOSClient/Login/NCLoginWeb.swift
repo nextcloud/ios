@@ -29,12 +29,16 @@ import FloatingPanel
 class NCLoginWeb: UIViewController {
 
     var webView: WKWebView?
+
+    // swiftlint:disable force_cast
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
+    // swiftlint:enable force_cast
+
     var titleView: String = ""
 
     var urlBase = ""
     var user: String?
-    
+
     var configServerUrl: String?
     var configUsername: String?
     var configPassword: String?
@@ -55,7 +59,7 @@ class NCLoginWeb: UIViewController {
         // load AppConfig
         if (NCBrandOptions.shared.disable_multiaccount == false) || (NCBrandOptions.shared.disable_multiaccount == true && accountCount == 0) {
             if let configurationManaged = UserDefaults.standard.dictionary(forKey: "com.apple.configuration.managed"), NCBrandOptions.shared.use_AppConfig {
-                
+
                 if let serverUrl = configurationManaged[NCGlobal.shared.configuration_serverUrl] as? String {
                     self.configServerUrl = serverUrl
                 }
@@ -104,7 +108,7 @@ class NCLoginWeb: UIViewController {
                 urlBase = serverUrl
             }
         }
-        
+
         // ADD end point for Web Flow
         if urlBase != NCBrandOptions.shared.linkloginPreferredProviders {
             if loginFlowV2Available {
@@ -171,7 +175,7 @@ class NCLoginWeb: UIViewController {
             let deviceUserAgent = String(cString: deviceName, encoding: .ascii) {
             webView.customUserAgent = deviceUserAgent
         } else {
-            webView.customUserAgent = CCUtility.getUserAgent()
+            webView.customUserAgent = userAgent
         }
 
         request.addValue("true", forHTTPHeaderField: "OCS-APIRequest")
@@ -179,10 +183,10 @@ class NCLoginWeb: UIViewController {
 
         webView.load(request)
     }
-    
+
     func getAppPassword(serverUrl: String, username: String, password: String) {
-        
-        NextcloudKit.shared.getAppPassword(serverUrl: serverUrl, username: username, password: password) { token, data, error in
+
+        NextcloudKit.shared.getAppPassword(serverUrl: serverUrl, username: username, password: password) { token, _, error in
             if error == .success, let password = token {
                 self.createAccount(server: serverUrl, username: username, password: password)
             } else {
@@ -232,7 +236,7 @@ extension NCLoginWeb: WKNavigationDelegate {
                 if value.contains("password:") { password = value }
             }
 
-            if server != "" && user != "" && password != "" {
+            if !server.isEmpty, !user.isEmpty, !password.isEmpty {
 
                 let server: String = server.replacingOccurrences(of: "/server:", with: "")
                 let username: String = user.replacingOccurrences(of: "user:", with: "").replacingOccurrences(of: "+", with: " ")
@@ -241,22 +245,6 @@ extension NCLoginWeb: WKNavigationDelegate {
                 createAccount(server: server, username: username, password: password)
             }
         }
-    }
-
-    func webView(_ webView: WKWebView, didFailProvisionalNavigation navigation: WKNavigation!, withError error: Error) {
-
-        var errorMessage = error.localizedDescription
-
-        for (key, value) in (error as NSError).userInfo {
-            let message = "\(key) \(value)\n"
-            errorMessage += message
-        }
-
-        let alertController = UIAlertController(title: NSLocalizedString("_error_", comment: ""), message: errorMessage, preferredStyle: .alert)
-
-        alertController.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { _ in }))
-
-        self.present(alertController, animated: true)
     }
 
     func webView(_ webView: WKWebView, didReceive challenge: URLAuthenticationChallenge, completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
@@ -283,7 +271,7 @@ extension NCLoginWeb: WKNavigationDelegate {
 
         if loginFlowV2Available {
             DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                NextcloudKit.shared.getLoginFlowV2Poll(token: self.loginFlowV2Token, endpoint: self.loginFlowV2Endpoint) { server, loginName, appPassword, data, error in
+                NextcloudKit.shared.getLoginFlowV2Poll(token: self.loginFlowV2Token, endpoint: self.loginFlowV2Endpoint) { server, loginName, appPassword, _, error in
                     if error == .success && server != nil && loginName != nil && appPassword != nil {
                         self.createAccount(server: server!, username: loginName!, password: appPassword!)
                     }
@@ -297,47 +285,48 @@ extension NCLoginWeb: WKNavigationDelegate {
     func createAccount(server: String, username: String, password: String) {
 
         var urlBase = server
-
-        // Normalized
-        if urlBase.last == "/" {
-            urlBase = String(urlBase.dropLast())
-        }
-
-        // Create account
+        if urlBase.last == "/" { urlBase = String(urlBase.dropLast()) }
         let account: String = "\(username) \(urlBase)"
+        let user = username
 
-        // NO account found, clear all
-        if NCManageDatabase.shared.getAccounts() == nil {
-            NCUtility.shared.removeAllSettings()
-        }
-        
-        // Add new account
-        NCManageDatabase.shared.deleteAccount(account)
-        NCManageDatabase.shared.addAccount(account, urlBase: urlBase, user: username, password: password)
+        NextcloudKit.shared.setup(account: account, user: user, userId: user, password: password, urlBase: urlBase)
+        NextcloudKit.shared.getUserProfile { _, userProfile, _, error in
 
-        guard let tableAccount = NCManageDatabase.shared.setAccountActive(account) else {
-            self.dismiss(animated: true, completion: nil)
-            return
-        }
+            if error == .success, let userProfile {
 
-        appDelegate.settingAccount(account, urlBase: urlBase, user: username, userId: tableAccount.userId, password: password)
+                if NCManageDatabase.shared.getAccounts() == nil {
+                    NCUtility.shared.removeAllSettings()
+                }
 
-        if CCUtility.getIntro() {
-            self.dismiss(animated: true)
-        } else {
-            CCUtility.setIntro(true)
-            if self.presentingViewController == nil {
-                if let viewController = UIStoryboard(name: "Main", bundle: nil).instantiateInitialViewController() {
-                    viewController.modalPresentationStyle = .fullScreen
-                    viewController.view.alpha = 0
-                    appDelegate.window?.rootViewController = viewController
-                    appDelegate.window?.makeKeyAndVisible()
-                    UIView.animate(withDuration: 0.5) {
-                        viewController.view.alpha = 1
+                NCManageDatabase.shared.deleteAccount(account)
+                NCManageDatabase.shared.addAccount(account, urlBase: urlBase, user: user, userId: userProfile.userId, password: password)
+
+                self.appDelegate.changeAccount(account, userProfile: userProfile)
+
+                if CCUtility.getIntro() {
+                    self.dismiss(animated: true)
+                } else {
+                    CCUtility.setIntro(true)
+                    if self.presentingViewController == nil {
+                        if let viewController = UIStoryboard(name: "Main", bundle: nil).instantiateInitialViewController() {
+                            viewController.modalPresentationStyle = .fullScreen
+                            viewController.view.alpha = 0
+                            self.appDelegate.window?.rootViewController = viewController
+                            self.appDelegate.window?.makeKeyAndVisible()
+                            UIView.animate(withDuration: 0.5) {
+                                viewController.view.alpha = 1
+                            }
+                        }
+                    } else {
+                        self.dismiss(animated: true)
                     }
                 }
+
             } else {
-                self.dismiss(animated: true)
+
+                let alertController = UIAlertController(title: NSLocalizedString("_error_", comment: ""), message: error.errorDescription, preferredStyle: .alert)
+                alertController.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { _ in }))
+                self.present(alertController, animated: true)
             }
         }
     }

@@ -56,10 +56,11 @@ extension NCManageDatabase {
 
         do {
             let realm = try Realm()
+            realm.refresh()
             guard let result = realm.objects(tableCapabilities.self).filter("account == %@", account).first else { return nil }
             return result.jsondata
         } catch let error as NSError {
-            NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
+            NextcloudKit.shared.nkCommonInstance.writeLog("Could not access database: \(error)")
         }
 
         return nil
@@ -285,6 +286,10 @@ extension NCManageDatabase {
             NCGlobal.shared.capabilityServerVersion = json.ocs.data.version.string
             NCGlobal.shared.capabilityServerVersionMajor = json.ocs.data.version.major
 
+            if NCGlobal.shared.capabilityServerVersionMajor > 0 {
+                NextcloudKit.shared.setup(nextcloudVersion: NCGlobal.shared.capabilityServerVersionMajor)
+            }
+
             NCGlobal.shared.capabilityFileSharingApiEnabled = json.ocs.data.capabilities.filessharing?.apienabled ?? false
             NCGlobal.shared.capabilityFileSharingDefaultPermission = json.ocs.data.capabilities.filessharing?.defaultpermissions ?? 0
             NCGlobal.shared.capabilityFileSharingPubPasswdEnforced = json.ocs.data.capabilities.filessharing?.ncpublic?.password?.enforced ?? false
@@ -328,6 +333,7 @@ extension NCManageDatabase {
             NCGlobal.shared.capabilityFilesUndelete = json.ocs.data.capabilities.files?.undelete ?? false
             NCGlobal.shared.capabilityFilesLockVersion = json.ocs.data.capabilities.files?.locking ?? ""
             NCGlobal.shared.capabilityFilesComments = json.ocs.data.capabilities.files?.comments ?? false
+            NCGlobal.shared.capabilityFilesBigfilechunking = json.ocs.data.capabilities.files?.bigfilechunking ?? false
 
             NCGlobal.shared.capabilityUserStatusEnabled = json.ocs.data.capabilities.files?.undelete ?? false
             if json.ocs.data.capabilities.external != nil {

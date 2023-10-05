@@ -32,8 +32,8 @@ class NCApplicationHandle: NSObject {
 
     // class: AppDelegate
     // func nextcloudPushNotificationAction(data: [String: AnyObject])
-    func nextcloudPushNotificationAction(data: [String: AnyObject], completion: @escaping () -> Void) {
-        completion()
+    func nextcloudPushNotificationAction(data: [String: AnyObject]) -> [String: AnyObject]? {
+        return data
     }
 
     // class: AppDelegate
@@ -86,6 +86,7 @@ class NCApplicationHandle: NSObject {
     }
 
     // class: NCNotification
-    func didSelectNotification(_ notification: NKNotifications, viewController: UIViewController) {
+    func didSelectNotification(_ notification: NKNotifications, viewController: UIViewController) -> NKNotifications? {
+        return notification
     }
 }

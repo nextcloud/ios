@@ -27,7 +27,7 @@ import NextcloudKit
 import Photos
 import JGProgressHUD
 
-protocol NCCreateFormUploadConflictDelegate {
+protocol NCCreateFormUploadConflictDelegate: AnyObject {
     func dismissCreateFormUploadConflict(metadatas: [tableMetadata]?)
 }
 
@@ -58,7 +58,7 @@ class NCCreateFormUploadConflict: UIViewController {
 
     var metadatasConflictNewFiles: [String] = []
     var metadatasConflictAlreadyExistingFiles: [String] = []
-    let fileNamesPath = ThreadSafeDictionary<String,String>()
+    let fileNamesPath = ThreadSafeDictionary<String, String>()
     var blurView: UIVisualEffectView!
 
     // MARK: - View Life Cycle
@@ -256,7 +256,7 @@ class NCCreateFormUploadConflict: UIViewController {
                 metadata.fileNameView = newFileName
 
                 // This is not an asset - [file]
-                if metadata.assetLocalIdentifier == "" || metadata.isExtractFile {
+                if metadata.assetLocalIdentifier.isEmpty || metadata.isExtractFile {
                     let newPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: newFileName)
                     CCUtility.moveFile(atPath: oldPath, toPath: newPath)
                 }
@@ -311,8 +311,8 @@ extension NCCreateFormUploadConflict: UITableViewDataSource {
             cell.backgroundColor = tableView.backgroundColor
             cell.switchNewFile.onTintColor = NCBrandColor.shared.brand
             cell.switchAlreadyExistingFile.onTintColor = NCBrandColor.shared.brand
-            
-            let metadataNewFile =  tableMetadata.init(value: metadatasUploadInConflict[indexPath.row])
+
+            let metadataNewFile = tableMetadata.init(value: metadatasUploadInConflict[indexPath.row])
 
             cell.ocId = metadataNewFile.ocId
             cell.delegate = self
@@ -324,7 +324,7 @@ extension NCCreateFormUploadConflict: UITableViewDataSource {
 
             guard let metadataAlreadyExists = NCManageDatabase.shared.getMetadataConflict(account: metadataNewFile.account, serverUrl: metadataNewFile.serverUrl, fileNameView: metadataNewFile.fileNameView) else { return UITableViewCell() }
             if FileManager().fileExists(atPath: CCUtility.getDirectoryProviderStorageIconOcId(metadataAlreadyExists.ocId, etag: metadataAlreadyExists.etag)) {
-                cell.imageAlreadyExistingFile.image =  UIImage(contentsOfFile: CCUtility.getDirectoryProviderStorageIconOcId(metadataAlreadyExists.ocId, etag: metadataAlreadyExists.etag))
+                cell.imageAlreadyExistingFile.image = UIImage(contentsOfFile: CCUtility.getDirectoryProviderStorageIconOcId(metadataAlreadyExists.ocId, etag: metadataAlreadyExists.etag))
             } else if FileManager().fileExists(atPath: CCUtility.getDirectoryProviderStorageOcId(metadataAlreadyExists.ocId, fileNameView: metadataAlreadyExists.fileNameView)) && metadataAlreadyExists.contentType == "application/pdf" {
 
                 let url = URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadataAlreadyExists.ocId, fileNameView: metadataAlreadyExists.fileNameView))
@@ -335,10 +335,10 @@ extension NCCreateFormUploadConflict: UITableViewDataSource {
                 }
 
             } else {
-                if metadataAlreadyExists.iconName.count > 0 {
-                    cell.imageAlreadyExistingFile.image = UIImage(named: metadataAlreadyExists.iconName)
-                } else {
+                if metadataAlreadyExists.iconName.isEmpty {
                     cell.imageAlreadyExistingFile.image = UIImage(named: "file")
+                } else {
+                    cell.imageAlreadyExistingFile.image = UIImage(named: metadataAlreadyExists.iconName)
                 }
             }
             cell.labelDetailAlreadyExistingFile.text = CCUtility.dateDiff(metadataAlreadyExists.date as Date) + "\n" + CCUtility.transformedSize(metadataAlreadyExists.size)
@@ -351,13 +351,13 @@ extension NCCreateFormUploadConflict: UITableViewDataSource {
 
             // -----> New File
 
-            if metadataNewFile.iconName.count > 0 {
-                cell.imageNewFile.image = UIImage(named: metadataNewFile.iconName)
-            } else {
+            if metadataNewFile.iconName.isEmpty {
                 cell.imageNewFile.image = UIImage(named: "file")
+            } else {
+                cell.imageNewFile.image = UIImage(named: metadataNewFile.iconName)
             }
             let filePathNewFile = CCUtility.getDirectoryProviderStorageOcId(metadataNewFile.ocId, fileNameView: metadataNewFile.fileNameView)!
-            if metadataNewFile.assetLocalIdentifier.count > 0 {
+            if !metadataNewFile.assetLocalIdentifier.isEmpty {
 
                 let result = PHAsset.fetchAssets(withLocalIdentifiers: [metadataNewFile.assetLocalIdentifier], options: nil)
                 let date = result.firstObject!.modificationDate
@@ -378,7 +378,7 @@ extension NCCreateFormUploadConflict: UITableViewDataSource {
                         }
 
                         let fileDictionary = try FileManager.default.attributesOfItem(atPath: fileNamePath)
-                        let fileSize = fileDictionary[FileAttributeKey.size] as! Int64
+                        let fileSize = fileDictionary[FileAttributeKey.size] as? Int64 ?? 0
 
                         cell.labelDetailNewFile.text = CCUtility.dateDiff(date) + "\n" + CCUtility.transformedSize(fileSize)
 
@@ -388,12 +388,12 @@ extension NCCreateFormUploadConflict: UITableViewDataSource {
 
                     // PREVIEW
                     let cameraRoll = NCCameraRoll()
-                    cameraRoll.extractImageVideoFromAssetLocalIdentifier(metadata: metadataNewFile, modifyMetadataForUpload: false, viewController: self, hud: JGProgressHUD()) { metadata, fileNamePath, error in
+                    cameraRoll.extractImageVideoFromAssetLocalIdentifier(metadata: metadataNewFile, modifyMetadataForUpload: false, viewController: self, hud: JGProgressHUD()) { _, fileNamePath, error in
                         if !error {
                             self.fileNamesPath[metadataNewFile.fileNameView] = fileNamePath!
                             do {
                                 let fileDictionary = try FileManager.default.attributesOfItem(atPath: fileNamePath!)
-                                let fileSize = fileDictionary[FileAttributeKey.size] as! Int64
+                                let fileSize = fileDictionary[FileAttributeKey.size] as? Int64 ?? 0
                                 if mediaType == PHAssetMediaType.image {
                                     let data = try Data(contentsOf: URL(fileURLWithPath: fileNamePath!))
                                     if let image = UIImage(data: data) {
@@ -413,7 +413,7 @@ extension NCCreateFormUploadConflict: UITableViewDataSource {
             } else if FileManager().fileExists(atPath: filePathNewFile) {
 
                 do {
-                    if metadataNewFile.classFile ==  NKCommon.TypeClassFile.image.rawValue {
+                    if metadataNewFile.classFile == NKCommon.TypeClassFile.image.rawValue {
                         // preserver memory especially for very large files in Share extension
                         if let image = UIImage.downsample(imageAt: URL(fileURLWithPath: filePathNewFile), to: cell.imageNewFile.frame.size) {
                             cell.imageNewFile.image = image
@@ -421,7 +421,7 @@ extension NCCreateFormUploadConflict: UITableViewDataSource {
                     }
 
                     let fileDictionary = try FileManager.default.attributesOfItem(atPath: filePathNewFile)
-                    let fileSize = fileDictionary[FileAttributeKey.size] as! Int64
+                    let fileSize = fileDictionary[FileAttributeKey.size] as? Int64 ?? 0
 
                     cell.labelDetailNewFile.text = CCUtility.dateDiff(metadataNewFile.date as Date) + "\n" + CCUtility.transformedSize(fileSize)
 
@@ -520,7 +520,6 @@ struct UploadConflictView: UIViewControllerRepresentable {
     var serverUrl: String
     var metadatasUploadInConflict: [tableMetadata]
     var metadatasNOConflict: [tableMetadata]
-
 
     func makeUIViewController(context: Context) -> UIViewControllerType {
 

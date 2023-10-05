@@ -30,20 +30,6 @@ protocol DateCompareable {
     var dateKey: Date { get }
 }
 
-class tableChunk: Object {
-
-    @objc dynamic var account = ""
-    @objc dynamic var chunkFolder = ""
-    @objc dynamic var fileName = ""
-    @objc dynamic var index = ""
-    @objc dynamic var ocId = ""
-    @objc dynamic var size: Int64 = 0
-
-    override static func primaryKey() -> String {
-        return "index"
-    }
-}
-
 class tableComments: Object, DateCompareable {
     var dateKey: Date { creationDateTime as Date }
 
@@ -98,33 +84,9 @@ class tableExternalSites: Object {
 }
 
 class tableGPS: Object {
-
-    @objc dynamic var latitude = ""
+    @objc dynamic var latitude: Double = 0
+    @objc dynamic var longitude: Double = 0
     @objc dynamic var location = ""
-    @objc dynamic var longitude = ""
-    @objc dynamic var placemarkAdministrativeArea = ""
-    @objc dynamic var placemarkCountry = ""
-    @objc dynamic var placemarkLocality = ""
-    @objc dynamic var placemarkPostalCode = ""
-    @objc dynamic var placemarkThoroughfare = ""
-}
-
-class tableLocalFile: Object {
-
-    @objc dynamic var account = ""
-    @objc dynamic var etag = ""
-    @objc dynamic var exifDate: NSDate?
-    @objc dynamic var exifLatitude = ""
-    @objc dynamic var exifLongitude = ""
-    @objc dynamic var exifLensModel: String?
-    @objc dynamic var favorite: Bool = false
-    @objc dynamic var fileName = ""
-    @objc dynamic var ocId = ""
-    @objc dynamic var offline: Bool = false
-
-    override static func primaryKey() -> String {
-        return "ocId"
-    }
 }
 
 class tablePhotoLibrary: Object {

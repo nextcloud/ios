@@ -36,3 +36,16 @@ extension UIDevice {
         }
     }
 }
+
+extension UIDeviceOrientation {
+    /// According to Apple... if the device is laid flat the UI is neither portrait nor landscape, so this flag ignores that and checks if the UI is REALLY in landscape. Thanks Apple.
+    /// 
+    /// Unless you really need to use this, you can instead try `traitCollection.verticalSizeClass` and `traitCollection.horizontalSizeClass`.
+    var isLandscapeHardCheck: Bool {
+        if UIDevice.current.orientation.isValidInterfaceOrientation {
+            return UIDevice.current.orientation.isLandscape
+        } else {
+            return UIApplication.shared.windows.first?.windowScene?.interfaceOrientation.isLandscape ?? false
+        }
+    }
+}

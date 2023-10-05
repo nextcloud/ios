@@ -173,7 +173,7 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
 
             for metadata in metadatas! {
 
-                if metadata.e2eEncrypted || (metadata.session != "" && metadata.session != NCNetworking.shared.sessionIdentifierBackgroundExtension) { continue }
+                if metadata.e2eEncrypted || (!metadata.session.isEmpty && metadata.session != NCNetworking.shared.sessionIdentifierBackgroundExtension) { continue }
 
                 fileProviderUtility.shared.createocIdentifierOnFileSystem(metadata: metadata)
 

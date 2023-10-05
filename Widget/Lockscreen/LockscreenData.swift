@@ -70,7 +70,7 @@ func getLockscreenDataEntry(configuration: AccountIntent?, isPreview: Bool, fami
         userId: account.userId,
         password: password,
         urlBase: account.urlBase,
-        userAgent: CCUtility.getUserAgent(),
+        userAgent: userAgent,
         nextcloudVersion: 0,
         delegate: NCNetworking.shared)
 

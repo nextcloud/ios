@@ -36,19 +36,20 @@
 // Certificate
 
 - (NSString *)createCSR:(NSString *)userId directory:(NSString *)directory;
-- (NSString *)encryptPrivateKey:(NSString *)userId directory: (NSString *)directory passphrase:(NSString *)passphrase privateKey:(NSString **)privateKey;
-- (NSData *)decryptPrivateKey:(NSString *)privateKey passphrase:(NSString *)passphrase publicKey:(NSString *)publicKey;
+- (NSString *)encryptPrivateKey:(NSString *)userId directory: (NSString *)directory passphrase:(NSString *)passphrase privateKey:(NSString **)privateKey iterationCount:(unsigned int)iterationCount;
+- (NSData *)decryptPrivateKey:(NSString *)privateKey passphrase:(NSString *)passphrase publicKey:(NSString *)publicKey iterationCount:(unsigned int)iterationCount;
 
 // Encrypt / Decrypt file material
 
-- (NSString *)encryptPayloadFile:(NSString *)encrypted key:(NSString *)key;
-- (NSString *)encryptPayloadFile:(NSString *)encrypted key:(NSString *)key initializationVector:(NSString **)initializationVector authenticationTag:(NSString **)authenticationTag;
+- (NSString *)encryptPayloadFile:(NSData *)encrypted key:(NSString *)key;
+- (NSString *)encryptPayloadFile:(NSData *)encrypted key:(NSString *)key initializationVector:(NSString **)initializationVector authenticationTag:(NSString **)authenticationTag;
 - (NSData *)decryptPayloadFile:(NSString *)encrypted key:(NSString *)key;
 - (NSData *)decryptPayloadFile:(NSString *)encrypted key:(NSString *)key initializationVector:(NSString *)initializationVector authenticationTag:(NSString *)authenticationTag;
 
 // Encrypt/Decrypt asymmetric
 
-- (NSData *)encryptAsymmetricString:(NSString *)plain publicKey:(NSString *)publicKey privateKey:(NSString *)privateKey;
+- (NSData *)encryptAsymmetricData:(NSData *)plainData certificate:(NSString *)certificate;
+- (NSData *)encryptAsymmetricData:(NSData *)plainData  privateKey:(NSString *)privateKey;
 - (NSData *)decryptAsymmetricData:(NSData *)cipherData privateKey:(NSString *)privateKey;
 
 // Encrypt / Decrypt file
@@ -58,15 +59,16 @@
 
 // Signature CMS
 
-- (NSData *)generateSignatureCMS:(NSData *)data certificate:(NSString *)certificate privateKey:(NSString *)privateKey publicKey:(NSString *)publicKey userId:(NSString *)userId;
-- (BOOL)verifySignatureCMS:(NSData *)cmsContent data:(NSData *)data publicKey:(NSString *)publicKey userId:(NSString *)userId;
+- (NSData *)generateSignatureCMS:(NSData *)data certificate:(NSString *)certificate privateKey:(NSString *)privateKey userId:(NSString *)userId;
+// - (BOOL)verifySignatureCMS:(NSData *)cmsContent data:(NSData *)data publicKey:(NSString *)publicKey userId:(NSString *)userId;
+- (BOOL)verifySignatureCMS:(NSData *)cmsContent data:(NSData *)data certificates:(NSArray*)certificates;
 
 // Utility
 
 - (void)Encodedkey:(NSString **)key initializationVector:(NSString **)initializationVector;
 - (NSData *)generateKey;
 - (NSString *)createSHA512:(NSString *)string;
-- (NSString *)createSHA256:(NSString *)string;
+- (NSString *)createSHA256:(NSData *)data;
 - (NSString *)extractPublicKeyFromCertificate:(NSString *)pemCertificate;
 
 @end

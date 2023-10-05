@@ -31,7 +31,10 @@ import NextcloudKit
 
 class NCPhotosPickerViewController: NSObject {
 
+    // swiftlint:disable force_cast
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
+    // swiftlint:enable force_cast
+
     var sourceViewController: UIViewController
     var maxSelectedAssets = 1
     var singleSelectedMode = false
@@ -115,7 +118,10 @@ class customPhotoPickerViewController: TLPhotosPickerViewController {
 
 class NCDocumentPickerViewController: NSObject, UIDocumentPickerDelegate {
 
+    // swiftlint:disable force_cast
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
+    // swiftlint:enable force_cast
+
     var isViewerMedia: Bool
     var viewController: UIViewController?
 
@@ -165,7 +171,7 @@ class NCDocumentPickerViewController: NSObject, UIDocumentPickerDelegate {
                 let toPath = CCUtility.getDirectoryProviderStorageOcId(ocId, fileNameView: fileName)!
                 let urlOut = URL(fileURLWithPath: toPath)
 
-                guard let _ = self.copySecurityScopedResource(url: urlIn, urlOut: urlOut) else { continue }
+                guard self.copySecurityScopedResource(url: urlIn, urlOut: urlOut) != nil else { continue }
 
                 let metadataForUpload = NCManageDatabase.shared.createMetadata(account: appDelegate.account, user: appDelegate.user, userId: appDelegate.userId, fileName: fileName, fileNameView: fileName, ocId: ocId, serverUrl: serverUrl, urlBase: appDelegate.urlBase, url: "", contentType: "")
 
@@ -174,7 +180,7 @@ class NCDocumentPickerViewController: NSObject, UIDocumentPickerDelegate {
                 metadataForUpload.size = NCUtilityFileSystem.shared.getFileSize(filePath: toPath)
                 metadataForUpload.status = NCGlobal.shared.metadataStatusWaitUpload
 
-                if let _ = NCManageDatabase.shared.getMetadataConflict(account: appDelegate.account, serverUrl: serverUrl, fileNameView: fileName) {
+                if NCManageDatabase.shared.getMetadataConflict(account: appDelegate.account, serverUrl: serverUrl, fileNameView: fileName) != nil {
                     metadatasInConflict.append(metadataForUpload)
                 } else {
                     metadatas.append(metadataForUpload)

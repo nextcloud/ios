@@ -65,7 +65,6 @@ class NCShareExtension: UIViewController {
     var autoUploadDirectory = ""
     let refreshControl = UIRefreshControl()
     var activeAccount: tableAccount!
-    let chunckSize = CCUtility.getChunkSize() * 1000000
     var progress: CGFloat = 0
     var counterUploaded: Int = 0
     var uploadErrors: [tableMetadata] = []
@@ -337,8 +336,18 @@ extension NCShareExtension {
         metadata.contentType = results.mimeType
         metadata.iconName = results.iconName
         metadata.classFile = results.classFile
-        // CHUNCK
-        metadata.chunk = chunckSize != 0 && metadata.size > chunckSize
+        // CHUNK
+        var chunkSize = NCGlobal.shared.chunkSizeMBCellular
+        if NCNetworking.shared.networkReachability == NKCommon.TypeReachability.reachableEthernetOrWiFi {
+            chunkSize = NCGlobal.shared.chunkSizeMBEthernetOrWiFi
+        }
+        if metadata.size > chunkSize {
+            metadata.chunk = chunkSize
+        } else {
+            metadata.chunk = 0
+        }
+        // E2EE
+        metadata.e2eEncrypted = metadata.isDirectoryE2EE
 
         hud.textLabel.text = NSLocalizedString("_upload_file_", comment: "") + " \(counterUploaded + 1) " + NSLocalizedString("_of_", comment: "") + " \(filesName.count)"
         hud.show(in: self.view)
@@ -351,7 +360,6 @@ extension NCShareExtension {
             if error != .success {
                 let path = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId)!
                 NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
-                NCManageDatabase.shared.deleteChunks(account: metadata.account, ocId: metadata.ocId)
                 NCUtilityFileSystem.shared.deleteFile(filePath: path)
                 self.uploadErrors.append(metadata)
             }

@@ -81,7 +81,7 @@ class NCTableShareOptions: NCTableShareable {
     var attributes: String?
 
     private init(shareType: Int, metadata: tableMetadata, password: String?) {
-        if metadata.e2eEncrypted {
+        if metadata.e2eEncrypted && NCGlobal.shared.capabilityE2EEApiVersion == NCGlobal.shared.e2eeVersionV12 {
             self.permissions = NCGlobal.shared.permissionCreateShare
         } else {
             self.permissions = NCGlobal.shared.capabilityFileSharingDefaultPermission & metadata.sharePermissionsCollaborationServices

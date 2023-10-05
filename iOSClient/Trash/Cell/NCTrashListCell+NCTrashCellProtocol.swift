@@ -46,6 +46,7 @@ class NCTrashListCell: UICollectionViewCell, NCTrashCellProtocol {
     weak var delegate: NCTrashListCellDelegate?
 
     var objectId = ""
+    var indexPath = IndexPath()
 
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -137,6 +138,7 @@ protocol NCTrashCellProtocol {
     var labelTitle: UILabel! { get set }
     var labelInfo: UILabel! { get set }
     var imageItem: UIImageView! { get set }
+    var indexPath: IndexPath { get set }
 
     func selectMode(_ status: Bool)
     func selected(_ status: Bool)

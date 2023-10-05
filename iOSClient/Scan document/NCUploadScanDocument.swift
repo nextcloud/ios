@@ -182,30 +182,20 @@ class NCUploadScanDocument: ObservableObject {
     private func changeCompressionImage(_ image: UIImage, quality: Double) -> UIImage {
 
         var compressionQuality: CGFloat = 0.0
-        var baseHeight: Float = 595.2    // A4
-        var baseWidth: Float = 841.8     // A4
+        let baseHeight: Float = 595.2    // A4
+        let baseWidth: Float = 841.8     // A4
 
         switch quality {
         case 0:
-            baseHeight *= 2
-            baseWidth *= 2
-            compressionQuality = 0.3
+            compressionQuality = 0.1
         case 1:
-            baseHeight *= 3
-            baseWidth *= 3
-            compressionQuality = 0.4
+            compressionQuality = 0.3
         case 2:
-            baseHeight *= 4
-            baseWidth *= 4
             compressionQuality = 0.5
         case 3:
-            baseHeight *= 5
-            baseWidth *= 5
-            compressionQuality = 0.6
+            compressionQuality = 0.7
         case 4:
-            baseHeight = Float(image.size.height)
-            baseWidth = Float(image.size.width)
-            compressionQuality = 0.6
+            compressionQuality = 0.9
         default:
             break
         }
@@ -231,7 +221,7 @@ class NCUploadScanDocument: ObservableObject {
         }
 
         let rect = CGRect(x: 0.0, y: 0.0, width: CGFloat(newWidth), height: CGFloat(newHeight))
-        UIGraphicsBeginImageContext(rect.size)
+        UIGraphicsBeginImageContextWithOptions(rect.size, false, 0)
         image.draw(in: rect)
         let img = UIGraphicsGetImageFromCurrentImageContext()
         let imageData = img?.jpegData(compressionQuality: CGFloat(compressionQuality))
@@ -326,7 +316,7 @@ class NCUploadScanDocument: ObservableObject {
 
 extension NCUploadScanDocument: NCSelectDelegate {
 
-    func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String, items: [Any], overwrite: Bool, copy: Bool, move: Bool) {
+    func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String, items: [Any], indexPath: [IndexPath], overwrite: Bool, copy: Bool, move: Bool) {
 
         if let serverUrl = serverUrl {
             CCUtility.setDirectoryScanDocument(serverUrl)
@@ -502,7 +492,7 @@ struct UploadScanDocumentView: View {
                 }
                 HUDView(showHUD: $uploadScanDocument.showHUD, textLabel: NSLocalizedString("_wait_", comment: ""), image: "doc.badge.arrow.up")
                     .offset(y: uploadScanDocument.showHUD ? 5 : -200)
-                    .animation(.easeOut)
+                    .animation(.easeOut, value: UUID())
             }
         }
         .background(Color(UIColor.systemGroupedBackground))
@@ -512,7 +502,7 @@ struct UploadScanDocumentView: View {
         .sheet(isPresented: $isPresentedUploadConflict) {
             UploadConflictView(delegate: uploadScanDocument, serverUrl: uploadScanDocument.serverUrl, metadatasUploadInConflict: [uploadScanDocument.metadata], metadatasNOConflict: [])
         }.onTapGesture {
-            UIApplication.shared.windows.filter { $0.isKeyWindow }.first?.endEditing(true)
+            UIApplication.shared.connectedScenes.flatMap { ($0 as? UIWindowScene)?.windows ?? [] }.filter { $0.isKeyWindow }.first?.endEditing(true)
         }
     }
 }

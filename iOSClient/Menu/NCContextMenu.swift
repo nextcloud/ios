@@ -28,7 +28,7 @@ import JGProgressHUD
 
 class NCContextMenu: NSObject {
 
-    func viewMenu(ocId: String, viewController: UIViewController, image: UIImage?) -> UIMenu {
+    func viewMenu(ocId: String, indexPath: IndexPath, viewController: UIViewController, image: UIImage?) -> UIMenu {
         guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) else { return UIMenu() }
 
         var downloadRequest: DownloadRequest?
@@ -41,6 +41,7 @@ class NCContextMenu: NSObject {
 
         let hud = JGProgressHUD()
         hud.indicatorView = JGProgressHUDRingIndicatorView()
+        hud.textLabel.text = NSLocalizedString("_downloading_", comment: "")
         hud.detailTextLabel.text = NSLocalizedString("_tap_to_cancel_", comment: "")
         if let indicatorView = hud.indicatorView as? JGProgressHUDRingIndicatorView { indicatorView.ringWidth = 1.5 }
         hud.tapOnHUDViewBlock = { _ in
@@ -97,7 +98,7 @@ class NCContextMenu: NSObject {
         let save = UIAction(title: titleSave,
                             image: UIImage(systemName: "square.and.arrow.down")) { _ in
             if let metadataMOV = metadataMOV {
-                NCActionCenter.shared.saveLivePhoto(metadata: metadata, metadataMOV: metadataMOV)
+                NCOperationQueue.shared.saveLivePhoto(metadata: metadata, metadataMOV: metadataMOV)
             } else {
                 if CCUtility.fileProviderStorageExists(metadata) {
                     NCActionCenter.shared.saveAlbum(metadata: metadata)
@@ -119,13 +120,6 @@ class NCContextMenu: NSObject {
                 }
             }
         }
-
-        /*
-        let copy = UIAction(title: NSLocalizedString("_copy_file_", comment: ""),
-                            image: UIImage(systemName: "doc.on.doc")) { _ in
-            NCActionCenter.shared.copyPasteboard(pasteboardOcIds: [metadata.ocId], hudView: viewController.view)
-        }
-        */
 
         let modify = UIAction(title: NSLocalizedString("_modify_", comment: ""),
                               image: UIImage(systemName: "pencil.tip.crop.circle")) { _ in
@@ -158,16 +152,21 @@ class NCContextMenu: NSObject {
             }
             let alertController = UIAlertController(title: nil, message: nil, preferredStyle: alertStyle)
             alertController.addAction(UIAlertAction(title: NSLocalizedString("_delete_file_", comment: ""), style: .destructive) { _ in
+                let hud = JGProgressHUD()
+                hud.textLabel.text = NSLocalizedString("_deletion_progess_", comment: "")
+                if let appDelegate = UIApplication.shared.delegate as? AppDelegate,
+                   let view = appDelegate.window?.rootViewController?.view {
+                    hud.show(in: view)
+                }
                 Task {
                     var ocId: [String] = []
-                    let account: String = metadata.account
                     let error = await NCNetworking.shared.deleteMetadata(metadata, onlyLocalCache: false)
                     if error == .success {
                         ocId.append(metadata.ocId)
                     } else {
                         NCContentPresenter.shared.showError(error: error)
                     }
-                    NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDeleteFile, userInfo: ["account": account, "ocId": ocId, "error": error])
+                    NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDeleteFile, userInfo: ["ocId": ocId, "indexPath": [indexPath], "onlyLocalCache": false, "error": error, "hud": hud])
                 }
             })
             alertController.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel) { _ in })
@@ -178,14 +177,13 @@ class NCContextMenu: NSObject {
                                           image: UIImage(systemName: "trash"), attributes: .destructive) { _ in
             Task {
                 var ocId: [String] = []
-                let account: String = metadata.account
                 let error = await NCNetworking.shared.deleteMetadata(metadata, onlyLocalCache: true)
                 if error == .success {
                     ocId.append(metadata.ocId)
                 } else {
                     NCContentPresenter.shared.showError(error: error)
                 }
-                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDeleteFile, userInfo: ["account": account, "ocId": ocId, "error": error])
+                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDeleteFile, userInfo: ["ocId": ocId, "indexPath": [indexPath], "onlyLocalCache": true, "error": error])
             }
         }
 

@@ -27,28 +27,16 @@ class NCNetworkingCheckRemoteUser {
 
     func checkRemoteUser(account: String, error: NKError) {
 
-        guard let tableAccount = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", account)) else {
-            return
-        }
+        guard let tableAccount = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", account)),
+              let token = CCUtility.getPassword(account), !token.isEmpty,
+              let appDelegate = UIApplication.shared.delegate as? AppDelegate else { return }
 
-        // remove all process ----
-
-        NCNetworking.shared.cancelAllTransfer(account: account) { }
-        NCOperationQueue.shared.cancelAllQueue()
-        NCNetworking.shared.cancelAllTask()
-
-        // -----------------------
+        NCNetworking.shared.cancelSessions(inBackground: true)
 
         if NCGlobal.shared.capabilityServerVersionMajor >= NCGlobal.shared.nextcloudVersion17 {
 
-            let token = CCUtility.getPassword(account)!
-            if token.isEmpty {
-                return
-            }
+            NextcloudKit.shared.getRemoteWipeStatus(serverUrl: tableAccount.urlBase, token: token) { account, wipe, _, error in
 
-            NextcloudKit.shared.getRemoteWipeStatus(serverUrl: tableAccount.urlBase, token: token) { account, wipe, data, error in
-
-                let appDelegate = UIApplication.shared.delegate as! AppDelegate
                 if wipe {
 
                     appDelegate.deleteAccount(account, wipe: true)
@@ -58,7 +46,7 @@ class NCNetworkingCheckRemoteUser {
 
                 } else {
 
-                    if UIApplication.shared.applicationState == .active && NextcloudKit.shared.isNetworkReachable() && !CCUtility.getPassword(account).isEmpty {
+                    if UIApplication.shared.applicationState == .active && NextcloudKit.shared.isNetworkReachable() {
                         let description = String.localizedStringWithFormat(NSLocalizedString("_error_check_remote_user_", comment: ""), tableAccount.user, tableAccount.urlBase)
                         let error = NKError(errorCode: error.errorCode, errorDescription: description)
                         NCContentPresenter.shared.showError(error: error, priority: .max)
@@ -68,9 +56,9 @@ class NCNetworkingCheckRemoteUser {
                 }
             }
 
-        } else if CCUtility.getPassword(account) != "" {
+        } else {
 
-            if UIApplication.shared.applicationState == .active &&  NextcloudKit.shared.isNetworkReachable() {
+            if UIApplication.shared.applicationState == .active && NextcloudKit.shared.isNetworkReachable() {
                 let description = String.localizedStringWithFormat(NSLocalizedString("_error_check_remote_user_", comment: ""), tableAccount.user, tableAccount.urlBase)
                 let error = NKError(errorCode: error.errorCode, errorDescription: description)
                 NCContentPresenter.shared.showError(error: error, priority: .max)

@@ -49,40 +49,44 @@ class NCOffline: NCCollectionViewCommon {
 
     // MARK: - DataSource + NC Endpoint
 
-    override func reloadDataSource(forced: Bool = true) {
+    override func queryDB(isForced: Bool) {
+
+        var ocIds: [String] = []
+        var metadatas: [tableMetadata] = []
+
+        if self.serverUrl.isEmpty {
+            if let directories = NCManageDatabase.shared.getTablesDirectory(predicate: NSPredicate(format: "account == %@ AND offline == true", self.appDelegate.account), sorted: "serverUrl", ascending: true) {
+                for directory: tableDirectory in directories {
+                    ocIds.append(directory.ocId)
+                }
+            }
+            let files = NCManageDatabase.shared.getTableLocalFiles(predicate: NSPredicate(format: "account == %@ AND offline == true", self.appDelegate.account), sorted: "fileName", ascending: true)
+            for file in files {
+                ocIds.append(file.ocId)
+            }
+            metadatas = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND ocId IN %@", self.appDelegate.account, ocIds))
+        } else {
+            metadatas = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", self.appDelegate.account, self.serverUrl))
+        }
+
+        self.dataSource = NCDataSource(
+            metadatas: metadatas,
+            account: self.appDelegate.account,
+            sort: self.layoutForView?.sort,
+            ascending: self.layoutForView?.ascending,
+            directoryOnTop: self.layoutForView?.directoryOnTop,
+            favoriteOnTop: true,
+            filterLivePhoto: true,
+            groupByField: self.groupByField,
+            providers: self.providers,
+            searchResults: self.searchResults)
+    }
+
+    override func reloadDataSource(isForced: Bool = true) {
         super.reloadDataSource()
 
         DispatchQueue.global().async {
-            var ocIds: [String] = []
-            var metadatas: [tableMetadata] = []
-
-            if self.serverUrl.isEmpty {
-                if let directories = NCManageDatabase.shared.getTablesDirectory(predicate: NSPredicate(format: "account == %@ AND offline == true", self.appDelegate.account), sorted: "serverUrl", ascending: true) {
-                    for directory: tableDirectory in directories {
-                        ocIds.append(directory.ocId)
-                    }
-                }
-                let files = NCManageDatabase.shared.getTableLocalFiles(predicate: NSPredicate(format: "account == %@ AND offline == true", self.appDelegate.account), sorted: "fileName", ascending: true)
-                for file in files {
-                    ocIds.append(file.ocId)
-                }
-                metadatas = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND ocId IN %@", self.appDelegate.account, ocIds))
-            } else {
-                metadatas = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", self.appDelegate.account, self.serverUrl))
-            }
-
-            self.dataSource = NCDataSource(
-                metadatas: metadatas,
-                account: self.appDelegate.account,
-                sort: self.layoutForView?.sort,
-                ascending: self.layoutForView?.ascending,
-                directoryOnTop: self.layoutForView?.directoryOnTop,
-                favoriteOnTop: true,
-                filterLivePhoto: true,
-                groupByField: self.groupByField,
-                providers: self.providers,
-                searchResults: self.searchResults)
-
+            self.queryDB(isForced: isForced)
             DispatchQueue.main.async {
                 self.refreshControl.endRefreshing()
                 self.collectionView.reloadData()
@@ -90,34 +94,9 @@ class NCOffline: NCCollectionViewCommon {
         }
     }
 
-    override func reloadDataSourceNetwork(forced: Bool = false) {
-        super.reloadDataSourceNetwork(forced: forced)
+    override func reloadDataSourceNetwork(isForced: Bool = false) {
+        super.reloadDataSourceNetwork(isForced: isForced)
 
-        guard !serverUrl.isEmpty else {
-            self.reloadDataSource()
-            return
-        }
-
-        isReloadDataSourceNetworkInProgress = true
-        collectionView?.reloadData()
-
-        networkReadFolder(forced: forced) { tableDirectory, metadatas, metadatasUpdate, metadatasDelete, error in
-            if error == .success, let metadatas = metadatas {
-                for metadata in metadatas where (!metadata.directory && NCManageDatabase.shared.isDownloadMetadata(metadata, download: true)) {
-                    NCOperationQueue.shared.download(metadata: metadata, selector: NCGlobal.shared.selectorDownloadFile)
-                }
-            }
-
-            DispatchQueue.main.async {
-                self.refreshControl.endRefreshing()
-                self.isReloadDataSourceNetworkInProgress = false
-                self.richWorkspaceText = tableDirectory?.richWorkspace
-                if metadatasUpdate?.count ?? 0 > 0 || metadatasDelete?.count ?? 0 > 0 || forced {
-                    self.reloadDataSource()
-                } else {
-                    self.collectionView?.reloadData()
-                }
-            }
-        }
+        return self.reloadDataSource()
     }
 }

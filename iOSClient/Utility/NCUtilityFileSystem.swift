@@ -172,7 +172,7 @@ class NCUtilityFileSystem: NSObject {
         if home == serverUrlPath {
             return serverUrlPath
         }
-        
+
         if let serverUrlPath = serverUrlPath.urlEncoded, let url = URL(string: serverUrlPath) {
             if let path = url.deletingLastPathComponent().absoluteString.removingPercentEncoding {
                 if path.last == "/" {
@@ -199,25 +199,25 @@ class NCUtilityFileSystem: NSObject {
                     let characters = Array(name)
 
                     if characters.count < 2 {
-                        if ext == "" {
+                        if ext.isEmpty {
                             resultFileName = name + " " + "1"
                         } else {
                             resultFileName = name + " " + "1" + "." + ext
                         }
                     } else {
-                        let space = characters[characters.count-2]
-                        let numChar = characters[characters.count-1]
+                        let space = characters[characters.count - 2]
+                        let numChar = characters[characters.count - 1]
                         var num = Int(String(numChar))
                         if space == " " && num != nil {
                             name = String(name.dropLast())
                             num = num! + 1
-                            if ext == "" {
+                            if ext.isEmpty {
                                 resultFileName = name + "\(num!)"
                             } else {
                                 resultFileName = name + "\(num!)" + "." + ext
                             }
                         } else {
-                            if ext == "" {
+                            if ext.isEmpty {
                                 resultFileName = name + " " + "1"
                             } else {
                                 resultFileName = name + " " + "1" + "." + ext
@@ -256,7 +256,7 @@ class NCUtilityFileSystem: NSObject {
 
         if days == 0 { return}
 
-        let minimumDate = Date().addingTimeInterval(-days*24*60*60)
+        let minimumDate = Date().addingTimeInterval(-days * 24 * 60 * 60)
         let url = URL(fileURLWithPath: directory)
         var offlineDir: [String] = []
         var offlineFiles: [String] = []
@@ -287,7 +287,7 @@ class NCUtilityFileSystem: NSObject {
                         // check offline
                         if offlineFiles.contains(fileURL.path) { continue }
                         let filter = offlineDir.filter({ fileURL.path.hasPrefix($0)})
-                        if filter.count > 0 { continue }
+                        if !filter.isEmpty { continue }
                         // check date
                         if meetsRequirement(date: date) {
                             let folderURL = fileURL.deletingLastPathComponent()
