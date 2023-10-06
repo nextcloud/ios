@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import SafariServices
 
 class NCMoreAppSuggestionsCell: BaseNCMoreCell {
     @IBOutlet weak var talkView: UIStackView!
@@ -14,6 +15,8 @@ class NCMoreAppSuggestionsCell: BaseNCMoreCell {
     @IBOutlet weak var moreAppsView: UIStackView!
 
     static let reuseIdentifier = "NCMoreAppSuggestionsCell"
+
+    weak var delegate: NCMoreAppSuggestionsCellDelegate?
 
     static func fromNib() -> UINib {
         return UINib(nibName: "NCMoreAppSuggestionsCell", bundle: nil)
@@ -51,7 +54,10 @@ class NCMoreAppSuggestionsCell: BaseNCMoreCell {
     }
 
     @objc func moreAppsTapped() {
-        guard let url = URL(string: NCGlobal.shared.moreAppsUrl) else { return }
-        UIApplication.shared.open(url)
+        delegate?.moreAppsTapped()
     }
+}
+
+protocol NCMoreAppSuggestionsCellDelegate: AnyObject {
+    func moreAppsTapped()
 }

@@ -23,6 +23,7 @@
 
 import UIKit
 import NextcloudKit
+import SafariServices
 
 class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
 
@@ -359,6 +360,9 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
 
         } else if section.type == .moreApps {
             guard let cell = tableView.dequeueReusableCell(withIdentifier: NCMoreAppSuggestionsCell.reuseIdentifier, for: indexPath) as? NCMoreAppSuggestionsCell else { return UITableViewCell() }
+
+            cell.delegate = self
+
             return cell
         } else {
             guard let cell = tableView.dequeueReusableCell(withIdentifier: CCCellMore.reuseIdentifier, for: indexPath) as? CCCellMore else { return UITableViewCell() }
@@ -443,5 +447,14 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         } else {
             applicationHandle.didSelectItem(item, viewController: self)
         }
+    }
+}
+
+extension NCMore: NCMoreAppSuggestionsCellDelegate {
+    func moreAppsTapped() {
+        guard let url = URL(string: NCGlobal.shared.moreAppsUrl) else { return }
+        let safariViewController = SFSafariViewController(url: url)
+
+        present(safariViewController, animated: true, completion: nil)
     }
 }
