@@ -83,7 +83,8 @@ class tableExternalSites: Object {
     @objc dynamic var url = ""
 }
 
-class tableGPS: Object {
+typealias tableGPS = tableGPSV2
+class tableGPSV2: Object {
     @objc dynamic var latitude: Double = 0
     @objc dynamic var longitude: Double = 0
     @objc dynamic var location = ""
