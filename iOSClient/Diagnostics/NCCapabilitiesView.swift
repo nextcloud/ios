@@ -160,7 +160,7 @@ struct NCCapabilitiesView: View {
                     .foregroundColor(.green)
             } else {
                 Image(systemName: "multiply.circle.fill")
-                    .foregroundColor(.red)
+                    .foregroundColor(.gray)
             }
         }
     }

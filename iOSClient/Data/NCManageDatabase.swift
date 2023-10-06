@@ -124,6 +124,7 @@ class NCManageDatabase: NSObject {
                         migration.deleteData(forType: tableMetadata.className())
                         migration.deleteData(forType: tableDirectory.className())
                         migration.deleteData(forType: tableE2eEncryptionLock.className())
+                        migration.deleteData(forType: tableGPS.className())
                     }
 
                 }, shouldCompactOnLaunch: { totalBytes, usedBytes in
