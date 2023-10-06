@@ -16,8 +16,6 @@ class NCMoreAppSuggestionsCell: BaseNCMoreCell {
 
     static let reuseIdentifier = "NCMoreAppSuggestionsCell"
 
-    weak var delegate: NCMoreAppSuggestionsCellDelegate?
-
     static func fromNib() -> UINib {
         return UINib(nibName: "NCMoreAppSuggestionsCell", bundle: nil)
     }
@@ -54,10 +52,7 @@ class NCMoreAppSuggestionsCell: BaseNCMoreCell {
     }
 
     @objc func moreAppsTapped() {
-        delegate?.moreAppsTapped()
+        guard let url = URL(string: NCGlobal.shared.moreAppsUrl) else { return }
+        UIApplication.shared.open(url)
     }
-}
-
-protocol NCMoreAppSuggestionsCellDelegate: AnyObject {
-    func moreAppsTapped()
 }
