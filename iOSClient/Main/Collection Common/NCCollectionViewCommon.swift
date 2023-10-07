@@ -1109,7 +1109,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     }
 }
 
-// MARK: - E2EE
+// MARK: - NCEndToEndInitializeDelegate
 
 extension NCCollectionViewCommon: NCEndToEndInitializeDelegate {
 
@@ -1120,7 +1120,7 @@ extension NCCollectionViewCommon: NCEndToEndInitializeDelegate {
     }
 }
 
-// MARK: - Collection View
+// MARK: - Collection UICollectionViewDelegate
 
 extension NCCollectionViewCommon: UICollectionViewDelegate {
 
@@ -1226,6 +1226,8 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
         }
     }
 }
+
+// MARK: - UICollectionViewDataSource
 
 extension NCCollectionViewCommon: UICollectionViewDataSource {
 
@@ -1642,6 +1644,8 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
     }
 }
 
+// MARK: - UICollectionViewDelegateFlowLayout
+
 extension NCCollectionViewCommon: UICollectionViewDelegateFlowLayout {
 
     func getHeaderHeight() -> CGFloat {
@@ -1718,6 +1722,8 @@ extension NCCollectionViewCommon: UICollectionViewDelegateFlowLayout {
     }
 }
 
+// MARK: - EasyTipViewDelegate
+
 extension NCCollectionViewCommon: EasyTipViewDelegate {
 
     func easyTipViewDidTap(_ tipView: EasyTipView) {
@@ -1731,6 +1737,8 @@ extension NCCollectionViewCommon: EasyTipViewDelegate {
         self.tipView?.dismiss()
     }
 }
+
+// MARK: - NCTabBarSelectDelegate
 
 extension NCCollectionViewCommon: NCTabBarSelectDelegate {
 
