@@ -49,7 +49,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     internal var richWorkspaceText: String?
     internal var headerMenu: NCSectionHeaderMenu?
     internal var isSearchingMode: Bool = false
-    internal var tabbarUISelect = NCTabbarUISelect()
+    internal var tabBarSelect = NCTabBarSelect()
     internal var layoutForView: NCDBLayoutForView?
     internal var selectableDataSource: [RealmSwiftObject] { dataSource.getMetadataSourceForAllSections() }
 
@@ -744,7 +744,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         self.setNavigationItem()
         self.collectionView.reloadData()
 
-        tabbarUISelect.addTabBar(tabBarController: tabBarController)
+        tabBarSelect.addTabBar(tabBarController: tabBarController)
     }
 
     func unselect() {
@@ -754,7 +754,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         self.setNavigationItem()
         self.collectionView.reloadData()
 
-        tabbarUISelect.removeTabBar()
+        tabBarSelect.removeTabBar()
     }
 
     func tapNotification() {

@@ -8,7 +8,7 @@
 
 import SwiftUI
 
-class NCTabbarUISelect: NSObject {
+class NCTabBarSelect: NSObject {
 
     var tabBarController: UITabBarController?
     var hostingController: UIViewController?
@@ -16,7 +16,7 @@ class NCTabbarUISelect: NSObject {
     public func addTabBar(tabBarController: UITabBarController?) {
 
         guard let tabBarController else { return }
-        let hostingController = UIHostingController(rootView: TabBarSelect())
+        let hostingController = UIHostingController(rootView: TabBarSelectView())
         let height: CGFloat = tabBarController.tabBar.frame.height
 
         self.tabBarController = tabBarController
@@ -40,12 +40,12 @@ class NCTabbarUISelect: NSObject {
     }
 }
 
-struct TabBarSelect: View {
+struct TabBarSelectView: View {
     var body: some View {
         Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
     }
 }
 
 #Preview {
-    TabBarSelect()
+    TabBarSelectView()
 }
