@@ -744,7 +744,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         self.setNavigationItem()
         self.collectionView.reloadData()
 
-        tabBarSelect.addTabBar(tabBarController: tabBarController)
+        tabBarSelect.addTabBar(tabBarController: tabBarController, delegate: self)
     }
 
     func unselect() {
