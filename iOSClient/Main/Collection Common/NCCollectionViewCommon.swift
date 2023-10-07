@@ -159,6 +159,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
         tipView = EasyTipView(text: NSLocalizedString("_tip_accountrequest_", comment: ""), preferences: preferences, delegate: self)
 
+        self.tabBarSelect.delegate = self
+
         NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeTheming), object: nil)
     }
 
@@ -745,16 +747,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         self.collectionView.reloadData()
 
         tabBarSelect.addTabBar(tabBarController: tabBarController, delegate: self)
-    }
-
-    func unselect() {
-        isEditMode = false
-        selectOcId.removeAll()
-        selectIndexPath.removeAll()
-        self.setNavigationItem()
-        self.collectionView.reloadData()
-
-        tabBarSelect.removeTabBar()
     }
 
     func tapNotification() {
@@ -1737,5 +1729,16 @@ extension NCCollectionViewCommon: EasyTipViewDelegate {
     func dismissTip() {
         NCManageDatabase.shared.addTip(NCGlobal.shared.tipNCCollectionViewCommonAccountRequest)
         self.tipView?.dismiss()
+    }
+}
+
+extension NCCollectionViewCommon: NCTabBarSelectDelegate {
+
+    func unselect() {
+        isEditMode = false
+        selectOcId.removeAll()
+        selectIndexPath.removeAll()
+        self.setNavigationItem()
+        self.collectionView.reloadData()
     }
 }

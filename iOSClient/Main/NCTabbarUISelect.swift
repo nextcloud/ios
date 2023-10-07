@@ -8,16 +8,20 @@
 
 import SwiftUI
 
+@objc protocol NCTabBarSelectDelegate: AnyObject {
+    func unselect()
+}
+
 class NCTabBarSelect: ObservableObject {
 
     var tabBarController: UITabBarController?
     var hostingController: UIViewController?
-    @Published var delegate: UIViewController?
+    open weak var delegate: NCTabBarSelectDelegate?
 
     public func addTabBar(tabBarController: UITabBarController?, delegate: UIViewController?) {
 
         guard let tabBarController else { return }
-        let hostingController = UIHostingController(rootView: TabBarSelectView(tabBarSelectObservableObject: self))
+        let hostingController = UIHostingController(rootView: TabBarSelectView(tabBarSelect: self))
         let height: CGFloat = tabBarController.tabBar.frame.height
 
         self.tabBarController = tabBarController
@@ -43,16 +47,26 @@ class NCTabBarSelect: ObservableObject {
 
 struct TabBarSelectView: View {
 
-    @ObservedObject var tabBarSelectObservableObject: NCTabBarSelect
+    @ObservedObject var tabBarSelect: NCTabBarSelect
 
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        VStack(alignment: .leading) {
+            Button("Unselect") {
+                tabBarSelect.delegate?.unselect()
+                tabBarSelect.removeTabBar()
+            }
+        }
     }
 }
 
+#Preview {
+    TabBarSelectView(tabBarSelect: NCTabBarSelect())
+}
+
+/*
 struct TabBarSelectView_Previews: PreviewProvider {
     static var previews: some View {
-        let tabBarSelect = NCTabBarSelect()
-        TabBarSelectView(tabBarSelectObservableObject: tabBarSelect)
+        TabBarSelectView(tabBarSelect: NCTabBarSelect())
     }
 }
+*/
