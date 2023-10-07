@@ -26,8 +26,9 @@ import Realm
 import NextcloudKit
 import EasyTipView
 import JGProgressHUD
+import SwiftUI
 
-class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UISearchResultsUpdating, UISearchControllerDelegate, UISearchBarDelegate, NCListCellDelegate, NCGridCellDelegate, NCSectionHeaderMenuDelegate, NCSectionFooterDelegate, UIAdaptivePresentationControllerDelegate, NCEmptyDataSetDelegate, UIContextMenuInteractionDelegate, NCAccountRequestDelegate, NCSelectableNavigationView {
+class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UISearchResultsUpdating, UISearchControllerDelegate, UISearchBarDelegate, NCListCellDelegate, NCGridCellDelegate, NCSectionHeaderMenuDelegate, NCSectionFooterDelegate, UIAdaptivePresentationControllerDelegate, NCEmptyDataSetDelegate, UIContextMenuInteractionDelegate, NCAccountRequestDelegate {
 
     @IBOutlet weak var collectionView: UICollectionView!
 
@@ -48,7 +49,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     internal var richWorkspaceText: String?
     internal var headerMenu: NCSectionHeaderMenu?
     internal var isSearchingMode: Bool = false
-
+    internal var tabBarUI = NCTabbarUI()
     internal var layoutForView: NCDBLayoutForView?
     internal var selectableDataSource: [RealmSwiftObject] { dataSource.getMetadataSourceForAllSections() }
 
@@ -243,11 +244,9 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
         pushed = false
 
-        // REQUEST
         NCNetworking.shared.cancelUnifiedSearchFiles()
-
-        // TIP
-        self.tipView?.dismiss()
+        tipView?.dismiss()
+        unselect()
     }
 
     func presentationControllerDidDismiss( _ presentationController: UIPresentationController) {
@@ -578,7 +577,18 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
     func setNavigationItem() {
 
-        self.setNavigationRightItems()
+        if isEditMode {
+            navigationItem.rightBarButtonItems = []
+        } else {
+            let select = UIBarButtonItem(title: NSLocalizedString("_select_", comment: ""), style: UIBarButtonItem.Style.plain, action: tapSelect)
+            let notification = UIBarButtonItem(image: UIImage(systemName: "bell"), style: .plain, action: tapNotification)
+            if layoutKey == NCGlobal.shared.layoutViewFiles {
+                navigationItem.rightBarButtonItems = [select, notification]
+            } else {
+                navigationItem.rightBarButtonItems = [select]
+            }
+        }
+
         navigationItem.title = titleCurrentFolder
 
         guard layoutKey == NCGlobal.shared.layoutViewFiles else { return }
@@ -726,6 +736,32 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     }
 
     // MARK: - TAP EVENT
+
+    func tapSelect() {
+        isEditMode = true
+        selectOcId.removeAll()
+        selectIndexPath.removeAll()
+        self.setNavigationItem()
+        self.collectionView.reloadData()
+
+        tabBarUI.addTabBar(tabBarController: tabBarController)
+    }
+
+    func unselect() {
+        isEditMode = false
+        selectOcId.removeAll()
+        selectIndexPath.removeAll()
+        self.setNavigationItem()
+        self.collectionView.reloadData()
+
+        tabBarUI.removeTabBar()
+    }
+
+    func tapNotification() {
+        if let viewController = UIStoryboard(name: "NCNotification", bundle: nil).instantiateInitialViewController() as? NCNotification {
+            navigationController?.pushViewController(viewController, animated: true)
+        }
+    }
 
     func accountRequestChangeAccount(account: String) {
 

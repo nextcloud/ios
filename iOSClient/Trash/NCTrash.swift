@@ -26,8 +26,9 @@
 import Realm
 import UIKit
 import NextcloudKit
+import SwiftUI
 
-class NCTrash: UIViewController, NCSelectableNavigationView, NCTrashListCellDelegate, NCSectionHeaderMenuDelegate, NCEmptyDataSetDelegate, NCGridCellDelegate {
+class NCTrash: UIViewController, NCTrashListCellDelegate, NCSectionHeaderMenuDelegate, NCEmptyDataSetDelegate, NCGridCellDelegate {
 
     @IBOutlet weak var collectionView: UICollectionView!
 
@@ -42,6 +43,7 @@ class NCTrash: UIViewController, NCSelectableNavigationView, NCTrashListCellDele
     internal var isEditMode = false
     internal var selectOcId: [String] = []
     internal var selectIndexPath: [IndexPath] = []
+    internal var tabBarUI: NCTabbarUI = NCTabbarUI()
 
     var datasource: [tableTrash] = []
     var layoutForView: NCDBLayoutForView?
@@ -99,7 +101,7 @@ class NCTrash: UIViewController, NCSelectableNavigationView, NCTrashListCellDele
             collectionView.collectionViewLayout = gridLayout
         }
 
-        setNavigationItem()
+        // setNavigationItem()
         reloadDataSource()
     }
 
@@ -197,7 +199,7 @@ class NCTrash: UIViewController, NCSelectableNavigationView, NCTrashListCellDele
         if isEditMode {
             if selectOcId.isEmpty { return }
             self.selectOcId.forEach(self.restoreItem)
-            self.tapSelect()
+            // self.tapSelect()
         } else {
             if datasource.isEmpty { return }
             datasource.forEach({ self.restoreItem(with: $0.fileId) })
@@ -211,7 +213,7 @@ class NCTrash: UIViewController, NCSelectableNavigationView, NCTrashListCellDele
             let alert = UIAlertController(title: NSLocalizedString("_trash_delete_selected_", comment: ""), message: "", preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: NSLocalizedString("_delete_", comment: ""), style: .destructive, handler: { _ in
                 self.selectOcId.forEach(self.deleteItem)
-                self.tapSelect()
+                // self.tapSelect()
             }))
             alert.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel, handler: { _ in }))
             self.present(alert, animated: true, completion: nil)
