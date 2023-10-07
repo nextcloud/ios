@@ -11,31 +11,31 @@ import SwiftUI
 class NCTabbarUI: NSObject {
 
     var tabBarController: UITabBarController?
-    var controller: UIViewController?
+    var hostingController: UIViewController?
 
     public func addTabBar(tabBarController: UITabBarController?) {
 
         guard let tabBarController else { return }
-        let controller = UIHostingController(rootView: TabBarSelect())
+        let hostingController = UIHostingController(rootView: TabBarSelect())
         let height: CGFloat = tabBarController.tabBar.frame.height
 
         self.tabBarController = tabBarController
-        self.controller = controller
+        self.hostingController = hostingController
 
         tabBarController.tabBar.isHidden = true
-        tabBarController.addChild(controller)
-        tabBarController.view.addSubview(controller.view)
+        tabBarController.addChild(hostingController)
+        tabBarController.view.addSubview(hostingController.view)
 
-        controller.view.translatesAutoresizingMaskIntoConstraints = false
-        controller.view.bottomAnchor.constraint(equalTo: tabBarController.view.bottomAnchor).isActive = true
-        controller.view.rightAnchor.constraint(equalTo: tabBarController.view.rightAnchor).isActive = true
-        controller.view.leftAnchor.constraint(equalTo: tabBarController.view.leftAnchor).isActive = true
-        controller.view.heightAnchor.constraint(equalToConstant: height).isActive = true
+        hostingController.view.translatesAutoresizingMaskIntoConstraints = false
+        hostingController.view.bottomAnchor.constraint(equalTo: tabBarController.view.bottomAnchor).isActive = true
+        hostingController.view.rightAnchor.constraint(equalTo: tabBarController.view.rightAnchor).isActive = true
+        hostingController.view.leftAnchor.constraint(equalTo: tabBarController.view.leftAnchor).isActive = true
+        hostingController.view.heightAnchor.constraint(equalToConstant: height).isActive = true
     }
 
     func removeTabBar() {
 
-        controller?.view.removeFromSuperview()
+        hostingController?.view.removeFromSuperview()
         tabBarController?.tabBar.isHidden = false
     }
 }
