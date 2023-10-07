@@ -16,7 +16,8 @@ class NCTabBarSelect: NSObject {
     public func addTabBar(tabBarController: UITabBarController?) {
 
         guard let tabBarController else { return }
-        let hostingController = UIHostingController(rootView: TabBarSelectView())
+        let tabBarSelectObservableObject = NCTabBarSelectObservableObject()
+        let hostingController = UIHostingController(rootView: TabBarSelectView(tabBarSelectObservableObject: tabBarSelectObservableObject))
         let height: CGFloat = tabBarController.tabBar.frame.height
 
         self.tabBarController = tabBarController
@@ -40,12 +41,21 @@ class NCTabBarSelect: NSObject {
     }
 }
 
+class NCTabBarSelectObservableObject: ObservableObject {
+}
+
 struct TabBarSelectView: View {
+
+    @ObservedObject var tabBarSelectObservableObject: NCTabBarSelectObservableObject
+
     var body: some View {
         Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
     }
 }
 
-#Preview {
-    TabBarSelectView()
+struct TabBarSelectView_Previews: PreviewProvider {
+    static var previews: some View {
+        let tabBarSelectObservableObject = NCTabBarSelectObservableObject()
+        TabBarSelectView(tabBarSelectObservableObject: tabBarSelectObservableObject)
+    }
 }
