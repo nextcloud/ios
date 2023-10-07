@@ -1,5 +1,5 @@
 //
-//  NCTabbarUI.swift
+//  NCTabbarUISelect.swift
 //  Nextcloud
 //
 //  Created by Marino Faggiana on 06/10/23.
@@ -8,7 +8,7 @@
 
 import SwiftUI
 
-class NCTabbarUI: NSObject {
+class NCTabbarUISelect: NSObject {
 
     var tabBarController: UITabBarController?
     var hostingController: UIViewController?

@@ -43,7 +43,7 @@ class NCTrash: UIViewController, NCTrashListCellDelegate, NCSectionHeaderMenuDel
     internal var isEditMode = false
     internal var selectOcId: [String] = []
     internal var selectIndexPath: [IndexPath] = []
-    internal var tabBarUI: NCTabbarUI = NCTabbarUI()
+    internal var tabbarUISelect: NCTabbarUISelect = NCTabbarUISelect()
 
     var datasource: [tableTrash] = []
     var layoutForView: NCDBLayoutForView?
