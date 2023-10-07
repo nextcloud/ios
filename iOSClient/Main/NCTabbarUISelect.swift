@@ -53,7 +53,6 @@ struct TabBarSelectView: View {
         VStack(alignment: .leading) {
             Button("Unselect") {
                 tabBarSelect.delegate?.unselect()
-                tabBarSelect.removeTabBar()
             }
         }
     }
@@ -62,11 +61,3 @@ struct TabBarSelectView: View {
 #Preview {
     TabBarSelectView(tabBarSelect: NCTabBarSelect())
 }
-
-/*
-struct TabBarSelectView_Previews: PreviewProvider {
-    static var previews: some View {
-        TabBarSelectView(tabBarSelect: NCTabBarSelect())
-    }
-}
-*/

@@ -1748,5 +1748,7 @@ extension NCCollectionViewCommon: NCTabBarSelectDelegate {
         selectIndexPath.removeAll()
         self.setNavigationItem()
         self.collectionView.reloadData()
+
+        tabBarSelect.removeTabBar()
     }
 }
