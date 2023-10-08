@@ -50,11 +50,16 @@ struct TabBarSelectView: View {
     @ObservedObject var tabBarSelect: NCTabBarSelect
 
     var body: some View {
-        VStack(alignment: .leading) {
-            Button("Unselect") {
-                tabBarSelect.delegate?.unselect()
+        ZStack(alignment: .top) {
+            Color(UIColor.systemBackground).ignoresSafeArea()
+            VStack {
+                Divider()
+                Button("Unselect") {
+                    tabBarSelect.delegate?.unselect()
+                }
             }
         }
+        .edgesIgnoringSafeArea(.all)
     }
 }
 
