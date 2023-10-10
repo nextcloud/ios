@@ -40,16 +40,20 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     internal var searchController: UISearchController?
     internal var emptyDataSet: NCEmptyDataSet?
     internal var backgroundImageView = UIImageView()
+    internal var tabBarSelect = NCTabBarSelect()
     internal var serverUrl: String = ""
     internal var isEditMode = false
-    internal var selectOcId: [String] = []
+    internal var selectOcId: [String] = [] {
+        didSet {
+            tabBarSelect.count = selectOcId.count
+        }
+    }
     internal var selectIndexPath: [IndexPath] = []
     internal var metadataFolder: tableMetadata?
     internal var dataSource = NCDataSource()
     internal var richWorkspaceText: String?
     internal var headerMenu: NCSectionHeaderMenu?
     internal var isSearchingMode: Bool = false
-    internal var tabBarSelect = NCTabBarSelect()
     internal var layoutForView: NCDBLayoutForView?
     internal var selectableDataSource: [RealmSwiftObject] { dataSource.getMetadataSourceForAllSections() }
 

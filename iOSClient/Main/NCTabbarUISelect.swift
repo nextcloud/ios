@@ -18,6 +18,8 @@ class NCTabBarSelect: ObservableObject {
     var hostingController: UIViewController?
     open weak var delegate: NCTabBarSelectDelegate?
 
+    @Published var count: Int = 0
+
     public func addTabBar(tabBarController: UITabBarController?, delegate: UIViewController?) {
 
         guard let tabBarController else { return }
@@ -57,6 +59,9 @@ struct TabBarSelectView: View {
                 Button("Unselect") {
                     tabBarSelect.delegate?.unselect()
                 }
+                Text("Counter" + String(self.tabBarSelect.count))
+                    .font(.system(size: 15))
+                    .frame(maxWidth: .infinity, alignment: .trailing)
             }
         }
         .edgesIgnoringSafeArea(.all)
