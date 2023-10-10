@@ -40,12 +40,12 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     internal var searchController: UISearchController?
     internal var emptyDataSet: NCEmptyDataSet?
     internal var backgroundImageView = UIImageView()
-    internal var tabBarSelect = NCTabBarSelect()
+    internal var tabBarSelect: NCTabBarSelect?
     internal var serverUrl: String = ""
     internal var isEditMode = false
     internal var selectOcId: [String] = [] {
         didSet {
-            tabBarSelect.count = selectOcId.count
+            tabBarSelect?.count = selectOcId.count
         }
     }
     internal var selectIndexPath: [IndexPath] = []
@@ -162,8 +162,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         preferences.animating.dismissDuration = 1.5
 
         tipView = EasyTipView(text: NSLocalizedString("_tip_accountrequest_", comment: ""), preferences: preferences, delegate: self)
-
-        self.tabBarSelect.delegate = self
 
         NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeTheming), object: nil)
     }
@@ -750,7 +748,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         self.setNavigationItem()
         self.collectionView.reloadData()
 
-        tabBarSelect.addTabBar(tabBarController: tabBarController, delegate: self)
+        tabBarSelect = NCTabBarSelect(tabBarController: tabBarController, delegate: self)
     }
 
     func tapNotification() {
@@ -1753,6 +1751,6 @@ extension NCCollectionViewCommon: NCTabBarSelectDelegate {
         self.setNavigationItem()
         self.collectionView.reloadData()
 
-        tabBarSelect.removeTabBar()
+        tabBarSelect?.removeTabBar()
     }
 }

@@ -20,7 +20,7 @@ class NCTabBarSelect: ObservableObject {
 
     @Published var count: Int = 0
 
-    public func addTabBar(tabBarController: UITabBarController?, delegate: UIViewController?) {
+    init(tabBarController: UITabBarController? = nil, delegate: NCTabBarSelectDelegate? = nil) {
 
         guard let tabBarController else { return }
         let hostingController = UIHostingController(rootView: TabBarSelectView(tabBarSelect: self))
@@ -28,6 +28,7 @@ class NCTabBarSelect: ObservableObject {
 
         self.tabBarController = tabBarController
         self.hostingController = hostingController
+        self.delegate = delegate
 
         tabBarController.tabBar.isHidden = true
         tabBarController.addChild(hostingController)
