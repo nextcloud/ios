@@ -9,7 +9,7 @@
 import SwiftUI
 
 @objc protocol NCTabBarSelectDelegate: AnyObject {
-    func unselect()
+    func unselect(animation: Bool)
 }
 
 class NCTabBarSelect: ObservableObject {
@@ -41,7 +41,7 @@ class NCTabBarSelect: ObservableObject {
         hostingController.view.heightAnchor.constraint(equalToConstant: height).isActive = true
     }
 
-    func removeTabBar() {
+    func removeTabBar(animation: Bool) {
 
         hostingController?.view.removeFromSuperview()
         tabBarController?.tabBar.isHidden = false
@@ -58,7 +58,7 @@ struct TabBarSelectView: View {
             VStack {
                 Divider()
                 Button("Unselect") {
-                    tabBarSelect.delegate?.unselect()
+                    tabBarSelect.delegate?.unselect(animation: true)
                 }
                 Text("Counter" + String(self.tabBarSelect.count))
                     .font(.system(size: 15))

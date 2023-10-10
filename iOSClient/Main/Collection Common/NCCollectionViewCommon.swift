@@ -250,7 +250,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
         NCNetworking.shared.cancelUnifiedSearchFiles()
         tipView?.dismiss()
-        unselect()
+        unselect(animation: false)
     }
 
     func presentationControllerDidDismiss( _ presentationController: UIPresentationController) {
@@ -1744,13 +1744,13 @@ extension NCCollectionViewCommon: EasyTipViewDelegate {
 
 extension NCCollectionViewCommon: NCTabBarSelectDelegate {
 
-    func unselect() {
+    func unselect(animation: Bool) {
         isEditMode = false
         selectOcId.removeAll()
         selectIndexPath.removeAll()
         self.setNavigationItem()
         self.collectionView.reloadData()
 
-        tabBarSelect?.removeTabBar()
+        tabBarSelect?.removeTabBar(animation: true)
     }
 }
