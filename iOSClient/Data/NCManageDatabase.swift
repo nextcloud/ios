@@ -90,7 +90,8 @@ class NCManageDatabase: NSObject {
                               tableAvatar.self,
                               tableDashboardWidget.self,
                               tableDashboardWidgetButton.self,
-                              NCDBLayoutForView.self]
+                              NCDBLayoutForView.self,
+                              tableProblems.self]
             )
 
             Realm.Configuration.defaultConfiguration = config
@@ -231,6 +232,7 @@ class NCManageDatabase: NSObject {
         self.clearTable(tableLocalFile.self, account: account)
         self.clearTable(tableMetadata.self, account: account)
         self.clearTable(tablePhotoLibrary.self, account: account)
+        self.clearTable(tableProblems.self, account: account)
         self.clearTable(tableShare.self, account: account)
         self.clearTable(tableTag.self, account: account)
         self.clearTable(tableTip.self)
