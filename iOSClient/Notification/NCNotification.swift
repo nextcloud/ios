@@ -29,10 +29,7 @@ import JGProgressHUD
 
 class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmptyDataSetDelegate {
 
-    // swiftlint:disable force_cast
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
-    // swiftlint:enable force_cast
-
     var notifications: [NKNotifications] = []
     var emptyDataSet: NCEmptyDataSet?
     var isReloadDataSourceNetworkInProgress: Bool = false
@@ -48,6 +45,7 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmpty
         tableView.tableFooterView = UIView()
         tableView.rowHeight = UITableView.automaticDimension
         tableView.estimatedRowHeight = 50.0
+        tableView.allowsSelection = false
         tableView.backgroundColor = .systemBackground
 
         refreshControl?.addTarget(self, action: #selector(getNetwokingNotification), for: .valueChanged)
@@ -68,12 +66,28 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmpty
         super.viewWillAppear(animated)
 
         appDelegate.activeViewController = self
+
         navigationController?.setFileAppreance()
+
+        NotificationCenter.default.addObserver(self, selector: #selector(initialize), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterInitialize), object: nil)
+
         getNetwokingNotification()
+    }
+
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterInitialize), object: nil)
     }
 
     @objc func viewClose() {
         self.dismiss(animated: true, completion: nil)
+    }
+
+    // MARK: - NotificationCenter
+
+    @objc func initialize() {
+        getNetwokingNotification()
     }
 
     // MARK: - Empty
@@ -100,28 +114,20 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmpty
 
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
 
-        guard let notification = NCApplicationHandle().didSelectNotification(notifications[indexPath.row], viewController: self) else { return }
+        let notification = notifications[indexPath.row]
 
-        do {
-            if let subjectRichParameters = notification.subjectRichParameters,
-               let json = try JSONSerialization.jsonObject(with: subjectRichParameters, options: .mutableContainers) as? [String: Any],
-               let file = json["file"] as? [String: Any],
-               file["type"] as? String == "file" {
-                if let id = file["id"] {
-                    NCActionCenter.shared.viewerFile(account: appDelegate.account, fileId: ("\(id)"), viewController: self)
-                }
-            }
-        } catch {
-            print("Something went wrong")
+        if notification.app == "files_sharing" {
+            NCActionCenter.shared.viewerFile(account: appDelegate.account, fileId: notification.objectId, viewController: self)
+        } else {
+            NCApplicationHandle().didSelectNotification(notification, viewController: self)
         }
     }
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
 
-        guard let cell = self.tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath) as? NCNotificationCell else { return UITableViewCell() }
+        let cell = self.tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath) as! NCNotificationCell
         cell.delegate = self
         cell.selectionStyle = .none
-        cell.indexPath = indexPath
 
         let notification = notifications[indexPath.row]
         let urlIcon = URL(string: notification.icon)
@@ -133,31 +139,14 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmpty
         }
 
         if let image = image {
-            cell.icon.image = image.withTintColor(NCBrandColor.shared.brandElement, renderingMode: .alwaysOriginal)
+            cell.icon.image = image.withTintColor(NCBrandColor.shared.iconColor, renderingMode: .alwaysOriginal)
         } else {
-            cell.icon.image = NCUtility.shared.loadImage(named: "bell", color: NCBrandColor.shared.brandElement)
+            cell.icon.image = NCUtility.shared.loadImage(named: "bell", color: NCBrandColor.shared.iconColor)
         }
 
         // Avatar
         cell.avatar.isHidden = true
         cell.avatarLeadingMargin.constant = 10
-        if let subjectRichParameters = notification.subjectRichParameters,
-           let json = JSON(subjectRichParameters).dictionary,
-           let user = json["user"]?["id"].stringValue {
-            cell.avatar.isHidden = false
-            cell.avatarLeadingMargin.constant = 50
-
-            let fileName = appDelegate.userBaseUrl + "-" + user + ".png"
-            let fileNameLocalPath = String(CCUtility.getDirectoryUserData()) + "/" + fileName
-
-            if let image = UIImage(contentsOfFile: fileNameLocalPath) {
-                cell.avatar.image = image
-            } else if !FileManager.default.fileExists(atPath: fileNameLocalPath) {
-                cell.fileUser = user
-                NCOperationQueue.shared.downloadAvatar(user: user, dispalyName: json["user"]?["name"].string, fileName: fileName, cell: cell, view: tableView, cellImageView: cell.fileAvatarImageView)
-            }
-        }
-
         cell.date.text = DateFormatter.localizedString(from: notification.date as Date, dateStyle: .medium, timeStyle: .medium)
         cell.notification = notification
         cell.date.text = CCUtility.dateDiff(notification.date as Date)
@@ -171,29 +160,21 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmpty
 
         cell.primary.isEnabled = false
         cell.primary.isHidden = true
-        cell.primary.titleLabel?.font = .systemFont(ofSize: 15)
-        cell.primary.layer.cornerRadius = 15
+        cell.primary.titleLabel?.font = .systemFont(ofSize: 14)
+        cell.primary.setTitleColor(.white, for: .normal)
+        cell.primary.layer.cornerRadius = 10
         cell.primary.layer.masksToBounds = true
-        cell.primary.layer.backgroundColor = NCBrandColor.shared.brandElement.cgColor
-        cell.primary.setTitleColor(NCBrandColor.shared.brandText, for: .normal)
-
-        cell.more.isEnabled = false
-        cell.more.isHidden = true
-        cell.more.titleLabel?.font = .systemFont(ofSize: 15)
-        cell.more.layer.cornerRadius = 15
-        cell.more.layer.masksToBounds = true
-        cell.more.layer.backgroundColor = NCBrandColor.shared.brandElement.cgColor
-        cell.more.setTitleColor(NCBrandColor.shared.brandText, for: .normal)
+        cell.primary.layer.backgroundColor = NCBrandColor.shared.notificationAction.cgColor
 
         cell.secondary.isEnabled = false
         cell.secondary.isHidden = true
-        cell.secondary.titleLabel?.font = .systemFont(ofSize: 15)
-        cell.secondary.layer.cornerRadius = 15
+        cell.secondary.titleLabel?.font = .systemFont(ofSize: 14)
+        cell.secondary.setTitleColor(NCBrandColor.shared.notificationAction, for: .normal)
+        cell.secondary.layer.cornerRadius = 10
         cell.secondary.layer.masksToBounds = true
+        cell.secondary.layer.backgroundColor = UIColor.clear.cgColor
         cell.secondary.layer.borderWidth = 1
-        cell.secondary.layer.borderColor = UIColor.systemGray.cgColor
-        cell.secondary.layer.backgroundColor = UIColor.secondarySystemBackground.cgColor
-        cell.secondary.setTitleColor(.gray, for: .normal)
+        cell.secondary.layer.borderColor = NCBrandColor.shared.notificationAction.cgColor
 
         // Action
         if let actions = notification.actions,
@@ -215,7 +196,7 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmpty
 
                 for action in jsonActions {
 
-                    let label = action["label"].stringValue
+                    let label =  action["label"].stringValue
                     let primary = action["primary"].boolValue
 
                     if primary {
@@ -224,13 +205,20 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmpty
                         cell.secondary.setTitle(label, for: .normal)
                     }
                 }
-            } else if jsonActions.count >= 3 {
-
-                cell.more.isEnabled = true
-                cell.more.isHidden = false
-                cell.more.setTitle("…", for: .normal)
             }
-
+            
+            let widthPrimary = cell.primary.intrinsicContentSize.width + 48;
+            let widthSecondary = cell.secondary.intrinsicContentSize.width + 48;
+            
+            if widthPrimary > widthSecondary {
+                cell.primaryWidth.constant = widthPrimary
+                cell.secondaryWidth.constant = widthPrimary
+            } else {
+                cell.primaryWidth.constant = widthSecondary
+                cell.secondaryWidth.constant = widthSecondary
+            }
+            
+            
             var buttonWidth = max(cell.primary.intrinsicContentSize.width, cell.secondary.intrinsicContentSize.width)
             buttonWidth += 30
             cell.primaryWidth.constant = buttonWidth
@@ -244,10 +232,10 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmpty
 
     func tapRemove(with notification: NKNotifications) {
 
-        NextcloudKit.shared.setNotification(serverUrl: nil, idNotification: notification.idNotification, method: "DELETE") { account, error in
+        NextcloudKit.shared.setNotification(serverUrl: nil, idNotification: notification.idNotification , method: "DELETE") { (account, error) in
             if error == .success && account == self.appDelegate.account {
                 if let index = self.notifications
-                    .firstIndex(where: { $0.idNotification == notification.idNotification }) {
+                    .firstIndex(where: { $0.idNotification == notification.idNotification })  {
                     self.notifications.remove(at: index)
                 }
                 self.tableView.reloadData()
@@ -276,7 +264,7 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmpty
                 return
             }
 
-            NextcloudKit.shared.setNotification(serverUrl: serverUrl, idNotification: 0, method: method) { account, error in
+            NextcloudKit.shared.setNotification(serverUrl: serverUrl, idNotification: 0, method: method) { (account, error) in
                 if error == .success && account == self.appDelegate.account {
                     if let index = self.notifications.firstIndex(where: { $0.idNotification == notification.idNotification }) {
                         self.notifications.remove(at: index)
@@ -306,17 +294,15 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmpty
         isReloadDataSourceNetworkInProgress = true
         self.tableView.reloadData()
 
-        NextcloudKit.shared.getNotifications { account, notifications, _, error in
+        NextcloudKit.shared.getNotifications { account, notifications, data, error in
             if error == .success && account == self.appDelegate.account {
                 self.notifications.removeAll()
                 let sortedListOfNotifications = (notifications! as NSArray).sortedArray(using: [NSSortDescriptor(key: "date", ascending: false)])
                 for notification in sortedListOfNotifications {
-                    if let icon = (notification as? NKNotifications)?.icon {
+                    if let icon = (notification as! NKNotifications).icon {
                         NCUtility.shared.convertSVGtoPNGWriteToUserData(svgUrlString: icon, fileName: nil, width: 25, rewrite: false, account: self.appDelegate.account, completion: { _, _ in })
                     }
-                    if let notification = (notification as? NKNotifications) {
-                        self.notifications.append(notification)
-                    }
+                    self.notifications.append(notification as! NKNotifications)
                 }
                 self.refreshControl?.endRefreshing()
                 self.isReloadDataSourceNetworkInProgress = false
@@ -338,23 +324,17 @@ class NCNotificationCell: UITableViewCell, NCCellProtocol {
     @IBOutlet weak var remove: UIButton!
     @IBOutlet weak var primary: UIButton!
     @IBOutlet weak var secondary: UIButton!
-    @IBOutlet weak var more: UIButton!
     @IBOutlet weak var avatarLeadingMargin: NSLayoutConstraint!
     @IBOutlet weak var primaryWidth: NSLayoutConstraint!
     @IBOutlet weak var secondaryWidth: NSLayoutConstraint!
 
     private var user = ""
-    private var index = IndexPath()
 
     weak var delegate: NCNotificationCellDelegate?
     var notification: NKNotifications?
 
-    var indexPath: IndexPath {
-        get { return index }
-        set { index = newValue }
-    }
     var fileAvatarImageView: UIImageView? {
-        return avatar
+        get { return avatar }
     }
     var fileUser: String? {
         get { return user }
@@ -386,14 +366,9 @@ class NCNotificationCell: UITableViewCell, NCCellProtocol {
         delegate?.tapAction(with: notification, label: label)
     }
 
-    @IBAction func touchUpInsideMore(_ sender: Any) {
-        guard let notification = notification else { return }
-        delegate?.tapMore(with: notification)
-    }
 }
 
 protocol NCNotificationCellDelegate: AnyObject {
     func tapRemove(with notification: NKNotifications)
     func tapAction(with notification: NKNotifications, label: String)
-    func tapMore(with notification: NKNotifications)
 }

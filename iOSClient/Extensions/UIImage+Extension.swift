@@ -141,7 +141,18 @@ extension UIImage {
 
         return newImage
     }
-
+    
+    func imageColor(_ color: UIColor) -> UIImage {
+        if #available(iOS 13.0, *) {
+            return self.withTintColor(color, renderingMode: .alwaysOriginal)
+        } else {
+            return UIGraphicsImageRenderer(size: size, format: imageRendererFormat).image { _ in
+                color.set()
+                withRenderingMode(.alwaysTemplate).draw(at: .zero)
+            }
+        }
+    }
+    
     func isEqualToImage(image: UIImage?) -> Bool {
         if image == nil { return false }
         let data1: NSData = self.pngData()! as NSData
