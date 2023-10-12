@@ -36,7 +36,7 @@ class tableProblems: Object {
 
 extension NCManageDatabase {
 
-    func addProblem(account: String, type: String, date: Date) {
+    func addProblem(account: String, type: String, error: NKError) {
 
         do {
             let realm = try Realm()
@@ -44,12 +44,12 @@ extension NCManageDatabase {
                 let primaryKey = account + type
                 if let result = realm.objects(tableProblems.self).filter("primaryKey %@", primaryKey).first {
                     result.count += 1
-                    result.oldest = date.timeIntervalSince1970
+                    result.oldest = Date().timeIntervalSince1970
                     realm.add(result, update: .all)
                 } else {
                     let result = tableProblems()
                     result.count = 1
-                    result.oldest = date.timeIntervalSince1970
+                    result.oldest = Date().timeIntervalSince1970
                     realm.add(result, update: .all)
                 }
             }
