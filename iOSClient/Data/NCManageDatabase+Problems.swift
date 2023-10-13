@@ -86,5 +86,16 @@ extension NCManageDatabase {
         return nil
     }
 
+    func deleteProblems(account: String) {
 
+        do {
+            let realm = try Realm()
+            try realm.write {
+                let result = realm.objects(tableProblems.self).filter("account == %@", account)
+                realm.delete(result)
+            }
+        } catch let error {
+            NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
+        }
+    }
 }
