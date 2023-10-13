@@ -30,7 +30,7 @@ class tableProblems: Object {
     @Persisted var account = ""
     @Persisted(primaryKey: true) var primaryKey = ""
     @Persisted var selector: String = ""
-    @Persisted var count: Int = 0
+    @Persisted var count: Int = 1
     @Persisted var oldest: Double = 0
 }
 
@@ -49,7 +49,6 @@ extension NCManageDatabase {
                 } else {
                     let result = tableProblems()
                     result.primaryKey = primaryKey
-                    result.count = 1
                     result.oldest = Date().timeIntervalSince1970
                     realm.add(result, update: .all)
                 }
