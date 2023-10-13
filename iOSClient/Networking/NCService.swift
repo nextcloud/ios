@@ -322,7 +322,7 @@ class NCService: NSObject {
             let problems = "{\"problems\":{\"conflict\":{\"count\":3,\"oldest\":1695592800},\"failed-upload\":{\"count\":1,\"oldest\":1695592900}}}"
             NextcloudKit.shared.sendClientDiagnosticsRemoteOperation(problems: problems) { _, error in
                 if error == .success {
-                    NCManageDatabase.shared.deleteProblems(account: account)
+                    //NCManageDatabase.shared.deleteProblems(account: account)
                 }
             }
         }

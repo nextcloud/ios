@@ -29,29 +29,44 @@ class tableProblems: Object {
 
     @Persisted var account = ""
     @Persisted(primaryKey: true) var primaryKey = ""
-    @Persisted var type: String = ""
+    @Persisted var selector: String = ""
     @Persisted var count: Int = 0
     @Persisted var oldest: Double = 0
 }
 
 extension NCManageDatabase {
 
-    func addProblem(account: String, type: String, error: NKError) {
+    func addProblem(account: String, selector: String, error: NKError) {
 
         do {
             let realm = try Realm()
+            let primaryKey = account + selector
             try realm.write {
-                let primaryKey = account + type
-                if let result = realm.objects(tableProblems.self).filter("primaryKey %@", primaryKey).first {
+                if let result = realm.objects(tableProblems.self).filter("primaryKey == %@", primaryKey).first {
                     result.count += 1
                     result.oldest = Date().timeIntervalSince1970
                     realm.add(result, update: .all)
                 } else {
                     let result = tableProblems()
+                    result.primaryKey = primaryKey
                     result.count = 1
                     result.oldest = Date().timeIntervalSince1970
                     realm.add(result, update: .all)
                 }
+            }
+        } catch let error {
+            NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
+        }
+    }
+
+    func deleteProblem(account: String, selector: String) {
+
+        do {
+            let realm = try Realm()
+            let primaryKey = account + selector
+            try realm.write {
+                let result = realm.objects(tableProblems.self).filter("primaryKey == %@", primaryKey)
+                realm.delete(result)
             }
         } catch let error {
             NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
@@ -71,16 +86,5 @@ extension NCManageDatabase {
         return nil
     }
 
-    func deleteProblems(account: String) {
 
-        do {
-            let realm = try Realm()
-            try realm.write {
-                let result = realm.objects(tableProblems.self).filter("account == %@", account)
-                realm.delete(result)
-            }
-        } catch let error {
-            NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
-        }
-    }
 }

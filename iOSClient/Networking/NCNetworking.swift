@@ -432,8 +432,11 @@ class NCNetworking: NSObject, NKCommonDelegate {
             if withUploadComplete, let uploadTask = uploadTask {
                 self.uploadComplete(fileName: metadata.fileName, serverUrl: metadata.serverUrl, ocId: ocId, etag: etag, date: date, size: size, description: description, task: uploadTask, error: error)
             }
-            if error != .success {
-                NCManageDatabase.shared.addProblem(account: account, type: "UploadResult", error: error)
+            // sendClientDiagnosticsRemoteOperation
+            if error == .success {
+                NCManageDatabase.shared.deleteProblem(account: account, selector: NCGlobal.shared.selectorUploadFile)
+            } else {
+                NCManageDatabase.shared.addProblem(account: account, selector: NCGlobal.shared.selectorUploadFile, error: error)
             }
             completion(account, ocId, etag, date, size, allHeaderFields, afError, error)
         }
@@ -507,10 +510,12 @@ class NCNetworking: NSObject, NKCommonDelegate {
 
             self.uploadRequest.removeValue(forKey: fileNameLocalPath)
 
+            // sendClientDiagnosticsRemoteOperation
             if error == .success {
                 NCManageDatabase.shared.deleteChunks(account: account, ocId: metadata.ocId, directory: directory)
+                NCManageDatabase.shared.deleteProblem(account: account, selector: NCGlobal.shared.selectorUploadFile)
             } else {
-                NCManageDatabase.shared.addProblem(account: account, type: "UploadResult", error: error)
+                NCManageDatabase.shared.addProblem(account: account, selector: NCGlobal.shared.selectorUploadFile, error: error)
             }
 
             switch error.errorCode {
@@ -598,6 +603,13 @@ class NCNetworking: NSObject, NKCommonDelegate {
         isApplicationStateActive = UIApplication.shared.applicationState == .active
 #endif
 
+        // sendClientDiagnosticsRemoteOperation
+        if error == .success {
+            NCManageDatabase.shared.deleteProblem(account: metadata.account, selector: NCGlobal.shared.selectorUploadFile)
+        } else {
+            NCManageDatabase.shared.addProblem(account: metadata.account, selector: NCGlobal.shared.selectorUploadFile, error: error)
+        }
+
         if error == .success, let ocId = ocId, size == metadata.size {
 
             let metadata = tableMetadata.init(value: metadata)
@@ -644,7 +656,6 @@ class NCNetworking: NSObject, NKCommonDelegate {
 
             } else if error.errorCode == NCGlobal.shared.errorForbidden && isApplicationStateActive {
 #if !EXTENSION
-                NCManageDatabase.shared.addProblem(account: metadata.account, type: "UploadResult", error: error)
                 DispatchQueue.main.async {
                     let newFileName = NCUtilityFileSystem.shared.createFileName(metadata.fileName, serverUrl: metadata.serverUrl, account: metadata.account)
                     let alertController = UIAlertController(title: error.errorDescription, message: NSLocalizedString("_change_upload_filename_", comment: ""), preferredStyle: .alert)
@@ -669,7 +680,6 @@ class NCNetworking: NSObject, NKCommonDelegate {
 #endif
             } else {
 
-                NCManageDatabase.shared.addProblem(account: metadata.account, type: "UploadResult", error: error)
                 NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId, session: nil, sessionError: error.errorDescription, sessionTaskIdentifier: 0, status: NCGlobal.shared.metadataStatusUploadError)
                 NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUploadedFile, userInfo: ["ocId": metadata.ocId, "serverUrl": metadata.serverUrl, "account": metadata.account, "fileName": metadata.fileName, "ocIdTemp": ocIdTemp, "error": error])
             }
