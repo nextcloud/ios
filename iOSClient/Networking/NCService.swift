@@ -318,6 +318,7 @@ class NCService: NSObject {
 
     func sendClientDiagnosticsRemoteOperation(account: String) {
 
+        /*
         if let problems = NCManageDatabase.shared.getProblems(account: account), !problems.isEmpty {
             let problems = "{\"problems\":{\"conflict\":{\"count\":3,\"oldest\":1695592800},\"failed-upload\":{\"count\":1,\"oldest\":1695592900}}}"
             NextcloudKit.shared.sendClientDiagnosticsRemoteOperation(problems: problems) { _, error in
@@ -326,5 +327,6 @@ class NCService: NSObject {
                 }
             }
         }
+        */
     }
 }
