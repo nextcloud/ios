@@ -338,6 +338,11 @@
     }
 }
 
+-(NSString *)tableView:(UITableView *)tableView titleForDeleteConfirmationButtonForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    return NSLocalizedString(@"_remove_local_account_", nil);
+}
+
 -(void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath {
     [super tableView:tableView commitEditingStyle:editingStyle forRowAtIndexPath:indexPath];
     
@@ -355,8 +360,8 @@
         NSString *title = [NSString stringWithFormat:NSLocalizedString(@"_want_delete_account_",nil), accountForDelete];
         UIAlertController *alertController = [UIAlertController alertControllerWithTitle:title message:nil preferredStyle:UIAlertControllerStyleActionSheet];
         
-        [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_delete_", nil) style:UIAlertActionStyleDestructive handler:^(UIAlertAction *action) {
-                        
+        [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_remove_local_account_", nil) style:UIAlertActionStyleDestructive handler:^(UIAlertAction *action) {
+
             if (accountForDelete) {
                 [appDelegate deleteAccount:accountForDelete wipe:false];
             }
