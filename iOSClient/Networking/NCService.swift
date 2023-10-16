@@ -316,19 +316,44 @@ class NCService: NSObject {
 
     // MARK: -
 
+    //let problems = "{\"problems\":{\"conflict\":{\"count\":3,\"oldest\":1695592800},\"failed-upload\":{\"count\":1,\"oldest\":1695592900}}}"
+
     func sendClientDiagnosticsRemoteOperation(account: String) {
 
+        struct Problem: Codable {
+            let count: Int
+            let oldest: Double
+        }
+        var problems: [String: Problem] = [:]
+
         if let metadatas = NCManageDatabase.shared.getMetadatasInError(account: account), !metadatas.isEmpty {
-            let problems = "{\"problems\":{\"conflict\":{\"count\":3,\"oldest\":1695592800},\"failed-upload\":{\"count\":1,\"oldest\":1695592900}}}"
 
-            
+            for metadata in metadatas {
+                guard let oldest = metadata.errorCodeDate?.timeIntervalSince1970 else { continue }
+                var key = String(metadata.errorCode)
+                if !metadata.sessionError.isEmpty {
+                    key = key + " - " + metadata.sessionError
+                }
+                let value = Problem(count: metadata.errorCodeCounter, oldest: oldest)
+                problems[key] = value
+            }
 
+            do {
+                let data = try JSONEncoder().encode(problems)
+                guard let json = String(data: data, encoding: .utf8) else { return }
+                let problems = "{\"problems\":" + json + "}"
+                print(problems)
+            } catch {
+                print("Error: \(error.localizedDescription)")
+            }
 
+            /*
             NextcloudKit.shared.sendClientDiagnosticsRemoteOperation(problems: problems) { _, error in
                 if error == .success {
                     NCManageDatabase.shared.clearErrorCodeMetadatas(metadatas: metadatas)
                 }
             }
+            */
         }
     }
 }
