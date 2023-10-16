@@ -296,6 +296,11 @@
             <point key="canvasLocation" x="3510" y="-169"/>
         </scene>
     </scenes>
+    <designables>
+        <designable name="KHG-xj-wfG">
+            <size key="intrinsicContentSize" width="37.333333333333336" height="18"/>
+        </designable>
+    </designables>
     <resources>
         <image name="contact" width="24" height="24"/>
         <image name="note.text" width="24" height="24"/>
