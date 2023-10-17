@@ -237,7 +237,7 @@ extension AppDelegate {
             )
         }
 
-        if !NCGlobal.shared.capabilityRichdocumentsMimetypes.isEmpty {
+        if NCGlobal.shared.capabilityRichdocumentsEnabled {
             if NextcloudKit.shared.isNetworkReachable() && !isDirectoryE2EE {
                 actions.append(
                     NCMenuAction(

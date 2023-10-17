@@ -453,6 +453,7 @@ class NCGlobal: NSObject {
     @objc var capabilityE2EEEnabled: Bool                       = false
     @objc var capabilityE2EEApiVersion: String                  = ""
 
+    var capabilityRichdocumentsEnabled: Bool                    = false
     var capabilityRichdocumentsMimetypes: [String]              = []
     var capabilityActivity: [String]                            = []
     var capabilityNotification: [String]                        = []

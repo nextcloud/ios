@@ -202,6 +202,12 @@ extension NCManageDatabase {
 
                         struct RichDocuments: Codable {
                             let mimetypes: [String]?
+                            let directediting: Bool?
+
+                            enum CodingKeys: String, CodingKey {
+                                case mimetypes
+                                case directediting = "direct_editing"
+                            }
                         }
 
                         struct Activity: Codable {
@@ -309,6 +315,7 @@ extension NCManageDatabase {
             NCGlobal.shared.capabilityE2EEEnabled = json.ocs.data.capabilities.endtoendencryption?.enabled ?? false
             NCGlobal.shared.capabilityE2EEApiVersion = json.ocs.data.capabilities.endtoendencryption?.apiversion ?? ""
 
+            NCGlobal.shared.capabilityRichdocumentsEnabled = json.ocs.data.capabilities.richdocuments?.directediting ?? false
             NCGlobal.shared.capabilityRichdocumentsMimetypes.removeAll()
             if let mimetypes = json.ocs.data.capabilities.richdocuments?.mimetypes {
                 for mimetype in mimetypes {
