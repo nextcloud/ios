@@ -472,7 +472,7 @@ class NCGlobal: NSObject {
     let notesSchemeUrl                                          = "nextcloudnotes://"
     let talkAppStoreUrl                                         = "https://apps.apple.com/de/app/nextcloud-talk/id1296825574"
     let notesAppStoreUrl                                        = "https://apps.apple.com/de/app/nextcloud-notes/id813973264"
-    let moreAppsUrl                                             = "https://www.apple.com/us/search/nextcloud?src=globalnav"
+    let moreAppsUrl                                             = "itms-apps://search.itunes.apple.com/WebObjects/MZSearch.woa/wa/search?media=software&term=nextcloud"
 
     // SNAPSHOT PREVIEW
     let defaultSnapshotConfiguration = "DefaultPreviewConfiguration"
