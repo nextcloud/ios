@@ -24,6 +24,7 @@
 import UIKit
 import SVGKit
 import NextcloudKit
+import RealmSwift
 
 class NCService: NSObject {
     @objc static let shared: NCService = {
@@ -55,6 +56,7 @@ class NCService: NSObject {
                 requestDashboardWidget()
                 NCNetworkingE2EE().unlockAll(account: account)
                 NCNetworkingProcessUpload.shared.verifyUploadZombie()
+                sendClientDiagnosticsRemoteOperation(account: account)
             }
         }
     }
@@ -311,5 +313,45 @@ class NCService: NSObject {
             }
         }
         NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] end synchronize offline")
+    }
+
+    // MARK: -
+
+    func sendClientDiagnosticsRemoteOperation(account: String) {
+
+        struct Problem: Codable {
+            let count: Int
+            let oldest: TimeInterval
+        }
+
+        struct Problems: Codable {
+            var problems: [String: Problem] = [:]
+        }
+
+        var problems = Problems()
+
+        guard let metadatas = NCManageDatabase.shared.getMetadatasInError(account: account), !metadatas.isEmpty else { return }
+        for metadata in metadatas {
+            guard let oldest = metadata.errorCodeDate?.timeIntervalSince1970 else { continue }
+            var key = String(metadata.errorCode)
+            if !metadata.sessionError.isEmpty {
+                key = key + " - " + metadata.sessionError
+            }
+            let value = Problem(count: metadata.errorCodeCounter, oldest: oldest)
+            problems.problems[key] = value
+        }
+
+        do {
+            @ThreadSafe var metadatas = metadatas
+            let data = try JSONEncoder().encode(problems)
+            data.printJson()
+            NextcloudKit.shared.sendClientDiagnosticsRemoteOperation(problems: data, options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { _, error in
+                if error == .success {
+                    NCManageDatabase.shared.clearErrorCodeMetadatas(metadatas: metadatas)
+                }
+            }
+        } catch {
+            print("Error: \(error.localizedDescription)")
+        }
     }
 }

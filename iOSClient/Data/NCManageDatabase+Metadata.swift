@@ -104,6 +104,9 @@ class tableMetadata: Object, NCUserBaseUrl {
     @objc dynamic var longitude: Double = 0
     @objc dynamic var height: Int = 0
     @objc dynamic var width: Int = 0
+    @objc dynamic var errorCode: Int = 0
+    @objc dynamic var errorCodeCounter: Int = 0
+    @objc dynamic var errorCodeDate: Date?
 
     override static func primaryKey() -> String {
         return "ocId"
@@ -626,7 +629,7 @@ extension NCManageDatabase {
         return ([], [], [])
     }
 
-    func setMetadataSession(ocId: String, newFileName: String? = nil, session: String? = nil, sessionError: String? = nil, sessionSelector: String? = nil, sessionTaskIdentifier: Int? = nil, status: Int? = nil, etag: String? = nil) {
+    func setMetadataSession(ocId: String, newFileName: String? = nil, session: String?, sessionError: String?, sessionSelector: String?, sessionTaskIdentifier: Int?, status: Int?, etag: String? = nil, errorCode: Int?) {
 
         do {
             let realm = try Realm()
@@ -636,23 +639,32 @@ extension NCManageDatabase {
                         result.fileName = newFileName
                         result.fileNameView = newFileName
                     }
-                    if let session = session {
+                    if let session {
                         result.session = session
                     }
-                    if let sessionError = sessionError {
+                    if let sessionError {
                         result.sessionError = sessionError
                     }
-                    if let sessionSelector = sessionSelector {
+                    if let sessionSelector {
                         result.sessionSelector = sessionSelector
                     }
-                    if let sessionTaskIdentifier = sessionTaskIdentifier {
+                    if let sessionTaskIdentifier {
                         result.sessionTaskIdentifier = sessionTaskIdentifier
                     }
-                    if let status = status {
+                    if let status {
                         result.status = status
                     }
-                    if let etag = etag {
+                    if let etag {
                         result.etag = etag
+                    }
+                    if let errorCode {
+                        result.errorCode = errorCode
+                        if errorCode == 0 {
+                            result.errorCodeCounter = 0
+                        } else {
+                            result.errorCodeCounter += 1
+                            result.errorCodeDate = Date()
+                        }
                     }
                 }
             }
@@ -1206,5 +1218,36 @@ extension NCManageDatabase {
         }
 
         return metadatas
+    }
+
+    func getMetadatasInError(account: String) -> Results<tableMetadata>? {
+
+        do {
+            let realm = try Realm()
+            let results = realm.objects(tableMetadata.self).filter("account == %@ AND errorCodeCounter > 1", account)
+            return results
+        } catch let error as NSError {
+            NextcloudKit.shared.nkCommonInstance.writeLog("Could not access database: \(error)")
+        }
+
+        return nil
+    }
+
+    func clearErrorCodeMetadatas(metadatas: Results<tableMetadata>?) {
+
+        guard let metadatas else { return }
+
+        do {
+            let realm = try Realm()
+            try realm.write {
+                for metadata in metadatas {
+                    metadata.errorCode = 0
+                    metadata.errorCodeCounter = 0
+                    metadata.errorCodeDate = nil
+                }
+            }
+        } catch let error as NSError {
+            NextcloudKit.shared.nkCommonInstance.writeLog("Could not access database: \(error)")
+        }
     }
 }
