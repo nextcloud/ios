@@ -126,6 +126,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
             NCBrandColor.shared.settingThemingColor(account: activeAccount.account)
 
+            DispatchQueue.global().async { NCMediaManager.shared.createCache(account: self.account) }
+
         } else {
 
             CCUtility.deleteAllChainStore()
@@ -594,6 +596,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Initialize Auto upload with \(items) uploads")
         }
 
+        DispatchQueue.global().async { NCMediaManager.shared.createCache(account: account) }
+        
         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterChangeUser)
     }
 

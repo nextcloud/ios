@@ -384,6 +384,8 @@
 		F769CA1A2966EA3C00039397 /* ComponentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F769CA182966EA3C00039397 /* ComponentView.swift */; };
 		F76B3CCE1EAE01BD00921AC9 /* NCBrand.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76B3CCD1EAE01BD00921AC9 /* NCBrand.swift */; };
 		F76B3CCF1EAE01BD00921AC9 /* NCBrand.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76B3CCD1EAE01BD00921AC9 /* NCBrand.swift */; };
+		F76B649C2ADFFAED00014640 /* NCMediaManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76B649B2ADFFAED00014640 /* NCMediaManager.swift */; };
+		F76B649E2ADFFDEC00014640 /* LRUCache in Frameworks */ = {isa = PBXBuildFile; productRef = F76B649D2ADFFDEC00014640 /* LRUCache */; };
 		F76C26A62850D3A500E42BDF /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F7F67BB81A24D27800EE80DA /* Images.xcassets */; };
 		F76D364628A4F8BF00214537 /* NCActivityIndicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76D364528A4F8BF00214537 /* NCActivityIndicator.swift */; };
 		F76D364728A4F8BF00214537 /* NCActivityIndicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76D364528A4F8BF00214537 /* NCActivityIndicator.swift */; };
@@ -1068,6 +1070,7 @@
 		F769CA162965AB7C00039397 /* NCUploadAssets.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCUploadAssets.swift; sourceTree = "<group>"; };
 		F769CA182966EA3C00039397 /* ComponentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComponentView.swift; sourceTree = "<group>"; };
 		F76B3CCD1EAE01BD00921AC9 /* NCBrand.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCBrand.swift; sourceTree = "<group>"; };
+		F76B649B2ADFFAED00014640 /* NCMediaManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCMediaManager.swift; sourceTree = "<group>"; };
 		F76D364528A4F8BF00214537 /* NCActivityIndicator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCActivityIndicator.swift; sourceTree = "<group>"; };
 		F76D3CF02428B40E005DFA87 /* NCViewerPDFSearch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCViewerPDFSearch.swift; sourceTree = "<group>"; };
 		F76D3CF22428B94E005DFA87 /* NCViewerPDFSearchCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = NCViewerPDFSearchCell.xib; sourceTree = "<group>"; };
@@ -1504,6 +1507,7 @@
 				F74E7720277A2EF40013B958 /* XLForm in Frameworks */,
 				F73ADD1C265546890069EA0D /* SwiftEntryKit in Frameworks */,
 				F31F69642A2F929600162F76 /* PreviewSnapshots in Frameworks */,
+				F76B649E2ADFFDEC00014640 /* LRUCache in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2376,6 +2380,7 @@
 				F720B5B72507B9A5008C94E5 /* Cell */,
 				F7501C302212E57400FB1415 /* NCMedia.storyboard */,
 				F7501C312212E57400FB1415 /* NCMedia.swift */,
+				F76B649B2ADFFAED00014640 /* NCMediaManager.swift */,
 				F7F1E54B2492369A00E42386 /* NCMediaCommandView.xib */,
 			);
 			path = Media;
@@ -2889,6 +2894,7 @@
 				F7A1050D29E587AF00FFD92B /* TagListView */,
 				F31F69632A2F929600162F76 /* PreviewSnapshots */,
 				F7F623B42A5EF4D30022D3D4 /* Gzip */,
+				F76B649D2ADFFDEC00014640 /* LRUCache */,
 			);
 			productName = "Crypto Cloud";
 			productReference = F7CE8AFA1DC1F8D8009CAE48 /* Nextcloud.app */;
@@ -3064,6 +3070,7 @@
 				F31F69622A2F929600162F76 /* XCRemoteSwiftPackageReference "swiftui-preview-snapshots" */,
 				F31F69672A2F92F000162F76 /* XCRemoteSwiftPackageReference "SnapshotTestingHEIC" */,
 				F7F623B32A5EF4D30022D3D4 /* XCRemoteSwiftPackageReference "GzipSwift" */,
+				F76B649A2ADFFAD200014640 /* XCRemoteSwiftPackageReference "LRUCache" */,
 			);
 			productRefGroup = F7F67B9F1A24D27800EE80DA;
 			projectDirPath = "";
@@ -3657,6 +3664,7 @@
 				F72A47EC2487B06B005AD489 /* NCOperationQueue.swift in Sources */,
 				F769454622E9F1B0000A798A /* NCShareCommon.swift in Sources */,
 				F70753F12542A9A200972D44 /* NCViewerMedia.swift in Sources */,
+				F76B649C2ADFFAED00014640 /* NCMediaManager.swift in Sources */,
 				F78A18B823CDE2B300F681F3 /* NCViewerRichWorkspace.swift in Sources */,
 				F7A60F86292D215000FCE1F2 /* NCShareAccounts.swift in Sources */,
 				F77910AB25DD53C700CEDB9E /* NCSettingsBundleHelper.swift in Sources */,
@@ -4989,6 +4997,14 @@
 				minimumVersion = 4.3.0;
 			};
 		};
+		F76B649A2ADFFAD200014640 /* XCRemoteSwiftPackageReference "LRUCache" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/nicklockwood/LRUCache";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.0.4;
+			};
+		};
 		F76DA961277B760E0082465B /* XCRemoteSwiftPackageReference "Queuer" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/FabrizioBrancati/Queuer";
@@ -5340,6 +5356,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = F75EAED626D2552E00F4320E /* XCRemoteSwiftPackageReference "MarqueeLabel" */;
 			productName = MarqueeLabel;
+		};
+		F76B649D2ADFFDEC00014640 /* LRUCache */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F76B649A2ADFFAD200014640 /* XCRemoteSwiftPackageReference "LRUCache" */;
+			productName = LRUCache;
 		};
 		F76DA962277B760E0082465B /* Queuer */ = {
 			isa = XCSwiftPackageProductDependency;
