@@ -194,7 +194,7 @@ class NCOperationDownloadThumbnail: ConcurrentOperation {
             fileNameIconLocalPath: fileNameIconLocalPath,
             sizeIcon: NCGlobal.shared.sizeIcon,
             etag: etagResource,
-            options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { _, _, imageIcon, _, etag, error in
+            options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { _, imagePreview, imageIcon, _, etag, error in
 
             if error == .success, let imageIcon = imageIcon {
                 NCManageDatabase.shared.setMetadataEtagResource(ocId: self.metadata.ocId, etagResource: etag)
@@ -214,6 +214,7 @@ class NCOperationDownloadThumbnail: ConcurrentOperation {
                     }
                     NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDownloadedThumbnail, userInfo: ["ocId": self.metadata.ocId])
                 }
+                NCMediaManager.shared.setImage(ocId: self.metadata.ocId, image: imageIcon)
             }
             self.finish()
         }
