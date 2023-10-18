@@ -10,7 +10,7 @@ import UIKit
 import LRUCache
 import NextcloudKit
 
-@objc class NCMediaManager {
+@objc class NCMediaManager: NSObject {
 
     @objc public static let shared: NCMediaManager = {
         let instance = NCMediaManager()
@@ -18,9 +18,9 @@ import NextcloudKit
     }()
 
     private typealias ThumbnailLRUCache = LRUCache<String, UIImage>
-    private let cache: ThumbnailLRUCache = ThumbnailLRUCache(countLimit: 1500)
+    private let cache: ThumbnailLRUCache = ThumbnailLRUCache(countLimit: 2000)
 
-    func createCache(account: String) {
+    @objc func createCache(account: String) {
 
         let resultsMedia = NCManageDatabase.shared.getMediaOcIdEtag(account: account)
         guard !resultsMedia.isEmpty,

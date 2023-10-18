@@ -161,6 +161,8 @@
             } else {
                 [[[NextcloudKit shared] nkCommonInstance] writeLog:[NSString stringWithFormat:@"[INFO] Clear log with level %lu %@", (unsigned long)logLevel, versionNextcloudiOS]];
             }
+
+            [[NCMediaManager shared] createCacheWithAccount:appDelegate.account];
         };
         [section addFormRow:row];
         
