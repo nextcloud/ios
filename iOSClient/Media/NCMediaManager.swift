@@ -17,7 +17,7 @@ class NCMediaManager {
     }()
 
     typealias ThumbnailLRUCache = LRUCache<String, UIImage>
-    let cache: ThumbnailLRUCache = ThumbnailLRUCache(countLimit: 1000)
+    let cache: ThumbnailLRUCache = ThumbnailLRUCache(countLimit: 2000)
 
     func createCache(account: String) {
 

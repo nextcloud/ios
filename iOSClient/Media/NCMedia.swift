@@ -374,8 +374,11 @@ extension NCMedia: UICollectionViewDataSource {
             cell.imageItem.backgroundColor = nil
             cell.imageItem.image = image
         } else if FileManager().fileExists(atPath: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)) {
-            cell.imageItem.backgroundColor = nil
-            cell.imageItem.image = UIImage(contentsOfFile: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag))
+            if let image = UIImage(contentsOfFile: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)) {
+                cell.imageItem.backgroundColor = nil
+                cell.imageItem.image = image
+                NCMediaManager.shared.setImage(ocId: metadata.ocId, image: image)
+            }
         } else {
             NCOperationQueue.shared.downloadThumbnail(metadata: metadata, placeholder: false, cell: cell, view: collectionView)
         }
