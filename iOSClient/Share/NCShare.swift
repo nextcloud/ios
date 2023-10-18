@@ -380,8 +380,8 @@ extension NCShare: UITableViewDataSource {
     }
 }
 
+// MARK: CNContactPickerDelegate
 
-//MARK: CNContactPickerDelegate
 extension NCShare: CNContactPickerDelegate {
     func contactPicker(_ picker: CNContactPickerViewController, didSelect contact: CNContact) {
         if  contact.emailAddresses.count > 1 {
@@ -391,7 +391,7 @@ extension NCShare: CNContactPickerDelegate {
             networking?.getSharees(searchString: email)
         }
     }
-    
+
     func showEmailList(arrEmail: [String]) {
         var actions = [NCMenuAction]()
         for email in arrEmail {
