@@ -31,7 +31,6 @@ class NCMediaManager {
         struct FileInfo {
             var path: URL
             var ocId: String
-            var etag: String
             var date: Date
         }
         var files: [FileInfo] = []
@@ -50,7 +49,7 @@ class NCMediaManager {
                         let date = resourceValues.creationDate,
                         let etag = resultsMedia[ocId],
                         fileName == etag + ext else { continue }
-                files.append(FileInfo(path: fileURL, ocId: ocId, etag: etag, date: date))
+                files.append(FileInfo(path: fileURL, ocId: ocId, date: date))
             }
         }
 
