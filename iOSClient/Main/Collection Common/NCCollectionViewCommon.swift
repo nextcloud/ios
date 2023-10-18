@@ -320,21 +320,12 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
         guard let userInfo = notification.userInfo as NSDictionary?,
               let error = userInfo["error"] as? NKError else { return }
-        let onlyLocalCache: Bool = userInfo["onlyLocalCache"] as? Bool ?? false
 
         self.queryDB(isForced: true)
+        self.collectionView?.reloadData()
 
-        if error == .success, let indexPath = userInfo["indexPath"] as? [IndexPath], !indexPath.isEmpty, !onlyLocalCache {
-            collectionView?.performBatchUpdates({
-                collectionView?.deleteItems(at: indexPath)
-            }, completion: { _ in
-                self.collectionView?.reloadData()
-            })
-        } else {
-            if error != .success {
-                NCContentPresenter.shared.showError(error: error)
-            }
-            self.collectionView?.reloadData()
+        if error != .success {
+            NCContentPresenter.shared.showError(error: error)
         }
 
         if let hud = userInfo["hud"] as? JGProgressHUD {
