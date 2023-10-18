@@ -10,15 +10,15 @@ import UIKit
 import LRUCache
 import NextcloudKit
 
-class NCMediaManager {
+@objc class NCMediaManager {
 
-    public static let shared: NCMediaManager = {
+    @objc public static let shared: NCMediaManager = {
         let instance = NCMediaManager()
         return instance
     }()
 
-    typealias ThumbnailLRUCache = LRUCache<String, UIImage>
-    let cache: ThumbnailLRUCache = ThumbnailLRUCache(countLimit: 2000)
+    private typealias ThumbnailLRUCache = LRUCache<String, UIImage>
+    private let cache: ThumbnailLRUCache = ThumbnailLRUCache(countLimit: 1500)
 
     func createCache(account: String) {
 
@@ -39,6 +39,7 @@ class NCMediaManager {
         let startDate = Date()
         let startMemory = NCUtility.shared.getMemoryUsedAndDeviceTotalInMegabytes()
         NextcloudKit.shared.nkCommonInstance.writeLog("--------- start ThumbnailLRUCache image process ---------")
+        NextcloudKit.shared.nkCommonInstance.writeLog("Memory used in MB: \(startMemory.0)")
 
         // Get files only image / video
         if let enumerator = manager.enumerator(at: URL(fileURLWithPath: directory), includingPropertiesForKeys: [.isRegularFileKey], options: [.skipsHiddenFiles]) {
@@ -58,8 +59,8 @@ class NCMediaManager {
         // Sort for most recent
         files.sort(by: { $0.date > $1.date })
         if let firstDate = files.first?.date, let lastDate = files.last?.date {
-            NextcloudKit.shared.nkCommonInstance.writeLog("First date: \(firstDate)")
-            NextcloudKit.shared.nkCommonInstance.writeLog("Last date: \(lastDate)")
+            print("First date: \(firstDate)")
+            print("Last date: \(lastDate)")
         }
 
         // Insert in cache
@@ -78,6 +79,7 @@ class NCMediaManager {
         let usedMemory = endMemory.0 - startMemory.0
         NextcloudKit.shared.nkCommonInstance.writeLog("Counter process: \(cache.count)")
         NextcloudKit.shared.nkCommonInstance.writeLog("Time process: \(diffDate)")
+        NextcloudKit.shared.nkCommonInstance.writeLog("Memory used in MB: \(endMemory.0)")
         NextcloudKit.shared.nkCommonInstance.writeLog("Memory used for cache in MB: \(usedMemory)")
         NextcloudKit.shared.nkCommonInstance.writeLog("--------- stop ThumbnailLRUCache image process ---------")
     }
@@ -90,5 +92,10 @@ class NCMediaManager {
     func setImage(ocId: String, image: UIImage) {
 
         cache.setValue(image, forKey: ocId)
+    }
+
+    @objc func clearCache() {
+
+        cache.removeAllValues()
     }
 }
