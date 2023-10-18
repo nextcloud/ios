@@ -809,4 +809,36 @@ class NCUtility: NSObject {
             }
         }
     }
+
+    // https://stackoverflow.com/questions/5887248/ios-app-maximum-memory-budget/19692719#19692719
+    // https://stackoverflow.com/questions/27556807/swift-pointer-problems-with-mach-task-basic-info/27559770#27559770
+
+    func getMemoryUsedAndDeviceTotalInMegabytes() -> (Float, Float) {
+
+        var usedmegabytes: Float = 0
+
+        let totalbytes = Float(ProcessInfo.processInfo.physicalMemory)
+        let totalmegabytes = totalbytes / 1024.0 / 1024.0
+
+        var info = mach_task_basic_info()
+        var count = mach_msg_type_number_t(MemoryLayout<mach_task_basic_info>.size) / 4
+
+        let kerr: kern_return_t = withUnsafeMutablePointer(to: &info) {
+            $0.withMemoryRebound(to: integer_t.self, capacity: 1) {
+                task_info(
+                    mach_task_self_,
+                    task_flavor_t(MACH_TASK_BASIC_INFO),
+                    $0,
+                    &count
+                )
+            }
+        }
+
+        if kerr == KERN_SUCCESS {
+            let usedbytes: Float = Float(info.resident_size)
+            usedmegabytes = usedbytes / 1024.0 / 1024.0
+        }
+
+        return (usedmegabytes, totalmegabytes)
+    }
 }

@@ -8,6 +8,7 @@
 
 import UIKit
 import LRUCache
+import NextcloudKit
 
 class NCMediaManager {
 
@@ -36,7 +37,8 @@ class NCMediaManager {
         var files: [FileInfo] = []
 
         let startDate = Date()
-        print("--------- start ThumbnailLRUCache image process ---------")
+        let startMemory = NCUtility.shared.getMemoryUsedAndDeviceTotalInMegabytes()
+        NextcloudKit.shared.nkCommonInstance.writeLog("--------- start ThumbnailLRUCache image process ---------")
 
         // Get files only image / video
         if let enumerator = manager.enumerator(at: URL(fileURLWithPath: directory), includingPropertiesForKeys: [.isRegularFileKey], options: [.skipsHiddenFiles]) {
@@ -56,8 +58,8 @@ class NCMediaManager {
         // Sort for most recent
         files.sort(by: { $0.date > $1.date })
         if let firstDate = files.first?.date, let lastDate = files.last?.date {
-            print("First date: \(firstDate)")
-            print("Last date: \(lastDate)")
+            NextcloudKit.shared.nkCommonInstance.writeLog("First date: \(firstDate)")
+            NextcloudKit.shared.nkCommonInstance.writeLog("Last date: \(lastDate)")
         }
 
         // Insert in cache
@@ -72,9 +74,12 @@ class NCMediaManager {
 
         let endDate = Date()
         let diffDate = endDate.timeIntervalSinceReferenceDate - startDate.timeIntervalSinceReferenceDate
-        print("Counter process: \(cache.count)")
-        print("Time process: \(diffDate)")
-        print("--------- stop ThumbnailLRUCache image process ---------")
+        let endMemory = NCUtility.shared.getMemoryUsedAndDeviceTotalInMegabytes()
+        let usedMemory = endMemory.0 - startMemory.0
+        NextcloudKit.shared.nkCommonInstance.writeLog("Counter process: \(cache.count)")
+        NextcloudKit.shared.nkCommonInstance.writeLog("Time process: \(diffDate)")
+        NextcloudKit.shared.nkCommonInstance.writeLog("Memory used for cache in MB: \(usedMemory)")
+        NextcloudKit.shared.nkCommonInstance.writeLog("--------- stop ThumbnailLRUCache image process ---------")
     }
 
     func getImage(ocId: String) -> UIImage? {
