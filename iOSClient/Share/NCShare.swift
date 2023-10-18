@@ -28,6 +28,7 @@ import Parchment
 import DropDown
 import NextcloudKit
 import MarqueeLabel
+import ContactsUI
 
 class NCShare: UIViewController, NCShareNetworkingDelegate, NCSharePagingContent {
 
@@ -42,6 +43,7 @@ class NCShare: UIViewController, NCShareNetworkingDelegate, NCSharePagingContent
     var textField: UITextField? { searchField }
 
     @IBOutlet weak var tableView: UITableView!
+    @IBOutlet weak var btnContact: UIButton!
 
     weak var appDelegate = UIApplication.shared.delegate as? AppDelegate
 
@@ -103,6 +105,13 @@ class NCShare: UIViewController, NCShareNetworkingDelegate, NCSharePagingContent
             let isVisible = (self.navigationController?.topViewController as? NCSharePaging)?.page == .sharing
             networking?.readShare(showLoadingIndicator: isVisible)
         }
+
+        btnContact.layer.cornerRadius = 5
+        btnContact.layer.masksToBounds = true
+        btnContact.layer.borderWidth = 1
+        btnContact.layer.borderColor = UIColor.gray.cgColor
+        btnContact.tintColor = .gray
+        btnContact.setImage(NCUtility.shared.loadImage(named: "contact", color: .gray, size: 24), for: .normal)
     }
 
     func makeNewLinkShare() {
@@ -208,6 +217,14 @@ class NCShare: UIViewController, NCShareNetworkingDelegate, NCSharePagingContent
         self.present(UIAlertController.password(titleKey: "_enforce_password_protection_", completion: completion), animated: true)
     }
 
+    @IBAction func selectContactClicked(_ sender: Any) {
+        let cnPicker = CNContactPickerViewController()
+        cnPicker.delegate = self
+        cnPicker.displayedPropertyKeys = [CNContactEmailAddressesKey]
+        cnPicker.predicateForEnablingContact = NSPredicate(format: "emailAddresses.@count > 0")
+        cnPicker.predicateForSelectionOfProperty = NSPredicate(format: "emailAddresses.@count > 0")
+        self.present(cnPicker, animated: true)
+    }
     // MARK: - NCShareNetworkingDelegate
 
     func readShareCompleted() {
@@ -360,5 +377,39 @@ extension NCShare: UITableViewDataSource {
         }
 
         return UITableViewCell()
+    }
+}
+
+
+//MARK: CNContactPickerDelegate
+extension NCShare: CNContactPickerDelegate {
+    func contactPicker(_ picker: CNContactPickerViewController, didSelect contact: CNContact) {
+        if  contact.emailAddresses.count > 1 {
+            showEmailList(arrEmail: contact.emailAddresses.map({$0.value as String}))
+        } else if let email = contact.emailAddresses.first?.value as? String {
+            textField?.text = email
+            networking?.getSharees(searchString: email)
+        }
+    }
+    
+    func showEmailList(arrEmail: [String]) {
+        var actions = [NCMenuAction]()
+        for email in arrEmail {
+            actions.append(
+                NCMenuAction(
+                    title: email,
+                    icon: NCUtility.shared.loadImage(named: "email"),
+                    selected: false,
+                    on: false,
+                    action: { _ in
+                        self.textField?.text = email
+                        self.networking?.getSharees(searchString: email)
+                    }
+                )
+            )
+        }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            self.presentMenu(with: actions)
+        }
     }
 }
