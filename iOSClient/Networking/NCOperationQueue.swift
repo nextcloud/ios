@@ -172,9 +172,7 @@ class NCOperationDownloadThumbnail: ConcurrentOperation {
                             (self.view as? UITableView)?.reloadData()
                         }
                     }
-                    NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDownloadedThumbnail, userInfo: ["ocId": self.metadata.ocId])
                 }
-                NCMediaManager.shared.setImage(ocId: self.metadata.ocId, image: image)
             }
             self.finish()
         }

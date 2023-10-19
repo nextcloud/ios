@@ -370,14 +370,14 @@ extension NCMedia: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
         guard let cell = (cell as? NCGridMediaCell), indexPath.row < self.metadatas.count else { return }
         let metadata = self.metadatas[indexPath.row]
-        if let image = NCMediaManager.shared.getImage(ocId: metadata.ocId) {
+        if let image = NCMediaCache.shared.getImage(ocId: metadata.ocId) {
             cell.imageItem.backgroundColor = nil
             cell.imageItem.image = image
         } else if FileManager().fileExists(atPath: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)) {
             if let image = UIImage(contentsOfFile: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)) {
                 cell.imageItem.backgroundColor = nil
                 cell.imageItem.image = image
-                NCMediaManager.shared.setImage(ocId: metadata.ocId, image: image)
+                NCMediaCache.shared.setImage(ocId: metadata.ocId, image: image)
             }
         } else {
             if metadata.hasPreview && metadata.status == NCGlobal.shared.metadataStatusNormal && (!CCUtility.fileProviderStoragePreviewIconExists(metadata.ocId, etag: metadata.etag)) {

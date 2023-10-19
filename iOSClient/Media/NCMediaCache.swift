@@ -1,5 +1,5 @@
 //
-//  NCMediaManager.swift
+//  NCMediaCache.swift
 //  Nextcloud
 //
 //  Created by Milen on 10.10.23.
@@ -10,10 +10,10 @@ import UIKit
 import LRUCache
 import NextcloudKit
 
-@objc class NCMediaManager: NSObject {
+@objc class NCMediaCache: NSObject {
 
-    @objc public static let shared: NCMediaManager = {
-        let instance = NCMediaManager()
+    @objc public static let shared: NCMediaCache = {
+        let instance = NCMediaCache()
         return instance
     }()
 

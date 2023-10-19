@@ -162,7 +162,7 @@
                 [[[NextcloudKit shared] nkCommonInstance] writeLog:[NSString stringWithFormat:@"[INFO] Clear log with level %lu %@", (unsigned long)logLevel, versionNextcloudiOS]];
             }
 
-            [[NCMediaManager shared] createCacheWithAccount:appDelegate.account];
+            [[NCMediaCache shared] createCacheWithAccount:appDelegate.account];
         };
         [section addFormRow:row];
         
@@ -388,7 +388,7 @@
 
         [[NCAutoUpload shared] alignPhotoLibraryWithViewController:self];
 
-        [[NCMediaManager shared] clearCache];
+        [[NCMediaCache shared] clearCache];
 
         [[NCActivityIndicator shared] stop];
         [self calculateSize];

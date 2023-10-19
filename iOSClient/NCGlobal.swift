@@ -379,8 +379,6 @@ class NCGlobal: NSObject {
     let notificationCenterMenuSearchTextPDF                     = "menuSearchTextPDF"
     let notificationCenterMenuGotToPageInPDF                    = "menuGotToPageInPDF"
 
-    let notificationCenterDownloadedThumbnail                   = "DownloadedThumbnail"             // userInfo: ocId
-
     let notificationCenterOpenMediaDetail                       = "openMediaDetail"                 // userInfo: ocId
 
     let notificationCenterDismissScanDocument                   = "dismissScanDocument"
