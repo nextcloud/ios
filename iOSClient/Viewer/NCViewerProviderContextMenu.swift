@@ -116,28 +116,38 @@ class NCViewerProviderContextMenu: UIViewController {
                         maxDownload = NCGlobal.shared.maxAutoDownload
                     }
 
-                    if metadata.size <= maxDownload {
-                        NCOperationQueue.shared.download(metadata: metadata, selector: "")
+                    if metadata.size <= maxDownload, 
+                       let appDelegate = (UIApplication.shared.delegate as? AppDelegate),
+                       appDelegate.downloadQueue.operations.filter({ ($0 as? NCOperationDownload)?.metadata.ocId == metadata.ocId }).isEmpty {
+                        appDelegate.downloadQueue.addOperation(NCOperationDownload(metadata: metadata, selector: ""))
                     }
                 }
             }
 
             // AUTO DOWNLOAD IMAGE GIF
-            if !CCUtility.fileProviderStorageExists(metadata) && metadata.contentType == "image/gif" {
-                NCOperationQueue.shared.download(metadata: metadata, selector: "")
+            if !CCUtility.fileProviderStorageExists(metadata),
+               metadata.contentType == "image/gif",
+               let appDelegate = (UIApplication.shared.delegate as? AppDelegate),
+               appDelegate.downloadQueue.operations.filter({ ($0 as? NCOperationDownload)?.metadata.ocId == metadata.ocId }).isEmpty {
+                appDelegate.downloadQueue.addOperation(NCOperationDownload(metadata: metadata, selector: ""))
             }
 
             // AUTO DOWNLOAD IMAGE SVG
-            if !CCUtility.fileProviderStorageExists(metadata) && metadata.contentType == "image/svg+xml" {
-                NCOperationQueue.shared.download(metadata: metadata, selector: "")
+            if !CCUtility.fileProviderStorageExists(metadata),
+               metadata.contentType == "image/svg+xml",
+               let appDelegate = (UIApplication.shared.delegate as? AppDelegate),
+               appDelegate.downloadQueue.operations.filter({ ($0 as? NCOperationDownload)?.metadata.ocId == metadata.ocId }).isEmpty {
+                appDelegate.downloadQueue.addOperation(NCOperationDownload(metadata: metadata, selector: ""))
             }
 
             // AUTO DOWNLOAD LIVE PHOTO
-            if let metadataLivePhoto = self.metadataLivePhoto {
-                if !CCUtility.fileProviderStorageExists(metadataLivePhoto) {
-                    NCOperationQueue.shared.download(metadata: metadataLivePhoto, selector: "")
-                }
+            if let metadataLivePhoto = self.metadataLivePhoto,
+               !CCUtility.fileProviderStorageExists(metadataLivePhoto),
+               let appDelegate = (UIApplication.shared.delegate as? AppDelegate),
+               appDelegate.downloadQueue.operations.filter({ ($0 as? NCOperationDownload)?.metadata.ocId == metadata.ocId }).isEmpty {
+                appDelegate.downloadQueue.addOperation(NCOperationDownload(metadata: metadataLivePhoto, selector: ""))
             }
+
         }
     }
 

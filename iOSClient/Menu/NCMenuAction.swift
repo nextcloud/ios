@@ -222,12 +222,16 @@ extension NCMenuAction {
             action: { _ in
                 for metadata in selectedMediaMetadatas {
                     if let metadataMOV = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata) {
-                        NCOperationQueue.shared.saveLivePhoto(metadata: metadata, metadataMOV: metadataMOV)
+                        if let appDelegate = (UIApplication.shared.delegate as? AppDelegate) {
+                            appDelegate.saveLivePhotoQueue.addOperation(NCOperationSaveLivePhoto(metadata: metadata, metadataMOV: metadataMOV))
+                        }
                     } else {
                         if CCUtility.fileProviderStorageExists(metadata) {
                             NCActionCenter.shared.saveAlbum(metadata: metadata)
                         } else {
-                            NCOperationQueue.shared.download(metadata: metadata, selector: NCGlobal.shared.selectorSaveAlbum)
+                            if let appDelegate = (UIApplication.shared.delegate as? AppDelegate), appDelegate.downloadQueue.operations.filter({ ($0 as? NCOperationDownload)?.metadata.ocId == metadata.ocId }).isEmpty {
+                                appDelegate.downloadQueue.addOperation(NCOperationDownload(metadata: metadata, selector: NCGlobal.shared.selectorSaveAlbum))
+                            }
                         }
                     }
                 }

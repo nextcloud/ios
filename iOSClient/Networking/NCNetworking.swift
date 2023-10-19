@@ -26,6 +26,7 @@ import OpenSSL
 import NextcloudKit
 import Alamofire
 import Photos
+import Queuer
 
 @objc public protocol NCNetworkingDelegate {
     @objc optional func downloadProgress(_ progress: Float, totalBytes: Int64, totalBytesExpected: Int64, fileName: String, serverUrl: String, session: URLSession, task: URLSessionTask)
@@ -958,8 +959,11 @@ class NCNetworking: NSObject, NKCommonDelegate {
                         if metadata.directory {
                             let serverUrl = metadata.serverUrl + "/" + metadata.fileName
                             NCManageDatabase.shared.addDirectory(encrypted: metadata.e2eEncrypted, favorite: metadata.favorite, ocId: metadata.ocId, fileId: metadata.fileId, etag: metadata.etag, permissions: metadata.permissions, serverUrl: serverUrl, account: metadata.account)
-                        } else if selector == NCGlobal.shared.selectorSynchronizationOffline, NCManageDatabase.shared.isDownloadMetadata(metadata, download: true) {
-                            NCOperationQueue.shared.download(metadata: metadata, selector: selector)
+                        } else if selector == NCGlobal.shared.selectorSynchronizationOffline,
+                                  NCManageDatabase.shared.isDownloadMetadata(metadata, download: true),
+                                  let appDelegate = (UIApplication.shared.delegate as? AppDelegate),
+                                  appDelegate.downloadQueue.operations.filter({ ($0 as? NCOperationDownload)?.metadata.ocId == metadata.ocId }).isEmpty {
+                            appDelegate.downloadQueue.addOperation(NCOperationDownload(metadata: metadata, selector: selector))
                         }
                     }
                 }
@@ -1644,5 +1648,27 @@ class NCNetworking: NSObject, NKCommonDelegate {
 extension Array where Element == URLQueryItem {
     subscript(name: String) -> URLQueryItem? {
         first(where: { $0.name == name })
+    }
+}
+
+// MARK: -
+
+class NCOperationDownload: ConcurrentOperation {
+
+    var metadata: tableMetadata
+    var selector: String
+
+    init(metadata: tableMetadata, selector: String) {
+        self.metadata = tableMetadata.init(value: metadata)
+        self.selector = selector
+    }
+
+    override func start() {
+
+        guard !isCancelled else { return self.finish() }
+
+        NCNetworking.shared.download(metadata: metadata, selector: self.selector) { _, _ in
+            self.finish()
+        }
     }
 }

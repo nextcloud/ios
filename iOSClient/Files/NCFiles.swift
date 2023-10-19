@@ -165,7 +165,9 @@ class NCFiles: NCCollectionViewCommon {
         networkReadFolder(isForced: isForced) { tableDirectory, metadatas, metadatasUpdate, metadatasDelete, error in
             if error == .success {
                 for metadata in metadatas ?? [] where !metadata.directory && NCManageDatabase.shared.isDownloadMetadata(metadata, download: false) {
-                    NCOperationQueue.shared.download(metadata: metadata, selector: NCGlobal.shared.selectorDownloadFile)
+                    if self.appDelegate.downloadQueue.operations.filter({ ($0 as? NCOperationDownload)?.metadata.ocId == metadata.ocId }).isEmpty {
+                        self.appDelegate.downloadQueue.addOperation(NCOperationDownload(metadata: metadata, selector: NCGlobal.shared.selectorDownloadFile))
+                    }
                 }
             }
 
