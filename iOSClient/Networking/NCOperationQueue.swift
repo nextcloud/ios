@@ -42,21 +42,6 @@ import JGProgressHUD
         appDelegate.downloadQueue.addOperation(NCOperationDownload(metadata: metadata, selector: selector))
     }
 
-    // MARK: - Download Thumbnail Activity
-
-    func downloadThumbnailActivity(fileNamePathOrFileId: String, fileNamePreviewLocalPath: String, fileId: String, cell: NCActivityCollectionViewCell, collectionView: UICollectionView?) {
-
-        cell.imageView?.image = UIImage(named: "file_photo")
-        cell.fileId = fileId
-
-        if !FileManager.default.fileExists(atPath: fileNamePreviewLocalPath) {
-            for case let operation as NCOperationDownloadThumbnailActivity in appDelegate.downloadThumbnailActivityQueue.operations where operation.fileId == fileId {
-                return
-            }
-            appDelegate.downloadThumbnailActivityQueue.addOperation(NCOperationDownloadThumbnailActivity(fileNamePathOrFileId: fileNamePathOrFileId, fileNamePreviewLocalPath: fileNamePreviewLocalPath, fileId: fileId, cell: cell, collectionView: collectionView))
-        }
-    }
-
     // MARK: - Download Avatar
 
     func downloadAvatar(user: String, dispalyName: String?, fileName: String, cell: NCCellProtocol, view: UIView?, cellImageView: UIImageView?) {
@@ -112,54 +97,6 @@ class NCOperationDownload: ConcurrentOperation {
         guard !isCancelled else { return self.finish() }
 
         NCNetworking.shared.download(metadata: metadata, selector: self.selector) { _, _ in
-            self.finish()
-        }
-    }
-}
-
-// MARK: -
-
-class NCOperationDownloadThumbnailActivity: ConcurrentOperation {
-
-    var cell: NCActivityCollectionViewCell?
-    var collectionView: UICollectionView?
-    var fileNamePathOrFileId: String
-    var fileNamePreviewLocalPath: String
-    var fileId: String
-
-    init(fileNamePathOrFileId: String, fileNamePreviewLocalPath: String, fileId: String, cell: NCActivityCollectionViewCell?, collectionView: UICollectionView?) {
-        self.fileNamePathOrFileId = fileNamePathOrFileId
-        self.fileNamePreviewLocalPath = fileNamePreviewLocalPath
-        self.fileId = fileId
-        self.cell = cell
-        self.collectionView = collectionView
-    }
-
-    override func start() {
-
-        guard !isCancelled else { return self.finish() }
-
-        NextcloudKit.shared.downloadPreview(fileNamePathOrFileId: fileNamePathOrFileId,
-                                            fileNamePreviewLocalPath: fileNamePreviewLocalPath,
-                                            widthPreview: 0,
-                                            heightPreview: 0,
-                                            etag: nil,
-                                            useInternalEndpoint: false,
-                                            options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { _, imagePreview, _, _, _, error in
-
-            if error == .success, let imagePreview = imagePreview {
-                DispatchQueue.main.async {
-                    if self.fileId == self.cell?.fileId, let imageView = self.cell?.imageView {
-                        UIView.transition(with: imageView,
-                                          duration: 0.75,
-                                          options: .transitionCrossDissolve,
-                                          animations: { imageView.image = imagePreview },
-                                          completion: nil)
-                    } else {
-                        self.collectionView?.reloadData()
-                    }
-                }
-            }
             self.finish()
         }
     }
