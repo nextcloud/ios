@@ -9,18 +9,6 @@
 import UIKit
 import LRUCache
 import NextcloudKit
-import Queuer
-
-struct ScaledThumbnail: Hashable {
-    let image: UIImage
-    var isPlaceholderImage = false
-    var scaledSize: CGSize = .zero
-    let ocId: String
-
-    func hash(into hasher: inout Hasher) {
-        hasher.combine(ocId)
-    }
-}
 
 @objc class NCMediaManager: NSObject {
 
@@ -29,7 +17,7 @@ struct ScaledThumbnail: Hashable {
         return instance
     }()
 
-    typealias ThumbnailLRUCache = LRUCache<String, ScaledThumbnail>
+    private typealias ThumbnailLRUCache = LRUCache<String, UIImage>
     private let cache: ThumbnailLRUCache = ThumbnailLRUCache(countLimit: 2000)
 
     @objc func createCache(account: String) {
@@ -78,8 +66,7 @@ struct ScaledThumbnail: Hashable {
         for file in files {
             autoreleasepool {
                 if let image = UIImage(contentsOfFile: file.path.path) {
-                    let scaledThumbnail = ScaledThumbnail(image: image, ocId: file.ocId)
-                    cache.setValue(scaledThumbnail, forKey: file.ocId)
+                    cache.setValue(image, forKey: file.ocId)
                 }
             }
         }
@@ -93,16 +80,12 @@ struct ScaledThumbnail: Hashable {
 
     func getImage(ocId: String) -> UIImage? {
 
-        if let scaledThumbnail = cache.value(forKey: ocId) {
-            return scaledThumbnail.image
-        }
-        return nil
+        return cache.value(forKey: ocId)
     }
 
     func setImage(ocId: String, image: UIImage) {
 
-        let scaledThumbnail = ScaledThumbnail(image: image, ocId: ocId)
-        cache.setValue(scaledThumbnail, forKey: ocId)
+        cache.setValue(image, forKey: ocId)
     }
 
     @objc func clearCache() {
