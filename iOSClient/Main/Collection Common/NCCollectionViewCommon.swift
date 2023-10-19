@@ -941,7 +941,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                     searchResults: self.searchResults)
             } update: { _, _, searchResult, metadatas in
                 guard let metadatas, !metadatas.isEmpty, self.isSearchingMode, let searchResult else { return }
-                NCOperationQueue.shared.unifiedSearchAddSection(collectionViewCommon: self, metadatas: metadatas, searchResult: searchResult)
+                self.appDelegate.unifiedSearchQueue.addOperation(NCOperationUnifiedSearch(collectionViewCommon: self, metadatas: metadatas, searchResult: searchResult))
             } completion: { _, _ in
                 self.refreshControl.endRefreshing()
                 self.isReloadDataSourceNetworkInProgress = false
@@ -1238,7 +1238,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                 if !metadata.iconUrl.isEmpty {
                     if let ownerId = NCUtility.shared.getAvatarFromIconUrl(metadata: metadata), let cell = cell as? NCCellProtocol {
                         let fileName = metadata.userBaseUrl + "-" + ownerId + ".png"
-                        NCOperationQueue.shared.downloadAvatar(user: ownerId, dispalyName: nil, fileName: fileName, cell: cell, view: collectionView, cellImageView: cell.filePreviewImageView)
+                        NCNetworking.shared.downloadAvatar(user: ownerId, dispalyName: nil, fileName: fileName, cell: cell, view: collectionView, cellImageView: cell.filePreviewImageView)
                     }
                 }
             }
@@ -1250,7 +1250,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
            appDelegate.account == metadata.account,
            let cell = cell as? NCCellProtocol {
             let fileName = metadata.userBaseUrl + "-" + metadata.ownerId + ".png"
-            NCOperationQueue.shared.downloadAvatar(user: metadata.ownerId, dispalyName: metadata.ownerDisplayName, fileName: fileName, cell: cell, view: collectionView, cellImageView: cell.fileAvatarImageView)
+            NCNetworking.shared.downloadAvatar(user: metadata.ownerId, dispalyName: metadata.ownerDisplayName, fileName: fileName, cell: cell, view: collectionView, cellImageView: cell.fileAvatarImageView)
         }
     }
 
@@ -1703,6 +1703,41 @@ extension NCCollectionViewCommon: EasyTipViewDelegate {
     func dismissTip() {
         NCManageDatabase.shared.addTip(NCGlobal.shared.tipNCCollectionViewCommonAccountRequest)
         self.tipView?.dismiss()
+    }
+}
+
+// MARK: -
+
+class NCOperationUnifiedSearch: ConcurrentOperation {
+
+    var collectionViewCommon: NCCollectionViewCommon
+    var metadatas: [tableMetadata]
+    var searchResult: NKSearchResult
+
+    init(collectionViewCommon: NCCollectionViewCommon, metadatas: [tableMetadata], searchResult: NKSearchResult) {
+        self.collectionViewCommon = collectionViewCommon
+        self.metadatas = metadatas
+        self.searchResult = searchResult
+    }
+
+    func reloadDataThenPerform(_ closure: @escaping (() -> Void)) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+            CATransaction.begin()
+            CATransaction.setCompletionBlock(closure)
+            self.collectionViewCommon.collectionView.reloadData()
+            CATransaction.commit()
+        }
+    }
+
+    override func start() {
+
+        guard !isCancelled else { return self.finish() }
+
+        self.collectionViewCommon.dataSource.addSection(metadatas: metadatas, searchResult: searchResult)
+        self.collectionViewCommon.searchResults?.append(self.searchResult)
+        reloadDataThenPerform {
+            self.finish()
+        }
     }
 }
 

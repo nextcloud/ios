@@ -26,6 +26,7 @@ import OpenSSL
 import NextcloudKit
 import Alamofire
 import Photos
+import Queuer
 
 @objc public protocol NCNetworkingDelegate {
     @objc optional func downloadProgress(_ progress: Float, totalBytes: Int64, totalBytesExpected: Int64, fileName: String, serverUrl: String, session: URLSession, task: URLSessionTask)
@@ -352,6 +353,26 @@ class NCNetworking: NSObject, NKCommonDelegate {
             DispatchQueue.main.async { completion(afError, error) }
         }
     }
+
+#if !EXTENSION
+    func downloadAvatar(user: String, dispalyName: String?, fileName: String, cell: NCCellProtocol, view: UIView?, cellImageView: UIImageView?) {
+        guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else { return }
+        let fileNameLocalPath = String(CCUtility.getDirectoryUserData()) + "/" + fileName
+
+        if let image = NCManageDatabase.shared.getImageAvatarLoaded(fileName: fileName) {
+            cellImageView?.image = image
+            cell.fileAvatarImageView?.image = image
+            return
+        }
+
+        if let account = NCManageDatabase.shared.getActiveAccount() {
+            cellImageView?.image = NCUtility.shared.loadUserImage(for: user, displayName: dispalyName, userBaseUrl: account)
+        }
+
+        for case let operation as NCOperationDownloadAvatar in appDelegate.downloadAvatarQueue.operations where operation.fileName == fileName { return }
+        appDelegate.downloadAvatarQueue.addOperation(NCOperationDownloadAvatar(user: user, fileName: fileName, fileNameLocalPath: fileNameLocalPath, cell: cell, view: view, cellImageView: cellImageView))
+    }
+#endif
 
     // MARK: - Upload
 
@@ -958,8 +979,11 @@ class NCNetworking: NSObject, NKCommonDelegate {
                         if metadata.directory {
                             let serverUrl = metadata.serverUrl + "/" + metadata.fileName
                             NCManageDatabase.shared.addDirectory(encrypted: metadata.e2eEncrypted, favorite: metadata.favorite, ocId: metadata.ocId, fileId: metadata.fileId, etag: metadata.etag, permissions: metadata.permissions, serverUrl: serverUrl, account: metadata.account)
-                        } else if selector == NCGlobal.shared.selectorSynchronizationOffline, NCManageDatabase.shared.isDownloadMetadata(metadata, download: true) {
-                            NCOperationQueue.shared.download(metadata: metadata, selector: selector)
+                        } else if selector == NCGlobal.shared.selectorSynchronizationOffline,
+                                  NCManageDatabase.shared.isDownloadMetadata(metadata, download: true),
+                                  let appDelegate = (UIApplication.shared.delegate as? AppDelegate),
+                                  appDelegate.downloadQueue.operations.filter({ ($0 as? NCOperationDownload)?.metadata.ocId == metadata.ocId }).isEmpty {
+                            appDelegate.downloadQueue.addOperation(NCOperationDownload(metadata: metadata, selector: selector))
                         }
                     }
                 }
@@ -1644,5 +1668,83 @@ class NCNetworking: NSObject, NKCommonDelegate {
 extension Array where Element == URLQueryItem {
     subscript(name: String) -> URLQueryItem? {
         first(where: { $0.name == name })
+    }
+}
+
+// MARK: -
+
+class NCOperationDownload: ConcurrentOperation {
+
+    var metadata: tableMetadata
+    var selector: String
+
+    init(metadata: tableMetadata, selector: String) {
+        self.metadata = tableMetadata.init(value: metadata)
+        self.selector = selector
+    }
+
+    override func start() {
+
+        guard !isCancelled else { return self.finish() }
+
+        NCNetworking.shared.download(metadata: metadata, selector: self.selector) { _, _ in
+            self.finish()
+        }
+    }
+}
+
+class NCOperationDownloadAvatar: ConcurrentOperation {
+
+    var user: String
+    var fileName: String
+    var etag: String?
+    var fileNameLocalPath: String
+    var cell: NCCellProtocol!
+    var view: UIView?
+    var cellImageView: UIImageView?
+
+    init(user: String, fileName: String, fileNameLocalPath: String, cell: NCCellProtocol, view: UIView?, cellImageView: UIImageView?) {
+        self.user = user
+        self.fileName = fileName
+        self.fileNameLocalPath = fileNameLocalPath
+        self.cell = cell
+        self.view = view
+        self.etag = NCManageDatabase.shared.getTableAvatar(fileName: fileName)?.etag
+        self.cellImageView = cellImageView
+    }
+
+    override func start() {
+
+        guard !isCancelled else { return self.finish() }
+
+        NextcloudKit.shared.downloadAvatar(user: user,
+                                           fileNameLocalPath: fileNameLocalPath,
+                                           sizeImage: NCGlobal.shared.avatarSize,
+                                           avatarSizeRounded: NCGlobal.shared.avatarSizeRounded,
+                                           etag: self.etag,
+                                           options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { _, imageAvatar, _, etag, error in
+
+            if error == .success, let imageAvatar = imageAvatar, let etag = etag {
+                NCManageDatabase.shared.addAvatar(fileName: self.fileName, etag: etag)
+                DispatchQueue.main.async {
+                    if self.user == self.cell.fileUser, let avatarImageView = self.cellImageView {
+                        UIView.transition(with: avatarImageView,
+                                          duration: 0.75,
+                                          options: .transitionCrossDissolve,
+                                          animations: { avatarImageView.image = imageAvatar },
+                                          completion: nil)
+                    } else {
+                        if self.view is UICollectionView {
+                            (self.view as? UICollectionView)?.reloadData()
+                        } else if self.view is UITableView {
+                            (self.view as? UITableView)?.reloadData()
+                        }
+                    }
+                }
+            } else if error.errorCode == NCGlobal.shared.errorNotModified {
+                NCManageDatabase.shared.setAvatarLoaded(fileName: self.fileName)
+            }
+            self.finish()
+        }
     }
 }

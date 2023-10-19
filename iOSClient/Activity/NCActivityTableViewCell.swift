@@ -25,6 +25,7 @@ import Foundation
 import NextcloudKit
 import FloatingPanel
 import JGProgressHUD
+import Queuer
 
 class NCActivityCollectionViewCell: UICollectionViewCell {
 
@@ -194,7 +195,13 @@ extension NCActivityTableViewCell: UICollectionViewDataSource {
                     if FileManager.default.fileExists(atPath: fileNamePath), let image = UIImage(contentsOfFile: fileNamePath) {
                         cell.imageView.image = image
                     } else {
-                        NCOperationQueue.shared.downloadThumbnailActivity(fileNamePathOrFileId: activityPreview.source, fileNamePreviewLocalPath: fileNamePath, fileId: fileId, cell: cell, collectionView: collectionView)
+                        cell.imageView?.image = UIImage(named: "file_photo")
+                        cell.fileId = fileId
+                        if !FileManager.default.fileExists(atPath: fileNamePath) {
+                            if appDelegate.downloadThumbnailActivityQueue.operations.filter({ ($0 as? NCOperationDownloadThumbnailActivity)?.fileId == fileId }).isEmpty {
+                                appDelegate.downloadThumbnailActivityQueue.addOperation(NCOperationDownloadThumbnailActivity(fileNamePathOrFileId: activityPreview.source, fileNamePreviewLocalPath: fileNamePath, fileId: fileId, cell: cell, collectionView: collectionView))
+                            }
+                        }
                     }
                 }
             }
@@ -217,5 +224,51 @@ extension NCActivityTableViewCell: UICollectionViewDelegateFlowLayout {
 
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
         return UIEdgeInsets(top: 0, left: 0, bottom: 10, right: 0)
+    }
+}
+
+class NCOperationDownloadThumbnailActivity: ConcurrentOperation {
+
+    var cell: NCActivityCollectionViewCell?
+    var collectionView: UICollectionView?
+    var fileNamePathOrFileId: String
+    var fileNamePreviewLocalPath: String
+    var fileId: String
+
+    init(fileNamePathOrFileId: String, fileNamePreviewLocalPath: String, fileId: String, cell: NCActivityCollectionViewCell?, collectionView: UICollectionView?) {
+        self.fileNamePathOrFileId = fileNamePathOrFileId
+        self.fileNamePreviewLocalPath = fileNamePreviewLocalPath
+        self.fileId = fileId
+        self.cell = cell
+        self.collectionView = collectionView
+    }
+
+    override func start() {
+
+        guard !isCancelled else { return self.finish() }
+
+        NextcloudKit.shared.downloadPreview(fileNamePathOrFileId: fileNamePathOrFileId,
+                                            fileNamePreviewLocalPath: fileNamePreviewLocalPath,
+                                            widthPreview: 0,
+                                            heightPreview: 0,
+                                            etag: nil,
+                                            useInternalEndpoint: false,
+                                            options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { _, imagePreview, _, _, _, error in
+
+            if error == .success, let imagePreview = imagePreview {
+                DispatchQueue.main.async {
+                    if self.fileId == self.cell?.fileId, let imageView = self.cell?.imageView {
+                        UIView.transition(with: imageView,
+                                          duration: 0.75,
+                                          options: .transitionCrossDissolve,
+                                          animations: { imageView.image = imagePreview },
+                                          completion: nil)
+                    } else {
+                        self.collectionView?.reloadData()
+                    }
+                }
+            }
+            self.finish()
+        }
     }
 }

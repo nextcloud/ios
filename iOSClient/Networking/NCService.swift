@@ -309,8 +309,9 @@ class NCService: NSObject {
         let files = NCManageDatabase.shared.getTableLocalFiles(predicate: NSPredicate(format: "account == %@ AND offline == true", account), sorted: "fileName", ascending: true)
         for file: tableLocalFile in files {
             guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(file.ocId) else { continue }
-            if NCManageDatabase.shared.isDownloadMetadata(metadata, download: true) {
-                NCOperationQueue.shared.download(metadata: metadata, selector: NCGlobal.shared.selectorDownloadFile)
+            if NCManageDatabase.shared.isDownloadMetadata(metadata, download: true),
+               appDelegate.downloadQueue.operations.filter({ ($0 as? NCOperationDownload)?.metadata.ocId == metadata.ocId }).isEmpty {
+                appDelegate.downloadQueue.addOperation(NCOperationDownload(metadata: metadata, selector: NCGlobal.shared.selectorDownloadFile))
             }
         }
         NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] end synchronize offline")
