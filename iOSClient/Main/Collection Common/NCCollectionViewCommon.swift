@@ -1208,8 +1208,8 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                         (cell as? NCCellProtocol)?.filePreviewImageView?.image = UIImage(named: metadata.iconName)
                     }
                     if metadata.hasPreview && metadata.status == NCGlobal.shared.metadataStatusNormal && (!CCUtility.fileProviderStoragePreviewIconExists(metadata.ocId, etag: metadata.etag)) {
-                        for case let operation as NCCollecionViewCommonDownloadThumbnail in appDelegate.downloadThumbnailQueue.operations where operation.metadata.ocId == metadata.ocId { return }
-                        appDelegate.downloadThumbnailQueue.addOperation(NCCollecionViewCommonDownloadThumbnail(metadata: metadata, cell: (cell as? NCCellProtocol), view: view, forItemAt: indexPath))
+                        for case let operation as NCCollectionViewDownloadThumbnail in appDelegate.downloadThumbnailQueue.operations where operation.metadata.ocId == metadata.ocId { return }
+                        appDelegate.downloadThumbnailQueue.addOperation(NCCollectionViewDownloadThumbnail(metadata: metadata, cell: (cell as? NCCellProtocol), view: view))
                     }
                 }
             } else {
@@ -1257,7 +1257,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
         if !collectionView.indexPathsForVisibleItems.contains(indexPath) {
             guard let metadata = dataSource.cellForItemAt(indexPath: indexPath) else { return }
-            for case let operation as NCCollecionViewCommonDownloadThumbnail in appDelegate.downloadThumbnailQueue.operations where operation.metadata.ocId == metadata.ocId {
+            for case let operation as NCCollectionViewDownloadThumbnail in appDelegate.downloadThumbnailQueue.operations where operation.metadata.ocId == metadata.ocId {
                 operation.cancel()
             }
         }
@@ -1706,7 +1706,7 @@ extension NCCollectionViewCommon: EasyTipViewDelegate {
     }
 }
 
-class NCCollecionViewCommonDownloadThumbnail: ConcurrentOperation {
+class NCCollectionViewDownloadThumbnail: ConcurrentOperation {
 
     var metadata: tableMetadata
         var cell: NCCellProtocol?
@@ -1715,7 +1715,7 @@ class NCCollecionViewCommonDownloadThumbnail: ConcurrentOperation {
         var fileNamePreviewLocalPath: String
         var fileNameIconLocalPath: String
 
-    init(metadata: tableMetadata, cell: NCCellProtocol?, view: UIView?, forItemAt indexPath: IndexPath) {
+    init(metadata: tableMetadata, cell: NCCellProtocol?, view: UIView?) {
         self.metadata = tableMetadata.init(value: metadata)
         self.cell = cell
         self.view = view

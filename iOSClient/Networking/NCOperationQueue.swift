@@ -119,68 +119,6 @@ class NCOperationDownload: ConcurrentOperation {
 
 // MARK: -
 
-class NCOperationDownloadThumbnail: ConcurrentOperation {
-
-    var metadata: tableMetadata
-    var cell: NCCellProtocol?
-    var view: UIView?
-    var fileNamePath: String
-    var fileNamePreviewLocalPath: String
-    var fileNameIconLocalPath: String
-
-    init(metadata: tableMetadata, cell: NCCellProtocol?, view: UIView?) {
-        self.metadata = tableMetadata.init(value: metadata)
-        self.cell = cell
-        self.view = view
-        self.fileNamePath = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, urlBase: metadata.urlBase, userId: metadata.userId, account: metadata.account)!
-        self.fileNamePreviewLocalPath = CCUtility.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)!
-        self.fileNameIconLocalPath = CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)!
-    }
-
-    override func start() {
-
-        guard !isCancelled else { return self.finish() }
-
-        var etagResource: String?
-        if FileManager.default.fileExists(atPath: fileNameIconLocalPath) && FileManager.default.fileExists(atPath: fileNamePreviewLocalPath) {
-            etagResource = metadata.etagResource
-        }
-
-        NextcloudKit.shared.downloadPreview(
-            fileNamePathOrFileId: fileNamePath,
-            fileNamePreviewLocalPath: fileNamePreviewLocalPath,
-            widthPreview: NCGlobal.shared.sizePreview,
-            heightPreview: NCGlobal.shared.sizePreview,
-            fileNameIconLocalPath: fileNameIconLocalPath,
-            sizeIcon: NCGlobal.shared.sizeIcon,
-            etag: etagResource,
-            options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { _, imagePreview, _, _, etag, error in
-
-            if error == .success, let image = imagePreview  {
-                NCManageDatabase.shared.setMetadataEtagResource(ocId: self.metadata.ocId, etagResource: etag)
-                DispatchQueue.main.async {
-                    if self.metadata.ocId == self.cell?.fileObjectId, let filePreviewImageView = self.cell?.filePreviewImageView {
-                        UIView.transition(with: filePreviewImageView,
-                                          duration: 0.75,
-                                          options: .transitionCrossDissolve,
-                                          animations: { filePreviewImageView.image = image },
-                                          completion: nil)
-                    } else {
-                        if self.view is UICollectionView {
-                            (self.view as? UICollectionView)?.reloadData()
-                        } else if self.view is UITableView {
-                            (self.view as? UITableView)?.reloadData()
-                        }
-                    }
-                }
-            }
-            self.finish()
-        }
-    }
-}
-
-// MARK: -
-
 class NCOperationDownloadThumbnailActivity: ConcurrentOperation {
 
     var cell: NCActivityCollectionViewCell?
