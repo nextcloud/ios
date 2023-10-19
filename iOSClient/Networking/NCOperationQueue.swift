@@ -62,11 +62,7 @@ import JGProgressHUD
         }
     }
 
-    func cancelDownloadThumbnail(metadata: tableMetadata) {
-        for case let operation as NCOperationDownloadThumbnail in appDelegate.downloadThumbnailQueue.operations where operation.metadata.ocId == metadata.ocId {
-            operation.cancel()
-        }
-    }
+    
 
     // MARK: - Download Thumbnail Activity
 

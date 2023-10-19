@@ -1248,7 +1248,9 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
         if !collectionView.indexPathsForVisibleItems.contains(indexPath) {
             guard let metadata = dataSource.cellForItemAt(indexPath: indexPath) else { return }
-            NCOperationQueue.shared.cancelDownloadThumbnail(metadata: metadata)
+            for case let operation as NCOperationDownloadThumbnail in appDelegate.downloadThumbnailQueue.operations where operation.metadata.ocId == metadata.ocId {
+                operation.cancel()
+            }
         }
     }
 
