@@ -1201,7 +1201,15 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                     if let image = NCUtility.shared.createFilePreviewImage(ocId: metadata.ocId, etag: metadata.etag, fileNameView: metadata.fileNameView, classFile: metadata.classFile, status: metadata.status, createPreviewMedia: !metadata.hasPreview) {
                     (cell as? NCCellProtocol)?.filePreviewImageView?.image = image
                 } else {
-                    NCOperationQueue.shared.downloadThumbnail(metadata: metadata, placeholder: true, cell: cell, view: collectionView)
+                    if metadata.iconName.isEmpty {
+                        (cell as? NCCellProtocol)?.filePreviewImageView?.image = NCBrandColor.cacheImages.file
+                    } else {
+                        (cell as? NCCellProtocol)?.filePreviewImageView?.image = UIImage(named: metadata.iconName)
+                    }
+                    if metadata.hasPreview && metadata.status == NCGlobal.shared.metadataStatusNormal && (!CCUtility.fileProviderStoragePreviewIconExists(metadata.ocId, etag: metadata.etag)) {
+                        for case let operation as NCOperationDownloadThumbnail in appDelegate.downloadThumbnailQueue.operations where operation.metadata.ocId == metadata.ocId { return }
+                        appDelegate.downloadThumbnailQueue.addOperation(NCOperationDownloadThumbnail(metadata: metadata, cell: (cell as? NCCellProtocol), view: view))
+                    }
                 }
             } else {
                 // Unified search

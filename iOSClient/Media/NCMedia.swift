@@ -380,7 +380,10 @@ extension NCMedia: UICollectionViewDataSource {
                 NCMediaManager.shared.setImage(ocId: metadata.ocId, image: image)
             }
         } else {
-            NCOperationQueue.shared.downloadThumbnail(metadata: metadata, placeholder: false, cell: cell, view: collectionView)
+            if metadata.hasPreview && metadata.status == NCGlobal.shared.metadataStatusNormal && (!CCUtility.fileProviderStoragePreviewIconExists(metadata.ocId, etag: metadata.etag)) {
+                for case let operation as NCOperationDownloadThumbnail in appDelegate.downloadThumbnailQueue.operations where operation.metadata.ocId == metadata.ocId { return }
+                appDelegate.downloadThumbnailQueue.addOperation(NCOperationDownloadThumbnail(metadata: metadata, cell: cell, view: view))
+            }
         }
     }
 

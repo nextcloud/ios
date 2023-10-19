@@ -42,28 +42,6 @@ import JGProgressHUD
         appDelegate.downloadQueue.addOperation(NCOperationDownload(metadata: metadata, selector: selector))
     }
 
-    // MARK: - Download Thumbnail
-
-    func downloadThumbnail(metadata: tableMetadata, placeholder: Bool, cell: UIView?, view: UIView?) {
-
-        let cell: NCCellProtocol? = cell as? NCCellProtocol
-
-        if placeholder {
-            if metadata.iconName.isEmpty {
-                cell?.filePreviewImageView?.image = NCBrandColor.cacheImages.file
-            } else {
-                cell?.filePreviewImageView?.image = UIImage(named: metadata.iconName)
-            }
-        }
-
-        if metadata.hasPreview && metadata.status == NCGlobal.shared.metadataStatusNormal && (!CCUtility.fileProviderStoragePreviewIconExists(metadata.ocId, etag: metadata.etag)) {
-            for case let operation as NCOperationDownloadThumbnail in appDelegate.downloadThumbnailQueue.operations where operation.metadata.ocId == metadata.ocId { return }
-            appDelegate.downloadThumbnailQueue.addOperation(NCOperationDownloadThumbnail(metadata: metadata, cell: cell, view: view))
-        }
-    }
-
-    
-
     // MARK: - Download Thumbnail Activity
 
     func downloadThumbnailActivity(fileNamePathOrFileId: String, fileNamePreviewLocalPath: String, fileId: String, cell: NCActivityCollectionViewCell, collectionView: UICollectionView?) {
