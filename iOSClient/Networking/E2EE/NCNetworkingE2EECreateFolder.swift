@@ -124,7 +124,7 @@ class NCNetworkingE2EECreateFolder: NSObject {
 
         // SET FOLDER AS E2EE
         //
-        let resultsMarkE2EEFolder = await NextcloudKit.shared.markE2EEFolder(fileId: fileId, delete: false, route: NCNetworkingE2EE.shared.getRoute())
+        let resultsMarkE2EEFolder = await NextcloudKit.shared.markE2EEFolder(fileId: fileId, delete: false)
         guard resultsMarkE2EEFolder.error == .success  else {
             await NCNetworkingE2EE.shared.unlock(account: account, serverUrl: serverUrl)
             return resultsMarkE2EEFolder.error
