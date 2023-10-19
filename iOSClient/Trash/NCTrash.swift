@@ -350,22 +350,21 @@ extension NCTrash {
         let fileNamePreviewLocalPath = CCUtility.getDirectoryProviderStoragePreviewOcId(tableTrash.fileId, etag: tableTrash.fileName)!
         let fileNameIconLocalPath = CCUtility.getDirectoryProviderStorageIconOcId(tableTrash.fileId, etag: tableTrash.fileName)!
 
-        NextcloudKit.shared.downloadPreview(
-            fileNamePathOrFileId: tableTrash.fileId,
-            fileNamePreviewLocalPath: fileNamePreviewLocalPath,
-            widthPreview: NCGlobal.shared.sizePreview,
-            heightPreview: NCGlobal.shared.sizePreview,
-            fileNameIconLocalPath: fileNameIconLocalPath,
-            sizeIcon: NCGlobal.shared.sizeIcon,
-            etag: nil,
-            endpointTrashbin: true) { account, _, imageIcon, _, _, error in
-                guard error == .success, let imageIcon = imageIcon, account == self.appDelegate.account,
-                      let cell = self.collectionView.cellForItem(at: indexPath) else { return }
-                if let cell = cell as? NCTrashListCell {
-                    cell.imageItem.image = imageIcon
-                } else if let cell = cell as? NCGridCell {
-                    cell.imageItem.image = imageIcon
-                } // else: undefined cell
-            }
+        NextcloudKit.shared.downloadPreview(fileNamePathOrFileId: tableTrash.fileId,
+                                            fileNamePreviewLocalPath: fileNamePreviewLocalPath,
+                                            widthPreview: NCGlobal.shared.sizePreview,
+                                            heightPreview: NCGlobal.shared.sizePreview,
+                                            fileNameIconLocalPath: fileNameIconLocalPath,
+                                            sizeIcon: NCGlobal.shared.sizeIcon,
+                                            etag: nil,
+                                            endpointTrashbin: true) { account, _, imageIcon, _, _, error in
+            guard error == .success, let imageIcon = imageIcon, account == self.appDelegate.account,
+                let cell = self.collectionView.cellForItem(at: indexPath) else { return }
+            if let cell = cell as? NCTrashListCell {
+                cell.imageItem.image = imageIcon
+            } else if let cell = cell as? NCGridCell {
+                cell.imageItem.image = imageIcon
+            } // else: undefined cell
+        }
     }
 }

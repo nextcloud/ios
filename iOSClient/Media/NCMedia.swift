@@ -884,15 +884,14 @@ class NCMediaDownloadThumbnaill: ConcurrentOperation {
             etagResource = metadata.etagResource
         }
 
-        NextcloudKit.shared.downloadPreview(
-            fileNamePathOrFileId: fileNamePath,
-            fileNamePreviewLocalPath: fileNamePreviewLocalPath,
-            widthPreview: NCGlobal.shared.sizePreview,
-            heightPreview: NCGlobal.shared.sizePreview,
-            fileNameIconLocalPath: fileNameIconLocalPath,
-            sizeIcon: NCGlobal.shared.sizeIcon,
-            etag: etagResource,
-            options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { _, imagePreview, _, _, etag, error in
+        NextcloudKit.shared.downloadPreview(fileNamePathOrFileId: fileNamePath,
+                                            fileNamePreviewLocalPath: fileNamePreviewLocalPath,
+                                            widthPreview: NCGlobal.shared.sizePreview,
+                                            heightPreview: NCGlobal.shared.sizePreview,
+                                            fileNameIconLocalPath: fileNameIconLocalPath,
+                                            sizeIcon: NCGlobal.shared.sizeIcon,
+                                            etag: etagResource,
+                                            options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { _, imagePreview, _, _, etag, error in
 
             if error == .success, let image = imagePreview {
                 NCManageDatabase.shared.setMetadataEtagResource(ocId: self.metadata.ocId, etagResource: etag)

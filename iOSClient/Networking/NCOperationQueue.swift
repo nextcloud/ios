@@ -139,14 +139,13 @@ class NCOperationDownloadThumbnailActivity: ConcurrentOperation {
 
         guard !isCancelled else { return self.finish() }
 
-        NextcloudKit.shared.downloadPreview(
-            fileNamePathOrFileId: fileNamePathOrFileId,
-            fileNamePreviewLocalPath: fileNamePreviewLocalPath,
-            widthPreview: 0,
-            heightPreview: 0,
-            etag: nil,
-            useInternalEndpoint: false,
-            options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { _, imagePreview, _, _, _, error in
+        NextcloudKit.shared.downloadPreview(fileNamePathOrFileId: fileNamePathOrFileId,
+                                            fileNamePreviewLocalPath: fileNamePreviewLocalPath,
+                                            widthPreview: 0,
+                                            heightPreview: 0,
+                                            etag: nil,
+                                            useInternalEndpoint: false,
+                                            options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { _, imagePreview, _, _, _, error in
 
             if error == .success, let imagePreview = imagePreview {
                 DispatchQueue.main.async {
