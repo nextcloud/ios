@@ -744,7 +744,9 @@ class NCNetworking: NSObject, NKCommonDelegate {
     func cancel(inBackground: Bool) async {
 
 #if !EXTENSION
-        NCOperationQueue.shared.cancelAllQueue()
+        if let appDelegate = await UIApplication.shared.delegate as? AppDelegate {
+            await appDelegate.cancelAllQueue()
+        }
 #endif
 
         NextcloudKit.shared.sessionManager.cancelAllRequests()

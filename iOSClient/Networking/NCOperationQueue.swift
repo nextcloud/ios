@@ -32,28 +32,14 @@ import JGProgressHUD
         return instance
     }()
 
-    private var downloadQueue = Queuer(name: "downloadQueue", maxConcurrentOperationCount: NCGlobal.shared.maxConcurrentOperationCountDownload, qualityOfService: .default)
-    private let downloadThumbnailQueue = Queuer(name: "downloadThumbnailQueue", maxConcurrentOperationCount: 10, qualityOfService: .default)
-    private let downloadThumbnailActivityQueue = Queuer(name: "downloadThumbnailActivityQueue", maxConcurrentOperationCount: 10, qualityOfService: .default)
-    private let downloadAvatarQueue = Queuer(name: "downloadAvatarQueue", maxConcurrentOperationCount: 10, qualityOfService: .default)
-    private let unifiedSearchQueue = Queuer(name: "unifiedSearchQueue", maxConcurrentOperationCount: 1, qualityOfService: .default)
-    private let saveLivePhotoQueue = Queuer(name: "saveLivePhotoQueue", maxConcurrentOperationCount: 1, qualityOfService: .default)
-
-    @objc func cancelAllQueue() {
-        downloadQueue.cancelAll()
-        downloadThumbnailQueue.cancelAll()
-        downloadThumbnailActivityQueue.cancelAll()
-        downloadAvatarQueue.cancelAll()
-        unifiedSearchQueue.cancelAll()
-        saveLivePhotoQueue.cancelAll()
-    }
+    let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
 
     // MARK: - Download file
 
     func download(metadata: tableMetadata, selector: String) {
 
-        for case let operation as NCOperationDownload in downloadQueue.operations where operation.metadata.ocId == metadata.ocId { return }
-        downloadQueue.addOperation(NCOperationDownload(metadata: metadata, selector: selector))
+        for case let operation as NCOperationDownload in appDelegate.downloadQueue.operations where operation.metadata.ocId == metadata.ocId { return }
+        appDelegate.downloadQueue.addOperation(NCOperationDownload(metadata: metadata, selector: selector))
     }
 
     // MARK: - Download Thumbnail
@@ -71,13 +57,13 @@ import JGProgressHUD
         }
 
         if metadata.hasPreview && metadata.status == NCGlobal.shared.metadataStatusNormal && (!CCUtility.fileProviderStoragePreviewIconExists(metadata.ocId, etag: metadata.etag)) {
-            for case let operation as NCOperationDownloadThumbnail in downloadThumbnailQueue.operations where operation.metadata.ocId == metadata.ocId { return }
-            downloadThumbnailQueue.addOperation(NCOperationDownloadThumbnail(metadata: metadata, cell: cell, view: view))
+            for case let operation as NCOperationDownloadThumbnail in appDelegate.downloadThumbnailQueue.operations where operation.metadata.ocId == metadata.ocId { return }
+            appDelegate.downloadThumbnailQueue.addOperation(NCOperationDownloadThumbnail(metadata: metadata, cell: cell, view: view))
         }
     }
 
     func cancelDownloadThumbnail(metadata: tableMetadata) {
-        for case let operation as NCOperationDownloadThumbnail in downloadThumbnailQueue.operations where operation.metadata.ocId == metadata.ocId {
+        for case let operation as NCOperationDownloadThumbnail in appDelegate.downloadThumbnailQueue.operations where operation.metadata.ocId == metadata.ocId {
             operation.cancel()
         }
     }
@@ -90,10 +76,10 @@ import JGProgressHUD
         cell.fileId = fileId
 
         if !FileManager.default.fileExists(atPath: fileNamePreviewLocalPath) {
-            for case let operation as NCOperationDownloadThumbnailActivity in downloadThumbnailActivityQueue.operations where operation.fileId == fileId {
+            for case let operation as NCOperationDownloadThumbnailActivity in appDelegate.downloadThumbnailActivityQueue.operations where operation.fileId == fileId {
                 return
             }
-            downloadThumbnailActivityQueue.addOperation(NCOperationDownloadThumbnailActivity(fileNamePathOrFileId: fileNamePathOrFileId, fileNamePreviewLocalPath: fileNamePreviewLocalPath, fileId: fileId, cell: cell, collectionView: collectionView))
+            appDelegate.downloadThumbnailActivityQueue.addOperation(NCOperationDownloadThumbnailActivity(fileNamePathOrFileId: fileNamePathOrFileId, fileNamePreviewLocalPath: fileNamePreviewLocalPath, fileId: fileId, cell: cell, collectionView: collectionView))
         }
     }
 
@@ -116,22 +102,22 @@ import JGProgressHUD
                    userBaseUrl: account)
         }
 
-        for case let operation as NCOperationDownloadAvatar in downloadAvatarQueue.operations where operation.fileName == fileName { return }
-        downloadAvatarQueue.addOperation(NCOperationDownloadAvatar(user: user, fileName: fileName, fileNameLocalPath: fileNameLocalPath, cell: cell, view: view, cellImageView: cellImageView))
+        for case let operation as NCOperationDownloadAvatar in appDelegate.downloadAvatarQueue.operations where operation.fileName == fileName { return }
+        appDelegate.downloadAvatarQueue.addOperation(NCOperationDownloadAvatar(user: user, fileName: fileName, fileNameLocalPath: fileNameLocalPath, cell: cell, view: view, cellImageView: cellImageView))
     }
 
     // MARK: - Unified Search
 
     func unifiedSearchAddSection(collectionViewCommon: NCCollectionViewCommon, metadatas: [tableMetadata], searchResult: NKSearchResult) {
-        unifiedSearchQueue.addOperation(NCOperationUnifiedSearch(collectionViewCommon: collectionViewCommon, metadatas: metadatas, searchResult: searchResult))
+        appDelegate.unifiedSearchQueue.addOperation(NCOperationUnifiedSearch(collectionViewCommon: collectionViewCommon, metadatas: metadatas, searchResult: searchResult))
     }
 
     // MARK: - Save Live Photo
 
     func saveLivePhoto(metadata: tableMetadata, metadataMOV: tableMetadata) {
 
-        for case let operation as NCOperationSaveLivePhoto in saveLivePhotoQueue.operations where operation.metadata.fileName == metadata.fileName { return }
-        saveLivePhotoQueue.addOperation(NCOperationSaveLivePhoto(metadata: metadata, metadataMOV: metadataMOV))
+        for case let operation as NCOperationSaveLivePhoto in appDelegate.saveLivePhotoQueue.operations where operation.metadata.fileName == metadata.fileName { return }
+        appDelegate.saveLivePhotoQueue.addOperation(NCOperationSaveLivePhoto(metadata: metadata, metadataMOV: metadataMOV))
     }
 }
 
