@@ -212,7 +212,7 @@ extension NCActivity: UITableViewDataSource {
 
         // Image
         let fileName = appDelegate.userBaseUrl + "-" + comment.actorId + ".png"
-        NCOperationQueue.shared.downloadAvatar(user: comment.actorId, dispalyName: comment.actorDisplayName, fileName: fileName, cell: cell, view: tableView, cellImageView: cell.fileAvatarImageView)
+        NCNetworking.shared.downloadAvatar(user: comment.actorId, dispalyName: comment.actorDisplayName, fileName: fileName, cell: cell, view: tableView, cellImageView: cell.fileAvatarImageView)
         // Username
         cell.labelUser.text = comment.actorDisplayName
         cell.labelUser.textColor = .label
@@ -279,7 +279,7 @@ extension NCActivity: UITableViewDataSource {
 
             let fileName = appDelegate.userBaseUrl + "-" + activity.user + ".png"
 
-            NCOperationQueue.shared.downloadAvatar(user: activity.user, dispalyName: nil, fileName: fileName, cell: cell, view: tableView, cellImageView: cell.fileAvatarImageView)
+            NCNetworking.shared.downloadAvatar(user: activity.user, dispalyName: nil, fileName: fileName, cell: cell, view: tableView, cellImageView: cell.fileAvatarImageView)
         }
 
         // subject
