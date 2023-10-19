@@ -194,16 +194,16 @@ class NCOperationDownloadThumbnail: ConcurrentOperation {
             fileNameIconLocalPath: fileNameIconLocalPath,
             sizeIcon: NCGlobal.shared.sizeIcon,
             etag: etagResource,
-            options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { _, imagePreview, imageIcon, _, etag, error in
+            options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { _, imagePreview, _, _, etag, error in
 
-            if error == .success, let imageIcon = imageIcon {
+            if error == .success, let image = imagePreview  {
                 NCManageDatabase.shared.setMetadataEtagResource(ocId: self.metadata.ocId, etagResource: etag)
                 DispatchQueue.main.async {
                     if self.metadata.ocId == self.cell?.fileObjectId, let filePreviewImageView = self.cell?.filePreviewImageView {
                         UIView.transition(with: filePreviewImageView,
                                           duration: 0.75,
                                           options: .transitionCrossDissolve,
-                                          animations: { filePreviewImageView.image = imageIcon },
+                                          animations: { filePreviewImageView.image = image },
                                           completion: nil)
                     } else {
                         if self.view is UICollectionView {
@@ -214,7 +214,7 @@ class NCOperationDownloadThumbnail: ConcurrentOperation {
                     }
                     NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDownloadedThumbnail, userInfo: ["ocId": self.metadata.ocId])
                 }
-                NCMediaManager.shared.setImage(ocId: self.metadata.ocId, image: imageIcon)
+                NCMediaManager.shared.setImage(ocId: self.metadata.ocId, image: image)
             }
             self.finish()
         }
