@@ -27,6 +27,7 @@ import NextcloudKit
 import Alamofire
 import Photos
 import Queuer
+import JGProgressHUD
 
 @objc public protocol NCNetworkingDelegate {
     @objc optional func downloadProgress(_ progress: Float, totalBytes: Int64, totalBytesExpected: Int64, fileName: String, serverUrl: String, session: URLSession, task: URLSessionTask)
@@ -382,6 +383,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
                 progressHandler: @escaping (_ totalBytesExpected: Int64, _ totalBytes: Int64, _ fractionCompleted: Double) -> Void = { _, _, _ in },
                 completion: @escaping (_ error: NKError) -> Void = { _ in }) {
 
+        let hud = JGProgressHUD()
         let metadata = tableMetadata.init(value: metadata)
         NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Upload file \(metadata.fileNameView) with Identifier \(metadata.assetLocalIdentifier) with size \(metadata.size) [CHUNK \(metadata.chunk), E2EE \(metadata.isDirectoryE2EE)]")
 
@@ -393,7 +395,20 @@ class NCNetworking: NSObject, NKCommonDelegate {
             }
 #endif
         } else if metadata.chunk > 0 {
-            uploadChunkFile(metadata: metadata, start: start, progressHandler: progressHandler) { _, _, _, error in
+#if !EXTENSION
+            DispatchQueue.main.async {
+                guard let appDelegate = UIApplication.shared.delegate as? AppDelegate, let hudView = appDelegate.window?.rootViewController?.view else {
+                    return completion(.success)
+                }
+                hud.textLabel.text = NSLocalizedString("_wait_file_preparation_", comment: "")
+                hud.show(in: hudView)
+            }
+#endif
+            uploadChunkFile(metadata: metadata) {
+#if !EXTENSION
+                DispatchQueue.main.async { hud.dismiss() }
+#endif
+            } completion: { _, _, _, error in
                 completion(error)
             }
         } else if metadata.session == NextcloudKit.shared.nkCommonInstance.sessionIdentifierUpload {
