@@ -1,5 +1,5 @@
 //
-//  NCooo.swift
+//  NCOperationSaveLivePhoto.swift
 //  Nextcloud
 //
 //  Created by Marino Faggiana on 19/10/23.
@@ -20,7 +20,6 @@
 //  You should have received a copy of the GNU General Public License
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
-
 
 import UIKit
 import Queuer
@@ -97,8 +96,8 @@ class NCOperationSaveLivePhoto: ConcurrentOperation {
         NCLivePhoto.generate(from: fileNameImage, videoURL: fileNameMov, progress: { progress in
             self.hud.progress = Float(progress)
         }, completion: { _, resources in
-            if resources != nil {
-                NCLivePhoto.saveToLibrary(resources!) { result in
+            if let resources {
+                NCLivePhoto.saveToLibrary(resources) { result in
                     DispatchQueue.main.async {
                         if !result {
                             self.hud.indicatorView = JGProgressHUDErrorIndicatorView()

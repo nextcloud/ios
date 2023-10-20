@@ -86,6 +86,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
         CCUtility.createDirectoryStandard()
         CCUtility.emptyTemporaryDirectory()
+        NCUtility.shared.clearCacheDirectory("com.limit-point.LivePhoto")
 
         // Activated singleton
         _ = NCActionCenter.shared
