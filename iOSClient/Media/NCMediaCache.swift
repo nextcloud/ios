@@ -50,9 +50,7 @@ import NextcloudKit
             var date: Date
         }
         var files: [FileInfo] = []
-
         let startDate = Date()
-        NextcloudKit.shared.nkCommonInstance.writeLog("--------- start ThumbnailLRUCache image process ---------")
 
         // Get files only image / video
         if let enumerator = manager.enumerator(at: URL(fileURLWithPath: directory), includingPropertiesForKeys: [.isRegularFileKey], options: [.skipsHiddenFiles]) {
@@ -88,9 +86,10 @@ import NextcloudKit
 
         let endDate = Date()
         let diffDate = endDate.timeIntervalSinceReferenceDate - startDate.timeIntervalSinceReferenceDate
+        NextcloudKit.shared.nkCommonInstance.writeLog("--------- ThumbnailLRUCache image process ---------")
         NextcloudKit.shared.nkCommonInstance.writeLog("Counter process: \(cache.count)")
         NextcloudKit.shared.nkCommonInstance.writeLog("Time process: \(diffDate)")
-        NextcloudKit.shared.nkCommonInstance.writeLog("--------- stop ThumbnailLRUCache image process ---------")
+        NextcloudKit.shared.nkCommonInstance.writeLog("--------- ThumbnailLRUCache image process ---------")
     }
 
     func getImage(ocId: String) -> UIImage? {
