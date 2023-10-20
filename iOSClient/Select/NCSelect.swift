@@ -308,7 +308,7 @@ extension NCSelect: UICollectionViewDataSource {
                 }
                 if metadata.hasPreview && metadata.status == NCGlobal.shared.metadataStatusNormal && (!CCUtility.fileProviderStoragePreviewIconExists(metadata.ocId, etag: metadata.etag)) {
                     for case let operation as NCCollectionViewDownloadThumbnail in appDelegate.downloadThumbnailQueue.operations where operation.metadata.ocId == metadata.ocId { return }
-                    appDelegate.downloadThumbnailQueue.addOperation(NCCollectionViewDownloadThumbnail(metadata: metadata, cell: (cell as? NCCellProtocol), view: view))
+                    appDelegate.downloadThumbnailQueue.addOperation(NCCollectionViewDownloadThumbnail(metadata: metadata, cell: (cell as? NCCellProtocol), collectionView: collectionView))
                 }
             }
         }

@@ -1209,7 +1209,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                     }
                     if metadata.hasPreview && metadata.status == NCGlobal.shared.metadataStatusNormal && (!CCUtility.fileProviderStoragePreviewIconExists(metadata.ocId, etag: metadata.etag)) {
                         for case let operation as NCCollectionViewDownloadThumbnail in appDelegate.downloadThumbnailQueue.operations where operation.metadata.ocId == metadata.ocId { return }
-                        appDelegate.downloadThumbnailQueue.addOperation(NCCollectionViewDownloadThumbnail(metadata: metadata, cell: (cell as? NCCellProtocol), view: view))
+                        appDelegate.downloadThumbnailQueue.addOperation(NCCollectionViewDownloadThumbnail(metadata: metadata, cell: (cell as? NCCellProtocol), collectionView: collectionView))
                     }
                 }
             } else {
@@ -1745,15 +1745,15 @@ class NCCollectionViewDownloadThumbnail: ConcurrentOperation {
 
     var metadata: tableMetadata
         var cell: NCCellProtocol?
-        var view: UIView?
+        var collectionView: UICollectionView?
         var fileNamePath: String
         var fileNamePreviewLocalPath: String
         var fileNameIconLocalPath: String
 
-    init(metadata: tableMetadata, cell: NCCellProtocol?, view: UIView?) {
+    init(metadata: tableMetadata, cell: NCCellProtocol?, collectionView: UICollectionView?) {
         self.metadata = tableMetadata.init(value: metadata)
         self.cell = cell
-        self.view = view
+        self.collectionView = collectionView
         self.fileNamePath = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, urlBase: metadata.urlBase, userId: metadata.userId, account: metadata.account)!
         self.fileNamePreviewLocalPath = CCUtility.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)!
         self.fileNameIconLocalPath = CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)!
@@ -1786,6 +1786,8 @@ class NCCollectionViewDownloadThumbnail: ConcurrentOperation {
                                           options: .transitionCrossDissolve,
                                           animations: { filePreviewImageView.image = image },
                                           completion: nil)
+                    } else {
+                        self.collectionView?.reloadData()
                     }
                 }
             }
