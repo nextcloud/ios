@@ -32,8 +32,11 @@ import NextcloudKit
         return instance
     }()
 
+    let limit: Int = 2000
     private typealias ThumbnailLRUCache = LRUCache<String, UIImage>
-    private let cache: ThumbnailLRUCache = ThumbnailLRUCache(countLimit: 2000)
+    private lazy var cache: ThumbnailLRUCache = {
+        return ThumbnailLRUCache(countLimit: limit)
+    }()
 
     func createCache(account: String) {
 
@@ -76,7 +79,10 @@ import NextcloudKit
 
         // Insert in cache
         cache.removeAllValues()
+        var counter: Int = 0
         for file in files {
+            counter += 1
+            if counter > limit { break }
             autoreleasepool {
                 if let image = UIImage(contentsOfFile: file.path.path) {
                     cache.setValue(image, forKey: file.ocId)
