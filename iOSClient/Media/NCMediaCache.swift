@@ -55,7 +55,6 @@ import NextcloudKit
         var files: [FileInfo] = []
         let startDate = Date()
 
-        // Get files only image / video
         if let enumerator = manager.enumerator(at: URL(fileURLWithPath: directory), includingPropertiesForKeys: [.isRegularFileKey], options: [.skipsHiddenFiles]) {
             for case let fileURL as URL in enumerator where fileURL.lastPathComponent.hasSuffix(ext) {
                 let fileName = fileURL.lastPathComponent
@@ -70,14 +69,12 @@ import NextcloudKit
             }
         }
 
-        // Sort for most recent
         files.sort(by: { $0.date > $1.date })
         if let firstDate = files.first?.date, let lastDate = files.last?.date {
             print("First date: \(firstDate)")
             print("Last date: \(lastDate)")
         }
 
-        // Insert in cache
         cache.removeAllValues()
         var counter: Int = 0
         for file in files {
