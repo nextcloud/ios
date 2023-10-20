@@ -14,3 +14,9 @@ struct ScrollOffsetPreferenceKey: PreferenceKey {
 
     static func reduce(value: inout CGPoint, nextValue: () -> CGPoint) {}
 }
+
+struct TitlePreferenceKey: PreferenceKey {
+    static var defaultValue: String = ""
+
+    static func reduce(value: inout String, nextValue: () -> String) {}
+}

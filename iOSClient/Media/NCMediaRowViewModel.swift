@@ -8,6 +8,7 @@
 
 import Foundation
 import NextcloudKit
+import Queuer
 
 struct RowData {
     var scaledThumbnails: [ScaledThumbnail] = []
@@ -21,7 +22,7 @@ struct ScaledThumbnail: Hashable {
     let metadata: tableMetadata
 
     func hash(into hasher: inout Hasher) {
-        hasher.combine(image)
+        hasher.combine(metadata.ocId)
     }
 }
 
@@ -30,6 +31,13 @@ struct ScaledThumbnail: Hashable {
 
     private var metadatas: [tableMetadata] = []
 
+    internal let cache = NCMediaCache.shared
+
+//    internal lazy var cache = manager.cache
+//    internal lazy var thumbnailsQueue = manager.queuer
+
+    var operations: [ConcurrentOperation] = []
+
     func configure(metadatas: [tableMetadata]) {
         self.metadatas = metadatas
     }
@@ -37,23 +45,24 @@ struct ScaledThumbnail: Hashable {
     func downloadThumbnails(rowWidth: CGFloat, spacing: CGFloat) {
         var thumbnails: [ScaledThumbnail] = []
 
-        metadatas.enumerated().forEach { index, metadata in
-            let thumbnailPath = CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)
+        metadatas.forEach { metadata in
+            if let cachedImage = cache.getImage(ocId: metadata.ocId) {
+                let thumbnail = ScaledThumbnail(image: cachedImage, metadata: metadata)
+                thumbnails.append(thumbnail)
 
-            if let thumbnailPath, FileManager.default.fileExists(atPath: thumbnailPath) {
+                DispatchQueue.main.async {
+                    self.calculateShrinkRatio(thumbnails: &thumbnails, rowWidth: rowWidth, spacing: spacing)
+                }
+            } else if let thumbnailPath = CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag), FileManager.default.fileExists(atPath: thumbnailPath) {
                 // Load thumbnail from file
                 if let image = UIImage(contentsOfFile: thumbnailPath) {
-                    thumbnails.append(ScaledThumbnail(image: image, metadata: metadata))
+                    let thumbnail = ScaledThumbnail(image: image, metadata: metadata)
+                    cache.setImage(ocId: metadata.ocId, image: image)
+//                    cache.setValue(thumbnail, forKey: metadata.ocId)
+                    thumbnails.append(thumbnail)
 
-                    if thumbnails.count == self.metadatas.count {
-                        thumbnails.enumerated().forEach { index, thumbnail in
-                            thumbnails[index].scaledSize = getScaledThumbnailSize(of: thumbnail, thumbnailsInRow: thumbnails)
-                        }
-
-                        let shrinkRatio = getShrinkRatio(thumbnailsInRow: thumbnails, fullWidth: rowWidth, spacing: spacing)
-
-                        rowData.scaledThumbnails = thumbnails
-                        rowData.shrinkRatio = shrinkRatio
+                    DispatchQueue.main.async {
+                        self.calculateShrinkRatio(thumbnails: &thumbnails, rowWidth: rowWidth, spacing: spacing)
                     }
                 }
             } else {
@@ -67,41 +76,61 @@ struct ScaledThumbnail: Hashable {
                 }
                 let options = NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
 
-                NextcloudKit.shared.downloadPreview(
-                    fileNamePathOrFileId: fileNamePath,
-                    fileNamePreviewLocalPath: fileNamePreviewLocalPath,
-                    widthPreview: Int(UIScreen.main.bounds.width) / 2,
-                    heightPreview: Int(UIScreen.main.bounds.height) / 2,
-                    fileNameIconLocalPath: fileNameIconLocalPath,
-                    sizeIcon: NCGlobal.shared.sizeIcon,
-                    etag: etagResource,
-                    options: options) { _, _, imageIcon, _, etag, error in
-                        print(metadata.isVideo.description + " " + metadata.fileName)
-                        if error == .success, let image = imageIcon {
+//                let concurrentOperation = ConcurrentOperation { _ in
+                    NextcloudKit.shared.downloadPreview(
+                        fileNamePathOrFileId: fileNamePath,
+                        fileNamePreviewLocalPath: fileNamePreviewLocalPath,
+                        widthPreview: Int(UIScreen.main.bounds.width) / 2,
+                        heightPreview: Int(UIScreen.main.bounds.height) / 2,
+                        fileNameIconLocalPath: fileNameIconLocalPath,
+                        sizeIcon: NCGlobal.shared.sizeIcon,
+                        etag: etagResource,
+                        options: options) { _, _, imageIcon, _, etag, error in
                             NCManageDatabase.shared.setMetadataEtagResource(ocId: metadata.ocId, etagResource: etag)
-                            thumbnails.append(ScaledThumbnail(image: image, metadata: metadata))
-                        } else {
-                            thumbnails.append(ScaledThumbnail(image: UIImage(systemName: metadata.isVideo ? "video.fill" : "photo.fill")!.withRenderingMode(.alwaysTemplate), isPlaceholderImage: true, metadata: metadata))
-                        }
 
-                        DispatchQueue.main.async {
-                            if thumbnails.count == self.metadatas.count {
-                                thumbnails.enumerated().forEach { index, thumbnail in
-                                    thumbnails[index].scaledSize = self.getScaledThumbnailSize(of: thumbnail, thumbnailsInRow: thumbnails)
-                                }
+                            let thumbnail: ScaledThumbnail
 
-                                let shrinkRatio = self.getShrinkRatio(thumbnailsInRow: thumbnails, fullWidth: rowWidth, spacing: spacing)
+                            if error == .success, let image = imageIcon {
+                                thumbnail = ScaledThumbnail(image: image, metadata: metadata)
+                                self.cache.setImage(ocId: metadata.ocId, image: image)
+                            } else {
+                                thumbnail = ScaledThumbnail(image: UIImage(systemName: metadata.isVideo ? "video.fill" : "photo.fill")!.withRenderingMode(.alwaysTemplate), isPlaceholderImage: true, metadata: metadata)
+                            }
 
-                                self.rowData.scaledThumbnails = thumbnails
-                                self.rowData.shrinkRatio = shrinkRatio
+                            thumbnails.append(thumbnail)
+//                            self.cache.setValue(thumbnail, forKey: metadata.ocId)
+
+                            DispatchQueue.main.async {
+                                self.calculateShrinkRatio(thumbnails: &thumbnails, rowWidth: rowWidth, spacing: spacing)
                             }
                         }
-                    }
+//                }
+
+//                operations.append(concurrentOperation)
+//                thumbnailsQueue.addOperation(concurrentOperation)
             }
         }
     }
 
-    func getScaledThumbnailSize(of thumbnail: ScaledThumbnail, thumbnailsInRow thumbnails: [ScaledThumbnail]) -> CGSize {
+    private func calculateShrinkRatio(thumbnails: inout [ScaledThumbnail], rowWidth: CGFloat, spacing: CGFloat) {
+            if thumbnails.count == self.metadatas.count {
+                thumbnails.enumerated().forEach { index, thumbnail in
+                    thumbnails[index].scaledSize = self.getScaledThumbnailSize(of: thumbnail, thumbnailsInRow: thumbnails)
+                }
+
+                let shrinkRatio = self.getShrinkRatio(thumbnailsInRow: thumbnails, fullWidth: rowWidth, spacing: spacing)
+
+                self.rowData.scaledThumbnails = thumbnails
+                self.rowData.shrinkRatio = shrinkRatio
+            }
+        }
+
+    func cancelDownloadingThumbnails() {
+        operations.forEach {( $0.cancel() )}
+        operations.removeAll()
+    }
+
+    private func getScaledThumbnailSize(of thumbnail: ScaledThumbnail, thumbnailsInRow thumbnails: [ScaledThumbnail]) -> CGSize {
         let maxHeight = thumbnails.compactMap { CGFloat($0.image.size.height) }.max() ?? 0
 
         let height = thumbnail.image.size.height
@@ -114,7 +143,7 @@ struct ScaledThumbnail: Hashable {
         return .init(width: newWidth, height: newHeight)
     }
 
-    func getShrinkRatio(thumbnailsInRow thumbnails: [ScaledThumbnail], fullWidth: CGFloat, spacing: CGFloat) -> CGFloat {
+    private func getShrinkRatio(thumbnailsInRow thumbnails: [ScaledThumbnail], fullWidth: CGFloat, spacing: CGFloat) -> CGFloat {
         var newSummedWidth: CGFloat = 0
 
         for thumbnail in thumbnails {

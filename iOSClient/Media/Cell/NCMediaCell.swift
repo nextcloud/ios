@@ -7,7 +7,6 @@
 //
 
 import SwiftUI
-import VisibilityTrackingScrollView
 import Shimmer
 import NextcloudKit
 
@@ -30,7 +29,6 @@ struct NCMediaCell: View {
     var body: some View {
         let image = Image(uiImage: thumbnail.image)
             .resizable()
-            .trackVisibility(id: CCUtility.getTitleSectionDate(thumbnail.metadata.date as Date) ?? "")
 
         ZStack(alignment: .center) {
             if thumbnail.isPlaceholderImage {
@@ -136,7 +134,7 @@ struct NCMediaCell: View {
 struct NCMediaLoadingCell: View {
     let itemsInRow: Int
     let metadata: tableMetadata
-    let geometryProxy: GeometryProxy
+    let rowSize: CGFloat
     let spacing: CGFloat
 
     let gradient = Gradient(colors: [
@@ -146,14 +144,24 @@ struct NCMediaLoadingCell: View {
     ])
 
     var body: some View {
-        ZStack {
-            Image(uiImage: UIImage())
-                .resizable()
-                .trackVisibility(id: CCUtility.getTitleSectionDate(metadata.date as Date) ?? "")// TODO: Fix spacing
-                .aspectRatio(1.5, contentMode: .fit)
-                .frame(width: (geometryProxy.size.width - spacing) / CGFloat(itemsInRow))
-                .redacted(reason: .placeholder)
-                .shimmering(gradient: gradient, bandSize: 0.7)
-        }
+//        let _ = Self._printChanges()
+
+        Image(uiImage: UIImage())
+            .resizable()
+//            .background(Color.random)
+            .aspectRatio(1.5, contentMode: .fit)
+            .frame(width: (UIScreen.main.bounds.width - spacing) / CGFloat(itemsInRow))
+            .redacted(reason: .placeholder)
+            .shimmering(gradient: gradient, bandSize: 0.7)
+    }
+}
+
+extension Color {
+    static var random: Color {
+        return Color(
+            red: .random(in: 0...1),
+            green: .random(in: 0...1),
+            blue: .random(in: 0...1)
+        )
     }
 }

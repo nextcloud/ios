@@ -8,11 +8,15 @@
 
 import SwiftUI
 import PreviewSnapshots
-import VisibilityTrackingScrollView
+import Queuer
 
-struct NCMediaRow: View {
+struct NCMediaRow: View, Equatable {
+    static func == (lhs: NCMediaRow, rhs: NCMediaRow) -> Bool {
+        return lhs.metadatas == rhs.metadatas
+    }
+
     let metadatas: [tableMetadata]
-    let geometryProxy: GeometryProxy
+
     @Binding var isInSelectMode: Bool
     let onCellSelected: (ScaledThumbnail, Bool) -> Void
     let onCellContextMenuItemSelected: (ScaledThumbnail, ContextMenuSelection) -> Void
@@ -20,20 +24,29 @@ struct NCMediaRow: View {
     private let spacing: CGFloat = 2
 
     var body: some View {
+        let _ = Self._printChanges()
+
         HStack(spacing: spacing) {
             if vm.rowData.scaledThumbnails.isEmpty {
-                ForEach(metadatas, id: \.self) { metadata in
-                    NCMediaLoadingCell(itemsInRow: metadatas.count, metadata: metadata, geometryProxy: geometryProxy, spacing: spacing)
+                ForEach(metadatas, id: \.ocId) { metadata in
+                    NCMediaLoadingCell(itemsInRow: metadatas.count, metadata: metadata, rowSize: UIScreen.main.bounds.width, spacing: spacing)
                 }
             } else {
-                ForEach(vm.rowData.scaledThumbnails, id: \.self) { thumbnail in
+                ForEach(vm.rowData.scaledThumbnails, id: \.metadata.ocId) { thumbnail in
                     NCMediaCell(thumbnail: thumbnail, shrinkRatio: vm.rowData.shrinkRatio, isInSelectMode: $isInSelectMode, onSelected: onCellSelected, onContextMenuItemSelected: onCellContextMenuItemSelected, isFavorite: thumbnail.metadata.favorite)
                 }
             }
         }
-        .onAppear {
+        .onFirstAppear {
             vm.configure(metadatas: metadatas)
-            vm.downloadThumbnails(rowWidth: geometryProxy.size.width, spacing: spacing)
+            vm.downloadThumbnails(rowWidth: UIScreen.main.bounds.width, spacing: spacing)
+        }
+        .onDisappear {
+            vm.cancelDownloadingThumbnails()
+        }
+        .onRotate { _ in
+            vm.configure(metadatas: metadatas)
+            vm.downloadThumbnails(rowWidth: UIScreen.main.bounds.width, spacing: spacing)
         }
     }
 }

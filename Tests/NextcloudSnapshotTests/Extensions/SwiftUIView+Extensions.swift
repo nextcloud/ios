@@ -37,6 +37,24 @@ struct DeviceOrientationViewModifier: ViewModifier {
     }
 }
 
+struct ViewDidFirstAppearModifier: ViewModifier {
+    @State private var didLoad = false
+    private let action: (() -> Void)?
+
+    init(perform action: (() -> Void)? = nil) {
+        self.action = action
+    }
+
+    func body(content: Content) -> some View {
+        content.onAppear {
+            if didLoad == false {
+                didLoad = true
+                action?()
+            }
+        }
+    }
+}
+
 extension SwiftUI.View {
     func toVC() -> UIViewController {
         let vc = UIHostingController (rootView: self)
@@ -46,5 +64,9 @@ extension SwiftUI.View {
 
     func onRotate(perform action: @escaping (UIDeviceOrientation) -> Void) -> some View {
         self.modifier(DeviceOrientationViewModifier(action: action))
+    }
+
+    func onFirstAppear(perform action: (() -> Void)? = nil) -> some View {
+        modifier(ViewDidFirstAppearModifier(perform: action))
     }
 }
