@@ -32,17 +32,23 @@ import NextcloudKit
         return instance
     }()
 
-    let limit: Int = 2000
+    private let limit: Int = 2000
     private typealias ThumbnailLRUCache = LRUCache<String, UIImage>
     private lazy var cache: ThumbnailLRUCache = {
         return ThumbnailLRUCache(countLimit: limit)
     }()
+    public var metadatas: [tableMetadata] = []
+    public var predicateDefault: NSPredicate?
+    public var predicate: NSPredicate?
 
     func createCache(account: String) {
 
         let resultsMedia = NCManageDatabase.shared.getMediaOcIdEtag(account: account)
         guard !resultsMedia.isEmpty,
               let directory = CCUtility.getDirectoryProviderStorage() else { return }
+
+        metadatas.removeAll()
+        getMetadatasMedia()
 
         let ext = ".preview.ico"
         let manager = FileManager.default
@@ -108,5 +114,38 @@ import NextcloudKit
     @objc func clearCache() {
 
         cache.removeAllValues()
+    }
+
+    func getMetadatasMedia(filterClassTypeImage: Bool = false, filterClassTypeVideo: Bool = false) {
+
+        let livePhoto = CCUtility.getLivePhoto()
+        guard let appDelegate = (UIApplication.shared.delegate as? AppDelegate),
+              let activeAccount = NCManageDatabase.shared.getActiveAccount() else { return }
+        let startServerUrl = NCUtilityFileSystem.shared.getHomeServer(urlBase: appDelegate.urlBase, userId: appDelegate.userId) + activeAccount.mediaPath
+
+        predicateDefault = NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND (classFile == %@ OR classFile == %@) AND NOT (session CONTAINS[c] 'upload')", appDelegate.account, startServerUrl, NKCommon.TypeClassFile.image.rawValue, NKCommon.TypeClassFile.video.rawValue)
+
+        if filterClassTypeImage {
+            predicate = NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND classFile == %@ AND NOT (session CONTAINS[c] 'upload')", appDelegate.account, startServerUrl, NKCommon.TypeClassFile.video.rawValue)
+        } else if filterClassTypeVideo {
+            predicate = NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND classFile == %@ AND NOT (session CONTAINS[c] 'upload')", appDelegate.account, startServerUrl, NKCommon.TypeClassFile.image.rawValue)
+        } else {
+            predicate = predicateDefault
+        }
+
+        guard let predicate = predicate else { return }
+
+        metadatas = NCManageDatabase.shared.getMetadatasMedia(predicate: predicate, livePhoto: livePhoto)
+
+        switch CCUtility.getMediaSortDate() {
+        case "date":
+            metadatas = self.metadatas.sorted(by: {($0.date as Date) > ($1.date as Date)})
+        case "creationDate":
+            metadatas = self.metadatas.sorted(by: {($0.creationDate as Date) > ($1.creationDate as Date)})
+        case "uploadDate":
+            metadatas = self.metadatas.sorted(by: {($0.uploadDate as Date) > ($1.uploadDate as Date)})
+        default:
+            break
+        }
     }
 }

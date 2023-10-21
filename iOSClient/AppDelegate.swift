@@ -135,7 +135,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
             NCBrandColor.shared.settingThemingColor(account: activeAccount.account)
 
-            DispatchQueue.global().async { NCMediaCache.shared.createCache(account: self.account) }
+            NCMediaCache.shared.createCache(account: self.account)
 
         } else {
 
