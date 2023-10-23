@@ -44,14 +44,8 @@ class NCScan: UIViewController, NCScanCellCellDelegate {
     internal var itemsDestination: [String] = []
 
     internal let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
-
     private var tipView: EasyTipView?
-
-    enum TypeFilter {
-        case document
-        case original
-    }
-    internal var filter: TypeFilter = TypeFilter.document
+    internal var filter: NCGlobal.TypeFilterScanDocument = NCKeychain().typeFilterScanDocument
 
     // MARK: - View Life Cycle
 
@@ -81,6 +75,11 @@ class NCScan: UIViewController, NCScanCellCellDelegate {
 
         segmentControlFilter.setTitle(NSLocalizedString("_filter_document_", comment: ""), forSegmentAt: 0)
         segmentControlFilter.setTitle(NSLocalizedString("_filter_original_", comment: ""), forSegmentAt: 1)
+        if filter == .document {
+            segmentControlFilter.selectedSegmentIndex = 0
+        } else if filter == .original {
+            segmentControlFilter.selectedSegmentIndex = 1
+        }
 
         add.setImage(UIImage(systemName: "plus")?.image(color: .label, size: 25), for: .normal)
         transferDown.setImage(UIImage(systemName: "arrow.down")?.image(color: .label, size: 25), for: .normal)
@@ -220,6 +219,7 @@ class NCScan: UIViewController, NCScanCellCellDelegate {
             break
         }
 
+        NCKeychain().typeFilterScanDocument = filter
         collectionViewDestination.reloadData()
     }
 

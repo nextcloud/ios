@@ -61,6 +61,13 @@ class NCGlobal: NSObject {
         return result.reduce(0, { $0 + $1 }) % maximum
     }
 
+    // ENUM
+    //
+    public enum TypeFilterScanDocument: String {
+        case document = "document"
+        case original = "original"
+    }
+
     // Directory on Group
     //
     @objc let directoryProviderStorage              = "File Provider Storage"
