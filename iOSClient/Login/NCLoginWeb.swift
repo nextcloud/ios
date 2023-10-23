@@ -303,10 +303,10 @@ extension NCLoginWeb: WKNavigationDelegate {
 
                 self.appDelegate.changeAccount(account, userProfile: userProfile)
 
-                if CCUtility.getIntro() {
+                if NCKeychain().intro {
                     self.dismiss(animated: true)
                 } else {
-                    CCUtility.setIntro(true)
+                    NCKeychain().intro = true
                     if self.presentingViewController == nil {
                         if let viewController = UIStoryboard(name: "Main", bundle: nil).instantiateInitialViewController() {
                             viewController.modalPresentationStyle = .fullScreen

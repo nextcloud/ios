@@ -48,77 +48,7 @@
     [UICKeyChainStore removeAllItemsForService:NCGlobal.shared.serviceShareKeyChain];
 }
 
-+ (void)storeAllChainInService
-{
-    UICKeyChainStore *store = [UICKeyChainStore keyChainStore];
-
-    NSArray *items = store.allItems;
-
-    for (NSDictionary *item in items) {
-
-        [UICKeyChainStore setString:[item objectForKey:@"value"] forKey:[item objectForKey:@"key"] service:NCGlobal.shared.serviceShareKeyChain];
-        [UICKeyChainStore removeItemForKey:[item objectForKey:@"key"]];
-    }
-}
-
 #pragma ------------------------------ GET/SET
-
-+ (NSString *)getGroupBySettings
-{
-    NSString *groupby = [UICKeyChainStore stringForKey:@"groupby" service:NCGlobal.shared.serviceShareKeyChain];
-
-    if (groupby == nil) {
-
-        [self setGroupBySettings:@"none"];
-        return @"none";
-    }
-
-    return @"none";
-
-    //return groupby;
-}
-
-+ (void)setGroupBySettings:(NSString *)groupby
-{
-    [UICKeyChainStore setString:groupby forKey:@"groupby" service:NCGlobal.shared.serviceShareKeyChain];
-}
-
-+ (BOOL)getIntro
-{
-    // Set compatibility old version don't touch me
-    if ([[UICKeyChainStore stringForKey:[INTRO_MessageType stringByAppendingString:@"Intro"] service:NCGlobal.shared.serviceShareKeyChain] boolValue] == YES) {
-        [CCUtility setIntro:YES];
-        return YES;
-    }
-
-    return [[UICKeyChainStore stringForKey:@"intro" service:NCGlobal.shared.serviceShareKeyChain] boolValue];
-}
-
-+ (BOOL)getIntroMessageOldVersion
-{
-    NSString *key = [INTRO_MessageType stringByAppendingString:@"Intro"];
-
-    return [[UICKeyChainStore stringForKey:key service:NCGlobal.shared.serviceShareKeyChain] boolValue];
-}
-
-+ (void)setIntro:(BOOL)set
-{
-    NSString *sIntro = (set) ? @"true" : @"false";
-    [UICKeyChainStore setString:sIntro forKey:@"intro" service:NCGlobal.shared.serviceShareKeyChain];
-
-}
-
-+ (NSString *)getIncrementalNumber
-{
-    long number = [[UICKeyChainStore stringForKey:@"incrementalnumber" service:NCGlobal.shared.serviceShareKeyChain] intValue];
-
-    number++;
-    if (number >= 9999) number = 1;
-
-    [UICKeyChainStore setString:[NSString stringWithFormat:@"%ld", number] forKey:@"incrementalnumber" service:NCGlobal.shared.serviceShareKeyChain];
-
-    return [NSString stringWithFormat:@"%04ld", number];
-}
 
 + (NSString *)getAccountExt
 {
@@ -794,7 +724,7 @@
 
     NSString *numberFileName;
     if ([fileName length] > 8) numberFileName = [fileName substringWithRange:NSMakeRange(04, 04)];
-    else numberFileName = [CCUtility getIncrementalNumber];
+    else numberFileName = [NCKeychain alloc].incrementalNumber;
 
     NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
     [formatter setLocale:[[NSLocale alloc] initWithLocaleIdentifier:@"en_US_POSIX"]];

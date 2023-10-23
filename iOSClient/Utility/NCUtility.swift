@@ -220,6 +220,7 @@ class NCUtility: NSObject {
         CCUtility.createDirectoryStandard()
 
         CCUtility.deleteAllChainStore()
+        NCKeychain().removeAll()
     }
 #endif
 

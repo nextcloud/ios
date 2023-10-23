@@ -36,6 +36,10 @@ import KeychainAccess
         }
     }
 
+    @objc func removeAll() {
+        try? keychain.removeAll()
+    }
+
     var typeFilterScanDocument: NCGlobal.TypeFilterScanDocument {
         get {
             if let rawValue = try? keychain.get("ScanDocumentTypeFilter"), let value = NCGlobal.TypeFilterScanDocument(rawValue: rawValue) {
@@ -94,5 +98,29 @@ import KeychainAccess
         set {
             keychain["enableTouchFaceID"] = String(newValue)
         }
+    }
+
+    var intro: Bool {
+        get {
+            migrate(key: "intro")
+            if let value = try? keychain.get("intro"), let result = Bool(value) {
+                return result
+            }
+            return false
+        }
+        set {
+            keychain["intro"] = String(newValue)
+        }
+    }
+
+    @objc var incrementalNumber: String {
+        migrate(key: "incrementalnumber")
+        var incrementalString = String(format: "%04ld", 0)
+        if let value = try? keychain.get("incrementalnumber"), var result = Int(value) {
+            result += 1
+            incrementalString = String(format: "%04ld", result)
+        }
+        keychain["incrementalnumber"] = incrementalString
+        return incrementalString
     }
 }

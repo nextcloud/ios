@@ -48,6 +48,7 @@ class NCSettingsBundleHelper: NSObject {
             CCUtility.removeTemporaryDirectory()
 
             CCUtility.deleteAllChainStore()
+            NCKeychain().removeAll()
             NCManageDatabase.shared.removeDB()
 
             DispatchQueue.main.asyncAfter(deadline: .now() + delay) {

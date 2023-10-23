@@ -40,15 +40,6 @@
 // GET/SET
 
 + (void)deleteAllChainStore;
-+ (void)storeAllChainInService;
-
-+ (NSString *)getGroupBySettings;
-+ (void)setGroupBySettings:(NSString *)groupby;
-
-+ (BOOL)getIntro;
-+ (void)setIntro:(BOOL)set;
-
-+ (NSString *)getIncrementalNumber;
 
 + (NSString *)getAccountExt;
 + (void)setAccountExt:(NSString *)account;

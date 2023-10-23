@@ -466,6 +466,7 @@
             [CCUtility removeTemporaryDirectory];
 
             [CCUtility deleteAllChainStore];
+            [[[NCKeychain alloc] init] removeAll];
 
             exit(0);
         });

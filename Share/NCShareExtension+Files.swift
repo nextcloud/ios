@@ -118,7 +118,8 @@ class NCFilesExtensionHandler {
                 if let url = item as? URL, url.isFileURL, !url.lastPathComponent.isEmpty {
                     originalName = url.lastPathComponent
 
-                    if fileNames.contains(originalName), let incrementalNumber = CCUtility.getIncrementalNumber() {
+                    if fileNames.contains(originalName) {
+                        let incrementalNumber = NCKeychain().incrementalNumber
                         originalName = "\(url.deletingPathExtension().lastPathComponent) \(incrementalNumber).\(url.pathExtension)"
                     }
                 }
