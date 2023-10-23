@@ -137,4 +137,16 @@ import KeychainAccess
     @objc func setOriginalFileName(key: String, value: Bool) {
         keychain[key] = String(value)
     }
+
+    @objc func setFileNameMask(key: String, mask: String) {
+        keychain[key] = mask
+    }
+
+    @objc func getFileNameMask(key: String) -> String {
+        if let value = try? keychain.get(key) {
+            return value
+        } else {
+            return ""
+        }
+    }
 }
