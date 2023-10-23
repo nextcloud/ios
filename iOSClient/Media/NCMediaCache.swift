@@ -32,7 +32,7 @@ import NextcloudKit
         return instance
     }()
 
-    private let limit: Int = 2000
+    private let limit: Int = 1500
     private typealias ThumbnailLRUCache = LRUCache<String, UIImage>
     private lazy var cache: ThumbnailLRUCache = {
         return ThumbnailLRUCache(countLimit: limit)
