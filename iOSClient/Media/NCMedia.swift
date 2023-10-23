@@ -364,26 +364,6 @@ extension NCMedia: UICollectionViewDataSource {
         return NCMediaCache.shared.metadatas.count
     }
 
-    func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
-        guard let cell = (cell as? NCGridMediaCell), indexPath.row < NCMediaCache.shared.metadatas.count else { return }
-        let metadata = NCMediaCache.shared.metadatas[indexPath.row]
-        if let image = NCMediaCache.shared.getImage(ocId: metadata.ocId) {
-            cell.imageItem.backgroundColor = nil
-            cell.imageItem.image = image
-        } else if FileManager().fileExists(atPath: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)) {
-            if let image = UIImage(contentsOfFile: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)) {
-                cell.imageItem.backgroundColor = nil
-                cell.imageItem.image = image
-                NCMediaCache.shared.setImage(ocId: metadata.ocId, image: image)
-            }
-        } else {
-            if metadata.hasPreview && metadata.status == NCGlobal.shared.metadataStatusNormal && (!CCUtility.fileProviderStoragePreviewIconExists(metadata.ocId, etag: metadata.etag)) {
-                for case let operation as NCMediaDownloadThumbnaill in appDelegate.downloadThumbnailQueue.operations where operation.metadata.ocId == metadata.ocId { return }
-                appDelegate.downloadThumbnailQueue.addOperation(NCMediaDownloadThumbnaill(metadata: metadata, cell: cell, collectionView: collectionView))
-            }
-        }
-    }
-
     func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
         if !collectionView.indexPathsForVisibleItems.contains(indexPath) && indexPath.row < NCMediaCache.shared.metadatas.count {
             let metadata = NCMediaCache.shared.metadatas[indexPath.row]
@@ -407,6 +387,23 @@ extension NCMedia: UICollectionViewDataSource {
             cell.fileObjectId = metadata.ocId
             cell.indexPath = indexPath
             cell.fileUser = metadata.ownerId
+
+            if let image = NCMediaCache.shared.getImage(ocId: metadata.ocId) {
+                cell.imageItem.backgroundColor = nil
+                cell.imageItem.image = image
+            } else if FileManager().fileExists(atPath: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)) {
+                if let image = UIImage(contentsOfFile: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)) {
+                    cell.imageItem.backgroundColor = nil
+                    cell.imageItem.image = image
+                    NCMediaCache.shared.setImage(ocId: metadata.ocId, image: image)
+                }
+            } else {
+                if metadata.hasPreview && metadata.status == NCGlobal.shared.metadataStatusNormal && (!CCUtility.fileProviderStoragePreviewIconExists(metadata.ocId, etag: metadata.etag)) {
+                    if appDelegate.downloadThumbnailQueue.operations.filter({ ($0 as? NCMediaDownloadThumbnaill)?.metadata.ocId == metadata.ocId }).isEmpty {
+                        appDelegate.downloadThumbnailQueue.addOperation(NCMediaDownloadThumbnaill(metadata: metadata, cell: cell, collectionView: collectionView))
+                    }
+                }
+            }
 
             if metadata.isAudioOrVideo {
                 cell.imageStatus.image = cacheImages.cellPlayImage
