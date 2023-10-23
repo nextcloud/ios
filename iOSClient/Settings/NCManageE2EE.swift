@@ -136,7 +136,7 @@ class NCManageE2EE: NSObject, ObservableObject, NCEndToEndInitializeDelegate, TO
 
     func passcodeViewController(_ passcodeViewController: TOPasscodeViewController, isCorrectCode code: String) -> Bool {
 
-        if code == CCUtility.getPasscode() {
+        if code == NCKeychain().passcode {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
                 self.correctPasscode()
             }
@@ -202,7 +202,7 @@ struct NCViewE2EE: View {
                     }
                     .contentShape(Rectangle())
                     .onTapGesture {
-                        if let passcode = CCUtility.getPasscode(), !passcode.isEmpty {
+                        if let passcode = NCKeychain().passcode {
                             manageE2EE.requestPasscodeType("readPassphrase")
                         } else {
                             NCContentPresenter.shared.showInfo(error: NKError(errorCode: 0, errorDescription: "_e2e_settings_lock_not_active_"))
@@ -222,7 +222,7 @@ struct NCViewE2EE: View {
                     }
                     .contentShape(Rectangle())
                     .onTapGesture {
-                        if let passcode = CCUtility.getPasscode(), !passcode.isEmpty {
+                        if let passcode = NCKeychain().passcode {
                             manageE2EE.requestPasscodeType("removeLocallyEncryption")
                         } else {
                             NCContentPresenter.shared.showInfo(error: NKError(errorCode: 0, errorDescription: "_e2e_settings_lock_not_active_"))
@@ -252,7 +252,7 @@ struct NCViewE2EE: View {
                         }
                         .contentShape(Rectangle())
                         .onTapGesture {
-                            if let passcode = CCUtility.getPasscode(), !passcode.isEmpty {
+                            if let passcode = NCKeychain().passcode {
                                 manageE2EE.requestPasscodeType("startE2E")
                             } else {
                                 NCContentPresenter.shared.showInfo(error: NKError(errorCode: 0, errorDescription: "_e2e_settings_lock_not_active_"))

@@ -714,7 +714,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         defer { self.requestAccount() }
 
         let presentedViewController = window?.rootViewController?.presentedViewController
-        guard !account.isEmpty, CCUtility.isPasscodeAtStartEnabled(), !(presentedViewController is NCLoginNavigationController) else { return }
+        guard !account.isEmpty, NCKeychain().passcode != nil, NCKeychain().requestPasscodeAtStart, !(presentedViewController is NCLoginNavigationController) else { return }
 
         // Make sure we have a privacy window (in case it's not enabled)
         showPrivacyProtectionWindow()
@@ -747,7 +747,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     func enableTouchFaceID() {
         guard !account.isEmpty,
               CCUtility.getEnableTouchFaceID(),
-              CCUtility.isPasscodeAtStartEnabled(),
+              NCKeychain().passcode != nil,
+              NCKeychain().requestPasscodeAtStart,
               let passcodeViewController = privacyProtectionWindow?.rootViewController?.presentedViewController as? TOPasscodeViewController
         else { return }
 
@@ -775,7 +776,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     }
 
     func passcodeViewController(_ passcodeViewController: TOPasscodeViewController, isCorrectCode code: String) -> Bool {
-        return code == CCUtility.getPasscode()
+        return code == NCKeychain().passcode
     }
 
     func didPerformBiometricValidationRequest(in passcodeViewController: TOPasscodeViewController) {

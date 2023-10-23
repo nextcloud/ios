@@ -42,16 +42,8 @@
 + (void)deleteAllChainStore;
 + (void)storeAllChainInService;
 
-+ (NSString *)getPasscode;
-+ (void)setPasscode:(NSString *)passcode;
-
-+ (BOOL)getNotPasscodeAtStart;
-+ (void)setNotPasscodeAtStart:(BOOL)set;
-
 + (BOOL)getEnableTouchFaceID;
 + (void)setEnableTouchFaceID:(BOOL)set;
-
-+ (BOOL)isPasscodeAtStartEnabled;
 
 + (NSString *)getGroupBySettings;
 + (void)setGroupBySettings:(NSString *)groupby;

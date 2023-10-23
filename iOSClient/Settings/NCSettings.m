@@ -265,7 +265,7 @@
 
     // ------------------------------------------------------------------
     
-    if ([[CCUtility getPasscode] length]) {
+    if ([[NCKeychain alloc] init].passcode) {
         rowBloccoPasscode.title = NSLocalizedString(@"_lock_active_", nil);
         [rowBloccoPasscode.cellConfig setObject:[[UIImage imageNamed:@"lock"] imageWithColor:UIColor.systemGrayColor size:25] forKey:@"imageView.image"];
     } else {
@@ -274,7 +274,7 @@
     }
     
     if ([CCUtility getEnableTouchFaceID]) [rowEnableTouchDaceID setValue:@1]; else [rowEnableTouchDaceID setValue:@0];
-    if ([CCUtility getNotPasscodeAtStart]) [rowNotPasscodeAtStart setValue:@1]; else [rowNotPasscodeAtStart setValue:@0];
+    if ([[NCKeychain alloc] init].requestPasscodeAtStart) [rowNotPasscodeAtStart setValue:@0]; else [rowNotPasscodeAtStart setValue:@1];
     if ([CCUtility getPrivacyScreenEnabled]) [rowPrivacyScreen setValue:@1]; else [rowPrivacyScreen setValue:@0];
 
 
@@ -292,9 +292,9 @@
     if ([rowDescriptor.tag isEqualToString:@"notPasscodeAtStart"]) {
         
         if ([[rowDescriptor.value valueData] boolValue] == YES) {
-            [CCUtility setNotPasscodeAtStart:true];
+            [[NCKeychain alloc] init].requestPasscodeAtStart = false;
         } else {
-            [CCUtility setNotPasscodeAtStart:false];
+            [[NCKeychain alloc] init].requestPasscodeAtStart = true;
         }
     }
     
@@ -370,7 +370,7 @@
     [[LAContext new] evaluatePolicy:LAPolicyDeviceOwnerAuthenticationWithBiometrics localizedReason:[[NCBrandOptions shared] brand] reply:^(BOOL success, NSError * _Nullable error) {
         if (success) {
             dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.5 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
-                [CCUtility setPasscode:@""];
+                [[NCKeychain alloc] init].passcode = nil;
                 [passcodeViewController dismissViewControllerAnimated:YES completion:nil];
                 [self reloadForm];
             });
@@ -380,7 +380,7 @@
 
 - (void)passcodeSettingsViewController:(TOPasscodeSettingsViewController *)passcodeSettingsViewController didChangeToNewPasscode:(NSString *)passcode ofType:(TOPasscodeType)type
 {
-    [CCUtility setPasscode:passcode];
+    [[NCKeychain alloc] init].passcode = passcode;
     [passcodeSettingsViewController dismissViewControllerAnimated:YES completion:nil];
     
     [self reloadForm];
@@ -393,8 +393,8 @@
 
 - (BOOL)passcodeViewController:(TOPasscodeViewController *)passcodeViewController isCorrectCode:(NSString *)code
 {
-    if ([code isEqualToString:[CCUtility getPasscode]]) {
-        [CCUtility setPasscode:@""];
+    if ([code isEqualToString:[[NCKeychain alloc] init].passcode]) {
+        [[NCKeychain alloc] init].passcode = nil;
         [self reloadForm];
         
         return YES;
@@ -410,22 +410,12 @@
     
     [self deselectFormRow:sender];
 
-    if ([[CCUtility getPasscode] length] == 0) {
-        
-        passcodeSettingsViewController = [[TOPasscodeSettingsViewController alloc] init];
-        passcodeSettingsViewController.hideOptionsButton = YES;
-        passcodeSettingsViewController.requireCurrentPasscode = NO;
-        passcodeSettingsViewController.passcodeType = TOPasscodeTypeSixDigits;
-        passcodeSettingsViewController.delegate = self;
-        
-        [self presentViewController:passcodeSettingsViewController animated:YES completion:nil];
-        
-    } else {
-     
+    if ([[NCKeychain alloc] init].passcode) {
+
         passcodeViewController = [[TOPasscodeViewController alloc] initPasscodeType:TOPasscodeTypeSixDigits allowCancel:true];
         passcodeViewController.delegate = self;
         passcodeViewController.keypadButtonShowLettering = false;
-        
+
         if (CCUtility.getEnableTouchFaceID && [laContext canEvaluatePolicy:LAPolicyDeviceOwnerAuthenticationWithBiometrics error:&error]) {
             if (error == NULL) {
                 if (laContext.biometryType == LABiometryTypeFaceID) {
@@ -443,6 +433,16 @@
         }
 
         [self presentViewController:passcodeViewController animated:YES completion:nil];
+
+    } else {
+     
+        passcodeSettingsViewController = [[TOPasscodeSettingsViewController alloc] init];
+        passcodeSettingsViewController.hideOptionsButton = YES;
+        passcodeSettingsViewController.requireCurrentPasscode = NO;
+        passcodeSettingsViewController.passcodeType = TOPasscodeTypeSixDigits;
+        passcodeSettingsViewController.delegate = self;
+
+        [self presentViewController:passcodeSettingsViewController animated:YES completion:nil];
     }
 }
 

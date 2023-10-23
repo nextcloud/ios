@@ -24,10 +24,17 @@
 import Foundation
 import KeychainAccess
 
-class NCKeychain {
+@objc class NCKeychain: NSObject {
 
     let keychain = Keychain(service: "com.nextcloud.keychain")
-    let keychainOLD = Keychain(service: NCGlobal.shared.serviceShareKeyChain)
+
+    private func migrate(key: String) {
+        let keychainOLD = Keychain(service: NCGlobal.shared.serviceShareKeyChain)
+        if let value = keychainOLD[key], !value.isEmpty {
+            keychain[key] = value
+            keychainOLD[key] = nil
+        }
+    }
 
     var typeFilterScanDocument: NCGlobal.TypeFilterScanDocument {
         get {
@@ -42,21 +49,37 @@ class NCKeychain {
         }
     }
 
-    var passcode: String {
+    @objc var passcode: String? {
         get {
-            /* MIGRATION OLD */
-            if let value = keychainOLD["passcodeBlock"], !value.isEmpty {
-                keychain["passcodeBlock"] = value
-                keychainOLD["passcodeBlock"] = nil
-            }
+            migrate(key: "passcodeBlock")
             if let value = try? keychain.get("passcodeBlock") {
                 return value
-            } else {
-                return ""
             }
+            return nil
         }
         set {
             keychain["passcodeBlock"] = newValue
+        }
+    }
+
+    @objc var requestPasscodeAtStart: Bool {
+        get {
+            let keychainOLD = Keychain(service: NCGlobal.shared.serviceShareKeyChain)
+            if let value = keychainOLD["notPasscodeAtStart"], !value.isEmpty {
+                if value == "true" {
+                    keychain["requestPasscodeAtStart"] = "false"
+                } else if value == "false" {
+                    keychain["requestPasscodeAtStart"] = "true"
+                }
+                keychainOLD["notPasscodeAtStart"] = nil
+            }
+            if let value = try? keychain.get("requestPasscodeAtStart"), let result = Bool(value) {
+                return result
+            }
+            return false
+        }
+        set {
+            keychain["requestPasscodeAtStart"] = String(newValue)
         }
     }
 }

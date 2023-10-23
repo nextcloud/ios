@@ -78,7 +78,7 @@ class FileProviderExtension: NSFileProviderExtension, NCNetworkingDelegate {
         if containerItemIdentifier != NSFileProviderItemIdentifier.workingSet {
             if fileProviderData.shared.setupAccount(domain: domain, providerExtension: self) == nil {
                 throw NSError(domain: NSFileProviderErrorDomain, code: NSFileProviderError.notAuthenticated.rawValue, userInfo: [:])
-            } else if let passcode = CCUtility.getPasscode(), !passcode.isEmpty, CCUtility.isPasscodeAtStartEnabled() {
+            } else if NCKeychain().passcode != nil, NCKeychain().requestPasscodeAtStart {
                 throw NSError(domain: NSFileProviderErrorDomain, code: NSFileProviderError.notAuthenticated.rawValue, userInfo: ["code": NSNumber(value: NCGlobal.shared.errorUnauthorizedFilesPasscode)])
             } else if CCUtility.getDisableFilesApp() || NCBrandOptions.shared.disable_openin_file {
                 throw NSError(domain: NSFileProviderErrorDomain, code: NSFileProviderError.notAuthenticated.rawValue, userInfo: ["code": NSNumber(value: NCGlobal.shared.errorDisableFilesApp)])
