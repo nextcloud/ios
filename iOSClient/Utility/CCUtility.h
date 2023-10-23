@@ -41,9 +41,6 @@
 
 + (void)deleteAllChainStore;
 
-+ (BOOL)getOriginalFileName:(NSString *)key;
-+ (void)setOriginalFileName:(BOOL)value key:(NSString *)key;
-
 + (NSString *)getFileNameMask:(NSString *)key;
 + (void)setFileNameMask:(NSString *)mask key:(NSString *)key;
 

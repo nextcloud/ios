@@ -49,7 +49,7 @@ class NCManageAutoUploadFileName: XLFormViewController {
         // Maintain the original fileName
 
         row = XLFormRowDescriptor(tag: "maintainOriginalFileName", rowType: XLFormRowDescriptorTypeBooleanSwitch, title: NSLocalizedString("_maintain_original_filename_", comment: ""))
-        row.value = CCUtility.getOriginalFileName(NCGlobal.shared.keyFileNameOriginalAutoUpload)
+        row.value = NCKeychain().getOriginalFileName(key: NCGlobal.shared.keyFileNameOriginalAutoUpload)
         row.cellConfig["backgroundColor"] = UIColor.secondarySystemGroupedBackground
 
         row.cellConfig["textLabel.font"] = UIFont.systemFont(ofSize: 15.0)
@@ -150,7 +150,7 @@ class NCManageAutoUploadFileName: XLFormViewController {
             CCUtility.setFileNameType((formRow.value! as AnyObject).boolValue, key: NCGlobal.shared.keyFileNameAutoUploadType)
             self.reloadForm()
         } else if formRow.tag == "maintainOriginalFileName" {
-            CCUtility.setOriginalFileName((formRow.value! as AnyObject).boolValue, key: NCGlobal.shared.keyFileNameOriginalAutoUpload)
+            NCKeychain().setOriginalFileName(key: NCGlobal.shared.keyFileNameOriginalAutoUpload, value: (formRow.value! as AnyObject).boolValue)
             self.reloadForm()
         } else if formRow.tag == "maskFileName" {
 
@@ -189,7 +189,7 @@ class NCManageAutoUploadFileName: XLFormViewController {
 
         var returnString: String = ""
 
-        if CCUtility.getOriginalFileName(NCGlobal.shared.keyFileNameOriginalAutoUpload) {
+        if NCKeychain().getOriginalFileName(key: NCGlobal.shared.keyFileNameOriginalAutoUpload) {
 
             return (NSLocalizedString("_filename_", comment: "") + ": IMG_0001.JPG")
 

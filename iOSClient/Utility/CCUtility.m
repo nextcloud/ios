@@ -50,17 +50,6 @@
 
 #pragma ------------------------------ GET/SET
 
-+ (BOOL)getOriginalFileName:(NSString *)key
-{
-    return [[UICKeyChainStore stringForKey:key service:NCGlobal.shared.serviceShareKeyChain] boolValue];
-}
-
-+ (void)setOriginalFileName:(BOOL)value key:(NSString *)key
-{
-    NSString *sValue = (value) ? @"true" : @"false";
-    [UICKeyChainStore setString:sValue forKey:key service:NCGlobal.shared.serviceShareKeyChain];
-}
-
 + (NSString *)getFileNameMask:(NSString *)key
 {
     NSString *mask = [UICKeyChainStore stringForKey:key service:NCGlobal.shared.serviceShareKeyChain];
@@ -658,7 +647,7 @@
     BOOL addFileNameType = NO;
 
     // Original FileName ?
-    if ([self getOriginalFileName:keyFileNameOriginal] && !forcedNewFileName) {
+    if ([[NCKeychain init] getOriginalFileNameWithKey:keyFileNameOriginal] && !forcedNewFileName) {
         return fileName;
     }
 

@@ -148,7 +148,7 @@ class NCUploadAssets: NSObject, ObservableObject, NCCreateFormUploadConflictDele
 struct UploadAssetsView: View {
 
     @State private var fileName: String = CCUtility.getFileNameMask(NCGlobal.shared.keyFileNameMask)
-    @State private var isMaintainOriginalFilename: Bool = CCUtility.getOriginalFileName(NCGlobal.shared.keyFileNameOriginal)
+    @State private var isMaintainOriginalFilename: Bool = NCKeychain().getOriginalFileName(key: NCGlobal.shared.keyFileNameOriginal)
     @State private var isAddFilenametype: Bool = CCUtility.getFileNameType(NCGlobal.shared.keyFileNameType)
     @State private var isPresentedSelect = false
     @State private var isPresentedUploadConflict = false
@@ -185,7 +185,7 @@ struct UploadAssetsView: View {
         var preview: String = ""
         let creationDate = asset.creationDate ?? Date()
 
-        CCUtility.setOriginalFileName(isMaintainOriginalFilename, key: NCGlobal.shared.keyFileNameOriginal)
+        NCKeychain().setOriginalFileName(key: NCGlobal.shared.keyFileNameOriginal, value: isMaintainOriginalFilename)
         CCUtility.setFileNameType(isAddFilenametype, key: NCGlobal.shared.keyFileNameType)
         CCUtility.setFileNameMask(fileName, key: NCGlobal.shared.keyFileNameMask)
 
@@ -323,7 +323,7 @@ struct UploadAssetsView: View {
     }
 
     private func getOriginalFilenameForPreview() -> NSString {
-        CCUtility.setOriginalFileName(isMaintainOriginalFilename, key: NCGlobal.shared.keyFileNameOriginal)
+        NCKeychain().setOriginalFileName(key: NCGlobal.shared.keyFileNameOriginal, value: isMaintainOriginalFilename)
 
         if let asset = uploadAssets.assets.first?.phAsset {
             return asset.originalFilename

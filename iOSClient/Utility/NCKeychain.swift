@@ -28,18 +28,6 @@ import KeychainAccess
 
     let keychain = Keychain(service: "com.nextcloud.keychain")
 
-    private func migrate(key: String) {
-        let keychainOLD = Keychain(service: NCGlobal.shared.serviceShareKeyChain)
-        if let value = keychainOLD[key], !value.isEmpty {
-            keychain[key] = value
-            keychainOLD[key] = nil
-        }
-    }
-
-    @objc func removeAll() {
-        try? keychain.removeAll()
-    }
-
     var typeFilterScanDocument: NCGlobal.TypeFilterScanDocument {
         get {
             if let rawValue = try? keychain.get("ScanDocumentTypeFilter"), let value = NCGlobal.TypeFilterScanDocument(rawValue: rawValue) {
@@ -122,5 +110,31 @@ import KeychainAccess
         }
         keychain["incrementalnumber"] = incrementalString
         return incrementalString
+    }
+
+    // MARK: -
+
+    private func migrate(key: String) {
+        let keychainOLD = Keychain(service: NCGlobal.shared.serviceShareKeyChain)
+        if let value = keychainOLD[key], !value.isEmpty {
+            keychain[key] = value
+            keychainOLD[key] = nil
+        }
+    }
+
+    @objc func removeAll() {
+        try? keychain.removeAll()
+    }
+
+    @objc func getOriginalFileName(key: String) -> Bool {
+        migrate(key: key)
+        if let value = try? keychain.get(key), let result = Bool(value) {
+            return result
+        }
+        return false
+    }
+
+    @objc func setOriginalFileName(key: String, value: Bool) {
+        keychain[key] = String(value)
     }
 }
