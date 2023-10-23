@@ -39,7 +39,7 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate, NCSelectDelegate {
     internal let appDelegate = UIApplication.shared.delegate as! AppDelegate
     // swiftlint:enable force_cast
 
-    private var account: String = ""
+    //private var account: String = ""
 
     internal var isEditMode = false
     internal var selectOcId: [String] = []
@@ -162,7 +162,7 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate, NCSelectDelegate {
               let error = userInfo["error"] as? NKError else { return }
         let onlyLocalCache: Bool = userInfo["onlyLocalCache"] as? Bool ?? false
 
-        NCMediaCache.shared.getMetadatasMedia(filterClassTypeImage: filterClassTypeImage, filterClassTypeVideo: filterClassTypeVideo)
+        NCMediaCache.shared.getMetadatasMedia(account: appDelegate.account, filterClassTypeImage: filterClassTypeImage, filterClassTypeVideo: filterClassTypeVideo)
 
         if error == .success, let indexPath = userInfo["indexPath"] as? [IndexPath], !indexPath.isEmpty, !onlyLocalCache {
             collectionView?.performBatchUpdates({
@@ -447,14 +447,8 @@ extension NCMedia {
     @objc func reloadDataSourceWithCompletion(_ completion: @escaping (_ metadatas: [tableMetadata]) -> Void) {
         guard !appDelegate.account.isEmpty else { return }
 
-        if account != appDelegate.account {
-            NCMediaCache.shared.metadatas = []
-            account = appDelegate.account
-            DispatchQueue.main.async { self.collectionView?.reloadData() }
-        }
-
         DispatchQueue.global().async {
-            NCMediaCache.shared.getMetadatasMedia(filterClassTypeImage: self.filterClassTypeImage, filterClassTypeVideo: self.filterClassTypeVideo)
+            NCMediaCache.shared.getMetadatasMedia(account: self.appDelegate.account, filterClassTypeImage: self.filterClassTypeImage, filterClassTypeVideo: self.filterClassTypeVideo)
             DispatchQueue.main.sync {
                 self.reloadDataThenPerform {
                     self.updateMediaControlVisibility()

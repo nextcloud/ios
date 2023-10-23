@@ -32,7 +32,7 @@ class NCNetworkingCheckRemoteUser {
               let token = CCUtility.getPassword(account), !token.isEmpty,
               let appDelegate = UIApplication.shared.delegate as? AppDelegate else { return }
 
-        NCNetworking.shared.cancelSessions(inBackground: true)
+        NCNetworking.shared.cancel(inBackground: true)
 
         if NCGlobal.shared.capabilityServerVersionMajor >= NCGlobal.shared.nextcloudVersion17 {
 

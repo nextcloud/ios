@@ -771,17 +771,11 @@ class NCNetworking: NSObject, NKCommonDelegate {
     // sessionIdentifierBackgroundWWan: String = "com.nextcloud.session.upload.backgroundWWan"
     // sessionIdentifierBackgroundExtension: String = "com.nextcloud.session.upload.extension"
 
-    func cancelSessions(inBackground: Bool) {
-        Task {
-            await cancel(inBackground: inBackground)
-        }
-    }
-
-    func cancel(inBackground: Bool) async {
+    func cancel(inBackground: Bool) {
 
 #if !EXTENSION
-        if let appDelegate = await UIApplication.shared.delegate as? AppDelegate {
-            await appDelegate.cancelAllQueue()
+        if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
+            appDelegate.cancelAllQueue()
         }
 #endif
 
@@ -813,16 +807,17 @@ class NCNetworking: NSObject, NKCommonDelegate {
             NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
         }
 
-        let tasksBackground = await NCNetworking.shared.sessionManagerBackground.tasks
-        for task in tasksBackground.1 { // ([URLSessionDataTask], [URLSessionUploadTask], [URLSessionDownloadTask])
-            task.cancel()
+        Task {
+            let tasksBackground = await NCNetworking.shared.sessionManagerBackground.tasks
+            for task in tasksBackground.1 { // ([URLSessionDataTask], [URLSessionUploadTask], [URLSessionDownloadTask])
+                task.cancel()
+            }
+            let tasksBackgroundWWan = await NCNetworking.shared.sessionManagerBackgroundWWan.tasks
+            for task in tasksBackgroundWWan.1 { // ([URLSessionDataTask], [URLSessionUploadTask], [URLSessionDownloadTask])
+                task.cancel()
+            }
+            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSource)
         }
-        let tasksBackgroundWWan = await NCNetworking.shared.sessionManagerBackgroundWWan.tasks
-        for task in tasksBackgroundWWan.1 { // ([URLSessionDataTask], [URLSessionUploadTask], [URLSessionDownloadTask])
-            task.cancel()
-        }
-
-        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSource)
     }
 
     func cancel(metadata: tableMetadata) async {

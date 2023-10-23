@@ -135,7 +135,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
             NCBrandColor.shared.settingThemingColor(account: activeAccount.account)
 
-            NCMediaCache.shared.createCache(account: self.account)
+            DispatchQueue.global().async { NCMediaCache.shared.createCache(account: activeAccount.account) }
 
         } else {
 
@@ -269,7 +269,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Create share accounts \(error.localizedDescription)")
         }
 
-        NCNetworking.shared.cancelSessions(inBackground: false)
+        NCNetworking.shared.cancel(inBackground: false)
 
         presentPasscode { }
 
@@ -279,7 +279,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     // L'applicazione terminerà
     func applicationWillTerminate(_ application: UIApplication) {
 
-        NCNetworking.shared.cancelSessions(inBackground: false)
+        NCNetworking.shared.cancel(inBackground: false)
 
         if UIApplication.shared.backgroundRefreshStatus == .available {
 
@@ -576,9 +576,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
     @objc func changeAccount(_ account: String, userProfile: NKUserProfile?) {
 
+        NCNetworking.shared.cancel(inBackground: false)
         guard let tableAccount = NCManageDatabase.shared.setAccountActive(account) else { return }
-
-        NCNetworking.shared.cancelSessions(inBackground: false)
 
         self.account = tableAccount.account
         self.urlBase = tableAccount.urlBase
@@ -605,7 +604,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Initialize Auto upload with \(items) uploads")
         }
 
-        DispatchQueue.global().async { NCMediaCache.shared.createCache(account: account) }
+        DispatchQueue.global().async { NCMediaCache.shared.createCache(account: self.account) }
 
         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterChangeUser)
     }
