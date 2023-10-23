@@ -50,66 +50,6 @@
 
 #pragma ------------------------------ GET/SET
 
-+ (NSString *)getAccountExt
-{
-    return [UICKeyChainStore stringForKey:@"accountExt" service:NCGlobal.shared.serviceShareKeyChain];
-}
-
-+ (void)setAccountExt:(NSString *)account
-{
-    [UICKeyChainStore setString:account forKey:@"accountExt" service:NCGlobal.shared.serviceShareKeyChain];
-}
-
-+ (NSString *)getServerUrlExt
-{
-    return [UICKeyChainStore stringForKey:@"serverUrlExt" service:NCGlobal.shared.serviceShareKeyChain];
-}
-
-+ (void)setServerUrlExt:(NSString *)serverUrl
-{
-    [UICKeyChainStore setString:serverUrl forKey:@"serverUrlExt" service:NCGlobal.shared.serviceShareKeyChain];
-}
-
-+ (NSString *)getTitleServerUrlExt
-{
-    return [UICKeyChainStore stringForKey:@"titleServerUrlExt" service:NCGlobal.shared.serviceShareKeyChain];
-}
-
-+ (void)setTitleServerUrlExt:(NSString *)titleServerUrl
-{
-    [UICKeyChainStore setString:titleServerUrl forKey:@"titleServerUrlExt" service:NCGlobal.shared.serviceShareKeyChain];
-}
-
-+ (NSString *)getFileNameExt
-{
-    return [UICKeyChainStore stringForKey:@"fileNameExt" service:NCGlobal.shared.serviceShareKeyChain];
-}
-
-+ (void)setFileNameExt:(NSString *)fileName
-{
-    [UICKeyChainStore setString:fileName forKey:@"fileNameExt" service:NCGlobal.shared.serviceShareKeyChain];
-}
-
-+ (NSString *)getEmail
-{
-    return [UICKeyChainStore stringForKey:@"email" service:NCGlobal.shared.serviceShareKeyChain];
-}
-
-+ (void)setEmail:(NSString *)email
-{
-    [UICKeyChainStore setString:email forKey:@"email" service:NCGlobal.shared.serviceShareKeyChain];
-}
-
-+ (NSString *)getHint
-{
-    return [UICKeyChainStore stringForKey:@"hint" service:NCGlobal.shared.serviceShareKeyChain];
-}
-
-+ (void)setHint:(NSString *)hint
-{
-    [UICKeyChainStore setString:hint forKey:@"hint" service:NCGlobal.shared.serviceShareKeyChain];
-}
-
 + (BOOL)getOriginalFileName:(NSString *)key
 {
     return [[UICKeyChainStore stringForKey:key service:NCGlobal.shared.serviceShareKeyChain] boolValue];

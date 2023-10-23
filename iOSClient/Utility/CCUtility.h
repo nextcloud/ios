@@ -41,24 +41,6 @@
 
 + (void)deleteAllChainStore;
 
-+ (NSString *)getAccountExt;
-+ (void)setAccountExt:(NSString *)account;
-
-+ (NSString *)getServerUrlExt;
-+ (void)setServerUrlExt:(NSString *)serverUrl;
-
-+ (NSString *)getTitleServerUrlExt;
-+ (void)setTitleServerUrlExt:(NSString *)titleServerUrl;
-
-+ (NSString *)getFileNameExt;
-+ (void)setFileNameExt:(NSString *)fileName;
-
-+ (NSString *)getEmail;
-+ (void)setEmail:(NSString *)email;
-
-+ (NSString *)getHint;
-+ (void)setHint:(NSString *)hint;
-
 + (BOOL)getOriginalFileName:(NSString *)key;
 + (void)setOriginalFileName:(BOOL)value key:(NSString *)key;
 
