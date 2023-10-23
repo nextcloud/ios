@@ -63,27 +63,6 @@
 
 #pragma ------------------------------ GET/SET
 
-+ (NSString *)getPasscode
-{
-    return [UICKeyChainStore stringForKey:@"passcodeBlock" service:NCGlobal.shared.serviceShareKeyChain];
-}
-
-+ (void)setPasscode:(NSString *)passcode
-{
-    [UICKeyChainStore setString:passcode forKey:@"passcodeBlock" service:NCGlobal.shared.serviceShareKeyChain];
-}
-
-+ (BOOL)getNotPasscodeAtStart
-{
-    return [[UICKeyChainStore stringForKey:@"notPasscodeAtStart" service:NCGlobal.shared.serviceShareKeyChain] boolValue];
-}
-
-+ (void)setNotPasscodeAtStart:(BOOL)set
-{
-    NSString *sSet = (set) ? @"true" : @"false";
-    [UICKeyChainStore setString:sSet forKey:@"notPasscodeAtStart" service:NCGlobal.shared.serviceShareKeyChain];
-}
-
 + (BOOL)getEnableTouchFaceID
 {
     NSString *valueString = [UICKeyChainStore stringForKey:@"enableTouchFaceID" service:NCGlobal.shared.serviceShareKeyChain];

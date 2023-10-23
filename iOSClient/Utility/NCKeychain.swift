@@ -27,17 +27,36 @@ import KeychainAccess
 class NCKeychain {
 
     let keychain = Keychain(service: "com.nextcloud.keychain")
+    let keychainOLD = Keychain(service: NCGlobal.shared.serviceShareKeyChain)
 
     var typeFilterScanDocument: NCGlobal.TypeFilterScanDocument {
         get {
-            if let rawValue = try? keychain.get("ScanDocumentTypeFilter"), let result = NCGlobal.TypeFilterScanDocument(rawValue: rawValue) {
-                return result
+            if let rawValue = try? keychain.get("ScanDocumentTypeFilter"), let value = NCGlobal.TypeFilterScanDocument(rawValue: rawValue) {
+                return value
             } else {
                 return .original
             }
         }
         set {
             keychain["ScanDocumentTypeFilter"] = newValue.rawValue
+        }
+    }
+
+    var passcode: String {
+        get {
+            /* MIGRATION OLD */
+            if let value = keychainOLD["passcodeBlock"], !value.isEmpty {
+                keychain["passcodeBlock"] = value
+                keychainOLD["passcodeBlock"] = nil
+            }
+            if let value = try? keychain.get("passcodeBlock") {
+                return value
+            } else {
+                return ""
+            }
+        }
+        set {
+            keychain["passcodeBlock"] = newValue
         }
     }
 }
