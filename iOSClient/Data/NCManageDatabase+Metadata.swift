@@ -1250,21 +1250,4 @@ extension NCManageDatabase {
             NextcloudKit.shared.nkCommonInstance.writeLog("Could not access database: \(error)")
         }
     }
-
-    func getMediaOcIdEtag(account: String) -> [String: String] {
-
-        let predicate = NSPredicate(format: "account == %@ AND (classFile == %@ OR classFile == %@)", account, NKCommon.TypeClassFile.image.rawValue, NKCommon.TypeClassFile.video.rawValue)
-        var results: [String: String] = [:]
-
-        do {
-            let realm = try Realm()
-            for result in realm.objects(tableMetadata.self).filter(predicate) {
-                results[result.ocId] = result.etag
-            }
-        } catch let error {
-            NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
-        }
-
-        return results
-    }
 }

@@ -37,19 +37,18 @@ import NextcloudKit
     private lazy var cache: ThumbnailLRUCache = {
         return ThumbnailLRUCache(countLimit: limit)
     }()
+    private var ocIdEtag: [String: String] = [:]
     public var metadatas: [tableMetadata] = []
     public var predicateDefault: NSPredicate?
     public var predicate: NSPredicate?
+    public var livePhoto: Bool = false
 
     func createCache(account: String) {
-
-        let resultsMedia = NCManageDatabase.shared.getMediaOcIdEtag(account: account)
-        guard !resultsMedia.isEmpty,
-              let directory = CCUtility.getDirectoryProviderStorage() else { return }
 
         metadatas.removeAll()
         getMetadatasMedia(account: account)
 
+        guard !metadatas.isEmpty, let directory = CCUtility.getDirectoryProviderStorage() else { return }
         let ext = ".preview.ico"
         let manager = FileManager.default
         let resourceKeys = Set<URLResourceKey>([.nameKey, .pathKey, .fileSizeKey, .creationDateKey])
@@ -61,6 +60,10 @@ import NextcloudKit
         var files: [FileInfo] = []
         let startDate = Date()
 
+        for metadata in metadatas {
+            ocIdEtag[metadata.ocId] = metadata.etag
+        }
+
         if let enumerator = manager.enumerator(at: URL(fileURLWithPath: directory), includingPropertiesForKeys: [.isRegularFileKey], options: [.skipsHiddenFiles]) {
             for case let fileURL as URL in enumerator where fileURL.lastPathComponent.hasSuffix(ext) {
                 let fileName = fileURL.lastPathComponent
@@ -69,7 +72,7 @@ import NextcloudKit
                         let size = resourceValues.fileSize,
                         size > 0,
                         let date = resourceValues.creationDate,
-                        let etag = resultsMedia[ocId],
+                        let etag = ocIdEtag[ocId],
                         fileName == etag + ext else { continue }
                 files.append(FileInfo(path: fileURL, ocId: ocId, date: date))
             }
@@ -118,10 +121,8 @@ import NextcloudKit
 
     func getMetadatasMedia(account: String, filterClassTypeImage: Bool = false, filterClassTypeVideo: Bool = false) {
 
-        let livePhoto = CCUtility.getLivePhoto()
-        guard let appDelegate = (UIApplication.shared.delegate as? AppDelegate),
-              let account = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", account)) else { return }
-        let startServerUrl = NCUtilityFileSystem.shared.getHomeServer(urlBase: appDelegate.urlBase, userId: appDelegate.userId) + account.mediaPath
+        guard let account = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", account)) else { return }
+        let startServerUrl = NCUtilityFileSystem.shared.getHomeServer(urlBase: account.urlBase, userId: account.userId) + account.mediaPath
 
         predicateDefault = NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND (classFile == %@ OR classFile == %@) AND NOT (session CONTAINS[c] 'upload')", account.account, startServerUrl, NKCommon.TypeClassFile.image.rawValue, NKCommon.TypeClassFile.video.rawValue)
 
@@ -135,6 +136,7 @@ import NextcloudKit
 
         guard let predicate = predicate else { return }
 
+        livePhoto = CCUtility.getLivePhoto()
         metadatas = NCManageDatabase.shared.getMetadatasMedia(predicate: predicate, livePhoto: livePhoto)
 
         switch CCUtility.getMediaSortDate() {

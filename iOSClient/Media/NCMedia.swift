@@ -56,7 +56,6 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate, NCSelectDelegate {
 
     private var lastContentOffsetY: CGFloat = 0
     private var mediaPath = ""
-    private var livePhoto: Bool = false
 
     private var timeIntervalSearchNewMedia: TimeInterval = 3.0
     private var timerSearchNewMedia: Timer?
@@ -407,7 +406,7 @@ extension NCMedia: UICollectionViewDataSource {
 
             if metadata.isAudioOrVideo {
                 cell.imageStatus.image = cacheImages.cellPlayImage
-            } else if metadata.livePhoto && livePhoto {
+            } else if metadata.livePhoto && NCMediaCache.shared.livePhoto {
                 cell.imageStatus.image = cacheImages.cellLivePhotoImage
             }
 
