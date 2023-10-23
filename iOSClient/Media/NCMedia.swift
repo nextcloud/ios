@@ -489,10 +489,8 @@ extension NCMedia {
         }
 
         var lessDate = Date()
-        if let predicate = NCMediaCache.shared.predicateDefault {
-            if let metadata = NCManageDatabase.shared.getMetadata(predicate: predicate, sorted: "date", ascending: true) {
-                lessDate = metadata.date as Date
-            }
+        if let predicate = NCMediaCache.shared.predicateDefault, let metadata = NCManageDatabase.shared.getMetadata(predicate: predicate, sorted: "date", ascending: true) {
+            lessDate = metadata.date as Date
         }
 
         var greaterDate: Date
