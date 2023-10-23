@@ -42,9 +42,6 @@
 + (void)deleteAllChainStore;
 + (void)storeAllChainInService;
 
-+ (BOOL)getEnableTouchFaceID;
-+ (void)setEnableTouchFaceID:(BOOL)set;
-
 + (NSString *)getGroupBySettings;
 + (void)setGroupBySettings:(NSString *)groupby;
 

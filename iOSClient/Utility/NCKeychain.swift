@@ -82,4 +82,17 @@ import KeychainAccess
             keychain["requestPasscodeAtStart"] = String(newValue)
         }
     }
+
+    @objc var touchFaceID: Bool {
+        get {
+            migrate(key: "enableTouchFaceID")
+            if let value = try? keychain.get("enableTouchFaceID"), let result = Bool(value) {
+                return result
+            }
+            return false
+        }
+        set {
+            keychain["enableTouchFaceID"] = String(newValue)
+        }
+    }
 }

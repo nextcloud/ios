@@ -273,7 +273,7 @@
         [rowBloccoPasscode.cellConfig setObject:[[UIImage imageNamed:@"lock_open"] imageWithColor:UIColor.systemGrayColor size:25] forKey:@"imageView.image"];
     }
     
-    if ([CCUtility getEnableTouchFaceID]) [rowEnableTouchDaceID setValue:@1]; else [rowEnableTouchDaceID setValue:@0];
+    if ([[NCKeychain alloc] init].touchFaceID) [rowEnableTouchDaceID setValue:@1]; else [rowEnableTouchDaceID setValue:@0];
     if ([[NCKeychain alloc] init].requestPasscodeAtStart) [rowNotPasscodeAtStart setValue:@0]; else [rowNotPasscodeAtStart setValue:@1];
     if ([CCUtility getPrivacyScreenEnabled]) [rowPrivacyScreen setValue:@1]; else [rowPrivacyScreen setValue:@0];
 
@@ -301,9 +301,9 @@
     if ([rowDescriptor.tag isEqualToString:@"enableTouchDaceID"]) {
         
         if ([[rowDescriptor.value valueData] boolValue] == YES) {
-            [CCUtility setEnableTouchFaceID:true];
+            [[NCKeychain alloc] init].touchFaceID = true;
         } else {
-            [CCUtility setEnableTouchFaceID:false];
+            [[NCKeychain alloc] init].touchFaceID = false;
         }
     }
     
@@ -416,7 +416,7 @@
         passcodeViewController.delegate = self;
         passcodeViewController.keypadButtonShowLettering = false;
 
-        if (CCUtility.getEnableTouchFaceID && [laContext canEvaluatePolicy:LAPolicyDeviceOwnerAuthenticationWithBiometrics error:&error]) {
+        if ([[NCKeychain alloc] init].touchFaceID && [laContext canEvaluatePolicy:LAPolicyDeviceOwnerAuthenticationWithBiometrics error:&error]) {
             if (error == NULL) {
                 if (laContext.biometryType == LABiometryTypeFaceID) {
                     passcodeViewController.biometryType = TOPasscodeBiometryTypeFaceID;

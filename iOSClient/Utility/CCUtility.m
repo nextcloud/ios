@@ -63,25 +63,6 @@
 
 #pragma ------------------------------ GET/SET
 
-+ (BOOL)getEnableTouchFaceID
-{
-    NSString *valueString = [UICKeyChainStore stringForKey:@"enableTouchFaceID" service:NCGlobal.shared.serviceShareKeyChain];
-
-    // Default TRUE
-    if (valueString == nil) {
-        [self setEnableTouchFaceID:YES];
-        return true;
-    }
-
-    return [valueString boolValue];
-}
-
-+ (void)setEnableTouchFaceID:(BOOL)set
-{
-    NSString *sSet = (set) ? @"true" : @"false";
-    [UICKeyChainStore setString:sSet forKey:@"enableTouchFaceID" service:NCGlobal.shared.serviceShareKeyChain];
-}
-
 + (NSString *)getGroupBySettings
 {
     NSString *groupby = [UICKeyChainStore stringForKey:@"groupby" service:NCGlobal.shared.serviceShareKeyChain];
