@@ -216,7 +216,6 @@ import KeychainAccess
 
     func setEndToEndPrivateKey(account: String, privateKey: String) {
         let key = E2E_PrivateKey + account
-        migrate(key: key)
         keychain[key] = privateKey
     }
 
@@ -228,7 +227,17 @@ import KeychainAccess
 
     func setEndToEndPublicKey(account: String, publicKey: String) {
         let key = E2E_PublicKey + account
-        migrate(key: key)
         keychain[key] = publicKey
+    }
+
+    func getEndToEndPassphrase(account: String) -> String? {
+        let key = E2E_Passphrase + account
+        migrate(key: key)
+        return try? keychain.get(key)
+    }
+
+    func setEndToEndPassphrase(account: String, passphrase: String) {
+        let key = E2E_Passphrase + account
+        keychain[key] = passphrase
     }
 }
