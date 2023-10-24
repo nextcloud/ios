@@ -495,7 +495,7 @@
     BOOL addFileNameType = NO;
 
     // Original FileName ?
-    if ([[NCKeychain init] getOriginalFileNameWithKey:keyFileNameOriginal] && !forcedNewFileName) {
+    if ([[[NCKeychain alloc] init] getOriginalFileNameWithKey:keyFileNameOriginal] && !forcedNewFileName) {
         return fileName;
     }
 
@@ -520,13 +520,13 @@
 
     // Use File Name Type
     if (keyFileNameType)
-        addFileNameType = [[NCKeychain init] getFileNameTypeWithKey:keyFileNameType];
+        addFileNameType = [[[NCKeychain alloc] init] getFileNameTypeWithKey:keyFileNameType];
 
     NSString *fileNameExt = [[fileName pathExtension] lowercaseString];
 
     if (keyFileName) {
 
-        fileName = [[NCKeychain init] getFileNameMaskWithKey:keyFileName];
+        fileName = [[[NCKeychain alloc] init] getFileNameMaskWithKey:keyFileName];
 
         if ([fileName length] > 0) {
 

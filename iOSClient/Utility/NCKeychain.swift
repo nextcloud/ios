@@ -35,6 +35,10 @@ import KeychainAccess
     let E2E_PublicKey = "EndToEndPublicKeyServer_"
     // swiftlint:enable identifier_name
 
+    override init() {
+        super.init()
+    }
+
     var typeFilterScanDocument: NCGlobal.TypeFilterScanDocument {
         get {
             if let rawValue = try? keychain.get("ScanDocumentTypeFilter"), let value = NCGlobal.TypeFilterScanDocument(rawValue: rawValue) {
@@ -157,6 +161,12 @@ import KeychainAccess
 
     @objc func removeAll() {
         try? keychain.removeAll()
+    }
+
+    @objc func getPassword(account: String) -> String {
+        let key = "password" + account
+        migrate(key: key)
+        return (try? keychain.get(key)) ?? ""
     }
 
     @objc func getOriginalFileName(key: String) -> Bool {

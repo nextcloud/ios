@@ -124,7 +124,7 @@ func getFilesDataEntry(configuration: AccountIntent?, isPreview: Bool, displaySi
     }
 
     // NETWORKING
-    let password = CCUtility.getPassword(account.account)!
+    let password = NCKeychain().getPassword(account: account.account)
     NextcloudKit.shared.setup(
         account: account.account,
         user: account.user,

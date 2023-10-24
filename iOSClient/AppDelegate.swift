@@ -117,7 +117,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
         if let account = NCManageDatabase.shared.getActiveAccount() {
             NextcloudKit.shared.nkCommonInstance.writeLog("Account active \(account.account)")
-            if CCUtility.getPassword(account.account).isEmpty {
+            if NCKeychain().getPassword(account: account.account).isEmpty {
                 NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] PASSWORD NOT FOUND for \(account.account)")
             }
         }
@@ -128,7 +128,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             urlBase = activeAccount.urlBase
             user = activeAccount.user
             userId = activeAccount.userId
-            password = CCUtility.getPassword(account)
+            password = NCKeychain().getPassword(account: account)
 
             NextcloudKit.shared.setup(account: account, user: user, userId: userId, password: password, urlBase: urlBase)
             NCManageDatabase.shared.setCapabilities(account: account)
@@ -530,7 +530,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     }
 
     @objc private func checkErrorNetworking() {
-        guard !account.isEmpty, CCUtility.getPassword(account)!.isEmpty else { return }
+        guard !account.isEmpty, NCKeychain().getPassword(account: account).isEmpty else { return }
         openLogin(viewController: window?.rootViewController, selector: NCGlobal.shared.introLogin, openLoginWeb: true)
     }
 
@@ -584,7 +584,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         self.urlBase = tableAccount.urlBase
         self.user = tableAccount.user
         self.userId = tableAccount.userId
-        self.password = CCUtility.getPassword(tableAccount.account)
+        self.password = NCKeychain().getPassword(account: tableAccount.account)
 
         NextcloudKit.shared.setup(account: account, user: user, userId: userId, password: password, urlBase: urlBase)
         NCManageDatabase.shared.setCapabilities(account: account)

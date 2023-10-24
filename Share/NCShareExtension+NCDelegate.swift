@@ -88,7 +88,7 @@ extension NCShareExtension: NCEmptyDataSetDelegate, NCAccountRequestDelegate {
             account: activeAccount.account,
             user: activeAccount.user,
             userId: activeAccount.userId,
-            password: CCUtility.getPassword(activeAccount.account),
+            password: NCKeychain().getPassword(account: activeAccount.account),
             urlBase: activeAccount.urlBase,
             userAgent: userAgent,
             nextcloudVersion: 0,
