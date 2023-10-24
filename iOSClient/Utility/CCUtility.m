@@ -50,30 +50,6 @@
 
 #pragma ------------------------------ GET/SET
 
-+ (NSString *)getEndToEndPrivateKey:(NSString *)account
-{
-    NSString *key = [E2E_PrivateKey stringByAppendingString:account];
-    return [UICKeyChainStore stringForKey:key service:NCGlobal.shared.serviceShareKeyChain];
-}
-
-+ (void)setEndToEndPrivateKey:(NSString *)account privateKey:(NSString *)privateKey
-{
-    NSString *key = [E2E_PrivateKey stringByAppendingString:account];
-    [UICKeyChainStore setString:privateKey forKey:key service:NCGlobal.shared.serviceShareKeyChain];
-}
-
-+ (NSString *)getEndToEndPublicKey:(NSString *)account
-{
-    NSString *key = [E2E_PublicKey stringByAppendingString:account];
-    return [UICKeyChainStore stringForKey:key service:NCGlobal.shared.serviceShareKeyChain];
-}
-
-+ (void)setEndToEndPublicKey:(NSString *)account publicKey:(NSString *)publicKey
-{
-    NSString *key = [E2E_PublicKey stringByAppendingString:account];
-    [UICKeyChainStore setString:publicKey forKey:key service:NCGlobal.shared.serviceShareKeyChain];
-}
-
 + (NSString *)getEndToEndPassphrase:(NSString *)account
 {
     NSString *key = [E2E_Passphrase stringByAppendingString:account];
@@ -91,10 +67,10 @@
     NSString* versionE2EE = [[NCGlobal shared] capabilityE2EEApiVersion];
 
     // NSString *certificate = [self getEndToEndCertificate:account];
-    NSString *publicKey = [self getEndToEndPublicKey:account];
-    NSString *privateKey = [self getEndToEndPrivateKey:account];
-    NSString *passphrase = [self getEndToEndPassphrase:account];
-            
+    //NSString *publicKey = [self getEndToEndPublicKey:account];
+    //NSString *privateKey = [self getEndToEndPrivateKey:account];
+    // NSString *passphrase = [self getEndToEndPassphrase:account];
+
     //if (passphrase.length > 0 && privateKey.length > 0 && certificate.length > 0 && publicKey.length > 0 && [NCGlobal.shared.e2eeVersions containsObject:versionE2EE]) {
         return YES;
     //} else {
@@ -105,9 +81,9 @@
 + (void)clearAllKeysEndToEnd:(NSString *)account
 {
    // [self setEndToEndCertificate:account certificate:nil];
-    [self setEndToEndPrivateKey:account privateKey:nil];
-    [self setEndToEndPublicKey:account publicKey:nil];
-    [self setEndToEndPassphrase:account passphrase:nil];
+    //[self setEndToEndPrivateKey:account privateKey:nil];
+    //[self setEndToEndPublicKey:account publicKey:nil];
+    //[self setEndToEndPassphrase:account passphrase:nil];
 
     // OLD
     [UICKeyChainStore setString:nil forKey:[@"EndToEndPublicKey_" stringByAppendingString:account] service:NCGlobal.shared.serviceShareKeyChain];

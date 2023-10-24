@@ -170,9 +170,9 @@ class NCEndToEndInitialize: NSObject {
                     // request server publicKey
                     NextcloudKit.shared.getE2EEPublicKey { account, publicKey, _, error in
 
-                        if error == .success && account == self.appDelegate.account {
+                        if error == .success, account == self.appDelegate.account, let publicKey {
 
-                            CCUtility.setEndToEndPublicKey(account, publicKey: publicKey)
+                            NCKeychain().setEndToEndPublicKey(account: account, publicKey: publicKey)
                             NCManageDatabase.shared.clearTablesE2EE(account: account)
 
                             self.delegate?.endToEndInitializeSuccess()
@@ -274,9 +274,9 @@ class NCEndToEndInitialize: NSObject {
                 // request server publicKey
                 NextcloudKit.shared.getE2EEPublicKey { account, publicKey, _, error in
 
-                    if error == .success && account == self.appDelegate.account {
+                    if error == .success, account == self.appDelegate.account, let publicKey {
 
-                        CCUtility.setEndToEndPublicKey(account, publicKey: publicKey)
+                        NCKeychain().setEndToEndPublicKey(account: account, publicKey: publicKey)
                         NCManageDatabase.shared.clearTablesE2EE(account: account)
 
                         if copyPassphrase {

@@ -43,9 +43,6 @@
 
 // E2EE -------------------------------------------
 
-+ (NSString *)getEndToEndPublicKey:(NSString *)account;
-+ (void)setEndToEndPublicKey:(NSString *)account publicKey:(NSString *)publicKey;
-
 + (NSString *)getEndToEndPassphrase:(NSString *)account;
 + (void)setEndToEndPassphrase:(NSString *)account passphrase:(NSString *)passphrase;
 

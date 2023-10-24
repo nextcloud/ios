@@ -219,4 +219,16 @@ import KeychainAccess
         migrate(key: key)
         keychain[key] = privateKey
     }
+
+    func getEndToEndPublicKey(account: String) -> String? {
+        let key = E2E_PublicKey + account
+        migrate(key: key)
+        return try? keychain.get(key)
+    }
+
+    func setEndToEndPublicKey(account: String, publicKey: String) {
+        let key = E2E_PublicKey + account
+        migrate(key: key)
+        keychain[key] = publicKey
+    }
 }
