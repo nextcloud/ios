@@ -151,7 +151,7 @@ class NCAutoUpload: NSObject {
                 var fileNameSearchMetadata = fileName
                 let ext = (fileNameSearchMetadata as NSString).pathExtension.uppercased()
 
-                if ext == "HEIC" && CCUtility.getFormatCompatibility() {
+                if ext == "HEIC", NCKeychain().formatCompatibility {
                     fileNameSearchMetadata = (fileNameSearchMetadata as NSString).deletingPathExtension + ".jpg"
                 }
 

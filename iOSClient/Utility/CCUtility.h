@@ -41,10 +41,6 @@
 
 + (void)deleteAllChainStore;
 
-
-+ (BOOL)getFormatCompatibility;
-+ (void)setFormatCompatibility:(BOOL)set;
-
 // E2EE -------------------------------------------
 
 + (NSString *)getEndToEndCertificate:(NSString *)account;

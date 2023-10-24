@@ -62,7 +62,7 @@
 
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"formatCompatibility" rowType:XLFormRowDescriptorTypeBooleanSwitch title:NSLocalizedString(@"_format_compatibility_", nil)];
     row.cellConfigAtConfigure[@"backgroundColor"] = UIColor.secondarySystemGroupedBackgroundColor;
-    if ([CCUtility getFormatCompatibility]) row.value = @"1";
+    if ([[NCKeychain init] formatCompatibility]) row.value = @"1";
     else row.value = @"0";
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
     [row.cellConfig setObject:UIColor.labelColor forKey:@"textLabel.textColor"];
@@ -318,7 +318,7 @@
     
     if ([rowDescriptor.tag isEqualToString:@"formatCompatibility"]) {
         
-        [CCUtility setFormatCompatibility:[[rowDescriptor.value valueData] boolValue]];
+        [[NCKeychain alloc] init].formatCompatibility = [[rowDescriptor.value valueData] boolValue];
     }
     
     if ([rowDescriptor.tag isEqualToString:@"livePhoto"]) {

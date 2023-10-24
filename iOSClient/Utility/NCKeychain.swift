@@ -125,6 +125,19 @@ import KeychainAccess
         }
     }
 
+    @objc var formatCompatibility: Bool {
+        get {
+            migrate(key: "formatCompatibility")
+            if let value = try? keychain.get("formatCompatibility"), let result = Bool(value) {
+                return result
+            }
+            return true
+        }
+        set {
+            keychain["formatCompatibility"] = String(newValue)
+        }
+    }
+
     // MARK: -
 
     private func migrate(key: String) {

@@ -50,25 +50,6 @@
 
 #pragma ------------------------------ GET/SET
 
-+ (BOOL)getFormatCompatibility
-{
-    NSString *valueString = [UICKeyChainStore stringForKey:@"formatCompatibility" service:NCGlobal.shared.serviceShareKeyChain];
-
-    // Default TRUE
-    if (valueString == nil) {
-        [self setFormatCompatibility:YES];
-        return true;
-    }
-
-    return [valueString boolValue];
-}
-
-+ (void)setFormatCompatibility:(BOOL)set
-{
-    NSString *sSet = (set) ? @"true" : @"false";
-    [UICKeyChainStore setString:sSet forKey:@"formatCompatibility" service:NCGlobal.shared.serviceShareKeyChain];
-}
-
 + (NSString *)getEndToEndCertificate:(NSString *)account
 {
     NSString *key, *certificate;

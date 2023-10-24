@@ -139,7 +139,7 @@ class NCCameraRoll: NSObject {
         let creationDate = asset.creationDate ?? Date()
         let modificationDate = asset.modificationDate ?? Date()
 
-        if asset.mediaType == PHAssetMediaType.image && (extensionAsset == "HEIC" || extensionAsset == "DNG") && CCUtility.getFormatCompatibility() {
+        if asset.mediaType == PHAssetMediaType.image && (extensionAsset == "HEIC" || extensionAsset == "DNG") && NCKeychain().formatCompatibility {
             let fileName = (metadata.fileNameView as NSString).deletingPathExtension + ".jpg"
             metadata.contentType = "image/jpeg"
             fileNamePath = NSTemporaryDirectory() + fileName

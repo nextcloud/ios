@@ -1162,7 +1162,7 @@ extension NCManageDatabase {
         let fileNameNoExtension = (fileNameView as NSString).deletingPathExtension
         var fileNameConflict = fileNameView
 
-        if fileNameExtension == "heic" && CCUtility.getFormatCompatibility() {
+        if fileNameExtension == "heic", NCKeychain().formatCompatibility {
             fileNameConflict = fileNameNoExtension + ".jpg"
         }
         return getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView == %@", account, serverUrl, fileNameConflict))
