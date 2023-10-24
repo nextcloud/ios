@@ -132,55 +132,6 @@
     [self setPushNotificationDeviceIdentifierSignature:account deviceIdentifierSignature:nil];
 }
 
-+ (BOOL)getTextRecognitionStatus
-{
-    return [[UICKeyChainStore stringForKey:@"textRecognitionStatus" service:NCGlobal.shared.serviceShareKeyChain] boolValue];
-}
-
-+ (void)setTextRecognitionStatus:(BOOL)value
-{
-    NSString *valueString = (value) ? @"true" : @"false";
-    [UICKeyChainStore setString:valueString forKey:@"textRecognitionStatus" service:NCGlobal.shared.serviceShareKeyChain];
-}
-
-+ (BOOL)getDeleteAllScanImages
-{
-    return [[UICKeyChainStore stringForKey:@"deleteAllScanImages" service:NCGlobal.shared.serviceShareKeyChain] boolValue];
-}
-
-+ (void)setDeleteAllScanImages:(BOOL)value
-{
-    NSString *valueString = (value) ? @"true" : @"false";
-    [UICKeyChainStore setString:valueString forKey:@"deleteAllScanImages" service:NCGlobal.shared.serviceShareKeyChain];
-}
-
-+ (NSString *)getDirectoryScanDocument
-{
-    return [UICKeyChainStore stringForKey:@"directoryScanDocuments" service:NCGlobal.shared.serviceShareKeyChain];
-}
-
-+ (void)setDirectoryScanDocument:(NSString *)value
-{
-    [UICKeyChainStore setString:value forKey:@"directoryScanDocuments" service:NCGlobal.shared.serviceShareKeyChain];
-}
-
-+ (double)getQualityScanDocument
-{
-    NSString *value = [UICKeyChainStore stringForKey:@"qualityScanDocument" service:NCGlobal.shared.serviceShareKeyChain];
-
-    if (value == nil) {
-        return 2;
-    } else {
-        return [value doubleValue];
-    }
-}
-
-+ (void)setQualityScanDocument:(double)value
-{
-    NSString *valueString = [@(value) stringValue];
-    [UICKeyChainStore setString:valueString forKey:@"qualityScanDocument" service:NCGlobal.shared.serviceShareKeyChain];
-}
-
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== Various =====
 #pragma --------------------------------------------------------------------------------------------

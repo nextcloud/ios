@@ -55,15 +55,6 @@
 + (NSString *)getPushNotificationDeviceIdentifierSignature:(NSString *)account;
 + (void)clearAllKeysPushNotification:(NSString *)account;
 
-+ (BOOL)getTextRecognitionStatus;
-+ (void)setTextRecognitionStatus:(BOOL)value;
-+ (BOOL)getDeleteAllScanImages;
-+ (void)setDeleteAllScanImages:(BOOL)value;
-+ (NSString *)getDirectoryScanDocument;
-+ (void)setDirectoryScanDocument:(NSString *)value;
-+ (double)getQualityScanDocument;
-+ (void)setQualityScanDocument:(double)value;
-
 // ===== Varius =====
 
 + (BOOL)addSkipBackupAttributeToItemAtURL:(NSURL *)URL;

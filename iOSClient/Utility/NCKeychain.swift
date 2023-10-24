@@ -279,6 +279,45 @@ import KeychainAccess
         }
     }
 
+    var textRecognitionStatus: Bool {
+        get {
+            migrate(key: "textRecognitionStatus")
+            if let value = try? keychain.get("textRecognitionStatus"), let result = Bool(value) {
+                return result
+            }
+            return false
+        }
+        set {
+            keychain["textRecognitionStatus"] = String(newValue)
+        }
+    }
+
+    var deleteAllScanImages: Bool {
+        get {
+            migrate(key: "deleteAllScanImages")
+            if let value = try? keychain.get("deleteAllScanImages"), let result = Bool(value) {
+                return result
+            }
+            return false
+        }
+        set {
+            keychain["deleteAllScanImages"] = String(newValue)
+        }
+    }
+
+    var qualityScanDocument: Double {
+        get {
+            migrate(key: "qualityScanDocument")
+            if let value = try? keychain.get("qualityScanDocument"), let result = Double(value) {
+                return result
+            }
+            return 2
+        }
+        set {
+            keychain["qualityScanDocument"] = String(newValue)
+        }
+    }
+
     // MARK: -
 
     private func migrate(key: String) {

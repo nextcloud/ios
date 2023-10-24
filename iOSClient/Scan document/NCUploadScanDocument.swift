@@ -319,7 +319,6 @@ extension NCUploadScanDocument: NCSelectDelegate {
     func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String, items: [Any], indexPath: [IndexPath], overwrite: Bool, copy: Bool, move: Bool) {
 
         if let serverUrl = serverUrl {
-            CCUtility.setDirectoryScanDocument(serverUrl)
             self.serverUrl = serverUrl
         }
     }
@@ -348,9 +347,9 @@ struct UploadScanDocumentView: View {
     @State var fileName = CCUtility.createFileNameDate("scan", extension: "") ?? "scan"
     @State var password: String = ""
     @State var isSecuredPassword: Bool = true
-    @State var isTextRecognition: Bool = CCUtility.getTextRecognitionStatus()
-    @State var quality = CCUtility.getQualityScanDocument()
-    @State var removeAllFiles: Bool = CCUtility.getDeleteAllScanImages()
+    @State var isTextRecognition: Bool = NCKeychain().textRecognitionStatus
+    @State var quality = NCKeychain().qualityScanDocument
+    @State var removeAllFiles: Bool = NCKeychain().deleteAllScanImages
     @State var isPresentedSelect = false
     @State var isPresentedUploadConflict = false
 
@@ -437,7 +436,7 @@ struct UploadScanDocumentView: View {
                             Toggle(NSLocalizedString("_text_recognition_", comment: ""), isOn: $isTextRecognition)
                                 .toggleStyle(SwitchToggleStyle(tint: Color(NCBrandColor.shared.brand)))
                                 .onChange(of: isTextRecognition) { newValue in
-                                    CCUtility.setTextRecognitionStatus(newValue)
+                                    NCKeychain().textRecognitionStatus = newValue
                                 }
                         }
                     }
@@ -450,8 +449,7 @@ struct UploadScanDocumentView: View {
                         Toggle(NSLocalizedString("_delete_all_scanned_images_", comment: ""), isOn: $removeAllFiles)
                             .toggleStyle(SwitchToggleStyle(tint: Color(NCBrandColor.shared.brand)))
                             .onChange(of: removeAllFiles) { newValue in
-                                CCUtility.setDeleteAllScanImages(newValue)
-
+                                NCKeychain().deleteAllScanImages = newValue
                             }
 
                         Button(NSLocalizedString("_save_", comment: "")) {
@@ -478,7 +476,7 @@ struct UploadScanDocumentView: View {
                         VStack {
                             Slider(value: $quality, in: 0...4, step: 1, onEditingChanged: { touch in
                                 if !touch {
-                                    CCUtility.setQualityScanDocument(quality)
+                                    NCKeychain().qualityScanDocument = quality
                                 }
                             })
                             .accentColor(Color(NCBrandColor.shared.brand))

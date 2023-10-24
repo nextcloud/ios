@@ -159,7 +159,7 @@ extension NCMedia {
                 NCMenuAction(
                     title: NSLocalizedString("_media_by_created_date_", comment: ""),
                     icon: NCUtility.shared.loadImage(named: "circle.grid.cross.down.fill"),
-                    selected:NCKeychain().mediaSortDate == "creationDate",
+                    selected: NCKeychain().mediaSortDate == "creationDate",
                     on: true,
                     action: { _ in
                         NCKeychain().mediaSortDate = "creationDate"
