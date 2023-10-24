@@ -50,17 +50,6 @@
 
 #pragma ------------------------------ GET/SET
 
-+ (BOOL)getFileNameType:(NSString *)key
-{
-    return [[UICKeyChainStore stringForKey:key service:NCGlobal.shared.serviceShareKeyChain] boolValue];
-}
-
-+ (void)setFileNameType:(BOOL)prefix key:(NSString *)key
-{
-    NSString *sPrefix = (prefix) ? @"true" : @"false";
-    [UICKeyChainStore setString:sPrefix forKey:key service:NCGlobal.shared.serviceShareKeyChain];
-}
-
 + (BOOL)getActivityVerboseHigh
 {
     return [[UICKeyChainStore stringForKey:@"activityVerboseHigh" service:NCGlobal.shared.serviceShareKeyChain] boolValue];
@@ -657,7 +646,7 @@
 
     // Use File Name Type
     if (keyFileNameType)
-        addFileNameType = [CCUtility getFileNameType:keyFileNameType];
+        addFileNameType = [[NCKeychain init] getFileNameTypeWithKey:keyFileNameType];
 
     NSString *fileNameExt = [[fileName pathExtension] lowercaseString];
 

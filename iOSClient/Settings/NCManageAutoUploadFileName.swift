@@ -60,7 +60,7 @@ class NCManageAutoUploadFileName: XLFormViewController {
         // Add File Name Type
 
         row = XLFormRowDescriptor(tag: "addFileNameType", rowType: XLFormRowDescriptorTypeBooleanSwitch, title: NSLocalizedString("_add_filenametype_", comment: ""))
-        row.value = CCUtility.getFileNameType(NCGlobal.shared.keyFileNameAutoUploadType)
+        row.value = NCKeychain().getFileNameType(key: NCGlobal.shared.keyFileNameAutoUploadType)
         row.hidden = "$\("maintainOriginalFileName") == 1"
         row.cellConfig["backgroundColor"] = UIColor.secondarySystemGroupedBackground
 
@@ -147,7 +147,7 @@ class NCManageAutoUploadFileName: XLFormViewController {
         super.formRowDescriptorValueHasChanged(formRow, oldValue: oldValue, newValue: newValue)
 
         if formRow.tag == "addFileNameType" {
-            CCUtility.setFileNameType((formRow.value! as AnyObject).boolValue, key: NCGlobal.shared.keyFileNameAutoUploadType)
+            NCKeychain().setFileNameType(key: NCGlobal.shared.keyFileNameAutoUploadType, prefix: (formRow.value! as AnyObject).boolValue) 
             self.reloadForm()
         } else if formRow.tag == "maintainOriginalFileName" {
             NCKeychain().setOriginalFileName(key: NCGlobal.shared.keyFileNameOriginalAutoUpload, value: (formRow.value! as AnyObject).boolValue)

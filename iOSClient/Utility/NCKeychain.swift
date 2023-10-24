@@ -138,15 +138,29 @@ import KeychainAccess
         keychain[key] = String(value)
     }
 
-    @objc func setFileNameMask(key: String, mask: String) {
-        keychain[key] = mask
-    }
-
     @objc func getFileNameMask(key: String) -> String {
+        migrate(key: key)
         if let value = try? keychain.get(key) {
             return value
         } else {
             return ""
         }
+    }
+
+    @objc func setFileNameMask(key: String, mask: String?) {
+        keychain[key] = mask
+    }
+
+    @objc func getFileNameType(key: String) -> Bool {
+        migrate(key: key)
+        if let value = try? keychain.get(key), let result = Bool(value) {
+            return result
+        } else {
+            return false
+        }
+    }
+
+    @objc func setFileNameType(key: String, prefix: Bool) {
+        keychain[key] = String(prefix)
     }
 }

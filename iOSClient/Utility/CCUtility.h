@@ -41,8 +41,6 @@
 
 + (void)deleteAllChainStore;
 
-+ (BOOL)getFileNameType:(NSString *)key;
-+ (void)setFileNameType:(BOOL)prefix key:(NSString *)key;
 
 + (BOOL)getActivityVerboseHigh;
 + (void)setActivityVerboseHigh:(BOOL)debug;
