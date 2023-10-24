@@ -676,7 +676,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     func requestAccount() {
 
         if isPasscodePresented() { return }
-        if !CCUtility.getAccountRequest() { return }
+        if !NCKeychain().accountRequest { return }
 
         let accounts = NCManageDatabase.shared.getAllAccount()
 

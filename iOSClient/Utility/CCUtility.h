@@ -70,9 +70,6 @@
 + (double)getQualityScanDocument;
 + (void)setQualityScanDocument:(double)value;
 
-+ (BOOL)getAccountRequest;
-+ (void)setAccountRequest:(BOOL)set;
-
 + (NSInteger)getCleanUpDay;
 + (void)setCleanUpDay:(NSInteger)days;
 

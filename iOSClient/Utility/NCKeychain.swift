@@ -201,6 +201,19 @@ import KeychainAccess
         }
     }
 
+    @objc var accountRequest: Bool {
+        get {
+            migrate(key: "accountRequest")
+            if let value = try? keychain.get("accountRequest"), let result = Bool(value) {
+                return result
+            }
+            return false
+        }
+        set {
+            keychain["accountRequest"] = String(newValue)
+        }
+    }
+
     // MARK: -
 
     private func migrate(key: String) {
