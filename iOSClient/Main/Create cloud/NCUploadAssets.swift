@@ -230,7 +230,7 @@ struct UploadAssetsView: View {
                                        forcedNewFileName: false)!
             : (previewStore.fileName + "." + ext)
 
-            if previewStore.assetType == .livePhoto && CCUtility.getLivePhoto() && previewStore.data == nil {
+            if previewStore.assetType == .livePhoto && NCKeychain().livePhoto && previewStore.data == nil {
                 livePhoto = true
             }
 

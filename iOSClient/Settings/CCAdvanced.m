@@ -70,7 +70,7 @@
     
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"livePhoto" rowType:XLFormRowDescriptorTypeBooleanSwitch title:NSLocalizedString(@"_upload_mov_livephoto_", nil)];
     row.cellConfigAtConfigure[@"backgroundColor"] = UIColor.secondarySystemGroupedBackgroundColor;
-    if ([CCUtility getLivePhoto]) row.value = @"1";
+    if ([[[NCKeychain alloc] init] livePhoto]) row.value = @"1";
     else row.value = @"0";
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
     [row.cellConfig setObject:UIColor.labelColor forKey:@"textLabel.textColor"];
@@ -323,7 +323,7 @@
     
     if ([rowDescriptor.tag isEqualToString:@"livePhoto"]) {
         
-        [CCUtility setLivePhoto:[[rowDescriptor.value valueData] boolValue]];
+        [[NCKeychain alloc] init].livePhoto = [[rowDescriptor.value valueData] boolValue];
     }
 
     if ([rowDescriptor.tag isEqualToString:@"removePhotoCameraRoll"]) {

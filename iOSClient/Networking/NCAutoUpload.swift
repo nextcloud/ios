@@ -117,7 +117,7 @@ class NCAutoUpload: NSObject {
                 var serverUrl: String = ""
                 let fileName = CCUtility.createFileName(asset.originalFilename as String, fileDate: assetDate, fileType: assetMediaType, keyFileName: NCGlobal.shared.keyFileNameAutoUploadMask, keyFileNameType: NCGlobal.shared.keyFileNameAutoUploadType, keyFileNameOriginal: NCGlobal.shared.keyFileNameOriginalAutoUpload, forcedNewFileName: false)!
 
-                if asset.mediaSubtypes.contains(.photoLive) && CCUtility.getLivePhoto() {
+                if asset.mediaSubtypes.contains(.photoLive), NCKeychain().livePhoto {
                     livePhoto = true
                 }
 

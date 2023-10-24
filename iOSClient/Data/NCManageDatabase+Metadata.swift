@@ -1057,7 +1057,7 @@ extension NCManageDatabase {
         var classFile = metadata.classFile
         var fileName = (metadata.fileNameView as NSString).deletingPathExtension
 
-        if !metadata.livePhoto || !CCUtility.getLivePhoto() {
+        if !metadata.livePhoto || !NCKeychain().livePhoto {
             return nil
         }
 

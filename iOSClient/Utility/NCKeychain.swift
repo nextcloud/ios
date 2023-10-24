@@ -162,6 +162,19 @@ import KeychainAccess
         }
     }
 
+    @objc var livePhoto: Bool {
+        get {
+            migrate(key: "livePhoto")
+            if let value = try? keychain.get("livePhoto"), let result = Bool(value) {
+                return result
+            }
+            return true
+        }
+        set {
+            keychain["livePhoto"] = String(newValue)
+        }
+    }
+
     // MARK: -
 
     private func migrate(key: String) {

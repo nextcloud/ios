@@ -160,53 +160,6 @@
     [UICKeyChainStore setString:sDisable forKey:@"crashservice" service:NCGlobal.shared.serviceShareKeyChain];
 }
 
-+ (void)setHCBusinessType:(NSString *)professions
-{
-    [UICKeyChainStore setString:professions forKey:@"businessType" service:NCGlobal.shared.serviceShareKeyChain];
-}
-
-+ (NSString *)getHCBusinessType
-{
-    return [UICKeyChainStore stringForKey:@"businessType" service:NCGlobal.shared.serviceShareKeyChain];
-}
-
-+ (NSData *)getDatabaseEncryptionKey
-{
-    NSData *key = [UICKeyChainStore dataForKey:@"databaseEncryptionKey" service:NCGlobal.shared.serviceShareKeyChain];
-    if (key == nil) {
-        NSMutableData *key = [NSMutableData dataWithLength:64];
-        (void)SecRandomCopyBytes(kSecRandomDefault, key.length, (uint8_t *)key.mutableBytes);
-        [UICKeyChainStore setData:key forKey:@"databaseEncryptionKey" service:NCGlobal.shared.serviceShareKeyChain];
-        return key;
-    } else {
-        return key;
-    }
-}
-
-+ (void)setDatabaseEncryptionKey:(NSData *)data
-{
-    [UICKeyChainStore setData:data forKey:@"databaseEncryptionKey" service:NCGlobal.shared.serviceShareKeyChain];
-}
-
-+ (BOOL)getLivePhoto
-{
-    NSString *valueString = [UICKeyChainStore stringForKey:@"livePhoto" service:NCGlobal.shared.serviceShareKeyChain];
-
-    // Default TRUE
-    if (valueString == nil) {
-        [self setLivePhoto:YES];
-        return true;
-    }
-
-    return [valueString boolValue];
-}
-
-+ (void)setLivePhoto:(BOOL)set
-{
-    NSString *sSet = (set) ? @"true" : @"false";
-    [UICKeyChainStore setString:sSet forKey:@"livePhoto" service:NCGlobal.shared.serviceShareKeyChain];
-}
-
 + (NSString *)getMediaSortDate
 {
     NSString *valueString = [UICKeyChainStore stringForKey:@"mediaSortDate" service:NCGlobal.shared.serviceShareKeyChain];

@@ -61,14 +61,6 @@
 + (BOOL)getDisableCrashservice;
 + (void)setDisableCrashservice:(BOOL)disable;
 
-+ (void)setHCBusinessType:(NSString *)professions;
-+ (NSString *)getHCBusinessType;
-
-+ (NSData *)getDatabaseEncryptionKey;
-
-+ (BOOL)getLivePhoto;
-+ (void)setLivePhoto:(BOOL)set;
-
 + (NSString *)getMediaSortDate;
 + (void)setMediaSortDate:(NSString *)value;
 

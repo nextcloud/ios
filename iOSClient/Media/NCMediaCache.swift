@@ -136,7 +136,7 @@ import NextcloudKit
 
         guard let predicate = predicate else { return }
 
-        livePhoto = CCUtility.getLivePhoto()
+        livePhoto = NCKeychain().livePhoto
         metadatas = NCManageDatabase.shared.getMetadatasMedia(predicate: predicate, livePhoto: livePhoto)
 
         switch CCUtility.getMediaSortDate() {
