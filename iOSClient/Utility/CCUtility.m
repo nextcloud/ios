@@ -50,28 +50,6 @@
 
 #pragma ------------------------------ GET/SET
 
-+ (NSString *)getEndToEndCertificate:(NSString *)account
-{
-    NSString *key, *certificate;
-
-    key = [E2E_certificate stringByAppendingString:account];
-    certificate = [UICKeyChainStore stringForKey:key service:NCGlobal.shared.serviceShareKeyChain];
-
-    // OLD VERSION
-    if (certificate == nil) {
-        key = [@"EndToEndPublicKey_" stringByAppendingString:account];
-        certificate = [UICKeyChainStore stringForKey:key service:NCGlobal.shared.serviceShareKeyChain];
-    }
-
-    return certificate;
-}
-
-+ (void)setEndToEndCertificate:(NSString *)account certificate:(NSString *)certificate
-{
-    NSString *key = [E2E_certificate stringByAppendingString:account];
-    [UICKeyChainStore setString:certificate forKey:key service:NCGlobal.shared.serviceShareKeyChain];
-}
-
 + (NSString *)getEndToEndPrivateKey:(NSString *)account
 {
     NSString *key = [E2E_PrivateKey stringByAppendingString:account];

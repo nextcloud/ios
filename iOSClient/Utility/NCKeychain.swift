@@ -28,6 +28,13 @@ import KeychainAccess
 
     let keychain = Keychain(service: "com.nextcloud.keychain")
 
+    // swiftlint:disable identifier_name
+    let E2E_certificate = "EndToEndCertificate_"
+    let E2E_PrivateKey = "EndToEndPrivateKey_"
+    let E2E_Passphrase = "EndToEndPassphrase_"
+    let E2E_PublicKey = "EndToEndPublicKeyServer_"
+    // swiftlint:enable identifier_name
+
     var typeFilterScanDocument: NCGlobal.TypeFilterScanDocument {
         get {
             if let rawValue = try? keychain.get("ScanDocumentTypeFilter"), let value = NCGlobal.TypeFilterScanDocument(rawValue: rawValue) {
@@ -188,5 +195,20 @@ import KeychainAccess
 
     @objc func setFileNameType(key: String, prefix: Bool) {
         keychain[key] = String(prefix)
+    }
+
+    func getEndToEndCertificate(account: String) -> String? {
+
+        let key = E2E_certificate + account
+        migrate(key: key)
+
+        let certificate = try? keychain.get(key)
+        return certificate
+    }
+
+    func setEndToEndCertificate(account: String, certificate: String) {
+
+        let key = E2E_certificate + account
+        keychain[key] = certificate
     }
 }

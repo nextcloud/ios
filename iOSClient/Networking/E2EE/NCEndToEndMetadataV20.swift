@@ -100,7 +100,7 @@ extension NCEndToEndMetadata {
 
     func encodeMetadataV20(account: String, serverUrl: String, ocIdServerUrl: String, userId: String, addUserId: String?, addCertificate: String?, removeUserId: String?) -> (metadata: String?, signature: String?, counter: Int, error: NKError) {
 
-        guard let directoryTop = NCUtility.shared.getDirectoryE2EETop(serverUrl: serverUrl, account: account) else {
+        guard let directoryTop = NCUtility.shared.getDirectoryE2EETop(serverUrl: serverUrl, account: account), let certificate = NCKeychain().getEndToEndCertificate(account: account) else {
             return (nil, nil, 0, NKError(errorCode: NCGlobal.shared.errorUnexpectedResponseFromDB, errorDescription: "_e2e_error_"))
         }
 
@@ -134,7 +134,7 @@ extension NCEndToEndMetadata {
                let metadataKey = tableUserId.metadataKey {
                 key = metadataKey
             } else {
-                addUser(userId: userId, certificate: CCUtility.getEndToEndCertificate(account), key: key)
+                addUser(userId: userId, certificate: certificate, key: key)
             }
             // ADDUSERID
             if let addUserId {
@@ -237,7 +237,7 @@ extension NCEndToEndMetadata {
             e2eeData.printJson()
 
             let e2eeJson = String(data: e2eeData, encoding: .utf8)
-            let signature = createSignature(account: account, userId: userId, metadata: metadataCodable, users: usersCodable, version: NCGlobal.shared.e2eeVersionV20, certificate: CCUtility.getEndToEndCertificate(account))
+            let signature = createSignature(account: account, userId: userId, metadata: metadataCodable, users: usersCodable, version: NCGlobal.shared.e2eeVersionV20, certificate: certificate)
 
             return (e2eeJson, signature, counter, NKError())
 

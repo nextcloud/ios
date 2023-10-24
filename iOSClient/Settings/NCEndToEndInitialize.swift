@@ -65,9 +65,9 @@ class NCEndToEndInitialize: NSObject {
 
         NextcloudKit.shared.getE2EECertificate { account, certificate, _, _, error in
 
-            if error == .success && account == self.appDelegate.account {
+            if error == .success, account == self.appDelegate.account, let certificate {
 
-                CCUtility.setEndToEndCertificate(account, certificate: certificate)
+                NCKeychain().setEndToEndCertificate(account: account, certificate: certificate)
 
                 self.extractedPublicKey = NCEndToEndEncryption.sharedManager().extractPublicKey(fromCertificate: certificate)
 
@@ -92,7 +92,7 @@ class NCEndToEndInitialize: NSObject {
 
                     NextcloudKit.shared.signE2EECertificate(certificate: csr) { account, certificate, _, error in
 
-                        if error == .success && account == self.appDelegate.account {
+                        if error == .success, account == self.appDelegate.account, let certificate {
 
                             // TEST publicKey
                             let extractedPublicKey = NCEndToEndEncryption.sharedManager().extractPublicKey(fromCertificate: certificate)
@@ -102,7 +102,7 @@ class NCEndToEndInitialize: NSObject {
 
                             } else {
 
-                                CCUtility.setEndToEndCertificate(account, certificate: certificate)
+                                NCKeychain().setEndToEndCertificate(account: account, certificate: certificate)
 
                                 // Request PrivateKey chiper to Server
                                 self.getPrivateKeyCipher()
@@ -154,7 +154,7 @@ class NCEndToEndInitialize: NSObject {
 
                     let passphrase = passphraseTextField?.text
 
-                    let publicKey = CCUtility.getEndToEndCertificate(self.appDelegate.account)
+                    let publicKey = NCKeychain().getEndToEndCertificate(account: self.appDelegate.account)
 
                     if let privateKeyData = (NCEndToEndEncryption.sharedManager().decryptPrivateKey(privateKeyChiper, passphrase: passphrase, publicKey: publicKey, iterationCount: 1024)),
                        let keyData = Data(base64Encoded: privateKeyData) {
