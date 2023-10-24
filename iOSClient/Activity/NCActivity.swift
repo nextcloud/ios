@@ -39,9 +39,7 @@ class NCActivity: UIViewController, NCSharePagingContent {
     var metadata: tableMetadata?
     var showComments: Bool = false
 
-    // swiftlint:disable force_cast
-    private let appDelegate = UIApplication.shared.delegate as! AppDelegate
-    // swiftlint:enable force_cast
+    let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
 
     var allItems: [DateCompareable] = []
     var sectionDates: [Date] = []

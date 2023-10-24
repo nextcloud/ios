@@ -29,10 +29,7 @@ import JGProgressHUD
 
 class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmptyDataSetDelegate {
 
-    // swiftlint:disable force_cast
-    let appDelegate = UIApplication.shared.delegate as! AppDelegate
-    // swiftlint:enable force_cast
-
+    let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
     var notifications: [NKNotifications] = []
     var emptyDataSet: NCEmptyDataSet?
     var isReloadDataSourceNetworkInProgress: Bool = false

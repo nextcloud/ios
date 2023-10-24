@@ -30,10 +30,6 @@ import LocalAuthentication
 
     @objc func makeShipDetailsUI(account: String) -> UIViewController {
 
-        // swiftlint:disable force_cast
-        let account = (UIApplication.shared.delegate as! AppDelegate).account
-        // swiftlint:enable force_cast
-
         let details = NCViewE2EE(account: account)
         let vc = UIHostingController(rootView: details)
         vc.title = NSLocalizedString("_e2e_settings_", comment: "")
@@ -44,11 +40,7 @@ import LocalAuthentication
 class NCManageE2EE: NSObject, ObservableObject, NCEndToEndInitializeDelegate, TOPasscodeViewControllerDelegate {
 
     let endToEndInitialize = NCEndToEndInitialize()
-
-    // swiftlint:disable force_cast
-    let appDelegate = UIApplication.shared.delegate as! AppDelegate
-    // swiftlint:enable force_cast
-
+    let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
     var passcodeType = ""
 
     @Published var isEndToEndEnabled: Bool = false
@@ -202,7 +194,7 @@ struct NCViewE2EE: View {
                     }
                     .contentShape(Rectangle())
                     .onTapGesture {
-                        if let passcode = NCKeychain().passcode {
+                        if NCKeychain().passcode != nil {
                             manageE2EE.requestPasscodeType("readPassphrase")
                         } else {
                             NCContentPresenter.shared.showInfo(error: NKError(errorCode: 0, errorDescription: "_e2e_settings_lock_not_active_"))

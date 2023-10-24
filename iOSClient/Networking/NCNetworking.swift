@@ -690,10 +690,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
                         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUploadCancelFile, userInfo: ["ocId": metadata.ocId, "serverUrl": metadata.serverUrl, "account": metadata.account])
                     }))
 
-                    // swiftlint:disable force_cast
-                    let appDelegate = UIApplication.shared.delegate as! AppDelegate
-                    // swiftlint:enable force_cast
-
+                    let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
                     appDelegate.window?.rootViewController?.present(alertController, animated: true)
                 }
 #endif

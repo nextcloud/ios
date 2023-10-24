@@ -31,10 +31,7 @@ class NCCreateFormUploadVoiceNote: XLFormViewController, NCSelectDelegate, AVAud
     @IBOutlet weak var labelDuration: UILabel!
     @IBOutlet weak var progressView: UIProgressView!
 
-    // swiftlint:disable force_cast
-    let appDelegate = UIApplication.shared.delegate as! AppDelegate
-    // swiftlint:enable force_cast
-
+    private let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
     private var serverUrl = ""
     private var titleServerUrl = ""
     private var fileName = ""

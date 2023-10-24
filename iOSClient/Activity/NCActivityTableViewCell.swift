@@ -41,10 +41,6 @@ class NCActivityCollectionViewCell: UICollectionViewCell {
 
 class NCActivityTableViewCell: UITableViewCell, NCCellProtocol {
 
-    // swiftlint:disable force_cast
-    private let appDelegate = UIApplication.shared.delegate as! AppDelegate
-    // swiftlint:enable force_cast
-
     @IBOutlet weak var collectionView: UICollectionView!
     @IBOutlet weak var icon: UIImageView!
     @IBOutlet weak var avatar: UIImageView!
@@ -52,6 +48,7 @@ class NCActivityTableViewCell: UITableViewCell, NCCellProtocol {
     @IBOutlet weak var subjectTrailingConstraint: NSLayoutConstraint!
     @IBOutlet weak var collectionViewHeightConstraint: NSLayoutConstraint!
 
+    private let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
     private var user: String = ""
     private var index = IndexPath()
 

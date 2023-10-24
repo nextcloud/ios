@@ -37,13 +37,8 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
     private var externalSiteMenu: [NKExternalSite] = []
     private var settingsMenu: [NKExternalSite] = []
     private var quotaMenu: [NKExternalSite] = []
-
-    // swiftlint:disable force_cast
-    private let appDelegate = UIApplication.shared.delegate as! AppDelegate
-    // swiftlint:enable force_cast
-
+    private let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
     private let applicationHandle = NCApplicationHandle()
-
     private var tabAccount: tableAccount?
 
     private struct Section {

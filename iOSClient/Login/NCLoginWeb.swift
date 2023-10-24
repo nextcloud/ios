@@ -30,9 +30,7 @@ class NCLoginWeb: UIViewController {
 
     var webView: WKWebView?
 
-    // swiftlint:disable force_cast
-    let appDelegate = UIApplication.shared.delegate as! AppDelegate
-    // swiftlint:enable force_cast
+    let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
 
     var titleView: String = ""
 

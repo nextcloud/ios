@@ -31,10 +31,7 @@ class NCViewer: NSObject {
         return instance
     }()
 
-    // swiftlint:disable force_cast
-    let appDelegate = UIApplication.shared.delegate as! AppDelegate
-    // swiftlint:enable force_cast
-
+    let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
     private var viewerQuickLook: NCViewerQuickLook?
     private var metadata = tableMetadata()
     private var metadatas: [tableMetadata] = []

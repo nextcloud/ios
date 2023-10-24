@@ -32,11 +32,7 @@ extension AppDelegate {
     func toggleMenu(viewController: UIViewController) {
 
         var actions: [NCMenuAction] = []
-
-        // swiftlint:disable force_cast
-        let appDelegate = UIApplication.shared.delegate as! AppDelegate
-        // swiftlint:enable force_cast
-
+        let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
         let directEditingCreators = NCManageDatabase.shared.getDirectEditingCreators(account: appDelegate.account)
         let isDirectoryE2EE = NCUtility.shared.isDirectoryE2EE(serverUrl: appDelegate.activeServerUrl, userBase: appDelegate)
         let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", appDelegate.account, appDelegate.activeServerUrl))

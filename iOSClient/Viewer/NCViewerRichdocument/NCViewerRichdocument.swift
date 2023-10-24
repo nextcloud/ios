@@ -27,10 +27,7 @@ import NextcloudKit
 
 class NCViewerRichdocument: UIViewController, WKNavigationDelegate, WKScriptMessageHandler, NCSelectDelegate {
 
-    // swiftlint:disable force_cast
-    let appDelegate = UIApplication.shared.delegate as! AppDelegate
-    // swiftlint:enable force_cast
-
+    let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
     var webView = WKWebView()
     var bottomConstraint: NSLayoutConstraint?
     var documentController: UIDocumentInteractionController?

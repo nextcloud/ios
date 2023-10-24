@@ -27,10 +27,7 @@ import NextcloudKit
 
 class NCManageAutoUploadFileName: XLFormViewController {
 
-    // swiftlint:disable force_cast
-    let appDelegate = UIApplication.shared.delegate as! AppDelegate
-    // swiftlint:enable force_cast
-
+    let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
     let dateExample = Date()
 
     func initializeForm() {

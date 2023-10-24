@@ -33,10 +33,7 @@ class NCNetworkingProcessUpload: NSObject {
         return instance
     }()
 
-    // swiftlint:disable force_cast
-    private let appDelegate = UIApplication.shared.delegate as! AppDelegate
-    // swiftlint:enable force_cast
-
+    private let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
     private var notificationToken: NotificationToken?
     private var timerProcess: Timer?
     private var pauseProcess: Bool = false

@@ -26,9 +26,7 @@ import NextcloudKit
 
 @objc class NCRichWorkspaceCommon: NSObject {
 
-    // swiftlint:disable force_cast
-    let appDelegate = UIApplication.shared.delegate as! AppDelegate
-    // swiftlint:enable force_cast
+    let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
 
     @objc func createViewerNextcloudText(serverUrl: String, viewController: UIViewController) {
 

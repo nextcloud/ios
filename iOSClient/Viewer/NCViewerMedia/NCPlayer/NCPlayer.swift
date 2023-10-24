@@ -28,10 +28,7 @@ import MobileVLCKit
 
 class NCPlayer: NSObject {
 
-    // swiftlint:disable force_cast
-    internal let appDelegate = UIApplication.shared.delegate as! AppDelegate
-    // swiftlint:enable force_cast
-
+    internal let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
     internal var url: URL?
     internal var player = VLCMediaPlayer()
     internal var dialogProvider: VLCDialogProvider?

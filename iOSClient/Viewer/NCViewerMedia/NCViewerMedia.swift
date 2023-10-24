@@ -47,11 +47,7 @@ class NCViewerMedia: UIViewController {
 
     private var tipView: EasyTipView?
     private let player = VLCMediaPlayer()
-
-    // swiftlint:disable force_cast
-    let appDelegate = UIApplication.shared.delegate as! AppDelegate
-    // swiftlint:enable force_cast
-
+    private let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
     weak var viewerMediaPage: NCViewerMediaPage?
     var playerToolBar: NCPlayerToolBar?
     var ncplayer: NCPlayer?

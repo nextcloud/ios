@@ -35,9 +35,7 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate, NCSelectDelegate {
     private var gridLayout: NCGridMediaLayout!
     internal var documentPickerViewController: NCDocumentPickerViewController?
 
-    // swiftlint:disable force_cast
-    internal let appDelegate = UIApplication.shared.delegate as! AppDelegate
-    // swiftlint:enable force_cast
+    internal let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
 
     //private var account: String = ""
 
