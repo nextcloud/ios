@@ -28,13 +28,6 @@ import KeychainAccess
 
     let keychain = Keychain(service: "com.nextcloud.keychain")
 
-    // swiftlint:disable identifier_name
-    let E2E_certificate = "EndToEndCertificate_"
-    let E2E_PrivateKey = "EndToEndPrivateKey_"
-    let E2E_Passphrase = "EndToEndPassphrase_"
-    let E2E_PublicKey = "EndToEndPublicKeyServer_"
-    // swiftlint:enable identifier_name
-
     override init() {
         super.init()
     }
@@ -384,46 +377,46 @@ import KeychainAccess
     // MARK: - E2EE
 
     func getEndToEndCertificate(account: String) -> String? {
-        let key = E2E_certificate + account
+        let key = "EndToEndCertificate_" + account
         migrate(key: key)
         return try? keychain.get(key)
     }
 
     func setEndToEndCertificate(account: String, certificate: String?) {
-        let key = E2E_certificate + account
+        let key = "EndToEndCertificate_" + account
         keychain[key] = certificate
     }
 
     func getEndToEndPrivateKey(account: String) -> String? {
-        let key = E2E_PrivateKey + account
+        let key = "EndToEndPrivateKey_" + account
         migrate(key: key)
         return try? keychain.get(key)
     }
 
     func setEndToEndPrivateKey(account: String, privateKey: String?) {
-        let key = E2E_PrivateKey + account
+        let key = "EndToEndPrivateKey_" + account
         keychain[key] = privateKey
     }
 
     func getEndToEndPublicKey(account: String) -> String? {
-        let key = E2E_PublicKey + account
+        let key = "EndToEndPublicKeyServer_" + account
         migrate(key: key)
         return try? keychain.get(key)
     }
 
     func setEndToEndPublicKey(account: String, publicKey: String?) {
-        let key = E2E_PublicKey + account
+        let key = "EndToEndPublicKeyServer_" + account
         keychain[key] = publicKey
     }
 
     func getEndToEndPassphrase(account: String) -> String? {
-        let key = E2E_Passphrase + account
+        let key = "EndToEndPassphrase_" + account
         migrate(key: key)
         return try? keychain.get(key)
     }
 
     func setEndToEndPassphrase(account: String, passphrase: String?) {
-        let key = E2E_Passphrase + account
+        let key = "EndToEndPassphrase_" + account
         keychain[key] = passphrase
     }
 
