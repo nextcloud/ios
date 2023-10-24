@@ -28,10 +28,6 @@ import KeychainAccess
 
     let keychain = Keychain(service: "com.nextcloud.keychain")
 
-    override init() {
-        super.init()
-    }
-
     var typeFilterScanDocument: NCGlobal.TypeFilterScanDocument {
         get {
             if let rawValue = try? keychain.get("ScanDocumentTypeFilter"), let value = NCGlobal.TypeFilterScanDocument(rawValue: rawValue) {
@@ -440,6 +436,7 @@ import KeychainAccess
 
     @objc func getPushNotificationPublicKey(account: String) -> Data? {
         let key = "PNPublicKey" + account
+        migrate(key: key)
         return try? keychain.getData(key)
     }
 
@@ -448,18 +445,9 @@ import KeychainAccess
         keychain[data: key] = data
     }
 
-    @objc func getPushNotificationSubscribingPublicKey(account: String) -> String? {
-        let key = "PNSubscribingPublicKey" + account
-        return try? keychain.get(key)
-    }
-
-    @objc func setPushNotificationSubscribingPublicKey(account: String, publicKey: String?) {
-        let key = "PNSubscribingPublicKey" + account
-        keychain[key] = publicKey
-    }
-
     @objc func getPushNotificationPrivateKey(account: String) -> Data? {
         let key = "PNPrivateKey" + account
+        migrate(key: key)
         return try? keychain.getData(key)
     }
 
@@ -468,8 +456,20 @@ import KeychainAccess
         keychain[data: key] = data
     }
 
+    @objc func getPushNotificationSubscribingPublicKey(account: String) -> String? {
+        let key = "PNSubscribingPublicKey" + account
+        migrate(key: key)
+        return try? keychain.get(key)
+    }
+
+    @objc func setPushNotificationSubscribingPublicKey(account: String, publicKey: String?) {
+        let key = "PNSubscribingPublicKey" + account
+        keychain[key] = publicKey
+    }
+
     @objc func getPushNotificationToken(account: String) -> String? {
         let key = "PNToken" + account
+        migrate(key: key)
         return try? keychain.get(key)
     }
 
@@ -480,6 +480,7 @@ import KeychainAccess
 
     @objc func getPushNotificationDeviceIdentifier(account: String) -> String? {
         let key = "PNDeviceIdentifier" + account
+        migrate(key: key)
         return try? keychain.get(key)
     }
 
@@ -490,6 +491,7 @@ import KeychainAccess
 
     @objc func getPushNotificationDeviceIdentifierSignature(account: String) -> String? {
         let key = "PNDeviceIdentifierSignature" + account
+        migrate(key: key)
         return try? keychain.get(key)
     }
 
