@@ -115,7 +115,7 @@
         [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
         [row.cellConfig setObject:UIColor.labelColor forKey:@"textLabel.textColor"];
         [row.cellConfig setObject:[[UIImage imageNamed:@"crashservice"] imageWithColor:UIColor.systemGrayColor size:25] forKey:@"imageView.image"];
-        if ([CCUtility getDisableCrashservice]) row.value = @"1";
+        if ([[[NCKeychain alloc] init] disableCrashservice]) row.value = @"1";
         else row.value = @"0";
         [section addFormRow:row];
     }
@@ -338,8 +338,8 @@
     
     if ([rowDescriptor.tag isEqualToString:@"crashservice"]) {
         
-        [CCUtility setDisableCrashservice:[[rowDescriptor.value valueData] boolValue]];
-        
+        [[NCKeychain alloc] init].disableCrashservice = [[rowDescriptor.value valueData] boolValue];
+
         UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_crashservice_title_", nil) message:NSLocalizedString(@"_crashservice_alert_", nil) preferredStyle:UIAlertControllerStyleAlert];
         UIAlertAction *okAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_ok_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
             exit(0);

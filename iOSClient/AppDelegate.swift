@@ -80,7 +80,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         let versionNextcloudiOS = String(format: NCBrandOptions.shared.textCopyrightNextcloudiOS, NCUtility.shared.getVersionApp())
 
         UserDefaults.standard.register(defaults: ["UserAgent": userAgent])
-        if !CCUtility.getDisableCrashservice() && !NCBrandOptions.shared.disable_crash_service {
+        if !NCKeychain().disableCrashservice, !NCBrandOptions.shared.disable_crash_service {
             FirebaseApp.configure()
         }
 

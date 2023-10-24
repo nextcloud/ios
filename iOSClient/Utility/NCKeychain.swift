@@ -175,6 +175,19 @@ import KeychainAccess
         }
     }
 
+    @objc var disableCrashservice: Bool {
+        get {
+            migrate(key: "crashservice")
+            if let value = try? keychain.get("crashservice"), let result = Bool(value) {
+                return result
+            }
+            return false
+        }
+        set {
+            keychain["crashservice"] = String(newValue)
+        }
+    }
+
     // MARK: -
 
     private func migrate(key: String) {

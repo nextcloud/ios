@@ -149,17 +149,6 @@
     [UICKeyChainStore setString:widthString forKey:@"mediaWidthImage" service:NCGlobal.shared.serviceShareKeyChain];
 }
 
-+ (BOOL)getDisableCrashservice
-{
-    return [[UICKeyChainStore stringForKey:@"crashservice" service:NCGlobal.shared.serviceShareKeyChain] boolValue];
-}
-
-+ (void)setDisableCrashservice:(BOOL)disable
-{
-    NSString *sDisable = (disable) ? @"true" : @"false";
-    [UICKeyChainStore setString:sDisable forKey:@"crashservice" service:NCGlobal.shared.serviceShareKeyChain];
-}
-
 + (NSString *)getMediaSortDate
 {
     NSString *valueString = [UICKeyChainStore stringForKey:@"mediaSortDate" service:NCGlobal.shared.serviceShareKeyChain];
