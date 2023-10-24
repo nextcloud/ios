@@ -200,7 +200,7 @@
 
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"deleteoldfiles" rowType:XLFormRowDescriptorTypeSelectorPush title:NSLocalizedString(@"_delete_old_files_", nil)];
     
-    switch (CCUtility.getCleanUpDay) {
+    switch ([[NCKeychain alloc] init].cleanUpDay) {
         case 0:
             row.value = [XLFormOptionsObject formOptionsObjectWithValue:@(0) displayText:NSLocalizedString(@"_never_", nil)];
             break;
@@ -359,7 +359,7 @@
     if ([rowDescriptor.tag isEqualToString:@"deleteoldfiles"]) {
         
         NSInteger days = [[rowDescriptor.value valueData] intValue];
-        [CCUtility setCleanUpDay:days];
+        [[NCKeychain alloc] init].cleanUpDay = days;
     }
 }
 

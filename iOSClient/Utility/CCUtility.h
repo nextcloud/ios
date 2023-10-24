@@ -70,9 +70,6 @@
 + (double)getQualityScanDocument;
 + (void)setQualityScanDocument:(double)value;
 
-+ (NSInteger)getCleanUpDay;
-+ (void)setCleanUpDay:(NSInteger)days;
-
 // ===== Varius =====
 
 + (BOOL)addSkipBackupAttributeToItemAtURL:(NSURL *)URL;

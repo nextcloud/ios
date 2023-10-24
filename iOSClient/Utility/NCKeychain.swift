@@ -240,6 +240,19 @@ import KeychainAccess
         }
     }
 
+    @objc var cleanUpDay: Int {
+        get {
+            migrate(key: "cleanUpDay")
+            if let value = try? keychain.get("cleanUpDay"), let result = Int(value) {
+                return result
+            }
+            return NCBrandOptions.shared.cleanUpDay
+        }
+        set {
+            keychain["cleanUpDay"] = String(newValue)
+        }
+    }
+
     // MARK: -
 
     private func migrate(key: String) {

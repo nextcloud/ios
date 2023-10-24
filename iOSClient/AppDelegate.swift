@@ -238,7 +238,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         WidgetCenter.shared.reloadAllTimelines()
 
         // Clear older files
-        let days = CCUtility.getCleanUpDay()
+        let days = NCKeychain().cleanUpDay
         if let directory = CCUtility.getDirectoryProviderStorage() {
             NCUtilityFileSystem.shared.cleanUp(directory: directory, days: TimeInterval(days))
         }

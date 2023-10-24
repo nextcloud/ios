@@ -216,24 +216,6 @@
     [UICKeyChainStore setString:valueString forKey:@"qualityScanDocument" service:NCGlobal.shared.serviceShareKeyChain];
 }
 
-+ (NSInteger)getCleanUpDay
-{
-    NSString *size = [UICKeyChainStore stringForKey:@"cleanUpDay" service:NCGlobal.shared.serviceShareKeyChain];
-
-    if (size == nil) {
-        NSInteger days = [[NCBrandOptions shared] cleanUpDay];
-        return days;
-    } else {
-        return [size integerValue];
-    }
-}
-
-+ (void)setCleanUpDay:(NSInteger)days
-{
-    NSString *daysString = [@(days) stringValue];
-    [UICKeyChainStore setString:daysString forKey:@"cleanUpDay" service:NCGlobal.shared.serviceShareKeyChain];
-}
-
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== Various =====
 #pragma --------------------------------------------------------------------------------------------
