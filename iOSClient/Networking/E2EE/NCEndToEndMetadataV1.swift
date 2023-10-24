@@ -166,7 +166,7 @@ extension NCEndToEndMetadata {
         }
 
         // Create checksum
-        let passphrase = CCUtility.getEndToEndPassphrase(account).replacingOccurrences(of: " ", with: "")
+        let passphrase = NCKeychain().getEndToEndPassphrase(account: account)?.replacingOccurrences(of: " ", with: "") ?? ""
         let dataChecksum = (passphrase + fileNameIdentifiers.sorted().joined() + metadataKey).data(using: .utf8)
         let checksum = NCEndToEndEncryption.sharedManager().createSHA256(dataChecksum)
 
@@ -345,7 +345,7 @@ extension NCEndToEndMetadata {
             }
 
             // verify checksum
-            let passphrase = CCUtility.getEndToEndPassphrase(account).replacingOccurrences(of: " ", with: "")
+            let passphrase = NCKeychain().getEndToEndPassphrase(account: account)?.replacingOccurrences(of: " ", with: "") ?? ""
             let dataChecksum = (passphrase + fileNameIdentifiers.sorted().joined() + metadata.metadataKey).data(using: .utf8)
             let checksum = NCEndToEndEncryption.sharedManager().createSHA256(dataChecksum)
             if metadata.checksum != checksum {

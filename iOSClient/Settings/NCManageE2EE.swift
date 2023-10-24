@@ -50,7 +50,7 @@ class NCManageE2EE: NSObject, ObservableObject, NCEndToEndInitializeDelegate, TO
         super.init()
 
         endToEndInitialize.delegate = self
-        isEndToEndEnabled = CCUtility.isEnd(toEndEnabled: appDelegate.account)
+        isEndToEndEnabled = NCKeychain().isEndToEndEnabled(account: appDelegate.account)
         if isEndToEndEnabled {
             statusOfService = NSLocalizedString("_status_e2ee_configured_", comment: "")
         } else {
@@ -103,7 +103,7 @@ class NCManageE2EE: NSObject, ObservableObject, NCEndToEndInitializeDelegate, TO
         case "startE2E":
             endToEndInitialize.initEndToEndEncryption()
         case "readPassphrase":
-            if let e2ePassphrase = CCUtility.getEndToEndPassphrase(appDelegate.account) {
+            if let e2ePassphrase = NCKeychain().getEndToEndPassphrase(account: appDelegate.account) {
                 print("[LOG]Passphrase: " + e2ePassphrase)
                 let message = "\n" + NSLocalizedString("_e2e_settings_the_passphrase_is_", comment: "") + "\n\n\n" + e2ePassphrase
                 let alertController = UIAlertController(title: NSLocalizedString("_info_", comment: ""), message: message, preferredStyle: .alert)
@@ -116,8 +116,8 @@ class NCManageE2EE: NSObject, ObservableObject, NCEndToEndInitializeDelegate, TO
         case "removeLocallyEncryption":
             let alertController = UIAlertController(title: NSLocalizedString("_e2e_settings_remove_", comment: ""), message: NSLocalizedString("_e2e_settings_remove_message_", comment: ""), preferredStyle: .alert)
             alertController.addAction(UIAlertAction(title: NSLocalizedString("_remove_", comment: ""), style: .default, handler: { _ in
-                CCUtility.clearAllKeysEnd(toEnd: self.appDelegate.account)
-                self.isEndToEndEnabled = CCUtility.isEnd(toEndEnabled: self.appDelegate.account)
+                NCKeychain().clearAllKeysEndToEnd(account: self.appDelegate.account)
+                self.isEndToEndEnabled = NCKeychain().isEndToEndEnabled(account: self.appDelegate.account)
             }))
             alertController.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .default, handler: { _ in }))
             appDelegate.window?.rootViewController?.present(alertController, animated: true)

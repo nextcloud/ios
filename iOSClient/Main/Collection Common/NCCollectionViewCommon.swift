@@ -1012,8 +1012,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                     self.metadataFolder = metadataFolder
                     // E2EE
                     if let metadataFolder = metadataFolder,
-                        metadataFolder.e2eEncrypted,
-                        CCUtility.isEnd(toEndEnabled: self.appDelegate.account),
+                       metadataFolder.e2eEncrypted,
+                       NCKeychain().isEndToEndEnabled(account: self.appDelegate.account),
                        !NCNetworkingE2EE.shared.isInUpload(account: self.appDelegate.account, serverUrl: self.serverUrl) {
                         let lock = NCManageDatabase.shared.getE2ETokenLock(account: self.appDelegate.account, serverUrl: self.serverUrl)
                         NextcloudKit.shared.getE2EEMetadata(fileId: metadataFolder.ocId, e2eToken: lock?.e2eToken) { _, e2eMetadata, signature, _, error in
@@ -1105,7 +1105,7 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
 
         if metadata.e2eEncrypted {
             if NCGlobal.shared.capabilityE2EEEnabled {
-                if !CCUtility.isEnd(toEndEnabled: appDelegate.account) {
+                if !NCKeychain().isEndToEndEnabled(account: appDelegate.account) {
                     let e2ee = NCEndToEndInitialize()
                     e2ee.delegate = self
                     e2ee.initEndToEndEncryption()

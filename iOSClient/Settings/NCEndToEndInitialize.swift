@@ -45,7 +45,7 @@ class NCEndToEndInitialize: NSObject {
     @objc func initEndToEndEncryption() {
 
         // Clear all keys
-        CCUtility.clearAllKeysEnd(toEnd: appDelegate.account)
+        NCKeychain().clearAllKeysEndToEnd(account: appDelegate.account)
 
         self.getPublicKey()
     }
@@ -148,7 +148,7 @@ class NCEndToEndInitialize: NSObject {
 
                 let ok = UIAlertAction(title: "OK", style: .default, handler: { _ -> Void in
 
-                    let passphrase = passphraseTextField?.text
+                    let passphrase = passphraseTextField?.text ?? ""
 
                     let publicKey = NCKeychain().getEndToEndCertificate(account: self.appDelegate.account)
 
@@ -165,7 +165,7 @@ class NCEndToEndInitialize: NSObject {
                     }
 
                     // Save to keychain
-                    CCUtility.setEndToEndPassphrase(self.appDelegate.account, passphrase: passphrase)
+                    NCKeychain().setEndToEndPassphrase(account: self.appDelegate.account, passphrase: passphrase)
 
                     // request server publicKey
                     NextcloudKit.shared.getE2EEPublicKey { account, publicKey, _, error in
@@ -269,7 +269,7 @@ class NCEndToEndInitialize: NSObject {
             if error == .success, account == self.appDelegate.account, let privateKey = privateKeyString {
 
                 NCKeychain().setEndToEndPrivateKey(account: account, privateKey: String(privateKey))
-                CCUtility.setEndToEndPassphrase(account, passphrase: e2ePassphrase)
+                NCKeychain().setEndToEndPassphrase(account: account, passphrase: e2ePassphrase)
 
                 // request server publicKey
                 NextcloudKit.shared.getE2EEPublicKey { account, publicKey, _, error in

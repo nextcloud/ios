@@ -111,7 +111,7 @@ extension AppDelegate {
             )
         )
 
-        if CCUtility.isEnd(toEndEnabled: appDelegate.account) {
+        if NCKeychain().isEndToEndEnabled(account: appDelegate.account) {
             actions.append(.seperator(order: 0))
         }
 
@@ -128,7 +128,7 @@ extension AppDelegate {
         )
 
         // Folder encrypted
-        if !isDirectoryE2EE && CCUtility.isEnd(toEndEnabled: appDelegate.account) {
+        if !isDirectoryE2EE && NCKeychain().isEndToEndEnabled(account: appDelegate.account) {
             actions.append(
                 NCMenuAction(title: NSLocalizedString("_create_folder_e2ee_", comment: ""),
                              icon: UIImage(named: "folderEncrypted")!.image(color: NCBrandColor.shared.brandElement, size: 50),
@@ -140,7 +140,7 @@ extension AppDelegate {
             )
         }
 
-        if CCUtility.isEnd(toEndEnabled: appDelegate.account) {
+        if NCKeychain().isEndToEndEnabled(account: appDelegate.account) {
             actions.append(.seperator(order: 0))
         }
 

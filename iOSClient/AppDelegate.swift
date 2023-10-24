@@ -622,7 +622,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         }
         NCManageDatabase.shared.clearDatabase(account: account, removeAccount: true)
 
-        CCUtility.clearAllKeysEnd(toEnd: account)
+        NCKeychain().clearAllKeysEndToEnd(account: account)
         CCUtility.clearAllKeysPushNotification(account)
         CCUtility.setPassword(account, password: nil)
 

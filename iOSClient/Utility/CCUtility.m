@@ -50,45 +50,6 @@
 
 #pragma ------------------------------ GET/SET
 
-+ (NSString *)getEndToEndPassphrase:(NSString *)account
-{
-    NSString *key = [E2E_Passphrase stringByAppendingString:account];
-    return [UICKeyChainStore stringForKey:key service:NCGlobal.shared.serviceShareKeyChain];
-}
-
-+ (void)setEndToEndPassphrase:(NSString *)account passphrase:(NSString *)passphrase
-{
-    NSString *key = [E2E_Passphrase stringByAppendingString:account];
-    [UICKeyChainStore setString:passphrase forKey:key service:NCGlobal.shared.serviceShareKeyChain];
-}
-
-+ (BOOL)isEndToEndEnabled:(NSString *)account
-{
-    NSString* versionE2EE = [[NCGlobal shared] capabilityE2EEApiVersion];
-
-    // NSString *certificate = [self getEndToEndCertificate:account];
-    //NSString *publicKey = [self getEndToEndPublicKey:account];
-    //NSString *privateKey = [self getEndToEndPrivateKey:account];
-    // NSString *passphrase = [self getEndToEndPassphrase:account];
-
-    //if (passphrase.length > 0 && privateKey.length > 0 && certificate.length > 0 && publicKey.length > 0 && [NCGlobal.shared.e2eeVersions containsObject:versionE2EE]) {
-        return YES;
-    //} else {
-    //    return NO;
-    //}
-}
-
-+ (void)clearAllKeysEndToEnd:(NSString *)account
-{
-   // [self setEndToEndCertificate:account certificate:nil];
-    //[self setEndToEndPrivateKey:account privateKey:nil];
-    //[self setEndToEndPublicKey:account publicKey:nil];
-    //[self setEndToEndPassphrase:account passphrase:nil];
-
-    // OLD
-    [UICKeyChainStore setString:nil forKey:[@"EndToEndPublicKey_" stringByAppendingString:account] service:NCGlobal.shared.serviceShareKeyChain];
-}
-
 + (BOOL)getDisableFilesApp
 {
     return [[UICKeyChainStore stringForKey:@"disablefilesapp" service:NCGlobal.shared.serviceShareKeyChain] boolValue];

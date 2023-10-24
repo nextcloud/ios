@@ -202,11 +202,11 @@ extension tableMetadata {
     }
 
     var isDirectoySettableE2EE: Bool {
-        return directory && size == 0 && !e2eEncrypted && CCUtility.isEnd(toEndEnabled: account)
+        return directory && size == 0 && !e2eEncrypted && NCKeychain().isEndToEndEnabled(account: account)
     }
 
     var isDirectoryUnsettableE2EE: Bool {
-        return !isDirectoryE2EE && directory && size == 0 && e2eEncrypted && CCUtility.isEnd(toEndEnabled: account)
+        return !isDirectoryE2EE && directory && size == 0 && e2eEncrypted && NCKeychain().isEndToEndEnabled(account: account)
     }
 
     var canOpenExternalEditor: Bool {

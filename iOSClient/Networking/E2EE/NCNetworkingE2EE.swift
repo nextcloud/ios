@@ -191,7 +191,7 @@ class NCNetworkingE2EE: NSObject {
 
     func unlockAll(account: String) {
 
-        guard CCUtility.isEnd(toEndEnabled: account) else { return }
+        guard NCKeychain().isEndToEndEnabled(account: account) else { return }
 
         Task {
             for result in NCManageDatabase.shared.getE2EAllTokenLock(account: account) {

@@ -34,7 +34,7 @@ extension NCShareExtension: UICollectionViewDelegate {
                   return showAlert(description: "_invalid_url_")
               }
 
-        if metadata.e2eEncrypted && !CCUtility.isEnd(toEndEnabled: activeAccount.account) {
+        if metadata.e2eEncrypted && !NCKeychain().isEndToEndEnabled(account: activeAccount.account) {
             showAlert(title: "_info_", description: "_e2e_goto_settings_for_enable_")
         }
 

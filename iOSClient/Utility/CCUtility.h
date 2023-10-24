@@ -41,17 +41,6 @@
 
 + (void)deleteAllChainStore;
 
-// E2EE -------------------------------------------
-
-+ (NSString *)getEndToEndPassphrase:(NSString *)account;
-+ (void)setEndToEndPassphrase:(NSString *)account passphrase:(NSString *)passphrase;
-
-+ (BOOL)isEndToEndEnabled:(NSString *)account;
-
-// E2EE -------------------------------------------
-
-+ (void)clearAllKeysEndToEnd:(NSString *)account;
-
 + (BOOL)getDisableFilesApp;
 + (void)setDisableFilesApp:(BOOL)disable;
 

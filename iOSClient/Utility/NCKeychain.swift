@@ -197,13 +197,15 @@ import KeychainAccess
         keychain[key] = String(prefix)
     }
 
+    // MARK: - E2EE
+
     func getEndToEndCertificate(account: String) -> String? {
         let key = E2E_certificate + account
         migrate(key: key)
         return try? keychain.get(key)
     }
 
-    func setEndToEndCertificate(account: String, certificate: String) {
+    func setEndToEndCertificate(account: String, certificate: String?) {
         let key = E2E_certificate + account
         keychain[key] = certificate
     }
@@ -214,7 +216,7 @@ import KeychainAccess
         return try? keychain.get(key)
     }
 
-    func setEndToEndPrivateKey(account: String, privateKey: String) {
+    func setEndToEndPrivateKey(account: String, privateKey: String?) {
         let key = E2E_PrivateKey + account
         keychain[key] = privateKey
     }
@@ -225,7 +227,7 @@ import KeychainAccess
         return try? keychain.get(key)
     }
 
-    func setEndToEndPublicKey(account: String, publicKey: String) {
+    func setEndToEndPublicKey(account: String, publicKey: String?) {
         let key = E2E_PublicKey + account
         keychain[key] = publicKey
     }
@@ -236,8 +238,25 @@ import KeychainAccess
         return try? keychain.get(key)
     }
 
-    func setEndToEndPassphrase(account: String, passphrase: String) {
+    func setEndToEndPassphrase(account: String, passphrase: String?) {
         let key = E2E_Passphrase + account
         keychain[key] = passphrase
+    }
+
+    func isEndToEndEnabled(account: String) -> Bool {
+
+        guard let certificate = getEndToEndCertificate(account: account), !certificate.isEmpty,
+              let publicKey = getEndToEndPublicKey(account: account), !publicKey.isEmpty,
+              let privateKey = getEndToEndPrivateKey(account: account), !privateKey.isEmpty,
+              let passphrase = getEndToEndPassphrase(account: account), !passphrase.isEmpty,
+              NCGlobal.shared.e2eeVersions.contains(NCGlobal.shared.capabilityE2EEApiVersion) else { return false }
+        return true
+    }
+
+    func clearAllKeysEndToEnd(account: String) {
+        setEndToEndCertificate(account: account, certificate: nil)
+        setEndToEndPrivateKey(account: account, privateKey: nil)
+        setEndToEndPublicKey(account: account, publicKey: nil)
+        setEndToEndPassphrase(account: account, passphrase: nil)
     }
 }
