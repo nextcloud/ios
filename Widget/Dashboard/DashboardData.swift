@@ -142,7 +142,7 @@ func getDashboardDataEntry(configuration: DashboardIntent?, isPreview: Bool, dis
         delegate: NCNetworking.shared)
 
     // LOG
-    let levelLog = CCUtility.getLogLevel()
+    let levelLog = NCKeychain().logLevel
     let isSimulatorOrTestFlight = NCUtility.shared.isSimulatorOrTestFlight()
     let versionNextcloudiOS = String(format: NCBrandOptions.shared.textCopyrightNextcloudiOS, NCUtility.shared.getVersionApp())
 

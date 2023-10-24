@@ -70,9 +70,6 @@
 + (double)getQualityScanDocument;
 + (void)setQualityScanDocument:(double)value;
 
-+ (NSInteger)getLogLevel;
-+ (void)setLogLevel:(NSInteger)value;
-
 + (BOOL)getAccountRequest;
 + (void)setAccountRequest:(BOOL)set;
 

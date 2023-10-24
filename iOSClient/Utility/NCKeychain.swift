@@ -188,6 +188,19 @@ import KeychainAccess
         }
     }
 
+    @objc var logLevel: Int {
+        get {
+            migrate(key: "logLevel")
+            if let value = try? keychain.get("logLevel"), let result = Int(value) {
+                return result
+            }
+            return 1
+        }
+        set {
+            keychain["logLevel"] = String(newValue)
+        }
+    }
+
     // MARK: -
 
     private func migrate(key: String) {

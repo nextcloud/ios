@@ -216,23 +216,6 @@
     [UICKeyChainStore setString:valueString forKey:@"qualityScanDocument" service:NCGlobal.shared.serviceShareKeyChain];
 }
 
-+ (NSInteger)getLogLevel
-{
-    NSString *value = [UICKeyChainStore stringForKey:@"logLevel" service:NCGlobal.shared.serviceShareKeyChain];
-
-    if (value == nil) {
-        return 1;
-    } else {
-        return [value integerValue];
-    }
-}
-
-+ (void)setLogLevel:(NSInteger)value
-{
-    NSString *valueString = [@(value) stringValue];
-    [UICKeyChainStore setString:valueString forKey:@"logLevel" service:NCGlobal.shared.serviceShareKeyChain];
-}
-
 + (BOOL)getAccountRequest
 {
     return [[UICKeyChainStore stringForKey:@"accountRequest" service:NCGlobal.shared.serviceShareKeyChain] boolValue];

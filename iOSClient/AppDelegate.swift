@@ -109,7 +109,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
         } else {
 
-            levelLog = CCUtility.getLogLevel()
+            levelLog = NCKeychain().logLevel
             NextcloudKit.shared.nkCommonInstance.levelLog = levelLog
             NextcloudKit.shared.nkCommonInstance.copyLogToDocumentDirectory = true
             NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Start session with level \(levelLog) " + versionNextcloudiOS)

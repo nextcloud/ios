@@ -153,7 +153,7 @@
 
             [[[NextcloudKit shared] nkCommonInstance] clearFileLog];
             
-            NSInteger logLevel = [CCUtility getLogLevel];
+            NSInteger logLevel = [[NCKeychain alloc] init].logLevel;
             BOOL isSimulatorOrTestFlight = [[NCUtility shared] isSimulatorOrTestFlight];
             NSString *versionNextcloudiOS = [NSString stringWithFormat:[NCBrandOptions shared].textCopyrightNextcloudiOS, [[NCUtility shared] getVersionAppWithBuild:true]];
             if (isSimulatorOrTestFlight) {
@@ -169,7 +169,7 @@
         [row.cellConfig setObject:@(NSTextAlignmentCenter) forKey:@"textLabel.textAlignment"];
         [row.cellConfig setObject:UIColor.labelColor forKey:@"textLabel.textColor"];
         [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
-        NSInteger logLevel = [CCUtility getLogLevel];
+        NSInteger logLevel = [[NCKeychain alloc] init].logLevel;
         row.value = @(logLevel);
         [row.cellConfigAtConfigure setObject:@(2) forKey:@"slider.maximumValue"];
         [row.cellConfigAtConfigure setObject:@(0) forKey:@"slider.minimumValue"];
@@ -352,7 +352,7 @@
     if ([rowDescriptor.tag isEqualToString:@"logLevel"]) {
         
         NSInteger levelLog = [[rowDescriptor.value valueData] intValue];
-        [CCUtility setLogLevel:levelLog];
+        [[NCKeychain alloc] init].logLevel = levelLog;
         [[[NextcloudKit shared] nkCommonInstance] setLevelLog:levelLog];
     }
 

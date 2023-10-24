@@ -192,7 +192,7 @@ func getFilesDataEntry(configuration: AccountIntent?, isPreview: Bool, displaySi
     let requestBody = String(format: requestBodyRecent, "/files/" + account.userId, lessDateString)
 
     // LOG
-    let levelLog = CCUtility.getLogLevel()
+    let levelLog = NCKeychain().logLevel
     let isSimulatorOrTestFlight = NCUtility.shared.isSimulatorOrTestFlight()
     let versionNextcloudiOS = String(format: NCBrandOptions.shared.textCopyrightNextcloudiOS, NCUtility.shared.getVersionApp())
 

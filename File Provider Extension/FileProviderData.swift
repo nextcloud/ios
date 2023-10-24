@@ -74,7 +74,7 @@ class fileProviderData: NSObject {
         // LOG
         if let pathDirectoryGroup = CCUtility.getDirectoryGroup()?.path {
             NextcloudKit.shared.nkCommonInstance.pathLog = pathDirectoryGroup
-            let levelLog = CCUtility.getLogLevel()
+            let levelLog = NCKeychain().logLevel
             NextcloudKit.shared.nkCommonInstance.levelLog = levelLog
             let version = NSString(format: NCBrandOptions.shared.textCopyrightNextcloudiOS as NSString, NCUtility.shared.getVersionApp()) as String
             NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Start File Provider session with level \(levelLog) " + version + " (File Provider Extension)")
