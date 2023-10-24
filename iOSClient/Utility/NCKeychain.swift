@@ -79,7 +79,7 @@ import KeychainAccess
             if let value = try? keychain.get("requestPasscodeAtStart"), let result = Bool(value) {
                 return result
             }
-            return false
+            return true
         }
         set {
             keychain["requestPasscodeAtStart"] = String(newValue)
@@ -155,7 +155,7 @@ import KeychainAccess
             if let value = try? keychain.get("disablefilesapp"), let result = Bool(value) {
                 return result
             }
-            return true
+            return false
         }
         set {
             keychain["disablefilesapp"] = String(newValue)
