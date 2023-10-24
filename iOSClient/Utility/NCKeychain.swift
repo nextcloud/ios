@@ -227,6 +227,19 @@ import KeychainAccess
         }
     }
 
+    @objc var privacyScreenEnabled: Bool {
+        get {
+            migrate(key: "privacyScreen")
+            if let value = try? keychain.get("privacyScreen"), let result = Bool(value) {
+                return result
+            }
+            return false
+        }
+        set {
+            keychain["privacyScreen"] = String(newValue)
+        }
+    }
+
     // MARK: -
 
     private func migrate(key: String) {

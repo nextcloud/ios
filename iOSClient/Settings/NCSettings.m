@@ -275,7 +275,7 @@
     
     if ([[NCKeychain alloc] init].touchFaceID) [rowEnableTouchDaceID setValue:@1]; else [rowEnableTouchDaceID setValue:@0];
     if ([[NCKeychain alloc] init].requestPasscodeAtStart) [rowNotPasscodeAtStart setValue:@0]; else [rowNotPasscodeAtStart setValue:@1];
-    if ([CCUtility getPrivacyScreenEnabled]) [rowPrivacyScreen setValue:@1]; else [rowPrivacyScreen setValue:@0];
+    if ([[NCKeychain alloc] init].privacyScreenEnabled) [rowPrivacyScreen setValue:@1]; else [rowPrivacyScreen setValue:@0];
 
 
     // -----------------------------------------------------------------
@@ -310,9 +310,9 @@
     if ([rowDescriptor.tag isEqualToString:@"privacyScreen"]) {
         
         if ([[rowDescriptor.value valueData] boolValue] == YES) {
-            [CCUtility setPrivacyScreenEnabled:true];
+            [[NCKeychain alloc] init].privacyScreenEnabled = true;
         } else {
-            [CCUtility setPrivacyScreenEnabled:false];
+            [[NCKeychain alloc] init].privacyScreenEnabled = false;
         }
     }
 }

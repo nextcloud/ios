@@ -230,7 +230,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         NCNetworkingProcessUpload.shared.invalidateObserveTableMetadata()
         NCNetworkingProcessUpload.shared.stopTimer()
 
-        if CCUtility.getPrivacyScreenEnabled() {
+        if NCKeychain().privacyScreenEnabled {
             showPrivacyProtectionWindow()
         }
 

@@ -73,9 +73,6 @@
 + (NSInteger)getCleanUpDay;
 + (void)setCleanUpDay:(NSInteger)days;
 
-+ (BOOL)getPrivacyScreenEnabled;
-+ (void)setPrivacyScreenEnabled:(BOOL)set;
-
 // ===== Varius =====
 
 + (BOOL)addSkipBackupAttributeToItemAtURL:(NSURL *)URL;
