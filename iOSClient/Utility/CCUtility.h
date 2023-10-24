@@ -35,28 +35,6 @@
 
 @interface CCUtility : NSObject
 
-// ===== KeyChainStore =====
-
-// GET/SET
-
-+ (void)deleteAllChainStore;
-
-+ (void)setPushNotificationPublicKey:(NSString *)account data:(NSData *)data;
-+ (NSData *)getPushNotificationPublicKey:(NSString *)account;
-+ (void)setPushNotificationSubscribingPublicKey:(NSString *)account publicKey:(NSString *)publicKey;
-+ (NSString *)getPushNotificationSubscribingPublicKey:(NSString *)account;
-+ (void)setPushNotificationPrivateKey:(NSString *)account data:(NSData *)data;
-+ (NSData *)getPushNotificationPrivateKey:(NSString *)account;
-+ (void)setPushNotificationToken:(NSString *)account token:(NSString *)token;
-+ (NSString *)getPushNotificationToken:(NSString *)account;
-+ (void)setPushNotificationDeviceIdentifier:(NSString *)account deviceIdentifier:(NSString *)deviceIdentifier;
-+ (NSString *)getPushNotificationDeviceIdentifier:(NSString *)account;
-+ (void)setPushNotificationDeviceIdentifierSignature:(NSString *)account deviceIdentifierSignature:(NSString *)deviceIdentifierSignature;
-+ (NSString *)getPushNotificationDeviceIdentifierSignature:(NSString *)account;
-+ (void)clearAllKeysPushNotification:(NSString *)account;
-
-// ===== Varius =====
-
 + (BOOL)addSkipBackupAttributeToItemAtURL:(NSURL *)URL;
 
 + (NSString *)dateDiff:(NSDate *)convertedDate;

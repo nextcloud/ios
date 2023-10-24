@@ -139,7 +139,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
         } else {
 
-            CCUtility.deleteAllChainStore()
             NCKeychain().removeAll()
             if let bundleID = Bundle.main.bundleIdentifier {
                 UserDefaults.standard.removePersistentDomain(forName: bundleID)
@@ -623,7 +622,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         NCManageDatabase.shared.clearDatabase(account: account, removeAccount: true)
 
         NCKeychain().clearAllKeysEndToEnd(account: account)
-        CCUtility.clearAllKeysPushNotification(account)
+        NCKeychain().clearAllKeysPushNotification(account: account)
         NCKeychain().setPassword(account: account, password: nil)
 
         self.account = ""

@@ -47,7 +47,6 @@ class NCSettingsBundleHelper: NSObject {
             CCUtility.removeDocumentsDirectory()
             CCUtility.removeTemporaryDirectory()
 
-            CCUtility.deleteAllChainStore()
             NCKeychain().removeAll()
             NCManageDatabase.shared.removeDB()
 

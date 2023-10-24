@@ -23,7 +23,7 @@
 //  This code derived from : Nextcloud Talk - NCSettingsController Created by Ivan Sein on 26.06.17. Copyright © 2017 struktur AG. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
+#import <UIKit/UIKit.h>
 
 @interface NCPushNotificationEncryption : NSObject
 
