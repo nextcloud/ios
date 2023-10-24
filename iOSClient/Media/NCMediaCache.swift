@@ -139,7 +139,7 @@ import NextcloudKit
         livePhoto = NCKeychain().livePhoto
         metadatas = NCManageDatabase.shared.getMetadatasMedia(predicate: predicate, livePhoto: livePhoto)
 
-        switch CCUtility.getMediaSortDate() {
+        switch NCKeychain().mediaSortDate {
         case "date":
             metadatas = self.metadatas.sorted(by: {($0.date as Date) > ($1.date as Date)})
         case "creationDate":

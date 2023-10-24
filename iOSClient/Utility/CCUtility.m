@@ -132,24 +132,6 @@
     [self setPushNotificationDeviceIdentifierSignature:account deviceIdentifierSignature:nil];
 }
 
-+ (NSString *)getMediaSortDate
-{
-    NSString *valueString = [UICKeyChainStore stringForKey:@"mediaSortDate" service:NCGlobal.shared.serviceShareKeyChain];
-
-    // Default TRUE
-    if (valueString == nil) {
-        [self setMediaSortDate:@"date"];
-        return @"date";
-    }
-
-    return valueString;
-}
-
-+ (void)setMediaSortDate:(NSString *)value
-{
-    [UICKeyChainStore setString:value forKey:@"mediaSortDate" service:NCGlobal.shared.serviceShareKeyChain];
-}
-
 + (BOOL)getTextRecognitionStatus
 {
     return [[UICKeyChainStore stringForKey:@"textRecognitionStatus" service:NCGlobal.shared.serviceShareKeyChain] boolValue];

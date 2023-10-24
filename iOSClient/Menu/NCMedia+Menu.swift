@@ -146,10 +146,10 @@ extension NCMedia {
                 NCMenuAction(
                     title: NSLocalizedString("_media_by_modified_date_", comment: ""),
                     icon: NCUtility.shared.loadImage(named: "circle.grid.cross.up.fill"),
-                    selected: CCUtility.getMediaSortDate() == "date",
+                    selected: NCKeychain().mediaSortDate == "date",
                     on: true,
                     action: { _ in
-                        CCUtility.setMediaSortDate("date")
+                        NCKeychain().mediaSortDate = "date"
                         self.reloadDataSourceWithCompletion { _ in }
                     }
                 )
@@ -159,10 +159,10 @@ extension NCMedia {
                 NCMenuAction(
                     title: NSLocalizedString("_media_by_created_date_", comment: ""),
                     icon: NCUtility.shared.loadImage(named: "circle.grid.cross.down.fill"),
-                    selected: CCUtility.getMediaSortDate() == "creationDate",
+                    selected:NCKeychain().mediaSortDate == "creationDate",
                     on: true,
                     action: { _ in
-                        CCUtility.setMediaSortDate("creationDate")
+                        NCKeychain().mediaSortDate = "creationDate"
                         self.reloadDataSourceWithCompletion { _ in }
                     }
                 )
@@ -172,10 +172,10 @@ extension NCMedia {
                 NCMenuAction(
                     title: NSLocalizedString("_media_by_upload_date_", comment: ""),
                     icon: NCUtility.shared.loadImage(named: "circle.grid.cross.right.fill"),
-                    selected: CCUtility.getMediaSortDate() == "uploadDate",
+                    selected: NCKeychain().mediaSortDate == "uploadDate",
                     on: true,
                     action: { _ in
-                        CCUtility.setMediaSortDate("uploadDate")
+                        NCKeychain().mediaSortDate = "uploadDate"
                         self.reloadDataSourceWithCompletion { _ in }
                     }
                 )

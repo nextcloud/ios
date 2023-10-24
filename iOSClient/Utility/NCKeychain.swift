@@ -266,6 +266,19 @@ import KeychainAccess
         }
     }
 
+    var mediaSortDate: String {
+        get {
+            migrate(key: "mediaSortDate")
+            if let value = try? keychain.get("mediaSortDate") {
+                return value
+            }
+            return "date"
+        }
+        set {
+            keychain["mediaSortDate"] = newValue
+        }
+    }
+
     // MARK: -
 
     private func migrate(key: String) {

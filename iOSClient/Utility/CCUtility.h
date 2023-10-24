@@ -55,9 +55,6 @@
 + (NSString *)getPushNotificationDeviceIdentifierSignature:(NSString *)account;
 + (void)clearAllKeysPushNotification:(NSString *)account;
 
-+ (NSString *)getMediaSortDate;
-+ (void)setMediaSortDate:(NSString *)value;
-
 + (BOOL)getTextRecognitionStatus;
 + (void)setTextRecognitionStatus:(BOOL)value;
 + (BOOL)getDeleteAllScanImages;
