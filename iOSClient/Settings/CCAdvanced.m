@@ -78,7 +78,7 @@
 
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"removePhotoCameraRoll" rowType:XLFormRowDescriptorTypeBooleanSwitch title:NSLocalizedString(@"_remove_photo_CameraRoll_", nil)];
     row.cellConfigAtConfigure[@"backgroundColor"] = UIColor.secondarySystemGroupedBackgroundColor;
-    if ([CCUtility getRemovePhotoCameraRoll]) row.value = @"1";
+    if ([[[NCKeychain alloc] init] removePhotoCameraRoll]) row.value = @"1";
     else row.value = @0;
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
     [row.cellConfig setObject:UIColor.labelColor forKey:@"textLabel.textColor"];
@@ -328,7 +328,7 @@
 
     if ([rowDescriptor.tag isEqualToString:@"removePhotoCameraRoll"]) {
 
-        [CCUtility setRemovePhotoCameraRoll:[[rowDescriptor.value valueData] boolValue]];
+        [[NCKeychain alloc] init].removePhotoCameraRoll = [[rowDescriptor.value valueData] boolValue];
     }
 
     if ([rowDescriptor.tag isEqualToString:@"disablefilesapp"]) {

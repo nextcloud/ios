@@ -76,9 +76,6 @@
 + (BOOL)getPrivacyScreenEnabled;
 + (void)setPrivacyScreenEnabled:(BOOL)set;
 
-+ (BOOL)getRemovePhotoCameraRoll;
-+ (void)setRemovePhotoCameraRoll:(BOOL)set;
-
 // ===== Varius =====
 
 + (BOOL)addSkipBackupAttributeToItemAtURL:(NSURL *)URL;

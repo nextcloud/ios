@@ -214,6 +214,19 @@ import KeychainAccess
         }
     }
 
+    @objc var removePhotoCameraRoll: Bool {
+        get {
+            migrate(key: "removePhotoCameraRoll")
+            if let value = try? keychain.get("removePhotoCameraRoll"), let result = Bool(value) {
+                return result
+            }
+            return false
+        }
+        set {
+            keychain["removePhotoCameraRoll"] = String(newValue)
+        }
+    }
+
     // MARK: -
 
     private func migrate(key: String) {

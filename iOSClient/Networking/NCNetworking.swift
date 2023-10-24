@@ -648,7 +648,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
             metadata.status = NCGlobal.shared.metadataStatusNormal
 
             // Delete Asset on Photos album
-            if CCUtility.getRemovePhotoCameraRoll() && !metadata.assetLocalIdentifier.isEmpty {
+            if NCKeychain().removePhotoCameraRoll, !metadata.assetLocalIdentifier.isEmpty {
                 metadata.deleteAssetLocalIdentifier = true
             }
 
