@@ -624,7 +624,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
         NCKeychain().clearAllKeysEndToEnd(account: account)
         CCUtility.clearAllKeysPushNotification(account)
-        CCUtility.setPassword(account, password: nil)
+        NCKeychain().setPassword(account: account, password: nil)
 
         self.account = ""
         self.urlBase = ""

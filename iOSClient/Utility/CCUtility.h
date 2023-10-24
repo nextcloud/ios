@@ -64,9 +64,6 @@
 + (BOOL)getDisableCrashservice;
 + (void)setDisableCrashservice:(BOOL)disable;
 
-+ (void)setPassword:(NSString *)account password:(NSString *)password;
-//+ (NSString *)getPassword:(NSString *)account;
-
 + (void)setHCBusinessType:(NSString *)professions;
 + (NSString *)getHCBusinessType;
 

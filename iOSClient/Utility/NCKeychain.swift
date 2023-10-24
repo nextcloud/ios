@@ -169,6 +169,11 @@ import KeychainAccess
         return (try? keychain.get(key)) ?? ""
     }
 
+    @objc func setPassword(account: String, password: String?) {
+        let key = "password" + account
+        keychain[key] = password
+    }
+
     @objc func getOriginalFileName(key: String) -> Bool {
         migrate(key: key)
         if let value = try? keychain.get(key), let result = Bool(value) {

@@ -52,7 +52,7 @@ class NCNetworkingCheckRemoteUser {
                         let description = String.localizedStringWithFormat(NSLocalizedString("_error_check_remote_user_", comment: ""), tableAccount.user, tableAccount.urlBase)
                         let error = NKError(errorCode: error.errorCode, errorDescription: description)
                         NCContentPresenter.shared.showError(error: error, priority: .max)
-                        CCUtility.setPassword(account, password: nil)
+                        NCKeychain().setPassword(account: account, password: nil)
                         NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Password removed.")
                     }
                 }
@@ -64,7 +64,7 @@ class NCNetworkingCheckRemoteUser {
                 let description = String.localizedStringWithFormat(NSLocalizedString("_error_check_remote_user_", comment: ""), tableAccount.user, tableAccount.urlBase)
                 let error = NKError(errorCode: error.errorCode, errorDescription: description)
                 NCContentPresenter.shared.showError(error: error, priority: .max)
-                CCUtility.setPassword(account, password: nil)
+                NCKeychain().setPassword(account: account, password: nil)
             }
         }
     }

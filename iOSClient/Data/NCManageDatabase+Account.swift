@@ -106,7 +106,7 @@ extension NCManageDatabase {
                     addObject.autoUploadWWAnVideo = true
                 }
 
-                CCUtility.setPassword(account, password: password)
+                NCKeychain().setPassword(account: account, password: password)
 
                 addObject.urlBase = urlBase
                 addObject.user = user

@@ -171,20 +171,6 @@
     [UICKeyChainStore setString:sDisable forKey:@"crashservice" service:NCGlobal.shared.serviceShareKeyChain];
 }
 
-+ (void)setPassword:(NSString *)account password:(NSString *)password
-{
-    NSString *key = [@"password" stringByAppendingString:account];
-    [UICKeyChainStore setString:password forKey:key service:NCGlobal.shared.serviceShareKeyChain];
-}
-
-+ (NSString *)getPassword:(NSString *)account
-{
-    NSString *key = [@"password" stringByAppendingString:account];
-    NSString *result = [UICKeyChainStore stringForKey:key service:NCGlobal.shared.serviceShareKeyChain];
-    if (result == nil) { result = @""; }
-    return result;
-}
-
 + (void)setHCBusinessType:(NSString *)professions
 {
     [UICKeyChainStore setString:professions forKey:@"businessType" service:NCGlobal.shared.serviceShareKeyChain];
