@@ -132,23 +132,6 @@
     [self setPushNotificationDeviceIdentifierSignature:account deviceIdentifierSignature:nil];
 }
 
-+ (NSInteger)getMediaWidthImage
-{
-    NSString *width = [UICKeyChainStore stringForKey:@"mediaWidthImage" service:NCGlobal.shared.serviceShareKeyChain];
-
-    if (width == nil) {
-        return 80;
-    } else {
-        return [width integerValue];
-    }
-}
-
-+ (void)setMediaWidthImage:(NSInteger)width
-{
-    NSString *widthString = [@(width) stringValue];
-    [UICKeyChainStore setString:widthString forKey:@"mediaWidthImage" service:NCGlobal.shared.serviceShareKeyChain];
-}
-
 + (NSString *)getMediaSortDate
 {
     NSString *valueString = [UICKeyChainStore stringForKey:@"mediaSortDate" service:NCGlobal.shared.serviceShareKeyChain];

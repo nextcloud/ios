@@ -55,9 +55,6 @@
 + (NSString *)getPushNotificationDeviceIdentifierSignature:(NSString *)account;
 + (void)clearAllKeysPushNotification:(NSString *)account;
 
-+ (NSInteger)getMediaWidthImage;
-+ (void)setMediaWidthImage:(NSInteger)width;
-
 + (NSString *)getMediaSortDate;
 + (void)setMediaSortDate:(NSString *)value;
 

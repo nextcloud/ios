@@ -79,7 +79,7 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate, NCSelectDelegate {
         collectionView.backgroundColor = .systemBackground
 
         gridLayout = NCGridMediaLayout()
-        gridLayout.itemForLine = CGFloat(min(CCUtility.getMediaWidthImage(), 5))
+        gridLayout.itemForLine = CGFloat(min(NCKeychain().mediaWidthImage, 5))
         gridLayout.sectionHeadersPinToVisibleBounds = true
 
         collectionView.collectionViewLayout = gridLayout
@@ -241,7 +241,7 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate, NCSelectDelegate {
             }
 
             self.collectionView.collectionViewLayout.invalidateLayout()
-            CCUtility.setMediaWidthImage(Int(self.gridLayout.itemForLine))
+            NCKeychain().mediaWidthImage = Int(self.gridLayout.itemForLine)
         })
     }
 
@@ -257,7 +257,7 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate, NCSelectDelegate {
             }
 
             self.collectionView.collectionViewLayout.invalidateLayout()
-            CCUtility.setMediaWidthImage(Int(self.gridLayout.itemForLine))
+            NCKeychain().mediaWidthImage = Int(self.gridLayout.itemForLine)
         })
     }
 

@@ -253,6 +253,19 @@ import KeychainAccess
         }
     }
 
+    var mediaWidthImage: Int {
+        get {
+            migrate(key: "mediaWidthImage")
+            if let value = try? keychain.get("mediaWidthImage"), let result = Int(value) {
+                return result
+            }
+            return 80
+        }
+        set {
+            keychain["mediaWidthImage"] = String(newValue)
+        }
+    }
+
     // MARK: -
 
     private func migrate(key: String) {
