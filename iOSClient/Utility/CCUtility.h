@@ -42,12 +42,6 @@
 + (void)deleteAllChainStore;
 
 
-+ (BOOL)getActivityVerboseHigh;
-+ (void)setActivityVerboseHigh:(BOOL)debug;
-
-+ (BOOL)getShowHiddenFiles;
-+ (void)setShowHiddenFiles:(BOOL)show;
-
 + (BOOL)getFormatCompatibility;
 + (void)setFormatCompatibility:(BOOL)set;
 

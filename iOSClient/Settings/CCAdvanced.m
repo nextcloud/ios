@@ -48,7 +48,7 @@
     
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"showHiddenFiles" rowType:XLFormRowDescriptorTypeBooleanSwitch title:NSLocalizedString(@"_show_hidden_files_", nil)];
     row.cellConfigAtConfigure[@"backgroundColor"] = UIColor.secondarySystemGroupedBackgroundColor;
-    if ([CCUtility getShowHiddenFiles]) row.value = @"1";
+    if ([[NCKeychain init] showHiddenFiles]) row.value = @"1";
     else row.value = @"0";
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
     [row.cellConfig setObject:UIColor.labelColor forKey:@"textLabel.textColor"];
@@ -313,7 +313,7 @@
     
     if ([rowDescriptor.tag isEqualToString:@"showHiddenFiles"]) {
         
-        [CCUtility setShowHiddenFiles:[[rowDescriptor.value valueData] boolValue]];        
+        [[NCKeychain alloc] init].showHiddenFiles = [[rowDescriptor.value valueData] boolValue];
     }
     
     if ([rowDescriptor.tag isEqualToString:@"formatCompatibility"]) {

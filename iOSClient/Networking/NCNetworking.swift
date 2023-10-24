@@ -880,7 +880,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
 
         NextcloudKit.shared.readFileOrFolder(serverUrlFileName: serverUrl,
                                              depth: "1",
-                                             showHiddenFiles: CCUtility.getShowHiddenFiles(),
+                                             showHiddenFiles: NCKeychain().showHiddenFiles,
                                              includeHiddenFiles: NCGlobal.shared.includeHiddenFiles,
                                              options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { account, files, _, error in
 
@@ -912,7 +912,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
         }
     }
 
-    func readFile(serverUrlFileName: String, showHiddenFiles: Bool = CCUtility.getShowHiddenFiles(), queue: DispatchQueue = NextcloudKit.shared.nkCommonInstance.backgroundQueue, completion: @escaping (_ account: String, _ metadata: tableMetadata?, _ error: NKError) -> Void) {
+    func readFile(serverUrlFileName: String, showHiddenFiles: Bool = NCKeychain().showHiddenFiles, queue: DispatchQueue = NextcloudKit.shared.nkCommonInstance.backgroundQueue, completion: @escaping (_ account: String, _ metadata: tableMetadata?, _ error: NKError) -> Void) {
 
         let options = NKRequestOptions(queue: queue)
 
@@ -977,7 +977,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
 #if !EXTENSION
         NextcloudKit.shared.readFileOrFolder(serverUrlFileName: serverUrl,
                                              depth: "infinity",
-                                             showHiddenFiles: CCUtility.getShowHiddenFiles(),
+                                             showHiddenFiles: NCKeychain().showHiddenFiles,
                                              options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { account, files, _, error in
 
             if error == .success {
@@ -1010,7 +1010,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
         NextcloudKit.shared.searchLiteral(serverUrl: urlBase.urlBase,
                                           depth: "infinity",
                                           literal: literal,
-                                          showHiddenFiles: CCUtility.getShowHiddenFiles(),
+                                          showHiddenFiles: NCKeychain().showHiddenFiles,
                                           options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { account, files, _, error in
 
             guard error == .success else {

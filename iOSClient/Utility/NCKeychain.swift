@@ -112,6 +112,19 @@ import KeychainAccess
         return incrementalString
     }
 
+    @objc var showHiddenFiles: Bool {
+        get {
+            migrate(key: "showHiddenFiles")
+            if let value = try? keychain.get("showHiddenFiles"), let result = Bool(value) {
+                return result
+            }
+            return false
+        }
+        set {
+            keychain["showHiddenFiles"] = String(newValue)
+        }
+    }
+
     // MARK: -
 
     private func migrate(key: String) {

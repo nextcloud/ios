@@ -41,7 +41,7 @@ extension FileProviderExtension {
 
             if error == .success {
 
-                NextcloudKit.shared.readFileOrFolder(serverUrlFileName: serverUrlFileName, depth: "0", showHiddenFiles: CCUtility.getShowHiddenFiles()) { _, files, _, error in
+                NextcloudKit.shared.readFileOrFolder(serverUrlFileName: serverUrlFileName, depth: "0", showHiddenFiles: NCKeychain().showHiddenFiles) { _, files, _, error in
 
                     if error == .success, let file = files.first {
 

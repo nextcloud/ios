@@ -50,28 +50,6 @@
 
 #pragma ------------------------------ GET/SET
 
-+ (BOOL)getActivityVerboseHigh
-{
-    return [[UICKeyChainStore stringForKey:@"activityVerboseHigh" service:NCGlobal.shared.serviceShareKeyChain] boolValue];
-}
-
-+ (void)setActivityVerboseHigh:(BOOL)high
-{
-    NSString *sHigh = (high) ? @"true" : @"false";
-    [UICKeyChainStore setString:sHigh forKey:@"activityVerboseHigh" service:NCGlobal.shared.serviceShareKeyChain];
-}
-
-+ (BOOL)getShowHiddenFiles
-{
-    return [[UICKeyChainStore stringForKey:@"showHiddenFiles" service:NCGlobal.shared.serviceShareKeyChain] boolValue];
-}
-
-+ (void)setShowHiddenFiles:(BOOL)show
-{
-    NSString *sShow = (show) ? @"true" : @"false";
-    [UICKeyChainStore setString:sShow forKey:@"showHiddenFiles" service:NCGlobal.shared.serviceShareKeyChain];
-}
-
 + (BOOL)getFormatCompatibility
 {
     NSString *valueString = [UICKeyChainStore stringForKey:@"formatCompatibility" service:NCGlobal.shared.serviceShareKeyChain];

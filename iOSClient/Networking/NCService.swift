@@ -139,7 +139,7 @@ class NCService: NSObject {
     func synchronize() {
 
         NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] start synchronize Favorite")
-        NextcloudKit.shared.listingFavorites(showHiddenFiles: CCUtility.getShowHiddenFiles(),
+        NextcloudKit.shared.listingFavorites(showHiddenFiles: NCKeychain().showHiddenFiles,
                                              options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { account, files, _, error in
 
             guard error == .success else { return }
