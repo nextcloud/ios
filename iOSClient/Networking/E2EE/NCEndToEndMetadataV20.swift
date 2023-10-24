@@ -303,7 +303,7 @@ extension NCEndToEndMetadata {
                     var metadataKey: Data?
                     if let encryptedMetadataKey = user.encryptedMetadataKey {
                         let data = Data(base64Encoded: encryptedMetadataKey)
-                        if let decrypted = NCEndToEndEncryption.sharedManager().decryptAsymmetricData(data, privateKey: CCUtility.getEndToEndPrivateKey(account)) {
+                        if let decrypted = NCEndToEndEncryption.sharedManager().decryptAsymmetricData(data, privateKey: NCKeychain().getEndToEndPrivateKey(account: account)) {
                             metadataKey = decrypted
                         }
                     }
@@ -447,7 +447,7 @@ extension NCEndToEndMetadata {
             let decoded = try? JSONSerialization.data(withJSONObject: dataSerialization, options: [.sortedKeys, .withoutEscapingSlashes])
             let base64 = decoded!.base64EncodedString()
             if let base64Data = base64.data(using: .utf8),
-               let signatureData = NCEndToEndEncryption.sharedManager().generateSignatureCMS(base64Data, certificate: certificate, privateKey: CCUtility.getEndToEndPrivateKey(account), userId: userId) {
+               let signatureData = NCEndToEndEncryption.sharedManager().generateSignatureCMS(base64Data, certificate: certificate, privateKey: NCKeychain().getEndToEndPrivateKey(account: account), userId: userId) {
                 return signatureData.base64EncodedString()
             }
         } catch {

@@ -198,17 +198,25 @@ import KeychainAccess
     }
 
     func getEndToEndCertificate(account: String) -> String? {
-
         let key = E2E_certificate + account
         migrate(key: key)
-
-        let certificate = try? keychain.get(key)
-        return certificate
+        return try? keychain.get(key)
     }
 
     func setEndToEndCertificate(account: String, certificate: String) {
-
         let key = E2E_certificate + account
         keychain[key] = certificate
+    }
+
+    func getEndToEndPrivateKey(account: String) -> String? {
+        let key = E2E_PrivateKey + account
+        migrate(key: key)
+        return try? keychain.get(key)
+    }
+
+    func setEndToEndPrivateKey(account: String, privateKey: String) {
+        let key = E2E_PrivateKey + account
+        migrate(key: key)
+        keychain[key] = privateKey
     }
 }

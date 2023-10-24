@@ -153,9 +153,9 @@ class NCEndToEndInitialize: NSObject {
                     let publicKey = NCKeychain().getEndToEndCertificate(account: self.appDelegate.account)
 
                     if let privateKeyData = (NCEndToEndEncryption.sharedManager().decryptPrivateKey(privateKeyChiper, passphrase: passphrase, publicKey: publicKey, iterationCount: 1024)),
-                       let keyData = Data(base64Encoded: privateKeyData) {
-                        let privateKey = String(data: keyData, encoding: .utf8)
-                        CCUtility.setEndToEndPrivateKey(self.appDelegate.account, privateKey: privateKey)
+                       let keyData = Data(base64Encoded: privateKeyData), 
+                       let privateKey = String(data: keyData, encoding: .utf8) {
+                        NCKeychain().setEndToEndPrivateKey(account: self.appDelegate.account, privateKey: privateKey)
                     } else {
 
                         let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "Serious internal error to decrypt Private Key")
@@ -266,9 +266,9 @@ class NCEndToEndInitialize: NSObject {
 
         NextcloudKit.shared.storeE2EEPrivateKey(privateKey: privateKeyChiper) { account, _, _, error in
 
-            if error == .success && account == self.appDelegate.account {
+            if error == .success, account == self.appDelegate.account, let privateKey = privateKeyString {
 
-                CCUtility.setEndToEndPrivateKey(account, privateKey: privateKeyString! as String)
+                NCKeychain().setEndToEndPrivateKey(account: account, privateKey: String(privateKey))
                 CCUtility.setEndToEndPassphrase(account, passphrase: e2ePassphrase)
 
                 // request server publicKey
