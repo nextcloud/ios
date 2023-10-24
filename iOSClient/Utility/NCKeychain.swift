@@ -149,6 +149,19 @@ import KeychainAccess
         }
     }
 
+    @objc var disableFilesApp: Bool {
+        get {
+            migrate(key: "disablefilesapp")
+            if let value = try? keychain.get("disablefilesapp"), let result = Bool(value) {
+                return result
+            }
+            return true
+        }
+        set {
+            keychain["disablefilesapp"] = String(newValue)
+        }
+    }
+
     // MARK: -
 
     private func migrate(key: String) {

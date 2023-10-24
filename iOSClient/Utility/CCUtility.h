@@ -41,9 +41,6 @@
 
 + (void)deleteAllChainStore;
 
-+ (BOOL)getDisableFilesApp;
-+ (void)setDisableFilesApp:(BOOL)disable;
-
 + (void)setPushNotificationPublicKey:(NSString *)account data:(NSData *)data;
 + (NSData *)getPushNotificationPublicKey:(NSString *)account;
 + (void)setPushNotificationSubscribingPublicKey:(NSString *)account publicKey:(NSString *)publicKey;

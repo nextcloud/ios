@@ -95,7 +95,7 @@
         // Disable Files App
         row = [XLFormRowDescriptor formRowDescriptorWithTag:@"disablefilesapp" rowType:XLFormRowDescriptorTypeBooleanSwitch title:NSLocalizedString(@"_disable_files_app_", nil)];
         row.cellConfigAtConfigure[@"backgroundColor"] = UIColor.secondarySystemGroupedBackgroundColor;
-        if ([CCUtility getDisableFilesApp]) row.value = @"1";
+        if ([[NCKeychain alloc] init].disableFilesApp) row.value = @"1";
         else row.value = @"0";
         [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
         [row.cellConfig setObject:UIColor.labelColor forKey:@"textLabel.textColor"];
@@ -333,7 +333,7 @@
 
     if ([rowDescriptor.tag isEqualToString:@"disablefilesapp"]) {
         
-        [CCUtility setDisableFilesApp:[[rowDescriptor.value valueData] boolValue]];
+        [[NCKeychain alloc] init].disableFilesApp = [[rowDescriptor.value valueData] boolValue];
     }
     
     if ([rowDescriptor.tag isEqualToString:@"crashservice"]) {

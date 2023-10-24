@@ -50,17 +50,6 @@
 
 #pragma ------------------------------ GET/SET
 
-+ (BOOL)getDisableFilesApp
-{
-    return [[UICKeyChainStore stringForKey:@"disablefilesapp" service:NCGlobal.shared.serviceShareKeyChain] boolValue];
-}
-
-+ (void)setDisableFilesApp:(BOOL)disable
-{
-    NSString *sDisable = (disable) ? @"true" : @"false";
-    [UICKeyChainStore setString:sDisable forKey:@"disablefilesapp" service:NCGlobal.shared.serviceShareKeyChain];
-}
-
 + (void)setPushNotificationPublicKey:(NSString *)account data:(NSData *)data
 {
     NSString *key = [@"PNPublicKey" stringByAppendingString:account];
