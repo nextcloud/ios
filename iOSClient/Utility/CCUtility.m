@@ -147,7 +147,7 @@
 
     NSString *numberFileName;
     if ([fileName length] > 8) numberFileName = [fileName substringWithRange:NSMakeRange(04, 04)];
-    else numberFileName = [NCKeychain alloc].incrementalNumber;
+    else numberFileName = [[NCKeychain alloc] init].incrementalNumber;
 
     NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
     [formatter setLocale:[[NSLocale alloc] initWithLocaleIdentifier:@"en_US_POSIX"]];
