@@ -272,7 +272,7 @@ class NCNetworkingProcessUpload: NSObject {
         let metadatasUploadShareExtension = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "session == %@ AND sessionSelector == %@", NextcloudKit.shared.nkCommonInstance.sessionIdentifierUpload, NCGlobal.shared.selectorUploadFileShareExtension))
         for metadata in metadatasUploadShareExtension {
             NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
-            NCUtilityFileSystem.shared.deleteFile(filePath: NCUtilityFileSystem.shared.getDirectoryProviderStorageOcId(metadata.ocId))
+            NCUtilityFileSystem.shared.removeFile(atPath: NCUtilityFileSystem.shared.getDirectoryProviderStorageOcId(metadata.ocId))
         }
 
         // verify metadataStatusInUpload (BACKGROUND)
