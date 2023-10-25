@@ -1148,7 +1148,7 @@ extension NCManageDatabase {
     func isDownloadMetadata(_ metadata: tableMetadata, download: Bool) -> Bool {
 
         let localFile = getTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
-        let fileSize = CCUtility.fileProviderStorageSize(metadata.ocId, fileNameView: metadata.fileNameView)
+        let fileSize = NCUtilityFileSystem.shared.fileProviderStorageSize(metadata.ocId, fileNameView: metadata.fileNameView)
         if (localFile != nil || download) && (localFile?.etag != metadata.etag || fileSize == 0) {
             return true
         }

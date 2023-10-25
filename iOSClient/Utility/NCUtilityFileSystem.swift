@@ -143,11 +143,21 @@ class NCUtilityFileSystem: NSObject {
             } else {
                 return fileNameViewSize == metadata.size
             }
-        } catch {
-            print("Error: \(error)")
-        }
+        } catch { print("Error: \(error)") }
 
         return false
+    }
+
+    func fileProviderStorageSize(_ ocId: String, fileNameView: String) -> UInt64 {
+
+        let fileNamePath = getDirectoryProviderStorageOcId(ocId, fileNameView: fileNameView)
+        do {
+            let fileNameAttribute = try fileManager.attributesOfItem(atPath: fileNamePath)
+            let fileNameSize: UInt64 = fileNameAttribute[FileAttributeKey.size] as? UInt64 ?? 0
+            return fileNameSize
+        } catch { print("Error: \(error)") }
+
+        return 0
     }
 
     // MARK: -

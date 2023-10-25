@@ -377,7 +377,7 @@ class NCUtility: NSObject {
         let fileNamePathPreview = NCUtilityFileSystem.shared.getDirectoryProviderStoragePreviewOcId(ocId, etag: etag)
         let fileNamePathIcon = NCUtilityFileSystem.shared.getDirectoryProviderStorageIconOcId(ocId, etag: etag)
 
-        if CCUtility.fileProviderStorageSize(ocId, fileNameView: fileNameView) > 0 && FileManager().fileExists(atPath: fileNamePathPreview) && FileManager().fileExists(atPath: fileNamePathIcon) { return }
+        if NCUtilityFileSystem.shared.fileProviderStorageSize(ocId, fileNameView: fileNameView) > 0 && FileManager().fileExists(atPath: fileNamePathPreview) && FileManager().fileExists(atPath: fileNamePathIcon) { return }
         if classFile != NKCommon.TypeClassFile.image.rawValue && classFile != NKCommon.TypeClassFile.video.rawValue { return }
 
         if classFile == NKCommon.TypeClassFile.image.rawValue {
