@@ -28,14 +28,6 @@
 #import <CoreLocation/CoreLocation.h>
 #include <sys/stat.h>
 
-
-#define INTRO_MessageType       @"MessageType_"
-
-#define E2E_certificate         @"EndToEndCertificate_"
-#define E2E_PrivateKey          @"EndToEndPrivateKey_"
-#define E2E_Passphrase          @"EndToEndPassphrase_"
-#define E2E_PublicKey           @"EndToEndPublicKeyServer_"
-
 @implementation CCUtility
 
 #pragma --------------------------------------------------------------------------------------------
@@ -260,29 +252,6 @@
     }
 
     return title;
-}
-
-+ (void)moveFileAtPath:(NSString *)atPath toPath:(NSString *)toPath
-{
-    [[NSFileManager defaultManager] removeItemAtPath:toPath error:nil];
-    [[NSFileManager defaultManager] copyItemAtPath:atPath toPath:toPath error:nil];
-    [[NSFileManager defaultManager] removeItemAtPath:atPath error:nil];
-}
-
-+ (void)copyFileAtPath:(NSString *)atPath toPath:(NSString *)toPath
-{
-    [[NSFileManager defaultManager] removeItemAtPath:toPath error:nil];
-    [[NSFileManager defaultManager] copyItemAtPath:atPath toPath:toPath error:nil];
-}
-
-+ (void)removeFileAtPath:(NSString *)atPath
-{
-    [[NSFileManager defaultManager] removeItemAtPath:atPath error:nil];
-}
-
-+ (void)createDirectoryAtPath:(NSString *)atPath
-{
-    [[NSFileManager defaultManager] createDirectoryAtPath:atPath withIntermediateDirectories:true attributes:nil error:nil];
 }
 
 + (NSString *)returnPathfromServerUrl:(NSString *)serverUrl urlBase:(NSString *)urlBase userId:(NSString *)userId account:(NSString *)account

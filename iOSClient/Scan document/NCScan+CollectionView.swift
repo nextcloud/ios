@@ -56,7 +56,7 @@ extension NCScan: UICollectionViewDataSource {
                 if let indexPath = self.collectionViewSource.indexPathForItem(at: buttonPosition) {
 
                     let fileNameAtPath = NCUtilityFileSystem.shared.directoryScan + "/" + self.itemsSource[indexPath.row]
-                    CCUtility.removeFile(atPath: fileNameAtPath)
+                    NCUtilityFileSystem.shared.removeFile(atPath: fileNameAtPath)
                     self.itemsSource.remove(at: indexPath.row)
 
                     self.collectionViewSource.deleteItems(at: [indexPath])

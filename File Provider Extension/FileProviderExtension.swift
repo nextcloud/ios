@@ -276,7 +276,7 @@ class FileProviderExtension: NSFileProviderExtension, NCNetworkingDelegate {
             ocId = outstandingOcIdTemp[ocId]!
             let atPath = NCUtilityFileSystem.shared.getDirectoryProviderStorageOcId(itemIdentifier.rawValue, fileNameView: fileName)
             let toPath = NCUtilityFileSystem.shared.getDirectoryProviderStorageOcId(ocId, fileNameView: fileName)
-            CCUtility.copyFile(atPath: atPath, toPath: toPath)
+            NCUtilityFileSystem.shared.copyFile(atPath: atPath, toPath: toPath)
         }
         guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) else { return }
 
@@ -418,7 +418,7 @@ class FileProviderExtension: NSFileProviderExtension, NCNetworkingDelegate {
                 // File system
                 let atPath = NCUtilityFileSystem.shared.getDirectoryProviderStorageOcId(ocIdTemp)
                 let toPath = NCUtilityFileSystem.shared.getDirectoryProviderStorageOcId(ocId)
-                CCUtility.copyFile(atPath: atPath, toPath: toPath)
+                NCUtilityFileSystem.shared.copyFile(atPath: atPath, toPath: toPath)
             }
 
             fileProviderData.shared.signalEnumerator(ocId: metadata.ocId, update: true)

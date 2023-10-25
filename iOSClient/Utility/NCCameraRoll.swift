@@ -178,7 +178,7 @@ class NCCameraRoll: NSObject {
                     guard let ciImage = CIImage(data: data), let colorSpace = ciImage.colorSpace, let dataJPEG = CIContext().jpegRepresentation(of: ciImage, colorSpace: colorSpace) else { return callCompletionWithError() }
                     data = dataJPEG
                 }
-                NCUtilityFileSystem.shared.deleteFile(filePath: fileNamePath)
+                NCUtilityFileSystem.shared.removeFile(atPath: fileNamePath)
                 do {
                     try data.write(to: URL(fileURLWithPath: fileNamePath), options: .atomic)
                 } catch { return callCompletionWithError() }
@@ -200,7 +200,7 @@ class NCCameraRoll: NSObject {
 
             PHImageManager.default().requestAVAsset(forVideo: asset, options: options) { asset, _, _ in
                 if let asset = asset as? AVURLAsset {
-                    NCUtilityFileSystem.shared.deleteFile(filePath: fileNamePath)
+                    NCUtilityFileSystem.shared.removeFile(atPath: fileNamePath)
                     do {
                         try FileManager.default.copyItem(at: asset.url, to: URL(fileURLWithPath: fileNamePath))
                         metadata.creationDate = creationDate as NSDate
@@ -268,7 +268,7 @@ class NCCameraRoll: NSObject {
                 break
             }
             guard let videoResource = videoResource else { return completion(nil) }
-            NCUtilityFileSystem.shared.deleteFile(filePath: fileNamePath)
+            NCUtilityFileSystem.shared.removeFile(atPath: fileNamePath)
             PHAssetResourceManager.default().writeData(for: videoResource, toFile: URL(fileURLWithPath: fileNamePath), options: nil) { error in
                 if error != nil { return completion(nil) }
                 let metadataLivePhoto = NCManageDatabase.shared.createMetadata(account: metadata.account,

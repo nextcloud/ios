@@ -357,7 +357,7 @@ extension NCShareExtension {
         } completion: { error in
             if error != .success {
                 NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
-                NCUtilityFileSystem.shared.deleteFile(filePath: NCUtilityFileSystem.shared.getDirectoryProviderStorageOcId(metadata.ocId))
+                NCUtilityFileSystem.shared.removeFile(atPath: NCUtilityFileSystem.shared.getDirectoryProviderStorageOcId(metadata.ocId))
                 self.uploadErrors.append(metadata)
             }
             self.counterUploaded += 1

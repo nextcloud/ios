@@ -85,7 +85,7 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
                 navigationController.modalPresentationStyle = .fullScreen
                 appDelegate.window?.rootViewController?.present(navigationController, animated: true)
             } else {
-                CCUtility.copyFile(atPath: fileNamePath, toPath: fileNameTemp)
+                NCUtilityFileSystem.shared.copyFile(atPath: fileNamePath, toPath: fileNameTemp)
                 appDelegate.window?.rootViewController?.present(viewerQuickLook, animated: true)
             }
 

@@ -120,7 +120,7 @@ extension NCManageDatabase {
             realm.refresh()
             let result = realm.objects(tableAvatar.self).filter("fileName == %@", fileName).first
             if result == nil {
-                NCUtilityFileSystem.shared.deleteFile(filePath: fileNameLocalPath)
+                NCUtilityFileSystem.shared.removeFile(atPath: fileNameLocalPath)
                 return nil
             } else if result?.loaded == false {
                 return nil
@@ -130,7 +130,7 @@ extension NCManageDatabase {
             NextcloudKit.shared.nkCommonInstance.writeLog("Could not access database: \(error)")
         }
 
-        NCUtilityFileSystem.shared.deleteFile(filePath: fileNameLocalPath)
+        NCUtilityFileSystem.shared.removeFile(atPath: fileNameLocalPath)
         return nil
     }
 }

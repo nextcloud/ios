@@ -264,10 +264,10 @@ class NCUtilityFileSystem: NSObject {
         }
     }
 
-    @objc func deleteFile(filePath: String) {
+    @objc func removeFile(atPath: String) {
 
         do {
-            try FileManager.default.removeItem(atPath: filePath)
+            try FileManager.default.removeItem(atPath: atPath)
         } catch {
             print(error)
         }

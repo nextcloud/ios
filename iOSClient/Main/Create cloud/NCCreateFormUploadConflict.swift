@@ -258,7 +258,7 @@ class NCCreateFormUploadConflict: UIViewController {
                 // This is not an asset - [file]
                 if metadata.assetLocalIdentifier.isEmpty || metadata.isExtractFile {
                     let newPath = NCUtilityFileSystem.shared.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: newFileName)
-                    CCUtility.moveFile(atPath: oldPath, toPath: newPath)
+                    NCUtilityFileSystem.shared.moveFile(atPath: oldPath, toPath: newPath)
                 }
 
                 metadatasNOConflict.append(metadata)
