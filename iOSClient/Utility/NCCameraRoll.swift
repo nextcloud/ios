@@ -38,7 +38,7 @@ class NCCameraRoll: NSObject {
 
         guard !metadata.isExtractFile else { return  completition([metadataSource]) }
         guard !metadataSource.assetLocalIdentifier.isEmpty else {
-            let filePath = CCUtility.getDirectoryProviderStorageOcId(metadataSource.ocId, fileNameView: metadataSource.fileName)!
+            let filePath = NCUtilityFileSystem.shared.getDirectoryProviderStorageOcId(metadataSource.ocId, fileNameView: metadataSource.fileName)
             metadataSource.size = NCUtilityFileSystem.shared.getFileSize(filePath: filePath)
             let results = NextcloudKit.shared.nkCommonInstance.getInternalType(fileName: metadataSource.fileNameView, mimeType: metadataSource.contentType, directory: false)
             metadataSource.contentType = results.mimeType
@@ -69,7 +69,7 @@ class NCCameraRoll: NSObject {
         extractImageVideoFromAssetLocalIdentifier(metadata: metadataSource, modifyMetadataForUpload: true, viewController: viewController, hud: hud) { metadata, fileNamePath, error in
             if let metadata = metadata, let fileNamePath = fileNamePath, !error {
                 metadatas.append(metadata)
-                let toPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
+                let toPath = NCUtilityFileSystem.shared.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)
                 NCUtilityFileSystem.shared.moveFile(atPath: fileNamePath, toPath: toPath)
                 let fetchAssets = PHAsset.fetchAssets(withLocalIdentifiers: [metadataSource.assetLocalIdentifier], options: nil)
                 // swiftlint:disable empty_count
@@ -254,7 +254,7 @@ class NCCameraRoll: NSObject {
         options.isNetworkAccessAllowed = true
         let ocId = NSUUID().uuidString
         let fileName = (metadata.fileName as NSString).deletingPathExtension + ".mov"
-        let fileNamePath = CCUtility.getDirectoryProviderStorageOcId(ocId, fileNameView: fileName)!
+        let fileNamePath = NCUtilityFileSystem.shared.getDirectoryProviderStorageOcId(ocId, fileNameView: fileName)
         var chunkSize = NCGlobal.shared.chunkSizeMBCellular
         if NCNetworking.shared.networkReachability == NKCommon.TypeReachability.reachableEthernetOrWiFi {
             chunkSize = NCGlobal.shared.chunkSizeMBEthernetOrWiFi

@@ -225,10 +225,10 @@ class NCViewer: NSObject {
         }
 
         // QLPreview
-        let item = URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView))
+        let item = URL(fileURLWithPath: NCUtilityFileSystem.shared.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView))
         if QLPreviewController.canPreview(item as QLPreviewItem) {
             let fileNamePath = NSTemporaryDirectory() + metadata.fileNameView
-            CCUtility.copyFile(atPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView), toPath: fileNamePath)
+            CCUtility.copyFile(atPath: NCUtilityFileSystem.shared.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView), toPath: fileNamePath)
             let viewerQuickLook = NCViewerQuickLook(with: URL(fileURLWithPath: fileNamePath), isEditingEnabled: false, metadata: metadata)
             viewController.present(viewerQuickLook, animated: true)
         } else {

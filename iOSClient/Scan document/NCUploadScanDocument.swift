@@ -99,7 +99,7 @@ class NCUploadScanDocument: ObservableObject {
     func createPDF(metadata: tableMetadata, completion: @escaping (_ error: Bool) -> Void) {
 
         DispatchQueue.global().async {
-            let fileNamePath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
+            let fileNamePath = NCUtilityFileSystem.shared.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)
             let pdfData = NSMutableData()
 
             if self.password.isEmpty {

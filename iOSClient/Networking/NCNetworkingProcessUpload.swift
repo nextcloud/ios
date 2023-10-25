@@ -324,7 +324,7 @@ class NCNetworkingProcessUpload: NSObject {
             NCNetworking.shared.transferInForegorund = nil
         }
         for metadata in metadatasUploading {
-            let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
+            let fileNameLocalPath = NCUtilityFileSystem.shared.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)
             if NCNetworking.shared.uploadRequest[fileNameLocalPath] == nil {
                 NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId, session: nil, sessionError: "", sessionSelector: nil, sessionTaskIdentifier: 0, status: NCGlobal.shared.metadataStatusWaitUpload, errorCode: nil)
             }

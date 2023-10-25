@@ -212,7 +212,7 @@ class NCNetworkingE2EEUpload: NSObject {
 
         } else {
 
-            let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileName)!
+            let fileNameLocalPath = NCUtilityFileSystem.shared.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileName)
             return await withCheckedContinuation({ continuation in
                 NCNetworking.shared.uploadFile(metadata: metadata, fileNameLocalPath: fileNameLocalPath, withUploadComplete: false, addCustomHeaders: ["e2e-token": e2eToken]) {
 #if !EXTENSION

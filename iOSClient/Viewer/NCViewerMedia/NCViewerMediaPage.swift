@@ -305,7 +305,7 @@ class NCViewerMediaPage: UIViewController {
            metadata.isAudioOrVideo,
            CCUtility.fileProviderStorageExists(metadata),
            let ncplayer = currentViewController.ncplayer {
-            let url = URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!)
+            let url = URL(fileURLWithPath: NCUtilityFileSystem.shared.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView))
             if ncplayer.isPlay() {
                 ncplayer.playerPause()
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
@@ -658,7 +658,7 @@ extension NCViewerMediaPage: UIGestureRecognizerDelegate {
             let fileName = (currentViewController.metadata.fileNameView as NSString).deletingPathExtension + ".mov"
             if let metadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView LIKE[c] %@", currentViewController.metadata.account, currentViewController.metadata.serverUrl, fileName)), CCUtility.fileProviderStorageExists(metadata) {
                 AudioServicesPlaySystemSound(1519) // peek feedback
-                currentViewController.playLivePhoto(filePath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!)
+                currentViewController.playLivePhoto(filePath: NCUtilityFileSystem.shared.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView))
             }
         } else if gestureRecognizer.state == .ended {
             currentViewController.stopLivePhoto()

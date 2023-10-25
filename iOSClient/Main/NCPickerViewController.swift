@@ -162,7 +162,7 @@ class NCDocumentPickerViewController: NSObject, UIDocumentPickerDelegate {
                 let ocId = NSUUID().uuidString
 
                 let fileName = urlIn.lastPathComponent
-                let toPath = CCUtility.getDirectoryProviderStorageOcId(ocId, fileNameView: fileName)!
+                let toPath = NCUtilityFileSystem.shared.getDirectoryProviderStorageOcId(ocId, fileNameView: fileName)
                 let urlOut = URL(fileURLWithPath: toPath)
 
                 guard self.copySecurityScopedResource(url: urlIn, urlOut: urlOut) != nil else { continue }

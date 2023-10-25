@@ -463,7 +463,7 @@ extension NCPlayerToolBar: NCSelectDelegate {
         if let metadata = metadata, let viewerMediaPage = viewerMediaPage {
 
             let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
-            let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
+            let fileNameLocalPath = NCUtilityFileSystem.shared.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)
 
             if CCUtility.fileProviderStorageExists(metadata) {
                 addPlaybackSlave(type: type, metadata: metadata)
@@ -503,7 +503,7 @@ extension NCPlayerToolBar: NCSelectDelegate {
     func addPlaybackSlave(type: String, metadata: tableMetadata) {
     // swiftlint:enable inclusive_language
 
-        let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
+        let fileNameLocalPath = NCUtilityFileSystem.shared.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)
 
         if type == "subtitle" {
             self.ncplayer?.player.addPlaybackSlave(URL(fileURLWithPath: fileNameLocalPath), type: .subtitle, enforce: true)

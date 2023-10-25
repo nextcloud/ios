@@ -55,7 +55,7 @@ class fileProviderUtility: NSObject {
         if metadata.directory {
             _ = NCUtilityFileSystem.shared.getDirectoryProviderStorageOcId(itemIdentifier.rawValue)
         } else {
-            CCUtility.getDirectoryProviderStorageOcId(itemIdentifier.rawValue, fileNameView: metadata.fileNameView)
+            NCUtilityFileSystem.shared.getDirectoryProviderStorageOcId(itemIdentifier.rawValue, fileNameView: metadata.fileNameView)
         }
     }
 

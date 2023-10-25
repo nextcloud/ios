@@ -58,7 +58,7 @@ extension NCUtility {
         if CCUtility.fileProviderStorageExists(metadata) && metadata.isImage {
 
             let previewPath = CCUtility.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)!
-            let imagePath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
+            let imagePath = NCUtilityFileSystem.shared.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)
 
             if ext == "GIF" {
                 if !FileManager().fileExists(atPath: previewPath) {

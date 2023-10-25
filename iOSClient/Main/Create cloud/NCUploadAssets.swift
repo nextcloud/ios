@@ -271,7 +271,7 @@ struct UploadAssetsView: View {
                     metadata.fileName = fileNameNoExtension + ".jpg"
                     metadata.fileNameView = fileNameNoExtension + ".jpg"
                 }
-                let fileNamePath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
+                let fileNamePath = NCUtilityFileSystem.shared.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)
                 do {
                     try data.write(to: URL(fileURLWithPath: fileNamePath))
                     metadata.isExtractFile = true

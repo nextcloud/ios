@@ -201,7 +201,7 @@ extension FileProviderExtension {
                     let itemIdentifier = fileProviderUtility.shared.getItemIdentifier(metadata: metadata)
 
                     // rename file
-                    _ = fileProviderUtility.shared.moveFile(CCUtility.getDirectoryProviderStorageOcId(itemIdentifier.rawValue, fileNameView: fileNameFrom), toPath: CCUtility.getDirectoryProviderStorageOcId(itemIdentifier.rawValue, fileNameView: itemName))
+                    _ = fileProviderUtility.shared.moveFile(NCUtilityFileSystem.shared.getDirectoryProviderStorageOcId(itemIdentifier.rawValue, fileNameView: fileNameFrom), toPath: NCUtilityFileSystem.shared.getDirectoryProviderStorageOcId(itemIdentifier.rawValue, fileNameView: itemName))
 
                     _ = fileProviderUtility.shared.moveFile(CCUtility.getDirectoryProviderStoragePreviewOcId(itemIdentifier.rawValue, etag: metadata.etag), toPath: CCUtility.getDirectoryProviderStoragePreviewOcId(itemIdentifier.rawValue, etag: metadata.etag))
 

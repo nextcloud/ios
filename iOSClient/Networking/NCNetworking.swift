@@ -299,7 +299,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
         }
 
         let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
-        let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileName)!
+        let fileNameLocalPath = NCUtilityFileSystem.shared.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileName)
 
         if NCManageDatabase.shared.getMetadataFromOcId(metadata.ocId) == nil {
             NCManageDatabase.shared.addMetadata(tableMetadata.init(value: metadata))
@@ -412,7 +412,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
                 completion(error)
             }
         } else if metadata.session == NextcloudKit.shared.nkCommonInstance.sessionIdentifierUpload {
-            let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
+            let fileNameLocalPath = NCUtilityFileSystem.shared.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)
             uploadFile(metadata: metadata, fileNameLocalPath: fileNameLocalPath, start: start, progressHandler: progressHandler) { _, _, _, _, _, _, _, error in
                 completion(error)
             }
@@ -480,7 +480,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
                          completion: @escaping (_ account: String, _ file: NKFile?, _ afError: AFError?, _ error: NKError) -> Void) {
 
         let directory = NCUtilityFileSystem.shared.getDirectoryProviderStorageOcId(metadata.ocId)
-        let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
+        let fileNameLocalPath = NCUtilityFileSystem.shared.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)
         let chunkFolder = NCManageDatabase.shared.getChunkFolder(account: metadata.account, ocId: metadata.ocId)
         let filesChunk = NCManageDatabase.shared.getChunks(account: metadata.account, ocId: metadata.ocId)
         var uploadTask: URLSessionTask?
@@ -582,7 +582,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
         var session: URLSession?
         let metadata = tableMetadata.init(value: metadata)
         let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
-        let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
+        let fileNameLocalPath = NCUtilityFileSystem.shared.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)
 
         if metadata.session == sessionIdentifierBackground || metadata.session == sessionIdentifierBackgroundExtension {
             session = sessionManagerBackground
@@ -819,7 +819,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
 
     func cancel(metadata: tableMetadata) async {
 
-        let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
+        let fileNameLocalPath = NCUtilityFileSystem.shared.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)
         CCUtility.removeFile(atPath: NCUtilityFileSystem.shared.getDirectoryProviderStorageOcId(metadata.ocId))
 
         // No session found
@@ -1623,7 +1623,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
                 completition(URL(string: metadata.url), true, .success)
             }
         } else if CCUtility.fileProviderStorageExists(metadata) {
-            completition(URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)), false, .success)
+            completition(URL(fileURLWithPath: NCUtilityFileSystem.shared.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)), false, .success)
         } else {
             NextcloudKit.shared.getDirectDownload(fileId: metadata.fileId) { _, url, _, error in
                 if error == .success && url != nil {

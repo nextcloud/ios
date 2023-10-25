@@ -209,7 +209,7 @@ class FileProviderExtension: NSFileProviderExtension, NCNetworkingDelegate {
         }
 
         let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
-        let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileName)!
+        let fileNameLocalPath = NCUtilityFileSystem.shared.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileName)
 
         // Update status
         NCManageDatabase.shared.setMetadataStatus(ocId: metadata.ocId, status: NCGlobal.shared.metadataStatusDownloading)
@@ -274,8 +274,8 @@ class FileProviderExtension: NSFileProviderExtension, NCNetworkingDelegate {
         // Temp ocId ?
         if outstandingOcIdTemp[ocId] != nil && outstandingOcIdTemp[ocId] != ocId {
             ocId = outstandingOcIdTemp[ocId]!
-            let atPath = CCUtility.getDirectoryProviderStorageOcId(itemIdentifier.rawValue, fileNameView: fileName)
-            let toPath = CCUtility.getDirectoryProviderStorageOcId(ocId, fileNameView: fileName)
+            let atPath = NCUtilityFileSystem.shared.getDirectoryProviderStorageOcId(itemIdentifier.rawValue, fileNameView: fileName)
+            let toPath = NCUtilityFileSystem.shared.getDirectoryProviderStorageOcId(ocId, fileNameView: fileName)
             CCUtility.copyFile(atPath: atPath, toPath: toPath)
         }
         guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) else { return }
@@ -348,7 +348,7 @@ class FileProviderExtension: NSFileProviderExtension, NCNetworkingDelegate {
                 let ocIdTemp = NSUUID().uuidString.lowercased()
 
                 NSFileCoordinator().coordinate(readingItemAt: fileURL, options: .withoutChanges, error: &error) { url in
-                    _ = fileProviderUtility.shared.copyFile(url.path, toPath: CCUtility.getDirectoryProviderStorageOcId(ocIdTemp, fileNameView: fileName))
+                    _ = fileProviderUtility.shared.copyFile(url.path, toPath: NCUtilityFileSystem.shared.getDirectoryProviderStorageOcId(ocIdTemp, fileNameView: fileName))
                 }
 
                 fileURL.stopAccessingSecurityScopedResource()
@@ -361,7 +361,7 @@ class FileProviderExtension: NSFileProviderExtension, NCNetworkingDelegate {
                 NCManageDatabase.shared.addMetadata(metadata)
 
                 let serverUrlFileName = tableDirectory.serverUrl + "/" + fileName
-                let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(ocIdTemp, fileNameView: fileName)!
+                let fileNameLocalPath = NCUtilityFileSystem.shared.getDirectoryProviderStorageOcId(ocIdTemp, fileNameView: fileName)
 
                 if let task = NKBackground(nkCommonInstance: NextcloudKit.shared.nkCommonInstance).upload(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, dateCreationFile: nil, dateModificationFile: nil, description: ocIdTemp, session: NCNetworking.shared.sessionManagerBackgroundExtension) {
 
@@ -383,7 +383,7 @@ class FileProviderExtension: NSFileProviderExtension, NCNetworkingDelegate {
         guard let metadataTemp = NCManageDatabase.shared.getMetadataFromOcId(ocIdTemp) else { return }
         let metadata = tableMetadata.init(value: metadataTemp)
 
-        let url = URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(ocIdTemp, fileNameView: fileName))
+        let url = URL(fileURLWithPath: NCUtilityFileSystem.shared.getDirectoryProviderStorageOcId(ocIdTemp, fileNameView: fileName))
         DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
             self.outstandingSessionTasks.removeValue(forKey: url)
         }

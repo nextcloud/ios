@@ -295,7 +295,7 @@ extension NCShareExtension {
         var conflicts: [tableMetadata] = []
         for fileName in filesName {
             let ocId = NSUUID().uuidString
-            let toPath = CCUtility.getDirectoryProviderStorageOcId(ocId, fileNameView: fileName)!
+            let toPath = NCUtilityFileSystem.shared.getDirectoryProviderStorageOcId(ocId, fileNameView: fileName)
             guard NCUtilityFileSystem.shared.copyFile(atPath: (NSTemporaryDirectory() + fileName), toPath: toPath) else { continue }
             let metadata = NCManageDatabase.shared.createMetadata(
                 account: activeAccount.account, user: activeAccount.user, userId: activeAccount.userId,

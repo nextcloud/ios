@@ -71,7 +71,7 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
         if let url = self.url {
             pdfDocument = PDFDocument(url: url)
         } else if let metadata = self.metadata {
-            filePath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
+            filePath = NCUtilityFileSystem.shared.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)
             pdfDocument = PDFDocument(url: URL(fileURLWithPath: filePath))
             navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(named: "more")!.image(color: .label, size: 25), style: .plain, target: self, action: #selector(self.openMenuMore))
         }

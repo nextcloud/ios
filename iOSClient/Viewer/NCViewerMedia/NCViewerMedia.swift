@@ -186,7 +186,7 @@ class NCViewerMedia: UIViewController {
                                 if error == .success {
                                     hud.dismiss()
                                     if CCUtility.fileProviderStorageExists(self.metadata) {
-                                        let url = URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(self.metadata.ocId, fileNameView: self.metadata.fileNameView))
+                                        let url = URL(fileURLWithPath: NCUtilityFileSystem.shared.getDirectoryProviderStorageOcId(self.metadata.ocId, fileNameView: self.metadata.fileNameView))
                                         ncplayer.openAVPlayer(url: url, autoplay: autoplay)
                                     }
                                 } else {
@@ -330,7 +330,7 @@ class NCViewerMedia: UIViewController {
         if CCUtility.fileProviderStorageExists(metadata) && metadata.isImage {
 
             let previewPath = CCUtility.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)!
-            let imagePath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
+            let imagePath = NCUtilityFileSystem.shared.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)
 
             if ext == "GIF" {
                 if !FileManager().fileExists(atPath: previewPath) {
