@@ -1233,7 +1233,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                 }
 
                 if !metadata.iconUrl.isEmpty {
-                    if let ownerId = NCUtility.shared.getAvatarFromIconUrl(metadata: metadata), let cell = cell as? NCCellProtocol {
+                    if let ownerId = getAvatarFromIconUrl(metadata: metadata), let cell = cell as? NCCellProtocol {
                         let fileName = metadata.userBaseUrl + "-" + ownerId + ".png"
                         NCNetworking.shared.downloadAvatar(user: ownerId, dispalyName: nil, fileName: fileName, cell: cell, view: collectionView, cellImageView: cell.filePreviewImageView)
                     }
@@ -1455,7 +1455,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             cell.fileLocalImage?.image = nil
             cell.hideButtonShare(true)
             cell.hideButtonMore(true)
-            if let ownerId = NCUtility.shared.getAvatarFromIconUrl(metadata: metadata) {
+            if let ownerId = getAvatarFromIconUrl(metadata: metadata) {
                 cell.fileUser = ownerId
             }
         }
@@ -1700,6 +1700,26 @@ extension NCCollectionViewCommon: EasyTipViewDelegate {
     func dismissTip() {
         NCManageDatabase.shared.addTip(NCGlobal.shared.tipNCCollectionViewCommonAccountRequest)
         self.tipView?.dismiss()
+    }
+}
+
+extension NCCollectionViewCommon {
+
+    func getAvatarFromIconUrl(metadata: tableMetadata) -> String? {
+
+        var ownerId: String?
+        if metadata.iconUrl.contains("http") && metadata.iconUrl.contains("avatar") {
+            let splitIconUrl = metadata.iconUrl.components(separatedBy: "/")
+            var found: Bool = false
+            for item in splitIconUrl {
+                if found {
+                    ownerId = item
+                    break
+                }
+                if item == "avatar" { found = true}
+            }
+        }
+        return ownerId
     }
 }
 

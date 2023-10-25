@@ -237,12 +237,12 @@ class NCViewerMediaPage: UIViewController {
             }
 
             if metadata.isAudioOrVideo {
-                NCUtility.shared.colorNavigationController(navigationController, backgroundColor: .black, titleColor: .label, tintColor: nil, withoutShadow: false)
+                colorNavigationController(backgroundColor: .black, titleColor: .label, tintColor: nil, withoutShadow: false)
                 currentViewController.playerToolBar?.show()
                 view.backgroundColor = .black
                 textColor = .white
             } else {
-                NCUtility.shared.colorNavigationController(navigationController, backgroundColor: .systemBackground, titleColor: .label, tintColor: nil, withoutShadow: false)
+                colorNavigationController(backgroundColor: .systemBackground, titleColor: .label, tintColor: nil, withoutShadow: false)
                 view.backgroundColor = .systemGray6
                 textColor = .label
             }
@@ -286,6 +286,28 @@ class NCViewerMediaPage: UIViewController {
         if metadata.isVideo, viewerMediaScreenMode == .normal {
             changeScreenMode(mode: .full)
         }
+    }
+
+    func colorNavigationController(backgroundColor: UIColor, titleColor: UIColor, tintColor: UIColor?, withoutShadow: Bool) {
+
+        let appearance = UINavigationBarAppearance()
+        appearance.titleTextAttributes = [.foregroundColor: titleColor]
+        appearance.largeTitleTextAttributes = [.foregroundColor: titleColor]
+
+        if withoutShadow {
+            appearance.shadowColor = .clear
+            appearance.shadowImage = UIImage()
+        }
+
+        if let tintColor = tintColor {
+            navigationController?.navigationBar.tintColor = tintColor
+        }
+
+        navigationController?.view.backgroundColor = backgroundColor
+        navigationController?.navigationBar.barTintColor = titleColor
+        navigationController?.navigationBar.standardAppearance = appearance
+        navigationController?.navigationBar.compactAppearance = appearance
+        navigationController?.navigationBar.scrollEdgeAppearance = appearance
     }
 
     // MARK: - NotificationCenter

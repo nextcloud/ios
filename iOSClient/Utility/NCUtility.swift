@@ -121,21 +121,21 @@ class NCUtility: NSObject {
     }
 #endif
 
-    @objc func isSimulatorOrTestFlight() -> Bool {
+    func isSimulatorOrTestFlight() -> Bool {
         guard let path = Bundle.main.appStoreReceiptURL?.path else {
             return false
         }
         return path.contains("CoreSimulator") || path.contains("sandboxReceipt")
     }
 
-    @objc func isSimulator() -> Bool {
+    func isSimulator() -> Bool {
         guard let path = Bundle.main.appStoreReceiptURL?.path else {
             return false
         }
         return path.contains("CoreSimulator")
     }
 
-    @objc func isRichDocument(_ metadata: tableMetadata) -> Bool {
+    func isRichDocument(_ metadata: tableMetadata) -> Bool {
 
         guard let mimeType = CCUtility.getMimeType(metadata.fileNameView) else {
             return false
@@ -164,7 +164,7 @@ class NCUtility: NSObject {
         return false
     }
 
-    @objc func isDirectEditing(account: String, contentType: String) -> [String] {
+    func isDirectEditing(account: String, contentType: String) -> [String] {
 
         var editor: [String] = []
 
@@ -195,11 +195,6 @@ class NCUtility: NSObject {
             }
         }
 
-        // HARDCODE
-        // if editor.count == 0 {
-        //    editor.append(NCGlobal.shared.editorText)
-        // }
-
         return Array(Set(editor))
     }
 
@@ -223,7 +218,7 @@ class NCUtility: NSObject {
     }
 #endif
 
-    @objc func permissionsContainsString(_ metadataPermissions: String, permissions: String) -> Bool {
+    func permissionsContainsString(_ metadataPermissions: String, permissions: String) -> Bool {
 
         for char in permissions {
             if metadataPermissions.contains(char) == false {
@@ -233,7 +228,7 @@ class NCUtility: NSObject {
         return true
     }
 
-    @objc func getCustomUserAgentNCText() -> String {
+    func getCustomUserAgentNCText() -> String {
         if UIDevice.current.userInterfaceIdiom == .phone {
             // NOTE: Hardcoded (May 2022)
             // Tested for iPhone SE (1st), iOS 12 iPhone Pro Max, iOS 15.4
@@ -245,7 +240,7 @@ class NCUtility: NSObject {
         }
     }
 
-    @objc func getCustomUserAgentOnlyOffice() -> String {
+    func getCustomUserAgentOnlyOffice() -> String {
 
         let appVersion = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString")!
         if UIDevice.current.userInterfaceIdiom == .pad {
@@ -441,33 +436,22 @@ class NCUtility: NSObject {
         let fileName = userBaseUrl.userBaseUrl + "-" + user + ".png"
         let localFilePath = NCUtilityFileSystem.shared.directoryUserData + "/" + fileName
 
-        if let localImage = UIImage(contentsOfFile: localFilePath) {
-            return createAvatar(image: localImage, size: 30)
+        if var localImage = UIImage(contentsOfFile: localFilePath) {
+            let rect = CGRect(x: 0, y: 0, width: 30, height: 30)
+            UIGraphicsBeginImageContextWithOptions(rect.size, false, 3.0)
+            UIBezierPath(roundedRect: rect, cornerRadius: rect.size.height).addClip()
+            localImage.draw(in: rect)
+            localImage = UIGraphicsGetImageFromCurrentImageContext() ?? localImage
+            UIGraphicsEndImageContext()
+            return localImage
         } else if let loadedAvatar = NCManageDatabase.shared.getImageAvatarLoaded(fileName: fileName) {
             return loadedAvatar
         } else if let displayName = displayName, !displayName.isEmpty, let avatarImg = createAvatar(displayName: displayName, size: 30) {
             return avatarImg
-        } else { return getDefaultUserIcon() }
-    }
-
-    func getDefaultUserIcon() -> UIImage {
-
-        let config = UIImage.SymbolConfiguration(pointSize: 30)
-        return NCUtility.shared.loadImage(named: "person.crop.circle", symbolConfiguration: config)
-    }
-
-    @objc func createAvatar(image: UIImage, size: CGFloat) -> UIImage {
-
-        var avatarImage = image
-        let rect = CGRect(x: 0, y: 0, width: size, height: size)
-
-        UIGraphicsBeginImageContextWithOptions(rect.size, false, 3.0)
-        UIBezierPath(roundedRect: rect, cornerRadius: rect.size.height).addClip()
-        avatarImage.draw(in: rect)
-        avatarImage = UIGraphicsGetImageFromCurrentImageContext() ?? image
-        UIGraphicsEndImageContext()
-
-        return avatarImage
+        } else {
+            let config = UIImage.SymbolConfiguration(pointSize: 30)
+            return NCUtility.shared.loadImage(named: "person.crop.circle", symbolConfiguration: config)
+        }
     }
 
     func createAvatar(displayName: String, size: CGFloat) -> UIImage? {
@@ -580,99 +564,6 @@ class NCUtility: NSObject {
         return isEqual
     }
 
-    func stringFromTime(_ time: CMTime) -> String {
-
-        let interval = Int(CMTimeGetSeconds(time))
-
-        let seconds = interval % 60
-        let minutes = (interval / 60) % 60
-        let hours = (interval / 3600)
-
-        if hours > 0 {
-            return String(format: "%02d:%02d:%02d", hours, minutes, seconds)
-        } else {
-            return String(format: "%02d:%02d", minutes, seconds)
-        }
-    }
-
-    func colorNavigationController(_ navigationController: UINavigationController?, backgroundColor: UIColor, titleColor: UIColor, tintColor: UIColor?, withoutShadow: Bool) {
-
-        let appearance = UINavigationBarAppearance()
-        appearance.titleTextAttributes = [.foregroundColor: titleColor]
-        appearance.largeTitleTextAttributes = [.foregroundColor: titleColor]
-
-        if withoutShadow {
-            appearance.shadowColor = .clear
-            appearance.shadowImage = UIImage()
-        }
-
-        if let tintColor = tintColor {
-            navigationController?.navigationBar.tintColor = tintColor
-        }
-
-        navigationController?.view.backgroundColor = backgroundColor
-        navigationController?.navigationBar.barTintColor = titleColor
-        navigationController?.navigationBar.standardAppearance = appearance
-        navigationController?.navigationBar.compactAppearance = appearance
-        navigationController?.navigationBar.scrollEdgeAppearance = appearance
-    }
-
-    func getEncondingDataType(data: Data) -> String.Encoding? {
-        if String(data: data, encoding: .utf8) != nil { return .utf8 }
-        if String(data: data, encoding: .ascii) != nil { return .ascii }
-        if String(data: data, encoding: .isoLatin1) != nil { return .isoLatin1 }
-        if String(data: data, encoding: .isoLatin2) != nil { return .isoLatin2 }
-        if String(data: data, encoding: .windowsCP1250) != nil { return .windowsCP1250 }
-        if String(data: data, encoding: .windowsCP1251) != nil { return .windowsCP1251 }
-        if String(data: data, encoding: .windowsCP1252) != nil { return .windowsCP1252 }
-        if String(data: data, encoding: .windowsCP1253) != nil { return .windowsCP1253 }
-        if String(data: data, encoding: .windowsCP1254) != nil { return .windowsCP1254 }
-        if String(data: data, encoding: .macOSRoman) != nil { return .macOSRoman }
-        if String(data: data, encoding: .japaneseEUC) != nil { return .japaneseEUC }
-        if String(data: data, encoding: .nextstep) != nil { return .nextstep }
-        if String(data: data, encoding: .nonLossyASCII) != nil { return .nonLossyASCII }
-        if String(data: data, encoding: .shiftJIS) != nil { return .shiftJIS }
-        if String(data: data, encoding: .symbol) != nil { return .symbol }
-        if String(data: data, encoding: .unicode) != nil { return .unicode }
-        if String(data: data, encoding: .utf16) != nil { return .utf16 }
-        if String(data: data, encoding: .utf16BigEndian) != nil { return .utf16BigEndian }
-        if String(data: data, encoding: .utf16LittleEndian) != nil { return .utf16LittleEndian }
-        if String(data: data, encoding: .utf32) != nil { return .utf32 }
-        if String(data: data, encoding: .utf32BigEndian) != nil { return .utf32BigEndian }
-        if String(data: data, encoding: .utf32LittleEndian) != nil { return .utf32LittleEndian }
-        return nil
-    }
-
-    func SYSTEM_VERSION_LESS_THAN(version: String) -> Bool {
-        return UIDevice.current.systemVersion.compare(version,
-                                                      options: NSString.CompareOptions.numeric) == ComparisonResult.orderedAscending
-    }
-
-    func getAvatarFromIconUrl(metadata: tableMetadata) -> String? {
-
-        var ownerId: String?
-        if metadata.iconUrl.contains("http") && metadata.iconUrl.contains("avatar") {
-            let splitIconUrl = metadata.iconUrl.components(separatedBy: "/")
-            var found: Bool = false
-            for item in splitIconUrl {
-                if found {
-                    ownerId = item
-                    break
-                }
-                if item == "avatar" { found = true}
-            }
-        }
-        return ownerId
-    }
-
-    // https://stackoverflow.com/questions/25471114/how-to-validate-an-e-mail-address-in-swift
-    func isValidEmail(_ email: String) -> Bool {
-
-        let emailRegEx = "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,64}"
-        let emailPred = NSPredicate(format: "SELF MATCHES %@", emailRegEx)
-        return emailPred.evaluate(with: email)
-    }
-
     func createFilePreviewImage(ocId: String, etag: String, fileNameView: String, classFile: String, status: Int, createPreviewMedia: Bool) -> UIImage? {
 
         var imagePreview: UIImage?
@@ -750,43 +641,6 @@ class NCUtility: NSObject {
         }
 
         return top
-    }
-
-    func createViewImageAndText(image: UIImage, title: String? = nil) -> UIView {
-
-        let imageView = UIImageView()
-        let titleView = UIView()
-        let label = UILabel()
-
-        if let title = title {
-            label.text = title + " "
-        } else {
-            label.text = " "
-        }
-        label.sizeToFit()
-        label.center = titleView.center
-        label.textAlignment = NSTextAlignment.center
-
-        imageView.image = image
-
-        let imageAspect = (imageView.image?.size.width ?? 0) / (imageView.image?.size.height ?? 0)
-        let imageX = label.frame.origin.x - label.frame.size.height * imageAspect
-        let imageY = label.frame.origin.y
-        let imageWidth = label.frame.size.height * imageAspect
-        let imageHeight = label.frame.size.height
-
-        if title != nil {
-            imageView.frame = CGRect(x: imageX, y: imageY, width: imageWidth, height: imageHeight)
-            titleView.addSubview(label)
-        } else {
-            imageView.frame = CGRect(x: imageX / 2, y: imageY, width: imageWidth, height: imageHeight)
-        }
-        imageView.contentMode = UIView.ContentMode.scaleAspectFit
-
-        titleView.addSubview(imageView)
-        titleView.sizeToFit()
-
-        return titleView
     }
 
     func getLocation(latitude: Double, longitude: Double, completion: @escaping (String?) -> Void) {
