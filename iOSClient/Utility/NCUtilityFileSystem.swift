@@ -491,4 +491,22 @@ class NCUtilityFileSystem: NSObject {
             }
         }
     }
+
+    func clearCacheDirectory(_ directory: String) {
+        if let cacheURL = fileManager.urls(for: .cachesDirectory, in: .userDomainMask).first {
+            do {
+                let directoryURL = cacheURL.appendingPathComponent(directory, isDirectory: true)
+                let directoryContents = try fileManager.contentsOfDirectory(at: directoryURL, includingPropertiesForKeys: nil, options: [])
+                for file in directoryContents {
+                    do {
+                        try fileManager.removeItem(at: file)
+                    } catch let error as NSError {
+                        debugPrint("Ooops! Something went wrong: \(error)")
+                    }
+                }
+            } catch let error as NSError {
+                print(error.localizedDescription)
+            }
+        }
+    }
 }

@@ -842,28 +842,10 @@ class NCUtility: NSObject {
         return (usedmegabytes, totalmegabytes)
     }
 
-    func clearCacheDirectory(_ directory: String) {
-        if let cacheURL = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first {
-            do {
-                let directoryURL = cacheURL.appendingPathComponent(directory, isDirectory: true)
-                let directoryContents = try FileManager.default.contentsOfDirectory(at: directoryURL, includingPropertiesForKeys: nil, options: [])
-                for file in directoryContents {
-                    do {
-                        try FileManager.default.removeItem(at: file)
-                    } catch let error as NSError {
-                        debugPrint("Ooops! Something went wrong: \(error)")
-                    }
-                }
-            } catch let error as NSError {
-                print(error.localizedDescription)
-            }
-        }
-    }
-
     func removeForbiddenCharactersServer(_ fileName: String) -> String {
 
         var fileName = fileName
-        let arrayForbiddenCharacters = ["/"];
+        let arrayForbiddenCharacters = ["/"]
 
         for character in arrayForbiddenCharacters {
             fileName = fileName.replacingOccurrences(of: character, with: "")
