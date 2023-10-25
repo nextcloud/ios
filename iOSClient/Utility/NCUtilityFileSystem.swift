@@ -32,6 +32,44 @@ class NCUtilityFileSystem: NSObject {
 
     let fileManager = FileManager.default
 
+    var directoryGroup: String {
+        return fileManager.containerURL(forSecurityApplicationGroupIdentifier: NCBrandOptions.shared.capabilitiesGroups)?.path ?? ""
+    }
+
+    var directoryDocuments: String {
+        return NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true).first ?? ""
+    }
+
+    var directoryCertificates: String {
+        if let directoryGroup = fileManager.containerURL(forSecurityApplicationGroupIdentifier: NCBrandOptions.shared.capabilitiesGroups) {
+            let path = directoryGroup.appendingPathComponent(NCGlobal.shared.appCertificates).path
+            if !fileManager.fileExists(atPath: path) {
+                do {
+                    try fileManager.createDirectory(atPath: path, withIntermediateDirectories: true)
+                } catch {
+                    return ""
+                }
+            }
+            return path
+        }
+        return ""
+    }
+
+    var directoryUserData: String {
+        if let directoryGroup = fileManager.containerURL(forSecurityApplicationGroupIdentifier: NCBrandOptions.shared.capabilitiesGroups) {
+            let path = directoryGroup.appendingPathComponent(NCGlobal.shared.appUserData).path
+            if !fileManager.fileExists(atPath: path) {
+                do {
+                    try fileManager.createDirectory(atPath: path, withIntermediateDirectories: true)
+                } catch {
+                    return ""
+                }
+            }
+            return path
+        }
+        return ""
+    }
+
     @objc func getFileSize(filePath: String) -> Int64 {
 
         do {

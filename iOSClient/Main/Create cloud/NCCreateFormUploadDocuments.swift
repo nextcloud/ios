@@ -166,7 +166,7 @@ import XLForm
         // image
         let imagePreview = cell.viewWithTag(100) as? UIImageView
         if !template.preview.isEmpty {
-            let fileNameLocalPath = String(CCUtility.getDirectoryUserData()) + "/" + template.name + ".png"
+            let fileNameLocalPath = NCUtilityFileSystem.shared.directoryUserData + "/" + template.name + ".png"
             if FileManager.default.fileExists(atPath: fileNameLocalPath) {
                 let imageURL = URL(fileURLWithPath: fileNameLocalPath)
                 if let image = UIImage(contentsOfFile: imageURL.path) {
@@ -486,7 +486,7 @@ import XLForm
 
     func getImageFromTemplate(name: String, preview: String, indexPath: IndexPath) {
 
-        let fileNameLocalPath = String(CCUtility.getDirectoryUserData()) + "/" + name + ".png"
+        let fileNameLocalPath = NCUtilityFileSystem.shared.directoryUserData + "/" + name + ".png"
 
         NextcloudKit.shared.download(serverUrlFileName: preview, fileNameLocalPath: fileNameLocalPath, requestHandler: { _ in
 

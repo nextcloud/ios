@@ -125,7 +125,7 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmpty
         var image: UIImage?
 
         if let urlIcon = urlIcon {
-            let pathFileName = String(CCUtility.getDirectoryUserData()) + "/" + urlIcon.deletingPathExtension().lastPathComponent + ".png"
+            let pathFileName = NCUtilityFileSystem.shared.directoryUserData + "/" + urlIcon.deletingPathExtension().lastPathComponent + ".png"
             image = UIImage(contentsOfFile: pathFileName)
         }
 
@@ -145,7 +145,7 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmpty
             cell.avatarLeadingMargin.constant = 50
 
             let fileName = appDelegate.userBaseUrl + "-" + user + ".png"
-            let fileNameLocalPath = String(CCUtility.getDirectoryUserData()) + "/" + fileName
+            let fileNameLocalPath = NCUtilityFileSystem.shared.directoryUserData + "/" + fileName
 
             if let image = UIImage(contentsOfFile: fileNameLocalPath) {
                 cell.avatar.image = image

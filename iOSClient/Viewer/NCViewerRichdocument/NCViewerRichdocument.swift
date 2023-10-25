@@ -185,7 +185,7 @@ class NCViewerRichdocument: UIViewController, WKNavigationDelegate, WKScriptMess
                         guard let type = values["Type"] as? String else { return }
                         guard let urlString = values["URL"] as? String else { return }
                         guard let url = URL(string: urlString) else { return }
-                        let fileNameLocalPath = CCUtility.getDirectoryUserData() + "/" + (metadata.fileName as NSString).deletingPathExtension
+                        let fileNameLocalPath = NCUtilityFileSystem.shared.directoryUserData + "/" + (metadata.fileName as NSString).deletingPathExtension
 
                         if type == "slideshow" {
 
@@ -221,7 +221,7 @@ class NCViewerRichdocument: UIViewController, WKNavigationDelegate, WKScriptMess
                                         if let disposition = allHeaderFields["Content-Disposition"] as? String {
                                             let components = disposition.components(separatedBy: "filename=")
                                             if let filename = components.last?.replacingOccurrences(of: "\"", with: "") {
-                                                item = CCUtility.getDirectoryUserData() + "/" + filename
+                                                item = NCUtilityFileSystem.shared.directoryUserData + "/" + filename
                                                 _ = NCUtilityFileSystem.shared.moveFile(atPath: fileNameLocalPath, toPath: item)
                                             }
                                         }

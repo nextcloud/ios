@@ -153,7 +153,7 @@ class NCService: NSObject {
     func getAvatar() {
 
         let fileName = appDelegate.userBaseUrl + "-" + self.appDelegate.user + ".png"
-        let fileNameLocalPath = String(CCUtility.getDirectoryUserData()) + "/" + fileName
+        let fileNameLocalPath = NCUtilityFileSystem.shared.directoryUserData + "/" + fileName
         let etag = NCManageDatabase.shared.getTableAvatar(fileName: fileName)?.etag
 
         NextcloudKit.shared.downloadAvatar(user: appDelegate.userId,
@@ -269,7 +269,7 @@ class NCService: NSObject {
             }
             if let fileName = fileNameToWrite, let image = imageData {
                 do {
-                    let fileNamePath: String = CCUtility.getDirectoryUserData() + "/" + fileName + ".png"
+                    let fileNamePath = NCUtilityFileSystem.shared.directoryUserData + "/" + fileName + ".png"
                     try image.pngData()?.write(to: URL(fileURLWithPath: fileNamePath), options: .atomic)
                 } catch { }
             }

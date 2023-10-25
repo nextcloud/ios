@@ -116,9 +116,7 @@ class NCShareExtension: UIViewController {
         let versionNextcloudiOS = String(format: NCBrandOptions.shared.textCopyrightNextcloudiOS, NCUtility.shared.getVersionApp())
 
         NextcloudKit.shared.nkCommonInstance.levelLog = levelLog
-        if let pathDirectoryGroup = CCUtility.getDirectoryGroup()?.path {
-            NextcloudKit.shared.nkCommonInstance.pathLog = pathDirectoryGroup
-        }
+        NextcloudKit.shared.nkCommonInstance.pathLog = NCUtilityFileSystem.shared.directoryGroup
         if isSimulatorOrTestFlight {
             NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Start Share session with level \(levelLog) " + versionNextcloudiOS + " (Simulator / TestFlight)")
         } else {

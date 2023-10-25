@@ -174,7 +174,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
     public func checkTrustedChallenge(_ session: URLSession, didReceive challenge: URLAuthenticationChallenge, completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
 
         let protectionSpace: URLProtectionSpace = challenge.protectionSpace
-        let directoryCertificate = CCUtility.getDirectoryCerificates()!
+        let directoryCertificate = NCUtilityFileSystem.shared.directoryCertificates
         let host = challenge.protectionSpace.host
         let certificateSavedPath = directoryCertificate + "/" + host + ".der"
         var isTrusted: Bool
@@ -215,7 +215,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
 
     func writeCertificate(host: String) {
 
-        let directoryCertificate = CCUtility.getDirectoryCerificates()!
+        let directoryCertificate = NCUtilityFileSystem.shared.directoryCertificates
         let certificateAtPath = directoryCertificate + "/" + host + ".tmp"
         let certificateToPath = directoryCertificate + "/" + host + ".der"
 
@@ -358,7 +358,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
 #if !EXTENSION
     func downloadAvatar(user: String, dispalyName: String?, fileName: String, cell: NCCellProtocol, view: UIView?, cellImageView: UIImageView?) {
         guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else { return }
-        let fileNameLocalPath = String(CCUtility.getDirectoryUserData()) + "/" + fileName
+        let fileNameLocalPath = NCUtilityFileSystem.shared.directoryUserData + "/" + fileName
 
         if let image = NCManageDatabase.shared.getImageAvatarLoaded(fileName: fileName) {
             cellImageView?.image = image

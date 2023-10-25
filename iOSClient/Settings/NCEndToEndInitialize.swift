@@ -79,7 +79,7 @@ class NCEndToEndInitialize: NSObject {
                     NCContentPresenter.shared.messageNotification("E2E get publicKey", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, priority: .max)
 
                 case NCGlobal.shared.errorResourceNotFound:
-                    guard let csr = NCEndToEndEncryption.sharedManager().createCSR(self.appDelegate.userId, directory: CCUtility.getDirectoryUserData()) else {
+                    guard let csr = NCEndToEndEncryption.sharedManager().createCSR(self.appDelegate.userId, directory: NCUtilityFileSystem.shared.directoryUserData) else {
                         let error = NKError(errorCode: error.errorCode, errorDescription: "Error to create Csr")
                         NCContentPresenter.shared.messageNotification("E2E Csr", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, priority: .max)
 
@@ -255,7 +255,7 @@ class NCEndToEndInitialize: NSObject {
 
         var privateKeyString: NSString?
 
-        guard let privateKeyChiper = NCEndToEndEncryption.sharedManager().encryptPrivateKey(self.appDelegate.userId, directory: CCUtility.getDirectoryUserData(), passphrase: e2ePassphrase, privateKey: &privateKeyString, iterationCount: 1024) else {
+        guard let privateKeyChiper = NCEndToEndEncryption.sharedManager().encryptPrivateKey(self.appDelegate.userId, directory: NCUtilityFileSystem.shared.directoryUserData, passphrase: e2ePassphrase, privateKey: &privateKeyString, iterationCount: 1024) else {
             let error = NKError(errorCode: error.errorCode, errorDescription: "Serious internal error to create PrivateKey chiper")
             NCContentPresenter.shared.messageNotification("E2E privateKey", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, priority: .max)
             return

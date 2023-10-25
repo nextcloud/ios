@@ -98,9 +98,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         startTimerErrorNetworking()
 
         var levelLog = 0
-        if let pathDirectoryGroup = CCUtility.getDirectoryGroup()?.path {
-            NextcloudKit.shared.nkCommonInstance.pathLog = pathDirectoryGroup
-        }
+        NextcloudKit.shared.nkCommonInstance.pathLog = NCUtilityFileSystem.shared.directoryGroup
 
         if NCBrandOptions.shared.disable_log {
 
@@ -541,7 +539,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
               host == currentHost
         else { return }
 
-        let certificateHostSavedPath = CCUtility.getDirectoryCerificates()! + "/" + host + ".der"
+        let certificateHostSavedPath = NCUtilityFileSystem.shared.directoryCertificates + "/" + host + ".der"
         var title = NSLocalizedString("_ssl_certificate_changed_", comment: "")
 
         if !FileManager.default.fileExists(atPath: certificateHostSavedPath) {
@@ -659,7 +657,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             let name = account.alias.isEmpty ? account.displayName : account.alias
             let userBaseUrl = account.user + "-" + (URL(string: account.urlBase)?.host ?? "")
             let avatarFileName = userBaseUrl + "-\(account.user).png"
-            let pathAvatarFileName = String(CCUtility.getDirectoryUserData()) + "/" + avatarFileName
+            let pathAvatarFileName = NCUtilityFileSystem.shared.directoryUserData + "/" + avatarFileName
             let image = UIImage(contentsOfFile: pathAvatarFileName)
             accounts.append(NKShareAccounts.DataAccounts(withUrl: account.urlBase, user: account.user, name: name, image: image))
         }

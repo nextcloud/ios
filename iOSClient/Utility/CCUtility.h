@@ -49,12 +49,6 @@
 
 + (void)createDirectoryStandard;
 
-+ (NSURL *)getDirectoryGroup;
-+ (NSString *)getDirectoryDocuments;
-+ (NSString *)getDirectoryReaderMetadata;
-+ (NSString *)getDirectoryAudio;
-+ (NSString *)getDirectoryCerificates;
-+ (NSString *)getDirectoryUserData;
 + (NSString *)getDirectoryProviderStorage;
 + (NSString *)getDirectoryProviderStorageOcId:(NSString *)ocId;
 + (NSString *)getDirectoryProviderStorageOcId:(NSString *)ocId fileNameView:(NSString *)fileNameView;

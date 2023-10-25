@@ -89,7 +89,7 @@ extension NCManageDatabase {
     @discardableResult
     func setAvatarLoaded(fileName: String) -> UIImage? {
 
-        let fileNameLocalPath = String(CCUtility.getDirectoryUserData()) + "/" + fileName
+        let fileNameLocalPath = NCUtilityFileSystem.shared.directoryUserData + "/" + fileName
         var image: UIImage?
 
         do {
@@ -113,7 +113,7 @@ extension NCManageDatabase {
 
     func getImageAvatarLoaded(fileName: String) -> UIImage? {
 
-        let fileNameLocalPath = String(CCUtility.getDirectoryUserData()) + "/" + fileName
+        let fileNameLocalPath = NCUtilityFileSystem.shared.directoryUserData + "/" + fileName
 
         do {
             let realm = try Realm()

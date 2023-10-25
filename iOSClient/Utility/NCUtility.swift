@@ -55,7 +55,7 @@ class NCUtility: NSObject {
             fileNamePNG = iconURL.deletingPathExtension().lastPathComponent + ".png"
         }
 
-        let imageNamePath = CCUtility.getDirectoryUserData() + "/" + fileNamePNG
+        let imageNamePath = NCUtilityFileSystem.shared.directoryUserData + "/" + fileNamePNG
 
         if !FileManager.default.fileExists(atPath: imageNamePath) || rewrite == true {
 
@@ -439,7 +439,7 @@ class NCUtility: NSObject {
     @objc func loadUserImage(for user: String, displayName: String?, userBaseUrl: NCUserBaseUrl) -> UIImage {
 
         let fileName = userBaseUrl.userBaseUrl + "-" + user + ".png"
-        let localFilePath = String(CCUtility.getDirectoryUserData()) + "/" + fileName
+        let localFilePath = NCUtilityFileSystem.shared.directoryUserData + "/" + fileName
 
         if let localImage = UIImage(contentsOfFile: localFilePath) {
             return createAvatar(image: localImage, size: 30)

@@ -90,7 +90,7 @@ func convertDataToImage(data: Data?, size: CGSize, fileNameToWrite: String?) -> 
     }
     if let fileName = fileNameToWrite, let image = imageData {
         do {
-            let fileNamePath: String = CCUtility.getDirectoryUserData() + "/" + fileName + ".png"
+            let fileNamePath: String = NCUtilityFileSystem.shared.directoryUserData + "/" + fileName + ".png"
             try image.pngData()?.write(to: URL(fileURLWithPath: fileNamePath), options: .atomic)
         } catch { }
     }
@@ -147,9 +147,7 @@ func getDashboardDataEntry(configuration: DashboardIntent?, isPreview: Bool, dis
     let versionNextcloudiOS = String(format: NCBrandOptions.shared.textCopyrightNextcloudiOS, NCUtility.shared.getVersionApp())
 
     NextcloudKit.shared.nkCommonInstance.levelLog = levelLog
-    if let pathDirectoryGroup = CCUtility.getDirectoryGroup()?.path {
-        NextcloudKit.shared.nkCommonInstance.pathLog = pathDirectoryGroup
-    }
+    NextcloudKit.shared.nkCommonInstance.pathLog = NCUtilityFileSystem.shared.directoryGroup
     if isSimulatorOrTestFlight {
         NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Start \(NCBrandOptions.shared.brand) dashboard widget session with level \(levelLog) " + versionNextcloudiOS + " (Simulator / TestFlight)")
     } else {
@@ -162,7 +160,7 @@ func getDashboardDataEntry(configuration: DashboardIntent?, isPreview: Bool, dis
 
     var imagetmp = UIImage(named: "widget")!
     if let fileName = tableDashboard?.iconClass {
-        let fileNamePath: String = CCUtility.getDirectoryUserData() + "/" + fileName + ".png"
+        let fileNamePath: String = NCUtilityFileSystem.shared.directoryUserData + "/" + fileName + ".png"
         if let image = UIImage(contentsOfFile: fileNamePath) {
             imagetmp = image.withTintColor(.label, renderingMode: .alwaysOriginal)
         }
@@ -224,7 +222,7 @@ func getDashboardDataEntry(configuration: DashboardIntent?, isPreview: Bool, dis
                                     imageColor = UIColor(hex: colorString)
                                     icon = UIImage(systemName: "circle.fill")!
                                 } else if let fileName = iconFileName {
-                                    let fileNamePath: String = CCUtility.getDirectoryUserData() + "/" + fileName + ".png"
+                                    let fileNamePath: String = NCUtilityFileSystem.shared.directoryUserData + "/" + fileName + ".png"
                                     if FileManager().fileExists(atPath: fileNamePath), let image = UIImage(contentsOfFile: fileNamePath) {
                                         icon = image
                                     } else {
