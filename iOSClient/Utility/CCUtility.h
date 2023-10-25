@@ -49,7 +49,6 @@
 
 + (void)createDirectoryStandard;
 
-+ (NSString *)getDirectoryProviderStorage;
 + (NSString *)getDirectoryProviderStorageOcId:(NSString *)ocId;
 + (NSString *)getDirectoryProviderStorageOcId:(NSString *)ocId fileNameView:(NSString *)fileNameView;
 + (NSString *)getDirectoryProviderStorageIconOcId:(NSString *)ocId etag:(NSString *)etag;

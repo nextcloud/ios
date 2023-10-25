@@ -236,9 +236,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
         // Clear older files
         let days = NCKeychain().cleanUpDay
-        if let directory = CCUtility.getDirectoryProviderStorage() {
-            NCUtilityFileSystem.shared.cleanUp(directory: directory, days: TimeInterval(days))
-        }
+        NCUtilityFileSystem.shared.cleanUp(directory: NCUtilityFileSystem.shared.directoryProviderStorage, days: TimeInterval(days))
 
         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterApplicationWillResignActive)
     }

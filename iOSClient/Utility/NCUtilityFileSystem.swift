@@ -70,6 +70,21 @@ class NCUtilityFileSystem: NSObject {
         return ""
     }
 
+    @objc var directoryProviderStorage: String {
+        if let directoryGroup = fileManager.containerURL(forSecurityApplicationGroupIdentifier: NCBrandOptions.shared.capabilitiesGroups) {
+            let path = directoryGroup.appendingPathComponent(NCGlobal.shared.directoryProviderStorage).path
+            if !fileManager.fileExists(atPath: path) {
+                do {
+                    try fileManager.createDirectory(atPath: path, withIntermediateDirectories: true)
+                } catch {
+                    return ""
+                }
+            }
+            return path
+        }
+        return ""
+    }
+
     @objc func getFileSize(filePath: String) -> Int64 {
 
         do {

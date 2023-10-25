@@ -60,7 +60,7 @@ class FileProviderExtension: NSFileProviderExtension, NCNetworkingDelegate {
         super.init()
 
         // Create directory File Provider Storage
-        CCUtility.getDirectoryProviderStorage()
+        _ = NCUtilityFileSystem.shared.directoryProviderStorage
         // Configure URLSession
         _ = NCNetworking.shared.sessionManagerBackgroundExtension
     }
