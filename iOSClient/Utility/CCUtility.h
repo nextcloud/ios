@@ -35,18 +35,12 @@
 @interface CCUtility : NSObject
 
 + (NSString *)dateDiff:(NSDate *)convertedDate;
-
-+ (NSString *)removeForbiddenCharactersServer:(NSString *)fileName;
-
 + (NSString *)stringAppendServerUrl:(NSString *)serverUrl addFileName:(NSString *)addFileName;
-
 + (NSString *)createFileNameDate:(NSString *)fileName extension:(NSString *)extension;
 + (NSString *)createFileName:(NSString *)fileName fileDate:(NSDate *)fileDate fileType:(PHAssetMediaType)fileType keyFileName:(NSString *)keyFileName keyFileNameType:(NSString *)keyFileNameType keyFileNameOriginal:(NSString *)keyFileNameOriginal forcedNewFileName:(BOOL)forcedNewFileName;
-
 + (NSString *)getTitleSectionDate:(NSDate *)date;
 + (NSString *)returnPathfromServerUrl:(NSString *)serverUrl urlBase:(NSString *)urlBase userId:(NSString *)userId account:(NSString *)account;
 + (NSString *)returnFileNamePathFromFileName:(NSString *)metadataFileName serverUrl:(NSString *)serverUrl urlBase:(NSString *)urlBase userId:(NSString *)userId account:(NSString *)account;
-
 + (NSString *)getMimeType:(NSString *)fileNameView;
 
 // ===== Share Permissions =====

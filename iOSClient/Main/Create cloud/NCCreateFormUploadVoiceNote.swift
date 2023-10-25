@@ -167,8 +167,8 @@ class NCCreateFormUploadVoiceNote: XLFormViewController, NCSelectDelegate, AVAud
 
             self.form.delegate = nil
 
-            if let fileNameNew = formRow.value {
-                self.fileName = CCUtility.removeForbiddenCharactersServer(fileNameNew as? String)
+            if let fileNameNew = formRow.value as? String {
+                self.fileName = NCUtility.shared.removeForbiddenCharactersServer(fileNameNew)
             }
 
             formRow.value = self.fileName

@@ -859,4 +859,16 @@ class NCUtility: NSObject {
             }
         }
     }
+
+    func removeForbiddenCharactersServer(_ fileName: String) -> String {
+
+        var fileName = fileName
+        let arrayForbiddenCharacters = ["/"];
+
+        for character in arrayForbiddenCharacters {
+            fileName = fileName.replacingOccurrences(of: character, with: "")
+        }
+        return fileName
+    }
+
 }
