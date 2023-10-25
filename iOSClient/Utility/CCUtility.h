@@ -40,7 +40,6 @@
 + (NSString *)transformedSize:(int64_t)value;
 
 + (NSString *)removeForbiddenCharactersServer:(NSString *)fileName;
-+ (NSString *)removeForbiddenCharactersFileSystem:(NSString *)fileName;
 
 + (NSString *)stringAppendServerUrl:(NSString *)serverUrl addFileName:(NSString *)addFileName;
 

@@ -110,18 +110,6 @@
     return fileName;
 }
 
-// Remove do not forbidden characters for File System Server
-+ (NSString *)removeForbiddenCharactersFileSystem:(NSString *)fileName
-{
-    NSArray *arrayForbiddenCharacters = [NSArray arrayWithObjects:@"\\",@"<",@">",@":",@"\"",@"|",@"?",@"*",@"/", nil];
-
-    for (NSString *currentCharacter in arrayForbiddenCharacters) {
-        fileName = [fileName stringByReplacingOccurrencesOfString:currentCharacter withString:@""];
-    }
-
-    return fileName;
-}
-
 + (NSString*)stringAppendServerUrl:(NSString *)serverUrl addFileName:(NSString *)addFileName
 {
     NSString *result;

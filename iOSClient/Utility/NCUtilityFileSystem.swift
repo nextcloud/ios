@@ -43,97 +43,74 @@ class NCUtilityFileSystem: NSObject {
     }
 
     var directoryCertificates: String {
-        if let directoryGroup = fileManager.containerURL(forSecurityApplicationGroupIdentifier: NCBrandOptions.shared.capabilitiesGroups) {
-            let path = directoryGroup.appendingPathComponent(NCGlobal.shared.appCertificates).path
-            if !fileManager.fileExists(atPath: path) {
-                do {
-                    try fileManager.createDirectory(atPath: path, withIntermediateDirectories: true)
-                } catch {
-                    return ""
-                }
-            }
-            return path
+        guard let directoryGroup = fileManager.containerURL(forSecurityApplicationGroupIdentifier: NCBrandOptions.shared.capabilitiesGroups) else { return "" }
+        let path = directoryGroup.appendingPathComponent(NCGlobal.shared.appCertificates).path
+        if !fileManager.fileExists(atPath: path) {
+            do {
+                try fileManager.createDirectory(atPath: path, withIntermediateDirectories: true)
+            } catch { print("Error: \(error)") }
         }
-        return ""
+        return path
     }
 
     var directoryUserData: String {
-        if let directoryGroup = fileManager.containerURL(forSecurityApplicationGroupIdentifier: NCBrandOptions.shared.capabilitiesGroups) {
-            let path = directoryGroup.appendingPathComponent(NCGlobal.shared.appUserData).path
-            if !fileManager.fileExists(atPath: path) {
-                do {
-                    try fileManager.createDirectory(atPath: path, withIntermediateDirectories: true)
-                } catch {
-                    return ""
-                }
-            }
-            return path
+        guard let directoryGroup = fileManager.containerURL(forSecurityApplicationGroupIdentifier: NCBrandOptions.shared.capabilitiesGroups) else { return "" }
+        let path = directoryGroup.appendingPathComponent(NCGlobal.shared.appUserData).path
+        if !fileManager.fileExists(atPath: path) {
+            do {
+                try fileManager.createDirectory(atPath: path, withIntermediateDirectories: true)
+            } catch { print("Error: \(error)") }
         }
-        return ""
+        return path
     }
 
     @objc var directoryProviderStorage: String {
-        if let directoryGroup = fileManager.containerURL(forSecurityApplicationGroupIdentifier: NCBrandOptions.shared.capabilitiesGroups) {
-            let path = directoryGroup.appendingPathComponent(NCGlobal.shared.directoryProviderStorage).path
-            if !fileManager.fileExists(atPath: path) {
-                do {
-                    try fileManager.createDirectory(atPath: path, withIntermediateDirectories: true)
-                } catch {
-                    return ""
-                }
-            }
-            return path
+        guard let directoryGroup = fileManager.containerURL(forSecurityApplicationGroupIdentifier: NCBrandOptions.shared.capabilitiesGroups) else { return "" }
+        let path = directoryGroup.appendingPathComponent(NCGlobal.shared.directoryProviderStorage).path
+        if !fileManager.fileExists(atPath: path) {
+            do {
+                try fileManager.createDirectory(atPath: path, withIntermediateDirectories: true)
+            } catch { print("Error: \(error)") }
         }
-        return ""
+        return path
     }
 
     @objc func getDirectoryProviderStorageOcId(_ ocId: String) -> String {
-
         let path = directoryProviderStorage + "/" + ocId
         if !fileManager.fileExists(atPath: path) {
             do {
                 try fileManager.createDirectory(atPath: path, withIntermediateDirectories: true)
-            } catch {
-                return ""
-            }
+            } catch { print("Error: \(error)") }
         }
         return path
     }
 
     @objc func getDirectoryProviderStorageOcId(_ ocId: String, fileNameView: String) -> String {
-
         let path = directoryProviderStorage + "/" + ocId + "/" + fileNameView
         if !fileManager.fileExists(atPath: path) {
             do {
                 try fileManager.createDirectory(atPath: path, withIntermediateDirectories: true)
-            } catch {
-                return ""
-            }
+            } catch { print("Error: \(error)") }
         }
         return path
     }
 
     func getDirectoryProviderStorageIconOcId(_ ocId: String, etag: String) -> String {
-
         return directoryProviderStorage + "/" + ocId + "/" + etag + ".small." + NCGlobal.shared.extensionPreview
     }
 
     func getDirectoryProviderStoragePreviewOcId(_ ocId: String, etag: String) -> String {
-
         return directoryProviderStorage + "/" + ocId + "/" + etag + ".preview." + NCGlobal.shared.extensionPreview
     }
 
     func fileProviderStorageExists(_ metadata: tableMetadata) -> Bool {
-
         let fileNamePath = getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileName)
         let fileNameViewPath = getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)
-
         do {
             let fileNameAttribute = try fileManager.attributesOfItem(atPath: fileNamePath)
             let fileNameSize: UInt64 = fileNameAttribute[FileAttributeKey.size] as? UInt64 ?? 0
             let fileNameViewAttribute = try fileManager.attributesOfItem(atPath: fileNameViewPath)
             let fileNameViewSize: UInt64 = fileNameViewAttribute[FileAttributeKey.size] as? UInt64 ?? 0
-
             if metadata.isDirectoryE2EE == true {
                 if (fileNameSize == metadata.size || fileNameViewSize == metadata.size) && fileNameViewSize > 0 {
                     return true
@@ -144,28 +121,22 @@ class NCUtilityFileSystem: NSObject {
                 return fileNameViewSize == metadata.size
             }
         } catch { print("Error: \(error)") }
-
         return false
     }
 
     func fileProviderStorageSize(_ ocId: String, fileNameView: String) -> UInt64 {
-
         let fileNamePath = getDirectoryProviderStorageOcId(ocId, fileNameView: fileNameView)
-
         do {
             let fileNameAttribute = try fileManager.attributesOfItem(atPath: fileNamePath)
             let fileNameSize: UInt64 = fileNameAttribute[FileAttributeKey.size] as? UInt64 ?? 0
             return fileNameSize
         } catch { print("Error: \(error)") }
-
         return 0
     }
 
     func fileProviderStoragePreviewIconExists(_ ocId: String, etag: String) -> Bool {
-
         let fileNamePathPreview = getDirectoryProviderStoragePreviewOcId(ocId, etag: etag)
         let fileNamePathIcon = getDirectoryProviderStorageIconOcId(ocId, etag: etag)
-
         do {
             let fileNamePathPreviewAttribute = try fileManager.attributesOfItem(atPath: fileNamePathPreview)
             let fileSizePreview: UInt64 = fileNamePathPreviewAttribute[FileAttributeKey.size] as? UInt64 ?? 0
@@ -177,8 +148,12 @@ class NCUtilityFileSystem: NSObject {
                 return false
             }
         } catch { print("Error: \(error)") }
-
         return false
+    }
+
+    func createDirectoryStandard() {
+
+        guard let directoryGroup = fileManager.containerURL(forSecurityApplicationGroupIdentifier: NCBrandOptions.shared.capabilitiesGroups) else { return }
     }
 
     // MARK: -
