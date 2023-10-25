@@ -271,9 +271,8 @@ class NCNetworkingProcessUpload: NSObject {
         // remove leaning upload share extension
         let metadatasUploadShareExtension = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "session == %@ AND sessionSelector == %@", NextcloudKit.shared.nkCommonInstance.sessionIdentifierUpload, NCGlobal.shared.selectorUploadFileShareExtension))
         for metadata in metadatasUploadShareExtension {
-            let path = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId)!
             NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
-            NCUtilityFileSystem.shared.deleteFile(filePath: path)
+            NCUtilityFileSystem.shared.deleteFile(filePath: NCUtilityFileSystem.shared.getDirectoryProviderStorageOcId(metadata.ocId))
         }
 
         // verify metadataStatusInUpload (BACKGROUND)

@@ -92,7 +92,7 @@ extension FileProviderExtension {
 
             if error == .success { // || error == kOCErrorServerPathNotFound {
 
-                let fileNamePath = CCUtility.getDirectoryProviderStorageOcId(itemIdentifier.rawValue)!
+                let fileNamePath = NCUtilityFileSystem.shared.getDirectoryProviderStorageOcId(itemIdentifier.rawValue)
                 do {
                     try fileProviderUtility.shared.fileManager.removeItem(atPath: fileNamePath)
                 } catch let error {

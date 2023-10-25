@@ -356,9 +356,8 @@ extension NCShareExtension {
             self.hud.progress = Float(fractionCompleted)
         } completion: { error in
             if error != .success {
-                let path = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId)!
                 NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
-                NCUtilityFileSystem.shared.deleteFile(filePath: path)
+                NCUtilityFileSystem.shared.deleteFile(filePath: NCUtilityFileSystem.shared.getDirectoryProviderStorageOcId(metadata.ocId))
                 self.uploadErrors.append(metadata)
             }
             self.counterUploaded += 1

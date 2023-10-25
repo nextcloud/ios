@@ -77,8 +77,8 @@ class NCNetworkingE2EERename: NSObject {
 
         // MOVE FILE SYSTEM
         //
-        let atPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId) + "/" + metadata.fileNameView
-        let toPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId) + "/" + fileNameNew
+        let atPath = NCUtilityFileSystem.shared.getDirectoryProviderStorageOcId(metadata.ocId) + "/" + metadata.fileNameView
+        let toPath = NCUtilityFileSystem.shared.getDirectoryProviderStorageOcId(metadata.ocId) + "/" + fileNameNew
         do {
             try FileManager.default.moveItem(atPath: atPath, toPath: toPath)
         } catch { }

@@ -85,6 +85,19 @@ class NCUtilityFileSystem: NSObject {
         return ""
     }
 
+    @objc func getDirectoryProviderStorageOcId(_ ocId: String) -> String {
+
+        let path = directoryProviderStorage + "/" + ocId
+        if !fileManager.fileExists(atPath: path) {
+            do {
+                try fileManager.createDirectory(atPath: path, withIntermediateDirectories: true)
+            } catch {
+                return ""
+            }
+        }
+        return path
+    }
+
     @objc func getFileSize(filePath: String) -> Int64 {
 
         do {
@@ -316,7 +329,7 @@ class NCUtilityFileSystem: NSObject {
 
         if let directories = NCManageDatabase.shared.getTablesDirectory(predicate: NSPredicate(format: "offline == true"), sorted: "serverUrl", ascending: true) {
             for directory: tableDirectory in directories {
-                offlineDir.append(CCUtility.getDirectoryProviderStorageOcId(directory.ocId))
+                offlineDir.append(NCUtilityFileSystem.shared.getDirectoryProviderStorageOcId(directory.ocId))
             }
         }
 

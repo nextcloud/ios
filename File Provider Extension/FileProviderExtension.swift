@@ -411,13 +411,13 @@ class FileProviderExtension: NSFileProviderExtension, NCNetworkingDelegate {
             NCManageDatabase.shared.addLocalFile(metadata: metadata)
 
             // New file
-            if ocId != ocIdTemp {
+            if let ocId, ocId != ocIdTemp {
 
                 NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", ocIdTemp))
 
                 // File system
-                let atPath = CCUtility.getDirectoryProviderStorageOcId(ocIdTemp)
-                let toPath = CCUtility.getDirectoryProviderStorageOcId(ocId)
+                let atPath = NCUtilityFileSystem.shared.getDirectoryProviderStorageOcId(ocIdTemp)
+                let toPath = NCUtilityFileSystem.shared.getDirectoryProviderStorageOcId(ocId)
                 CCUtility.copyFile(atPath: atPath, toPath: toPath)
             }
 
