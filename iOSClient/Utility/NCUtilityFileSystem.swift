@@ -426,6 +426,23 @@ class NCUtilityFileSystem: NSObject {
         return resultFileName
     }
 
+    func createFileNameDate(_ fileName: String, ext: String) -> String {
+
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yy-MM-dd HH-mm-ss"
+        let fileNameDate = formatter.string(from: Date())
+
+        if fileName.isEmpty, !ext.isEmpty {
+            return fileNameDate + "." + ext
+        } else if !fileName.isEmpty, ext.isEmpty {
+            return fileName + " " + fileNameDate
+        } else if fileName.isEmpty, ext.isEmpty {
+            return fileNameDate
+        } else {
+            return fileName + " " + fileNameDate + "." + ext
+        }
+    }
+
     @objc func getDirectorySize(directory: String) -> Int64 {
 
         let url = URL(fileURLWithPath: directory)

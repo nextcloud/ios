@@ -71,32 +71,6 @@
     }
 }
 
-+ (NSString *)createFileNameDate:(NSString *)fileName extension:(NSString *)extension
-{
-    NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
-    [formatter setDateFormat:@"yy-MM-dd HH-mm-ss"];
-    NSString *fileNameDate = [formatter stringFromDate:[NSDate date]];
-    NSString *returnFileName;
-
-    if ([fileName isEqualToString:@""] && ![extension isEqualToString:@""]) {
-        returnFileName = [NSString stringWithFormat:@"%@.%@", fileNameDate, extension];
-    }
-
-    if (![fileName isEqualToString:@""] && [extension isEqualToString:@""]) {
-        returnFileName = [NSString stringWithFormat:@"%@ %@", fileName, fileNameDate];
-    }
-
-    if ([fileName isEqualToString:@""] && [extension isEqualToString:@""]) {
-        returnFileName = fileNameDate;
-    }
-
-    if (![fileName isEqualToString:@""] && ![extension isEqualToString:@""]) {
-        returnFileName = [NSString stringWithFormat:@"%@ %@.%@", fileName, fileNameDate, extension];
-    }
-
-    return returnFileName;
-}
-
 + (NSString *)createFileName:(NSString *)fileName fileDate:(NSDate *)fileDate fileType:(PHAssetMediaType)fileType keyFileName:(NSString *)keyFileName keyFileNameType:(NSString *)keyFileNameType keyFileNameOriginal:(NSString *)keyFileNameOriginal forcedNewFileName:(BOOL)forcedNewFileName
 {
     BOOL addFileNameType = NO;

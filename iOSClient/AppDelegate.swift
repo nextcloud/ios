@@ -893,7 +893,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
                     NCAskAuthorization.shared.askAuthorizationAudioRecord(viewController: rootViewController) { hasPermission in
                         if hasPermission {
-                            let fileName = CCUtility.createFileNameDate(NSLocalizedString("_voice_memo_filename_", comment: ""), extension: "m4a")!
+                            let fileName = NCUtilityFileSystem.shared.createFileNameDate(NSLocalizedString("_voice_memo_filename_", comment: ""), ext: "m4a")
                             if let viewController = UIStoryboard(name: "NCAudioRecorderViewController", bundle: nil).instantiateInitialViewController() as? NCAudioRecorderViewController {
 
                                 viewController.delegate = self
