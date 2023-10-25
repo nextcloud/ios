@@ -211,13 +211,13 @@ class NCUtility: NSObject {
 
         NCManageDatabase.shared.clearDatabase(account: nil, removeAccount: true)
 
-        CCUtility.removeGroupDirectoryProviderStorage()
-        CCUtility.removeGroupLibraryDirectory()
+        NCUtilityFileSystem.shared.removeGroupDirectoryProviderStorage()
+        NCUtilityFileSystem.shared.removeGroupLibraryDirectory()
 
-        CCUtility.removeDocumentsDirectory()
-        CCUtility.removeTemporaryDirectory()
+        NCUtilityFileSystem.shared.removeDocumentsDirectory()
+        NCUtilityFileSystem.shared.removeTemporaryDirectory()
 
-        CCUtility.createDirectoryStandard()
+        NCUtilityFileSystem.shared.createDirectoryStandard()
 
         NCKeychain().removeAll()
     }

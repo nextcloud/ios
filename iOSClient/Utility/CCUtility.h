@@ -46,16 +46,6 @@
 + (NSString *)createFileNameDate:(NSString *)fileName extension:(NSString *)extension;
 + (NSString *)createFileName:(NSString *)fileName fileDate:(NSDate *)fileDate fileType:(PHAssetMediaType)fileType keyFileName:(NSString *)keyFileName keyFileNameType:(NSString *)keyFileNameType keyFileNameOriginal:(NSString *)keyFileNameOriginal forcedNewFileName:(BOOL)forcedNewFileName;
 
-+ (void)createDirectoryStandard;
-
-
-+ (void)removeGroupApplicationSupport;
-+ (void)removeGroupLibraryDirectory;
-+ (void)removeGroupDirectoryProviderStorage;
-+ (void)removeDocumentsDirectory;
-+ (void)removeTemporaryDirectory;
-+ (void)emptyTemporaryDirectory;
-
 + (NSString *)getTitleSectionDate:(NSDate *)date;
 
 + (void)moveFileAtPath:(NSString *)atPath toPath:(NSString *)toPath;
@@ -65,8 +55,6 @@
 
 + (NSString *)returnPathfromServerUrl:(NSString *)serverUrl urlBase:(NSString *)urlBase userId:(NSString *)userId account:(NSString *)account;
 + (NSString *)returnFileNamePathFromFileName:(NSString *)metadataFileName serverUrl:(NSString *)serverUrl urlBase:(NSString *)urlBase userId:(NSString *)userId account:(NSString *)account;
-
-+ (NSString *)getDirectoryScan;
 
 + (NSString *)getMimeType:(NSString *)fileNameView;
 

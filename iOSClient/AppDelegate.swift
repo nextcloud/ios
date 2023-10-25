@@ -84,8 +84,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             FirebaseApp.configure()
         }
 
-        CCUtility.createDirectoryStandard()
-        CCUtility.emptyTemporaryDirectory()
+        NCUtilityFileSystem.shared.createDirectoryStandard()
+        NCUtilityFileSystem.shared.emptyTemporaryDirectory()
         NCUtility.shared.clearCacheDirectory("com.limit-point.LivePhoto")
 
         // Activated singleton

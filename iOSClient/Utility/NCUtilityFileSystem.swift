@@ -64,6 +64,17 @@ class NCUtilityFileSystem: NSObject {
         return path
     }
 
+    var directoryScan: String {
+        guard let directoryGroup = fileManager.containerURL(forSecurityApplicationGroupIdentifier: NCBrandOptions.shared.capabilitiesGroups) else { return "" }
+        let path = directoryGroup.appendingPathComponent(NCGlobal.shared.appScan).path
+        if !fileManager.fileExists(atPath: path) {
+            do {
+                try fileManager.createDirectory(atPath: path, withIntermediateDirectories: true)
+            } catch { print("Error: \(error)") }
+        }
+        return path
+    }
+
     @objc var directoryProviderStorage: String {
         guard let directoryGroup = fileManager.containerURL(forSecurityApplicationGroupIdentifier: NCBrandOptions.shared.capabilitiesGroups) else { return "" }
         let path = directoryGroup.appendingPathComponent(NCGlobal.shared.directoryProviderStorage).path
@@ -86,21 +97,19 @@ class NCUtilityFileSystem: NSObject {
     }
 
     @objc func getDirectoryProviderStorageOcId(_ ocId: String, fileNameView: String) -> String {
-        let path = directoryProviderStorage + "/" + ocId + "/" + fileNameView
+        let path = getDirectoryProviderStorageOcId(ocId) + "/" + fileNameView
         if !fileManager.fileExists(atPath: path) {
-            do {
-                try fileManager.createDirectory(atPath: path, withIntermediateDirectories: true)
-            } catch { print("Error: \(error)") }
+            fileManager.createFile(atPath: path, contents: nil)
         }
         return path
     }
 
     func getDirectoryProviderStorageIconOcId(_ ocId: String, etag: String) -> String {
-        return directoryProviderStorage + "/" + ocId + "/" + etag + ".small." + NCGlobal.shared.extensionPreview
+        return getDirectoryProviderStorageOcId(ocId) + "/" + etag + ".small." + NCGlobal.shared.extensionPreview
     }
 
     func getDirectoryProviderStoragePreviewOcId(_ ocId: String, etag: String) -> String {
-        return directoryProviderStorage + "/" + ocId + "/" + etag + ".preview." + NCGlobal.shared.extensionPreview
+        return getDirectoryProviderStorageOcId(ocId) + "/" + etag + ".preview." + NCGlobal.shared.extensionPreview
     }
 
     func fileProviderStorageExists(_ metadata: tableMetadata) -> Bool {
@@ -151,9 +160,56 @@ class NCUtilityFileSystem: NSObject {
         return false
     }
 
-    func createDirectoryStandard() {
+    @objc func createDirectoryStandard() {
+        guard let directoryGroup = fileManager.containerURL(forSecurityApplicationGroupIdentifier: NCBrandOptions.shared.capabilitiesGroups)?.path else { return }
+        if !fileManager.fileExists(atPath: directoryDocuments) { try? fileManager.createDirectory(atPath: directoryDocuments, withIntermediateDirectories: true) }
+        let appDatabaseNextcloud = directoryGroup + "/" + NCGlobal.shared.appDatabaseNextcloud
+        if !fileManager.fileExists(atPath: appDatabaseNextcloud) { try? fileManager.createDirectory(atPath: appDatabaseNextcloud, withIntermediateDirectories: true) }
+        if !fileManager.fileExists(atPath: directoryUserData) { try? fileManager.createDirectory(atPath: directoryUserData, withIntermediateDirectories: true) }
+        if !fileManager.fileExists(atPath: directoryProviderStorage) { try? fileManager.createDirectory(atPath: directoryProviderStorage, withIntermediateDirectories: true) }
+        let appScan = directoryGroup + "/" + NCGlobal.shared.appScan
+        if !fileManager.fileExists(atPath: appScan) { try? fileManager.createDirectory(atPath: appScan, withIntermediateDirectories: true) }
+        if !fileManager.fileExists(atPath: NSTemporaryDirectory()) { try? fileManager.createDirectory(atPath: NSTemporaryDirectory(), withIntermediateDirectories: true) }
+        // Directory Excluded From Backup
+        if let url = NSURL(string: directoryDocuments) {
+            try? url.setResourceValue(true, forKey: URLResourceKey.isExcludedFromBackupKey)
+        }
+        if let url = NSURL(string: directoryGroup) {
+            try? url.setResourceValue(true, forKey: URLResourceKey.isExcludedFromBackupKey)
+        }
+    }
 
-        guard let directoryGroup = fileManager.containerURL(forSecurityApplicationGroupIdentifier: NCBrandOptions.shared.capabilitiesGroups) else { return }
+    @objc func removeGroupApplicationSupport() {
+        let path = directoryGroup + "/" + NCGlobal.shared.appApplicationSupport
+        try? fileManager.removeItem(atPath: path)
+    }
+
+    @objc func removeGroupLibraryDirectory() {
+        try? fileManager.removeItem(atPath: directoryScan)
+        try? fileManager.removeItem(atPath: directoryUserData)
+    }
+
+    @objc func removeGroupDirectoryProviderStorage() {
+        try? fileManager.removeItem(atPath: directoryProviderStorage)
+    }
+
+    @objc func removeDocumentsDirectory() {
+        try? fileManager.removeItem(atPath: directoryDocuments)
+    }
+
+    @objc func removeTemporaryDirectory() {
+        try? fileManager.removeItem(atPath: NSTemporaryDirectory())
+    }
+
+    @objc func emptyTemporaryDirectory() {
+        do {
+            let files = try fileManager.contentsOfDirectory(atPath: NSTemporaryDirectory())
+            for file in files {
+                do {
+                    try fileManager.removeItem(atPath: NSTemporaryDirectory() + "/" + file)
+                } catch { print("Error: \(error)") }
+            }
+        } catch { print("Error: \(error)") }
     }
 
     // MARK: -

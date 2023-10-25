@@ -127,7 +127,7 @@ class NCUploadScanDocument: ObservableObject {
                 metadata.size = NCUtilityFileSystem.shared.getFileSize(filePath: fileNamePath)
                 NCNetworkingProcessUpload.shared.createProcessUploads(metadatas: [metadata], completion: { _ in })
                 if self.removeAllFiles {
-                    let path = CCUtility.getDirectoryScan()!
+                    let path = NCUtilityFileSystem.shared.directoryScan
                     let filePaths = try FileManager.default.contentsOfDirectory(atPath: path)
                     for filePath in filePaths {
                         try FileManager.default.removeItem(atPath: path + "/" + filePath)

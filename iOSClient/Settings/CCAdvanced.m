@@ -376,13 +376,13 @@
 
         [[NCManageDatabase shared] clearDatabaseWithAccount:account removeAccount:false];
 
-        [CCUtility removeGroupDirectoryProviderStorage];
-        [CCUtility removeGroupLibraryDirectory];
+        [[NCUtilityFileSystem shared] removeGroupDirectoryProviderStorage];
+        [[NCUtilityFileSystem shared] removeGroupLibraryDirectory];
 
-        [CCUtility removeDocumentsDirectory];
-        [CCUtility removeTemporaryDirectory];
+        [[NCUtilityFileSystem shared] removeDocumentsDirectory];
+        [[NCUtilityFileSystem shared] removeTemporaryDirectory];
 
-        [CCUtility createDirectoryStandard];
+        [[NCUtilityFileSystem shared] createDirectoryStandard];
 
         [[NCAutoUpload shared] alignPhotoLibraryWithViewController:self];
 
@@ -459,11 +459,11 @@
             [[NSURLCache sharedURLCache] setMemoryCapacity:0];
             [[NSURLCache sharedURLCache] setDiskCapacity:0];
 
-            [CCUtility removeGroupDirectoryProviderStorage];
-            [CCUtility removeGroupApplicationSupport];
+            [[NCUtilityFileSystem shared] removeGroupDirectoryProviderStorage];
+            [[NCUtilityFileSystem shared] removeGroupApplicationSupport];
 
-            [CCUtility removeDocumentsDirectory];
-            [CCUtility removeTemporaryDirectory];
+            [[NCUtilityFileSystem shared] removeDocumentsDirectory];
+            [[NCUtilityFileSystem shared] removeTemporaryDirectory];
 
             [[[NCKeychain alloc] init] removeAll];
 

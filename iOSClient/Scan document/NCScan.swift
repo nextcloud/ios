@@ -191,7 +191,7 @@ class NCScan: UIViewController, NCScanCellCellDelegate {
 
         for fileName in itemsSource where !itemsDestination.contains(fileName) {
 
-            let fileNamePathAt = CCUtility.getDirectoryScan() + "/" + fileName
+            let fileNamePathAt = NCUtilityFileSystem.shared.directoryScan + "/" + fileName
             guard let data = try? Data(contentsOf: URL(fileURLWithPath: fileNamePathAt)), let image = UIImage(data: data) else { return }
 
             imagesDestination.append(image)
@@ -228,7 +228,7 @@ class NCScan: UIViewController, NCScanCellCellDelegate {
         itemsSource.removeAll()
 
         do {
-            let atPath = CCUtility.getDirectoryScan()!
+            let atPath = NCUtilityFileSystem.shared.directoryScan
             let directoryContents = try FileManager.default.contentsOfDirectory(atPath: atPath)
             for fileName in directoryContents where fileName.first != "." {
                 itemsSource.append(fileName)
@@ -329,7 +329,7 @@ class NCScan: UIViewController, NCScanCellCellDelegate {
                 if collectionView === collectionViewDestination {
 
                     let fileName = (item.dragItem.localObject as? String)!
-                    let fileNamePathAt = CCUtility.getDirectoryScan() + "/" + fileName
+                    let fileNamePathAt = NCUtilityFileSystem.shared.directoryScan + "/" + fileName
 
                     guard let data = try? Data(contentsOf: URL(fileURLWithPath: fileNamePathAt)), let image = UIImage(data: data) else { return }
 
@@ -382,7 +382,7 @@ class NCScan: UIViewController, NCScanCellCellDelegate {
                                                     keyFileNameType: NCGlobal.shared.keyFileNameType,
                                                     keyFileNameOriginal: NCGlobal.shared.keyFileNameOriginal,
                                                     forcedNewFileName: true)!
-            let fileNamePath = CCUtility.getDirectoryScan() + "/" + fileName
+            let fileNamePath = NCUtilityFileSystem.shared.directoryScan + "/" + fileName
 
             do {
                 try image.pngData()?.write(to: NSURL.fileURL(withPath: fileNamePath), options: .atomic)

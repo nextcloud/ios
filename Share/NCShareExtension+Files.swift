@@ -99,7 +99,7 @@ class NCFilesExtensionHandler {
 
     @discardableResult
     init(items: [NSExtensionItem], completion: @escaping ([String]) -> Void) {
-        CCUtility.emptyTemporaryDirectory()
+        NCUtilityFileSystem.shared.emptyTemporaryDirectory()
         var counter = 0
 
         self.itemsProvider = items.compactMap({ $0.attachments }).flatMap { $0.filter({
