@@ -113,9 +113,14 @@ class NCUtilityFileSystem: NSObject {
         return path
     }
 
-    @objc func getDirectoryProviderStorageIconOcId(_ ocId: String, etag: String) -> String {
+    func getDirectoryProviderStorageIconOcId(_ ocId: String, etag: String) -> String {
 
         return directoryProviderStorage + "/" + ocId + "/" + etag + ".small." + NCGlobal.shared.extensionPreview
+    }
+
+    func getDirectoryProviderStoragePreviewOcId(_ ocId: String, etag: String) -> String {
+
+        return directoryProviderStorage + "/" + ocId + "/" + etag + ".preview." + NCGlobal.shared.extensionPreview
     }
 
     // MARK: -

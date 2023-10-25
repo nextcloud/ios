@@ -374,7 +374,7 @@ class NCUtility: NSObject {
         var originalImage, scaleImagePreview, scaleImageIcon: UIImage?
 
         let fileNamePath = NCUtilityFileSystem.shared.getDirectoryProviderStorageOcId(ocId, fileNameView: fileNameView)
-        let fileNamePathPreview = CCUtility.getDirectoryProviderStoragePreviewOcId(ocId, etag: etag)!
+        let fileNamePathPreview = NCUtilityFileSystem.shared.getDirectoryProviderStoragePreviewOcId(ocId, etag: etag)
         let fileNamePathIcon = NCUtilityFileSystem.shared.getDirectoryProviderStorageIconOcId(ocId, etag: etag)
 
         if CCUtility.fileProviderStorageSize(ocId, fileNameView: fileNameView) > 0 && FileManager().fileExists(atPath: fileNamePathPreview) && FileManager().fileExists(atPath: fileNamePathIcon) { return }

@@ -203,7 +203,7 @@ extension FileProviderExtension {
                     // rename file
                     _ = fileProviderUtility.shared.moveFile(NCUtilityFileSystem.shared.getDirectoryProviderStorageOcId(itemIdentifier.rawValue, fileNameView: fileNameFrom), toPath: NCUtilityFileSystem.shared.getDirectoryProviderStorageOcId(itemIdentifier.rawValue, fileNameView: itemName))
 
-                    _ = fileProviderUtility.shared.moveFile(CCUtility.getDirectoryProviderStoragePreviewOcId(itemIdentifier.rawValue, etag: metadata.etag), toPath: CCUtility.getDirectoryProviderStoragePreviewOcId(itemIdentifier.rawValue, etag: metadata.etag))
+                    _ = fileProviderUtility.shared.moveFile(NCUtilityFileSystem.shared.getDirectoryProviderStoragePreviewOcId(itemIdentifier.rawValue, etag: metadata.etag), toPath: NCUtilityFileSystem.shared.getDirectoryProviderStoragePreviewOcId(itemIdentifier.rawValue, etag: metadata.etag))
 
                     _ = fileProviderUtility.shared.moveFile(NCUtilityFileSystem.shared.getDirectoryProviderStorageIconOcId(itemIdentifier.rawValue, etag: metadata.etag), toPath: NCUtilityFileSystem.shared.getDirectoryProviderStorageIconOcId(itemIdentifier.rawValue, etag: metadata.etag))
 

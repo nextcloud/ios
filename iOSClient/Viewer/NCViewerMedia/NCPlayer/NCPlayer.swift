@@ -137,7 +137,7 @@ class NCPlayer: NSObject {
 
             if metadata.isVideo {
                 if position == 0 {
-                    let fileNamePreviewLocalPath = CCUtility.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)!
+                    let fileNamePreviewLocalPath = NCUtilityFileSystem.shared.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)
                     imageVideoContainer?.image = UIImage(contentsOfFile: fileNamePreviewLocalPath)
                 } else {
                     imageVideoContainer?.image = nil

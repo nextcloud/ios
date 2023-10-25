@@ -72,7 +72,7 @@ class NCViewerProviderContextMenu: UIViewController {
             // PREVIEW
             if CCUtility.fileProviderStoragePreviewIconExists(metadata.ocId, etag: metadata.etag) {
 
-                if let image = UIImage(contentsOfFile: CCUtility.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)) {
+                if let image = UIImage(contentsOfFile: NCUtilityFileSystem.shared.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)) {
                     imageView.image = image
                     imageView.frame = resize(image.size)
                 }
