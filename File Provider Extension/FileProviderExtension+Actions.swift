@@ -100,8 +100,8 @@ extension FileProviderExtension {
                 }
 
                 if isDirectory {
-                    let dirForDelete = CCUtility.stringAppendServerUrl(serverUrl, addFileName: fileName)
-                    NCManageDatabase.shared.deleteDirectoryAndSubDirectory(serverUrl: dirForDelete!, account: account)
+                    let dirForDelete = NCUtilityFileSystem.shared.stringAppendServerUrl(serverUrl, addFileName: fileName)
+                    NCManageDatabase.shared.deleteDirectoryAndSubDirectory(serverUrl: dirForDelete, account: account)
                 }
 
                 NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", ocId))

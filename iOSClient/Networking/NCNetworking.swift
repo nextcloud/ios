@@ -1383,7 +1383,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
             NCManageDatabase.shared.deleteLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
 
             if metadata.directory {
-                NCManageDatabase.shared.deleteDirectoryAndSubDirectory(serverUrl: CCUtility.stringAppendServerUrl(metadata.serverUrl, addFileName: metadata.fileName), account: metadata.account)
+                NCManageDatabase.shared.deleteDirectoryAndSubDirectory(serverUrl: NCUtilityFileSystem.shared.stringAppendServerUrl(metadata.serverUrl, addFileName: metadata.fileName), account: metadata.account)
             }
         }
 
@@ -1507,8 +1507,8 @@ class NCNetworking: NSObject, NKCommonDelegate {
 
                 if metadata.directory {
 
-                    let serverUrl = CCUtility.stringAppendServerUrl(metadata.serverUrl, addFileName: metadata.fileName)!
-                    let serverUrlTo = CCUtility.stringAppendServerUrl(metadata.serverUrl, addFileName: fileNameNew)!
+                    let serverUrl = NCUtilityFileSystem.shared.stringAppendServerUrl(metadata.serverUrl, addFileName: metadata.fileName)
+                    let serverUrlTo = NCUtilityFileSystem.shared.stringAppendServerUrl(metadata.serverUrl, addFileName: fileNameNew)
                     if let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", metadata.account, metadata.serverUrl)) {
 
                         NCManageDatabase.shared.setDirectory(serverUrl: serverUrl, serverUrlTo: serverUrlTo, etag: "", ocId: nil, fileId: nil, encrypted: directory.e2eEncrypted, richWorkspace: nil, account: metadata.account)
@@ -1573,7 +1573,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
         let result = await NextcloudKit.shared.moveFileOrFolder(serverUrlFileNameSource: serverUrlFileNameSource, serverUrlFileNameDestination: serverUrlFileNameDestination, overwrite: overwrite)
         if result.error == .success {
             if metadata.directory {
-                NCManageDatabase.shared.deleteDirectoryAndSubDirectory(serverUrl: CCUtility.stringAppendServerUrl(metadata.serverUrl, addFileName: metadata.fileName), account: result.account)
+                NCManageDatabase.shared.deleteDirectoryAndSubDirectory(serverUrl: NCUtilityFileSystem.shared.stringAppendServerUrl(metadata.serverUrl, addFileName: metadata.fileName), account: result.account)
             }
             NCManageDatabase.shared.moveMetadata(ocId: metadata.ocId, serverUrlTo: serverUrlTo)
         }

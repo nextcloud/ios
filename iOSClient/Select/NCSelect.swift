@@ -249,7 +249,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
 
     func pushMetadata(_ metadata: tableMetadata) {
 
-        guard let serverUrlPush = CCUtility.stringAppendServerUrl(metadata.serverUrl, addFileName: metadata.fileName) else { return }
+        let serverUrlPush = NCUtilityFileSystem.shared.stringAppendServerUrl(metadata.serverUrl, addFileName: metadata.fileName)
         guard let viewController = UIStoryboard(name: "NCSelect", bundle: nil).instantiateViewController(withIdentifier: "NCSelect.storyboard") as? NCSelect else { return }
 
         self.serverUrlPush = serverUrlPush

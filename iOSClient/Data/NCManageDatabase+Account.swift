@@ -263,8 +263,7 @@ extension NCManageDatabase {
 
         let cameraFileName = self.getAccountAutoUploadFileName()
         let cameraDirectory = self.getAccountAutoUploadDirectory(urlBase: urlBase, userId: userId, account: account)
-
-        let folderPhotos = CCUtility.stringAppendServerUrl(cameraDirectory, addFileName: cameraFileName)!
+        let folderPhotos = NCUtilityFileSystem.shared.stringAppendServerUrl(cameraDirectory, addFileName: cameraFileName)
 
         return folderPhotos
     }

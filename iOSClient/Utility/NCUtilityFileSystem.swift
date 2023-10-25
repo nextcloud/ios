@@ -367,6 +367,17 @@ class NCUtilityFileSystem: NSObject {
         return returnString
     }
 
+    func stringAppendServerUrl(_ serverUrl: String, addFileName: String) -> String {
+
+        if addFileName.isEmpty {
+            return serverUrl
+        } else if serverUrl.last == "/" {
+            return serverUrl + addFileName
+        } else {
+            return serverUrl + "/" + addFileName
+        }
+    }
+
     @objc func createFileName(_ fileName: String, serverUrl: String, account: String) -> String {
 
         var resultFileName = fileName

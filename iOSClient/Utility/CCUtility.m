@@ -71,19 +71,6 @@
     }
 }
 
-+ (NSString*)stringAppendServerUrl:(NSString *)serverUrl addFileName:(NSString *)addFileName
-{
-    NSString *result;
-
-    if (serverUrl == nil || addFileName == nil) return nil;
-    if ([addFileName isEqualToString:@""]) return serverUrl;
-
-    if ([serverUrl isEqualToString:@"/"]) result = [serverUrl stringByAppendingString:addFileName];
-    else result = [NSString stringWithFormat:@"%@/%@", serverUrl, addFileName];
-
-    return result;
-}
-
 + (NSString *)createFileNameDate:(NSString *)fileName extension:(NSString *)extension
 {
     NSDateFormatter *formatter = [[NSDateFormatter alloc] init];

@@ -1052,7 +1052,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
     func pushMetadata(_ metadata: tableMetadata) {
 
-        guard let serverUrlPush = CCUtility.stringAppendServerUrl(metadata.serverUrl, addFileName: metadata.fileName) else { return }
+        let serverUrlPush = NCUtilityFileSystem.shared.stringAppendServerUrl(metadata.serverUrl, addFileName: metadata.fileName)
         appDelegate.activeMetadata = metadata
 
         if let viewController = appDelegate.listFilesVC[serverUrlPush], viewController.isViewLoaded {
