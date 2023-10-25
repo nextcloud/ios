@@ -341,7 +341,7 @@ extension NCCreateFormUploadConflict: UITableViewDataSource {
                     cell.imageAlreadyExistingFile.image = UIImage(named: metadataAlreadyExists.iconName)
                 }
             }
-            cell.labelDetailAlreadyExistingFile.text = CCUtility.dateDiff(metadataAlreadyExists.date as Date) + "\n" + CCUtility.transformedSize(metadataAlreadyExists.size)
+            cell.labelDetailAlreadyExistingFile.text = CCUtility.dateDiff(metadataAlreadyExists.date as Date) + "\n" + NCUtilityFileSystem.shared.transformedSize(metadataAlreadyExists.size)
 
             if metadatasConflictAlreadyExistingFiles.contains(metadataNewFile.ocId) {
                 cell.switchAlreadyExistingFile.isOn = true
@@ -380,7 +380,7 @@ extension NCCreateFormUploadConflict: UITableViewDataSource {
                         let fileDictionary = try FileManager.default.attributesOfItem(atPath: fileNamePath)
                         let fileSize = fileDictionary[FileAttributeKey.size] as? Int64 ?? 0
 
-                        cell.labelDetailNewFile.text = CCUtility.dateDiff(date) + "\n" + CCUtility.transformedSize(fileSize)
+                        cell.labelDetailNewFile.text = CCUtility.dateDiff(date) + "\n" + NCUtilityFileSystem.shared.transformedSize(fileSize)
 
                     } catch { print("Error: \(error)") }
 
@@ -404,7 +404,7 @@ extension NCCreateFormUploadConflict: UITableViewDataSource {
                                         DispatchQueue.main.async { cell.imageNewFile.image = image }
                                     }
                                 }
-                                DispatchQueue.main.async { cell.labelDetailNewFile.text = CCUtility.dateDiff(date) + "\n" + CCUtility.transformedSize(fileSize) }
+                                DispatchQueue.main.async { cell.labelDetailNewFile.text = CCUtility.dateDiff(date) + "\n" + NCUtilityFileSystem.shared.transformedSize(fileSize) }
                             } catch { print("Error: \(error)") }
                         }
                     }
@@ -423,7 +423,7 @@ extension NCCreateFormUploadConflict: UITableViewDataSource {
                     let fileDictionary = try FileManager.default.attributesOfItem(atPath: filePathNewFile)
                     let fileSize = fileDictionary[FileAttributeKey.size] as? Int64 ?? 0
 
-                    cell.labelDetailNewFile.text = CCUtility.dateDiff(metadataNewFile.date as Date) + "\n" + CCUtility.transformedSize(fileSize)
+                    cell.labelDetailNewFile.text = CCUtility.dateDiff(metadataNewFile.date as Date) + "\n" + NCUtilityFileSystem.shared.transformedSize(fileSize)
 
                 } catch { print("Error: \(error)") }
 

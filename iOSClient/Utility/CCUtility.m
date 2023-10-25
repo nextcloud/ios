@@ -71,12 +71,6 @@
     }
 }
 
-+ (NSString *)transformedSize:(int64_t)value
-{
-    NSString *string = [NSByteCountFormatter stringFromByteCount:value countStyle:NSByteCountFormatterCountStyleBinary];
-    return string;
-}
-
 // Remove do not forbidden characters for Nextcloud Server
 + (NSString *)removeForbiddenCharactersServer:(NSString *)fileName
 {

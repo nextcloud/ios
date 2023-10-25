@@ -140,7 +140,7 @@ class NCViewerMediaDetailView: UIView {
         }
 
         nameLabel.text = (metadata.fileNameView as NSString).deletingPathExtension
-        sizeLabel.text = CCUtility.transformedSize(metadata.size)
+        sizeLabel.text = NCUtilityFileSystem.shared.transformedSize(metadata.size)
 
         if let shutterSpeedApex = exif.shutterSpeedApex {
             prepareLensInfoViewsForData()

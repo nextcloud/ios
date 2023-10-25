@@ -391,7 +391,7 @@ extension NCSelect: UICollectionViewDataSource {
 
         } else {
 
-            cell.labelInfo.text = CCUtility.dateDiff(metadata.date as Date) + " · " + CCUtility.transformedSize(metadata.size)
+            cell.labelInfo.text = CCUtility.dateDiff(metadata.date as Date) + " · " + NCUtilityFileSystem.shared.transformedSize(metadata.size)
 
             // image local
             if NCManageDatabase.shared.getTableLocalFile(ocId: metadata.ocId) != nil {

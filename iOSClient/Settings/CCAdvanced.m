@@ -432,8 +432,8 @@
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         NSString *directory =  [[NCUtilityFileSystem shared] directoryProviderStorage];
         int64_t totalSize = [[NCUtilityFileSystem shared] getDirectorySizeWithDirectory:directory];
-        sectionSize.footerTitle = [NSString stringWithFormat:@"%@. (%@ %@)", NSLocalizedString(@"_clear_cache_footer_", nil), NSLocalizedString(@"_used_space_", nil), [CCUtility transformedSize:totalSize]];
-            
+        sectionSize.footerTitle = [NSString stringWithFormat:@"%@. (%@ %@)", NSLocalizedString(@"_clear_cache_footer_", nil), NSLocalizedString(@"_used_space_", nil), [[NCUtilityFileSystem shared] transformedSize:totalSize]];
+
         dispatch_async(dispatch_get_main_queue(), ^{
             [self.tableView reloadData];
         });

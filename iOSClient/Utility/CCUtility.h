@@ -35,7 +35,6 @@
 @interface CCUtility : NSObject
 
 + (NSString *)dateDiff:(NSDate *)convertedDate;
-+ (NSString *)transformedSize:(int64_t)value;
 
 + (NSString *)removeForbiddenCharactersServer:(NSString *)fileName;
 

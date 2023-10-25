@@ -162,7 +162,7 @@ extension NCTrashCellProtocol where Self: UICollectionViewCell {
             self.imageItem.image = NCBrandColor.cacheImages.folder
         } else {
             self.imageItem.image = image
-            self.labelInfo?.text = (self.labelInfo?.text ?? "") + " · " + CCUtility.transformedSize(tableTrash.size)
+            self.labelInfo?.text = (self.labelInfo?.text ?? "") + " · " + NCUtilityFileSystem.shared.transformedSize(tableTrash.size)
         }
         self.accessibilityLabel = tableTrash.trashbinFileName + ", " + (self.labelInfo?.text ?? "")
     }

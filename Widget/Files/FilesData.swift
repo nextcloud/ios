@@ -218,7 +218,7 @@ func getFilesDataEntry(configuration: AccountIntent?, isPreview: Bool, displaySi
                 guard !isLive(file: file, files: files) else { continue }
 
                 // SUBTITLE
-                let subTitle = CCUtility.dateDiff(file.date as Date) + " · " + CCUtility.transformedSize(file.size)
+                let subTitle = CCUtility.dateDiff(file.date as Date) + " · " + NCUtilityFileSystem.shared.transformedSize(file.size)
 
                 // URL: nextcloud://open-file?path=Talk/IMG_0000123.jpg&user=marinofaggiana&link=https://cloud.nextcloud.com/f/123
                 guard var path = NCUtilityFileSystem.shared.getPath(path: file.path, user: file.user, fileName: file.fileName).urlEncoded else { continue }

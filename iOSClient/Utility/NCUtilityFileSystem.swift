@@ -434,6 +434,12 @@ class NCUtilityFileSystem: NSObject {
         return totalSize
     }
 
+    @objc func transformedSize(_ bytes: Int64) -> String {
+        let formatter: ByteCountFormatter = ByteCountFormatter()
+        formatter.countStyle = .binary
+        return formatter.string(fromByteCount: bytes)
+    }
+
     func cleanUp(directory: String, days: TimeInterval) {
 
         if days == 0 { return}

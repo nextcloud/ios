@@ -196,7 +196,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
         } else {
             cell.imageItem.image = UIImage(named: "file")
         }
-        cell.labelInfo.text = CCUtility.dateDiff(metadata.date as Date) + " · " + CCUtility.transformedSize(metadata.size)
+        cell.labelInfo.text = CCUtility.dateDiff(metadata.date as Date) + " · " + NCUtilityFileSystem.shared.transformedSize(metadata.size)
         if metadata.status == NCGlobal.shared.metadataStatusDownloading || metadata.status == NCGlobal.shared.metadataStatusUploading {
             cell.progressView.isHidden = false
         } else {
@@ -206,22 +206,22 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
         switch metadata.status {
         case NCGlobal.shared.metadataStatusWaitDownload:
             cell.labelStatus.text = NSLocalizedString("_status_wait_download_", comment: "")
-            cell.labelInfo.text = CCUtility.transformedSize(metadata.size)
+            cell.labelInfo.text = NCUtilityFileSystem.shared.transformedSize(metadata.size)
         case NCGlobal.shared.metadataStatusInDownload:
             cell.labelStatus.text = NSLocalizedString("_status_in_download_", comment: "")
-            cell.labelInfo.text = CCUtility.transformedSize(metadata.size)
+            cell.labelInfo.text = NCUtilityFileSystem.shared.transformedSize(metadata.size)
         case NCGlobal.shared.metadataStatusDownloading:
             cell.labelStatus.text = NSLocalizedString("_status_downloading_", comment: "")
-            cell.labelInfo.text = CCUtility.transformedSize(metadata.size) + " - ↓ …"
+            cell.labelInfo.text = NCUtilityFileSystem.shared.transformedSize(metadata.size) + " - ↓ …"
         case NCGlobal.shared.metadataStatusWaitUpload:
             cell.labelStatus.text = NSLocalizedString("_status_wait_upload_", comment: "")
             cell.labelInfo.text = ""
         case NCGlobal.shared.metadataStatusInUpload:
             cell.labelStatus.text = NSLocalizedString("_status_in_upload_", comment: "")
-            cell.labelInfo.text = CCUtility.transformedSize(metadata.size)
+            cell.labelInfo.text = NCUtilityFileSystem.shared.transformedSize(metadata.size)
         case NCGlobal.shared.metadataStatusUploading:
             cell.labelStatus.text = NSLocalizedString("_status_uploading_", comment: "")
-            cell.labelInfo.text = CCUtility.transformedSize(metadata.size) + " - ↑ …"
+            cell.labelInfo.text = NCUtilityFileSystem.shared.transformedSize(metadata.size) + " - ↑ …"
         case NCGlobal.shared.metadataStatusUploadError:
             cell.labelStatus.text = NSLocalizedString("_status_upload_error_", comment: "")
             cell.labelInfo.text = metadata.sessionError

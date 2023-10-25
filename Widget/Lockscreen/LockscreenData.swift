@@ -82,7 +82,7 @@ func getLockscreenDataEntry(configuration: AccountIntent?, isPreview: Bool, fami
                     if userProfile.quotaRelative > 0 {
                         quotaRelative = Float(userProfile.quotaRelative) / 100
                     }
-                    let quotaUsed: String = CCUtility.transformedSize(userProfile.quotaUsed)
+                    let quotaUsed: String = NCUtilityFileSystem.shared.transformedSize(userProfile.quotaUsed)
                     var quotaTotal: String = ""
 
                     switch userProfile.quotaTotal {
@@ -93,7 +93,7 @@ func getLockscreenDataEntry(configuration: AccountIntent?, isPreview: Bool, fami
                     case -3:
                         quotaTotal = ""
                     default:
-                        quotaTotal = CCUtility.transformedSize(userProfile.quotaTotal)
+                        quotaTotal = NCUtilityFileSystem.shared.transformedSize(userProfile.quotaTotal)
                     }
                     completion(LockscreenData(date: Date(), isPlaceholder: false, activity: "", link: URL(string: "https://")!, quotaRelative: quotaRelative, quotaUsed: quotaUsed, quotaTotal: quotaTotal, error: false))
                 } else {
