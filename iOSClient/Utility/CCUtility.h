@@ -49,7 +49,6 @@
 
 + (void)createDirectoryStandard;
 
-+ (BOOL)fileProviderStoragePreviewIconExists:(NSString *)ocId etag:(NSString *)etag;
 
 + (void)removeGroupApplicationSupport;
 + (void)removeGroupLibraryDirectory;

@@ -151,6 +151,7 @@ class NCUtilityFileSystem: NSObject {
     func fileProviderStorageSize(_ ocId: String, fileNameView: String) -> UInt64 {
 
         let fileNamePath = getDirectoryProviderStorageOcId(ocId, fileNameView: fileNameView)
+
         do {
             let fileNameAttribute = try fileManager.attributesOfItem(atPath: fileNamePath)
             let fileNameSize: UInt64 = fileNameAttribute[FileAttributeKey.size] as? UInt64 ?? 0
@@ -158,6 +159,26 @@ class NCUtilityFileSystem: NSObject {
         } catch { print("Error: \(error)") }
 
         return 0
+    }
+
+    func fileProviderStoragePreviewIconExists(_ ocId: String, etag: String) -> Bool {
+
+        let fileNamePathPreview = getDirectoryProviderStoragePreviewOcId(ocId, etag: etag)
+        let fileNamePathIcon = getDirectoryProviderStorageIconOcId(ocId, etag: etag)
+
+        do {
+            let fileNamePathPreviewAttribute = try fileManager.attributesOfItem(atPath: fileNamePathPreview)
+            let fileSizePreview: UInt64 = fileNamePathPreviewAttribute[FileAttributeKey.size] as? UInt64 ?? 0
+            let fileNamePathIconAttribute = try fileManager.attributesOfItem(atPath: fileNamePathIcon)
+            let fileSizeIcon: UInt64 = fileNamePathIconAttribute[FileAttributeKey.size] as? UInt64 ?? 0
+            if fileSizePreview > 0 && fileSizeIcon > 0 {
+                return true
+            } else {
+                return false
+            }
+        } catch { print("Error: \(error)") }
+
+        return false
     }
 
     // MARK: -
