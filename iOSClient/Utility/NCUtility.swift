@@ -121,7 +121,7 @@ class NCUtility: NSObject {
     }
 #endif
 
-    func isSimulatorOrTestFlight() -> Bool {
+    @objc func isSimulatorOrTestFlight() -> Bool {
         guard let path = Bundle.main.appStoreReceiptURL?.path else {
             return false
         }
