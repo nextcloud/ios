@@ -98,7 +98,7 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
                 self.openDocumentController(metadata: metadata)
             } else {
                 if let viewController = appDelegate.activeViewController {
-                    let imageIcon = UIImage(contentsOfFile: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag))
+                    let imageIcon = UIImage(contentsOfFile: NCUtilityFileSystem.shared.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag))
                     NCViewer.shared.view(viewController: viewController, metadata: metadata, metadatas: [metadata], imageIcon: imageIcon)
                 }
             }

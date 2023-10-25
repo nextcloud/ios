@@ -388,8 +388,8 @@ extension NCMedia: UICollectionViewDataSource {
             if let image = NCMediaCache.shared.getImage(ocId: metadata.ocId) {
                 cell.imageItem.backgroundColor = nil
                 cell.imageItem.image = image
-            } else if FileManager().fileExists(atPath: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)) {
-                if let image = UIImage(contentsOfFile: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)) {
+            } else if FileManager().fileExists(atPath: NCUtilityFileSystem.shared.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)) {
+                if let image = UIImage(contentsOfFile: NCUtilityFileSystem.shared.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)) {
                     cell.imageItem.backgroundColor = nil
                     cell.imageItem.image = image
                     NCMediaCache.shared.setImage(ocId: metadata.ocId, image: image)
@@ -817,7 +817,7 @@ class NCMediaDownloadThumbnaill: ConcurrentOperation {
         self.collectionView = collectionView
         self.fileNamePath = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, urlBase: metadata.urlBase, userId: metadata.userId, account: metadata.account)!
         self.fileNamePreviewLocalPath = CCUtility.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)!
-        self.fileNameIconLocalPath = CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)!
+        self.fileNameIconLocalPath = NCUtilityFileSystem.shared.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)
     }
 
     override func start() {

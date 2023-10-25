@@ -276,8 +276,8 @@ class NCSharePagingView: PagingView {
         dateFormatter.timeStyle = .short
         dateFormatter.locale = Locale.current
 
-        if FileManager.default.fileExists(atPath: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)) {
-            headerView.imageView.image = UIImage(contentsOfFile: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag))
+        if FileManager.default.fileExists(atPath: NCUtilityFileSystem.shared.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)) {
+            headerView.imageView.image = UIImage(contentsOfFile: NCUtilityFileSystem.shared.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag))
         } else {
             if metadata.directory {
                 let image = metadata.e2eEncrypted ? UIImage(named: "folderEncrypted") : UIImage(named: "folder")

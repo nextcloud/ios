@@ -1123,7 +1123,7 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
 
         } else {
 
-            let imageIcon = UIImage(contentsOfFile: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag))
+            let imageIcon = UIImage(contentsOfFile: NCUtilityFileSystem.shared.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag))
 
             if !metadata.isDirectoryE2EE && (metadata.isImage || metadata.isAudioOrVideo) {
                 var metadatas: [tableMetadata] = []
@@ -1753,7 +1753,7 @@ class NCCollectionViewDownloadThumbnail: ConcurrentOperation {
         self.collectionView = collectionView
         self.fileNamePath = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, urlBase: metadata.urlBase, userId: metadata.userId, account: metadata.account)!
         self.fileNamePreviewLocalPath = CCUtility.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)!
-        self.fileNameIconLocalPath = CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)!
+        self.fileNameIconLocalPath = NCUtilityFileSystem.shared.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)
     }
 
     override func start() {

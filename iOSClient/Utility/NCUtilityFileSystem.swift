@@ -32,6 +32,8 @@ class NCUtilityFileSystem: NSObject {
 
     let fileManager = FileManager.default
 
+    // MARK: -
+
     var directoryGroup: String {
         return fileManager.containerURL(forSecurityApplicationGroupIdentifier: NCBrandOptions.shared.capabilitiesGroups)?.path ?? ""
     }
@@ -110,6 +112,13 @@ class NCUtilityFileSystem: NSObject {
         }
         return path
     }
+
+    @objc func getDirectoryProviderStorageIconOcId(_ ocId: String, etag: String) -> String {
+
+        return directoryProviderStorage + "/" + ocId + "/" + etag + ".small." + NCGlobal.shared.extensionPreview
+    }
+
+    // MARK: -
 
     @objc func getFileSize(filePath: String) -> Int64 {
 

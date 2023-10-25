@@ -298,8 +298,8 @@ extension NCSelect: UICollectionViewDataSource {
 
         // Thumbnail
         if !metadata.directory {
-            if FileManager().fileExists(atPath: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)) {
-                (cell as? NCCellProtocol)?.filePreviewImageView?.image = UIImage(contentsOfFile: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag))
+            if FileManager().fileExists(atPath: NCUtilityFileSystem.shared.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)) {
+                (cell as? NCCellProtocol)?.filePreviewImageView?.image = UIImage(contentsOfFile: NCUtilityFileSystem.shared.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag))
             } else {
                 if metadata.iconName.isEmpty {
                     (cell as? NCCellProtocol)?.filePreviewImageView?.image = NCBrandColor.cacheImages.file

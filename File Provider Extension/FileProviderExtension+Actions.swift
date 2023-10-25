@@ -205,7 +205,7 @@ extension FileProviderExtension {
 
                     _ = fileProviderUtility.shared.moveFile(CCUtility.getDirectoryProviderStoragePreviewOcId(itemIdentifier.rawValue, etag: metadata.etag), toPath: CCUtility.getDirectoryProviderStoragePreviewOcId(itemIdentifier.rawValue, etag: metadata.etag))
 
-                    _ = fileProviderUtility.shared.moveFile(CCUtility.getDirectoryProviderStorageIconOcId(itemIdentifier.rawValue, etag: metadata.etag), toPath: CCUtility.getDirectoryProviderStorageIconOcId(itemIdentifier.rawValue, etag: metadata.etag))
+                    _ = fileProviderUtility.shared.moveFile(NCUtilityFileSystem.shared.getDirectoryProviderStorageIconOcId(itemIdentifier.rawValue, etag: metadata.etag), toPath: NCUtilityFileSystem.shared.getDirectoryProviderStorageIconOcId(itemIdentifier.rawValue, etag: metadata.etag))
 
                     NCManageDatabase.shared.setLocalFile(ocId: ocId, fileName: itemName, etag: nil)
                 }

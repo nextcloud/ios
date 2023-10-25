@@ -237,7 +237,7 @@ func getFilesDataEntry(configuration: AccountIntent?, isPreview: Bool, displaySi
                 } else if file.hasPreview {
                     let fileNamePathOrFileId = CCUtility.returnFileNamePath(fromFileName: file.fileName, serverUrl: file.serverUrl, urlBase: file.urlBase, userId: file.userId, account: account.account)!
                     let fileNamePreviewLocalPath = CCUtility.getDirectoryProviderStoragePreviewOcId(file.ocId, etag: file.etag)!
-                    let fileNameIconLocalPath = CCUtility.getDirectoryProviderStorageIconOcId(file.ocId, etag: file.etag)!
+                    let fileNameIconLocalPath = NCUtilityFileSystem.shared.getDirectoryProviderStorageIconOcId(file.ocId, etag: file.etag)
                     let (_, _, imageIcon, _, _, _) = await NextcloudKit.shared.downloadPreview(fileNamePathOrFileId: fileNamePathOrFileId, fileNamePreviewLocalPath: fileNamePreviewLocalPath, widthPreview: NCGlobal.shared.sizePreview, heightPreview: NCGlobal.shared.sizePreview, fileNameIconLocalPath: fileNameIconLocalPath, sizeIcon: NCGlobal.shared.sizeIcon, options: options)
                     if let image = imageIcon {
                         imageRecent = image

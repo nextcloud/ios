@@ -375,7 +375,7 @@ class NCUtility: NSObject {
 
         let fileNamePath = NCUtilityFileSystem.shared.getDirectoryProviderStorageOcId(ocId, fileNameView: fileNameView)
         let fileNamePathPreview = CCUtility.getDirectoryProviderStoragePreviewOcId(ocId, etag: etag)!
-        let fileNamePathIcon = CCUtility.getDirectoryProviderStorageIconOcId(ocId, etag: etag)!
+        let fileNamePathIcon = NCUtilityFileSystem.shared.getDirectoryProviderStorageIconOcId(ocId, etag: etag)
 
         if CCUtility.fileProviderStorageSize(ocId, fileNameView: fileNameView) > 0 && FileManager().fileExists(atPath: fileNamePathPreview) && FileManager().fileExists(atPath: fileNamePathIcon) { return }
         if classFile != NKCommon.TypeClassFile.image.rawValue && classFile != NKCommon.TypeClassFile.video.rawValue { return }
@@ -677,7 +677,7 @@ class NCUtility: NSObject {
 
         var imagePreview: UIImage?
         let filePath = NCUtilityFileSystem.shared.getDirectoryProviderStorageOcId(ocId, fileNameView: fileNameView)
-        let iconImagePath = CCUtility.getDirectoryProviderStorageIconOcId(ocId, etag: etag)!
+        let iconImagePath = NCUtilityFileSystem.shared.getDirectoryProviderStorageIconOcId(ocId, etag: etag)
 
         if FileManager().fileExists(atPath: iconImagePath) {
             imagePreview = UIImage(contentsOfFile: iconImagePath)
