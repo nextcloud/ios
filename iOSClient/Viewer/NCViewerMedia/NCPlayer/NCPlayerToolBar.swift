@@ -465,7 +465,7 @@ extension NCPlayerToolBar: NCSelectDelegate {
             let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
             let fileNameLocalPath = NCUtilityFileSystem.shared.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)
 
-            if CCUtility.fileProviderStorageExists(metadata) {
+            if NCUtilityFileSystem.shared.fileProviderStorageExists(metadata) {
                 addPlaybackSlave(type: type, metadata: metadata)
             } else {
                 var downloadRequest: DownloadRequest?

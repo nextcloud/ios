@@ -309,7 +309,7 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
 
         for metadata in metadatas {
             let fileURL = URL(fileURLWithPath: NCUtilityFileSystem.shared.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView))
-            if CCUtility.fileProviderStorageExists(metadata) {
+            if NCUtilityFileSystem.shared.fileProviderStorageExists(metadata) {
                 items.append(fileURL)
             } else {
                 downloadMetadata.append((metadata, fileURL))
@@ -323,7 +323,7 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
                 } progressHandler: { progress in
                     processor.hud?.progress = Float(progress.fractionCompleted)
                 } completion: { _, _ in
-                    if CCUtility.fileProviderStorageExists(metadata) { items.append(url) }
+                    if NCUtilityFileSystem.shared.fileProviderStorageExists(metadata) { items.append(url) }
                     completion()
                 }
             }
@@ -698,7 +698,7 @@ fileprivate extension tableMetadata {
     func toPasteBoardItem() -> [String: Any]? {
         // Get Data
         let fileUrl = URL(fileURLWithPath: NCUtilityFileSystem.shared.getDirectoryProviderStorageOcId(ocId, fileNameView: fileNameView))
-        guard CCUtility.fileProviderStorageExists(self),
+        guard NCUtilityFileSystem.shared.fileProviderStorageExists(self),
               let data = try? Data(contentsOf: fileUrl),
               let unmanagedFileUTI = UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, fileExtension as CFString, nil)
         else { return nil }

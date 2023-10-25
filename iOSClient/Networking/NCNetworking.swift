@@ -294,7 +294,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
                   completion: @escaping (_ afError: AFError?, _ error: NKError) -> Void) {
 
         guard !metadata.isInTransfer else { return completion(nil, NKError()) }
-        if checkfileProviderStorageExists, CCUtility.fileProviderStorageExists(metadata) {
+        if checkfileProviderStorageExists, NCUtilityFileSystem.shared.fileProviderStorageExists(metadata) {
             return completion(nil, NKError())
         }
 
@@ -1622,7 +1622,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
             } else {
                 completition(URL(string: metadata.url), true, .success)
             }
-        } else if CCUtility.fileProviderStorageExists(metadata) {
+        } else if NCUtilityFileSystem.shared.fileProviderStorageExists(metadata) {
             completition(URL(fileURLWithPath: NCUtilityFileSystem.shared.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)), false, .success)
         } else {
             NextcloudKit.shared.getDirectDownload(fileId: metadata.fileId) { _, url, _, error in

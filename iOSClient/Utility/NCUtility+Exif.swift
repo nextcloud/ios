@@ -72,7 +72,7 @@ extension NCUtility {
             }
         }
 
-        if metadata.classFile != "image" || !CCUtility.fileProviderStorageExists(metadata) {
+        if metadata.classFile != "image" || !NCUtilityFileSystem.shared.fileProviderStorageExists(metadata) {
             print("Storage exists or file is not an image")
         }
 

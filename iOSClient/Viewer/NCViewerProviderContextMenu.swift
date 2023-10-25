@@ -79,12 +79,12 @@ class NCViewerProviderContextMenu: UIViewController {
             }
 
             // VIEW IMAGE
-            if metadata.isImage && CCUtility.fileProviderStorageExists(metadata) {
+            if metadata.isImage && NCUtilityFileSystem.shared.fileProviderStorageExists(metadata) {
                 viewImage(metadata: metadata)
             }
 
             // VIEW LIVE PHOTO
-            if let metadataLivePhoto = metadataLivePhoto, CCUtility.fileProviderStorageExists(metadataLivePhoto) {
+            if let metadataLivePhoto = metadataLivePhoto, NCUtilityFileSystem.shared.fileProviderStorageExists(metadataLivePhoto) {
                 viewVideo(metadata: metadataLivePhoto)
             }
 
@@ -104,7 +104,7 @@ class NCViewerProviderContextMenu: UIViewController {
 
                 var maxDownload: UInt64 = 0
 
-                if CCUtility.fileProviderStorageExists(metadata) {
+                if NCUtilityFileSystem.shared.fileProviderStorageExists(metadata) {
 
                     viewVideo(metadata: metadata)
 
@@ -125,7 +125,7 @@ class NCViewerProviderContextMenu: UIViewController {
             }
 
             // AUTO DOWNLOAD IMAGE GIF
-            if !CCUtility.fileProviderStorageExists(metadata),
+            if !NCUtilityFileSystem.shared.fileProviderStorageExists(metadata),
                metadata.contentType == "image/gif",
                let appDelegate = (UIApplication.shared.delegate as? AppDelegate),
                appDelegate.downloadQueue.operations.filter({ ($0 as? NCOperationDownload)?.metadata.ocId == metadata.ocId }).isEmpty {
@@ -133,7 +133,7 @@ class NCViewerProviderContextMenu: UIViewController {
             }
 
             // AUTO DOWNLOAD IMAGE SVG
-            if !CCUtility.fileProviderStorageExists(metadata),
+            if !NCUtilityFileSystem.shared.fileProviderStorageExists(metadata),
                metadata.contentType == "image/svg+xml",
                let appDelegate = (UIApplication.shared.delegate as? AppDelegate),
                appDelegate.downloadQueue.operations.filter({ ($0 as? NCOperationDownload)?.metadata.ocId == metadata.ocId }).isEmpty {
@@ -142,7 +142,7 @@ class NCViewerProviderContextMenu: UIViewController {
 
             // AUTO DOWNLOAD LIVE PHOTO
             if let metadataLivePhoto = self.metadataLivePhoto,
-               !CCUtility.fileProviderStorageExists(metadataLivePhoto),
+               !NCUtilityFileSystem.shared.fileProviderStorageExists(metadataLivePhoto),
                let appDelegate = (UIApplication.shared.delegate as? AppDelegate),
                appDelegate.downloadQueue.operations.filter({ ($0 as? NCOperationDownload)?.metadata.ocId == metadata.ocId }).isEmpty {
                 appDelegate.downloadQueue.addOperation(NCOperationDownload(metadata: metadataLivePhoto, selector: ""))

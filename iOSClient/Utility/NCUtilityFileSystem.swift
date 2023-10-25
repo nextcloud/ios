@@ -123,6 +123,33 @@ class NCUtilityFileSystem: NSObject {
         return directoryProviderStorage + "/" + ocId + "/" + etag + ".preview." + NCGlobal.shared.extensionPreview
     }
 
+    func fileProviderStorageExists(_ metadata: tableMetadata) -> Bool {
+
+        let fileNamePath = getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileName)
+        let fileNameViewPath = getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)
+
+        do {
+            let fileNameAttribute = try fileManager.attributesOfItem(atPath: fileNamePath)
+            let fileNameSize: UInt64 = fileNameAttribute[FileAttributeKey.size] as? UInt64 ?? 0
+            let fileNameViewAttribute = try fileManager.attributesOfItem(atPath: fileNameViewPath)
+            let fileNameViewSize: UInt64 = fileNameViewAttribute[FileAttributeKey.size] as? UInt64 ?? 0
+
+            if metadata.isDirectoryE2EE == true {
+                if (fileNameSize == metadata.size || fileNameViewSize == metadata.size) && fileNameViewSize > 0 {
+                    return true
+                } else {
+                    return false
+                }
+            } else {
+                return fileNameViewSize == metadata.size
+            }
+        } catch {
+            print("Error: \(error)")
+        }
+
+        return false
+    }
+
     // MARK: -
 
     @objc func getFileSize(filePath: String) -> Int64 {

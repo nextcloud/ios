@@ -1136,7 +1136,7 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
                 return
             }
 
-            if CCUtility.fileProviderStorageExists(metadata) {
+            if NCUtilityFileSystem.shared.fileProviderStorageExists(metadata) {
                 NCViewer.shared.view(viewController: self, metadata: metadata, metadatas: [metadata], imageIcon: imageIcon)
             } else if NextcloudKit.shared.isNetworkReachable() {
                 NCNetworking.shared.download(metadata: metadata, selector: NCGlobal.shared.selectorLoadFileView) { _, _ in }
@@ -1382,7 +1382,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             if NCManageDatabase.shared.getTableLocalFile(ocId: metadata.ocId) != nil {
                 a11yValues.append(NSLocalizedString("_offline_", comment: ""))
                 cell.fileLocalImage?.image = NCBrandColor.cacheImages.offlineFlag
-            } else if CCUtility.fileProviderStorageExists(metadata) {
+            } else if NCUtilityFileSystem.shared.fileProviderStorageExists(metadata) {
                 cell.fileLocalImage?.image = NCBrandColor.cacheImages.local
             }
         }

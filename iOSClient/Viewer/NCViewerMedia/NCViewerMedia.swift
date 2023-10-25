@@ -185,7 +185,7 @@ class NCViewerMedia: UIViewController {
                             } completion: { _, error in
                                 if error == .success {
                                     hud.dismiss()
-                                    if CCUtility.fileProviderStorageExists(self.metadata) {
+                                    if NCUtilityFileSystem.shared.fileProviderStorageExists(self.metadata) {
                                         let url = URL(fileURLWithPath: NCUtilityFileSystem.shared.getDirectoryProviderStorageOcId(self.metadata.ocId, fileNameView: self.metadata.fileNameView))
                                         ncplayer.openAVPlayer(url: url, autoplay: autoplay)
                                     }
@@ -275,17 +275,17 @@ class NCViewerMedia: UIViewController {
         self.metadata = metadata
 
         // Download image
-        if !CCUtility.fileProviderStorageExists(metadata) && metadata.isImage && metadata.session.isEmpty {
+        if !NCUtilityFileSystem.shared.fileProviderStorageExists(metadata) && metadata.isImage && metadata.session.isEmpty {
 
             if metadata.livePhoto {
                 let fileName = (metadata.fileNameView as NSString).deletingPathExtension + ".mov"
-                if let metadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView LIKE[c] %@", metadata.account, metadata.serverUrl, fileName)), !CCUtility.fileProviderStorageExists(metadata) {
+                if let metadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView LIKE[c] %@", metadata.account, metadata.serverUrl, fileName)), !NCUtilityFileSystem.shared.fileProviderStorageExists(metadata) {
                     NCNetworking.shared.download(metadata: metadata, selector: "") { _, _ in }
                 }
             }
         }
 
-        if metadata.isImage, metadata.fileExtension.lowercased() == "gif", !CCUtility.fileProviderStorageExists(metadata) {
+        if metadata.isImage, metadata.fileExtension.lowercased() == "gif", !NCUtilityFileSystem.shared.fileProviderStorageExists(metadata) {
             downloadImage()
         }
 
@@ -325,7 +325,7 @@ class NCViewerMedia: UIViewController {
         let ext = CCUtility.getExtension(metadata.fileNameView)
         var image: UIImage?
 
-        if CCUtility.fileProviderStorageExists(metadata) && metadata.isImage {
+        if NCUtilityFileSystem.shared.fileProviderStorageExists(metadata) && metadata.isImage {
 
             let previewPath = NCUtilityFileSystem.shared.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)
             let imagePath = NCUtilityFileSystem.shared.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)

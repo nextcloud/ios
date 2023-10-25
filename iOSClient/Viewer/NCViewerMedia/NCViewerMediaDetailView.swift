@@ -207,7 +207,7 @@ class NCViewerMediaDetailView: UIView {
             livePhotoImageView.isHidden = false
         }
 
-        if metadata.isImage && !CCUtility.fileProviderStorageExists(metadata) && metadata.session.isEmpty {
+        if metadata.isImage && !NCUtilityFileSystem.shared.fileProviderStorageExists(metadata) && metadata.session.isEmpty {
             downloadImageButton.setTitle(NSLocalizedString("_try_download_full_resolution_", comment: ""), for: .normal)
             downloadImageLabel.text = NSLocalizedString("_full_resolution_image_info_", comment: "")
             downloadImageButtonContainer.isHidden = false

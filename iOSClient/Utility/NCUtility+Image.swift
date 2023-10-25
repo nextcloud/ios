@@ -53,7 +53,7 @@ extension NCUtility {
         let ext = CCUtility.getExtension(metadata.fileNameView)
         var image: UIImage?
 
-        if CCUtility.fileProviderStorageExists(metadata) && metadata.isImage {
+        if NCUtilityFileSystem.shared.fileProviderStorageExists(metadata) && metadata.isImage {
 
             let previewPath = NCUtilityFileSystem.shared.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)
             let imagePath = NCUtilityFileSystem.shared.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)

@@ -105,7 +105,7 @@ class FileProviderItem: NSObject, NSFileProviderItem {
         if metadata.directory {
             return true
         }
-        if CCUtility.fileProviderStorageExists(metadata) {
+        if NCUtilityFileSystem.shared.fileProviderStorageExists(metadata) {
             return true
         } else {
             return false

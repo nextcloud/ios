@@ -396,7 +396,7 @@ extension NCSelect: UICollectionViewDataSource {
             // image local
             if NCManageDatabase.shared.getTableLocalFile(ocId: metadata.ocId) != nil {
                 cell.imageLocal.image = NCBrandColor.cacheImages.offlineFlag
-            } else if CCUtility.fileProviderStorageExists(metadata) {
+            } else if NCUtilityFileSystem.shared.fileProviderStorageExists(metadata) {
                 cell.imageLocal.image = NCBrandColor.cacheImages.local
             }
         }
