@@ -168,7 +168,7 @@ class NCViewer: NSObject {
 
                     if metadata.url.isEmpty {
 
-                        let fileNamePath = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, urlBase: metadata.urlBase, userId: metadata.userId, account: metadata.account)!
+                        let fileNamePath = NCUtilityFileSystem.shared.getFileNamePath(metadata.fileName, serverUrl: metadata.serverUrl, urlBase: metadata.urlBase, userId: metadata.userId)
 
                         var options = NKRequestOptions()
                         if editor == NCGlobal.shared.editorOnlyoffice {

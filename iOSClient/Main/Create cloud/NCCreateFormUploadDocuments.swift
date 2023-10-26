@@ -276,7 +276,7 @@ import XLForm
 
         } else {
 
-            let fileNamePath = CCUtility.returnFileNamePath(fromFileName: String(describing: fileNameForm), serverUrl: serverUrl, urlBase: appDelegate.urlBase, userId: appDelegate.userId, account: appDelegate.account)!
+            let fileNamePath = NCUtilityFileSystem.shared.getFileNamePath(String(describing: fileNameForm), serverUrl: serverUrl, urlBase: appDelegate.urlBase, userId: appDelegate.userId)
             createDocument(fileNamePath: fileNamePath, fileName: String(describing: fileNameForm))
         }
     }
@@ -285,7 +285,7 @@ import XLForm
 
         if let metadatas {
             let fileName = metadatas[0].fileName
-            let fileNamePath = CCUtility.returnFileNamePath(fromFileName: fileName, serverUrl: serverUrl, urlBase: appDelegate.urlBase, userId: appDelegate.userId, account: appDelegate.account)!
+            let fileNamePath = NCUtilityFileSystem.shared.getFileNamePath(fileName, serverUrl: serverUrl, urlBase: appDelegate.urlBase, userId: appDelegate.userId)
             createDocument(fileNamePath: fileNamePath, fileName: fileName)
         } else {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {

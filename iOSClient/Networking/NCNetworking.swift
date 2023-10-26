@@ -1409,7 +1409,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
 
     private func favoriteMetadataPlain(_ metadata: tableMetadata, completion: @escaping (_ error: NKError) -> Void) {
 
-        let fileName = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, urlBase: metadata.urlBase, userId: metadata.userId, account: metadata.account)!
+        let fileName = NCUtilityFileSystem.shared.getFileNamePath(metadata.fileName, serverUrl: metadata.serverUrl, urlBase: metadata.urlBase, userId: metadata.userId)
         let favorite = !metadata.favorite
         let ocId = metadata.ocId
 

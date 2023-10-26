@@ -378,6 +378,16 @@ class NCUtilityFileSystem: NSObject {
         }
     }
 
+    @objc func getFileNamePath(_ fileName: String, serverUrl: String, urlBase: String, userId: String) -> String {
+
+        let home = getHomeServer(urlBase: urlBase, userId: userId)
+        var fileNamePath = serverUrl.replacingOccurrences(of: home, with: "") + "/" + fileName
+        if fileNamePath.first == "/" {
+            fileNamePath.removeFirst()
+        }
+        return fileNamePath
+    }
+
     @objc func createFileName(_ fileName: String, serverUrl: String, account: String) -> String {
 
         var resultFileName = fileName

@@ -245,7 +245,7 @@ extension FileProviderExtension {
         }
 
         if (favorite == true && metadata.favorite == false) || (favorite == false && metadata.favorite == true) {
-            let fileNamePath = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, urlBase: metadata.urlBase, userId: metadata.userId, account: metadata.account)!
+            let fileNamePath = NCUtilityFileSystem.shared.getFileNamePath(metadata.fileName, serverUrl: metadata.serverUrl, urlBase: metadata.urlBase, userId: metadata.userId)
 
             NextcloudKit.shared.setFavorite(fileName: fileNamePath, favorite: favorite) { _, error in
 

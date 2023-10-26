@@ -1771,7 +1771,7 @@ class NCCollectionViewDownloadThumbnail: ConcurrentOperation {
         self.metadata = tableMetadata.init(value: metadata)
         self.cell = cell
         self.collectionView = collectionView
-        self.fileNamePath = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, urlBase: metadata.urlBase, userId: metadata.userId, account: metadata.account)!
+        self.fileNamePath = NCUtilityFileSystem.shared.getFileNamePath(metadata.fileName, serverUrl: metadata.serverUrl, urlBase: metadata.urlBase, userId: metadata.userId)
         self.fileNamePreviewLocalPath = NCUtilityFileSystem.shared.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)
         self.fileNameIconLocalPath = NCUtilityFileSystem.shared.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)
     }

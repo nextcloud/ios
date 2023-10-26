@@ -290,13 +290,13 @@ class NCViewerRichdocument: UIViewController, WKNavigationDelegate, WKScriptMess
 
     func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String, items: [Any], indexPath: [IndexPath], overwrite: Bool, copy: Bool, move: Bool) {
 
-        if serverUrl != nil && metadata != nil {
+        if let serverUrl, let metadata {
 
-            let path = CCUtility.returnFileNamePath(fromFileName: metadata!.fileName, serverUrl: serverUrl!, urlBase: appDelegate.urlBase, userId: appDelegate.userId, account: metadata!.account)!
+            let path = NCUtilityFileSystem.shared.getFileNamePath(metadata.fileName, serverUrl: serverUrl, urlBase: appDelegate.urlBase, userId: appDelegate.userId)
 
             NextcloudKit.shared.createAssetRichdocuments(path: path) { account, url, _, error in
-                if error == .success && account == self.appDelegate.account {
-                    let functionJS = "OCA.RichDocuments.documentsMain.postAsset('\(metadata!.fileNameView)', '\(url!)')"
+                if error == .success, account == self.appDelegate.account, let url {
+                    let functionJS = "OCA.RichDocuments.documentsMain.postAsset('\(metadata.fileNameView)', '\(url)')"
                     self.webView.evaluateJavaScript(functionJS, completionHandler: { _, _ in })
                 } else if error != .success {
                     NCContentPresenter.shared.showError(error: error)
@@ -309,11 +309,11 @@ class NCViewerRichdocument: UIViewController, WKNavigationDelegate, WKScriptMess
 
     func select(_ metadata: tableMetadata!, serverUrl: String!) {
 
-        let path = CCUtility.returnFileNamePath(fromFileName: metadata!.fileName, serverUrl: serverUrl!, urlBase: appDelegate.urlBase, userId: appDelegate.userId, account: metadata!.account)!
+        let path = NCUtilityFileSystem.shared.getFileNamePath(metadata!.fileName, serverUrl: serverUrl!, urlBase: appDelegate.urlBase, userId: appDelegate.userId)
 
         NextcloudKit.shared.createAssetRichdocuments(path: path) { account, url, _, error in
-            if error == .success && account == self.appDelegate.account {
-                let functionJS = "OCA.RichDocuments.documentsMain.postAsset('\(metadata.fileNameView)', '\(url!)')"
+            if error == .success, account == self.appDelegate.account, let url {
+                let functionJS = "OCA.RichDocuments.documentsMain.postAsset('\(metadata.fileNameView)', '\(url)')"
                 self.webView.evaluateJavaScript(functionJS, completionHandler: { _, _ in })
             } else if error != .success {
                 NCContentPresenter.shared.showError(error: error)

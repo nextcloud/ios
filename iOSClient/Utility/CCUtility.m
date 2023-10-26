@@ -197,20 +197,6 @@
     return title;
 }
 
-+ (NSString *)returnFileNamePathFromFileName:(NSString *)metadataFileName serverUrl:(NSString *)serverUrl urlBase:(NSString *)urlBase userId:(NSString *)userId account:(NSString *)account
-{
-    if (metadataFileName == nil || serverUrl == nil || urlBase == nil) {
-        return @"";
-    }
-
-    NSString *homeServer = [[NCUtilityFileSystem shared] getHomeServerWithUrlBase:urlBase userId:userId];
-    NSString *fileName = [NSString stringWithFormat:@"%@/%@", [serverUrl stringByReplacingOccurrencesOfString:homeServer withString:@""], metadataFileName];
-
-    if ([fileName hasPrefix:@"/"]) fileName = [fileName substringFromIndex:1];
-
-    return fileName;
-}
-
 + (NSString *)getMimeType:(NSString *)fileNameView
 {
     CFStringRef fileUTI = nil;
