@@ -399,7 +399,7 @@
             sectionName = NSLocalizedString(@"_autoupload_description_", nil);
             break;
         case 1:
-            if (activeAccount.autoUpload) sectionName = [NSString stringWithFormat:@"%@: %@", NSLocalizedString(@"_autoupload_current_folder_", nil), [CCUtility returnPathfromServerUrl:autoUploadPath urlBase:appDelegate.urlBase userId:appDelegate.userId account:appDelegate.account]];
+            if (activeAccount.autoUpload) sectionName = [NSString stringWithFormat:@"%@: %@", NSLocalizedString(@"_autoupload_current_folder_", nil), [self returnPathfromServerUrl:autoUploadPath urlBase:appDelegate.urlBase userId:appDelegate.userId account:appDelegate.account]];
             else sectionName = @"";
             break;
         case 4:
@@ -452,5 +452,12 @@
          [self.tableView reloadData];
      }];
  }
+
+- (NSString *)returnPathfromServerUrl:(NSString *)serverUrl urlBase:(NSString *)urlBase userId:(NSString *)userId account:(NSString *)account
+{
+   NSString *homeServer = [[NCUtilityFileSystem shared] getHomeServerWithUrlBase:urlBase userId:userId];
+   NSString *path = [serverUrl stringByReplacingOccurrencesOfString:homeServer withString:@""];
+   return path;
+}
 
 @end

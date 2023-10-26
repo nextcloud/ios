@@ -197,13 +197,6 @@
     return title;
 }
 
-+ (NSString *)returnPathfromServerUrl:(NSString *)serverUrl urlBase:(NSString *)urlBase userId:(NSString *)userId account:(NSString *)account
-{
-    NSString *homeServer = [[NCUtilityFileSystem shared] getHomeServerWithUrlBase:urlBase userId:userId];
-    NSString *path = [serverUrl stringByReplacingOccurrencesOfString:homeServer withString:@""];
-    return path;
-}
-
 + (NSString *)returnFileNamePathFromFileName:(NSString *)metadataFileName serverUrl:(NSString *)serverUrl urlBase:(NSString *)urlBase userId:(NSString *)userId account:(NSString *)account
 {
     if (metadataFileName == nil || serverUrl == nil || urlBase == nil) {

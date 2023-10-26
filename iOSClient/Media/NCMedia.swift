@@ -271,8 +271,9 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate, NCSelectDelegate {
     func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String, items: [Any], indexPath: [IndexPath], overwrite: Bool, copy: Bool, move: Bool) {
 
         guard let serverUrl = serverUrl else { return }
-        let path = CCUtility.returnPathfromServerUrl(serverUrl, urlBase: appDelegate.urlBase, userId: appDelegate.userId, account: appDelegate.account) ?? ""
-            NCManageDatabase.shared.setAccountMediaPath(path, account: appDelegate.account)
+        let home = NCUtilityFileSystem.shared.getHomeServer(urlBase: appDelegate.urlBase, userId: appDelegate.userId)
+        let path = serverUrl.replacingOccurrences(of: home, with: "")
+        NCManageDatabase.shared.setAccountMediaPath(path, account: appDelegate.account)
         reloadDataSourceWithCompletion { _ in
             self.searchNewMedia()
         }
