@@ -311,7 +311,11 @@ import KeychainAccess
 
     private func migrate(key: String) {
         let keychainOLD = Keychain(service: "Crypto Cloud")
-        if let value = keychainOLD[key], !value.isEmpty {
+        if key.starts(with: "PNPublicKey") || key.starts(with: "PNPrivateKey") {
+            if let data = try? keychainOLD.getData(key), !data.isEmpty {
+                keychain[data: key] = data
+            }
+        } else if let value = keychainOLD[key], !value.isEmpty {
             keychain[key] = value
             keychainOLD[key] = nil
         }
