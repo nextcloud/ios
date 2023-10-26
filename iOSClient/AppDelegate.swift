@@ -837,8 +837,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         var serverUrl: String = ""
 
         /*
-         Example:
-         nextcloud://open-action?action=create-voice-memo&&user=marinofaggiana&url=https://cloud.nextcloud.com
+         Example: nextcloud://open-action?action=create-voice-memo&&user=marinofaggiana&url=https://cloud.nextcloud.com
          */
 
         if !account.isEmpty && scheme == NCGlobal.shared.appScheme && action == "open-action" {
@@ -846,16 +845,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             if let urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false) {
 
                 let queryItems = urlComponents.queryItems
-                guard let actionScheme = CCUtility.value(forKey: "action", fromQueryItems: queryItems), let rootViewController = window?.rootViewController else { return false }
-                guard let userScheme = CCUtility.value(forKey: "user", fromQueryItems: queryItems) else { return false }
-                guard let urlScheme = CCUtility.value(forKey: "url", fromQueryItems: queryItems) else { return false }
+                guard let actionScheme = queryItems?.filter({ $0.name == "action" }).first?.value,
+                      let userScheme = queryItems?.filter({ $0.name == "user" }).first?.value,
+                      let urlScheme = queryItems?.filter({ $0.name == "url" }).first?.value,
+                      let rootViewController = window?.rootViewController else { return false }
                 if getMatchedAccount(userId: userScheme, url: urlScheme) == nil {
                     let message = NSLocalizedString("_the_account_", comment: "") + " " + userScheme + NSLocalizedString("_of_", comment: "") + " " + urlScheme + " " + NSLocalizedString("_does_not_exist_", comment: "")
                     let alertController = UIAlertController(title: NSLocalizedString("_info_", comment: ""), message: message, preferredStyle: .alert)
                     alertController.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { _ in }))
 
                     window?.rootViewController?.present(alertController, animated: true, completion: { })
-
                     return false
                 }
 
@@ -914,8 +913,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         }
 
         /*
-         Example:
-         nextcloud://open-file?path=Talk/IMG_0000123.jpg&user=marinofaggiana&link=https://cloud.nextcloud.com/f/123
+         Example: nextcloud://open-file?path=Talk/IMG_0000123.jpg&user=marinofaggiana&link=https://cloud.nextcloud.com/f/123
          */
 
         else if !account.isEmpty && scheme == NCGlobal.shared.appScheme && action == "open-file" {
@@ -923,19 +921,18 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             if let urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false) {
 
                 let queryItems = urlComponents.queryItems
-                guard let userScheme = CCUtility.value(forKey: "user", fromQueryItems: queryItems) else { return false }
-                guard let pathScheme = CCUtility.value(forKey: "path", fromQueryItems: queryItems) else { return false }
-                guard let linkScheme = CCUtility.value(forKey: "link", fromQueryItems: queryItems) else { return false }
+                guard let userScheme = queryItems?.filter({ $0.name == "user" }).first?.value,
+                      let pathScheme = queryItems?.filter({ $0.name == "path" }).first?.value,
+                      let linkScheme = queryItems?.filter({ $0.name == "link" }).first?.value else { return false}
+
                 guard let matchedAccount = getMatchedAccount(userId: userScheme, url: linkScheme) else {
                     guard let domain = URL(string: linkScheme)?.host else { return true }
                     fileName = (pathScheme as NSString).lastPathComponent
                     let message = String(format: NSLocalizedString("_account_not_available_", comment: ""), userScheme, domain, fileName)
-
                     let alertController = UIAlertController(title: NSLocalizedString("_info_", comment: ""), message: message, preferredStyle: .alert)
                     alertController.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { _ in }))
 
                     window?.rootViewController?.present(alertController, animated: true, completion: { })
-
                     return false
                 }
 
@@ -955,22 +952,18 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             return true
 
         /*
-         Example:
-         nextcloud://open-and-switch-account?user=marinofaggiana&url=https://cloud.nextcloud.com
+         Example: nextcloud://open-and-switch-account?user=marinofaggiana&url=https://cloud.nextcloud.com
          */
 
         } else if !account.isEmpty && scheme == NCGlobal.shared.appScheme && action == "open-and-switch-account" {
             guard let urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false) else { return false }
             let queryItems = urlComponents.queryItems
-
-            guard let userScheme = CCUtility.value(forKey: "user", fromQueryItems: queryItems) else { return false }
-            guard let urlScheme = CCUtility.value(forKey: "url", fromQueryItems: queryItems) else { return false }
-
+            guard let userScheme = queryItems?.filter({ $0.name == "user" }).first?.value,
+                  let urlScheme = queryItems?.filter({ $0.name == "url" }).first?.value else { return false}
             // If the account doesn't exist, return false which will open the app without switching
             if getMatchedAccount(userId: userScheme, url: urlScheme) == nil {
                 return false
             }
-
             // Otherwise open the app and switch accounts
             return true
         } else {

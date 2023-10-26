@@ -204,7 +204,7 @@ func getDashboardDataEntry(configuration: DashboardIntent?, isPreview: Bool, dis
                                     if (pathComponents.last as? NSString)?.pathExtension.lowercased() == "svg" {
                                         imageTemplate = true
                                     }
-                                    if let item = CCUtility.value(forKey: "fileId", fromQueryItems: queryItems) {
+                                    if let item = queryItems?.filter({ $0.name == "fileId" }).first?.value {
                                         iconFileName = item
                                     } else if pathComponents.contains("avatar") {
                                         iconFileName = pathComponents[pathComponents.count - 2]

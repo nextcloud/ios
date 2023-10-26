@@ -353,13 +353,6 @@
     return datDate;
 }
 
-+ (NSString *)valueForKey:(NSString *)key fromQueryItems:(NSArray *)queryItems
-{
-    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"name=%@", key];
-    NSURLQueryItem *queryItem = [[queryItems filteredArrayUsingPredicate:predicate] firstObject];
-    return queryItem.value;
-}
-
 + (NSDate *)getATime:(const char *)path
 {
     struct stat st;
