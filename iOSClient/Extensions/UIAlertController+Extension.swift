@@ -74,7 +74,7 @@ extension UIAlertController {
             object: alertController.textFields?.first,
             queue: .main) { _ in
                 guard let text = alertController.textFields?.first?.text else { return }
-                let folderName = NCUtility.shared.removeForbiddenCharactersServer(text).trimmingCharacters(in: .whitespaces)
+                let folderName = NCUtility.shared.removeForbiddenCharacters(text).trimmingCharacters(in: .whitespaces)
                 okAction.isEnabled = !folderName.isEmpty && folderName != "." && folderName != ".."
             }
 

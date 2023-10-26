@@ -696,7 +696,7 @@ class NCUtility: NSObject {
         return (usedmegabytes, totalmegabytes)
     }
 
-    func removeForbiddenCharactersServer(_ fileName: String) -> String {
+    func removeForbiddenCharacters(_ fileName: String) -> String {
 
         var fileName = fileName
         let arrayForbiddenCharacters = ["/"]
