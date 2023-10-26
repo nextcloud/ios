@@ -311,11 +311,7 @@ import KeychainAccess
 
     private func migrate(key: String) {
         let keychainOLD = Keychain(service: "Crypto Cloud")
-        if key.starts(with: "PNPublicKey") || key.starts(with: "PNPrivateKey") {
-            if let data = try? keychainOLD.getData(key), !data.isEmpty {
-                keychain[data: key] = data
-            }
-        } else if let value = keychainOLD[key], !value.isEmpty {
+        if let value = keychainOLD[key], !value.isEmpty {
             keychain[key] = value
             keychainOLD[key] = nil
         }
@@ -442,7 +438,6 @@ import KeychainAccess
 
     @objc func getPushNotificationPublicKey(account: String) -> Data? {
         let key = "PNPublicKey" + account
-        migrate(key: key)
         return try? keychain.getData(key)
     }
 
@@ -453,7 +448,6 @@ import KeychainAccess
 
     @objc func getPushNotificationPrivateKey(account: String) -> Data? {
         let key = "PNPrivateKey" + account
-        migrate(key: key)
         return try? keychain.getData(key)
     }
 
@@ -464,7 +458,6 @@ import KeychainAccess
 
     @objc func getPushNotificationSubscribingPublicKey(account: String) -> String? {
         let key = "PNSubscribingPublicKey" + account
-        migrate(key: key)
         return try? keychain.get(key)
     }
 
@@ -475,7 +468,6 @@ import KeychainAccess
 
     @objc func getPushNotificationToken(account: String) -> String? {
         let key = "PNToken" + account
-        migrate(key: key)
         return try? keychain.get(key)
     }
 
@@ -486,7 +478,6 @@ import KeychainAccess
 
     @objc func getPushNotificationDeviceIdentifier(account: String) -> String? {
         let key = "PNDeviceIdentifier" + account
-        migrate(key: key)
         return try? keychain.get(key)
     }
 
@@ -497,7 +488,6 @@ import KeychainAccess
 
     @objc func getPushNotificationDeviceIdentifierSignature(account: String) -> String? {
         let key = "PNDeviceIdentifierSignature" + account
-        migrate(key: key)
         return try? keychain.get(key)
     }
 
