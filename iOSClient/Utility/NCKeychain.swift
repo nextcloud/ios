@@ -56,7 +56,7 @@ import KeychainAccess
 
     @objc var requestPasscodeAtStart: Bool {
         get {
-            let keychainOLD = Keychain(service: NCGlobal.shared.serviceShareKeyChain)
+            let keychainOLD = Keychain(service: "Crypto Cloud")
             if let value = keychainOLD["notPasscodeAtStart"], !value.isEmpty {
                 if value == "true" {
                     keychain["requestPasscodeAtStart"] = "false"
@@ -310,7 +310,7 @@ import KeychainAccess
     // MARK: -
 
     private func migrate(key: String) {
-        let keychainOLD = Keychain(service: NCGlobal.shared.serviceShareKeyChain)
+        let keychainOLD = Keychain(service: "Crypto Cloud")
         if let value = keychainOLD[key], !value.isEmpty {
             keychain[key] = value
             keychainOLD[key] = nil
@@ -320,6 +320,8 @@ import KeychainAccess
     @objc func removeAll() {
         try? keychain.removeAll()
     }
+
+    // MARK: -
 
     @objc func getPassword(account: String) -> String {
         let key = "password" + account
