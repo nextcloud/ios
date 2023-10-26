@@ -80,13 +80,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         let versionNextcloudiOS = String(format: NCBrandOptions.shared.textCopyrightNextcloudiOS, NCUtility.shared.getVersionApp())
 
         UserDefaults.standard.register(defaults: ["UserAgent": userAgent])
-        if !CCUtility.getDisableCrashservice() && !NCBrandOptions.shared.disable_crash_service {
+        if !NCKeychain().disableCrashservice, !NCBrandOptions.shared.disable_crash_service {
             FirebaseApp.configure()
         }
 
-        CCUtility.createDirectoryStandard()
-        CCUtility.emptyTemporaryDirectory()
-        NCUtility.shared.clearCacheDirectory("com.limit-point.LivePhoto")
+        NCUtilityFileSystem.shared.createDirectoryStandard()
+        NCUtilityFileSystem.shared.emptyTemporaryDirectory()
+        NCUtilityFileSystem.shared.clearCacheDirectory("com.limit-point.LivePhoto")
 
         // Activated singleton
         _ = NCActionCenter.shared
@@ -98,18 +98,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         startTimerErrorNetworking()
 
         var levelLog = 0
-        if let pathDirectoryGroup = CCUtility.getDirectoryGroup()?.path {
-            NextcloudKit.shared.nkCommonInstance.pathLog = pathDirectoryGroup
-        }
+        NextcloudKit.shared.nkCommonInstance.pathLog = NCUtilityFileSystem.shared.directoryGroup
 
         if NCBrandOptions.shared.disable_log {
 
-            NCUtilityFileSystem.shared.deleteFile(filePath: NextcloudKit.shared.nkCommonInstance.filenamePathLog)
-            NCUtilityFileSystem.shared.deleteFile(filePath: NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true).first! + "/" + NextcloudKit.shared.nkCommonInstance.filenameLog)
+            NCUtilityFileSystem.shared.removeFile(atPath: NextcloudKit.shared.nkCommonInstance.filenamePathLog)
+            NCUtilityFileSystem.shared.removeFile(atPath: NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true).first! + "/" + NextcloudKit.shared.nkCommonInstance.filenameLog)
 
         } else {
 
-            levelLog = CCUtility.getLogLevel()
+            levelLog = NCKeychain().logLevel
             NextcloudKit.shared.nkCommonInstance.levelLog = levelLog
             NextcloudKit.shared.nkCommonInstance.copyLogToDocumentDirectory = true
             NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Start session with level \(levelLog) " + versionNextcloudiOS)
@@ -117,7 +115,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
         if let account = NCManageDatabase.shared.getActiveAccount() {
             NextcloudKit.shared.nkCommonInstance.writeLog("Account active \(account.account)")
-            if CCUtility.getPassword(account.account).isEmpty {
+            if NCKeychain().getPassword(account: account.account).isEmpty {
                 NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] PASSWORD NOT FOUND for \(account.account)")
             }
         }
@@ -128,7 +126,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             urlBase = activeAccount.urlBase
             user = activeAccount.user
             userId = activeAccount.userId
-            password = CCUtility.getPassword(account)
+            password = NCKeychain().getPassword(account: account)
 
             NextcloudKit.shared.setup(account: account, user: user, userId: userId, password: password, urlBase: urlBase)
             NCManageDatabase.shared.setCapabilities(account: account)
@@ -139,7 +137,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
         } else {
 
-            CCUtility.deleteAllChainStore()
+            NCKeychain().removeAll()
             if let bundleID = Bundle.main.bundleIdentifier {
                 UserDefaults.standard.removePersistentDomain(forName: bundleID)
             }
@@ -170,12 +168,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
         // Intro
         if NCBrandOptions.shared.disable_intro {
-            CCUtility.setIntro(true)
+            NCKeychain().intro = true
             if account.isEmpty {
                 openLogin(viewController: nil, selector: NCGlobal.shared.introLogin, openLoginWeb: false)
             }
         } else {
-            if !CCUtility.getIntro() {
+            if !NCKeychain().intro {
                 if let viewController = UIStoryboard(name: "NCIntro", bundle: nil).instantiateInitialViewController() {
                     let navigationController = NCLoginNavigationController(rootViewController: viewController)
                     window?.rootViewController = navigationController
@@ -229,7 +227,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         NCNetworkingProcessUpload.shared.invalidateObserveTableMetadata()
         NCNetworkingProcessUpload.shared.stopTimer()
 
-        if CCUtility.getPrivacyScreenEnabled() {
+        if NCKeychain().privacyScreenEnabled {
             showPrivacyProtectionWindow()
         }
 
@@ -237,10 +235,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         WidgetCenter.shared.reloadAllTimelines()
 
         // Clear older files
-        let days = CCUtility.getCleanUpDay()
-        if let directory = CCUtility.getDirectoryProviderStorage() {
-            NCUtilityFileSystem.shared.cleanUp(directory: directory, days: TimeInterval(days))
-        }
+        let days = NCKeychain().cleanUpDay
+        NCUtilityFileSystem.shared.cleanUp(directory: NCUtilityFileSystem.shared.directoryProviderStorage, days: TimeInterval(days))
 
         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterApplicationWillResignActive)
     }
@@ -529,7 +525,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     }
 
     @objc private func checkErrorNetworking() {
-        guard !account.isEmpty, CCUtility.getPassword(account)!.isEmpty else { return }
+        guard !account.isEmpty, NCKeychain().getPassword(account: account).isEmpty else { return }
         openLogin(viewController: window?.rootViewController, selector: NCGlobal.shared.introLogin, openLoginWeb: true)
     }
 
@@ -541,7 +537,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
               host == currentHost
         else { return }
 
-        let certificateHostSavedPath = CCUtility.getDirectoryCerificates()! + "/" + host + ".der"
+        let certificateHostSavedPath = NCUtilityFileSystem.shared.directoryCertificates + "/" + host + ".der"
         var title = NSLocalizedString("_ssl_certificate_changed_", comment: "")
 
         if !FileManager.default.fileExists(atPath: certificateHostSavedPath) {
@@ -583,7 +579,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         self.urlBase = tableAccount.urlBase
         self.user = tableAccount.user
         self.userId = tableAccount.userId
-        self.password = CCUtility.getPassword(tableAccount.account)
+        self.password = NCKeychain().getPassword(account: tableAccount.account)
 
         NextcloudKit.shared.setup(account: account, user: user, userId: userId, password: password, urlBase: urlBase)
         NCManageDatabase.shared.setCapabilities(account: account)
@@ -617,13 +613,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
         let results = NCManageDatabase.shared.getTableLocalFiles(predicate: NSPredicate(format: "account == %@", account), sorted: "ocId", ascending: false)
         for result in results {
-            CCUtility.removeFile(atPath: CCUtility.getDirectoryProviderStorageOcId(result.ocId))
+            NCUtilityFileSystem.shared.removeFile(atPath: NCUtilityFileSystem.shared.getDirectoryProviderStorageOcId(result.ocId))
         }
         NCManageDatabase.shared.clearDatabase(account: account, removeAccount: true)
 
-        CCUtility.clearAllKeysEnd(toEnd: account)
-        CCUtility.clearAllKeysPushNotification(account)
-        CCUtility.setPassword(account, password: nil)
+        NCKeychain().clearAllKeysEndToEnd(account: account)
+        NCKeychain().clearAllKeysPushNotification(account: account)
+        NCKeychain().setPassword(account: account, password: nil)
 
         self.account = ""
         self.urlBase = ""
@@ -659,7 +655,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             let name = account.alias.isEmpty ? account.displayName : account.alias
             let userBaseUrl = account.user + "-" + (URL(string: account.urlBase)?.host ?? "")
             let avatarFileName = userBaseUrl + "-\(account.user).png"
-            let pathAvatarFileName = String(CCUtility.getDirectoryUserData()) + "/" + avatarFileName
+            let pathAvatarFileName = NCUtilityFileSystem.shared.directoryUserData + "/" + avatarFileName
             let image = UIImage(contentsOfFile: pathAvatarFileName)
             accounts.append(NKShareAccounts.DataAccounts(withUrl: account.urlBase, user: account.user, name: name, image: image))
         }
@@ -675,7 +671,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     func requestAccount() {
 
         if isPasscodePresented() { return }
-        if !CCUtility.getAccountRequest() { return }
+        if !NCKeychain().accountRequest { return }
 
         let accounts = NCManageDatabase.shared.getAllAccount()
 
@@ -714,7 +710,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         defer { self.requestAccount() }
 
         let presentedViewController = window?.rootViewController?.presentedViewController
-        guard !account.isEmpty, CCUtility.isPasscodeAtStartEnabled(), !(presentedViewController is NCLoginNavigationController) else { return }
+        guard !account.isEmpty, NCKeychain().passcode != nil, NCKeychain().requestPasscodeAtStart, !(presentedViewController is NCLoginNavigationController) else { return }
 
         // Make sure we have a privacy window (in case it's not enabled)
         showPrivacyProtectionWindow()
@@ -722,7 +718,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         let passcodeViewController = TOPasscodeViewController(passcodeType: .sixDigits, allowCancel: false)
         passcodeViewController.delegate = self
         passcodeViewController.keypadButtonShowLettering = false
-        if CCUtility.getEnableTouchFaceID() && laContext.canEvaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, error: &error) {
+        if NCKeychain().touchFaceID, laContext.canEvaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, error: &error) {
             if error == nil {
                 if laContext.biometryType == .faceID {
                     passcodeViewController.biometryType = .faceID
@@ -746,8 +742,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
     func enableTouchFaceID() {
         guard !account.isEmpty,
-              CCUtility.getEnableTouchFaceID(),
-              CCUtility.isPasscodeAtStartEnabled(),
+              NCKeychain().touchFaceID,
+              NCKeychain().passcode != nil,
+              NCKeychain().requestPasscodeAtStart,
               let passcodeViewController = privacyProtectionWindow?.rootViewController?.presentedViewController as? TOPasscodeViewController
         else { return }
 
@@ -775,7 +772,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     }
 
     func passcodeViewController(_ passcodeViewController: TOPasscodeViewController, isCorrectCode code: String) -> Bool {
-        return code == CCUtility.getPasscode()
+        return code == NCKeychain().passcode
     }
 
     func didPerformBiometricValidationRequest(in passcodeViewController: TOPasscodeViewController) {
@@ -840,8 +837,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         var serverUrl: String = ""
 
         /*
-         Example:
-         nextcloud://open-action?action=create-voice-memo&&user=marinofaggiana&url=https://cloud.nextcloud.com
+         Example: nextcloud://open-action?action=create-voice-memo&&user=marinofaggiana&url=https://cloud.nextcloud.com
          */
 
         if !account.isEmpty && scheme == NCGlobal.shared.appScheme && action == "open-action" {
@@ -849,16 +845,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             if let urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false) {
 
                 let queryItems = urlComponents.queryItems
-                guard let actionScheme = CCUtility.value(forKey: "action", fromQueryItems: queryItems), let rootViewController = window?.rootViewController else { return false }
-                guard let userScheme = CCUtility.value(forKey: "user", fromQueryItems: queryItems) else { return false }
-                guard let urlScheme = CCUtility.value(forKey: "url", fromQueryItems: queryItems) else { return false }
+                guard let actionScheme = queryItems?.filter({ $0.name == "action" }).first?.value,
+                      let userScheme = queryItems?.filter({ $0.name == "user" }).first?.value,
+                      let urlScheme = queryItems?.filter({ $0.name == "url" }).first?.value,
+                      let rootViewController = window?.rootViewController else { return false }
                 if getMatchedAccount(userId: userScheme, url: urlScheme) == nil {
                     let message = NSLocalizedString("_the_account_", comment: "") + " " + userScheme + NSLocalizedString("_of_", comment: "") + " " + urlScheme + " " + NSLocalizedString("_does_not_exist_", comment: "")
                     let alertController = UIAlertController(title: NSLocalizedString("_info_", comment: ""), message: message, preferredStyle: .alert)
                     alertController.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { _ in }))
 
                     window?.rootViewController?.present(alertController, animated: true, completion: { })
-
                     return false
                 }
 
@@ -896,7 +892,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
                     NCAskAuthorization.shared.askAuthorizationAudioRecord(viewController: rootViewController) { hasPermission in
                         if hasPermission {
-                            let fileName = CCUtility.createFileNameDate(NSLocalizedString("_voice_memo_filename_", comment: ""), extension: "m4a")!
+                            let fileName = NCUtilityFileSystem.shared.createFileNameDate(NSLocalizedString("_voice_memo_filename_", comment: ""), ext: "m4a")
                             if let viewController = UIStoryboard(name: "NCAudioRecorderViewController", bundle: nil).instantiateInitialViewController() as? NCAudioRecorderViewController {
 
                                 viewController.delegate = self
@@ -917,8 +913,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         }
 
         /*
-         Example:
-         nextcloud://open-file?path=Talk/IMG_0000123.jpg&user=marinofaggiana&link=https://cloud.nextcloud.com/f/123
+         Example: nextcloud://open-file?path=Talk/IMG_0000123.jpg&user=marinofaggiana&link=https://cloud.nextcloud.com/f/123
          */
 
         else if !account.isEmpty && scheme == NCGlobal.shared.appScheme && action == "open-file" {
@@ -926,19 +921,18 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             if let urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false) {
 
                 let queryItems = urlComponents.queryItems
-                guard let userScheme = CCUtility.value(forKey: "user", fromQueryItems: queryItems) else { return false }
-                guard let pathScheme = CCUtility.value(forKey: "path", fromQueryItems: queryItems) else { return false }
-                guard let linkScheme = CCUtility.value(forKey: "link", fromQueryItems: queryItems) else { return false }
+                guard let userScheme = queryItems?.filter({ $0.name == "user" }).first?.value,
+                      let pathScheme = queryItems?.filter({ $0.name == "path" }).first?.value,
+                      let linkScheme = queryItems?.filter({ $0.name == "link" }).first?.value else { return false}
+
                 guard let matchedAccount = getMatchedAccount(userId: userScheme, url: linkScheme) else {
                     guard let domain = URL(string: linkScheme)?.host else { return true }
                     fileName = (pathScheme as NSString).lastPathComponent
                     let message = String(format: NSLocalizedString("_account_not_available_", comment: ""), userScheme, domain, fileName)
-
                     let alertController = UIAlertController(title: NSLocalizedString("_info_", comment: ""), message: message, preferredStyle: .alert)
                     alertController.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { _ in }))
 
                     window?.rootViewController?.present(alertController, animated: true, completion: { })
-
                     return false
                 }
 
@@ -958,22 +952,18 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             return true
 
         /*
-         Example:
-         nextcloud://open-and-switch-account?user=marinofaggiana&url=https://cloud.nextcloud.com
+         Example: nextcloud://open-and-switch-account?user=marinofaggiana&url=https://cloud.nextcloud.com
          */
 
         } else if !account.isEmpty && scheme == NCGlobal.shared.appScheme && action == "open-and-switch-account" {
             guard let urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false) else { return false }
             let queryItems = urlComponents.queryItems
-
-            guard let userScheme = CCUtility.value(forKey: "user", fromQueryItems: queryItems) else { return false }
-            guard let urlScheme = CCUtility.value(forKey: "url", fromQueryItems: queryItems) else { return false }
-
+            guard let userScheme = queryItems?.filter({ $0.name == "user" }).first?.value,
+                  let urlScheme = queryItems?.filter({ $0.name == "url" }).first?.value else { return false}
             // If the account doesn't exist, return false which will open the app without switching
             if getMatchedAccount(userId: userScheme, url: urlScheme) == nil {
                 return false
             }
-
             // Otherwise open the app and switch accounts
             return true
         } else {

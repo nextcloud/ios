@@ -203,11 +203,11 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
             directoryEtag = tableDirectory.etag
         }
 
-        NextcloudKit.shared.readFileOrFolder(serverUrlFileName: serverUrl, depth: "0", showHiddenFiles: CCUtility.getShowHiddenFiles()) { account, files, _, error in
+        NextcloudKit.shared.readFileOrFolder(serverUrlFileName: serverUrl, depth: "0", showHiddenFiles: NCKeychain().showHiddenFiles) { account, files, _, error in
 
             if directoryEtag != files.first?.etag {
 
-                NextcloudKit.shared.readFileOrFolder(serverUrlFileName: serverUrl, depth: "1", showHiddenFiles: CCUtility.getShowHiddenFiles()) { account, files, _, error in
+                NextcloudKit.shared.readFileOrFolder(serverUrlFileName: serverUrl, depth: "1", showHiddenFiles: NCKeychain().showHiddenFiles) { account, files, _, error in
 
                     if error == .success {
                         DispatchQueue.global().async {

@@ -38,7 +38,7 @@ class NCCameraRoll: NSObject {
 
         guard !metadata.isExtractFile else { return  completition([metadataSource]) }
         guard !metadataSource.assetLocalIdentifier.isEmpty else {
-            let filePath = CCUtility.getDirectoryProviderStorageOcId(metadataSource.ocId, fileNameView: metadataSource.fileName)!
+            let filePath = NCUtilityFileSystem.shared.getDirectoryProviderStorageOcId(metadataSource.ocId, fileNameView: metadataSource.fileName)
             metadataSource.size = NCUtilityFileSystem.shared.getFileSize(filePath: filePath)
             let results = NextcloudKit.shared.nkCommonInstance.getInternalType(fileName: metadataSource.fileNameView, mimeType: metadataSource.contentType, directory: false)
             metadataSource.contentType = results.mimeType
@@ -69,7 +69,7 @@ class NCCameraRoll: NSObject {
         extractImageVideoFromAssetLocalIdentifier(metadata: metadataSource, modifyMetadataForUpload: true, viewController: viewController, hud: hud) { metadata, fileNamePath, error in
             if let metadata = metadata, let fileNamePath = fileNamePath, !error {
                 metadatas.append(metadata)
-                let toPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
+                let toPath = NCUtilityFileSystem.shared.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)
                 NCUtilityFileSystem.shared.moveFile(atPath: fileNamePath, toPath: toPath)
                 let fetchAssets = PHAsset.fetchAssets(withLocalIdentifiers: [metadataSource.assetLocalIdentifier], options: nil)
                 // swiftlint:disable empty_count
@@ -139,7 +139,7 @@ class NCCameraRoll: NSObject {
         let creationDate = asset.creationDate ?? Date()
         let modificationDate = asset.modificationDate ?? Date()
 
-        if asset.mediaType == PHAssetMediaType.image && (extensionAsset == "HEIC" || extensionAsset == "DNG") && CCUtility.getFormatCompatibility() {
+        if asset.mediaType == PHAssetMediaType.image && (extensionAsset == "HEIC" || extensionAsset == "DNG") && NCKeychain().formatCompatibility {
             let fileName = (metadata.fileNameView as NSString).deletingPathExtension + ".jpg"
             metadata.contentType = "image/jpeg"
             fileNamePath = NSTemporaryDirectory() + fileName
@@ -178,7 +178,7 @@ class NCCameraRoll: NSObject {
                     guard let ciImage = CIImage(data: data), let colorSpace = ciImage.colorSpace, let dataJPEG = CIContext().jpegRepresentation(of: ciImage, colorSpace: colorSpace) else { return callCompletionWithError() }
                     data = dataJPEG
                 }
-                NCUtilityFileSystem.shared.deleteFile(filePath: fileNamePath)
+                NCUtilityFileSystem.shared.removeFile(atPath: fileNamePath)
                 do {
                     try data.write(to: URL(fileURLWithPath: fileNamePath), options: .atomic)
                 } catch { return callCompletionWithError() }
@@ -200,7 +200,7 @@ class NCCameraRoll: NSObject {
 
             PHImageManager.default().requestAVAsset(forVideo: asset, options: options) { asset, _, _ in
                 if let asset = asset as? AVURLAsset {
-                    NCUtilityFileSystem.shared.deleteFile(filePath: fileNamePath)
+                    NCUtilityFileSystem.shared.removeFile(atPath: fileNamePath)
                     do {
                         try FileManager.default.copyItem(at: asset.url, to: URL(fileURLWithPath: fileNamePath))
                         metadata.creationDate = creationDate as NSDate
@@ -254,7 +254,7 @@ class NCCameraRoll: NSObject {
         options.isNetworkAccessAllowed = true
         let ocId = NSUUID().uuidString
         let fileName = (metadata.fileName as NSString).deletingPathExtension + ".mov"
-        let fileNamePath = CCUtility.getDirectoryProviderStorageOcId(ocId, fileNameView: fileName)!
+        let fileNamePath = NCUtilityFileSystem.shared.getDirectoryProviderStorageOcId(ocId, fileNameView: fileName)
         var chunkSize = NCGlobal.shared.chunkSizeMBCellular
         if NCNetworking.shared.networkReachability == NKCommon.TypeReachability.reachableEthernetOrWiFi {
             chunkSize = NCGlobal.shared.chunkSizeMBEthernetOrWiFi
@@ -268,7 +268,7 @@ class NCCameraRoll: NSObject {
                 break
             }
             guard let videoResource = videoResource else { return completion(nil) }
-            NCUtilityFileSystem.shared.deleteFile(filePath: fileNamePath)
+            NCUtilityFileSystem.shared.removeFile(atPath: fileNamePath)
             PHAssetResourceManager.default().writeData(for: videoResource, toFile: URL(fileURLWithPath: fileNamePath), options: nil) { error in
                 if error != nil { return completion(nil) }
                 let metadataLivePhoto = NCManageDatabase.shared.createMetadata(account: metadata.account,

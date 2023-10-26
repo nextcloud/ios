@@ -202,11 +202,11 @@ extension tableMetadata {
     }
 
     var isDirectoySettableE2EE: Bool {
-        return directory && size == 0 && !e2eEncrypted && CCUtility.isEnd(toEndEnabled: account)
+        return directory && size == 0 && !e2eEncrypted && NCKeychain().isEndToEndEnabled(account: account)
     }
 
     var isDirectoryUnsettableE2EE: Bool {
-        return !isDirectoryE2EE && directory && size == 0 && e2eEncrypted && CCUtility.isEnd(toEndEnabled: account)
+        return !isDirectoryE2EE && directory && size == 0 && e2eEncrypted && NCKeychain().isEndToEndEnabled(account: account)
     }
 
     var canOpenExternalEditor: Bool {
@@ -1057,7 +1057,7 @@ extension NCManageDatabase {
         var classFile = metadata.classFile
         var fileName = (metadata.fileNameView as NSString).deletingPathExtension
 
-        if !metadata.livePhoto || !CCUtility.getLivePhoto() {
+        if !metadata.livePhoto || !NCKeychain().livePhoto {
             return nil
         }
 
@@ -1148,7 +1148,7 @@ extension NCManageDatabase {
     func isDownloadMetadata(_ metadata: tableMetadata, download: Bool) -> Bool {
 
         let localFile = getTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
-        let fileSize = CCUtility.fileProviderStorageSize(metadata.ocId, fileNameView: metadata.fileNameView)
+        let fileSize = NCUtilityFileSystem.shared.fileProviderStorageSize(metadata.ocId, fileNameView: metadata.fileNameView)
         if (localFile != nil || download) && (localFile?.etag != metadata.etag || fileSize == 0) {
             return true
         }
@@ -1162,7 +1162,7 @@ extension NCManageDatabase {
         let fileNameNoExtension = (fileNameView as NSString).deletingPathExtension
         var fileNameConflict = fileNameView
 
-        if fileNameExtension == "heic" && CCUtility.getFormatCompatibility() {
+        if fileNameExtension == "heic", NCKeychain().formatCompatibility {
             fileNameConflict = fileNameNoExtension + ".jpg"
         }
         return getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView == %@", account, serverUrl, fileNameConflict))

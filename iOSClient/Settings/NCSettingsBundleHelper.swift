@@ -42,12 +42,12 @@ class NCSettingsBundleHelper: NSObject {
             URLCache.shared.memoryCapacity = 0
             URLCache.shared.diskCapacity = 0
 
-            CCUtility.removeGroupDirectoryProviderStorage()
-            CCUtility.removeGroupApplicationSupport()
-            CCUtility.removeDocumentsDirectory()
-            CCUtility.removeTemporaryDirectory()
+            NCUtilityFileSystem.shared.removeGroupDirectoryProviderStorage()
+            NCUtilityFileSystem.shared.removeGroupApplicationSupport()
+            NCUtilityFileSystem.shared.removeDocumentsDirectory()
+            NCUtilityFileSystem.shared.removeTemporaryDirectory()
 
-            CCUtility.deleteAllChainStore()
+            NCKeychain().removeAll()
             NCManageDatabase.shared.removeDB()
 
             DispatchQueue.main.asyncAfter(deadline: .now() + delay) {

@@ -30,9 +30,7 @@ class NCLoginWeb: UIViewController {
 
     var webView: WKWebView?
 
-    // swiftlint:disable force_cast
-    let appDelegate = UIApplication.shared.delegate as! AppDelegate
-    // swiftlint:enable force_cast
+    let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
 
     var titleView: String = ""
 
@@ -131,7 +129,7 @@ class NCLoginWeb: UIViewController {
         // TITLE
         if let host = URL(string: urlBase)?.host {
             titleView = host
-            if let account = NCManageDatabase.shared.getActiveAccount(), CCUtility.getPassword(account.account).isEmpty {
+            if let account = NCManageDatabase.shared.getActiveAccount(), NCKeychain().getPassword(account: account.account).isEmpty {
                 titleView = NSLocalizedString("_user_", comment: "") + " " + account.userId + " " + NSLocalizedString("_in_", comment: "") + " " + host
             }
         }
@@ -144,7 +142,7 @@ class NCLoginWeb: UIViewController {
         // Stop timer error network
         appDelegate.timerErrorNetworking?.invalidate()
 
-        if let account = NCManageDatabase.shared.getActiveAccount(), CCUtility.getPassword(account.account).isEmpty {
+        if let account = NCManageDatabase.shared.getActiveAccount(), NCKeychain().getPassword(account: account.account).isEmpty {
 
             let message = "\n" + NSLocalizedString("_password_not_present_", comment: "")
             let alertController = UIAlertController(title: titleView, message: message, preferredStyle: .alert)
@@ -303,10 +301,10 @@ extension NCLoginWeb: WKNavigationDelegate {
 
                 self.appDelegate.changeAccount(account, userProfile: userProfile)
 
-                if CCUtility.getIntro() {
+                if NCKeychain().intro {
                     self.dismiss(animated: true)
                 } else {
-                    CCUtility.setIntro(true)
+                    NCKeychain().intro = true
                     if self.presentingViewController == nil {
                         if let viewController = UIStoryboard(name: "Main", bundle: nil).instantiateInitialViewController() {
                             viewController.modalPresentationStyle = .fullScreen

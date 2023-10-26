@@ -106,7 +106,7 @@ extension NCManageDatabase {
                     addObject.autoUploadWWAnVideo = true
                 }
 
-                CCUtility.setPassword(account, password: password)
+                NCKeychain().setPassword(account: account, password: password)
 
                 addObject.urlBase = urlBase
                 addObject.user = user
@@ -263,8 +263,7 @@ extension NCManageDatabase {
 
         let cameraFileName = self.getAccountAutoUploadFileName()
         let cameraDirectory = self.getAccountAutoUploadDirectory(urlBase: urlBase, userId: userId, account: account)
-
-        let folderPhotos = CCUtility.stringAppendServerUrl(cameraDirectory, addFileName: cameraFileName)!
+        let folderPhotos = NCUtilityFileSystem.shared.stringAppendServerUrl(cameraDirectory, addFileName: cameraFileName)
 
         return folderPhotos
     }

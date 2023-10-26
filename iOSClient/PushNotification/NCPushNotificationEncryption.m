@@ -24,10 +24,9 @@
 //
 
 #import "NCPushNotificationEncryption.h"
-
+#import "NCBridgeSwift.h"
 #import <OpenSSL/OpenSSL.h>
 #import <CommonCrypto/CommonDigest.h>
-
 #import "NCEndToEndEncryption.h"
 #import "CCUtility.h"
 
@@ -75,7 +74,8 @@
     
     BIO_read(publicKeyBIO, keyBytes, len);
     NSData *ncPNPublicKey = [NSData dataWithBytes:keyBytes length:len];
-    [CCUtility setPushNotificationPublicKey:account data:ncPNPublicKey];
+
+    [[[NCKeychain alloc] init] setPushNotificationPublicKeyWithAccount:account data:ncPNPublicKey];
     NSLog(@"Push Notifications Key Pair generated: \n%@", [[NSString alloc] initWithData:ncPNPublicKey encoding:NSUTF8StringEncoding]);
     
     // PrivateKey
@@ -87,7 +87,7 @@
     
     BIO_read(privateKeyBIO, keyBytes, len);
     NSData *ncPNPrivateKey = [NSData dataWithBytes:keyBytes length:len];
-    [CCUtility setPushNotificationPrivateKey:account data:ncPNPrivateKey];
+    [[[NCKeychain alloc] init] setPushNotificationPrivateKeyWithAccount:account data:ncPNPrivateKey];
     
     RSA_free(rsa);
     BN_free(bigNumber);

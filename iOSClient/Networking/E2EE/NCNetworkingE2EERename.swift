@@ -55,7 +55,8 @@ class NCNetworkingE2EERename: NSObject {
 
         // DB RENAME
         //
-        NCManageDatabase.shared.renameFileE2eEncryption(account: metadata.account, serverUrl: metadata.serverUrl, fileNameIdentifier: metadata.fileName, newFileName: fileNameNew, newFileNamePath: CCUtility.returnFileNamePath(fromFileName: fileNameNew, serverUrl: metadata.serverUrl, urlBase: metadata.urlBase, userId: metadata.userId, account: metadata.account))
+        let newFileNamePath = NCUtilityFileSystem.shared.getFileNamePath(fileNameNew, serverUrl: metadata.serverUrl, urlBase: metadata.urlBase, userId: metadata.userId)
+        NCManageDatabase.shared.renameFileE2eEncryption(account: metadata.account, serverUrl: metadata.serverUrl, fileNameIdentifier: metadata.fileName, newFileName: fileNameNew, newFileNamePath: newFileNamePath)
 
         // UPLOAD METADATA
         //
@@ -77,8 +78,8 @@ class NCNetworkingE2EERename: NSObject {
 
         // MOVE FILE SYSTEM
         //
-        let atPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId) + "/" + metadata.fileNameView
-        let toPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId) + "/" + fileNameNew
+        let atPath = NCUtilityFileSystem.shared.getDirectoryProviderStorageOcId(metadata.ocId) + "/" + metadata.fileNameView
+        let toPath = NCUtilityFileSystem.shared.getDirectoryProviderStorageOcId(metadata.ocId) + "/" + fileNameNew
         do {
             try FileManager.default.moveItem(atPath: atPath, toPath: toPath)
         } catch { }

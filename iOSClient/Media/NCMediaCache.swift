@@ -48,7 +48,7 @@ import NextcloudKit
         metadatas.removeAll()
         getMetadatasMedia(account: account)
 
-        guard !metadatas.isEmpty, let directory = CCUtility.getDirectoryProviderStorage() else { return }
+        guard !metadatas.isEmpty else { return }
         let ext = ".preview.ico"
         let manager = FileManager.default
         let resourceKeys = Set<URLResourceKey>([.nameKey, .pathKey, .fileSizeKey, .creationDateKey])
@@ -64,7 +64,7 @@ import NextcloudKit
             ocIdEtag[metadata.ocId] = metadata.etag
         }
 
-        if let enumerator = manager.enumerator(at: URL(fileURLWithPath: directory), includingPropertiesForKeys: [.isRegularFileKey], options: [.skipsHiddenFiles]) {
+        if let enumerator = manager.enumerator(at: URL(fileURLWithPath: NCUtilityFileSystem.shared.directoryProviderStorage), includingPropertiesForKeys: [.isRegularFileKey], options: [.skipsHiddenFiles]) {
             for case let fileURL as URL in enumerator where fileURL.lastPathComponent.hasSuffix(ext) {
                 let fileName = fileURL.lastPathComponent
                 let ocId = fileURL.deletingLastPathComponent().lastPathComponent
@@ -136,10 +136,10 @@ import NextcloudKit
 
         guard let predicate = predicate else { return }
 
-        livePhoto = CCUtility.getLivePhoto()
+        livePhoto = NCKeychain().livePhoto
         metadatas = NCManageDatabase.shared.getMetadatasMedia(predicate: predicate, livePhoto: livePhoto)
 
-        switch CCUtility.getMediaSortDate() {
+        switch NCKeychain().mediaSortDate {
         case "date":
             metadatas = self.metadatas.sorted(by: {($0.date as Date) > ($1.date as Date)})
         case "creationDate":

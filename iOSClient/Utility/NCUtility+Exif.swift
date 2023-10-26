@@ -72,11 +72,11 @@ extension NCUtility {
             }
         }
 
-        if metadata.classFile != "image" || !CCUtility.fileProviderStorageExists(metadata) {
+        if metadata.classFile != "image" || !NCUtilityFileSystem.shared.fileProviderStorageExists(metadata) {
             print("Storage exists or file is not an image")
         }
 
-        let url = URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView))
+        let url = URL(fileURLWithPath: NCUtilityFileSystem.shared.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView))
 
         guard let originalSource = CGImageSourceCreateWithURL(url as CFURL, nil),
               let imageProperties = CGImageSourceCopyPropertiesAtIndex(originalSource, 0, nil) as NSDictionary? else {

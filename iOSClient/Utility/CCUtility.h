@@ -27,7 +27,6 @@
 #import <sys/sysctl.h>
 #import <AssetsLibrary/AssetsLibrary.h>
 #import <MessageUI/MessageUI.h>
-#import <UICKeyChainStore.h>
 #import <Photos/Photos.h>
 #import <PDFKit/PDFKit.h>
 
@@ -35,200 +34,9 @@
 
 @interface CCUtility : NSObject
 
-// ===== KeyChainStore =====
-
-// GET/SET
-
-+ (void)deleteAllChainStore;
-+ (void)storeAllChainInService;
-
-+ (NSString *)getPasscode;
-+ (void)setPasscode:(NSString *)passcode;
-
-+ (BOOL)getNotPasscodeAtStart;
-+ (void)setNotPasscodeAtStart:(BOOL)set;
-
-+ (BOOL)getEnableTouchFaceID;
-+ (void)setEnableTouchFaceID:(BOOL)set;
-
-+ (BOOL)isPasscodeAtStartEnabled;
-
-+ (NSString *)getGroupBySettings;
-+ (void)setGroupBySettings:(NSString *)groupby;
-
-+ (BOOL)getIntro;
-+ (void)setIntro:(BOOL)set;
-
-+ (NSString *)getIncrementalNumber;
-
-+ (NSString *)getAccountExt;
-+ (void)setAccountExt:(NSString *)account;
-
-+ (NSString *)getServerUrlExt;
-+ (void)setServerUrlExt:(NSString *)serverUrl;
-
-+ (NSString *)getTitleServerUrlExt;
-+ (void)setTitleServerUrlExt:(NSString *)titleServerUrl;
-
-+ (NSString *)getFileNameExt;
-+ (void)setFileNameExt:(NSString *)fileName;
-
-+ (NSString *)getEmail;
-+ (void)setEmail:(NSString *)email;
-
-+ (NSString *)getHint;
-+ (void)setHint:(NSString *)hint;
-
-+ (BOOL)getOriginalFileName:(NSString *)key;
-+ (void)setOriginalFileName:(BOOL)value key:(NSString *)key;
-
-+ (NSString *)getFileNameMask:(NSString *)key;
-+ (void)setFileNameMask:(NSString *)mask key:(NSString *)key;
-
-+ (BOOL)getFileNameType:(NSString *)key;
-+ (void)setFileNameType:(BOOL)prefix key:(NSString *)key;
-
-+ (BOOL)getActivityVerboseHigh;
-+ (void)setActivityVerboseHigh:(BOOL)debug;
-
-+ (BOOL)getShowHiddenFiles;
-+ (void)setShowHiddenFiles:(BOOL)show;
-
-+ (BOOL)getFormatCompatibility;
-+ (void)setFormatCompatibility:(BOOL)set;
-
-// E2EE -------------------------------------------
-
-+ (NSString *)getEndToEndCertificate:(NSString *)account;
-+ (void)setEndToEndCertificate:(NSString *)account certificate:(NSString *)certificate;
-
-+ (NSString *)getEndToEndPrivateKey:(NSString *)account;
-+ (void)setEndToEndPrivateKey:(NSString *)account privateKey:(NSString *)privateKey;
-
-+ (NSString *)getEndToEndPublicKey:(NSString *)account;
-+ (void)setEndToEndPublicKey:(NSString *)account publicKey:(NSString *)publicKey;
-
-+ (NSString *)getEndToEndPassphrase:(NSString *)account;
-+ (void)setEndToEndPassphrase:(NSString *)account passphrase:(NSString *)passphrase;
-
-+ (BOOL)isEndToEndEnabled:(NSString *)account;
-
-// E2EE -------------------------------------------
-
-+ (void)clearAllKeysEndToEnd:(NSString *)account;
-
-+ (BOOL)getDisableFilesApp;
-+ (void)setDisableFilesApp:(BOOL)disable;
-
-+ (void)setPushNotificationPublicKey:(NSString *)account data:(NSData *)data;
-+ (NSData *)getPushNotificationPublicKey:(NSString *)account;
-+ (void)setPushNotificationSubscribingPublicKey:(NSString *)account publicKey:(NSString *)publicKey;
-+ (NSString *)getPushNotificationSubscribingPublicKey:(NSString *)account;
-+ (void)setPushNotificationPrivateKey:(NSString *)account data:(NSData *)data;
-+ (NSData *)getPushNotificationPrivateKey:(NSString *)account;
-+ (void)setPushNotificationToken:(NSString *)account token:(NSString *)token;
-+ (NSString *)getPushNotificationToken:(NSString *)account;
-+ (void)setPushNotificationDeviceIdentifier:(NSString *)account deviceIdentifier:(NSString *)deviceIdentifier;
-+ (NSString *)getPushNotificationDeviceIdentifier:(NSString *)account;
-+ (void)setPushNotificationDeviceIdentifierSignature:(NSString *)account deviceIdentifierSignature:(NSString *)deviceIdentifierSignature;
-+ (NSString *)getPushNotificationDeviceIdentifierSignature:(NSString *)account;
-+ (void)clearAllKeysPushNotification:(NSString *)account;
-
-+ (NSInteger)getMediaWidthImage;
-+ (void)setMediaWidthImage:(NSInteger)width;
-
-+ (BOOL)getDisableCrashservice;
-+ (void)setDisableCrashservice:(BOOL)disable;
-
-+ (void)setPassword:(NSString *)account password:(NSString *)password;
-+ (NSString *)getPassword:(NSString *)account;
-
-+ (void)setHCBusinessType:(NSString *)professions;
-+ (NSString *)getHCBusinessType;
-
-+ (NSData *)getDatabaseEncryptionKey;
-
-+ (BOOL)getLivePhoto;
-+ (void)setLivePhoto:(BOOL)set;
-
-+ (NSString *)getMediaSortDate;
-+ (void)setMediaSortDate:(NSString *)value;
-
-+ (BOOL)getTextRecognitionStatus;
-+ (void)setTextRecognitionStatus:(BOOL)value;
-+ (BOOL)getDeleteAllScanImages;
-+ (void)setDeleteAllScanImages:(BOOL)value;
-+ (NSString *)getDirectoryScanDocument;
-+ (void)setDirectoryScanDocument:(NSString *)value;
-+ (double)getQualityScanDocument;
-+ (void)setQualityScanDocument:(double)value;
-
-+ (NSInteger)getLogLevel;
-+ (void)setLogLevel:(NSInteger)value;
-
-+ (BOOL)getAccountRequest;
-+ (void)setAccountRequest:(BOOL)set;
-
-+ (NSInteger)getCleanUpDay;
-+ (void)setCleanUpDay:(NSInteger)days;
-
-+ (BOOL)getPrivacyScreenEnabled;
-+ (void)setPrivacyScreenEnabled:(BOOL)set;
-
-+ (BOOL)getRemovePhotoCameraRoll;
-+ (void)setRemovePhotoCameraRoll:(BOOL)set;
-
-// ===== Varius =====
-
-+ (BOOL)addSkipBackupAttributeToItemAtURL:(NSURL *)URL;
-
 + (NSString *)dateDiff:(NSDate *)convertedDate;
-+ (NSString *)transformedSize:(int64_t)value;
-
-+ (NSString *)removeForbiddenCharactersServer:(NSString *)fileName;
-+ (NSString *)removeForbiddenCharactersFileSystem:(NSString *)fileName;
-
-+ (NSString *)stringAppendServerUrl:(NSString *)serverUrl addFileName:(NSString *)addFileName;
-
-+ (NSString *)createFileNameDate:(NSString *)fileName extension:(NSString *)extension;
 + (NSString *)createFileName:(NSString *)fileName fileDate:(NSDate *)fileDate fileType:(PHAssetMediaType)fileType keyFileName:(NSString *)keyFileName keyFileNameType:(NSString *)keyFileNameType keyFileNameOriginal:(NSString *)keyFileNameOriginal forcedNewFileName:(BOOL)forcedNewFileName;
-
-+ (void)createDirectoryStandard;
-
-+ (NSURL *)getDirectoryGroup;
-+ (NSString *)getDirectoryDocuments;
-+ (NSString *)getDirectoryReaderMetadata;
-+ (NSString *)getDirectoryAudio;
-+ (NSString *)getDirectoryCerificates;
-+ (NSString *)getDirectoryUserData;
-+ (NSString *)getDirectoryProviderStorage;
-+ (NSString *)getDirectoryProviderStorageOcId:(NSString *)ocId;
-+ (NSString *)getDirectoryProviderStorageOcId:(NSString *)ocId fileNameView:(NSString *)fileNameView;
-+ (NSString *)getDirectoryProviderStorageIconOcId:(NSString *)ocId etag:(NSString *)etag;
-+ (NSString *)getDirectoryProviderStoragePreviewOcId:(NSString *)ocId etag:(NSString *)etag;
-+ (BOOL)fileProviderStorageExists:(tableMetadata *)metadata;
-+ (int64_t)fileProviderStorageSize:(NSString *)ocId fileNameView:(NSString *)fileNameView;
-+ (BOOL)fileProviderStoragePreviewIconExists:(NSString *)ocId etag:(NSString *)etag;
-
-+ (void)removeGroupApplicationSupport;
-+ (void)removeGroupLibraryDirectory;
-+ (void)removeGroupDirectoryProviderStorage;
-+ (void)removeDocumentsDirectory;
-+ (void)removeTemporaryDirectory;
-+ (void)emptyTemporaryDirectory;
-
 + (NSString *)getTitleSectionDate:(NSDate *)date;
-
-+ (void)moveFileAtPath:(NSString *)atPath toPath:(NSString *)toPath;
-+ (void)copyFileAtPath:(NSString *)atPath toPath:(NSString *)toPath;
-+ (void)removeFileAtPath:(NSString *)atPath;
-+ (void)createDirectoryAtPath:(NSString *)atPath;
-
-+ (NSString *)returnPathfromServerUrl:(NSString *)serverUrl urlBase:(NSString *)urlBase userId:(NSString *)userId account:(NSString *)account;
-+ (NSString *)returnFileNamePathFromFileName:(NSString *)metadataFileName serverUrl:(NSString *)serverUrl urlBase:(NSString *)urlBase userId:(NSString *)userId account:(NSString *)account;
-
-+ (NSString *)getDirectoryScan;
-
 + (NSString *)getMimeType:(NSString *)fileNameView;
 
 // ===== Share Permissions =====
@@ -246,7 +54,6 @@
 
 + (NSString *)getExtension:(NSString*)fileName;
 + (NSDate *)datetimeWithOutTime:(NSDate *)datDate;
-+ (NSString *)valueForKey:(NSString *)key fromQueryItems:(NSArray *)queryItems;
 + (NSDate *)getATime:(const char *)path;
 
 @end

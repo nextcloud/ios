@@ -39,9 +39,7 @@ class NCActivity: UIViewController, NCSharePagingContent {
     var metadata: tableMetadata?
     var showComments: Bool = false
 
-    // swiftlint:disable force_cast
-    private let appDelegate = UIApplication.shared.delegate as! AppDelegate
-    // swiftlint:enable force_cast
+    let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
 
     var allItems: [DateCompareable] = []
     var sectionDates: [Date] = []
@@ -252,7 +250,7 @@ extension NCActivity: UITableViewDataSource {
         if !activity.icon.isEmpty {
 
             let fileNameIcon = (activity.icon as NSString).lastPathComponent
-            let fileNameLocalPath = CCUtility.getDirectoryUserData() + "/" + fileNameIcon
+            let fileNameLocalPath = NCUtilityFileSystem.shared.directoryUserData + "/" + fileNameIcon
 
             if FileManager.default.fileExists(atPath: fileNameLocalPath) {
                 if let image = UIImage(contentsOfFile: fileNameLocalPath) {

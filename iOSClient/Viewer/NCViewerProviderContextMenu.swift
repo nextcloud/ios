@@ -70,27 +70,27 @@ class NCViewerProviderContextMenu: UIViewController {
             }
 
             // PREVIEW
-            if CCUtility.fileProviderStoragePreviewIconExists(metadata.ocId, etag: metadata.etag) {
+            if NCUtilityFileSystem.shared.fileProviderStoragePreviewIconExists(metadata.ocId, etag: metadata.etag) {
 
-                if let image = UIImage(contentsOfFile: CCUtility.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)) {
+                if let image = UIImage(contentsOfFile: NCUtilityFileSystem.shared.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)) {
                     imageView.image = image
                     imageView.frame = resize(image.size)
                 }
             }
 
             // VIEW IMAGE
-            if metadata.isImage && CCUtility.fileProviderStorageExists(metadata) {
+            if metadata.isImage && NCUtilityFileSystem.shared.fileProviderStorageExists(metadata) {
                 viewImage(metadata: metadata)
             }
 
             // VIEW LIVE PHOTO
-            if let metadataLivePhoto = metadataLivePhoto, CCUtility.fileProviderStorageExists(metadataLivePhoto) {
+            if let metadataLivePhoto = metadataLivePhoto, NCUtilityFileSystem.shared.fileProviderStorageExists(metadataLivePhoto) {
                 viewVideo(metadata: metadataLivePhoto)
             }
 
             // VIEW VIDEO
             if metadata.isVideo {
-                if !CCUtility.fileProviderStoragePreviewIconExists(metadata.ocId, etag: metadata.etag) {
+                if !NCUtilityFileSystem.shared.fileProviderStoragePreviewIconExists(metadata.ocId, etag: metadata.etag) {
                     let newSize = CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height)
                     imageView.image = nil
                     imageView.frame = newSize
@@ -104,7 +104,7 @@ class NCViewerProviderContextMenu: UIViewController {
 
                 var maxDownload: UInt64 = 0
 
-                if CCUtility.fileProviderStorageExists(metadata) {
+                if NCUtilityFileSystem.shared.fileProviderStorageExists(metadata) {
 
                     viewVideo(metadata: metadata)
 
@@ -125,7 +125,7 @@ class NCViewerProviderContextMenu: UIViewController {
             }
 
             // AUTO DOWNLOAD IMAGE GIF
-            if !CCUtility.fileProviderStorageExists(metadata),
+            if !NCUtilityFileSystem.shared.fileProviderStorageExists(metadata),
                metadata.contentType == "image/gif",
                let appDelegate = (UIApplication.shared.delegate as? AppDelegate),
                appDelegate.downloadQueue.operations.filter({ ($0 as? NCOperationDownload)?.metadata.ocId == metadata.ocId }).isEmpty {
@@ -133,7 +133,7 @@ class NCViewerProviderContextMenu: UIViewController {
             }
 
             // AUTO DOWNLOAD IMAGE SVG
-            if !CCUtility.fileProviderStorageExists(metadata),
+            if !NCUtilityFileSystem.shared.fileProviderStorageExists(metadata),
                metadata.contentType == "image/svg+xml",
                let appDelegate = (UIApplication.shared.delegate as? AppDelegate),
                appDelegate.downloadQueue.operations.filter({ ($0 as? NCOperationDownload)?.metadata.ocId == metadata.ocId }).isEmpty {
@@ -142,7 +142,7 @@ class NCViewerProviderContextMenu: UIViewController {
 
             // AUTO DOWNLOAD LIVE PHOTO
             if let metadataLivePhoto = self.metadataLivePhoto,
-               !CCUtility.fileProviderStorageExists(metadataLivePhoto),
+               !NCUtilityFileSystem.shared.fileProviderStorageExists(metadataLivePhoto),
                let appDelegate = (UIApplication.shared.delegate as? AppDelegate),
                appDelegate.downloadQueue.operations.filter({ ($0 as? NCOperationDownload)?.metadata.ocId == metadata.ocId }).isEmpty {
                 appDelegate.downloadQueue.addOperation(NCOperationDownload(metadata: metadataLivePhoto, selector: ""))
@@ -229,12 +229,12 @@ class NCViewerProviderContextMenu: UIViewController {
 
         var image: UIImage?
 
-        let filePath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
+        let filePath = NCUtilityFileSystem.shared.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)
 
         if metadata.contentType == "image/gif" {
             image = UIImage.animatedImage(withAnimatedGIFURL: URL(fileURLWithPath: filePath))
         } else if metadata.contentType == "image/svg+xml" {
-            let imagePath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
+            let imagePath = NCUtilityFileSystem.shared.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)
             if let svgImage = SVGKImage(contentsOfFile: imagePath) {
                 svgImage.size = CGSize(width: NCGlobal.shared.sizePreview, height: NCGlobal.shared.sizePreview)
                 image = svgImage.uiImage

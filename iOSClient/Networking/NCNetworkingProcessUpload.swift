@@ -33,10 +33,7 @@ class NCNetworkingProcessUpload: NSObject {
         return instance
     }()
 
-    // swiftlint:disable force_cast
-    private let appDelegate = UIApplication.shared.delegate as! AppDelegate
-    // swiftlint:enable force_cast
-
+    private let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
     private var notificationToken: NotificationToken?
     private var timerProcess: Timer?
     private var pauseProcess: Bool = false
@@ -274,9 +271,8 @@ class NCNetworkingProcessUpload: NSObject {
         // remove leaning upload share extension
         let metadatasUploadShareExtension = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "session == %@ AND sessionSelector == %@", NextcloudKit.shared.nkCommonInstance.sessionIdentifierUpload, NCGlobal.shared.selectorUploadFileShareExtension))
         for metadata in metadatasUploadShareExtension {
-            let path = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId)!
             NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
-            NCUtilityFileSystem.shared.deleteFile(filePath: path)
+            NCUtilityFileSystem.shared.removeFile(atPath: NCUtilityFileSystem.shared.getDirectoryProviderStorageOcId(metadata.ocId))
         }
 
         // verify metadataStatusInUpload (BACKGROUND)
@@ -328,7 +324,7 @@ class NCNetworkingProcessUpload: NSObject {
             NCNetworking.shared.transferInForegorund = nil
         }
         for metadata in metadatasUploading {
-            let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
+            let fileNameLocalPath = NCUtilityFileSystem.shared.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)
             if NCNetworking.shared.uploadRequest[fileNameLocalPath] == nil {
                 NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId, session: nil, sessionError: "", sessionSelector: nil, sessionTaskIdentifier: 0, status: NCGlobal.shared.metadataStatusWaitUpload, errorCode: nil)
             }

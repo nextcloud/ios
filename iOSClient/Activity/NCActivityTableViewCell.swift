@@ -41,10 +41,6 @@ class NCActivityCollectionViewCell: UICollectionViewCell {
 
 class NCActivityTableViewCell: UITableViewCell, NCCellProtocol {
 
-    // swiftlint:disable force_cast
-    private let appDelegate = UIApplication.shared.delegate as! AppDelegate
-    // swiftlint:enable force_cast
-
     @IBOutlet weak var collectionView: UICollectionView!
     @IBOutlet weak var icon: UIImageView!
     @IBOutlet weak var avatar: UIImageView!
@@ -52,6 +48,7 @@ class NCActivityTableViewCell: UITableViewCell, NCCellProtocol {
     @IBOutlet weak var subjectTrailingConstraint: NSLayoutConstraint!
     @IBOutlet weak var collectionViewHeightConstraint: NSLayoutConstraint!
 
+    private let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
     private var user: String = ""
     private var index = IndexPath()
 
@@ -190,7 +187,7 @@ extension NCActivityTableViewCell: UICollectionViewDataSource {
 
                 if let activitySubjectRich = NCManageDatabase.shared.getActivitySubjectRich(account: activityPreview.account, idActivity: idActivity, id: fileId) {
 
-                    let fileNamePath = CCUtility.getDirectoryUserData() + "/" + activitySubjectRich.name
+                    let fileNamePath = NCUtilityFileSystem.shared.directoryUserData + "/" + activitySubjectRich.name
 
                     if FileManager.default.fileExists(atPath: fileNamePath), let image = UIImage(contentsOfFile: fileNamePath) {
                         cell.imageView.image = image

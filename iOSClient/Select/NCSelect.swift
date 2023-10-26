@@ -249,7 +249,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
 
     func pushMetadata(_ metadata: tableMetadata) {
 
-        guard let serverUrlPush = CCUtility.stringAppendServerUrl(metadata.serverUrl, addFileName: metadata.fileName) else { return }
+        let serverUrlPush = NCUtilityFileSystem.shared.stringAppendServerUrl(metadata.serverUrl, addFileName: metadata.fileName)
         guard let viewController = UIStoryboard(name: "NCSelect", bundle: nil).instantiateViewController(withIdentifier: "NCSelect.storyboard") as? NCSelect else { return }
 
         self.serverUrlPush = serverUrlPush
@@ -298,15 +298,15 @@ extension NCSelect: UICollectionViewDataSource {
 
         // Thumbnail
         if !metadata.directory {
-            if FileManager().fileExists(atPath: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)) {
-                (cell as? NCCellProtocol)?.filePreviewImageView?.image = UIImage(contentsOfFile: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag))
+            if FileManager().fileExists(atPath: NCUtilityFileSystem.shared.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)) {
+                (cell as? NCCellProtocol)?.filePreviewImageView?.image = UIImage(contentsOfFile: NCUtilityFileSystem.shared.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag))
             } else {
                 if metadata.iconName.isEmpty {
                     (cell as? NCCellProtocol)?.filePreviewImageView?.image = NCBrandColor.cacheImages.file
                 } else {
                     (cell as? NCCellProtocol)?.filePreviewImageView?.image = UIImage(named: metadata.iconName)
                 }
-                if metadata.hasPreview && metadata.status == NCGlobal.shared.metadataStatusNormal && (!CCUtility.fileProviderStoragePreviewIconExists(metadata.ocId, etag: metadata.etag)) {
+                if metadata.hasPreview && metadata.status == NCGlobal.shared.metadataStatusNormal && (!NCUtilityFileSystem.shared.fileProviderStoragePreviewIconExists(metadata.ocId, etag: metadata.etag)) {
                     for case let operation as NCCollectionViewDownloadThumbnail in appDelegate.downloadThumbnailQueue.operations where operation.metadata.ocId == metadata.ocId { return }
                     appDelegate.downloadThumbnailQueue.addOperation(NCCollectionViewDownloadThumbnail(metadata: metadata, cell: (cell as? NCCellProtocol), collectionView: collectionView))
                 }
@@ -391,12 +391,12 @@ extension NCSelect: UICollectionViewDataSource {
 
         } else {
 
-            cell.labelInfo.text = CCUtility.dateDiff(metadata.date as Date) + " · " + CCUtility.transformedSize(metadata.size)
+            cell.labelInfo.text = CCUtility.dateDiff(metadata.date as Date) + " · " + NCUtilityFileSystem.shared.transformedSize(metadata.size)
 
             // image local
             if NCManageDatabase.shared.getTableLocalFile(ocId: metadata.ocId) != nil {
                 cell.imageLocal.image = NCBrandColor.cacheImages.offlineFlag
-            } else if CCUtility.fileProviderStorageExists(metadata) {
+            } else if NCUtilityFileSystem.shared.fileProviderStorageExists(metadata) {
                 cell.imageLocal.image = NCBrandColor.cacheImages.local
             }
         }

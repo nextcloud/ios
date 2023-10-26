@@ -36,7 +36,7 @@ extension NCScan: UICollectionViewDataSource {
 
             let cell = (collectionView.dequeueReusableCell(withReuseIdentifier: "cell1", for: indexPath) as? NCScanCell)!
 
-            let fileNamePath = CCUtility.getDirectoryScan() + "/" + itemsSource[indexPath.row]
+            let fileNamePath = NCUtilityFileSystem.shared.directoryScan + "/" + itemsSource[indexPath.row]
 
             guard let data = try? Data(contentsOf: URL(fileURLWithPath: fileNamePath)), var image = UIImage(data: data) else { return cell }
 
@@ -55,8 +55,8 @@ extension NCScan: UICollectionViewDataSource {
                 let buttonPosition: CGPoint = (sender as? UIButton)!.convert(.zero, to: self.collectionViewSource)
                 if let indexPath = self.collectionViewSource.indexPathForItem(at: buttonPosition) {
 
-                    let fileNameAtPath = CCUtility.getDirectoryScan() + "/" + self.itemsSource[indexPath.row]
-                    CCUtility.removeFile(atPath: fileNameAtPath)
+                    let fileNameAtPath = NCUtilityFileSystem.shared.directoryScan + "/" + self.itemsSource[indexPath.row]
+                    NCUtilityFileSystem.shared.removeFile(atPath: fileNameAtPath)
                     self.itemsSource.remove(at: indexPath.row)
 
                     self.collectionViewSource.deleteItems(at: [indexPath])

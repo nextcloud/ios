@@ -53,7 +53,7 @@ class NCViewCertificateDetails: UIViewController {
         buttonCancel.title = NSLocalizedString("_close_", comment: "")
 
         if fileNamePath.isEmpty {
-            fileNamePath = CCUtility.getDirectoryCerificates()! + "/" + host + ".txt"
+            fileNamePath = NCUtilityFileSystem.shared.directoryCertificates + "/" + host + ".txt"
         }
 
         if FileManager.default.fileExists(atPath: fileNamePath) {

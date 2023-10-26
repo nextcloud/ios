@@ -90,7 +90,7 @@ func convertDataToImage(data: Data?, size: CGSize, fileNameToWrite: String?) -> 
     }
     if let fileName = fileNameToWrite, let image = imageData {
         do {
-            let fileNamePath: String = CCUtility.getDirectoryUserData() + "/" + fileName + ".png"
+            let fileNamePath: String = NCUtilityFileSystem.shared.directoryUserData + "/" + fileName + ".png"
             try image.pngData()?.write(to: URL(fileURLWithPath: fileNamePath), options: .atomic)
         } catch { }
     }
@@ -130,7 +130,7 @@ func getDashboardDataEntry(configuration: DashboardIntent?, isPreview: Bool, dis
     }
 
     // NETWORKING
-    let password = CCUtility.getPassword(account.account)!
+    let password = NCKeychain().getPassword(account: account.account)
     NextcloudKit.shared.setup(
         account: account.account,
         user: account.user,
@@ -142,14 +142,12 @@ func getDashboardDataEntry(configuration: DashboardIntent?, isPreview: Bool, dis
         delegate: NCNetworking.shared)
 
     // LOG
-    let levelLog = CCUtility.getLogLevel()
+    let levelLog = NCKeychain().logLevel
     let isSimulatorOrTestFlight = NCUtility.shared.isSimulatorOrTestFlight()
     let versionNextcloudiOS = String(format: NCBrandOptions.shared.textCopyrightNextcloudiOS, NCUtility.shared.getVersionApp())
 
     NextcloudKit.shared.nkCommonInstance.levelLog = levelLog
-    if let pathDirectoryGroup = CCUtility.getDirectoryGroup()?.path {
-        NextcloudKit.shared.nkCommonInstance.pathLog = pathDirectoryGroup
-    }
+    NextcloudKit.shared.nkCommonInstance.pathLog = NCUtilityFileSystem.shared.directoryGroup
     if isSimulatorOrTestFlight {
         NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Start \(NCBrandOptions.shared.brand) dashboard widget session with level \(levelLog) " + versionNextcloudiOS + " (Simulator / TestFlight)")
     } else {
@@ -162,7 +160,7 @@ func getDashboardDataEntry(configuration: DashboardIntent?, isPreview: Bool, dis
 
     var imagetmp = UIImage(named: "widget")!
     if let fileName = tableDashboard?.iconClass {
-        let fileNamePath: String = CCUtility.getDirectoryUserData() + "/" + fileName + ".png"
+        let fileNamePath: String = NCUtilityFileSystem.shared.directoryUserData + "/" + fileName + ".png"
         if let image = UIImage(contentsOfFile: fileNamePath) {
             imagetmp = image.withTintColor(.label, renderingMode: .alwaysOriginal)
         }
@@ -206,7 +204,7 @@ func getDashboardDataEntry(configuration: DashboardIntent?, isPreview: Bool, dis
                                     if (pathComponents.last as? NSString)?.pathExtension.lowercased() == "svg" {
                                         imageTemplate = true
                                     }
-                                    if let item = CCUtility.value(forKey: "fileId", fromQueryItems: queryItems) {
+                                    if let item = queryItems?.filter({ $0.name == "fileId" }).first?.value {
                                         iconFileName = item
                                     } else if pathComponents.contains("avatar") {
                                         iconFileName = pathComponents[pathComponents.count - 2]
@@ -224,7 +222,7 @@ func getDashboardDataEntry(configuration: DashboardIntent?, isPreview: Bool, dis
                                     imageColor = UIColor(hex: colorString)
                                     icon = UIImage(systemName: "circle.fill")!
                                 } else if let fileName = iconFileName {
-                                    let fileNamePath: String = CCUtility.getDirectoryUserData() + "/" + fileName + ".png"
+                                    let fileNamePath: String = NCUtilityFileSystem.shared.directoryUserData + "/" + fileName + ".png"
                                     if FileManager().fileExists(atPath: fileNamePath), let image = UIImage(contentsOfFile: fileNamePath) {
                                         icon = image
                                     } else {

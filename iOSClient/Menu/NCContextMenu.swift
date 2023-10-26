@@ -70,7 +70,7 @@ class NCContextMenu: NSObject {
 
         let openIn = UIAction(title: NSLocalizedString("_open_in_", comment: ""),
                               image: UIImage(systemName: "square.and.arrow.up") ) { _ in
-            if CCUtility.fileProviderStorageExists(metadata) {
+            if NCUtilityFileSystem.shared.fileProviderStorageExists(metadata) {
                 NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDownloadedFile, userInfo: ["ocId": metadata.ocId, "selector": NCGlobal.shared.selectorOpenIn, "error": NKError(), "account": metadata.account])
             } else {
                 hud.show(in: viewController.view)
@@ -102,7 +102,7 @@ class NCContextMenu: NSObject {
                     appDelegate.saveLivePhotoQueue.addOperation(NCOperationSaveLivePhoto(metadata: metadata, metadataMOV: metadataMOV))
                 }
             } else {
-                if CCUtility.fileProviderStorageExists(metadata) {
+                if NCUtilityFileSystem.shared.fileProviderStorageExists(metadata) {
                     NCActionCenter.shared.saveAlbum(metadata: metadata)
                 } else {
                     hud.show(in: viewController.view)
@@ -125,7 +125,7 @@ class NCContextMenu: NSObject {
 
         let modify = UIAction(title: NSLocalizedString("_modify_", comment: ""),
                               image: UIImage(systemName: "pencil.tip.crop.circle")) { _ in
-            if CCUtility.fileProviderStorageExists(metadata) {
+            if NCUtilityFileSystem.shared.fileProviderStorageExists(metadata) {
                 NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDownloadedFile, userInfo: ["ocId": metadata.ocId, "selector": NCGlobal.shared.selectorLoadFileQuickLook, "error": NKError(), "account": metadata.account])
             } else {
                 hud.show(in: viewController.view)

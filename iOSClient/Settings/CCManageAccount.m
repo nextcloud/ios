@@ -123,7 +123,7 @@
             [row.cellConfig setObject:[[UIImage imageNamed:@"users"] imageWithColor:UIColor.systemGrayColor size:25] forKey:@"imageView.image"];
             [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
             [row.cellConfig setObject:UIColor.labelColor forKey:@"textLabel.textColor"];
-            if ([CCUtility getAccountRequest]) row.value = @1;
+            if ([[NCKeychain alloc] init].accountRequest) row.value = @1;
             else row.value = @0;
             [section addFormRow:row];
         }
@@ -205,7 +205,6 @@
         [row.cellConfig setObject:UIColor.labelColor forKey:@"textLabel.textColor"];
         [row.cellConfig setObject:[[UIImage imageNamed:@"country"] imageWithColor:UIColor.systemGrayColor size:25] forKey:@"imageView.image"];
         row.value = [[NSLocale systemLocale] displayNameForKey:NSLocaleCountryCode value:activeAccount.country];
-        //NSArray *countryCodes = [NSLocale ISOCountryCodes];
         [section addFormRow:row];
     }
     
@@ -306,9 +305,9 @@
     if ([rowDescriptor.tag isEqualToString:@"accountRequest"]) {
         
         if ([[rowDescriptor.value valueData] boolValue] == YES) {
-            [CCUtility setAccountRequest:true];
+            [[NCKeychain alloc] init].accountRequest = true;
         } else {
-            [CCUtility setAccountRequest:false];
+            [[NCKeychain alloc] init].accountRequest = false;
         }
     }
     

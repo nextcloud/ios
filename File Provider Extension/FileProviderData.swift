@@ -72,13 +72,11 @@ class fileProviderData: NSObject {
         }
 
         // LOG
-        if let pathDirectoryGroup = CCUtility.getDirectoryGroup()?.path {
-            NextcloudKit.shared.nkCommonInstance.pathLog = pathDirectoryGroup
-            let levelLog = CCUtility.getLogLevel()
-            NextcloudKit.shared.nkCommonInstance.levelLog = levelLog
-            let version = NSString(format: NCBrandOptions.shared.textCopyrightNextcloudiOS as NSString, NCUtility.shared.getVersionApp()) as String
-            NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Start File Provider session with level \(levelLog) " + version + " (File Provider Extension)")
-        }
+        NextcloudKit.shared.nkCommonInstance.pathLog = NCUtilityFileSystem.shared.directoryGroup
+        let levelLog = NCKeychain().logLevel
+        NextcloudKit.shared.nkCommonInstance.levelLog = levelLog
+        let version = NSString(format: NCBrandOptions.shared.textCopyrightNextcloudiOS as NSString, NCUtility.shared.getVersionApp()) as String
+        NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Start File Provider session with level \(levelLog) " + version + " (File Provider Extension)")
 
         // NO DOMAIN -> Set default account
         if domain == nil {
@@ -93,7 +91,7 @@ class fileProviderData: NSObject {
 
             NCManageDatabase.shared.setCapabilities(account: account)
 
-            NextcloudKit.shared.setup(account: activeAccount.account, user: activeAccount.user, userId: activeAccount.userId, password: CCUtility.getPassword(activeAccount.account), urlBase: activeAccount.urlBase, userAgent: userAgent, nextcloudVersion: NCGlobal.shared.capabilityServerVersionMajor, delegate: NCNetworking.shared)
+            NextcloudKit.shared.setup(account: activeAccount.account, user: activeAccount.user, userId: activeAccount.userId, password: NCKeychain().getPassword(account: activeAccount.account), urlBase: activeAccount.urlBase, userAgent: userAgent, nextcloudVersion: NCGlobal.shared.capabilityServerVersionMajor, delegate: NCNetworking.shared)
             NCNetworking.shared.delegate = providerExtension as? NCNetworkingDelegate
 
             return tableAccount.init(value: activeAccount)
@@ -117,7 +115,7 @@ class fileProviderData: NSObject {
 
                 NCManageDatabase.shared.setCapabilities(account: account)
 
-                NextcloudKit.shared.setup(account: activeAccount.account, user: activeAccount.user, userId: activeAccount.userId, password: CCUtility.getPassword(activeAccount.account), urlBase: activeAccount.urlBase, userAgent: userAgent, nextcloudVersion: NCGlobal.shared.capabilityServerVersionMajor, delegate: NCNetworking.shared)
+                NextcloudKit.shared.setup(account: activeAccount.account, user: activeAccount.user, userId: activeAccount.userId, password: NCKeychain().getPassword(account: activeAccount.account), urlBase: activeAccount.urlBase, userAgent: userAgent, nextcloudVersion: NCGlobal.shared.capabilityServerVersionMajor, delegate: NCNetworking.shared)
                 NCNetworking.shared.delegate = providerExtension as? NCNetworkingDelegate
 
                 return tableAccount.init(value: activeAccount)

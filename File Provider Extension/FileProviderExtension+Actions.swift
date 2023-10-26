@@ -41,7 +41,7 @@ extension FileProviderExtension {
 
             if error == .success {
 
-                NextcloudKit.shared.readFileOrFolder(serverUrlFileName: serverUrlFileName, depth: "0", showHiddenFiles: CCUtility.getShowHiddenFiles()) { _, files, _, error in
+                NextcloudKit.shared.readFileOrFolder(serverUrlFileName: serverUrlFileName, depth: "0", showHiddenFiles: NCKeychain().showHiddenFiles) { _, files, _, error in
 
                     if error == .success, let file = files.first {
 
@@ -92,7 +92,7 @@ extension FileProviderExtension {
 
             if error == .success { // || error == kOCErrorServerPathNotFound {
 
-                let fileNamePath = CCUtility.getDirectoryProviderStorageOcId(itemIdentifier.rawValue)!
+                let fileNamePath = NCUtilityFileSystem.shared.getDirectoryProviderStorageOcId(itemIdentifier.rawValue)
                 do {
                     try fileProviderUtility.shared.fileManager.removeItem(atPath: fileNamePath)
                 } catch let error {
@@ -100,8 +100,8 @@ extension FileProviderExtension {
                 }
 
                 if isDirectory {
-                    let dirForDelete = CCUtility.stringAppendServerUrl(serverUrl, addFileName: fileName)
-                    NCManageDatabase.shared.deleteDirectoryAndSubDirectory(serverUrl: dirForDelete!, account: account)
+                    let dirForDelete = NCUtilityFileSystem.shared.stringAppendServerUrl(serverUrl, addFileName: fileName)
+                    NCManageDatabase.shared.deleteDirectoryAndSubDirectory(serverUrl: dirForDelete, account: account)
                 }
 
                 NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", ocId))
@@ -201,11 +201,11 @@ extension FileProviderExtension {
                     let itemIdentifier = fileProviderUtility.shared.getItemIdentifier(metadata: metadata)
 
                     // rename file
-                    _ = fileProviderUtility.shared.moveFile(CCUtility.getDirectoryProviderStorageOcId(itemIdentifier.rawValue, fileNameView: fileNameFrom), toPath: CCUtility.getDirectoryProviderStorageOcId(itemIdentifier.rawValue, fileNameView: itemName))
+                    _ = fileProviderUtility.shared.moveFile(NCUtilityFileSystem.shared.getDirectoryProviderStorageOcId(itemIdentifier.rawValue, fileNameView: fileNameFrom), toPath: NCUtilityFileSystem.shared.getDirectoryProviderStorageOcId(itemIdentifier.rawValue, fileNameView: itemName))
 
-                    _ = fileProviderUtility.shared.moveFile(CCUtility.getDirectoryProviderStoragePreviewOcId(itemIdentifier.rawValue, etag: metadata.etag), toPath: CCUtility.getDirectoryProviderStoragePreviewOcId(itemIdentifier.rawValue, etag: metadata.etag))
+                    _ = fileProviderUtility.shared.moveFile(NCUtilityFileSystem.shared.getDirectoryProviderStoragePreviewOcId(itemIdentifier.rawValue, etag: metadata.etag), toPath: NCUtilityFileSystem.shared.getDirectoryProviderStoragePreviewOcId(itemIdentifier.rawValue, etag: metadata.etag))
 
-                    _ = fileProviderUtility.shared.moveFile(CCUtility.getDirectoryProviderStorageIconOcId(itemIdentifier.rawValue, etag: metadata.etag), toPath: CCUtility.getDirectoryProviderStorageIconOcId(itemIdentifier.rawValue, etag: metadata.etag))
+                    _ = fileProviderUtility.shared.moveFile(NCUtilityFileSystem.shared.getDirectoryProviderStorageIconOcId(itemIdentifier.rawValue, etag: metadata.etag), toPath: NCUtilityFileSystem.shared.getDirectoryProviderStorageIconOcId(itemIdentifier.rawValue, etag: metadata.etag))
 
                     NCManageDatabase.shared.setLocalFile(ocId: ocId, fileName: itemName, etag: nil)
                 }
@@ -245,7 +245,7 @@ extension FileProviderExtension {
         }
 
         if (favorite == true && metadata.favorite == false) || (favorite == false && metadata.favorite == true) {
-            let fileNamePath = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, urlBase: metadata.urlBase, userId: metadata.userId, account: metadata.account)!
+            let fileNamePath = NCUtilityFileSystem.shared.getFileNamePath(metadata.fileName, serverUrl: metadata.serverUrl, urlBase: metadata.urlBase, userId: metadata.userId)
 
             NextcloudKit.shared.setFavorite(fileName: fileNamePath, favorite: favorite) { _, error in
 

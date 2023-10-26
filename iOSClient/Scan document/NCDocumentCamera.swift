@@ -54,7 +54,7 @@ class NCDocumentCamera: NSObject, VNDocumentCameraViewControllerDelegate {
                                                     keyFileNameType: NCGlobal.shared.keyFileNameType,
                                                     keyFileNameOriginal: NCGlobal.shared.keyFileNameOriginal,
                                                     forcedNewFileName: true)!
-            let fileNamePath = CCUtility.getDirectoryScan() + "/" + fileName
+            let fileNamePath = NCUtilityFileSystem.shared.directoryScan + "/" + fileName
             let image = scan.imageOfPage(at: pageNumber)
             do {
                 try image.pngData()?.write(to: NSURL.fileURL(withPath: fileNamePath))

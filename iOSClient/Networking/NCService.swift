@@ -32,9 +32,7 @@ class NCService: NSObject {
         return instance
     }()
 
-    // swiftlint:disable force_cast
-    let appDelegate = UIApplication.shared.delegate as! AppDelegate
-    // swiftlint:enable force_cast
+    let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
 
     // MARK: -
 
@@ -139,7 +137,7 @@ class NCService: NSObject {
     func synchronize() {
 
         NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] start synchronize Favorite")
-        NextcloudKit.shared.listingFavorites(showHiddenFiles: CCUtility.getShowHiddenFiles(),
+        NextcloudKit.shared.listingFavorites(showHiddenFiles: NCKeychain().showHiddenFiles,
                                              options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { account, files, _, error in
 
             guard error == .success else { return }
@@ -155,7 +153,7 @@ class NCService: NSObject {
     func getAvatar() {
 
         let fileName = appDelegate.userBaseUrl + "-" + self.appDelegate.user + ".png"
-        let fileNameLocalPath = String(CCUtility.getDirectoryUserData()) + "/" + fileName
+        let fileNameLocalPath = NCUtilityFileSystem.shared.directoryUserData + "/" + fileName
         let etag = NCManageDatabase.shared.getTableAvatar(fileName: fileName)?.etag
 
         NextcloudKit.shared.downloadAvatar(user: appDelegate.userId,
@@ -271,7 +269,7 @@ class NCService: NSObject {
             }
             if let fileName = fileNameToWrite, let image = imageData {
                 do {
-                    let fileNamePath: String = CCUtility.getDirectoryUserData() + "/" + fileName + ".png"
+                    let fileNamePath = NCUtilityFileSystem.shared.directoryUserData + "/" + fileName + ".png"
                     try image.pngData()?.write(to: URL(fileURLWithPath: fileNamePath), options: .atomic)
                 } catch { }
             }

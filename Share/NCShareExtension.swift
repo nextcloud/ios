@@ -111,14 +111,12 @@ class NCShareExtension: UIViewController {
         uploadView.addGestureRecognizer(uploadGesture)
 
         // LOG
-        let levelLog = CCUtility.getLogLevel()
+        let levelLog = NCKeychain().logLevel
         let isSimulatorOrTestFlight = NCUtility.shared.isSimulatorOrTestFlight()
         let versionNextcloudiOS = String(format: NCBrandOptions.shared.textCopyrightNextcloudiOS, NCUtility.shared.getVersionApp())
 
         NextcloudKit.shared.nkCommonInstance.levelLog = levelLog
-        if let pathDirectoryGroup = CCUtility.getDirectoryGroup()?.path {
-            NextcloudKit.shared.nkCommonInstance.pathLog = pathDirectoryGroup
-        }
+        NextcloudKit.shared.nkCommonInstance.pathLog = NCUtilityFileSystem.shared.directoryGroup
         if isSimulatorOrTestFlight {
             NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Start Share session with level \(levelLog) " + versionNextcloudiOS + " (Simulator / TestFlight)")
         } else {
@@ -297,7 +295,7 @@ extension NCShareExtension {
         var conflicts: [tableMetadata] = []
         for fileName in filesName {
             let ocId = NSUUID().uuidString
-            let toPath = CCUtility.getDirectoryProviderStorageOcId(ocId, fileNameView: fileName)!
+            let toPath = NCUtilityFileSystem.shared.getDirectoryProviderStorageOcId(ocId, fileNameView: fileName)
             guard NCUtilityFileSystem.shared.copyFile(atPath: (NSTemporaryDirectory() + fileName), toPath: toPath) else { continue }
             let metadata = NCManageDatabase.shared.createMetadata(
                 account: activeAccount.account, user: activeAccount.user, userId: activeAccount.userId,
@@ -358,9 +356,8 @@ extension NCShareExtension {
             self.hud.progress = Float(fractionCompleted)
         } completion: { error in
             if error != .success {
-                let path = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId)!
                 NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
-                NCUtilityFileSystem.shared.deleteFile(filePath: path)
+                NCUtilityFileSystem.shared.removeFile(atPath: NCUtilityFileSystem.shared.getDirectoryProviderStorageOcId(metadata.ocId))
                 self.uploadErrors.append(metadata)
             }
             self.counterUploaded += 1

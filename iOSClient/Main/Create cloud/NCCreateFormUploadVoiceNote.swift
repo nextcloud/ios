@@ -31,10 +31,7 @@ class NCCreateFormUploadVoiceNote: XLFormViewController, NCSelectDelegate, AVAud
     @IBOutlet weak var labelDuration: UILabel!
     @IBOutlet weak var progressView: UIProgressView!
 
-    // swiftlint:disable force_cast
-    let appDelegate = UIApplication.shared.delegate as! AppDelegate
-    // swiftlint:enable force_cast
-
+    private let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
     private var serverUrl = ""
     private var titleServerUrl = ""
     private var fileName = ""
@@ -170,8 +167,8 @@ class NCCreateFormUploadVoiceNote: XLFormViewController, NCSelectDelegate, AVAud
 
             self.form.delegate = nil
 
-            if let fileNameNew = formRow.value {
-                self.fileName = CCUtility.removeForbiddenCharactersServer(fileNameNew as? String)
+            if let fileNameNew = formRow.value as? String {
+                self.fileName = NCUtility.shared.removeForbiddenCharacters(fileNameNew)
             }
 
             formRow.value = self.fileName
@@ -259,7 +256,7 @@ class NCCreateFormUploadVoiceNote: XLFormViewController, NCSelectDelegate, AVAud
 
     func dismissAndUpload(_ metadata: tableMetadata) {
 
-        CCUtility.copyFile(atPath: self.fileNamePath, toPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView))
+        NCUtilityFileSystem.shared.copyFile(atPath: self.fileNamePath, toPath: NCUtilityFileSystem.shared.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView))
 
         NCNetworkingProcessUpload.shared.createProcessUploads(metadatas: [metadata], completion: { _ in })
 

@@ -36,10 +36,8 @@ extension NCUtility {
             NCUtility.shared.createImageFrom(fileNameView: metadata.fileNameView, ocId: metadata.ocId, etag: metadata.etag, classFile: metadata.classFile)
         }
 
-        if CCUtility.fileProviderStoragePreviewIconExists(metadata.ocId, etag: metadata.etag) {
-            if let imagePreviewPath = CCUtility.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag) {
-                return UIImage(contentsOfFile: imagePreviewPath)
-            }
+        if NCUtilityFileSystem.shared.fileProviderStoragePreviewIconExists(metadata.ocId, etag: metadata.etag) {
+            return UIImage(contentsOfFile: NCUtilityFileSystem.shared.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag))
         }
 
         if metadata.isVideo {
@@ -55,10 +53,10 @@ extension NCUtility {
         let ext = CCUtility.getExtension(metadata.fileNameView)
         var image: UIImage?
 
-        if CCUtility.fileProviderStorageExists(metadata) && metadata.isImage {
+        if NCUtilityFileSystem.shared.fileProviderStorageExists(metadata) && metadata.isImage {
 
-            let previewPath = CCUtility.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)!
-            let imagePath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
+            let previewPath = NCUtilityFileSystem.shared.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)
+            let imagePath = NCUtilityFileSystem.shared.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)
 
             if ext == "GIF" {
                 if !FileManager().fileExists(atPath: previewPath) {

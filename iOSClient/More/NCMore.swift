@@ -37,13 +37,8 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
     private var externalSiteMenu: [NKExternalSite] = []
     private var settingsMenu: [NKExternalSite] = []
     private var quotaMenu: [NKExternalSite] = []
-
-    // swiftlint:disable force_cast
-    private let appDelegate = UIApplication.shared.delegate as! AppDelegate
-    // swiftlint:enable force_cast
-
+    private let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
     private let applicationHandle = NCApplicationHandle()
-
     private var tabAccount: tableAccount?
 
     private struct Section {
@@ -213,10 +208,10 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
             case -3:
                 quota = NSLocalizedString("_quota_space_unlimited_", comment: "")
             default:
-                quota = CCUtility.transformedSize(activeAccount.quotaTotal)
+                quota = NCUtilityFileSystem.shared.transformedSize(activeAccount.quotaTotal)
             }
 
-            let quotaUsed: String = CCUtility.transformedSize(activeAccount.quotaUsed)
+            let quotaUsed: String = NCUtilityFileSystem.shared.transformedSize(activeAccount.quotaUsed)
 
             labelQuota.text = String.localizedStringWithFormat(NSLocalizedString("_quota_using_", comment: ""), quotaUsed, quota)
         }

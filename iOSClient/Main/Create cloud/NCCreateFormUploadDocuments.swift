@@ -33,10 +33,7 @@ import XLForm
     @IBOutlet weak var collectionView: UICollectionView!
     @IBOutlet weak var collectionViewHeigth: NSLayoutConstraint!
 
-    // swiftlint:disable force_cast
-    let appDelegate = UIApplication.shared.delegate as! AppDelegate
-    // swiftlint:enable force_cast
-
+    let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
     var editorId = ""
     var creatorId = ""
     var typeTemplate = ""
@@ -169,7 +166,7 @@ import XLForm
         // image
         let imagePreview = cell.viewWithTag(100) as? UIImageView
         if !template.preview.isEmpty {
-            let fileNameLocalPath = String(CCUtility.getDirectoryUserData()) + "/" + template.name + ".png"
+            let fileNameLocalPath = NCUtilityFileSystem.shared.directoryUserData + "/" + template.name + ".png"
             if FileManager.default.fileExists(atPath: fileNameLocalPath) {
                 let imageURL = URL(fileURLWithPath: fileNameLocalPath)
                 if let image = UIImage(contentsOfFile: imageURL.path) {
@@ -279,7 +276,7 @@ import XLForm
 
         } else {
 
-            let fileNamePath = CCUtility.returnFileNamePath(fromFileName: String(describing: fileNameForm), serverUrl: serverUrl, urlBase: appDelegate.urlBase, userId: appDelegate.userId, account: appDelegate.account)!
+            let fileNamePath = NCUtilityFileSystem.shared.getFileNamePath(String(describing: fileNameForm), serverUrl: serverUrl, urlBase: appDelegate.urlBase, userId: appDelegate.userId)
             createDocument(fileNamePath: fileNamePath, fileName: String(describing: fileNameForm))
         }
     }
@@ -288,7 +285,7 @@ import XLForm
 
         if let metadatas {
             let fileName = metadatas[0].fileName
-            let fileNamePath = CCUtility.returnFileNamePath(fromFileName: fileName, serverUrl: serverUrl, urlBase: appDelegate.urlBase, userId: appDelegate.userId, account: appDelegate.account)!
+            let fileNamePath = NCUtilityFileSystem.shared.getFileNamePath(fileName, serverUrl: serverUrl, urlBase: appDelegate.urlBase, userId: appDelegate.userId)
             createDocument(fileNamePath: fileNamePath, fileName: fileName)
         } else {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
@@ -489,7 +486,7 @@ import XLForm
 
     func getImageFromTemplate(name: String, preview: String, indexPath: IndexPath) {
 
-        let fileNameLocalPath = String(CCUtility.getDirectoryUserData()) + "/" + name + ".png"
+        let fileNameLocalPath = NCUtilityFileSystem.shared.directoryUserData + "/" + name + ".png"
 
         NextcloudKit.shared.download(serverUrlFileName: preview, fileNameLocalPath: fileNameLocalPath, requestHandler: { _ in
 

@@ -25,10 +25,7 @@ import NextcloudKit
 
 class NCShareNetworking: NSObject {
 
-    // swiftlint:disable force_cast
-    private let appDelegate = UIApplication.shared.delegate as! AppDelegate
-    // swiftlint:enable force_cast
-
+    let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
     weak var delegate: NCShareNetworkingDelegate?
     var view: UIView
     var metadata: tableMetadata
@@ -47,7 +44,7 @@ class NCShareNetworking: NSObject {
             NCActivityIndicator.shared.start(backgroundView: view)
         }
 
-        let filenamePath = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, urlBase: metadata.urlBase, userId: metadata.userId, account: metadata.account)!
+        let filenamePath = NCUtilityFileSystem.shared.getFileNamePath(metadata.fileName, serverUrl: metadata.serverUrl, urlBase: metadata.urlBase, userId: metadata.userId)
         let parameter = NKShareParameter(path: filenamePath)
 
         NextcloudKit.shared.readShares(parameters: parameter) { account, shares, _, error in
@@ -83,7 +80,7 @@ class NCShareNetworking: NSObject {
         // https://github.com/nextcloud/ios-communication-library/pull/104
 
         NCActivityIndicator.shared.start(backgroundView: view)
-        let filenamePath = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, urlBase: metadata.urlBase, userId: metadata.userId, account: metadata.account)!
+        let filenamePath = NCUtilityFileSystem.shared.getFileNamePath(metadata.fileName, serverUrl: metadata.serverUrl, urlBase: metadata.urlBase, userId: metadata.userId)
 
         NextcloudKit.shared.createShare(path: filenamePath, shareType: option.shareType, shareWith: option.shareWith, password: option.password, note: option.note, permissions: option.permissions, attributes: option.attributes) { _, share, _, error in
             NCActivityIndicator.shared.stop()

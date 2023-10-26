@@ -38,7 +38,7 @@ class NotificationService: UNNotificationServiceExtension {
                 if let message = bestAttemptContent.userInfo["subject"] as? String {
                     let tableAccounts = NCManageDatabase.shared.getAllAccount()
                     for tableAccount in tableAccounts {
-                        guard let privateKey = CCUtility.getPushNotificationPrivateKey(tableAccount.account),
+                        guard let privateKey = NCKeychain().getPushNotificationPrivateKey(account: tableAccount.account),
                               let decryptedMessage = NCPushNotificationEncryption.shared().decryptPushNotification(message, withDevicePrivateKey: privateKey),
                               let data = decryptedMessage.data(using: .utf8) else {
                             continue

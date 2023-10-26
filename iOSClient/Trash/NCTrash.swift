@@ -347,8 +347,8 @@ extension NCTrash {
 
     func downloadThumbnail(with tableTrash: tableTrash, indexPath: IndexPath) {
 
-        let fileNamePreviewLocalPath = CCUtility.getDirectoryProviderStoragePreviewOcId(tableTrash.fileId, etag: tableTrash.fileName)!
-        let fileNameIconLocalPath = CCUtility.getDirectoryProviderStorageIconOcId(tableTrash.fileId, etag: tableTrash.fileName)!
+        let fileNamePreviewLocalPath = NCUtilityFileSystem.shared.getDirectoryProviderStoragePreviewOcId(tableTrash.fileId, etag: tableTrash.fileName)
+        let fileNameIconLocalPath = NCUtilityFileSystem.shared.getDirectoryProviderStorageIconOcId(tableTrash.fileId, etag: tableTrash.fileName)
 
         NextcloudKit.shared.downloadPreview(fileNamePathOrFileId: tableTrash.fileId,
                                             fileNamePreviewLocalPath: fileNamePreviewLocalPath,

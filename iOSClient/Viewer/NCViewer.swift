@@ -31,10 +31,7 @@ class NCViewer: NSObject {
         return instance
     }()
 
-    // swiftlint:disable force_cast
-    let appDelegate = UIApplication.shared.delegate as! AppDelegate
-    // swiftlint:enable force_cast
-
+    let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
     private var viewerQuickLook: NCViewerQuickLook?
     private var metadata = tableMetadata()
     private var metadatas: [tableMetadata] = []
@@ -171,7 +168,7 @@ class NCViewer: NSObject {
 
                     if metadata.url.isEmpty {
 
-                        let fileNamePath = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, urlBase: metadata.urlBase, userId: metadata.userId, account: metadata.account)!
+                        let fileNamePath = NCUtilityFileSystem.shared.getFileNamePath(metadata.fileName, serverUrl: metadata.serverUrl, urlBase: metadata.urlBase, userId: metadata.userId)
 
                         var options = NKRequestOptions()
                         if editor == NCGlobal.shared.editorOnlyoffice {
@@ -228,10 +225,10 @@ class NCViewer: NSObject {
         }
 
         // QLPreview
-        let item = URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView))
+        let item = URL(fileURLWithPath: NCUtilityFileSystem.shared.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView))
         if QLPreviewController.canPreview(item as QLPreviewItem) {
             let fileNamePath = NSTemporaryDirectory() + metadata.fileNameView
-            CCUtility.copyFile(atPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView), toPath: fileNamePath)
+            NCUtilityFileSystem.shared.copyFile(atPath: NCUtilityFileSystem.shared.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView), toPath: fileNamePath)
             let viewerQuickLook = NCViewerQuickLook(with: URL(fileURLWithPath: fileNamePath), isEditingEnabled: false, metadata: metadata)
             viewController.present(viewerQuickLook, animated: true)
         } else {

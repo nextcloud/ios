@@ -57,7 +57,7 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
             // File do not exists on server, remove in local
             if error.errorCode == NCGlobal.shared.errorResourceNotFound || error.errorCode == NCGlobal.shared.errorBadServerResponse {
                 do {
-                    try FileManager.default.removeItem(atPath: CCUtility.getDirectoryProviderStorageOcId(ocId))
+                    try FileManager.default.removeItem(atPath: NCUtilityFileSystem.shared.getDirectoryProviderStorageOcId(ocId))
                 } catch { }
                 NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", ocId))
                 NCManageDatabase.shared.deleteLocalFile(predicate: NSPredicate(format: "ocId == %@", ocId))
@@ -70,7 +70,7 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
 
         switch selector {
         case NCGlobal.shared.selectorLoadFileQuickLook:
-            let fileNamePath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
+            let fileNamePath = NCUtilityFileSystem.shared.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)
             let fileNameTemp = NSTemporaryDirectory() + metadata.fileNameView
             let viewerQuickLook = NCViewerQuickLook(with: URL(fileURLWithPath: fileNameTemp), isEditingEnabled: true, metadata: metadata)
             if let image = UIImage(contentsOfFile: fileNamePath) {
@@ -85,7 +85,7 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
                 navigationController.modalPresentationStyle = .fullScreen
                 appDelegate.window?.rootViewController?.present(navigationController, animated: true)
             } else {
-                CCUtility.copyFile(atPath: fileNamePath, toPath: fileNameTemp)
+                NCUtilityFileSystem.shared.copyFile(atPath: fileNamePath, toPath: fileNameTemp)
                 appDelegate.window?.rootViewController?.present(viewerQuickLook, animated: true)
             }
 
@@ -98,7 +98,7 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
                 self.openDocumentController(metadata: metadata)
             } else {
                 if let viewController = appDelegate.activeViewController {
-                    let imageIcon = UIImage(contentsOfFile: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag))
+                    let imageIcon = UIImage(contentsOfFile: NCUtilityFileSystem.shared.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag))
                     NCViewer.shared.view(viewController: viewController, metadata: metadata, metadatas: [metadata], imageIcon: imageIcon)
                 }
             }
@@ -159,17 +159,15 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
         var downloadRequest: DownloadRequest?
 
         if let metadata = NCManageDatabase.shared.getMetadataFromFileId(fileId) {
-            if let filePath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView) {
-                do {
-                    let attr = try FileManager.default.attributesOfItem(atPath: filePath)
-                    let fileSize = attr[FileAttributeKey.size] as? UInt64 ?? 0
-                    if fileSize > 0 {
-                        NCViewer.shared.view(viewController: viewController, metadata: metadata, metadatas: [metadata], imageIcon: nil)
-                        return
-                    }
-                } catch {
-                    print("Error: \(error)")
+            do {
+                let attr = try FileManager.default.attributesOfItem(atPath: NCUtilityFileSystem.shared.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView))
+                let fileSize = attr[FileAttributeKey.size] as? UInt64 ?? 0
+                if fileSize > 0 {
+                    NCViewer.shared.view(viewController: viewController, metadata: metadata, metadatas: [metadata], imageIcon: nil)
+                    return
                 }
+            } catch {
+                print("Error: \(error)")
             }
         }
 
@@ -197,7 +195,7 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
                 NCManageDatabase.shared.addMetadata(metadata)
 
                 let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
-                let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
+                let fileNameLocalPath = NCUtilityFileSystem.shared.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)
 
                 if metadata.isAudioOrVideo {
                     NCViewer.shared.view(viewController: viewController, metadata: metadata, metadatas: [metadata], imageIcon: nil)
@@ -296,7 +294,7 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
 
         guard let appDelegate = UIApplication.shared.delegate as? AppDelegate,
               let mainTabBar = appDelegate.mainTabBar else { return }
-        let fileURL = URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView))
+        let fileURL = URL(fileURLWithPath: NCUtilityFileSystem.shared.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView))
 
         documentController = UIDocumentInteractionController(url: fileURL)
         documentController?.presentOptionsMenu(from: mainTabBar.menuRect, in: mainTabBar, animated: true)
@@ -310,8 +308,8 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
         var downloadMetadata: [(tableMetadata, URL)] = []
 
         for metadata in metadatas {
-            let fileURL = URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView))
-            if CCUtility.fileProviderStorageExists(metadata) {
+            let fileURL = URL(fileURLWithPath: NCUtilityFileSystem.shared.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView))
+            if NCUtilityFileSystem.shared.fileProviderStorageExists(metadata) {
                 items.append(fileURL)
             } else {
                 downloadMetadata.append((metadata, fileURL))
@@ -325,7 +323,7 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
                 } progressHandler: { progress in
                     processor.hud?.progress = Float(progress.fractionCompleted)
                 } completion: { _, _ in
-                    if CCUtility.fileProviderStorageExists(metadata) { items.append(url) }
+                    if NCUtilityFileSystem.shared.fileProviderStorageExists(metadata) { items.append(url) }
                     completion()
                 }
             }
@@ -346,9 +344,9 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
     func saveAsScan(metadata: tableMetadata) {
         guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else { return }
 
-        let fileNamePath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
+        let fileNamePath = NCUtilityFileSystem.shared.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)
         let fileNameDestination = CCUtility.createFileName("scan.png", fileDate: Date(), fileType: PHAssetMediaType.image, keyFileName: NCGlobal.shared.keyFileNameMask, keyFileNameType: NCGlobal.shared.keyFileNameType, keyFileNameOriginal: NCGlobal.shared.keyFileNameOriginal, forcedNewFileName: true)!
-        let fileNamePathDestination = CCUtility.getDirectoryScan() + "/" + fileNameDestination
+        let fileNamePathDestination = NCUtilityFileSystem.shared.directoryScan + "/" + fileNameDestination
 
         NCUtilityFileSystem.shared.copyFile(atPath: fileNamePath, toPath: fileNamePathDestination)
 
@@ -364,7 +362,7 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
 
     func printDocument(metadata: tableMetadata) {
 
-        let fileNameURL = URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!)
+        let fileNameURL = URL(fileURLWithPath: NCUtilityFileSystem.shared.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView))
         let printController = UIPrintInteractionController.shared
         let printInfo = UIPrintInfo(dictionary: nil)
 
@@ -403,7 +401,7 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
     func saveAlbum(metadata: tableMetadata) {
         guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else { return }
 
-        let fileNamePath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
+        let fileNamePath = NCUtilityFileSystem.shared.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)
 
         NCAskAuthorization.shared.askAuthorizationPhotoLibrary(viewController: appDelegate.mainTabBar?.window?.rootViewController) { hasPermission in
             guard hasPermission else {
@@ -503,7 +501,7 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
             } completionHandler: { account, ocId, etag, _, _, _, afError, error in
                 NCNetworking.shared.uploadRequest.removeValue(forKey: fileNameLocalPath)
                 if error == .success && etag != nil && ocId != nil {
-                    let toPath = CCUtility.getDirectoryProviderStorageOcId(ocId!, fileNameView: fileName)!
+                    let toPath = NCUtilityFileSystem.shared.getDirectoryProviderStorageOcId(ocId!, fileNameView: fileName)
                     NCUtilityFileSystem.shared.moveFile(atPath: fileNameLocalPath, toPath: toPath)
                     NCManageDatabase.shared.addLocalFile(account: account, etag: etag!, ocId: ocId!, fileName: fileName)
                     NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSourceNetworkForced)
@@ -523,10 +521,10 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
                 guard !results.ext.isEmpty,
                       let data = UIPasteboard.general.data(forPasteboardType: item.key, inItemSet: IndexSet([index]))?.first
                 else { continue }
-                let fileName = results.name + "_" + CCUtility.getIncrementalNumber() + "." + results.ext
+                let fileName = results.name + "_" + NCKeychain().incrementalNumber + "." + results.ext
                 let serverUrlFileName = serverUrl + "/" + fileName
                 let ocIdUpload = UUID().uuidString
-                let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(ocIdUpload, fileNameView: fileName)!
+                let fileNameLocalPath = NCUtilityFileSystem.shared.getDirectoryProviderStorageOcId(ocIdUpload, fileNameView: fileName)
                 do { try data.write(to: URL(fileURLWithPath: fileNameLocalPath)) } catch { continue }
                 processor.execute { completion in
                     uploadPastePasteboard(fileName: fileName, serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, serverUrl: serverUrl, completion: completion)
@@ -699,8 +697,8 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
 fileprivate extension tableMetadata {
     func toPasteBoardItem() -> [String: Any]? {
         // Get Data
-        let fileUrl = URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(ocId, fileNameView: fileNameView))
-        guard CCUtility.fileProviderStorageExists(self),
+        let fileUrl = URL(fileURLWithPath: NCUtilityFileSystem.shared.getDirectoryProviderStorageOcId(ocId, fileNameView: fileNameView))
+        guard NCUtilityFileSystem.shared.fileProviderStorageExists(self),
               let data = try? Data(contentsOf: fileUrl),
               let unmanagedFileUTI = UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, fileExtension as CFString, nil)
         else { return nil }

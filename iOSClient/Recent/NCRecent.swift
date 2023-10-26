@@ -151,7 +151,7 @@ class NCRecent: NCCollectionViewCommon {
 
         NextcloudKit.shared.searchBodyRequest(serverUrl: appDelegate.urlBase,
                                               requestBody: requestBody,
-                                              showHiddenFiles: CCUtility.getShowHiddenFiles(),
+                                              showHiddenFiles: NCKeychain().showHiddenFiles,
                                               options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { account, files, _, error in
 
             self.isReloadDataSourceNetworkInProgress = false

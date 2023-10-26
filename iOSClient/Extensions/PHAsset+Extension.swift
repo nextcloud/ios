@@ -30,7 +30,7 @@ extension PHAsset {
             return resource.originalFilename as NSString
         } else {
             return self.value(forKey: "filename") as? NSString
-            ?? ("IMG_" + CCUtility.getIncrementalNumber() + getExtension()) as NSString
+            ?? ("IMG_" + NCKeychain().incrementalNumber + getExtension()) as NSString
         }
     }
 

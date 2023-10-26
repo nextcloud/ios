@@ -79,7 +79,6 @@ class NCGlobal: NSObject {
 
     // Service
     //
-    @objc let serviceShareKeyChain                  = "Crypto Cloud"
     let metadataKeyedUnarchiver                     = "it.twsweb.nextcloud.metadata"
     let refreshTask                                 = "com.nextcloud.refreshTask"
     let processingTask                              = "com.nextcloud.processingTask"

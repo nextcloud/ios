@@ -70,9 +70,7 @@
 		AFCE353927E5DE0500FEA6C2 /* NCShare+Helper.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFCE353827E5DE0400FEA6C2 /* NCShare+Helper.swift */; };
 		C0046CDD2A17B98400D87C9D /* LoginUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0046CDC2A17B98400D87C9D /* LoginUITests.swift */; };
 		C03BA14A2A17BC57002C8BA3 /* XLForm in Frameworks */ = {isa = PBXBuildFile; productRef = C03BA1492A17BC57002C8BA3 /* XLForm */; };
-		C03BA14C2A17BC60002C8BA3 /* UICKeyChainStore in Frameworks */ = {isa = PBXBuildFile; productRef = C03BA14B2A17BC60002C8BA3 /* UICKeyChainStore */; };
 		C04E2F192A17BA78001BAD85 /* XLForm in Frameworks */ = {isa = PBXBuildFile; productRef = C04E2F182A17BA78001BAD85 /* XLForm */; };
-		C04E2F1B2A17BAAB001BAD85 /* UICKeyChainStore in Frameworks */ = {isa = PBXBuildFile; productRef = C04E2F1A2A17BAAB001BAD85 /* UICKeyChainStore */; };
 		C04E2F232A17BB4D001BAD85 /* FilesIntegrationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C04E2F222A17BB4D001BAD85 /* FilesIntegrationTests.swift */; };
 		D575039F27146F93008DC9DC /* String+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7A0D1342591FBC5008F8A13 /* String+Extension.swift */; };
 		D5B6AA7827200C7200D49C24 /* NCActivityTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5B6AA7727200C7200D49C24 /* NCActivityTableViewCell.swift */; };
@@ -93,7 +91,6 @@
 		F31F69542A2F89C400162F76 /* SwiftRichString in Frameworks */ = {isa = PBXBuildFile; productRef = F31F69532A2F89C400162F76 /* SwiftRichString */; };
 		F31F69562A2F89C400162F76 /* FirebaseDatabase in Frameworks */ = {isa = PBXBuildFile; productRef = F31F69552A2F89C400162F76 /* FirebaseDatabase */; };
 		F31F69582A2F89C400162F76 /* XLForm in Frameworks */ = {isa = PBXBuildFile; productRef = F31F69572A2F89C400162F76 /* XLForm */; };
-		F31F695A2A2F89C400162F76 /* UICKeyChainStore in Frameworks */ = {isa = PBXBuildFile; productRef = F31F69592A2F89C400162F76 /* UICKeyChainStore */; };
 		F31F695C2A2F89C400162F76 /* Realm in Frameworks */ = {isa = PBXBuildFile; productRef = F31F695B2A2F89C400162F76 /* Realm */; };
 		F31F695E2A2F89C400162F76 /* JGProgressHUD in Frameworks */ = {isa = PBXBuildFile; productRef = F31F695D2A2F89C400162F76 /* JGProgressHUD */; };
 		F31F69612A2F907800162F76 /* __Snapshots__ in Resources */ = {isa = PBXBuildFile; fileRef = F31F69602A2F907800162F76 /* __Snapshots__ */; };
@@ -157,7 +154,6 @@
 		F70716E62987F81500E72C1D /* DocumentActionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70716E52987F81500E72C1D /* DocumentActionViewController.swift */; };
 		F70716E92987F81500E72C1D /* MainInterface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F70716E72987F81500E72C1D /* MainInterface.storyboard */; };
 		F70716ED2987F81500E72C1D /* File Provider Extension UI.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = F70716E32987F81500E72C1D /* File Provider Extension UI.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
-		F70716F929881CFA00E72C1D /* UICKeyChainStore in Frameworks */ = {isa = PBXBuildFile; productRef = F70716F829881CFA00E72C1D /* UICKeyChainStore */; };
 		F70753EB2542A99800972D44 /* NCViewerMediaPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70753EA2542A99800972D44 /* NCViewerMediaPage.swift */; };
 		F70753F12542A9A200972D44 /* NCViewerMedia.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70753F02542A9A200972D44 /* NCViewerMedia.swift */; };
 		F70753F72542A9C000972D44 /* NCViewerMediaPage.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F70753F62542A9C000972D44 /* NCViewerMediaPage.storyboard */; };
@@ -243,7 +239,6 @@
 		F7346E1628B0EF5C006CE2D2 /* Widget.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7346E1528B0EF5C006CE2D2 /* Widget.swift */; };
 		F7346E1C28B0EF5E006CE2D2 /* Widget.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = F7346E1028B0EF5B006CE2D2 /* Widget.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		F7346E2328B0FEBA006CE2D2 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F7346E2228B0FEBA006CE2D2 /* Assets.xcassets */; };
-		F7346E2528B0FEFA006CE2D2 /* UICKeyChainStore in Frameworks */ = {isa = PBXBuildFile; productRef = F7346E2428B0FEFA006CE2D2 /* UICKeyChainStore */; };
 		F7346E2928B0FFF2006CE2D2 /* RealmSwift in Frameworks */ = {isa = PBXBuildFile; productRef = F7346E2828B0FFF2006CE2D2 /* RealmSwift */; };
 		F734B06628E75C0100E180D5 /* TLPhotoPicker in Frameworks */ = {isa = PBXBuildFile; productRef = F734B06528E75C0100E180D5 /* TLPhotoPicker */; };
 		F7362A1F220C853A005101B5 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7362A1E220C853A005101B5 /* LaunchScreen.storyboard */; };
@@ -417,7 +412,6 @@
 		F76DA95B277B75A90082465B /* TOPasscodeViewController.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = F70B86822642CF5500ED5349 /* TOPasscodeViewController.xcframework */; };
 		F76DA95C277B75A90082465B /* TOPasscodeViewController.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = F70B86822642CF5500ED5349 /* TOPasscodeViewController.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		F76DA963277B760E0082465B /* Queuer in Frameworks */ = {isa = PBXBuildFile; productRef = F76DA962277B760E0082465B /* Queuer */; };
-		F76DA966277B76F30082465B /* UICKeyChainStore in Frameworks */ = {isa = PBXBuildFile; productRef = F76DA965277B76F30082465B /* UICKeyChainStore */; };
 		F76DA969277B77EA0082465B /* DropDown in Frameworks */ = {isa = PBXBuildFile; productRef = F76DA968277B77EA0082465B /* DropDown */; };
 		F76DEE9728F808AF0041B1C9 /* LockscreenData.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76DEE9428F808AF0041B1C9 /* LockscreenData.swift */; };
 		F76DEE9828F808AF0041B1C9 /* LockscreenWidgetProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76DEE9528F808AF0041B1C9 /* LockscreenWidgetProvider.swift */; };
@@ -580,7 +574,6 @@
 		F7A7FA6329265CF4000603EF /* NCManageE2EE.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7A7FA6229265CF4000603EF /* NCManageE2EE.swift */; };
 		F7A8D72428F1771B008BBE1C /* NextcloudKit in Frameworks */ = {isa = PBXBuildFile; productRef = F7A8D72328F1771B008BBE1C /* NextcloudKit */; };
 		F7A8D72828F17728008BBE1C /* RealmSwift in Frameworks */ = {isa = PBXBuildFile; productRef = F7A8D72728F17728008BBE1C /* RealmSwift */; };
-		F7A8D72E28F17764008BBE1C /* UICKeyChainStore in Frameworks */ = {isa = PBXBuildFile; productRef = F7A8D72D28F17764008BBE1C /* UICKeyChainStore */; };
 		F7A8D73428F17E12008BBE1C /* NCDatabase.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7BAADB41ED5A87C00B7EAD4 /* NCDatabase.swift */; };
 		F7A8D73528F17E16008BBE1C /* NCManageDatabase.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7BAADB51ED5A87C00B7EAD4 /* NCManageDatabase.swift */; };
 		F7A8D73628F17E1A008BBE1C /* NCManageDatabase+Activity.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF4BF61D27562B3F0081CEEF /* NCManageDatabase+Activity.swift */; };
@@ -663,9 +656,6 @@
 		F7E98C1727E0D0FC001F9F19 /* NCManageDatabase+Video.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7E98C1527E0D0FC001F9F19 /* NCManageDatabase+Video.swift */; };
 		F7E98C1827E0D0FC001F9F19 /* NCManageDatabase+Video.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7E98C1527E0D0FC001F9F19 /* NCManageDatabase+Video.swift */; };
 		F7E98C1927E0D0FC001F9F19 /* NCManageDatabase+Video.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7E98C1527E0D0FC001F9F19 /* NCManageDatabase+Video.swift */; };
-		F7EBCDCF277B81FF00A4EF67 /* UICKeyChainStore in Frameworks */ = {isa = PBXBuildFile; productRef = F7EBCDCE277B81FF00A4EF67 /* UICKeyChainStore */; };
-		F7EBCDD1277B820D00A4EF67 /* UICKeyChainStore in Frameworks */ = {isa = PBXBuildFile; productRef = F7EBCDD0277B820D00A4EF67 /* UICKeyChainStore */; };
-		F7EBCDD3277B821700A4EF67 /* UICKeyChainStore in Frameworks */ = {isa = PBXBuildFile; productRef = F7EBCDD2277B821700A4EF67 /* UICKeyChainStore */; };
 		F7ED547C25EEA65400956C55 /* QRCodeReader in Frameworks */ = {isa = PBXBuildFile; productRef = F7ED547B25EEA65400956C55 /* QRCodeReader */; };
 		F7EDE4CC262D7B6F00414FE6 /* NCEmptyDataSet.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7239870253D86B600257F49 /* NCEmptyDataSet.swift */; };
 		F7EDE4D1262D7B8400414FE6 /* NCDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7C1EEA425053A9C00866ACC /* NCDataSource.swift */; };
@@ -1398,7 +1388,6 @@
 				F72AD71128C24BBB006CB92D /* NextcloudKit in Frameworks */,
 				F314F1112A30C11200BC7FAB /* PreviewSnapshots in Frameworks */,
 				F710FC88277B7D3F00AA9FBF /* RealmSwift in Frameworks */,
-				F7EBCDD3277B821700A4EF67 /* UICKeyChainStore in Frameworks */,
 				F760DE0F2AE66EE60027D78A /* KeychainAccess in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1414,7 +1403,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C04E2F1B2A17BAAB001BAD85 /* UICKeyChainStore in Frameworks */,
 				C04E2F192A17BA78001BAD85 /* XLForm in Frameworks */,
 				F760DE152AE66F020027D78A /* KeychainAccess in Frameworks */,
 			);
@@ -1429,7 +1417,6 @@
 				F30A96362A2DFCD000D7BCFE /* RealmSwift in Frameworks */,
 				F30A96342A2DFCD000D7BCFE /* Realm in Frameworks */,
 				F760DE112AE66EF00027D78A /* KeychainAccess in Frameworks */,
-				C03BA14C2A17BC60002C8BA3 /* UICKeyChainStore in Frameworks */,
 				F30A963A2A2DFD3100D7BCFE /* JGProgressHUD in Frameworks */,
 				C03BA14A2A17BC57002C8BA3 /* XLForm in Frameworks */,
 			);
@@ -1440,7 +1427,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				F31F695C2A2F89C400162F76 /* Realm in Frameworks */,
-				F31F695A2A2F89C400162F76 /* UICKeyChainStore in Frameworks */,
 				F31F69582A2F89C400162F76 /* XLForm in Frameworks */,
 				F31F69542A2F89C400162F76 /* SwiftRichString in Frameworks */,
 				F760DE132AE66EF80027D78A /* KeychainAccess in Frameworks */,
@@ -1460,7 +1446,6 @@
 				F7490E8B29882CE4009DCE94 /* NextcloudKit in Frameworks */,
 				F7490E8929882CC8009DCE94 /* SwiftEntryKit in Frameworks */,
 				F7490E7229882BB4009DCE94 /* RealmSwift in Frameworks */,
-				F70716F929881CFA00E72C1D /* UICKeyChainStore in Frameworks */,
 				F760DE0D2AE66EDF0027D78A /* KeychainAccess in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1476,7 +1461,6 @@
 				F760DE092AE66ED00027D78A /* KeychainAccess in Frameworks */,
 				F73ADD2126554F8E0069EA0D /* SwiftEntryKit in Frameworks */,
 				F7A560482AE15D5000BE8FD6 /* Queuer in Frameworks */,
-				F7EBCDCF277B81FF00A4EF67 /* UICKeyChainStore in Frameworks */,
 				F70821D829E59E6D001CA2D7 /* TagListView in Frameworks */,
 				F7F623B72A5EFA0C0022D3D4 /* Gzip in Frameworks */,
 				F72D7EB7263B1207000B3DFC /* MarkdownKit in Frameworks */,
@@ -1488,7 +1472,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				F787AC0B298BCB540001BB00 /* SVGKitSwift in Frameworks */,
-				F7346E2528B0FEFA006CE2D2 /* UICKeyChainStore in Frameworks */,
 				F783034428B5142B00B84583 /* NextcloudKit in Frameworks */,
 				F7346E1328B0EF5B006CE2D2 /* SwiftUI.framework in Frameworks */,
 				F760DE052AE66EBE0027D78A /* KeychainAccess in Frameworks */,
@@ -1505,7 +1488,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				F7A560442AE15D2900BE8FD6 /* Queuer in Frameworks */,
-				F7EBCDD1277B820D00A4EF67 /* UICKeyChainStore in Frameworks */,
 				F760DE0B2AE66ED80027D78A /* KeychainAccess in Frameworks */,
 				F73ADD2426554FE20069EA0D /* SwiftEntryKit in Frameworks */,
 				F710FC84277B7D3500AA9FBF /* RealmSwift in Frameworks */,
@@ -1530,7 +1512,6 @@
 				F710FC7C277B7D0000AA9FBF /* RealmSwift in Frameworks */,
 				F758A01227A7F03E0069468B /* JGProgressHUD in Frameworks */,
 				F77333882927A72100466E35 /* OpenSSL in Frameworks */,
-				F76DA966277B76F30082465B /* UICKeyChainStore in Frameworks */,
 				F7792DE529EEE02D005930CE /* MobileVLCKit.xcframework in Frameworks */,
 				F753BA93281FD8020015BFB6 /* EasyTipView in Frameworks */,
 				F76DA95B277B75A90082465B /* TOPasscodeViewController.xcframework in Frameworks */,
@@ -1555,7 +1536,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				F7A8D72828F17728008BBE1C /* RealmSwift in Frameworks */,
-				F7A8D72E28F17764008BBE1C /* UICKeyChainStore in Frameworks */,
 				F7A8D72428F1771B008BBE1C /* NextcloudKit in Frameworks */,
 				F7C9739228F17131002C43E2 /* Intents.framework in Frameworks */,
 				F760DE072AE66EC70027D78A /* KeychainAccess in Frameworks */,
@@ -2683,7 +2663,6 @@
 			name = "Notification Service Extension";
 			packageProductDependencies = (
 				F710FC87277B7D3F00AA9FBF /* RealmSwift */,
-				F7EBCDD2277B821700A4EF67 /* UICKeyChainStore */,
 				F72AD71028C24BBB006CB92D /* NextcloudKit */,
 				F314F1102A30C11200BC7FAB /* PreviewSnapshots */,
 				F760DE0E2AE66EE60027D78A /* KeychainAccess */,
@@ -2726,7 +2705,6 @@
 			name = NextcloudUITests;
 			packageProductDependencies = (
 				C04E2F182A17BA78001BAD85 /* XLForm */,
-				C04E2F1A2A17BAAB001BAD85 /* UICKeyChainStore */,
 				F760DE142AE66F020027D78A /* KeychainAccess */,
 			);
 			productName = NextcloudUITests;
@@ -2749,7 +2727,6 @@
 			name = NextcloudIntegrationTests;
 			packageProductDependencies = (
 				C03BA1492A17BC57002C8BA3 /* XLForm */,
-				C03BA14B2A17BC60002C8BA3 /* UICKeyChainStore */,
 				F30A96332A2DFCD000D7BCFE /* Realm */,
 				F30A96352A2DFCD000D7BCFE /* RealmSwift */,
 				F30A96372A2DFD2900D7BCFE /* FirebaseDatabase */,
@@ -2781,7 +2758,6 @@
 				F31F69532A2F89C400162F76 /* SwiftRichString */,
 				F31F69552A2F89C400162F76 /* FirebaseDatabase */,
 				F31F69572A2F89C400162F76 /* XLForm */,
-				F31F69592A2F89C400162F76 /* UICKeyChainStore */,
 				F31F695B2A2F89C400162F76 /* Realm */,
 				F31F695D2A2F89C400162F76 /* JGProgressHUD */,
 				F31F69652A2F929600162F76 /* PreviewSnapshotsTesting */,
@@ -2806,7 +2782,6 @@
 			);
 			name = "File Provider Extension UI";
 			packageProductDependencies = (
-				F70716F829881CFA00E72C1D /* UICKeyChainStore */,
 				F7490E7129882BB4009DCE94 /* RealmSwift */,
 				F7490E8829882CC8009DCE94 /* SwiftEntryKit */,
 				F7490E8A29882CE4009DCE94 /* NextcloudKit */,
@@ -2833,7 +2808,6 @@
 				F72D7EB6263B1207000B3DFC /* MarkdownKit */,
 				F73ADD2026554F8E0069EA0D /* SwiftEntryKit */,
 				F710FC7F277B7D2700AA9FBF /* RealmSwift */,
-				F7EBCDCE277B81FF00A4EF67 /* UICKeyChainStore */,
 				F72CD01127A7E92400E59476 /* JGProgressHUD */,
 				F72AD70E28C24BA1006CB92D /* NextcloudKit */,
 				F70821D729E59E6D001CA2D7 /* TagListView */,
@@ -2860,7 +2834,6 @@
 			);
 			name = Widget;
 			packageProductDependencies = (
-				F7346E2428B0FEFA006CE2D2 /* UICKeyChainStore */,
 				F7346E2828B0FFF2006CE2D2 /* RealmSwift */,
 				F783030C28B4C59A00B84583 /* SwiftEntryKit */,
 				F783034328B5142B00B84583 /* NextcloudKit */,
@@ -2889,7 +2862,6 @@
 			packageProductDependencies = (
 				F73ADD2326554FE20069EA0D /* SwiftEntryKit */,
 				F710FC83277B7D3500AA9FBF /* RealmSwift */,
-				F7EBCDD0277B820D00A4EF67 /* UICKeyChainStore */,
 				F72AD71228C24BCC006CB92D /* NextcloudKit */,
 				F7A560432AE15D2900BE8FD6 /* Queuer */,
 				F753791F2AE2AD9400C0250E /* JGProgressHUD */,
@@ -2932,7 +2904,6 @@
 				F75EAED726D2552E00F4320E /* MarqueeLabel */,
 				F74E771F277A2EF40013B958 /* XLForm */,
 				F76DA962277B760E0082465B /* Queuer */,
-				F76DA965277B76F30082465B /* UICKeyChainStore */,
 				F76DA968277B77EA0082465B /* DropDown */,
 				F710FC79277B7D0000AA9FBF /* Realm */,
 				F710FC7B277B7D0000AA9FBF /* RealmSwift */,
@@ -2971,7 +2942,6 @@
 			packageProductDependencies = (
 				F7A8D72328F1771B008BBE1C /* NextcloudKit */,
 				F7A8D72728F17728008BBE1C /* RealmSwift */,
-				F7A8D72D28F17764008BBE1C /* UICKeyChainStore */,
 				F760DE062AE66EC70027D78A /* KeychainAccess */,
 			);
 			productName = WidgetDashboardIntentHandler;
@@ -3110,7 +3080,6 @@
 				F75EAED626D2552E00F4320E /* XCRemoteSwiftPackageReference "MarqueeLabel" */,
 				F74E771E277A2EF40013B958 /* XCRemoteSwiftPackageReference "XLForm" */,
 				F76DA961277B760E0082465B /* XCRemoteSwiftPackageReference "Queuer" */,
-				F76DA964277B76F10082465B /* XCRemoteSwiftPackageReference "UICKeyChainStore" */,
 				F76DA967277B77E90082465B /* XCRemoteSwiftPackageReference "DropDown" */,
 				F710FC78277B7CFF00AA9FBF /* XCRemoteSwiftPackageReference "realm-swift" */,
 				F7BB7E4527A18C56009B9F29 /* XCRemoteSwiftPackageReference "Parchment" */,
@@ -4744,7 +4713,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 5;
+				CURRENT_PROJECT_VERSION = 6;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = NKUJUXUJ3B;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -4809,7 +4778,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 5;
+				CURRENT_PROJECT_VERSION = 6;
 				DEVELOPMENT_TEAM = NKUJUXUJ3B;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
@@ -5087,14 +5056,6 @@
 				minimumVersion = 2.0.0;
 			};
 		};
-		F76DA964277B76F10082465B /* XCRemoteSwiftPackageReference "UICKeyChainStore" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/kishikawakatsumi/UICKeyChainStore";
-			requirement = {
-				branch = master;
-				kind = branch;
-			};
-		};
 		F76DA967277B77E90082465B /* XCRemoteSwiftPackageReference "DropDown" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/AssistoLab/DropDown";
@@ -5131,8 +5092,8 @@
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/nextcloud/NextcloudKit";
 			requirement = {
-				branch = develop;
-				kind = branch;
+				kind = exactVersion;
+				version = 2.9.0;
 			};
 		};
 		F788ECC5263AAAF900ADC67F /* XCRemoteSwiftPackageReference "MarkdownKit" */ = {
@@ -5191,20 +5152,10 @@
 			package = F74E771E277A2EF40013B958 /* XCRemoteSwiftPackageReference "XLForm" */;
 			productName = XLForm;
 		};
-		C03BA14B2A17BC60002C8BA3 /* UICKeyChainStore */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = F76DA964277B76F10082465B /* XCRemoteSwiftPackageReference "UICKeyChainStore" */;
-			productName = UICKeyChainStore;
-		};
 		C04E2F182A17BA78001BAD85 /* XLForm */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = F74E771E277A2EF40013B958 /* XCRemoteSwiftPackageReference "XLForm" */;
 			productName = XLForm;
-		};
-		C04E2F1A2A17BAAB001BAD85 /* UICKeyChainStore */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = F76DA964277B76F10082465B /* XCRemoteSwiftPackageReference "UICKeyChainStore" */;
-			productName = UICKeyChainStore;
 		};
 		F30A96332A2DFCD000D7BCFE /* Realm */ = {
 			isa = XCSwiftPackageProductDependency;
@@ -5261,11 +5212,6 @@
 			package = F74E771E277A2EF40013B958 /* XCRemoteSwiftPackageReference "XLForm" */;
 			productName = XLForm;
 		};
-		F31F69592A2F89C400162F76 /* UICKeyChainStore */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = F76DA964277B76F10082465B /* XCRemoteSwiftPackageReference "UICKeyChainStore" */;
-			productName = UICKeyChainStore;
-		};
 		F31F695B2A2F89C400162F76 /* Realm */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = F710FC78277B7CFF00AA9FBF /* XCRemoteSwiftPackageReference "realm-swift" */;
@@ -5290,11 +5236,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = F31F69672A2F92F000162F76 /* XCRemoteSwiftPackageReference "SnapshotTestingHEIC" */;
 			productName = SnapshotTestingHEIC;
-		};
-		F70716F829881CFA00E72C1D /* UICKeyChainStore */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = F76DA964277B76F10082465B /* XCRemoteSwiftPackageReference "UICKeyChainStore" */;
-			productName = UICKeyChainStore;
 		};
 		F70821D729E59E6D001CA2D7 /* TagListView */ = {
 			isa = XCSwiftPackageProductDependency;
@@ -5365,11 +5306,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = F72DA9B225F53E4E00B87DB1 /* XCRemoteSwiftPackageReference "SwiftRichString" */;
 			productName = SwiftRichString;
-		};
-		F7346E2428B0FEFA006CE2D2 /* UICKeyChainStore */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = F76DA964277B76F10082465B /* XCRemoteSwiftPackageReference "UICKeyChainStore" */;
-			productName = UICKeyChainStore;
 		};
 		F7346E2828B0FFF2006CE2D2 /* RealmSwift */ = {
 			isa = XCSwiftPackageProductDependency;
@@ -5501,11 +5437,6 @@
 			package = F76DA961277B760E0082465B /* XCRemoteSwiftPackageReference "Queuer" */;
 			productName = Queuer;
 		};
-		F76DA965277B76F30082465B /* UICKeyChainStore */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = F76DA964277B76F10082465B /* XCRemoteSwiftPackageReference "UICKeyChainStore" */;
-			productName = UICKeyChainStore;
-		};
 		F76DA968277B77EA0082465B /* DropDown */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = F76DA967277B77E90082465B /* XCRemoteSwiftPackageReference "DropDown" */;
@@ -5586,11 +5517,6 @@
 			package = F710FC78277B7CFF00AA9FBF /* XCRemoteSwiftPackageReference "realm-swift" */;
 			productName = RealmSwift;
 		};
-		F7A8D72D28F17764008BBE1C /* UICKeyChainStore */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = F76DA964277B76F10082465B /* XCRemoteSwiftPackageReference "UICKeyChainStore" */;
-			productName = UICKeyChainStore;
-		};
 		F7BB7E4627A18C56009B9F29 /* Parchment */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = F7BB7E4527A18C56009B9F29 /* XCRemoteSwiftPackageReference "Parchment" */;
@@ -5600,21 +5526,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = F7D56B182972405400FA46C4 /* XCRemoteSwiftPackageReference "Mantis" */;
 			productName = Mantis;
-		};
-		F7EBCDCE277B81FF00A4EF67 /* UICKeyChainStore */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = F76DA964277B76F10082465B /* XCRemoteSwiftPackageReference "UICKeyChainStore" */;
-			productName = UICKeyChainStore;
-		};
-		F7EBCDD0277B820D00A4EF67 /* UICKeyChainStore */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = F76DA964277B76F10082465B /* XCRemoteSwiftPackageReference "UICKeyChainStore" */;
-			productName = UICKeyChainStore;
-		};
-		F7EBCDD2277B821700A4EF67 /* UICKeyChainStore */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = F76DA964277B76F10082465B /* XCRemoteSwiftPackageReference "UICKeyChainStore" */;
-			productName = UICKeyChainStore;
 		};
 		F7ED547B25EEA65400956C55 /* QRCodeReader */ = {
 			isa = XCSwiftPackageProductDependency;

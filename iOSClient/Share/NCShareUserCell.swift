@@ -171,7 +171,7 @@ class NCSearchUserDropDownCell: DropDownCell, NCCellProtocol {
 
         let fileName = baseUrl.userBaseUrl + "-" + sharee.shareWith + ".png"
         if NCManageDatabase.shared.getImageAvatarLoaded(fileName: fileName) == nil {
-            let fileNameLocalPath = String(CCUtility.getDirectoryUserData()) + "/" + fileName
+            let fileNameLocalPath = NCUtilityFileSystem.shared.directoryUserData + "/" + fileName
             let etag = NCManageDatabase.shared.getTableAvatar(fileName: fileName)?.etag
 
             NextcloudKit.shared.downloadAvatar(

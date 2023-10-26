@@ -30,7 +30,7 @@ class NCShareAdvancePermissionHeader: UIView {
     @IBOutlet weak var fullWidthImageView: UIImageView!
 
     func setupUI(with metadata: tableMetadata) {
-        if FileManager.default.fileExists(atPath: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)) {
+        if FileManager.default.fileExists(atPath: NCUtilityFileSystem.shared.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)) {
             fullWidthImageView.image = NCUtility.shared.getImageMetadata(metadata, for: frame.height)
             fullWidthImageView.contentMode = .scaleAspectFill
             imageView.isHidden = true
@@ -46,6 +46,6 @@ class NCShareAdvancePermissionHeader: UIView {
         fileName.text = metadata.fileNameView
         fileName.textColor = .label
         info.textColor = .secondaryLabel
-        info.text = CCUtility.transformedSize(metadata.size) + ", " + CCUtility.dateDiff(metadata.date as Date)
+        info.text = NCUtilityFileSystem.shared.transformedSize(metadata.size) + ", " + CCUtility.dateDiff(metadata.date as Date)
     }
 }
