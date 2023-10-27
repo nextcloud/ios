@@ -203,7 +203,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             hidePrivacyProtectionWindow()
         }
 
-        NCService.shared.startRequestServicesServer()
+        NCService().startRequestServicesServer()
 
         NCAutoUpload.shared.initAutoUpload(viewController: nil) { items in
             NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Initialize Auto upload with \(items) uploads")
@@ -589,7 +589,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
         NCPushNotification.shared().pushNotification()
 
-        NCService.shared.startRequestServicesServer()
+        NCService().startRequestServicesServer()
 
         NCAutoUpload.shared.initAutoUpload(viewController: nil) { items in
             NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Initialize Auto upload with \(items) uploads")

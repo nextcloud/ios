@@ -130,7 +130,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
         if typeReachability == NKCommon.TypeReachability.reachableCellular || typeReachability == NKCommon.TypeReachability.reachableEthernetOrWiFi {
             if !lastReachability {
 #if !EXTENSION
-                NCService.shared.startRequestServicesServer()
+                NCService().startRequestServicesServer()
 #endif
             }
             lastReachability = true

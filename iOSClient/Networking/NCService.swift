@@ -27,10 +27,6 @@ import NextcloudKit
 import RealmSwift
 
 class NCService: NSObject {
-    @objc static let shared: NCService = {
-        let instance = NCService()
-        return instance
-    }()
 
     let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
 
