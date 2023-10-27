@@ -24,10 +24,6 @@ import UIKit
 import DropDown
 
 class NCShareCommon: NSObject {
-    @objc static let shared: NCShareCommon = {
-        let instance = NCShareCommon()
-        return instance
-    }()
 
     // swiftlint:disable identifier_name
     let SHARE_TYPE_USER = 0

@@ -68,7 +68,7 @@ class NCShareUserCell: UITableViewCell, NCCellProtocol {
         imageDownArrow.isHidden = false
         buttonMenu.isHidden = false
         buttonMenu.accessibilityLabel = NSLocalizedString("_more_", comment: "")
-        imageItem.image = NCShareCommon.shared.getImageShareType(shareType: tableShare.shareType)
+        imageItem.image = NCShareCommon().getImageShareType(shareType: tableShare.shareType)
 
         let status = NCUtility.shared.getUserStatus(userIcon: tableShare.userIcon, userStatus: tableShare.userStatus, userMessage: tableShare.userMessage)
         imageStatus.image = status.onlineStatus
@@ -153,8 +153,8 @@ class NCSearchUserDropDownCell: DropDownCell, NCCellProtocol {
     }
 
     func setupCell(sharee: NKSharee, baseUrl: NCUserBaseUrl) {
-        imageItem.image = NCShareCommon.shared.getImageShareType(shareType: sharee.shareType)
-        imageShareeType.image = NCShareCommon.shared.getImageShareType(shareType: sharee.shareType)
+        imageItem.image = NCShareCommon().getImageShareType(shareType: sharee.shareType)
+        imageShareeType.image = NCShareCommon().getImageShareType(shareType: sharee.shareType)
         let status = NCUtility.shared.getUserStatus(userIcon: sharee.userIcon, userStatus: sharee.userStatus, userMessage: sharee.userMessage)
         imageStatus.image = status.onlineStatus
         self.status.text = status.statusMessage

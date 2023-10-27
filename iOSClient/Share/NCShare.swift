@@ -50,6 +50,7 @@ class NCShare: UIViewController, NCShareNetworkingDelegate, NCSharePagingContent
     public var metadata: tableMetadata?
     public var sharingEnabled = true
     public var height: CGFloat = 0
+    let shareCommon = NCShareCommon()
 
     var canReshare: Bool {
         guard let metadata = metadata else { return true }
@@ -119,7 +120,7 @@ class NCShare: UIViewController, NCShareNetworkingDelegate, NCSharePagingContent
             let advancePermission = UIStoryboard(name: "NCShare", bundle: nil).instantiateViewController(withIdentifier: "NCShareAdvancePermission") as? NCShareAdvancePermission,
             let navigationController = self.navigationController,
             let metadata = self.metadata else { return }
-        self.checkEnforcedPassword(shareType: NCShareCommon.shared.SHARE_TYPE_LINK) { password in
+        self.checkEnforcedPassword(shareType: shareCommon.SHARE_TYPE_LINK) { password in
             advancePermission.networking = self.networking
             advancePermission.share = NCTableShareOptions.shareLink(metadata: metadata, password: password)
             advancePermission.metadata = self.metadata
@@ -218,7 +219,7 @@ class NCShare: UIViewController, NCShareNetworkingDelegate, NCSharePagingContent
 
     func checkEnforcedPassword(shareType: Int, completion: @escaping (String?) -> Void) {
         guard NCGlobal.shared.capabilityFileSharingPubPasswdEnforced,
-              shareType == NCShareCommon.shared.SHARE_TYPE_LINK || shareType == NCShareCommon.shared.SHARE_TYPE_EMAIL
+              shareType == shareCommon.SHARE_TYPE_LINK || shareType == shareCommon.SHARE_TYPE_EMAIL
         else { return completion(nil) }
 
         self.present(UIAlertController.password(titleKey: "_enforce_password_protection_", completion: completion), animated: true)
@@ -268,7 +269,7 @@ class NCShare: UIViewController, NCShareNetworkingDelegate, NCSharePagingContent
 
         for sharee in sharees {
             var label = sharee.label
-            if sharee.shareType == NCShareCommon.shared.SHARE_TYPE_CIRCLE {
+            if sharee.shareType == shareCommon.SHARE_TYPE_CIRCLE {
                 label += " (\(sharee.circleInfo), \(sharee.circleOwner))"
             }
             dropDown.dataSource.append(label)
@@ -362,7 +363,7 @@ extension NCShare: UITableViewDataSource {
         guard let appDelegate = appDelegate, let tableShare = shares.share?[indexPath.row] else { return UITableViewCell() }
 
         // LINK
-        if tableShare.shareType == NCShareCommon.shared.SHARE_TYPE_LINK {
+        if tableShare.shareType == shareCommon.SHARE_TYPE_LINK {
             if let cell = tableView.dequeueReusableCell(withIdentifier: "cellLink", for: indexPath) as? NCShareLinkCell {
                 cell.indexPath = indexPath
                 cell.tableShare = tableShare
