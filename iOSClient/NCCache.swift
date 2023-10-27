@@ -1,5 +1,5 @@
 //
-//  NCMediaCache.swift
+//  NCCache.swift
 //  Nextcloud
 //
 //  Created by Marino Faggiana on 18/10/23.
@@ -25,10 +25,10 @@ import UIKit
 import LRUCache
 import NextcloudKit
 
-@objc class NCMediaCache: NSObject {
+@objc class NCCache: NSObject {
 
-    @objc public static let shared: NCMediaCache = {
-        let instance = NCMediaCache()
+    @objc public static let shared: NCCache = {
+        let instance = NCCache()
         return instance
     }()
 
@@ -45,6 +45,7 @@ import NextcloudKit
 
     func createCache(account: String) {
 
+        ocIdEtag.removeAll()
         metadatas.removeAll()
         getMetadatasMedia(account: account)
 
@@ -116,6 +117,8 @@ import NextcloudKit
 
     @objc func clearCache() {
 
+        ocIdEtag.removeAll()
+        metadatas.removeAll()
         cache.removeAllValues()
     }
 

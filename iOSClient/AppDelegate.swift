@@ -129,7 +129,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
             NCBrandColor.shared.settingThemingColor(account: activeAccount.account)
 
-            DispatchQueue.global().async { NCMediaCache.shared.createCache(account: activeAccount.account) }
+            DispatchQueue.global().async { NCCache.shared.createCache(account: activeAccount.account) }
 
         } else {
 
@@ -246,7 +246,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
         enableTouchFaceID()
 
-        NCMediaCache.shared.createCache(account: account)
+        NCCache.shared.createCache(account: account)
 
         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterRichdocumentGrabFocus)
         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSourceNetwork, second: 2)
@@ -276,7 +276,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         }
 
         NCNetworking.shared.cancel(inBackground: false)
-        NCMediaCache.shared.clearCache()
+        NCCache.shared.clearCache()
 
         presentPasscode { }
 
@@ -595,7 +595,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Initialize Auto upload with \(items) uploads")
         }
 
-        DispatchQueue.global().async { NCMediaCache.shared.createCache(account: self.account) }
+        DispatchQueue.global().async { NCCache.shared.createCache(account: self.account) }
 
         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterChangeUser)
     }
