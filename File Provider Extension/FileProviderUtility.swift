@@ -24,10 +24,6 @@
 import UIKit
 
 class fileProviderUtility: NSObject {
-    static let shared: fileProviderUtility = {
-        let instance = fileProviderUtility()
-        return instance
-    }()
 
     var fileManager = FileManager()
 
@@ -55,7 +51,7 @@ class fileProviderUtility: NSObject {
         if metadata.directory {
             _ = NCUtilityFileSystem.shared.getDirectoryProviderStorageOcId(itemIdentifier.rawValue)
         } else {
-            NCUtilityFileSystem.shared.getDirectoryProviderStorageOcId(itemIdentifier.rawValue, fileNameView: metadata.fileNameView)
+            _ = NCUtilityFileSystem.shared.getDirectoryProviderStorageOcId(itemIdentifier.rawValue, fileNameView: metadata.fileNameView)
         }
     }
 
