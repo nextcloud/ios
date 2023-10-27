@@ -386,6 +386,14 @@ extension NCMedia: UICollectionViewDataSource {
             cell.indexPath = indexPath
             cell.fileUser = metadata.ownerId
 
+            if metadata.isAudioOrVideo {
+                cell.imageStatus.image = cacheImages.cellPlayImage
+            } else if metadata.livePhoto && NCMediaCache.shared.livePhoto {
+                cell.imageStatus.image = cacheImages.cellLivePhotoImage
+            } else {
+                cell.imageStatus.image = nil
+            }
+
             if let image = NCMediaCache.shared.getImage(ocId: metadata.ocId) {
                 cell.imageItem.backgroundColor = nil
                 cell.imageItem.image = image
@@ -401,12 +409,7 @@ extension NCMedia: UICollectionViewDataSource {
                         appDelegate.downloadThumbnailQueue.addOperation(NCMediaDownloadThumbnaill(metadata: metadata, cell: cell, collectionView: collectionView))
                     }
                 }
-            }
-
-            if metadata.isAudioOrVideo {
-                cell.imageStatus.image = cacheImages.cellPlayImage
-            } else if metadata.livePhoto && NCMediaCache.shared.livePhoto {
-                cell.imageStatus.image = cacheImages.cellLivePhotoImage
+                cell.imageStatus.image = nil
             }
 
             if isEditMode {

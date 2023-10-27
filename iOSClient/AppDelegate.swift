@@ -53,10 +53,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     var disableSharesView: Bool = false
     var documentPickerViewController: NCDocumentPickerViewController?
     var timerErrorNetworking: Timer?
-
-    var isAppRefresh: Bool = false
-    var isAppProcessing: Bool = false
-
     private var privacyProtectionWindow: UIWindow?
 
     let downloadQueue = Queuer(name: "downloadQueue", maxConcurrentOperationCount: NCGlobal.shared.maxConcurrentOperationCountDownload, qualityOfService: .default)
@@ -250,6 +246,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
         enableTouchFaceID()
 
+        NCMediaCache.shared.createCache(account: account)
+
         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterRichdocumentGrabFocus)
         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSourceNetwork, second: 2)
     }
@@ -260,12 +258,25 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Application did enter in background")
 
         guard !account.isEmpty else { return }
+        let activeAccount = NCManageDatabase.shared.getActiveAccount()
+
+        if let autoUpload = activeAccount?.autoUpload, autoUpload {
+            NextcloudKit.shared.nkCommonInstance.writeLog("- Auto upload: true")
+            if UIApplication.shared.backgroundRefreshStatus == .available {
+                NextcloudKit.shared.nkCommonInstance.writeLog("- Auto upload in background: true")
+            } else {
+                NextcloudKit.shared.nkCommonInstance.writeLog("- Auto upload in background: false")
+            }
+        } else {
+            NextcloudKit.shared.nkCommonInstance.writeLog("- Auto upload: false")
+        }
 
         if let error = updateShareAccounts() {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Create share accounts \(error.localizedDescription)")
         }
 
         NCNetworking.shared.cancel(inBackground: false)
+        NCMediaCache.shared.clearCache()
 
         presentPasscode { }
 
@@ -327,19 +338,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     func handleAppRefresh(_ task: BGTask) {
         scheduleAppRefresh()
 
-        guard !account.isEmpty, !isAppProcessing else {
-            return task.setTaskCompleted(success: true)
-        }
-
-        isAppRefresh = true
-        NextcloudKit.shared.setup(delegate: NCNetworking.shared)
-
         NCAutoUpload.shared.initAutoUpload(viewController: nil) { items in
             NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Refresh task auto upload with \(items) uploads")
             NCNetworkingProcessUpload.shared.start { items in
                 NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Refresh task upload process with \(items) uploads")
                 task.setTaskCompleted(success: true)
-                self.isAppRefresh = false
             }
         }
     }
@@ -347,19 +350,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     func handleProcessingTask(_ task: BGTask) {
         scheduleAppProcessing()
 
-        guard !account.isEmpty, !isAppRefresh else {
-            return task.setTaskCompleted(success: true)
-        }
-
-        isAppProcessing = true
-        NextcloudKit.shared.setup(delegate: NCNetworking.shared)
-
         NCAutoUpload.shared.initAutoUpload(viewController: nil) { items in
             NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Processing task auto upload with \(items) uploads")
             NCNetworkingProcessUpload.shared.start { items in
                 NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Processing task upload process with \(items) uploads")
                 task.setTaskCompleted(success: true)
-                self.isAppProcessing = false
             }
         }
     }
