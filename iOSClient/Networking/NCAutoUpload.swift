@@ -45,7 +45,7 @@ class NCAutoUpload: NSObject {
         }
         applicationState = UIApplication.shared.applicationState
 
-        NCAskAuthorization.shared.askAuthorizationPhotoLibrary(viewController: viewController) { hasPermission in
+        NCAskAuthorization().askAuthorizationPhotoLibrary(viewController: viewController) { hasPermission in
             guard hasPermission else {
                 NCManageDatabase.shared.setAccountAutoUploadProperty("autoUpload", state: false)
                 return completion(0)
@@ -62,7 +62,7 @@ class NCAutoUpload: NSObject {
 
         applicationState = UIApplication.shared.applicationState
 
-        NCAskAuthorization.shared.askAuthorizationPhotoLibrary(viewController: viewController) { hasPermission in
+        NCAskAuthorization().askAuthorizationPhotoLibrary(viewController: viewController) { hasPermission in
             guard hasPermission else { return }
             let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_create_full_upload_")
             NCContentPresenter().showWarning(error: error, priority: .max)
@@ -202,7 +202,7 @@ class NCAutoUpload: NSObject {
 
     private func getCameraRollAssets(viewController: UIViewController?, account: tableAccount, selector: String, alignPhotoLibrary: Bool, completion: @escaping (_ assets: [PHAsset]?) -> Void) {
 
-        NCAskAuthorization.shared.askAuthorizationPhotoLibrary(viewController: viewController) { hasPermission in
+        NCAskAuthorization().askAuthorizationPhotoLibrary(viewController: viewController) { hasPermission in
 
             let assetCollection = PHAssetCollection.fetchAssetCollections(with: PHAssetCollectionType.smartAlbum, subtype: PHAssetCollectionSubtype.smartAlbumUserLibrary, options: nil)
             // swiftlint:disable empty_count
