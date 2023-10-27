@@ -41,7 +41,7 @@ import NextcloudKit
 
         let dataTask = defaultSession.dataTask(with: urlRequest) { data, _, error in
             if let error = error {
-                NCContentPresenter.shared.showInfo(error: NKError(error: error))
+                NCContentPresenter().showInfo(error: NKError(error: error))
             } else if let data = data {
                 self.start(data: data)
             }
@@ -89,7 +89,7 @@ import NextcloudKit
                 registerForNotifications()
                 UIApplication.shared.open(url)
             } catch {
-                NCContentPresenter.shared.showInfo(error: NKError(error: error))
+                NCContentPresenter().showInfo(error: NKError(error: error))
                 self.stop()
             }
         }

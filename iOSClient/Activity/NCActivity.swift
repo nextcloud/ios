@@ -88,7 +88,7 @@ class NCActivity: UIViewController, NCSharePagingContent {
                     self.commentView?.newCommentField.text?.removeAll()
                     self.loadComments()
                 } else {
-                    NCContentPresenter.shared.showError(error: error)
+                    NCContentPresenter().showError(error: error)
                 }
             }
         }
@@ -402,7 +402,7 @@ extension NCActivity {
             if error == .success, let comments = comments {
                 NCManageDatabase.shared.addComments(comments, account: metadata.account, objectId: metadata.fileId)
             } else if error.errorCode != NCGlobal.shared.errorResourceNotFound {
-                NCContentPresenter.shared.showError(error: error)
+                NCContentPresenter().showError(error: error)
             }
 
             if let disptachGroup = disptachGroup {
@@ -513,7 +513,7 @@ extension NCActivity: NCShareCommentsCellDelegate {
                             if error == .success {
                                 self.loadComments()
                             } else {
-                                NCContentPresenter.shared.showError(error: error)
+                                NCContentPresenter().showError(error: error)
                             }
                         }
                     }))
@@ -534,7 +534,7 @@ extension NCActivity: NCShareCommentsCellDelegate {
                         if error == .success {
                             self.loadComments()
                         } else {
-                            NCContentPresenter.shared.showError(error: error)
+                            NCContentPresenter().showError(error: error)
                         }
                     }
                 }

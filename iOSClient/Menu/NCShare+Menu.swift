@@ -68,11 +68,11 @@ extension NCShare {
                             let serverUrl = metadata.serverUrl + "/" + metadata.fileName
                             if NCNetworkingE2EE.shared.isInUpload(account: metadata.account, serverUrl: serverUrl) {
                                 let error = NKError(errorCode: NCGlobal.shared.errorE2EEUploadInProgress, errorDescription: NSLocalizedString("_e2e_in_upload_", comment: ""))
-                                return NCContentPresenter.shared.showInfo(error: error)
+                                return NCContentPresenter().showInfo(error: error)
                             }
                             let error = await NCNetworkingE2EE().uploadMetadata(account: metadata.account, serverUrl: serverUrl, userId: metadata.userId, addUserId: nil, removeUserId: share.shareWith)
                             if error != .success {
-                                return NCContentPresenter.shared.showError(error: error)
+                                return NCContentPresenter().showError(error: error)
                             }
                         }
                         self.networking?.unShare(idShare: share.idShare)

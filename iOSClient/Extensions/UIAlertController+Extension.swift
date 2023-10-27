@@ -43,10 +43,10 @@ extension UIAlertController {
                     if createFolderResults.error == .success {
                         let error = await NCNetworkingE2EEMarkFolder().markFolderE2ee(account: urlBase.account, fileName: fileNameFolder, serverUrl: serverUrl, userId: urlBase.userId)
                         if error != .success {
-                            NCContentPresenter.shared.showError(error: error)
+                            NCContentPresenter().showError(error: error)
                         }
                     } else {
-                        NCContentPresenter.shared.showError(error: createFolderResults.error)
+                        NCContentPresenter().showError(error: createFolderResults.error)
                     }
                 }
             } else {
@@ -54,7 +54,7 @@ extension UIAlertController {
                     if let completion = completion {
                         completion(error)
                     } else if error != .success {
-                        NCContentPresenter.shared.showError(error: error)
+                        NCContentPresenter().showError(error: error)
                     } // else: successful, no action
                 }
             }

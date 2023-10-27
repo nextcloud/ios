@@ -249,7 +249,7 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmpty
                 }
                 self.tableView.reloadData()
             } else if error != .success {
-                NCContentPresenter.shared.showError(error: error)
+                NCContentPresenter().showError(error: error)
             } else {
                 print("[Error] The user has been changed during networking process.")
             }
@@ -283,7 +283,7 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmpty
                         self.dismiss(animated: true)
                     }
                 } else if error != .success {
-                    NCContentPresenter.shared.showError(error: error)
+                    NCContentPresenter().showError(error: error)
                 } else {
                     print("[Error] The user has been changed during networking process.")
                 }

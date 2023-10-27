@@ -72,7 +72,7 @@ private var hasChangesQuickLook: Bool = false
 
         if metadata?.livePhoto == true {
             let error = NKError(errorCode: NCGlobal.shared.errorCharactersForbidden, errorDescription: "_message_disable_overwrite_livephoto_")
-            NCContentPresenter.shared.showInfo(error: error)
+            NCContentPresenter().showInfo(error: error)
         }
 
         if let metadata = metadata, metadata.isImage {

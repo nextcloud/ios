@@ -234,7 +234,7 @@ class NCRenameFile: UIViewController, UITextFieldDelegate {
 
         // verify if already exists
         if NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileName == %@", metadata.account, metadata.serverUrl, fileNameNew)) != nil {
-            NCContentPresenter.shared.showError(error: NKError(errorCode: 0, errorDescription: "_rename_already_exists_"))
+            NCContentPresenter().showError(error: NKError(errorCode: 0, errorDescription: "_rename_already_exists_"))
             return
         }
 
@@ -250,7 +250,7 @@ class NCRenameFile: UIViewController, UITextFieldDelegate {
 
             } else {
 
-                NCContentPresenter.shared.showError(error: error)
+                NCContentPresenter().showError(error: error)
             }
         }
     }

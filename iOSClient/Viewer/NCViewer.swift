@@ -133,7 +133,7 @@ class NCViewer: NSObject {
 
                         } else if error != .success {
 
-                            NCContentPresenter.shared.showError(error: error)
+                            NCContentPresenter().showError(error: error)
                         }
                     }
 
@@ -197,7 +197,7 @@ class NCViewer: NSObject {
 
                             } else if error != .success {
 
-                                NCContentPresenter.shared.showError(error: error)
+                                NCContentPresenter().showError(error: error)
                             }
                         }
 
@@ -217,7 +217,7 @@ class NCViewer: NSObject {
 
                 } else {
                     let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_editor_unknown_")
-                    NCContentPresenter.shared.showError(error: error)
+                    NCContentPresenter().showError(error: error)
                 }
 
                 return
@@ -248,14 +248,14 @@ extension NCViewer: NCSelectDelegate {
                 Task {
                     let error = await NCNetworking.shared.moveMetadata(metadata, serverUrlTo: serverUrl, overwrite: overwrite)
                     if error != .success {
-                        NCContentPresenter.shared.showError(error: error)
+                        NCContentPresenter().showError(error: error)
                     }
                 }
             } else if copy {
                 Task {
                     let error = await NCNetworking.shared.copyMetadata(metadata, serverUrlTo: serverUrl, overwrite: overwrite)
                     if error != .success {
-                        NCContentPresenter.shared.showError(error: error)
+                        NCContentPresenter().showError(error: error)
                     }
                 }
             }

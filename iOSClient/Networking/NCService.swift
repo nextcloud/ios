@@ -101,15 +101,15 @@ class NCService: NSObject {
         case .success(let serverInfo):
             if serverInfo.maintenance {
                 let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_maintenance_mode_")
-                NCContentPresenter.shared.showWarning(error: error, priority: .max)
+                NCContentPresenter().showWarning(error: error, priority: .max)
                 return false
             } else if serverInfo.productName.lowercased().contains("owncloud") {
                 let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_warning_owncloud_")
-                NCContentPresenter.shared.showWarning(error: error, priority: .max)
+                NCContentPresenter().showWarning(error: error, priority: .max)
                 return false
             } else if serverInfo.versionMajor <= NCGlobal.shared.nextcloud_unsupported_version {
                 let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_warning_unsupported_")
-                NCContentPresenter.shared.showWarning(error: error, priority: .max)
+                NCContentPresenter().showWarning(error: error, priority: .max)
             }
         case .failure:
             return false
@@ -129,7 +129,7 @@ class NCService: NSObject {
             }
             return false
         } else {
-            NCContentPresenter.shared.showError(error: resultUserProfile.error, priority: .max)
+            NCContentPresenter().showError(error: resultUserProfile.error, priority: .max)
             return false
         }
     }

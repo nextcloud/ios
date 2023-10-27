@@ -183,7 +183,7 @@ class NCUserStatus: UIViewController {
         if error != .success && error.errorCode != NCGlobal.shared.errorResourceNotFound {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                 self.dismiss(animated: true) {
-                    NCContentPresenter.shared.showError(error: error)
+                    NCContentPresenter().showError(error: error)
                 }
             }
         }
@@ -310,7 +310,7 @@ class NCUserStatus: UIViewController {
         NextcloudKit.shared.clearMessage { _, error in
 
             if error != .success {
-                NCContentPresenter.shared.showError(error: error)
+                NCContentPresenter().showError(error: error)
             }
 
             self.dismiss(animated: true)
@@ -324,7 +324,7 @@ class NCUserStatus: UIViewController {
         NextcloudKit.shared.setCustomMessageUserDefined(statusIcon: statusMessageEmojiTextField.text, message: message, clearAt: clearAtTimestamp) { _, error in
 
             if error != .success {
-                NCContentPresenter.shared.showError(error: error)
+                NCContentPresenter().showError(error: error)
             }
 
             self.dismiss(animated: true)

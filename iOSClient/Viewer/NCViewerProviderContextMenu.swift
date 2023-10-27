@@ -310,7 +310,7 @@ extension NCViewerProviderContextMenu: VLCMediaPlayerDelegate {
         case .error:
             NCActivityIndicator.shared.stop()
             let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_error_something_wrong_")
-            NCContentPresenter.shared.showError(error: error, priority: .max)
+            NCContentPresenter().showError(error: error, priority: .max)
             print("Played mode: ERROR")
         case .playing:
             NCActivityIndicator.shared.stop()

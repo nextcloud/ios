@@ -197,7 +197,7 @@ struct NCViewE2EE: View {
                         if NCKeychain().passcode != nil {
                             manageE2EE.requestPasscodeType("readPassphrase")
                         } else {
-                            NCContentPresenter.shared.showInfo(error: NKError(errorCode: 0, errorDescription: "_e2e_settings_lock_not_active_"))
+                            NCContentPresenter().showInfo(error: NKError(errorCode: 0, errorDescription: "_e2e_settings_lock_not_active_"))
                         }
                     }
 
@@ -217,7 +217,7 @@ struct NCViewE2EE: View {
                         if let passcode = NCKeychain().passcode {
                             manageE2EE.requestPasscodeType("removeLocallyEncryption")
                         } else {
-                            NCContentPresenter.shared.showInfo(error: NKError(errorCode: 0, errorDescription: "_e2e_settings_lock_not_active_"))
+                            NCContentPresenter().showInfo(error: NKError(errorCode: 0, errorDescription: "_e2e_settings_lock_not_active_"))
                         }
                     }
 
@@ -247,7 +247,7 @@ struct NCViewE2EE: View {
                             if let passcode = NCKeychain().passcode {
                                 manageE2EE.requestPasscodeType("startE2E")
                             } else {
-                                NCContentPresenter.shared.showInfo(error: NKError(errorCode: 0, errorDescription: "_e2e_settings_lock_not_active_"))
+                                NCContentPresenter().showInfo(error: NKError(errorCode: 0, errorDescription: "_e2e_settings_lock_not_active_"))
                             }
                         }
                     }
@@ -283,9 +283,9 @@ struct DeleteCerificateSection: View {
             .onTapGesture {
                 NextcloudKit.shared.deleteE2EECertificate { _, error in
                     if error == .success {
-                        NCContentPresenter.shared.messageNotification("E2E delete certificate", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: .success)
+                        NCContentPresenter().messageNotification("E2E delete certificate", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: .success)
                     } else {
-                        NCContentPresenter.shared.messageNotification("E2E delete certificate", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: .error)
+                        NCContentPresenter().messageNotification("E2E delete certificate", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: .error)
                     }
                 }
             }
@@ -305,9 +305,9 @@ struct DeleteCerificateSection: View {
             .onTapGesture {
                 NextcloudKit.shared.deleteE2EEPrivateKey { _, error in
                     if error == .success {
-                        NCContentPresenter.shared.messageNotification("E2E delete privateKey", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: .success)
+                        NCContentPresenter().messageNotification("E2E delete privateKey", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: .success)
                     } else {
-                        NCContentPresenter.shared.messageNotification("E2E delete privateKey", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: .error)
+                        NCContentPresenter().messageNotification("E2E delete privateKey", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: .error)
                     }
                 }
             }

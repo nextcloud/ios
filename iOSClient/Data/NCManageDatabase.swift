@@ -145,7 +145,7 @@ class NCManageDatabase: NSObject {
                     do {
 #if !EXTENSION
                         let nkError = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: error.localizedDescription)
-                        NCContentPresenter.shared.showError(error: nkError, priority: .max)
+                        NCContentPresenter().showError(error: nkError, priority: .max)
 #endif
                         NextcloudKit.shared.nkCommonInstance.writeLog("DATABASE ERROR: \(error.localizedDescription)")
                         try FileManager.default.removeItem(at: databaseFileUrlPath)
@@ -169,7 +169,7 @@ class NCManageDatabase: NSObject {
                 do {
 #if !EXTENSION
                     let nkError = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: error.localizedDescription)
-                    NCContentPresenter.shared.showError(error: nkError, priority: .max)
+                    NCContentPresenter().showError(error: nkError, priority: .max)
 #endif
                     NextcloudKit.shared.nkCommonInstance.writeLog("DATABASE ERROR: \(error.localizedDescription)")
                     try FileManager.default.removeItem(at: databaseFileUrlPath)

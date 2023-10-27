@@ -78,17 +78,17 @@ class NCPhotosPickerViewController: NSObject {
 
         viewController.didExceedMaximumNumberOfSelection = { _ in
             let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_limited_dimension_")
-            NCContentPresenter.shared.showError(error: error)
+            NCContentPresenter().showError(error: error)
         }
 
         viewController.handleNoAlbumPermissions = { _ in
             let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_denied_album_")
-            NCContentPresenter.shared.showError(error: error)
+            NCContentPresenter().showError(error: error)
         }
 
         viewController.handleNoCameraPermissions = { _ in
             let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_denied_camera_")
-            NCContentPresenter.shared.showError(error: error)
+            NCContentPresenter().showError(error: error)
         }
 
         viewController.configure = configure

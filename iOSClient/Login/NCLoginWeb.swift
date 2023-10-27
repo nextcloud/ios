@@ -123,7 +123,7 @@ class NCLoginWeb: UIViewController {
             loadWebPage(webView: webView!, url: url)
         } else {
             let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_login_url_error_")
-            NCContentPresenter.shared.showError(error: error, priority: .max)
+            NCContentPresenter().showError(error: error, priority: .max)
         }
 
         // TITLE
@@ -188,7 +188,7 @@ class NCLoginWeb: UIViewController {
             if error == .success, let password = token {
                 self.createAccount(server: serverUrl, username: username, password: password)
             } else {
-                NCContentPresenter.shared.showError(error: error)
+                NCContentPresenter().showError(error: error)
                 self.dismiss(animated: true, completion: nil)
             }
         }

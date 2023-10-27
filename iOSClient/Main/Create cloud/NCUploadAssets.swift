@@ -133,7 +133,7 @@ class NCUploadAssets: NSObject, ObservableObject, NCCreateFormUploadConflictDele
                         createProcessUploads()
                     } else {
                         let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_error_createsubfolders_upload_")
-                        NCContentPresenter.shared.showError(error: error)
+                        NCContentPresenter().showError(error: error)
                     }
                 }
             }

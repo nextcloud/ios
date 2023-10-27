@@ -108,7 +108,7 @@ class NCUploadScanDocument: ObservableObject {
                 for char in self.password.unicodeScalars {
                     if !char.isASCII {
                         let error = NKError(errorCode: NCGlobal.shared.errorForbidden, errorDescription: "_password_ascii_")
-                        NCContentPresenter.shared.showError(error: error)
+                        NCContentPresenter().showError(error: error)
                         return DispatchQueue.main.async { completion(true) }
                     }
                 }

@@ -374,7 +374,7 @@ class NCShareHeaderView: UIView {
                     color: metadata.favorite ? NCBrandColor.shared.yellowFavorite : .systemGray,
                     size: 20), for: .normal)
             } else {
-                NCContentPresenter.shared.showError(error: error)
+                NCContentPresenter().showError(error: error)
             }
         }
     }
@@ -388,6 +388,6 @@ class NCShareHeaderView: UIView {
     @objc func longTap(sender: UIGestureRecognizer) {
         UIPasteboard.general.string = path.text
         let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_copied_path_")
-        NCContentPresenter.shared.showInfo(error: error)
+        NCContentPresenter().showInfo(error: error)
     }
 }

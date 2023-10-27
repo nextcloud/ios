@@ -32,7 +32,7 @@ import NextcloudKit
 
         if !NextcloudKit.shared.isNetworkReachable() {
             let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_go_online_")
-            NCContentPresenter.shared.showError(error: error)
+            NCContentPresenter().showError(error: error)
             return
         }
 
@@ -56,7 +56,7 @@ import NextcloudKit
                 }
 
             } else if error != .success {
-                NCContentPresenter.shared.showError(error: error)
+                NCContentPresenter().showError(error: error)
             }
         }
     }
@@ -65,7 +65,7 @@ import NextcloudKit
 
         if !NextcloudKit.shared.isNetworkReachable() {
             let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_go_online_")
-            NCContentPresenter.shared.showError(error: error)
+            NCContentPresenter().showError(error: error)
             return
         }
 
@@ -92,7 +92,7 @@ import NextcloudKit
                         }
 
                     } else if error != .success {
-                        NCContentPresenter.shared.showError(error: error)
+                        NCContentPresenter().showError(error: error)
                     }
                 }
 

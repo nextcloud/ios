@@ -27,10 +27,6 @@ import CFNetwork
 import NextcloudKit
 
 class NCContentPresenter: NSObject {
-    @objc static let shared: NCContentPresenter = {
-        let instance = NCContentPresenter()
-        return instance
-    }()
 
     typealias MainFont = Font.HelveticaNeue
     enum Font {

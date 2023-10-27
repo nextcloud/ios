@@ -222,7 +222,7 @@ class NCCreateFormUploadConflict: UIViewController {
 
             switchAlreadyExistingFiles.isOn = true
             let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_file_not_rewite_doc_")
-            NCContentPresenter.shared.showInfo(error: error)
+            NCContentPresenter().showInfo(error: error)
         }
 
         tableView.reloadData()

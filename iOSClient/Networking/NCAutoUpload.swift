@@ -65,7 +65,7 @@ class NCAutoUpload: NSObject {
         NCAskAuthorization.shared.askAuthorizationPhotoLibrary(viewController: viewController) { hasPermission in
             guard hasPermission else { return }
             let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_create_full_upload_")
-            NCContentPresenter.shared.showWarning(error: error, priority: .max)
+            NCContentPresenter().showWarning(error: error, priority: .max)
             NCActivityIndicator.shared.start()
             Task {
                 self.uploadAssetsNewAndFull(viewController: viewController, selector: NCGlobal.shared.selectorUploadAutoUploadAll, log: log) { _ in
@@ -94,7 +94,7 @@ class NCAutoUpload: NSObject {
             if !NCNetworking.shared.createFolder(assets: assets, selector: selector, useSubFolder: account.autoUploadCreateSubfolder, account: account.account, urlBase: account.urlBase, userId: account.userId, withPush: false) {
                 if selector == NCGlobal.shared.selectorUploadAutoUploadAll {
                     let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_error_createsubfolders_upload_")
-                    NCContentPresenter.shared.showError(error: error, priority: .max)
+                    NCContentPresenter().showError(error: error, priority: .max)
                 }
                 return completion(0)
             }

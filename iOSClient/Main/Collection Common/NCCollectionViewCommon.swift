@@ -323,7 +323,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         self.collectionView?.reloadData()
 
         if error != .success {
-            NCContentPresenter.shared.showError(error: error)
+            NCContentPresenter().showError(error: error)
         }
 
         if let hud = userInfo["hud"] as? JGProgressHUD {
@@ -976,7 +976,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
         NCNetworking.shared.unifiedSearchFilesProvider(userBaseUrl: appDelegate, id: lastSearchResult.id, term: term, limit: 5, cursor: cursor) { _, searchResult, metadatas, error in
             if error != .success {
-                NCContentPresenter.shared.showError(error: error)
+                NCContentPresenter().showError(error: error)
             }
 
             metadataForSection.unifiedSearchInProgress = false
@@ -1022,7 +1022,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                                 if error == .success {
                                     self.reloadDataSource()
                                 } else {
-                                    NCContentPresenter.shared.showError(error: error)
+                                    NCContentPresenter().showError(error: error)
                                 }
                             } else if error.errorCode == NCGlobal.shared.errorResourceNotFound {
                                 // no metadata found, send a new metadata
@@ -1030,11 +1030,11 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                                     let serverUrl = metadataFolder.serverUrl + "/" + metadataFolder.fileName
                                     let error = await NCNetworkingE2EE.shared.uploadMetadata(account: metadataFolder.account, serverUrl: serverUrl, userId: metadataFolder.userId)
                                     if error != .success {
-                                        NCContentPresenter.shared.showError(error: error)
+                                        NCContentPresenter().showError(error: error)
                                     }
                                 }
                             } else {
-                                NCContentPresenter.shared.showError(error: NKError(errorCode: NCGlobal.shared.errorE2EEKeyDecodeMetadata, errorDescription: "_e2e_error_"))
+                                NCContentPresenter().showError(error: NKError(errorCode: NCGlobal.shared.errorE2EEKeyDecodeMetadata, errorDescription: "_e2e_error_"))
                             }
                             completion(tableDirectory, metadatas, metadatasUpdate, metadatasDelete, error)
                         }
@@ -1112,7 +1112,7 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
                     return
                 }
             } else {
-                NCContentPresenter.shared.showInfo(error: NKError(errorCode: NCGlobal.shared.errorE2EENotEnabled, errorDescription: "_e2e_server_disabled_"))
+                NCContentPresenter().showInfo(error: NKError(errorCode: NCGlobal.shared.errorE2EENotEnabled, errorDescription: "_e2e_server_disabled_"))
                 return
             }
         }
@@ -1142,7 +1142,7 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
                 NCNetworking.shared.download(metadata: metadata, selector: NCGlobal.shared.selectorLoadFileView) { _, _ in }
             } else {
                 let error = NKError(errorCode: NCGlobal.shared.errorOffline, errorDescription: "_go_online_")
-                NCContentPresenter.shared.showInfo(error: error)
+                NCContentPresenter().showInfo(error: error)
             }
         }
     }
