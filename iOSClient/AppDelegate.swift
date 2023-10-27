@@ -864,7 +864,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
                 case NCGlobal.shared.actionScanDocument:
 
-                    NCDocumentCamera.shared.openScannerDocument(viewController: rootViewController)
+                    NCDocumentCamera().openScannerDocument(viewController: rootViewController)
 
                 case NCGlobal.shared.actionTextDocument:
 
