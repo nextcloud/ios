@@ -275,6 +275,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Create share accounts \(error.localizedDescription)")
         }
 
+        scheduleAppRefresh()
+        scheduleAppProcessing()
         NCNetworking.shared.cancel(inBackground: false)
         NCCache.shared.clearCache()
 
@@ -313,6 +315,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         request.earliestBeginDate = Date(timeIntervalSinceNow: 60) // Refresh after 60 seconds.
         do {
             try BGTaskScheduler.shared.submit(request)
+            NextcloudKit.shared.nkCommonInstance.writeLog("Refresh task: ok")
         } catch {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Refresh task failed to submit request: \(error)")
         }
@@ -330,6 +333,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         request.requiresExternalPower = false
         do {
             try BGTaskScheduler.shared.submit(request)
+            NextcloudKit.shared.nkCommonInstance.writeLog("Processing task: ok")
         } catch {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Background Processing task failed to submit request: \(error)")
         }
