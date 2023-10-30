@@ -248,7 +248,7 @@ extension NCCollectionViewCommon {
                         icon: icon!,
                         order: 70,
                         action: { _ in
-                            NCViewer.shared.view(viewController: self, metadata: metadata, metadatas: [metadata], imageIcon: imageIcon, editor: editor, isRichDocument: isRichDocument)
+                            NCViewer().view(viewController: self, metadata: metadata, metadatas: [metadata], imageIcon: imageIcon, editor: editor, isRichDocument: isRichDocument)
                         }
                     )
                 )

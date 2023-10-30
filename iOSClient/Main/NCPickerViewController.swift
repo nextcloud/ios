@@ -150,7 +150,7 @@ class NCDocumentPickerViewController: NSObject, UIDocumentPickerDelegate {
                 metadata.classFile = NKCommon.TypeClassFile.video.rawValue
             }
             NCManageDatabase.shared.addMetadata(metadata)
-            NCViewer.shared.view(viewController: viewController, metadata: metadata, metadatas: [metadata], imageIcon: nil)
+            NCViewer().view(viewController: viewController, metadata: metadata, metadatas: [metadata], imageIcon: nil)
 
         } else {
             let serverUrl = appDelegate.activeServerUrl

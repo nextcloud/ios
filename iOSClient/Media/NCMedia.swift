@@ -315,7 +315,7 @@ extension NCMedia: UICollectionViewDelegate {
             // ACTIVE SERVERURL
             appDelegate.activeServerUrl = metadata.serverUrl
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "gridCell", for: indexPath) as? NCGridMediaCell
-            NCViewer.shared.view(viewController: self, metadata: metadata, metadatas: NCCache.shared.metadatas, imageIcon: cell?.imageItem.image)
+            NCViewer().view(viewController: self, metadata: metadata, metadatas: NCCache.shared.metadatas, imageIcon: cell?.imageItem.image)
         }
     }
 

@@ -437,7 +437,7 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
             imageIcon = UIImage(named: "file_pdf")
         }
 
-        NCViewer.shared.toggleMenu(viewController: self, metadata: metadata, webView: false, imageIcon: imageIcon)
+        NCViewer().toggleMenu(viewController: self, metadata: metadata, webView: false, imageIcon: imageIcon)
     }
 
     // MARK: - Gesture Recognizer

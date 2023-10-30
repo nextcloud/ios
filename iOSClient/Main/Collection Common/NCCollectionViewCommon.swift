@@ -1132,12 +1132,12 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
                         metadatas.append(metadata)
                     }
                 }
-                NCViewer.shared.view(viewController: self, metadata: metadata, metadatas: metadatas, imageIcon: imageIcon)
+                NCViewer().view(viewController: self, metadata: metadata, metadatas: metadatas, imageIcon: imageIcon)
                 return
             }
 
             if NCUtilityFileSystem.shared.fileProviderStorageExists(metadata) {
-                NCViewer.shared.view(viewController: self, metadata: metadata, metadatas: [metadata], imageIcon: imageIcon)
+                NCViewer().view(viewController: self, metadata: metadata, metadatas: [metadata], imageIcon: imageIcon)
             } else if NextcloudKit.shared.isNetworkReachable() {
                 NCNetworking.shared.download(metadata: metadata, selector: NCGlobal.shared.selectorLoadFileView) { _, _ in }
             } else {

@@ -131,7 +131,7 @@ extension NCMedia {
                             let fileName = url.lastPathComponent
                             let metadata = NCManageDatabase.shared.createMetadata(account: self.appDelegate.account, user: self.appDelegate.user, userId: self.appDelegate.userId, fileName: fileName, fileNameView: fileName, ocId: NSUUID().uuidString, serverUrl: "", urlBase: self.appDelegate.urlBase, url: stringUrl, contentType: "")
                             NCManageDatabase.shared.addMetadata(metadata)
-                            NCViewer.shared.view(viewController: self, metadata: metadata, metadatas: [metadata], imageIcon: nil)
+                            NCViewer().view(viewController: self, metadata: metadata, metadatas: [metadata], imageIcon: nil)
                         }))
 
                         self.present(alert, animated: true)

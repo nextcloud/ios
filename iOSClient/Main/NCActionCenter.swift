@@ -99,7 +99,7 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
             } else {
                 if let viewController = appDelegate.activeViewController {
                     let imageIcon = UIImage(contentsOfFile: NCUtilityFileSystem.shared.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag))
-                    NCViewer.shared.view(viewController: viewController, metadata: metadata, metadatas: [metadata], imageIcon: imageIcon)
+                    NCViewer().view(viewController: viewController, metadata: metadata, metadatas: [metadata], imageIcon: imageIcon)
                 }
             }
 
@@ -163,7 +163,7 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
                 let attr = try FileManager.default.attributesOfItem(atPath: NCUtilityFileSystem.shared.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView))
                 let fileSize = attr[FileAttributeKey.size] as? UInt64 ?? 0
                 if fileSize > 0 {
-                    NCViewer.shared.view(viewController: viewController, metadata: metadata, metadatas: [metadata], imageIcon: nil)
+                    NCViewer().view(viewController: viewController, metadata: metadata, metadatas: [metadata], imageIcon: nil)
                     return
                 }
             } catch {
@@ -198,7 +198,7 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
                 let fileNameLocalPath = NCUtilityFileSystem.shared.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)
 
                 if metadata.isAudioOrVideo {
-                    NCViewer.shared.view(viewController: viewController, metadata: metadata, metadatas: [metadata], imageIcon: nil)
+                    NCViewer().view(viewController: viewController, metadata: metadata, metadatas: [metadata], imageIcon: nil)
                 } else {
                     hud.show(in: hudView)
                     NextcloudKit.shared.download(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, requestHandler: { request in
@@ -210,7 +210,7 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
                         hud.dismiss()
                         if account == accountDownload && error == .success {
                             NCManageDatabase.shared.addLocalFile(metadata: metadata)
-                            NCViewer.shared.view(viewController: viewController, metadata: metadata, metadatas: [metadata], imageIcon: nil)
+                            NCViewer().view(viewController: viewController, metadata: metadata, metadatas: [metadata], imageIcon: nil)
                         }
                     }
                 }

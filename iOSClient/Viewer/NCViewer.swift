@@ -26,10 +26,6 @@ import NextcloudKit
 import QuickLook
 
 class NCViewer: NSObject {
-    @objc static let shared: NCViewer = {
-        let instance = NCViewer()
-        return instance
-    }()
 
     let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
     private var viewerQuickLook: NCViewerQuickLook?
