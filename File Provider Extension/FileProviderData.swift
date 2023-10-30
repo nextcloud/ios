@@ -32,6 +32,7 @@ class fileProviderData: NSObject {
 
     var domain: NSFileProviderDomain?
     var fileProviderManager: NSFileProviderManager = NSFileProviderManager.default
+    let utilityFileSystem = NCUtilityFileSystem()
 
     var account = ""
     var user = ""
@@ -72,7 +73,7 @@ class fileProviderData: NSObject {
         }
 
         // LOG
-        NextcloudKit.shared.nkCommonInstance.pathLog = NCUtilityFileSystem().directoryGroup
+        NextcloudKit.shared.nkCommonInstance.pathLog = utilityFileSystem.directoryGroup
         let levelLog = NCKeychain().logLevel
         NextcloudKit.shared.nkCommonInstance.levelLog = levelLog
         let version = NSString(format: NCBrandOptions.shared.textCopyrightNextcloudiOS as NSString, NCUtility().getVersionApp()) as String
@@ -87,7 +88,7 @@ class fileProviderData: NSObject {
             user = activeAccount.user
             userId = activeAccount.userId
             accountUrlBase = activeAccount.urlBase
-            homeServerUrl = NCUtilityFileSystem().getHomeServer(urlBase: activeAccount.urlBase, userId: activeAccount.userId)
+            homeServerUrl = utilityFileSystem.getHomeServer(urlBase: activeAccount.urlBase, userId: activeAccount.userId)
 
             NCManageDatabase.shared.setCapabilities(account: account)
 
@@ -111,7 +112,7 @@ class fileProviderData: NSObject {
                 user = activeAccount.user
                 userId = activeAccount.userId
                 accountUrlBase = activeAccount.urlBase
-                homeServerUrl = NCUtilityFileSystem().getHomeServer(urlBase: activeAccount.urlBase, userId: activeAccount.userId)
+                homeServerUrl = utilityFileSystem.getHomeServer(urlBase: activeAccount.urlBase, userId: activeAccount.userId)
 
                 NCManageDatabase.shared.setCapabilities(account: account)
 

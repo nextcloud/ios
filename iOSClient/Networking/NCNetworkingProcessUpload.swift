@@ -267,12 +267,13 @@ class NCNetworkingProcessUpload: NSObject {
     func verifyUploadZombie() {
 
         var session: URLSession?
+        let utilityFileSystem = NCUtilityFileSystem()
 
         // remove leaning upload share extension
         let metadatasUploadShareExtension = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "session == %@ AND sessionSelector == %@", NextcloudKit.shared.nkCommonInstance.sessionIdentifierUpload, NCGlobal.shared.selectorUploadFileShareExtension))
         for metadata in metadatasUploadShareExtension {
             NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
-            NCUtilityFileSystem().removeFile(atPath: NCUtilityFileSystem().getDirectoryProviderStorageOcId(metadata.ocId))
+            utilityFileSystem.removeFile(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId))
         }
 
         // verify metadataStatusInUpload (BACKGROUND)
@@ -324,7 +325,7 @@ class NCNetworkingProcessUpload: NSObject {
             NCNetworking.shared.transferInForegorund = nil
         }
         for metadata in metadatasUploading {
-            let fileNameLocalPath = NCUtilityFileSystem().getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)
+            let fileNameLocalPath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)
             if NCNetworking.shared.uploadRequest[fileNameLocalPath] == nil {
                 NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId, session: nil, sessionError: "", sessionSelector: nil, sessionTaskIdentifier: 0, status: NCGlobal.shared.metadataStatusWaitUpload, errorCode: nil)
             }

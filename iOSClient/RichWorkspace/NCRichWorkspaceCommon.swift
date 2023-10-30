@@ -27,6 +27,7 @@ import NextcloudKit
 @objc class NCRichWorkspaceCommon: NSObject {
 
     let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
+    let utilityFileSystem = NCUtilityFileSystem()
 
     @objc func createViewerNextcloudText(serverUrl: String, viewController: UIViewController) {
 
@@ -40,7 +41,7 @@ import NextcloudKit
 
         NCActivityIndicator.shared.start(backgroundView: viewController.view)
 
-        let fileNamePath = NCUtilityFileSystem().getFileNamePath(NCGlobal.shared.fileNameRichWorkspace, serverUrl: serverUrl, urlBase: appDelegate.urlBase, userId: appDelegate.userId)
+        let fileNamePath = utilityFileSystem.getFileNamePath(NCGlobal.shared.fileNameRichWorkspace, serverUrl: serverUrl, urlBase: appDelegate.urlBase, userId: appDelegate.userId)
         NextcloudKit.shared.NCTextCreateFile(fileNamePath: fileNamePath, editorId: directEditingCreator.editor, creatorId: directEditingCreator.identifier, templateId: "") { account, url, _, error in
 
             NCActivityIndicator.shared.stop()
@@ -75,7 +76,7 @@ import NextcloudKit
 
                 NCActivityIndicator.shared.start(backgroundView: viewController.view)
 
-                let fileNamePath = NCUtilityFileSystem().getFileNamePath(metadata.fileName, serverUrl: metadata.serverUrl, urlBase: appDelegate.urlBase, userId: appDelegate.userId)
+                let fileNamePath = utilityFileSystem.getFileNamePath(metadata.fileName, serverUrl: metadata.serverUrl, urlBase: appDelegate.urlBase, userId: appDelegate.userId)
                 NextcloudKit.shared.NCTextOpenFile(fileNamePath: fileNamePath, editor: "text") { account, url, _, error in
 
                     NCActivityIndicator.shared.stop()

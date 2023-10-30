@@ -117,7 +117,7 @@ class NCShares: NCCollectionViewCommon {
             if error == .success {
                 NCManageDatabase.shared.deleteTableShare(account: account)
                 if let shares = shares, !shares.isEmpty {
-                    let home = NCUtilityFileSystem().getHomeServer(urlBase: self.appDelegate.urlBase, userId: self.appDelegate.userId)
+                    let home = self.utilityFileSystem.getHomeServer(urlBase: self.appDelegate.urlBase, userId: self.appDelegate.userId)
                     NCManageDatabase.shared.addShare(account: self.appDelegate.account, home: home, shares: shares)
                 }
             }

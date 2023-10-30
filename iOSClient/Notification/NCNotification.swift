@@ -30,6 +30,7 @@ import JGProgressHUD
 class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmptyDataSetDelegate {
 
     let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
+    let utilityFileSystem = NCUtilityFileSystem()
     var notifications: [NKNotifications] = []
     var emptyDataSet: NCEmptyDataSet?
     var isReloadDataSourceNetworkInProgress: Bool = false
@@ -125,7 +126,7 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmpty
         var image: UIImage?
 
         if let urlIcon = urlIcon {
-            let pathFileName = NCUtilityFileSystem().directoryUserData + "/" + urlIcon.deletingPathExtension().lastPathComponent + ".png"
+            let pathFileName = utilityFileSystem.directoryUserData + "/" + urlIcon.deletingPathExtension().lastPathComponent + ".png"
             image = UIImage(contentsOfFile: pathFileName)
         }
 
@@ -145,7 +146,7 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmpty
             cell.avatarLeadingMargin.constant = 50
 
             let fileName = appDelegate.userBaseUrl + "-" + user + ".png"
-            let fileNameLocalPath = NCUtilityFileSystem().directoryUserData + "/" + fileName
+            let fileNameLocalPath = utilityFileSystem.directoryUserData + "/" + fileName
 
             if let image = UIImage(contentsOfFile: fileNameLocalPath) {
                 cell.avatar.image = image

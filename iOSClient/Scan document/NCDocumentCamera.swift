@@ -27,6 +27,7 @@ import VisionKit
 class NCDocumentCamera: NSObject, VNDocumentCameraViewControllerDelegate {
 
     var viewController: UIViewController?
+    let utilityFileSystem = NCUtilityFileSystem()
 
     func openScannerDocument(viewController: UIViewController) {
 
@@ -50,7 +51,7 @@ class NCDocumentCamera: NSObject, VNDocumentCameraViewControllerDelegate {
                                                     keyFileNameType: NCGlobal.shared.keyFileNameType,
                                                     keyFileNameOriginal: NCGlobal.shared.keyFileNameOriginal,
                                                     forcedNewFileName: true)!
-            let fileNamePath = NCUtilityFileSystem().directoryScan + "/" + fileName
+            let fileNamePath = utilityFileSystem.directoryScan + "/" + fileName
             let image = scan.imageOfPage(at: pageNumber)
             do {
                 try image.pngData()?.write(to: NSURL.fileURL(withPath: fileNamePath))

@@ -37,6 +37,7 @@ struct LockscreenData: TimelineEntry {
 
 func getLockscreenDataEntry(configuration: AccountIntent?, isPreview: Bool, family: WidgetFamily, completion: @escaping (_ entry: LockscreenData) -> Void) {
 
+    let utilityFileSystem = NCUtilityFileSystem()
     var account: tableAccount?
     var quotaRelative: Float = 0
 
@@ -82,7 +83,7 @@ func getLockscreenDataEntry(configuration: AccountIntent?, isPreview: Bool, fami
                     if userProfile.quotaRelative > 0 {
                         quotaRelative = Float(userProfile.quotaRelative) / 100
                     }
-                    let quotaUsed: String = NCUtilityFileSystem().transformedSize(userProfile.quotaUsed)
+                    let quotaUsed: String = utilityFileSystem.transformedSize(userProfile.quotaUsed)
                     var quotaTotal: String = ""
 
                     switch userProfile.quotaTotal {
@@ -93,7 +94,7 @@ func getLockscreenDataEntry(configuration: AccountIntent?, isPreview: Bool, fami
                     case -3:
                         quotaTotal = ""
                     default:
-                        quotaTotal = NCUtilityFileSystem().transformedSize(userProfile.quotaTotal)
+                        quotaTotal = utilityFileSystem.transformedSize(userProfile.quotaTotal)
                     }
                     completion(LockscreenData(date: Date(), isPlaceholder: false, activity: "", link: URL(string: "https://")!, quotaRelative: quotaRelative, quotaUsed: quotaUsed, quotaTotal: quotaTotal, error: false))
                 } else {

@@ -28,6 +28,7 @@ import NextcloudKit
 class NCViewerRichdocument: UIViewController, WKNavigationDelegate, WKScriptMessageHandler, NCSelectDelegate {
 
     let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
+    let utilityFileSystem = NCUtilityFileSystem()
     var webView = WKWebView()
     var bottomConstraint: NSLayoutConstraint?
     var documentController: UIDocumentInteractionController?
@@ -185,7 +186,7 @@ class NCViewerRichdocument: UIViewController, WKNavigationDelegate, WKScriptMess
                         guard let type = values["Type"] as? String else { return }
                         guard let urlString = values["URL"] as? String else { return }
                         guard let url = URL(string: urlString) else { return }
-                        let fileNameLocalPath = NCUtilityFileSystem().directoryUserData + "/" + (metadata.fileName as NSString).deletingPathExtension
+                        let fileNameLocalPath = utilityFileSystem.directoryUserData + "/" + (metadata.fileName as NSString).deletingPathExtension
 
                         if type == "slideshow" {
 
@@ -221,8 +222,8 @@ class NCViewerRichdocument: UIViewController, WKNavigationDelegate, WKScriptMess
                                         if let disposition = allHeaderFields["Content-Disposition"] as? String {
                                             let components = disposition.components(separatedBy: "filename=")
                                             if let filename = components.last?.replacingOccurrences(of: "\"", with: "") {
-                                                item = NCUtilityFileSystem().directoryUserData + "/" + filename
-                                                _ = NCUtilityFileSystem().moveFile(atPath: fileNameLocalPath, toPath: item)
+                                                item = self.utilityFileSystem.directoryUserData + "/" + filename
+                                                _ = self.utilityFileSystem.moveFile(atPath: fileNameLocalPath, toPath: item)
                                             }
                                         }
                                     }
@@ -292,7 +293,7 @@ class NCViewerRichdocument: UIViewController, WKNavigationDelegate, WKScriptMess
 
         if let serverUrl, let metadata {
 
-            let path = NCUtilityFileSystem().getFileNamePath(metadata.fileName, serverUrl: serverUrl, urlBase: appDelegate.urlBase, userId: appDelegate.userId)
+            let path = utilityFileSystem.getFileNamePath(metadata.fileName, serverUrl: serverUrl, urlBase: appDelegate.urlBase, userId: appDelegate.userId)
 
             NextcloudKit.shared.createAssetRichdocuments(path: path) { account, url, _, error in
                 if error == .success, account == self.appDelegate.account, let url {
@@ -309,7 +310,7 @@ class NCViewerRichdocument: UIViewController, WKNavigationDelegate, WKScriptMess
 
     func select(_ metadata: tableMetadata!, serverUrl: String!) {
 
-        let path = NCUtilityFileSystem().getFileNamePath(metadata!.fileName, serverUrl: serverUrl!, urlBase: appDelegate.urlBase, userId: appDelegate.userId)
+        let path = utilityFileSystem.getFileNamePath(metadata!.fileName, serverUrl: serverUrl!, urlBase: appDelegate.urlBase, userId: appDelegate.userId)
 
         NextcloudKit.shared.createAssetRichdocuments(path: path) { account, url, _, error in
             if error == .success, account == self.appDelegate.account, let url {

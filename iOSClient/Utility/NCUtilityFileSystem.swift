@@ -485,13 +485,13 @@ class NCUtilityFileSystem: NSObject {
 
         if let directories = NCManageDatabase.shared.getTablesDirectory(predicate: NSPredicate(format: "offline == true"), sorted: "serverUrl", ascending: true) {
             for directory: tableDirectory in directories {
-                offlineDir.append(NCUtilityFileSystem().getDirectoryProviderStorageOcId(directory.ocId))
+                offlineDir.append(getDirectoryProviderStorageOcId(directory.ocId))
             }
         }
 
         let files = NCManageDatabase.shared.getTableLocalFiles(predicate: NSPredicate(format: "offline == true"), sorted: "fileName", ascending: true)
         for file: tableLocalFile in files {
-            offlineFiles.append(NCUtilityFileSystem().getDirectoryProviderStorageOcId(file.ocId, fileNameView: file.fileName))
+            offlineFiles.append(getDirectoryProviderStorageOcId(file.ocId, fileNameView: file.fileName))
         }
 
         func meetsRequirement(date: Date) -> Bool {

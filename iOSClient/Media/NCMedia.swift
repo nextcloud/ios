@@ -36,8 +36,7 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate, NCSelectDelegate {
     internal var documentPickerViewController: NCDocumentPickerViewController?
 
     internal let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
-
-    //private var account: String = ""
+    internal let utilityFileSystem = NCUtilityFileSystem()
 
     internal var isEditMode = false
     internal var selectOcId: [String] = []
@@ -271,7 +270,7 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate, NCSelectDelegate {
     func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String, items: [Any], indexPath: [IndexPath], overwrite: Bool, copy: Bool, move: Bool) {
 
         guard let serverUrl = serverUrl else { return }
-        let home = NCUtilityFileSystem().getHomeServer(urlBase: appDelegate.urlBase, userId: appDelegate.userId)
+        let home = utilityFileSystem.getHomeServer(urlBase: appDelegate.urlBase, userId: appDelegate.userId)
         let path = serverUrl.replacingOccurrences(of: home, with: "")
         NCManageDatabase.shared.setAccountMediaPath(path, account: appDelegate.account)
         reloadDataSourceWithCompletion { _ in
@@ -397,14 +396,14 @@ extension NCMedia: UICollectionViewDataSource {
             if let image = NCCache.shared.getMediaImage(ocId: metadata.ocId) {
                 cell.imageItem.backgroundColor = nil
                 cell.imageItem.image = image
-            } else if FileManager().fileExists(atPath: NCUtilityFileSystem().getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)) {
-                if let image = UIImage(contentsOfFile: NCUtilityFileSystem().getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)) {
+            } else if FileManager().fileExists(atPath: utilityFileSystem.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)) {
+                if let image = UIImage(contentsOfFile: utilityFileSystem.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)) {
                     cell.imageItem.backgroundColor = nil
                     cell.imageItem.image = image
                     NCCache.shared.setMediaImage(ocId: metadata.ocId, image: image)
                 }
             } else {
-                if metadata.hasPreview && metadata.status == NCGlobal.shared.metadataStatusNormal && (!NCUtilityFileSystem().fileProviderStoragePreviewIconExists(metadata.ocId, etag: metadata.etag)) {
+                if metadata.hasPreview && metadata.status == NCGlobal.shared.metadataStatusNormal && (!utilityFileSystem.fileProviderStoragePreviewIconExists(metadata.ocId, etag: metadata.etag)) {
                     if appDelegate.downloadThumbnailQueue.operations.filter({ ($0 as? NCMediaDownloadThumbnaill)?.metadata.ocId == metadata.ocId }).isEmpty {
                         appDelegate.downloadThumbnailQueue.addOperation(NCMediaDownloadThumbnaill(metadata: metadata, cell: cell, collectionView: collectionView))
                     }
@@ -814,14 +813,15 @@ class NCMediaDownloadThumbnaill: ConcurrentOperation {
     var fileNamePath: String
     var fileNamePreviewLocalPath: String
     var fileNameIconLocalPath: String
+    let utilityFileSystem = NCUtilityFileSystem()
 
     init(metadata: tableMetadata, cell: NCCellProtocol?, collectionView: UICollectionView?) {
         self.metadata = tableMetadata.init(value: metadata)
         self.cell = cell
         self.collectionView = collectionView
-        self.fileNamePath = NCUtilityFileSystem().getFileNamePath(metadata.fileName, serverUrl: metadata.serverUrl, urlBase: metadata.urlBase, userId: metadata.userId)
-        self.fileNamePreviewLocalPath = NCUtilityFileSystem().getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)
-        self.fileNameIconLocalPath = NCUtilityFileSystem().getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)
+        self.fileNamePath = utilityFileSystem.getFileNamePath(metadata.fileName, serverUrl: metadata.serverUrl, urlBase: metadata.urlBase, userId: metadata.userId)
+        self.fileNamePreviewLocalPath = utilityFileSystem.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)
+        self.fileNameIconLocalPath = utilityFileSystem.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)
     }
 
     override func start() {

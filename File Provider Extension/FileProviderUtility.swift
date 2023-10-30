@@ -25,7 +25,8 @@ import UIKit
 
 class fileProviderUtility: NSObject {
 
-    var fileManager = FileManager()
+    let fileManager = FileManager()
+    let utilityFileSystem = NCUtilityFileSystem()
 
     func getAccountFromItemIdentifier(_ itemIdentifier: NSFileProviderItemIdentifier) -> String? {
 
@@ -49,15 +50,15 @@ class fileProviderUtility: NSObject {
         let itemIdentifier = getItemIdentifier(metadata: metadata)
 
         if metadata.directory {
-            _ = NCUtilityFileSystem().getDirectoryProviderStorageOcId(itemIdentifier.rawValue)
+            _ = utilityFileSystem.getDirectoryProviderStorageOcId(itemIdentifier.rawValue)
         } else {
-            _ = NCUtilityFileSystem().getDirectoryProviderStorageOcId(itemIdentifier.rawValue, fileNameView: metadata.fileNameView)
+            _ = utilityFileSystem.getDirectoryProviderStorageOcId(itemIdentifier.rawValue, fileNameView: metadata.fileNameView)
         }
     }
 
     func getParentItemIdentifier(metadata: tableMetadata) -> NSFileProviderItemIdentifier? {
 
-        let homeServerUrl = NCUtilityFileSystem().getHomeServer(urlBase: metadata.urlBase, userId: metadata.userId)
+        let homeServerUrl = utilityFileSystem.getHomeServer(urlBase: metadata.urlBase, userId: metadata.userId)
         if let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", metadata.account, metadata.serverUrl)) {
             if directory.serverUrl == homeServerUrl {
                 return NSFileProviderItemIdentifier(NSFileProviderItemIdentifier.rootContainer.rawValue)

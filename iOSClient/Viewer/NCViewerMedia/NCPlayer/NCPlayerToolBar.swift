@@ -64,7 +64,7 @@ class NCPlayerToolBar: UIView {
     private var metadata: tableMetadata?
     private let audioSession = AVAudioSession.sharedInstance()
     private var pointSize: CGFloat = 0
-
+    private let utilityFileSystem = NCUtilityFileSystem()
     private weak var viewerMediaPage: NCViewerMediaPage?
 
     // MARK: - View Life Cycle
@@ -465,7 +465,7 @@ extension NCPlayerToolBar: NCSelectDelegate {
             let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
             let fileNameLocalPath = NCUtilityFileSystem().getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)
 
-            if NCUtilityFileSystem().fileProviderStorageExists(metadata) {
+            if utilityFileSystem.fileProviderStorageExists(metadata) {
                 addPlaybackSlave(type: type, metadata: metadata)
             } else {
                 var downloadRequest: DownloadRequest?
@@ -503,7 +503,7 @@ extension NCPlayerToolBar: NCSelectDelegate {
     func addPlaybackSlave(type: String, metadata: tableMetadata) {
     // swiftlint:enable inclusive_language
 
-        let fileNameLocalPath = NCUtilityFileSystem().getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)
+        let fileNameLocalPath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)
 
         if type == "subtitle" {
             self.ncplayer?.player.addPlaybackSlave(URL(fileURLWithPath: fileNameLocalPath), type: .subtitle, enforce: true)

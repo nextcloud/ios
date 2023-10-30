@@ -37,7 +37,8 @@ class NCTrash: UIViewController, NCSelectableNavigationView, NCTrashListCellDele
     var emptyDataSet: NCEmptyDataSet?
     var selectableDataSource: [RealmSwiftObject] { datasource }
 
-    internal let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
+    let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
+    let utilityFileSystem = NCUtilityFileSystem()
 
     internal var isEditMode = false
     internal var selectOcId: [String] = []
@@ -347,8 +348,8 @@ extension NCTrash {
 
     func downloadThumbnail(with tableTrash: tableTrash, indexPath: IndexPath) {
 
-        let fileNamePreviewLocalPath = NCUtilityFileSystem().getDirectoryProviderStoragePreviewOcId(tableTrash.fileId, etag: tableTrash.fileName)
-        let fileNameIconLocalPath = NCUtilityFileSystem().getDirectoryProviderStorageIconOcId(tableTrash.fileId, etag: tableTrash.fileName)
+        let fileNamePreviewLocalPath = utilityFileSystem.getDirectoryProviderStoragePreviewOcId(tableTrash.fileId, etag: tableTrash.fileName)
+        let fileNameIconLocalPath = utilityFileSystem.getDirectoryProviderStorageIconOcId(tableTrash.fileId, etag: tableTrash.fileName)
 
         NextcloudKit.shared.downloadPreview(fileNamePathOrFileId: tableTrash.fileId,
                                             fileNamePreviewLocalPath: fileNamePreviewLocalPath,

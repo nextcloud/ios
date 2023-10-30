@@ -35,6 +35,7 @@ class NCManageDatabase: NSObject {
     }()
 
     let serialQueue = DispatchQueue(label: "realmSerialQueue")
+    let utilityFileSystem = NCUtilityFileSystem()
 
     override init() {
 

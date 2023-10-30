@@ -37,6 +37,7 @@ class NCShareCell: UITableViewCell {
     @IBOutlet weak var sizeCell: UILabel!
     weak var delegate: (NCShareCellDelegate & UIViewController)?
     var fileName = ""
+    let utilityFileSystem = NCUtilityFileSystem()
 
     func setup(fileName: String) {
         self.fileName = fileName
@@ -58,8 +59,8 @@ class NCShareCell: UITableViewCell {
 
         fileNameCell?.text = fileName
 
-        let fileSize = NCUtilityFileSystem().getFileSize(filePath: (NSTemporaryDirectory() + fileName))
-        sizeCell?.text = NCUtilityFileSystem().transformedSize(fileSize)
+        let fileSize = utilityFileSystem.getFileSize(filePath: (NSTemporaryDirectory() + fileName))
+        sizeCell?.text = utilityFileSystem.transformedSize(fileSize)
 
         moreButton?.setImage(NCUtility().loadImage(named: "more").image(color: .label, size: 15), for: .normal)
     }

@@ -206,6 +206,7 @@ struct UploadAssetsView: View {
 
     private func save(completion: @escaping (_ metadatasNOConflict: [tableMetadata], _ metadatasUploadInConflict: [tableMetadata]) -> Void) {
 
+        let utilityFileSystem = NCUtilityFileSystem()
         var metadatasNOConflict: [tableMetadata] = []
         var metadatasUploadInConflict: [tableMetadata] = []
         let autoUploadPath = NCManageDatabase.shared.getAccountAutoUploadPath(urlBase: uploadAssets.userBaseUrl.urlBase, userId: uploadAssets.userBaseUrl.userId, account: uploadAssets.userBaseUrl.account)
@@ -271,11 +272,11 @@ struct UploadAssetsView: View {
                     metadata.fileName = fileNameNoExtension + ".jpg"
                     metadata.fileNameView = fileNameNoExtension + ".jpg"
                 }
-                let fileNamePath = NCUtilityFileSystem().getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)
+                let fileNamePath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)
                 do {
                     try data.write(to: URL(fileURLWithPath: fileNamePath))
                     metadata.isExtractFile = true
-                    metadata.size = NCUtilityFileSystem().getFileSize(filePath: fileNamePath)
+                    metadata.size = utilityFileSystem.getFileSize(filePath: fileNamePath)
                     metadata.creationDate = asset.creationDate as? NSDate ?? (Date() as NSDate)
                     metadata.date = asset.modificationDate as? NSDate ?? (Date() as NSDate)
                 } catch {  }
@@ -333,6 +334,8 @@ struct UploadAssetsView: View {
     }
 
     var body: some View {
+
+        let utilityFileSystem = NCUtilityFileSystem()
 
         NavigationView {
             ZStack(alignment: .top) {
@@ -438,7 +441,7 @@ struct UploadAssetsView: View {
                         if !uploadAssets.isUseAutoUploadFolder {
                             HStack {
                                 Label {
-                                    if NCUtilityFileSystem().getHomeServer(urlBase: uploadAssets.userBaseUrl.urlBase, userId: uploadAssets.userBaseUrl.userId) == uploadAssets.serverUrl {
+                                    if utilityFileSystem.getHomeServer(urlBase: uploadAssets.userBaseUrl.urlBase, userId: uploadAssets.userBaseUrl.userId) == uploadAssets.serverUrl {
                                         Text("/")
                                             .font(.system(size: 15))
                                             .frame(maxWidth: .infinity, alignment: .trailing)

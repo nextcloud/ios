@@ -33,6 +33,7 @@ class NCEndToEndInitialize: NSObject {
 
     @objc weak var delegate: NCEndToEndInitializeDelegate?
     let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
+    let utilityFileSystem = NCUtilityFileSystem()
     var extractedPublicKey: String?
 
     override init() {
@@ -79,7 +80,7 @@ class NCEndToEndInitialize: NSObject {
                     NCContentPresenter().messageNotification("E2E get publicKey", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, priority: .max)
 
                 case NCGlobal.shared.errorResourceNotFound:
-                    guard let csr = NCEndToEndEncryption.sharedManager().createCSR(self.appDelegate.userId, directory: NCUtilityFileSystem().directoryUserData) else {
+                    guard let csr = NCEndToEndEncryption.sharedManager().createCSR(self.appDelegate.userId, directory: self.utilityFileSystem.directoryUserData) else {
                         let error = NKError(errorCode: error.errorCode, errorDescription: "Error to create Csr")
                         NCContentPresenter().messageNotification("E2E Csr", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, priority: .max)
 
@@ -255,7 +256,7 @@ class NCEndToEndInitialize: NSObject {
 
         var privateKeyString: NSString?
 
-        guard let privateKeyChiper = NCEndToEndEncryption.sharedManager().encryptPrivateKey(self.appDelegate.userId, directory: NCUtilityFileSystem().directoryUserData, passphrase: e2ePassphrase, privateKey: &privateKeyString, iterationCount: 1024) else {
+        guard let privateKeyChiper = NCEndToEndEncryption.sharedManager().encryptPrivateKey(self.appDelegate.userId, directory: utilityFileSystem.directoryUserData, passphrase: e2ePassphrase, privateKey: &privateKeyString, iterationCount: 1024) else {
             let error = NKError(errorCode: error.errorCode, errorDescription: "Serious internal error to create PrivateKey chiper")
             NCContentPresenter().messageNotification("E2E privateKey", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, priority: .max)
             return

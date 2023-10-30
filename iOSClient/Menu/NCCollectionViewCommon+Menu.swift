@@ -286,7 +286,7 @@ extension NCCollectionViewCommon {
                     icon: NCUtility().loadImage(named: "viewfinder.circle"),
                     order: 110,
                     action: { _ in
-                        if NCUtilityFileSystem().fileProviderStorageExists(metadata) {
+                        if self.utilityFileSystem.fileProviderStorageExists(metadata) {
                             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDownloadedFile, userInfo: ["ocId": metadata.ocId, "selector": NCGlobal.shared.selectorSaveAsScan, "error": NKError(), "account": metadata.account])
                         } else {
                             NCNetworking.shared.download(metadata: metadata, selector: NCGlobal.shared.selectorSaveAsScan) { _, _ in }
@@ -346,7 +346,7 @@ extension NCCollectionViewCommon {
                     icon: NCUtility().loadImage(named: "pencil.tip.crop.circle"),
                     order: 150,
                     action: { _ in
-                        if NCUtilityFileSystem().fileProviderStorageExists(metadata) {
+                        if self.utilityFileSystem.fileProviderStorageExists(metadata) {
                             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDownloadedFile, userInfo: ["ocId": metadata.ocId, "selector": NCGlobal.shared.selectorLoadFileQuickLook, "error": NKError(), "account": metadata.account])
                         } else {
                             NCNetworking.shared.download(metadata: metadata, selector: NCGlobal.shared.selectorLoadFileQuickLook) { _, _ in }

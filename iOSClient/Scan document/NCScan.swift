@@ -44,6 +44,7 @@ class NCScan: UIViewController, NCScanCellCellDelegate {
     internal var itemsDestination: [String] = []
 
     internal let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
+    let utilityFileSystem = NCUtilityFileSystem()
     private var tipView: EasyTipView?
     internal var filter: NCGlobal.TypeFilterScanDocument = NCKeychain().typeFilterScanDocument
 
@@ -191,7 +192,7 @@ class NCScan: UIViewController, NCScanCellCellDelegate {
 
         for fileName in itemsSource where !itemsDestination.contains(fileName) {
 
-            let fileNamePathAt = NCUtilityFileSystem().directoryScan + "/" + fileName
+            let fileNamePathAt = utilityFileSystem.directoryScan + "/" + fileName
             guard let data = try? Data(contentsOf: URL(fileURLWithPath: fileNamePathAt)), let image = UIImage(data: data) else { return }
 
             imagesDestination.append(image)
@@ -228,7 +229,7 @@ class NCScan: UIViewController, NCScanCellCellDelegate {
         itemsSource.removeAll()
 
         do {
-            let atPath = NCUtilityFileSystem().directoryScan
+            let atPath = utilityFileSystem.directoryScan
             let directoryContents = try FileManager.default.contentsOfDirectory(atPath: atPath)
             for fileName in directoryContents where fileName.first != "." {
                 itemsSource.append(fileName)
@@ -329,7 +330,7 @@ class NCScan: UIViewController, NCScanCellCellDelegate {
                 if collectionView === collectionViewDestination {
 
                     let fileName = (item.dragItem.localObject as? String)!
-                    let fileNamePathAt = NCUtilityFileSystem().directoryScan + "/" + fileName
+                    let fileNamePathAt = utilityFileSystem.directoryScan + "/" + fileName
 
                     guard let data = try? Data(contentsOf: URL(fileURLWithPath: fileNamePathAt)), let image = UIImage(data: data) else { return }
 
@@ -382,7 +383,7 @@ class NCScan: UIViewController, NCScanCellCellDelegate {
                                                     keyFileNameType: NCGlobal.shared.keyFileNameType,
                                                     keyFileNameOriginal: NCGlobal.shared.keyFileNameOriginal,
                                                     forcedNewFileName: true)!
-            let fileNamePath = NCUtilityFileSystem().directoryScan + "/" + fileName
+            let fileNamePath = utilityFileSystem.directoryScan + "/" + fileName
 
             do {
                 try image.pngData()?.write(to: NSURL.fileURL(withPath: fileNamePath), options: .atomic)

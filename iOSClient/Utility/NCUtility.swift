@@ -35,6 +35,8 @@ import SVGKit
 
 class NCUtility: NSObject {
 
+    let utilityFileSystem = NCUtilityFileSystem()
+
 #if !EXTENSION
     func convertSVGtoPNGWriteToUserData(svgUrlString: String, fileName: String? = nil, width: CGFloat? = nil, rewrite: Bool, account: String, id: Int? = nil, completion: @escaping (_ imageNamePath: String?, _ id: Int?) -> Void) {
 
@@ -51,7 +53,7 @@ class NCUtility: NSObject {
             fileNamePNG = iconURL.deletingPathExtension().lastPathComponent + ".png"
         }
 
-        let imageNamePath = NCUtilityFileSystem().directoryUserData + "/" + fileNamePNG
+        let imageNamePath = utilityFileSystem.directoryUserData + "/" + fileNamePNG
 
         if !FileManager.default.fileExists(atPath: imageNamePath) || rewrite == true {
 
@@ -202,13 +204,13 @@ class NCUtility: NSObject {
 
         NCManageDatabase.shared.clearDatabase(account: nil, removeAccount: true)
 
-        NCUtilityFileSystem().removeGroupDirectoryProviderStorage()
-        NCUtilityFileSystem().removeGroupLibraryDirectory()
+        utilityFileSystem.removeGroupDirectoryProviderStorage()
+        utilityFileSystem.removeGroupLibraryDirectory()
 
-        NCUtilityFileSystem().removeDocumentsDirectory()
-        NCUtilityFileSystem().removeTemporaryDirectory()
+        utilityFileSystem.removeDocumentsDirectory()
+        utilityFileSystem.removeTemporaryDirectory()
 
-        NCUtilityFileSystem().createDirectoryStandard()
+        utilityFileSystem.createDirectoryStandard()
 
         NCKeychain().removeAll()
     }
@@ -364,11 +366,11 @@ class NCUtility: NSObject {
 
         var originalImage, scaleImagePreview, scaleImageIcon: UIImage?
 
-        let fileNamePath = NCUtilityFileSystem().getDirectoryProviderStorageOcId(ocId, fileNameView: fileNameView)
-        let fileNamePathPreview = NCUtilityFileSystem().getDirectoryProviderStoragePreviewOcId(ocId, etag: etag)
-        let fileNamePathIcon = NCUtilityFileSystem().getDirectoryProviderStorageIconOcId(ocId, etag: etag)
+        let fileNamePath = utilityFileSystem.getDirectoryProviderStorageOcId(ocId, fileNameView: fileNameView)
+        let fileNamePathPreview = utilityFileSystem.getDirectoryProviderStoragePreviewOcId(ocId, etag: etag)
+        let fileNamePathIcon = utilityFileSystem.getDirectoryProviderStorageIconOcId(ocId, etag: etag)
 
-        if NCUtilityFileSystem().fileProviderStorageSize(ocId, fileNameView: fileNameView) > 0 && FileManager().fileExists(atPath: fileNamePathPreview) && FileManager().fileExists(atPath: fileNamePathIcon) { return }
+        if utilityFileSystem.fileProviderStorageSize(ocId, fileNameView: fileNameView) > 0 && FileManager().fileExists(atPath: fileNamePathPreview) && FileManager().fileExists(atPath: fileNamePathIcon) { return }
         if classFile != NKCommon.TypeClassFile.image.rawValue && classFile != NKCommon.TypeClassFile.video.rawValue { return }
 
         if classFile == NKCommon.TypeClassFile.image.rawValue {
@@ -384,7 +386,7 @@ class NCUtility: NSObject {
         } else if classFile == NKCommon.TypeClassFile.video.rawValue {
 
             let videoPath = NSTemporaryDirectory() + "tempvideo.mp4"
-            NCUtilityFileSystem().linkItem(atPath: fileNamePath, toPath: videoPath)
+            utilityFileSystem.linkItem(atPath: fileNamePath, toPath: videoPath)
 
             originalImage = imageFromVideo(url: URL(fileURLWithPath: videoPath), at: 0)
 
@@ -430,7 +432,7 @@ class NCUtility: NSObject {
     @objc func loadUserImage(for user: String, displayName: String?, userBaseUrl: NCUserBaseUrl) -> UIImage {
 
         let fileName = userBaseUrl.userBaseUrl + "-" + user + ".png"
-        let localFilePath = NCUtilityFileSystem().directoryUserData + "/" + fileName
+        let localFilePath = utilityFileSystem.directoryUserData + "/" + fileName
 
         if var localImage = UIImage(contentsOfFile: localFilePath) {
             let rect = CGRect(x: 0, y: 0, width: 30, height: 30)
@@ -563,8 +565,8 @@ class NCUtility: NSObject {
     func createFilePreviewImage(ocId: String, etag: String, fileNameView: String, classFile: String, status: Int, createPreviewMedia: Bool) -> UIImage? {
 
         var imagePreview: UIImage?
-        let filePath = NCUtilityFileSystem().getDirectoryProviderStorageOcId(ocId, fileNameView: fileNameView)
-        let iconImagePath = NCUtilityFileSystem().getDirectoryProviderStorageIconOcId(ocId, etag: etag)
+        let filePath = utilityFileSystem.getDirectoryProviderStorageOcId(ocId, fileNameView: fileNameView)
+        let iconImagePath = utilityFileSystem.getDirectoryProviderStorageIconOcId(ocId, etag: etag)
 
         if FileManager().fileExists(atPath: iconImagePath) {
             imagePreview = UIImage(contentsOfFile: iconImagePath)
@@ -598,7 +600,7 @@ class NCUtility: NSObject {
     }
 
     func isDirectoryE2EE(account: String, urlBase: String, userId: String, serverUrl: String) -> Bool {
-        if serverUrl == NCUtilityFileSystem().getHomeServer(urlBase: urlBase, userId: userId) || serverUrl == ".." { return false }
+        if serverUrl == utilityFileSystem.getHomeServer(urlBase: urlBase, userId: userId) || serverUrl == ".." { return false }
         if let directory = NCManageDatabase.shared.getTableDirectory(account: account, serverUrl: serverUrl) {
             return directory.e2eEncrypted
         }

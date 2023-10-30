@@ -31,6 +31,7 @@ class NCOperationSaveLivePhoto: ConcurrentOperation {
     var metadataMOV: tableMetadata
     let hud = JGProgressHUD()
     let appDelegate = UIApplication.shared.delegate as? AppDelegate
+    let utilityFileSystem = NCUtilityFileSystem()
 
     init(metadata: tableMetadata, metadataMOV: tableMetadata) {
         self.metadata = tableMetadata.init(value: metadata)
@@ -85,8 +86,8 @@ class NCOperationSaveLivePhoto: ConcurrentOperation {
 
     func saveLivePhotoToDisk(metadata: tableMetadata, metadataMov: tableMetadata) {
 
-        let fileNameImage = URL(fileURLWithPath: NCUtilityFileSystem().getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView))
-        let fileNameMov = URL(fileURLWithPath: NCUtilityFileSystem().getDirectoryProviderStorageOcId(metadataMov.ocId, fileNameView: metadataMov.fileNameView))
+        let fileNameImage = URL(fileURLWithPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView))
+        let fileNameMov = URL(fileURLWithPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadataMov.ocId, fileNameView: metadataMov.fileNameView))
 
         DispatchQueue.main.async {
             self.hud.textLabel.text = NSLocalizedString("_livephoto_save_", comment: "")

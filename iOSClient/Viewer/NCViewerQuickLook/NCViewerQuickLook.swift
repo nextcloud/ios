@@ -42,6 +42,7 @@ private var hasChangesQuickLook: Bool = false
     var timer: Timer?
     // used to display the save alert
     var parentVC: UIViewController?
+    let utilityFileSystem = NCUtilityFileSystem()
 
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
@@ -207,16 +208,16 @@ extension NCViewerQuickLook: QLPreviewControllerDataSource, QLPreviewControllerD
         guard let metadata = self.metadata else { return }
 
         let ocId = NSUUID().uuidString
-        let size = NCUtilityFileSystem().getFileSize(filePath: url.path)
+        let size = utilityFileSystem.getFileSize(filePath: url.path)
 
         if !override {
-            let fileName = NCUtilityFileSystem().createFileName(metadata.fileNameView, serverUrl: metadata.serverUrl, account: metadata.account)
+            let fileName = utilityFileSystem.createFileName(metadata.fileNameView, serverUrl: metadata.serverUrl, account: metadata.account)
             metadata.fileName = fileName
             metadata.fileNameView = fileName
         }
 
-        let fileNamePath = NCUtilityFileSystem().getDirectoryProviderStorageOcId(ocId, fileNameView: metadata.fileNameView)
-        guard NCUtilityFileSystem().copyFile(atPath: url.path, toPath: fileNamePath) else { return }
+        let fileNamePath = utilityFileSystem.getDirectoryProviderStorageOcId(ocId, fileNameView: metadata.fileNameView)
+        guard utilityFileSystem.copyFile(atPath: url.path, toPath: fileNamePath) else { return }
 
         let metadataForUpload = NCManageDatabase.shared.createMetadata(
             account: metadata.account,
@@ -247,7 +248,7 @@ extension NCViewerQuickLook: QLPreviewControllerDataSource, QLPreviewControllerD
     func previewController(_ controller: QLPreviewController, didSaveEditedCopyOf previewItem: QLPreviewItem, at modifiedContentsURL: URL) {
         // easier to handle that way than to use `.updateContents`
         // needs to be moved otherwise it will only be called once!
-        guard NCUtilityFileSystem().moveFile(atPath: modifiedContentsURL.path, toPath: url.path) else { return }
+        guard utilityFileSystem.moveFile(atPath: modifiedContentsURL.path, toPath: url.path) else { return }
         hasChangesQuickLook = true
     }
 }

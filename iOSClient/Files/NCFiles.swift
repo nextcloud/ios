@@ -54,7 +54,7 @@ class NCFiles: NCCollectionViewCommon {
 
                 self.navigationController?.popToRootViewController(animated: false)
 
-                self.serverUrl = NCUtilityFileSystem().getHomeServer(urlBase: self.appDelegate.urlBase, userId: self.appDelegate.userId)
+                self.serverUrl = self.utilityFileSystem.getHomeServer(urlBase: self.appDelegate.urlBase, userId: self.appDelegate.userId)
                 self.appDelegate.activeServerUrl = self.serverUrl
 
                 self.isSearchingMode = false
@@ -82,7 +82,7 @@ class NCFiles: NCCollectionViewCommon {
     override func viewWillAppear(_ animated: Bool) {
 
         if isRoot {
-            serverUrl = NCUtilityFileSystem().getHomeServer(urlBase: appDelegate.urlBase, userId: appDelegate.userId)
+            serverUrl = utilityFileSystem.getHomeServer(urlBase: appDelegate.urlBase, userId: appDelegate.userId)
             titleCurrentFolder = getNavigationTitle()
         }
         super.viewWillAppear(animated)

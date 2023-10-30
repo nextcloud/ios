@@ -83,7 +83,7 @@ extension NCManageDatabase {
             try realm.write {
                 for share in shares {
                     let serverUrlPath = home + share.path
-                    guard let serverUrl = NCUtilityFileSystem().deleteLastPath(serverUrlPath: serverUrlPath, home: home) else { continue }
+                    guard let serverUrl = utilityFileSystem.deleteLastPath(serverUrlPath: serverUrlPath, home: home) else { continue }
                     let object = tableShare()
                     object.account = account
                     if let fileName = share.path.components(separatedBy: "/").last {

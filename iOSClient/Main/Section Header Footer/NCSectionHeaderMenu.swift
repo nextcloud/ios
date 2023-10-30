@@ -291,6 +291,7 @@ class NCSectionFooter: UICollectionReusableView, NCSectionFooterDelegate {
 
     weak var delegate: NCSectionFooterDelegate?
     var metadataForSection: NCMetadataForSection?
+    let utilityFileSystem = NCUtilityFileSystem()
 
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -319,9 +320,9 @@ class NCSectionFooter: UICollectionReusableView, NCSectionFooterDelegate {
         }
 
         if files > 1 {
-            filesText = "\(files) " + NSLocalizedString("_files_", comment: "") + " " + NCUtilityFileSystem().transformedSize(size)
+            filesText = "\(files) " + NSLocalizedString("_files_", comment: "") + " " + utilityFileSystem.transformedSize(size)
         } else if files == 1 {
-            filesText = "1 " + NSLocalizedString("_file_", comment: "") + " " + NCUtilityFileSystem().transformedSize(size)
+            filesText = "1 " + NSLocalizedString("_file_", comment: "") + " " + utilityFileSystem.transformedSize(size)
         }
 
         if foldersText.isEmpty {

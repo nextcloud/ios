@@ -28,6 +28,8 @@ import JGProgressHUD
 
 class NCContextMenu: NSObject {
 
+    let utilityFileSystem = NCUtilityFileSystem()
+
     func viewMenu(ocId: String, indexPath: IndexPath, viewController: UIViewController, image: UIImage?) -> UIMenu {
         guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) else { return UIMenu() }
 
@@ -70,7 +72,7 @@ class NCContextMenu: NSObject {
 
         let openIn = UIAction(title: NSLocalizedString("_open_in_", comment: ""),
                               image: UIImage(systemName: "square.and.arrow.up") ) { _ in
-            if NCUtilityFileSystem().fileProviderStorageExists(metadata) {
+            if self.utilityFileSystem.fileProviderStorageExists(metadata) {
                 NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDownloadedFile, userInfo: ["ocId": metadata.ocId, "selector": NCGlobal.shared.selectorOpenIn, "error": NKError(), "account": metadata.account])
             } else {
                 hud.show(in: viewController.view)
@@ -102,7 +104,7 @@ class NCContextMenu: NSObject {
                     appDelegate.saveLivePhotoQueue.addOperation(NCOperationSaveLivePhoto(metadata: metadata, metadataMOV: metadataMOV))
                 }
             } else {
-                if NCUtilityFileSystem().fileProviderStorageExists(metadata) {
+                if self.utilityFileSystem.fileProviderStorageExists(metadata) {
                     NCActionCenter.shared.saveAlbum(metadata: metadata)
                 } else {
                     hud.show(in: viewController.view)
@@ -125,7 +127,7 @@ class NCContextMenu: NSObject {
 
         let modify = UIAction(title: NSLocalizedString("_modify_", comment: ""),
                               image: UIImage(systemName: "pencil.tip.crop.circle")) { _ in
-            if NCUtilityFileSystem().fileProviderStorageExists(metadata) {
+            if self.utilityFileSystem.fileProviderStorageExists(metadata) {
                 NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDownloadedFile, userInfo: ["ocId": metadata.ocId, "selector": NCGlobal.shared.selectorLoadFileQuickLook, "error": NKError(), "account": metadata.account])
             } else {
                 hud.show(in: viewController.view)

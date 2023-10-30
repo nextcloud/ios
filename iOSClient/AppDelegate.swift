@@ -70,6 +70,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         if isUiTestingEnabled {
             deleteAllAccounts()
         }
+        let utilityFileSystem = NCUtilityFileSystem()
 
         NCSettingsBundleHelper.checkAndExecuteSettings(delay: 0)
 
@@ -80,9 +81,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             FirebaseApp.configure()
         }
 
-        NCUtilityFileSystem().createDirectoryStandard()
-        NCUtilityFileSystem().emptyTemporaryDirectory()
-        NCUtilityFileSystem().clearCacheDirectory("com.limit-point.LivePhoto")
+        utilityFileSystem.createDirectoryStandard()
+        utilityFileSystem.emptyTemporaryDirectory()
+        utilityFileSystem.clearCacheDirectory("com.limit-point.LivePhoto")
 
         // Activated singleton
         _ = NCActionCenter.shared
@@ -94,12 +95,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         startTimerErrorNetworking()
 
         var levelLog = 0
-        NextcloudKit.shared.nkCommonInstance.pathLog = NCUtilityFileSystem().directoryGroup
+        NextcloudKit.shared.nkCommonInstance.pathLog = utilityFileSystem.directoryGroup
 
         if NCBrandOptions.shared.disable_log {
 
-            NCUtilityFileSystem().removeFile(atPath: NextcloudKit.shared.nkCommonInstance.filenamePathLog)
-            NCUtilityFileSystem().removeFile(atPath: NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true).first! + "/" + NextcloudKit.shared.nkCommonInstance.filenameLog)
+            utilityFileSystem.removeFile(atPath: NextcloudKit.shared.nkCommonInstance.filenamePathLog)
+            utilityFileSystem.removeFile(atPath: NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true).first! + "/" + NextcloudKit.shared.nkCommonInstance.filenameLog)
 
         } else {
 
@@ -232,7 +233,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
         // Clear older files
         let days = NCKeychain().cleanUpDay
-        NCUtilityFileSystem().cleanUp(directory: NCUtilityFileSystem().directoryProviderStorage, days: TimeInterval(days))
+        let utilityFileSystem = NCUtilityFileSystem()
+        utilityFileSystem.cleanUp(directory: utilityFileSystem.directoryProviderStorage, days: TimeInterval(days))
 
         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterApplicationWillResignActive)
     }
@@ -607,8 +609,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         }
 
         let results = NCManageDatabase.shared.getTableLocalFiles(predicate: NSPredicate(format: "account == %@", account), sorted: "ocId", ascending: false)
+        let utilityFileSystem = NCUtilityFileSystem()
         for result in results {
-            NCUtilityFileSystem().removeFile(atPath: NCUtilityFileSystem().getDirectoryProviderStorageOcId(result.ocId))
+            utilityFileSystem.removeFile(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(result.ocId))
         }
         NCManageDatabase.shared.clearDatabase(account: account, removeAccount: true)
 

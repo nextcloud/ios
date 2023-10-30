@@ -53,6 +53,7 @@ class NCUploadScanDocument: ObservableObject {
     internal var isTextRecognition: Bool = false
     internal var quality: Double = 0
     internal var removeAllFiles: Bool = false
+    let utilityFileSystem = NCUtilityFileSystem()
 
     @Published var serverUrl: String
     @Published var showHUD: Bool = false
@@ -99,7 +100,7 @@ class NCUploadScanDocument: ObservableObject {
     func createPDF(metadata: tableMetadata, completion: @escaping (_ error: Bool) -> Void) {
 
         DispatchQueue.global().async {
-            let fileNamePath = NCUtilityFileSystem().getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)
+            let fileNamePath = self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)
             let pdfData = NSMutableData()
 
             if self.password.isEmpty {
@@ -124,10 +125,10 @@ class NCUploadScanDocument: ObservableObject {
 
             do {
                 try pdfData.write(to: URL(fileURLWithPath: fileNamePath), options: .atomic)
-                metadata.size = NCUtilityFileSystem().getFileSize(filePath: fileNamePath)
+                metadata.size = self.utilityFileSystem.getFileSize(filePath: fileNamePath)
                 NCNetworkingProcessUpload.shared.createProcessUploads(metadatas: [metadata], completion: { _ in })
                 if self.removeAllFiles {
-                    let path = NCUtilityFileSystem().directoryScan
+                    let path = self.utilityFileSystem.directoryScan
                     let filePaths = try FileManager.default.contentsOfDirectory(atPath: path)
                     for filePath in filePaths {
                         try FileManager.default.removeItem(atPath: path + "/" + filePath)

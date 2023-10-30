@@ -25,6 +25,7 @@ import Foundation
 class NCNetworkingE2EERename: NSObject {
 
     let networkingE2EE = NCNetworkingE2EE()
+    let utilityFileSystem = NCUtilityFileSystem()
 
     func rename(metadata: tableMetadata, fileNameNew: String, indexPath: IndexPath) async -> NKError {
 
@@ -57,7 +58,7 @@ class NCNetworkingE2EERename: NSObject {
 
         // DB RENAME
         //
-        let newFileNamePath = NCUtilityFileSystem().getFileNamePath(fileNameNew, serverUrl: metadata.serverUrl, urlBase: metadata.urlBase, userId: metadata.userId)
+        let newFileNamePath = utilityFileSystem.getFileNamePath(fileNameNew, serverUrl: metadata.serverUrl, urlBase: metadata.urlBase, userId: metadata.userId)
         NCManageDatabase.shared.renameFileE2eEncryption(account: metadata.account, serverUrl: metadata.serverUrl, fileNameIdentifier: metadata.fileName, newFileName: fileNameNew, newFileNamePath: newFileNamePath)
 
         // UPLOAD METADATA
@@ -80,8 +81,8 @@ class NCNetworkingE2EERename: NSObject {
 
         // MOVE FILE SYSTEM
         //
-        let atPath = NCUtilityFileSystem().getDirectoryProviderStorageOcId(metadata.ocId) + "/" + metadata.fileNameView
-        let toPath = NCUtilityFileSystem().getDirectoryProviderStorageOcId(metadata.ocId) + "/" + fileNameNew
+        let atPath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId) + "/" + metadata.fileNameView
+        let toPath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId) + "/" + fileNameNew
         do {
             try FileManager.default.moveItem(atPath: atPath, toPath: toPath)
         } catch { }

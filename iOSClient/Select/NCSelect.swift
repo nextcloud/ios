@@ -37,6 +37,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
 
     private let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
     private var selectCommandViewSelect: NCSelectCommandView?
+    let utilityFileSystem = NCUtilityFileSystem()
 
     @objc enum selectType: Int {
         case select
@@ -160,7 +161,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
 
         // set the serverUrl
         if serverUrl.isEmpty {
-            serverUrl = NCUtilityFileSystem().getHomeServer(urlBase: activeAccount.urlBase, userId: activeAccount.userId)
+            serverUrl = utilityFileSystem.getHomeServer(urlBase: activeAccount.urlBase, userId: activeAccount.userId)
         }
 
         // get auto upload folder
@@ -249,7 +250,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
 
     func pushMetadata(_ metadata: tableMetadata) {
 
-        let serverUrlPush = NCUtilityFileSystem().stringAppendServerUrl(metadata.serverUrl, addFileName: metadata.fileName)
+        let serverUrlPush = utilityFileSystem.stringAppendServerUrl(metadata.serverUrl, addFileName: metadata.fileName)
         guard let viewController = UIStoryboard(name: "NCSelect", bundle: nil).instantiateViewController(withIdentifier: "NCSelect.storyboard") as? NCSelect else { return }
 
         self.serverUrlPush = serverUrlPush
@@ -298,15 +299,15 @@ extension NCSelect: UICollectionViewDataSource {
 
         // Thumbnail
         if !metadata.directory {
-            if FileManager().fileExists(atPath: NCUtilityFileSystem().getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)) {
-                (cell as? NCCellProtocol)?.filePreviewImageView?.image = UIImage(contentsOfFile: NCUtilityFileSystem().getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag))
+            if FileManager().fileExists(atPath: utilityFileSystem.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)) {
+                (cell as? NCCellProtocol)?.filePreviewImageView?.image = UIImage(contentsOfFile: utilityFileSystem.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag))
             } else {
                 if metadata.iconName.isEmpty {
                     (cell as? NCCellProtocol)?.filePreviewImageView?.image = NCCache.cacheImages.file
                 } else {
                     (cell as? NCCellProtocol)?.filePreviewImageView?.image = UIImage(named: metadata.iconName)
                 }
-                if metadata.hasPreview && metadata.status == NCGlobal.shared.metadataStatusNormal && (!NCUtilityFileSystem().fileProviderStoragePreviewIconExists(metadata.ocId, etag: metadata.etag)) {
+                if metadata.hasPreview && metadata.status == NCGlobal.shared.metadataStatusNormal && (!utilityFileSystem.fileProviderStoragePreviewIconExists(metadata.ocId, etag: metadata.etag)) {
                     for case let operation as NCCollectionViewDownloadThumbnail in appDelegate.downloadThumbnailQueue.operations where operation.metadata.ocId == metadata.ocId { return }
                     appDelegate.downloadThumbnailQueue.addOperation(NCCollectionViewDownloadThumbnail(metadata: metadata, cell: (cell as? NCCellProtocol), collectionView: collectionView))
                 }
@@ -391,12 +392,12 @@ extension NCSelect: UICollectionViewDataSource {
 
         } else {
 
-            cell.labelInfo.text = CCUtility.dateDiff(metadata.date as Date) + " · " + NCUtilityFileSystem().transformedSize(metadata.size)
+            cell.labelInfo.text = CCUtility.dateDiff(metadata.date as Date) + " · " + utilityFileSystem.transformedSize(metadata.size)
 
             // image local
             if NCManageDatabase.shared.getTableLocalFile(ocId: metadata.ocId) != nil {
                 cell.imageLocal.image = NCCache.cacheImages.offlineFlag
-            } else if NCUtilityFileSystem().fileProviderStorageExists(metadata) {
+            } else if utilityFileSystem.fileProviderStorageExists(metadata) {
                 cell.imageLocal.image = NCCache.cacheImages.local
             }
         }

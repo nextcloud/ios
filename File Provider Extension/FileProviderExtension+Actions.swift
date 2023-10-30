@@ -34,7 +34,7 @@ extension FileProviderExtension {
             return
         }
 
-        let directoryName = NCUtilityFileSystem().createFileName(directoryName, serverUrl: tableDirectory.serverUrl, account: fileProviderData.shared.account)
+        let directoryName = utilityFileSystem.createFileName(directoryName, serverUrl: tableDirectory.serverUrl, account: fileProviderData.shared.account)
         let serverUrlFileName = tableDirectory.serverUrl + "/" + directoryName
 
         NextcloudKit.shared.createFolder(serverUrlFileName: serverUrlFileName) { _, ocId, _, error in
@@ -92,7 +92,7 @@ extension FileProviderExtension {
 
             if error == .success { // || error == kOCErrorServerPathNotFound {
 
-                let fileNamePath = NCUtilityFileSystem().getDirectoryProviderStorageOcId(itemIdentifier.rawValue)
+                let fileNamePath = self.utilityFileSystem.getDirectoryProviderStorageOcId(itemIdentifier.rawValue)
                 do {
                     try self.fpUtility.fileManager.removeItem(atPath: fileNamePath)
                 } catch let error {
@@ -100,7 +100,7 @@ extension FileProviderExtension {
                 }
 
                 if isDirectory {
-                    let dirForDelete = NCUtilityFileSystem().stringAppendServerUrl(serverUrl, addFileName: fileName)
+                    let dirForDelete = self.utilityFileSystem.stringAppendServerUrl(serverUrl, addFileName: fileName)
                     NCManageDatabase.shared.deleteDirectoryAndSubDirectory(serverUrl: dirForDelete, account: account)
                 }
 
@@ -201,11 +201,11 @@ extension FileProviderExtension {
                     let itemIdentifier = self.fpUtility.getItemIdentifier(metadata: metadata)
 
                     // rename file
-                    _ = self.fpUtility.moveFile(NCUtilityFileSystem().getDirectoryProviderStorageOcId(itemIdentifier.rawValue, fileNameView: fileNameFrom), toPath: NCUtilityFileSystem().getDirectoryProviderStorageOcId(itemIdentifier.rawValue, fileNameView: itemName))
+                    _ = self.fpUtility.moveFile(self.utilityFileSystem.getDirectoryProviderStorageOcId(itemIdentifier.rawValue, fileNameView: fileNameFrom), toPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(itemIdentifier.rawValue, fileNameView: itemName))
 
-                    _ = self.fpUtility.moveFile(NCUtilityFileSystem().getDirectoryProviderStoragePreviewOcId(itemIdentifier.rawValue, etag: metadata.etag), toPath: NCUtilityFileSystem().getDirectoryProviderStoragePreviewOcId(itemIdentifier.rawValue, etag: metadata.etag))
+                    _ = self.fpUtility.moveFile(self.utilityFileSystem.getDirectoryProviderStoragePreviewOcId(itemIdentifier.rawValue, etag: metadata.etag), toPath: self.utilityFileSystem.getDirectoryProviderStoragePreviewOcId(itemIdentifier.rawValue, etag: metadata.etag))
 
-                    _ = self.fpUtility.moveFile(NCUtilityFileSystem().getDirectoryProviderStorageIconOcId(itemIdentifier.rawValue, etag: metadata.etag), toPath: NCUtilityFileSystem().getDirectoryProviderStorageIconOcId(itemIdentifier.rawValue, etag: metadata.etag))
+                    _ = self.fpUtility.moveFile(self.utilityFileSystem.getDirectoryProviderStorageIconOcId(itemIdentifier.rawValue, etag: metadata.etag), toPath: self.utilityFileSystem.getDirectoryProviderStorageIconOcId(itemIdentifier.rawValue, etag: metadata.etag))
 
                     NCManageDatabase.shared.setLocalFile(ocId: ocId, fileName: itemName, etag: nil)
                 }
@@ -245,7 +245,7 @@ extension FileProviderExtension {
         }
 
         if (favorite == true && metadata.favorite == false) || (favorite == false && metadata.favorite == true) {
-            let fileNamePath = NCUtilityFileSystem().getFileNamePath(metadata.fileName, serverUrl: metadata.serverUrl, urlBase: metadata.urlBase, userId: metadata.userId)
+            let fileNamePath = utilityFileSystem.getFileNamePath(metadata.fileName, serverUrl: metadata.serverUrl, urlBase: metadata.urlBase, userId: metadata.userId)
 
             NextcloudKit.shared.setFavorite(fileName: fileNamePath, favorite: favorite) { _, error in
 

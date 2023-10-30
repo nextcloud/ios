@@ -40,6 +40,7 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
     private let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
     private let applicationHandle = NCApplicationHandle()
     private var tabAccount: tableAccount?
+    let utilityFileSystem = NCUtilityFileSystem()
 
     private struct Section {
         var items: [NKExternalSite]
@@ -208,10 +209,10 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
             case -3:
                 quota = NSLocalizedString("_quota_space_unlimited_", comment: "")
             default:
-                quota = NCUtilityFileSystem().transformedSize(activeAccount.quotaTotal)
+                quota = utilityFileSystem.transformedSize(activeAccount.quotaTotal)
             }
 
-            let quotaUsed: String = NCUtilityFileSystem().transformedSize(activeAccount.quotaUsed)
+            let quotaUsed: String = utilityFileSystem.transformedSize(activeAccount.quotaUsed)
 
             labelQuota.text = String.localizedStringWithFormat(NSLocalizedString("_quota_using_", comment: ""), quotaUsed, quota)
         }

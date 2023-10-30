@@ -40,7 +40,7 @@ class NCActivity: UIViewController, NCSharePagingContent {
     var showComments: Bool = false
 
     let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
-
+    let utilityFileSystem = NCUtilityFileSystem()
     var allItems: [DateCompareable] = []
     var sectionDates: [Date] = []
 
@@ -250,7 +250,7 @@ extension NCActivity: UITableViewDataSource {
         if !activity.icon.isEmpty {
 
             let fileNameIcon = (activity.icon as NSString).lastPathComponent
-            let fileNameLocalPath = NCUtilityFileSystem().directoryUserData + "/" + fileNameIcon
+            let fileNameLocalPath = utilityFileSystem.directoryUserData + "/" + fileNameIcon
 
             if FileManager.default.fileExists(atPath: fileNameLocalPath) {
                 if let image = UIImage(contentsOfFile: fileNameLocalPath) {

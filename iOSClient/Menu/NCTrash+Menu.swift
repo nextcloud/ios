@@ -121,7 +121,7 @@ extension NCTrash {
         var actions: [NCMenuAction] = []
 
         var iconHeader: UIImage!
-        if let icon = UIImage(contentsOfFile: NCUtilityFileSystem().getDirectoryProviderStorageIconOcId(tableTrash.fileId, etag: tableTrash.fileName)) {
+        if let icon = UIImage(contentsOfFile: utilityFileSystem.getDirectoryProviderStorageIconOcId(tableTrash.fileId, etag: tableTrash.fileName)) {
             iconHeader = icon
         } else {
             if tableTrash.directory {

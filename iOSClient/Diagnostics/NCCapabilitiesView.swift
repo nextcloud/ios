@@ -49,6 +49,7 @@ class NCCapabilitiesViewOO: ObservableObject {
 
     @Published var capabililies: [Capability] = []
     @Published var homeServer = ""
+    let utilityFileSystem = NCUtilityFileSystem()
 
     init() {
         guard let activeAccount = NCManageDatabase.shared.getActiveAccount() else { return }
@@ -106,7 +107,7 @@ class NCCapabilitiesViewOO: ObservableObject {
             capabililies.append(Capability(text: "Group folders", image: image, resize: false, available: NCGlobal.shared.capabilityGroupfoldersEnabled))
         }
 
-        homeServer = NCUtilityFileSystem().getHomeServer(urlBase: activeAccount.urlBase, userId: activeAccount.userId) + "/"
+        homeServer = utilityFileSystem.getHomeServer(urlBase: activeAccount.urlBase, userId: activeAccount.userId) + "/"
     }
 }
 
