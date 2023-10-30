@@ -245,7 +245,7 @@ func getFilesDataEntry(configuration: AccountIntent?, isPreview: Bool, displaySi
                     }
                 }
 
-                let isDirectoryE2EE = NCUtility().isDirectoryE2EE(file: file)
+                let isDirectoryE2EE = utilityFileSystem.isDirectoryE2EE(file: file)
                 let metadata = NCManageDatabase.shared.convertFileToMetadata(file, isDirectoryE2EE: isDirectoryE2EE)
 
                 // DATA

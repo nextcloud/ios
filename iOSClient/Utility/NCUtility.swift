@@ -591,56 +591,6 @@ class NCUtility: NSObject {
         return imagePreview
     }
 
-    func isDirectoryE2EE(serverUrl: String, userBase: NCUserBaseUrl) -> Bool {
-        return isDirectoryE2EE(account: userBase.account, urlBase: userBase.urlBase, userId: userBase.userId, serverUrl: serverUrl)
-    }
-
-    func isDirectoryE2EE(file: NKFile) -> Bool {
-        return isDirectoryE2EE(account: file.account, urlBase: file.urlBase, userId: file.userId, serverUrl: file.serverUrl)
-    }
-
-    func isDirectoryE2EE(account: String, urlBase: String, userId: String, serverUrl: String) -> Bool {
-        if serverUrl == utilityFileSystem.getHomeServer(urlBase: urlBase, userId: userId) || serverUrl == ".." { return false }
-        if let directory = NCManageDatabase.shared.getTableDirectory(account: account, serverUrl: serverUrl) {
-            return directory.e2eEncrypted
-        }
-        return false
-    }
-
-    func isDirectoryE2EETop(account: String, serverUrl: String) -> Bool {
-
-        guard let serverUrl = serverUrl.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) else { return false }
-
-        if let url = URL(string: serverUrl)?.deletingLastPathComponent(),
-           let serverUrl = String(url.absoluteString.dropLast()).removingPercentEncoding {
-            if let directory = NCManageDatabase.shared.getTableDirectory(account: account, serverUrl: serverUrl) {
-                return !directory.e2eEncrypted
-            }
-        }
-        return true
-    }
-
-    func getDirectoryE2EETop(serverUrl: String, account: String) -> tableDirectory? {
-
-        guard var serverUrl = serverUrl.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) else { return nil }
-        var top: tableDirectory?
-
-        while let url = URL(string: serverUrl)?.deletingLastPathComponent(),
-              let serverUrlencoding = serverUrl.removingPercentEncoding,
-              let directory = NCManageDatabase.shared.getTableDirectory(account: account, serverUrl: serverUrlencoding) {
-
-            if directory.e2eEncrypted {
-                top = directory
-            } else {
-                return top
-            }
-
-            serverUrl = String(url.absoluteString.dropLast())
-        }
-
-        return top
-    }
-
     func getLocation(latitude: Double, longitude: Double, completion: @escaping (String?) -> Void) {
         let geocoder = CLGeocoder()
         let llocation = CLLocation(latitude: latitude, longitude: longitude)

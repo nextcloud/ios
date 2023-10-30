@@ -26,6 +26,8 @@ import NextcloudKit
 
 class NCEndToEndMetadata: NSObject {
 
+    let utilityFileSystem = NCUtilityFileSystem()
+
     // --------------------------------------------------------------------------------------------
     // MARK: Encode JSON Metadata Bridge
     // --------------------------------------------------------------------------------------------

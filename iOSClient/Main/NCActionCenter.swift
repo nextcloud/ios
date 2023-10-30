@@ -191,7 +191,7 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
                 NCContentPresenter().showError(error: error)
             } else if let file = file {
 
-                let isDirectoryE2EE = NCUtility().isDirectoryE2EE(file: file)
+                let isDirectoryE2EE = self.utilityFileSystem.isDirectoryE2EE(file: file)
                 let metadata = NCManageDatabase.shared.convertFileToMetadata(file, isDirectoryE2EE: isDirectoryE2EE)
                 NCManageDatabase.shared.addMetadata(metadata)
 

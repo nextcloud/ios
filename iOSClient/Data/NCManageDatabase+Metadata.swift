@@ -239,11 +239,11 @@ extension tableMetadata {
     }
 
     @objc var isDirectoryE2EE: Bool {
-        NCUtility().isDirectoryE2EE(account: account, urlBase: urlBase, userId: userId, serverUrl: serverUrl)
+        NCUtilityFileSystem().isDirectoryE2EE(account: account, urlBase: urlBase, userId: userId, serverUrl: serverUrl)
     }
 
     var isDirectoryE2EETop: Bool {
-        NCUtility().isDirectoryE2EETop(account: account, serverUrl: serverUrl)
+        NCUtilityFileSystem().isDirectoryE2EETop(account: account, serverUrl: serverUrl)
     }
 
     /// Returns false if the user is lokced out of the file. I.e. The file is locked but by somone else
@@ -367,7 +367,7 @@ extension NCManageDatabase {
             if let key = listServerUrl[file.serverUrl] {
                 isDirectoryE2EE = key
             } else {
-                isDirectoryE2EE = NCUtility().isDirectoryE2EE(file: file)
+                isDirectoryE2EE = NCUtilityFileSystem().isDirectoryE2EE(file: file)
                 listServerUrl[file.serverUrl] = isDirectoryE2EE
             }
 
