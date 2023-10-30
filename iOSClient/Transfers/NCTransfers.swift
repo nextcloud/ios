@@ -179,7 +179,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
         cell.indexPath = indexPath
         cell.fileUser = metadata.ownerId
         cell.indexPath = indexPath
-        cell.imageItem.image = NCBrandColor.cacheImages.file
+        cell.imageItem.image = NCCache.cacheImages.file
         cell.imageItem.backgroundColor = nil
         cell.labelTitle.text = metadata.fileNameView
         cell.labelTitle.textColor = .label
@@ -187,7 +187,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
         var pathText = metadata.serverUrl.replacingOccurrences(of: serverUrlHome, with: "")
         if pathText.isEmpty { pathText = "/" }
         cell.labelPath.text = pathText
-        cell.setButtonMore(named: NCGlobal.shared.buttonMoreStop, image: NCBrandColor.cacheImages.buttonStop)
+        cell.setButtonMore(named: NCGlobal.shared.buttonMoreStop, image: NCCache.cacheImages.buttonStop)
         cell.progressView.progress = 0.0
         if let image = NCUtility.shared.createFilePreviewImage(ocId: metadata.ocId, etag: metadata.etag, fileNameView: metadata.fileNameView, classFile: metadata.classFile, status: metadata.status, createPreviewMedia: true) {
             cell.imageItem.image = image

@@ -249,7 +249,7 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
         if status {
             var blurEffect: UIVisualEffect?
             var blurEffectView: UIView?
-            imageSelect.image = NCBrandColor.cacheImages.checkedYes
+            imageSelect.image = NCCache.cacheImages.checkedYes
             if traitCollection.userInterfaceStyle == .dark {
                 blurEffect = UIBlurEffect(style: .dark)
                 blurEffectView = UIVisualEffectView(effect: blurEffect)
@@ -264,7 +264,7 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
             backgroundView = blurEffectView
             separator.isHidden = true
         } else {
-            imageSelect.image = NCBrandColor.cacheImages.checkedNo
+            imageSelect.image = NCCache.cacheImages.checkedNo
             backgroundView = nil
             separator.isHidden = false
         }

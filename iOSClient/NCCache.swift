@@ -42,6 +42,45 @@ import NextcloudKit
     public var predicate: NSPredicate?
     public var livePhoto: Bool = false
 
+    struct cacheImages {
+        static var file = UIImage()
+
+        static var shared = UIImage()
+        static var canShare = UIImage()
+        static var shareByLink = UIImage()
+
+        static var favorite = UIImage()
+        static var comment = UIImage()
+        static var livePhoto = UIImage()
+        static var offlineFlag = UIImage()
+        static var local = UIImage()
+
+        static var folderEncrypted = UIImage()
+        static var folderSharedWithMe = UIImage()
+        static var folderPublic = UIImage()
+        static var folderGroup = UIImage()
+        static var folderExternal = UIImage()
+        static var folderAutomaticUpload = UIImage()
+        static var folder = UIImage()
+
+        static var checkedYes = UIImage()
+        static var checkedNo = UIImage()
+
+        static var buttonMore = UIImage()
+        static var buttonStop = UIImage()
+        static var buttonMoreLock = UIImage()
+        static var buttonRestore = UIImage()
+        static var buttonTrash = UIImage()
+
+        static var iconContacts = UIImage()
+        static var iconTalk = UIImage()
+        static var iconCalendar = UIImage()
+        static var iconDeck = UIImage()
+        static var iconMail = UIImage()
+        static var iconConfirm = UIImage()
+        static var iconPages = UIImage()
+    }
+
     func createCache(account: String) {
 
         ocIdEtag.removeAll()
@@ -119,6 +158,50 @@ import NextcloudKit
         ocIdEtag.removeAll()
         metadatas.removeAll()
         cache.removeAllValues()
+    }
+
+    func createImagesThemingColor() {
+
+        let brandElement = NCBrandColor.shared.brandElement
+        let yellowFavorite = NCBrandColor.shared.yellowFavorite
+
+        cacheImages.file = UIImage(named: "file")!
+
+        cacheImages.shared = UIImage(named: "share")!.image(color: .systemGray, size: 50)
+        cacheImages.canShare = UIImage(named: "share")!.image(color: .systemGray, size: 50)
+        cacheImages.shareByLink = UIImage(named: "sharebylink")!.image(color: .systemGray, size: 50)
+
+        cacheImages.favorite = NCUtility.shared.loadImage(named: "star.fill", color: yellowFavorite)
+        cacheImages.comment = UIImage(named: "comment")!.image(color: .systemGray, size: 50)
+        cacheImages.livePhoto = NCUtility.shared.loadImage(named: "livephoto", color: .label)
+        cacheImages.offlineFlag = UIImage(named: "offlineFlag")!
+        cacheImages.local = UIImage(named: "local")!
+
+        let folderWidth: CGFloat = UIScreen.main.bounds.width / 3
+        cacheImages.folderEncrypted = UIImage(named: "folderEncrypted")!.image(color: brandElement, size: folderWidth)
+        cacheImages.folderSharedWithMe = UIImage(named: "folder_shared_with_me")!.image(color: brandElement, size: folderWidth)
+        cacheImages.folderPublic = UIImage(named: "folder_public")!.image(color: brandElement, size: folderWidth)
+        cacheImages.folderGroup = UIImage(named: "folder_group")!.image(color: brandElement, size: folderWidth)
+        cacheImages.folderExternal = UIImage(named: "folder_external")!.image(color: brandElement, size: folderWidth)
+        cacheImages.folderAutomaticUpload = UIImage(named: "folderAutomaticUpload")!.image(color: brandElement, size: folderWidth)
+        cacheImages.folder = UIImage(named: "folder")!.image(color: brandElement, size: folderWidth)
+
+        cacheImages.checkedYes = NCUtility.shared.loadImage(named: "checkmark.circle.fill", color: .systemBlue)
+        cacheImages.checkedNo = NCUtility.shared.loadImage(named: "circle", color: .systemGray)
+
+        cacheImages.buttonMore = UIImage(named: "more")!.image(color: .systemGray, size: 50)
+        cacheImages.buttonStop = UIImage(named: "stop")!.image(color: .systemGray, size: 50)
+        cacheImages.buttonMoreLock = UIImage(named: "moreLock")!.image(color: .systemGray, size: 50)
+        cacheImages.buttonRestore = UIImage(named: "restore")!.image(color: .systemGray, size: 50)
+        cacheImages.buttonTrash = UIImage(named: "trash")!.image(color: .systemGray, size: 50)
+
+        cacheImages.iconContacts = UIImage(named: "icon-contacts")!.image(color: brandElement, size: folderWidth)
+        cacheImages.iconTalk = UIImage(named: "icon-talk")!.image(color: brandElement, size: folderWidth)
+        cacheImages.iconCalendar = UIImage(named: "icon-calendar")!.image(color: brandElement, size: folderWidth)
+        cacheImages.iconDeck = UIImage(named: "icon-deck")!.image(color: brandElement, size: folderWidth)
+        cacheImages.iconMail = UIImage(named: "icon-mail")!.image(color: brandElement, size: folderWidth)
+        cacheImages.iconConfirm = UIImage(named: "icon-confirm")!.image(color: brandElement, size: folderWidth)
+        cacheImages.iconPages = UIImage(named: "icon-pages")!.image(color: brandElement, size: folderWidth)
     }
 
     func getMetadatasMedia(account: String, filterClassTypeImage: Bool = false, filterClassTypeVideo: Bool = false) {

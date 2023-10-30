@@ -52,7 +52,7 @@ class NCShareCell: UITableViewCell {
             if !resultInternalType.iconName.isEmpty {
                 imageCell?.image = UIImage(named: resultInternalType.iconName)
             } else {
-                imageCell?.image = NCBrandColor.cacheImages.file
+                imageCell?.image = NCCache.cacheImages.file
             }
         }
 

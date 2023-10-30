@@ -194,7 +194,7 @@ class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
                 imageVisualEffect.effect = UIBlurEffect(style: .extraLight)
                 imageVisualEffect.backgroundColor = .lightGray
             }
-            imageSelect.image = NCBrandColor.cacheImages.checkedYes
+            imageSelect.image = NCCache.cacheImages.checkedYes
             imageVisualEffect.isHidden = false
         } else {
             imageSelect.isHidden = true

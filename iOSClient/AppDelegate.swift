@@ -128,8 +128,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             NCManageDatabase.shared.setCapabilities(account: account)
 
             NCBrandColor.shared.settingThemingColor(account: activeAccount.account)
-
-            DispatchQueue.global().async { NCCache.shared.createCache(account: activeAccount.account) }
+            NCCache.shared.createImagesThemingColor()
+            NCCache.shared.createCache(account: activeAccount.account)
 
         } else {
 
@@ -138,7 +138,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                 UserDefaults.standard.removePersistentDomain(forName: bundleID)
             }
 
-            NCBrandColor.shared.createImagesThemingColor()
+            NCCache.shared.createImagesThemingColor()
         }
 
         NCBrandColor.shared.createUserColors()
