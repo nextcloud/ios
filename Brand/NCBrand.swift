@@ -239,10 +239,6 @@ class NCBrandColor: NSObject {
             brand = customer
             brandText = customerText
         }
-
-#if !EXTENSION
-        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterChangeTheming)
-#endif
     }
 
     private func stepCalc(steps: Int, color1: CGColor, color2: CGColor) -> [CGFloat] {

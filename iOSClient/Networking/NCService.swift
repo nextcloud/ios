@@ -174,7 +174,7 @@ class NCService: NSObject {
         NextcloudKit.shared.getCapabilities(options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { account, data, error in
             guard error == .success, let data = data else {
                 NCBrandColor.shared.settingThemingColor(account: account)
-                NCCache.shared.createImagesThemingColor()
+                NCCache.shared.createImagesCache()
                 return
             }
 
@@ -191,7 +191,7 @@ class NCService: NSObject {
             // Theming
             if NCGlobal.shared.capabilityThemingColor != NCBrandColor.shared.themingColor || NCGlobal.shared.capabilityThemingColorElement != NCBrandColor.shared.themingColorElement || NCGlobal.shared.capabilityThemingColorText != NCBrandColor.shared.themingColorText {
                 NCBrandColor.shared.settingThemingColor(account: account)
-                NCCache.shared.createImagesThemingColor()
+                NCCache.shared.createImagesCache()
             }
 
             // Sharing & Comments

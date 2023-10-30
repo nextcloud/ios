@@ -386,7 +386,7 @@
 
         [[NCAutoUpload shared] alignPhotoLibraryWithViewController:self];
 
-        [[NCCache shared] clearCache];
+        [[NCCache shared] clearMediaCache];
 
         [[NCActivityIndicator shared] stop];
         [self calculateSize];
