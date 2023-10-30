@@ -371,18 +371,20 @@
 
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
 
+        NCUtilityFileSystem *ufs = [[NCUtilityFileSystem alloc] init];
+
         [[NSURLCache sharedURLCache] setMemoryCapacity:0];
         [[NSURLCache sharedURLCache] setDiskCapacity:0];
 
         [[NCManageDatabase shared] clearDatabaseWithAccount:account removeAccount:false];
 
-        [[NCUtilityFileSystem shared] removeGroupDirectoryProviderStorage];
-        [[NCUtilityFileSystem shared] removeGroupLibraryDirectory];
+        [ufs removeGroupDirectoryProviderStorage];
+        [ufs removeGroupLibraryDirectory];
 
-        [[NCUtilityFileSystem shared] removeDocumentsDirectory];
-        [[NCUtilityFileSystem shared] removeTemporaryDirectory];
+        [ufs removeDocumentsDirectory];
+        [ufs removeTemporaryDirectory];
 
-        [[NCUtilityFileSystem shared] createDirectoryStandard];
+        [ufs createDirectoryStandard];
 
         [[NCAutoUpload shared] alignPhotoLibraryWithViewController:self];
 
@@ -430,9 +432,10 @@
 - (void)calculateSize
 {
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        NSString *directory =  [[NCUtilityFileSystem shared] directoryProviderStorage];
-        int64_t totalSize = [[NCUtilityFileSystem shared] getDirectorySizeWithDirectory:directory];
-        sectionSize.footerTitle = [NSString stringWithFormat:@"%@. (%@ %@)", NSLocalizedString(@"_clear_cache_footer_", nil), NSLocalizedString(@"_used_space_", nil), [[NCUtilityFileSystem shared] transformedSize:totalSize]];
+        NCUtilityFileSystem *ufs = [[NCUtilityFileSystem alloc] init];
+        NSString *directory =  [ufs directoryProviderStorage];
+        int64_t totalSize = [ufs getDirectorySizeWithDirectory:directory];
+        sectionSize.footerTitle = [NSString stringWithFormat:@"%@. (%@ %@)", NSLocalizedString(@"_clear_cache_footer_", nil), NSLocalizedString(@"_used_space_", nil), [ufs transformedSize:totalSize]];
 
         dispatch_async(dispatch_get_main_queue(), ^{
             [self.tableView reloadData];
@@ -454,16 +457,18 @@
 
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
 
+            NCUtilityFileSystem *ufs = [[NCUtilityFileSystem alloc] init];
+
             [[NCManageDatabase shared] removeDB];
 
             [[NSURLCache sharedURLCache] setMemoryCapacity:0];
             [[NSURLCache sharedURLCache] setDiskCapacity:0];
 
-            [[NCUtilityFileSystem shared] removeGroupDirectoryProviderStorage];
-            [[NCUtilityFileSystem shared] removeGroupApplicationSupport];
+            [ufs removeGroupDirectoryProviderStorage];
+            [ufs removeGroupApplicationSupport];
 
-            [[NCUtilityFileSystem shared] removeDocumentsDirectory];
-            [[NCUtilityFileSystem shared] removeTemporaryDirectory];
+            [ufs removeDocumentsDirectory];
+            [ufs removeTemporaryDirectory];
 
             [[[NCKeychain alloc] init] removeAll];
 

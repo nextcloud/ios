@@ -42,10 +42,10 @@ class NCSettingsBundleHelper: NSObject {
             URLCache.shared.memoryCapacity = 0
             URLCache.shared.diskCapacity = 0
 
-            NCUtilityFileSystem.shared.removeGroupDirectoryProviderStorage()
-            NCUtilityFileSystem.shared.removeGroupApplicationSupport()
-            NCUtilityFileSystem.shared.removeDocumentsDirectory()
-            NCUtilityFileSystem.shared.removeTemporaryDirectory()
+            NCUtilityFileSystem().removeGroupDirectoryProviderStorage()
+            NCUtilityFileSystem().removeGroupApplicationSupport()
+            NCUtilityFileSystem().removeDocumentsDirectory()
+            NCUtilityFileSystem().removeTemporaryDirectory()
 
             NCKeychain().removeAll()
             NCManageDatabase.shared.removeDB()

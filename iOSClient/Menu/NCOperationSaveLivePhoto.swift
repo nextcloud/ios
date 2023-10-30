@@ -85,8 +85,8 @@ class NCOperationSaveLivePhoto: ConcurrentOperation {
 
     func saveLivePhotoToDisk(metadata: tableMetadata, metadataMov: tableMetadata) {
 
-        let fileNameImage = URL(fileURLWithPath: NCUtilityFileSystem.shared.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView))
-        let fileNameMov = URL(fileURLWithPath: NCUtilityFileSystem.shared.getDirectoryProviderStorageOcId(metadataMov.ocId, fileNameView: metadataMov.fileNameView))
+        let fileNameImage = URL(fileURLWithPath: NCUtilityFileSystem().getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView))
+        let fileNameMov = URL(fileURLWithPath: NCUtilityFileSystem().getDirectoryProviderStorageOcId(metadataMov.ocId, fileNameView: metadataMov.fileNameView))
 
         DispatchQueue.main.async {
             self.hud.textLabel.text = NSLocalizedString("_livephoto_save_", comment: "")

@@ -276,8 +276,8 @@ class NCSharePagingView: PagingView {
         dateFormatter.timeStyle = .short
         dateFormatter.locale = Locale.current
 
-        if FileManager.default.fileExists(atPath: NCUtilityFileSystem.shared.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)) {
-            headerView.imageView.image = UIImage(contentsOfFile: NCUtilityFileSystem.shared.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag))
+        if FileManager.default.fileExists(atPath: NCUtilityFileSystem().getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)) {
+            headerView.imageView.image = UIImage(contentsOfFile: NCUtilityFileSystem().getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag))
         } else {
             if metadata.directory {
                 let image = metadata.e2eEncrypted ? UIImage(named: "folderEncrypted") : UIImage(named: "folder")
@@ -289,7 +289,7 @@ class NCSharePagingView: PagingView {
                 headerView.imageView.image = UIImage(named: "file")
             }
         }
-        headerView.path.text = NCUtilityFileSystem.shared.getPath(path: metadata.path, user: metadata.user, fileName: metadata.fileName)
+        headerView.path.text = NCUtilityFileSystem().getPath(path: metadata.path, user: metadata.user, fileName: metadata.fileName)
         headerView.path.textColor = .label
         headerView.path.trailingBuffer = headerView.path.frame.width
         if metadata.favorite {
@@ -297,7 +297,7 @@ class NCSharePagingView: PagingView {
         } else {
             headerView.favorite.setImage(NCUtility().loadImage(named: "star.fill", color: .systemGray, size: 20), for: .normal)
         }
-        headerView.info.text = NCUtilityFileSystem.shared.transformedSize(metadata.size) + ", " + NSLocalizedString("_modified_", comment: "") + " " + dateFormatter.string(from: metadata.date as Date)
+        headerView.info.text = NCUtilityFileSystem().transformedSize(metadata.size) + ", " + NSLocalizedString("_modified_", comment: "") + " " + dateFormatter.string(from: metadata.date as Date)
         headerView.info.textColor = .systemGray
         headerView.creation.text = NSLocalizedString("_creation_", comment: "") + " " + dateFormatter.string(from: metadata.creationDate as Date)
         headerView.creation.textColor = .systemGray

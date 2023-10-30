@@ -110,7 +110,7 @@ extension NCViewer {
                     title: NSLocalizedString("_print_", comment: ""),
                     icon: NCUtility().loadImage(named: "printer"),
                     action: { _ in
-                        if NCUtilityFileSystem.shared.fileProviderStorageExists(metadata) {
+                        if NCUtilityFileSystem().fileProviderStorageExists(metadata) {
                             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDownloadedFile, userInfo: ["ocId": metadata.ocId, "selector": NCGlobal.shared.selectorPrint, "error": NKError(), "account": metadata.account])
                         } else {
                             NCNetworking.shared.download(metadata: metadata, selector: NCGlobal.shared.selectorPrint) { _, _ in }
@@ -157,7 +157,7 @@ extension NCViewer {
                     title: NSLocalizedString("_save_as_scan_", comment: ""),
                     icon: NCUtility().loadImage(named: "viewfinder.circle"),
                     action: { _ in
-                        if NCUtilityFileSystem.shared.fileProviderStorageExists(metadata) {
+                        if NCUtilityFileSystem().fileProviderStorageExists(metadata) {
                             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDownloadedFile, userInfo: ["ocId": metadata.ocId, "selector": NCGlobal.shared.selectorSaveAsScan, "error": NKError(), "account": metadata.account])
                         } else {
                             NCNetworking.shared.download(metadata: metadata, selector: NCGlobal.shared.selectorSaveAsScan) { _, _ in }
@@ -210,7 +210,7 @@ extension NCViewer {
         //
         // DOWNLOAD LOCALLY
         //
-        if !webView, metadata.session.isEmpty, !NCUtilityFileSystem.shared.fileProviderStorageExists(metadata) {
+        if !webView, metadata.session.isEmpty, !NCUtilityFileSystem().fileProviderStorageExists(metadata) {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_download_locally_", comment: ""),
@@ -256,7 +256,7 @@ extension NCViewer {
                     title: NSLocalizedString("_modify_", comment: ""),
                     icon: NCUtility().loadImage(named: "pencil.tip.crop.circle"),
                     action: { _ in
-                        if NCUtilityFileSystem.shared.fileProviderStorageExists(metadata) {
+                        if NCUtilityFileSystem().fileProviderStorageExists(metadata) {
                             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDownloadedFile, userInfo: ["ocId": metadata.ocId, "selector": NCGlobal.shared.selectorLoadFileQuickLook, "error": NKError(), "account": metadata.account])
                         } else {
                             NCNetworking.shared.download(metadata: metadata, selector: NCGlobal.shared.selectorLoadFileQuickLook) { _, _ in }

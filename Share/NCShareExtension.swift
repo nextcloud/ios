@@ -116,7 +116,7 @@ class NCShareExtension: UIViewController {
         let versionNextcloudiOS = String(format: NCBrandOptions.shared.textCopyrightNextcloudiOS, NCUtility().getVersionApp())
 
         NextcloudKit.shared.nkCommonInstance.levelLog = levelLog
-        NextcloudKit.shared.nkCommonInstance.pathLog = NCUtilityFileSystem.shared.directoryGroup
+        NextcloudKit.shared.nkCommonInstance.pathLog = NCUtilityFileSystem().directoryGroup
         if isSimulatorOrTestFlight {
             NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Start Share session with level \(levelLog) " + versionNextcloudiOS + " (Simulator / TestFlight)")
         } else {
@@ -208,7 +208,7 @@ class NCShareExtension: UIViewController {
                 self.reloadDatasource(withLoadFolder: true)
 
                 var navigationTitle = (self.serverUrl as NSString).lastPathComponent
-                if NCUtilityFileSystem.shared.getHomeServer(urlBase: self.activeAccount.urlBase, userId: self.activeAccount.userId) == self.serverUrl {
+                if NCUtilityFileSystem().getHomeServer(urlBase: self.activeAccount.urlBase, userId: self.activeAccount.userId) == self.serverUrl {
                     navigationTitle = NCBrandOptions.shared.brand
                 }
                 self.setNavigationBar(navigationTitle: navigationTitle)
@@ -219,7 +219,7 @@ class NCShareExtension: UIViewController {
         let profileButton = UIButton(type: .custom)
         profileButton.setImage(image, for: .normal)
 
-        if serverUrl == NCUtilityFileSystem.shared.getHomeServer(urlBase: activeAccount.urlBase, userId: activeAccount.userId) {
+        if serverUrl == NCUtilityFileSystem().getHomeServer(urlBase: activeAccount.urlBase, userId: activeAccount.userId) {
 
             var title = "  "
             if let userAlias = activeAccount?.alias, !userAlias.isEmpty {
@@ -240,7 +240,7 @@ class NCShareExtension: UIViewController {
             }
         }
         var navItems = [UIBarButtonItem(customView: profileButton)]
-        if serverUrl != NCUtilityFileSystem.shared.getHomeServer(urlBase: activeAccount.urlBase, userId: activeAccount.userId) {
+        if serverUrl != NCUtilityFileSystem().getHomeServer(urlBase: activeAccount.urlBase, userId: activeAccount.userId) {
             let space = UIBarButtonItem(barButtonSystemItem: .fixedSpace, target: nil, action: nil)
             space.width = 20
             navItems.append(contentsOf: [UIBarButtonItem(customView: backButton), space])
@@ -294,8 +294,8 @@ extension NCShareExtension {
         var conflicts: [tableMetadata] = []
         for fileName in filesName {
             let ocId = NSUUID().uuidString
-            let toPath = NCUtilityFileSystem.shared.getDirectoryProviderStorageOcId(ocId, fileNameView: fileName)
-            guard NCUtilityFileSystem.shared.copyFile(atPath: (NSTemporaryDirectory() + fileName), toPath: toPath) else { continue }
+            let toPath = NCUtilityFileSystem().getDirectoryProviderStorageOcId(ocId, fileNameView: fileName)
+            guard NCUtilityFileSystem().copyFile(atPath: (NSTemporaryDirectory() + fileName), toPath: toPath) else { continue }
             let metadata = NCManageDatabase.shared.createMetadata(
                 account: activeAccount.account, user: activeAccount.user, userId: activeAccount.userId,
                 fileName: fileName, fileNameView: fileName,
@@ -304,7 +304,7 @@ extension NCShareExtension {
                 contentType: "")
             metadata.session = NextcloudKit.shared.nkCommonInstance.sessionIdentifierUpload
             metadata.sessionSelector = NCGlobal.shared.selectorUploadFileShareExtension
-            metadata.size = NCUtilityFileSystem.shared.getFileSize(filePath: toPath)
+            metadata.size = NCUtilityFileSystem().getFileSize(filePath: toPath)
             metadata.status = NCGlobal.shared.metadataStatusWaitUpload
             if NCManageDatabase.shared.getMetadataConflict(account: activeAccount.account, serverUrl: serverUrl, fileNameView: fileName) != nil {
                 conflicts.append(metadata)
@@ -356,7 +356,7 @@ extension NCShareExtension {
         } completion: { error in
             if error != .success {
                 NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
-                NCUtilityFileSystem.shared.removeFile(atPath: NCUtilityFileSystem.shared.getDirectoryProviderStorageOcId(metadata.ocId))
+                NCUtilityFileSystem().removeFile(atPath: NCUtilityFileSystem().getDirectoryProviderStorageOcId(metadata.ocId))
                 self.uploadErrors.append(metadata)
             }
             self.counterUploaded += 1

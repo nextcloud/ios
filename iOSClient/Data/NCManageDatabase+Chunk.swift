@@ -100,7 +100,7 @@ extension NCManageDatabase {
                 let result = realm.objects(tableChunk.self).filter(NSPredicate(format: "account == %@ AND ocId == %@ AND fileName == %d", account, ocId, Int(fileChunk.fileName) ?? 0))
                 realm.delete(result)
                 let filePath = directory + "/\(fileChunk.fileName)"
-                NCUtilityFileSystem.shared.removeFile(atPath: filePath)
+                NCUtilityFileSystem().removeFile(atPath: filePath)
             }
         } catch let error {
             NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
@@ -115,7 +115,7 @@ extension NCManageDatabase {
                 let results = realm.objects(tableChunk.self).filter(NSPredicate(format: "account == %@ AND ocId == %@", account, ocId))
                 for result in results {
                     let filePath = directory + "/\(result.fileName)"
-                    NCUtilityFileSystem.shared.removeFile(atPath: filePath)
+                    NCUtilityFileSystem().removeFile(atPath: filePath)
                 }
                 realm.delete(results)
             }

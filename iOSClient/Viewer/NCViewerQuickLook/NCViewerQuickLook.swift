@@ -207,16 +207,16 @@ extension NCViewerQuickLook: QLPreviewControllerDataSource, QLPreviewControllerD
         guard let metadata = self.metadata else { return }
 
         let ocId = NSUUID().uuidString
-        let size = NCUtilityFileSystem.shared.getFileSize(filePath: url.path)
+        let size = NCUtilityFileSystem().getFileSize(filePath: url.path)
 
         if !override {
-            let fileName = NCUtilityFileSystem.shared.createFileName(metadata.fileNameView, serverUrl: metadata.serverUrl, account: metadata.account)
+            let fileName = NCUtilityFileSystem().createFileName(metadata.fileNameView, serverUrl: metadata.serverUrl, account: metadata.account)
             metadata.fileName = fileName
             metadata.fileNameView = fileName
         }
 
-        let fileNamePath = NCUtilityFileSystem.shared.getDirectoryProviderStorageOcId(ocId, fileNameView: metadata.fileNameView)
-        guard NCUtilityFileSystem.shared.copyFile(atPath: url.path, toPath: fileNamePath) else { return }
+        let fileNamePath = NCUtilityFileSystem().getDirectoryProviderStorageOcId(ocId, fileNameView: metadata.fileNameView)
+        guard NCUtilityFileSystem().copyFile(atPath: url.path, toPath: fileNamePath) else { return }
 
         let metadataForUpload = NCManageDatabase.shared.createMetadata(
             account: metadata.account,
@@ -247,7 +247,7 @@ extension NCViewerQuickLook: QLPreviewControllerDataSource, QLPreviewControllerD
     func previewController(_ controller: QLPreviewController, didSaveEditedCopyOf previewItem: QLPreviewItem, at modifiedContentsURL: URL) {
         // easier to handle that way than to use `.updateContents`
         // needs to be moved otherwise it will only be called once!
-        guard NCUtilityFileSystem.shared.moveFile(atPath: modifiedContentsURL.path, toPath: url.path) else { return }
+        guard NCUtilityFileSystem().moveFile(atPath: modifiedContentsURL.path, toPath: url.path) else { return }
         hasChangesQuickLook = true
     }
 }

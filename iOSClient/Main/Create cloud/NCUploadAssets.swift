@@ -271,11 +271,11 @@ struct UploadAssetsView: View {
                     metadata.fileName = fileNameNoExtension + ".jpg"
                     metadata.fileNameView = fileNameNoExtension + ".jpg"
                 }
-                let fileNamePath = NCUtilityFileSystem.shared.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)
+                let fileNamePath = NCUtilityFileSystem().getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)
                 do {
                     try data.write(to: URL(fileURLWithPath: fileNamePath))
                     metadata.isExtractFile = true
-                    metadata.size = NCUtilityFileSystem.shared.getFileSize(filePath: fileNamePath)
+                    metadata.size = NCUtilityFileSystem().getFileSize(filePath: fileNamePath)
                     metadata.creationDate = asset.creationDate as? NSDate ?? (Date() as NSDate)
                     metadata.date = asset.modificationDate as? NSDate ?? (Date() as NSDate)
                 } catch {  }
@@ -438,7 +438,7 @@ struct UploadAssetsView: View {
                         if !uploadAssets.isUseAutoUploadFolder {
                             HStack {
                                 Label {
-                                    if NCUtilityFileSystem.shared.getHomeServer(urlBase: uploadAssets.userBaseUrl.urlBase, userId: uploadAssets.userBaseUrl.userId) == uploadAssets.serverUrl {
+                                    if NCUtilityFileSystem().getHomeServer(urlBase: uploadAssets.userBaseUrl.urlBase, userId: uploadAssets.userBaseUrl.userId) == uploadAssets.serverUrl {
                                         Text("/")
                                             .font(.system(size: 15))
                                             .frame(maxWidth: .infinity, alignment: .trailing)

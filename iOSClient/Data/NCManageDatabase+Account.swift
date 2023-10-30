@@ -243,11 +243,11 @@ extension NCManageDatabase {
             realm.refresh()
             guard let result = realm.objects(tableAccount.self).filter("active == true").first else { return "" }
             if result.autoUploadDirectory.isEmpty {
-                return NCUtilityFileSystem.shared.getHomeServer(urlBase: urlBase, userId: userId)
+                return NCUtilityFileSystem().getHomeServer(urlBase: urlBase, userId: userId)
             } else {
                 // FIX change webdav -> /dav/files/
                 if result.autoUploadDirectory.contains("/webdav") {
-                    return NCUtilityFileSystem.shared.getHomeServer(urlBase: urlBase, userId: userId)
+                    return NCUtilityFileSystem().getHomeServer(urlBase: urlBase, userId: userId)
                 } else {
                     return result.autoUploadDirectory
                 }
@@ -263,7 +263,7 @@ extension NCManageDatabase {
 
         let cameraFileName = self.getAccountAutoUploadFileName()
         let cameraDirectory = self.getAccountAutoUploadDirectory(urlBase: urlBase, userId: userId, account: account)
-        let folderPhotos = NCUtilityFileSystem.shared.stringAppendServerUrl(cameraDirectory, addFileName: cameraFileName)
+        let folderPhotos = NCUtilityFileSystem().stringAppendServerUrl(cameraDirectory, addFileName: cameraFileName)
 
         return folderPhotos
     }

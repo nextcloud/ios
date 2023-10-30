@@ -96,7 +96,7 @@ struct ViewerQuickLook: UIViewControllerRepresentable {
         }
 
         func previewController(_ controller: QLPreviewController, didSaveEditedCopyOf previewItem: QLPreviewItem, at modifiedContentsURL: URL) {
-            guard NCUtilityFileSystem.shared.moveFile(atPath: modifiedContentsURL.path, toPath: parent.url.path) else { return }
+            guard NCUtilityFileSystem().moveFile(atPath: modifiedContentsURL.path, toPath: parent.url.path) else { return }
             if let image = UIImage(contentsOfFile: parent.url.path) {
                 self.image = image
                 self.hasChange = true

@@ -140,7 +140,7 @@ class NCViewerMediaDetailView: UIView {
         }
 
         nameLabel.text = (metadata.fileNameView as NSString).deletingPathExtension
-        sizeLabel.text = NCUtilityFileSystem.shared.transformedSize(metadata.size)
+        sizeLabel.text = NCUtilityFileSystem().transformedSize(metadata.size)
 
         if let shutterSpeedApex = exif.shutterSpeedApex {
             prepareLensInfoViewsForData()
@@ -207,7 +207,7 @@ class NCViewerMediaDetailView: UIView {
             livePhotoImageView.isHidden = false
         }
 
-        if metadata.isImage && !NCUtilityFileSystem.shared.fileProviderStorageExists(metadata) && metadata.session.isEmpty {
+        if metadata.isImage && !NCUtilityFileSystem().fileProviderStorageExists(metadata) && metadata.session.isEmpty {
             downloadImageButton.setTitle(NSLocalizedString("_try_download_full_resolution_", comment: ""), for: .normal)
             downloadImageLabel.text = NSLocalizedString("_full_resolution_image_info_", comment: "")
             downloadImageButtonContainer.isHidden = false

@@ -319,9 +319,9 @@ class NCSectionFooter: UICollectionReusableView, NCSectionFooterDelegate {
         }
 
         if files > 1 {
-            filesText = "\(files) " + NSLocalizedString("_files_", comment: "") + " " + NCUtilityFileSystem.shared.transformedSize(size)
+            filesText = "\(files) " + NSLocalizedString("_files_", comment: "") + " " + NCUtilityFileSystem().transformedSize(size)
         } else if files == 1 {
-            filesText = "1 " + NSLocalizedString("_file_", comment: "") + " " + NCUtilityFileSystem.shared.transformedSize(size)
+            filesText = "1 " + NSLocalizedString("_file_", comment: "") + " " + NCUtilityFileSystem().transformedSize(size)
         }
 
         if foldersText.isEmpty {

@@ -226,7 +226,7 @@ extension NCMenuAction {
                             appDelegate.saveLivePhotoQueue.addOperation(NCOperationSaveLivePhoto(metadata: metadata, metadataMOV: metadataMOV))
                         }
                     } else {
-                        if NCUtilityFileSystem.shared.fileProviderStorageExists(metadata) {
+                        if NCUtilityFileSystem().fileProviderStorageExists(metadata) {
                             NCActionCenter.shared.saveAlbum(metadata: metadata)
                         } else {
                             if let appDelegate = (UIApplication.shared.delegate as? AppDelegate), appDelegate.downloadQueue.operations.filter({ ($0 as? NCOperationDownload)?.metadata.ocId == metadata.ocId }).isEmpty {
@@ -286,7 +286,7 @@ extension NCMenuAction {
             icon: NCUtility().loadImage(named: "printer"),
             order: order,
             action: { _ in
-                if NCUtilityFileSystem.shared.fileProviderStorageExists(metadata) {
+                if NCUtilityFileSystem().fileProviderStorageExists(metadata) {
                     NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDownloadedFile, userInfo: ["ocId": metadata.ocId, "selector": NCGlobal.shared.selectorPrint, "error": NKError(), "account": metadata.account])
                 } else {
                     NCNetworking.shared.download(metadata: metadata, selector: NCGlobal.shared.selectorPrint) { _, _ in }

@@ -25,10 +25,6 @@ import UIKit
 import PhotosUI
 
 class NCUtilityFileSystem: NSObject {
-    @objc static let shared: NCUtilityFileSystem = {
-        let instance = NCUtilityFileSystem()
-        return instance
-    }()
 
     let fileManager = FileManager.default
 
@@ -489,13 +485,13 @@ class NCUtilityFileSystem: NSObject {
 
         if let directories = NCManageDatabase.shared.getTablesDirectory(predicate: NSPredicate(format: "offline == true"), sorted: "serverUrl", ascending: true) {
             for directory: tableDirectory in directories {
-                offlineDir.append(NCUtilityFileSystem.shared.getDirectoryProviderStorageOcId(directory.ocId))
+                offlineDir.append(NCUtilityFileSystem().getDirectoryProviderStorageOcId(directory.ocId))
             }
         }
 
         let files = NCManageDatabase.shared.getTableLocalFiles(predicate: NSPredicate(format: "offline == true"), sorted: "fileName", ascending: true)
         for file: tableLocalFile in files {
-            offlineFiles.append(NCUtilityFileSystem.shared.getDirectoryProviderStorageOcId(file.ocId, fileNameView: file.fileName))
+            offlineFiles.append(NCUtilityFileSystem().getDirectoryProviderStorageOcId(file.ocId, fileNameView: file.fileName))
         }
 
         func meetsRequirement(date: Date) -> Bool {

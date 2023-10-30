@@ -208,10 +208,10 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
             case -3:
                 quota = NSLocalizedString("_quota_space_unlimited_", comment: "")
             default:
-                quota = NCUtilityFileSystem.shared.transformedSize(activeAccount.quotaTotal)
+                quota = NCUtilityFileSystem().transformedSize(activeAccount.quotaTotal)
             }
 
-            let quotaUsed: String = NCUtilityFileSystem.shared.transformedSize(activeAccount.quotaUsed)
+            let quotaUsed: String = NCUtilityFileSystem().transformedSize(activeAccount.quotaUsed)
 
             labelQuota.text = String.localizedStringWithFormat(NSLocalizedString("_quota_using_", comment: ""), quotaUsed, quota)
         }

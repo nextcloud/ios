@@ -946,13 +946,13 @@ extension NCManageDatabase {
         var serverUrl = serverUrl
         var fileName = ""
 
-        let serverUrlHome = NCUtilityFileSystem.shared.getHomeServer(urlBase: urlBase, userId: userId)
+        let serverUrlHome = NCUtilityFileSystem().getHomeServer(urlBase: urlBase, userId: userId)
         if serverUrlHome == serverUrl {
             fileName = "."
             serverUrl = ".."
         } else {
             fileName = (serverUrl as NSString).lastPathComponent
-            if let path = NCUtilityFileSystem.shared.deleteLastPath(serverUrlPath: serverUrl) {
+            if let path = NCUtilityFileSystem().deleteLastPath(serverUrlPath: serverUrl) {
                 serverUrl = path
             }
         }
@@ -1148,7 +1148,7 @@ extension NCManageDatabase {
     func isDownloadMetadata(_ metadata: tableMetadata, download: Bool) -> Bool {
 
         let localFile = getTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
-        let fileSize = NCUtilityFileSystem.shared.fileProviderStorageSize(metadata.ocId, fileNameView: metadata.fileNameView)
+        let fileSize = NCUtilityFileSystem().fileProviderStorageSize(metadata.ocId, fileNameView: metadata.fileNameView)
         if (localFile != nil || download) && (localFile?.etag != metadata.etag || fileSize == 0) {
             return true
         }
@@ -1199,7 +1199,7 @@ extension NCManageDatabase {
     func getMetadatasFromGroupfolders(account: String, urlBase: String, userId: String) -> [tableMetadata] {
 
         var metadatas: [tableMetadata] = []
-        let homeServerUrl = NCUtilityFileSystem.shared.getHomeServer(urlBase: urlBase, userId: userId)
+        let homeServerUrl = NCUtilityFileSystem().getHomeServer(urlBase: urlBase, userId: userId)
 
         do {
             let realm = try Realm()

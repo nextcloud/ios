@@ -89,7 +89,7 @@ extension NCManageDatabase {
     @discardableResult
     func setAvatarLoaded(fileName: String) -> UIImage? {
 
-        let fileNameLocalPath = NCUtilityFileSystem.shared.directoryUserData + "/" + fileName
+        let fileNameLocalPath = NCUtilityFileSystem().directoryUserData + "/" + fileName
         var image: UIImage?
 
         do {
@@ -113,14 +113,14 @@ extension NCManageDatabase {
 
     func getImageAvatarLoaded(fileName: String) -> UIImage? {
 
-        let fileNameLocalPath = NCUtilityFileSystem.shared.directoryUserData + "/" + fileName
+        let fileNameLocalPath = NCUtilityFileSystem().directoryUserData + "/" + fileName
 
         do {
             let realm = try Realm()
             realm.refresh()
             let result = realm.objects(tableAvatar.self).filter("fileName == %@", fileName).first
             if result == nil {
-                NCUtilityFileSystem.shared.removeFile(atPath: fileNameLocalPath)
+                NCUtilityFileSystem().removeFile(atPath: fileNameLocalPath)
                 return nil
             } else if result?.loaded == false {
                 return nil
@@ -130,7 +130,7 @@ extension NCManageDatabase {
             NextcloudKit.shared.nkCommonInstance.writeLog("Could not access database: \(error)")
         }
 
-        NCUtilityFileSystem.shared.removeFile(atPath: fileNameLocalPath)
+        NCUtilityFileSystem().removeFile(atPath: fileNameLocalPath)
         return nil
     }
 }

@@ -58,8 +58,8 @@ class NCShareCell: UITableViewCell {
 
         fileNameCell?.text = fileName
 
-        let fileSize = NCUtilityFileSystem.shared.getFileSize(filePath: (NSTemporaryDirectory() + fileName))
-        sizeCell?.text = NCUtilityFileSystem.shared.transformedSize(fileSize)
+        let fileSize = NCUtilityFileSystem().getFileSize(filePath: (NSTemporaryDirectory() + fileName))
+        sizeCell?.text = NCUtilityFileSystem().transformedSize(fileSize)
 
         moreButton?.setImage(NCUtility().loadImage(named: "more").image(color: .label, size: 15), for: .normal)
     }

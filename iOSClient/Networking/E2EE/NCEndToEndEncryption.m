@@ -564,7 +564,7 @@
     NSData *initializationVectorData = [[NSData alloc] initWithBase64EncodedString:initializationVector options:0];
     NSData *authenticationTagData = [[NSData alloc] initWithBase64EncodedString:authenticationTag options:0];
 
-    return [self decryptFile:[[NCUtilityFileSystem shared] getDirectoryProviderStorageOcId:ocId fileNameView:fileName] fileNamePlain:[[NCUtilityFileSystem shared] getDirectoryProviderStorageOcId:ocId fileNameView:fileNameView] key:keyData keyLen:AES_KEY_128_LENGTH initializationVector:initializationVectorData authenticationTag:authenticationTagData];
+    return [self decryptFile:[[[NCUtilityFileSystem alloc] init] getDirectoryProviderStorageOcId:ocId fileNameView:fileName] fileNamePlain:[[[NCUtilityFileSystem alloc] init] getDirectoryProviderStorageOcId:ocId fileNameView:fileNameView] key:keyData keyLen:AES_KEY_128_LENGTH initializationVector:initializationVectorData authenticationTag:authenticationTagData];
 }
 
 // -----------------------------------------------------------------------------------------------------------------------------------------------------------------------

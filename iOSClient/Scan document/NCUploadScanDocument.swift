@@ -99,7 +99,7 @@ class NCUploadScanDocument: ObservableObject {
     func createPDF(metadata: tableMetadata, completion: @escaping (_ error: Bool) -> Void) {
 
         DispatchQueue.global().async {
-            let fileNamePath = NCUtilityFileSystem.shared.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)
+            let fileNamePath = NCUtilityFileSystem().getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)
             let pdfData = NSMutableData()
 
             if self.password.isEmpty {
@@ -124,10 +124,10 @@ class NCUploadScanDocument: ObservableObject {
 
             do {
                 try pdfData.write(to: URL(fileURLWithPath: fileNamePath), options: .atomic)
-                metadata.size = NCUtilityFileSystem.shared.getFileSize(filePath: fileNamePath)
+                metadata.size = NCUtilityFileSystem().getFileSize(filePath: fileNamePath)
                 NCNetworkingProcessUpload.shared.createProcessUploads(metadatas: [metadata], completion: { _ in })
                 if self.removeAllFiles {
-                    let path = NCUtilityFileSystem.shared.directoryScan
+                    let path = NCUtilityFileSystem().directoryScan
                     let filePaths = try FileManager.default.contentsOfDirectory(atPath: path)
                     for filePath in filePaths {
                         try FileManager.default.removeItem(atPath: path + "/" + filePath)
@@ -344,7 +344,7 @@ extension NCUploadScanDocument: NCCreateFormUploadConflictDelegate {
 
 struct UploadScanDocumentView: View {
 
-    @State var fileName = NCUtilityFileSystem.shared.createFileNameDate("scan", ext: "")
+    @State var fileName = NCUtilityFileSystem().createFileNameDate("scan", ext: "")
     @State var password: String = ""
     @State var isSecuredPassword: Bool = true
     @State var isTextRecognition: Bool = NCKeychain().textRecognitionStatus
@@ -378,7 +378,7 @@ struct UploadScanDocumentView: View {
                     Section(header: Text(NSLocalizedString("_file_creation_", comment: ""))) {
                         HStack {
                             Label {
-                                if NCUtilityFileSystem.shared.getHomeServer(urlBase: uploadScanDocument.userBaseUrl.urlBase, userId: uploadScanDocument.userBaseUrl.userId) == uploadScanDocument.serverUrl {
+                                if NCUtilityFileSystem().getHomeServer(urlBase: uploadScanDocument.userBaseUrl.urlBase, userId: uploadScanDocument.userBaseUrl.userId) == uploadScanDocument.serverUrl {
                                     Text("/")
                                         .frame(maxWidth: .infinity, alignment: .trailing)
                                 } else {

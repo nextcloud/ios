@@ -187,7 +187,7 @@ extension NCActivityTableViewCell: UICollectionViewDataSource {
 
                 if let activitySubjectRich = NCManageDatabase.shared.getActivitySubjectRich(account: activityPreview.account, idActivity: idActivity, id: fileId) {
 
-                    let fileNamePath = NCUtilityFileSystem.shared.directoryUserData + "/" + activitySubjectRich.name
+                    let fileNamePath = NCUtilityFileSystem().directoryUserData + "/" + activitySubjectRich.name
 
                     if FileManager.default.fileExists(atPath: fileNamePath), let image = UIImage(contentsOfFile: fileNamePath) {
                         cell.imageView.image = image

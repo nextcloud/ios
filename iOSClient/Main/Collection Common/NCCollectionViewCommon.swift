@@ -199,7 +199,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         NotificationCenter.default.addObserver(self, selector: #selector(triggerProgressTask(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterProgressTask), object: nil)
 
         if serverUrl.isEmpty {
-            appDelegate.activeServerUrl = NCUtilityFileSystem.shared.getHomeServer(urlBase: appDelegate.urlBase, userId: appDelegate.userId)
+            appDelegate.activeServerUrl = NCUtilityFileSystem().getHomeServer(urlBase: appDelegate.urlBase, userId: appDelegate.userId)
         } else {
             appDelegate.activeServerUrl = serverUrl
         }
@@ -539,12 +539,12 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                     cell.fileProgressView?.progress = progressNumber.floatValue
                     cell.setButtonMore(named: NCGlobal.shared.buttonMoreStop, image: NCCache.cacheImages.buttonStop)
                     if status == NCGlobal.shared.metadataStatusInDownload {
-                        cell.fileInfoLabel?.text = NCUtilityFileSystem.shared.transformedSize(totalBytesExpected) + " - ↓ " + NCUtilityFileSystem.shared.transformedSize(totalBytes)
+                        cell.fileInfoLabel?.text = NCUtilityFileSystem().transformedSize(totalBytesExpected) + " - ↓ " + NCUtilityFileSystem().transformedSize(totalBytes)
                     } else if status == NCGlobal.shared.metadataStatusInUpload {
                         if totalBytes > 0 {
-                            cell.fileInfoLabel?.text = NCUtilityFileSystem.shared.transformedSize(totalBytesExpected) + " - ↑ " + NCUtilityFileSystem.shared.transformedSize(totalBytes)
+                            cell.fileInfoLabel?.text = NCUtilityFileSystem().transformedSize(totalBytesExpected) + " - ↑ " + NCUtilityFileSystem().transformedSize(totalBytes)
                         } else {
-                            cell.fileInfoLabel?.text = NCUtilityFileSystem.shared.transformedSize(totalBytesExpected) + " - ↑ …"
+                            cell.fileInfoLabel?.text = NCUtilityFileSystem().transformedSize(totalBytesExpected) + " - ↑ …"
                         }
                     }
                 }
@@ -556,7 +556,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
     func showTip() {
 
-        if self is NCFiles, self.view.window != nil, !NCBrandOptions.shared.disable_multiaccount, !NCBrandOptions.shared.disable_manage_account, self.serverUrl == NCUtilityFileSystem.shared.getHomeServer(urlBase: appDelegate.urlBase, userId: appDelegate.userId), let view = self.navigationItem.leftBarButtonItem?.customView {
+        if self is NCFiles, self.view.window != nil, !NCBrandOptions.shared.disable_multiaccount, !NCBrandOptions.shared.disable_manage_account, self.serverUrl == NCUtilityFileSystem().getHomeServer(urlBase: appDelegate.urlBase, userId: appDelegate.userId), let view = self.navigationItem.leftBarButtonItem?.customView {
             if !NCManageDatabase.shared.tipExists(NCGlobal.shared.tipNCCollectionViewCommonAccountRequest), !NCManageDatabase.shared.getAllAccountOrderAlias().isEmpty {
                 self.tipView?.show(forView: view)
             }
@@ -584,7 +584,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         let button = UIButton(type: .custom)
         button.setImage(image, for: .normal)
 
-        if serverUrl == NCUtilityFileSystem.shared.getHomeServer(urlBase: appDelegate.urlBase, userId: appDelegate.userId) {
+        if serverUrl == NCUtilityFileSystem().getHomeServer(urlBase: appDelegate.urlBase, userId: appDelegate.userId) {
 
             var titleButton = "  "
 
@@ -1052,7 +1052,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
     func pushMetadata(_ metadata: tableMetadata) {
 
-        let serverUrlPush = NCUtilityFileSystem.shared.stringAppendServerUrl(metadata.serverUrl, addFileName: metadata.fileName)
+        let serverUrlPush = NCUtilityFileSystem().stringAppendServerUrl(metadata.serverUrl, addFileName: metadata.fileName)
         appDelegate.activeMetadata = metadata
 
         if let viewController = appDelegate.listFilesVC[serverUrlPush], viewController.isViewLoaded {
@@ -1123,7 +1123,7 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
 
         } else {
 
-            let imageIcon = UIImage(contentsOfFile: NCUtilityFileSystem.shared.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag))
+            let imageIcon = UIImage(contentsOfFile: NCUtilityFileSystem().getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag))
 
             if !metadata.isDirectoryE2EE && (metadata.isImage || metadata.isAudioOrVideo) {
                 var metadatas: [tableMetadata] = []
@@ -1136,7 +1136,7 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
                 return
             }
 
-            if NCUtilityFileSystem.shared.fileProviderStorageExists(metadata) {
+            if NCUtilityFileSystem().fileProviderStorageExists(metadata) {
                 NCViewer().view(viewController: self, metadata: metadata, metadatas: [metadata], imageIcon: imageIcon)
             } else if NextcloudKit.shared.isNetworkReachable() {
                 NCNetworking.shared.download(metadata: metadata, selector: NCGlobal.shared.selectorLoadFileView) { _, _ in }
@@ -1204,7 +1204,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                     } else {
                         (cell as? NCCellProtocol)?.filePreviewImageView?.image = UIImage(named: metadata.iconName)
                     }
-                    if metadata.hasPreview && metadata.status == NCGlobal.shared.metadataStatusNormal && (!NCUtilityFileSystem.shared.fileProviderStoragePreviewIconExists(metadata.ocId, etag: metadata.etag)) {
+                    if metadata.hasPreview && metadata.status == NCGlobal.shared.metadataStatusNormal && (!NCUtilityFileSystem().fileProviderStoragePreviewIconExists(metadata.ocId, etag: metadata.etag)) {
                         for case let operation as NCCollectionViewDownloadThumbnail in appDelegate.downloadThumbnailQueue.operations where operation.metadata.ocId == metadata.ocId { return }
                         appDelegate.downloadThumbnailQueue.addOperation(NCCollectionViewDownloadThumbnail(metadata: metadata, cell: (cell as? NCCellProtocol), collectionView: collectionView))
                     }
@@ -1325,7 +1325,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             cell.fileTitleLabel?.text = metadata.fileName
             cell.fileTitleLabel?.lineBreakMode = .byTruncatingTail
             if metadata.name == NCGlobal.shared.appName {
-                cell.fileInfoLabel?.text = NSLocalizedString("_in_", comment: "") + " " + NCUtilityFileSystem.shared.getPath(path: metadata.path, user: metadata.user)
+                cell.fileInfoLabel?.text = NSLocalizedString("_in_", comment: "") + " " + NCUtilityFileSystem().getPath(path: metadata.path, user: metadata.user)
             } else {
                 cell.fileInfoLabel?.text = metadata.subline
             }
@@ -1382,7 +1382,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             if NCManageDatabase.shared.getTableLocalFile(ocId: metadata.ocId) != nil {
                 a11yValues.append(NSLocalizedString("_offline_", comment: ""))
                 cell.fileLocalImage?.image = NCCache.cacheImages.offlineFlag
-            } else if NCUtilityFileSystem.shared.fileProviderStorageExists(metadata) {
+            } else if NCUtilityFileSystem().fileProviderStorageExists(metadata) {
                 cell.fileLocalImage?.image = NCCache.cacheImages.local
             }
         }
@@ -1420,19 +1420,19 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         // Write status on Label Info
         switch metadata.status {
         case NCGlobal.shared.metadataStatusWaitDownload:
-            cell.fileInfoLabel?.text = NCUtilityFileSystem.shared.transformedSize(metadata.size) + " - " + NSLocalizedString("_status_wait_download_", comment: "")
+            cell.fileInfoLabel?.text = NCUtilityFileSystem().transformedSize(metadata.size) + " - " + NSLocalizedString("_status_wait_download_", comment: "")
         case NCGlobal.shared.metadataStatusInDownload:
-            cell.fileInfoLabel?.text = NCUtilityFileSystem.shared.transformedSize(metadata.size) + " - " + NSLocalizedString("_status_in_download_", comment: "")
+            cell.fileInfoLabel?.text = NCUtilityFileSystem().transformedSize(metadata.size) + " - " + NSLocalizedString("_status_in_download_", comment: "")
         case NCGlobal.shared.metadataStatusDownloading:
-            cell.fileInfoLabel?.text = NCUtilityFileSystem.shared.transformedSize(metadata.size) + " - ↓ …"
+            cell.fileInfoLabel?.text = NCUtilityFileSystem().transformedSize(metadata.size) + " - ↓ …"
         case NCGlobal.shared.metadataStatusWaitUpload:
-            cell.fileInfoLabel?.text = NCUtilityFileSystem.shared.transformedSize(metadata.size) + " - " + NSLocalizedString("_status_wait_upload_", comment: "")
+            cell.fileInfoLabel?.text = NCUtilityFileSystem().transformedSize(metadata.size) + " - " + NSLocalizedString("_status_wait_upload_", comment: "")
             cell.fileLocalImage?.image = nil
         case NCGlobal.shared.metadataStatusInUpload:
-            cell.fileInfoLabel?.text = NCUtilityFileSystem.shared.transformedSize(metadata.size) + " - " + NSLocalizedString("_status_in_upload_", comment: "")
+            cell.fileInfoLabel?.text = NCUtilityFileSystem().transformedSize(metadata.size) + " - " + NSLocalizedString("_status_in_upload_", comment: "")
             cell.fileLocalImage?.image = nil
         case NCGlobal.shared.metadataStatusUploading:
-            cell.fileInfoLabel?.text = NCUtilityFileSystem.shared.transformedSize(metadata.size) + " - ↑ …"
+            cell.fileInfoLabel?.text = NCUtilityFileSystem().transformedSize(metadata.size) + " - ↑ …"
             cell.fileLocalImage?.image = nil
         case NCGlobal.shared.metadataStatusUploadError:
             if metadata.sessionError.isEmpty {
@@ -1771,9 +1771,9 @@ class NCCollectionViewDownloadThumbnail: ConcurrentOperation {
         self.metadata = tableMetadata.init(value: metadata)
         self.cell = cell
         self.collectionView = collectionView
-        self.fileNamePath = NCUtilityFileSystem.shared.getFileNamePath(metadata.fileName, serverUrl: metadata.serverUrl, urlBase: metadata.urlBase, userId: metadata.userId)
-        self.fileNamePreviewLocalPath = NCUtilityFileSystem.shared.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)
-        self.fileNameIconLocalPath = NCUtilityFileSystem.shared.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)
+        self.fileNamePath = NCUtilityFileSystem().getFileNamePath(metadata.fileName, serverUrl: metadata.serverUrl, urlBase: metadata.urlBase, userId: metadata.userId)
+        self.fileNamePreviewLocalPath = NCUtilityFileSystem().getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)
+        self.fileNameIconLocalPath = NCUtilityFileSystem().getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)
     }
 
     override func start() {

@@ -197,7 +197,7 @@ func getFilesDataEntry(configuration: AccountIntent?, isPreview: Bool, displaySi
     let versionNextcloudiOS = String(format: NCBrandOptions.shared.textCopyrightNextcloudiOS, NCUtility().getVersionApp())
 
     NextcloudKit.shared.nkCommonInstance.levelLog = levelLog
-    NextcloudKit.shared.nkCommonInstance.pathLog = NCUtilityFileSystem.shared.directoryGroup
+    NextcloudKit.shared.nkCommonInstance.pathLog = NCUtilityFileSystem().directoryGroup
 
     if isSimulatorOrTestFlight {
         NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Start \(NCBrandOptions.shared.brand) widget session with level \(levelLog) " + versionNextcloudiOS + " (Simulator / TestFlight)")
@@ -218,10 +218,10 @@ func getFilesDataEntry(configuration: AccountIntent?, isPreview: Bool, displaySi
                 guard !isLive(file: file, files: files) else { continue }
 
                 // SUBTITLE
-                let subTitle = CCUtility.dateDiff(file.date as Date) + " · " + NCUtilityFileSystem.shared.transformedSize(file.size)
+                let subTitle = CCUtility.dateDiff(file.date as Date) + " · " + NCUtilityFileSystem().transformedSize(file.size)
 
                 // URL: nextcloud://open-file?path=Talk/IMG_0000123.jpg&user=marinofaggiana&link=https://cloud.nextcloud.com/f/123
-                guard var path = NCUtilityFileSystem.shared.getPath(path: file.path, user: file.user, fileName: file.fileName).urlEncoded else { continue }
+                guard var path = NCUtilityFileSystem().getPath(path: file.path, user: file.user, fileName: file.fileName).urlEncoded else { continue }
                 if path.first == "/" { path = String(path.dropFirst())}
                 guard let user = file.user.urlEncoded else { continue }
                 let link = file.urlBase + "/f/" + file.fileId
@@ -235,9 +235,9 @@ func getFilesDataEntry(configuration: AccountIntent?, isPreview: Bool, displaySi
                 if let image = NCUtility().createFilePreviewImage(ocId: file.ocId, etag: file.etag, fileNameView: file.fileName, classFile: file.classFile, status: 0, createPreviewMedia: false) {
                     imageRecent = image
                 } else if file.hasPreview {
-                    let fileNamePathOrFileId = NCUtilityFileSystem.shared.getFileNamePath(file.fileName, serverUrl: file.serverUrl, urlBase: file.urlBase, userId: file.userId)
-                    let fileNamePreviewLocalPath = NCUtilityFileSystem.shared.getDirectoryProviderStoragePreviewOcId(file.ocId, etag: file.etag)
-                    let fileNameIconLocalPath = NCUtilityFileSystem.shared.getDirectoryProviderStorageIconOcId(file.ocId, etag: file.etag)
+                    let fileNamePathOrFileId = NCUtilityFileSystem().getFileNamePath(file.fileName, serverUrl: file.serverUrl, urlBase: file.urlBase, userId: file.userId)
+                    let fileNamePreviewLocalPath = NCUtilityFileSystem().getDirectoryProviderStoragePreviewOcId(file.ocId, etag: file.etag)
+                    let fileNameIconLocalPath = NCUtilityFileSystem().getDirectoryProviderStorageIconOcId(file.ocId, etag: file.etag)
                     let (_, _, imageIcon, _, _, _) = await NextcloudKit.shared.downloadPreview(fileNamePathOrFileId: fileNamePathOrFileId, fileNamePreviewLocalPath: fileNamePreviewLocalPath, widthPreview: NCGlobal.shared.sizePreview, heightPreview: NCGlobal.shared.sizePreview, fileNameIconLocalPath: fileNameIconLocalPath, sizeIcon: NCGlobal.shared.sizeIcon, options: options)
                     if let image = imageIcon {
                         imageRecent = image

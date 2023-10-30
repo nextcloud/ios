@@ -162,7 +162,7 @@ class NCDocumentPickerViewController: NSObject, UIDocumentPickerDelegate {
                 let ocId = NSUUID().uuidString
 
                 let fileName = urlIn.lastPathComponent
-                let toPath = NCUtilityFileSystem.shared.getDirectoryProviderStorageOcId(ocId, fileNameView: fileName)
+                let toPath = NCUtilityFileSystem().getDirectoryProviderStorageOcId(ocId, fileNameView: fileName)
                 let urlOut = URL(fileURLWithPath: toPath)
 
                 guard self.copySecurityScopedResource(url: urlIn, urlOut: urlOut) != nil else { continue }
@@ -171,7 +171,7 @@ class NCDocumentPickerViewController: NSObject, UIDocumentPickerDelegate {
 
                 metadataForUpload.session = NCNetworking.shared.sessionIdentifierBackground
                 metadataForUpload.sessionSelector = NCGlobal.shared.selectorUploadFile
-                metadataForUpload.size = NCUtilityFileSystem.shared.getFileSize(filePath: toPath)
+                metadataForUpload.size = NCUtilityFileSystem().getFileSize(filePath: toPath)
                 metadataForUpload.status = NCGlobal.shared.metadataStatusWaitUpload
 
                 if NCManageDatabase.shared.getMetadataConflict(account: appDelegate.account, serverUrl: serverUrl, fileNameView: fileName) != nil {

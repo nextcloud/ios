@@ -67,7 +67,7 @@ class NCNetworkingE2EEUpload: NSObject {
 
             // ENCRYPT FILE
             //
-            if NCEndToEndEncryption.sharedManager()?.encryptFile(metadata.fileNameView, fileNameIdentifier: metadata.fileName, directory: NCUtilityFileSystem.shared.getDirectoryProviderStorageOcId(metadata.ocId), key: &key, initializationVector: &initializationVector, authenticationTag: &authenticationTag) == false {
+            if NCEndToEndEncryption.sharedManager()?.encryptFile(metadata.fileNameView, fileNameIdentifier: metadata.fileName, directory: NCUtilityFileSystem().getDirectoryProviderStorageOcId(metadata.ocId), key: &key, initializationVector: &initializationVector, authenticationTag: &authenticationTag) == false {
                 return NKError(errorCode: NCGlobal.shared.errorE2EEEncryptFile, errorDescription: NSLocalizedString("_e2e_error_", comment: ""))
             }
             guard let key = key as? String, let initializationVector = initializationVector as? String else {
@@ -160,14 +160,14 @@ class NCNetworkingE2EEUpload: NSObject {
 
         if let afError = resultsSendFile.afError, afError.isExplicitlyCancelledError {
 
-            NCUtilityFileSystem.shared.removeFile(atPath: NCUtilityFileSystem.shared.getDirectoryProviderStorageOcId(metadata.ocId))
+            NCUtilityFileSystem().removeFile(atPath: NCUtilityFileSystem().getDirectoryProviderStorageOcId(metadata.ocId))
             NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUploadedFile, userInfo: ["ocId": metadata.ocId, "serverUrl": metadata.serverUrl, "account": metadata.account, "fileName": metadata.fileName, "ocIdTemp": ocIdTemp, "error": resultsSendFile.error])
 
         } else if resultsSendFile.error == .success, let ocId = resultsSendFile.ocId {
 
             NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
-            NCUtilityFileSystem.shared.moveFileInBackground(atPath: NCUtilityFileSystem.shared.getDirectoryProviderStorageOcId(metadata.ocId), toPath: NCUtilityFileSystem.shared.getDirectoryProviderStorageOcId(ocId))
+            NCUtilityFileSystem().moveFileInBackground(atPath: NCUtilityFileSystem().getDirectoryProviderStorageOcId(metadata.ocId), toPath: NCUtilityFileSystem().getDirectoryProviderStorageOcId(ocId))
 
             metadata.date = resultsSendFile.date ?? NSDate()
             metadata.etag = resultsSendFile.etag ?? ""
@@ -213,7 +213,7 @@ class NCNetworkingE2EEUpload: NSObject {
 
         } else {
 
-            let fileNameLocalPath = NCUtilityFileSystem.shared.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileName)
+            let fileNameLocalPath = NCUtilityFileSystem().getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileName)
             return await withCheckedContinuation({ continuation in
                 NCNetworking.shared.uploadFile(metadata: metadata, fileNameLocalPath: fileNameLocalPath, withUploadComplete: false, addCustomHeaders: ["e2e-token": e2eToken]) {
 #if !EXTENSION

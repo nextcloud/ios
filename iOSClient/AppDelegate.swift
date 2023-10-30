@@ -80,9 +80,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             FirebaseApp.configure()
         }
 
-        NCUtilityFileSystem.shared.createDirectoryStandard()
-        NCUtilityFileSystem.shared.emptyTemporaryDirectory()
-        NCUtilityFileSystem.shared.clearCacheDirectory("com.limit-point.LivePhoto")
+        NCUtilityFileSystem().createDirectoryStandard()
+        NCUtilityFileSystem().emptyTemporaryDirectory()
+        NCUtilityFileSystem().clearCacheDirectory("com.limit-point.LivePhoto")
 
         // Activated singleton
         _ = NCActionCenter.shared
@@ -94,12 +94,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         startTimerErrorNetworking()
 
         var levelLog = 0
-        NextcloudKit.shared.nkCommonInstance.pathLog = NCUtilityFileSystem.shared.directoryGroup
+        NextcloudKit.shared.nkCommonInstance.pathLog = NCUtilityFileSystem().directoryGroup
 
         if NCBrandOptions.shared.disable_log {
 
-            NCUtilityFileSystem.shared.removeFile(atPath: NextcloudKit.shared.nkCommonInstance.filenamePathLog)
-            NCUtilityFileSystem.shared.removeFile(atPath: NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true).first! + "/" + NextcloudKit.shared.nkCommonInstance.filenameLog)
+            NCUtilityFileSystem().removeFile(atPath: NextcloudKit.shared.nkCommonInstance.filenamePathLog)
+            NCUtilityFileSystem().removeFile(atPath: NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true).first! + "/" + NextcloudKit.shared.nkCommonInstance.filenameLog)
 
         } else {
 
@@ -232,7 +232,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
         // Clear older files
         let days = NCKeychain().cleanUpDay
-        NCUtilityFileSystem.shared.cleanUp(directory: NCUtilityFileSystem.shared.directoryProviderStorage, days: TimeInterval(days))
+        NCUtilityFileSystem().cleanUp(directory: NCUtilityFileSystem().directoryProviderStorage, days: TimeInterval(days))
 
         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterApplicationWillResignActive)
     }
@@ -532,7 +532,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
               host == currentHost
         else { return }
 
-        let certificateHostSavedPath = NCUtilityFileSystem.shared.directoryCertificates + "/" + host + ".der"
+        let certificateHostSavedPath = NCUtilityFileSystem().directoryCertificates + "/" + host + ".der"
         var title = NSLocalizedString("_ssl_certificate_changed_", comment: "")
 
         if !FileManager.default.fileExists(atPath: certificateHostSavedPath) {
@@ -608,7 +608,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
         let results = NCManageDatabase.shared.getTableLocalFiles(predicate: NSPredicate(format: "account == %@", account), sorted: "ocId", ascending: false)
         for result in results {
-            NCUtilityFileSystem.shared.removeFile(atPath: NCUtilityFileSystem.shared.getDirectoryProviderStorageOcId(result.ocId))
+            NCUtilityFileSystem().removeFile(atPath: NCUtilityFileSystem().getDirectoryProviderStorageOcId(result.ocId))
         }
         NCManageDatabase.shared.clearDatabase(account: account, removeAccount: true)
 
@@ -650,7 +650,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             let name = account.alias.isEmpty ? account.displayName : account.alias
             let userBaseUrl = account.user + "-" + (URL(string: account.urlBase)?.host ?? "")
             let avatarFileName = userBaseUrl + "-\(account.user).png"
-            let pathAvatarFileName = NCUtilityFileSystem.shared.directoryUserData + "/" + avatarFileName
+            let pathAvatarFileName = NCUtilityFileSystem().directoryUserData + "/" + avatarFileName
             let image = UIImage(contentsOfFile: pathAvatarFileName)
             accounts.append(NKShareAccounts.DataAccounts(withUrl: account.urlBase, user: account.user, name: name, image: image))
         }
@@ -887,7 +887,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
                     NCAskAuthorization().askAuthorizationAudioRecord(viewController: rootViewController) { hasPermission in
                         if hasPermission {
-                            let fileName = NCUtilityFileSystem.shared.createFileNameDate(NSLocalizedString("_voice_memo_filename_", comment: ""), ext: "m4a")
+                            let fileName = NCUtilityFileSystem().createFileNameDate(NSLocalizedString("_voice_memo_filename_", comment: ""), ext: "m4a")
                             if let viewController = UIStoryboard(name: "NCAudioRecorderViewController", bundle: nil).instantiateInitialViewController() as? NCAudioRecorderViewController {
 
                                 viewController.delegate = self

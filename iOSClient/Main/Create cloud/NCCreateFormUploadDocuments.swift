@@ -56,7 +56,7 @@ import XLForm
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        if serverUrl == NCUtilityFileSystem.shared.getHomeServer(urlBase: appDelegate.urlBase, userId: appDelegate.userId) {
+        if serverUrl == NCUtilityFileSystem().getHomeServer(urlBase: appDelegate.urlBase, userId: appDelegate.userId) {
             fileNameFolder = "/"
         } else {
             fileNameFolder = (serverUrl as NSString).lastPathComponent
@@ -166,7 +166,7 @@ import XLForm
         // image
         let imagePreview = cell.viewWithTag(100) as? UIImageView
         if !template.preview.isEmpty {
-            let fileNameLocalPath = NCUtilityFileSystem.shared.directoryUserData + "/" + template.name + ".png"
+            let fileNameLocalPath = NCUtilityFileSystem().directoryUserData + "/" + template.name + ".png"
             if FileManager.default.fileExists(atPath: fileNameLocalPath) {
                 let imageURL = URL(fileURLWithPath: fileNameLocalPath)
                 if let image = UIImage(contentsOfFile: imageURL.path) {
@@ -215,7 +215,7 @@ import XLForm
         }
 
         self.serverUrl = serverUrl
-        if serverUrl == NCUtilityFileSystem.shared.getHomeServer(urlBase: appDelegate.urlBase, userId: appDelegate.userId) {
+        if serverUrl == NCUtilityFileSystem().getHomeServer(urlBase: appDelegate.urlBase, userId: appDelegate.userId) {
             fileNameFolder = "/"
         } else {
             fileNameFolder = (serverUrl as NSString).lastPathComponent
@@ -276,7 +276,7 @@ import XLForm
 
         } else {
 
-            let fileNamePath = NCUtilityFileSystem.shared.getFileNamePath(String(describing: fileNameForm), serverUrl: serverUrl, urlBase: appDelegate.urlBase, userId: appDelegate.userId)
+            let fileNamePath = NCUtilityFileSystem().getFileNamePath(String(describing: fileNameForm), serverUrl: serverUrl, urlBase: appDelegate.urlBase, userId: appDelegate.userId)
             createDocument(fileNamePath: fileNamePath, fileName: String(describing: fileNameForm))
         }
     }
@@ -285,7 +285,7 @@ import XLForm
 
         if let metadatas {
             let fileName = metadatas[0].fileName
-            let fileNamePath = NCUtilityFileSystem.shared.getFileNamePath(fileName, serverUrl: serverUrl, urlBase: appDelegate.urlBase, userId: appDelegate.userId)
+            let fileNamePath = NCUtilityFileSystem().getFileNamePath(fileName, serverUrl: serverUrl, urlBase: appDelegate.urlBase, userId: appDelegate.userId)
             createDocument(fileNamePath: fileNamePath, fileName: fileName)
         } else {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
@@ -486,7 +486,7 @@ import XLForm
 
     func getImageFromTemplate(name: String, preview: String, indexPath: IndexPath) {
 
-        let fileNameLocalPath = NCUtilityFileSystem.shared.directoryUserData + "/" + name + ".png"
+        let fileNameLocalPath = NCUtilityFileSystem().directoryUserData + "/" + name + ".png"
 
         NextcloudKit.shared.download(serverUrlFileName: preview, fileNameLocalPath: fileNameLocalPath, requestHandler: { _ in
 

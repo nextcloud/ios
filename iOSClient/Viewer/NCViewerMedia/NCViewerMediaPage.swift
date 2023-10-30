@@ -211,7 +211,7 @@ class NCViewerMediaPage: UIViewController {
 
     @objc private func openMenuMore() {
 
-        let imageIcon = UIImage(contentsOfFile: NCUtilityFileSystem.shared.getDirectoryProviderStorageIconOcId(currentViewController.metadata.ocId, etag: currentViewController.metadata.etag))
+        let imageIcon = UIImage(contentsOfFile: NCUtilityFileSystem().getDirectoryProviderStorageIconOcId(currentViewController.metadata.ocId, etag: currentViewController.metadata.etag))
 
         NCViewer().toggleMenu(viewController: self, metadata: currentViewController.metadata, webView: false, imageIcon: imageIcon)
     }
@@ -326,9 +326,9 @@ class NCViewerMediaPage: UIViewController {
 
         if metadata.ocId == ocId,
            metadata.isAudioOrVideo,
-           NCUtilityFileSystem.shared.fileProviderStorageExists(metadata),
+           NCUtilityFileSystem().fileProviderStorageExists(metadata),
            let ncplayer = currentViewController.ncplayer {
-            let url = URL(fileURLWithPath: NCUtilityFileSystem.shared.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView))
+            let url = URL(fileURLWithPath: NCUtilityFileSystem().getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView))
             if ncplayer.isPlay() {
                 ncplayer.playerPause()
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
@@ -679,9 +679,9 @@ extension NCViewerMediaPage: UIGestureRecognizerDelegate {
 
         if gestureRecognizer.state == .began {
             let fileName = (currentViewController.metadata.fileNameView as NSString).deletingPathExtension + ".mov"
-            if let metadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView LIKE[c] %@", currentViewController.metadata.account, currentViewController.metadata.serverUrl, fileName)), NCUtilityFileSystem.shared.fileProviderStorageExists(metadata) {
+            if let metadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView LIKE[c] %@", currentViewController.metadata.account, currentViewController.metadata.serverUrl, fileName)), NCUtilityFileSystem().fileProviderStorageExists(metadata) {
                 AudioServicesPlaySystemSound(1519) // peek feedback
-                currentViewController.playLivePhoto(filePath: NCUtilityFileSystem.shared.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView))
+                currentViewController.playLivePhoto(filePath: NCUtilityFileSystem().getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView))
             }
         } else if gestureRecognizer.state == .ended {
             currentViewController.stopLivePhoto()

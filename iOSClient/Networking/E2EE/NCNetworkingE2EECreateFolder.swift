@@ -34,7 +34,7 @@ class NCNetworkingE2EECreateFolder: NSObject {
 
         let fileNameIdentifier = networkingE2EE.generateRandomIdentifier()
         let serverUrlFileName = serverUrl + "/" + fileNameIdentifier
-        let fileNameFolder = NCUtilityFileSystem.shared.createFileName(NCUtility().removeForbiddenCharacters(fileName), serverUrl: serverUrl, account: account)
+        let fileNameFolder = NCUtilityFileSystem().createFileName(NCUtility().removeForbiddenCharacters(fileName), serverUrl: serverUrl, account: account)
         if fileNameFolder.isEmpty {
             return NKError(errorCode: NCGlobal.shared.errorUnexpectedResponseFromDB, errorDescription: NSLocalizedString("_e2e_error_", comment: ""))
         }

@@ -167,7 +167,7 @@ class NCShare: UIViewController, NCShareNetworkingDelegate, NCSharePagingContent
         let fileName = appDelegate.userBaseUrl + "-" + metadata.ownerId + ".png"
 
         if NCManageDatabase.shared.getImageAvatarLoaded(fileName: fileName) == nil {
-            let fileNameLocalPath = NCUtilityFileSystem.shared.directoryUserData + "/" + fileName
+            let fileNameLocalPath = NCUtilityFileSystem().directoryUserData + "/" + fileName
             let etag = NCManageDatabase.shared.getTableAvatar(fileName: fileName)?.etag
 
             NextcloudKit.shared.downloadAvatar(

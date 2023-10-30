@@ -66,7 +66,7 @@ import NextcloudKit
             ocIdEtag[metadata.ocId] = metadata.etag
         }
 
-        if let enumerator = manager.enumerator(at: URL(fileURLWithPath: NCUtilityFileSystem.shared.directoryProviderStorage), includingPropertiesForKeys: [.isRegularFileKey], options: [.skipsHiddenFiles]) {
+        if let enumerator = manager.enumerator(at: URL(fileURLWithPath: NCUtilityFileSystem().directoryProviderStorage), includingPropertiesForKeys: [.isRegularFileKey], options: [.skipsHiddenFiles]) {
             for case let fileURL as URL in enumerator where fileURL.lastPathComponent.hasSuffix(ext) {
                 let fileName = fileURL.lastPathComponent
                 let ocId = fileURL.deletingLastPathComponent().lastPathComponent
@@ -126,7 +126,7 @@ import NextcloudKit
     func getMediaMetadatas(account: String, filterClassTypeImage: Bool = false, filterClassTypeVideo: Bool = false) {
 
         guard let account = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", account)) else { return }
-        let startServerUrl = NCUtilityFileSystem.shared.getHomeServer(urlBase: account.urlBase, userId: account.userId) + account.mediaPath
+        let startServerUrl = NCUtilityFileSystem().getHomeServer(urlBase: account.urlBase, userId: account.userId) + account.mediaPath
 
         predicateDefault = NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND (classFile == %@ OR classFile == %@) AND NOT (session CONTAINS[c] 'upload')", account.account, startServerUrl, NKCommon.TypeClassFile.image.rawValue, NKCommon.TypeClassFile.video.rawValue)
 
