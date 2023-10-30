@@ -22,13 +22,10 @@
 //
 
 import UIKit
+import NextcloudKit
 import PhotosUI
 
 class NCUtilityFileSystem: NSObject {
-    @objc static let shared: NCUtilityFileSystem = {
-        let instance = NCUtilityFileSystem()
-        return instance
-    }()
 
     let fileManager = FileManager.default
 
@@ -210,6 +207,56 @@ class NCUtilityFileSystem: NSObject {
                 } catch { print("Error: \(error)") }
             }
         } catch { print("Error: \(error)") }
+    }
+
+    func isDirectoryE2EE(serverUrl: String, userBase: NCUserBaseUrl) -> Bool {
+        return isDirectoryE2EE(account: userBase.account, urlBase: userBase.urlBase, userId: userBase.userId, serverUrl: serverUrl)
+    }
+
+    func isDirectoryE2EE(file: NKFile) -> Bool {
+        return isDirectoryE2EE(account: file.account, urlBase: file.urlBase, userId: file.userId, serverUrl: file.serverUrl)
+    }
+
+    func isDirectoryE2EE(account: String, urlBase: String, userId: String, serverUrl: String) -> Bool {
+        if serverUrl == getHomeServer(urlBase: urlBase, userId: userId) || serverUrl == ".." { return false }
+        if let directory = NCManageDatabase.shared.getTableDirectory(account: account, serverUrl: serverUrl) {
+            return directory.e2eEncrypted
+        }
+        return false
+    }
+
+    func isDirectoryE2EETop(account: String, serverUrl: String) -> Bool {
+
+        guard let serverUrl = serverUrl.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) else { return false }
+
+        if let url = URL(string: serverUrl)?.deletingLastPathComponent(),
+           let serverUrl = String(url.absoluteString.dropLast()).removingPercentEncoding {
+            if let directory = NCManageDatabase.shared.getTableDirectory(account: account, serverUrl: serverUrl) {
+                return !directory.e2eEncrypted
+            }
+        }
+        return true
+    }
+
+    func getDirectoryE2EETop(serverUrl: String, account: String) -> tableDirectory? {
+
+        guard var serverUrl = serverUrl.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) else { return nil }
+        var top: tableDirectory?
+
+        while let url = URL(string: serverUrl)?.deletingLastPathComponent(),
+              let serverUrlencoding = serverUrl.removingPercentEncoding,
+              let directory = NCManageDatabase.shared.getTableDirectory(account: account, serverUrl: serverUrlencoding) {
+
+            if directory.e2eEncrypted {
+                top = directory
+            } else {
+                return top
+            }
+
+            serverUrl = String(url.absoluteString.dropLast())
+        }
+
+        return top
     }
 
     // MARK: -
@@ -489,13 +536,13 @@ class NCUtilityFileSystem: NSObject {
 
         if let directories = NCManageDatabase.shared.getTablesDirectory(predicate: NSPredicate(format: "offline == true"), sorted: "serverUrl", ascending: true) {
             for directory: tableDirectory in directories {
-                offlineDir.append(NCUtilityFileSystem.shared.getDirectoryProviderStorageOcId(directory.ocId))
+                offlineDir.append(getDirectoryProviderStorageOcId(directory.ocId))
             }
         }
 
         let files = NCManageDatabase.shared.getTableLocalFiles(predicate: NSPredicate(format: "offline == true"), sorted: "fileName", ascending: true)
         for file: tableLocalFile in files {
-            offlineFiles.append(NCUtilityFileSystem.shared.getDirectoryProviderStorageOcId(file.ocId, fileNameView: file.fileName))
+            offlineFiles.append(getDirectoryProviderStorageOcId(file.ocId, fileNameView: file.fileName))
         }
 
         func meetsRequirement(date: Date) -> Bool {

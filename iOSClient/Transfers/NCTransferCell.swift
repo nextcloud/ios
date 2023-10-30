@@ -141,7 +141,7 @@ class NCTransferCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellP
     }
 
     func writeInfoDateSize(date: NSDate, size: Int64) {
-        labelInfo.text = CCUtility.dateDiff(date as Date) + " · " + NCUtilityFileSystem.shared.transformedSize(size)
+        labelInfo.text = CCUtility.dateDiff(date as Date) + " · " + NCUtilityFileSystem().transformedSize(size)
     }
 }
 

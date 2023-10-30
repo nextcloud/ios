@@ -30,7 +30,7 @@ extension NCShareExtension: UICollectionViewDelegate {
 
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         guard let metadata = dataSource.cellForItemAt(indexPath: indexPath) else { return showAlert(description: "_invalid_url_") }
-        let serverUrl = NCUtilityFileSystem.shared.stringAppendServerUrl(metadata.serverUrl, addFileName: metadata.fileName)
+        let serverUrl = utilityFileSystem.stringAppendServerUrl(metadata.serverUrl, addFileName: metadata.fileName)
         if metadata.e2eEncrypted && !NCKeychain().isEndToEndEnabled(account: activeAccount.account) {
             showAlert(title: "_info_", description: "_e2e_goto_settings_for_enable_")
         }
@@ -84,7 +84,7 @@ extension NCShareExtension: UICollectionViewDataSource {
 
         // image Favorite
         if metadata.favorite {
-            cell.imageFavorite.image = NCBrandColor.cacheImages.favorite
+            cell.imageFavorite.image = NCCache.cacheImages.favorite
         }
 
         cell.imageSelect.isHidden = true
@@ -95,7 +95,7 @@ extension NCShareExtension: UICollectionViewDataSource {
 
         // Live Photo
         if metadata.livePhoto {
-            cell.imageStatus.image = NCBrandColor.cacheImages.livePhoto
+            cell.imageStatus.image = NCCache.cacheImages.livePhoto
         }
 
         // Add TAGS
@@ -116,31 +116,31 @@ extension NCShareExtension: UICollectionViewDataSource {
         }
 
         if metadata.e2eEncrypted {
-            cell.imageItem.image = NCBrandColor.cacheImages.folderEncrypted
+            cell.imageItem.image = NCCache.cacheImages.folderEncrypted
         } else if isShare {
-            cell.imageItem.image = NCBrandColor.cacheImages.folderSharedWithMe
+            cell.imageItem.image = NCCache.cacheImages.folderSharedWithMe
         } else if !metadata.shareType.isEmpty {
             metadata.shareType.contains(3) ?
-            (cell.imageItem.image = NCBrandColor.cacheImages.folderPublic) :
-            (cell.imageItem.image = NCBrandColor.cacheImages.folderSharedWithMe)
+            (cell.imageItem.image = NCCache.cacheImages.folderPublic) :
+            (cell.imageItem.image = NCCache.cacheImages.folderSharedWithMe)
         } else if metadata.mountType == "group" {
-            cell.imageItem.image = NCBrandColor.cacheImages.folderGroup
+            cell.imageItem.image = NCCache.cacheImages.folderGroup
         } else if isMounted {
-            cell.imageItem.image = NCBrandColor.cacheImages.folderExternal
+            cell.imageItem.image = NCCache.cacheImages.folderExternal
         } else if metadata.fileName == autoUploadFileName && metadata.serverUrl == autoUploadDirectory {
-            cell.imageItem.image = NCBrandColor.cacheImages.folderAutomaticUpload
+            cell.imageItem.image = NCCache.cacheImages.folderAutomaticUpload
         } else {
-            cell.imageItem.image = NCBrandColor.cacheImages.folder
+            cell.imageItem.image = NCCache.cacheImages.folder
         }
 
         cell.labelInfo.text = CCUtility.dateDiff(metadata.date as Date)
 
-        let lockServerUrl = NCUtilityFileSystem.shared.stringAppendServerUrl(metadata.serverUrl, addFileName: metadata.fileName)
+        let lockServerUrl = utilityFileSystem.stringAppendServerUrl(metadata.serverUrl, addFileName: metadata.fileName)
         let tableDirectory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", activeAccount.account, lockServerUrl))
 
         // Local image: offline
         if tableDirectory != nil && tableDirectory!.offline {
-            cell.imageLocal.image = NCBrandColor.cacheImages.offlineFlag
+            cell.imageLocal.image = NCCache.cacheImages.offlineFlag
         }
     }
 }

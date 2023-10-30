@@ -213,8 +213,9 @@ extension tableMetadata {
         if isDocumentViewableOnly {
             return false
         }
-        let editors = NCUtility.shared.isDirectEditing(account: account, contentType: contentType)
-        let isRichDocument = NCUtility.shared.isRichDocument(self)
+        let utility = NCUtility()
+        let editors = utility.isDirectEditing(account: account, contentType: contentType)
+        let isRichDocument = utility.isRichDocument(self)
         return classFile == NKCommon.TypeClassFile.document.rawValue && editors.contains(NCGlobal.shared.editorText) && ((editors.contains(NCGlobal.shared.editorOnlyoffice) || isRichDocument))
     }
 
@@ -239,11 +240,11 @@ extension tableMetadata {
     }
 
     @objc var isDirectoryE2EE: Bool {
-        NCUtility.shared.isDirectoryE2EE(account: account, urlBase: urlBase, userId: userId, serverUrl: serverUrl)
+        NCUtilityFileSystem().isDirectoryE2EE(account: account, urlBase: urlBase, userId: userId, serverUrl: serverUrl)
     }
 
     var isDirectoryE2EETop: Bool {
-        NCUtility.shared.isDirectoryE2EETop(account: account, serverUrl: serverUrl)
+        NCUtilityFileSystem().isDirectoryE2EETop(account: account, serverUrl: serverUrl)
     }
 
     /// Returns false if the user is lokced out of the file. I.e. The file is locked but by somone else
@@ -367,7 +368,7 @@ extension NCManageDatabase {
             if let key = listServerUrl[file.serverUrl] {
                 isDirectoryE2EE = key
             } else {
-                isDirectoryE2EE = NCUtility.shared.isDirectoryE2EE(file: file)
+                isDirectoryE2EE = NCUtilityFileSystem().isDirectoryE2EE(file: file)
                 listServerUrl[file.serverUrl] = isDirectoryE2EE
             }
 
@@ -946,13 +947,13 @@ extension NCManageDatabase {
         var serverUrl = serverUrl
         var fileName = ""
 
-        let serverUrlHome = NCUtilityFileSystem.shared.getHomeServer(urlBase: urlBase, userId: userId)
+        let serverUrlHome = utilityFileSystem.getHomeServer(urlBase: urlBase, userId: userId)
         if serverUrlHome == serverUrl {
             fileName = "."
             serverUrl = ".."
         } else {
             fileName = (serverUrl as NSString).lastPathComponent
-            if let path = NCUtilityFileSystem.shared.deleteLastPath(serverUrlPath: serverUrl) {
+            if let path = utilityFileSystem.deleteLastPath(serverUrlPath: serverUrl) {
                 serverUrl = path
             }
         }
@@ -1148,7 +1149,7 @@ extension NCManageDatabase {
     func isDownloadMetadata(_ metadata: tableMetadata, download: Bool) -> Bool {
 
         let localFile = getTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
-        let fileSize = NCUtilityFileSystem.shared.fileProviderStorageSize(metadata.ocId, fileNameView: metadata.fileNameView)
+        let fileSize = utilityFileSystem.fileProviderStorageSize(metadata.ocId, fileNameView: metadata.fileNameView)
         if (localFile != nil || download) && (localFile?.etag != metadata.etag || fileSize == 0) {
             return true
         }
@@ -1199,7 +1200,7 @@ extension NCManageDatabase {
     func getMetadatasFromGroupfolders(account: String, urlBase: String, userId: String) -> [tableMetadata] {
 
         var metadatas: [tableMetadata] = []
-        let homeServerUrl = NCUtilityFileSystem.shared.getHomeServer(urlBase: urlBase, userId: userId)
+        let homeServerUrl = utilityFileSystem.getHomeServer(urlBase: urlBase, userId: userId)
 
         do {
             let realm = try Realm()

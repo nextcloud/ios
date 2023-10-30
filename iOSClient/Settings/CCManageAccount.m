@@ -56,7 +56,7 @@
         row = [XLFormRowDescriptor formRowDescriptorWithTag:account.account rowType:XLFormRowDescriptorTypeBooleanCheck title:title];
         
         // Avatar
-        UIImage *avatar = [[NCUtility shared] loadUserImageFor:account.user displayName:account.displayName userBaseUrl:account];
+        UIImage *avatar = [[[NCUtility alloc] init] loadUserImageFor:account.user displayName:account.displayName userBaseUrl:account];
         
         row.cellConfigAtConfigure[@"backgroundColor"] = UIColor.secondarySystemGroupedBackgroundColor;
         [row.cellConfig setObject:[UIFont systemFontOfSize:13.0] forKey:@"textLabel.font"];

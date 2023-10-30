@@ -34,13 +34,13 @@ extension AppDelegate {
         var actions: [NCMenuAction] = []
         let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
         let directEditingCreators = NCManageDatabase.shared.getDirectEditingCreators(account: appDelegate.account)
-        let isDirectoryE2EE = NCUtility.shared.isDirectoryE2EE(serverUrl: appDelegate.activeServerUrl, userBase: appDelegate)
+        let isDirectoryE2EE = NCUtilityFileSystem().isDirectoryE2EE(serverUrl: appDelegate.activeServerUrl, userBase: appDelegate)
         let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", appDelegate.account, appDelegate.activeServerUrl))
 
         actions.append(
             NCMenuAction(
                 title: NSLocalizedString("_upload_photos_videos_", comment: ""), icon: UIImage(named: "file_photo")!.image(color: UIColor.systemGray, size: 50), action: { _ in
-                    NCAskAuthorization.shared.askAuthorizationPhotoLibrary(viewController: viewController) { hasPermission in
+                    NCAskAuthorization().askAuthorizationPhotoLibrary(viewController: viewController) { hasPermission in
                         if hasPermission {NCPhotosPickerViewController(viewController: viewController, maxSelectedAssets: 0, singleSelectedMode: false)
                         }
                     }
@@ -82,9 +82,9 @@ extension AppDelegate {
 
         actions.append(
             NCMenuAction(
-                title: NSLocalizedString("_scans_document_", comment: ""), icon: NCUtility.shared.loadImage(named: "doc.text.viewfinder"), action: { _ in
+                title: NSLocalizedString("_scans_document_", comment: ""), icon: NCUtility().loadImage(named: "doc.text.viewfinder"), action: { _ in
                     if let viewController = appDelegate.window?.rootViewController {
-                        NCDocumentCamera.shared.openScannerDocument(viewController: viewController)
+                        NCDocumentCamera().openScannerDocument(viewController: viewController)
                     }
                 }
             )
@@ -93,9 +93,9 @@ extension AppDelegate {
         actions.append(
             NCMenuAction(
                 title: NSLocalizedString("_create_voice_memo_", comment: ""), icon: UIImage(named: "microphone")!.image(color: UIColor.systemGray, size: 50), action: { _ in
-                    NCAskAuthorization.shared.askAuthorizationAudioRecord(viewController: viewController) { hasPermission in
+                    NCAskAuthorization().askAuthorizationAudioRecord(viewController: viewController) { hasPermission in
                         if hasPermission {
-                            let fileName = NCUtilityFileSystem.shared.createFileNameDate(NSLocalizedString("_voice_memo_filename_", comment: ""), ext: "m4a")
+                            let fileName = NCUtilityFileSystem().createFileNameDate(NSLocalizedString("_voice_memo_filename_", comment: ""), ext: "m4a")
                             if let viewController = UIStoryboard(name: "NCAudioRecorderViewController", bundle: nil).instantiateInitialViewController() as? NCAudioRecorderViewController {
 
                                 viewController.delegate = self

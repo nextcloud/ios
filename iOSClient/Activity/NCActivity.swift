@@ -40,7 +40,8 @@ class NCActivity: UIViewController, NCSharePagingContent {
     var showComments: Bool = false
 
     let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
-
+    let utilityFileSystem = NCUtilityFileSystem()
+    let utility = NCUtility()
     var allItems: [DateCompareable] = []
     var sectionDates: [Date] = []
 
@@ -88,7 +89,7 @@ class NCActivity: UIViewController, NCSharePagingContent {
                     self.commentView?.newCommentField.text?.removeAll()
                     self.loadComments()
                 } else {
-                    NCContentPresenter.shared.showError(error: error)
+                    NCContentPresenter().showError(error: error)
                 }
             }
         }
@@ -250,7 +251,7 @@ extension NCActivity: UITableViewDataSource {
         if !activity.icon.isEmpty {
 
             let fileNameIcon = (activity.icon as NSString).lastPathComponent
-            let fileNameLocalPath = NCUtilityFileSystem.shared.directoryUserData + "/" + fileNameIcon
+            let fileNameLocalPath = utilityFileSystem.directoryUserData + "/" + fileNameIcon
 
             if FileManager.default.fileExists(atPath: fileNameLocalPath) {
                 if let image = UIImage(contentsOfFile: fileNameLocalPath) {
@@ -402,7 +403,7 @@ extension NCActivity {
             if error == .success, let comments = comments {
                 NCManageDatabase.shared.addComments(comments, account: metadata.account, objectId: metadata.fileId)
             } else if error.errorCode != NCGlobal.shared.errorResourceNotFound {
-                NCContentPresenter.shared.showError(error: error)
+                NCContentPresenter().showError(error: error)
             }
 
             if let disptachGroup = disptachGroup {
@@ -513,7 +514,7 @@ extension NCActivity: NCShareCommentsCellDelegate {
                             if error == .success {
                                 self.loadComments()
                             } else {
-                                NCContentPresenter.shared.showError(error: error)
+                                NCContentPresenter().showError(error: error)
                             }
                         }
                     }))
@@ -526,7 +527,7 @@ extension NCActivity: NCShareCommentsCellDelegate {
         actions.append(
             NCMenuAction(
                 title: NSLocalizedString("_delete_comment_", comment: ""),
-                icon: NCUtility.shared.loadImage(named: "trash"),
+                icon: utility.loadImage(named: "trash"),
                 action: { _ in
                     guard let metadata = self.metadata, let tableComments = tableComments else { return }
 
@@ -534,7 +535,7 @@ extension NCActivity: NCShareCommentsCellDelegate {
                         if error == .success {
                             self.loadComments()
                         } else {
-                            NCContentPresenter.shared.showError(error: error)
+                            NCContentPresenter().showError(error: error)
                         }
                     }
                 }

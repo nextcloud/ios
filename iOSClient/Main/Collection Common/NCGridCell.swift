@@ -194,7 +194,7 @@ class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
                 imageVisualEffect.effect = UIBlurEffect(style: .extraLight)
                 imageVisualEffect.backgroundColor = .lightGray
             }
-            imageSelect.image = NCBrandColor.cacheImages.checkedYes
+            imageSelect.image = NCCache.cacheImages.checkedYes
             imageVisualEffect.isHidden = false
         } else {
             imageSelect.isHidden = true
@@ -209,7 +209,7 @@ class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
         dateFormatter.timeStyle = .none
         dateFormatter.locale = Locale.current
 
-        labelInfo.text = dateFormatter.string(from: date as Date) + " · " + NCUtilityFileSystem.shared.transformedSize(size)
+        labelInfo.text = dateFormatter.string(from: date as Date) + " · " + NCUtilityFileSystem().transformedSize(size)
     }
 
     func setAccessibility(label: String, value: String) {

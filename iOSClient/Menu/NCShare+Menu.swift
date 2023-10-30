@@ -33,7 +33,7 @@ extension NCShare {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_share_add_sharelink_", comment: ""),
-                    icon: NCUtility.shared.loadImage(named: "shareAdd"),
+                    icon: utility.loadImage(named: "shareAdd"),
                     action: { _ in
                         self.makeNewLinkShare()
                     }
@@ -44,7 +44,7 @@ extension NCShare {
         actions.append(
             NCMenuAction(
                 title: NSLocalizedString("_details_", comment: ""),
-                icon: NCUtility.shared.loadImage(named: "pencil"),
+                icon: utility.loadImage(named: "pencil"),
                 action: { _ in
                     guard
                         let advancePermission = UIStoryboard(name: "NCShare", bundle: nil).instantiateViewController(withIdentifier: "NCShareAdvancePermission") as? NCShareAdvancePermission,
@@ -61,18 +61,18 @@ extension NCShare {
         actions.append(
             NCMenuAction(
                 title: NSLocalizedString("_share_unshare_", comment: ""),
-                icon: NCUtility.shared.loadImage(named: "trash"),
+                icon: utility.loadImage(named: "trash"),
                 action: { _ in
                     Task {
-                        if share.shareType != NCShareCommon.shared.SHARE_TYPE_LINK, let metadata = self.metadata, metadata.e2eEncrypted && NCGlobal.shared.capabilityE2EEApiVersion == NCGlobal.shared.e2eeVersionV20 {
+                        if share.shareType != NCShareCommon().SHARE_TYPE_LINK, let metadata = self.metadata, metadata.e2eEncrypted && NCGlobal.shared.capabilityE2EEApiVersion == NCGlobal.shared.e2eeVersionV20 {
                             let serverUrl = metadata.serverUrl + "/" + metadata.fileName
-                            if NCNetworkingE2EE.shared.isInUpload(account: metadata.account, serverUrl: serverUrl) {
+                            if NCNetworkingE2EE().isInUpload(account: metadata.account, serverUrl: serverUrl) {
                                 let error = NKError(errorCode: NCGlobal.shared.errorE2EEUploadInProgress, errorDescription: NSLocalizedString("_e2e_in_upload_", comment: ""))
-                                return NCContentPresenter.shared.showInfo(error: error)
+                                return NCContentPresenter().showInfo(error: error)
                             }
                             let error = await NCNetworkingE2EE().uploadMetadata(account: metadata.account, serverUrl: serverUrl, userId: metadata.userId, addUserId: nil, removeUserId: share.shareWith)
                             if error != .success {
-                                return NCContentPresenter.shared.showError(error: error)
+                                return NCContentPresenter().showError(error: error)
                             }
                         }
                         self.networking?.unShare(idShare: share.idShare)
@@ -90,7 +90,7 @@ extension NCShare {
         actions.append(
             NCMenuAction(
                 title: NSLocalizedString("_share_read_only_", comment: ""),
-                icon: NCUtility.shared.loadImage(named: "eye"),
+                icon: utility.loadImage(named: "eye"),
                 selected: tableShare.permissions == (NCGlobal.shared.permissionReadShare + NCGlobal.shared.permissionShareShare) || tableShare.permissions == NCGlobal.shared.permissionReadShare,
                 on: false,
                 action: { _ in
@@ -104,7 +104,7 @@ extension NCShare {
         actions.append(
             NCMenuAction(
                 title: isDirectory ? NSLocalizedString("_share_allow_upload_", comment: "") : NSLocalizedString("_share_editing_", comment: ""),
-                icon: NCUtility.shared.loadImage(named: "pencil"),
+                icon: utility.loadImage(named: "pencil"),
                 selected: hasUploadPermission(tableShare: tableShare),
                 on: false,
                 action: { _ in

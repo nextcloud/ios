@@ -50,7 +50,7 @@ struct ViewerQuickLook: UIViewControllerRepresentable {
         DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
             if uploadAssets.previewStore[index].assetType == .livePhoto && uploadAssets.previewStore[index].asset.type == .livePhoto && uploadAssets.previewStore[index].data == nil {
                 let error = NKError(errorCode: NCGlobal.shared.errorCharactersForbidden, errorDescription: "_message_disable_livephoto_")
-                NCContentPresenter.shared.showInfo(error: error)
+                NCContentPresenter().showInfo(error: error)
             }
         }
 
@@ -96,7 +96,7 @@ struct ViewerQuickLook: UIViewControllerRepresentable {
         }
 
         func previewController(_ controller: QLPreviewController, didSaveEditedCopyOf previewItem: QLPreviewItem, at modifiedContentsURL: URL) {
-            guard NCUtilityFileSystem.shared.moveFile(atPath: modifiedContentsURL.path, toPath: parent.url.path) else { return }
+            guard NCUtilityFileSystem().moveFile(atPath: modifiedContentsURL.path, toPath: parent.url.path) else { return }
             if let image = UIImage(contentsOfFile: parent.url.path) {
                 self.image = image
                 self.hasChange = true

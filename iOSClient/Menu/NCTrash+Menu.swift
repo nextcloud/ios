@@ -32,14 +32,14 @@ extension NCTrash {
         [
             NCMenuAction(
                 title: NSLocalizedString("_cancel_", comment: ""),
-                icon: NCUtility.shared.loadImage(named: "xmark"),
+                icon: utility.loadImage(named: "xmark"),
                 action: { _ in
                     self.tapSelect()
                 }
             ),
             NCMenuAction(
                 title: NSLocalizedString("_select_all_", comment: ""),
-                icon: NCUtility.shared.loadImage(named: "checkmark.circle.fill"),
+                icon: utility.loadImage(named: "checkmark.circle.fill"),
                 action: { _ in
                     self.selectOcId = self.datasource.map { $0.fileId }
                     self.collectionView.reloadData()
@@ -48,7 +48,7 @@ extension NCTrash {
             NCMenuAction.seperator(),
             NCMenuAction(
                 title: NSLocalizedString("_trash_restore_selected_", comment: ""),
-                icon: NCUtility.shared.loadImage(named: "restore"),
+                icon: utility.loadImage(named: "restore"),
                 action: { _ in
                     self.selectOcId.forEach(self.restoreItem)
                     self.tapSelect()
@@ -56,7 +56,7 @@ extension NCTrash {
             ),
             NCMenuAction(
                 title: NSLocalizedString("_trash_delete_selected_", comment: ""),
-                icon: NCUtility.shared.loadImage(named: "trash"),
+                icon: utility.loadImage(named: "trash"),
                 action: { _ in
                     let alert = UIAlertController(title: NSLocalizedString("_trash_delete_selected_", comment: ""), message: "", preferredStyle: .alert)
                     alert.addAction(UIAlertAction(title: NSLocalizedString("_delete_", comment: ""), style: .destructive, handler: { _ in
@@ -77,7 +77,7 @@ extension NCTrash {
         actions.append(
             NCMenuAction(
                 title: NSLocalizedString("_trash_restore_all_", comment: ""),
-                icon: NCUtility.shared.loadImage(named: "restore"),
+                icon: utility.loadImage(named: "restore"),
                 action: { _ in
                     self.datasource.forEach({ self.restoreItem(with: $0.fileId) })
                 }
@@ -87,7 +87,7 @@ extension NCTrash {
         actions.append(
             NCMenuAction(
                 title: NSLocalizedString("_trash_delete_all_", comment: ""),
-                icon: NCUtility.shared.loadImage(named: "trash"),
+                icon: utility.loadImage(named: "trash"),
                 action: { _ in
                     let alert = UIAlertController(title: NSLocalizedString("_trash_delete_all_description_", comment: ""), message: "", preferredStyle: .alert)
                     alert.addAction(UIAlertAction(title: NSLocalizedString("_trash_delete_all_", comment: ""), style: .destructive, handler: { _ in
@@ -121,7 +121,7 @@ extension NCTrash {
         var actions: [NCMenuAction] = []
 
         var iconHeader: UIImage!
-        if let icon = UIImage(contentsOfFile: NCUtilityFileSystem.shared.getDirectoryProviderStorageIconOcId(tableTrash.fileId, etag: tableTrash.fileName)) {
+        if let icon = UIImage(contentsOfFile: utilityFileSystem.getDirectoryProviderStorageIconOcId(tableTrash.fileId, etag: tableTrash.fileName)) {
             iconHeader = icon
         } else {
             if tableTrash.directory {
@@ -152,7 +152,7 @@ extension NCTrash {
         actions.append(
             NCMenuAction(
                 title: NSLocalizedString("_delete_", comment: ""),
-                icon: NCUtility.shared.loadImage(named: "trash"),
+                icon: utility.loadImage(named: "trash"),
                 action: { _ in
                     self.deleteItem(with: objectId)
                 }

@@ -36,7 +36,7 @@ class NCActivityCommentView: UIView, UITextFieldDelegate {
         newCommentField.delegate = self
 
         let fileName = urlBase.userBaseUrl + "-" + urlBase.user + ".png"
-        let fileNameLocalPath = NCUtilityFileSystem.shared.directoryUserData + "/" + fileName
+        let fileNameLocalPath = NCUtilityFileSystem().directoryUserData + "/" + fileName
         if let image = UIImage(contentsOfFile: fileNameLocalPath) {
             imageItem.image = image
         } else {

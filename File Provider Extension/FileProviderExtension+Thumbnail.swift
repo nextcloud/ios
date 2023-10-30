@@ -34,7 +34,7 @@ extension FileProviderExtension {
 
         for itemIdentifier in itemIdentifiers {
 
-            guard let metadata = fileProviderUtility.shared.getTableMetadataFromItemIdentifier(itemIdentifier) else {
+            guard let metadata = fpUtility.getTableMetadataFromItemIdentifier(itemIdentifier) else {
                 counterProgress += 1
                 if counterProgress == progress.totalUnitCount { completionHandler(nil) }
                 continue
@@ -42,8 +42,8 @@ extension FileProviderExtension {
 
             if metadata.hasPreview {
 
-                let fileNamePath = NCUtilityFileSystem.shared.getFileNamePath(metadata.fileName, serverUrl: metadata.serverUrl, urlBase: metadata.urlBase, userId: metadata.userId)
-                let fileNameIconLocalPath = NCUtilityFileSystem.shared.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)
+                let fileNamePath = utilityFileSystem.getFileNamePath(metadata.fileName, serverUrl: metadata.serverUrl, urlBase: metadata.urlBase, userId: metadata.userId)
+                let fileNameIconLocalPath = utilityFileSystem.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)
 
                 if let urlBase = metadata.urlBase.urlEncoded,
                    let fileNamePath = fileNamePath.urlEncoded,

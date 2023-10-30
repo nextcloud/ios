@@ -36,7 +36,7 @@ extension UIViewController {
                 let components = URLComponents(url: url, resolvingAgainstBaseURL: false)
             else {
                 let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_cannot_send_mail_error_")
-                NCContentPresenter.shared.showError(error: error)
+                NCContentPresenter().showError(error: error)
                 return
             }
             sendEmail(to: components.path)
@@ -52,7 +52,7 @@ extension UIViewController {
         default:
             guard let url = action.hyperlinkUrl, UIApplication.shared.canOpenURL(url) else {
                 let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_open_url_error_")
-                NCContentPresenter.shared.showError(error: error)
+                NCContentPresenter().showError(error: error)
                 return
             }
             UIApplication.shared.open(url, options: [:])
@@ -69,14 +69,14 @@ extension UIViewController {
 
             let personHeader = NCMenuAction(
                 title: card.displayName,
-                icon: NCUtility.shared.loadUserImage(
+                icon: NCUtility().loadUserImage(
                     for: userId,
                        displayName: card.displayName,
                        userBaseUrl: appDelegate),
                 action: nil)
 
             let actions = card.actions.map { action -> NCMenuAction in
-                var image = NCUtility.shared.loadImage(named: "user", color: .label)
+                var image = NCUtility().loadImage(named: "user", color: .label)
                 if let url = URL(string: action.icon),
                    let svgSource = SVGKSourceURL.source(from: url),
                    let svg = SVGKImage(source: svgSource) {
@@ -96,7 +96,7 @@ extension UIViewController {
     func sendEmail(to email: String) {
         guard MFMailComposeViewController.canSendMail() else {
             let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_cannot_send_mail_error_")
-            NCContentPresenter.shared.showError(error: error)
+            NCContentPresenter().showError(error: error)
             return
         }
 
@@ -112,7 +112,7 @@ extension UIViewController {
         let actions = actions.sorted(by: { $0.order < $1.order })
         guard let menuViewController = NCMenu.makeNCMenu(with: actions, menuColor: menuColor, textColor: textColor) else {
             let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_internal_generic_error_")
-            NCContentPresenter.shared.showError(error: error)
+            NCContentPresenter().showError(error: error)
             return
         }
 

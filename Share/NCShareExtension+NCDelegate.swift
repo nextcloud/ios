@@ -82,6 +82,7 @@ extension NCShareExtension: NCEmptyDataSetDelegate, NCAccountRequestDelegate {
         // COLORS
         NCBrandColor.shared.settingThemingColor(account: activeAccount.account)
         NCBrandColor.shared.createUserColors()
+        NCCache.shared.createImagesCache()
 
         // NETWORKING
         NextcloudKit.shared.setup(
@@ -98,7 +99,7 @@ extension NCShareExtension: NCEmptyDataSetDelegate, NCAccountRequestDelegate {
         autoUploadFileName = NCManageDatabase.shared.getAccountAutoUploadFileName()
         autoUploadDirectory = NCManageDatabase.shared.getAccountAutoUploadDirectory(urlBase: activeAccount.urlBase, userId: activeAccount.userId, account: activeAccount.account)
 
-        serverUrl = NCUtilityFileSystem.shared.getHomeServer(urlBase: activeAccount.urlBase, userId: activeAccount.userId)
+        serverUrl = utilityFileSystem.getHomeServer(urlBase: activeAccount.urlBase, userId: activeAccount.userId)
 
         layoutForView = NCManageDatabase.shared.getLayoutForView(account: activeAccount.account, key: keyLayout, serverUrl: serverUrl)
 
@@ -131,7 +132,7 @@ extension NCShareExtension: NCShareCellDelegate, NCRenameFileDelegate, NCListCel
         if let previewImage = UIImage.downsample(imageAt: URL(fileURLWithPath: NSTemporaryDirectory() + fileName), to: CGSize(width: 140, height: 140)) {
             vcRename.imagePreview = previewImage
         } else {
-            vcRename.imagePreview = UIImage(named: resultInternalType.iconName) ?? NCBrandColor.cacheImages.file
+            vcRename.imagePreview = UIImage(named: resultInternalType.iconName) ?? NCCache.cacheImages.file
         }
 
         let popup = NCPopupViewController(contentController: vcRename, popupWidth: vcRename.width, popupHeight: vcRename.height)
@@ -143,7 +144,7 @@ extension NCShareExtension: NCShareCellDelegate, NCRenameFileDelegate, NCListCel
         guard fileName != fileNameNew else { return }
         guard let fileIx = self.filesName.firstIndex(of: fileName),
               !self.filesName.contains(fileNameNew),
-              NCUtilityFileSystem.shared.moveFile(atPath: (NSTemporaryDirectory() + fileName), toPath: (NSTemporaryDirectory() + fileNameNew)) else {
+              utilityFileSystem.moveFile(atPath: (NSTemporaryDirectory() + fileName), toPath: (NSTemporaryDirectory() + fileNameNew)) else {
                   return showAlert(title: "_single_file_conflict_title_", description: "'\(fileName)' -> '\(fileNameNew)'")
               }
 

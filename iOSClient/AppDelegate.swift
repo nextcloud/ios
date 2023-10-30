@@ -53,10 +53,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     var disableSharesView: Bool = false
     var documentPickerViewController: NCDocumentPickerViewController?
     var timerErrorNetworking: Timer?
-
-    var isAppRefresh: Bool = false
-    var isAppProcessing: Bool = false
-
     private var privacyProtectionWindow: UIWindow?
 
     let downloadQueue = Queuer(name: "downloadQueue", maxConcurrentOperationCount: NCGlobal.shared.maxConcurrentOperationCountDownload, qualityOfService: .default)
@@ -74,19 +70,21 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         if isUiTestingEnabled {
             deleteAllAccounts()
         }
+        let utilityFileSystem = NCUtilityFileSystem()
+        let utility = NCUtility()
 
         NCSettingsBundleHelper.checkAndExecuteSettings(delay: 0)
 
-        let versionNextcloudiOS = String(format: NCBrandOptions.shared.textCopyrightNextcloudiOS, NCUtility.shared.getVersionApp())
+        let versionNextcloudiOS = String(format: NCBrandOptions.shared.textCopyrightNextcloudiOS, utility.getVersionApp())
 
         UserDefaults.standard.register(defaults: ["UserAgent": userAgent])
         if !NCKeychain().disableCrashservice, !NCBrandOptions.shared.disable_crash_service {
             FirebaseApp.configure()
         }
 
-        NCUtilityFileSystem.shared.createDirectoryStandard()
-        NCUtilityFileSystem.shared.emptyTemporaryDirectory()
-        NCUtilityFileSystem.shared.clearCacheDirectory("com.limit-point.LivePhoto")
+        utilityFileSystem.createDirectoryStandard()
+        utilityFileSystem.emptyTemporaryDirectory()
+        utilityFileSystem.clearCacheDirectory("com.limit-point.LivePhoto")
 
         // Activated singleton
         _ = NCActionCenter.shared
@@ -98,12 +96,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         startTimerErrorNetworking()
 
         var levelLog = 0
-        NextcloudKit.shared.nkCommonInstance.pathLog = NCUtilityFileSystem.shared.directoryGroup
+        NextcloudKit.shared.nkCommonInstance.pathLog = utilityFileSystem.directoryGroup
 
         if NCBrandOptions.shared.disable_log {
 
-            NCUtilityFileSystem.shared.removeFile(atPath: NextcloudKit.shared.nkCommonInstance.filenamePathLog)
-            NCUtilityFileSystem.shared.removeFile(atPath: NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true).first! + "/" + NextcloudKit.shared.nkCommonInstance.filenameLog)
+            utilityFileSystem.removeFile(atPath: NextcloudKit.shared.nkCommonInstance.filenamePathLog)
+            utilityFileSystem.removeFile(atPath: NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true).first! + "/" + NextcloudKit.shared.nkCommonInstance.filenameLog)
 
         } else {
 
@@ -132,8 +130,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             NCManageDatabase.shared.setCapabilities(account: account)
 
             NCBrandColor.shared.settingThemingColor(account: activeAccount.account)
-
-            DispatchQueue.global().async { NCMediaCache.shared.createCache(account: activeAccount.account) }
+            NCCache.shared.createImagesCache()
+            NCCache.shared.createMediaCache(account: activeAccount.account)
 
         } else {
 
@@ -142,7 +140,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                 UserDefaults.standard.removePersistentDomain(forName: bundleID)
             }
 
-            NCBrandColor.shared.createImagesThemingColor()
+            NCCache.shared.createImagesCache()
         }
 
         NCBrandColor.shared.createUserColors()
@@ -152,7 +150,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         UNUserNotificationCenter.current().delegate = self
         UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge, .sound]) { _, _ in }
 
-        if !NCUtility.shared.isSimulatorOrTestFlight() {
+        if !utility.isSimulatorOrTestFlight() {
             let review = NCStoreReview()
             review.incrementAppRuns()
             review.showStoreReview()
@@ -203,11 +201,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         NCNetworkingProcessUpload.shared.observeTableMetadata()
         NCNetworkingProcessUpload.shared.startTimer()
 
-        if !NCAskAuthorization.shared.isRequesting {
+        if !NCAskAuthorization().isRequesting {
             hidePrivacyProtectionWindow()
         }
 
-        NCService.shared.startRequestServicesServer()
+        NCService().startRequestServicesServer()
 
         NCAutoUpload.shared.initAutoUpload(viewController: nil) { items in
             NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Initialize Auto upload with \(items) uploads")
@@ -236,7 +234,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
         // Clear older files
         let days = NCKeychain().cleanUpDay
-        NCUtilityFileSystem.shared.cleanUp(directory: NCUtilityFileSystem.shared.directoryProviderStorage, days: TimeInterval(days))
+        let utilityFileSystem = NCUtilityFileSystem()
+        utilityFileSystem.cleanUp(directory: utilityFileSystem.directoryProviderStorage, days: TimeInterval(days))
 
         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterApplicationWillResignActive)
     }
@@ -260,13 +259,26 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Application did enter in background")
 
         guard !account.isEmpty else { return }
+        let activeAccount = NCManageDatabase.shared.getActiveAccount()
+
+        if let autoUpload = activeAccount?.autoUpload, autoUpload {
+            NextcloudKit.shared.nkCommonInstance.writeLog("- Auto upload: true")
+            if UIApplication.shared.backgroundRefreshStatus == .available {
+                NextcloudKit.shared.nkCommonInstance.writeLog("- Auto upload in background: true")
+            } else {
+                NextcloudKit.shared.nkCommonInstance.writeLog("- Auto upload in background: false")
+            }
+        } else {
+            NextcloudKit.shared.nkCommonInstance.writeLog("- Auto upload: false")
+        }
 
         if let error = updateShareAccounts() {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Create share accounts \(error.localizedDescription)")
         }
 
+        scheduleAppRefresh()
+        scheduleAppProcessing()
         NCNetworking.shared.cancel(inBackground: false)
-
         presentPasscode { }
 
         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterApplicationDidEnterBackground)
@@ -302,6 +314,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         request.earliestBeginDate = Date(timeIntervalSinceNow: 60) // Refresh after 60 seconds.
         do {
             try BGTaskScheduler.shared.submit(request)
+            NextcloudKit.shared.nkCommonInstance.writeLog("- Refresh task: ok")
         } catch {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Refresh task failed to submit request: \(error)")
         }
@@ -319,6 +332,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         request.requiresExternalPower = false
         do {
             try BGTaskScheduler.shared.submit(request)
+            NextcloudKit.shared.nkCommonInstance.writeLog("- Processing task: ok")
         } catch {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Background Processing task failed to submit request: \(error)")
         }
@@ -327,19 +341,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     func handleAppRefresh(_ task: BGTask) {
         scheduleAppRefresh()
 
-        guard !account.isEmpty, !isAppProcessing else {
-            return task.setTaskCompleted(success: true)
-        }
-
-        isAppRefresh = true
-        NextcloudKit.shared.setup(delegate: NCNetworking.shared)
-
         NCAutoUpload.shared.initAutoUpload(viewController: nil) { items in
             NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Refresh task auto upload with \(items) uploads")
             NCNetworkingProcessUpload.shared.start { items in
                 NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Refresh task upload process with \(items) uploads")
                 task.setTaskCompleted(success: true)
-                self.isAppRefresh = false
             }
         }
     }
@@ -347,19 +353,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     func handleProcessingTask(_ task: BGTask) {
         scheduleAppProcessing()
 
-        guard !account.isEmpty, !isAppRefresh else {
-            return task.setTaskCompleted(success: true)
-        }
-
-        isAppProcessing = true
-        NextcloudKit.shared.setup(delegate: NCNetworking.shared)
-
         NCAutoUpload.shared.initAutoUpload(viewController: nil) { items in
             NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Processing task auto upload with \(items) uploads")
             NCNetworkingProcessUpload.shared.start { items in
                 NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Processing task upload process with \(items) uploads")
                 task.setTaskCompleted(success: true)
-                self.isAppProcessing = false
             }
         }
     }
@@ -537,7 +535,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
               host == currentHost
         else { return }
 
-        let certificateHostSavedPath = NCUtilityFileSystem.shared.directoryCertificates + "/" + host + ".der"
+        let certificateHostSavedPath = NCUtilityFileSystem().directoryCertificates + "/" + host + ".der"
         var title = NSLocalizedString("_ssl_certificate_changed_", comment: "")
 
         if !FileManager.default.fileExists(atPath: certificateHostSavedPath) {
@@ -594,13 +592,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
         NCPushNotification.shared().pushNotification()
 
-        NCService.shared.startRequestServicesServer()
+        NCService().startRequestServicesServer()
 
         NCAutoUpload.shared.initAutoUpload(viewController: nil) { items in
             NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Initialize Auto upload with \(items) uploads")
         }
 
-        DispatchQueue.global().async { NCMediaCache.shared.createCache(account: self.account) }
+        DispatchQueue.global().async { NCCache.shared.createMediaCache(account: self.account) }
 
         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterChangeUser)
     }
@@ -612,8 +610,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         }
 
         let results = NCManageDatabase.shared.getTableLocalFiles(predicate: NSPredicate(format: "account == %@", account), sorted: "ocId", ascending: false)
+        let utilityFileSystem = NCUtilityFileSystem()
         for result in results {
-            NCUtilityFileSystem.shared.removeFile(atPath: NCUtilityFileSystem.shared.getDirectoryProviderStorageOcId(result.ocId))
+            utilityFileSystem.removeFile(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(result.ocId))
         }
         NCManageDatabase.shared.clearDatabase(account: account, removeAccount: true)
 
@@ -655,7 +654,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             let name = account.alias.isEmpty ? account.displayName : account.alias
             let userBaseUrl = account.user + "-" + (URL(string: account.urlBase)?.host ?? "")
             let avatarFileName = userBaseUrl + "-\(account.user).png"
-            let pathAvatarFileName = NCUtilityFileSystem.shared.directoryUserData + "/" + avatarFileName
+            let pathAvatarFileName = NCUtilityFileSystem().directoryUserData + "/" + avatarFileName
             let image = UIImage(contentsOfFile: pathAvatarFileName)
             accounts.append(NKShareAccounts.DataAccounts(withUrl: account.urlBase, user: account.user, name: name, image: image))
         }
@@ -861,7 +860,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                 switch actionScheme {
                 case NCGlobal.shared.actionUploadAsset:
 
-                    NCAskAuthorization.shared.askAuthorizationPhotoLibrary(viewController: rootViewController) { hasPermission in
+                    NCAskAuthorization().askAuthorizationPhotoLibrary(viewController: rootViewController) { hasPermission in
                         if hasPermission {
                             NCPhotosPickerViewController(viewController: rootViewController, maxSelectedAssets: 0, singleSelectedMode: false)
                         }
@@ -869,7 +868,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
                 case NCGlobal.shared.actionScanDocument:
 
-                    NCDocumentCamera.shared.openScannerDocument(viewController: rootViewController)
+                    NCDocumentCamera().openScannerDocument(viewController: rootViewController)
 
                 case NCGlobal.shared.actionTextDocument:
 
@@ -890,9 +889,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
                 case NCGlobal.shared.actionVoiceMemo:
 
-                    NCAskAuthorization.shared.askAuthorizationAudioRecord(viewController: rootViewController) { hasPermission in
+                    NCAskAuthorization().askAuthorizationAudioRecord(viewController: rootViewController) { hasPermission in
                         if hasPermission {
-                            let fileName = NCUtilityFileSystem.shared.createFileNameDate(NSLocalizedString("_voice_memo_filename_", comment: ""), ext: "m4a")
+                            let fileName = NCUtilityFileSystem().createFileNameDate(NSLocalizedString("_voice_memo_filename_", comment: ""), ext: "m4a")
                             if let viewController = UIStoryboard(name: "NCAudioRecorderViewController", bundle: nil).instantiateInitialViewController() as? NCAudioRecorderViewController {
 
                                 viewController.delegate = self

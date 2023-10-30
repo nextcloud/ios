@@ -24,10 +24,6 @@
 import UIKit
 
 class NCAskAuthorization: NSObject {
-    @objc static let shared: NCAskAuthorization = {
-        let instance = NCAskAuthorization()
-        return instance
-    }()
 
     private(set) var isRequesting = false
 

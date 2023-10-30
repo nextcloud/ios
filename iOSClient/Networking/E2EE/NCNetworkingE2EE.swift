@@ -23,10 +23,6 @@ import Foundation
 import NextcloudKit
 
 class NCNetworkingE2EE: NSObject {
-    public static let shared: NCNetworkingE2EE = {
-        let instance = NCNetworkingE2EE()
-        return instance
-    }()
 
     func isInUpload(account: String, serverUrl: String) -> Bool {
 

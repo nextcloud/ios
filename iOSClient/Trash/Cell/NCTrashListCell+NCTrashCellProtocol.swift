@@ -65,8 +65,8 @@ class NCTrashListCell: UICollectionViewCell, NCTrashCellProtocol {
 
         ]
 
-        imageRestore.image = NCBrandColor.cacheImages.buttonRestore
-        imageMore.image = NCBrandColor.cacheImages.buttonTrash
+        imageRestore.image = NCCache.cacheImages.buttonRestore
+        imageMore.image = NCCache.cacheImages.buttonTrash
 
         imageItem.layer.cornerRadius = 6
         imageItem.layer.masksToBounds = true
@@ -106,7 +106,7 @@ class NCTrashListCell: UICollectionViewCell, NCTrashCellProtocol {
         if status {
             var blurEffect: UIVisualEffect?
             var blurEffectView: UIView?
-            imageSelect.image = NCBrandColor.cacheImages.checkedYes
+            imageSelect.image = NCCache.cacheImages.checkedYes
             if traitCollection.userInterfaceStyle == .dark {
                 blurEffect = UIBlurEffect(style: .dark)
                 blurEffectView = UIVisualEffectView(effect: blurEffect)
@@ -121,7 +121,7 @@ class NCTrashListCell: UICollectionViewCell, NCTrashCellProtocol {
             backgroundView = blurEffectView
             separator.isHidden = true
         } else {
-            imageSelect.image = NCBrandColor.cacheImages.checkedNo
+            imageSelect.image = NCCache.cacheImages.checkedNo
             backgroundView = nil
             separator.isHidden = false
         }
@@ -159,10 +159,10 @@ extension NCTrashCellProtocol where Self: UICollectionViewCell {
             self.labelInfo?.text = dateFormatter.string(from: tableTrash.date as Date)
         }
         if tableTrash.directory {
-            self.imageItem.image = NCBrandColor.cacheImages.folder
+            self.imageItem.image = NCCache.cacheImages.folder
         } else {
             self.imageItem.image = image
-            self.labelInfo?.text = (self.labelInfo?.text ?? "") + " · " + NCUtilityFileSystem.shared.transformedSize(tableTrash.size)
+            self.labelInfo?.text = (self.labelInfo?.text ?? "") + " · " + NCUtilityFileSystem().transformedSize(tableTrash.size)
         }
         self.accessibilityLabel = tableTrash.trashbinFileName + ", " + (self.labelInfo?.text ?? "")
     }

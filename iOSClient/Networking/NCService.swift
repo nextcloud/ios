@@ -27,12 +27,9 @@ import NextcloudKit
 import RealmSwift
 
 class NCService: NSObject {
-    @objc static let shared: NCService = {
-        let instance = NCService()
-        return instance
-    }()
 
     let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
+    let utilityFileSystem = NCUtilityFileSystem()
 
     // MARK: -
 
@@ -101,15 +98,15 @@ class NCService: NSObject {
         case .success(let serverInfo):
             if serverInfo.maintenance {
                 let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_maintenance_mode_")
-                NCContentPresenter.shared.showWarning(error: error, priority: .max)
+                NCContentPresenter().showWarning(error: error, priority: .max)
                 return false
             } else if serverInfo.productName.lowercased().contains("owncloud") {
                 let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_warning_owncloud_")
-                NCContentPresenter.shared.showWarning(error: error, priority: .max)
+                NCContentPresenter().showWarning(error: error, priority: .max)
                 return false
             } else if serverInfo.versionMajor <= NCGlobal.shared.nextcloud_unsupported_version {
                 let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_warning_unsupported_")
-                NCContentPresenter.shared.showWarning(error: error, priority: .max)
+                NCContentPresenter().showWarning(error: error, priority: .max)
             }
         case .failure:
             return false
@@ -129,7 +126,7 @@ class NCService: NSObject {
             }
             return false
         } else {
-            NCContentPresenter.shared.showError(error: resultUserProfile.error, priority: .max)
+            NCContentPresenter().showError(error: resultUserProfile.error, priority: .max)
             return false
         }
     }
@@ -153,7 +150,7 @@ class NCService: NSObject {
     func getAvatar() {
 
         let fileName = appDelegate.userBaseUrl + "-" + self.appDelegate.user + ".png"
-        let fileNameLocalPath = NCUtilityFileSystem.shared.directoryUserData + "/" + fileName
+        let fileNameLocalPath = utilityFileSystem.directoryUserData + "/" + fileName
         let etag = NCManageDatabase.shared.getTableAvatar(fileName: fileName)?.etag
 
         NextcloudKit.shared.downloadAvatar(user: appDelegate.userId,
@@ -178,6 +175,7 @@ class NCService: NSObject {
         NextcloudKit.shared.getCapabilities(options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { account, data, error in
             guard error == .success, let data = data else {
                 NCBrandColor.shared.settingThemingColor(account: account)
+                NCCache.shared.createImagesCache()
                 return
             }
 
@@ -194,6 +192,7 @@ class NCService: NSObject {
             // Theming
             if NCGlobal.shared.capabilityThemingColor != NCBrandColor.shared.themingColor || NCGlobal.shared.capabilityThemingColorElement != NCBrandColor.shared.themingColorElement || NCGlobal.shared.capabilityThemingColorText != NCBrandColor.shared.themingColorText {
                 NCBrandColor.shared.settingThemingColor(account: account)
+                NCCache.shared.createImagesCache()
             }
 
             // Sharing & Comments
@@ -269,7 +268,7 @@ class NCService: NSObject {
             }
             if let fileName = fileNameToWrite, let image = imageData {
                 do {
-                    let fileNamePath = NCUtilityFileSystem.shared.directoryUserData + "/" + fileName + ".png"
+                    let fileNamePath = utilityFileSystem.directoryUserData + "/" + fileName + ".png"
                     try image.pngData()?.write(to: URL(fileURLWithPath: fileNamePath), options: .atomic)
                 } catch { }
             }

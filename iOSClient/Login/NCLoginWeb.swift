@@ -31,6 +31,7 @@ class NCLoginWeb: UIViewController {
     var webView: WKWebView?
 
     let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
+    let utility = NCUtility()
 
     var titleView: String = ""
 
@@ -123,7 +124,7 @@ class NCLoginWeb: UIViewController {
             loadWebPage(webView: webView!, url: url)
         } else {
             let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_login_url_error_")
-            NCContentPresenter.shared.showError(error: error, priority: .max)
+            NCContentPresenter().showError(error: error, priority: .max)
         }
 
         // TITLE
@@ -188,7 +189,7 @@ class NCLoginWeb: UIViewController {
             if error == .success, let password = token {
                 self.createAccount(server: serverUrl, username: username, password: password)
             } else {
-                NCContentPresenter.shared.showError(error: error)
+                NCContentPresenter().showError(error: error)
                 self.dismiss(animated: true, completion: nil)
             }
         }
@@ -293,7 +294,7 @@ extension NCLoginWeb: WKNavigationDelegate {
             if error == .success, let userProfile {
 
                 if NCManageDatabase.shared.getAccounts() == nil {
-                    NCUtility.shared.removeAllSettings()
+                    self.utility.removeAllSettings()
                 }
 
                 NCManageDatabase.shared.deleteAccount(account)

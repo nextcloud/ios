@@ -91,7 +91,7 @@ class NCGroupfolders: NCCollectionViewCommon {
         isReloadDataSourceNetworkInProgress = true
         collectionView?.reloadData()
 
-        let homeServerUrl = NCUtilityFileSystem.shared.getHomeServer(urlBase: self.appDelegate.urlBase, userId: self.appDelegate.userId)
+        let homeServerUrl = utilityFileSystem.getHomeServer(urlBase: self.appDelegate.urlBase, userId: self.appDelegate.userId)
 
         NextcloudKit.shared.getGroupfolders(options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { account, results, _, error in
 
@@ -104,7 +104,7 @@ class NCGroupfolders: NCCollectionViewCommon {
                         if NCManageDatabase.shared.getMetadataFromDirectory(account: self.appDelegate.account, serverUrl: serverUrlFileName) == nil {
                             let results = await NextcloudKit.shared.readFileOrFolder(serverUrlFileName: serverUrlFileName, depth: "0", showHiddenFiles: NCKeychain().showHiddenFiles)
                             if results.error == .success, let file = results.files.first {
-                                let isDirectoryE2EE = NCUtility.shared.isDirectoryE2EE(file: file)
+                                let isDirectoryE2EE = self.utilityFileSystem.isDirectoryE2EE(file: file)
                                 let metadata = NCManageDatabase.shared.convertFileToMetadata(file, isDirectoryE2EE: isDirectoryE2EE)
                                 NCManageDatabase.shared.addMetadata(metadata)
                                 NCManageDatabase.shared.addDirectory(encrypted: isDirectoryE2EE, favorite: metadata.favorite, ocId: metadata.ocId, fileId: metadata.fileId, etag: nil, permissions: metadata.permissions, serverUrl: serverUrlFileName, account: metadata.account)

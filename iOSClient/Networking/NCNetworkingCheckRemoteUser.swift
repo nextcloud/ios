@@ -43,7 +43,7 @@ class NCNetworkingCheckRemoteUser {
 
                     appDelegate.deleteAccount(account, wipe: true)
                     let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_wipe_account_")
-                    NCContentPresenter.shared.messageNotification(tableAccount.user, error: error, delay: NCGlobal.shared.dismissAfterSecondLong, type: NCContentPresenter.messageType.error, priority: .max)
+                    NCContentPresenter().messageNotification(tableAccount.user, error: error, delay: NCGlobal.shared.dismissAfterSecondLong, type: NCContentPresenter.messageType.error, priority: .max)
                     NextcloudKit.shared.setRemoteWipeCompletition(serverUrl: tableAccount.urlBase, token: token) { _, _ in print("wipe") }
 
                 } else {
@@ -51,7 +51,7 @@ class NCNetworkingCheckRemoteUser {
                     if UIApplication.shared.applicationState == .active && NextcloudKit.shared.isNetworkReachable() {
                         let description = String.localizedStringWithFormat(NSLocalizedString("_error_check_remote_user_", comment: ""), tableAccount.user, tableAccount.urlBase)
                         let error = NKError(errorCode: error.errorCode, errorDescription: description)
-                        NCContentPresenter.shared.showError(error: error, priority: .max)
+                        NCContentPresenter().showError(error: error, priority: .max)
                         NCKeychain().setPassword(account: account, password: nil)
                         NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Password removed.")
                     }
@@ -63,7 +63,7 @@ class NCNetworkingCheckRemoteUser {
             if UIApplication.shared.applicationState == .active && NextcloudKit.shared.isNetworkReachable() {
                 let description = String.localizedStringWithFormat(NSLocalizedString("_error_check_remote_user_", comment: ""), tableAccount.user, tableAccount.urlBase)
                 let error = NKError(errorCode: error.errorCode, errorDescription: description)
-                NCContentPresenter.shared.showError(error: error, priority: .max)
+                NCContentPresenter().showError(error: error, priority: .max)
                 NCKeychain().setPassword(account: account, password: nil)
             }
         }

@@ -31,21 +31,22 @@ class NCSettingsBundleHelper: NSObject {
     }
 
     class func setVersionAndBuildNumber() {
-        let version = NCUtility.shared.getVersionApp() as String
+        let version = NCUtility().getVersionApp() as String
         UserDefaults.standard.set(version, forKey: SettingsBundleKeys.BuildVersionKey)
     }
 
     class func checkAndExecuteSettings(delay: Double) {
         if UserDefaults.standard.bool(forKey: SettingsBundleKeys.Reset) {
             UserDefaults.standard.set(false, forKey: SettingsBundleKeys.Reset)
+            let utilityFileSystem = NCUtilityFileSystem()
 
             URLCache.shared.memoryCapacity = 0
             URLCache.shared.diskCapacity = 0
 
-            NCUtilityFileSystem.shared.removeGroupDirectoryProviderStorage()
-            NCUtilityFileSystem.shared.removeGroupApplicationSupport()
-            NCUtilityFileSystem.shared.removeDocumentsDirectory()
-            NCUtilityFileSystem.shared.removeTemporaryDirectory()
+            utilityFileSystem.removeGroupDirectoryProviderStorage()
+            utilityFileSystem.removeGroupApplicationSupport()
+            utilityFileSystem.removeDocumentsDirectory()
+            utilityFileSystem.removeTemporaryDirectory()
 
             NCKeychain().removeAll()
             NCManageDatabase.shared.removeDB()

@@ -50,7 +50,7 @@ class NCSectionHeaderMenu: UICollectionReusableView, UIGestureRecognizerDelegate
     @IBOutlet weak var transferSeparatorBottomHeightConstraint: NSLayoutConstraint!
 
     weak var delegate: NCSectionHeaderMenuDelegate?
-
+    let utility = NCUtility()
     private var markdownParser = MarkdownParser()
     private var richWorkspaceText: String?
     private var textViewColor: UIColor?
@@ -200,7 +200,7 @@ class NCSectionHeaderMenu: UICollectionReusableView, UIGestureRecognizerDelegate
             var image: UIImage?
             if let ocId,
                let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
-                image = NCUtility.shared.createFilePreviewImage(ocId: metadata.ocId, etag: metadata.etag, fileNameView: metadata.fileNameView, classFile: metadata.classFile, status: metadata.status, createPreviewMedia: true)?.darken()
+                image = utility.createFilePreviewImage(ocId: metadata.ocId, etag: metadata.etag, fileNameView: metadata.fileNameView, classFile: metadata.classFile, status: metadata.status, createPreviewMedia: true)?.darken()
                 if image == nil {
                     image = UIImage(named: metadata.iconName)
                     buttonTransfer.backgroundColor = .lightGray
@@ -291,6 +291,7 @@ class NCSectionFooter: UICollectionReusableView, NCSectionFooterDelegate {
 
     weak var delegate: NCSectionFooterDelegate?
     var metadataForSection: NCMetadataForSection?
+    let utilityFileSystem = NCUtilityFileSystem()
 
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -319,9 +320,9 @@ class NCSectionFooter: UICollectionReusableView, NCSectionFooterDelegate {
         }
 
         if files > 1 {
-            filesText = "\(files) " + NSLocalizedString("_files_", comment: "") + " " + NCUtilityFileSystem.shared.transformedSize(size)
+            filesText = "\(files) " + NSLocalizedString("_files_", comment: "") + " " + utilityFileSystem.transformedSize(size)
         } else if files == 1 {
-            filesText = "1 " + NSLocalizedString("_file_", comment: "") + " " + NCUtilityFileSystem.shared.transformedSize(size)
+            filesText = "1 " + NSLocalizedString("_file_", comment: "") + " " + utilityFileSystem.transformedSize(size)
         }
 
         if foldersText.isEmpty {

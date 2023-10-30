@@ -37,7 +37,9 @@ class NCTrash: UIViewController, NCSelectableNavigationView, NCTrashListCellDele
     var emptyDataSet: NCEmptyDataSet?
     var selectableDataSource: [RealmSwiftObject] { datasource }
 
-    internal let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
+    let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
+    let utilityFileSystem = NCUtilityFileSystem()
+    let utility = NCUtility()
 
     internal var isEditMode = false
     internal var selectOcId: [String] = []
@@ -283,7 +285,7 @@ extension NCTrash {
             DispatchQueue.main.async { self.refreshControl.endRefreshing() }
 
             guard error == .success, account == self.appDelegate.account, let trashPath = self.getTrashPath() else {
-                NCContentPresenter.shared.showError(error: error)
+                NCContentPresenter().showError(error: error)
                 return
             }
 
@@ -303,7 +305,7 @@ extension NCTrash {
         NextcloudKit.shared.moveFileOrFolder(serverUrlFileNameSource: fileNameFrom, serverUrlFileNameDestination: fileNameTo, overwrite: true) { account, error in
 
             guard error == .success, account == self.appDelegate.account else {
-                NCContentPresenter.shared.showError(error: error)
+                NCContentPresenter().showError(error: error)
                 return
             }
 
@@ -319,7 +321,7 @@ extension NCTrash {
         NextcloudKit.shared.deleteFileOrFolder(serverUrlFileName: serverUrlFileName) { account, error in
 
             guard error == .success, account == self.appDelegate.account else {
-                NCContentPresenter.shared.showError(error: error)
+                NCContentPresenter().showError(error: error)
                 return
             }
 
@@ -336,7 +338,7 @@ extension NCTrash {
         NextcloudKit.shared.deleteFileOrFolder(serverUrlFileName: serverUrlFileName) { account, error in
 
             guard error == .success, account == self.appDelegate.account else {
-                NCContentPresenter.shared.showError(error: error)
+                NCContentPresenter().showError(error: error)
                 return
             }
 
@@ -347,8 +349,8 @@ extension NCTrash {
 
     func downloadThumbnail(with tableTrash: tableTrash, indexPath: IndexPath) {
 
-        let fileNamePreviewLocalPath = NCUtilityFileSystem.shared.getDirectoryProviderStoragePreviewOcId(tableTrash.fileId, etag: tableTrash.fileName)
-        let fileNameIconLocalPath = NCUtilityFileSystem.shared.getDirectoryProviderStorageIconOcId(tableTrash.fileId, etag: tableTrash.fileName)
+        let fileNamePreviewLocalPath = utilityFileSystem.getDirectoryProviderStoragePreviewOcId(tableTrash.fileId, etag: tableTrash.fileName)
+        let fileNameIconLocalPath = utilityFileSystem.getDirectoryProviderStorageIconOcId(tableTrash.fileId, etag: tableTrash.fileName)
 
         NextcloudKit.shared.downloadPreview(fileNamePathOrFileId: tableTrash.fileId,
                                             fileNamePreviewLocalPath: fileNamePreviewLocalPath,

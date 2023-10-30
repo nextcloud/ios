@@ -50,6 +50,9 @@ class NCShare: UIViewController, NCShareNetworkingDelegate, NCSharePagingContent
     public var metadata: tableMetadata?
     public var sharingEnabled = true
     public var height: CGFloat = 0
+    let shareCommon = NCShareCommon()
+    let utilityFileSystem = NCUtilityFileSystem()
+    let utility = NCUtility()
 
     var canReshare: Bool {
         guard let metadata = metadata else { return true }
@@ -111,7 +114,7 @@ class NCShare: UIViewController, NCShareNetworkingDelegate, NCSharePagingContent
         btnContact.layer.borderWidth = 1
         btnContact.layer.borderColor = UIColor.gray.cgColor
         btnContact.tintColor = .gray
-        btnContact.setImage(NCUtility.shared.loadImage(named: "contact", color: .gray, size: 24), for: .normal)
+        btnContact.setImage(utility.loadImage(named: "contact", color: .gray, size: 24), for: .normal)
     }
 
     func makeNewLinkShare() {
@@ -119,7 +122,7 @@ class NCShare: UIViewController, NCShareNetworkingDelegate, NCSharePagingContent
             let advancePermission = UIStoryboard(name: "NCShare", bundle: nil).instantiateViewController(withIdentifier: "NCShareAdvancePermission") as? NCShareAdvancePermission,
             let navigationController = self.navigationController,
             let metadata = self.metadata else { return }
-        self.checkEnforcedPassword(shareType: NCShareCommon.shared.SHARE_TYPE_LINK) { password in
+        self.checkEnforcedPassword(shareType: shareCommon.SHARE_TYPE_LINK) { password in
             advancePermission.networking = self.networking
             advancePermission.share = NCTableShareOptions.shareLink(metadata: metadata, password: password)
             advancePermission.metadata = self.metadata
@@ -139,7 +142,7 @@ class NCShare: UIViewController, NCShareNetworkingDelegate, NCSharePagingContent
         searchFieldTopConstraint.constant = 65
         sharedWithYouByView.isHidden = false
         sharedWithYouByLabel.text = NSLocalizedString("_shared_with_you_by_", comment: "") + " " + metadata.ownerDisplayName
-        sharedWithYouByImage.image = NCUtility.shared.loadUserImage(
+        sharedWithYouByImage.image = utility.loadUserImage(
             for: metadata.ownerId,
             displayName: metadata.ownerDisplayName,
             userBaseUrl: appDelegate)
@@ -153,7 +156,7 @@ class NCShare: UIViewController, NCShareNetworkingDelegate, NCSharePagingContent
         if !metadata.note.isEmpty {
             searchFieldTopConstraint.constant = 95
             sharedWithYouByNoteImage.isHidden = false
-            sharedWithYouByNoteImage.image = NCUtility.shared.loadImage(named: "note.text", color: .gray)
+            sharedWithYouByNoteImage.image = utility.loadImage(named: "note.text", color: .gray)
             sharedWithYouByNote.isHidden = false
             sharedWithYouByNote.text = metadata.note
             sharedWithYouByNote.textColor = .label
@@ -166,7 +169,7 @@ class NCShare: UIViewController, NCShareNetworkingDelegate, NCSharePagingContent
         let fileName = appDelegate.userBaseUrl + "-" + metadata.ownerId + ".png"
 
         if NCManageDatabase.shared.getImageAvatarLoaded(fileName: fileName) == nil {
-            let fileNameLocalPath = NCUtilityFileSystem.shared.directoryUserData + "/" + fileName
+            let fileNameLocalPath = utilityFileSystem.directoryUserData + "/" + fileName
             let etag = NCManageDatabase.shared.getTableAvatar(fileName: fileName)?.etag
 
             NextcloudKit.shared.downloadAvatar(
@@ -218,7 +221,7 @@ class NCShare: UIViewController, NCShareNetworkingDelegate, NCSharePagingContent
 
     func checkEnforcedPassword(shareType: Int, completion: @escaping (String?) -> Void) {
         guard NCGlobal.shared.capabilityFileSharingPubPasswdEnforced,
-              shareType == NCShareCommon.shared.SHARE_TYPE_LINK || shareType == NCShareCommon.shared.SHARE_TYPE_EMAIL
+              shareType == shareCommon.SHARE_TYPE_LINK || shareType == shareCommon.SHARE_TYPE_EMAIL
         else { return completion(nil) }
 
         self.present(UIAlertController.password(titleKey: "_enforce_password_protection_", completion: completion), animated: true)
@@ -268,7 +271,7 @@ class NCShare: UIViewController, NCShareNetworkingDelegate, NCSharePagingContent
 
         for sharee in sharees {
             var label = sharee.label
-            if sharee.shareType == NCShareCommon.shared.SHARE_TYPE_CIRCLE {
+            if sharee.shareType == shareCommon.SHARE_TYPE_CIRCLE {
                 label += " (\(sharee.circleInfo), \(sharee.circleOwner))"
             }
             dropDown.dataSource.append(label)
@@ -362,7 +365,7 @@ extension NCShare: UITableViewDataSource {
         guard let appDelegate = appDelegate, let tableShare = shares.share?[indexPath.row] else { return UITableViewCell() }
 
         // LINK
-        if tableShare.shareType == NCShareCommon.shared.SHARE_TYPE_LINK {
+        if tableShare.shareType == shareCommon.SHARE_TYPE_LINK {
             if let cell = tableView.dequeueReusableCell(withIdentifier: "cellLink", for: indexPath) as? NCShareLinkCell {
                 cell.indexPath = indexPath
                 cell.tableShare = tableShare
@@ -405,7 +408,7 @@ extension NCShare: CNContactPickerDelegate {
             actions.append(
                 NCMenuAction(
                     title: email,
-                    icon: NCUtility.shared.loadImage(named: "email"),
+                    icon: utility.loadImage(named: "email"),
                     selected: false,
                     on: false,
                     action: { _ in

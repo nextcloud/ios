@@ -85,7 +85,7 @@ class NCRenameFile: UIViewController, UITextFieldDelegate {
             if metadata.directory {
 
                 if imagePreview == nil {
-                    previewFile.image = NCBrandColor.cacheImages.folder
+                    previewFile.image = NCCache.cacheImages.folder
                 }
 
                 ext.isHidden = true
@@ -95,7 +95,7 @@ class NCRenameFile: UIViewController, UITextFieldDelegate {
             } else {
 
                 if imagePreview == nil {
-                    previewFile.image = NCBrandColor.cacheImages.file
+                    previewFile.image = NCCache.cacheImages.file
                 }
 
                 fileNameNoExtensionTrailingContraint.constant = 90
@@ -114,7 +114,7 @@ class NCRenameFile: UIViewController, UITextFieldDelegate {
             ext.delegate = self
 
             if imagePreview == nil {
-                previewFile.image = NCBrandColor.cacheImages.file
+                previewFile.image = NCCache.cacheImages.file
             } else {
                 previewFile.image = imagePreview
             }
@@ -234,7 +234,7 @@ class NCRenameFile: UIViewController, UITextFieldDelegate {
 
         // verify if already exists
         if NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileName == %@", metadata.account, metadata.serverUrl, fileNameNew)) != nil {
-            NCContentPresenter.shared.showError(error: NKError(errorCode: 0, errorDescription: "_rename_already_exists_"))
+            NCContentPresenter().showError(error: NKError(errorCode: 0, errorDescription: "_rename_already_exists_"))
             return
         }
 
@@ -250,7 +250,7 @@ class NCRenameFile: UIViewController, UITextFieldDelegate {
 
             } else {
 
-                NCContentPresenter.shared.showError(error: error)
+                NCContentPresenter().showError(error: error)
             }
         }
     }

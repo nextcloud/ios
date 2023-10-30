@@ -34,10 +34,8 @@ import SVGKit
 #endif
 
 class NCUtility: NSObject {
-    @objc static let shared: NCUtility = {
-        let instance = NCUtility()
-        return instance
-    }()
+
+    let utilityFileSystem = NCUtilityFileSystem()
 
 #if !EXTENSION
     func convertSVGtoPNGWriteToUserData(svgUrlString: String, fileName: String? = nil, width: CGFloat? = nil, rewrite: Bool, account: String, id: Int? = nil, completion: @escaping (_ imageNamePath: String?, _ id: Int?) -> Void) {
@@ -55,7 +53,7 @@ class NCUtility: NSObject {
             fileNamePNG = iconURL.deletingPathExtension().lastPathComponent + ".png"
         }
 
-        let imageNamePath = NCUtilityFileSystem.shared.directoryUserData + "/" + fileNamePNG
+        let imageNamePath = utilityFileSystem.directoryUserData + "/" + fileNamePNG
 
         if !FileManager.default.fileExists(atPath: imageNamePath) || rewrite == true {
 
@@ -206,13 +204,13 @@ class NCUtility: NSObject {
 
         NCManageDatabase.shared.clearDatabase(account: nil, removeAccount: true)
 
-        NCUtilityFileSystem.shared.removeGroupDirectoryProviderStorage()
-        NCUtilityFileSystem.shared.removeGroupLibraryDirectory()
+        utilityFileSystem.removeGroupDirectoryProviderStorage()
+        utilityFileSystem.removeGroupLibraryDirectory()
 
-        NCUtilityFileSystem.shared.removeDocumentsDirectory()
-        NCUtilityFileSystem.shared.removeTemporaryDirectory()
+        utilityFileSystem.removeDocumentsDirectory()
+        utilityFileSystem.removeTemporaryDirectory()
 
-        NCUtilityFileSystem.shared.createDirectoryStandard()
+        utilityFileSystem.createDirectoryStandard()
 
         NCKeychain().removeAll()
     }
@@ -368,11 +366,11 @@ class NCUtility: NSObject {
 
         var originalImage, scaleImagePreview, scaleImageIcon: UIImage?
 
-        let fileNamePath = NCUtilityFileSystem.shared.getDirectoryProviderStorageOcId(ocId, fileNameView: fileNameView)
-        let fileNamePathPreview = NCUtilityFileSystem.shared.getDirectoryProviderStoragePreviewOcId(ocId, etag: etag)
-        let fileNamePathIcon = NCUtilityFileSystem.shared.getDirectoryProviderStorageIconOcId(ocId, etag: etag)
+        let fileNamePath = utilityFileSystem.getDirectoryProviderStorageOcId(ocId, fileNameView: fileNameView)
+        let fileNamePathPreview = utilityFileSystem.getDirectoryProviderStoragePreviewOcId(ocId, etag: etag)
+        let fileNamePathIcon = utilityFileSystem.getDirectoryProviderStorageIconOcId(ocId, etag: etag)
 
-        if NCUtilityFileSystem.shared.fileProviderStorageSize(ocId, fileNameView: fileNameView) > 0 && FileManager().fileExists(atPath: fileNamePathPreview) && FileManager().fileExists(atPath: fileNamePathIcon) { return }
+        if utilityFileSystem.fileProviderStorageSize(ocId, fileNameView: fileNameView) > 0 && FileManager().fileExists(atPath: fileNamePathPreview) && FileManager().fileExists(atPath: fileNamePathIcon) { return }
         if classFile != NKCommon.TypeClassFile.image.rawValue && classFile != NKCommon.TypeClassFile.video.rawValue { return }
 
         if classFile == NKCommon.TypeClassFile.image.rawValue {
@@ -388,7 +386,7 @@ class NCUtility: NSObject {
         } else if classFile == NKCommon.TypeClassFile.video.rawValue {
 
             let videoPath = NSTemporaryDirectory() + "tempvideo.mp4"
-            NCUtilityFileSystem.shared.linkItem(atPath: fileNamePath, toPath: videoPath)
+            utilityFileSystem.linkItem(atPath: fileNamePath, toPath: videoPath)
 
             originalImage = imageFromVideo(url: URL(fileURLWithPath: videoPath), at: 0)
 
@@ -434,7 +432,7 @@ class NCUtility: NSObject {
     @objc func loadUserImage(for user: String, displayName: String?, userBaseUrl: NCUserBaseUrl) -> UIImage {
 
         let fileName = userBaseUrl.userBaseUrl + "-" + user + ".png"
-        let localFilePath = NCUtilityFileSystem.shared.directoryUserData + "/" + fileName
+        let localFilePath = utilityFileSystem.directoryUserData + "/" + fileName
 
         if var localImage = UIImage(contentsOfFile: localFilePath) {
             let rect = CGRect(x: 0, y: 0, width: 30, height: 30)
@@ -450,7 +448,7 @@ class NCUtility: NSObject {
             return avatarImg
         } else {
             let config = UIImage.SymbolConfiguration(pointSize: 30)
-            return NCUtility.shared.loadImage(named: "person.crop.circle", symbolConfiguration: config)
+            return loadImage(named: "person.crop.circle", symbolConfiguration: config)
         }
     }
 
@@ -567,8 +565,8 @@ class NCUtility: NSObject {
     func createFilePreviewImage(ocId: String, etag: String, fileNameView: String, classFile: String, status: Int, createPreviewMedia: Bool) -> UIImage? {
 
         var imagePreview: UIImage?
-        let filePath = NCUtilityFileSystem.shared.getDirectoryProviderStorageOcId(ocId, fileNameView: fileNameView)
-        let iconImagePath = NCUtilityFileSystem.shared.getDirectoryProviderStorageIconOcId(ocId, etag: etag)
+        let filePath = utilityFileSystem.getDirectoryProviderStorageOcId(ocId, fileNameView: fileNameView)
+        let iconImagePath = utilityFileSystem.getDirectoryProviderStorageIconOcId(ocId, etag: etag)
 
         if FileManager().fileExists(atPath: iconImagePath) {
             imagePreview = UIImage(contentsOfFile: iconImagePath)
@@ -582,7 +580,7 @@ class NCUtility: NSObject {
                 } catch { }
             }
         } else if createPreviewMedia && status >= NCGlobal.shared.metadataStatusNormal && classFile == NKCommon.TypeClassFile.video.rawValue && FileManager().fileExists(atPath: filePath) {
-            if let image = NCUtility.shared.imageFromVideo(url: URL(fileURLWithPath: filePath), at: 0), let image = image.resizeImage(size: CGSize(width: NCGlobal.shared.sizeIcon, height: NCGlobal.shared.sizeIcon)), let data = image.jpegData(compressionQuality: 0.5) {
+            if let image = imageFromVideo(url: URL(fileURLWithPath: filePath), at: 0), let image = image.resizeImage(size: CGSize(width: NCGlobal.shared.sizeIcon, height: NCGlobal.shared.sizeIcon)), let data = image.jpegData(compressionQuality: 0.5) {
                 do {
                     try data.write(to: URL(fileURLWithPath: iconImagePath), options: .atomic)
                     imagePreview = image
@@ -591,56 +589,6 @@ class NCUtility: NSObject {
         }
 
         return imagePreview
-    }
-
-    func isDirectoryE2EE(serverUrl: String, userBase: NCUserBaseUrl) -> Bool {
-        return isDirectoryE2EE(account: userBase.account, urlBase: userBase.urlBase, userId: userBase.userId, serverUrl: serverUrl)
-    }
-
-    func isDirectoryE2EE(file: NKFile) -> Bool {
-        return isDirectoryE2EE(account: file.account, urlBase: file.urlBase, userId: file.userId, serverUrl: file.serverUrl)
-    }
-
-    func isDirectoryE2EE(account: String, urlBase: String, userId: String, serverUrl: String) -> Bool {
-        if serverUrl == NCUtilityFileSystem.shared.getHomeServer(urlBase: urlBase, userId: userId) || serverUrl == ".." { return false }
-        if let directory = NCManageDatabase.shared.getTableDirectory(account: account, serverUrl: serverUrl) {
-            return directory.e2eEncrypted
-        }
-        return false
-    }
-
-    func isDirectoryE2EETop(account: String, serverUrl: String) -> Bool {
-
-        guard let serverUrl = serverUrl.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) else { return false }
-
-        if let url = URL(string: serverUrl)?.deletingLastPathComponent(),
-           let serverUrl = String(url.absoluteString.dropLast()).removingPercentEncoding {
-            if let directory = NCManageDatabase.shared.getTableDirectory(account: account, serverUrl: serverUrl) {
-                return !directory.e2eEncrypted
-            }
-        }
-        return true
-    }
-
-    func getDirectoryE2EETop(serverUrl: String, account: String) -> tableDirectory? {
-
-        guard var serverUrl = serverUrl.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) else { return nil }
-        var top: tableDirectory?
-
-        while let url = URL(string: serverUrl)?.deletingLastPathComponent(),
-              let serverUrlencoding = serverUrl.removingPercentEncoding,
-              let directory = NCManageDatabase.shared.getTableDirectory(account: account, serverUrl: serverUrlencoding) {
-
-            if directory.e2eEncrypted {
-                top = directory
-            } else {
-                return top
-            }
-
-            serverUrl = String(url.absoluteString.dropLast())
-        }
-
-        return top
     }
 
     func getLocation(latitude: Double, longitude: Double, completion: @escaping (String?) -> Void) {

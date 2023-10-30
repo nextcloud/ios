@@ -68,10 +68,10 @@ extension NCTrash: UICollectionViewDataSource {
             image = UIImage(named: tableTrash.iconName)
         }
 
-        if FileManager().fileExists(atPath: NCUtilityFileSystem.shared.getDirectoryProviderStorageIconOcId(tableTrash.fileId, etag: tableTrash.fileName)) {
-            image = UIImage(contentsOfFile: NCUtilityFileSystem.shared.getDirectoryProviderStorageIconOcId(tableTrash.fileId, etag: tableTrash.fileName))
+        if FileManager().fileExists(atPath: utilityFileSystem.getDirectoryProviderStorageIconOcId(tableTrash.fileId, etag: tableTrash.fileName)) {
+            image = UIImage(contentsOfFile: utilityFileSystem.getDirectoryProviderStorageIconOcId(tableTrash.fileId, etag: tableTrash.fileName))
         } else {
-            if tableTrash.hasPreview && !NCUtilityFileSystem.shared.fileProviderStoragePreviewIconExists(tableTrash.fileId, etag: tableTrash.fileName) {
+            if tableTrash.hasPreview && !utilityFileSystem.fileProviderStoragePreviewIconExists(tableTrash.fileId, etag: tableTrash.fileName) {
                 downloadThumbnail(with: tableTrash, indexPath: indexPath)
             }
         }
@@ -85,7 +85,7 @@ extension NCTrash: UICollectionViewDataSource {
         } else {
             // GRID
             guard let gridCell = collectionView.dequeueReusableCell(withReuseIdentifier: "gridCell", for: indexPath) as? NCGridCell else { return UICollectionViewCell() }
-            gridCell.setButtonMore(named: NCGlobal.shared.buttonMoreMore, image: NCBrandColor.cacheImages.buttonMore)
+            gridCell.setButtonMore(named: NCGlobal.shared.buttonMoreMore, image: NCCache.cacheImages.buttonMore)
             gridCell.delegate = self
             cell = gridCell
         }
@@ -123,9 +123,9 @@ extension NCTrash: UICollectionViewDataSource {
         }
 
         if files > 1 {
-            filesText = "\(files) " + NSLocalizedString("_files_", comment: "") + " " + NCUtilityFileSystem.shared.transformedSize(size)
+            filesText = "\(files) " + NSLocalizedString("_files_", comment: "") + " " + utilityFileSystem.transformedSize(size)
         } else if files == 1 {
-            filesText = "1 " + NSLocalizedString("_file_", comment: "") + " " + NCUtilityFileSystem.shared.transformedSize(size)
+            filesText = "1 " + NSLocalizedString("_file_", comment: "") + " " + utilityFileSystem.transformedSize(size)
         }
 
         if foldersText.isEmpty {

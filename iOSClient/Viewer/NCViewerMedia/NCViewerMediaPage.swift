@@ -66,6 +66,7 @@ class NCViewerMediaPage: UIViewController {
     var skipBackwardCommand: Any?
     var nextTrackCommand: Any?
     var previousTrackCommand: Any?
+    let utilityFileSystem = NCUtilityFileSystem()
 
     var timerAutoHide: Timer?
     private var timerAutoHideSeconds: Double = 4
@@ -211,8 +212,9 @@ class NCViewerMediaPage: UIViewController {
 
     @objc private func openMenuMore() {
 
-        let imageIcon = UIImage(contentsOfFile: NCUtilityFileSystem.shared.getDirectoryProviderStorageIconOcId(currentViewController.metadata.ocId, etag: currentViewController.metadata.etag))
-        NCViewer.shared.toggleMenu(viewController: self, metadata: currentViewController.metadata, webView: false, imageIcon: imageIcon)
+        let imageIcon = UIImage(contentsOfFile: utilityFileSystem.getDirectoryProviderStorageIconOcId(currentViewController.metadata.ocId, etag: currentViewController.metadata.etag))
+
+        NCViewer().toggleMenu(viewController: self, metadata: currentViewController.metadata, webView: false, imageIcon: imageIcon)
     }
 
     @objc private func toggleDetail() {
@@ -325,9 +327,9 @@ class NCViewerMediaPage: UIViewController {
 
         if metadata.ocId == ocId,
            metadata.isAudioOrVideo,
-           NCUtilityFileSystem.shared.fileProviderStorageExists(metadata),
+           utilityFileSystem.fileProviderStorageExists(metadata),
            let ncplayer = currentViewController.ncplayer {
-            let url = URL(fileURLWithPath: NCUtilityFileSystem.shared.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView))
+            let url = URL(fileURLWithPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView))
             if ncplayer.isPlay() {
                 ncplayer.playerPause()
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
@@ -678,9 +680,9 @@ extension NCViewerMediaPage: UIGestureRecognizerDelegate {
 
         if gestureRecognizer.state == .began {
             let fileName = (currentViewController.metadata.fileNameView as NSString).deletingPathExtension + ".mov"
-            if let metadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView LIKE[c] %@", currentViewController.metadata.account, currentViewController.metadata.serverUrl, fileName)), NCUtilityFileSystem.shared.fileProviderStorageExists(metadata) {
+            if let metadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView LIKE[c] %@", currentViewController.metadata.account, currentViewController.metadata.serverUrl, fileName)), utilityFileSystem.fileProviderStorageExists(metadata) {
                 AudioServicesPlaySystemSound(1519) // peek feedback
-                currentViewController.playLivePhoto(filePath: NCUtilityFileSystem.shared.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView))
+                currentViewController.playLivePhoto(filePath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView))
             }
         } else if gestureRecognizer.state == .ended {
             currentViewController.stopLivePhoto()
