@@ -40,7 +40,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
         headerMenuButtonsView = false
         headerRichWorkspaceDisable = true
         headerMenuTransferView = true
-        emptyImage = NCUtility.shared.loadImage(named: "arrow.left.arrow.right", color: .gray, size: UIScreen.main.bounds.width)
+        emptyImage = NCUtility().loadImage(named: "arrow.left.arrow.right", color: .gray, size: UIScreen.main.bounds.width)
         emptyTitle = "_no_transfer_"
         emptyDescription = "_no_transfer_sub_"
     }
@@ -189,7 +189,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
         cell.labelPath.text = pathText
         cell.setButtonMore(named: NCGlobal.shared.buttonMoreStop, image: NCCache.cacheImages.buttonStop)
         cell.progressView.progress = 0.0
-        if let image = NCUtility.shared.createFilePreviewImage(ocId: metadata.ocId, etag: metadata.etag, fileNameView: metadata.fileNameView, classFile: metadata.classFile, status: metadata.status, createPreviewMedia: true) {
+        if let image = NCUtility().createFilePreviewImage(ocId: metadata.ocId, etag: metadata.etag, fileNameView: metadata.fileNameView, classFile: metadata.classFile, status: metadata.status, createPreviewMedia: true) {
             cell.imageItem.image = image
         } else if !metadata.iconName.isEmpty {
             cell.imageItem.image = UIImage(named: metadata.iconName)

@@ -112,7 +112,7 @@ class NCShare: UIViewController, NCShareNetworkingDelegate, NCSharePagingContent
         btnContact.layer.borderWidth = 1
         btnContact.layer.borderColor = UIColor.gray.cgColor
         btnContact.tintColor = .gray
-        btnContact.setImage(NCUtility.shared.loadImage(named: "contact", color: .gray, size: 24), for: .normal)
+        btnContact.setImage(NCUtility().loadImage(named: "contact", color: .gray, size: 24), for: .normal)
     }
 
     func makeNewLinkShare() {
@@ -140,7 +140,7 @@ class NCShare: UIViewController, NCShareNetworkingDelegate, NCSharePagingContent
         searchFieldTopConstraint.constant = 65
         sharedWithYouByView.isHidden = false
         sharedWithYouByLabel.text = NSLocalizedString("_shared_with_you_by_", comment: "") + " " + metadata.ownerDisplayName
-        sharedWithYouByImage.image = NCUtility.shared.loadUserImage(
+        sharedWithYouByImage.image = NCUtility().loadUserImage(
             for: metadata.ownerId,
             displayName: metadata.ownerDisplayName,
             userBaseUrl: appDelegate)
@@ -154,7 +154,7 @@ class NCShare: UIViewController, NCShareNetworkingDelegate, NCSharePagingContent
         if !metadata.note.isEmpty {
             searchFieldTopConstraint.constant = 95
             sharedWithYouByNoteImage.isHidden = false
-            sharedWithYouByNoteImage.image = NCUtility.shared.loadImage(named: "note.text", color: .gray)
+            sharedWithYouByNoteImage.image = NCUtility().loadImage(named: "note.text", color: .gray)
             sharedWithYouByNote.isHidden = false
             sharedWithYouByNote.text = metadata.note
             sharedWithYouByNote.textColor = .label
@@ -406,7 +406,7 @@ extension NCShare: CNContactPickerDelegate {
             actions.append(
                 NCMenuAction(
                     title: email,
-                    icon: NCUtility.shared.loadImage(named: "email"),
+                    icon: NCUtility().loadImage(named: "email"),
                     selected: false,
                     on: false,
                     action: { _ in

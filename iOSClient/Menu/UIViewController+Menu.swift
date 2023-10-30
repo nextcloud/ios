@@ -69,14 +69,14 @@ extension UIViewController {
 
             let personHeader = NCMenuAction(
                 title: card.displayName,
-                icon: NCUtility.shared.loadUserImage(
+                icon: NCUtility().loadUserImage(
                     for: userId,
                        displayName: card.displayName,
                        userBaseUrl: appDelegate),
                 action: nil)
 
             let actions = card.actions.map { action -> NCMenuAction in
-                var image = NCUtility.shared.loadImage(named: "user", color: .label)
+                var image = NCUtility().loadImage(named: "user", color: .label)
                 if let url = URL(string: action.icon),
                    let svgSource = SVGKSourceURL.source(from: url),
                    let svg = SVGKImage(source: svgSource) {

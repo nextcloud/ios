@@ -143,8 +143,8 @@ func getDashboardDataEntry(configuration: DashboardIntent?, isPreview: Bool, dis
 
     // LOG
     let levelLog = NCKeychain().logLevel
-    let isSimulatorOrTestFlight = NCUtility.shared.isSimulatorOrTestFlight()
-    let versionNextcloudiOS = String(format: NCBrandOptions.shared.textCopyrightNextcloudiOS, NCUtility.shared.getVersionApp())
+    let isSimulatorOrTestFlight = NCUtility().isSimulatorOrTestFlight()
+    let versionNextcloudiOS = String(format: NCBrandOptions.shared.textCopyrightNextcloudiOS, NCUtility().getVersionApp())
 
     NextcloudKit.shared.nkCommonInstance.levelLog = levelLog
     NextcloudKit.shared.nkCommonInstance.pathLog = NCUtilityFileSystem.shared.directoryGroup

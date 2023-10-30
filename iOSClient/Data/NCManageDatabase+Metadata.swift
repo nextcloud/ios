@@ -213,8 +213,8 @@ extension tableMetadata {
         if isDocumentViewableOnly {
             return false
         }
-        let editors = NCUtility.shared.isDirectEditing(account: account, contentType: contentType)
-        let isRichDocument = NCUtility.shared.isRichDocument(self)
+        let editors = NCUtility().isDirectEditing(account: account, contentType: contentType)
+        let isRichDocument = NCUtility().isRichDocument(self)
         return classFile == NKCommon.TypeClassFile.document.rawValue && editors.contains(NCGlobal.shared.editorText) && ((editors.contains(NCGlobal.shared.editorOnlyoffice) || isRichDocument))
     }
 
@@ -239,11 +239,11 @@ extension tableMetadata {
     }
 
     @objc var isDirectoryE2EE: Bool {
-        NCUtility.shared.isDirectoryE2EE(account: account, urlBase: urlBase, userId: userId, serverUrl: serverUrl)
+        NCUtility().isDirectoryE2EE(account: account, urlBase: urlBase, userId: userId, serverUrl: serverUrl)
     }
 
     var isDirectoryE2EETop: Bool {
-        NCUtility.shared.isDirectoryE2EETop(account: account, serverUrl: serverUrl)
+        NCUtility().isDirectoryE2EETop(account: account, serverUrl: serverUrl)
     }
 
     /// Returns false if the user is lokced out of the file. I.e. The file is locked but by somone else
@@ -367,7 +367,7 @@ extension NCManageDatabase {
             if let key = listServerUrl[file.serverUrl] {
                 isDirectoryE2EE = key
             } else {
-                isDirectoryE2EE = NCUtility.shared.isDirectoryE2EE(file: file)
+                isDirectoryE2EE = NCUtility().isDirectoryE2EE(file: file)
                 listServerUrl[file.serverUrl] = isDirectoryE2EE
             }
 

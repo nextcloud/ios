@@ -154,8 +154,8 @@
             [[[NextcloudKit shared] nkCommonInstance] clearFileLog];
             
             NSInteger logLevel = [[NCKeychain alloc] init].logLevel;
-            BOOL isSimulatorOrTestFlight = [[NCUtility shared] isSimulatorOrTestFlight];
-            NSString *versionNextcloudiOS = [NSString stringWithFormat:[NCBrandOptions shared].textCopyrightNextcloudiOS, [[NCUtility shared] getVersionAppWithBuild:true]];
+            BOOL isSimulatorOrTestFlight = [[[NCUtility alloc] init] isSimulatorOrTestFlight];
+            NSString *versionNextcloudiOS = [NSString stringWithFormat:[NCBrandOptions shared].textCopyrightNextcloudiOS, [[[NCUtility alloc] init] getVersionAppWithBuild:true]];
             if (isSimulatorOrTestFlight) {
                 [[[NextcloudKit shared] nkCommonInstance] writeLog:[NSString stringWithFormat:@"[INFO] Clear log with level %lu %@ (Simulator / TestFlight)", (unsigned long)logLevel, versionNextcloudiOS]];
             } else {

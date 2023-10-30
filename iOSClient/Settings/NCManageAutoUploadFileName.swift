@@ -156,7 +156,7 @@ class NCManageAutoUploadFileName: XLFormViewController {
             self.form.delegate = nil
 
             if let fileName = fileName {
-                formRow.value = NCUtility.shared.removeForbiddenCharacters(fileName)
+                formRow.value = NCUtility().removeForbiddenCharacters(fileName)
             }
 
             self.form.delegate = self

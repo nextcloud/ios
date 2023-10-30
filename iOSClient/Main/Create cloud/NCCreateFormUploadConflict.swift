@@ -313,6 +313,7 @@ extension NCCreateFormUploadConflict: UITableViewDataSource {
             cell.switchAlreadyExistingFile.onTintColor = NCBrandColor.shared.brand
 
             let metadataNewFile = tableMetadata.init(value: metadatasUploadInConflict[indexPath.row])
+            let utility = NCUtility()
 
             cell.ocId = metadataNewFile.ocId
             cell.delegate = self
@@ -328,7 +329,7 @@ extension NCCreateFormUploadConflict: UITableViewDataSource {
             } else if FileManager().fileExists(atPath: NCUtilityFileSystem.shared.getDirectoryProviderStorageOcId(metadataAlreadyExists.ocId, fileNameView: metadataAlreadyExists.fileNameView)) && metadataAlreadyExists.contentType == "application/pdf" {
 
                 let url = URL(fileURLWithPath: NCUtilityFileSystem.shared.getDirectoryProviderStorageOcId(metadataAlreadyExists.ocId, fileNameView: metadataAlreadyExists.fileNameView))
-                if let image = NCUtility.shared.pdfThumbnail(url: url) {
+                if let image = utility.pdfThumbnail(url: url) {
                     cell.imageAlreadyExistingFile.image = image
                 } else {
                     cell.imageAlreadyExistingFile.image = UIImage(named: metadataAlreadyExists.iconName)
@@ -372,7 +373,7 @@ extension NCCreateFormUploadConflict: UITableViewDataSource {
                                 cell.imageNewFile.image = image
                             }
                         } else if mediaType == PHAssetMediaType.video {
-                            if let image = NCUtility.shared.imageFromVideo(url: URL(fileURLWithPath: fileNamePath), at: 0) {
+                            if let image = utility.imageFromVideo(url: URL(fileURLWithPath: fileNamePath), at: 0) {
                                 cell.imageNewFile.image = image
                             }
                         }
@@ -400,7 +401,7 @@ extension NCCreateFormUploadConflict: UITableViewDataSource {
                                         DispatchQueue.main.async { cell.imageNewFile.image = image }
                                     }
                                 } else if mediaType == PHAssetMediaType.video {
-                                    if let image = NCUtility.shared.imageFromVideo(url: URL(fileURLWithPath: fileNamePath!), at: 0) {
+                                    if let image = utility.imageFromVideo(url: URL(fileURLWithPath: fileNamePath!), at: 0) {
                                         DispatchQueue.main.async { cell.imageNewFile.image = image }
                                     }
                                 }

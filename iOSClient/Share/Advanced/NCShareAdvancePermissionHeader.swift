@@ -31,7 +31,7 @@ class NCShareAdvancePermissionHeader: UIView {
 
     func setupUI(with metadata: tableMetadata) {
         if FileManager.default.fileExists(atPath: NCUtilityFileSystem.shared.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)) {
-            fullWidthImageView.image = NCUtility.shared.getImageMetadata(metadata, for: frame.height)
+            fullWidthImageView.image = NCUtility().getImageMetadata(metadata, for: frame.height)
             fullWidthImageView.contentMode = .scaleAspectFill
             imageView.isHidden = true
         } else {

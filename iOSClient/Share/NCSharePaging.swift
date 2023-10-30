@@ -293,9 +293,9 @@ class NCSharePagingView: PagingView {
         headerView.path.textColor = .label
         headerView.path.trailingBuffer = headerView.path.frame.width
         if metadata.favorite {
-            headerView.favorite.setImage(NCUtility.shared.loadImage(named: "star.fill", color: NCBrandColor.shared.yellowFavorite, size: 20), for: .normal)
+            headerView.favorite.setImage(NCUtility().loadImage(named: "star.fill", color: NCBrandColor.shared.yellowFavorite, size: 20), for: .normal)
         } else {
-            headerView.favorite.setImage(NCUtility.shared.loadImage(named: "star.fill", color: .systemGray, size: 20), for: .normal)
+            headerView.favorite.setImage(NCUtility().loadImage(named: "star.fill", color: .systemGray, size: 20), for: .normal)
         }
         headerView.info.text = NCUtilityFileSystem.shared.transformedSize(metadata.size) + ", " + NSLocalizedString("_modified_", comment: "") + " " + dateFormatter.string(from: metadata.date as Date)
         headerView.info.textColor = .systemGray
@@ -369,7 +369,7 @@ class NCShareHeaderView: UIView {
         NCNetworking.shared.favoriteMetadata(metadata) { error in
             if error == .success {
                 guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(metadata.ocId) else { return }
-                self.favorite.setImage(NCUtility.shared.loadImage(
+                self.favorite.setImage(NCUtility().loadImage(
                     named: "star.fill",
                     color: metadata.favorite ? NCBrandColor.shared.yellowFavorite : .systemGray,
                     size: 20), for: .normal)

@@ -34,10 +34,6 @@ import SVGKit
 #endif
 
 class NCUtility: NSObject {
-    @objc static let shared: NCUtility = {
-        let instance = NCUtility()
-        return instance
-    }()
 
 #if !EXTENSION
     func convertSVGtoPNGWriteToUserData(svgUrlString: String, fileName: String? = nil, width: CGFloat? = nil, rewrite: Bool, account: String, id: Int? = nil, completion: @escaping (_ imageNamePath: String?, _ id: Int?) -> Void) {
@@ -450,7 +446,7 @@ class NCUtility: NSObject {
             return avatarImg
         } else {
             let config = UIImage.SymbolConfiguration(pointSize: 30)
-            return NCUtility.shared.loadImage(named: "person.crop.circle", symbolConfiguration: config)
+            return NCUtility().loadImage(named: "person.crop.circle", symbolConfiguration: config)
         }
     }
 
@@ -582,7 +578,7 @@ class NCUtility: NSObject {
                 } catch { }
             }
         } else if createPreviewMedia && status >= NCGlobal.shared.metadataStatusNormal && classFile == NKCommon.TypeClassFile.video.rawValue && FileManager().fileExists(atPath: filePath) {
-            if let image = NCUtility.shared.imageFromVideo(url: URL(fileURLWithPath: filePath), at: 0), let image = image.resizeImage(size: CGSize(width: NCGlobal.shared.sizeIcon, height: NCGlobal.shared.sizeIcon)), let data = image.jpegData(compressionQuality: 0.5) {
+            if let image = NCUtility().imageFromVideo(url: URL(fileURLWithPath: filePath), at: 0), let image = image.resizeImage(size: CGSize(width: NCGlobal.shared.sizeIcon, height: NCGlobal.shared.sizeIcon)), let data = image.jpegData(compressionQuality: 0.5) {
                 do {
                     try data.write(to: URL(fileURLWithPath: iconImagePath), options: .atomic)
                     imagePreview = image

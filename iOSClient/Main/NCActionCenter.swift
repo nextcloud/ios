@@ -92,7 +92,7 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
         case NCGlobal.shared.selectorLoadFileView:
             guard UIApplication.shared.applicationState == .active else { break }
 
-            if metadata.contentType.contains("opendocument") && !NCUtility.shared.isRichDocument(metadata) {
+            if metadata.contentType.contains("opendocument") && !NCUtility().isRichDocument(metadata) {
                 self.openDocumentController(metadata: metadata)
             } else if metadata.classFile == NKCommon.TypeClassFile.compress.rawValue || metadata.classFile == NKCommon.TypeClassFile.unknow.rawValue {
                 self.openDocumentController(metadata: metadata)
@@ -190,7 +190,7 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
                 NCContentPresenter().showError(error: error)
             } else if let file = file {
 
-                let isDirectoryE2EE = NCUtility.shared.isDirectoryE2EE(file: file)
+                let isDirectoryE2EE = NCUtility().isDirectoryE2EE(file: file)
                 let metadata = NCManageDatabase.shared.convertFileToMetadata(file, isDirectoryE2EE: isDirectoryE2EE)
                 NCManageDatabase.shared.addMetadata(metadata)
 

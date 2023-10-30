@@ -100,11 +100,11 @@ extension NCEndToEndMetadata {
 
     func encodeMetadataV20(account: String, serverUrl: String, ocIdServerUrl: String, userId: String, addUserId: String?, addCertificate: String?, removeUserId: String?) -> (metadata: String?, signature: String?, counter: Int, error: NKError) {
 
-        guard let directoryTop = NCUtility.shared.getDirectoryE2EETop(serverUrl: serverUrl, account: account), let certificate = NCKeychain().getEndToEndCertificate(account: account) else {
+        guard let directoryTop = NCUtility().getDirectoryE2EETop(serverUrl: serverUrl, account: account), let certificate = NCKeychain().getEndToEndCertificate(account: account) else {
             return (nil, nil, 0, NKError(errorCode: NCGlobal.shared.errorUnexpectedResponseFromDB, errorDescription: "_e2e_error_"))
         }
 
-        let isDirectoryTop = NCUtility.shared.isDirectoryE2EETop(account: account, serverUrl: serverUrl)
+        let isDirectoryTop = NCUtility().isDirectoryE2EETop(account: account, serverUrl: serverUrl)
         var metadataKey: String?
         var keyChecksums: [String] = []
         var usersCodable: [E2eeV20.Users] = []
@@ -253,7 +253,7 @@ extension NCEndToEndMetadata {
     func decodeMetadataV20(_ json: String, signature: String?, serverUrl: String, account: String, ocIdServerUrl: String, urlBase: String, userId: String) -> NKError {
 
         guard let data = json.data(using: .utf8),
-              let directoryTop = NCUtility.shared.getDirectoryE2EETop(serverUrl: serverUrl, account: account) else {
+              let directoryTop = NCUtility().getDirectoryE2EETop(serverUrl: serverUrl, account: account) else {
             return NKError(errorCode: NCGlobal.shared.errorE2EEKeyDecodeMetadata, errorDescription: "_e2e_error_")
         }
 

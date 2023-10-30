@@ -82,7 +82,7 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmpty
             view.emptyTitle.text = NSLocalizedString("_request_in_progress_", comment: "")
             view.emptyDescription.text = ""
         } else {
-            view.emptyImage.image = NCUtility.shared.loadImage(named: "bell", color: .gray, size: UIScreen.main.bounds.width)
+            view.emptyImage.image = NCUtility().loadImage(named: "bell", color: .gray, size: UIScreen.main.bounds.width)
             view.emptyTitle.text = NSLocalizedString("_no_notification_", comment: "")
             view.emptyDescription.text = ""
         }
@@ -132,7 +132,7 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmpty
         if let image = image {
             cell.icon.image = image.withTintColor(NCBrandColor.shared.brandElement, renderingMode: .alwaysOriginal)
         } else {
-            cell.icon.image = NCUtility.shared.loadImage(named: "bell", color: NCBrandColor.shared.brandElement)
+            cell.icon.image = NCUtility().loadImage(named: "bell", color: NCBrandColor.shared.brandElement)
         }
 
         // Avatar
@@ -309,7 +309,7 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmpty
                 let sortedListOfNotifications = (notifications! as NSArray).sortedArray(using: [NSSortDescriptor(key: "date", ascending: false)])
                 for notification in sortedListOfNotifications {
                     if let icon = (notification as? NKNotifications)?.icon {
-                        NCUtility.shared.convertSVGtoPNGWriteToUserData(svgUrlString: icon, fileName: nil, width: 25, rewrite: false, account: self.appDelegate.account, completion: { _, _ in })
+                        NCUtility().convertSVGtoPNGWriteToUserData(svgUrlString: icon, fileName: nil, width: 25, rewrite: false, account: self.appDelegate.account, completion: { _, _ in })
                     }
                     if let notification = (notification as? NKNotifications) {
                         self.notifications.append(notification)

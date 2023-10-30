@@ -84,7 +84,7 @@ class NCUserStatus: UIViewController {
         onlineButton.layer.cornerRadius = 10
         onlineButton.layer.masksToBounds = true
         onlineButton.backgroundColor = .systemGray5
-        let onLine = NCUtility.shared.getUserStatus(userIcon: nil, userStatus: "online", userMessage: nil)
+        let onLine = NCUtility().getUserStatus(userIcon: nil, userStatus: "online", userMessage: nil)
         onlineImage.image = onLine.onlineStatus
         onlineLabel.text = onLine.statusMessage
         onlineLabel.textColor = .label
@@ -92,7 +92,7 @@ class NCUserStatus: UIViewController {
         awayButton.layer.cornerRadius = 10
         awayButton.layer.masksToBounds = true
         awayButton.backgroundColor = .systemGray5
-        let away = NCUtility.shared.getUserStatus(userIcon: nil, userStatus: "away", userMessage: nil)
+        let away = NCUtility().getUserStatus(userIcon: nil, userStatus: "away", userMessage: nil)
         awayImage.image = away.onlineStatus
         awayLabel.text = away.statusMessage
         awayLabel.textColor = .label
@@ -100,7 +100,7 @@ class NCUserStatus: UIViewController {
         dndButton.layer.cornerRadius = 10
         dndButton.layer.masksToBounds = true
         dndButton.backgroundColor = .systemGray5
-        let dnd = NCUtility.shared.getUserStatus(userIcon: nil, userStatus: "dnd", userMessage: nil)
+        let dnd = NCUtility().getUserStatus(userIcon: nil, userStatus: "dnd", userMessage: nil)
         dndImage.image = dnd.onlineStatus
         dndLabel.text = dnd.statusMessage
         dndLabel.textColor = .label
@@ -110,7 +110,7 @@ class NCUserStatus: UIViewController {
         invisibleButton.layer.cornerRadius = 10
         invisibleButton.layer.masksToBounds = true
         invisibleButton.backgroundColor = .systemGray5
-        let invisible = NCUtility.shared.getUserStatus(userIcon: nil, userStatus: "invisible", userMessage: nil)
+        let invisible = NCUtility().getUserStatus(userIcon: nil, userStatus: "invisible", userMessage: nil)
         invisibleImage.image = invisible.onlineStatus
         invisibleLabel.text = invisible.statusMessage
         invisibleLabel.textColor = .label

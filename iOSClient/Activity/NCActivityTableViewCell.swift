@@ -161,7 +161,7 @@ extension NCActivityTableViewCell: UICollectionViewDataSource {
 
             let source = activityPreview.source
 
-            NCUtility.shared.convertSVGtoPNGWriteToUserData(svgUrlString: source, width: 100, rewrite: false, account: appDelegate.account, id: idActivity) { imageNamePath, id in
+            NCUtility().convertSVGtoPNGWriteToUserData(svgUrlString: source, width: 100, rewrite: false, account: appDelegate.account, id: idActivity) { imageNamePath, id in
                 if let imageNamePath = imageNamePath, id == self.idActivity, let image = UIImage(contentsOfFile: imageNamePath) {
                     cell.imageView.image = image
                 } else {
@@ -175,7 +175,7 @@ extension NCActivityTableViewCell: UICollectionViewDataSource {
 
                 let source = activityPreview.source
 
-                NCUtility.shared.convertSVGtoPNGWriteToUserData(svgUrlString: source, width: 100, rewrite: false, account: appDelegate.account, id: idActivity) { imageNamePath, id in
+                NCUtility().convertSVGtoPNGWriteToUserData(svgUrlString: source, width: 100, rewrite: false, account: appDelegate.account, id: idActivity) { imageNamePath, id in
                     if let imageNamePath = imageNamePath, id == self.idActivity, let image = UIImage(contentsOfFile: imageNamePath) {
                         cell.imageView.image = image
                     } else {

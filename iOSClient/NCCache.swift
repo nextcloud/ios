@@ -200,6 +200,7 @@ import NextcloudKit
 
         let brandElement = NCBrandColor.shared.brandElement
         let yellowFavorite = NCBrandColor.shared.yellowFavorite
+        let utility = NCUtility()
 
         cacheImages.file = UIImage(named: "file")!
 
@@ -207,9 +208,9 @@ import NextcloudKit
         cacheImages.canShare = UIImage(named: "share")!.image(color: .systemGray, size: 50)
         cacheImages.shareByLink = UIImage(named: "sharebylink")!.image(color: .systemGray, size: 50)
 
-        cacheImages.favorite = NCUtility.shared.loadImage(named: "star.fill", color: yellowFavorite)
+        cacheImages.favorite = utility.loadImage(named: "star.fill", color: yellowFavorite)
         cacheImages.comment = UIImage(named: "comment")!.image(color: .systemGray, size: 50)
-        cacheImages.livePhoto = NCUtility.shared.loadImage(named: "livephoto", color: .label)
+        cacheImages.livePhoto = utility.loadImage(named: "livephoto", color: .label)
         cacheImages.offlineFlag = UIImage(named: "offlineFlag")!
         cacheImages.local = UIImage(named: "local")!
 
@@ -222,8 +223,8 @@ import NextcloudKit
         cacheImages.folderAutomaticUpload = UIImage(named: "folderAutomaticUpload")!.image(color: brandElement, size: folderWidth)
         cacheImages.folder = UIImage(named: "folder")!.image(color: brandElement, size: folderWidth)
 
-        cacheImages.checkedYes = NCUtility.shared.loadImage(named: "checkmark.circle.fill", color: .systemBlue)
-        cacheImages.checkedNo = NCUtility.shared.loadImage(named: "circle", color: .systemGray)
+        cacheImages.checkedYes = utility.loadImage(named: "checkmark.circle.fill", color: .systemBlue)
+        cacheImages.checkedNo = utility.loadImage(named: "circle", color: .systemGray)
 
         cacheImages.buttonMore = UIImage(named: "more")!.image(color: .systemGray, size: 50)
         cacheImages.buttonStop = UIImage(named: "stop")!.image(color: .systemGray, size: 50)

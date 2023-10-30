@@ -102,8 +102,8 @@ class NCViewer: NSObject {
             }
 
             // EDITORS
-            let editors = NCUtility.shared.isDirectEditing(account: metadata.account, contentType: metadata.contentType)
-            let availableRichDocument = NCUtility.shared.isRichDocument(metadata)
+            let editors = NCUtility().isDirectEditing(account: metadata.account, contentType: metadata.contentType)
+            let availableRichDocument = NCUtility().isRichDocument(metadata)
 
             // RichDocument: Collabora
             if (isRichDocument || (availableRichDocument && editors.isEmpty)) && NCGlobal.shared.capabilityRichdocumentsEnabled && NextcloudKit.shared.isNetworkReachable() {
@@ -168,9 +168,9 @@ class NCViewer: NSObject {
 
                         var options = NKRequestOptions()
                         if editor == NCGlobal.shared.editorOnlyoffice {
-                            options = NKRequestOptions(customUserAgent: NCUtility.shared.getCustomUserAgentOnlyOffice())
+                            options = NKRequestOptions(customUserAgent: NCUtility().getCustomUserAgentOnlyOffice())
                         } else {
-                            options = NKRequestOptions(customUserAgent: NCUtility.shared.getCustomUserAgentNCText())
+                            options = NKRequestOptions(customUserAgent: NCUtility().getCustomUserAgentNCText())
                         }
 
                         NCActivityIndicator.shared.start(backgroundView: viewController.view)

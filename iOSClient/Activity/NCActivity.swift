@@ -526,7 +526,7 @@ extension NCActivity: NCShareCommentsCellDelegate {
         actions.append(
             NCMenuAction(
                 title: NSLocalizedString("_delete_comment_", comment: ""),
-                icon: NCUtility.shared.loadImage(named: "trash"),
+                icon: NCUtility().loadImage(named: "trash"),
                 action: { _ in
                     guard let metadata = self.metadata, let tableComments = tableComments else { return }
 
