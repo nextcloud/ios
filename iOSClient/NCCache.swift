@@ -26,13 +26,12 @@ import LRUCache
 import NextcloudKit
 
 @objc class NCCache: NSObject {
-
     @objc public static let shared: NCCache = {
         let instance = NCCache()
         return instance
     }()
 
-    private let limit: Int = 1500
+    private let limit: Int = 1000
     private typealias ThumbnailLRUCache = LRUCache<String, UIImage>
     private lazy var cache: ThumbnailLRUCache = {
         return ThumbnailLRUCache(countLimit: limit)
