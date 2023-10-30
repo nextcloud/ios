@@ -33,6 +33,7 @@ class NCCreateFormUploadVoiceNote: XLFormViewController, NCSelectDelegate, AVAud
 
     private let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
     let utilityFileSystem = NCUtilityFileSystem()
+    let utility = NCUtility()
     private var serverUrl = ""
     private var titleServerUrl = ""
     private var fileName = ""
@@ -169,7 +170,7 @@ class NCCreateFormUploadVoiceNote: XLFormViewController, NCSelectDelegate, AVAud
             self.form.delegate = nil
 
             if let fileNameNew = formRow.value as? String {
-                self.fileName = NCUtility().removeForbiddenCharacters(fileNameNew)
+                self.fileName = utility.removeForbiddenCharacters(fileNameNew)
             }
 
             formRow.value = self.fileName

@@ -54,6 +54,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
 
     weak var delegate: NCNetworkingDelegate?
     let utilityFileSystem = NCUtilityFileSystem()
+    let utility = NCUtility()
     var lastReachability: Bool = true
     var networkReachability: NKCommon.TypeReachability?
     let downloadRequest = ThreadSafeDictionary<String, DownloadRequest>()
@@ -367,7 +368,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
         }
 
         if let account = NCManageDatabase.shared.getActiveAccount() {
-            cellImageView?.image = NCUtility().loadUserImage(for: user, displayName: dispalyName, userBaseUrl: account)
+            cellImageView?.image = utility.loadUserImage(for: user, displayName: dispalyName, userBaseUrl: account)
         }
 
         for case let operation as NCOperationDownloadAvatar in appDelegate.downloadAvatarQueue.operations where operation.fileName == fileName { return }
@@ -638,7 +639,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
             metadata.ocId = ocId
             metadata.chunk = 0
 
-            if let fileId = NCUtility().ocIdToFileId(ocId: ocId) {
+            if let fileId = utility.ocIdToFileId(ocId: ocId) {
                 metadata.fileId = fileId
             }
 
@@ -1197,7 +1198,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
 
     private func createFolderPlain(fileName: String, serverUrl: String, account: String, urlBase: String, overwrite: Bool, withPush: Bool, completion: @escaping (_ error: NKError) -> Void) {
 
-        var fileNameFolder = NCUtility().removeForbiddenCharacters(fileName)
+        var fileNameFolder = utility.removeForbiddenCharacters(fileName)
 
         if !overwrite {
             fileNameFolder = utilityFileSystem.createFileName(fileNameFolder, serverUrl: serverUrl, account: account)
@@ -1362,7 +1363,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
     func deleteMetadataPlain(_ metadata: tableMetadata, customHeader: [String: String]? = nil) async -> NKError {
 
         // verify permission
-        let permission = NCUtility().permissionsContainsString(metadata.permissions, permissions: NCGlobal.shared.permissionCanDelete)
+        let permission = utility.permissionsContainsString(metadata.permissions, permissions: NCGlobal.shared.permissionCanDelete)
         if !metadata.permissions.isEmpty && permission == false {
             return NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_no_permission_delete_file_")
         }
@@ -1486,11 +1487,11 @@ class NCNetworking: NSObject, NKCommonDelegate {
 
     private func renameMetadataPlain(_ metadata: tableMetadata, fileNameNew: String, indexPath: IndexPath, completion: @escaping (_ error: NKError) -> Void) {
 
-        let permission = NCUtility().permissionsContainsString(metadata.permissions, permissions: NCGlobal.shared.permissionCanRename)
+        let permission = utility.permissionsContainsString(metadata.permissions, permissions: NCGlobal.shared.permissionCanRename)
         if !metadata.permissions.isEmpty && !permission {
             return completion(NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_no_permission_modify_file_"))
         }
-        let fileNameNew = NCUtility().removeForbiddenCharacters(fileNameNew)
+        let fileNameNew = utility.removeForbiddenCharacters(fileNameNew)
         if fileNameNew.isEmpty || fileNameNew == metadata.fileNameView {
             return completion(NKError())
         }
@@ -1562,7 +1563,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
 
     private func moveMetadataPlain(_ metadata: tableMetadata, serverUrlTo: String, overwrite: Bool) async -> NKError {
 
-        let permission = NCUtility().permissionsContainsString(metadata.permissions, permissions: NCGlobal.shared.permissionCanRename)
+        let permission = utility.permissionsContainsString(metadata.permissions, permissions: NCGlobal.shared.permissionCanRename)
         if !metadata.permissions.isEmpty && !permission {
             return NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_no_permission_modify_file_")
         }
@@ -1598,7 +1599,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
 
     private func copyMetadataPlain(_ metadata: tableMetadata, serverUrlTo: String, overwrite: Bool) async -> NKError {
 
-        let permission = NCUtility().permissionsContainsString(metadata.permissions, permissions: NCGlobal.shared.permissionCanRename)
+        let permission = utility.permissionsContainsString(metadata.permissions, permissions: NCGlobal.shared.permissionCanRename)
         if !metadata.permissions.isEmpty && !permission {
             return NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_no_permission_modify_file_")
         }

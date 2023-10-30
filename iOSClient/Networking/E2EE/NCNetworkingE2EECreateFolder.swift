@@ -30,12 +30,13 @@ class NCNetworkingE2EECreateFolder: NSObject {
 
     let networkingE2EE = NCNetworkingE2EE()
     let utilityFileSystem = NCUtilityFileSystem()
+    let utility = NCUtility()
 
     func createFolder(fileName: String, serverUrl: String, account: String, urlBase: String, userId: String, withPush: Bool) async -> NKError {
 
         let fileNameIdentifier = networkingE2EE.generateRandomIdentifier()
         let serverUrlFileName = serverUrl + "/" + fileNameIdentifier
-        let fileNameFolder = utilityFileSystem.createFileName(NCUtility().removeForbiddenCharacters(fileName), serverUrl: serverUrl, account: account)
+        let fileNameFolder = utilityFileSystem.createFileName(utility.removeForbiddenCharacters(fileName), serverUrl: serverUrl, account: account)
         if fileNameFolder.isEmpty {
             return NKError(errorCode: NCGlobal.shared.errorUnexpectedResponseFromDB, errorDescription: NSLocalizedString("_e2e_error_", comment: ""))
         }
@@ -120,7 +121,7 @@ class NCNetworkingE2EECreateFolder: NSObject {
         // CREATE FOLDER
         //
         let resultsCreateFolder = await NextcloudKit.shared.createFolder(serverUrlFileName: serverUrlFileName, options: NKRequestOptions(customHeader: ["e2e-token": e2eToken]))
-        guard resultsCreateFolder.error == .success, let ocId = resultsCreateFolder.ocId, let fileId = NCUtility().ocIdToFileId(ocId: ocId) else {
+        guard resultsCreateFolder.error == .success, let ocId = resultsCreateFolder.ocId, let fileId = utility.ocIdToFileId(ocId: ocId) else {
             await networkingE2EE.unlock(account: account, serverUrl: serverUrl)
             return resultsCreateFolder.error
         }

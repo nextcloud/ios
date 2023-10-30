@@ -72,6 +72,7 @@ class NCShareExtension: UIViewController {
     var uploadStarted = false
     let hud = JGProgressHUD()
     let utilityFileSystem = NCUtilityFileSystem()
+    let utility = NCUtility()
 
     // MARK: - View Life Cycle
 
@@ -98,14 +99,14 @@ class NCShareExtension: UIViewController {
         commandViewHeightConstraint.constant = heightCommandView
 
         createFolderView.layer.cornerRadius = 10
-        createFolderImage.image = NCUtility().loadImage(named: "folder.badge.plus", color: .label)
+        createFolderImage.image = utility.loadImage(named: "folder.badge.plus", color: .label)
         createFolderLabel.text = NSLocalizedString("_create_folder_", comment: "")
         let createFolderGesture = UITapGestureRecognizer(target: self, action: #selector(actionCreateFolder))
         createFolderView.addGestureRecognizer(createFolderGesture)
 
         uploadView.layer.cornerRadius = 10
 
-        // uploadImage.image = NCUtility().loadImage(named: "square.and.arrow.up", color: .label)
+        // uploadImage.image = utility).loadImage(named: "square.and.arrow.up", color: .label)
         uploadLabel.text = NSLocalizedString("_upload_", comment: "")
         uploadLabel.textColor = .systemBlue
         let uploadGesture = UITapGestureRecognizer(target: self, action: #selector(actionUpload))
@@ -113,8 +114,8 @@ class NCShareExtension: UIViewController {
 
         // LOG
         let levelLog = NCKeychain().logLevel
-        let isSimulatorOrTestFlight = NCUtility().isSimulatorOrTestFlight()
-        let versionNextcloudiOS = String(format: NCBrandOptions.shared.textCopyrightNextcloudiOS, NCUtility().getVersionApp())
+        let isSimulatorOrTestFlight = utility.isSimulatorOrTestFlight()
+        let versionNextcloudiOS = String(format: NCBrandOptions.shared.textCopyrightNextcloudiOS, utility.getVersionApp())
 
         NextcloudKit.shared.nkCommonInstance.levelLog = levelLog
         NextcloudKit.shared.nkCommonInstance.pathLog = utilityFileSystem.directoryGroup
@@ -216,7 +217,7 @@ class NCShareExtension: UIViewController {
             }
         }
 
-        let image = NCUtility().loadUserImage(for: activeAccount.user, displayName: activeAccount.displayName, userBaseUrl: activeAccount)
+        let image = utility.loadUserImage(for: activeAccount.user, displayName: activeAccount.displayName, userBaseUrl: activeAccount)
         let profileButton = UIButton(type: .custom)
         profileButton.setImage(image, for: .normal)
 

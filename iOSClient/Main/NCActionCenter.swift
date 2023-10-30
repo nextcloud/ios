@@ -40,6 +40,7 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
     var viewerQuickLook: NCViewerQuickLook?
     var documentController: UIDocumentInteractionController?
     let utilityFileSystem = NCUtilityFileSystem()
+    let utility = NCUtility()
 
     // MARK: - Download
 
@@ -93,7 +94,7 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
         case NCGlobal.shared.selectorLoadFileView:
             guard UIApplication.shared.applicationState == .active else { break }
 
-            if metadata.contentType.contains("opendocument") && !NCUtility().isRichDocument(metadata) {
+            if metadata.contentType.contains("opendocument") && !utility.isRichDocument(metadata) {
                 self.openDocumentController(metadata: metadata)
             } else if metadata.classFile == NKCommon.TypeClassFile.compress.rawValue || metadata.classFile == NKCommon.TypeClassFile.unknow.rawValue {
                 self.openDocumentController(metadata: metadata)

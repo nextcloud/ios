@@ -38,6 +38,7 @@ class NCShareUserCell: UITableViewCell, NCCellProtocol {
     private var index = IndexPath()
 
     var tableShare: tableShare?
+    let utility = NCUtility()
     weak var delegate: NCShareUserCellDelegate?
 
     var indexPath: IndexPath {
@@ -70,7 +71,7 @@ class NCShareUserCell: UITableViewCell, NCCellProtocol {
         buttonMenu.accessibilityLabel = NSLocalizedString("_more_", comment: "")
         imageItem.image = NCShareCommon().getImageShareType(shareType: tableShare.shareType)
 
-        let status = NCUtility().getUserStatus(userIcon: tableShare.userIcon, userStatus: tableShare.userStatus, userMessage: tableShare.userMessage)
+        let status = utility.getUserStatus(userIcon: tableShare.userIcon, userStatus: tableShare.userStatus, userMessage: tableShare.userMessage)
         imageStatus.image = status.onlineStatus
         self.status.text = status.statusMessage
 
@@ -105,7 +106,7 @@ class NCShareUserCell: UITableViewCell, NCCellProtocol {
 
         buttonMenu.setImage(UIImage(named: "shareMenu")?.image(color: .gray, size: 50), for: .normal)
         labelQuickStatus.textColor = NCBrandColor.shared.customer
-        imageDownArrow.image = NCUtility().loadImage(named: "arrowtriangle.down.fill", color: NCBrandColor.shared.customer)
+        imageDownArrow.image = utility.loadImage(named: "arrowtriangle.down.fill", color: NCBrandColor.shared.customer)
     }
 
     @objc func tapAvatarImage(_ sender: UITapGestureRecognizer) {
@@ -153,9 +154,10 @@ class NCSearchUserDropDownCell: DropDownCell, NCCellProtocol {
     }
 
     func setupCell(sharee: NKSharee, baseUrl: NCUserBaseUrl) {
+        let utility = NCUtility()
         imageItem.image = NCShareCommon().getImageShareType(shareType: sharee.shareType)
         imageShareeType.image = NCShareCommon().getImageShareType(shareType: sharee.shareType)
-        let status = NCUtility().getUserStatus(userIcon: sharee.userIcon, userStatus: sharee.userStatus, userMessage: sharee.userMessage)
+        let status = utility.getUserStatus(userIcon: sharee.userIcon, userStatus: sharee.userStatus, userMessage: sharee.userMessage)
         imageStatus.image = status.onlineStatus
         self.status.text = status.statusMessage
         if self.status.text?.count ?? 0 > 0 {
@@ -164,7 +166,7 @@ class NCSearchUserDropDownCell: DropDownCell, NCCellProtocol {
             centerTitle.constant = 0
         }
 
-        imageItem.image = NCUtility().loadUserImage(
+        imageItem.image = utility.loadUserImage(
             for: sharee.shareWith,
                displayName: nil,
                userBaseUrl: baseUrl)

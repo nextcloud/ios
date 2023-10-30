@@ -46,6 +46,7 @@ import XLForm
     var listOfTemplate: [NKEditorTemplates] = []
     var selectTemplate: NKEditorTemplates?
     let utilityFileSystem = NCUtilityFileSystem()
+    let utility = NCUtility()
 
     // Layout
     let numItems = 2
@@ -257,7 +258,7 @@ import XLForm
         fileNameForm = fileNameForm.trimmingCharacters(in: .whitespacesAndNewlines)
 
         let result = NextcloudKit.shared.nkCommonInstance.getInternalType(fileName: fileNameForm, mimeType: "", directory: false)
-        if NCUtility().isDirectEditing(account: appDelegate.account, contentType: result.mimeType).isEmpty {
+        if utility.isDirectEditing(account: appDelegate.account, contentType: result.mimeType).isEmpty {
             fileNameForm = (fileNameForm as NSString).deletingPathExtension + "." + fileNameExtension
         }
 
@@ -305,9 +306,9 @@ import XLForm
 
             var options = NKRequestOptions()
             if self.editorId == NCGlobal.shared.editorOnlyoffice {
-                options = NKRequestOptions(customUserAgent: NCUtility().getCustomUserAgentOnlyOffice())
+                options = NKRequestOptions(customUserAgent: utility.getCustomUserAgentOnlyOffice())
             } else if editorId == NCGlobal.shared.editorText {
-                options = NKRequestOptions(customUserAgent: NCUtility().getCustomUserAgentNCText())
+                options = NKRequestOptions(customUserAgent: utility.getCustomUserAgentNCText())
             }
 
             NextcloudKit.shared.NCTextCreateFile(fileNamePath: fileNamePath, editorId: editorId, creatorId: creatorId, templateId: templateIdentifier, options: options) { account, url, _, error in
@@ -368,9 +369,9 @@ import XLForm
 
             var options = NKRequestOptions()
             if self.editorId == NCGlobal.shared.editorOnlyoffice {
-                options = NKRequestOptions(customUserAgent: NCUtility().getCustomUserAgentOnlyOffice())
+                options = NKRequestOptions(customUserAgent: utility.getCustomUserAgentOnlyOffice())
             } else if editorId == NCGlobal.shared.editorText {
-                options = NKRequestOptions(customUserAgent: NCUtility().getCustomUserAgentNCText())
+                options = NKRequestOptions(customUserAgent: utility.getCustomUserAgentNCText())
             }
 
             NextcloudKit.shared.NCTextGetListOfTemplates(options: options) { account, templates, _, error in

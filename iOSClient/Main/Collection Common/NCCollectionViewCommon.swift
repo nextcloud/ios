@@ -34,6 +34,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
     internal let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
     internal let utilityFileSystem = NCUtilityFileSystem()
+    internal let utility = NCUtility()
     internal let refreshControl = UIRefreshControl()
     internal var searchController: UISearchController?
     internal var emptyDataSet: NCEmptyDataSet?
@@ -577,7 +578,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
         let activeAccount = NCManageDatabase.shared.getActiveAccount()
 
-        let image = NCUtility().loadUserImage(
+        let image = utility.loadUserImage(
             for: appDelegate.user,
                displayName: activeAccount?.displayName,
                userBaseUrl: appDelegate)
@@ -1197,7 +1198,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         // Thumbnail
         if !metadata.directory {
             if metadata.name == NCGlobal.shared.appName {
-                    if let image = NCUtility().createFilePreviewImage(ocId: metadata.ocId, etag: metadata.etag, fileNameView: metadata.fileNameView, classFile: metadata.classFile, status: metadata.status, createPreviewMedia: !metadata.hasPreview) {
+                    if let image = utility.createFilePreviewImage(ocId: metadata.ocId, etag: metadata.etag, fileNameView: metadata.fileNameView, classFile: metadata.classFile, status: metadata.status, createPreviewMedia: !metadata.hasPreview) {
                     (cell as? NCCellProtocol)?.filePreviewImageView?.image = image
                 } else {
                     if metadata.iconName.isEmpty {

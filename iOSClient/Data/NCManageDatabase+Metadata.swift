@@ -213,8 +213,9 @@ extension tableMetadata {
         if isDocumentViewableOnly {
             return false
         }
-        let editors = NCUtility().isDirectEditing(account: account, contentType: contentType)
-        let isRichDocument = NCUtility().isRichDocument(self)
+        let utility = NCUtility()
+        let editors = utility.isDirectEditing(account: account, contentType: contentType)
+        let isRichDocument = utility.isRichDocument(self)
         return classFile == NKCommon.TypeClassFile.document.rawValue && editors.contains(NCGlobal.shared.editorText) && ((editors.contains(NCGlobal.shared.editorOnlyoffice) || isRichDocument))
     }
 

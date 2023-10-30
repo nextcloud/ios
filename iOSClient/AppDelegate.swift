@@ -71,10 +71,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             deleteAllAccounts()
         }
         let utilityFileSystem = NCUtilityFileSystem()
+        let utility = NCUtility()
 
         NCSettingsBundleHelper.checkAndExecuteSettings(delay: 0)
 
-        let versionNextcloudiOS = String(format: NCBrandOptions.shared.textCopyrightNextcloudiOS, NCUtility().getVersionApp())
+        let versionNextcloudiOS = String(format: NCBrandOptions.shared.textCopyrightNextcloudiOS, utility.getVersionApp())
 
         UserDefaults.standard.register(defaults: ["UserAgent": userAgent])
         if !NCKeychain().disableCrashservice, !NCBrandOptions.shared.disable_crash_service {
@@ -149,7 +150,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         UNUserNotificationCenter.current().delegate = self
         UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge, .sound]) { _, _ in }
 
-        if !NCUtility().isSimulatorOrTestFlight() {
+        if !utility.isSimulatorOrTestFlight() {
             let review = NCStoreReview()
             review.incrementAppRuns()
             review.showStoreReview()

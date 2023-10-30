@@ -41,6 +41,7 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
     private let applicationHandle = NCApplicationHandle()
     private var tabAccount: tableAccount?
     let utilityFileSystem = NCUtilityFileSystem()
+    let utility = NCUtility()
 
     private struct Section {
         var items: [NKExternalSite]
@@ -326,7 +327,7 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
             cell.displayName.text = ""
 
             if let account = tabAccount {
-                cell.avatar.image = NCUtility().loadUserImage(for: account.user, displayName: account.displayName, userBaseUrl: appDelegate)
+                cell.avatar.image = utility.loadUserImage(for: account.user, displayName: account.displayName, userBaseUrl: appDelegate)
 
                 if account.alias.isEmpty {
                     cell.displayName?.text = account.displayName
@@ -338,7 +339,7 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
             cell.accessoryType = UITableViewCell.AccessoryType.disclosureIndicator
 
             if NCGlobal.shared.capabilityUserStatusEnabled, let account = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", appDelegate.account)) {
-                let status = NCUtility().getUserStatus(userIcon: account.userStatusIcon, userStatus: account.userStatusStatus, userMessage: account.userStatusMessage)
+                let status = utility.getUserStatus(userIcon: account.userStatusIcon, userStatus: account.userStatusStatus, userMessage: account.userStatusMessage)
                 cell.icon.image = status.onlineStatus
                 cell.status.text = status.statusMessage
                 cell.status.textColor = .label
@@ -363,7 +364,7 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
 
             let item = sections[indexPath.section].items[indexPath.row]
 
-            cell.imageIcon?.image = NCUtility().loadImage(named: item.icon)
+            cell.imageIcon?.image = utility.loadImage(named: item.icon)
             cell.imageIcon?.contentMode = .scaleAspectFit
             cell.labelText?.text = NSLocalizedString(item.name, comment: "")
             cell.labelText.textColor = .label

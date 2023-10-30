@@ -33,6 +33,7 @@ class NCViewerNextcloudText: UIViewController, WKNavigationDelegate, WKScriptMes
     var editor: String = ""
     var metadata: tableMetadata = tableMetadata()
     var imageIcon: UIImage?
+    let utility = NCUtility()
 
     // MARK: - View Life Cycle
 
@@ -76,9 +77,9 @@ class NCViewerNextcloudText: UIViewController, WKNavigationDelegate, WKScriptMes
         request.addValue(language, forHTTPHeaderField: "Accept-Language")
 
         if editor == NCGlobal.shared.editorOnlyoffice {
-            webView.customUserAgent = NCUtility().getCustomUserAgentOnlyOffice()
+            webView.customUserAgent = utility.getCustomUserAgentOnlyOffice()
         } else if editor == NCGlobal.shared.editorText {
-            webView.customUserAgent = NCUtility().getCustomUserAgentNCText()
+            webView.customUserAgent = utility.getCustomUserAgentNCText()
         } // else: use default
 
         webView.load(request)

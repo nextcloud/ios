@@ -29,6 +29,7 @@ class NCViewer: NSObject {
 
     let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
     let utilityFileSystem = NCUtilityFileSystem()
+    let utility = NCUtility()
     private var viewerQuickLook: NCViewerQuickLook?
     private var metadata = tableMetadata()
     private var metadatas: [tableMetadata] = []
@@ -103,8 +104,8 @@ class NCViewer: NSObject {
             }
 
             // EDITORS
-            let editors = NCUtility().isDirectEditing(account: metadata.account, contentType: metadata.contentType)
-            let availableRichDocument = NCUtility().isRichDocument(metadata)
+            let editors = utility.isDirectEditing(account: metadata.account, contentType: metadata.contentType)
+            let availableRichDocument = utility.isRichDocument(metadata)
 
             // RichDocument: Collabora
             if (isRichDocument || (availableRichDocument && editors.isEmpty)) && NCGlobal.shared.capabilityRichdocumentsEnabled && NextcloudKit.shared.isNetworkReachable() {
@@ -169,9 +170,9 @@ class NCViewer: NSObject {
 
                         var options = NKRequestOptions()
                         if editor == NCGlobal.shared.editorOnlyoffice {
-                            options = NKRequestOptions(customUserAgent: NCUtility().getCustomUserAgentOnlyOffice())
+                            options = NKRequestOptions(customUserAgent: utility.getCustomUserAgentOnlyOffice())
                         } else {
-                            options = NKRequestOptions(customUserAgent: NCUtility().getCustomUserAgentNCText())
+                            options = NKRequestOptions(customUserAgent: utility.getCustomUserAgentNCText())
                         }
 
                         NCActivityIndicator.shared.start(backgroundView: viewController.view)

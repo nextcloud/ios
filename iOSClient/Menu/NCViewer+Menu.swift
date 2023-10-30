@@ -44,7 +44,7 @@ extension NCViewer {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_details_", comment: ""),
-                    icon: NCUtility().loadImage(named: "info"),
+                    icon: utility.loadImage(named: "info"),
                     action: { _ in
                         NCActionCenter.shared.openShare(viewController: viewController, metadata: metadata, page: .activity)
                     }
@@ -59,7 +59,7 @@ extension NCViewer {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_view_in_folder_", comment: ""),
-                    icon: NCUtility().loadImage(named: "questionmark.folder"),
+                    icon: utility.loadImage(named: "questionmark.folder"),
                     action: { _ in
                         NCActionCenter.shared.openFileViewInFolder(serverUrl: metadata.serverUrl, fileNameBlink: metadata.fileName, fileNameOpen: nil)
                     }
@@ -75,7 +75,7 @@ extension NCViewer {
             actions.append(
                 NCMenuAction(
                     title: titleFavorite,
-                    icon: NCUtility().loadImage(named: "star.fill", color: NCBrandColor.shared.yellowFavorite),
+                    icon: utility.loadImage(named: "star.fill", color: NCBrandColor.shared.yellowFavorite),
                     action: { _ in
                         NCNetworking.shared.favoriteMetadata(metadata) { error in
                             if error != .success {
@@ -108,7 +108,7 @@ extension NCViewer {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_print_", comment: ""),
-                    icon: NCUtility().loadImage(named: "printer"),
+                    icon: utility.loadImage(named: "printer"),
                     action: { _ in
                         if self.utilityFileSystem.fileProviderStorageExists(metadata) {
                             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDownloadedFile, userInfo: ["ocId": metadata.ocId, "selector": NCGlobal.shared.selectorPrint, "error": NKError(), "account": metadata.account])
@@ -130,7 +130,7 @@ extension NCViewer {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_video_processing_", comment: ""),
-                    icon: NCUtility().loadImage(named: "film"),
+                    icon: utility.loadImage(named: "film"),
                     action: { menuAction in
                         if let ncplayer = (viewController as? NCViewerMediaPage)?.currentViewController.ncplayer {
                             ncplayer.convertVideo(withAlert: false)
@@ -155,7 +155,7 @@ extension NCViewer {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_save_as_scan_", comment: ""),
-                    icon: NCUtility().loadImage(named: "viewfinder.circle"),
+                    icon: utility.loadImage(named: "viewfinder.circle"),
                     action: { _ in
                         if self.utilityFileSystem.fileProviderStorageExists(metadata) {
                             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDownloadedFile, userInfo: ["ocId": metadata.ocId, "selector": NCGlobal.shared.selectorSaveAsScan, "error": NKError(), "account": metadata.account])
@@ -174,7 +174,7 @@ extension NCViewer {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_rename_", comment: ""),
-                    icon: NCUtility().loadImage(named: "pencil"),
+                    icon: utility.loadImage(named: "pencil"),
                     action: { _ in
 
                         if let vcRename = UIStoryboard(name: "NCRenameFile", bundle: nil).instantiateInitialViewController() as? NCRenameFile {
@@ -214,7 +214,7 @@ extension NCViewer {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_download_locally_", comment: ""),
-                    icon: NCUtility().loadImage(named: "icloud.and.arrow.down"),
+                    icon: utility.loadImage(named: "icloud.and.arrow.down"),
                     action: { _ in
                         NCNetworking.shared.download(metadata: metadata, selector: "") { _, _ in }
                     }
@@ -239,7 +239,7 @@ extension NCViewer {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_go_to_page_", comment: ""),
-                    icon: NCUtility().loadImage(named: "repeat"),
+                    icon: utility.loadImage(named: "repeat"),
                     action: { _ in
                         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterMenuGotToPageInPDF)
                     }
@@ -254,7 +254,7 @@ extension NCViewer {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_modify_", comment: ""),
-                    icon: NCUtility().loadImage(named: "pencil.tip.crop.circle"),
+                    icon: utility.loadImage(named: "pencil.tip.crop.circle"),
                     action: { _ in
                         if self.utilityFileSystem.fileProviderStorageExists(metadata) {
                             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDownloadedFile, userInfo: ["ocId": metadata.ocId, "selector": NCGlobal.shared.selectorLoadFileQuickLook, "error": NKError(), "account": metadata.account])

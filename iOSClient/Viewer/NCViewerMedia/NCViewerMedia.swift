@@ -49,6 +49,7 @@ class NCViewerMedia: UIViewController {
     private let player = VLCMediaPlayer()
     private let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
     let utilityFileSystem = NCUtilityFileSystem()
+    let utility = NCUtility()
     weak var viewerMediaPage: NCViewerMediaPage?
     var playerToolBar: NCPlayerToolBar?
     var ncplayer: NCPlayer?
@@ -88,7 +89,7 @@ class NCViewerMedia: UIViewController {
         view.addGestureRecognizer(doubleTapGestureRecognizer)
 
         if NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata) != nil {
-            statusViewImage.image = NCUtility().loadImage(named: "livephoto", color: .gray)
+            statusViewImage.image = utility.loadImage(named: "livephoto", color: .gray)
             statusLabel.text = "LIVE"
         } else {
             statusViewImage.image = nil
@@ -305,7 +306,7 @@ class NCViewerMedia: UIViewController {
         }
 
         if metadata.isVideo && !metadata.hasPreview {
-            NCUtility().createImageFrom(fileNameView: metadata.fileNameView, ocId: metadata.ocId, etag: metadata.etag, classFile: metadata.classFile)
+            utility.createImageFrom(fileNameView: metadata.fileNameView, ocId: metadata.ocId, etag: metadata.etag, classFile: metadata.classFile)
         }
 
         if utilityFileSystem.fileProviderStoragePreviewIconExists(metadata.ocId, etag: metadata.etag) {
@@ -333,7 +334,7 @@ class NCViewerMedia: UIViewController {
 
             if ext == "GIF" {
                 if !FileManager().fileExists(atPath: previewPath) {
-                    NCUtility().createImageFrom(fileNameView: metadata.fileNameView, ocId: metadata.ocId, etag: metadata.etag, classFile: metadata.classFile)
+                    utility.createImageFrom(fileNameView: metadata.fileNameView, ocId: metadata.ocId, etag: metadata.etag, classFile: metadata.classFile)
                 }
                 image = UIImage.animatedImage(withAnimatedGIFURL: URL(fileURLWithPath: imagePath))
             } else if ext == "SVG" {
@@ -353,7 +354,7 @@ class NCViewerMedia: UIViewController {
                     return nil
                 }
             } else {
-                NCUtility().createImageFrom(fileNameView: metadata.fileNameView, ocId: metadata.ocId, etag: metadata.etag, classFile: metadata.classFile)
+                utility.createImageFrom(fileNameView: metadata.fileNameView, ocId: metadata.ocId, etag: metadata.etag, classFile: metadata.classFile)
                 image = UIImage(contentsOfFile: imagePath)
             }
         }
@@ -487,7 +488,7 @@ extension NCViewerMedia {
             self.statusLabel.isHidden = true
             self.statusViewImage.isHidden = true
 
-            NCUtility().getExif(metadata: self.metadata) { exif in
+            self.utility.getExif(metadata: self.metadata) { exif in
                 self.view.layoutIfNeeded()
                 self.showDetailView(exif: exif)
 
@@ -544,7 +545,7 @@ extension NCViewerMedia {
 
     func reloadDetail() {
         if self.detailView.isShown {
-            NCUtility().getExif(metadata: metadata) { exif in
+            utility.getExif(metadata: metadata) { exif in
                 self.showDetailView(exif: exif)
             }
         }

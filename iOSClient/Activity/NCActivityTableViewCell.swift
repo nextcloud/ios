@@ -56,6 +56,7 @@ class NCActivityTableViewCell: UITableViewCell, NCCellProtocol {
     var activityPreviews: [tableActivityPreview] = []
     var didSelectItemEnable: Bool = true
     var viewController = UIViewController()
+    let utility = NCUtility()
 
     var indexPath: IndexPath {
         get { return index }
@@ -161,7 +162,7 @@ extension NCActivityTableViewCell: UICollectionViewDataSource {
 
             let source = activityPreview.source
 
-            NCUtility().convertSVGtoPNGWriteToUserData(svgUrlString: source, width: 100, rewrite: false, account: appDelegate.account, id: idActivity) { imageNamePath, id in
+            utility.convertSVGtoPNGWriteToUserData(svgUrlString: source, width: 100, rewrite: false, account: appDelegate.account, id: idActivity) { imageNamePath, id in
                 if let imageNamePath = imageNamePath, id == self.idActivity, let image = UIImage(contentsOfFile: imageNamePath) {
                     cell.imageView.image = image
                 } else {
@@ -175,7 +176,7 @@ extension NCActivityTableViewCell: UICollectionViewDataSource {
 
                 let source = activityPreview.source
 
-                NCUtility().convertSVGtoPNGWriteToUserData(svgUrlString: source, width: 100, rewrite: false, account: appDelegate.account, id: idActivity) { imageNamePath, id in
+                utility.convertSVGtoPNGWriteToUserData(svgUrlString: source, width: 100, rewrite: false, account: appDelegate.account, id: idActivity) { imageNamePath, id in
                     if let imageNamePath = imageNamePath, id == self.idActivity, let image = UIImage(contentsOfFile: imageNamePath) {
                         cell.imageView.image = image
                     } else {

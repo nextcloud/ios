@@ -33,7 +33,7 @@ extension NCShare {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_share_add_sharelink_", comment: ""),
-                    icon: NCUtility().loadImage(named: "shareAdd"),
+                    icon: utility.loadImage(named: "shareAdd"),
                     action: { _ in
                         self.makeNewLinkShare()
                     }
@@ -44,7 +44,7 @@ extension NCShare {
         actions.append(
             NCMenuAction(
                 title: NSLocalizedString("_details_", comment: ""),
-                icon: NCUtility().loadImage(named: "pencil"),
+                icon: utility.loadImage(named: "pencil"),
                 action: { _ in
                     guard
                         let advancePermission = UIStoryboard(name: "NCShare", bundle: nil).instantiateViewController(withIdentifier: "NCShareAdvancePermission") as? NCShareAdvancePermission,
@@ -61,7 +61,7 @@ extension NCShare {
         actions.append(
             NCMenuAction(
                 title: NSLocalizedString("_share_unshare_", comment: ""),
-                icon: NCUtility().loadImage(named: "trash"),
+                icon: utility.loadImage(named: "trash"),
                 action: { _ in
                     Task {
                         if share.shareType != NCShareCommon().SHARE_TYPE_LINK, let metadata = self.metadata, metadata.e2eEncrypted && NCGlobal.shared.capabilityE2EEApiVersion == NCGlobal.shared.e2eeVersionV20 {
@@ -90,7 +90,7 @@ extension NCShare {
         actions.append(
             NCMenuAction(
                 title: NSLocalizedString("_share_read_only_", comment: ""),
-                icon: NCUtility().loadImage(named: "eye"),
+                icon: utility.loadImage(named: "eye"),
                 selected: tableShare.permissions == (NCGlobal.shared.permissionReadShare + NCGlobal.shared.permissionShareShare) || tableShare.permissions == NCGlobal.shared.permissionReadShare,
                 on: false,
                 action: { _ in
@@ -104,7 +104,7 @@ extension NCShare {
         actions.append(
             NCMenuAction(
                 title: isDirectory ? NSLocalizedString("_share_allow_upload_", comment: "") : NSLocalizedString("_share_editing_", comment: ""),
-                icon: NCUtility().loadImage(named: "pencil"),
+                icon: utility.loadImage(named: "pencil"),
                 selected: hasUploadPermission(tableShare: tableShare),
                 on: false,
                 action: { _ in

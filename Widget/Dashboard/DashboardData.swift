@@ -100,6 +100,7 @@ func convertDataToImage(data: Data?, size: CGSize, fileNameToWrite: String?) -> 
 func getDashboardDataEntry(configuration: DashboardIntent?, isPreview: Bool, displaySize: CGSize, completion: @escaping (_ entry: DashboardDataEntry) -> Void) {
 
     let utilityFileSystem = NCUtilityFileSystem()
+    let utility = NCUtility()
     let dashboardItems = getDashboardItems(displaySize: displaySize, withButton: false)
     let datasPlaceholder = Array(dashboardDatasTest[0...dashboardItems - 1])
     var account: tableAccount?
@@ -144,8 +145,8 @@ func getDashboardDataEntry(configuration: DashboardIntent?, isPreview: Bool, dis
 
     // LOG
     let levelLog = NCKeychain().logLevel
-    let isSimulatorOrTestFlight = NCUtility().isSimulatorOrTestFlight()
-    let versionNextcloudiOS = String(format: NCBrandOptions.shared.textCopyrightNextcloudiOS, NCUtility().getVersionApp())
+    let isSimulatorOrTestFlight = utility.isSimulatorOrTestFlight()
+    let versionNextcloudiOS = String(format: NCBrandOptions.shared.textCopyrightNextcloudiOS, utility.getVersionApp())
 
     NextcloudKit.shared.nkCommonInstance.levelLog = levelLog
     NextcloudKit.shared.nkCommonInstance.pathLog = utilityFileSystem.directoryGroup

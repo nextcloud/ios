@@ -39,6 +39,7 @@ class NCTrash: UIViewController, NCSelectableNavigationView, NCTrashListCellDele
 
     let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
     let utilityFileSystem = NCUtilityFileSystem()
+    let utility = NCUtility()
 
     internal var isEditMode = false
     internal var selectOcId: [String] = []

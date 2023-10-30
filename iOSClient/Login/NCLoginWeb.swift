@@ -31,6 +31,7 @@ class NCLoginWeb: UIViewController {
     var webView: WKWebView?
 
     let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
+    let utility = NCUtility()
 
     var titleView: String = ""
 
@@ -293,7 +294,7 @@ extension NCLoginWeb: WKNavigationDelegate {
             if error == .success, let userProfile {
 
                 if NCManageDatabase.shared.getAccounts() == nil {
-                    NCUtility().removeAllSettings()
+                    self.utility.removeAllSettings()
                 }
 
                 NCManageDatabase.shared.deleteAccount(account)

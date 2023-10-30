@@ -448,7 +448,7 @@ class NCUtility: NSObject {
             return avatarImg
         } else {
             let config = UIImage.SymbolConfiguration(pointSize: 30)
-            return NCUtility().loadImage(named: "person.crop.circle", symbolConfiguration: config)
+            return loadImage(named: "person.crop.circle", symbolConfiguration: config)
         }
     }
 
@@ -580,7 +580,7 @@ class NCUtility: NSObject {
                 } catch { }
             }
         } else if createPreviewMedia && status >= NCGlobal.shared.metadataStatusNormal && classFile == NKCommon.TypeClassFile.video.rawValue && FileManager().fileExists(atPath: filePath) {
-            if let image = NCUtility().imageFromVideo(url: URL(fileURLWithPath: filePath), at: 0), let image = image.resizeImage(size: CGSize(width: NCGlobal.shared.sizeIcon, height: NCGlobal.shared.sizeIcon)), let data = image.jpegData(compressionQuality: 0.5) {
+            if let image = imageFromVideo(url: URL(fileURLWithPath: filePath), at: 0), let image = image.resizeImage(size: CGSize(width: NCGlobal.shared.sizeIcon, height: NCGlobal.shared.sizeIcon)), let data = image.jpegData(compressionQuality: 0.5) {
                 do {
                     try data.write(to: URL(fileURLWithPath: iconImagePath), options: .atomic)
                     imagePreview = image

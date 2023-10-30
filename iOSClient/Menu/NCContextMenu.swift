@@ -29,6 +29,7 @@ import JGProgressHUD
 class NCContextMenu: NSObject {
 
     let utilityFileSystem = NCUtilityFileSystem()
+    let utility = NCUtility()
 
     func viewMenu(ocId: String, indexPath: IndexPath, viewController: UIViewController, image: UIImage?) -> UIMenu {
         guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) else { return UIMenu() }
@@ -62,7 +63,7 @@ class NCContextMenu: NSObject {
         let favorite = UIAction(title: metadata.favorite ?
                                 NSLocalizedString("_remove_favorites_", comment: "") :
                                 NSLocalizedString("_add_favorites_", comment: ""),
-                                image: NCUtility().loadImage(named: "star.fill", color: NCBrandColor.shared.yellowFavorite)) { _ in
+                                image: utility.loadImage(named: "star.fill", color: NCBrandColor.shared.yellowFavorite)) { _ in
             NCNetworking.shared.favoriteMetadata(metadata) { error in
                 if error != .success {
                     NCContentPresenter().showError(error: error)

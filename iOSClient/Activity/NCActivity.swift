@@ -41,6 +41,7 @@ class NCActivity: UIViewController, NCSharePagingContent {
 
     let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
     let utilityFileSystem = NCUtilityFileSystem()
+    let utility = NCUtility()
     var allItems: [DateCompareable] = []
     var sectionDates: [Date] = []
 
@@ -526,7 +527,7 @@ extension NCActivity: NCShareCommentsCellDelegate {
         actions.append(
             NCMenuAction(
                 title: NSLocalizedString("_delete_comment_", comment: ""),
-                icon: NCUtility().loadImage(named: "trash"),
+                icon: utility.loadImage(named: "trash"),
                 action: { _ in
                     guard let metadata = self.metadata, let tableComments = tableComments else { return }
 

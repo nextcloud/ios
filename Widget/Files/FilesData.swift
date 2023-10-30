@@ -87,6 +87,7 @@ func getFilesItems(displaySize: CGSize) -> Int {
 func getFilesDataEntry(configuration: AccountIntent?, isPreview: Bool, displaySize: CGSize, completion: @escaping (_ entry: FilesDataEntry) -> Void) {
 
     let utilityFileSystem = NCUtilityFileSystem()
+    let utility = NCUtility()
     let filesItems = getFilesItems(displaySize: displaySize)
     let datasPlaceholder = Array(filesDatasTest[0...filesItems - 1])
     var account: tableAccount?
@@ -194,8 +195,8 @@ func getFilesDataEntry(configuration: AccountIntent?, isPreview: Bool, displaySi
 
     // LOG
     let levelLog = NCKeychain().logLevel
-    let isSimulatorOrTestFlight = NCUtility().isSimulatorOrTestFlight()
-    let versionNextcloudiOS = String(format: NCBrandOptions.shared.textCopyrightNextcloudiOS, NCUtility().getVersionApp())
+    let isSimulatorOrTestFlight = utility.isSimulatorOrTestFlight()
+    let versionNextcloudiOS = String(format: NCBrandOptions.shared.textCopyrightNextcloudiOS, utility.getVersionApp())
 
     NextcloudKit.shared.nkCommonInstance.levelLog = levelLog
     NextcloudKit.shared.nkCommonInstance.pathLog = utilityFileSystem.directoryGroup
@@ -233,7 +234,7 @@ func getFilesDataEntry(configuration: AccountIntent?, isPreview: Bool, displaySi
                 if !file.iconName.isEmpty {
                     imageRecent = UIImage(named: file.iconName)!
                 }
-                if let image = NCUtility().createFilePreviewImage(ocId: file.ocId, etag: file.etag, fileNameView: file.fileName, classFile: file.classFile, status: 0, createPreviewMedia: false) {
+                if let image = utility.createFilePreviewImage(ocId: file.ocId, etag: file.etag, fileNameView: file.fileName, classFile: file.classFile, status: 0, createPreviewMedia: false) {
                     imageRecent = image
                 } else if file.hasPreview {
                     let fileNamePathOrFileId = utilityFileSystem.getFileNamePath(file.fileName, serverUrl: file.serverUrl, urlBase: file.urlBase, userId: file.userId)

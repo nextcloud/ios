@@ -50,7 +50,7 @@ class NCSectionHeaderMenu: UICollectionReusableView, UIGestureRecognizerDelegate
     @IBOutlet weak var transferSeparatorBottomHeightConstraint: NSLayoutConstraint!
 
     weak var delegate: NCSectionHeaderMenuDelegate?
-
+    let utility = NCUtility()
     private var markdownParser = MarkdownParser()
     private var richWorkspaceText: String?
     private var textViewColor: UIColor?
@@ -200,7 +200,7 @@ class NCSectionHeaderMenu: UICollectionReusableView, UIGestureRecognizerDelegate
             var image: UIImage?
             if let ocId,
                let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
-                image = NCUtility().createFilePreviewImage(ocId: metadata.ocId, etag: metadata.etag, fileNameView: metadata.fileNameView, classFile: metadata.classFile, status: metadata.status, createPreviewMedia: true)?.darken()
+                image = utility.createFilePreviewImage(ocId: metadata.ocId, etag: metadata.etag, fileNameView: metadata.fileNameView, classFile: metadata.classFile, status: metadata.status, createPreviewMedia: true)?.darken()
                 if image == nil {
                     image = UIImage(named: metadata.iconName)
                     buttonTransfer.backgroundColor = .lightGray

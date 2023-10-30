@@ -31,13 +31,13 @@ extension NCLoginWeb {
         var actions = [NCMenuAction]()
 
         let accounts = NCManageDatabase.shared.getAllAccount()
-        var avatar = NCUtility().loadImage(named: "person.crop.circle")
+        var avatar = utility.loadImage(named: "person.crop.circle")
 
         for account in accounts {
 
             let title = account.user + " " + (URL(string: account.urlBase)?.host ?? "")
 
-            avatar = NCUtility().loadUserImage(
+            avatar = utility.loadUserImage(
                 for: account.user,
                    displayName: account.displayName,
                    userBaseUrl: account)
@@ -64,7 +64,7 @@ extension NCLoginWeb {
         actions.append(
             NCMenuAction(
                 title: NSLocalizedString("_delete_active_account_", comment: ""),
-                icon: NCUtility().loadImage(named: "trash", color: UIColor.systemGray),
+                icon: utility.loadImage(named: "trash", color: UIColor.systemGray),
                 onTitle: NSLocalizedString("_delete_active_account_", comment: ""),
                 onIcon: avatar,
                 selected: false,

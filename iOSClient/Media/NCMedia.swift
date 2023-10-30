@@ -37,6 +37,7 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate, NCSelectDelegate {
 
     internal let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
     internal let utilityFileSystem = NCUtilityFileSystem()
+    internal let utility = NCUtility()
 
     internal var isEditMode = false
     internal var selectOcId: [String] = []
@@ -101,8 +102,8 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate, NCSelectDelegate {
 
         collectionView.prefetchDataSource = self
 
-        cacheImages.cellLivePhotoImage = NCUtility().loadImage(named: "livephoto", color: .white)
-        cacheImages.cellPlayImage = NCUtility().loadImage(named: "play.fill", color: .white)
+        cacheImages.cellLivePhotoImage = utility.loadImage(named: "livephoto", color: .white)
+        cacheImages.cellPlayImage = utility.loadImage(named: "play.fill", color: .white)
     }
 
     override func viewWillAppear(_ animated: Bool) {

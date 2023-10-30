@@ -48,7 +48,7 @@ class NCAccountRequest: UIViewController {
     public var enableAddAccount: Bool = false
     public var dismissDidEnterBackground: Bool = false
     public weak var delegate: NCAccountRequestDelegate?
-
+    let utility = NCUtility()
     private var timer: Timer?
     private var time: Float = 0
     private let secondsAutoDismiss: Float = 3
@@ -201,7 +201,7 @@ extension NCAccountRequest: UITableViewDataSource {
 
         if indexPath.row == accounts.count {
 
-            avatarImage?.image = NCUtility().loadImage(named: "plus").image(color: .systemBlue, size: 15)
+            avatarImage?.image = utility.loadImage(named: "plus").image(color: .systemBlue, size: 15)
             avatarImage?.contentMode = .center
             userLabel?.text = NSLocalizedString("_add_account_", comment: "")
             userLabel?.textColor = .systemBlue
@@ -211,7 +211,7 @@ extension NCAccountRequest: UITableViewDataSource {
 
             let account = accounts[indexPath.row]
 
-            avatarImage?.image = NCUtility().loadUserImage(
+            avatarImage?.image = utility.loadUserImage(
                 for: account.user,
                    displayName: account.displayName,
                    userBaseUrl: account)
@@ -224,7 +224,7 @@ extension NCAccountRequest: UITableViewDataSource {
             }
 
             if account.active {
-                activeImage?.image = NCUtility().loadImage(named: "checkmark").image(color: .systemBlue, size: 30)
+                activeImage?.image = utility.loadImage(named: "checkmark").image(color: .systemBlue, size: 30)
             } else {
                 activeImage?.image = nil
             }
