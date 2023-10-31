@@ -31,7 +31,7 @@ struct ScaledThumbnail: Hashable {
 
     private var metadatas: [tableMetadata] = []
 
-    internal let cache = NCCache()
+    internal let cache = NCImageCache()
 
 //    internal lazy var cache = manager.cache
 //    internal lazy var thumbnailsQueue = manager.queuer

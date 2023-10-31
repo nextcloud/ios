@@ -159,7 +159,7 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate, NCSelectDelegate {
               let error = userInfo["error"] as? NKError else { return }
         let onlyLocalCache: Bool = userInfo["onlyLocalCache"] as? Bool ?? false
 
-        NCImageCache.shared.getMediaMetadatas(account: appDelegate.account, filterClassTypeImage: filterClassTypeImage, filterClassTypeVideo: filterClassTypeVideo)
+        NCImageCache.shared.getMediaMetadatas(account: appDelegate.account, showPhotos: filterClassTypeImage, showVideos: filterClassTypeVideo)
 
         if error == .success, let indexPath = userInfo["indexPath"] as? [IndexPath], !indexPath.isEmpty, !onlyLocalCache {
             collectionView?.performBatchUpdates({
@@ -449,7 +449,7 @@ extension NCMedia {
         guard !appDelegate.account.isEmpty else { return }
 
         DispatchQueue.global().async {
-            NCImageCache.shared.getMediaMetadatas(account: self.appDelegate.account, filterClassTypeImage: self.filterClassTypeImage, filterClassTypeVideo: self.filterClassTypeVideo)
+            NCImageCache.shared.getMediaMetadatas(account: self.appDelegate.account, showPhotos: self.filterClassTypeImage, showVideos: self.filterClassTypeVideo)
             DispatchQueue.main.sync {
                 self.reloadDataThenPerform {
                     self.updateMediaControlVisibility()

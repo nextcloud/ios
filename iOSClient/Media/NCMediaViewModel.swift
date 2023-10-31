@@ -26,7 +26,7 @@ import LRUCache
     @Published internal var needsLoadingMoreItems = true
     @Published internal var filter = Filter.all
 
-    private let cache = NCCache.shared
+    private let cache = NCImageCache.shared
 
     init() {
         NotificationCenter.default.addObserver(self, selector: #selector(deleteFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDeleteFile), object: nil)
