@@ -17,8 +17,8 @@ import LRUCache
     private var lastContentOffsetY: CGFloat = 0
     private var mediaPath = ""
     private var livePhoto: Bool = false
-//    private var predicateDefault: NSPredicate?
-//    private var predicate: NSPredicate?
+    private var predicateDefault: NSPredicate?
+    private var predicate: NSPredicate?
     internal let appDelegate = UIApplication.shared.delegate as? AppDelegate
 
     private var cancellables: Set<AnyCancellable> = []
@@ -27,6 +27,8 @@ import LRUCache
     @Published internal var filter = Filter.all
 
     private let cache = NCImageCache.shared
+
+    private var newAndOldMediaAlreadyLoaded = false
 
     init() {
         NotificationCenter.default.addObserver(self, selector: #selector(deleteFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDeleteFile), object: nil)
@@ -37,6 +39,8 @@ import LRUCache
         NotificationCenter.default.addObserver(self, selector: #selector(userChanged(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeUser), object: nil)
 
         // TODO: 2. Here we load from New media
+
+        metadatas = cache.metadatas
 
         Task {
             await loadNewMedia()
@@ -331,19 +335,32 @@ extension NCMediaViewModel {
             account = appDelegate.account
         }
 
-        cache.getMediaMetadatas(account: account, showPhotos: showPhotos, showVideos: showVideos)
+        guard let accountTable = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", account)) else { return }
+        let startServerUrl = NCUtilityFileSystem().getHomeServer(urlBase: accountTable.urlBase, userId: accountTable.userId) + accountTable.mediaPath
 
-        DispatchQueue.main.async {
-            self.metadatas = self.cache.metadatas
+        predicateDefault = NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND (classFile == %@ OR classFile == %@) AND NOT (session CONTAINS[c] 'upload')", account, startServerUrl, NKCommon.TypeClassFile.image.rawValue, NKCommon.TypeClassFile.video.rawValue)
+
+        if showPhotos, showVideos {
+            predicate = predicateDefault
+        } else if showPhotos {
+            predicate = NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND classFile == %@ AND NOT (session CONTAINS[c] 'upload')", account, startServerUrl, NKCommon.TypeClassFile.image.rawValue)
+        } else if showVideos {
+            predicate = NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND classFile == %@ AND NOT (session CONTAINS[c] 'upload')", account, startServerUrl, NKCommon.TypeClassFile.video.rawValue)
         }
 
-        // self.queryDB(isForced: true, showPhotos: showPhotos, showVideos: showVideos)
+        DispatchQueue.global(qos: .background).async {
+            self.cache.getMediaMetadatas(account: self.account, predicate: self.predicate)
+
+            DispatchQueue.main.async {
+                self.metadatas = self.cache.metadatas
+            }
+        }
     }
 
     private func loadOldMedia(value: Int = -30, limit: Int = 300) {
         var lessDate = Date()
-        if cache.predicateDefault != nil {
-            if let metadata = NCManageDatabase.shared.getMetadata(predicate: cache.predicateDefault!, sorted: "date", ascending: true) {
+        if let predicateDefault {
+            if let metadata = NCManageDatabase.shared.getMetadata(predicate: predicateDefault, sorted: "date", ascending: true) {
                 lessDate = metadata.date as Date
             }
         }
@@ -363,7 +380,7 @@ extension NCMediaViewModel {
                 if !files.isEmpty {
                     NCManageDatabase.shared.convertFilesToMetadatas(files, useMetadataFolder: false) { _, _, metadatas in
                         let predicateDate = NSPredicate(format: "date > %@ AND date < %@", greaterDate as NSDate, lessDate as NSDate)
-                        let predicateResult = NSCompoundPredicate(andPredicateWithSubpredicates: [predicateDate, self.cache.predicateDefault!])
+                        let predicateResult = NSCompoundPredicate(andPredicateWithSubpredicates: [predicateDate, self.predicateDefault!])
                         let metadatasResult = NCManageDatabase.shared.getMetadatas(predicate: predicateResult)
                         let metadatasChanged = NCManageDatabase.shared.updateMetadatas(metadatas, metadatasResult: metadatasResult, addCompareLivePhoto: false)
                         if metadatasChanged.metadatasUpdate.isEmpty {
@@ -414,7 +431,7 @@ extension NCMediaViewModel {
                 if error == .success && account == self.appDelegate?.account && !files.isEmpty {
                     NCManageDatabase.shared.convertFilesToMetadatas(files, useMetadataFolder: false) { _, _, metadatas in
                         let predicate = NSPredicate(format: "date > %@ AND date < %@", greaterDate as NSDate, lessDate as NSDate)
-                        let predicateResult = NSCompoundPredicate(andPredicateWithSubpredicates: [predicate, self.cache.predicate!])
+                        let predicateResult = NSCompoundPredicate(andPredicateWithSubpredicates: [predicate, self.predicate!])
                         let metadatasResult = NCManageDatabase.shared.getMetadatas(predicate: predicateResult)
                         let updateMetadatas = NCManageDatabase.shared.updateMetadatas(metadatas, metadatasResult: metadatasResult, addCompareLivePhoto: false)
                         if !updateMetadatas.metadatasUpdate.isEmpty || !updateMetadatas.metadatasDelete.isEmpty {

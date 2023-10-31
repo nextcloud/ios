@@ -89,9 +89,6 @@ struct NCMediaScrollView: View, Equatable {
                         .padding(.bottom, 40)
             //        }
             .coordinateSpace(name: "scroll")
-            .refreshable {
-                await vm.onPullToRefresh()
-            }
             //        .onPreferenceChange(ScrollOffsetPreferenceKey.self) { value in
             //            isScrolledToTop = value.y >= 40
             //        }
@@ -116,6 +113,10 @@ struct NCMediaScrollView: View, Equatable {
             //                                }
             //        }
             //        .preference(key: TitlePreferenceKey.self, value: title)
+        }
+
+        .refreshable {
+            await vm.onPullToRefresh()
         }
     }
 }

@@ -24,7 +24,7 @@ struct NCMediaRow: View, Equatable {
     private let spacing: CGFloat = 2
 
     var body: some View {
-        let _ = Self._printChanges()
+//        let _ = Self._printChanges()
 
         HStack(spacing: spacing) {
             if vm.rowData.scaledThumbnails.isEmpty {

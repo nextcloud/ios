@@ -65,6 +65,8 @@ struct NCMediaNew: View {
     @State var offsetPublisherSubscription: AnyCancellable?
 
     var body: some View {
+        let _ = Self._printChanges()
+
         ZStack(alignment: .top) {
             NCMediaScrollView(metadatas: vm.metadatas.chunked(into: columnCountStages[columnCountStagesIndex]), isInSelectMode: $isInSelectMode, selectedMetadatas: $selectedMetadatas, columnCountStages: $columnCountStages, columnCountStagesIndex: $columnCountStagesIndex, title: $title)
                 .equatable()
@@ -190,8 +192,6 @@ struct NCMediaNew: View {
                 columnCountStages = [2, 3, 4]
             }
         }
-        // TODO: 1. Here we load from DB first
-        .onAppear { vm.loadMediaFromDB() }
         .onChange(of: isInSelectMode) { newValue in
             if newValue == false { selectedMetadatas.removeAll() }
         }

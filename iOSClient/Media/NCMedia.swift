@@ -159,7 +159,7 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate, NCSelectDelegate {
               let error = userInfo["error"] as? NKError else { return }
         let onlyLocalCache: Bool = userInfo["onlyLocalCache"] as? Bool ?? false
 
-        NCImageCache.shared.getMediaMetadatas(account: appDelegate.account, showPhotos: filterClassTypeImage, showVideos: filterClassTypeVideo)
+//        NCImageCache.shared.getMediaMetadatas(account: appDelegate.account, showPhotos: filterClassTypeImage, showVideos: filterClassTypeVideo)
 
         if error == .success, let indexPath = userInfo["indexPath"] as? [IndexPath], !indexPath.isEmpty, !onlyLocalCache {
             collectionView?.performBatchUpdates({
@@ -449,7 +449,7 @@ extension NCMedia {
         guard !appDelegate.account.isEmpty else { return }
 
         DispatchQueue.global().async {
-            NCImageCache.shared.getMediaMetadatas(account: self.appDelegate.account, showPhotos: self.filterClassTypeImage, showVideos: self.filterClassTypeVideo)
+//            NCImageCache.shared.getMediaMetadatas(account: self.appDelegate.account, showPhotos: self.filterClassTypeImage, showVideos: self.filterClassTypeVideo)
             DispatchQueue.main.sync {
                 self.reloadDataThenPerform {
                     self.updateMediaControlVisibility()
@@ -491,9 +491,9 @@ extension NCMedia {
         }
 
         var lessDate = Date()
-        if let predicate = NCImageCache.shared.predicateDefault, let metadata = NCManageDatabase.shared.getMetadata(predicate: predicate, sorted: "date", ascending: true) {
-            lessDate = metadata.date as Date
-        }
+//        if let predicate = NCImageCache.shared.predicateDefault, let metadata = NCManageDatabase.shared.getMetadata(predicate: predicate, sorted: "date", ascending: true) {
+//            lessDate = metadata.date as Date
+//        }
 
         var greaterDate: Date
         if value == -999 {
@@ -516,14 +516,14 @@ extension NCMedia {
                 if !files.isEmpty {
                     NCManageDatabase.shared.convertFilesToMetadatas(files, useMetadataFolder: false) { _, _, metadatas in
                         let predicateDate = NSPredicate(format: "date > %@ AND date < %@", greaterDate as NSDate, lessDate as NSDate)
-                        let predicateResult = NSCompoundPredicate(andPredicateWithSubpredicates: [predicateDate, NCImageCache.shared.predicateDefault!])
-                        let metadatasResult = NCManageDatabase.shared.getMetadatas(predicate: predicateResult)
-                        let metadatasChanged = NCManageDatabase.shared.updateMetadatas(metadatas, metadatasResult: metadatasResult, addCompareLivePhoto: false)
-                        if metadatasChanged.metadatasUpdate.isEmpty {
-                            self.researchOldMedia(value: value, limit: limit, withElseReloadDataSource: true)
-                        } else {
-                            self.reloadDataSourceWithCompletion { _ in }
-                        }
+//                        let predicateResult = NSCompoundPredicate(andPredicateWithSubpredicates: [predicateDate, NCImageCache.shared.predicateDefault!])
+//                        let metadatasResult = NCManageDatabase.shared.getMetadatas(predicate: predicateResult)
+//                        let metadatasChanged = NCManageDatabase.shared.updateMetadatas(metadatas, metadatasResult: metadatasResult, addCompareLivePhoto: false)
+//                        if metadatasChanged.metadatasUpdate.isEmpty {
+//                            self.researchOldMedia(value: value, limit: limit, withElseReloadDataSource: true)
+//                        } else {
+//                            self.reloadDataSourceWithCompletion { _ in }
+//                        }
                     }
                 } else {
                     self.researchOldMedia(value: value, limit: limit, withElseReloadDataSource: false)
@@ -597,12 +597,12 @@ extension NCMedia {
                 if error == .success, account == self.appDelegate.account, !files.isEmpty {
                     NCManageDatabase.shared.convertFilesToMetadatas(files, useMetadataFolder: false) { _, _, metadatas in
                         let predicate = NSPredicate(format: "date > %@ AND date < %@", greaterDate as NSDate, lessDate as NSDate)
-                        let predicateResult = NSCompoundPredicate(andPredicateWithSubpredicates: [predicate, NCImageCache.shared.predicate!])
-                        let metadatasResult = NCManageDatabase.shared.getMetadatas(predicate: predicateResult)
-                        let updateMetadatas = NCManageDatabase.shared.updateMetadatas(metadatas, metadatasResult: metadatasResult, addCompareLivePhoto: false)
-                        if !updateMetadatas.metadatasUpdate.isEmpty || !updateMetadatas.metadatasDelete.isEmpty {
-                            self.reloadDataSourceWithCompletion { _ in }
-                        }
+//                        let predicateResult = NSCompoundPredicate(andPredicateWithSubpredicates: [predicate, NCImageCache.shared.predicate!])
+//                        let metadatasResult = NCManageDatabase.shared.getMetadatas(predicate: predicateResult)
+//                        let updateMetadatas = NCManageDatabase.shared.updateMetadatas(metadatas, metadatasResult: metadatasResult, addCompareLivePhoto: false)
+//                        if !updateMetadatas.metadatasUpdate.isEmpty || !updateMetadatas.metadatasDelete.isEmpty {
+//                            self.reloadDataSourceWithCompletion { _ in }
+//                        }
                     }
                 } else if error == .success, files.isEmpty, NCImageCache.shared.metadatas.isEmpty {
                     self.searchOldMedia()

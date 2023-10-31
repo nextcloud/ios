@@ -40,8 +40,6 @@ import NextcloudKit
     }()
     private var ocIdEtag: [String: String] = [:]
     public var metadatas: [tableMetadata] = []
-    public var predicateDefault: NSPredicate?
-    public var predicate: NSPredicate?
     public var livePhoto: Bool = false
 
     func createMediaCache(account: String) {
@@ -123,25 +121,19 @@ import NextcloudKit
         cache.removeAllValues()
     }
 
-    func getMediaMetadatas(account: String, showPhotos: Bool = true, showVideos: Bool = true) {
+    func getMediaMetadatas(account: String, predicate: NSPredicate? = nil) {
 
         guard let account = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", account)) else { return }
         let startServerUrl = NCUtilityFileSystem().getHomeServer(urlBase: account.urlBase, userId: account.userId) + account.mediaPath
 
-        predicateDefault = NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND (classFile == %@ OR classFile == %@) AND NOT (session CONTAINS[c] 'upload')", account.account, startServerUrl, NKCommon.TypeClassFile.image.rawValue, NKCommon.TypeClassFile.video.rawValue)
-
-        if showPhotos, showVideos {
-            predicate = predicateDefault
-        } else if showPhotos {
-            predicate = NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND classFile == %@ AND NOT (session CONTAINS[c] 'upload')", account, startServerUrl, NKCommon.TypeClassFile.image.rawValue)
-        } else if showVideos {
-            predicate = NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND classFile == %@ AND NOT (session CONTAINS[c] 'upload')", account, startServerUrl, NKCommon.TypeClassFile.video.rawValue)
-        }
-
-        guard let predicate = predicate else { return }
+        let predicateDefault = NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND (classFile == %@ OR classFile == %@) AND NOT (session CONTAINS[c] 'upload')", account.account, startServerUrl, NKCommon.TypeClassFile.image.rawValue, NKCommon.TypeClassFile.video.rawValue)
 
         livePhoto = NCKeychain().livePhoto
-        metadatas = NCManageDatabase.shared.getMetadatasMedia(predicate: predicate, livePhoto: livePhoto)
+
+        let newMetadatas = NCManageDatabase.shared.getMetadatasMedia(predicate: predicate ?? predicateDefault, livePhoto: livePhoto)
+        if metadatas != newMetadatas {
+            metadatas = newMetadatas
+        }
 
         switch NCKeychain().mediaSortDate {
         case "date":
