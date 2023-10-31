@@ -276,14 +276,10 @@ class NCViewerMedia: UIViewController {
         guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(metadata.ocId) else { return }
         self.metadata = metadata
 
-        // Download image
-        if !utilityFileSystem.fileProviderStorageExists(metadata) && metadata.isImage && metadata.session.isEmpty {
-
-            if metadata.livePhoto {
-                let fileName = (metadata.fileNameView as NSString).deletingPathExtension + ".mov"
-                if let metadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView LIKE[c] %@", metadata.account, metadata.serverUrl, fileName)), !utilityFileSystem.fileProviderStorageExists(metadata) {
-                    NCNetworking.shared.download(metadata: metadata, selector: "") { _, _ in }
-                }
+        if metadata.livePhoto {
+            let fileNameMOV = (metadata.fileNameView as NSString).deletingPathExtension + ".mov"
+            if let metadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView LIKE[c] %@", metadata.account, metadata.serverUrl, fileNameMOV)), !utilityFileSystem.fileProviderStorageExists(metadata) {
+                NCNetworking.shared.download(metadata: metadata, selector: "") { _, _ in }
             }
         }
 
