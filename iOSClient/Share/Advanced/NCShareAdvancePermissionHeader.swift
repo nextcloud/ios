@@ -41,7 +41,7 @@ class NCShareAdvancePermissionHeader: UIView {
             } else if !metadata.iconName.isEmpty {
                 imageView.image = UIImage(named: metadata.iconName)
             } else {
-                imageView.image = NCCache.cacheImages.file
+                imageView.image = NCImageCache.images.file
             }
         }
         fileName.text = metadata.fileNameView

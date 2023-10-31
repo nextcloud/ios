@@ -85,7 +85,7 @@ class NCRenameFile: UIViewController, UITextFieldDelegate {
             if metadata.directory {
 
                 if imagePreview == nil {
-                    previewFile.image = NCCache.cacheImages.folder
+                    previewFile.image = NCImageCache.images.folder
                 }
 
                 ext.isHidden = true
@@ -95,7 +95,7 @@ class NCRenameFile: UIViewController, UITextFieldDelegate {
             } else {
 
                 if imagePreview == nil {
-                    previewFile.image = NCCache.cacheImages.file
+                    previewFile.image = NCImageCache.images.file
                 }
 
                 fileNameNoExtensionTrailingContraint.constant = 90
@@ -114,7 +114,7 @@ class NCRenameFile: UIViewController, UITextFieldDelegate {
             ext.delegate = self
 
             if imagePreview == nil {
-                previewFile.image = NCCache.cacheImages.file
+                previewFile.image = NCImageCache.images.file
             } else {
                 previewFile.image = imagePreview
             }

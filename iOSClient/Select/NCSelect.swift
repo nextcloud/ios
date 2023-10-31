@@ -303,7 +303,7 @@ extension NCSelect: UICollectionViewDataSource {
                 (cell as? NCCellProtocol)?.filePreviewImageView?.image = UIImage(contentsOfFile: utilityFileSystem.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag))
             } else {
                 if metadata.iconName.isEmpty {
-                    (cell as? NCCellProtocol)?.filePreviewImageView?.image = NCCache.cacheImages.file
+                    (cell as? NCCellProtocol)?.filePreviewImageView?.image = NCImageCache.images.file
                 } else {
                     (cell as? NCCellProtocol)?.filePreviewImageView?.image = UIImage(named: metadata.iconName)
                 }
@@ -370,21 +370,21 @@ extension NCSelect: UICollectionViewDataSource {
         if metadata.directory {
 
             if metadata.e2eEncrypted {
-                cell.imageItem.image = NCCache.cacheImages.folderEncrypted
+                cell.imageItem.image = NCImageCache.images.folderEncrypted
             } else if isShare {
-                cell.imageItem.image = NCCache.cacheImages.folderSharedWithMe
+                cell.imageItem.image = NCImageCache.images.folderSharedWithMe
             } else if !metadata.shareType.isEmpty {
                 metadata.shareType.contains(3) ?
-                (cell.imageItem.image = NCCache.cacheImages.folderPublic) :
-                (cell.imageItem.image = NCCache.cacheImages.folderSharedWithMe)
+                (cell.imageItem.image = NCImageCache.images.folderPublic) :
+                (cell.imageItem.image = NCImageCache.images.folderSharedWithMe)
             } else if metadata.mountType == "group" {
-                cell.imageItem.image = NCCache.cacheImages.folderGroup
+                cell.imageItem.image = NCImageCache.images.folderGroup
             } else if isMounted {
-                cell.imageItem.image = NCCache.cacheImages.folderExternal
+                cell.imageItem.image = NCImageCache.images.folderExternal
             } else if metadata.fileName == autoUploadFileName && metadata.serverUrl == autoUploadDirectory {
-                cell.imageItem.image = NCCache.cacheImages.folderAutomaticUpload
+                cell.imageItem.image = NCImageCache.images.folderAutomaticUpload
             } else {
-                cell.imageItem.image = NCCache.cacheImages.folder
+                cell.imageItem.image = NCImageCache.images.folder
             }
             cell.imageItem.image = cell.imageItem.image?.colorizeFolder(metadata: metadata)
 
@@ -396,15 +396,15 @@ extension NCSelect: UICollectionViewDataSource {
 
             // image local
             if NCManageDatabase.shared.getTableLocalFile(ocId: metadata.ocId) != nil {
-                cell.imageLocal.image = NCCache.cacheImages.offlineFlag
+                cell.imageLocal.image = NCImageCache.images.offlineFlag
             } else if utilityFileSystem.fileProviderStorageExists(metadata) {
-                cell.imageLocal.image = NCCache.cacheImages.local
+                cell.imageLocal.image = NCImageCache.images.local
             }
         }
 
         // image Favorite
         if metadata.favorite {
-            cell.imageFavorite.image = NCCache.cacheImages.favorite
+            cell.imageFavorite.image = NCImageCache.images.favorite
         }
 
         cell.imageSelect.isHidden = true
@@ -415,7 +415,7 @@ extension NCSelect: UICollectionViewDataSource {
 
         // Live Photo
         if metadata.livePhoto {
-            cell.imageStatus.image = NCCache.cacheImages.livePhoto
+            cell.imageStatus.image = NCImageCache.images.livePhoto
         }
 
         // Remove last separator

@@ -84,7 +84,7 @@ extension NCShareExtension: UICollectionViewDataSource {
 
         // image Favorite
         if metadata.favorite {
-            cell.imageFavorite.image = NCCache.cacheImages.favorite
+            cell.imageFavorite.image = NCImageCache.images.favorite
         }
 
         cell.imageSelect.isHidden = true
@@ -95,7 +95,7 @@ extension NCShareExtension: UICollectionViewDataSource {
 
         // Live Photo
         if metadata.livePhoto {
-            cell.imageStatus.image = NCCache.cacheImages.livePhoto
+            cell.imageStatus.image = NCImageCache.images.livePhoto
         }
 
         // Add TAGS
@@ -116,21 +116,21 @@ extension NCShareExtension: UICollectionViewDataSource {
         }
 
         if metadata.e2eEncrypted {
-            cell.imageItem.image = NCCache.cacheImages.folderEncrypted
+            cell.imageItem.image = NCImageCache.images.folderEncrypted
         } else if isShare {
-            cell.imageItem.image = NCCache.cacheImages.folderSharedWithMe
+            cell.imageItem.image = NCImageCache.images.folderSharedWithMe
         } else if !metadata.shareType.isEmpty {
             metadata.shareType.contains(3) ?
-            (cell.imageItem.image = NCCache.cacheImages.folderPublic) :
-            (cell.imageItem.image = NCCache.cacheImages.folderSharedWithMe)
+            (cell.imageItem.image = NCImageCache.images.folderPublic) :
+            (cell.imageItem.image = NCImageCache.images.folderSharedWithMe)
         } else if metadata.mountType == "group" {
-            cell.imageItem.image = NCCache.cacheImages.folderGroup
+            cell.imageItem.image = NCImageCache.images.folderGroup
         } else if isMounted {
-            cell.imageItem.image = NCCache.cacheImages.folderExternal
+            cell.imageItem.image = NCImageCache.images.folderExternal
         } else if metadata.fileName == autoUploadFileName && metadata.serverUrl == autoUploadDirectory {
-            cell.imageItem.image = NCCache.cacheImages.folderAutomaticUpload
+            cell.imageItem.image = NCImageCache.images.folderAutomaticUpload
         } else {
-            cell.imageItem.image = NCCache.cacheImages.folder
+            cell.imageItem.image = NCImageCache.images.folder
         }
 
         cell.labelInfo.text = CCUtility.dateDiff(metadata.date as Date)
@@ -140,7 +140,7 @@ extension NCShareExtension: UICollectionViewDataSource {
 
         // Local image: offline
         if tableDirectory != nil && tableDirectory!.offline {
-            cell.imageLocal.image = NCCache.cacheImages.offlineFlag
+            cell.imageLocal.image = NCImageCache.images.offlineFlag
         }
     }
 }

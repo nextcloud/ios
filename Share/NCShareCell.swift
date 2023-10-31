@@ -54,7 +54,7 @@ class NCShareCell: UITableViewCell {
             if !resultInternalType.iconName.isEmpty {
                 imageCell?.image = UIImage(named: resultInternalType.iconName)
             } else {
-                imageCell?.image = NCCache.cacheImages.file
+                imageCell?.image = NCImageCache.images.file
             }
         }
 

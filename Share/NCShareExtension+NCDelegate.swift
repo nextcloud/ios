@@ -82,7 +82,7 @@ extension NCShareExtension: NCEmptyDataSetDelegate, NCAccountRequestDelegate {
         // COLORS
         NCBrandColor.shared.settingThemingColor(account: activeAccount.account)
         NCBrandColor.shared.createUserColors()
-        NCCache.shared.createImagesCache()
+        NCImageCache.shared.createImagesCache()
 
         // NETWORKING
         NextcloudKit.shared.setup(
@@ -132,7 +132,7 @@ extension NCShareExtension: NCShareCellDelegate, NCRenameFileDelegate, NCListCel
         if let previewImage = UIImage.downsample(imageAt: URL(fileURLWithPath: NSTemporaryDirectory() + fileName), to: CGSize(width: 140, height: 140)) {
             vcRename.imagePreview = previewImage
         } else {
-            vcRename.imagePreview = UIImage(named: resultInternalType.iconName) ?? NCCache.cacheImages.file
+            vcRename.imagePreview = UIImage(named: resultInternalType.iconName) ?? NCImageCache.images.file
         }
 
         let popup = NCPopupViewController(contentController: vcRename, popupWidth: vcRename.width, popupHeight: vcRename.height)

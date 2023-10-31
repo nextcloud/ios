@@ -159,7 +159,7 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate, NCSelectDelegate {
               let error = userInfo["error"] as? NKError else { return }
         let onlyLocalCache: Bool = userInfo["onlyLocalCache"] as? Bool ?? false
 
-        NCCache.shared.getMediaMetadatas(account: appDelegate.account, filterClassTypeImage: filterClassTypeImage, filterClassTypeVideo: filterClassTypeVideo)
+        NCImageCache.shared.getMediaMetadatas(account: appDelegate.account, filterClassTypeImage: filterClassTypeImage, filterClassTypeVideo: filterClassTypeVideo)
 
         if error == .success, let indexPath = userInfo["indexPath"] as? [IndexPath], !indexPath.isEmpty, !onlyLocalCache {
             collectionView?.performBatchUpdates({
@@ -299,7 +299,7 @@ extension NCMedia: UICollectionViewDelegate {
 
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
 
-        let metadata = NCCache.shared.metadatas[indexPath.row]
+        let metadata = NCImageCache.shared.metadatas[indexPath.row]
         if isEditMode {
             if let index = selectOcId.firstIndex(of: metadata.ocId) {
                 selectOcId.remove(at: index)
@@ -315,14 +315,14 @@ extension NCMedia: UICollectionViewDelegate {
             // ACTIVE SERVERURL
             appDelegate.activeServerUrl = metadata.serverUrl
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "gridCell", for: indexPath) as? NCGridMediaCell
-            NCViewer().view(viewController: self, metadata: metadata, metadatas: NCCache.shared.metadatas, imageIcon: cell?.imageItem.image)
+            NCViewer().view(viewController: self, metadata: metadata, metadatas: NCImageCache.shared.metadatas, imageIcon: cell?.imageItem.image)
         }
     }
 
     func collectionView(_ collectionView: UICollectionView, contextMenuConfigurationForItemAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
 
         guard let cell = collectionView.cellForItem(at: indexPath) as? NCGridMediaCell else { return nil }
-        let metadata = NCCache.shared.metadatas[indexPath.row]
+        let metadata = NCImageCache.shared.metadatas[indexPath.row]
         let identifier = indexPath as NSCopying
         let image = cell.imageItem.image
 
@@ -358,13 +358,13 @@ extension NCMedia: UICollectionViewDataSource {
     }
 
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        emptyDataSet?.numberOfItemsInSection(NCCache.shared.metadatas.count, section: section)
-        return NCCache.shared.metadatas.count
+        emptyDataSet?.numberOfItemsInSection(NCImageCache.shared.metadatas.count, section: section)
+        return NCImageCache.shared.metadatas.count
     }
 
     func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
-        if !collectionView.indexPathsForVisibleItems.contains(indexPath) && indexPath.row < NCCache.shared.metadatas.count {
-            let metadata = NCCache.shared.metadatas[indexPath.row]
+        if !collectionView.indexPathsForVisibleItems.contains(indexPath) && indexPath.row < NCImageCache.shared.metadatas.count {
+            let metadata = NCImageCache.shared.metadatas[indexPath.row]
             for case let operation as NCMediaDownloadThumbnaill in appDelegate.downloadThumbnailQueue.operations where operation.metadata.ocId == metadata.ocId {
                 operation.cancel()
             }
@@ -375,9 +375,9 @@ extension NCMedia: UICollectionViewDataSource {
 
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "gridCell", for: indexPath) as? NCGridMediaCell else { return UICollectionViewCell() }
 
-        if indexPath.section < collectionView.numberOfSections && indexPath.row < collectionView.numberOfItems(inSection: indexPath.section) && indexPath.row < NCCache.shared.metadatas.count {
+        if indexPath.section < collectionView.numberOfSections && indexPath.row < collectionView.numberOfItems(inSection: indexPath.section) && indexPath.row < NCImageCache.shared.metadatas.count {
 
-            let metadata = NCCache.shared.metadatas[indexPath.row]
+            let metadata = NCImageCache.shared.metadatas[indexPath.row]
 
             self.cellHeigth = cell.frame.size.height
 
@@ -388,20 +388,20 @@ extension NCMedia: UICollectionViewDataSource {
 
             if metadata.isAudioOrVideo {
                 cell.imageStatus.image = cacheImages.cellPlayImage
-            } else if metadata.livePhoto && NCCache.shared.livePhoto {
+            } else if metadata.livePhoto && NCImageCache.shared.livePhoto {
                 cell.imageStatus.image = cacheImages.cellLivePhotoImage
             } else {
                 cell.imageStatus.image = nil
             }
 
-            if let image = NCCache.shared.getMediaImage(ocId: metadata.ocId) {
+            if let image = NCImageCache.shared.getMediaImage(ocId: metadata.ocId) {
                 cell.imageItem.backgroundColor = nil
                 cell.imageItem.image = image
             } else if FileManager().fileExists(atPath: utilityFileSystem.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)) {
                 if let image = UIImage(contentsOfFile: utilityFileSystem.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)) {
                     cell.imageItem.backgroundColor = nil
                     cell.imageItem.image = image
-                    NCCache.shared.setMediaImage(ocId: metadata.ocId, image: image)
+                    NCImageCache.shared.setMediaImage(ocId: metadata.ocId, image: image)
                 }
             } else {
                 if metadata.hasPreview && metadata.status == NCGlobal.shared.metadataStatusNormal && (!utilityFileSystem.fileProviderStoragePreviewIconExists(metadata.ocId, etag: metadata.etag)) {
@@ -449,12 +449,12 @@ extension NCMedia {
         guard !appDelegate.account.isEmpty else { return }
 
         DispatchQueue.global().async {
-            NCCache.shared.getMediaMetadatas(account: self.appDelegate.account, filterClassTypeImage: self.filterClassTypeImage, filterClassTypeVideo: self.filterClassTypeVideo)
+            NCImageCache.shared.getMediaMetadatas(account: self.appDelegate.account, filterClassTypeImage: self.filterClassTypeImage, filterClassTypeVideo: self.filterClassTypeVideo)
             DispatchQueue.main.sync {
                 self.reloadDataThenPerform {
                     self.updateMediaControlVisibility()
                     self.mediaCommandTitle()
-                    completion(NCCache.shared.metadatas)
+                    completion(NCImageCache.shared.metadatas)
                 }
             }
         }
@@ -462,7 +462,7 @@ extension NCMedia {
 
     func updateMediaControlVisibility() {
 
-        if NCCache.shared.metadatas.isEmpty {
+        if NCImageCache.shared.metadatas.isEmpty {
             if !self.filterClassTypeImage && !self.filterClassTypeVideo {
                 self.mediaCommandView?.toggleEmptyView(isEmpty: true)
                 self.mediaCommandView?.isHidden = false
@@ -491,7 +491,7 @@ extension NCMedia {
         }
 
         var lessDate = Date()
-        if let predicate = NCCache.shared.predicateDefault, let metadata = NCManageDatabase.shared.getMetadata(predicate: predicate, sorted: "date", ascending: true) {
+        if let predicate = NCImageCache.shared.predicateDefault, let metadata = NCManageDatabase.shared.getMetadata(predicate: predicate, sorted: "date", ascending: true) {
             lessDate = metadata.date as Date
         }
 
@@ -516,7 +516,7 @@ extension NCMedia {
                 if !files.isEmpty {
                     NCManageDatabase.shared.convertFilesToMetadatas(files, useMetadataFolder: false) { _, _, metadatas in
                         let predicateDate = NSPredicate(format: "date > %@ AND date < %@", greaterDate as NSDate, lessDate as NSDate)
-                        let predicateResult = NSCompoundPredicate(andPredicateWithSubpredicates: [predicateDate, NCCache.shared.predicateDefault!])
+                        let predicateResult = NSCompoundPredicate(andPredicateWithSubpredicates: [predicateDate, NCImageCache.shared.predicateDefault!])
                         let metadatasResult = NCManageDatabase.shared.getMetadatas(predicate: predicateResult)
                         let metadatasChanged = NCManageDatabase.shared.updateMetadatas(metadatas, metadatasResult: metadatasResult, addCompareLivePhoto: false)
                         if metadatasChanged.metadatasUpdate.isEmpty {
@@ -570,7 +570,7 @@ extension NCMedia {
         if let visibleCells = self.collectionView?.indexPathsForVisibleItems.sorted(by: { $0.row < $1.row }).compactMap({ self.collectionView?.cellForItem(at: $0) }) {
             if let cell = visibleCells.first as? NCGridMediaCell {
                 if cell.date != nil {
-                    if cell.date != NCCache.shared.metadatas.first?.date as Date? {
+                    if cell.date != NCImageCache.shared.metadatas.first?.date as Date? {
                         lessDate = Calendar.current.date(byAdding: .second, value: 1, to: cell.date!)!
                         limit = 0
                     }
@@ -597,14 +597,14 @@ extension NCMedia {
                 if error == .success, account == self.appDelegate.account, !files.isEmpty {
                     NCManageDatabase.shared.convertFilesToMetadatas(files, useMetadataFolder: false) { _, _, metadatas in
                         let predicate = NSPredicate(format: "date > %@ AND date < %@", greaterDate as NSDate, lessDate as NSDate)
-                        let predicateResult = NSCompoundPredicate(andPredicateWithSubpredicates: [predicate, NCCache.shared.predicate!])
+                        let predicateResult = NSCompoundPredicate(andPredicateWithSubpredicates: [predicate, NCImageCache.shared.predicate!])
                         let metadatasResult = NCManageDatabase.shared.getMetadatas(predicate: predicateResult)
                         let updateMetadatas = NCManageDatabase.shared.updateMetadatas(metadatas, metadatasResult: metadatasResult, addCompareLivePhoto: false)
                         if !updateMetadatas.metadatasUpdate.isEmpty || !updateMetadatas.metadatasDelete.isEmpty {
                             self.reloadDataSourceWithCompletion { _ in }
                         }
                     }
-                } else if error == .success, files.isEmpty, NCCache.shared.metadatas.isEmpty {
+                } else if error == .success, files.isEmpty, NCImageCache.shared.metadatas.isEmpty {
                     self.searchOldMedia()
                 } else if error != .success {
                     NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Media search new media error code \(error.errorCode) " + error.errorDescription)
@@ -856,7 +856,7 @@ class NCMediaDownloadThumbnaill: ConcurrentOperation {
                         self.collectionView?.reloadData()
                     }
                 }
-                NCCache.shared.setMediaImage(ocId: self.metadata.ocId, image: image)
+                NCImageCache.shared.setMediaImage(ocId: self.metadata.ocId, image: image)
             }
             self.finish()
         }

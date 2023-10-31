@@ -65,8 +65,8 @@ class NCTrashListCell: UICollectionViewCell, NCTrashCellProtocol {
 
         ]
 
-        imageRestore.image = NCCache.cacheImages.buttonRestore
-        imageMore.image = NCCache.cacheImages.buttonTrash
+        imageRestore.image = NCImageCache.images.buttonRestore
+        imageMore.image = NCImageCache.images.buttonTrash
 
         imageItem.layer.cornerRadius = 6
         imageItem.layer.masksToBounds = true
@@ -106,7 +106,7 @@ class NCTrashListCell: UICollectionViewCell, NCTrashCellProtocol {
         if status {
             var blurEffect: UIVisualEffect?
             var blurEffectView: UIView?
-            imageSelect.image = NCCache.cacheImages.checkedYes
+            imageSelect.image = NCImageCache.images.checkedYes
             if traitCollection.userInterfaceStyle == .dark {
                 blurEffect = UIBlurEffect(style: .dark)
                 blurEffectView = UIVisualEffectView(effect: blurEffect)
@@ -121,7 +121,7 @@ class NCTrashListCell: UICollectionViewCell, NCTrashCellProtocol {
             backgroundView = blurEffectView
             separator.isHidden = true
         } else {
-            imageSelect.image = NCCache.cacheImages.checkedNo
+            imageSelect.image = NCImageCache.images.checkedNo
             backgroundView = nil
             separator.isHidden = false
         }
@@ -159,7 +159,7 @@ extension NCTrashCellProtocol where Self: UICollectionViewCell {
             self.labelInfo?.text = dateFormatter.string(from: tableTrash.date as Date)
         }
         if tableTrash.directory {
-            self.imageItem.image = NCCache.cacheImages.folder
+            self.imageItem.image = NCImageCache.images.folder
         } else {
             self.imageItem.image = image
             self.labelInfo?.text = (self.labelInfo?.text ?? "") + " · " + NCUtilityFileSystem().transformedSize(tableTrash.size)

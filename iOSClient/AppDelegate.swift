@@ -130,8 +130,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             NCManageDatabase.shared.setCapabilities(account: account)
 
             NCBrandColor.shared.settingThemingColor(account: activeAccount.account)
-            NCCache.shared.createImagesCache()
-            NCCache.shared.createMediaCache(account: activeAccount.account)
+            NCImageCache.shared.createImagesCache()
+            NCImageCache.shared.createMediaCache(account: activeAccount.account)
 
         } else {
 
@@ -140,7 +140,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                 UserDefaults.standard.removePersistentDomain(forName: bundleID)
             }
 
-            NCCache.shared.createImagesCache()
+            NCImageCache.shared.createImagesCache()
         }
 
         NCBrandColor.shared.createUserColors()
@@ -598,7 +598,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Initialize Auto upload with \(items) uploads")
         }
 
-        DispatchQueue.global().async { NCCache.shared.createMediaCache(account: self.account) }
+        DispatchQueue.global().async { NCImageCache.shared.createMediaCache(account: self.account) }
 
         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterChangeUser)
     }
