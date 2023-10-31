@@ -123,19 +123,19 @@ import NextcloudKit
         cache.removeAllValues()
     }
 
-    func getMediaMetadatas(account: String, filterClassTypeImage: Bool = false, filterClassTypeVideo: Bool = false) {
+    func getMediaMetadatas(account: String, showPhotos: Bool = true, showVideos: Bool = true) {
 
         guard let account = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", account)) else { return }
         let startServerUrl = NCUtilityFileSystem().getHomeServer(urlBase: account.urlBase, userId: account.userId) + account.mediaPath
 
         predicateDefault = NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND (classFile == %@ OR classFile == %@) AND NOT (session CONTAINS[c] 'upload')", account.account, startServerUrl, NKCommon.TypeClassFile.image.rawValue, NKCommon.TypeClassFile.video.rawValue)
 
-        if filterClassTypeImage {
-            predicate = NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND classFile == %@ AND NOT (session CONTAINS[c] 'upload')", account.account, startServerUrl, NKCommon.TypeClassFile.video.rawValue)
-        } else if filterClassTypeVideo {
-            predicate = NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND classFile == %@ AND NOT (session CONTAINS[c] 'upload')", account.account, startServerUrl, NKCommon.TypeClassFile.image.rawValue)
-        } else {
+        if showPhotos, showVideos {
             predicate = predicateDefault
+        } else if showPhotos {
+            predicate = NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND classFile == %@ AND NOT (session CONTAINS[c] 'upload')", account, startServerUrl, NKCommon.TypeClassFile.image.rawValue)
+        } else if showVideos {
+            predicate = NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND classFile == %@ AND NOT (session CONTAINS[c] 'upload')", account, startServerUrl, NKCommon.TypeClassFile.video.rawValue)
         }
 
         guard let predicate = predicate else { return }

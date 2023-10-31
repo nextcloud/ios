@@ -17,14 +17,16 @@ import LRUCache
     private var lastContentOffsetY: CGFloat = 0
     private var mediaPath = ""
     private var livePhoto: Bool = false
-    private var predicateDefault: NSPredicate?
-    private var predicate: NSPredicate?
+//    private var predicateDefault: NSPredicate?
+//    private var predicate: NSPredicate?
     internal let appDelegate = UIApplication.shared.delegate as? AppDelegate
 
     private var cancellables: Set<AnyCancellable> = []
 
     @Published internal var needsLoadingMoreItems = true
     @Published internal var filter = Filter.all
+
+    private let cache = NCCache.shared
 
     init() {
         NotificationCenter.default.addObserver(self, selector: #selector(deleteFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDeleteFile), object: nil)
@@ -171,7 +173,8 @@ import LRUCache
 
     func saveToPhotos(metadata: tableMetadata) {
         if let livePhoto = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata) {
-//            NCOperationQueue.shared.saveLivePhoto(metadata: metadata, metadataMOV: livePhoto) // TODO: Find where to call this
+            guard let appDelegate else { return }
+            appDelegate.saveLivePhotoQueue.addOperation(NCOperationSaveLivePhoto(metadata: metadata, metadataMOV: livePhoto))
         } else if NCUtilityFileSystem().fileProviderStorageExists(metadata) {
             NCActionCenter.shared.saveAlbum(metadata: metadata)
         } else {
@@ -328,15 +331,19 @@ extension NCMediaViewModel {
             account = appDelegate.account
         }
 
-        NCCache.shared.getMediaMetadatas(account: account, filterClassTypeImage: showPhotos, filterClassTypeVideo: showVideos)
+        cache.getMediaMetadatas(account: account, showPhotos: showPhotos, showVideos: showVideos)
+
+        DispatchQueue.main.async {
+            self.metadatas = self.cache.metadatas
+        }
 
         // self.queryDB(isForced: true, showPhotos: showPhotos, showVideos: showVideos)
     }
 
     private func loadOldMedia(value: Int = -30, limit: Int = 300) {
         var lessDate = Date()
-        if predicateDefault != nil {
-            if let metadata = NCManageDatabase.shared.getMetadata(predicate: predicateDefault!, sorted: "date", ascending: true) {
+        if cache.predicateDefault != nil {
+            if let metadata = NCManageDatabase.shared.getMetadata(predicate: cache.predicateDefault!, sorted: "date", ascending: true) {
                 lessDate = metadata.date as Date
             }
         }
@@ -356,7 +363,7 @@ extension NCMediaViewModel {
                 if !files.isEmpty {
                     NCManageDatabase.shared.convertFilesToMetadatas(files, useMetadataFolder: false) { _, _, metadatas in
                         let predicateDate = NSPredicate(format: "date > %@ AND date < %@", greaterDate as NSDate, lessDate as NSDate)
-                        let predicateResult = NSCompoundPredicate(andPredicateWithSubpredicates: [predicateDate, self.predicateDefault!])
+                        let predicateResult = NSCompoundPredicate(andPredicateWithSubpredicates: [predicateDate, self.cache.predicateDefault!])
                         let metadatasResult = NCManageDatabase.shared.getMetadatas(predicate: predicateResult)
                         let metadatasChanged = NCManageDatabase.shared.updateMetadatas(metadatas, metadatasResult: metadatasResult, addCompareLivePhoto: false)
                         if metadatasChanged.metadatasUpdate.isEmpty {
@@ -407,7 +414,7 @@ extension NCMediaViewModel {
                 if error == .success && account == self.appDelegate?.account && !files.isEmpty {
                     NCManageDatabase.shared.convertFilesToMetadatas(files, useMetadataFolder: false) { _, _, metadatas in
                         let predicate = NSPredicate(format: "date > %@ AND date < %@", greaterDate as NSDate, lessDate as NSDate)
-                        let predicateResult = NSCompoundPredicate(andPredicateWithSubpredicates: [predicate, self.predicate!])
+                        let predicateResult = NSCompoundPredicate(andPredicateWithSubpredicates: [predicate, self.cache.predicate!])
                         let metadatasResult = NCManageDatabase.shared.getMetadatas(predicate: predicateResult)
                         let updateMetadatas = NCManageDatabase.shared.updateMetadatas(metadatas, metadatasResult: metadatasResult, addCompareLivePhoto: false)
                         if !updateMetadatas.metadatasUpdate.isEmpty || !updateMetadatas.metadatasDelete.isEmpty {

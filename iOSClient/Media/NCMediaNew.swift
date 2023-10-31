@@ -84,7 +84,9 @@ struct NCMediaNew: View {
                     if offsetPublisherSubscription == nil {
                         offsetPublisherSubscription = scrollView.publisher(for: \.contentOffset)
                             .sink { offset in
-                                isScrolledToTop = offset.y <= 0
+                                DispatchQueue.main.async {
+                                    isScrolledToTop = offset.y <= 0
+                                }
                             }
                     }
                 }
