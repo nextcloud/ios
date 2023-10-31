@@ -304,24 +304,6 @@
 #pragma mark ===== Third parts =====
 #pragma --------------------------------------------------------------------------------------------
 
-+ (NSString *)getExtension:(NSString*)fileName
-{
-    NSMutableArray *fileNameArray =[[NSMutableArray alloc] initWithArray: [fileName componentsSeparatedByCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"."]]];
-    NSString *extension = [NSString stringWithFormat:@"%@",[fileNameArray lastObject]];
-    extension = [extension uppercaseString];
-    //If the file has a ZIP extension obtain the previous one for check if it is a .pages.zip / .numbers.zip / .key.zip extension
-    if ([extension isEqualToString:@"ZIP"]) {
-        [fileNameArray removeLastObject];
-        NSString *secondExtension = [NSString stringWithFormat:@"%@",[fileNameArray lastObject]];
-        secondExtension = [secondExtension uppercaseString];
-        if ([secondExtension isEqualToString:@"PAGES"] || [secondExtension isEqualToString:@"NUMBERS"] || [secondExtension isEqualToString:@"KEY"]) {
-            extension = [NSString stringWithFormat:@"%@.%@",secondExtension,extension];
-            return extension;
-        }
-    }
-    return extension;
-}
-
 + (NSDate *)datetimeWithOutTime:(NSDate *)datDate
 {
     if (datDate == nil) return nil;

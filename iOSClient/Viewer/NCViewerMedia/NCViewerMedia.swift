@@ -297,7 +297,7 @@ class NCViewerMedia: UIViewController {
 
     func getImageMetadata(_ metadata: tableMetadata) -> UIImage? {
 
-        if let image = getImage(metadata: metadata) {
+        if let image = utility.getImage(metadata: metadata) {
             return image
         }
 
@@ -316,46 +316,6 @@ class NCViewerMedia: UIViewController {
         } else {
             return nil
         }
-    }
-
-    func getImage(metadata: tableMetadata) -> UIImage? {
-
-        let ext = CCUtility.getExtension(metadata.fileNameView)
-        var image: UIImage?
-
-        if utilityFileSystem.fileProviderStorageExists(metadata) && metadata.isImage {
-
-            let previewPath = utilityFileSystem.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)
-            let imagePath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)
-
-            if ext == "GIF" {
-                if !FileManager().fileExists(atPath: previewPath) {
-                    utility.createImageFrom(fileNameView: metadata.fileNameView, ocId: metadata.ocId, etag: metadata.etag, classFile: metadata.classFile)
-                }
-                image = UIImage.animatedImage(withAnimatedGIFURL: URL(fileURLWithPath: imagePath))
-            } else if ext == "SVG" {
-                if let svgImage = SVGKImage(contentsOfFile: imagePath) {
-                    svgImage.size = CGSize(width: NCGlobal.shared.sizePreview, height: NCGlobal.shared.sizePreview)
-                    if let image = svgImage.uiImage {
-                        if !FileManager().fileExists(atPath: previewPath) {
-                            do {
-                                try image.pngData()?.write(to: URL(fileURLWithPath: previewPath), options: .atomic)
-                            } catch { }
-                        }
-                        return image
-                    } else {
-                        return nil
-                    }
-                } else {
-                    return nil
-                }
-            } else {
-                utility.createImageFrom(fileNameView: metadata.fileNameView, ocId: metadata.ocId, etag: metadata.etag, classFile: metadata.classFile)
-                image = UIImage(contentsOfFile: imagePath)
-            }
-        }
-
-        return image
     }
 
     func downloadImage(withSelector selector: String = "") {

@@ -52,7 +52,6 @@
 
 // ===== Third parts =====
 
-+ (NSString *)getExtension:(NSString*)fileName;
 + (NSDate *)datetimeWithOutTime:(NSDate *)datDate;
 + (NSDate *)getATime:(const char *)path;
 
