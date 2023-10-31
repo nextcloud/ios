@@ -40,7 +40,7 @@ struct NCMediaScrollView: View, Equatable {
                     if !isInSelectMode {
                         let selectedMetadata = tappedThumbnail.metadata
                         vm.onCellTapped(metadata: selectedMetadata)
-                        NCViewer.shared.view(viewController: parent, metadata: selectedMetadata, metadatas: vm.metadatas, imageIcon: tappedThumbnail.image)
+                        NCViewer().view(viewController: parent, metadata: selectedMetadata, metadatas: vm.metadatas, imageIcon: tappedThumbnail.image)
                     }
                 } onCellContextMenuItemSelected: { thumbnail, selection in
                     let selectedMetadata = thumbnail.metadata

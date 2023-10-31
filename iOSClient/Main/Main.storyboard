@@ -3,20 +3,10 @@
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="22130"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="22129"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
-        <!--NCMediaUI.storyboard-->
-        <scene sceneID="udp-lL-CYh">
-            <objects>
-                <viewControllerPlaceholder storyboardName="NCMediaUI" referencedIdentifier="NCMediaUI.storyboard" id="kO6-hz-Gsq" sceneMemberID="viewController">
-                    <navigationItem key="navigationItem" id="3mJ-L2-Cmt"/>
-                </viewControllerPlaceholder>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="6gG-SV-Hvv" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="7770" y="899"/>
-        </scene>
         <!--Tab Bar Controller-->
         <scene sceneID="gY3-Ur-rTC">
             <objects>
@@ -34,13 +24,13 @@
                         <segue destination="bSZ-tE-FEj" kind="relationship" relationship="viewControllers" id="qbu-nX-qCk"/>
                         <segue destination="hwM-4d-Afb" kind="relationship" relationship="viewControllers" id="tds-0Q-7Zf"/>
                         <segue destination="Cc7-4O-z6Q" kind="relationship" relationship="viewControllers" id="YKg-LH-tor"/>
-                        <segue destination="Npr-vu-PSD" kind="relationship" relationship="viewControllers" id="XeU-GF-etm"/>
+                        <segue destination="RF7-gD-gsF" kind="relationship" relationship="viewControllers" id="rvt-kL-0eL"/>
                         <segue destination="1Z8-Bx-Dqo" kind="relationship" relationship="viewControllers" id="z6l-ei-IMY"/>
                     </connections>
                 </tabBarController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="d2B-Yg-rp2" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="7071" y="-556"/>
+            <point key="canvasLocation" x="6929" y="-527"/>
         </scene>
         <!--File-->
         <scene sceneID="dMv-43-hWy">
@@ -79,25 +69,6 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="NME-vT-pfd" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="6367" y="327"/>
-        </scene>
-        <!--Media-->
-        <scene sceneID="IuY-Iu-oAm">
-            <objects>
-                <navigationController extendedLayoutIncludesOpaqueBars="YES" automaticallyAdjustsScrollViewInsets="NO" id="Npr-vu-PSD" sceneMemberID="viewController">
-                    <tabBarItem key="tabBarItem" title="Media" id="5cw-bP-7It"/>
-                    <toolbarItems/>
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" largeTitles="YES" id="ixg-Pw-TNO">
-                        <rect key="frame" x="0.0" y="48" width="414" height="96"/>
-                        <autoresizingMask key="autoresizingMask"/>
-                    </navigationBar>
-                    <nil name="viewControllers"/>
-                    <connections>
-                        <segue destination="kO6-hz-Gsq" kind="relationship" relationship="rootViewController" id="9zw-1n-Dhk"/>
-                    </connections>
-                </navigationController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="cZf-pk-3Bd" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="7771" y="327"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="cip-AF-Ks2">
@@ -262,6 +233,35 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="CL1-x1-23E" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="8458" y="899"/>
+        </scene>
+        <!--Media-->
+        <scene sceneID="cqe-8g-lRj">
+            <objects>
+                <navigationController extendedLayoutIncludesOpaqueBars="YES" automaticallyAdjustsScrollViewInsets="NO" id="RF7-gD-gsF" sceneMemberID="viewController">
+                    <tabBarItem key="tabBarItem" title="Media" id="Zte-Jp-EJV"/>
+                    <toolbarItems/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" largeTitles="YES" id="Qwq-ub-joD">
+                        <rect key="frame" x="0.0" y="48" width="414" height="96"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <nil name="viewControllers"/>
+                    <connections>
+                        <segue destination="CW8-KW-0pe" kind="relationship" relationship="rootViewController" id="Vb9-OI-DkF"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="L2K-7e-6T0" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="7768" y="327"/>
+        </scene>
+        <!--MediaUI Kit Wrapper-->
+        <scene sceneID="MtR-w7-Wmy">
+            <objects>
+                <viewController id="CW8-KW-0pe" customClass="NCMediaUIKitWrapper" customModule="Nextcloud" customModuleProvider="target" sceneMemberID="viewController">
+                    <navigationItem key="navigationItem" id="oRV-lm-zC3"/>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="alF-L6-HqO" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="7852" y="1447"/>
         </scene>
     </scenes>
     <resources>

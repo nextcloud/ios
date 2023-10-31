@@ -23,10 +23,6 @@ import Foundation
 import NextcloudKit
 
 class NCNetworkingE2EE: NSObject {
-    public static let shared: NCNetworkingE2EE = {
-        let instance = NCNetworkingE2EE()
-        return instance
-    }()
 
     func isInUpload(account: String, serverUrl: String) -> Bool {
 
@@ -191,7 +187,7 @@ class NCNetworkingE2EE: NSObject {
 
     func unlockAll(account: String) {
 
-        guard CCUtility.isEnd(toEndEnabled: account) else { return }
+        guard NCKeychain().isEndToEndEnabled(account: account) else { return }
 
         Task {
             for result in NCManageDatabase.shared.getE2EAllTokenLock(account: account) {

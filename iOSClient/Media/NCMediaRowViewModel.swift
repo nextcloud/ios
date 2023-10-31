@@ -31,7 +31,7 @@ struct ScaledThumbnail: Hashable {
 
     private var metadatas: [tableMetadata] = []
 
-    internal let cache = NCMediaCache.shared
+    internal let cache = NCCache()
 
 //    internal lazy var cache = manager.cache
 //    internal lazy var thumbnailsQueue = manager.queuer
@@ -46,18 +46,19 @@ struct ScaledThumbnail: Hashable {
         var thumbnails: [ScaledThumbnail] = []
 
         metadatas.forEach { metadata in
-            if let cachedImage = cache.getImage(ocId: metadata.ocId) {
+            let thumbnailPath = NCUtilityFileSystem().getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)
+            if let cachedImage = cache.getMediaImage(ocId: metadata.ocId) {
                 let thumbnail = ScaledThumbnail(image: cachedImage, metadata: metadata)
                 thumbnails.append(thumbnail)
 
                 DispatchQueue.main.async {
                     self.calculateShrinkRatio(thumbnails: &thumbnails, rowWidth: rowWidth, spacing: spacing)
                 }
-            } else if let thumbnailPath = CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag), FileManager.default.fileExists(atPath: thumbnailPath) {
+            } else if FileManager.default.fileExists(atPath: thumbnailPath) {
                 // Load thumbnail from file
                 if let image = UIImage(contentsOfFile: thumbnailPath) {
                     let thumbnail = ScaledThumbnail(image: image, metadata: metadata)
-                    cache.setImage(ocId: metadata.ocId, image: image)
+                    cache.setMediaImage(ocId: metadata.ocId, image: image)
 //                    cache.setValue(thumbnail, forKey: metadata.ocId)
                     thumbnails.append(thumbnail)
 
@@ -66,9 +67,9 @@ struct ScaledThumbnail: Hashable {
                     }
                 }
             } else {
-                let fileNamePath = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, urlBase: metadata.urlBase, userId: metadata.userId, account: metadata.account)!
-                let fileNamePreviewLocalPath = CCUtility.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)!
-                let fileNameIconLocalPath = CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)!
+                let fileNamePath = NCUtilityFileSystem().getFileNamePath(metadata.fileName, serverUrl: metadata.serverUrl, urlBase: metadata.urlBase, userId: metadata.userId)
+                let fileNamePreviewLocalPath = NCUtilityFileSystem().getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)
+                let fileNameIconLocalPath = NCUtilityFileSystem().getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)
 
                 var etagResource: String?
                 if FileManager.default.fileExists(atPath: fileNameIconLocalPath) && FileManager.default.fileExists(atPath: fileNamePreviewLocalPath) {
@@ -92,7 +93,7 @@ struct ScaledThumbnail: Hashable {
 
                             if error == .success, let image = imageIcon {
                                 thumbnail = ScaledThumbnail(image: image, metadata: metadata)
-                                self.cache.setImage(ocId: metadata.ocId, image: image)
+                                self.cache.setMediaImage(ocId: metadata.ocId, image: image)
                             } else {
                                 thumbnail = ScaledThumbnail(image: UIImage(systemName: metadata.isVideo ? "video.fill" : "photo.fill")!.withRenderingMode(.alwaysTemplate), isPlaceholderImage: true, metadata: metadata)
                             }
