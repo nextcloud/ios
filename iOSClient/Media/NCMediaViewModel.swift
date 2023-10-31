@@ -66,6 +66,7 @@ import LRUCache
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeUser), object: nil)
     }
 
+    /*
     private func queryDB(isForced: Bool = false, showPhotos: Bool = true, showVideos: Bool = true) {
         guard let appDelegate else { return }
 
@@ -104,6 +105,7 @@ import LRUCache
             }
         }
     }
+    */
 
     func loadMoreItems() {
         loadOldMedia()
@@ -326,7 +328,9 @@ extension NCMediaViewModel {
             account = appDelegate.account
         }
 
-        self.queryDB(isForced: true, showPhotos: showPhotos, showVideos: showVideos)
+        NCCache.shared.getMediaMetadatas(account: account, filterClassTypeImage: showPhotos, filterClassTypeVideo: showVideos)
+
+        // self.queryDB(isForced: true, showPhotos: showPhotos, showVideos: showVideos)
     }
 
     private func loadOldMedia(value: Int = -30, limit: Int = 300) {
