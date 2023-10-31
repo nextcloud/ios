@@ -79,14 +79,14 @@ struct NCMediaScrollView: View, Equatable {
                         .padding(.top, 10)
                 }
 
-//                Spacer(minLength: 40).listRowSeparator(.hidden)
+                //                Spacer(minLength: 40).listRowSeparator(.hidden)
             }.background(GeometryReader { geometry in
                 Color.clear
                     .preference(key: ScrollOffsetPreferenceKey.self, value: geometry.frame(in: .named("scroll")).origin)
             })
-//            .listStyle(.plain)
-                        .padding(.top, 70)
-                        .padding(.bottom, 40)
+            //            .listStyle(.plain)
+            .padding(.top, 70)
+            .padding(.bottom, 40)
             //        }
             .coordinateSpace(name: "scroll")
             //        .onPreferenceChange(ScrollOffsetPreferenceKey.self) { value in
@@ -113,9 +113,7 @@ struct NCMediaScrollView: View, Equatable {
             //                                }
             //        }
             //        .preference(key: TitlePreferenceKey.self, value: title)
-        }
-
-        .refreshable {
+        }.refreshable {
             await vm.onPullToRefresh()
         }
     }
