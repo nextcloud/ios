@@ -49,9 +49,9 @@ struct ScaledThumbnail: Hashable {
             let thumbnailPath = NCUtilityFileSystem().getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)
             if let cachedImage = cache.getMediaImage(ocId: metadata.ocId) {
                 let thumbnail = ScaledThumbnail(image: cachedImage, metadata: metadata)
-                thumbnails.append(thumbnail)
 
                 DispatchQueue.main.async {
+                    thumbnails.append(thumbnail)
                     self.calculateShrinkRatio(thumbnails: &thumbnails, rowWidth: rowWidth, spacing: spacing)
                 }
             } else if FileManager.default.fileExists(atPath: thumbnailPath) {
@@ -60,9 +60,9 @@ struct ScaledThumbnail: Hashable {
                     let thumbnail = ScaledThumbnail(image: image, metadata: metadata)
                     cache.setMediaImage(ocId: metadata.ocId, image: image)
 //                    cache.setValue(thumbnail, forKey: metadata.ocId)
-                    thumbnails.append(thumbnail)
 
                     DispatchQueue.main.async {
+                        thumbnails.append(thumbnail)
                         self.calculateShrinkRatio(thumbnails: &thumbnails, rowWidth: rowWidth, spacing: spacing)
                     }
                 }
@@ -98,10 +98,10 @@ struct ScaledThumbnail: Hashable {
                                 thumbnail = ScaledThumbnail(image: UIImage(systemName: metadata.isVideo ? "video.fill" : "photo.fill")!.withRenderingMode(.alwaysTemplate), isPlaceholderImage: true, metadata: metadata)
                             }
 
-                            thumbnails.append(thumbnail)
 //                            self.cache.setValue(thumbnail, forKey: metadata.ocId)
 
                             DispatchQueue.main.async {
+                                thumbnails.append(thumbnail)
                                 self.calculateShrinkRatio(thumbnails: &thumbnails, rowWidth: rowWidth, spacing: spacing)
                             }
                         }

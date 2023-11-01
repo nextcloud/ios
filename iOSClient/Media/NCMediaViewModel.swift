@@ -31,6 +31,18 @@ import LRUCache
     private var newAndOldMediaAlreadyLoaded = false
 
     init() {
+        guard let appDelegate, !appDelegate.account.isEmpty else { return }
+
+        if account != appDelegate.account {
+            self.metadatas = []
+            account = appDelegate.account
+        }
+
+        guard let accountTable = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", account)) else { return }
+        let startServerUrl = NCUtilityFileSystem().getHomeServer(urlBase: accountTable.urlBase, userId: accountTable.userId) + accountTable.mediaPath
+
+        predicateDefault = NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND (classFile == %@ OR classFile == %@) AND NOT (session CONTAINS[c] 'upload')", account, startServerUrl, NKCommon.TypeClassFile.image.rawValue, NKCommon.TypeClassFile.video.rawValue)
+
         NotificationCenter.default.addObserver(self, selector: #selector(deleteFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDeleteFile), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(moveFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterMoveFile), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(copyFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterCopyFile), object: nil)
@@ -111,20 +123,12 @@ import LRUCache
     }
     */
 
-    func loadMoreItems() {
+    public func loadMoreItems() {
         loadOldMedia()
         needsLoadingMoreItems = false
     }
 
-    func onPullToRefresh() async {
-        await loadNewMedia()
-    }
-
-    func onCellTapped(metadata: tableMetadata) {
-        appDelegate?.activeServerUrl = metadata.serverUrl
-    }
-
-    func deleteMetadata(metadatas: [tableMetadata]) {
+    public func deleteMetadata(metadatas: [tableMetadata]) {
         let notLocked = metadatas.allSatisfy { !$0.lock }
 
         if notLocked {
@@ -132,17 +136,25 @@ import LRUCache
         }
     }
 
-    func copyOrMoveMetadataInApp(metadatas: [tableMetadata]) {
+    public func copyOrMoveMetadataInApp(metadatas: [tableMetadata]) {
         NCActionCenter.shared.openSelectView(items: metadatas, indexPath: [])
 //        cancelSelection()
     }
 
-    func copyMetadata(metadatas: [tableMetadata]) {
+    public func copyMetadata(metadatas: [tableMetadata]) {
         copy(metadatas: metadatas)
 //        cancelSelection()
     }
 
-    func addToFavorites(metadata: tableMetadata) {
+    public func onCellTapped(metadata: tableMetadata) {
+        appDelegate?.activeServerUrl = metadata.serverUrl
+    }
+
+    public func onPullToRefresh() async {
+        await loadNewMedia()
+    }
+
+    public func addToFavorites(metadata: tableMetadata) {
         NCNetworking.shared.favoriteMetadata(metadata) { error in
             if error != .success {
                 NCContentPresenter().showError(error: error)
@@ -150,7 +162,7 @@ import LRUCache
         }
     }
 
-    func openIn(metadata: tableMetadata) {
+    public func openIn(metadata: tableMetadata) {
         if NCUtilityFileSystem().fileProviderStorageExists(metadata) {
             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDownloadedFile, userInfo: ["ocId": metadata.ocId, "selector": NCGlobal.shared.selectorOpenIn, "error": NKError(), "account": metadata.account])
         } else {
@@ -173,7 +185,7 @@ import LRUCache
         }
     }
 
-    func saveToPhotos(metadata: tableMetadata) {
+    public func saveToPhotos(metadata: tableMetadata) {
         if let livePhoto = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata) {
             guard let appDelegate else { return }
             appDelegate.saveLivePhotoQueue.addOperation(NCOperationSaveLivePhoto(metadata: metadata, metadataMOV: livePhoto))
@@ -196,11 +208,11 @@ import LRUCache
         }
     }
 
-    func viewInFolder(metadata: tableMetadata) {
+    public func viewInFolder(metadata: tableMetadata) {
         NCActionCenter.shared.openFileViewInFolder(serverUrl: metadata.serverUrl, fileNameBlink: metadata.fileName, fileNameOpen: nil)
     }
 
-    func modify(metadata: tableMetadata) {
+    public func modify(metadata: tableMetadata) {
         if NCUtilityFileSystem().fileProviderStorageExists(metadata) {
             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDownloadedFile, userInfo: ["ocId": metadata.ocId, "selector": NCGlobal.shared.selectorLoadFileQuickLook, "error": NKError(), "account": metadata.account])
         } else {
@@ -221,7 +233,7 @@ import LRUCache
         }
     }
 
-    func getMetadataFromUrl(_ urlString: String) -> tableMetadata? {
+    public func getMetadataFromUrl(_ urlString: String) -> tableMetadata? {
         guard let url = URL(string: urlString), let appDelegate else { return nil }
 
         let fileName = url.lastPathComponent
@@ -232,11 +244,11 @@ import LRUCache
         return metadata
     }
 
-    func delete(metadatas: tableMetadata...) {
+    public func delete(metadatas: tableMetadata...) {
         delete(metadatas: metadatas)
     }
 
-    func delete(metadatas: [tableMetadata]) {
+    public func delete(metadatas: [tableMetadata]) {
         Task {
             var error = NKError()
             var ocId: [String] = []
@@ -252,11 +264,11 @@ import LRUCache
         }
     }
 
-    func copy(metadatas: tableMetadata...) {
+    public func copy(metadatas: tableMetadata...) {
         copy(metadatas: metadatas)
     }
 
-    func copy(metadatas: [tableMetadata]) {
+    public func copy(metadatas: [tableMetadata]) {
         NCActionCenter.shared.copyPasteboard(pasteboardOcIds: metadatas.compactMap({ $0.ocId }))
     }
 
@@ -335,8 +347,6 @@ extension NCMediaViewModel {
 
         guard let accountTable = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", account)) else { return }
         let startServerUrl = NCUtilityFileSystem().getHomeServer(urlBase: accountTable.urlBase, userId: accountTable.userId) + accountTable.mediaPath
-
-        predicateDefault = NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND (classFile == %@ OR classFile == %@) AND NOT (session CONTAINS[c] 'upload')", account, startServerUrl, NKCommon.TypeClassFile.image.rawValue, NKCommon.TypeClassFile.video.rawValue)
 
         if showPhotos, showVideos {
             predicate = predicateDefault
@@ -429,7 +439,7 @@ extension NCMediaViewModel {
                 if error == .success && account == self.appDelegate?.account && !files.isEmpty {
                     NCManageDatabase.shared.convertFilesToMetadatas(files, useMetadataFolder: false) { _, _, metadatas in
                         let predicate = NSPredicate(format: "date > %@ AND date < %@", greaterDate as NSDate, lessDate as NSDate)
-                        let predicateResult = NSCompoundPredicate(andPredicateWithSubpredicates: [predicate, self.predicate!])
+                        let predicateResult = NSCompoundPredicate(andPredicateWithSubpredicates: [predicate, (self.predicate ?? self.predicateDefault!)])
                         let metadatasResult = NCManageDatabase.shared.getMetadatas(predicate: predicateResult)
                         let updateMetadatas = NCManageDatabase.shared.updateMetadatas(metadatas, metadatasResult: metadatasResult, addCompareLivePhoto: false)
                         if !updateMetadatas.metadatasUpdate.isEmpty || !updateMetadatas.metadatasDelete.isEmpty {
