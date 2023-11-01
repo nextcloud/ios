@@ -396,12 +396,12 @@ extension NCMedia: UICollectionViewDataSource {
 
             if let image = NCImageCache.shared.getMediaImage(ocId: metadata.ocId) {
                 cell.imageItem.backgroundColor = nil
-                cell.imageItem.image = image
+//                cell.imageItem.image = image
             } else if FileManager().fileExists(atPath: utilityFileSystem.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)) {
                 if let image = UIImage(contentsOfFile: utilityFileSystem.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)) {
                     cell.imageItem.backgroundColor = nil
                     cell.imageItem.image = image
-                    NCImageCache.shared.setMediaImage(ocId: metadata.ocId, image: image)
+//                    NCImageCache.shared.setMediaImage(ocId: metadata.ocId, image: image)
                 }
             } else {
                 if metadata.hasPreview && metadata.status == NCGlobal.shared.metadataStatusNormal && (!utilityFileSystem.fileProviderStoragePreviewIconExists(metadata.ocId, etag: metadata.etag)) {
@@ -856,7 +856,7 @@ class NCMediaDownloadThumbnaill: ConcurrentOperation {
                         self.collectionView?.reloadData()
                     }
                 }
-                NCImageCache.shared.setMediaImage(ocId: self.metadata.ocId, image: image)
+//                NCImageCache.shared.setMediaImage(ocId: self.metadata.ocId, image: image)
             }
             self.finish()
         }

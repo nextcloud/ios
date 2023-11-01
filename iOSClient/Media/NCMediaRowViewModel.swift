@@ -31,7 +31,7 @@ struct ScaledThumbnail: Hashable {
 
     private var metadatas: [tableMetadata] = []
 
-    private let cache = NCImageCache()
+    private let cache = NCImageCache.shared
 
 //    private let queuer = (UIApplication.shared.delegate as? AppDelegate)?.downloadThumbnailQueue
     private var queuer: Queuer?
@@ -52,7 +52,14 @@ struct ScaledThumbnail: Hashable {
         metadatas.forEach { metadata in
             let thumbnailPath = NCUtilityFileSystem().getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)
             if let cachedImage = cache.getMediaImage(ocId: metadata.ocId) {
-                let thumbnail = ScaledThumbnail(image: cachedImage, metadata: metadata)
+                let thumbnail: ScaledThumbnail
+
+                if case let .actual(image) = cachedImage {
+                    thumbnail = ScaledThumbnail(image: image, metadata: metadata)
+                } else {
+                    let image = UIImage(systemName: metadata.isVideo ? "video.fill" : "photo.fill")!.withRenderingMode(.alwaysTemplate)
+                    thumbnail = ScaledThumbnail(image: image, isPlaceholderImage: true, metadata: metadata)
+                }
 
                 DispatchQueue.main.async {
                     thumbnails.append(thumbnail)
@@ -62,7 +69,7 @@ struct ScaledThumbnail: Hashable {
                 // Load thumbnail from file
                 if let image = UIImage(contentsOfFile: thumbnailPath) {
                     let thumbnail = ScaledThumbnail(image: image, metadata: metadata)
-                    cache.setMediaImage(ocId: metadata.ocId, image: image)
+                    cache.setMediaImage(ocId: metadata.ocId, image: .actual(image))
 //                    cache.setValue(thumbnail, forKey: metadata.ocId)
 
                     DispatchQueue.main.async {
@@ -97,11 +104,11 @@ struct ScaledThumbnail: Hashable {
 
                             if error == .success, let image = imageIcon {
                                 thumbnail = ScaledThumbnail(image: image, metadata: metadata)
-                                self.cache.setMediaImage(ocId: metadata.ocId, image: image)
+                                self.cache.setMediaImage(ocId: metadata.ocId, image: .actual(image))
                             } else {
                                 let image = UIImage(systemName: metadata.isVideo ? "video.fill" : "photo.fill")!.withRenderingMode(.alwaysTemplate)
                                 thumbnail = ScaledThumbnail(image: image, isPlaceholderImage: true, metadata: metadata)
-                                self.cache.setMediaImage(ocId: metadata.ocId, image: image)
+                                self.cache.setMediaImage(ocId: metadata.ocId, image: .placeholder)
                             }
 
 //                            self.cache.setValue(thumbnail, forKey: metadata.ocId)
