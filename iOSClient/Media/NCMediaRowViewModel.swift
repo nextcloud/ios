@@ -99,7 +99,9 @@ struct ScaledThumbnail: Hashable {
                                 thumbnail = ScaledThumbnail(image: image, metadata: metadata)
                                 self.cache.setMediaImage(ocId: metadata.ocId, image: image)
                             } else {
-                                thumbnail = ScaledThumbnail(image: UIImage(systemName: metadata.isVideo ? "video.fill" : "photo.fill")!.withRenderingMode(.alwaysTemplate), isPlaceholderImage: true, metadata: metadata)
+                                let image = UIImage(systemName: metadata.isVideo ? "video.fill" : "photo.fill")!.withRenderingMode(.alwaysTemplate)
+                                thumbnail = ScaledThumbnail(image: image, isPlaceholderImage: true, metadata: metadata)
+                                self.cache.setMediaImage(ocId: metadata.ocId, image: image)
                             }
 
 //                            self.cache.setValue(thumbnail, forKey: metadata.ocId)
