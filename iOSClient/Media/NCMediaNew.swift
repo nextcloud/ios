@@ -11,6 +11,7 @@ import PreviewSnapshots
 import NextcloudKit
 import Combine
 @_spi(Advanced) import SwiftUIIntrospect
+import Queuer
 
 //struct Test: View {
 //    var metadatas: [[tableMetadata]]
@@ -43,6 +44,7 @@ import Combine
 struct NCMediaNew: View {
     @StateObject private var vm = NCMediaViewModel()
     @EnvironmentObject private var parent: NCMediaUIKitWrapper
+    let imageQueuer = Queuer(name: "downloadThumbnailQueue", maxConcurrentOperationCount: 10, qualityOfService: .default)
     @State private var title = "Media"
     @State private var isScrolledToTop = true
     @State private var tappedMetadata = tableMetadata()
@@ -68,7 +70,7 @@ struct NCMediaNew: View {
         let _ = Self._printChanges()
 
         ZStack(alignment: .top) {
-            NCMediaScrollView(metadatas: vm.metadatas.chunked(into: columnCountStages[columnCountStagesIndex]), isInSelectMode: $isInSelectMode, selectedMetadatas: $selectedMetadatas, columnCountStages: $columnCountStages, columnCountStagesIndex: $columnCountStagesIndex, title: $title)
+            NCMediaScrollView(metadatas: vm.metadatas.chunked(into: columnCountStages[columnCountStagesIndex]), isInSelectMode: $isInSelectMode, selectedMetadatas: $selectedMetadatas, columnCountStages: $columnCountStages, columnCountStagesIndex: $columnCountStagesIndex, title: $title, queuer: imageQueuer)
                 .equatable()
                 .ignoresSafeArea(.all, edges: .horizontal)
             //                MediaScrollView(metadatas: vm.metadatas.chunked(into: columnCountStages[columnCountStagesIndex]), proxy: geometry, vm: $columnCountStages, parent: $columnCountStagesIndex, isInSelectMode: $isScrolledToTop, selectedMetadatas: $selectedMetadatas, isInSelectMode: $isInSelectMode)

@@ -7,6 +7,7 @@
 //
 
 import SwiftUI
+import Queuer
 
 struct NCMediaScrollView: View, Equatable {
     static func == (lhs: NCMediaScrollView, rhs: NCMediaScrollView) -> Bool {
@@ -22,6 +23,8 @@ struct NCMediaScrollView: View, Equatable {
     @Binding var columnCountStagesIndex: Int
     @Binding var title: String
 
+    let queuer: Queuer
+
     var body: some View {
         let _ = Self._printChanges()
 
@@ -30,7 +33,7 @@ struct NCMediaScrollView: View, Equatable {
 
             LazyVStack(alignment: .leading, spacing: 2) {
                 ForEach(metadatas, id: \.self) { rowMetadatas in
-                    NCMediaRow(metadatas: rowMetadatas, isInSelectMode: $isInSelectMode) { tappedThumbnail, isSelected in
+                    NCMediaRow(metadatas: rowMetadatas, isInSelectMode: $isInSelectMode, queuer: queuer) { tappedThumbnail, isSelected in
                         if isInSelectMode, isSelected {
                             selectedMetadatas.append(tappedThumbnail.metadata)
                         } else {

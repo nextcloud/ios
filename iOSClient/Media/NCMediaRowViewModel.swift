@@ -31,15 +31,19 @@ struct ScaledThumbnail: Hashable {
 
     private var metadatas: [tableMetadata] = []
 
-    internal let cache = NCImageCache()
+    private let cache = NCImageCache()
+
+//    private let queuer = (UIApplication.shared.delegate as? AppDelegate)?.downloadThumbnailQueue
+    private var queuer: Queuer?
 
 //    internal lazy var cache = manager.cache
 //    internal lazy var thumbnailsQueue = manager.queuer
 
     var operations: [ConcurrentOperation] = []
 
-    func configure(metadatas: [tableMetadata]) {
+    func configure(metadatas: [tableMetadata], queuer: Queuer) {
         self.metadatas = metadatas
+        self.queuer = queuer
     }
 
     func downloadThumbnails(rowWidth: CGFloat, spacing: CGFloat) {
@@ -77,7 +81,7 @@ struct ScaledThumbnail: Hashable {
                 }
                 let options = NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
 
-//                let concurrentOperation = ConcurrentOperation { _ in
+                let concurrentOperation = ConcurrentOperation { _ in
                     NextcloudKit.shared.downloadPreview(
                         fileNamePathOrFileId: fileNamePath,
                         fileNamePreviewLocalPath: fileNamePreviewLocalPath,
@@ -105,10 +109,12 @@ struct ScaledThumbnail: Hashable {
                                 self.calculateShrinkRatio(thumbnails: &thumbnails, rowWidth: rowWidth, spacing: spacing)
                             }
                         }
-//                }
+                }
 
-//                operations.append(concurrentOperation)
-//                thumbnailsQueue.addOperation(concurrentOperation)
+                operations.append(concurrentOperation)
+                queuer?.addOperation(concurrentOperation)
+                print(queuer?.operationCount)
+                print(queuer?.maxConcurrentOperationCount.hashValue)
             }
         }
     }
@@ -127,8 +133,8 @@ struct ScaledThumbnail: Hashable {
         }
 
     func cancelDownloadingThumbnails() {
-        operations.forEach {( $0.cancel() )}
-        operations.removeAll()
+//        operations.forEach {( $0.cancel() )}
+//        operations.removeAll()
     }
 
     private func getScaledThumbnailSize(of thumbnail: ScaledThumbnail, thumbnailsInRow thumbnails: [ScaledThumbnail]) -> CGSize {
