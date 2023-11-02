@@ -43,8 +43,8 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate, NCSelectDelegate {
     internal var selectOcId: [String] = []
     internal var selectIndexPath: [IndexPath] = []
 
-    internal var filterClassTypeImage = false
-    internal var filterClassTypeVideo = false
+    internal var showOnlyImages = false
+    internal var showOnlyVideos = false
 
     private let maxImageGrid: CGFloat = 7
     private var cellHeigth: CGFloat = 0
@@ -455,16 +455,15 @@ extension NCMedia {
     func getPredicate(_ predicatedefault: Bool = false) -> NSPredicate {
 
         let startServerUrl = NCUtilityFileSystem().getHomeServer(urlBase: appDelegate.urlBase, userId: appDelegate.userId) + mediaPath
-        if predicatedefault {
-            return NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND (classFile == %@ OR classFile == %@) AND NOT (session CONTAINS[c] 'upload')", appDelegate.account, startServerUrl, NKCommon.TypeClassFile.image.rawValue, NKCommon.TypeClassFile.video.rawValue)
-        }
+        let showAll = NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND (classFile == %@ OR classFile == %@) AND NOT (session CONTAINS[c] 'upload')", appDelegate.account, startServerUrl, NKCommon.TypeClassFile.image.rawValue, NKCommon.TypeClassFile.video.rawValue)
 
-        if filterClassTypeImage {
-            return NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND classFile == %@ AND NOT (session CONTAINS[c] 'upload')", appDelegate.account, startServerUrl, NKCommon.TypeClassFile.video.rawValue)
-        } else if filterClassTypeVideo {
+        if predicatedefault { return showAll }
+        if showOnlyImages {
             return NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND classFile == %@ AND NOT (session CONTAINS[c] 'upload')", appDelegate.account, startServerUrl, NKCommon.TypeClassFile.image.rawValue)
+        } else if showOnlyVideos {
+            return NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND classFile == %@ AND NOT (session CONTAINS[c] 'upload')", appDelegate.account, startServerUrl, NKCommon.TypeClassFile.video.rawValue)
         } else {
-           return NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND (classFile == %@ OR classFile == %@) AND NOT (session CONTAINS[c] 'upload')", appDelegate.account, startServerUrl, NKCommon.TypeClassFile.image.rawValue, NKCommon.TypeClassFile.video.rawValue)
+           return showAll
         }
     }
 
@@ -486,7 +485,7 @@ extension NCMedia {
     func updateMediaControlVisibility() {
 
         if NCImageCache.shared.metadatas.isEmpty {
-            if !self.filterClassTypeImage && !self.filterClassTypeVideo {
+            if !self.showOnlyImages && !self.showOnlyVideos {
                 self.mediaCommandView?.toggleEmptyView(isEmpty: true)
                 self.mediaCommandView?.isHidden = false
             } else {
