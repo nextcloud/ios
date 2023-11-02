@@ -399,11 +399,6 @@ extension NCMedia: UICollectionViewDataSource {
             if let cachedImage = NCImageCache.shared.getMediaImage(ocId: metadata.ocId), case let .actual(image) = cachedImage {
                 cell.imageItem.backgroundColor = nil
                 cell.imageItem.image = image
-            // }
-
-            // if let image = NCImageCache.shared.getMediaImage(ocId: metadata.ocId) {
-                // cell.imageItem.backgroundColor = nil
-                // cell.imageItem.image = image
             } else if FileManager().fileExists(atPath: utilityFileSystem.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)) {
                 if let image = UIImage(contentsOfFile: utilityFileSystem.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)) {
                     cell.imageItem.backgroundColor = nil
