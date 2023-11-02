@@ -42,13 +42,15 @@ import Queuer
 //}
 
 struct NCMediaNew: View {
+    let imageQueuer = Queuer(name: "downloadThumbnailQueue", maxConcurrentOperationCount: 10, qualityOfService: .default)
+
     @StateObject private var vm = NCMediaViewModel()
     @EnvironmentObject private var parent: NCMediaUIKitWrapper
-    let imageQueuer = Queuer(name: "downloadThumbnailQueue", maxConcurrentOperationCount: 10, qualityOfService: .default)
-    @State private var title = "Media"
+    @State private var title = NSLocalizedString("_media_", comment: "")
     @State private var isScrolledToTop = true
     @State private var tappedMetadata = tableMetadata()
 
+    @State private var loadingIndicatorColor = Color.gray
     @State private var titleColor = Color.primary
     @State private var toolbarItemsColor = Color.blue
     @State private var toolbarColors = [Color.clear]
@@ -64,36 +66,61 @@ struct NCMediaNew: View {
     @State private var selectedMetadatas: [tableMetadata] = []
     @State private var isInSelectMode = false
 
-    @State var offsetPublisherSubscription: AnyCancellable?
-
     var body: some View {
         let _ = Self._printChanges()
 
         ZStack(alignment: .top) {
-            NCMediaScrollView(metadatas: vm.metadatas.chunked(into: columnCountStages[columnCountStagesIndex]), isInSelectMode: $isInSelectMode, selectedMetadatas: $selectedMetadatas, columnCountStages: $columnCountStages, columnCountStagesIndex: $columnCountStagesIndex, title: $title, queuer: imageQueuer)
-                .equatable()
-                .ignoresSafeArea(.all, edges: .horizontal)
-            //                MediaScrollView(metadatas: vm.metadatas.chunked(into: columnCountStages[columnCountStagesIndex]), proxy: geometry, vm: $columnCountStages, parent: $columnCountStagesIndex, isInSelectMode: $isScrolledToTop, selectedMetadatas: $selectedMetadatas, isInSelectMode: $isInSelectMode)
-            //            Test(metadatas: vm.metadatas.chunked(into: columnCountStages[columnCountStagesIndex]), columnCountStages: $columnCountStages, columnCountStagesIndex: $columnCountStagesIndex)
-                .environmentObject(vm)
-            //                    .environmentObject(parent)
-            //                    .onPreferenceChange(TitlePreferenceKey.self) { value in
-            //                        title = value
-            //                    }
-                .introspect(.scrollView, on: .iOS(.v15...)) { scrollView in
-                    scrollView.refreshControl?.translatesAutoresizingMaskIntoConstraints = false
-                    scrollView.refreshControl?.topAnchor.constraint(equalTo: scrollView.superview!.topAnchor, constant: 120).isActive = true
-                    scrollView.refreshControl?.centerXAnchor.constraint(equalTo: scrollView.centerXAnchor).isActive = true
-
-                    if offsetPublisherSubscription == nil {
-                        offsetPublisherSubscription = scrollView.publisher(for: \.contentOffset)
-                            .sink { offset in
-                                DispatchQueue.main.async {
-                                    isScrolledToTop = offset.y <= 40
-                                }
-                            }
-                    }
+            NCMediaScrollView(metadatas: $vm.metadatas, isInSelectMode: $isInSelectMode, selectedMetadatas: $selectedMetadatas, columnCountStages: $columnCountStages, columnCountStagesIndex: $columnCountStagesIndex, title: $title, queuer: imageQueuer) { tappedThumbnail, isSelected in
+                if isInSelectMode, isSelected {
+                    selectedMetadatas.append(tappedThumbnail.metadata)
+                } else {
+                    selectedMetadatas.removeAll(where: { $0.ocId == tappedThumbnail.metadata.ocId })
                 }
+
+                if !isInSelectMode {
+                    let selectedMetadata = tappedThumbnail.metadata
+                    vm.onCellTapped(metadata: selectedMetadata)
+                    NCViewer().view(viewController: parent, metadata: selectedMetadata, metadatas: vm.metadatas, imageIcon: tappedThumbnail.image)
+                }
+            } onCellContextMenuItemSelected: { thumbnail, selection in
+                let selectedMetadata = thumbnail.metadata
+
+                switch selection {
+                case .addToFavorites:
+                    vm.addToFavorites(metadata: selectedMetadata)
+                case .details:
+                    NCActionCenter.shared.openShare(viewController: parent, metadata: selectedMetadata, page: .activity)
+                case .openIn:
+                    vm.openIn(metadata: selectedMetadata)
+                case .saveToPhotos:
+                    vm.saveToPhotos(metadata: selectedMetadata)
+                case .viewInFolder:
+                    vm.viewInFolder(metadata: selectedMetadata)
+                case .modify:
+                    vm.modify(metadata: selectedMetadata)
+                case .delete:
+                    vm.delete(metadatas: selectedMetadata)
+                }
+            } onRefresh: {
+                await vm.onPullToRefresh()
+            }
+            .equatable()
+            .ignoresSafeArea(.all, edges: .horizontal)
+            .introspect(.scrollView, on: .iOS(.v15...)) { scrollView in
+                scrollView.refreshControl?.translatesAutoresizingMaskIntoConstraints = false
+                scrollView.refreshControl?.topAnchor.constraint(equalTo: scrollView.superview!.topAnchor, constant: 120).isActive = true
+                scrollView.refreshControl?.centerXAnchor.constraint(equalTo: scrollView.centerXAnchor).isActive = true
+
+//                scrollView.delegate = delegate
+//                if vm.offsetPublisherSubscription == nil {
+//                    vm.offsetPublisherSubscription = scrollView.publisher(for: \.contentOffset)
+//                        .sink { offset in
+////                            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+////                                isScrolledToTop = offset.y <= 40
+////                            }
+//                        }
+//                }
+            }.scrollStatusByIntrospect(isScrolledToTop: $isScrolledToTop)
 
             HStack(content: {
                 HStack {
@@ -102,6 +129,12 @@ struct NCMediaNew: View {
                         .foregroundStyle(titleColor)
 
                     Spacer()
+
+                    if vm.isLoadingMetadata {
+                        ProgressView()
+                            .tint(loadingIndicatorColor)
+                            .padding(.horizontal, 6)
+                    }
 
                     Button(action: {
                         isInSelectMode.toggle()
@@ -185,7 +218,10 @@ struct NCMediaNew: View {
             .frame(maxWidth: .infinity)
             .padding([.horizontal, .top], 10)
             .padding(.bottom, 20)
-            .background(LinearGradient(gradient: Gradient(colors: toolbarColors), startPoint: .top, endPoint: .bottom).ignoresSafeArea(.all, edges: [.top, .horizontal]))
+            .background(LinearGradient(gradient: Gradient(colors: toolbarColors), startPoint: .top, endPoint: .bottom)
+                .padding(.bottom, -50)
+                .ignoresSafeArea(.all, edges: [.all])
+            )
         }
         .onRotate { orientation in
             if orientation.isLandscapeHardCheck {
@@ -206,8 +242,9 @@ struct NCMediaNew: View {
         .onChange(of: isScrolledToTop) { value in
             withAnimation(.default) {
                 titleColor = value ? Color.primary : .white
+                loadingIndicatorColor = value ? Color.gray : .white
                 toolbarItemsColor = value ? .blue : .white
-                toolbarColors = value ? [.clear] : [.black.opacity(0.8), .black.opacity(0.0)]
+                toolbarColors = value ? [.clear] : [Color.black.opacity(0.8), Color.black.opacity(0.4), .clear]
             }
         }
         .alert("", isPresented: $showPlayFromURLAlert) {
@@ -305,5 +342,60 @@ struct NCMediaNew_Previews: PreviewProvider {
                 NCMediaNew()
                     .environmentObject(NCMediaUIKitWrapper())
             })
+    }
+}
+
+final class ScrollDelegate: NSObject, UITableViewDelegate, UIScrollViewDelegate {
+//    var isScrolling: Binding<Bool>?
+    var isScrolledToTop: Binding<Bool>?
+
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        DispatchQueue.main.async {
+            self.isScrolledToTop?.wrappedValue = scrollView.contentOffset.y <= -20
+        }
+//        if let isScrolling = isScrolling?.wrappedValue,!isScrolling {
+//            self.isScrolling?.wrappedValue = true
+//        }
+    }
+
+    func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
+//        if let isScrolling = isScrolling?.wrappedValue, isScrolling {
+//            self.isScrolling?.wrappedValue = false
+//        }
+    }
+//    // When the user slowly drags the scrollable control, decelerate is false after the user releases their finger, so the scrollViewDidEndDecelerating method is not called.
+    func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
+        if !decelerate {
+//            if let isScrolling = isScrolling?.wrappedValue, isScrolling {
+//                self.isScrolling?.wrappedValue = false
+//            }
+        }
+    }
+
+//    func scrollViewDidScrollToTop(_ scrollView: UIScrollView) {
+//        if let isScrolledToTop = isScrolledToTop?.wrappedValue {
+//            self.isScrolledToTop?.wrappedValue = isScrolledToTop
+//        }
+//    }
+}
+
+extension View {
+    func scrollStatusByIntrospect(isScrolledToTop: Binding<Bool>) -> some View {
+        modifier(ScrollStatusByIntrospectModifier(isScrolledToTop: isScrolledToTop))
+    }
+}
+
+struct ScrollStatusByIntrospectModifier: ViewModifier {
+    @State var delegate = ScrollDelegate()
+    @Binding var isScrolledToTop: Bool
+
+    func body(content: Content) -> some View {
+        content
+            .onAppear {
+                self.delegate.isScrolledToTop = $isScrolledToTop
+            }
+            .introspect(.scrollView, on: .iOS(.v15...)) { scrollView in
+                scrollView.delegate = delegate
+            }
     }
 }
