@@ -34,15 +34,21 @@ import NextcloudKit
     // MARK: -
 
     private let limit: Int = 1000
-    private typealias ThumbnailLRUCache = LRUCache<String, UIImage>
+
+    enum ImageType {
+        case placeholder
+        case actual(_ image: UIImage)
+    }
+
+    private typealias ThumbnailLRUCache = LRUCache<String, ImageType>
     private lazy var cache: ThumbnailLRUCache = {
         return ThumbnailLRUCache(countLimit: limit)
     }()
     private var ocIdEtag: [String: String] = [:]
     public var metadatas: [tableMetadata] = []
-    public var predicateDefault: NSPredicate?
-    public var predicate: NSPredicate?
     public var livePhoto: Bool = false
+
+    override private init() {}
 
     func createMediaCache(account: String) {
 
@@ -71,11 +77,11 @@ import NextcloudKit
                 let fileName = fileURL.lastPathComponent
                 let ocId = fileURL.deletingLastPathComponent().lastPathComponent
                 guard let resourceValues = try? fileURL.resourceValues(forKeys: resourceKeys),
-                        let size = resourceValues.fileSize,
-                        size > 0,
-                        let date = resourceValues.creationDate,
-                        let etag = ocIdEtag[ocId],
-                        fileName == etag + ext else { continue }
+                      let size = resourceValues.fileSize,
+                      size > 0,
+                      let date = resourceValues.creationDate,
+                      let etag = ocIdEtag[ocId],
+                      fileName == etag + ext else { continue }
                 files.append(FileInfo(path: fileURL, ocId: ocId, date: date))
             }
         }
@@ -93,7 +99,7 @@ import NextcloudKit
             if counter > limit { break }
             autoreleasepool {
                 if let image = UIImage(contentsOfFile: file.path.path) {
-                    cache.setValue(image, forKey: file.ocId)
+                    cache.setValue(.actual(image), forKey: file.ocId)
                 }
             }
         }
@@ -106,13 +112,11 @@ import NextcloudKit
         NextcloudKit.shared.nkCommonInstance.writeLog("--------- ThumbnailLRUCache image process ---------")
     }
 
-    func getMediaImage(ocId: String) -> UIImage? {
-
+    func getMediaImage(ocId: String) -> ImageType? {
         return cache.value(forKey: ocId)
     }
 
-    func setMediaImage(ocId: String, image: UIImage) {
-
+    func setMediaImage(ocId: String, image: ImageType) {
         cache.setValue(image, forKey: ocId)
     }
 
@@ -123,25 +127,19 @@ import NextcloudKit
         cache.removeAllValues()
     }
 
-    func getMediaMetadatas(account: String, filterClassTypeImage: Bool = false, filterClassTypeVideo: Bool = false) {
+    func getMediaMetadatas(account: String, predicate: NSPredicate? = nil) {
 
         guard let account = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", account)) else { return }
         let startServerUrl = NCUtilityFileSystem().getHomeServer(urlBase: account.urlBase, userId: account.userId) + account.mediaPath
 
-        predicateDefault = NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND (classFile == %@ OR classFile == %@) AND NOT (session CONTAINS[c] 'upload')", account.account, startServerUrl, NKCommon.TypeClassFile.image.rawValue, NKCommon.TypeClassFile.video.rawValue)
-
-        if filterClassTypeImage {
-            predicate = NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND classFile == %@ AND NOT (session CONTAINS[c] 'upload')", account.account, startServerUrl, NKCommon.TypeClassFile.video.rawValue)
-        } else if filterClassTypeVideo {
-            predicate = NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND classFile == %@ AND NOT (session CONTAINS[c] 'upload')", account.account, startServerUrl, NKCommon.TypeClassFile.image.rawValue)
-        } else {
-            predicate = predicateDefault
-        }
-
-        guard let predicate = predicate else { return }
+        let predicateDefault = NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND (classFile == %@ OR classFile == %@) AND NOT (session CONTAINS[c] 'upload')", account.account, startServerUrl, NKCommon.TypeClassFile.image.rawValue, NKCommon.TypeClassFile.video.rawValue)
 
         livePhoto = NCKeychain().livePhoto
-        metadatas = NCManageDatabase.shared.getMetadatasMedia(predicate: predicate, livePhoto: livePhoto)
+
+        let newMetadatas = NCManageDatabase.shared.getMetadatasMedia(predicate: predicate ?? predicateDefault, livePhoto: livePhoto)
+        if metadatas != newMetadatas {
+            metadatas = newMetadatas
+        }
 
         switch NCKeychain().mediaSortDate {
         case "date":
