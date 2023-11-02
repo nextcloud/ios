@@ -52,6 +52,8 @@ extension NCMedia {
                 )
             }
 
+            actions.append(.seperator(order: 0))
+
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_media_viewimage_show_", comment: ""),
@@ -93,6 +95,8 @@ extension NCMedia {
                     }
                 )
             )
+
+            actions.append(.seperator(order: 0))
 
             actions.append(
                 NCMenuAction(
