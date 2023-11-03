@@ -353,13 +353,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     func handleProcessingTask(_ task: BGTask) {
         scheduleAppProcessing()
 
-        NCAutoUpload.shared.initAutoUpload(viewController: nil) { items in
-            NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Processing task auto upload with \(items) uploads")
-            NCNetworkingProcessUpload.shared.start { items in
-                NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Processing task upload process with \(items) uploads")
-                task.setTaskCompleted(success: true)
-            }
-        }
+        NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Processing task")
     }
 
     // MARK: - Background Networking Session
