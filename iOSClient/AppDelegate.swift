@@ -290,6 +290,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     // L'applicazione terminerà
     func applicationWillTerminate(_ application: UIApplication) {
 
+        // NCNetworking.shared.cancel(upload: true, background: true)
+
         if UIApplication.shared.backgroundRefreshStatus == .available {
 
             let content = UNMutableNotificationContent()
