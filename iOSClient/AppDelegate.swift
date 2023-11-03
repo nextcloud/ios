@@ -62,6 +62,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     let unifiedSearchQueue = Queuer(name: "unifiedSearchQueue", maxConcurrentOperationCount: 1, qualityOfService: .default)
     let saveLivePhotoQueue = Queuer(name: "saveLivePhotoQueue", maxConcurrentOperationCount: 1, qualityOfService: .default)
 
+    var isAppRefresh: Bool = false
+    var isAppProcessing: Bool = false
+
     var isUiTestingEnabled: Bool {
         return ProcessInfo.processInfo.arguments.contains("UI_TESTING")
     }
@@ -341,11 +344,17 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     func handleAppRefresh(_ task: BGTask) {
         scheduleAppRefresh()
 
+        if isAppProcessing {
+            NextcloudKit.shared.nkCommonInstance.writeLog("[DEBUG TEST] Processing task TRUE")
+        }
+        isAppRefresh = true
+
         NCAutoUpload.shared.initAutoUpload(viewController: nil) { items in
             NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Refresh task auto upload with \(items) uploads")
             NCNetworkingProcessUpload.shared.start { items in
                 NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Refresh task upload process with \(items) uploads")
                 task.setTaskCompleted(success: true)
+                self.isAppRefresh = false
             }
         }
     }
@@ -353,7 +362,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     func handleProcessingTask(_ task: BGTask) {
         scheduleAppProcessing()
 
-        NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Processing task")
+        if isAppRefresh {
+            NextcloudKit.shared.nkCommonInstance.writeLog("[DEBUG TEST] Refresh task TRUE")
+        }
+        isAppProcessing = true
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+            NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Processing task completed")
+            task.setTaskCompleted(success: true)
+            self.isAppProcessing = false
+        }
     }
 
     // MARK: - Background Networking Session
