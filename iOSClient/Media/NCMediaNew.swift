@@ -13,36 +13,8 @@ import Combine
 @_spi(Advanced) import SwiftUIIntrospect
 import Queuer
 
-//struct Test: View {
-//    var metadatas: [[tableMetadata]]
-//    @EnvironmentObject var vm: NCMediaViewModel
-//    @EnvironmentObject var parent: NCMediaUIKitWrapper
-//    @State var isInSelectMode = true
-//    @Binding var columnCountStages: [Int]
-//    @Binding var columnCountStagesIndex: Int
-//    @State var title: String = ""
-//    internal let cache = UIImageLRUCache(countLimit: 1000)
-//
-//    var body: some View {
-//        let _ = Self._printChanges()
-//
-//        ScrollView {
-//            LazyVStack(alignment: .leading, spacing: 2) {
-//                ForEach(metadatas, id: \.self) { rowMetadatas in
-//                    Color.random.frame(width: 100, height: 100)
-//                }
-//                .background(GeometryReader { geometry in
-//                    Color.clear
-//                        .preference(key: ScrollOffsetPreferenceKey.self, value: geometry.frame(in: .named("scroll")).origin)
-//                })
-//            }
-//        }
-//        .coordinateSpace(name: "scroll")
-//    }
-//}
-
 struct NCMediaNew: View {
-    let imageQueuer = Queuer(name: "downloadThumbnailQueue", maxConcurrentOperationCount: 10, qualityOfService: .default)
+    let downloadThumbnailQueue = Queuer(name: "downloadThumbnailQueue", maxConcurrentOperationCount: 10, qualityOfService: .background)
 
     @StateObject private var vm = NCMediaViewModel()
     @EnvironmentObject private var parent: NCMediaUIKitWrapper
@@ -67,10 +39,8 @@ struct NCMediaNew: View {
     @State private var isInSelectMode = false
 
     var body: some View {
-        let _ = Self._printChanges()
-
         ZStack(alignment: .top) {
-            NCMediaScrollView(metadatas: $vm.metadatas, isInSelectMode: $isInSelectMode, selectedMetadatas: $selectedMetadatas, columnCountStages: $columnCountStages, columnCountStagesIndex: $columnCountStagesIndex, title: $title, queuer: imageQueuer) { tappedThumbnail, isSelected in
+            NCMediaScrollView(metadatas: $vm.metadatas, isInSelectMode: $isInSelectMode, selectedMetadatas: $selectedMetadatas, columnCountStages: $columnCountStages, columnCountStagesIndex: $columnCountStagesIndex, title: $title, queuer: downloadThumbnailQueue) { tappedThumbnail, isSelected in
                 if isInSelectMode, isSelected {
                     selectedMetadatas.append(tappedThumbnail.metadata)
                 } else {

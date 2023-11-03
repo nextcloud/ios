@@ -82,7 +82,7 @@ import LRUCache
                     self.loadMediaFromDB(showPhotos: false, showVideos: true)
                 }
 
-                self.cancelSelection()
+//                self.cancelSelection()
             }
             .store(in: &cancellables)
     }
@@ -286,10 +286,10 @@ import LRUCache
         NCActionCenter.shared.copyPasteboard(pasteboardOcIds: metadatas.compactMap({ $0.ocId }))
     }
 
-    private func cancelSelection() {
-//        self.isInSelectMode = false
-//        self.selectedMetadatas.removeAll()
-    }
+//    private func cancelSelection() {
+////        self.isInSelectMode = false
+////        self.selectedMetadatas.removeAll()
+//    }
 
     private func updateLoadingMedia() {
         isLoadingMetadata = isLoadingNewMetadata || isLoadingOldMetadata
@@ -346,6 +346,8 @@ extension NCMediaViewModel {
     }
 
     @objc func userChanged(_ notification: NSNotification) {
+            self.loadMediaFromDB()
+
         Task {
             await loadNewMedia()
         }
