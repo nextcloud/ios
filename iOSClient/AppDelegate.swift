@@ -345,7 +345,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         scheduleAppRefresh()
 
         if isAppProcessing {
-            NextcloudKit.shared.nkCommonInstance.writeLog("[DEBUG TEST] Processing task TRUE")
+            NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Processing task already in progress, abbort.")
+            task.setTaskCompleted(success: true)
+            return
         }
         isAppRefresh = true
 
@@ -363,14 +365,19 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         scheduleAppProcessing()
 
         if isAppRefresh {
-            NextcloudKit.shared.nkCommonInstance.writeLog("[DEBUG TEST] Refresh task TRUE")
+            NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Refresh task already in progress, abbort.")
+            task.setTaskCompleted(success: true)
+            return
         }
         isAppProcessing = true
 
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-            NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Processing task completed")
-            task.setTaskCompleted(success: true)
-            self.isAppProcessing = false
+        NCAutoUpload.shared.initAutoUpload(viewController: nil) { items in
+            NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Refresh task auto upload with \(items) uploads")
+            NCNetworkingProcessUpload.shared.start { items in
+                NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Refresh task upload process with \(items) uploads")
+                task.setTaskCompleted(success: true)
+                self.isAppProcessing = false
+            }
         }
     }
 
