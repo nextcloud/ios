@@ -63,6 +63,7 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate, NCSelectDelegate {
     struct cacheImages {
         static var cellLivePhotoImage = UIImage()
         static var cellPlayImage = UIImage()
+        static var cellImage = UIImage()
     }
 
     // MARK: - View Life Cycle
@@ -389,14 +390,6 @@ extension NCMedia: UICollectionViewDataSource {
             cell.indexPath = indexPath
             cell.fileUser = metadata.ownerId
 
-            if metadata.isAudioOrVideo {
-                cell.imageStatus.image = cacheImages.cellPlayImage
-            } else if metadata.livePhoto && NCImageCache.shared.livePhoto {
-                cell.imageStatus.image = cacheImages.cellLivePhotoImage
-            } else {
-                cell.imageStatus.image = nil
-            }
-
             if let cachedImage = NCImageCache.shared.getMediaImage(ocId: metadata.ocId), case let .actual(image) = cachedImage {
                 cell.imageItem.backgroundColor = nil
                 cell.imageItem.image = image
@@ -412,6 +405,14 @@ extension NCMedia: UICollectionViewDataSource {
                         appDelegate.downloadThumbnailQueue.addOperation(NCMediaDownloadThumbnaill(metadata: metadata, cell: cell, collectionView: collectionView))
                     }
                 }
+                cell.imageStatus.image = nil
+            }
+
+            if metadata.isAudioOrVideo {
+                cell.imageStatus.image = cacheImages.cellPlayImage
+            } else if metadata.livePhoto && NCImageCache.shared.livePhoto {
+                cell.imageStatus.image = cacheImages.cellLivePhotoImage
+            } else {
                 cell.imageStatus.image = nil
             }
 

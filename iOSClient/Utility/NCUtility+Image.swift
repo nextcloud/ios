@@ -159,6 +159,7 @@ extension NCUtility {
         if utilityFileSystem.fileProviderStorageExists(metadata) && metadata.isImage {
 
             let previewPath = utilityFileSystem.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)
+            let iconPath = utilityFileSystem.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)
             let imagePath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)
 
             if ext == "GIF" {
@@ -173,6 +174,7 @@ extension NCUtility {
                         if !FileManager().fileExists(atPath: previewPath) {
                             do {
                                 try image.pngData()?.write(to: URL(fileURLWithPath: previewPath), options: .atomic)
+                                try image.pngData()?.write(to: URL(fileURLWithPath: iconPath), options: .atomic)
                             } catch { }
                         }
                         return image

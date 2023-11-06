@@ -283,7 +283,7 @@ class NCViewerMedia: UIViewController {
             }
         }
 
-        if metadata.isImage, metadata.fileExtension.lowercased() == "gif", !utilityFileSystem.fileProviderStorageExists(metadata) {
+        if metadata.isImage, (metadata.fileExtension.lowercased() == "gif" || metadata.fileExtension.lowercased() == "svg"), !utilityFileSystem.fileProviderStorageExists(metadata) {
             downloadImage()
         }
 
