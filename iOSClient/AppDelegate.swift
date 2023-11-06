@@ -281,7 +281,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
         scheduleAppRefresh()
         scheduleAppProcessing()
-        NCNetworking.shared.cancel(inBackground: false)
+        NCNetworking.shared.cancelDataTask()
+        NCNetworking.shared.cancelDownloadTasks()
+        NCNetworking.shared.cancelUploadTasks()
         presentPasscode { }
 
         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterApplicationDidEnterBackground)
@@ -587,7 +589,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
     @objc func changeAccount(_ account: String, userProfile: NKUserProfile?) {
 
-        NCNetworking.shared.cancel(inBackground: false)
+        NCNetworking.shared.cancelDataTask()
+        NCNetworking.shared.cancelDownloadTasks()
+        NCNetworking.shared.cancelUploadTasks()
+
         guard let tableAccount = NCManageDatabase.shared.setAccountActive(account) else { return }
 
         self.account = tableAccount.account
