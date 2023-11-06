@@ -772,7 +772,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
     // sessionIdentifierBackgroundWWan: String = "com.nextcloud.session.upload.backgroundWWan"
     // sessionIdentifierBackgroundExtension: String = "com.nextcloud.session.upload.extension"
 
-    func cancel(upload: Bool = false, background: Bool = false) {
+    func cancel(inBackground: Bool) {
 
 #if !EXTENSION
         if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
@@ -780,6 +780,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
         }
 #endif
 
+        /*
         let sessionManager = NextcloudKit.shared.sessionManager
         sessionManager.session.getTasksWithCompletionHandler { dataTasks, uploadTasks, downloadTasks in
             dataTasks.forEach {
@@ -794,28 +795,29 @@ class NCNetworking: NSObject, NKCommonDelegate {
                 }
             }
         }
+        */
+
+        NextcloudKit.shared.sessionManager.cancelAllRequests()
+
+        downloadRequest.removeAll()
+        uploadRequest.removeAll()
 
         let metadatasDownload = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "status < 0"))
         let metadatasUpload = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "status > 0 AND session == %@", NextcloudKit.shared.nkCommonInstance.sessionIdentifierUpload))
         let metadatasUploadBackground = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "status > 0 AND (session == %@ || session == %@)", NCNetworking.shared.sessionIdentifierBackground, NCNetworking.shared.sessionIdentifierBackgroundWWan))
 
         // DOWNLOAD
-        downloadRequest.removeAll()
         for metadata in metadatasDownload {
             utilityFileSystem.removeFile(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId))
             NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId, session: "", sessionError: "", sessionSelector: "", sessionTaskIdentifier: 0, status: NCGlobal.shared.metadataStatusNormal, errorCode: 0)
         }
-
         // UPLOAD
-        if upload {
-            uploadRequest.removeAll()
-            for metadata in metadatasUpload {
-                utilityFileSystem.removeFile(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId))
-                NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
-            }
+        for metadata in metadatasUpload {
+            utilityFileSystem.removeFile(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId))
+            NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
         }
 
-        guard background else { return }
+        guard inBackground else { return }
 
         // BACKGROUND
         for metadata in metadatasUploadBackground {

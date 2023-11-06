@@ -367,7 +367,7 @@
 
 - (void)clearCache:(NSString *)account
 {
-    [[NCNetworking shared] cancelWithUpload:true background:true];
+    [[NCNetworking shared] cancelInBackground:true];
 
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
 
@@ -453,7 +453,7 @@
     
     [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_ok_", nil) style:UIAlertActionStyleDestructive handler:^(UIAlertAction *action) {
                 
-        [[NCNetworking shared] cancelWithUpload:true background:true];
+        [[NCNetworking shared] cancelInBackground:true];
 
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
 
