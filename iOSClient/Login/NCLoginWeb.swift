@@ -294,7 +294,7 @@ extension NCLoginWeb: WKNavigationDelegate {
             if error == .success, let userProfile {
 
                 if NCManageDatabase.shared.getAccounts() == nil {
-                    self.utility.removeAllSettings()
+                    NCUtilityFileSystem().removeAllSettings()
                 }
 
                 NCManageDatabase.shared.deleteAccount(account)

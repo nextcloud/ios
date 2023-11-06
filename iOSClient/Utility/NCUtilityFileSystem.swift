@@ -594,4 +594,22 @@ class NCUtilityFileSystem: NSObject {
             }
         }
     }
+
+    func removeAllSettings() {
+
+        URLCache.shared.memoryCapacity = 0
+        URLCache.shared.diskCapacity = 0
+
+        NCManageDatabase.shared.clearDatabase(account: nil, removeAccount: true)
+
+        removeGroupDirectoryProviderStorage()
+        removeGroupLibraryDirectory()
+
+        removeDocumentsDirectory()
+        removeTemporaryDirectory()
+
+        createDirectoryStandard()
+
+        NCKeychain().removeAll()
+    }
 }
