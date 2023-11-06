@@ -107,7 +107,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
         alertController.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel, handler: nil))
         alertController.addAction(UIAlertAction(title: NSLocalizedString("_cancel_all_task_", comment: ""), style: .default, handler: { _ in
             Task {
-                await NCNetworking.shared.cancel(inBackground: true)
+                NCNetworking.shared.cancel(inBackground: true)
             }
         }))
 

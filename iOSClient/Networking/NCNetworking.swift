@@ -301,6 +301,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
 
         let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
         let fileNameLocalPath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileName)
+        let options = NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
 
         if NCManageDatabase.shared.getMetadataFromOcId(metadata.ocId) == nil {
             NCManageDatabase.shared.addMetadata(tableMetadata.init(value: metadata))
@@ -308,7 +309,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
 
         NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId, session: NextcloudKit.shared.nkCommonInstance.sessionIdentifierDownload, sessionError: "", sessionSelector: selector, sessionTaskIdentifier: 0, status: NCGlobal.shared.metadataStatusInDownload, errorCode: nil)
 
-        NextcloudKit.shared.download(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue, requestHandler: { request in
+        NextcloudKit.shared.download(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, options: options, requestHandler: { request in
 
             requestHandler(request)
 
@@ -427,7 +428,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
     func uploadFile(metadata: tableMetadata,
                     fileNameLocalPath: String,
                     withUploadComplete: Bool = true,
-                    addCustomHeaders: [String: String]? = nil,
+                    customHeaders: [String: String]? = nil,
                     start: @escaping () -> Void = { },
                     progressHandler: @escaping (_ totalBytesExpected: Int64, _ totalBytes: Int64, _ fractionCompleted: Double) -> Void = { _, _, _ in },
                     completion: @escaping (_ account: String, _ ocId: String?, _ etag: String?, _ date: NSDate?, _ size: Int64, _ allHeaderFields: [AnyHashable: Any]?, _ afError: AFError?, _ error: NKError) -> Void) {
@@ -435,8 +436,9 @@ class NCNetworking: NSObject, NKCommonDelegate {
         let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
         var uploadTask: URLSessionTask?
         let description = metadata.ocId
+        let options = NKRequestOptions(customHeader: customHeaders, queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
 
-        NextcloudKit.shared.upload(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, dateCreationFile: metadata.creationDate as Date, dateModificationFile: metadata.date as Date, customUserAgent: nil, addCustomHeaders: addCustomHeaders, requestHandler: { request in
+        NextcloudKit.shared.upload(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, dateCreationFile: metadata.creationDate as Date, dateModificationFile: metadata.date as Date, options: options, requestHandler: { request in
 
             self.uploadRequest[fileNameLocalPath] = request
 
@@ -475,7 +477,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
 
     func uploadChunkFile(metadata: tableMetadata,
                          withUploadComplete: Bool = true,
-                         addCustomHeaders: [String: String] = [:],
+                         customHeaders: [String: String]? = nil,
                          start: @escaping () -> Void = { },
                          progressHandler: @escaping (_ totalBytesExpected: Int64, _ totalBytes: Int64, _ fractionCompleted: Double) -> Void = { _, _, _ in },
                          completion: @escaping (_ account: String, _ file: NKFile?, _ afError: AFError?, _ error: NKError) -> Void) {
@@ -490,6 +492,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
         if NCNetworking.shared.networkReachability == NKCommon.TypeReachability.reachableEthernetOrWiFi {
             chunkSize = NCGlobal.shared.chunkSizeMBEthernetOrWiFi
         }
+        let options = NKRequestOptions(customHeader: customHeaders, queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
 
         NextcloudKit.shared.uploadChunk(directory: directory,
                                         fileName: metadata.fileName,
@@ -499,7 +502,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
                                         chunkFolder: chunkFolder,
                                         filesChunk: filesChunk,
                                         chunkSize: chunkSize,
-                                        addCustomHeaders: addCustomHeaders) { filesChunk in
+                                        options: options) { filesChunk in
 
             start()
             NCManageDatabase.shared.addChunks(account: metadata.account, ocId: metadata.ocId, chunkFolder: chunkFolder, filesChunk: filesChunk)
@@ -776,6 +779,23 @@ class NCNetworking: NSObject, NKCommonDelegate {
             appDelegate.cancelAllQueue()
         }
 #endif
+
+        /*
+        let sessionManager = NextcloudKit.shared.sessionManager
+        sessionManager.session.getTasksWithCompletionHandler { dataTasks, uploadTasks, downloadTasks in
+            dataTasks.forEach {
+                $0.cancel()
+            }
+            downloadTasks.forEach {
+                $0.cancel()
+            }
+            uploadTasks.forEach {
+                if upload {
+                    $0.cancel()
+                }
+            }
+        }
+        */
 
         NextcloudKit.shared.sessionManager.cancelAllRequests()
 
