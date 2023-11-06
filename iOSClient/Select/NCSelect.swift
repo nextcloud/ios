@@ -38,6 +38,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
     private let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
     private var selectCommandViewSelect: NCSelectCommandView?
     let utilityFileSystem = NCUtilityFileSystem()
+    let utility = NCUtility()
 
     @objc enum selectType: Int {
         case select
@@ -388,11 +389,11 @@ extension NCSelect: UICollectionViewDataSource {
             }
             cell.imageItem.image = cell.imageItem.image?.colorizeFolder(metadata: metadata)
 
-            cell.labelInfo.text = CCUtility.dateDiff(metadata.date as Date)
+            cell.labelInfo.text = utility.dateDiff(metadata.date as Date)
 
         } else {
 
-            cell.labelInfo.text = CCUtility.dateDiff(metadata.date as Date) + " · " + utilityFileSystem.transformedSize(metadata.size)
+            cell.labelInfo.text = utility.dateDiff(metadata.date as Date) + " · " + utilityFileSystem.transformedSize(metadata.size)
 
             // image local
             if NCManageDatabase.shared.getTableLocalFile(ocId: metadata.ocId) != nil {

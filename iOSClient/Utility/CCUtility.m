@@ -34,43 +34,6 @@
 #pragma mark ===== Various =====
 #pragma --------------------------------------------------------------------------------------------
 
-+ (NSString *)dateDiff:(NSDate *) convertedDate
-{
-    NSDate *todayDate = [NSDate date];
-    double ti = [convertedDate timeIntervalSinceDate:todayDate];
-    ti = ti * -1;
-    if (ti < 60) {
-        return NSLocalizedString(@"_less_a_minute_", nil);
-    } else if (ti < 3600) {
-        int diff = round(ti / 60);
-        if (diff == 1) {
-            return NSLocalizedString(@"_a_minute_ago_", nil);
-        } else {
-            return [NSString stringWithFormat:NSLocalizedString(@"_minutes_ago_", nil), diff];
-        }
-    } else if (ti < 86400) {
-        int diff = round(ti / 60 / 60);
-        if (diff == 1) {
-            return NSLocalizedString(@"_an_hour_ago_", nil);
-        } else {
-            return[NSString stringWithFormat:NSLocalizedString(@"_hours_ago_", nil), diff];
-        }
-    } else if (ti < 86400 * 30) {
-        int diff = round(ti / 60 / 60 / 24);
-        if (diff == 1) {
-            return NSLocalizedString(@"_a_day_ago_", nil);
-        } else {
-            return[NSString stringWithFormat:NSLocalizedString(@"_days_ago_", nil), diff];
-        }
-    } else {
-        // Older than one month
-        NSDateFormatter *df = [[NSDateFormatter alloc] init];
-        [df setFormatterBehavior:NSDateFormatterBehavior10_4];
-        [df setDateStyle:NSDateFormatterMediumStyle];
-        return [df stringFromDate:convertedDate];
-    }
-}
-
 + (NSString *)createFileName:(NSString *)fileName fileDate:(NSDate *)fileDate fileType:(PHAssetMediaType)fileType keyFileName:(NSString *)keyFileName keyFileNameType:(NSString *)keyFileNameType keyFileNameOriginal:(NSString *)keyFileNameOriginal forcedNewFileName:(BOOL)forcedNewFileName
 {
     BOOL addFileNameType = NO;

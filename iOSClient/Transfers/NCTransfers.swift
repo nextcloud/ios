@@ -196,7 +196,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
         } else {
             cell.imageItem.image = UIImage(named: "file")
         }
-        cell.labelInfo.text = CCUtility.dateDiff(metadata.date as Date) + " · " + utilityFileSystem.transformedSize(metadata.size)
+        cell.labelInfo.text = utility.dateDiff(metadata.date as Date) + " · " + utilityFileSystem.transformedSize(metadata.size)
         if metadata.status == NCGlobal.shared.metadataStatusDownloading || metadata.status == NCGlobal.shared.metadataStatusUploading {
             cell.progressView.isHidden = false
         } else {

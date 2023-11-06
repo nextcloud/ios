@@ -655,4 +655,40 @@ class NCUtility: NSObject {
         return fileName
     }
 
+    func dateDiff(_ date: Date?) -> String {
+
+        guard let date else { return "" }
+        let today = Date()
+        var ti = date.timeIntervalSince(today)
+        ti = ti * -1
+        if ti < 60 {
+            return NSLocalizedString("_less_a_minute_", comment: "")
+        } else if ti < 3600 {
+            let diff = Int(round(ti / 60))
+            if diff == 1 {
+                return NSLocalizedString("_a_minute_ago_", comment: "")
+            } else {
+                return String.localizedStringWithFormat(NSLocalizedString("_minutes_ago_", comment: ""), diff)
+            }
+        } else if ti < 86400 {
+            let diff = Int(round(ti / 60))
+            if diff == 1 {
+                return NSLocalizedString("_an_hour_ago_", comment: "")
+            } else {
+                return String.localizedStringWithFormat(NSLocalizedString("_hours_ago_", comment: ""), diff)
+            }
+        } else if ti < 86400 * 30 {
+            let diff = Int(round(ti / 60 / 60 / 24))
+            if diff == 1 {
+                return NSLocalizedString("_a_day_ago_", comment: "")
+            } else {
+                return String.localizedStringWithFormat(NSLocalizedString("_days_ago_", comment: ""), diff)
+            }
+        } else {
+            let formatter = DateFormatter()
+            formatter.formatterBehavior = .behavior10_4
+            formatter.dateStyle = .medium
+            return formatter.string(from: date)
+        }
+    }
 }
