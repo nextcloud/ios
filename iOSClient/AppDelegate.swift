@@ -343,7 +343,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         scheduleAppRefresh()
 
         if isAppProcessing {
-            NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Processing task already in progress, abbort.")
+            NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Processing task already in progress, abort.")
             task.setTaskCompleted(success: true)
             return
         }
@@ -363,7 +363,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         scheduleAppProcessing()
 
         if isAppRefresh {
-            NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Refresh task already in progress, abbort.")
+            NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Refresh task already in progress, abort.")
             task.setTaskCompleted(success: true)
             return
         }
