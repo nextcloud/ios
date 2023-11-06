@@ -136,30 +136,6 @@
     return fileName;
 }
 
-+ (NSString *)getTitleSectionDate:(NSDate *)date
-{
-    NSString *title;
-    NSDate *today = [NSDate date];
-    NSDate *yesterday = [today dateByAddingTimeInterval: -86400.0];
-
-    if ([date isEqualToDate:[CCUtility datetimeWithOutTime:[NSDate distantPast]]]) {
-
-        title =  NSLocalizedString(@"_no_date_", nil);
-
-    } else {
-
-        title = [NSDateFormatter localizedStringFromDate:date dateStyle:NSDateFormatterLongStyle timeStyle:0];
-
-        if ([date isEqualToDate:[CCUtility datetimeWithOutTime:today]])
-            title = [NSString stringWithFormat:NSLocalizedString(@"_today_", nil)];
-
-        if ([date isEqualToDate:[CCUtility datetimeWithOutTime:yesterday]])
-            title = [NSString stringWithFormat:NSLocalizedString(@"_yesterday_", nil)];
-    }
-
-    return title;
-}
-
 + (NSString *)getMimeType:(NSString *)fileNameView
 {
     CFStringRef fileUTI = nil;
@@ -267,15 +243,6 @@
 #pragma mark ===== Third parts =====
 #pragma --------------------------------------------------------------------------------------------
 
-+ (NSDate *)datetimeWithOutTime:(NSDate *)datDate
-{
-    if (datDate == nil) return nil;
-
-    NSDateComponents* comps = [[NSCalendar currentCalendar] components:NSCalendarUnitYear|NSCalendarUnitMonth|NSCalendarUnitDay fromDate:datDate];
-    datDate = [[NSCalendar currentCalendar] dateFromComponents:comps];
-
-    return datDate;
-}
 
 + (NSDate *)getATime:(const char *)path
 {

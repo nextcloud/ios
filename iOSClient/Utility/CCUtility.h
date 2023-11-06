@@ -35,7 +35,6 @@
 @interface CCUtility : NSObject
 
 + (NSString *)createFileName:(NSString *)fileName fileDate:(NSDate *)fileDate fileType:(PHAssetMediaType)fileType keyFileName:(NSString *)keyFileName keyFileNameType:(NSString *)keyFileNameType keyFileNameOriginal:(NSString *)keyFileNameOriginal forcedNewFileName:(BOOL)forcedNewFileName;
-+ (NSString *)getTitleSectionDate:(NSDate *)date;
 + (NSString *)getMimeType:(NSString *)fileNameView;
 
 // ===== Share Permissions =====
@@ -51,7 +50,6 @@
 
 // ===== Third parts =====
 
-+ (NSDate *)datetimeWithOutTime:(NSDate *)datDate;
 + (NSDate *)getATime:(const char *)path;
 
 @end

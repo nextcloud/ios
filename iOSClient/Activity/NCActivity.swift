@@ -159,7 +159,7 @@ extension NCActivity: UITableViewDelegate {
         let label = UILabel()
         label.font = UIFont.boldSystemFont(ofSize: 13)
         label.textColor = .label
-        label.text = CCUtility.getTitleSectionDate(sectionDates[section])
+        label.text = utility.getTitleFromDate(sectionDates[section])
         label.textAlignment = .center
         label.layer.cornerRadius = 11
         label.layer.masksToBounds = true

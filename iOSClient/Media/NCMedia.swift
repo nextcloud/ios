@@ -224,8 +224,9 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate, NCSelectDelegate {
         mediaCommandView?.title.text = ""
         if let visibleCells = self.collectionView?.indexPathsForVisibleItems.sorted(by: { $0.row < $1.row }).compactMap({ self.collectionView?.cellForItem(at: $0) }) {
             if let cell = visibleCells.first as? NCGridMediaCell {
-                if cell.date != nil {
-                    mediaCommandView?.title.text = CCUtility.getTitleSectionDate(cell.date)
+                mediaCommandView?.title.text = ""
+                if let date = cell.date {
+                    mediaCommandView?.title.text = utility.getTitleFromDate(date)
                 }
             }
         }
