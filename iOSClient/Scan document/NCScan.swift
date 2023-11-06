@@ -185,7 +185,7 @@ class NCScan: UIViewController, NCScanCellCellDelegate {
         // TIP
         dismissTip()
 
-        NCDocumentCamera().openScannerDocument(viewController: self)
+        NCDocumentCamera.shared.openScannerDocument(viewController: self)
     }
 
     @IBAction func transferDown(sender: UIButton) {
