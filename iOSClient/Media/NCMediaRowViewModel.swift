@@ -84,7 +84,6 @@ struct ScaledThumbnail: Hashable {
                     }
 
                     queuer.addOperation(concurrentOperation)
-                    print(queuer.operationCount)
                 }
             }
         }

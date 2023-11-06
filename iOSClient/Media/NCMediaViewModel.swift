@@ -38,6 +38,12 @@ import LRUCache
         }
     }
 
+    private var isLoadingProcessingMetadata = false {
+        didSet {
+            updateLoadingMedia()
+        }
+    }
+
     @Published internal var isLoadingMetadata = true
 
     private let cache = NCImageCache.shared
@@ -151,7 +157,11 @@ import LRUCache
     }
 
     public func copyOrMoveMetadataInApp(metadatas: [tableMetadata]) {
-        NCActionCenter.shared.openSelectView(items: metadatas, indexPath: [])
+        isLoadingProcessingMetadata = true
+
+        NCActionCenter.shared.openSelectView(items: metadatas, indexPath: [], didCancel: {
+            self.isLoadingProcessingMetadata = false
+        })
 //        cancelSelection()
     }
 
@@ -177,6 +187,8 @@ import LRUCache
     }
 
     public func openIn(metadata: tableMetadata) {
+        isLoadingProcessingMetadata = true
+
         if NCUtilityFileSystem().fileProviderStorageExists(metadata) {
             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDownloadedFile, userInfo: ["ocId": metadata.ocId, "selector": NCGlobal.shared.selectorOpenIn, "error": NKError(), "account": metadata.account])
         } else {
@@ -188,6 +200,8 @@ import LRUCache
 //                hud.progress = Float(progress.fractionCompleted)
 //            } completion:
             { afError, error in
+                self.isLoadingProcessingMetadata = false
+
                 if error == .success || afError?.isExplicitlyCancelledError ?? false {
 //                    hud.dismiss()
                 } else {
@@ -200,6 +214,8 @@ import LRUCache
     }
 
     public func saveToPhotos(metadata: tableMetadata) {
+        isLoadingProcessingMetadata = true
+
         if let livePhoto = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata) {
             guard let appDelegate else { return }
             appDelegate.saveLivePhotoQueue.addOperation(NCOperationSaveLivePhoto(metadata: metadata, metadataMOV: livePhoto))
@@ -211,6 +227,9 @@ import LRUCache
             } progressHandler: { progress in
 //                hud.progress = Float(progress.fractionCompleted)
             } completion: { afError, error in
+
+                self.isLoadingProcessingMetadata = false
+
 //                if error == .success || afError?.isExplicitlyCancelledError ?? false {
 //                    hud.dismiss()
 //                } else {
@@ -227,6 +246,8 @@ import LRUCache
     }
 
     public func modify(metadata: tableMetadata) {
+        isLoadingProcessingMetadata = true
+
         if NCUtilityFileSystem().fileProviderStorageExists(metadata) {
             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDownloadedFile, userInfo: ["ocId": metadata.ocId, "selector": NCGlobal.shared.selectorLoadFileQuickLook, "error": NKError(), "account": metadata.account])
         } else {
@@ -236,6 +257,8 @@ import LRUCache
             } progressHandler: { progress in
 //                hud.progress = Float(progress.fractionCompleted)
             } completion: { afError, error in
+                self.isLoadingProcessingMetadata = false
+
 //                if error == .success || afError?.isExplicitlyCancelledError ?? false {
 //                    hud.dismiss()
 //                } else {
@@ -263,6 +286,8 @@ import LRUCache
     }
 
     public func delete(metadatas: [tableMetadata]) {
+        isLoadingProcessingMetadata = true
+
         Task {
             var error = NKError()
             var ocId: [String] = []
@@ -283,7 +308,11 @@ import LRUCache
     }
 
     public func copy(metadatas: [tableMetadata]) {
-        NCActionCenter.shared.copyPasteboard(pasteboardOcIds: metadatas.compactMap({ $0.ocId }))
+        isLoadingProcessingMetadata = true
+
+        NCActionCenter.shared.copyToPasteboard(pasteboardOcIds: metadatas.compactMap({ $0.ocId })) {
+            self.isLoadingProcessingMetadata = false
+        }
     }
 
 //    private func cancelSelection() {
@@ -292,7 +321,7 @@ import LRUCache
 //    }
 
     private func updateLoadingMedia() {
-        isLoadingMetadata = isLoadingNewMetadata || isLoadingOldMetadata
+        isLoadingMetadata = isLoadingNewMetadata || isLoadingOldMetadata || isLoadingProcessingMetadata
     }
 }
 
@@ -305,6 +334,8 @@ extension NCMediaViewModel {
 
         loadMediaFromDB()
 
+        isLoadingProcessingMetadata = false
+
         if error != .success {
             NCContentPresenter().showError(error: error)
         }
@@ -315,6 +346,8 @@ extension NCMediaViewModel {
               let error = userInfo["error"] as? NKError else { return }
 
         loadMediaFromDB()
+
+        isLoadingProcessingMetadata = false
 
         if error != .success {
             NCContentPresenter().showError(error: error)

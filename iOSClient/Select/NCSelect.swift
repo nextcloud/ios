@@ -26,6 +26,7 @@ import SwiftUI
 import NextcloudKit
 
 @objc protocol NCSelectDelegate {
+    @objc optional func dismissCancelled()
     @objc func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String, items: [Any], indexPath: [IndexPath], overwrite: Bool, copy: Bool, move: Bool)
 }
 
@@ -219,6 +220,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
     // MARK: ACTION
 
     @IBAction func actionCancel(_ sender: UIBarButtonItem) {
+        delegate?.dismissCancelled?()
         self.dismiss(animated: true, completion: nil)
     }
 
