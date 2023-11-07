@@ -540,10 +540,6 @@ class NCUtilityFileSystem: NSObject {
         }
         let resultsLocalFile = NCManageDatabase.shared.getResultsTableLocalFile(predicate: NSPredicate(format: "offline == false"), sorted: "lastOpeningDate", ascending: true)
 
-        func meetsRequirement(date: Date) -> Bool {
-            return date < minimumDate
-        }
-
         let manager = FileManager.default
         if let enumerator = manager.enumerator(at: url, includingPropertiesForKeys: [.isRegularFileKey], options: []) {
             for case let fileURL as URL in enumerator {
@@ -554,10 +550,10 @@ class NCUtilityFileSystem: NSObject {
                     // check directory offline
                     let filter = offlineDir.filter({ fileURL.path.hasPrefix($0)})
                     if !filter.isEmpty { continue }
-                    //
+                    // -----------------------
                     let folderURL = fileURL.deletingLastPathComponent()
                     let ocId = folderURL.lastPathComponent
-                    if let result = resultsLocalFile?.filter({ $0.ocId == ocId }).first, meetsRequirement(date: result.lastOpeningDate as Date) {
+                    if let result = resultsLocalFile?.filter({ $0.ocId == ocId }).first, (result.lastOpeningDate as Date) < minimumDate {
                         do {
                             try manager.removeItem(atPath: fileURL.path)
                         } catch { }
