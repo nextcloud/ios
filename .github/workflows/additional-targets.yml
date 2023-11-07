@@ -14,11 +14,11 @@ on:
 jobs:
   build-and-test:
     name: Build and Test
-    runs-on: macOS-latest
+    runs-on: macos-13
     if: github.event.pull_request.draft == false
     env:
       PROJECT: Nextcloud.xcodeproj
-      DESTINATION: platform=iOS Simulator,name=iPhone 14
+      DESTINATION: platform=iOS Simulator,name=iPhone 15
     steps:
     - name: Set env var
       run: echo "DEVELOPER_DIR=$(xcode-select --print-path)" >> $GITHUB_ENV
