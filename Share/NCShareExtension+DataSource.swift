@@ -133,7 +133,7 @@ extension NCShareExtension: UICollectionViewDataSource {
             cell.imageItem.image = NCImageCache.images.folder
         }
 
-        cell.labelInfo.text = CCUtility.dateDiff(metadata.date as Date)
+        cell.labelInfo.text = utility.dateDiff(metadata.date as Date)
 
         let lockServerUrl = utilityFileSystem.stringAppendServerUrl(metadata.serverUrl, addFileName: metadata.fileName)
         let tableDirectory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", activeAccount.account, lockServerUrl))

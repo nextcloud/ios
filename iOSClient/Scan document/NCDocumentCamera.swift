@@ -25,6 +25,10 @@ import Foundation
 import VisionKit
 
 class NCDocumentCamera: NSObject, VNDocumentCameraViewControllerDelegate {
+    static let shared: NCDocumentCamera = {
+        let instance = NCDocumentCamera()
+        return instance
+    }()
 
     var viewController: UIViewController?
     let utilityFileSystem = NCUtilityFileSystem()

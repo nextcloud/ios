@@ -150,7 +150,7 @@ extension NCTrashCellProtocol where Self: UICollectionViewCell {
         self.labelTitle.text = tableTrash.trashbinFileName
         self.labelTitle.textColor = .label
         if self is NCTrashListCell {
-            self.labelInfo?.text = CCUtility.dateDiff(tableTrash.date as Date)
+            self.labelInfo?.text = NCUtility().dateDiff(tableTrash.date as Date)
         } else {
             let dateFormatter = DateFormatter()
             dateFormatter.dateStyle = .short

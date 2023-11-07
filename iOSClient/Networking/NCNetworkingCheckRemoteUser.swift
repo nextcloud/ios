@@ -33,7 +33,10 @@ class NCNetworkingCheckRemoteUser {
               !token.isEmpty,
               let appDelegate = UIApplication.shared.delegate as? AppDelegate else { return }
 
-        NCNetworking.shared.cancel(inBackground: true)
+        NCNetworking.shared.cancelDataTask()
+        NCNetworking.shared.cancelDownloadTasks()
+        NCNetworking.shared.cancelUploadTasks()
+        NCNetworking.shared.cancelUploadBackgroundTask()
 
         if NCGlobal.shared.capabilityServerVersionMajor >= NCGlobal.shared.nextcloudVersion17 {
 

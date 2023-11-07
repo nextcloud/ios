@@ -34,43 +34,6 @@
 #pragma mark ===== Various =====
 #pragma --------------------------------------------------------------------------------------------
 
-+ (NSString *)dateDiff:(NSDate *) convertedDate
-{
-    NSDate *todayDate = [NSDate date];
-    double ti = [convertedDate timeIntervalSinceDate:todayDate];
-    ti = ti * -1;
-    if (ti < 60) {
-        return NSLocalizedString(@"_less_a_minute_", nil);
-    } else if (ti < 3600) {
-        int diff = round(ti / 60);
-        if (diff == 1) {
-            return NSLocalizedString(@"_a_minute_ago_", nil);
-        } else {
-            return [NSString stringWithFormat:NSLocalizedString(@"_minutes_ago_", nil), diff];
-        }
-    } else if (ti < 86400) {
-        int diff = round(ti / 60 / 60);
-        if (diff == 1) {
-            return NSLocalizedString(@"_an_hour_ago_", nil);
-        } else {
-            return[NSString stringWithFormat:NSLocalizedString(@"_hours_ago_", nil), diff];
-        }
-    } else if (ti < 86400 * 30) {
-        int diff = round(ti / 60 / 60 / 24);
-        if (diff == 1) {
-            return NSLocalizedString(@"_a_day_ago_", nil);
-        } else {
-            return[NSString stringWithFormat:NSLocalizedString(@"_days_ago_", nil), diff];
-        }
-    } else {
-        // Older than one month
-        NSDateFormatter *df = [[NSDateFormatter alloc] init];
-        [df setFormatterBehavior:NSDateFormatterBehavior10_4];
-        [df setDateStyle:NSDateFormatterMediumStyle];
-        return [df stringFromDate:convertedDate];
-    }
-}
-
 + (NSString *)createFileName:(NSString *)fileName fileDate:(NSDate *)fileDate fileType:(PHAssetMediaType)fileType keyFileName:(NSString *)keyFileName keyFileNameType:(NSString *)keyFileNameType keyFileNameOriginal:(NSString *)keyFileNameOriginal forcedNewFileName:(BOOL)forcedNewFileName
 {
     BOOL addFileNameType = NO;
@@ -171,30 +134,6 @@
     }
 
     return fileName;
-}
-
-+ (NSString *)getTitleSectionDate:(NSDate *)date
-{
-    NSString *title;
-    NSDate *today = [NSDate date];
-    NSDate *yesterday = [today dateByAddingTimeInterval: -86400.0];
-
-    if ([date isEqualToDate:[CCUtility datetimeWithOutTime:[NSDate distantPast]]]) {
-
-        title =  NSLocalizedString(@"_no_date_", nil);
-
-    } else {
-
-        title = [NSDateFormatter localizedStringFromDate:date dateStyle:NSDateFormatterLongStyle timeStyle:0];
-
-        if ([date isEqualToDate:[CCUtility datetimeWithOutTime:today]])
-            title = [NSString stringWithFormat:NSLocalizedString(@"_today_", nil)];
-
-        if ([date isEqualToDate:[CCUtility datetimeWithOutTime:yesterday]])
-            title = [NSString stringWithFormat:NSLocalizedString(@"_yesterday_", nil)];
-    }
-
-    return title;
 }
 
 + (NSString *)getMimeType:(NSString *)fileNameView
@@ -304,33 +243,6 @@
 #pragma mark ===== Third parts =====
 #pragma --------------------------------------------------------------------------------------------
 
-+ (NSString *)getExtension:(NSString*)fileName
-{
-    NSMutableArray *fileNameArray =[[NSMutableArray alloc] initWithArray: [fileName componentsSeparatedByCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"."]]];
-    NSString *extension = [NSString stringWithFormat:@"%@",[fileNameArray lastObject]];
-    extension = [extension uppercaseString];
-    //If the file has a ZIP extension obtain the previous one for check if it is a .pages.zip / .numbers.zip / .key.zip extension
-    if ([extension isEqualToString:@"ZIP"]) {
-        [fileNameArray removeLastObject];
-        NSString *secondExtension = [NSString stringWithFormat:@"%@",[fileNameArray lastObject]];
-        secondExtension = [secondExtension uppercaseString];
-        if ([secondExtension isEqualToString:@"PAGES"] || [secondExtension isEqualToString:@"NUMBERS"] || [secondExtension isEqualToString:@"KEY"]) {
-            extension = [NSString stringWithFormat:@"%@.%@",secondExtension,extension];
-            return extension;
-        }
-    }
-    return extension;
-}
-
-+ (NSDate *)datetimeWithOutTime:(NSDate *)datDate
-{
-    if (datDate == nil) return nil;
-
-    NSDateComponents* comps = [[NSCalendar currentCalendar] components:NSCalendarUnitYear|NSCalendarUnitMonth|NSCalendarUnitDay fromDate:datDate];
-    datDate = [[NSCalendar currentCalendar] dateFromComponents:comps];
-
-    return datDate;
-}
 
 + (NSDate *)getATime:(const char *)path
 {

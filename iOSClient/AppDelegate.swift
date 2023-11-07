@@ -62,6 +62,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     let unifiedSearchQueue = Queuer(name: "unifiedSearchQueue", maxConcurrentOperationCount: 1, qualityOfService: .default)
     let saveLivePhotoQueue = Queuer(name: "saveLivePhotoQueue", maxConcurrentOperationCount: 1, qualityOfService: .default)
 
+    var isAppRefresh: Bool = false
+    var isAppProcessing: Bool = false
+
     var isUiTestingEnabled: Bool {
         return ProcessInfo.processInfo.arguments.contains("UI_TESTING")
     }
@@ -278,7 +281,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
         scheduleAppRefresh()
         scheduleAppProcessing()
-        NCNetworking.shared.cancel(inBackground: false)
+        NCNetworking.shared.cancelDataTask()
+        NCNetworking.shared.cancelDownloadTasks()
         presentPasscode { }
 
         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterApplicationDidEnterBackground)
@@ -286,8 +290,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
     // L'applicazione terminerà
     func applicationWillTerminate(_ application: UIApplication) {
-
-        NCNetworking.shared.cancel(inBackground: false)
 
         if UIApplication.shared.backgroundRefreshStatus == .available {
 
@@ -341,11 +343,19 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     func handleAppRefresh(_ task: BGTask) {
         scheduleAppRefresh()
 
+        if isAppProcessing {
+            NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Processing task already in progress, abort.")
+            task.setTaskCompleted(success: true)
+            return
+        }
+        isAppRefresh = true
+
         NCAutoUpload.shared.initAutoUpload(viewController: nil) { items in
             NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Refresh task auto upload with \(items) uploads")
             NCNetworkingProcessUpload.shared.start { items in
                 NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Refresh task upload process with \(items) uploads")
                 task.setTaskCompleted(success: true)
+                self.isAppRefresh = false
             }
         }
     }
@@ -353,11 +363,19 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     func handleProcessingTask(_ task: BGTask) {
         scheduleAppProcessing()
 
+        if isAppRefresh {
+            NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Refresh task already in progress, abort.")
+            task.setTaskCompleted(success: true)
+            return
+        }
+        isAppProcessing = true
+
         NCAutoUpload.shared.initAutoUpload(viewController: nil) { items in
             NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Processing task auto upload with \(items) uploads")
             NCNetworkingProcessUpload.shared.start { items in
                 NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Processing task upload process with \(items) uploads")
                 task.setTaskCompleted(success: true)
+                self.isAppProcessing = false
             }
         }
     }
@@ -570,7 +588,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
     @objc func changeAccount(_ account: String, userProfile: NKUserProfile?) {
 
-        NCNetworking.shared.cancel(inBackground: false)
+        NCNetworking.shared.cancelDataTask()
+        NCNetworking.shared.cancelDownloadTasks()
+        NCNetworking.shared.cancelUploadTasks()
+
         guard let tableAccount = NCManageDatabase.shared.setAccountActive(account) else { return }
 
         self.account = tableAccount.account
@@ -868,7 +889,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
                 case NCGlobal.shared.actionScanDocument:
 
-                    NCDocumentCamera().openScannerDocument(viewController: rootViewController)
+                    NCDocumentCamera.shared.openScannerDocument(viewController: rootViewController)
 
                 case NCGlobal.shared.actionTextDocument:
 

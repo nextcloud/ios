@@ -159,7 +159,7 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmpty
 
         cell.date.text = DateFormatter.localizedString(from: notification.date as Date, dateStyle: .medium, timeStyle: .medium)
         cell.notification = notification
-        cell.date.text = CCUtility.dateDiff(notification.date as Date)
+        cell.date.text = utility.dateDiff(notification.date as Date)
         cell.date.textColor = .gray
         cell.subject.text = notification.subject
         cell.subject.textColor = .label

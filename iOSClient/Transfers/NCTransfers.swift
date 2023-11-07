@@ -107,7 +107,10 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
         alertController.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel, handler: nil))
         alertController.addAction(UIAlertAction(title: NSLocalizedString("_cancel_all_task_", comment: ""), style: .default, handler: { _ in
             Task {
-                await NCNetworking.shared.cancel(inBackground: true)
+                NCNetworking.shared.cancelDataTask()
+                NCNetworking.shared.cancelDownloadTasks()
+                NCNetworking.shared.cancelUploadTasks()
+                NCNetworking.shared.cancelUploadBackgroundTask()
             }
         }))
 
@@ -196,7 +199,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
         } else {
             cell.imageItem.image = UIImage(named: "file")
         }
-        cell.labelInfo.text = CCUtility.dateDiff(metadata.date as Date) + " · " + utilityFileSystem.transformedSize(metadata.size)
+        cell.labelInfo.text = utility.dateDiff(metadata.date as Date) + " · " + utilityFileSystem.transformedSize(metadata.size)
         if metadata.status == NCGlobal.shared.metadataStatusDownloading || metadata.status == NCGlobal.shared.metadataStatusUploading {
             cell.progressView.isHidden = false
         } else {

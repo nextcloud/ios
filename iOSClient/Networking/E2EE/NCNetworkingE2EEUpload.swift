@@ -201,7 +201,7 @@ class NCNetworkingE2EEUpload: NSObject {
 
         if metadata.chunk > 0 {
             return await withCheckedContinuation({ continuation in
-                NCNetworking.shared.uploadChunkFile(metadata: metadata, withUploadComplete: false, addCustomHeaders: ["e2e-token": e2eToken]) {
+                NCNetworking.shared.uploadChunkFile(metadata: metadata, withUploadComplete: false, customHeaders: ["e2e-token": e2eToken]) {
 #if !EXTENSION
                     DispatchQueue.main.async { self.hud.dismiss() }
 #endif
@@ -217,7 +217,7 @@ class NCNetworkingE2EEUpload: NSObject {
 
             let fileNameLocalPath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileName)
             return await withCheckedContinuation({ continuation in
-                NCNetworking.shared.uploadFile(metadata: metadata, fileNameLocalPath: fileNameLocalPath, withUploadComplete: false, addCustomHeaders: ["e2e-token": e2eToken]) {
+                NCNetworking.shared.uploadFile(metadata: metadata, fileNameLocalPath: fileNameLocalPath, withUploadComplete: false, customHeaders: ["e2e-token": e2eToken]) {
 #if !EXTENSION
                     DispatchQueue.main.async { self.hud.dismiss() }
 #endif

@@ -52,15 +52,17 @@ extension NCMedia {
                 )
             }
 
+            actions.append(.seperator(order: 0))
+
             actions.append(
                 NCMenuAction(
-                    title: NSLocalizedString("_media_viewimage_hide_", comment: ""),
+                    title: NSLocalizedString("_media_viewimage_show_", comment: ""),
                     icon: utility.loadImage(named: "photo"),
-                    selected: filterClassTypeImage,
+                    selected: showOnlyImages,
                     on: true,
                     action: { _ in
-                        self.filterClassTypeImage = !self.filterClassTypeImage
-                        self.filterClassTypeVideo = false
+                        self.showOnlyImages = true
+                        self.showOnlyVideos = false
                         self.reloadDataSourceWithCompletion { _ in }
                     }
                 )
@@ -68,17 +70,33 @@ extension NCMedia {
 
             actions.append(
                 NCMenuAction(
-                    title: NSLocalizedString("_media_viewvideo_hide_", comment: ""),
+                    title: NSLocalizedString("_media_viewvideo_show_", comment: ""),
                     icon: utility.loadImage(named: "video"),
-                    selected: filterClassTypeVideo,
+                    selected: showOnlyVideos,
                     on: true,
                     action: { _ in
-                        self.filterClassTypeVideo = !self.filterClassTypeVideo
-                        self.filterClassTypeImage = false
+                        self.showOnlyImages = false
+                        self.showOnlyVideos = true
                         self.reloadDataSourceWithCompletion { _ in }
                     }
                 )
             )
+
+            actions.append(
+                NCMenuAction(
+                    title: NSLocalizedString("_media_show_all_", comment: ""),
+                    icon: utility.loadImage(named: "photo.on.rectangle.angled"),
+                    selected: !showOnlyImages && !showOnlyVideos,
+                    on: true,
+                    action: { _ in
+                        self.showOnlyImages = false
+                        self.showOnlyVideos = false
+                        self.reloadDataSourceWithCompletion { _ in }
+                    }
+                )
+            )
+
+            actions.append(.seperator(order: 0))
 
             actions.append(
                 NCMenuAction(
