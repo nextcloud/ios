@@ -44,11 +44,6 @@ jobs:
       run: wget "https://raw.githubusercontent.com/firebase/quickstart-ios/master/mock-GoogleService-Info.plist" -O GoogleService-Info.plist
     - name: Install docker
       run: |
-        # Workaround for https://github.com/actions/runner-images/issues/8104
-        brew remove --ignore-dependencies qemu
-        curl -o ./qemu.rb https://raw.githubusercontent.com/Homebrew/homebrew-core/dc0669eca9479e9eeb495397ba3a7480aaa45c2e/Formula/qemu.rb
-        brew install ./qemu.rb
-
         brew install docker
         colima start
     - name: Create docker test server and export enviroment variables
