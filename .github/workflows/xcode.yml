@@ -44,6 +44,7 @@ jobs:
       run: wget "https://raw.githubusercontent.com/firebase/quickstart-ios/master/mock-GoogleService-Info.plist" -O GoogleService-Info.plist
     - name: Install docker
       run: |
+        brew install colima
         brew install docker
         colima start
     - name: Create docker test server and export enviroment variables
