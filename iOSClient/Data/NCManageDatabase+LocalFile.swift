@@ -208,22 +208,25 @@ extension NCManageDatabase {
         return []
     }
 
-    func setTableLocalLastOpeningDate(metadata: tableMetadata) {
+    func setLastOpeningDate(metadata: tableMetadata) {
 
         do {
             let realm = try Realm()
-            if let result = realm.objects(tableLocalFile.self).filter("ocId == %@", metadata.ocId).first {
-                result.lastOpeningDate = NSDate()
-            } else {
-                let addObject = tableLocalFile()
-                addObject.account = metadata.account
-                addObject.etag = metadata.etag
-                addObject.exifDate = NSDate()
-                addObject.exifLatitude = "-1"
-                addObject.exifLongitude = "-1"
-                addObject.ocId = metadata.ocId
-                addObject.fileName = metadata.fileName
-                realm.add(addObject, update: .all)
+            try realm.write {
+                if let result = realm.objects(tableLocalFile.self).filter("ocId == %@", metadata.ocId).first {
+                    result.lastOpeningDate = NSDate()
+                } else {
+                    let addObject = tableLocalFile()
+                    addObject.account = metadata.account
+                    addObject.etag = metadata.etag
+                    addObject.exifDate = NSDate()
+                    addObject.exifLatitude = "-1"
+                    addObject.exifLongitude = "-1"
+                    addObject.ocId = metadata.ocId
+                    addObject.fileName = metadata.fileName
+                    addObject.lastOpeningDate = NSDate()
+                    realm.add(addObject, update: .all)
+                }
             }
         } catch let error {
             NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
