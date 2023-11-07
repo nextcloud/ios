@@ -88,6 +88,9 @@ class NCViewer: NSObject {
         // DOCUMENTS
         if metadata.classFile == NKCommon.TypeClassFile.document.rawValue {
 
+            // Set Last Opening Date
+            NCManageDatabase.shared.setLastOpeningDate(metadata: metadata)
+
             // PDF
             if metadata.contentType == "application/pdf" || metadata.contentType == "com.adobe.pdf" {
 
