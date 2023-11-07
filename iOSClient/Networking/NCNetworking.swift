@@ -568,7 +568,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
             case NKError.chunkFilesNull:
                 NCManageDatabase.shared.deleteChunks(account: account, ocId: metadata.ocId, directory: directory)
                 NCContentPresenter().messageNotification("_chunk_files_null_", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: .error)
-            case NKError.chunkFileNull: // (cancel)
+            case NKError.chunkFileNull: // (fileSize == 0)
                 NCManageDatabase.shared.deleteChunks(account: account, ocId: metadata.ocId, directory: directory)
             case NKError.chunkFileUpload:
                 if let afError {
