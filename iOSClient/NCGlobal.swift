@@ -219,6 +219,7 @@ class NCGlobal: NSObject {
     @objc let errorPreconditionFailed: Int          = 412
     @objc let errorQuota: Int                       = 507
     @objc let errorUnauthorized997: Int             = 997
+    @objc let errorExplicitlyCancelled: Int         = -999
     @objc let errorConnectionLost: Int              = -1005
     @objc let errorNetworkNotAvailable: Int         = -1009
     @objc let errorBadServerResponse: Int           = -1011

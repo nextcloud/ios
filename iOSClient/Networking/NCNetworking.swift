@@ -332,16 +332,11 @@ class NCNetworking: NSObject, NKCommonDelegate {
             self.downloadRequest.removeValue(forKey: fileNameLocalPath)
 
             var sessionTaskFailedCode = 0
-            if let afError = afError?.asAFError {
-                switch afError {
-                case .sessionTaskFailed(let sessionError):
-                    let nsError = sessionError as NSError
-                    sessionTaskFailedCode = nsError.code
-                default: break
-                }
+            if let error = NextcloudKit.shared.nkCommonInstance.getSessionErrorFromAFError(afError) {
+                sessionTaskFailedCode = error.code
             }
 
-            if afError?.isExplicitlyCancelledError ?? false || sessionTaskFailedCode == -999 {
+            if afError?.isExplicitlyCancelledError ?? false || sessionTaskFailedCode == NCGlobal.shared.errorExplicitlyCancelled {
 
                 NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId, session: "", sessionError: "", sessionSelector: selector, sessionTaskIdentifier: 0, status: NCGlobal.shared.metadataStatusNormal, errorCode: 0)
                 NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDownloadCancelFile, userInfo: ["ocId": metadata.ocId, "serverUrl": metadata.serverUrl, "account": metadata.account])
@@ -552,10 +547,14 @@ class NCNetworking: NSObject, NKCommonDelegate {
 
         } completion: { account, _, file, afError, error in
 
+            var sessionTaskFailedCode = 0
             self.uploadRequest.removeValue(forKey: fileNameLocalPath)
 
             if error == .success {
                 NCManageDatabase.shared.deleteChunks(account: account, ocId: metadata.ocId, directory: directory)
+            }
+            if let error = NextcloudKit.shared.nkCommonInstance.getSessionErrorFromAFError(afError) {
+                sessionTaskFailedCode = error.code
             }
 
             switch error.errorCode {
@@ -572,8 +571,12 @@ class NCNetworking: NSObject, NKCommonDelegate {
             case NKError.chunkFileNull: // (cancel)
                 NCManageDatabase.shared.deleteChunks(account: account, ocId: metadata.ocId, directory: directory)
             case NKError.chunkFileUpload:
-                if let afError, !afError.isExplicitlyCancelledError {
-                    NCContentPresenter().messageNotification("_error_", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: .error)
+                if let afError {
+                    if afError.isExplicitlyCancelledError || sessionTaskFailedCode == NCGlobal.shared.errorExplicitlyCancelled {
+                        NCManageDatabase.shared.deleteChunks(account: account, ocId: metadata.ocId, directory: directory)
+                    } else {
+                        NCContentPresenter().messageNotification("_error_", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: .error)
+                    }
                 }
             case NKError.chunkMoveFile:
                 NCManageDatabase.shared.deleteChunks(account: account, ocId: metadata.ocId, directory: directory)
