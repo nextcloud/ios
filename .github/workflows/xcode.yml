@@ -18,7 +18,7 @@ jobs:
     if: github.event.pull_request.draft == false
     env:
       PROJECT: Nextcloud.xcodeproj
-      DESTINATION: platform=iOS Simulator,name=iPhone 15
+      DESTINATION: platform=iOS Simulator,name=iPhone 14
       SCHEME: Nextcloud
     steps:
     - name: Set env var
