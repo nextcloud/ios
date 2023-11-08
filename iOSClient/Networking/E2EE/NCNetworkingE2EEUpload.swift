@@ -201,14 +201,17 @@ class NCNetworkingE2EEUpload: NSObject {
 
         if metadata.chunk > 0 {
             return await withCheckedContinuation({ continuation in
-                NCNetworking.shared.uploadChunkFile(metadata: metadata, withUploadComplete: false, customHeaders: ["e2e-token": e2eToken]) {
-#if !EXTENSION
+                NCNetworking.shared.uploadChunkFile(metadata: metadata, withUploadComplete: false, customHeaders: ["e2e-token": e2eToken]) { num in
+
+                } counterChunk: { counter in
+
+                } start: {
                     DispatchQueue.main.async { self.hud.dismiss() }
-#endif
                     uploadE2EEDelegate?.start()
-                } progressHandler: { totalBytesExpected, totalBytes, fractionCompleted in
+                } progressHandler: {totalBytesExpected, totalBytes, fractionCompleted in
                     uploadE2EEDelegate?.uploadE2EEProgress(totalBytesExpected, totalBytes, fractionCompleted)
                 } completion: { _, file, afError, error in
+                    DispatchQueue.main.async { self.hud.dismiss() }
                     continuation.resume(returning: (ocId: file?.ocId, etag: file?.etag, date: file?.date, afError: afError, error: error))
                 }
             })
@@ -218,9 +221,7 @@ class NCNetworkingE2EEUpload: NSObject {
             let fileNameLocalPath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileName)
             return await withCheckedContinuation({ continuation in
                 NCNetworking.shared.uploadFile(metadata: metadata, fileNameLocalPath: fileNameLocalPath, withUploadComplete: false, customHeaders: ["e2e-token": e2eToken]) {
-#if !EXTENSION
                     DispatchQueue.main.async { self.hud.dismiss() }
-#endif
                     uploadE2EEDelegate?.start()
                 } progressHandler: { totalBytesExpected, totalBytes, fractionCompleted in
                     uploadE2EEDelegate?.uploadE2EEProgress(totalBytesExpected, totalBytes, fractionCompleted)
