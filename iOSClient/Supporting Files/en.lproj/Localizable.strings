@@ -216,6 +216,7 @@
 "_keep_both_for_all_action_title_" = "Keep both for all";
 "_more_action_title_" = "More Details";
 "_wait_file_preparation_" = "Please wait, upload file in preparation";
+"_wait_file_encryption_"  = "Please wait, file encryption";
 
 /* Background of the file listing view */
 "_use_as_background_"       = "Use it as a background";

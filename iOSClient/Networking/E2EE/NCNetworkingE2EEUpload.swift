@@ -134,7 +134,7 @@ class NCNetworkingE2EEUpload: NSObject {
         //
         if let hudView {
             DispatchQueue.main.async {
-                self.hud.textLabel.text = NSLocalizedString("_wait_file_preparation_", comment: "")
+                self.hud.textLabel.text = NSLocalizedString("_wait_file_encryption_", comment: "")
                 self.hud.show(in: hudView)
             }
         }
