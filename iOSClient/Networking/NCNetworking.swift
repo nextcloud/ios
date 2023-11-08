@@ -399,7 +399,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
         if metadata.isDirectoryE2EE {
 #if !EXTENSION_FILE_PROVIDER_EXTENSION && !EXTENSION_WIDGET
             Task {
-                let error = await NCNetworkingE2EEUpload().upload(metadata: metadata, uploadE2EEDelegate: uploadE2EEDelegate)
+                let error = await NCNetworkingE2EEUpload().upload(metadata: metadata, uploadE2EEDelegate: uploadE2EEDelegate, hudView: hudView)
                 completion(error)
             }
 #endif
@@ -421,9 +421,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
             uploadChunkFile(metadata: metadata) { num in
                 numChunks = num
             } counterChunk: { counter in
-                DispatchQueue.main.async {
-                    hud.progress = Float(counter) / Float(numChunks)
-                }
+                DispatchQueue.main.async { hud.progress = Float(counter) / Float(numChunks) }
             } start: {
                 DispatchQueue.main.async { hud.dismiss() }
             } completion: { _, _, _, error in
