@@ -408,7 +408,7 @@ extension NCManageDatabase {
         completion(metadataFolder, metadataFolders, metadataOutput)
     }
 
-    func createMetadata(account: String, user: String, userId: String, fileName: String, fileNameView: String, ocId: String, serverUrl: String, urlBase: String, url: String, contentType: String, isLivePhoto: Bool = false, isUrl: Bool = false, name: String = NCGlobal.shared.appName, subline: String? = nil, iconName: String? = nil, iconUrl: String? = nil) -> tableMetadata {
+    func createMetadata(account: String, user: String, userId: String, fileName: String, fileNameView: String, ocId: String, serverUrl: String, urlBase: String, url: String, contentType: String, isLivePhoto: Bool = false, livePhotoFile: String = "", isUrl: Bool = false, name: String = NCGlobal.shared.appName, subline: String? = nil, iconName: String? = nil, iconUrl: String? = nil) -> tableMetadata {
 
         let metadata = tableMetadata()
         if isUrl {
@@ -443,7 +443,6 @@ extension NCManageDatabase {
         metadata.etag = ocId
         metadata.fileName = fileName
         metadata.fileNameView = fileName
-        metadata.livePhoto = isLivePhoto
         metadata.name = name
         metadata.ocId = ocId
         metadata.permissions = "RGDNVW"
@@ -458,6 +457,10 @@ extension NCManageDatabase {
         if !metadata.urlBase.isEmpty, metadata.serverUrl.hasPrefix(metadata.urlBase) {
             metadata.path = String(metadata.serverUrl.dropFirst(metadata.urlBase.count)) + "/"
         }
+
+        // LIVE PHOTO
+        metadata.livePhoto = isLivePhoto
+        metadata.livePhotoFile = livePhotoFile
 
         return metadata
     }

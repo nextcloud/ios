@@ -104,6 +104,7 @@ class NCAutoUpload: NSObject {
             for asset in assets {
 
                 var livePhoto = false
+                var livePhotoFile = ""
                 var session: String = ""
                 let dateFormatter = DateFormatter()
                 let assetDate = asset.creationDate ?? Date()
@@ -119,6 +120,7 @@ class NCAutoUpload: NSObject {
 
                 if asset.mediaSubtypes.contains(.photoLive), NCKeychain().livePhoto {
                     livePhoto = true
+                    livePhotoFile = (fileName as NSString).deletingPathExtension + ".mov"
                 }
 
                 if selector == NCGlobal.shared.selectorUploadAutoUploadAll {
@@ -160,7 +162,7 @@ class NCAutoUpload: NSObject {
                         NCManageDatabase.shared.addPhotoLibrary([asset], account: account.account)
                     }
                 } else {
-                    let metadata = NCManageDatabase.shared.createMetadata(account: account.account, user: account.user, userId: account.userId, fileName: fileName, fileNameView: fileName, ocId: NSUUID().uuidString, serverUrl: serverUrl, urlBase: account.urlBase, url: "", contentType: "", isLivePhoto: livePhoto)
+                    let metadata = NCManageDatabase.shared.createMetadata(account: account.account, user: account.user, userId: account.userId, fileName: fileName, fileNameView: fileName, ocId: NSUUID().uuidString, serverUrl: serverUrl, urlBase: account.urlBase, url: "", contentType: "", isLivePhoto: livePhoto, livePhotoFile: livePhotoFile)
                     metadata.assetLocalIdentifier = asset.localIdentifier
                     metadata.session = session
                     metadata.sessionSelector = selector
