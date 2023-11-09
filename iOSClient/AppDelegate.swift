@@ -738,7 +738,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         let passcodeViewController = TOPasscodeViewController(passcodeType: .sixDigits, allowCancel: false)
         passcodeViewController.delegate = self
         passcodeViewController.keypadButtonShowLettering = false
-        if NCKeychain().touchFaceID, laContext.canEvaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, error: &error) {
+        if NCKeychain().touchFaceID,
+           laContext.canEvaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, error: &error),
+           NCKeychain().passcodeCounterFail < 3 {
             if error == nil {
                 if laContext.biometryType == .faceID {
                     passcodeViewController.biometryType = .faceID
@@ -752,6 +754,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
         // show passcode on top of privacy window
         privacyProtectionWindow?.rootViewController?.present(passcodeViewController, animated: true, completion: {
+            if NCKeychain().passcodeCounterFail >= 3 {
+                self.passcodeAlert(passcodeViewController)
+            }
             completion()
         })
     }
@@ -765,6 +770,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
               NCKeychain().touchFaceID,
               NCKeychain().passcode != nil,
               NCKeychain().requestPasscodeAtStart,
+              NCKeychain().passcodeCounterFail < 3,
               let passcodeViewController = privacyProtectionWindow?.rootViewController?.presentedViewController as? TOPasscodeViewController
         else { return }
 
@@ -773,6 +779,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                 if success {
                     DispatchQueue.main.async {
                         passcodeViewController.dismiss(animated: true) {
+                            NCKeychain().passcodeCounterFail = 0
                             self.hidePrivacyProtectionWindow()
                             self.requestAccount()
                         }
@@ -785,6 +792,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     func didInputCorrectPasscode(in passcodeViewController: TOPasscodeViewController) {
         DispatchQueue.main.async {
             passcodeViewController.dismiss(animated: true) {
+                NCKeychain().passcodeCounterFail = 0
                 self.hidePrivacyProtectionWindow()
                 self.requestAccount()
             }
@@ -793,12 +801,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
     func passcodeViewController(_ passcodeViewController: TOPasscodeViewController, isCorrectCode code: String) -> Bool {
         if code == NCKeychain().passcode {
-            NCKeychain().passcodeCounterFail = 0
             return true
         } else {
             NCKeychain().passcodeCounterFail += 1
             if NCKeychain().passcodeCounterFail >= 3 {
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) { self.passcodeAlert(passcodeViewController) }
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { self.passcodeAlert(passcodeViewController) }
             }
             return false
         }
@@ -809,6 +816,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     }
 
     func passcodeAlert(_ passcodeViewController: TOPasscodeViewController) {
+        passcodeViewController.biometricButton.isHidden = true
         let alertController = UIAlertController(title: NSLocalizedString("_passcode_counter_fail_", comment: ""), message: nil, preferredStyle: .alert)
         passcodeViewController.present(alertController, animated: true, completion: { })
 
