@@ -659,6 +659,12 @@ class NCNetworking: NSObject, NKCommonDelegate {
 
         if error == .success, let ocId = ocId, size == metadata.size {
 
+            //TODO: SET SERVER LIVEPHOTO
+            let serverUrlfileNamePath = metadata.urlBase + metadata.path + metadata.fileName
+            NextcloudKit.shared.setLivephoto(serverUrlfileNamePath: serverUrlfileNamePath, livePhotoFile: metadata.livePhotoFile) { _, error in
+                print(error)
+            }
+
             let metadata = tableMetadata.init(value: metadata)
 
             metadata.uploadDate = date ?? NSDate()
