@@ -816,6 +816,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     }
 
     func passcodeAlert(_ passcodeViewController: TOPasscodeViewController) {
+
         passcodeViewController.biometricButton.isHidden = true
         let alertController = UIAlertController(title: NSLocalizedString("_passcode_counter_fail_", comment: ""), message: nil, preferredStyle: .alert)
         passcodeViewController.present(alertController, animated: true, completion: { })
