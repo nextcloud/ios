@@ -54,6 +54,31 @@ import KeychainAccess
         }
     }
 
+    var passcodeCounterFail: Int {
+        get {
+            if let value = try? keychain.get("passcodeCounterFail"), let result = Int(value) {
+                return result
+            }
+            return 0
+        }
+        set {
+            if newValue == 0 { passcodeSecondsFail = 1 }
+            keychain["passcodeCounterFail"] = String(newValue)
+        }
+    }
+
+    var passcodeSecondsFail: Int {
+        get {
+            if let value = try? keychain.get("passcodeSecondsFail"), let result = Int(value) {
+                return result
+            }
+            return 1
+        }
+        set {
+            keychain["passcodeSecondsFail"] = String(newValue)
+        }
+    }
+
     @objc var requestPasscodeAtStart: Bool {
         get {
             let keychainOLD = Keychain(service: "Crypto Cloud")

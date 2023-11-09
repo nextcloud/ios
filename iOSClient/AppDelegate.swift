@@ -792,11 +792,36 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     }
 
     func passcodeViewController(_ passcodeViewController: TOPasscodeViewController, isCorrectCode code: String) -> Bool {
-        return code == NCKeychain().passcode
+        if code == NCKeychain().passcode {
+            NCKeychain().passcodeCounterFail = 0
+            return true
+        } else {
+            NCKeychain().passcodeCounterFail += 1
+            if NCKeychain().passcodeCounterFail >= 3 {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) { self.passcodeAlert(passcodeViewController) }
+            }
+            return false
+        }
     }
 
     func didPerformBiometricValidationRequest(in passcodeViewController: TOPasscodeViewController) {
         enableTouchFaceID()
+    }
+
+    func passcodeAlert(_ passcodeViewController: TOPasscodeViewController) {
+        let alertController = UIAlertController(title: NSLocalizedString("_passcode_counter_fail_", comment: ""), message: nil, preferredStyle: .alert)
+        passcodeViewController.present(alertController, animated: true, completion: { })
+
+        var seconds = NCKeychain().passcodeSecondsFail * 10
+        _ = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { timer in
+            alertController.message = "\(seconds) " + NSLocalizedString("_seconds_", comment: "")
+            seconds -= 1
+            if seconds < 0 {
+                NCKeychain().passcodeSecondsFail += 1
+                timer.invalidate()
+                alertController.dismiss(animated: true)
+            }
+        }
     }
 
     // MARK: - Privacy Protection
@@ -1025,17 +1050,14 @@ extension AppDelegate: NCAudioRecorderViewControllerDelegate {
 
     func didFinishRecording(_ viewController: NCAudioRecorderViewController, fileName: String) {
 
-        guard
-            let navigationController = UIStoryboard(name: "NCCreateFormUploadVoiceNote", bundle: nil).instantiateInitialViewController() as? UINavigationController,
-                let viewController = navigationController.topViewController as? NCCreateFormUploadVoiceNote
-        else { return }
+        guard let navigationController = UIStoryboard(name: "NCCreateFormUploadVoiceNote", bundle: nil).instantiateInitialViewController() as? UINavigationController,
+              let viewController = navigationController.topViewController as? NCCreateFormUploadVoiceNote else { return }
         navigationController.modalPresentationStyle = .formSheet
         viewController.setup(serverUrl: activeServerUrl, fileNamePath: NSTemporaryDirectory() + fileName, fileName: fileName)
         window?.rootViewController?.present(navigationController, animated: true)
     }
 
-    func didFinishWithoutRecording(_ viewController: NCAudioRecorderViewController, fileName: String) {
-    }
+    func didFinishWithoutRecording(_ viewController: NCAudioRecorderViewController, fileName: String) { }
 }
 
 extension AppDelegate: NCCreateFormUploadConflictDelegate {
