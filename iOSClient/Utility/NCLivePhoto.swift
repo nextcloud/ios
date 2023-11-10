@@ -470,7 +470,6 @@ fileprivate extension AVAsset {
 
 extension NCLivePhoto {
 
-
     func setLivephoto(metadata: tableMetadata) {
 
         livePhotoFile = metadata.livePhotoFile
