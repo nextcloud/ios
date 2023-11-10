@@ -754,7 +754,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
         // show passcode on top of privacy window
         privacyProtectionWindow?.rootViewController?.present(passcodeViewController, animated: true, completion: {
-            if NCKeychain().passcodeCounterFail >= 3 {
+            if NCKeychain().resetAppCounterFail >= NCKeychain().passcodeCounterFail {
+                self.passcodeResetApp(passcodeViewController)
+            } else if NCKeychain().passcodeCounterFail >= 3 {
                 self.passcodeAlert(passcodeViewController)
             }
             completion()
@@ -804,7 +806,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             return true
         } else {
             NCKeychain().passcodeCounterFail += 1
-            if NCKeychain().passcodeCounterFail >= 3 {
+            if NCKeychain().resetAppCounterFail >= NCKeychain().passcodeCounterFail {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { self.passcodeResetApp(passcodeViewController) }
+            } else if NCKeychain().passcodeCounterFail >= 3 {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { self.passcodeAlert(passcodeViewController) }
             }
             return false
@@ -821,7 +825,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         let alertController = UIAlertController(title: NSLocalizedString("_passcode_counter_fail_", comment: ""), message: nil, preferredStyle: .alert)
         passcodeViewController.present(alertController, animated: true, completion: { })
 
-        var seconds = NCKeychain().passcodeSecondsFail * 10
+        var seconds = NCKeychain().passcodeSecondsFail * 30
         _ = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { timer in
             alertController.message = "\(seconds) " + NSLocalizedString("_seconds_", comment: "")
             seconds -= 1
@@ -830,6 +834,62 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                 timer.invalidate()
                 alertController.dismiss(animated: true)
             }
+        }
+    }
+
+    func passcodeResetApp(_ passcodeViewController: TOPasscodeViewController) {
+
+        let alertController = UIAlertController(title: NSLocalizedString("_failes_attemps_reset_", comment: ""), message: nil, preferredStyle: .alert)
+        passcodeViewController.present(alertController, animated: true, completion: { })
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + 4) {
+            self.resetApplication()
+        }
+    }
+
+    // MARK: - Remove / Reset App
+
+    @objc func removeAllSettings() {
+
+        let utilityFileSystem = NCUtilityFileSystem()
+
+        URLCache.shared.memoryCapacity = 0
+        URLCache.shared.diskCapacity = 0
+
+        utilityFileSystem.removeGroupDirectoryProviderStorage()
+        utilityFileSystem.removeGroupLibraryDirectory()
+        utilityFileSystem.removeDocumentsDirectory()
+        utilityFileSystem.removeTemporaryDirectory()
+
+        utilityFileSystem.createDirectoryStandard()
+
+        NCKeychain().removeAll()
+        NCManageDatabase.shared.clearDatabase(account: nil, removeAccount: true)
+    }
+
+    @objc func resetApplication() {
+
+        let utilityFileSystem = NCUtilityFileSystem()
+
+        NCNetworking.shared.cancelDataTask()
+        NCNetworking.shared.cancelDownloadTasks()
+        NCNetworking.shared.cancelUploadTasks()
+        NCNetworking.shared.cancelUploadBackgroundTask()
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+
+            URLCache.shared.memoryCapacity = 0
+            URLCache.shared.diskCapacity = 0
+
+            utilityFileSystem.removeGroupDirectoryProviderStorage()
+            utilityFileSystem.removeGroupApplicationSupport()
+            utilityFileSystem.removeDocumentsDirectory()
+            utilityFileSystem.removeTemporaryDirectory()
+
+            NCKeychain().removeAll()
+            NCManageDatabase.shared.removeDB()
+
+            exit(0)
         }
     }
 

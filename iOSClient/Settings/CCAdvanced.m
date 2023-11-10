@@ -455,31 +455,7 @@
     UIAlertController *alertController = [UIAlertController alertControllerWithTitle:@"" message:NSLocalizedString(@"_want_exit_", nil) preferredStyle:UIAlertControllerStyleActionSheet];
     
     [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_ok_", nil) style:UIAlertActionStyleDestructive handler:^(UIAlertAction *action) {
-                
-        [[NCNetworking shared] cancelDataTask];
-        [[NCNetworking shared] cancelDownloadTasks];
-        [[NCNetworking shared] cancelUploadTasks];
-        [[NCNetworking shared] cancelUploadBackgroundTask];
-
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
-
-            NCUtilityFileSystem *ufs = [[NCUtilityFileSystem alloc] init];
-
-            [[NCManageDatabase shared] removeDB];
-
-            [[NSURLCache sharedURLCache] setMemoryCapacity:0];
-            [[NSURLCache sharedURLCache] setDiskCapacity:0];
-
-            [ufs removeGroupDirectoryProviderStorage];
-            [ufs removeGroupApplicationSupport];
-
-            [ufs removeDocumentsDirectory];
-            [ufs removeTemporaryDirectory];
-
-            [[[NCKeychain alloc] init] removeAll];
-
-            exit(0);
-        });
+        [appDelegate resetApplication];
     }]];
     
     [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_cancel_", nil) style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) {

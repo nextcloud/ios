@@ -946,6 +946,8 @@
 "_chunk_move_"              = "The sent file could not be reassembled, please check the server log";
 "_download_image_"          = "Download image";
 "_download_video_"          = "Download video";
+"_reset_app_passcode_"      = "Resets the app after wrong passcode";
+"_failes_attemps_reset_"    = "Number of failed attempts. App reset";
 
 // Video
 "_select_trace_"            = "Select the trace";
