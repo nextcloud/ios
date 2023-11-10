@@ -255,7 +255,6 @@ class NCCameraRoll: NSObject {
         options.deliveryMode = PHImageRequestOptionsDeliveryMode.fastFormat
         options.isNetworkAccessAllowed = true
         let ocId = NSUUID().uuidString
-        let livePhotoFile = metadata.fileName
         let fileName = (metadata.fileName as NSString).deletingPathExtension + ".mov"
         let fileNamePath = utilityFileSystem.getDirectoryProviderStorageOcId(ocId, fileNameView: fileName)
         var chunkSize = NCGlobal.shared.chunkSizeMBCellular
@@ -284,8 +283,7 @@ class NCCameraRoll: NSObject {
                                                                                urlBase: metadata.urlBase,
                                                                                url: "",
                                                                                contentType: "",
-                                                                               isLivePhoto: true,
-                                                                               livePhotoFile: livePhotoFile)
+                                                                               isLivePhoto: true)
 
                 metadataLivePhoto.classFile = NKCommon.TypeClassFile.video.rawValue
                 metadataLivePhoto.isExtractFile = true

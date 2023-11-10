@@ -218,7 +218,6 @@ struct UploadAssetsView: View {
 
             let assetFileName = asset.originalFilename
             var livePhoto: Bool = false
-            var livePhotoFile = ""
             let creationDate = asset.creationDate ?? Date()
             let ext = assetFileName.pathExtension.lowercased()
 
@@ -234,7 +233,6 @@ struct UploadAssetsView: View {
 
             if previewStore.assetType == .livePhoto && NCKeychain().livePhoto && previewStore.data == nil {
                 livePhoto = true
-                livePhotoFile = (fileName as NSString).deletingPathExtension + ".mov"
             }
 
             // Auto upload with subfolder
@@ -259,7 +257,7 @@ struct UploadAssetsView: View {
             let isRecordInSessions = NCManageDatabase.shared.getAdvancedMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileName == %@ AND session != ''", uploadAssets.userBaseUrl.account, serverUrl, fileName), sorted: "fileName", ascending: false)
             if !isRecordInSessions.isEmpty { continue }
 
-            let metadata = NCManageDatabase.shared.createMetadata(account: uploadAssets.userBaseUrl.account, user: uploadAssets.userBaseUrl.user, userId: uploadAssets.userBaseUrl.userId, fileName: fileName, fileNameView: fileName, ocId: NSUUID().uuidString, serverUrl: serverUrl, urlBase: uploadAssets.userBaseUrl.urlBase, url: "", contentType: "", isLivePhoto: livePhoto, livePhotoFile: livePhotoFile)
+            let metadata = NCManageDatabase.shared.createMetadata(account: uploadAssets.userBaseUrl.account, user: uploadAssets.userBaseUrl.user, userId: uploadAssets.userBaseUrl.userId, fileName: fileName, fileNameView: fileName, ocId: NSUUID().uuidString, serverUrl: serverUrl, urlBase: uploadAssets.userBaseUrl.urlBase, url: "", contentType: "", isLivePhoto: livePhoto)
 
             metadata.assetLocalIdentifier = asset.localIdentifier
             metadata.session = NCNetworking.shared.sessionIdentifierBackground

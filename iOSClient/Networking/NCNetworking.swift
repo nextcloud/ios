@@ -650,7 +650,6 @@ class NCNetworking: NSObject, NKCommonDelegate {
             self.delegate?.uploadComplete?(fileName: fileName, serverUrl: serverUrl, ocId: ocId, etag: etag, date: date, size: size, description: description, task: task, error: error)
             return
         }
-        let livePhotoFile = metadata.livePhotoFile
         let ocIdTemp = metadata.ocId
         let selector = metadata.sessionSelector
         var isApplicationStateActive = false
@@ -666,7 +665,6 @@ class NCNetworking: NSObject, NKCommonDelegate {
             metadata.etag = etag ?? ""
             metadata.ocId = ocId
             metadata.chunk = 0
-            metadata.livePhotoFile = ""
 
             if let fileId = utility.ocIdToFileId(ocId: ocId) {
                 metadata.fileId = fileId
@@ -693,9 +691,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
             }
 
             //TODO: SET SERVER LIVEPHOTO
-            NCLivePhoto().setLivephoto(metadata: metadata, livePhotoFile: livePhotoFile) { error in
-                print(error)
-            }
+            NCLivePhoto().setLivephoto(metadata: metadata)
 
             NextcloudKit.shared.nkCommonInstance.writeLog("[SUCCESS] Upload complete " + serverUrl + "/" + fileName + ", result: success(\(size) bytes)")
             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUploadedFile, userInfo: ["ocId": metadata.ocId, "serverUrl": metadata.serverUrl, "account": metadata.account, "fileName": metadata.fileName, "ocIdTemp": ocIdTemp, "error": error])

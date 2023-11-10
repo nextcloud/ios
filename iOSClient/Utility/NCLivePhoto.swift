@@ -14,6 +14,9 @@ import NextcloudKit
 
 class NCLivePhoto {
 
+    var livePhotoFile = ""
+    var livePhotoFile2 = ""
+
     // MARK: PUBLIC
     typealias LivePhotoResources = (pairedImage: URL, pairedVideo: URL)
     /// Returns the paired image and video for the given PHLivePhoto
@@ -467,9 +470,11 @@ fileprivate extension AVAsset {
 
 extension NCLivePhoto {
 
-    func setLivephoto(metadata: tableMetadata, livePhotoFile: String, completion: @escaping (_ error: NKError) -> Void) {
 
-        var livePhotoFile = livePhotoFile
+    func setLivephoto(metadata: tableMetadata) {
+
+        livePhotoFile = metadata.livePhotoFile
+        livePhotoFile2 = metadata.fileName
 
         if livePhotoFile.isEmpty {
             if metadata.classFile == NKCommon.TypeClassFile.image.rawValue {
@@ -481,18 +486,17 @@ extension NCLivePhoto {
 
         guard metadata.livePhoto,
               !livePhotoFile.isEmpty,
-              let metadata2 = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND urlBase == %@ AND path == %@ AND fileName == %@ AND status == %d", metadata.account, metadata.urlBase, metadata.path, livePhotoFile, NCGlobal.shared.metadataStatusNormal)) else { return completion(NKError(errorCode: NCGlobal.shared.errorResourceNotFound, errorDescription: "Internal error")) }
+              let metadata2 = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND urlBase == %@ AND path == %@ AND fileName == %@ AND status == %d", metadata.account, metadata.urlBase, metadata.path, livePhotoFile, NCGlobal.shared.metadataStatusNormal)) else { return }
 
         let serverUrlfileNamePath1 = metadata.urlBase + metadata.path + metadata.fileName
         let serverUrlfileNamePath2 = metadata2.urlBase + metadata2.path + livePhotoFile
 
-        NextcloudKit.shared.setLivephoto(serverUrlfileNamePath: serverUrlfileNamePath1, livePhotoFile: livePhotoFile) { _, error in
-            if error == .success {
-                NextcloudKit.shared.setLivephoto(serverUrlfileNamePath: serverUrlfileNamePath2, livePhotoFile: metadata.fileName) { _, error in
-                    completion(error)
-                }
-            } else {
-                completion(error)
+        Task {
+            if metadata.livePhotoFile.isEmpty {
+                _ = await NextcloudKit.shared.setLivephoto(serverUrlfileNamePath: serverUrlfileNamePath1, livePhotoFile: livePhotoFile)
+            }
+            if metadata2.livePhotoFile.isEmpty {
+                _ = await NextcloudKit.shared.setLivephoto(serverUrlfileNamePath: serverUrlfileNamePath2, livePhotoFile: livePhotoFile2)
             }
         }
     }
