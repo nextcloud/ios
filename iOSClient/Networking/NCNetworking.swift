@@ -650,6 +650,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
             self.delegate?.uploadComplete?(fileName: fileName, serverUrl: serverUrl, ocId: ocId, etag: etag, date: date, size: size, description: description, task: task, error: error)
             return
         }
+        let livePhotoFile = metadata.livePhotoFile
         let ocIdTemp = metadata.ocId
         let selector = metadata.sessionSelector
         var isApplicationStateActive = false
@@ -659,18 +660,13 @@ class NCNetworking: NSObject, NKCommonDelegate {
 
         if error == .success, let ocId = ocId, size == metadata.size {
 
-            //TODO: SET SERVER LIVEPHOTO
-            let serverUrlfileNamePath = metadata.urlBase + metadata.path + metadata.fileName
-            NextcloudKit.shared.setLivephoto(serverUrlfileNamePath: serverUrlfileNamePath, livePhotoFile: metadata.livePhotoFile) { _, error in
-                print(error)
-            }
-
             let metadata = tableMetadata.init(value: metadata)
 
             metadata.uploadDate = date ?? NSDate()
             metadata.etag = etag ?? ""
             metadata.ocId = ocId
             metadata.chunk = 0
+            metadata.livePhotoFile = ""
 
             if let fileId = utility.ocIdToFileId(ocId: ocId) {
                 metadata.fileId = fileId
@@ -694,6 +690,11 @@ class NCNetworking: NSObject, NKCommonDelegate {
                 NCManageDatabase.shared.addLocalFile(metadata: metadata)
             } else {
                 utilityFileSystem.removeFile(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(ocIdTemp))
+            }
+
+            //TODO: SET SERVER LIVEPHOTO
+            NCLivePhoto().setLivephoto(metadata: metadata, livePhotoFile: livePhotoFile) { error in
+                print(error)
             }
 
             NextcloudKit.shared.nkCommonInstance.writeLog("[SUCCESS] Upload complete " + serverUrl + "/" + fileName + ", result: success(\(size) bytes)")

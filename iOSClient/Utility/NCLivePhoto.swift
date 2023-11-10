@@ -10,6 +10,7 @@ import UIKit
 import AVFoundation
 import MobileCoreServices
 import Photos
+import NextcloudKit
 
 class NCLivePhoto {
 
@@ -460,6 +461,39 @@ fileprivate extension AVAsset {
         } catch let error as NSError {
             print("Image generation failed with error \(error)")
             return nil
+        }
+    }
+}
+
+extension NCLivePhoto {
+
+    func setLivephoto(metadata: tableMetadata, livePhotoFile: String, completion: @escaping (_ error: NKError) -> Void) {
+
+        var livePhotoFile = livePhotoFile
+
+        if livePhotoFile.isEmpty {
+            if metadata.classFile == NKCommon.TypeClassFile.image.rawValue {
+                livePhotoFile = (metadata.fileName as NSString).deletingPathExtension + ".mov"
+            } else if metadata.classFile == NKCommon.TypeClassFile.video.rawValue {
+                livePhotoFile = (metadata.fileName as NSString).deletingPathExtension + ".jpg"
+            }
+        }
+
+        guard metadata.livePhoto,
+              !livePhotoFile.isEmpty,
+              let metadata2 = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND urlBase == %@ AND path == %@ AND fileName == %@ AND status == %d", metadata.account, metadata.urlBase, metadata.path, livePhotoFile, NCGlobal.shared.metadataStatusNormal)) else { return completion(NKError(errorCode: NCGlobal.shared.errorResourceNotFound, errorDescription: "Internal error")) }
+
+        let serverUrlfileNamePath1 = metadata.urlBase + metadata.path + metadata.fileName
+        let serverUrlfileNamePath2 = metadata2.urlBase + metadata2.path + livePhotoFile
+
+        NextcloudKit.shared.setLivephoto(serverUrlfileNamePath: serverUrlfileNamePath1, livePhotoFile: livePhotoFile) { _, error in
+            if error == .success {
+                NextcloudKit.shared.setLivephoto(serverUrlfileNamePath: serverUrlfileNamePath2, livePhotoFile: metadata.fileName) { _, error in
+                    completion(error)
+                }
+            } else {
+                completion(error)
+            }
         }
     }
 }
