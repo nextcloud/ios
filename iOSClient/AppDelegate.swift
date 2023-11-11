@@ -754,9 +754,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
         // show passcode on top of privacy window
         privacyProtectionWindow?.rootViewController?.present(passcodeViewController, animated: true, completion: {
-            if NCKeychain().resetAppCounterFail >= NCKeychain().passcodeCounterFail {
+            let resetAppCounterFail = NCKeychain().resetAppCounterFail
+            let passcodeCounterFail = NCKeychain().passcodeCounterFail
+            if resetAppCounterFail > 0 && (passcodeCounterFail >= resetAppCounterFail) {
                 self.passcodeResetApp(passcodeViewController)
-            } else if NCKeychain().passcodeCounterFail >= 3 {
+            } else if passcodeCounterFail >= 3 {
                 self.passcodeAlert(passcodeViewController)
             }
             completion()
@@ -806,9 +808,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             return true
         } else {
             NCKeychain().passcodeCounterFail += 1
-            if NCKeychain().resetAppCounterFail >= NCKeychain().passcodeCounterFail {
+            let resetAppCounterFail = NCKeychain().resetAppCounterFail
+            let passcodeCounterFail = NCKeychain().passcodeCounterFail
+            if resetAppCounterFail > 0 && (passcodeCounterFail >= resetAppCounterFail) {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { self.passcodeResetApp(passcodeViewController) }
-            } else if NCKeychain().passcodeCounterFail >= 3 {
+            } else if passcodeCounterFail >= 3 {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { self.passcodeAlert(passcodeViewController) }
             }
             return false
