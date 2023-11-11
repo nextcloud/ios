@@ -788,6 +788,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                             self.requestAccount()
                         }
                     }
+                } else {
+                    NCKeychain().passcodeCounterFail += 1
                 }
             }
         }
