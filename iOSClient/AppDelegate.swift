@@ -847,31 +847,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         passcodeViewController.present(alertController, animated: true, completion: { })
 
         DispatchQueue.main.asyncAfter(deadline: .now() + 4) {
-            self.resetApplication()
+            self.removeAllSettings(killEmAll: true)
         }
     }
 
-    // MARK: - Remove / Reset App
+    // MARK: - Remove All Settings
 
-    @objc func removeAllSettings() {
-
-        let utilityFileSystem = NCUtilityFileSystem()
-
-        URLCache.shared.memoryCapacity = 0
-        URLCache.shared.diskCapacity = 0
-
-        utilityFileSystem.removeGroupDirectoryProviderStorage()
-        utilityFileSystem.removeGroupLibraryDirectory()
-        utilityFileSystem.removeDocumentsDirectory()
-        utilityFileSystem.removeTemporaryDirectory()
-
-        utilityFileSystem.createDirectoryStandard()
-
-        NCKeychain().removeAll()
-        NCManageDatabase.shared.clearDatabase(account: nil, removeAccount: true)
-    }
-
-    @objc func resetApplication() {
+    @objc func removeAllSettings(killEmAll: Bool) {
 
         let utilityFileSystem = NCUtilityFileSystem()
 
@@ -891,9 +873,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             utilityFileSystem.removeTemporaryDirectory()
 
             NCKeychain().removeAll()
-            NCManageDatabase.shared.removeDB()
 
-            exit(0)
+            if killEmAll {
+                NCManageDatabase.shared.removeDB()
+                exit(0)
+            } else {
+                NCManageDatabase.shared.clearDatabase(account: nil, removeAccount: true)
+            }
         }
     }
 
