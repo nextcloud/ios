@@ -101,6 +101,15 @@
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
     [row.cellConfig setObject:UIColor.labelColor forKey:@"textLabel.textColor"];
     [section addFormRow:row];
+    // Reset app wrong attemps
+    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"resetAppAttemps" rowType:XLFormRowDescriptorTypeStepCounter title:NSLocalizedString(@"_reset_app_passcode_", nil)];
+    [row.cellConfigAtConfigure setObject:@4 forKey:@"stepControl.stepValue"];
+    [row.cellConfigAtConfigure setObject:@0 forKey:@"stepControl.minimumValue"];
+    [row.cellConfigAtConfigure setObject:@20 forKey:@"stepControl.maximumValue"];
+    row.cellConfigAtConfigure[@"backgroundColor"] = UIColor.secondarySystemGroupedBackgroundColor;
+    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
+    [row.cellConfig setObject:UIColor.labelColor forKey:@"textLabel.textColor"];
+    [section addFormRow:row];
 
     // Section : CALDAV CARDAV --------------------------------------------------------------
 
@@ -261,6 +270,7 @@
     XLFormRowDescriptor *rowBloccoPasscode = [self.form formRowWithTag:@"bloccopasscode"];
     XLFormRowDescriptor *rowNotPasscodeAtStart = [self.form formRowWithTag:@"notPasscodeAtStart"];
     XLFormRowDescriptor *rowEnableTouchDaceID = [self.form formRowWithTag:@"enableTouchDaceID"];
+    XLFormRowDescriptor *rowResetAppAttemps = [self.form formRowWithTag:@"resetAppAttemps"];
     XLFormRowDescriptor *rowPrivacyScreen = [self.form formRowWithTag:@"privacyScreen"];
 
     // ------------------------------------------------------------------
@@ -272,7 +282,9 @@
         rowBloccoPasscode.title = NSLocalizedString(@"_lock_not_active_", nil);
         [rowBloccoPasscode.cellConfig setObject:[[UIImage imageNamed:@"lock_open"] imageWithColor:UIColor.systemGrayColor size:25] forKey:@"imageView.image"];
     }
-    
+    long resetAppCounterFail = [[NCKeychain alloc] init].resetAppCounterFail;
+    [rowResetAppAttemps setValue:[NSString stringWithFormat: @"%ld", resetAppCounterFail]];
+
     if ([[NCKeychain alloc] init].touchFaceID) [rowEnableTouchDaceID setValue:@1]; else [rowEnableTouchDaceID setValue:@0];
     if ([[NCKeychain alloc] init].requestPasscodeAtStart) [rowNotPasscodeAtStart setValue:@0]; else [rowNotPasscodeAtStart setValue:@1];
     if ([[NCKeychain alloc] init].privacyScreenEnabled) [rowPrivacyScreen setValue:@1]; else [rowPrivacyScreen setValue:@0];
@@ -314,6 +326,12 @@
         } else {
             [[NCKeychain alloc] init].privacyScreenEnabled = false;
         }
+    }
+
+    if ([rowDescriptor.tag isEqualToString:@"resetAppAttemps"]) {
+
+        NSInteger value = [[rowDescriptor.value valueData] intValue];
+        [[NCKeychain alloc] init].resetAppCounterFail = value;
     }
 }
 

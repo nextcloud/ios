@@ -738,7 +738,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         let passcodeViewController = TOPasscodeViewController(passcodeType: .sixDigits, allowCancel: false)
         passcodeViewController.delegate = self
         passcodeViewController.keypadButtonShowLettering = false
-        if NCKeychain().touchFaceID, laContext.canEvaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, error: &error) {
+        if NCKeychain().touchFaceID,
+           laContext.canEvaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, error: &error),
+           NCKeychain().passcodeCounterFail < 3 {
             if error == nil {
                 if laContext.biometryType == .faceID {
                     passcodeViewController.biometryType = .faceID
@@ -752,6 +754,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
         // show passcode on top of privacy window
         privacyProtectionWindow?.rootViewController?.present(passcodeViewController, animated: true, completion: {
+            let resetAppCounterFail = NCKeychain().resetAppCounterFail
+            let passcodeCounterFail = NCKeychain().passcodeCounterFail
+            if resetAppCounterFail > 0 && (passcodeCounterFail >= resetAppCounterFail) {
+                self.passcodeResetApp(passcodeViewController)
+            } else if passcodeCounterFail >= 3 {
+                self.passcodeAlert(passcodeViewController)
+            }
             completion()
         })
     }
@@ -765,6 +774,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
               NCKeychain().touchFaceID,
               NCKeychain().passcode != nil,
               NCKeychain().requestPasscodeAtStart,
+              NCKeychain().passcodeCounterFail < 3,
               let passcodeViewController = privacyProtectionWindow?.rootViewController?.presentedViewController as? TOPasscodeViewController
         else { return }
 
@@ -773,6 +783,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                 if success {
                     DispatchQueue.main.async {
                         passcodeViewController.dismiss(animated: true) {
+                            NCKeychain().passcodeCounterFail = 0
                             self.hidePrivacyProtectionWindow()
                             self.requestAccount()
                         }
@@ -785,6 +796,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     func didInputCorrectPasscode(in passcodeViewController: TOPasscodeViewController) {
         DispatchQueue.main.async {
             passcodeViewController.dismiss(animated: true) {
+                NCKeychain().passcodeCounterFail = 0
                 self.hidePrivacyProtectionWindow()
                 self.requestAccount()
             }
@@ -792,11 +804,97 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     }
 
     func passcodeViewController(_ passcodeViewController: TOPasscodeViewController, isCorrectCode code: String) -> Bool {
-        return code == NCKeychain().passcode
+        if code == NCKeychain().passcode {
+            return true
+        } else {
+            NCKeychain().passcodeCounterFail += 1
+            let resetAppCounterFail = NCKeychain().resetAppCounterFail
+            let passcodeCounterFail = NCKeychain().passcodeCounterFail
+            if resetAppCounterFail > 0 && (passcodeCounterFail >= resetAppCounterFail) {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { self.passcodeResetApp(passcodeViewController) }
+            } else if passcodeCounterFail >= 3 {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { self.passcodeAlert(passcodeViewController) }
+            }
+            return false
+        }
     }
 
     func didPerformBiometricValidationRequest(in passcodeViewController: TOPasscodeViewController) {
         enableTouchFaceID()
+    }
+
+    func passcodeAlert(_ passcodeViewController: TOPasscodeViewController) {
+
+        passcodeViewController.biometricButton.isHidden = true
+        let alertController = UIAlertController(title: NSLocalizedString("_passcode_counter_fail_", comment: ""), message: nil, preferredStyle: .alert)
+        passcodeViewController.present(alertController, animated: true, completion: { })
+
+        var seconds = NCKeychain().passcodeSecondsFail * 30
+        _ = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { timer in
+            alertController.message = "\(seconds) " + NSLocalizedString("_seconds_", comment: "")
+            seconds -= 1
+            if seconds < 0 {
+                NCKeychain().passcodeSecondsFail += 1
+                timer.invalidate()
+                alertController.dismiss(animated: true)
+            }
+        }
+    }
+
+    func passcodeResetApp(_ passcodeViewController: TOPasscodeViewController) {
+
+        let alertController = UIAlertController(title: NSLocalizedString("_failes_attemps_reset_", comment: ""), message: nil, preferredStyle: .alert)
+        passcodeViewController.present(alertController, animated: true, completion: { })
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + 4) {
+            self.resetApplication()
+        }
+    }
+
+    // MARK: - Remove / Reset App
+
+    @objc func removeAllSettings() {
+
+        let utilityFileSystem = NCUtilityFileSystem()
+
+        URLCache.shared.memoryCapacity = 0
+        URLCache.shared.diskCapacity = 0
+
+        utilityFileSystem.removeGroupDirectoryProviderStorage()
+        utilityFileSystem.removeGroupLibraryDirectory()
+        utilityFileSystem.removeDocumentsDirectory()
+        utilityFileSystem.removeTemporaryDirectory()
+
+        utilityFileSystem.createDirectoryStandard()
+
+        NCKeychain().removeAll()
+        NCManageDatabase.shared.clearDatabase(account: nil, removeAccount: true)
+    }
+
+    @objc func resetApplication() {
+
+        let utilityFileSystem = NCUtilityFileSystem()
+
+        NCNetworking.shared.cancelDataTask()
+        NCNetworking.shared.cancelDownloadTasks()
+        NCNetworking.shared.cancelUploadTasks()
+        NCNetworking.shared.cancelUploadBackgroundTask()
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+
+            URLCache.shared.memoryCapacity = 0
+            URLCache.shared.diskCapacity = 0
+
+            utilityFileSystem.removeGroupDirectoryProviderStorage()
+            utilityFileSystem.removeGroupApplicationSupport()
+            utilityFileSystem.removeDocumentsDirectory()
+            utilityFileSystem.removeTemporaryDirectory()
+
+            NCKeychain().removeAll()
+            NCManageDatabase.shared.removeDB()
+
+            exit(0)
+        }
     }
 
     // MARK: - Privacy Protection
@@ -1025,17 +1123,14 @@ extension AppDelegate: NCAudioRecorderViewControllerDelegate {
 
     func didFinishRecording(_ viewController: NCAudioRecorderViewController, fileName: String) {
 
-        guard
-            let navigationController = UIStoryboard(name: "NCCreateFormUploadVoiceNote", bundle: nil).instantiateInitialViewController() as? UINavigationController,
-                let viewController = navigationController.topViewController as? NCCreateFormUploadVoiceNote
-        else { return }
+        guard let navigationController = UIStoryboard(name: "NCCreateFormUploadVoiceNote", bundle: nil).instantiateInitialViewController() as? UINavigationController,
+              let viewController = navigationController.topViewController as? NCCreateFormUploadVoiceNote else { return }
         navigationController.modalPresentationStyle = .formSheet
         viewController.setup(serverUrl: activeServerUrl, fileNamePath: NSTemporaryDirectory() + fileName, fileName: fileName)
         window?.rootViewController?.present(navigationController, animated: true)
     }
 
-    func didFinishWithoutRecording(_ viewController: NCAudioRecorderViewController, fileName: String) {
-    }
+    func didFinishWithoutRecording(_ viewController: NCAudioRecorderViewController, fileName: String) { }
 }
 
 extension AppDelegate: NCCreateFormUploadConflictDelegate {
