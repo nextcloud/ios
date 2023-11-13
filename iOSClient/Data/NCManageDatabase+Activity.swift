@@ -2,7 +2,7 @@
 //  NCManageDatabase+Activity.swift
 //  Nextcloud
 //
-//  Created by Henrik Storch on 30.11.21.
+//  Created by Marino Faggiana on 13/11/23.
 //  Copyright © 2021 Marino Faggiana. All rights reserved.
 //
 //  Author Marino Faggiana <marino.faggiana@nextcloud.com>
@@ -295,51 +295,5 @@ extension NCManageDatabase {
         }
 
         return nil
-    }
-
-    // MARK: -
-    // MARK: Table Comments
-
-    func addComments(_ comments: [NKComments], account: String, objectId: String) {
-
-        do {
-            let realm = try Realm()
-            try realm.write {
-                let results = realm.objects(tableComments.self).filter("account == %@ AND objectId == %@", account, objectId)
-                realm.delete(results)
-                for comment in comments {
-                    let object = tableComments()
-                    object.account = account
-                    object.actorDisplayName = comment.actorDisplayName
-                    object.actorId = comment.actorId
-                    object.actorType = comment.actorType
-                    object.creationDateTime = comment.creationDateTime as NSDate
-                    object.isUnread = comment.isUnread
-                    object.message = comment.message
-                    object.messageId = comment.messageId
-                    object.objectId = comment.objectId
-                    object.objectType = comment.objectType
-                    object.path = comment.path
-                    object.verb = comment.verb
-                    realm.add(object, update: .all)
-                }
-            }
-        } catch let error {
-            NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
-        }
-    }
-
-    func getComments(account: String, objectId: String) -> [tableComments] {
-
-        do {
-            let realm = try Realm()
-            realm.refresh()
-            let results = realm.objects(tableComments.self).filter("account == %@ AND objectId == %@", account, objectId).sorted(byKeyPath: "creationDateTime", ascending: false)
-            return Array(results.map(tableComments.init))
-        } catch let error as NSError {
-            NextcloudKit.shared.nkCommonInstance.writeLog("Could not access database: \(error)")
-        }
-
-        return []
     }
 }

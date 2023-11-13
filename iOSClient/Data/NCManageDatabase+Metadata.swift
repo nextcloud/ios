@@ -340,6 +340,9 @@ extension NCManageDatabase {
         metadata.height = file.height
         metadata.width = file.width
         metadata.livePhotoFile = file.livePhotoFile
+        if !metadata.livePhotoFile.isEmpty {
+            metadata.livePhoto = true
+        }
 
         // E2EE find the fileName for fileNameView
         if isDirectoryE2EE || file.e2eEncrypted {
@@ -401,6 +404,9 @@ extension NCManageDatabase {
                 ((metadata.classFile == NKCommon.TypeClassFile.image.rawValue && metadatas[index + 1].classFile == NKCommon.TypeClassFile.video.rawValue) || (metadata.classFile == NKCommon.TypeClassFile.video.rawValue && metadatas[index + 1].classFile == NKCommon.TypeClassFile.image.rawValue)) {
                 metadata.livePhoto = true
                 metadatas[index + 1].livePhoto = true
+                let metadata1 = metadata
+                let metadata2 = metadatas[index + 1]
+                NCLivePhoto().setLivePhoto(metadata1: metadata1, metadata2: metadata2)
             }
             metadataOutput.append(metadata)
         }
@@ -798,48 +804,6 @@ extension NCManageDatabase {
         return nil
     }
 
-    func getMetadatasViewer(predicate: NSPredicate, sorted: String, ascending: Bool) -> [tableMetadata]? {
-
-        let results: Results<tableMetadata>
-        var finals: [tableMetadata] = []
-
-        do {
-            let realm = try Realm()
-            realm.refresh()
-            if (tableMetadata().objectSchema.properties.contains { $0.name == sorted }) {
-                results = realm.objects(tableMetadata.self).filter(predicate).sorted(byKeyPath: sorted, ascending: ascending)
-            } else {
-                results = realm.objects(tableMetadata.self).filter(predicate)
-            }
-
-            // For Live Photo
-            var fileNameImages: [String] = []
-            let filtered = results.filter { $0.classFile.contains(NKCommon.TypeClassFile.image.rawValue) }
-            filtered.forEach { print($0)
-                let fileName = ($0.fileNameView as NSString).deletingPathExtension
-                fileNameImages.append(fileName)
-            }
-
-            for result in results {
-
-                let ext = (result.fileNameView as NSString).pathExtension.uppercased()
-                let fileName = (result.fileNameView as NSString).deletingPathExtension
-
-                if !(ext == "MOV" && fileNameImages.contains(fileName)) {
-                    finals.append(result)
-                }
-            }
-        } catch let error as NSError {
-            NextcloudKit.shared.nkCommonInstance.writeLog("Could not access database: \(error)")
-        }
-
-        if finals.isEmpty {
-            return nil
-        } else {
-            return Array(finals.map { tableMetadata.init(value: $0) })
-        }
-    }
-
     func getMetadatas(predicate: NSPredicate) -> [tableMetadata] {
 
         do {
@@ -1104,6 +1068,9 @@ extension NCManageDatabase {
                             if !results[index + 1].livePhoto {
                                 results[index + 1].livePhoto = true
                             }
+                            let metadata1 = results[index + 1]
+                            let metadata2 = results[index]
+                            NCLivePhoto().setLivePhoto(metadata1: metadata1, metadata2: metadata2)
                         }
                         if metadata.livePhoto {
                             if metadata.classFile == NKCommon.TypeClassFile.image.rawValue {

@@ -470,7 +470,7 @@ fileprivate extension AVAsset {
 
 extension NCLivePhoto {
 
-    func setLivephoto(metadata: tableMetadata) {
+    func setLivephotoUpload(metadata: tableMetadata) {
 
         guard NCGlobal.shared.capabilityFileLivePhoto else { return }
 
@@ -498,6 +498,23 @@ extension NCLivePhoto {
             }
             if metadata2.livePhotoFile.isEmpty {
                 _ = await NextcloudKit.shared.setLivephoto(serverUrlfileNamePath: serverUrlfileNamePath2, livePhotoFile: livePhotoFile2)
+            }
+        }
+    }
+
+    func setLivePhoto(metadata1: tableMetadata, metadata2: tableMetadata) {
+
+        guard NCGlobal.shared.capabilityFileLivePhoto,
+              (!metadata1.livePhotoFile.isEmpty && !metadata2.livePhotoFile.isEmpty) else { return }
+
+        Task {
+            if metadata1.livePhotoFile.isEmpty {
+                let serverUrlfileNamePath = metadata1.urlBase + metadata1.path + metadata1.fileName
+                _ = await NextcloudKit.shared.setLivephoto(serverUrlfileNamePath: serverUrlfileNamePath, livePhotoFile: metadata2.fileName)
+            }
+            if metadata2.livePhotoFile.isEmpty {
+                let serverUrlfileNamePath = metadata2.urlBase + metadata2.path + metadata2.fileName
+                _ = await NextcloudKit.shared.setLivephoto(serverUrlfileNamePath: serverUrlfileNamePath, livePhotoFile: metadata1.fileName)
             }
         }
     }
