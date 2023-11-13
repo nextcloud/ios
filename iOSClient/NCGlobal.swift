@@ -103,6 +103,8 @@ class NCGlobal: NSObject {
     let nextcloudVersion25: Int                     = 25
     let nextcloudVersion26: Int                     = 26
     let nextcloudVersion27: Int                     = 27
+    let nextcloudVersion28: Int                     = 28
+    let nextcloudVersion29: Int                     = 29
 
     // Nextcloud unsupported
     //
@@ -448,8 +450,6 @@ class NCGlobal: NSObject {
     var capabilityFileSharingRemoteExpireDateEnforced: Bool     = false
     var capabilityFileSharingRemoteExpireDateDays: Int          = 0
     var capabilityFileSharingDefaultPermission: Int             = 0
-    var capabilityFileLivePhoto: Bool                           = false
-
 
     var capabilityThemingColor: String                          = ""
     var capabilityThemingColorElement: String                   = ""
