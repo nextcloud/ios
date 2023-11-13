@@ -47,7 +47,7 @@ struct DashboardWidget: Widget {
         .supportedFamilies([.systemLarge])
         .configurationDisplayName("Dashboard")
         .description(NSLocalizedString("_description_dashboardwidget_", comment: ""))
-        .contentMarginsDisabled()
+//        .contentMarginsDisabled()
     }
 }
 
@@ -61,7 +61,7 @@ struct FilesWidget: Widget {
         .supportedFamilies([.systemLarge])
         .configurationDisplayName("Files")
         .description(NSLocalizedString("_description_fileswidget_", comment: ""))
-        .contentMarginsDisabled()
+//        .contentMarginsDisabled()
     }
 }
 
@@ -75,7 +75,7 @@ struct ToolbarWidget: Widget {
         .supportedFamilies([.systemMedium])
         .configurationDisplayName("Toolbar")
         .description(NSLocalizedString("_description_toolbarwidget_", comment: ""))
-        .contentMarginsDisabled()
+//        .contentMarginsDisabled()
     }
 }
 
@@ -90,7 +90,7 @@ struct LockscreenWidget: Widget {
             .supportedFamilies([.accessoryRectangular, .accessoryCircular])
             .configurationDisplayName(NSLocalizedString("_title_lockscreenwidget_", comment: ""))
             .description(NSLocalizedString("_description_lockscreenwidget_", comment: ""))
-            .contentMarginsDisabled()
+//            .contentMarginsDisabled()
         } else {
             return EmptyWidgetConfiguration()
         }
