@@ -472,6 +472,8 @@ extension NCLivePhoto {
 
     func setLivephoto(metadata: tableMetadata) {
 
+        guard NCGlobal.shared.capabilityFileLivePhoto else { return }
+
         livePhotoFile = metadata.livePhotoFile
         livePhotoFile2 = metadata.fileName
 

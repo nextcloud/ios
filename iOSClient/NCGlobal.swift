@@ -448,6 +448,8 @@ class NCGlobal: NSObject {
     var capabilityFileSharingRemoteExpireDateEnforced: Bool     = false
     var capabilityFileSharingRemoteExpireDateDays: Int          = 0
     var capabilityFileSharingDefaultPermission: Int             = 0
+    var capabilityFileLivePhoto: Bool                           = false
+
 
     var capabilityThemingColor: String                          = ""
     var capabilityThemingColorElement: String                   = ""

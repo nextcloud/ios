@@ -943,10 +943,11 @@
 "_chunk_enough_memory_"     = "It seems there is not enough space to send the file";
 "_chunk_create_folder_"     = "The file could not be sent, please check the server log";
 "_chunk_files_null_"        = "The file for sending could not be created";
+"_chunk_file_null_"         = "The file could not be sended";
 "_chunk_move_"              = "The sent file could not be reassembled, please check the server log";
 "_download_image_"          = "Download image";
 "_download_video_"          = "Download video";
-"_reset_app_passcode_"      = "Resets the app after wrong passcode";
+"_reset_wrong_passcode_"    = "Resets after wrong passcode";
 "_failes_attemps_reset_"    = "Number of failed attempts. App reset";
 
 // Video

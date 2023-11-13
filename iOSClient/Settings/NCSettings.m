@@ -102,7 +102,7 @@
     [row.cellConfig setObject:UIColor.labelColor forKey:@"textLabel.textColor"];
     [section addFormRow:row];
     // Reset app wrong attemps
-    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"resetAppAttemps" rowType:XLFormRowDescriptorTypeStepCounter title:NSLocalizedString(@"_reset_app_passcode_", nil)];
+    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"resetAppAttemps" rowType:XLFormRowDescriptorTypeStepCounter title:NSLocalizedString(@"_reset_wrong_passcode_", nil)];
     [row.cellConfigAtConfigure setObject:@4 forKey:@"stepControl.stepValue"];
     [row.cellConfigAtConfigure setObject:@0 forKey:@"stepControl.minimumValue"];
     [row.cellConfigAtConfigure setObject:@20 forKey:@"stepControl.maximumValue"];

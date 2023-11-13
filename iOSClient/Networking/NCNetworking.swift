@@ -582,9 +582,10 @@ class NCNetworking: NSObject, NKCommonDelegate {
                 NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
                 NCManageDatabase.shared.deleteChunks(account: account, ocId: metadata.ocId, directory: directory)
                 NCContentPresenter().messageNotification("_chunk_files_null_", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: .error)
-            case NKError.chunkFileNull: // (fileSize == 0)
+            case NKError.chunkFileNull:
                 NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
                 NCManageDatabase.shared.deleteChunks(account: account, ocId: metadata.ocId, directory: directory)
+                NCContentPresenter().messageNotification("_chunk_file_null_", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: .error)
             case NKError.chunkFileUpload:
                 if let afError, (afError.isExplicitlyCancelledError || sessionTaskFailedCode == NCGlobal.shared.errorExplicitlyCancelled ) {
                     NCManageDatabase.shared.deleteChunks(account: account, ocId: metadata.ocId, directory: directory)
@@ -690,8 +691,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
                 utilityFileSystem.removeFile(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(ocIdTemp))
             }
 
-            // TODO: SET SERVER LIVEPHOTO
-            // NCLivePhoto().setLivephoto(metadata: metadata)
+            NCLivePhoto().setLivephoto(metadata: metadata)
 
             NextcloudKit.shared.nkCommonInstance.writeLog("[SUCCESS] Upload complete " + serverUrl + "/" + fileName + ", result: success(\(size) bytes)")
             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUploadedFile, userInfo: ["ocId": metadata.ocId, "serverUrl": metadata.serverUrl, "account": metadata.account, "fileName": metadata.fileName, "ocIdTemp": ocIdTemp, "error": error])
