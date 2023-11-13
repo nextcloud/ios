@@ -232,6 +232,7 @@ class NCManageDatabase: NSObject {
         self.clearTable(tableDirectEditingCreators.self, account: account)
         self.clearTable(tableDirectEditingEditors.self, account: account)
         self.clearTable(tableDirectory.self, account: account)
+        self.clearTablesE2EE(account: account)
         self.clearTable(tableExternalSites.self, account: account)
         self.clearTable(tableGPS.self, account: nil)
         self.clearTable(TableGroupfolders.self, account: account)
@@ -246,7 +247,6 @@ class NCManageDatabase: NSObject {
         self.clearTable(tableTrash.self, account: account)
         self.clearTable(tableUserStatus.self, account: account)
         self.clearTable(tableVideo.self, account: account)
-        self.clearTablesE2EE(account: account)
     }
 
     func clearTablesE2EE(account: String?) {

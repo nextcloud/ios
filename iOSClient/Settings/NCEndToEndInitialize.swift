@@ -154,7 +154,7 @@ class NCEndToEndInitialize: NSObject {
                     let publicKey = NCKeychain().getEndToEndCertificate(account: self.appDelegate.account)
 
                     if let privateKeyData = (NCEndToEndEncryption.sharedManager().decryptPrivateKey(privateKeyChiper, passphrase: passphrase, publicKey: publicKey, iterationCount: 1024)),
-                       let keyData = Data(base64Encoded: privateKeyData), 
+                       let keyData = Data(base64Encoded: privateKeyData),
                        let privateKey = String(data: keyData, encoding: .utf8) {
                         NCKeychain().setEndToEndPrivateKey(account: self.appDelegate.account, privateKey: privateKey)
                     } else {

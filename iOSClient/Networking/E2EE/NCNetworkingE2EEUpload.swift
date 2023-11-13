@@ -152,7 +152,7 @@ class NCNetworkingE2EEUpload: NSObject {
 
         // HUD CHUNK
         //
-        if let hudView {
+        if hudView != nil {
             DispatchQueue.main.async {
                 self.hud.indicatorView = JGProgressHUDRingIndicatorView()
                 if let indicatorView = self.hud.indicatorView as? JGProgressHUDRingIndicatorView {
