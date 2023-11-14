@@ -57,6 +57,7 @@ class tableMetadata: Object, NCUserBaseUrl {
     @objc dynamic var fileName = ""
     @objc dynamic var fileNameView = ""
     @objc dynamic var hasPreview: Bool = false
+    @objc dynamic var hidden: Bool = false
     @objc dynamic var iconName = ""
     @objc dynamic var iconUrl = ""
     @objc dynamic var isExtractFile: Bool = false
@@ -290,6 +291,7 @@ extension NCManageDatabase {
         metadata.fileName = file.fileName
         metadata.fileNameView = file.fileName
         metadata.hasPreview = file.hasPreview
+        metadata.hidden = file.hidden
         metadata.iconName = file.iconName
         metadata.mountType = file.mountType
         metadata.name = file.name
