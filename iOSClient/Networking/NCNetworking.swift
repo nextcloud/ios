@@ -386,36 +386,46 @@ class NCNetworking: NSObject, NKCommonDelegate {
 
     func upload(metadata: tableMetadata,
                 uploadE2EEDelegate: uploadE2EEDelegate? = nil,
+                hudView: UIView?,
                 start: @escaping () -> Void = { },
                 progressHandler: @escaping (_ totalBytesExpected: Int64, _ totalBytes: Int64, _ fractionCompleted: Double) -> Void = { _, _, _ in },
                 completion: @escaping (_ error: NKError) -> Void = { _ in }) {
 
         let hud = JGProgressHUD()
         let metadata = tableMetadata.init(value: metadata)
+        var numChunks: Int = 0
         NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Upload file \(metadata.fileNameView) with Identifier \(metadata.assetLocalIdentifier) with size \(metadata.size) [CHUNK \(metadata.chunk), E2EE \(metadata.isDirectoryE2EE)]")
 
         if metadata.isDirectoryE2EE {
 #if !EXTENSION_FILE_PROVIDER_EXTENSION && !EXTENSION_WIDGET
             Task {
-                let error = await NCNetworkingE2EEUpload().upload(metadata: metadata, uploadE2EEDelegate: uploadE2EEDelegate)
+                let error = await NCNetworkingE2EEUpload().upload(metadata: metadata, uploadE2EEDelegate: uploadE2EEDelegate, hudView: hudView)
                 completion(error)
             }
 #endif
         } else if metadata.chunk > 0 {
-#if !EXTENSION
-            DispatchQueue.main.async {
-                guard let appDelegate = UIApplication.shared.delegate as? AppDelegate, let hudView = appDelegate.window?.rootViewController?.view else {
-                    return completion(.success)
+                if let hudView {
+                    DispatchQueue.main.async {
+                        hud.indicatorView = JGProgressHUDRingIndicatorView()
+                        if let indicatorView = hud.indicatorView as? JGProgressHUDRingIndicatorView {
+                            indicatorView.ringWidth = 1.5
+                        }
+                        hud.tapOnHUDViewBlock = { _ in
+                            NotificationCenter.default.postOnMainThread(name: "NextcloudKit.chunkedFile.stop")
+                        }
+                        hud.textLabel.text = NSLocalizedString("_wait_file_preparation_", comment: "")
+                        hud.detailTextLabel.text = NSLocalizedString("_tap_to_cancel_", comment: "")
+                        hud.show(in: hudView)
+                    }
                 }
-                hud.textLabel.text = NSLocalizedString("_wait_file_preparation_", comment: "")
-                hud.show(in: hudView)
-            }
-#endif
-            uploadChunkFile(metadata: metadata) {
-#if !EXTENSION
+            uploadChunkFile(metadata: metadata) { num in
+                numChunks = num
+            } counterChunk: { counter in
+                DispatchQueue.main.async { hud.progress = Float(counter) / Float(numChunks) }
+            } start: {
                 DispatchQueue.main.async { hud.dismiss() }
-#endif
             } completion: { _, _, _, error in
+                DispatchQueue.main.async { hud.dismiss() }
                 completion(error)
             }
         } else if metadata.session == NextcloudKit.shared.nkCommonInstance.sessionIdentifierUpload {
@@ -483,6 +493,8 @@ class NCNetworking: NSObject, NKCommonDelegate {
     func uploadChunkFile(metadata: tableMetadata,
                          withUploadComplete: Bool = true,
                          customHeaders: [String: String]? = nil,
+                         numChunks: @escaping (_ num: Int) -> Void = { _ in },
+                         counterChunk: @escaping (_ counter: Int) -> Void = { _ in },
                          start: @escaping () -> Void = { },
                          progressHandler: @escaping (_ totalBytesExpected: Int64, _ totalBytes: Int64, _ fractionCompleted: Double) -> Void = { _, _, _ in },
                          completion: @escaping (_ account: String, _ file: NKFile?, _ afError: AFError?, _ error: NKError) -> Void) {
@@ -499,15 +511,15 @@ class NCNetworking: NSObject, NKCommonDelegate {
         }
         let options = NKRequestOptions(customHeader: customHeaders, queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
 
-        NextcloudKit.shared.uploadChunk(directory: directory,
-                                        fileName: metadata.fileName,
-                                        date: metadata.date as Date,
-                                        creationDate: metadata.creationDate as Date,
-                                        serverUrl: metadata.serverUrl,
-                                        chunkFolder: chunkFolder,
-                                        filesChunk: filesChunk,
-                                        chunkSize: chunkSize,
-                                        options: options) { filesChunk in
+        NextcloudKit.shared.uploadChunk(directory: directory, fileName: metadata.fileName, date: metadata.date as Date, creationDate: metadata.creationDate as Date, serverUrl: metadata.serverUrl, chunkFolder: chunkFolder, filesChunk: filesChunk, chunkSize: chunkSize, options: options) { num in
+
+            numChunks(num)
+
+        } counterChunk: { counter in
+
+            counterChunk(counter)
+
+        } start: { filesChunk in
 
             start()
             NCManageDatabase.shared.addChunks(account: metadata.account, ocId: metadata.ocId, chunkFolder: chunkFolder, filesChunk: filesChunk)
@@ -558,18 +570,22 @@ class NCNetworking: NSObject, NKCommonDelegate {
             }
 
             switch error.errorCode {
-            case NKError.chunkResourceNotFound:
-                NCManageDatabase.shared.deleteChunks(account: account, ocId: metadata.ocId, directory: directory)
             case NKError.chunkNoEnoughMemory:
+                NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
                 NCManageDatabase.shared.deleteChunks(account: account, ocId: metadata.ocId, directory: directory)
                 NCContentPresenter().messageNotification("_chunk_enough_memory_", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: .error)
             case NKError.chunkCreateFolder:
+                NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
+                NCManageDatabase.shared.deleteChunks(account: account, ocId: metadata.ocId, directory: directory)
                 NCContentPresenter().messageNotification("_chunk_create_folder_", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: .error)
             case NKError.chunkFilesNull:
+                NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
                 NCManageDatabase.shared.deleteChunks(account: account, ocId: metadata.ocId, directory: directory)
                 NCContentPresenter().messageNotification("_chunk_files_null_", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: .error)
-            case NKError.chunkFileNull: // (fileSize == 0)
+            case NKError.chunkFileNull:
+                NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
                 NCManageDatabase.shared.deleteChunks(account: account, ocId: metadata.ocId, directory: directory)
+                NCContentPresenter().messageNotification("_chunk_file_null_", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: .error)
             case NKError.chunkFileUpload:
                 if let afError, (afError.isExplicitlyCancelledError || sessionTaskFailedCode == NCGlobal.shared.errorExplicitlyCancelled ) {
                     NCManageDatabase.shared.deleteChunks(account: account, ocId: metadata.ocId, directory: directory)
@@ -674,6 +690,8 @@ class NCNetworking: NSObject, NKCommonDelegate {
             } else {
                 utilityFileSystem.removeFile(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(ocIdTemp))
             }
+
+            NCLivePhoto().setLivephotoUpload(metadata: metadata)
 
             NextcloudKit.shared.nkCommonInstance.writeLog("[SUCCESS] Upload complete " + serverUrl + "/" + fileName + ", result: success(\(size) bytes)")
             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUploadedFile, userInfo: ["ocId": metadata.ocId, "serverUrl": metadata.serverUrl, "account": metadata.account, "fileName": metadata.fileName, "ocIdTemp": ocIdTemp, "error": error])
