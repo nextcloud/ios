@@ -1070,8 +1070,8 @@ extension NCManageDatabase {
                             if !results[index + 1].livePhoto {
                                 results[index + 1].livePhoto = true
                             }
-                            let metadata1 = results[index + 1]
-                            let metadata2 = results[index]
+                            let metadata1 = tableMetadata(value: results[index + 1])
+                            let metadata2 = tableMetadata(value: results[index])
                             NCLivePhoto().setLivePhoto(metadata1: metadata1, metadata2: metadata2)
                         }
                         if metadata.livePhoto {

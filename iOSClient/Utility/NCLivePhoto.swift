@@ -507,9 +507,6 @@ extension NCLivePhoto {
         guard NCGlobal.shared.capabilityServerVersionMajor >= NCGlobal.shared.nextcloudVersion28,
               (!metadata1.livePhotoFile.isEmpty && !metadata2.livePhotoFile.isEmpty) else { return }
 
-        let metadata1 = tableMetadata(value: metadata1)
-        let metadata2 = tableMetadata(value: metadata2)
-
         Task {
             if metadata1.livePhotoFile.isEmpty {
                 let serverUrlfileNamePath = metadata1.urlBase + metadata1.path + metadata1.fileName
