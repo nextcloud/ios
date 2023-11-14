@@ -30,17 +30,8 @@ struct ScaledThumbnail: Hashable {
     @Published private(set) var rowData = RowData()
 
     private var metadatas: [tableMetadata] = []
-
     private let cache = NCImageCache.shared
-
-//    private let appDelegate = UIApplication.shared.delegate as? AppDelegate
-    //    private let queuer = (UIApplication.shared.delegate as? AppDelegate)?.downloadThumbnailQueue
     private var queuer: Queuer?
-
-    //    internal lazy var cache = manager.cache
-    //    internal lazy var thumbnailsQueue = manager.queuer
-
-    var operations: [ConcurrentOperation] = []
 
     func configure(metadatas: [tableMetadata], queuer: Queuer) {
         self.metadatas = metadatas
@@ -71,7 +62,6 @@ struct ScaledThumbnail: Hashable {
                 if let image = UIImage(contentsOfFile: thumbnailPath) {
                     let thumbnail = ScaledThumbnail(image: image, metadata: metadata)
                     cache.setMediaImage(ocId: metadata.ocId, image: .actual(image))
-                    //                    cache.setValue(thumbnail, forKey: metadata.ocId)
 
                     DispatchQueue.main.async {
                         thumbnails.append(thumbnail)
@@ -83,46 +73,7 @@ struct ScaledThumbnail: Hashable {
                 let fileNamePreviewLocalPath = NCUtilityFileSystem().getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)
                 let fileNameIconLocalPath = NCUtilityFileSystem().getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)
 
-                var etagResource: String?
-                if FileManager.default.fileExists(atPath: fileNameIconLocalPath) && FileManager.default.fileExists(atPath: fileNamePreviewLocalPath) {
-                    etagResource = metadata.etagResource
-                }
                 let options = NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
-
-                //                let concurrentOperation = ConcurrentOperation { operation in
-                //                    operation.execute()
-                //
-                //                    NextcloudKit.shared.downloadPreview(
-                //                        fileNamePathOrFileId: fileNamePath,
-                //                        fileNamePreviewLocalPath: fileNamePreviewLocalPath,
-                //                        widthPreview: Int(UIScreen.main.bounds.width) / 2,
-                //                        heightPreview: Int(UIScreen.main.bounds.height) / 2,
-                //                        fileNameIconLocalPath: fileNameIconLocalPath,
-                //                        sizeIcon: NCGlobal.shared.sizeIcon,
-                //                        etag: etagResource,
-                //                        options: options) { _, _, imageIcon, _, etag, error in
-                //                            NCManageDatabase.shared.setMetadataEtagResource(ocId: metadata.ocId, etagResource: etag)
-                //
-                //                            let thumbnail: ScaledThumbnail
-                //
-                //                            if error == .success, let image = imageIcon {
-                //                                thumbnail = ScaledThumbnail(image: image, metadata: metadata)
-                //                                self.cache.setMediaImage(ocId: metadata.ocId, image: image)
-                //                            } else {
-                //                                thumbnail = ScaledThumbnail(image: UIImage(systemName: metadata.isVideo ? "video.fill" : "photo.fill")!.withRenderingMode(.alwaysTemplate), isPlaceholderImage: true, metadata: metadata)
-                //                            }
-                //
-                ////                            self.cache.setValue(thumbnail, forKey: metadata.ocId)
-                //
-                //                            operation.finish()
-                //
-                //                            DispatchQueue.main.async {
-                //                                thumbnails.append(thumbnail)
-                //                                self.calculateShrinkRatio(thumbnails: &thumbnails, rowWidth: rowWidth, spacing: spacing)
-                //                            }
-                //
-                //                        }
-                //                }
 
                 if let queuer, queuer.operations.filter({ ($0 as? NCMediaDownloadThumbnaill)?.metadata.ocId == metadata.ocId }).isEmpty {
                     let concurrentOperation = NCMediaDownloadThumbnaill(metadata: metadata, cache: cache, rowWidth: rowWidth, spacing: spacing, maxWidth: UIScreen.main.bounds.width, maxHeight: UIScreen.main.bounds.height) { thumbnail in
@@ -132,18 +83,8 @@ struct ScaledThumbnail: Hashable {
                         }
                     }
 
-                    operations.append(concurrentOperation)
                     queuer.addOperation(concurrentOperation)
-                    print(queuer.operationCount)
                 }
-
-                //                let concurrentOperation = NCMediaDownloadThumbnaill(metadata: metadata, cache: cache, thumbnails: &thumbnails, rowWidth: rowWidth, spacing: spacing, maxWidth: UIScreen.main.bounds.width, maxHeight: UIScreen.main.bounds.height)
-
-                //                operations.append(concurrentOperation)
-                //                appDelegate?.downloadThumbnailQueue.addOperation(concurrentOperation)
-                //                print(appDelegate!.downloadThumbnailQueue.operationCount)
-
-                //                concurrentOperation.start()
             }
         }
     }
@@ -168,22 +109,6 @@ struct ScaledThumbnail: Hashable {
             self.onThumbnailDownloaded = onThumbnailDownloaded
         }
 
-        //        var cell: NCCellProtocol?
-        //        var collectionView: UICollectionView?
-        //        var fileNamePath: String
-        //        var fileNamePreviewLocalPath: String
-        //        var fileNameIconLocalPath: String
-        //        let utilityFileSystem = NCUtilityFileSystem()
-
-        //        init(metadata: tableMetadata, cell: NCCellProtocol?, collectionView: UICollectionView?) {
-        //            self.metadata = tableMetadata.init(value: metadata)
-        ////            self.cell = cell
-        ////            self.collectionView = collectionView
-        ////            self.fileNamePath = utilityFileSystem.getFileNamePath(metadata.fileName, serverUrl: metadata.serverUrl, urlBase: metadata.urlBase, userId: metadata.userId)
-        ////            self.fileNamePreviewLocalPath = utilityFileSystem.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)
-        ////            self.fileNameIconLocalPath = utilityFileSystem.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)
-        //        }
-
         override func start() {
             guard !isCancelled else { return self.finish() }
 
@@ -197,7 +122,6 @@ struct ScaledThumbnail: Hashable {
             }
             let options = NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
 
-            //            let concurrentOperation = ConcurrentOperation { operation in
             NextcloudKit.shared.downloadPreview(
                 fileNamePathOrFileId: fileNamePath,
                 fileNamePreviewLocalPath: fileNamePreviewLocalPath,
@@ -222,21 +146,9 @@ struct ScaledThumbnail: Hashable {
 
                     self.onThumbnailDownloaded(thumbnail)
 
-                    //                            self.cache.setValue(thumbnail, forKey: metadata.ocId)
-
-                    //                        DispatchQueue.main.async {
-                    //                            self.thumbnails.append(thumbnail)
-                    //                            NCMediaRowViewModel.calculateShrinkRatio(metadatas: self.metadatas, rowData: &self.rowData, thumbnails: &self.thumbnails, rowWidth: self.rowWidth, spacing: self.spacing)
-                    //                        }
-
                     self.finish()
-                    //                    }
                 }
-
-
         }
-
-
     }
 
     private func calculateShrinkRatio(metadatas: [tableMetadata], rowData: inout RowData, thumbnails: inout [ScaledThumbnail], rowWidth: CGFloat, spacing: CGFloat) {
@@ -279,33 +191,13 @@ struct ScaledThumbnail: Hashable {
     }
 
     func cancelDownloadingThumbnails() {
-        //        operations.forEach {( $0.cancel() )}
-        //        operations.removeAll()
-    }
+        guard let queuer else { return }
 
-    //    private func getScaledThumbnailSize(of thumbnail: ScaledThumbnail, thumbnailsInRow thumbnails: [ScaledThumbnail]) -> CGSize {
-    //        let maxHeight = thumbnails.compactMap { CGFloat($0.image.size.height) }.max() ?? 0
-    //
-    //        let height = thumbnail.image.size.height
-    //        let width = thumbnail.image.size.width
-    //
-    //        let scaleFactor = maxHeight / height
-    //        let newHeight = height * scaleFactor
-    //        let newWidth = width * scaleFactor
-    //
-    //        return .init(width: newWidth, height: newHeight)
-    //    }
-    //
-    //    private func getShrinkRatio(thumbnailsInRow thumbnails: [ScaledThumbnail], fullWidth: CGFloat, spacing: CGFloat) -> CGFloat {
-    //        var newSummedWidth: CGFloat = 0
-    //
-    //        for thumbnail in thumbnails {
-    //            newSummedWidth += CGFloat(thumbnail.scaledSize.width)
-    //        }
-    //
-    //        let spacingWidth = spacing * CGFloat(thumbnails.count - 1)
-    //        let shrinkRatio: CGFloat = (fullWidth - spacingWidth) / newSummedWidth
-    //
-    //        return shrinkRatio
-    //    }
+        metadatas.forEach { metadata in
+            for case let operation as NCMediaDownloadThumbnaill in queuer.operations where operation.metadata.ocId == metadata.ocId {
+                operation.cancel()
+                print(queuer.operationCount)
+            }
+        }
+    }
 }

@@ -33,7 +33,7 @@ import NextcloudKit
 
     // MARK: -
 
-    private let limit: Int = 1000
+    private let limit: Int = 1500
 
     enum ImageType {
         case placeholder
@@ -51,7 +51,6 @@ import NextcloudKit
     override private init() {}
 
     func createMediaCache(account: String) {
-
         ocIdEtag.removeAll()
         metadatas.removeAll()
         getMediaMetadatas(account: account)
@@ -128,7 +127,6 @@ import NextcloudKit
     }
 
     func getMediaMetadatas(account: String, predicate: NSPredicate? = nil) {
-
         guard let account = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", account)) else { return }
         let startServerUrl = NCUtilityFileSystem().getHomeServer(urlBase: account.urlBase, userId: account.userId) + account.mediaPath
 
@@ -195,7 +193,6 @@ import NextcloudKit
     }
 
     func createImagesCache() {
-
         let brandElement = NCBrandColor.shared.brandElement
         let yellowFavorite = NCBrandColor.shared.yellowFavorite
         let utility = NCUtility()

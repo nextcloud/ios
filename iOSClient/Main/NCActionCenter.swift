@@ -42,6 +42,8 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
     let utilityFileSystem = NCUtilityFileSystem()
     let utility = NCUtility()
 
+    var onSelectionCancelled: (() -> Void)?
+
     // MARK: - Download
 
     @objc func downloadedFile(_ notification: NSNotification) {
@@ -444,6 +446,7 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
 
     // MARK: - Copy & Paste
 
+    @available(*, deprecated, message: "This calls the HUD view on dismiss, and the HUD will be removed throughout the app soon. Use copyToPasteboard(pasteboardOcIds:completion:) instead")
     func copyPasteboard(pasteboardOcIds: [String]) {
         var items = [[String: Any]]()
         guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else { return }
@@ -482,6 +485,42 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
             processor.completeWork {
                 items.append(contentsOf: downloadMetadatas.compactMap({ $0.toPasteBoardItem() }))
                 UIPasteboard.general.setItems(items, options: [:])
+            }
+        }
+    }
+
+    func copyToPasteboard(pasteboardOcIds: [String], completion: @escaping () -> Void) {
+        var items = [[String: Any]]()
+        guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else { return }
+//        let hudView = appDelegate.window?.rootViewController?.view
+
+        // getting file data can take some time and block the main queue
+        DispatchQueue.global(qos: .userInitiated).async {
+            var downloadMetadatas: [tableMetadata] = []
+            for ocid in pasteboardOcIds {
+                guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocid) else { continue }
+                if let pasteboardItem = metadata.toPasteBoardItem() {
+                    items.append(pasteboardItem)
+                } else {
+                    downloadMetadatas.append(metadata)
+                }
+            }
+
+            // do 5 downloads in parallel to optimize efficiency
+            let processor = ParallelWorker(n: 5, titleKey: "_downloading_", totalTasks: downloadMetadatas.count, hudView: nil)
+
+            for metadata in downloadMetadatas {
+                processor.execute { completion in
+                    NCNetworking.shared.download(metadata: metadata, selector: "", notificationCenterProgressTask: false) { _ in
+                    } completion: { _, _ in
+                        completion()
+                    }
+                }
+            }
+            processor.completeWork {
+                items.append(contentsOf: downloadMetadatas.compactMap({ $0.toPasteBoardItem() }))
+                UIPasteboard.general.setItems(items, options: [:])
+                completion()
             }
         }
     }
@@ -596,14 +635,13 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
 
     // MARK: - NCSelect + Delegate
 
+    func dismissCancelled() {
+        guard let onSelectionCancelled else { return }
+        onSelectionCancelled()
+    }
+
     func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String, items: [Any], indexPath: [IndexPath], overwrite: Bool, copy: Bool, move: Bool) {
         if let serverUrl, !items.isEmpty {
-            let hud = JGProgressHUD()
-            hud.textLabel.text = copy ? NSLocalizedString("_copying_progess_", comment: "") : NSLocalizedString("_moving_progess_", comment: "")
-            if let appDelegate = UIApplication.shared.delegate as? AppDelegate,
-               let view = appDelegate.window?.rootViewController?.view {
-                hud.show(in: view)
-            }
             if copy {
                 Task {
                     var error = NKError()
@@ -617,7 +655,7 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
                     if error != .success {
                         NCContentPresenter().showError(error: error)
                     }
-                    NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterCopyFile, userInfo: ["ocId": ocId, "indexPath": indexPath, "error": error, "hud": hud])
+                    NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterCopyFile, userInfo: ["ocId": ocId, "indexPath": indexPath, "error": error])
                 }
             } else {
                 Task {
@@ -632,13 +670,15 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
                     if error != .success {
                         NCContentPresenter().showError(error: error)
                     }
-                    NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterMoveFile, userInfo: ["ocId": ocId, "indexPath": indexPath, "error": error, "hud": hud])
+                    NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterMoveFile, userInfo: ["ocId": ocId, "indexPath": indexPath, "error": error])
                 }
             }
         }
     }
 
-    func openSelectView(items: [tableMetadata], indexPath: [IndexPath]) {
+    func openSelectView(items: [tableMetadata], indexPath: [IndexPath], didCancel: (() -> Void)? = nil) {
+        onSelectionCancelled = didCancel
+
         guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else { return }
 
         let navigationController = UIStoryboard(name: "NCSelect", bundle: nil).instantiateInitialViewController() as? UINavigationController
@@ -692,6 +732,109 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
 
         if let navigationController = navigationController {
             appDelegate.window?.rootViewController?.present(navigationController, animated: true, completion: nil)
+        }
+    }
+
+    @available(*, deprecated, message: "This calls the HUD view on dismiss, and the HUD will be removed throughout the app soon. Use openSelectView(items:indexPath:didCancel:) instead")
+    func openSelectView(items: [tableMetadata], indexPath: [IndexPath]) {
+        guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else { return }
+
+        let navigationController = UIStoryboard(name: "NCSelect", bundle: nil).instantiateInitialViewController() as? UINavigationController
+        let topViewController = navigationController?.topViewController as? NCSelect
+        var listViewController = [NCSelect]()
+
+        var copyItems: [tableMetadata] = []
+        for item in items {
+            copyItems.append(item)
+        }
+
+        let homeUrl = utilityFileSystem.getHomeServer(urlBase: appDelegate.urlBase, userId: appDelegate.userId)
+        var serverUrl = copyItems[0].serverUrl
+
+        // Setup view controllers such that the current view is of the same directory the items to be copied are in
+        while true {
+            // If not in the topmost directory, create a new view controller and set correct title.
+            // If in the topmost directory, use the default view controller as the base.
+            var viewController: NCSelect?
+            if serverUrl != homeUrl {
+                viewController = UIStoryboard(name: "NCSelect", bundle: nil).instantiateViewController(withIdentifier: "NCSelect.storyboard") as? NCSelect
+                if viewController == nil {
+                    return
+                }
+                viewController!.titleCurrentFolder = (serverUrl as NSString).lastPathComponent
+            } else {
+                viewController = topViewController
+            }
+            guard let vc = viewController else { return }
+
+            let delegate = Delegate()
+            vc.delegate = delegate
+            vc.typeOfCommandView = .copyMove
+            vc.items = copyItems
+            vc.serverUrl = serverUrl
+            vc.selectIndexPath = indexPath
+
+            vc.navigationItem.backButtonTitle = vc.titleCurrentFolder
+            listViewController.insert(vc, at: 0)
+
+            if serverUrl != homeUrl {
+                if let path = utilityFileSystem.deleteLastPath(serverUrlPath: serverUrl) {
+                    serverUrl = path
+                }
+            } else {
+                break
+            }
+        }
+
+        navigationController?.setViewControllers(listViewController, animated: false)
+        navigationController?.modalPresentationStyle = .formSheet
+
+        if let navigationController = navigationController {
+            appDelegate.window?.rootViewController?.present(navigationController, animated: true, completion: nil)
+        }
+    }
+
+    class Delegate: NCSelectDelegate {
+        func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String, items: [Any], indexPath: [IndexPath], overwrite: Bool, copy: Bool, move: Bool) {
+            if let serverUrl, !items.isEmpty {
+                let hud = JGProgressHUD()
+                hud.textLabel.text = copy ? NSLocalizedString("_copying_progess_", comment: "") : NSLocalizedString("_moving_progess_", comment: "")
+                if let appDelegate = UIApplication.shared.delegate as? AppDelegate,
+                   let view = appDelegate.window?.rootViewController?.view {
+                    hud.show(in: view)
+                }
+                if copy {
+                    Task {
+                        var error = NKError()
+                        var ocId: [String] = []
+                        for case let metadata as tableMetadata in items where error == .success {
+                            error = await NCNetworking.shared.copyMetadata(metadata, serverUrlTo: serverUrl, overwrite: overwrite)
+                            if error == .success {
+                                ocId.append(metadata.ocId)
+                            }
+                        }
+                        if error != .success {
+                            NCContentPresenter().showError(error: error)
+                        }
+                        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterCopyFile, userInfo: ["ocId": ocId, "indexPath": indexPath, "error": error, "hud": hud])
+                    }
+                } else {
+                    Task {
+                        var error = NKError()
+                        var ocId: [String] = []
+                        for case let metadata as tableMetadata in items where error == .success {
+                            error = await NCNetworking.shared.moveMetadata(metadata, serverUrlTo: serverUrl, overwrite: overwrite)
+                            if error == .success {
+                                ocId.append(metadata.ocId)
+                            }
+                        }
+                        if error != .success {
+                            NCContentPresenter().showError(error: error)
+                        }
+                        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterMoveFile, userInfo: ["ocId": ocId, "indexPath": indexPath, "error": error, "hud": hud])
+                    }
+                }
+            }
         }
     }
 }

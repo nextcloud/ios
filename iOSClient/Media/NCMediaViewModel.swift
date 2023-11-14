@@ -11,7 +11,7 @@ import Combine
 import LRUCache
 
 @MainActor class NCMediaViewModel: ObservableObject {
-    @Published private(set) internal var metadatas: [tableMetadata] = []
+    @Published internal var metadatas: [tableMetadata] = []
 
     private var account: String = ""
     private var lastContentOffsetY: CGFloat = 0
@@ -26,9 +26,27 @@ import LRUCache
     @Published internal var needsLoadingMoreItems = true
     @Published internal var filter = Filter.all
 
-    private let cache = NCImageCache.shared
+    private var isLoadingNewMetadata = false {
+        didSet {
+            updateLoadingMedia()
+        }
+    }
 
-    private var newAndOldMediaAlreadyLoaded = false
+    private var isLoadingOldMetadata = false {
+        didSet {
+            updateLoadingMedia()
+        }
+    }
+
+    private var isLoadingProcessingMetadata = false {
+        didSet {
+            updateLoadingMedia()
+        }
+    }
+
+    @Published internal var isLoadingMetadata = true
+
+    private let cache = NCImageCache.shared
 
     init() {
         guard let appDelegate, !appDelegate.account.isEmpty else { return }
@@ -50,7 +68,9 @@ import LRUCache
         NotificationCenter.default.addObserver(self, selector: #selector(uploadedFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUploadedFile), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(userChanged(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeUser), object: nil)
 
-        metadatas = cache.metadatas
+        DispatchQueue.main.async {
+            self.metadatas = self.cache.metadatas
+        }
 
         Task {
             await loadNewMedia()
@@ -68,7 +88,7 @@ import LRUCache
                     self.loadMediaFromDB(showPhotos: false, showVideos: true)
                 }
 
-                self.cancelSelection()
+//                self.cancelSelection()
             }
             .store(in: &cancellables)
     }
@@ -137,7 +157,11 @@ import LRUCache
     }
 
     public func copyOrMoveMetadataInApp(metadatas: [tableMetadata]) {
-        NCActionCenter.shared.openSelectView(items: metadatas, indexPath: [])
+        isLoadingProcessingMetadata = true
+
+        NCActionCenter.shared.openSelectView(items: metadatas, indexPath: [], didCancel: {
+            self.isLoadingProcessingMetadata = false
+        })
 //        cancelSelection()
     }
 
@@ -163,6 +187,8 @@ import LRUCache
     }
 
     public func openIn(metadata: tableMetadata) {
+        isLoadingProcessingMetadata = true
+
         if NCUtilityFileSystem().fileProviderStorageExists(metadata) {
             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDownloadedFile, userInfo: ["ocId": metadata.ocId, "selector": NCGlobal.shared.selectorOpenIn, "error": NKError(), "account": metadata.account])
         } else {
@@ -174,6 +200,8 @@ import LRUCache
 //                hud.progress = Float(progress.fractionCompleted)
 //            } completion:
             { afError, error in
+                self.isLoadingProcessingMetadata = false
+
                 if error == .success || afError?.isExplicitlyCancelledError ?? false {
 //                    hud.dismiss()
                 } else {
@@ -186,6 +214,8 @@ import LRUCache
     }
 
     public func saveToPhotos(metadata: tableMetadata) {
+        isLoadingProcessingMetadata = true
+
         if let livePhoto = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata) {
             guard let appDelegate else { return }
             appDelegate.saveLivePhotoQueue.addOperation(NCOperationSaveLivePhoto(metadata: metadata, metadataMOV: livePhoto))
@@ -197,6 +227,9 @@ import LRUCache
             } progressHandler: { progress in
 //                hud.progress = Float(progress.fractionCompleted)
             } completion: { afError, error in
+
+                self.isLoadingProcessingMetadata = false
+
 //                if error == .success || afError?.isExplicitlyCancelledError ?? false {
 //                    hud.dismiss()
 //                } else {
@@ -213,6 +246,8 @@ import LRUCache
     }
 
     public func modify(metadata: tableMetadata) {
+        isLoadingProcessingMetadata = true
+
         if NCUtilityFileSystem().fileProviderStorageExists(metadata) {
             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDownloadedFile, userInfo: ["ocId": metadata.ocId, "selector": NCGlobal.shared.selectorLoadFileQuickLook, "error": NKError(), "account": metadata.account])
         } else {
@@ -222,6 +257,8 @@ import LRUCache
             } progressHandler: { progress in
 //                hud.progress = Float(progress.fractionCompleted)
             } completion: { afError, error in
+                self.isLoadingProcessingMetadata = false
+
 //                if error == .success || afError?.isExplicitlyCancelledError ?? false {
 //                    hud.dismiss()
 //                } else {
@@ -249,6 +286,8 @@ import LRUCache
     }
 
     public func delete(metadatas: [tableMetadata]) {
+        isLoadingProcessingMetadata = true
+
         Task {
             var error = NKError()
             var ocId: [String] = []
@@ -269,12 +308,20 @@ import LRUCache
     }
 
     public func copy(metadatas: [tableMetadata]) {
-        NCActionCenter.shared.copyPasteboard(pasteboardOcIds: metadatas.compactMap({ $0.ocId }))
+        isLoadingProcessingMetadata = true
+
+        NCActionCenter.shared.copyToPasteboard(pasteboardOcIds: metadatas.compactMap({ $0.ocId })) {
+            self.isLoadingProcessingMetadata = false
+        }
     }
 
-    private func cancelSelection() {
-//        self.isInSelectMode = false
-//        self.selectedMetadatas.removeAll()
+//    private func cancelSelection() {
+////        self.isInSelectMode = false
+////        self.selectedMetadatas.removeAll()
+//    }
+
+    private func updateLoadingMedia() {
+        isLoadingMetadata = isLoadingNewMetadata || isLoadingOldMetadata || isLoadingProcessingMetadata
     }
 }
 
@@ -287,6 +334,8 @@ extension NCMediaViewModel {
 
         loadMediaFromDB()
 
+        isLoadingProcessingMetadata = false
+
         if error != .success {
             NCContentPresenter().showError(error: error)
         }
@@ -297,6 +346,8 @@ extension NCMediaViewModel {
               let error = userInfo["error"] as? NKError else { return }
 
         loadMediaFromDB()
+
+        isLoadingProcessingMetadata = false
 
         if error != .success {
             NCContentPresenter().showError(error: error)
@@ -328,6 +379,8 @@ extension NCMediaViewModel {
     }
 
     @objc func userChanged(_ notification: NSNotification) {
+            self.loadMediaFromDB()
+
         Task {
             await loadNewMedia()
         }
@@ -367,6 +420,9 @@ extension NCMediaViewModel {
 
     private func loadOldMedia(value: Int = -30, limit: Int = 300) {
         var lessDate = Date()
+
+        isLoadingOldMetadata = true
+
         if let predicateDefault {
             if let metadata = NCManageDatabase.shared.getMetadata(predicate: predicateDefault, sorted: "date", ascending: true) {
                 lessDate = metadata.date as Date
@@ -406,6 +462,7 @@ extension NCMediaViewModel {
 
             DispatchQueue.main.async {
                 self.needsLoadingMoreItems = false
+                self.isLoadingOldMetadata = false
             }
         }
     }
@@ -433,6 +490,8 @@ extension NCMediaViewModel {
 
         let options = NKRequestOptions(timeout: 300, queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
 
+        isLoadingNewMetadata = true
+
         return await withCheckedContinuation { continuation in
             NextcloudKit.shared.searchMedia(path: self.mediaPath, lessDate: lessDate, greaterDate: greaterDate, elementDate: "d:getlastmodified/", limit: limit, showHiddenFiles: NCKeychain().showHiddenFiles, options: options) { account, files, _, error in
 
@@ -450,6 +509,10 @@ extension NCMediaViewModel {
                     self.loadOldMedia()
                 } else if error != .success {
                     NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Media search new media error code \(error.errorCode) " + error.errorDescription)
+                }
+
+                DispatchQueue.main.async {
+                    self.isLoadingNewMetadata = false
                 }
 
                 continuation.resume()
