@@ -70,9 +70,7 @@ class NCManageDatabase: NSObject {
 
         if isAppex {
 
-            // App Extension config
-
-            let config = Realm.Configuration(
+            Realm.Configuration.defaultConfiguration = Realm.Configuration(
                 fileURL: dirGroup?.appendingPathComponent(NCGlobal.shared.appDatabaseNextcloud + "/" + databaseName),
                 schemaVersion: databaseSchemaVersion,
                 objectTypes: [tableMetadata.self,
@@ -97,53 +95,48 @@ class NCManageDatabase: NSObject {
                               NCDBLayoutForView.self]
             )
 
-            Realm.Configuration.defaultConfiguration = config
-
         } else {
 
-            // App config
-
-            let configCompact = Realm.Configuration(
-
-                fileURL: databaseFileUrlPath,
-                schemaVersion: databaseSchemaVersion,
-
-                migrationBlock: { migration, oldSchemaVersion in
-
-                    if oldSchemaVersion < 255 {
-                        migration.deleteData(forType: tableActivity.className())
-                        migration.deleteData(forType: tableActivityLatestId.className())
-                        migration.deleteData(forType: tableActivityPreview.className())
-                        migration.deleteData(forType: tableActivitySubjectRich.className())
-                        migration.deleteData(forType: tableDirectory.className())
-                        migration.deleteData(forType: tableMetadata.className())
-                    }
-
-                    if oldSchemaVersion < 292 {
-                        migration.deleteData(forType: tableVideo.className())
-                    }
-
-                    if oldSchemaVersion < 319 {
-                        migration.deleteData(forType: tableChunk.className())
-                        migration.deleteData(forType: tableMetadata.className())
-                        migration.deleteData(forType: tableDirectory.className())
-                        migration.deleteData(forType: tableE2eEncryptionLock.className())
-                        migration.deleteData(forType: tableGPS.className())
-                    }
-
-                }, shouldCompactOnLaunch: { totalBytes, usedBytes in
-
-                    // totalBytes refers to the size of the file on disk in bytes (data + free space)
-                    // usedBytes refers to the number of bytes used by data in the file
-
-                    // Compact if the file is over 100MB in size and less than 50% 'used'
-                    let oneHundredMB = 100 * 1024 * 1024
-                    return (totalBytes > oneHundredMB) && (Double(usedBytes) / Double(totalBytes)) < 0.5
-                }
-            )
-
             do {
-                _ = try Realm(configuration: configCompact)
+                _ = try Realm(configuration: Realm.Configuration(
+
+                    fileURL: databaseFileUrlPath,
+                    schemaVersion: databaseSchemaVersion,
+
+                    migrationBlock: { migration, oldSchemaVersion in
+
+                        if oldSchemaVersion < 255 {
+                            migration.deleteData(forType: tableActivity.className())
+                            migration.deleteData(forType: tableActivityLatestId.className())
+                            migration.deleteData(forType: tableActivityPreview.className())
+                            migration.deleteData(forType: tableActivitySubjectRich.className())
+                            migration.deleteData(forType: tableDirectory.className())
+                            migration.deleteData(forType: tableMetadata.className())
+                        }
+
+                        if oldSchemaVersion < 292 {
+                            migration.deleteData(forType: tableVideo.className())
+                        }
+
+                        if oldSchemaVersion < 319 {
+                            migration.deleteData(forType: tableChunk.className())
+                            migration.deleteData(forType: tableMetadata.className())
+                            migration.deleteData(forType: tableDirectory.className())
+                            migration.deleteData(forType: tableE2eEncryptionLock.className())
+                            migration.deleteData(forType: tableGPS.className())
+                        }
+
+                    }, shouldCompactOnLaunch: { totalBytes, usedBytes in
+
+                        // totalBytes refers to the size of the file on disk in bytes (data + free space)
+                        // usedBytes refers to the number of bytes used by data in the file
+
+                        // Compact if the file is over 100MB in size and less than 50% 'used'
+                        let oneHundredMB = 100 * 1024 * 1024
+                        return (totalBytes > oneHundredMB) && (Double(usedBytes) / Double(totalBytes)) < 0.5
+                    }
+                ))
+
             } catch let error {
                 if let databaseFileUrlPath = databaseFileUrlPath {
                     do {
@@ -157,12 +150,10 @@ class NCManageDatabase: NSObject {
                 }
             }
 
-            let config = Realm.Configuration(
+            Realm.Configuration.defaultConfiguration = Realm.Configuration(
                 fileURL: dirGroup?.appendingPathComponent(NCGlobal.shared.appDatabaseNextcloud + "/" + databaseName),
                 schemaVersion: databaseSchemaVersion
             )
-
-            Realm.Configuration.defaultConfiguration = config
         }
 
         // Verify Database, if corrupt remove it
@@ -181,7 +172,6 @@ class NCManageDatabase: NSObject {
             }
         }
 
-        // Open Real
         do {
             _ = try Realm()
         } catch let error as NSError {
