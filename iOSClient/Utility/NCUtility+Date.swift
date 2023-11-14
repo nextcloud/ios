@@ -62,7 +62,7 @@ extension NCUtility {
                 return String.localizedStringWithFormat(NSLocalizedString("_minutes_ago_", comment: ""), diff)
             }
         } else if ti < 86400 {
-            let diff = Int(round(ti / 60))
+            let diff = Int(round(ti / 60 / 60))
             if diff == 1 {
                 return NSLocalizedString("_an_hour_ago_", comment: "")
             } else {

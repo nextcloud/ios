@@ -38,21 +38,10 @@ class NCSettingsBundleHelper: NSObject {
     class func checkAndExecuteSettings(delay: Double) {
         if UserDefaults.standard.bool(forKey: SettingsBundleKeys.Reset) {
             UserDefaults.standard.set(false, forKey: SettingsBundleKeys.Reset)
-            let utilityFileSystem = NCUtilityFileSystem()
-
-            URLCache.shared.memoryCapacity = 0
-            URLCache.shared.diskCapacity = 0
-
-            utilityFileSystem.removeGroupDirectoryProviderStorage()
-            utilityFileSystem.removeGroupApplicationSupport()
-            utilityFileSystem.removeDocumentsDirectory()
-            utilityFileSystem.removeTemporaryDirectory()
-
-            NCKeychain().removeAll()
-            NCManageDatabase.shared.removeDB()
 
             DispatchQueue.main.asyncAfter(deadline: .now() + delay) {
-                exit(0)
+                let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
+                appDelegate.removeAllSettings(killEmAll: true)
             }
         }
     }

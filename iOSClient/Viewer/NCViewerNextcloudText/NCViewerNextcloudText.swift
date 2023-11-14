@@ -71,18 +71,19 @@ class NCViewerNextcloudText: UIViewController, WKNavigationDelegate, WKScriptMes
         bottomConstraint = webView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: 70)
         bottomConstraint?.isActive = true
 
-        var request = URLRequest(url: URL(string: link)!)
-        request.addValue("true", forHTTPHeaderField: "OCS-APIRequest")
-        let language = NSLocale.preferredLanguages[0] as String
-        request.addValue(language, forHTTPHeaderField: "Accept-Language")
-
         if editor == NCGlobal.shared.editorOnlyoffice {
             webView.customUserAgent = utility.getCustomUserAgentOnlyOffice()
         } else if editor == NCGlobal.shared.editorText {
             webView.customUserAgent = utility.getCustomUserAgentNCText()
         } // else: use default
 
-        webView.load(request)
+        if let url = URL(string: link) {
+            var request = URLRequest(url: url)
+            request.addValue("true", forHTTPHeaderField: "OCS-APIRequest")
+            let language = NSLocale.preferredLanguages[0] as String
+            request.addValue(language, forHTTPHeaderField: "Accept-Language")
+            webView.load(request)
+        }
     }
 
     override func viewWillAppear(_ animated: Bool) {

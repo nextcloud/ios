@@ -2,7 +2,7 @@
 //  NCManageDatabase+Account.swift
 //  Nextcloud
 //
-//  Created by Henrik Storch on 30.11.21.
+//  Created by Marino Faggiana on 13/11/23.
 //  Copyright © 2021 Marino Faggiana. All rights reserved.
 //
 //  Author Marino Faggiana <marino.faggiana@nextcloud.com>

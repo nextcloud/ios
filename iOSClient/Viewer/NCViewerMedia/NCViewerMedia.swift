@@ -153,6 +153,9 @@ class NCViewerMedia: UIViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
+        // Set Last Opening Date
+        NCManageDatabase.shared.setLastOpeningDate(metadata: metadata)
+
         viewerMediaPage?.clearCommandCenter()
 
         if metadata.isAudioOrVideo {

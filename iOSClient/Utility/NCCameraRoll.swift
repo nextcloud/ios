@@ -284,6 +284,7 @@ class NCCameraRoll: NSObject {
                                                                                url: "",
                                                                                contentType: "",
                                                                                isLivePhoto: true)
+
                 metadataLivePhoto.classFile = NKCommon.TypeClassFile.video.rawValue
                 metadataLivePhoto.isExtractFile = true
                 metadataLivePhoto.session = metadata.session

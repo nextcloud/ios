@@ -396,7 +396,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
                 if error == .success, let userProfile {
 
                     if NCManageDatabase.shared.getAccounts() == nil {
-                        NCUtilityFileSystem().removeAllSettings()
+                        self.appDelegate.removeAllSettings(killEmAll: false)
                     }
 
                     NCManageDatabase.shared.deleteAccount(account)

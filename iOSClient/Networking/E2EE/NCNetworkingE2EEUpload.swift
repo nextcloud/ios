@@ -43,8 +43,9 @@ class NCNetworkingE2EEUpload: NSObject {
     let networkingE2EE = NCNetworkingE2EE()
     let utilityFileSystem = NCUtilityFileSystem()
     let utility = NCUtility()
+    var numChunks: Int = 0
 
-    func upload(metadata: tableMetadata, uploadE2EEDelegate: uploadE2EEDelegate? = nil) async -> NKError {
+    func upload(metadata: tableMetadata, uploadE2EEDelegate: uploadE2EEDelegate? = nil, hudView: UIView?) async -> NKError {
 
         var metadata = metadata
         let ocIdTemp = metadata.ocId
@@ -129,17 +130,14 @@ class NCNetworkingE2EEUpload: NSObject {
             return NKError(errorCode: NCGlobal.shared.errorE2EELock, errorDescription: NSLocalizedString("_e2e_error_", comment: ""))
         }
 
-        // HUD
+        // HUD ENCRYPTION
         //
-#if !EXTENSION
-        DispatchQueue.main.async {
-            guard let appDelegate = UIApplication.shared.delegate as? AppDelegate, let hudView = appDelegate.window?.rootViewController?.view else {
-                return
+        if let hudView {
+            DispatchQueue.main.async {
+                self.hud.textLabel.text = NSLocalizedString("_wait_file_encryption_", comment: "")
+                self.hud.show(in: hudView)
             }
-            self.hud.textLabel.text = NSLocalizedString("_wait_file_preparation_", comment: "")
-            self.hud.show(in: hudView)
         }
-#endif
 
         // SEND NEW METADATA
         //
@@ -150,6 +148,22 @@ class NCNetworkingE2EEUpload: NSObject {
             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUploadedFile, userInfo: ["ocId": metadata.ocId, "serverUrl": metadata.serverUrl, "account": metadata.account, "fileName": metadata.fileName, "ocIdTemp": ocIdTemp, "error": sendE2eeError])
             await networkingE2EE.unlock(account: metadata.account, serverUrl: metadata.serverUrl)
             return sendE2eeError
+        }
+
+        // HUD CHUNK
+        //
+        if hudView != nil {
+            DispatchQueue.main.async {
+                self.hud.indicatorView = JGProgressHUDRingIndicatorView()
+                if let indicatorView = self.hud.indicatorView as? JGProgressHUDRingIndicatorView {
+                    indicatorView.ringWidth = 1.5
+                }
+                self.hud.tapOnHUDViewBlock = { _ in
+                    NotificationCenter.default.postOnMainThread(name: "NextcloudKit.chunkedFile.stop")
+                }
+                self.hud.textLabel.text = NSLocalizedString("_wait_file_preparation_", comment: "")
+                self.hud.detailTextLabel.text = NSLocalizedString("_tap_to_cancel_", comment: "")
+            }
         }
 
         // UPLOAD
@@ -200,15 +214,19 @@ class NCNetworkingE2EEUpload: NSObject {
     private func sendFile(metadata: tableMetadata, e2eToken: String, uploadE2EEDelegate: uploadE2EEDelegate? = nil) async -> (ocId: String?, etag: String?, date: NSDate?, afError: AFError?, error: NKError) {
 
         if metadata.chunk > 0 {
+
             return await withCheckedContinuation({ continuation in
-                NCNetworking.shared.uploadChunkFile(metadata: metadata, withUploadComplete: false, customHeaders: ["e2e-token": e2eToken]) {
-#if !EXTENSION
+                NCNetworking.shared.uploadChunkFile(metadata: metadata, withUploadComplete: false, customHeaders: ["e2e-token": e2eToken]) { num in
+                    self.numChunks = num
+                } counterChunk: { counter in
+                    DispatchQueue.main.async { self.hud.progress = Float(counter) / Float(self.numChunks) }
+                } start: {
                     DispatchQueue.main.async { self.hud.dismiss() }
-#endif
                     uploadE2EEDelegate?.start()
-                } progressHandler: { totalBytesExpected, totalBytes, fractionCompleted in
+                } progressHandler: {totalBytesExpected, totalBytes, fractionCompleted in
                     uploadE2EEDelegate?.uploadE2EEProgress(totalBytesExpected, totalBytes, fractionCompleted)
                 } completion: { _, file, afError, error in
+                    DispatchQueue.main.async { self.hud.dismiss() }
                     continuation.resume(returning: (ocId: file?.ocId, etag: file?.etag, date: file?.date, afError: afError, error: error))
                 }
             })
@@ -218,9 +236,7 @@ class NCNetworkingE2EEUpload: NSObject {
             let fileNameLocalPath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileName)
             return await withCheckedContinuation({ continuation in
                 NCNetworking.shared.uploadFile(metadata: metadata, fileNameLocalPath: fileNameLocalPath, withUploadComplete: false, customHeaders: ["e2e-token": e2eToken]) {
-#if !EXTENSION
                     DispatchQueue.main.async { self.hud.dismiss() }
-#endif
                     uploadE2EEDelegate?.start()
                 } progressHandler: { totalBytesExpected, totalBytes, fractionCompleted in
                     uploadE2EEDelegate?.uploadE2EEProgress(totalBytesExpected, totalBytes, fractionCompleted)
