@@ -99,7 +99,7 @@ class NCNetworkingProcessUpload: NSObject {
 
         let applicationState = UIApplication.shared.applicationState
         let queue = DispatchQueue.global()
-        var maxConcurrentOperationUpload = 10
+        var maxConcurrentOperationUpload = NCBrandOptions.shared.maxConcurrentOperationUpload
         let viewController = appDelegate.window?.rootViewController
         let hud = JGProgressHUD()
 
