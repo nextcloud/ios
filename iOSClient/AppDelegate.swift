@@ -827,6 +827,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     func passcodeAlert(_ passcodeViewController: TOPasscodeViewController) {
 
         passcodeViewController.biometricButton.isHidden = true
+        passcodeViewController.passcodeView.resetPasscode(animated: true, playImpact: false)
+        passcodeViewController.setContentHidden(true, animated: true)
+
         let alertController = UIAlertController(title: NSLocalizedString("_passcode_counter_fail_", comment: ""), message: nil, preferredStyle: .alert)
         passcodeViewController.present(alertController, animated: true, completion: { })
 
@@ -838,11 +841,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                 NCKeychain().passcodeSecondsFail += 1
                 timer.invalidate()
                 alertController.dismiss(animated: true)
+                passcodeViewController.setContentHidden(false, animated: true)
             }
         }
     }
 
     func passcodeResetApp(_ passcodeViewController: TOPasscodeViewController) {
+
+        passcodeViewController.passcodeView.resetPasscode(animated: true, playImpact: false)
+        passcodeViewController.setContentHidden(true, animated: true)
 
         let alertController = UIAlertController(title: NSLocalizedString("_failes_attemps_reset_", comment: ""), message: nil, preferredStyle: .alert)
         passcodeViewController.present(alertController, animated: true, completion: { })
