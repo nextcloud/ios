@@ -297,7 +297,7 @@
 "_lock_active_"                 = "Lock: On";
 "_lock_not_active_"             = "Lock: Off";
 "_lock_protection_no_screen_"        = "Do not ask at startup";
-"_lock_protection_no_screen_footer_" = "Use \"Do not ask at startup\" for the encryption option";
+"_lock_protection_no_screen_footer_" = "Use \"Do not ask at startup\" for the encryption option.";
 "_enable_touch_face_id_"        = "Enable Touch/Face ID";
 "_url_"                         = "URL";
 "_username_"                    = "Username";
@@ -947,8 +947,8 @@
 "_chunk_move_"              = "The sent file could not be reassembled, please check the server log";
 "_download_image_"          = "Download image";
 "_download_video_"          = "Download video";
-"_reset_wrong_passcode_"    = "Resets after wrong passcode";
-"_failes_attemps_reset_"    = "Number of failed attempts. App reset";
+"_reset_wrong_passcode_"    = "Reset application";
+"_reset_wrong_passcode_desc_" = "Use \"Reset application\" for remove all accounts and local data after %d failed code entry attempts.";
 
 // Video
 "_select_trace_"            = "Select the trace";

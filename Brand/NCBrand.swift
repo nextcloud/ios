@@ -87,6 +87,10 @@ let userAgent: String = {
     // Max upload concurrent
     public let maxConcurrentOperationUpload: Int = 10
 
+    // Number of failed attempts after reset app
+    @objc public let resetAppPasscodeAttempts: Int = 10
+    public let passcodeSecondsFail: Int = 30
+
     // Info Paging
     enum NCInfoPagingTab: Int, CaseIterable {
         case activity, sharing
