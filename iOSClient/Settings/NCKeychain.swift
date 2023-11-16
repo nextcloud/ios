@@ -54,12 +54,12 @@ import KeychainAccess
         }
     }
 
-    @objc var resetAppCounterFail: Int {
+    @objc var resetAppCounterFail: Bool {
         get {
-            if let value = try? keychain.get("resetAppCounterFail"), let result = Int(value) {
+            if let value = try? keychain.get("resetAppCounterFail"), let result = Bool(value) {
                 return result
             }
-            return 0
+            return false
         }
         set {
             keychain["resetAppCounterFail"] = String(newValue)
