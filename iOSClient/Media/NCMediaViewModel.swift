@@ -502,7 +502,13 @@ extension NCMediaViewModel {
                         let metadatasResult = NCManageDatabase.shared.getMetadatas(predicate: predicateResult)
                         let updateMetadatas = NCManageDatabase.shared.updateMetadatas(metadatas, metadatasResult: metadatasResult, addCompareLivePhoto: false)
                         if !updateMetadatas.metadatasUpdate.isEmpty || !updateMetadatas.metadatasDelete.isEmpty {
-                            self.loadMediaFromDB()
+                            //                            self.loadMediaFromDB()
+                            DispatchQueue.main.async {
+                                print(updateMetadatas.metadatasUpdate.count)
+                                self.metadatas.insert(contentsOf: updateMetadatas.metadatasUpdate, at: 0)
+                                //                                self.metadatas.append(contentsOf: updateMetadatas.metadatasUpdate)
+                            }
+                            //                            self.loadMediaFromDB()
                         }
                     }
                 } else if error == .success && files.isEmpty && self.metadatas.isEmpty {

@@ -42,7 +42,7 @@ struct NCMediaScrollView: View, Equatable {
                     } onCellContextMenuItemSelected: { thumbnail, selection in
                         onCellContextMenuItemSelected(thumbnail, selection)
                     }
-                    .equatable()
+//                    .equatable()
                     .onAppear {
                         //                        title = CCUtility.getTitleSectionDate(rowMetadatas.first?.date as? Date) ?? ""
                     }
@@ -59,15 +59,12 @@ struct NCMediaScrollView: View, Equatable {
                 //                }
 
                 //                Spacer(minLength: 40).listRowSeparator(.hidden)
-            }.background(GeometryReader { geometry in
-                Color.clear
-                    .preference(key: ScrollOffsetPreferenceKey.self, value: geometry.frame(in: .named("scroll")).origin)
-            })
+            }
             //            .listStyle(.plain)
             .padding(.top, 70)
             .padding(.bottom, 40)
             //        }
-            .coordinateSpace(name: "scroll")
+//            .coordinateSpace(name: "scroll")
             //        .onPreferenceChange(ScrollOffsetPreferenceKey.self) { value in
             //            isScrolledToTop = value.y >= 40
             //        }
@@ -93,10 +90,10 @@ struct NCMediaScrollView: View, Equatable {
             //        }
             //        .preference(key: TitlePreferenceKey.self, value: title)
         }
-        .refreshable {
-            await onRefresh()
-            //            await vm.onPullToRefresh()
-        }
+//        .refreshable {
+//            await onRefresh()
+//            //            await vm.onPullToRefresh()
+//        }
     }
 }
 //}
