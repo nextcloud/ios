@@ -184,11 +184,6 @@ class NCService: NSObject {
             NCManageDatabase.shared.addCapabilitiesJSon(data, account: account)
             NCManageDatabase.shared.setCapabilities(account: account, data: data)
 
-            // Setup communication
-            if NCGlobal.shared.capabilityServerVersionMajor > 0 {
-                NextcloudKit.shared.setup(nextcloudVersion: NCGlobal.shared.capabilityServerVersionMajor)
-            }
-
             // Theming
             if NCGlobal.shared.capabilityThemingColor != NCBrandColor.shared.themingColor || NCGlobal.shared.capabilityThemingColorElement != NCBrandColor.shared.themingColorElement || NCGlobal.shared.capabilityThemingColorText != NCBrandColor.shared.themingColorText {
                 NCBrandColor.shared.settingThemingColor(account: account)
