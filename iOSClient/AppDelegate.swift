@@ -62,7 +62,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     let unifiedSearchQueue = Queuer(name: "unifiedSearchQueue", maxConcurrentOperationCount: 1, qualityOfService: .default)
     let saveLivePhotoQueue = Queuer(name: "saveLivePhotoQueue", maxConcurrentOperationCount: 1, qualityOfService: .default)
 
-    var isTaskProcessing: Bool = false
+    var isAppRefresh: Bool = false
+    var isAppProcessing: Bool = false
 
     var isUiTestingEnabled: Bool {
         return ProcessInfo.processInfo.arguments.contains("UI_TESTING")
@@ -342,19 +343,19 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     func handleAppRefresh(_ task: BGTask) {
         scheduleAppRefresh()
 
-        if isTaskProcessing {
-            NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Task already in progress, abort.")
+        if isAppProcessing {
+            NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Processing task already in progress, abort.")
             task.setTaskCompleted(success: true)
             return
         }
-        isTaskProcessing = true
+        isAppRefresh = true
 
         NCAutoUpload.shared.initAutoUpload(viewController: nil) { items in
             NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Refresh task auto upload with \(items) uploads")
             NCNetworkingProcessUpload.shared.start { items in
                 NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Refresh task upload process with \(items) uploads")
                 task.setTaskCompleted(success: true)
-                self.isTaskProcessing = false
+                self.isAppRefresh = false
             }
         }
     }
@@ -362,19 +363,19 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     func handleProcessingTask(_ task: BGTask) {
         scheduleAppProcessing()
 
-        if isTaskProcessing {
-            NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Task already in progress, abort.")
+        if isAppRefresh {
+            NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Refresh task already in progress, abort.")
             task.setTaskCompleted(success: true)
             return
         }
-        isTaskProcessing = true
+        isAppProcessing = true
 
         NCAutoUpload.shared.initAutoUpload(viewController: nil) { items in
             NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Processing task auto upload with \(items) uploads")
             NCNetworkingProcessUpload.shared.start { items in
                 NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Processing task upload process with \(items) uploads")
                 task.setTaskCompleted(success: true)
-                self.isTaskProcessing = false
+                self.isAppProcessing = false
             }
         }
     }
@@ -606,10 +607,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             NCManageDatabase.shared.setAccountUserProfile(account: account, userProfile: userProfile)
         }
 
-        if NCGlobal.shared.capabilityServerVersionMajor > 0 {
-            NextcloudKit.shared.setup(nextcloudVersion: NCGlobal.shared.capabilityServerVersionMajor)
-        }
-
         NCPushNotification.shared().pushNotification()
 
         NCService().startRequestServicesServer()
@@ -752,7 +749,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             let passcodeCounterFail = NCKeychain().passcodeCounterFail
             if NCKeychain().resetAppCounterFail && (passcodeCounterFail >= NCBrandOptions.shared.resetAppPasscodeAttempts) {
                 self.passcodeResetApp(passcodeViewController)
-            } else if passcodeCounterFail >= 3 {
+            } else if passcodeCounterFail == 3 || passcodeCounterFail == 5 {
                 self.passcodeAlert(passcodeViewController)
             }
             completion()
@@ -782,14 +779,21 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                         }
                     }
                 } else {
+                    let counterFail = NCKeychain().passcodeCounterFail
                     if let error = evaluateError {
                         if error._code == LAError.authenticationFailed.rawValue {
-                            // var error: NSError?
-                            // LAContext().canEvaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, error: &error)
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                                if counterFail < 3 { NCKeychain().passcodeCounterFail = 3 }
+                                self.passcodeAlert(passcodeViewController)
+                            }
                         } else if error._code == LAError.biometryLockout.rawValue {
-                            let reason = "TouchID has been locked out due to few fail attemp. Enter iPhone passcode to enable TouchID."
-                            LAContext().evaluatePolicy(LAPolicy.deviceOwnerAuthentication, localizedReason: reason, reply: { success, _ in
-                                if success { DispatchQueue.main.async { self.enableTouchFaceID() } }
+                            if counterFail < 5 { NCKeychain().passcodeCounterFail = 5 }
+                            LAContext().evaluatePolicy(LAPolicy.deviceOwnerAuthentication, localizedReason: NSLocalizedString("_deviceOwnerAuthentication_", comment: ""), reply: { success, _ in
+                                if success {
+                                    DispatchQueue.main.async {
+                                        self.enableTouchFaceID()
+                                    }
+                                }
                             })
                         }
                     }
@@ -816,7 +820,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             let passcodeCounterFail = NCKeychain().passcodeCounterFail
             if NCKeychain().resetAppCounterFail && (passcodeCounterFail >= NCBrandOptions.shared.resetAppPasscodeAttempts) {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { self.passcodeResetApp(passcodeViewController) }
-            } else if passcodeCounterFail >= 3 {
+            } else if passcodeCounterFail == 3 || passcodeCounterFail == 5 {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { self.passcodeAlert(passcodeViewController) }
             }
             return false
@@ -836,15 +840,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         let alertController = UIAlertController(title: NSLocalizedString("_passcode_counter_fail_", comment: ""), message: nil, preferredStyle: .alert)
         passcodeViewController.present(alertController, animated: true, completion: { })
 
-        var seconds = NCKeychain().passcodeSecondsFail * NCBrandOptions.shared.passcodeSecondsFail
+        var seconds = NCBrandOptions.shared.passcodeSecondsFail
         _ = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { timer in
             alertController.message = "\(seconds) " + NSLocalizedString("_seconds_", comment: "")
             seconds -= 1
             if seconds < 0 {
-                NCKeychain().passcodeSecondsFail += 1
                 timer.invalidate()
                 alertController.dismiss(animated: true)
                 passcodeViewController.setContentHidden(false, animated: true)
+                let counterFail = NCKeychain().passcodeCounterFail
             }
         }
     }
@@ -873,24 +877,21 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         NCNetworking.shared.cancelUploadTasks()
         NCNetworking.shared.cancelUploadBackgroundTask()
 
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+        URLCache.shared.memoryCapacity = 0
+        URLCache.shared.diskCapacity = 0
 
-            URLCache.shared.memoryCapacity = 0
-            URLCache.shared.diskCapacity = 0
+        utilityFileSystem.removeGroupDirectoryProviderStorage()
+        utilityFileSystem.removeGroupApplicationSupport()
+        utilityFileSystem.removeDocumentsDirectory()
+        utilityFileSystem.removeTemporaryDirectory()
 
-            utilityFileSystem.removeGroupDirectoryProviderStorage()
-            utilityFileSystem.removeGroupApplicationSupport()
-            utilityFileSystem.removeDocumentsDirectory()
-            utilityFileSystem.removeTemporaryDirectory()
+        NCKeychain().removeAll()
 
-            NCKeychain().removeAll()
-
-            if killEmAll {
-                NCManageDatabase.shared.removeDB()
-                exit(0)
-            } else {
-                NCManageDatabase.shared.clearDatabase(account: nil, removeAccount: true)
-            }
+        if killEmAll {
+            NCManageDatabase.shared.removeDB()
+            exit(0)
+        } else {
+            NCManageDatabase.shared.clearDatabase(account: nil, removeAccount: true)
         }
     }
 
