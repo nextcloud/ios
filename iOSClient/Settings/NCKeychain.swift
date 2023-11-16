@@ -78,6 +78,18 @@ import KeychainAccess
         }
     }
 
+    var biometricsCounterFail: Int {
+        get {
+            if let value = try? keychain.get("biometricsCounterFail"), let result = Int(value) {
+                return result
+            }
+            return 0
+        }
+        set {
+            keychain["biometricsCounterFail"] = String(newValue)
+        }
+    }
+
     @objc var requestPasscodeAtStart: Bool {
         get {
             let keychainOLD = Keychain(service: "Crypto Cloud")

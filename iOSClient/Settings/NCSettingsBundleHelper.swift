@@ -41,7 +41,7 @@ class NCSettingsBundleHelper: NSObject {
 
             DispatchQueue.main.asyncAfter(deadline: .now() + delay) {
                 let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
-                appDelegate.removeAllSettings(killEmAll: true)
+                appDelegate.resetApplication()
             }
         }
     }
