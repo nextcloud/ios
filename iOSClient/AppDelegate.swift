@@ -760,7 +760,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
               NCKeychain().touchFaceID,
               NCKeychain().passcode != nil,
               NCKeychain().requestPasscodeAtStart,
-              self.testAlert() == 0,
+              !(NCKeychain().passcodeCounterFail > 0 && NCKeychain().passcodeCounterFail.isMultiple(of: 3)),
+              !(NCKeychain().resetAppCounterFail && NCKeychain().passcodeCounterFailReset >= NCBrandOptions.shared.resetAppPasscodeAttempts),
               let passcodeViewController = privacyProtectionWindow?.rootViewController?.presentedViewController as? TOPasscodeViewController
         else { return }
 
@@ -779,6 +780,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                     if let error = evaluateError {
                         if error._code == LAError.authenticationFailed.rawValue {
                             NCKeychain().passcodeCounterFail = 3
+                            NCKeychain().passcodeCounterFailReset += 3
                             self.openAlert(passcodeViewController: passcodeViewController)
                         } else if error._code == LAError.biometryLockout.rawValue {
                             LAContext().evaluatePolicy(LAPolicy.deviceOwnerAuthentication, localizedReason: NSLocalizedString("_deviceOwnerAuthentication_", comment: ""), reply: { success, _ in
@@ -811,6 +813,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             return true
         } else {
             NCKeychain().passcodeCounterFail += 1
+            NCKeychain().passcodeCounterFailReset += 1
             openAlert(passcodeViewController: passcodeViewController)
             return false
         }
@@ -820,22 +823,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         enableTouchFaceID()
     }
 
-    func testAlert() -> Int {
-
-        let counter = NCKeychain().passcodeCounterFail
-        if NCKeychain().resetAppCounterFail && counter >= NCBrandOptions.shared.resetAppPasscodeAttempts {
-            return 1
-        } else if counter > 0 && counter.isMultiple(of: 3) {
-            return 2
-        }
-        return 0
-    }
-
     func openAlert(passcodeViewController: TOPasscodeViewController) {
 
+        let passcodeCounterFail = NCKeychain().passcodeCounterFail
+        let passcodeCounterFailReset = NCKeychain().passcodeCounterFailReset
+
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-            switch self.testAlert() {
-            case 1:
+
+            if NCKeychain().resetAppCounterFail && passcodeCounterFailReset >= NCBrandOptions.shared.resetAppPasscodeAttempts {
+
                 passcodeViewController.passcodeView.resetPasscode(animated: true, playImpact: false)
                 passcodeViewController.setContentHidden(true, animated: true)
 
@@ -845,7 +841,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                 DispatchQueue.main.asyncAfter(deadline: .now() + 4) {
                     self.resetApplication()
                 }
-            case 2:
+
+            } else if passcodeCounterFail > 0 && passcodeCounterFail.isMultiple(of: 3) {
+
                 passcodeViewController.biometricButton.isHidden = true
                 passcodeViewController.passcodeView.resetPasscode(animated: true, playImpact: false)
                 passcodeViewController.setContentHidden(true, animated: true)
@@ -864,8 +862,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                         NCKeychain().passcodeCounterFail = 0
                     }
                 }
-            default:
-                break
             }
         }
     }

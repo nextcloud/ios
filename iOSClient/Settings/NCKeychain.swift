@@ -74,7 +74,20 @@ import KeychainAccess
             return 0
         }
         set {
+            if newValue == 0 { passcodeCounterFailReset = 0 }
             keychain["passcodeCounterFail"] = String(newValue)
+        }
+    }
+
+    var passcodeCounterFailReset: Int {
+        get {
+            if let value = try? keychain.get("passcodeCounterFailReset"), let result = Int(value) {
+                return result
+            }
+            return 0
+        }
+        set {
+            keychain["passcodeCounterFailReset"] = String(newValue)
         }
     }
 
