@@ -789,11 +789,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                     }
                 } else {
                     if let error = evaluateError {
-                        if error._code == LAError.authenticationFailed.rawValue {
+                        switch error._code {
+                        case LAError.userFallback.rawValue, LAError.authenticationFailed.rawValue:
                             NCKeychain().passcodeCounterFail = 3
-                            NCKeychain().passcodeCounterFailReset += 3
+                            NCKeychain().passcodeCounterFailReset += 1
                             self.openAlert(passcodeViewController: passcodeViewController)
-                        } else if error._code == LAError.biometryLockout.rawValue {
+                        case LAError.biometryLockout.rawValue:
                             LAContext().evaluatePolicy(LAPolicy.deviceOwnerAuthentication, localizedReason: NSLocalizedString("_deviceOwnerAuthentication_", comment: ""), reply: { success, _ in
                                 if success {
                                     DispatchQueue.main.async {
@@ -802,6 +803,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                                     }
                                 }
                             })
+                        case LAError.userCancel.rawValue:
+                            NCKeychain().passcodeCounterFail += 1
+                            NCKeychain().passcodeCounterFailReset += 1
+                        default:
+                            break
                         }
                     }
                 }
@@ -836,9 +842,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     }
 
     func openAlert(passcodeViewController: TOPasscodeViewController) {
-
-        let passcodeCounterFail = NCKeychain().passcodeCounterFail
-        let passcodeCounterFailReset = NCKeychain().passcodeCounterFailReset
 
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
 
