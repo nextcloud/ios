@@ -196,7 +196,6 @@ struct ScaledThumbnail: Hashable {
         metadatas.forEach { metadata in
             for case let operation as NCMediaDownloadThumbnaill in queuer.operations where operation.metadata.ocId == metadata.ocId {
                 operation.cancel()
-                print(queuer.operationCount)
             }
         }
     }
