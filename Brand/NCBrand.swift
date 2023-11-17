@@ -89,7 +89,7 @@ let userAgent: String = {
 
     // Number of failed attempts after reset app
     @objc public let resetAppPasscodeAttempts: Int = 10
-    public let passcodeSecondsFail: Int = 5
+    public let passcodeSecondsFail: Int = 60
 
     // Info Paging
     enum NCInfoPagingTab: Int, CaseIterable {

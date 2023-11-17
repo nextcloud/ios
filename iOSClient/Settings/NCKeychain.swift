@@ -74,7 +74,6 @@ import KeychainAccess
             return 0
         }
         set {
-            if newValue == 0 { passcodeCounterFailReset = 0 }
             keychain["passcodeCounterFail"] = String(newValue)
         }
     }
