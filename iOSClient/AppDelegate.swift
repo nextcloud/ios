@@ -846,7 +846,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
             if self.isPasscodeReset {
 
-                passcodeViewController.passcodeView.resetPasscode(animated: true, playImpact: false)
                 passcodeViewController.setContentHidden(true, animated: true)
 
                 let alertController = UIAlertController(title: NSLocalizedString("_reset_wrong_passcode_", comment: ""), message: nil, preferredStyle: .alert)
@@ -858,8 +857,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
             } else if self.isPasscodeFail {
 
-                passcodeViewController.biometricButton.isHidden = true
-                passcodeViewController.passcodeView.resetPasscode(animated: true, playImpact: false)
                 passcodeViewController.setContentHidden(true, animated: true)
 
                 let alertController = UIAlertController(title: NSLocalizedString("_passcode_counter_fail_", comment: ""), message: nil, preferredStyle: .alert)
@@ -872,7 +869,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                     if seconds < 0 {
                         timer.invalidate()
                         alertController.dismiss(animated: true)
-                        passcodeViewController.setContentHidden(false, animated: true)
                         NCKeychain().passcodeCounterFail = 0
                         self.enableTouchFaceID()
                     }
