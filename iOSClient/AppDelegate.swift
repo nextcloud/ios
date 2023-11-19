@@ -869,6 +869,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                     if seconds < 0 {
                         timer.invalidate()
                         alertController.dismiss(animated: true)
+                        passcodeViewController.setContentHidden(false, animated: true)
                         NCKeychain().passcodeCounterFail = 0
                         self.enableTouchFaceID()
                     }
