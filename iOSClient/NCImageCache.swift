@@ -34,6 +34,8 @@ import NextcloudKit
     // MARK: -
 
     private let limit: Int = 1000
+    private var account: String = ""
+    private var brandElementColor: UIColor?
 
     enum ImageType {
         case placeholder
@@ -51,6 +53,9 @@ import NextcloudKit
     override private init() {}
 
     func createMediaCache(account: String) {
+
+        guard account != self.account, !account.isEmpty else { return }
+        self.account = account
 
         ocIdEtag.removeAll()
         metadatas.removeAll()
@@ -197,6 +202,9 @@ import NextcloudKit
     func createImagesCache() {
 
         let brandElement = NCBrandColor.shared.brandElement
+        guard brandElement != self.brandElementColor else { return }
+        self.brandElementColor = brandElement
+
         let yellowFavorite = NCBrandColor.shared.yellowFavorite
         let utility = NCUtility()
 

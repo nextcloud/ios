@@ -133,8 +133,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             NCManageDatabase.shared.setCapabilities(account: account)
 
             NCBrandColor.shared.settingThemingColor(account: activeAccount.account)
-            NCImageCache.shared.createImagesCache()
-            NCImageCache.shared.createMediaCache(account: activeAccount.account)
 
         } else {
 
@@ -142,8 +140,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             if let bundleID = Bundle.main.bundleIdentifier {
                 UserDefaults.standard.removePersistentDomain(forName: bundleID)
             }
-
-            NCImageCache.shared.createImagesCache()
         }
 
         NCBrandColor.shared.createUserColors()
@@ -196,6 +192,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     func applicationDidBecomeActive(_ application: UIApplication) {
 
         NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Application did become active")
+
+        NCImageCache.shared.createMediaCache(account: account)
+        NCImageCache.shared.createImagesCache()
 
         NCSettingsBundleHelper.setVersionAndBuildNumber()
         NCSettingsBundleHelper.checkAndExecuteSettings(delay: 0.5)
