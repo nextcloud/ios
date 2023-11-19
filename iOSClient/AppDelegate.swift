@@ -849,10 +849,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                 passcodeViewController.passcodeView.resetPasscode(animated: true, playImpact: false)
                 passcodeViewController.setContentHidden(true, animated: true)
 
-                let alertController = UIAlertController(title: NSLocalizedString("_failes_attemps_reset_", comment: ""), message: nil, preferredStyle: .alert)
+                let alertController = UIAlertController(title: NSLocalizedString("_reset_wrong_passcode_", comment: ""), message: nil, preferredStyle: .alert)
                 passcodeViewController.present(alertController, animated: true, completion: { })
 
-                DispatchQueue.main.asyncAfter(deadline: .now() + 4) {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
                     self.resetApplication()
                 }
 
