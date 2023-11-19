@@ -143,6 +143,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         }
 
         NCBrandColor.shared.createUserColors()
+        NCImageCache.shared.createImagesCache()
 
         // Push Notification & display notification
         application.registerForRemoteNotifications()
@@ -194,7 +195,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Application did become active")
 
         NCImageCache.shared.createMediaCache(account: account)
-        NCImageCache.shared.createImagesCache()
 
         NCSettingsBundleHelper.setVersionAndBuildNumber()
         NCSettingsBundleHelper.checkAndExecuteSettings(delay: 0.5)

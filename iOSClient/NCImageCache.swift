@@ -201,10 +201,6 @@ import NextcloudKit
 
     func createImagesCache() {
 
-        let brandElement = NCBrandColor.shared.brandElement
-        guard brandElement != self.brandElementColor else { return }
-        self.brandElementColor = brandElement
-
         let yellowFavorite = NCBrandColor.shared.yellowFavorite
         let utility = NCUtility()
 
@@ -220,15 +216,6 @@ import NextcloudKit
         images.offlineFlag = UIImage(named: "offlineFlag")!
         images.local = UIImage(named: "local")!
 
-        let folderWidth: CGFloat = UIScreen.main.bounds.width / 3
-        images.folderEncrypted = UIImage(named: "folderEncrypted")!.image(color: brandElement, size: folderWidth)
-        images.folderSharedWithMe = UIImage(named: "folder_shared_with_me")!.image(color: brandElement, size: folderWidth)
-        images.folderPublic = UIImage(named: "folder_public")!.image(color: brandElement, size: folderWidth)
-        images.folderGroup = UIImage(named: "folder_group")!.image(color: brandElement, size: folderWidth)
-        images.folderExternal = UIImage(named: "folder_external")!.image(color: brandElement, size: folderWidth)
-        images.folderAutomaticUpload = UIImage(named: "folderAutomaticUpload")!.image(color: brandElement, size: folderWidth)
-        images.folder = UIImage(named: "folder")!.image(color: brandElement, size: folderWidth)
-
         images.checkedYes = utility.loadImage(named: "checkmark.circle.fill", color: .systemBlue)
         images.checkedNo = utility.loadImage(named: "circle", color: .systemGray)
 
@@ -237,6 +224,24 @@ import NextcloudKit
         images.buttonMoreLock = UIImage(named: "moreLock")!.image(color: .systemGray, size: 50)
         images.buttonRestore = UIImage(named: "restore")!.image(color: .systemGray, size: 50)
         images.buttonTrash = UIImage(named: "trash")!.image(color: .systemGray, size: 50)
+
+        createImagesBrandCache()
+    }
+
+    func createImagesBrandCache() {
+
+        let brandElement = NCBrandColor.shared.brandElement
+        guard brandElement != self.brandElementColor else { return }
+        self.brandElementColor = brandElement
+
+        let folderWidth: CGFloat = UIScreen.main.bounds.width / 3
+        images.folderEncrypted = UIImage(named: "folderEncrypted")!.image(color: brandElement, size: folderWidth)
+        images.folderSharedWithMe = UIImage(named: "folder_shared_with_me")!.image(color: brandElement, size: folderWidth)
+        images.folderPublic = UIImage(named: "folder_public")!.image(color: brandElement, size: folderWidth)
+        images.folderGroup = UIImage(named: "folder_group")!.image(color: brandElement, size: folderWidth)
+        images.folderExternal = UIImage(named: "folder_external")!.image(color: brandElement, size: folderWidth)
+        images.folderAutomaticUpload = UIImage(named: "folderAutomaticUpload")!.image(color: brandElement, size: folderWidth)
+        images.folder = UIImage(named: "folder")!.image(color: brandElement, size: folderWidth)
 
         images.iconContacts = UIImage(named: "icon-contacts")!.image(color: brandElement, size: folderWidth)
         images.iconTalk = UIImage(named: "icon-talk")!.image(color: brandElement, size: folderWidth)
