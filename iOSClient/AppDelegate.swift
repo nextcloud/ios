@@ -194,7 +194,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
         NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Application did become active")
 
-        NCImageCache.shared.createMediaCache(account: account)
+        DispatchQueue.global().async { NCImageCache.shared.createMediaCache(account: self.account) }
 
         NCSettingsBundleHelper.setVersionAndBuildNumber()
         NCSettingsBundleHelper.checkAndExecuteSettings(delay: 0.5)
