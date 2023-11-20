@@ -84,6 +84,13 @@ let userAgent: String = {
     // Internal option behaviour
     @objc public var cleanUpDay: Int = 0                                                        // Set default "Delete, in the cache, all files older than" possible days value are: 0, 1, 7, 30, 90, 180, 365
 
+    // Max upload concurrent
+    public let maxConcurrentOperationUpload: Int = 10
+
+    // Number of failed attempts after reset app
+    @objc public let resetAppPasscodeAttempts: Int = 10
+    public let passcodeSecondsFail: Int = 60
+
     // Info Paging
     enum NCInfoPagingTab: Int, CaseIterable {
         case activity, sharing
@@ -136,45 +143,6 @@ class NCBrandColor: NSObject {
         return instance
     }()
 
-    struct cacheImages {
-        static var file = UIImage()
-
-        static var shared = UIImage()
-        static var canShare = UIImage()
-        static var shareByLink = UIImage()
-
-        static var favorite = UIImage()
-        static var comment = UIImage()
-        static var livePhoto = UIImage()
-        static var offlineFlag = UIImage()
-        static var local = UIImage()
-
-        static var folderEncrypted = UIImage()
-        static var folderSharedWithMe = UIImage()
-        static var folderPublic = UIImage()
-        static var folderGroup = UIImage()
-        static var folderExternal = UIImage()
-        static var folderAutomaticUpload = UIImage()
-        static var folder = UIImage()
-
-        static var checkedYes = UIImage()
-        static var checkedNo = UIImage()
-
-        static var buttonMore = UIImage()
-        static var buttonStop = UIImage()
-        static var buttonMoreLock = UIImage()
-        static var buttonRestore = UIImage()
-        static var buttonTrash = UIImage()
-
-        static var iconContacts = UIImage()
-        static var iconTalk = UIImage()
-        static var iconCalendar = UIImage()
-        static var iconDeck = UIImage()
-        static var iconMail = UIImage()
-        static var iconConfirm = UIImage()
-        static var iconPages = UIImage()
-    }
-
     // Color
     @objc public let customer: UIColor = UIColor(red: 0.0 / 255.0, green: 130.0 / 255.0, blue: 201.0 / 255.0, alpha: 1.0)         // BLU NC : #0082c9
     @objc public var customerText: UIColor = .white
@@ -205,47 +173,6 @@ class NCBrandColor: NSObject {
 
     func createUserColors() {
         userColors = generateColors()
-    }
-
-    func createImagesThemingColor() {
-
-        cacheImages.file = UIImage(named: "file")!
-
-        cacheImages.shared = UIImage(named: "share")!.image(color: .systemGray, size: 50)
-        cacheImages.canShare = UIImage(named: "share")!.image(color: .systemGray, size: 50)
-        cacheImages.shareByLink = UIImage(named: "sharebylink")!.image(color: .systemGray, size: 50)
-
-        cacheImages.favorite = NCUtility.shared.loadImage(named: "star.fill", color: yellowFavorite)
-        cacheImages.comment = UIImage(named: "comment")!.image(color: .systemGray, size: 50)
-        cacheImages.livePhoto = NCUtility.shared.loadImage(named: "livephoto", color: .label)
-        cacheImages.offlineFlag = UIImage(named: "offlineFlag")!
-        cacheImages.local = UIImage(named: "local")!
-
-        let folderWidth: CGFloat = UIScreen.main.bounds.width / 3
-        cacheImages.folderEncrypted = UIImage(named: "folderEncrypted")!.image(color: brandElement, size: folderWidth)
-        cacheImages.folderSharedWithMe = UIImage(named: "folder_shared_with_me")!.image(color: brandElement, size: folderWidth)
-        cacheImages.folderPublic = UIImage(named: "folder_public")!.image(color: brandElement, size: folderWidth)
-        cacheImages.folderGroup = UIImage(named: "folder_group")!.image(color: brandElement, size: folderWidth)
-        cacheImages.folderExternal = UIImage(named: "folder_external")!.image(color: brandElement, size: folderWidth)
-        cacheImages.folderAutomaticUpload = UIImage(named: "folderAutomaticUpload")!.image(color: brandElement, size: folderWidth)
-        cacheImages.folder = UIImage(named: "folder")!.image(color: brandElement, size: folderWidth)
-
-        cacheImages.checkedYes = NCUtility.shared.loadImage(named: "checkmark.circle.fill", color: .systemBlue)
-        cacheImages.checkedNo = NCUtility.shared.loadImage(named: "circle", color: .systemGray)
-
-        cacheImages.buttonMore = UIImage(named: "more")!.image(color: .systemGray, size: 50)
-        cacheImages.buttonStop = UIImage(named: "stop")!.image(color: .systemGray, size: 50)
-        cacheImages.buttonMoreLock = UIImage(named: "moreLock")!.image(color: .systemGray, size: 50)
-        cacheImages.buttonRestore = UIImage(named: "restore")!.image(color: .systemGray, size: 50)
-        cacheImages.buttonTrash = UIImage(named: "trash")!.image(color: .systemGray, size: 50)
-
-        cacheImages.iconContacts = UIImage(named: "icon-contacts")!.image(color: brandElement, size: folderWidth)
-        cacheImages.iconTalk = UIImage(named: "icon-talk")!.image(color: brandElement, size: folderWidth)
-        cacheImages.iconCalendar = UIImage(named: "icon-calendar")!.image(color: brandElement, size: folderWidth)
-        cacheImages.iconDeck = UIImage(named: "icon-deck")!.image(color: brandElement, size: folderWidth)
-        cacheImages.iconMail = UIImage(named: "icon-mail")!.image(color: brandElement, size: folderWidth)
-        cacheImages.iconConfirm = UIImage(named: "icon-confirm")!.image(color: brandElement, size: folderWidth)
-        cacheImages.iconPages = UIImage(named: "icon-pages")!.image(color: brandElement, size: folderWidth)
     }
 
     func settingThemingColor(account: String) {
@@ -319,11 +246,6 @@ class NCBrandColor: NSObject {
             brand = customer
             brandText = customerText
         }
-
-        createImagesThemingColor()
-#if !EXTENSION
-        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterChangeTheming)
-#endif
     }
 
     private func stepCalc(steps: Int, color1: CGColor, color2: CGColor) -> [CGFloat] {

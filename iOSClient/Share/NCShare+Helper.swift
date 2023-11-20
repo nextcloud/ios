@@ -98,7 +98,7 @@ class NCTableShareOptions: NCTableShareable {
     }
 
     static func shareLink(metadata: tableMetadata, password: String?) -> NCTableShareOptions {
-        return NCTableShareOptions(shareType: NCShareCommon.shared.SHARE_TYPE_LINK, metadata: metadata, password: password)
+        return NCTableShareOptions(shareType: NCShareCommon().SHARE_TYPE_LINK, metadata: metadata, password: password)
     }
 }
 
@@ -109,7 +109,7 @@ protocol NCShareDetail {
 extension NCShareDetail where Self: UIViewController {
     func setNavigationTitle() {
         title = NSLocalizedString("_share_", comment: "") + " – "
-        if share.shareType == NCShareCommon.shared.SHARE_TYPE_LINK {
+        if share.shareType == NCShareCommon().SHARE_TYPE_LINK {
             title! += share.label.isEmpty ? NSLocalizedString("_share_link_", comment: "") : share.label
         } else {
             title! += share.shareWithDisplayname.isEmpty ? share.shareWith : share.shareWithDisplayname

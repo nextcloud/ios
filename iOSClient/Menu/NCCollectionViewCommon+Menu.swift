@@ -46,8 +46,8 @@ extension NCCollectionViewCommon {
             isOffline = localFile.offline
         }
 
-        let editors = NCUtility.shared.isDirectEditing(account: metadata.account, contentType: metadata.contentType)
-        let isRichDocument = NCUtility.shared.isRichDocument(metadata)
+        let editors = utility.isDirectEditing(account: metadata.account, contentType: metadata.contentType)
+        let isRichDocument = utility.isRichDocument(metadata)
         let applicationHandle = NCApplicationHandle()
 
         var iconHeader: UIImage!
@@ -56,9 +56,9 @@ extension NCCollectionViewCommon {
             iconHeader = imageIcon!
         } else {
             if metadata.directory {
-                iconHeader = NCBrandColor.cacheImages.folder
+                iconHeader = NCImageCache.images.folder
             } else {
-                iconHeader = NCBrandColor.cacheImages.file
+                iconHeader = NCImageCache.images.file
             }
         }
 
@@ -78,7 +78,7 @@ extension NCCollectionViewCommon {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_details_", comment: ""),
-                    icon: NCUtility.shared.loadImage(named: "info"),
+                    icon: utility.loadImage(named: "info"),
                     order: 10,
                     action: { _ in
                         NCActionCenter.shared.openShare(viewController: self, metadata: metadata, page: .activity)
@@ -89,7 +89,7 @@ extension NCCollectionViewCommon {
 
         if metadata.lock {
             var lockOwnerName = metadata.lockOwnerDisplayName.isEmpty ? metadata.lockOwner : metadata.lockOwnerDisplayName
-            var lockIcon = NCUtility.shared.loadUserImage(for: metadata.lockOwner, displayName: lockOwnerName, userBaseUrl: metadata)
+            var lockIcon = utility.loadUserImage(for: metadata.lockOwner, displayName: lockOwnerName, userBaseUrl: metadata)
             if metadata.lockOwnerType != 0 {
                 lockOwnerName += " app"
                 if !metadata.lockOwnerEditor.isEmpty, let appIcon = UIImage(named: metadata.lockOwnerEditor) {
@@ -127,7 +127,7 @@ extension NCCollectionViewCommon {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_view_in_folder_", comment: ""),
-                    icon: NCUtility.shared.loadImage(named: "questionmark.folder"),
+                    icon: utility.loadImage(named: "questionmark.folder"),
                     order: 21,
                     action: { _ in
                         NCActionCenter.shared.openFileViewInFolder(serverUrl: metadata.serverUrl, fileNameBlink: metadata.fileName, fileNameOpen: nil)
@@ -150,13 +150,13 @@ extension NCCollectionViewCommon {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_e2e_set_folder_encrypted_", comment: ""),
-                    icon: NCUtility.shared.loadImage(named: "lock"),
+                    icon: utility.loadImage(named: "lock"),
                     order: 30,
                     action: { _ in
                         Task {
                             let error = await NCNetworkingE2EEMarkFolder().markFolderE2ee(account: metadata.account, fileName: metadata.fileName, serverUrl: metadata.serverUrl, userId: metadata.userId)
                             if error != .success {
-                                NCContentPresenter.shared.showError(error: error)
+                                NCContentPresenter().showError(error: error)
                             }
                         }
                     }
@@ -171,7 +171,7 @@ extension NCCollectionViewCommon {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_e2e_remove_folder_encrypted_", comment: ""),
-                    icon: NCUtility.shared.loadImage(named: "lock"),
+                    icon: utility.loadImage(named: "lock"),
                     order: 30,
                     action: { _ in
                         NextcloudKit.shared.markE2EEFolder(fileId: metadata.fileId, delete: true) { _, error in
@@ -182,7 +182,7 @@ extension NCCollectionViewCommon {
 
                                 NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterChangeStatusFolderE2EE, userInfo: ["serverUrl": metadata.serverUrl])
                             } else {
-                                NCContentPresenter.shared.messageNotification(NSLocalizedString("_e2e_error_", comment: ""), error: error, delay: NCGlobal.shared.dismissAfterSecond, type: .error)
+                                NCContentPresenter().messageNotification(NSLocalizedString("_e2e_error_", comment: ""), error: error, delay: NCGlobal.shared.dismissAfterSecond, type: .error)
                             }
                         }
                     }
@@ -200,12 +200,12 @@ extension NCCollectionViewCommon {
             actions.append(
                 NCMenuAction(
                     title: metadata.favorite ? NSLocalizedString("_remove_favorites_", comment: "") : NSLocalizedString("_add_favorites_", comment: ""),
-                    icon: NCUtility.shared.loadImage(named: "star.fill", color: NCBrandColor.shared.yellowFavorite),
+                    icon: utility.loadImage(named: "star.fill", color: NCBrandColor.shared.yellowFavorite),
                     order: 50,
                     action: { _ in
                         NCNetworking.shared.favoriteMetadata(metadata) { error in
                             if error != .success {
-                                NCContentPresenter.shared.showError(error: error)
+                                NCContentPresenter().showError(error: error)
                             }
                         }
                     }
@@ -234,11 +234,11 @@ extension NCCollectionViewCommon {
             if editors.contains(NCGlobal.shared.editorOnlyoffice) {
                 editor = NCGlobal.shared.editorOnlyoffice
                 title = NSLocalizedString("_open_in_onlyoffice_", comment: "")
-                icon = NCUtility.shared.loadImage(named: "onlyoffice")
+                icon = utility.loadImage(named: "onlyoffice")
             } else if isRichDocument {
                 editor = NCGlobal.shared.editorCollabora
                 title = NSLocalizedString("_open_in_collabora_", comment: "")
-                icon = NCUtility.shared.loadImage(named: "collabora")
+                icon = utility.loadImage(named: "collabora")
             }
 
             if !editor.isEmpty {
@@ -248,7 +248,7 @@ extension NCCollectionViewCommon {
                         icon: icon!,
                         order: 70,
                         action: { _ in
-                            NCViewer.shared.view(viewController: self, metadata: metadata, metadatas: [metadata], imageIcon: imageIcon, editor: editor, isRichDocument: isRichDocument)
+                            NCViewer().view(viewController: self, metadata: metadata, metadatas: [metadata], imageIcon: imageIcon, editor: editor, isRichDocument: isRichDocument)
                         }
                     )
                 )
@@ -283,10 +283,10 @@ extension NCCollectionViewCommon {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_save_as_scan_", comment: ""),
-                    icon: NCUtility.shared.loadImage(named: "viewfinder.circle"),
+                    icon: utility.loadImage(named: "viewfinder.circle"),
                     order: 110,
                     action: { _ in
-                        if CCUtility.fileProviderStorageExists(metadata) {
+                        if self.utilityFileSystem.fileProviderStorageExists(metadata) {
                             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDownloadedFile, userInfo: ["ocId": metadata.ocId, "selector": NCGlobal.shared.selectorSaveAsScan, "error": NKError(), "account": metadata.account])
                         } else {
                             NCNetworking.shared.download(metadata: metadata, selector: NCGlobal.shared.selectorSaveAsScan) { _, _ in }
@@ -303,7 +303,7 @@ extension NCCollectionViewCommon {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_rename_", comment: ""),
-                    icon: NCUtility.shared.loadImage(named: "pencil"),
+                    icon: utility.loadImage(named: "pencil"),
                     order: 120,
                     action: { _ in
 
@@ -343,10 +343,10 @@ extension NCCollectionViewCommon {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_modify_", comment: ""),
-                    icon: NCUtility.shared.loadImage(named: "pencil.tip.crop.circle"),
+                    icon: utility.loadImage(named: "pencil.tip.crop.circle"),
                     order: 150,
                     action: { _ in
-                        if CCUtility.fileProviderStorageExists(metadata) {
+                        if self.utilityFileSystem.fileProviderStorageExists(metadata) {
                             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDownloadedFile, userInfo: ["ocId": metadata.ocId, "selector": NCGlobal.shared.selectorLoadFileQuickLook, "error": NKError(), "account": metadata.account])
                         } else {
                             NCNetworking.shared.download(metadata: metadata, selector: NCGlobal.shared.selectorLoadFileQuickLook) { _, _ in }
@@ -363,7 +363,7 @@ extension NCCollectionViewCommon {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_change_color_", comment: ""),
-                    icon: NCUtility.shared.loadImage(named: "palette"),
+                    icon: utility.loadImage(named: "palette"),
                     order: 160,
                     action: { _ in
                         if let picker = UIStoryboard(name: "NCColorPicker", bundle: nil).instantiateInitialViewController() as? NCColorPicker {

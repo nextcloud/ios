@@ -36,7 +36,7 @@ class NCRecent: NCCollectionViewCommon {
         enableSearchBar = false
         headerMenuButtonsView = false
         headerRichWorkspaceDisable = true
-        emptyImage = NCUtility.shared.loadImage(named: "clock.arrow.circlepath", color: .gray, size: UIScreen.main.bounds.width)
+        emptyImage = utility.loadImage(named: "clock.arrow.circlepath", color: .gray, size: UIScreen.main.bounds.width)
         emptyTitle = "_files_no_files_"
         emptyDescription = ""
     }
@@ -151,7 +151,7 @@ class NCRecent: NCCollectionViewCommon {
 
         NextcloudKit.shared.searchBodyRequest(serverUrl: appDelegate.urlBase,
                                               requestBody: requestBody,
-                                              showHiddenFiles: CCUtility.getShowHiddenFiles(),
+                                              showHiddenFiles: NCKeychain().showHiddenFiles,
                                               options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { account, files, _, error in
 
             self.isReloadDataSourceNetworkInProgress = false

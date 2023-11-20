@@ -100,11 +100,11 @@ extension NCEndToEndMetadata {
 
     func encodeMetadataV20(account: String, serverUrl: String, ocIdServerUrl: String, userId: String, addUserId: String?, addCertificate: String?, removeUserId: String?) -> (metadata: String?, signature: String?, counter: Int, error: NKError) {
 
-        guard let directoryTop = NCUtility.shared.getDirectoryE2EETop(serverUrl: serverUrl, account: account) else {
+        guard let directoryTop = utilityFileSystem.getDirectoryE2EETop(serverUrl: serverUrl, account: account), let certificate = NCKeychain().getEndToEndCertificate(account: account) else {
             return (nil, nil, 0, NKError(errorCode: NCGlobal.shared.errorUnexpectedResponseFromDB, errorDescription: "_e2e_error_"))
         }
 
-        let isDirectoryTop = NCUtility.shared.isDirectoryE2EETop(account: account, serverUrl: serverUrl)
+        let isDirectoryTop = utilityFileSystem.isDirectoryE2EETop(account: account, serverUrl: serverUrl)
         var metadataKey: String?
         var keyChecksums: [String] = []
         var usersCodable: [E2eeV20.Users] = []
@@ -134,7 +134,7 @@ extension NCEndToEndMetadata {
                let metadataKey = tableUserId.metadataKey {
                 key = metadataKey
             } else {
-                addUser(userId: userId, certificate: CCUtility.getEndToEndCertificate(account), key: key)
+                addUser(userId: userId, certificate: certificate, key: key)
             }
             // ADDUSERID
             if let addUserId {
@@ -237,7 +237,7 @@ extension NCEndToEndMetadata {
             e2eeData.printJson()
 
             let e2eeJson = String(data: e2eeData, encoding: .utf8)
-            let signature = createSignature(account: account, userId: userId, metadata: metadataCodable, users: usersCodable, version: NCGlobal.shared.e2eeVersionV20, certificate: CCUtility.getEndToEndCertificate(account))
+            let signature = createSignature(account: account, userId: userId, metadata: metadataCodable, users: usersCodable, version: NCGlobal.shared.e2eeVersionV20, certificate: certificate)
 
             return (e2eeJson, signature, counter, NKError())
 
@@ -253,7 +253,7 @@ extension NCEndToEndMetadata {
     func decodeMetadataV20(_ json: String, signature: String?, serverUrl: String, account: String, ocIdServerUrl: String, urlBase: String, userId: String) -> NKError {
 
         guard let data = json.data(using: .utf8),
-              let directoryTop = NCUtility.shared.getDirectoryE2EETop(serverUrl: serverUrl, account: account) else {
+              let directoryTop = utilityFileSystem.getDirectoryE2EETop(serverUrl: serverUrl, account: account) else {
             return NKError(errorCode: NCGlobal.shared.errorE2EEKeyDecodeMetadata, errorDescription: "_e2e_error_")
         }
 
@@ -303,7 +303,7 @@ extension NCEndToEndMetadata {
                     var metadataKey: Data?
                     if let encryptedMetadataKey = user.encryptedMetadataKey {
                         let data = Data(base64Encoded: encryptedMetadataKey)
-                        if let decrypted = NCEndToEndEncryption.sharedManager().decryptAsymmetricData(data, privateKey: CCUtility.getEndToEndPrivateKey(account)) {
+                        if let decrypted = NCEndToEndEncryption.sharedManager().decryptAsymmetricData(data, privateKey: NCKeychain().getEndToEndPrivateKey(account: account)) {
                             metadataKey = decrypted
                         }
                     }
@@ -372,7 +372,7 @@ extension NCEndToEndMetadata {
                 print("Counter saved: \(resultCounter)")
                 if jsonCiphertextMetadata.counter < resultCounter {
                     // TODO: whats happen with < ?
-                    NCContentPresenter.shared.showError(error: NKError(errorCode: NCGlobal.shared.errorE2EECounter, errorDescription: NSLocalizedString("_e2e_error_", comment: "")))
+                    NCContentPresenter().showError(error: NKError(errorCode: NCGlobal.shared.errorE2EECounter, errorDescription: NSLocalizedString("_e2e_error_", comment: "")))
                 } else if jsonCiphertextMetadata.counter > resultCounter {
                     print("Counter UPDATED: \(jsonCiphertextMetadata.counter)")
                     NCManageDatabase.shared.updateCounterE2eMetadata(account: account, ocIdServerUrl: ocIdServerUrl, counter: jsonCiphertextMetadata.counter)
@@ -447,7 +447,7 @@ extension NCEndToEndMetadata {
             let decoded = try? JSONSerialization.data(withJSONObject: dataSerialization, options: [.sortedKeys, .withoutEscapingSlashes])
             let base64 = decoded!.base64EncodedString()
             if let base64Data = base64.data(using: .utf8),
-               let signatureData = NCEndToEndEncryption.sharedManager().generateSignatureCMS(base64Data, certificate: certificate, privateKey: CCUtility.getEndToEndPrivateKey(account), userId: userId) {
+               let signatureData = NCEndToEndEncryption.sharedManager().generateSignatureCMS(base64Data, certificate: certificate, privateKey: NCKeychain().getEndToEndPrivateKey(account: account), userId: userId) {
                 return signatureData.base64EncodedString()
             }
         } catch {

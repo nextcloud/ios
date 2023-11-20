@@ -25,6 +25,7 @@ import Foundation
 import NextcloudKit
 import FloatingPanel
 import JGProgressHUD
+import Queuer
 
 class NCActivityCollectionViewCell: UICollectionViewCell {
 
@@ -40,10 +41,6 @@ class NCActivityCollectionViewCell: UICollectionViewCell {
 
 class NCActivityTableViewCell: UITableViewCell, NCCellProtocol {
 
-    // swiftlint:disable force_cast
-    private let appDelegate = UIApplication.shared.delegate as! AppDelegate
-    // swiftlint:enable force_cast
-
     @IBOutlet weak var collectionView: UICollectionView!
     @IBOutlet weak var icon: UIImageView!
     @IBOutlet weak var avatar: UIImageView!
@@ -51,6 +48,7 @@ class NCActivityTableViewCell: UITableViewCell, NCCellProtocol {
     @IBOutlet weak var subjectTrailingConstraint: NSLayoutConstraint!
     @IBOutlet weak var collectionViewHeightConstraint: NSLayoutConstraint!
 
+    private let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
     private var user: String = ""
     private var index = IndexPath()
 
@@ -58,6 +56,7 @@ class NCActivityTableViewCell: UITableViewCell, NCCellProtocol {
     var activityPreviews: [tableActivityPreview] = []
     var didSelectItemEnable: Bool = true
     var viewController = UIViewController()
+    let utility = NCUtility()
 
     var indexPath: IndexPath {
         get { return index }
@@ -116,7 +115,7 @@ extension NCActivityTableViewCell: UICollectionViewDelegate {
                         (responder as? UIViewController)!.navigationController?.pushViewController(viewController, animated: true)
                     } else {
                         let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_trash_file_not_found_")
-                        NCContentPresenter.shared.showError(error: error)
+                        NCContentPresenter().showError(error: error)
                     }
                 }
             }
@@ -163,7 +162,7 @@ extension NCActivityTableViewCell: UICollectionViewDataSource {
 
             let source = activityPreview.source
 
-            NCUtility.shared.convertSVGtoPNGWriteToUserData(svgUrlString: source, width: 100, rewrite: false, account: appDelegate.account, id: idActivity) { imageNamePath, id in
+            utility.convertSVGtoPNGWriteToUserData(svgUrlString: source, width: 100, rewrite: false, account: appDelegate.account, id: idActivity) { imageNamePath, id in
                 if let imageNamePath = imageNamePath, id == self.idActivity, let image = UIImage(contentsOfFile: imageNamePath) {
                     cell.imageView.image = image
                 } else {
@@ -177,7 +176,7 @@ extension NCActivityTableViewCell: UICollectionViewDataSource {
 
                 let source = activityPreview.source
 
-                NCUtility.shared.convertSVGtoPNGWriteToUserData(svgUrlString: source, width: 100, rewrite: false, account: appDelegate.account, id: idActivity) { imageNamePath, id in
+                utility.convertSVGtoPNGWriteToUserData(svgUrlString: source, width: 100, rewrite: false, account: appDelegate.account, id: idActivity) { imageNamePath, id in
                     if let imageNamePath = imageNamePath, id == self.idActivity, let image = UIImage(contentsOfFile: imageNamePath) {
                         cell.imageView.image = image
                     } else {
@@ -189,12 +188,18 @@ extension NCActivityTableViewCell: UICollectionViewDataSource {
 
                 if let activitySubjectRich = NCManageDatabase.shared.getActivitySubjectRich(account: activityPreview.account, idActivity: idActivity, id: fileId) {
 
-                    let fileNamePath = CCUtility.getDirectoryUserData() + "/" + activitySubjectRich.name
+                    let fileNamePath = NCUtilityFileSystem().directoryUserData + "/" + activitySubjectRich.name
 
                     if FileManager.default.fileExists(atPath: fileNamePath), let image = UIImage(contentsOfFile: fileNamePath) {
                         cell.imageView.image = image
                     } else {
-                        NCOperationQueue.shared.downloadThumbnailActivity(fileNamePathOrFileId: activityPreview.source, fileNamePreviewLocalPath: fileNamePath, fileId: fileId, cell: cell, collectionView: collectionView)
+                        cell.imageView?.image = UIImage(named: "file_photo")
+                        cell.fileId = fileId
+                        if !FileManager.default.fileExists(atPath: fileNamePath) {
+                            if appDelegate.downloadThumbnailActivityQueue.operations.filter({ ($0 as? NCOperationDownloadThumbnailActivity)?.fileId == fileId }).isEmpty {
+                                appDelegate.downloadThumbnailActivityQueue.addOperation(NCOperationDownloadThumbnailActivity(fileNamePathOrFileId: activityPreview.source, fileNamePreviewLocalPath: fileNamePath, fileId: fileId, cell: cell, collectionView: collectionView))
+                            }
+                        }
                     }
                 }
             }
@@ -217,5 +222,51 @@ extension NCActivityTableViewCell: UICollectionViewDelegateFlowLayout {
 
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
         return UIEdgeInsets(top: 0, left: 0, bottom: 10, right: 0)
+    }
+}
+
+class NCOperationDownloadThumbnailActivity: ConcurrentOperation {
+
+    var cell: NCActivityCollectionViewCell?
+    var collectionView: UICollectionView?
+    var fileNamePathOrFileId: String
+    var fileNamePreviewLocalPath: String
+    var fileId: String
+
+    init(fileNamePathOrFileId: String, fileNamePreviewLocalPath: String, fileId: String, cell: NCActivityCollectionViewCell?, collectionView: UICollectionView?) {
+        self.fileNamePathOrFileId = fileNamePathOrFileId
+        self.fileNamePreviewLocalPath = fileNamePreviewLocalPath
+        self.fileId = fileId
+        self.cell = cell
+        self.collectionView = collectionView
+    }
+
+    override func start() {
+
+        guard !isCancelled else { return self.finish() }
+
+        NextcloudKit.shared.downloadPreview(fileNamePathOrFileId: fileNamePathOrFileId,
+                                            fileNamePreviewLocalPath: fileNamePreviewLocalPath,
+                                            widthPreview: 0,
+                                            heightPreview: 0,
+                                            etag: nil,
+                                            useInternalEndpoint: false,
+                                            options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { _, imagePreview, _, _, _, error in
+
+            if error == .success, let imagePreview = imagePreview {
+                DispatchQueue.main.async {
+                    if self.fileId == self.cell?.fileId, let imageView = self.cell?.imageView {
+                        UIView.transition(with: imageView,
+                                          duration: 0.75,
+                                          options: .transitionCrossDissolve,
+                                          animations: { imageView.image = imagePreview },
+                                          completion: nil)
+                    } else {
+                        self.collectionView?.reloadData()
+                    }
+                }
+            }
+            self.finish()
+        }
     }
 }

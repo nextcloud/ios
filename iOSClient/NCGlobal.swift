@@ -61,6 +61,13 @@ class NCGlobal: NSObject {
         return result.reduce(0, { $0 + $1 }) % maximum
     }
 
+    // ENUM
+    //
+    public enum TypeFilterScanDocument: String {
+        case document = "document"
+        case original = "original"
+    }
+
     // Directory on Group
     //
     @objc let directoryProviderStorage              = "File Provider Storage"
@@ -72,7 +79,6 @@ class NCGlobal: NSObject {
 
     // Service
     //
-    @objc let serviceShareKeyChain                  = "Crypto Cloud"
     let metadataKeyedUnarchiver                     = "it.twsweb.nextcloud.metadata"
     let refreshTask                                 = "com.nextcloud.refreshTask"
     let processingTask                              = "com.nextcloud.processingTask"
@@ -97,6 +103,8 @@ class NCGlobal: NSObject {
     let nextcloudVersion25: Int                     = 25
     let nextcloudVersion26: Int                     = 26
     let nextcloudVersion27: Int                     = 27
+    let nextcloudVersion28: Int                     = 28
+    let nextcloudVersion29: Int                     = 29
 
     // Nextcloud unsupported
     //
@@ -213,6 +221,7 @@ class NCGlobal: NSObject {
     @objc let errorPreconditionFailed: Int          = 412
     @objc let errorQuota: Int                       = 507
     @objc let errorUnauthorized997: Int             = 997
+    @objc let errorExplicitlyCancelled: Int         = -999
     @objc let errorConnectionLost: Int              = -1005
     @objc let errorNetworkNotAvailable: Int         = -1009
     @objc let errorBadServerResponse: Int           = -1011
@@ -379,8 +388,6 @@ class NCGlobal: NSObject {
     let notificationCenterMenuSearchTextPDF                     = "menuSearchTextPDF"
     let notificationCenterMenuGotToPageInPDF                    = "menuGotToPageInPDF"
 
-    let notificationCenterDownloadedThumbnail                   = "DownloadedThumbnail"             // userInfo: ocId
-
     let notificationCenterOpenMediaDetail                       = "openMediaDetail"                 // userInfo: ocId
 
     let notificationCenterDismissScanDocument                   = "dismissScanDocument"
@@ -453,6 +460,7 @@ class NCGlobal: NSObject {
     @objc var capabilityE2EEEnabled: Bool                       = false
     @objc var capabilityE2EEApiVersion: String                  = ""
 
+    var capabilityRichdocumentsEnabled: Bool                    = false
     var capabilityRichdocumentsMimetypes: [String]              = []
     var capabilityActivity: [String]                            = []
     var capabilityNotification: [String]                        = []
@@ -471,7 +479,7 @@ class NCGlobal: NSObject {
     let notesSchemeUrl                                          = "nextcloudnotes://"
     let talkAppStoreUrl                                         = "https://apps.apple.com/de/app/nextcloud-talk/id1296825574"
     let notesAppStoreUrl                                        = "https://apps.apple.com/de/app/nextcloud-notes/id813973264"
-    let moreAppsUrl                                             = "https://www.apple.com/us/search/nextcloud?src=globalnav"
+    let moreAppsUrl                                             = "itms-apps://search.itunes.apple.com/WebObjects/MZSearch.woa/wa/search?media=software&term=nextcloud"
 
     // SNAPSHOT PREVIEW
     let defaultSnapshotConfiguration = "DefaultPreviewConfiguration"

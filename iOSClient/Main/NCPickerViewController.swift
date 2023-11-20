@@ -31,10 +31,7 @@ import NextcloudKit
 
 class NCPhotosPickerViewController: NSObject {
 
-    // swiftlint:disable force_cast
-    let appDelegate = UIApplication.shared.delegate as! AppDelegate
-    // swiftlint:enable force_cast
-
+    let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
     var sourceViewController: UIViewController
     var maxSelectedAssets = 1
     var singleSelectedMode = false
@@ -81,17 +78,17 @@ class NCPhotosPickerViewController: NSObject {
 
         viewController.didExceedMaximumNumberOfSelection = { _ in
             let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_limited_dimension_")
-            NCContentPresenter.shared.showError(error: error)
+            NCContentPresenter().showError(error: error)
         }
 
         viewController.handleNoAlbumPermissions = { _ in
             let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_denied_album_")
-            NCContentPresenter.shared.showError(error: error)
+            NCContentPresenter().showError(error: error)
         }
 
         viewController.handleNoCameraPermissions = { _ in
             let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_denied_camera_")
-            NCContentPresenter.shared.showError(error: error)
+            NCContentPresenter().showError(error: error)
         }
 
         viewController.configure = configure
@@ -118,10 +115,8 @@ class customPhotoPickerViewController: TLPhotosPickerViewController {
 
 class NCDocumentPickerViewController: NSObject, UIDocumentPickerDelegate {
 
-    // swiftlint:disable force_cast
-    let appDelegate = UIApplication.shared.delegate as! AppDelegate
-    // swiftlint:enable force_cast
-
+    let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
+    let utilityFileSystem = NCUtilityFileSystem()
     var isViewerMedia: Bool
     var viewController: UIViewController?
 
@@ -156,7 +151,7 @@ class NCDocumentPickerViewController: NSObject, UIDocumentPickerDelegate {
                 metadata.classFile = NKCommon.TypeClassFile.video.rawValue
             }
             NCManageDatabase.shared.addMetadata(metadata)
-            NCViewer.shared.view(viewController: viewController, metadata: metadata, metadatas: [metadata], imageIcon: nil)
+            NCViewer().view(viewController: viewController, metadata: metadata, metadatas: [metadata], imageIcon: nil)
 
         } else {
             let serverUrl = appDelegate.activeServerUrl
@@ -168,7 +163,7 @@ class NCDocumentPickerViewController: NSObject, UIDocumentPickerDelegate {
                 let ocId = NSUUID().uuidString
 
                 let fileName = urlIn.lastPathComponent
-                let toPath = CCUtility.getDirectoryProviderStorageOcId(ocId, fileNameView: fileName)!
+                let toPath = utilityFileSystem.getDirectoryProviderStorageOcId(ocId, fileNameView: fileName)
                 let urlOut = URL(fileURLWithPath: toPath)
 
                 guard self.copySecurityScopedResource(url: urlIn, urlOut: urlOut) != nil else { continue }
@@ -177,7 +172,7 @@ class NCDocumentPickerViewController: NSObject, UIDocumentPickerDelegate {
 
                 metadataForUpload.session = NCNetworking.shared.sessionIdentifierBackground
                 metadataForUpload.sessionSelector = NCGlobal.shared.selectorUploadFile
-                metadataForUpload.size = NCUtilityFileSystem.shared.getFileSize(filePath: toPath)
+                metadataForUpload.size = utilityFileSystem.getFileSize(filePath: toPath)
                 metadataForUpload.status = NCGlobal.shared.metadataStatusWaitUpload
 
                 if NCManageDatabase.shared.getMetadataConflict(account: appDelegate.account, serverUrl: serverUrl, fileNameView: fileName) != nil {

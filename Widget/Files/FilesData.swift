@@ -86,6 +86,8 @@ func getFilesItems(displaySize: CGSize) -> Int {
 
 func getFilesDataEntry(configuration: AccountIntent?, isPreview: Bool, displaySize: CGSize, completion: @escaping (_ entry: FilesDataEntry) -> Void) {
 
+    let utilityFileSystem = NCUtilityFileSystem()
+    let utility = NCUtility()
     let filesItems = getFilesItems(displaySize: displaySize)
     let datasPlaceholder = Array(filesDatasTest[0...filesItems - 1])
     var account: tableAccount?
@@ -124,7 +126,7 @@ func getFilesDataEntry(configuration: AccountIntent?, isPreview: Bool, displaySi
     }
 
     // NETWORKING
-    let password = CCUtility.getPassword(account.account)!
+    let password = NCKeychain().getPassword(account: account.account)
     NextcloudKit.shared.setup(
         account: account.account,
         user: account.user,
@@ -192,14 +194,13 @@ func getFilesDataEntry(configuration: AccountIntent?, isPreview: Bool, displaySi
     let requestBody = String(format: requestBodyRecent, "/files/" + account.userId, lessDateString)
 
     // LOG
-    let levelLog = CCUtility.getLogLevel()
-    let isSimulatorOrTestFlight = NCUtility.shared.isSimulatorOrTestFlight()
-    let versionNextcloudiOS = String(format: NCBrandOptions.shared.textCopyrightNextcloudiOS, NCUtility.shared.getVersionApp())
+    let levelLog = NCKeychain().logLevel
+    let isSimulatorOrTestFlight = utility.isSimulatorOrTestFlight()
+    let versionNextcloudiOS = String(format: NCBrandOptions.shared.textCopyrightNextcloudiOS, utility.getVersionApp())
 
     NextcloudKit.shared.nkCommonInstance.levelLog = levelLog
-    if let pathDirectoryGroup = CCUtility.getDirectoryGroup()?.path {
-        NextcloudKit.shared.nkCommonInstance.pathLog = pathDirectoryGroup
-    }
+    NextcloudKit.shared.nkCommonInstance.pathLog = utilityFileSystem.directoryGroup
+
     if isSimulatorOrTestFlight {
         NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Start \(NCBrandOptions.shared.brand) widget session with level \(levelLog) " + versionNextcloudiOS + " (Simulator / TestFlight)")
     } else {
@@ -207,7 +208,7 @@ func getFilesDataEntry(configuration: AccountIntent?, isPreview: Bool, displaySi
     }
 
     let options = NKRequestOptions(timeout: 90, queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
-    NextcloudKit.shared.searchBodyRequest(serverUrl: account.urlBase, requestBody: requestBody, showHiddenFiles: CCUtility.getShowHiddenFiles(), options: options) { _, files, data, error in
+    NextcloudKit.shared.searchBodyRequest(serverUrl: account.urlBase, requestBody: requestBody, showHiddenFiles: NCKeychain().showHiddenFiles, options: options) { _, files, data, error in
         Task {
             var datas: [FilesData] = []
             var imageRecent = UIImage(named: "file")!
@@ -219,10 +220,10 @@ func getFilesDataEntry(configuration: AccountIntent?, isPreview: Bool, displaySi
                 guard !isLive(file: file, files: files) else { continue }
 
                 // SUBTITLE
-                let subTitle = CCUtility.dateDiff(file.date as Date) + " · " + CCUtility.transformedSize(file.size)
+                let subTitle = utility.dateDiff(file.date as Date) + " · " + utilityFileSystem.transformedSize(file.size)
 
                 // URL: nextcloud://open-file?path=Talk/IMG_0000123.jpg&user=marinofaggiana&link=https://cloud.nextcloud.com/f/123
-                guard var path = NCUtilityFileSystem.shared.getPath(path: file.path, user: file.user, fileName: file.fileName).urlEncoded else { continue }
+                guard var path = utilityFileSystem.getPath(path: file.path, user: file.user, fileName: file.fileName).urlEncoded else { continue }
                 if path.first == "/" { path = String(path.dropFirst())}
                 guard let user = file.user.urlEncoded else { continue }
                 let link = file.urlBase + "/f/" + file.fileId
@@ -233,19 +234,19 @@ func getFilesDataEntry(configuration: AccountIntent?, isPreview: Bool, displaySi
                 if !file.iconName.isEmpty {
                     imageRecent = UIImage(named: file.iconName)!
                 }
-                if let image = NCUtility.shared.createFilePreviewImage(ocId: file.ocId, etag: file.etag, fileNameView: file.fileName, classFile: file.classFile, status: 0, createPreviewMedia: false) {
+                if let image = utility.createFilePreviewImage(ocId: file.ocId, etag: file.etag, fileNameView: file.fileName, classFile: file.classFile, status: 0, createPreviewMedia: false) {
                     imageRecent = image
                 } else if file.hasPreview {
-                    let fileNamePathOrFileId = CCUtility.returnFileNamePath(fromFileName: file.fileName, serverUrl: file.serverUrl, urlBase: file.urlBase, userId: file.userId, account: account.account)!
-                    let fileNamePreviewLocalPath = CCUtility.getDirectoryProviderStoragePreviewOcId(file.ocId, etag: file.etag)!
-                    let fileNameIconLocalPath = CCUtility.getDirectoryProviderStorageIconOcId(file.ocId, etag: file.etag)!
+                    let fileNamePathOrFileId = utilityFileSystem.getFileNamePath(file.fileName, serverUrl: file.serverUrl, urlBase: file.urlBase, userId: file.userId)
+                    let fileNamePreviewLocalPath = utilityFileSystem.getDirectoryProviderStoragePreviewOcId(file.ocId, etag: file.etag)
+                    let fileNameIconLocalPath = utilityFileSystem.getDirectoryProviderStorageIconOcId(file.ocId, etag: file.etag)
                     let (_, _, imageIcon, _, _, _) = await NextcloudKit.shared.downloadPreview(fileNamePathOrFileId: fileNamePathOrFileId, fileNamePreviewLocalPath: fileNamePreviewLocalPath, widthPreview: NCGlobal.shared.sizePreview, heightPreview: NCGlobal.shared.sizePreview, fileNameIconLocalPath: fileNameIconLocalPath, sizeIcon: NCGlobal.shared.sizeIcon, options: options)
                     if let image = imageIcon {
                         imageRecent = image
                     }
                 }
 
-                let isDirectoryE2EE = NCUtility.shared.isDirectoryE2EE(file: file)
+                let isDirectoryE2EE = utilityFileSystem.isDirectoryE2EE(file: file)
                 let metadata = NCManageDatabase.shared.convertFileToMetadata(file, isDirectoryE2EE: isDirectoryE2EE)
 
                 // DATA

@@ -37,14 +37,11 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
     private var externalSiteMenu: [NKExternalSite] = []
     private var settingsMenu: [NKExternalSite] = []
     private var quotaMenu: [NKExternalSite] = []
-
-    // swiftlint:disable force_cast
-    private let appDelegate = UIApplication.shared.delegate as! AppDelegate
-    // swiftlint:enable force_cast
-
+    private let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
     private let applicationHandle = NCApplicationHandle()
-
     private var tabAccount: tableAccount?
+    let utilityFileSystem = NCUtilityFileSystem()
+    let utility = NCUtility()
 
     private struct Section {
         var items: [NKExternalSite]
@@ -213,10 +210,10 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
             case -3:
                 quota = NSLocalizedString("_quota_space_unlimited_", comment: "")
             default:
-                quota = CCUtility.transformedSize(activeAccount.quotaTotal)
+                quota = utilityFileSystem.transformedSize(activeAccount.quotaTotal)
             }
 
-            let quotaUsed: String = CCUtility.transformedSize(activeAccount.quotaUsed)
+            let quotaUsed: String = utilityFileSystem.transformedSize(activeAccount.quotaUsed)
 
             labelQuota.text = String.localizedStringWithFormat(NSLocalizedString("_quota_using_", comment: ""), quotaUsed, quota)
         }
@@ -330,7 +327,7 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
             cell.displayName.text = ""
 
             if let account = tabAccount {
-                cell.avatar.image = NCUtility.shared.loadUserImage(for: account.user, displayName: account.displayName, userBaseUrl: appDelegate)
+                cell.avatar.image = utility.loadUserImage(for: account.user, displayName: account.displayName, userBaseUrl: appDelegate)
 
                 if account.alias.isEmpty {
                     cell.displayName?.text = account.displayName
@@ -342,7 +339,7 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
             cell.accessoryType = UITableViewCell.AccessoryType.disclosureIndicator
 
             if NCGlobal.shared.capabilityUserStatusEnabled, let account = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", appDelegate.account)) {
-                let status = NCUtility.shared.getUserStatus(userIcon: account.userStatusIcon, userStatus: account.userStatusStatus, userMessage: account.userStatusMessage)
+                let status = utility.getUserStatus(userIcon: account.userStatusIcon, userStatus: account.userStatusStatus, userMessage: account.userStatusMessage)
                 cell.icon.image = status.onlineStatus
                 cell.status.text = status.statusMessage
                 cell.status.textColor = .label
@@ -361,15 +358,13 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         } else if section.type == .moreApps {
             guard let cell = tableView.dequeueReusableCell(withIdentifier: NCMoreAppSuggestionsCell.reuseIdentifier, for: indexPath) as? NCMoreAppSuggestionsCell else { return UITableViewCell() }
 
-            cell.delegate = self
-
             return cell
         } else {
             guard let cell = tableView.dequeueReusableCell(withIdentifier: CCCellMore.reuseIdentifier, for: indexPath) as? CCCellMore else { return UITableViewCell() }
 
             let item = sections[indexPath.section].items[indexPath.row]
 
-            cell.imageIcon?.image = NCUtility.shared.loadImage(named: item.icon)
+            cell.imageIcon?.image = utility.loadImage(named: item.icon)
             cell.imageIcon?.contentMode = .scaleAspectFit
             cell.labelText?.text = NSLocalizedString(item.name, comment: "")
             cell.labelText.textColor = .label
@@ -447,14 +442,5 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         } else {
             applicationHandle.didSelectItem(item, viewController: self)
         }
-    }
-}
-
-extension NCMore: NCMoreAppSuggestionsCellDelegate {
-    func moreAppsTapped() {
-        guard let url = URL(string: NCGlobal.shared.moreAppsUrl) else { return }
-        let safariViewController = SFSafariViewController(url: url)
-
-        present(safariViewController, animated: true, completion: nil)
     }
 }

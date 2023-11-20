@@ -53,6 +53,7 @@ class NCUploadScanDocument: ObservableObject {
     internal var isTextRecognition: Bool = false
     internal var quality: Double = 0
     internal var removeAllFiles: Bool = false
+    let utilityFileSystem = NCUtilityFileSystem()
 
     @Published var serverUrl: String
     @Published var showHUD: Bool = false
@@ -99,7 +100,7 @@ class NCUploadScanDocument: ObservableObject {
     func createPDF(metadata: tableMetadata, completion: @escaping (_ error: Bool) -> Void) {
 
         DispatchQueue.global().async {
-            let fileNamePath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
+            let fileNamePath = self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)
             let pdfData = NSMutableData()
 
             if self.password.isEmpty {
@@ -108,7 +109,7 @@ class NCUploadScanDocument: ObservableObject {
                 for char in self.password.unicodeScalars {
                     if !char.isASCII {
                         let error = NKError(errorCode: NCGlobal.shared.errorForbidden, errorDescription: "_password_ascii_")
-                        NCContentPresenter.shared.showError(error: error)
+                        NCContentPresenter().showError(error: error)
                         return DispatchQueue.main.async { completion(true) }
                     }
                 }
@@ -124,10 +125,10 @@ class NCUploadScanDocument: ObservableObject {
 
             do {
                 try pdfData.write(to: URL(fileURLWithPath: fileNamePath), options: .atomic)
-                metadata.size = NCUtilityFileSystem.shared.getFileSize(filePath: fileNamePath)
+                metadata.size = self.utilityFileSystem.getFileSize(filePath: fileNamePath)
                 NCNetworkingProcessUpload.shared.createProcessUploads(metadatas: [metadata], completion: { _ in })
                 if self.removeAllFiles {
-                    let path = CCUtility.getDirectoryScan()!
+                    let path = self.utilityFileSystem.directoryScan
                     let filePaths = try FileManager.default.contentsOfDirectory(atPath: path)
                     for filePath in filePaths {
                         try FileManager.default.removeItem(atPath: path + "/" + filePath)
@@ -319,7 +320,6 @@ extension NCUploadScanDocument: NCSelectDelegate {
     func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String, items: [Any], indexPath: [IndexPath], overwrite: Bool, copy: Bool, move: Bool) {
 
         if let serverUrl = serverUrl {
-            CCUtility.setDirectoryScanDocument(serverUrl)
             self.serverUrl = serverUrl
         }
     }
@@ -345,12 +345,12 @@ extension NCUploadScanDocument: NCCreateFormUploadConflictDelegate {
 
 struct UploadScanDocumentView: View {
 
-    @State var fileName = CCUtility.createFileNameDate("scan", extension: "") ?? "scan"
+    @State var fileName = NCUtilityFileSystem().createFileNameDate("scan", ext: "")
     @State var password: String = ""
     @State var isSecuredPassword: Bool = true
-    @State var isTextRecognition: Bool = CCUtility.getTextRecognitionStatus()
-    @State var quality = CCUtility.getQualityScanDocument()
-    @State var removeAllFiles: Bool = CCUtility.getDeleteAllScanImages()
+    @State var isTextRecognition: Bool = NCKeychain().textRecognitionStatus
+    @State var quality = NCKeychain().qualityScanDocument
+    @State var removeAllFiles: Bool = NCKeychain().deleteAllScanImages
     @State var isPresentedSelect = false
     @State var isPresentedUploadConflict = false
 
@@ -379,7 +379,7 @@ struct UploadScanDocumentView: View {
                     Section(header: Text(NSLocalizedString("_file_creation_", comment: ""))) {
                         HStack {
                             Label {
-                                if NCUtilityFileSystem.shared.getHomeServer(urlBase: uploadScanDocument.userBaseUrl.urlBase, userId: uploadScanDocument.userBaseUrl.userId) == uploadScanDocument.serverUrl {
+                                if NCUtilityFileSystem().getHomeServer(urlBase: uploadScanDocument.userBaseUrl.urlBase, userId: uploadScanDocument.userBaseUrl.userId) == uploadScanDocument.serverUrl {
                                     Text("/")
                                         .frame(maxWidth: .infinity, alignment: .trailing)
                                 } else {
@@ -437,7 +437,7 @@ struct UploadScanDocumentView: View {
                             Toggle(NSLocalizedString("_text_recognition_", comment: ""), isOn: $isTextRecognition)
                                 .toggleStyle(SwitchToggleStyle(tint: Color(NCBrandColor.shared.brand)))
                                 .onChange(of: isTextRecognition) { newValue in
-                                    CCUtility.setTextRecognitionStatus(newValue)
+                                    NCKeychain().textRecognitionStatus = newValue
                                 }
                         }
                     }
@@ -450,8 +450,7 @@ struct UploadScanDocumentView: View {
                         Toggle(NSLocalizedString("_delete_all_scanned_images_", comment: ""), isOn: $removeAllFiles)
                             .toggleStyle(SwitchToggleStyle(tint: Color(NCBrandColor.shared.brand)))
                             .onChange(of: removeAllFiles) { newValue in
-                                CCUtility.setDeleteAllScanImages(newValue)
-
+                                NCKeychain().deleteAllScanImages = newValue
                             }
 
                         Button(NSLocalizedString("_save_", comment: "")) {
@@ -478,7 +477,7 @@ struct UploadScanDocumentView: View {
                         VStack {
                             Slider(value: $quality, in: 0...4, step: 1, onEditingChanged: { touch in
                                 if !touch {
-                                    CCUtility.setQualityScanDocument(quality)
+                                    NCKeychain().qualityScanDocument = quality
                                 }
                             })
                             .accentColor(Color(NCBrandColor.shared.brand))

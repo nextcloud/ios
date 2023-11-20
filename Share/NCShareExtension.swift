@@ -71,6 +71,8 @@ class NCShareExtension: UIViewController {
     var uploadMetadata: [tableMetadata] = []
     var uploadStarted = false
     let hud = JGProgressHUD()
+    let utilityFileSystem = NCUtilityFileSystem()
+    let utility = NCUtility()
 
     // MARK: - View Life Cycle
 
@@ -97,28 +99,26 @@ class NCShareExtension: UIViewController {
         commandViewHeightConstraint.constant = heightCommandView
 
         createFolderView.layer.cornerRadius = 10
-        createFolderImage.image = NCUtility.shared.loadImage(named: "folder.badge.plus", color: .label)
+        createFolderImage.image = utility.loadImage(named: "folder.badge.plus", color: .label)
         createFolderLabel.text = NSLocalizedString("_create_folder_", comment: "")
         let createFolderGesture = UITapGestureRecognizer(target: self, action: #selector(actionCreateFolder))
         createFolderView.addGestureRecognizer(createFolderGesture)
 
         uploadView.layer.cornerRadius = 10
 
-        // uploadImage.image = NCUtility.shared.loadImage(named: "square.and.arrow.up", color: .label)
+        // uploadImage.image = utility).loadImage(named: "square.and.arrow.up", color: .label)
         uploadLabel.text = NSLocalizedString("_upload_", comment: "")
         uploadLabel.textColor = .systemBlue
         let uploadGesture = UITapGestureRecognizer(target: self, action: #selector(actionUpload))
         uploadView.addGestureRecognizer(uploadGesture)
 
         // LOG
-        let levelLog = CCUtility.getLogLevel()
-        let isSimulatorOrTestFlight = NCUtility.shared.isSimulatorOrTestFlight()
-        let versionNextcloudiOS = String(format: NCBrandOptions.shared.textCopyrightNextcloudiOS, NCUtility.shared.getVersionApp())
+        let levelLog = NCKeychain().logLevel
+        let isSimulatorOrTestFlight = utility.isSimulatorOrTestFlight()
+        let versionNextcloudiOS = String(format: NCBrandOptions.shared.textCopyrightNextcloudiOS, utility.getVersionApp())
 
         NextcloudKit.shared.nkCommonInstance.levelLog = levelLog
-        if let pathDirectoryGroup = CCUtility.getDirectoryGroup()?.path {
-            NextcloudKit.shared.nkCommonInstance.pathLog = pathDirectoryGroup
-        }
+        NextcloudKit.shared.nkCommonInstance.pathLog = utilityFileSystem.directoryGroup
         if isSimulatorOrTestFlight {
             NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Start Share session with level \(levelLog) " + versionNextcloudiOS + " (Simulator / TestFlight)")
         } else {
@@ -128,10 +128,10 @@ class NCShareExtension: UIViewController {
         // Colors
         if let activeAccount = NCManageDatabase.shared.getActiveAccount() {
             NCBrandColor.shared.settingThemingColor(account: activeAccount.account)
-        } else {
-            NCBrandColor.shared.createImagesThemingColor()
         }
         NCBrandColor.shared.createUserColors()
+        NCImageCache.shared.createImagesCache()
+        NCImageCache.shared.createImagesBrandCache()
 
         hud.indicatorView = JGProgressHUDRingIndicatorView()
         if let indicatorView = hud.indicatorView as? JGProgressHUDRingIndicatorView {
@@ -211,18 +211,18 @@ class NCShareExtension: UIViewController {
                 self.reloadDatasource(withLoadFolder: true)
 
                 var navigationTitle = (self.serverUrl as NSString).lastPathComponent
-                if NCUtilityFileSystem.shared.getHomeServer(urlBase: self.activeAccount.urlBase, userId: self.activeAccount.userId) == self.serverUrl {
+                if self.utilityFileSystem.getHomeServer(urlBase: self.activeAccount.urlBase, userId: self.activeAccount.userId) == self.serverUrl {
                     navigationTitle = NCBrandOptions.shared.brand
                 }
                 self.setNavigationBar(navigationTitle: navigationTitle)
             }
         }
 
-        let image = NCUtility.shared.loadUserImage(for: activeAccount.user, displayName: activeAccount.displayName, userBaseUrl: activeAccount)
+        let image = utility.loadUserImage(for: activeAccount.user, displayName: activeAccount.displayName, userBaseUrl: activeAccount)
         let profileButton = UIButton(type: .custom)
         profileButton.setImage(image, for: .normal)
 
-        if serverUrl == NCUtilityFileSystem.shared.getHomeServer(urlBase: activeAccount.urlBase, userId: activeAccount.userId) {
+        if serverUrl == utilityFileSystem.getHomeServer(urlBase: activeAccount.urlBase, userId: activeAccount.userId) {
 
             var title = "  "
             if let userAlias = activeAccount?.alias, !userAlias.isEmpty {
@@ -243,7 +243,7 @@ class NCShareExtension: UIViewController {
             }
         }
         var navItems = [UIBarButtonItem(customView: profileButton)]
-        if serverUrl != NCUtilityFileSystem.shared.getHomeServer(urlBase: activeAccount.urlBase, userId: activeAccount.userId) {
+        if serverUrl != utilityFileSystem.getHomeServer(urlBase: activeAccount.urlBase, userId: activeAccount.userId) {
             let space = UIBarButtonItem(barButtonSystemItem: .fixedSpace, target: nil, action: nil)
             space.width = 20
             navItems.append(contentsOf: [UIBarButtonItem(customView: backButton), space])
@@ -297,8 +297,8 @@ extension NCShareExtension {
         var conflicts: [tableMetadata] = []
         for fileName in filesName {
             let ocId = NSUUID().uuidString
-            let toPath = CCUtility.getDirectoryProviderStorageOcId(ocId, fileNameView: fileName)!
-            guard NCUtilityFileSystem.shared.copyFile(atPath: (NSTemporaryDirectory() + fileName), toPath: toPath) else { continue }
+            let toPath = utilityFileSystem.getDirectoryProviderStorageOcId(ocId, fileNameView: fileName)
+            guard utilityFileSystem.copyFile(atPath: (NSTemporaryDirectory() + fileName), toPath: toPath) else { continue }
             let metadata = NCManageDatabase.shared.createMetadata(
                 account: activeAccount.account, user: activeAccount.user, userId: activeAccount.userId,
                 fileName: fileName, fileNameView: fileName,
@@ -307,7 +307,7 @@ extension NCShareExtension {
                 contentType: "")
             metadata.session = NextcloudKit.shared.nkCommonInstance.sessionIdentifierUpload
             metadata.sessionSelector = NCGlobal.shared.selectorUploadFileShareExtension
-            metadata.size = NCUtilityFileSystem.shared.getFileSize(filePath: toPath)
+            metadata.size = utilityFileSystem.getFileSize(filePath: toPath)
             metadata.status = NCGlobal.shared.metadataStatusWaitUpload
             if NCManageDatabase.shared.getMetadataConflict(account: activeAccount.account, serverUrl: serverUrl, fileNameView: fileName) != nil {
                 conflicts.append(metadata)
@@ -352,15 +352,14 @@ extension NCShareExtension {
         hud.textLabel.text = NSLocalizedString("_upload_file_", comment: "") + " \(counterUploaded + 1) " + NSLocalizedString("_of_", comment: "") + " \(filesName.count)"
         hud.show(in: self.view)
 
-        NCNetworking.shared.upload(metadata: metadata, uploadE2EEDelegate: self) {
+        NCNetworking.shared.upload(metadata: metadata, uploadE2EEDelegate: self, hudView: self.view) {
             self.hud.progress = 0
         } progressHandler: { _, _, fractionCompleted in
             self.hud.progress = Float(fractionCompleted)
         } completion: { error in
             if error != .success {
-                let path = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId)!
                 NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
-                NCUtilityFileSystem.shared.deleteFile(filePath: path)
+                self.utilityFileSystem.removeFile(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId))
                 self.uploadErrors.append(metadata)
             }
             self.counterUploaded += 1

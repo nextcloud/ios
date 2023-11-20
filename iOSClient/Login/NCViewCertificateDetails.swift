@@ -39,7 +39,8 @@ class NCViewCertificateDetails: UIViewController {
     @IBOutlet weak var scrollView: UIScrollView!
     @IBOutlet weak var textView: UITextView!
 
-    public var delegate: NCViewCertificateDetailsDelegate?
+    var delegate: NCViewCertificateDetailsDelegate?
+    let utilityFileSystem = NCUtilityFileSystem()
     @objc public var host: String = ""
     public var fileNamePath: String = ""
     @objc public var certificateTitle = NSLocalizedString("_certificate_view_", comment: "")
@@ -53,7 +54,7 @@ class NCViewCertificateDetails: UIViewController {
         buttonCancel.title = NSLocalizedString("_close_", comment: "")
 
         if fileNamePath.isEmpty {
-            fileNamePath = CCUtility.getDirectoryCerificates()! + "/" + host + ".txt"
+            fileNamePath = utilityFileSystem.directoryCertificates + "/" + host + ".txt"
         }
 
         if FileManager.default.fileExists(atPath: fileNamePath) {

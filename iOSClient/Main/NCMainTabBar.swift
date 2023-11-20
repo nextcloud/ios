@@ -28,11 +28,7 @@ class NCMainTabBar: UITabBar {
 
     private var fillColor: UIColor!
     private var shapeLayer: CALayer?
-
-    // swiftlint:disable force_cast
-    private let appDelegate = UIApplication.shared.delegate as! AppDelegate
-    // swiftlint:enable force_cast
-
+    private let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
     private let centerButtonY: CGFloat = -28
 
     public var menuRect: CGRect {
@@ -196,7 +192,7 @@ class NCMainTabBar: UITabBar {
 
                 if !directory.permissions.contains("CK") {
                     let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_no_permission_add_file_")
-                    NCContentPresenter.shared.showWarning(error: error)
+                    NCContentPresenter().showWarning(error: error)
                     return
                 }
             }

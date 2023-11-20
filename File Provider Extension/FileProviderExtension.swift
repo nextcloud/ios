@@ -55,12 +55,14 @@ class FileProviderExtension: NSFileProviderExtension, NCNetworkingDelegate {
 
     var outstandingSessionTasks: [URL: URLSessionTask] = [:]
     var outstandingOcIdTemp: [String: String] = [:]
+    var fpUtility = fileProviderUtility()
+    let utilityFileSystem = NCUtilityFileSystem()
 
     override init() {
         super.init()
 
         // Create directory File Provider Storage
-        CCUtility.getDirectoryProviderStorage()
+        _ = utilityFileSystem.directoryProviderStorage
         // Configure URLSession
         _ = NCNetworking.shared.sessionManagerBackgroundExtension
     }
@@ -78,9 +80,9 @@ class FileProviderExtension: NSFileProviderExtension, NCNetworkingDelegate {
         if containerItemIdentifier != NSFileProviderItemIdentifier.workingSet {
             if fileProviderData.shared.setupAccount(domain: domain, providerExtension: self) == nil {
                 throw NSError(domain: NSFileProviderErrorDomain, code: NSFileProviderError.notAuthenticated.rawValue, userInfo: [:])
-            } else if let passcode = CCUtility.getPasscode(), !passcode.isEmpty, CCUtility.isPasscodeAtStartEnabled() {
+            } else if NCKeychain().passcode != nil, NCKeychain().requestPasscodeAtStart {
                 throw NSError(domain: NSFileProviderErrorDomain, code: NSFileProviderError.notAuthenticated.rawValue, userInfo: ["code": NSNumber(value: NCGlobal.shared.errorUnauthorizedFilesPasscode)])
-            } else if CCUtility.getDisableFilesApp() || NCBrandOptions.shared.disable_openin_file {
+            } else if NCKeychain().disableFilesApp || NCBrandOptions.shared.disable_openin_file {
                 throw NSError(domain: NSFileProviderErrorDomain, code: NSFileProviderError.notAuthenticated.rawValue, userInfo: ["code": NSNumber(value: NCGlobal.shared.errorDisableFilesApp)])
             }
         }
@@ -129,10 +131,10 @@ class FileProviderExtension: NSFileProviderExtension, NCNetworkingDelegate {
 
         } else {
 
-            guard let metadata = fileProviderUtility.shared.getTableMetadataFromItemIdentifier(identifier) else {
+            guard let metadata = fpUtility.getTableMetadataFromItemIdentifier(identifier) else {
                 throw NSFileProviderError(.noSuchItem)
             }
-            guard let parentItemIdentifier = fileProviderUtility.shared.getParentItemIdentifier(metadata: metadata) else {
+            guard let parentItemIdentifier = fpUtility.getParentItemIdentifier(metadata: metadata) else {
                 throw NSFileProviderError(.noSuchItem)
             }
             let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier)
@@ -194,7 +196,7 @@ class FileProviderExtension: NSFileProviderExtension, NCNetworkingDelegate {
             return completionHandler(nil)
         }
 
-        guard let metadata = fileProviderUtility.shared.getTableMetadataFromItemIdentifier(identifier) else {
+        guard let metadata = fpUtility.getTableMetadataFromItemIdentifier(identifier) else {
             return completionHandler(NSFileProviderError(.noSuchItem))
         }
 
@@ -204,12 +206,12 @@ class FileProviderExtension: NSFileProviderExtension, NCNetworkingDelegate {
         }
 
         let tableLocalFile = NCManageDatabase.shared.getTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
-        if tableLocalFile != nil && CCUtility.fileProviderStorageExists(metadata) && tableLocalFile?.etag == metadata.etag {
+        if tableLocalFile != nil && utilityFileSystem.fileProviderStorageExists(metadata) && tableLocalFile?.etag == metadata.etag {
             return completionHandler(nil)
         }
 
         let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
-        let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileName)!
+        let fileNameLocalPath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileName)
 
         // Update status
         NCManageDatabase.shared.setMetadataStatus(ocId: metadata.ocId, status: NCGlobal.shared.metadataStatusDownloading)
@@ -227,7 +229,7 @@ class FileProviderExtension: NSFileProviderExtension, NCNetworkingDelegate {
         }) { _, etag, date, _, _, _, error in
 
             self.outstandingSessionTasks.removeValue(forKey: url)
-            guard var metadata = fileProviderUtility.shared.getTableMetadataFromItemIdentifier(identifier) else {
+            guard var metadata = self.fpUtility.getTableMetadataFromItemIdentifier(identifier) else {
                 completionHandler(NSFileProviderError(.noSuchItem))
                 return
             }
@@ -274,9 +276,9 @@ class FileProviderExtension: NSFileProviderExtension, NCNetworkingDelegate {
         // Temp ocId ?
         if outstandingOcIdTemp[ocId] != nil && outstandingOcIdTemp[ocId] != ocId {
             ocId = outstandingOcIdTemp[ocId]!
-            let atPath = CCUtility.getDirectoryProviderStorageOcId(itemIdentifier.rawValue, fileNameView: fileName)
-            let toPath = CCUtility.getDirectoryProviderStorageOcId(ocId, fileNameView: fileName)
-            CCUtility.copyFile(atPath: atPath, toPath: toPath)
+            let atPath = utilityFileSystem.getDirectoryProviderStorageOcId(itemIdentifier.rawValue, fileNameView: fileName)
+            let toPath = utilityFileSystem.getDirectoryProviderStorageOcId(ocId, fileNameView: fileName)
+            utilityFileSystem.copyFile(atPath: atPath, toPath: toPath)
         }
         guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) else { return }
 
@@ -296,7 +298,7 @@ class FileProviderExtension: NSFileProviderExtension, NCNetworkingDelegate {
         if !fileHasLocalChanges {
             // remove the existing file to free up space
             do {
-                _ = try fileProviderUtility.shared.fileManager.removeItem(at: url)
+                _ = try fpUtility.fileManager.removeItem(at: url)
             } catch let error {
                 print("error: \(error)")
             }
@@ -323,7 +325,7 @@ class FileProviderExtension: NSFileProviderExtension, NCNetworkingDelegate {
                 var size = 0 as Int64
                 var error: NSError?
 
-                guard let tableDirectory = fileProviderUtility.shared.getTableDirectoryFromParentItemIdentifier(parentItemIdentifier, account: fileProviderData.shared.account, homeServerUrl: fileProviderData.shared.homeServerUrl) else {
+                guard let tableDirectory = self.fpUtility.getTableDirectoryFromParentItemIdentifier(parentItemIdentifier, account: fileProviderData.shared.account, homeServerUrl: fileProviderData.shared.homeServerUrl) else {
                     completionHandler(nil, NSFileProviderError(.noSuchItem))
                     return
                 }
@@ -332,7 +334,7 @@ class FileProviderExtension: NSFileProviderExtension, NCNetworkingDelegate {
 
                 // typefile directory ? (NOT PERMITTED)
                 do {
-                    let attributes = try fileProviderUtility.shared.fileManager.attributesOfItem(atPath: fileURL.path)
+                    let attributes = try self.fpUtility.fileManager.attributesOfItem(atPath: fileURL.path)
                     size = attributes[FileAttributeKey.size] as? Int64 ?? 0
                     let typeFile = attributes[FileAttributeKey.type] as? FileAttributeType
                     if typeFile == FileAttributeType.typeDirectory {
@@ -344,11 +346,11 @@ class FileProviderExtension: NSFileProviderExtension, NCNetworkingDelegate {
                     return
                 }
 
-                let fileName = NCUtilityFileSystem.shared.createFileName(fileURL.lastPathComponent, serverUrl: tableDirectory.serverUrl, account: fileProviderData.shared.account)
+                let fileName = self.utilityFileSystem.createFileName(fileURL.lastPathComponent, serverUrl: tableDirectory.serverUrl, account: fileProviderData.shared.account)
                 let ocIdTemp = NSUUID().uuidString.lowercased()
 
                 NSFileCoordinator().coordinate(readingItemAt: fileURL, options: .withoutChanges, error: &error) { url in
-                    _ = fileProviderUtility.shared.copyFile(url.path, toPath: CCUtility.getDirectoryProviderStorageOcId(ocIdTemp, fileNameView: fileName))
+                    _ = self.fpUtility.copyFile(url.path, toPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(ocIdTemp, fileNameView: fileName))
                 }
 
                 fileURL.stopAccessingSecurityScopedResource()
@@ -361,7 +363,7 @@ class FileProviderExtension: NSFileProviderExtension, NCNetworkingDelegate {
                 NCManageDatabase.shared.addMetadata(metadata)
 
                 let serverUrlFileName = tableDirectory.serverUrl + "/" + fileName
-                let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(ocIdTemp, fileNameView: fileName)!
+                let fileNameLocalPath = self.utilityFileSystem.getDirectoryProviderStorageOcId(ocIdTemp, fileNameView: fileName)
 
                 if let task = NKBackground(nkCommonInstance: NextcloudKit.shared.nkCommonInstance).upload(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, dateCreationFile: nil, dateModificationFile: nil, description: ocIdTemp, session: NCNetworking.shared.sessionManagerBackgroundExtension) {
 
@@ -383,7 +385,7 @@ class FileProviderExtension: NSFileProviderExtension, NCNetworkingDelegate {
         guard let metadataTemp = NCManageDatabase.shared.getMetadataFromOcId(ocIdTemp) else { return }
         let metadata = tableMetadata.init(value: metadataTemp)
 
-        let url = URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(ocIdTemp, fileNameView: fileName))
+        let url = URL(fileURLWithPath: utilityFileSystem.getDirectoryProviderStorageOcId(ocIdTemp, fileNameView: fileName))
         DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
             self.outstandingSessionTasks.removeValue(forKey: url)
         }
@@ -411,14 +413,14 @@ class FileProviderExtension: NSFileProviderExtension, NCNetworkingDelegate {
             NCManageDatabase.shared.addLocalFile(metadata: metadata)
 
             // New file
-            if ocId != ocIdTemp {
+            if let ocId, ocId != ocIdTemp {
 
                 NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", ocIdTemp))
 
                 // File system
-                let atPath = CCUtility.getDirectoryProviderStorageOcId(ocIdTemp)
-                let toPath = CCUtility.getDirectoryProviderStorageOcId(ocId)
-                CCUtility.copyFile(atPath: atPath, toPath: toPath)
+                let atPath = utilityFileSystem.getDirectoryProviderStorageOcId(ocIdTemp)
+                let toPath = utilityFileSystem.getDirectoryProviderStorageOcId(ocId)
+                utilityFileSystem.copyFile(atPath: atPath, toPath: toPath)
             }
 
             fileProviderData.shared.signalEnumerator(ocId: metadata.ocId, update: true)

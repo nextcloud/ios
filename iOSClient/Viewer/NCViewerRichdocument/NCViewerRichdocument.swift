@@ -27,10 +27,8 @@ import NextcloudKit
 
 class NCViewerRichdocument: UIViewController, WKNavigationDelegate, WKScriptMessageHandler, NCSelectDelegate {
 
-    // swiftlint:disable force_cast
-    let appDelegate = UIApplication.shared.delegate as! AppDelegate
-    // swiftlint:enable force_cast
-
+    let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
+    let utilityFileSystem = NCUtilityFileSystem()
     var webView = WKWebView()
     var bottomConstraint: NSLayoutConstraint?
     var documentController: UIDocumentInteractionController?
@@ -148,7 +146,7 @@ class NCViewerRichdocument: UIViewController, WKNavigationDelegate, WKScriptMess
 
     @objc func openMenuMore() {
         if imageIcon == nil { imageIcon = UIImage(named: "file_txt") }
-        NCViewer.shared.toggleMenu(viewController: self, metadata: metadata, webView: true, imageIcon: imageIcon)
+        NCViewer().toggleMenu(viewController: self, metadata: metadata, webView: true, imageIcon: imageIcon)
     }
 
     // MARK: -
@@ -188,7 +186,7 @@ class NCViewerRichdocument: UIViewController, WKNavigationDelegate, WKScriptMess
                         guard let type = values["Type"] as? String else { return }
                         guard let urlString = values["URL"] as? String else { return }
                         guard let url = URL(string: urlString) else { return }
-                        let fileNameLocalPath = CCUtility.getDirectoryUserData() + "/" + (metadata.fileName as NSString).deletingPathExtension
+                        let fileNameLocalPath = utilityFileSystem.directoryUserData + "/" + (metadata.fileName as NSString).deletingPathExtension
 
                         if type == "slideshow" {
 
@@ -224,8 +222,8 @@ class NCViewerRichdocument: UIViewController, WKNavigationDelegate, WKScriptMess
                                         if let disposition = allHeaderFields["Content-Disposition"] as? String {
                                             let components = disposition.components(separatedBy: "filename=")
                                             if let filename = components.last?.replacingOccurrences(of: "\"", with: "") {
-                                                item = CCUtility.getDirectoryUserData() + "/" + filename
-                                                _ = NCUtilityFileSystem.shared.moveFile(atPath: fileNameLocalPath, toPath: item)
+                                                item = self.utilityFileSystem.directoryUserData + "/" + filename
+                                                _ = self.utilityFileSystem.moveFile(atPath: fileNameLocalPath, toPath: item)
                                             }
                                         }
                                     }
@@ -246,7 +244,7 @@ class NCViewerRichdocument: UIViewController, WKNavigationDelegate, WKScriptMess
                                     }
                                 } else {
 
-                                    NCContentPresenter.shared.showError(error: error)
+                                    NCContentPresenter().showError(error: error)
                                 }
                             })
                         }
@@ -293,16 +291,16 @@ class NCViewerRichdocument: UIViewController, WKNavigationDelegate, WKScriptMess
 
     func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String, items: [Any], indexPath: [IndexPath], overwrite: Bool, copy: Bool, move: Bool) {
 
-        if serverUrl != nil && metadata != nil {
+        if let serverUrl, let metadata {
 
-            let path = CCUtility.returnFileNamePath(fromFileName: metadata!.fileName, serverUrl: serverUrl!, urlBase: appDelegate.urlBase, userId: appDelegate.userId, account: metadata!.account)!
+            let path = utilityFileSystem.getFileNamePath(metadata.fileName, serverUrl: serverUrl, urlBase: appDelegate.urlBase, userId: appDelegate.userId)
 
             NextcloudKit.shared.createAssetRichdocuments(path: path) { account, url, _, error in
-                if error == .success && account == self.appDelegate.account {
-                    let functionJS = "OCA.RichDocuments.documentsMain.postAsset('\(metadata!.fileNameView)', '\(url!)')"
+                if error == .success, account == self.appDelegate.account, let url {
+                    let functionJS = "OCA.RichDocuments.documentsMain.postAsset('\(metadata.fileNameView)', '\(url)')"
                     self.webView.evaluateJavaScript(functionJS, completionHandler: { _, _ in })
                 } else if error != .success {
-                    NCContentPresenter.shared.showError(error: error)
+                    NCContentPresenter().showError(error: error)
                 } else {
                     print("[LOG] It has been changed user during networking process, error.")
                 }
@@ -312,14 +310,14 @@ class NCViewerRichdocument: UIViewController, WKNavigationDelegate, WKScriptMess
 
     func select(_ metadata: tableMetadata!, serverUrl: String!) {
 
-        let path = CCUtility.returnFileNamePath(fromFileName: metadata!.fileName, serverUrl: serverUrl!, urlBase: appDelegate.urlBase, userId: appDelegate.userId, account: metadata!.account)!
+        let path = utilityFileSystem.getFileNamePath(metadata!.fileName, serverUrl: serverUrl!, urlBase: appDelegate.urlBase, userId: appDelegate.userId)
 
         NextcloudKit.shared.createAssetRichdocuments(path: path) { account, url, _, error in
-            if error == .success && account == self.appDelegate.account {
-                let functionJS = "OCA.RichDocuments.documentsMain.postAsset('\(metadata.fileNameView)', '\(url!)')"
+            if error == .success, account == self.appDelegate.account, let url {
+                let functionJS = "OCA.RichDocuments.documentsMain.postAsset('\(metadata.fileNameView)', '\(url)')"
                 self.webView.evaluateJavaScript(functionJS, completionHandler: { _, _ in })
             } else if error != .success {
-                NCContentPresenter.shared.showError(error: error)
+                NCContentPresenter().showError(error: error)
             } else {
                 print("[LOG] It has been changed user during networking process, error.")
             }

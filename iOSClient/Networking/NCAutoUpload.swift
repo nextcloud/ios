@@ -45,7 +45,7 @@ class NCAutoUpload: NSObject {
         }
         applicationState = UIApplication.shared.applicationState
 
-        NCAskAuthorization.shared.askAuthorizationPhotoLibrary(viewController: viewController) { hasPermission in
+        NCAskAuthorization().askAuthorizationPhotoLibrary(viewController: viewController) { hasPermission in
             guard hasPermission else {
                 NCManageDatabase.shared.setAccountAutoUploadProperty("autoUpload", state: false)
                 return completion(0)
@@ -62,10 +62,10 @@ class NCAutoUpload: NSObject {
 
         applicationState = UIApplication.shared.applicationState
 
-        NCAskAuthorization.shared.askAuthorizationPhotoLibrary(viewController: viewController) { hasPermission in
+        NCAskAuthorization().askAuthorizationPhotoLibrary(viewController: viewController) { hasPermission in
             guard hasPermission else { return }
             let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_create_full_upload_")
-            NCContentPresenter.shared.showWarning(error: error, priority: .max)
+            NCContentPresenter().showWarning(error: error, priority: .max)
             NCActivityIndicator.shared.start()
             Task {
                 self.uploadAssetsNewAndFull(viewController: viewController, selector: NCGlobal.shared.selectorUploadAutoUploadAll, log: log) { _ in
@@ -94,7 +94,7 @@ class NCAutoUpload: NSObject {
             if !NCNetworking.shared.createFolder(assets: assets, selector: selector, useSubFolder: account.autoUploadCreateSubfolder, account: account.account, urlBase: account.urlBase, userId: account.userId, withPush: false) {
                 if selector == NCGlobal.shared.selectorUploadAutoUploadAll {
                     let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_error_createsubfolders_upload_")
-                    NCContentPresenter.shared.showError(error: error, priority: .max)
+                    NCContentPresenter().showError(error: error, priority: .max)
                 }
                 return completion(0)
             }
@@ -117,7 +117,7 @@ class NCAutoUpload: NSObject {
                 var serverUrl: String = ""
                 let fileName = CCUtility.createFileName(asset.originalFilename as String, fileDate: assetDate, fileType: assetMediaType, keyFileName: NCGlobal.shared.keyFileNameAutoUploadMask, keyFileNameType: NCGlobal.shared.keyFileNameAutoUploadType, keyFileNameOriginal: NCGlobal.shared.keyFileNameOriginalAutoUpload, forcedNewFileName: false)!
 
-                if asset.mediaSubtypes.contains(.photoLive) && CCUtility.getLivePhoto() {
+                if asset.mediaSubtypes.contains(.photoLive), NCKeychain().livePhoto {
                     livePhoto = true
                 }
 
@@ -151,7 +151,7 @@ class NCAutoUpload: NSObject {
                 var fileNameSearchMetadata = fileName
                 let ext = (fileNameSearchMetadata as NSString).pathExtension.uppercased()
 
-                if ext == "HEIC" && CCUtility.getFormatCompatibility() {
+                if ext == "HEIC", NCKeychain().formatCompatibility {
                     fileNameSearchMetadata = (fileNameSearchMetadata as NSString).deletingPathExtension + ".jpg"
                 }
 
@@ -202,7 +202,7 @@ class NCAutoUpload: NSObject {
 
     private func getCameraRollAssets(viewController: UIViewController?, account: tableAccount, selector: String, alignPhotoLibrary: Bool, completion: @escaping (_ assets: [PHAsset]?) -> Void) {
 
-        NCAskAuthorization.shared.askAuthorizationPhotoLibrary(viewController: viewController) { hasPermission in
+        NCAskAuthorization().askAuthorizationPhotoLibrary(viewController: viewController) { hasPermission in
 
             let assetCollection = PHAssetCollection.fetchAssetCollections(with: PHAssetCollectionType.smartAlbum, subtype: PHAssetCollectionSubtype.smartAlbumUserLibrary, options: nil)
             // swiftlint:disable empty_count

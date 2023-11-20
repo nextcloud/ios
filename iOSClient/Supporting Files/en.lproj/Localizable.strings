@@ -202,7 +202,8 @@
 "_certificate_not_found_"   = "File %@ in documents directory not found.";
 "_copy_failed_"             = "Copy failed";
 "_certificate_installed_"   = "Certificate installed";
-"_want_delete_account_"     = "Do you want to delete the account %@";
+"_remove_local_account_"    = "Remove local account";
+"_want_delete_account_"     = "Do you want to remove local account %@";
 "_prevent_http_redirection_"= "The redirection in HTTP is not permitted";
 "_pdf_vertical_"            = "PDF vertical display";
 "_pdf_horizontal_"          = "PDF horizontal display";
@@ -214,6 +215,10 @@
 "_replace_all_action_title_" = "Replace all";
 "_keep_both_for_all_action_title_" = "Keep both for all";
 "_more_action_title_" = "More Details";
+"_wait_file_preparation_" = "Please wait, upload file in preparation";
+"_wait_file_encryption_"  = "Please wait, file encryption";
+"_passcode_counter_fail_" = "Failed attempts, please wait";
+"_seconds_"               = "seconds";
 
 /* Background of the file listing view */
 "_use_as_background_"       = "Use it as a background";
@@ -292,7 +297,7 @@
 "_lock_active_"                 = "Lock: On";
 "_lock_not_active_"             = "Lock: Off";
 "_lock_protection_no_screen_"        = "Do not ask at startup";
-"_lock_protection_no_screen_footer_" = "Use \"Do not ask at startup\" for the encryption option";
+"_lock_protection_no_screen_footer_" = "Use \"Do not ask at startup\" for the encryption option.";
 "_enable_touch_face_id_"        = "Enable Touch/Face ID";
 "_url_"                         = "URL";
 "_username_"                    = "Username";
@@ -585,10 +590,9 @@
 "_status_uploading_"            = "Uploading";
 "_status_upload_error_"         = "Error, waiting for upload";
 "_select_media_folder_"         = "Select the \"Media\" folder";
-"_media_viewimage_show_"        = "Show images";
-"_media_viewimage_hide_"        = "Hide images";
-"_media_viewvideo_show_"        = "Show video";
-"_media_viewvideo_hide_"        = "Hide video";
+"_media_viewimage_show_"        = "Show only images";
+"_media_viewvideo_show_"        = "Show only video";
+"_media_show_all_"              = "Show both";
 "_media_by_created_date_"       = "Sort by created date";
 "_media_by_upload_date_"        = "Sort by upload date";
 "_media_by_modified_date_"      = "Sort by modified date";
@@ -939,9 +943,13 @@
 "_chunk_enough_memory_"     = "It seems there is not enough space to send the file";
 "_chunk_create_folder_"     = "The file could not be sent, please check the server log";
 "_chunk_files_null_"        = "The file for sending could not be created";
+"_chunk_file_null_"         = "The file could not be sended";
 "_chunk_move_"              = "The sent file could not be reassembled, please check the server log";
 "_download_image_"          = "Download image";
 "_download_video_"          = "Download video";
+"_reset_wrong_passcode_"    = "Reset application";
+"_reset_wrong_passcode_desc_" = "Use \"Reset application\" for remove all accounts and local data after %d failed code entry attempts.";
+"_deviceOwnerAuthentication_" = "Biometric sensor has been locked out due to few fail attemps. Enter device passcode to enable sensor.";
 
 // Video
 "_select_trace_"            = "Select the trace";

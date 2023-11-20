@@ -249,7 +249,7 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
         if status {
             var blurEffect: UIVisualEffect?
             var blurEffectView: UIView?
-            imageSelect.image = NCBrandColor.cacheImages.checkedYes
+            imageSelect.image = NCImageCache.images.checkedYes
             if traitCollection.userInterfaceStyle == .dark {
                 blurEffect = UIBlurEffect(style: .dark)
                 blurEffectView = UIVisualEffectView(effect: blurEffect)
@@ -264,14 +264,14 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
             backgroundView = blurEffectView
             separator.isHidden = true
         } else {
-            imageSelect.image = NCBrandColor.cacheImages.checkedNo
+            imageSelect.image = NCImageCache.images.checkedNo
             backgroundView = nil
             separator.isHidden = false
         }
     }
 
     func writeInfoDateSize(date: NSDate, size: Int64) {
-        labelInfo.text = CCUtility.dateDiff(date as Date) + " · " + CCUtility.transformedSize(size)
+        labelInfo.text = NCUtility().dateDiff(date as Date) + " · " + NCUtilityFileSystem().transformedSize(size)
     }
 
     func setAccessibility(label: String, value: String) {

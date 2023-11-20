@@ -39,10 +39,9 @@ class NCActivity: UIViewController, NCSharePagingContent {
     var metadata: tableMetadata?
     var showComments: Bool = false
 
-    // swiftlint:disable force_cast
-    private let appDelegate = UIApplication.shared.delegate as! AppDelegate
-    // swiftlint:enable force_cast
-
+    let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
+    let utilityFileSystem = NCUtilityFileSystem()
+    let utility = NCUtility()
     var allItems: [DateCompareable] = []
     var sectionDates: [Date] = []
 
@@ -90,7 +89,7 @@ class NCActivity: UIViewController, NCSharePagingContent {
                     self.commentView?.newCommentField.text?.removeAll()
                     self.loadComments()
                 } else {
-                    NCContentPresenter.shared.showError(error: error)
+                    NCContentPresenter().showError(error: error)
                 }
             }
         }
@@ -160,7 +159,7 @@ extension NCActivity: UITableViewDelegate {
         let label = UILabel()
         label.font = UIFont.boldSystemFont(ofSize: 13)
         label.textColor = .label
-        label.text = CCUtility.getTitleSectionDate(sectionDates[section])
+        label.text = utility.getTitleFromDate(sectionDates[section])
         label.textAlignment = .center
         label.layer.cornerRadius = 11
         label.layer.masksToBounds = true
@@ -212,12 +211,12 @@ extension NCActivity: UITableViewDataSource {
 
         // Image
         let fileName = appDelegate.userBaseUrl + "-" + comment.actorId + ".png"
-        NCOperationQueue.shared.downloadAvatar(user: comment.actorId, dispalyName: comment.actorDisplayName, fileName: fileName, cell: cell, view: tableView, cellImageView: cell.fileAvatarImageView)
+        NCNetworking.shared.downloadAvatar(user: comment.actorId, dispalyName: comment.actorDisplayName, fileName: fileName, cell: cell, view: tableView, cellImageView: cell.fileAvatarImageView)
         // Username
         cell.labelUser.text = comment.actorDisplayName
         cell.labelUser.textColor = .label
         // Date
-        cell.labelDate.text = CCUtility.dateDiff(comment.creationDateTime as Date)
+        cell.labelDate.text = utility.dateDiff(comment.creationDateTime as Date)
         cell.labelDate.textColor = .systemGray4
         // Message
         cell.labelMessage.text = comment.message
@@ -252,7 +251,7 @@ extension NCActivity: UITableViewDataSource {
         if !activity.icon.isEmpty {
 
             let fileNameIcon = (activity.icon as NSString).lastPathComponent
-            let fileNameLocalPath = CCUtility.getDirectoryUserData() + "/" + fileNameIcon
+            let fileNameLocalPath = utilityFileSystem.directoryUserData + "/" + fileNameIcon
 
             if FileManager.default.fileExists(atPath: fileNameLocalPath) {
                 if let image = UIImage(contentsOfFile: fileNameLocalPath) {
@@ -279,7 +278,7 @@ extension NCActivity: UITableViewDataSource {
 
             let fileName = appDelegate.userBaseUrl + "-" + activity.user + ".png"
 
-            NCOperationQueue.shared.downloadAvatar(user: activity.user, dispalyName: nil, fileName: fileName, cell: cell, view: tableView, cellImageView: cell.fileAvatarImageView)
+            NCNetworking.shared.downloadAvatar(user: activity.user, dispalyName: nil, fileName: fileName, cell: cell, view: tableView, cellImageView: cell.fileAvatarImageView)
         }
 
         // subject
@@ -312,7 +311,7 @@ extension NCActivity: UITableViewDataSource {
                 $0.color = UIColor.lightGray
             }
 
-            subject += "\n" + "<date>" + CCUtility.dateDiff(activity.date as Date) + "</date>"
+            subject += "\n" + "<date>" + utility.dateDiff(activity.date as Date) + "</date>"
             cell.subject.attributedText = subject.set(style: StyleGroup(base: normal, ["bold": bold, "date": date]))
         }
 
@@ -404,7 +403,7 @@ extension NCActivity {
             if error == .success, let comments = comments {
                 NCManageDatabase.shared.addComments(comments, account: metadata.account, objectId: metadata.fileId)
             } else if error.errorCode != NCGlobal.shared.errorResourceNotFound {
-                NCContentPresenter.shared.showError(error: error)
+                NCContentPresenter().showError(error: error)
             }
 
             if let disptachGroup = disptachGroup {
@@ -515,7 +514,7 @@ extension NCActivity: NCShareCommentsCellDelegate {
                             if error == .success {
                                 self.loadComments()
                             } else {
-                                NCContentPresenter.shared.showError(error: error)
+                                NCContentPresenter().showError(error: error)
                             }
                         }
                     }))
@@ -528,7 +527,7 @@ extension NCActivity: NCShareCommentsCellDelegate {
         actions.append(
             NCMenuAction(
                 title: NSLocalizedString("_delete_comment_", comment: ""),
-                icon: NCUtility.shared.loadImage(named: "trash"),
+                icon: utility.loadImage(named: "trash"),
                 action: { _ in
                     guard let metadata = self.metadata, let tableComments = tableComments else { return }
 
@@ -536,7 +535,7 @@ extension NCActivity: NCShareCommentsCellDelegate {
                         if error == .success {
                             self.loadComments()
                         } else {
-                            NCContentPresenter.shared.showError(error: error)
+                            NCContentPresenter().showError(error: error)
                         }
                     }
                 }

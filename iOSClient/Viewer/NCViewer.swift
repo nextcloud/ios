@@ -26,15 +26,10 @@ import NextcloudKit
 import QuickLook
 
 class NCViewer: NSObject {
-    @objc static let shared: NCViewer = {
-        let instance = NCViewer()
-        return instance
-    }()
 
-    // swiftlint:disable force_cast
-    let appDelegate = UIApplication.shared.delegate as! AppDelegate
-    // swiftlint:enable force_cast
-
+    let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
+    let utilityFileSystem = NCUtilityFileSystem()
+    let utility = NCUtility()
     private var viewerQuickLook: NCViewerQuickLook?
     private var metadata = tableMetadata()
     private var metadatas: [tableMetadata] = []
@@ -93,6 +88,9 @@ class NCViewer: NSObject {
         // DOCUMENTS
         if metadata.classFile == NKCommon.TypeClassFile.document.rawValue {
 
+            // Set Last Opening Date
+            NCManageDatabase.shared.setLastOpeningDate(metadata: metadata)
+
             // PDF
             if metadata.contentType == "application/pdf" || metadata.contentType == "com.adobe.pdf" {
 
@@ -109,11 +107,11 @@ class NCViewer: NSObject {
             }
 
             // EDITORS
-            let editors = NCUtility.shared.isDirectEditing(account: metadata.account, contentType: metadata.contentType)
-            let availableRichDocument = NCUtility.shared.isRichDocument(metadata)
+            let editors = utility.isDirectEditing(account: metadata.account, contentType: metadata.contentType)
+            let availableRichDocument = utility.isRichDocument(metadata)
 
             // RichDocument: Collabora
-            if (isRichDocument || (availableRichDocument && editors.isEmpty)) && NextcloudKit.shared.isNetworkReachable() {
+            if (isRichDocument || (availableRichDocument && editors.isEmpty)) && NCGlobal.shared.capabilityRichdocumentsEnabled && NextcloudKit.shared.isNetworkReachable() {
 
                 if metadata.url.isEmpty {
 
@@ -136,7 +134,7 @@ class NCViewer: NSObject {
 
                         } else if error != .success {
 
-                            NCContentPresenter.shared.showError(error: error)
+                            NCContentPresenter().showError(error: error)
                         }
                     }
 
@@ -171,13 +169,13 @@ class NCViewer: NSObject {
 
                     if metadata.url.isEmpty {
 
-                        let fileNamePath = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, urlBase: metadata.urlBase, userId: metadata.userId, account: metadata.account)!
+                        let fileNamePath = utilityFileSystem.getFileNamePath(metadata.fileName, serverUrl: metadata.serverUrl, urlBase: metadata.urlBase, userId: metadata.userId)
 
                         var options = NKRequestOptions()
                         if editor == NCGlobal.shared.editorOnlyoffice {
-                            options = NKRequestOptions(customUserAgent: NCUtility.shared.getCustomUserAgentOnlyOffice())
+                            options = NKRequestOptions(customUserAgent: utility.getCustomUserAgentOnlyOffice())
                         } else {
-                            options = NKRequestOptions(customUserAgent: NCUtility.shared.getCustomUserAgentNCText())
+                            options = NKRequestOptions(customUserAgent: utility.getCustomUserAgentNCText())
                         }
 
                         NCActivityIndicator.shared.start(backgroundView: viewController.view)
@@ -200,7 +198,7 @@ class NCViewer: NSObject {
 
                             } else if error != .success {
 
-                                NCContentPresenter.shared.showError(error: error)
+                                NCContentPresenter().showError(error: error)
                             }
                         }
 
@@ -220,7 +218,7 @@ class NCViewer: NSObject {
 
                 } else {
                     let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_editor_unknown_")
-                    NCContentPresenter.shared.showError(error: error)
+                    NCContentPresenter().showError(error: error)
                 }
 
                 return
@@ -228,10 +226,10 @@ class NCViewer: NSObject {
         }
 
         // QLPreview
-        let item = URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView))
+        let item = URL(fileURLWithPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView))
         if QLPreviewController.canPreview(item as QLPreviewItem) {
             let fileNamePath = NSTemporaryDirectory() + metadata.fileNameView
-            CCUtility.copyFile(atPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView), toPath: fileNamePath)
+            utilityFileSystem.copyFile(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView), toPath: fileNamePath)
             let viewerQuickLook = NCViewerQuickLook(with: URL(fileURLWithPath: fileNamePath), isEditingEnabled: false, metadata: metadata)
             viewController.present(viewerQuickLook, animated: true)
         } else {
@@ -251,14 +249,14 @@ extension NCViewer: NCSelectDelegate {
                 Task {
                     let error = await NCNetworking.shared.moveMetadata(metadata, serverUrlTo: serverUrl, overwrite: overwrite)
                     if error != .success {
-                        NCContentPresenter.shared.showError(error: error)
+                        NCContentPresenter().showError(error: error)
                     }
                 }
             } else if copy {
                 Task {
                     let error = await NCNetworking.shared.copyMetadata(metadata, serverUrlTo: serverUrl, overwrite: overwrite)
                     if error != .success {
-                        NCContentPresenter.shared.showError(error: error)
+                        NCContentPresenter().showError(error: error)
                     }
                 }
             }

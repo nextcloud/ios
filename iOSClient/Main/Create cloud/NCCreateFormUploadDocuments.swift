@@ -33,10 +33,7 @@ import XLForm
     @IBOutlet weak var collectionView: UICollectionView!
     @IBOutlet weak var collectionViewHeigth: NSLayoutConstraint!
 
-    // swiftlint:disable force_cast
-    let appDelegate = UIApplication.shared.delegate as! AppDelegate
-    // swiftlint:enable force_cast
-
+    let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
     var editorId = ""
     var creatorId = ""
     var typeTemplate = ""
@@ -48,6 +45,8 @@ import XLForm
     var titleForm = ""
     var listOfTemplate: [NKEditorTemplates] = []
     var selectTemplate: NKEditorTemplates?
+    let utilityFileSystem = NCUtilityFileSystem()
+    let utility = NCUtility()
 
     // Layout
     let numItems = 2
@@ -59,7 +58,7 @@ import XLForm
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        if serverUrl == NCUtilityFileSystem.shared.getHomeServer(urlBase: appDelegate.urlBase, userId: appDelegate.userId) {
+        if serverUrl == utilityFileSystem.getHomeServer(urlBase: appDelegate.urlBase, userId: appDelegate.userId) {
             fileNameFolder = "/"
         } else {
             fileNameFolder = (serverUrl as NSString).lastPathComponent
@@ -169,7 +168,7 @@ import XLForm
         // image
         let imagePreview = cell.viewWithTag(100) as? UIImageView
         if !template.preview.isEmpty {
-            let fileNameLocalPath = String(CCUtility.getDirectoryUserData()) + "/" + template.name + ".png"
+            let fileNameLocalPath = utilityFileSystem.directoryUserData + "/" + template.name + ".png"
             if FileManager.default.fileExists(atPath: fileNameLocalPath) {
                 let imageURL = URL(fileURLWithPath: fileNameLocalPath)
                 if let image = UIImage(contentsOfFile: imageURL.path) {
@@ -218,7 +217,7 @@ import XLForm
         }
 
         self.serverUrl = serverUrl
-        if serverUrl == NCUtilityFileSystem.shared.getHomeServer(urlBase: appDelegate.urlBase, userId: appDelegate.userId) {
+        if serverUrl == utilityFileSystem.getHomeServer(urlBase: appDelegate.urlBase, userId: appDelegate.userId) {
             fileNameFolder = "/"
         } else {
             fileNameFolder = (serverUrl as NSString).lastPathComponent
@@ -259,7 +258,7 @@ import XLForm
         fileNameForm = fileNameForm.trimmingCharacters(in: .whitespacesAndNewlines)
 
         let result = NextcloudKit.shared.nkCommonInstance.getInternalType(fileName: fileNameForm, mimeType: "", directory: false)
-        if NCUtility.shared.isDirectEditing(account: appDelegate.account, contentType: result.mimeType).isEmpty {
+        if utility.isDirectEditing(account: appDelegate.account, contentType: result.mimeType).isEmpty {
             fileNameForm = (fileNameForm as NSString).deletingPathExtension + "." + fileNameExtension
         }
 
@@ -279,7 +278,7 @@ import XLForm
 
         } else {
 
-            let fileNamePath = CCUtility.returnFileNamePath(fromFileName: String(describing: fileNameForm), serverUrl: serverUrl, urlBase: appDelegate.urlBase, userId: appDelegate.userId, account: appDelegate.account)!
+            let fileNamePath = utilityFileSystem.getFileNamePath(String(describing: fileNameForm), serverUrl: serverUrl, urlBase: appDelegate.urlBase, userId: appDelegate.userId)
             createDocument(fileNamePath: fileNamePath, fileName: String(describing: fileNameForm))
         }
     }
@@ -288,7 +287,7 @@ import XLForm
 
         if let metadatas {
             let fileName = metadatas[0].fileName
-            let fileNamePath = CCUtility.returnFileNamePath(fromFileName: fileName, serverUrl: serverUrl, urlBase: appDelegate.urlBase, userId: appDelegate.userId, account: appDelegate.account)!
+            let fileNamePath = utilityFileSystem.getFileNamePath(fileName, serverUrl: serverUrl, urlBase: appDelegate.urlBase, userId: appDelegate.userId)
             createDocument(fileNamePath: fileNamePath, fileName: fileName)
         } else {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
@@ -307,15 +306,15 @@ import XLForm
 
             var options = NKRequestOptions()
             if self.editorId == NCGlobal.shared.editorOnlyoffice {
-                options = NKRequestOptions(customUserAgent: NCUtility.shared.getCustomUserAgentOnlyOffice())
+                options = NKRequestOptions(customUserAgent: utility.getCustomUserAgentOnlyOffice())
             } else if editorId == NCGlobal.shared.editorText {
-                options = NKRequestOptions(customUserAgent: NCUtility.shared.getCustomUserAgentNCText())
+                options = NKRequestOptions(customUserAgent: utility.getCustomUserAgentNCText())
             }
 
             NextcloudKit.shared.NCTextCreateFile(fileNamePath: fileNamePath, editorId: editorId, creatorId: creatorId, templateId: templateIdentifier, options: options) { account, url, _, error in
                 guard error == .success, account == self.appDelegate.account, let url = url else {
                     self.navigationItem.rightBarButtonItem?.isEnabled = true
-                    NCContentPresenter.shared.showError(error: error)
+                    NCContentPresenter().showError(error: error)
                     return
                 }
 
@@ -328,7 +327,7 @@ import XLForm
                 self.dismiss(animated: true, completion: {
                     let metadata = NCManageDatabase.shared.createMetadata(account: self.appDelegate.account, user: self.appDelegate.user, userId: self.appDelegate.userId, fileName: fileName, fileNameView: fileName, ocId: UUID, serverUrl: self.serverUrl, urlBase: self.appDelegate.urlBase, url: url, contentType: results.mimeType)
                     if let viewController = self.appDelegate.activeViewController {
-                        NCViewer.shared.view(viewController: viewController, metadata: metadata, metadatas: [metadata], imageIcon: nil)
+                        NCViewer().view(viewController: viewController, metadata: metadata, metadatas: [metadata], imageIcon: nil)
                     }
                 })
             }
@@ -339,7 +338,7 @@ import XLForm
             NextcloudKit.shared.createRichdocuments(path: fileNamePath, templateId: templateIdentifier) { account, url, _, error in
                 guard error == .success, account == self.appDelegate.account, let url = url else {
                     self.navigationItem.rightBarButtonItem?.isEnabled = true
-                    NCContentPresenter.shared.showError(error: error)
+                    NCContentPresenter().showError(error: error)
                     return
                 }
 
@@ -347,7 +346,7 @@ import XLForm
                     let createFileName = (fileName as NSString).deletingPathExtension + "." + self.fileNameExtension
                     let metadata = NCManageDatabase.shared.createMetadata(account: self.appDelegate.account, user: self.appDelegate.user, userId: self.appDelegate.userId, fileName: createFileName, fileNameView: createFileName, ocId: UUID, serverUrl: self.serverUrl, urlBase: self.appDelegate.urlBase, url: url, contentType: "")
                     if let viewController = self.appDelegate.activeViewController {
-                        NCViewer.shared.view(viewController: viewController, metadata: metadata, metadatas: [metadata], imageIcon: nil)
+                        NCViewer().view(viewController: viewController, metadata: metadata, metadatas: [metadata], imageIcon: nil)
                     }
                })
             }
@@ -370,9 +369,9 @@ import XLForm
 
             var options = NKRequestOptions()
             if self.editorId == NCGlobal.shared.editorOnlyoffice {
-                options = NKRequestOptions(customUserAgent: NCUtility.shared.getCustomUserAgentOnlyOffice())
+                options = NKRequestOptions(customUserAgent: utility.getCustomUserAgentOnlyOffice())
             } else if editorId == NCGlobal.shared.editorText {
-                options = NKRequestOptions(customUserAgent: NCUtility.shared.getCustomUserAgentNCText())
+                options = NKRequestOptions(customUserAgent: utility.getCustomUserAgentNCText())
             }
 
             NextcloudKit.shared.NCTextGetListOfTemplates(options: options) { account, templates, _, error in
@@ -489,7 +488,7 @@ import XLForm
 
     func getImageFromTemplate(name: String, preview: String, indexPath: IndexPath) {
 
-        let fileNameLocalPath = String(CCUtility.getDirectoryUserData()) + "/" + name + ".png"
+        let fileNameLocalPath = utilityFileSystem.directoryUserData + "/" + name + ".png"
 
         NextcloudKit.shared.download(serverUrlFileName: preview, fileNameLocalPath: fileNameLocalPath, requestHandler: { _ in
 

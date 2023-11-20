@@ -36,7 +36,6 @@ class NCSharePaging: UIViewController {
 
     private let pagingViewController = NCShareHeaderViewController()
     private weak var appDelegate = UIApplication.shared.delegate as? AppDelegate
-
     private var currentVC: NCSharePagingContent?
     private let applicationHandle = NCApplicationHandle()
 
@@ -250,7 +249,8 @@ class NCSharePagingView: PagingView {
     static let headerHeight: CGFloat = 90
     static var tagHeaderHeight: CGFloat = 0
     var metadata = tableMetadata()
-
+    let utilityFileSystem = NCUtilityFileSystem()
+    let utility = NCUtility()
     public var headerHeightConstraint: NSLayoutConstraint?
 
     // MARK: - View Life Cycle
@@ -276,8 +276,8 @@ class NCSharePagingView: PagingView {
         dateFormatter.timeStyle = .short
         dateFormatter.locale = Locale.current
 
-        if FileManager.default.fileExists(atPath: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)) {
-            headerView.imageView.image = UIImage(contentsOfFile: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag))
+        if FileManager.default.fileExists(atPath: utilityFileSystem.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)) {
+            headerView.imageView.image = UIImage(contentsOfFile: utilityFileSystem.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag))
         } else {
             if metadata.directory {
                 let image = metadata.e2eEncrypted ? UIImage(named: "folderEncrypted") : UIImage(named: "folder")
@@ -289,15 +289,15 @@ class NCSharePagingView: PagingView {
                 headerView.imageView.image = UIImage(named: "file")
             }
         }
-        headerView.path.text = NCUtilityFileSystem.shared.getPath(path: metadata.path, user: metadata.user, fileName: metadata.fileName)
+        headerView.path.text = utilityFileSystem.getPath(path: metadata.path, user: metadata.user, fileName: metadata.fileName)
         headerView.path.textColor = .label
         headerView.path.trailingBuffer = headerView.path.frame.width
         if metadata.favorite {
-            headerView.favorite.setImage(NCUtility.shared.loadImage(named: "star.fill", color: NCBrandColor.shared.yellowFavorite, size: 20), for: .normal)
+            headerView.favorite.setImage(utility.loadImage(named: "star.fill", color: NCBrandColor.shared.yellowFavorite, size: 20), for: .normal)
         } else {
-            headerView.favorite.setImage(NCUtility.shared.loadImage(named: "star.fill", color: .systemGray, size: 20), for: .normal)
+            headerView.favorite.setImage(utility.loadImage(named: "star.fill", color: .systemGray, size: 20), for: .normal)
         }
-        headerView.info.text = CCUtility.transformedSize(metadata.size) + ", " + NSLocalizedString("_modified_", comment: "") + " " + dateFormatter.string(from: metadata.date as Date)
+        headerView.info.text = utilityFileSystem.transformedSize(metadata.size) + ", " + NSLocalizedString("_modified_", comment: "") + " " + dateFormatter.string(from: metadata.date as Date)
         headerView.info.textColor = .systemGray
         headerView.creation.text = NSLocalizedString("_creation_", comment: "") + " " + dateFormatter.string(from: metadata.creationDate as Date)
         headerView.creation.textColor = .systemGray
@@ -369,12 +369,12 @@ class NCShareHeaderView: UIView {
         NCNetworking.shared.favoriteMetadata(metadata) { error in
             if error == .success {
                 guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(metadata.ocId) else { return }
-                self.favorite.setImage(NCUtility.shared.loadImage(
+                self.favorite.setImage(NCUtility().loadImage(
                     named: "star.fill",
                     color: metadata.favorite ? NCBrandColor.shared.yellowFavorite : .systemGray,
                     size: 20), for: .normal)
             } else {
-                NCContentPresenter.shared.showError(error: error)
+                NCContentPresenter().showError(error: error)
             }
         }
     }
@@ -388,6 +388,6 @@ class NCShareHeaderView: UIView {
     @objc func longTap(sender: UIGestureRecognizer) {
         UIPasteboard.general.string = path.text
         let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_copied_path_")
-        NCContentPresenter.shared.showInfo(error: error)
+        NCContentPresenter().showInfo(error: error)
     }
 }

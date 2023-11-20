@@ -44,14 +44,9 @@ class NCScan: UIViewController, NCScanCellCellDelegate {
     internal var itemsDestination: [String] = []
 
     internal let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
-
+    let utilityFileSystem = NCUtilityFileSystem()
     private var tipView: EasyTipView?
-
-    enum TypeFilter {
-        case document
-        case original
-    }
-    internal var filter: TypeFilter = TypeFilter.document
+    internal var filter: NCGlobal.TypeFilterScanDocument = NCKeychain().typeFilterScanDocument
 
     // MARK: - View Life Cycle
 
@@ -81,6 +76,11 @@ class NCScan: UIViewController, NCScanCellCellDelegate {
 
         segmentControlFilter.setTitle(NSLocalizedString("_filter_document_", comment: ""), forSegmentAt: 0)
         segmentControlFilter.setTitle(NSLocalizedString("_filter_original_", comment: ""), forSegmentAt: 1)
+        if filter == .document {
+            segmentControlFilter.selectedSegmentIndex = 0
+        } else if filter == .original {
+            segmentControlFilter.selectedSegmentIndex = 1
+        }
 
         add.setImage(UIImage(systemName: "plus")?.image(color: .label, size: 25), for: .normal)
         transferDown.setImage(UIImage(systemName: "arrow.down")?.image(color: .label, size: 25), for: .normal)
@@ -192,7 +192,7 @@ class NCScan: UIViewController, NCScanCellCellDelegate {
 
         for fileName in itemsSource where !itemsDestination.contains(fileName) {
 
-            let fileNamePathAt = CCUtility.getDirectoryScan() + "/" + fileName
+            let fileNamePathAt = utilityFileSystem.directoryScan + "/" + fileName
             guard let data = try? Data(contentsOf: URL(fileURLWithPath: fileNamePathAt)), let image = UIImage(data: data) else { return }
 
             imagesDestination.append(image)
@@ -220,6 +220,7 @@ class NCScan: UIViewController, NCScanCellCellDelegate {
             break
         }
 
+        NCKeychain().typeFilterScanDocument = filter
         collectionViewDestination.reloadData()
     }
 
@@ -228,7 +229,7 @@ class NCScan: UIViewController, NCScanCellCellDelegate {
         itemsSource.removeAll()
 
         do {
-            let atPath = CCUtility.getDirectoryScan()!
+            let atPath = utilityFileSystem.directoryScan
             let directoryContents = try FileManager.default.contentsOfDirectory(atPath: atPath)
             for fileName in directoryContents where fileName.first != "." {
                 itemsSource.append(fileName)
@@ -329,7 +330,7 @@ class NCScan: UIViewController, NCScanCellCellDelegate {
                 if collectionView === collectionViewDestination {
 
                     let fileName = (item.dragItem.localObject as? String)!
-                    let fileNamePathAt = CCUtility.getDirectoryScan() + "/" + fileName
+                    let fileNamePathAt = utilityFileSystem.directoryScan + "/" + fileName
 
                     guard let data = try? Data(contentsOf: URL(fileURLWithPath: fileNamePathAt)), let image = UIImage(data: data) else { return }
 
@@ -382,7 +383,7 @@ class NCScan: UIViewController, NCScanCellCellDelegate {
                                                     keyFileNameType: NCGlobal.shared.keyFileNameType,
                                                     keyFileNameOriginal: NCGlobal.shared.keyFileNameOriginal,
                                                     forcedNewFileName: true)!
-            let fileNamePath = CCUtility.getDirectoryScan() + "/" + fileName
+            let fileNamePath = utilityFileSystem.directoryScan + "/" + fileName
 
             do {
                 try image.pngData()?.write(to: NSURL.fileURL(withPath: fileNamePath), options: .atomic)

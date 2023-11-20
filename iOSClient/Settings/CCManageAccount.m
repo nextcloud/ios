@@ -56,7 +56,7 @@
         row = [XLFormRowDescriptor formRowDescriptorWithTag:account.account rowType:XLFormRowDescriptorTypeBooleanCheck title:title];
         
         // Avatar
-        UIImage *avatar = [[NCUtility shared] loadUserImageFor:account.user displayName:account.displayName userBaseUrl:account];
+        UIImage *avatar = [[[NCUtility alloc] init] loadUserImageFor:account.user displayName:account.displayName userBaseUrl:account];
         
         row.cellConfigAtConfigure[@"backgroundColor"] = UIColor.secondarySystemGroupedBackgroundColor;
         [row.cellConfig setObject:[UIFont systemFontOfSize:13.0] forKey:@"textLabel.font"];
@@ -123,7 +123,7 @@
             [row.cellConfig setObject:[[UIImage imageNamed:@"users"] imageWithColor:UIColor.systemGrayColor size:25] forKey:@"imageView.image"];
             [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
             [row.cellConfig setObject:UIColor.labelColor forKey:@"textLabel.textColor"];
-            if ([CCUtility getAccountRequest]) row.value = @1;
+            if ([[NCKeychain alloc] init].accountRequest) row.value = @1;
             else row.value = @0;
             [section addFormRow:row];
         }
@@ -205,7 +205,6 @@
         [row.cellConfig setObject:UIColor.labelColor forKey:@"textLabel.textColor"];
         [row.cellConfig setObject:[[UIImage imageNamed:@"country"] imageWithColor:UIColor.systemGrayColor size:25] forKey:@"imageView.image"];
         row.value = [[NSLocale systemLocale] displayNameForKey:NSLocaleCountryCode value:activeAccount.country];
-        //NSArray *countryCodes = [NSLocale ISOCountryCodes];
         [section addFormRow:row];
     }
     
@@ -306,9 +305,9 @@
     if ([rowDescriptor.tag isEqualToString:@"accountRequest"]) {
         
         if ([[rowDescriptor.value valueData] boolValue] == YES) {
-            [CCUtility setAccountRequest:true];
+            [[NCKeychain alloc] init].accountRequest = true;
         } else {
-            [CCUtility setAccountRequest:false];
+            [[NCKeychain alloc] init].accountRequest = false;
         }
     }
     
@@ -338,6 +337,11 @@
     }
 }
 
+-(NSString *)tableView:(UITableView *)tableView titleForDeleteConfirmationButtonForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    return NSLocalizedString(@"_remove_local_account_", nil);
+}
+
 -(void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath {
     [super tableView:tableView commitEditingStyle:editingStyle forRowAtIndexPath:indexPath];
     
@@ -355,8 +359,8 @@
         NSString *title = [NSString stringWithFormat:NSLocalizedString(@"_want_delete_account_",nil), accountForDelete];
         UIAlertController *alertController = [UIAlertController alertControllerWithTitle:title message:nil preferredStyle:UIAlertControllerStyleActionSheet];
         
-        [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_delete_", nil) style:UIAlertActionStyleDestructive handler:^(UIAlertAction *action) {
-                        
+        [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_remove_local_account_", nil) style:UIAlertActionStyleDestructive handler:^(UIAlertAction *action) {
+
             if (accountForDelete) {
                 [appDelegate deleteAccount:accountForDelete wipe:false];
             }

@@ -30,9 +30,8 @@ class NCLoginWeb: UIViewController {
 
     var webView: WKWebView?
 
-    // swiftlint:disable force_cast
-    let appDelegate = UIApplication.shared.delegate as! AppDelegate
-    // swiftlint:enable force_cast
+    let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
+    let utility = NCUtility()
 
     var titleView: String = ""
 
@@ -125,13 +124,13 @@ class NCLoginWeb: UIViewController {
             loadWebPage(webView: webView!, url: url)
         } else {
             let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_login_url_error_")
-            NCContentPresenter.shared.showError(error: error, priority: .max)
+            NCContentPresenter().showError(error: error, priority: .max)
         }
 
         // TITLE
         if let host = URL(string: urlBase)?.host {
             titleView = host
-            if let account = NCManageDatabase.shared.getActiveAccount(), CCUtility.getPassword(account.account).isEmpty {
+            if let account = NCManageDatabase.shared.getActiveAccount(), NCKeychain().getPassword(account: account.account).isEmpty {
                 titleView = NSLocalizedString("_user_", comment: "") + " " + account.userId + " " + NSLocalizedString("_in_", comment: "") + " " + host
             }
         }
@@ -144,7 +143,7 @@ class NCLoginWeb: UIViewController {
         // Stop timer error network
         appDelegate.timerErrorNetworking?.invalidate()
 
-        if let account = NCManageDatabase.shared.getActiveAccount(), CCUtility.getPassword(account.account).isEmpty {
+        if let account = NCManageDatabase.shared.getActiveAccount(), NCKeychain().getPassword(account: account.account).isEmpty {
 
             let message = "\n" + NSLocalizedString("_password_not_present_", comment: "")
             let alertController = UIAlertController(title: titleView, message: message, preferredStyle: .alert)
@@ -190,7 +189,7 @@ class NCLoginWeb: UIViewController {
             if error == .success, let password = token {
                 self.createAccount(server: serverUrl, username: username, password: password)
             } else {
-                NCContentPresenter.shared.showError(error: error)
+                NCContentPresenter().showError(error: error)
                 self.dismiss(animated: true, completion: nil)
             }
         }
@@ -294,19 +293,15 @@ extension NCLoginWeb: WKNavigationDelegate {
 
             if error == .success, let userProfile {
 
-                if NCManageDatabase.shared.getAccounts() == nil {
-                    NCUtility.shared.removeAllSettings()
-                }
-
                 NCManageDatabase.shared.deleteAccount(account)
                 NCManageDatabase.shared.addAccount(account, urlBase: urlBase, user: user, userId: userProfile.userId, password: password)
 
                 self.appDelegate.changeAccount(account, userProfile: userProfile)
 
-                if CCUtility.getIntro() {
+                if NCKeychain().intro {
                     self.dismiss(animated: true)
                 } else {
-                    CCUtility.setIntro(true)
+                    NCKeychain().intro = true
                     if self.presentingViewController == nil {
                         if let viewController = UIStoryboard(name: "Main", bundle: nil).instantiateInitialViewController() {
                             viewController.modalPresentationStyle = .fullScreen

@@ -47,11 +47,9 @@ class NCViewerMedia: UIViewController {
 
     private var tipView: EasyTipView?
     private let player = VLCMediaPlayer()
-
-    // swiftlint:disable force_cast
-    let appDelegate = UIApplication.shared.delegate as! AppDelegate
-    // swiftlint:enable force_cast
-
+    private let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
+    let utilityFileSystem = NCUtilityFileSystem()
+    let utility = NCUtility()
     weak var viewerMediaPage: NCViewerMediaPage?
     var playerToolBar: NCPlayerToolBar?
     var ncplayer: NCPlayer?
@@ -91,7 +89,7 @@ class NCViewerMedia: UIViewController {
         view.addGestureRecognizer(doubleTapGestureRecognizer)
 
         if NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata) != nil {
-            statusViewImage.image = NCUtility.shared.loadImage(named: "livephoto", color: .gray)
+            statusViewImage.image = utility.loadImage(named: "livephoto", color: .gray)
             statusLabel.text = "LIVE"
         } else {
             statusViewImage.image = nil
@@ -155,6 +153,9 @@ class NCViewerMedia: UIViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
+        // Set Last Opening Date
+        NCManageDatabase.shared.setLastOpeningDate(metadata: metadata)
+
         viewerMediaPage?.clearCommandCenter()
 
         if metadata.isAudioOrVideo {
@@ -189,8 +190,8 @@ class NCViewerMedia: UIViewController {
                             } completion: { _, error in
                                 if error == .success {
                                     hud.dismiss()
-                                    if CCUtility.fileProviderStorageExists(self.metadata) {
-                                        let url = URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(self.metadata.ocId, fileNameView: self.metadata.fileNameView))
+                                    if self.utilityFileSystem.fileProviderStorageExists(self.metadata) {
+                                        let url = URL(fileURLWithPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(self.metadata.ocId, fileNameView: self.metadata.fileNameView))
                                         ncplayer.openAVPlayer(url: url, autoplay: autoplay)
                                     }
                                 } else {
@@ -278,18 +279,14 @@ class NCViewerMedia: UIViewController {
         guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(metadata.ocId) else { return }
         self.metadata = metadata
 
-        // Download image
-        if !CCUtility.fileProviderStorageExists(metadata) && metadata.isImage && metadata.session.isEmpty {
-
-            if metadata.livePhoto {
-                let fileName = (metadata.fileNameView as NSString).deletingPathExtension + ".mov"
-                if let metadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView LIKE[c] %@", metadata.account, metadata.serverUrl, fileName)), !CCUtility.fileProviderStorageExists(metadata) {
-                    NCNetworking.shared.download(metadata: metadata, selector: "") { _, _ in }
-                }
+        if metadata.livePhoto {
+            let fileNameMOV = (metadata.fileNameView as NSString).deletingPathExtension + ".mov"
+            if let metadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView LIKE[c] %@", metadata.account, metadata.serverUrl, fileNameMOV)), !utilityFileSystem.fileProviderStorageExists(metadata) {
+                NCNetworking.shared.download(metadata: metadata, selector: "") { _, _ in }
             }
         }
 
-        if metadata.isImage, metadata.fileExtension.lowercased() == "gif", !CCUtility.fileProviderStorageExists(metadata) {
+        if metadata.isImage, (metadata.fileExtension.lowercased() == "gif" || metadata.fileExtension.lowercased() == "svg"), !utilityFileSystem.fileProviderStorageExists(metadata) {
             downloadImage()
         }
 
@@ -303,18 +300,16 @@ class NCViewerMedia: UIViewController {
 
     func getImageMetadata(_ metadata: tableMetadata) -> UIImage? {
 
-        if let image = getImage(metadata: metadata) {
+        if let image = utility.getImage(metadata: metadata) {
             return image
         }
 
         if metadata.isVideo && !metadata.hasPreview {
-            NCUtility.shared.createImageFrom(fileNameView: metadata.fileNameView, ocId: metadata.ocId, etag: metadata.etag, classFile: metadata.classFile)
+            utility.createImageFrom(fileNameView: metadata.fileNameView, ocId: metadata.ocId, etag: metadata.etag, classFile: metadata.classFile)
         }
 
-        if CCUtility.fileProviderStoragePreviewIconExists(metadata.ocId, etag: metadata.etag) {
-            if let imagePreviewPath = CCUtility.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag) {
-                return UIImage(contentsOfFile: imagePreviewPath)
-            }
+        if utilityFileSystem.fileProviderStoragePreviewIconExists(metadata.ocId, etag: metadata.etag) {
+            return UIImage(contentsOfFile: utilityFileSystem.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag))
         }
 
         if metadata.isAudio {
@@ -324,46 +319,6 @@ class NCViewerMedia: UIViewController {
         } else {
             return nil
         }
-    }
-
-    func getImage(metadata: tableMetadata) -> UIImage? {
-
-        let ext = CCUtility.getExtension(metadata.fileNameView)
-        var image: UIImage?
-
-        if CCUtility.fileProviderStorageExists(metadata) && metadata.isImage {
-
-            let previewPath = CCUtility.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)!
-            let imagePath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
-
-            if ext == "GIF" {
-                if !FileManager().fileExists(atPath: previewPath) {
-                    NCUtility.shared.createImageFrom(fileNameView: metadata.fileNameView, ocId: metadata.ocId, etag: metadata.etag, classFile: metadata.classFile)
-                }
-                image = UIImage.animatedImage(withAnimatedGIFURL: URL(fileURLWithPath: imagePath))
-            } else if ext == "SVG" {
-                if let svgImage = SVGKImage(contentsOfFile: imagePath) {
-                    svgImage.size = CGSize(width: NCGlobal.shared.sizePreview, height: NCGlobal.shared.sizePreview)
-                    if let image = svgImage.uiImage {
-                        if !FileManager().fileExists(atPath: previewPath) {
-                            do {
-                                try image.pngData()?.write(to: URL(fileURLWithPath: previewPath), options: .atomic)
-                            } catch { }
-                        }
-                        return image
-                    } else {
-                        return nil
-                    }
-                } else {
-                    return nil
-                }
-            } else {
-                NCUtility.shared.createImageFrom(fileNameView: metadata.fileNameView, ocId: metadata.ocId, etag: metadata.etag, classFile: metadata.classFile)
-                image = UIImage(contentsOfFile: imagePath)
-            }
-        }
-
-        return image
     }
 
     func downloadImage(withSelector selector: String = "") {
@@ -492,7 +447,7 @@ extension NCViewerMedia {
             self.statusLabel.isHidden = true
             self.statusViewImage.isHidden = true
 
-            NCUtility.shared.getExif(metadata: self.metadata) { exif in
+            self.utility.getExif(metadata: self.metadata) { exif in
                 self.view.layoutIfNeeded()
                 self.showDetailView(exif: exif)
 
@@ -549,7 +504,7 @@ extension NCViewerMedia {
 
     func reloadDetail() {
         if self.detailView.isShown {
-            NCUtility.shared.getExif(metadata: metadata) { exif in
+            utility.getExif(metadata: metadata) { exif in
                 self.showDetailView(exif: exif)
             }
         }

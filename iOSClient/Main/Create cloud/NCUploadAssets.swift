@@ -133,7 +133,7 @@ class NCUploadAssets: NSObject, ObservableObject, NCCreateFormUploadConflictDele
                         createProcessUploads()
                     } else {
                         let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_error_createsubfolders_upload_")
-                        NCContentPresenter.shared.showError(error: error)
+                        NCContentPresenter().showError(error: error)
                     }
                 }
             }
@@ -147,9 +147,9 @@ class NCUploadAssets: NSObject, ObservableObject, NCCreateFormUploadConflictDele
 
 struct UploadAssetsView: View {
 
-    @State private var fileName: String = CCUtility.getFileNameMask(NCGlobal.shared.keyFileNameMask)
-    @State private var isMaintainOriginalFilename: Bool = CCUtility.getOriginalFileName(NCGlobal.shared.keyFileNameOriginal)
-    @State private var isAddFilenametype: Bool = CCUtility.getFileNameType(NCGlobal.shared.keyFileNameType)
+    @State private var fileName: String = NCKeychain().getFileNameMask(key: NCGlobal.shared.keyFileNameMask)
+    @State private var isMaintainOriginalFilename: Bool = NCKeychain().getOriginalFileName(key: NCGlobal.shared.keyFileNameOriginal)
+    @State private var isAddFilenametype: Bool = NCKeychain().getFileNameType(key: NCGlobal.shared.keyFileNameType)
     @State private var isPresentedSelect = false
     @State private var isPresentedUploadConflict = false
     @State private var isPresentedQuickLook = false
@@ -185,9 +185,9 @@ struct UploadAssetsView: View {
         var preview: String = ""
         let creationDate = asset.creationDate ?? Date()
 
-        CCUtility.setOriginalFileName(isMaintainOriginalFilename, key: NCGlobal.shared.keyFileNameOriginal)
-        CCUtility.setFileNameType(isAddFilenametype, key: NCGlobal.shared.keyFileNameType)
-        CCUtility.setFileNameMask(fileName, key: NCGlobal.shared.keyFileNameMask)
+        NCKeychain().setOriginalFileName(key: NCGlobal.shared.keyFileNameOriginal, value: isMaintainOriginalFilename)
+        NCKeychain().setFileNameType(key: NCGlobal.shared.keyFileNameType, prefix: isAddFilenametype)
+        NCKeychain().setFileNameMask(key: NCGlobal.shared.keyFileNameMask, mask: fileName)
 
         preview = CCUtility.createFileName(
             getOriginalFilenameForPreview() as String,
@@ -206,6 +206,7 @@ struct UploadAssetsView: View {
 
     private func save(completion: @escaping (_ metadatasNOConflict: [tableMetadata], _ metadatasUploadInConflict: [tableMetadata]) -> Void) {
 
+        let utilityFileSystem = NCUtilityFileSystem()
         var metadatasNOConflict: [tableMetadata] = []
         var metadatasUploadInConflict: [tableMetadata] = []
         let autoUploadPath = NCManageDatabase.shared.getAccountAutoUploadPath(urlBase: uploadAssets.userBaseUrl.urlBase, userId: uploadAssets.userBaseUrl.userId, account: uploadAssets.userBaseUrl.account)
@@ -230,7 +231,7 @@ struct UploadAssetsView: View {
                                        forcedNewFileName: false)!
             : (previewStore.fileName + "." + ext)
 
-            if previewStore.assetType == .livePhoto && CCUtility.getLivePhoto() && previewStore.data == nil {
+            if previewStore.assetType == .livePhoto && NCKeychain().livePhoto && previewStore.data == nil {
                 livePhoto = true
             }
 
@@ -271,11 +272,11 @@ struct UploadAssetsView: View {
                     metadata.fileName = fileNameNoExtension + ".jpg"
                     metadata.fileNameView = fileNameNoExtension + ".jpg"
                 }
-                let fileNamePath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
+                let fileNamePath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)
                 do {
                     try data.write(to: URL(fileURLWithPath: fileNamePath))
                     metadata.isExtractFile = true
-                    metadata.size = NCUtilityFileSystem.shared.getFileSize(filePath: fileNamePath)
+                    metadata.size = utilityFileSystem.getFileSize(filePath: fileNamePath)
                     metadata.creationDate = asset.creationDate as? NSDate ?? (Date() as NSDate)
                     metadata.date = asset.modificationDate as? NSDate ?? (Date() as NSDate)
                 } catch {  }
@@ -323,7 +324,7 @@ struct UploadAssetsView: View {
     }
 
     private func getOriginalFilenameForPreview() -> NSString {
-        CCUtility.setOriginalFileName(isMaintainOriginalFilename, key: NCGlobal.shared.keyFileNameOriginal)
+        NCKeychain().setOriginalFileName(key: NCGlobal.shared.keyFileNameOriginal, value: isMaintainOriginalFilename)
 
         if let asset = uploadAssets.assets.first?.phAsset {
             return asset.originalFilename
@@ -333,6 +334,8 @@ struct UploadAssetsView: View {
     }
 
     var body: some View {
+
+        let utilityFileSystem = NCUtilityFileSystem()
 
         NavigationView {
             ZStack(alignment: .top) {
@@ -438,7 +441,7 @@ struct UploadAssetsView: View {
                         if !uploadAssets.isUseAutoUploadFolder {
                             HStack {
                                 Label {
-                                    if NCUtilityFileSystem.shared.getHomeServer(urlBase: uploadAssets.userBaseUrl.urlBase, userId: uploadAssets.userBaseUrl.userId) == uploadAssets.serverUrl {
+                                    if utilityFileSystem.getHomeServer(urlBase: uploadAssets.userBaseUrl.urlBase, userId: uploadAssets.userBaseUrl.userId) == uploadAssets.serverUrl {
                                         Text("/")
                                             .font(.system(size: 15))
                                             .frame(maxWidth: .infinity, alignment: .trailing)

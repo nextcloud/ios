@@ -24,16 +24,12 @@
 import UIKit
 import SVGKit
 import NextcloudKit
+import RealmSwift
 
 class NCService: NSObject {
-    @objc static let shared: NCService = {
-        let instance = NCService()
-        return instance
-    }()
 
-    // swiftlint:disable force_cast
-    let appDelegate = UIApplication.shared.delegate as! AppDelegate
-    // swiftlint:enable force_cast
+    let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
+    let utilityFileSystem = NCUtilityFileSystem()
 
     // MARK: -
 
@@ -55,6 +51,8 @@ class NCService: NSObject {
                 requestDashboardWidget()
                 NCNetworkingE2EE().unlockAll(account: account)
                 NCNetworkingProcessUpload.shared.verifyUploadZombie()
+                // TODO: sendClientDiagnosticsRemoteOperation(account: account)
+                // sendClientDiagnosticsRemoteOperation(account: account)
             }
         }
     }
@@ -100,15 +98,15 @@ class NCService: NSObject {
         case .success(let serverInfo):
             if serverInfo.maintenance {
                 let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_maintenance_mode_")
-                NCContentPresenter.shared.showWarning(error: error, priority: .max)
+                NCContentPresenter().showWarning(error: error, priority: .max)
                 return false
             } else if serverInfo.productName.lowercased().contains("owncloud") {
                 let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_warning_owncloud_")
-                NCContentPresenter.shared.showWarning(error: error, priority: .max)
+                NCContentPresenter().showWarning(error: error, priority: .max)
                 return false
             } else if serverInfo.versionMajor <= NCGlobal.shared.nextcloud_unsupported_version {
                 let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_warning_unsupported_")
-                NCContentPresenter.shared.showWarning(error: error, priority: .max)
+                NCContentPresenter().showWarning(error: error, priority: .max)
             }
         case .failure:
             return false
@@ -128,7 +126,7 @@ class NCService: NSObject {
             }
             return false
         } else {
-            NCContentPresenter.shared.showError(error: resultUserProfile.error, priority: .max)
+            NCContentPresenter().showError(error: resultUserProfile.error, priority: .max)
             return false
         }
     }
@@ -136,7 +134,7 @@ class NCService: NSObject {
     func synchronize() {
 
         NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] start synchronize Favorite")
-        NextcloudKit.shared.listingFavorites(showHiddenFiles: CCUtility.getShowHiddenFiles(),
+        NextcloudKit.shared.listingFavorites(showHiddenFiles: NCKeychain().showHiddenFiles,
                                              options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { account, files, _, error in
 
             guard error == .success else { return }
@@ -152,7 +150,7 @@ class NCService: NSObject {
     func getAvatar() {
 
         let fileName = appDelegate.userBaseUrl + "-" + self.appDelegate.user + ".png"
-        let fileNameLocalPath = String(CCUtility.getDirectoryUserData()) + "/" + fileName
+        let fileNameLocalPath = utilityFileSystem.directoryUserData + "/" + fileName
         let etag = NCManageDatabase.shared.getTableAvatar(fileName: fileName)?.etag
 
         NextcloudKit.shared.downloadAvatar(user: appDelegate.userId,
@@ -177,6 +175,7 @@ class NCService: NSObject {
         NextcloudKit.shared.getCapabilities(options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { account, data, error in
             guard error == .success, let data = data else {
                 NCBrandColor.shared.settingThemingColor(account: account)
+                NCImageCache.shared.createImagesBrandCache()
                 return
             }
 
@@ -185,14 +184,10 @@ class NCService: NSObject {
             NCManageDatabase.shared.addCapabilitiesJSon(data, account: account)
             NCManageDatabase.shared.setCapabilities(account: account, data: data)
 
-            // Setup communication
-            if NCGlobal.shared.capabilityServerVersionMajor > 0 {
-                NextcloudKit.shared.setup(nextcloudVersion: NCGlobal.shared.capabilityServerVersionMajor)
-            }
-
             // Theming
             if NCGlobal.shared.capabilityThemingColor != NCBrandColor.shared.themingColor || NCGlobal.shared.capabilityThemingColorElement != NCBrandColor.shared.themingColorElement || NCGlobal.shared.capabilityThemingColorText != NCBrandColor.shared.themingColorText {
                 NCBrandColor.shared.settingThemingColor(account: account)
+                NCImageCache.shared.createImagesBrandCache()
             }
 
             // Sharing & Comments
@@ -268,7 +263,7 @@ class NCService: NSObject {
             }
             if let fileName = fileNameToWrite, let image = imageData {
                 do {
-                    let fileNamePath: String = CCUtility.getDirectoryUserData() + "/" + fileName + ".png"
+                    let fileNamePath = utilityFileSystem.directoryUserData + "/" + fileName + ".png"
                     try image.pngData()?.write(to: URL(fileURLWithPath: fileNamePath), options: .atomic)
                 } catch { }
             }
@@ -306,10 +301,51 @@ class NCService: NSObject {
         let files = NCManageDatabase.shared.getTableLocalFiles(predicate: NSPredicate(format: "account == %@ AND offline == true", account), sorted: "fileName", ascending: true)
         for file: tableLocalFile in files {
             guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(file.ocId) else { continue }
-            if NCManageDatabase.shared.isDownloadMetadata(metadata, download: true) {
-                NCOperationQueue.shared.download(metadata: metadata, selector: NCGlobal.shared.selectorDownloadFile)
+            if NCManageDatabase.shared.isDownloadMetadata(metadata, download: true),
+               appDelegate.downloadQueue.operations.filter({ ($0 as? NCOperationDownload)?.metadata.ocId == metadata.ocId }).isEmpty {
+                appDelegate.downloadQueue.addOperation(NCOperationDownload(metadata: metadata, selector: NCGlobal.shared.selectorDownloadFile))
             }
         }
         NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] end synchronize offline")
+    }
+
+    // MARK: -
+
+    func sendClientDiagnosticsRemoteOperation(account: String) {
+
+        struct Problem: Codable {
+            let count: Int
+            let oldest: TimeInterval
+        }
+
+        struct Problems: Codable {
+            var problems: [String: Problem] = [:]
+        }
+
+        var problems = Problems()
+
+        guard let metadatas = NCManageDatabase.shared.getMetadatasInError(account: account), !metadatas.isEmpty else { return }
+        for metadata in metadatas {
+            guard let oldest = metadata.errorCodeDate?.timeIntervalSince1970 else { continue }
+            var key = String(metadata.errorCode)
+            if !metadata.sessionError.isEmpty {
+                key = key + " - " + metadata.sessionError
+            }
+            let value = Problem(count: metadata.errorCodeCounter, oldest: oldest)
+            problems.problems[key] = value
+        }
+
+        do {
+            @ThreadSafe var metadatas = metadatas
+            let data = try JSONEncoder().encode(problems)
+            data.printJson()
+            NextcloudKit.shared.sendClientDiagnosticsRemoteOperation(problems: data, options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { _, error in
+                if error == .success {
+                    NCManageDatabase.shared.clearErrorCodeMetadatas(metadatas: metadatas)
+                }
+            }
+        } catch {
+            print("Error: \(error.localizedDescription)")
+        }
     }
 }

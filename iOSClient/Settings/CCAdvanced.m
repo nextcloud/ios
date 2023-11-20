@@ -48,7 +48,7 @@
     
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"showHiddenFiles" rowType:XLFormRowDescriptorTypeBooleanSwitch title:NSLocalizedString(@"_show_hidden_files_", nil)];
     row.cellConfigAtConfigure[@"backgroundColor"] = UIColor.secondarySystemGroupedBackgroundColor;
-    if ([CCUtility getShowHiddenFiles]) row.value = @"1";
+    if ([[[NCKeychain alloc] init] showHiddenFiles]) row.value = @"1";
     else row.value = @"0";
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
     [row.cellConfig setObject:UIColor.labelColor forKey:@"textLabel.textColor"];
@@ -62,7 +62,7 @@
 
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"formatCompatibility" rowType:XLFormRowDescriptorTypeBooleanSwitch title:NSLocalizedString(@"_format_compatibility_", nil)];
     row.cellConfigAtConfigure[@"backgroundColor"] = UIColor.secondarySystemGroupedBackgroundColor;
-    if ([CCUtility getFormatCompatibility]) row.value = @"1";
+    if ([[[NCKeychain alloc] init] formatCompatibility]) row.value = @"1";
     else row.value = @"0";
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
     [row.cellConfig setObject:UIColor.labelColor forKey:@"textLabel.textColor"];
@@ -70,7 +70,7 @@
     
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"livePhoto" rowType:XLFormRowDescriptorTypeBooleanSwitch title:NSLocalizedString(@"_upload_mov_livephoto_", nil)];
     row.cellConfigAtConfigure[@"backgroundColor"] = UIColor.secondarySystemGroupedBackgroundColor;
-    if ([CCUtility getLivePhoto]) row.value = @"1";
+    if ([[[NCKeychain alloc] init] livePhoto]) row.value = @"1";
     else row.value = @"0";
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
     [row.cellConfig setObject:UIColor.labelColor forKey:@"textLabel.textColor"];
@@ -78,7 +78,7 @@
 
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"removePhotoCameraRoll" rowType:XLFormRowDescriptorTypeBooleanSwitch title:NSLocalizedString(@"_remove_photo_CameraRoll_", nil)];
     row.cellConfigAtConfigure[@"backgroundColor"] = UIColor.secondarySystemGroupedBackgroundColor;
-    if ([CCUtility getRemovePhotoCameraRoll]) row.value = @"1";
+    if ([[[NCKeychain alloc] init] removePhotoCameraRoll]) row.value = @"1";
     else row.value = @0;
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
     [row.cellConfig setObject:UIColor.labelColor forKey:@"textLabel.textColor"];
@@ -95,7 +95,7 @@
         // Disable Files App
         row = [XLFormRowDescriptor formRowDescriptorWithTag:@"disablefilesapp" rowType:XLFormRowDescriptorTypeBooleanSwitch title:NSLocalizedString(@"_disable_files_app_", nil)];
         row.cellConfigAtConfigure[@"backgroundColor"] = UIColor.secondarySystemGroupedBackgroundColor;
-        if ([CCUtility getDisableFilesApp]) row.value = @"1";
+        if ([[NCKeychain alloc] init].disableFilesApp) row.value = @"1";
         else row.value = @"0";
         [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
         [row.cellConfig setObject:UIColor.labelColor forKey:@"textLabel.textColor"];
@@ -115,7 +115,7 @@
         [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
         [row.cellConfig setObject:UIColor.labelColor forKey:@"textLabel.textColor"];
         [row.cellConfig setObject:[[UIImage imageNamed:@"crashservice"] imageWithColor:UIColor.systemGrayColor size:25] forKey:@"imageView.image"];
-        if ([CCUtility getDisableCrashservice]) row.value = @"1";
+        if ([[[NCKeychain alloc] init] disableCrashservice]) row.value = @"1";
         else row.value = @"0";
         [section addFormRow:row];
     }
@@ -153,9 +153,9 @@
 
             [[[NextcloudKit shared] nkCommonInstance] clearFileLog];
             
-            NSInteger logLevel = [CCUtility getLogLevel];
-            BOOL isSimulatorOrTestFlight = [[NCUtility shared] isSimulatorOrTestFlight];
-            NSString *versionNextcloudiOS = [NSString stringWithFormat:[NCBrandOptions shared].textCopyrightNextcloudiOS, [[NCUtility shared] getVersionAppWithBuild:true]];
+            NSInteger logLevel = [[NCKeychain alloc] init].logLevel;
+            BOOL isSimulatorOrTestFlight = [[[NCUtility alloc] init] isSimulatorOrTestFlight];
+            NSString *versionNextcloudiOS = [NSString stringWithFormat:[NCBrandOptions shared].textCopyrightNextcloudiOS, [[[NCUtility alloc] init] getVersionAppWithBuild:true]];
             if (isSimulatorOrTestFlight) {
                 [[[NextcloudKit shared] nkCommonInstance] writeLog:[NSString stringWithFormat:@"[INFO] Clear log with level %lu %@ (Simulator / TestFlight)", (unsigned long)logLevel, versionNextcloudiOS]];
             } else {
@@ -169,7 +169,7 @@
         [row.cellConfig setObject:@(NSTextAlignmentCenter) forKey:@"textLabel.textAlignment"];
         [row.cellConfig setObject:UIColor.labelColor forKey:@"textLabel.textColor"];
         [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
-        NSInteger logLevel = [CCUtility getLogLevel];
+        NSInteger logLevel = [[NCKeychain alloc] init].logLevel;
         row.value = @(logLevel);
         [row.cellConfigAtConfigure setObject:@(2) forKey:@"slider.maximumValue"];
         [row.cellConfigAtConfigure setObject:@(0) forKey:@"slider.minimumValue"];
@@ -200,7 +200,7 @@
 
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"deleteoldfiles" rowType:XLFormRowDescriptorTypeSelectorPush title:NSLocalizedString(@"_delete_old_files_", nil)];
     
-    switch (CCUtility.getCleanUpDay) {
+    switch ([[NCKeychain alloc] init].cleanUpDay) {
         case 0:
             row.value = [XLFormOptionsObject formOptionsObjectWithValue:@(0) displayText:NSLocalizedString(@"_never_", nil)];
             break;
@@ -313,33 +313,33 @@
     
     if ([rowDescriptor.tag isEqualToString:@"showHiddenFiles"]) {
         
-        [CCUtility setShowHiddenFiles:[[rowDescriptor.value valueData] boolValue]];        
+        [[NCKeychain alloc] init].showHiddenFiles = [[rowDescriptor.value valueData] boolValue];
     }
     
     if ([rowDescriptor.tag isEqualToString:@"formatCompatibility"]) {
         
-        [CCUtility setFormatCompatibility:[[rowDescriptor.value valueData] boolValue]];
+        [[NCKeychain alloc] init].formatCompatibility = [[rowDescriptor.value valueData] boolValue];
     }
     
     if ([rowDescriptor.tag isEqualToString:@"livePhoto"]) {
         
-        [CCUtility setLivePhoto:[[rowDescriptor.value valueData] boolValue]];
+        [[NCKeychain alloc] init].livePhoto = [[rowDescriptor.value valueData] boolValue];
     }
 
     if ([rowDescriptor.tag isEqualToString:@"removePhotoCameraRoll"]) {
 
-        [CCUtility setRemovePhotoCameraRoll:[[rowDescriptor.value valueData] boolValue]];
+        [[NCKeychain alloc] init].removePhotoCameraRoll = [[rowDescriptor.value valueData] boolValue];
     }
 
     if ([rowDescriptor.tag isEqualToString:@"disablefilesapp"]) {
         
-        [CCUtility setDisableFilesApp:[[rowDescriptor.value valueData] boolValue]];
+        [[NCKeychain alloc] init].disableFilesApp = [[rowDescriptor.value valueData] boolValue];
     }
     
     if ([rowDescriptor.tag isEqualToString:@"crashservice"]) {
         
-        [CCUtility setDisableCrashservice:[[rowDescriptor.value valueData] boolValue]];
-        
+        [[NCKeychain alloc] init].disableCrashservice = [[rowDescriptor.value valueData] boolValue];
+
         UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_crashservice_title_", nil) message:NSLocalizedString(@"_crashservice_alert_", nil) preferredStyle:UIAlertControllerStyleAlert];
         UIAlertAction *okAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_ok_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
             exit(0);
@@ -352,14 +352,14 @@
     if ([rowDescriptor.tag isEqualToString:@"logLevel"]) {
         
         NSInteger levelLog = [[rowDescriptor.value valueData] intValue];
-        [CCUtility setLogLevel:levelLog];
+        [[NCKeychain alloc] init].logLevel = levelLog;
         [[[NextcloudKit shared] nkCommonInstance] setLevelLog:levelLog];
     }
 
     if ([rowDescriptor.tag isEqualToString:@"deleteoldfiles"]) {
         
         NSInteger days = [[rowDescriptor.value valueData] intValue];
-        [CCUtility setCleanUpDay:days];
+        [[NCKeychain alloc] init].cleanUpDay = days;
     }
 }
 
@@ -367,24 +367,31 @@
 
 - (void)clearCache:(NSString *)account
 {
-    [[NCNetworking shared] cancelSessionsInBackground:true];
+    [[NCNetworking shared] cancelDataTask];
+    [[NCNetworking shared] cancelDownloadTasks];
+    [[NCNetworking shared] cancelUploadTasks];
+    [[NCNetworking shared] cancelUploadBackgroundTask];
 
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
+
+        NCUtilityFileSystem *ufs = [[NCUtilityFileSystem alloc] init];
 
         [[NSURLCache sharedURLCache] setMemoryCapacity:0];
         [[NSURLCache sharedURLCache] setDiskCapacity:0];
 
         [[NCManageDatabase shared] clearDatabaseWithAccount:account removeAccount:false];
 
-        [CCUtility removeGroupDirectoryProviderStorage];
-        [CCUtility removeGroupLibraryDirectory];
+        [ufs removeGroupDirectoryProviderStorage];
+        [ufs removeGroupLibraryDirectory];
 
-        [CCUtility removeDocumentsDirectory];
-        [CCUtility removeTemporaryDirectory];
+        [ufs removeDocumentsDirectory];
+        [ufs removeTemporaryDirectory];
 
-        [CCUtility createDirectoryStandard];
+        [ufs createDirectoryStandard];
 
         [[NCAutoUpload shared] alignPhotoLibraryWithViewController:self];
+
+        [[NCImageCache shared] clearMediaCache];
 
         [[NCActivityIndicator shared] stop];
         [self calculateSize];
@@ -428,10 +435,11 @@
 - (void)calculateSize
 {
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        NSString *directory = CCUtility.getDirectoryProviderStorage;
-        int64_t totalSize = [[NCUtilityFileSystem shared] getDirectorySizeWithDirectory:directory];
-        sectionSize.footerTitle = [NSString stringWithFormat:@"%@. (%@ %@)", NSLocalizedString(@"_clear_cache_footer_", nil), NSLocalizedString(@"_used_space_", nil), [CCUtility transformedSize:totalSize]];
-            
+        NCUtilityFileSystem *ufs = [[NCUtilityFileSystem alloc] init];
+        NSString *directory =  [ufs directoryProviderStorage];
+        int64_t totalSize = [ufs getDirectorySizeWithDirectory:directory];
+        sectionSize.footerTitle = [NSString stringWithFormat:@"%@. (%@ %@)", NSLocalizedString(@"_clear_cache_footer_", nil), NSLocalizedString(@"_used_space_", nil), [ufs transformedSize:totalSize]];
+
         dispatch_async(dispatch_get_main_queue(), ^{
             [self.tableView reloadData];
         });
@@ -447,26 +455,7 @@
     UIAlertController *alertController = [UIAlertController alertControllerWithTitle:@"" message:NSLocalizedString(@"_want_exit_", nil) preferredStyle:UIAlertControllerStyleActionSheet];
     
     [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_ok_", nil) style:UIAlertActionStyleDestructive handler:^(UIAlertAction *action) {
-                
-        [[NCNetworking shared] cancelSessionsInBackground:true];
-
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
-
-            [[NCManageDatabase shared] removeDB];
-
-            [[NSURLCache sharedURLCache] setMemoryCapacity:0];
-            [[NSURLCache sharedURLCache] setDiskCapacity:0];
-
-            [CCUtility removeGroupDirectoryProviderStorage];
-            [CCUtility removeGroupApplicationSupport];
-
-            [CCUtility removeDocumentsDirectory];
-            [CCUtility removeTemporaryDirectory];
-
-            [CCUtility deleteAllChainStore];
-
-            exit(0);
-        });
+        [appDelegate resetApplication];
     }]];
     
     [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_cancel_", nil) style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) {

@@ -30,10 +30,6 @@ import LocalAuthentication
 
     @objc func makeShipDetailsUI(account: String) -> UIViewController {
 
-        // swiftlint:disable force_cast
-        let account = (UIApplication.shared.delegate as! AppDelegate).account
-        // swiftlint:enable force_cast
-
         let details = NCViewE2EE(account: account)
         let vc = UIHostingController(rootView: details)
         vc.title = NSLocalizedString("_e2e_settings_", comment: "")
@@ -44,11 +40,7 @@ import LocalAuthentication
 class NCManageE2EE: NSObject, ObservableObject, NCEndToEndInitializeDelegate, TOPasscodeViewControllerDelegate {
 
     let endToEndInitialize = NCEndToEndInitialize()
-
-    // swiftlint:disable force_cast
-    let appDelegate = UIApplication.shared.delegate as! AppDelegate
-    // swiftlint:enable force_cast
-
+    let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
     var passcodeType = ""
 
     @Published var isEndToEndEnabled: Bool = false
@@ -58,7 +50,7 @@ class NCManageE2EE: NSObject, ObservableObject, NCEndToEndInitializeDelegate, TO
         super.init()
 
         endToEndInitialize.delegate = self
-        isEndToEndEnabled = CCUtility.isEnd(toEndEnabled: appDelegate.account)
+        isEndToEndEnabled = NCKeychain().isEndToEndEnabled(account: appDelegate.account)
         if isEndToEndEnabled {
             statusOfService = NSLocalizedString("_status_e2ee_configured_", comment: "")
         } else {
@@ -88,7 +80,7 @@ class NCManageE2EE: NSObject, ObservableObject, NCEndToEndInitializeDelegate, TO
         let passcodeViewController = TOPasscodeViewController(passcodeType: .sixDigits, allowCancel: true)
         passcodeViewController.delegate = self
         passcodeViewController.keypadButtonShowLettering = false
-        if CCUtility.getEnableTouchFaceID() && laContext.canEvaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, error: &error) {
+        if NCKeychain().touchFaceID, laContext.canEvaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, error: &error) {
             if error == nil {
                 if laContext.biometryType == .faceID {
                     passcodeViewController.biometryType = .faceID
@@ -111,7 +103,7 @@ class NCManageE2EE: NSObject, ObservableObject, NCEndToEndInitializeDelegate, TO
         case "startE2E":
             endToEndInitialize.initEndToEndEncryption()
         case "readPassphrase":
-            if let e2ePassphrase = CCUtility.getEndToEndPassphrase(appDelegate.account) {
+            if let e2ePassphrase = NCKeychain().getEndToEndPassphrase(account: appDelegate.account) {
                 print("[LOG]Passphrase: " + e2ePassphrase)
                 let message = "\n" + NSLocalizedString("_e2e_settings_the_passphrase_is_", comment: "") + "\n\n\n" + e2ePassphrase
                 let alertController = UIAlertController(title: NSLocalizedString("_info_", comment: ""), message: message, preferredStyle: .alert)
@@ -124,8 +116,8 @@ class NCManageE2EE: NSObject, ObservableObject, NCEndToEndInitializeDelegate, TO
         case "removeLocallyEncryption":
             let alertController = UIAlertController(title: NSLocalizedString("_e2e_settings_remove_", comment: ""), message: NSLocalizedString("_e2e_settings_remove_message_", comment: ""), preferredStyle: .alert)
             alertController.addAction(UIAlertAction(title: NSLocalizedString("_remove_", comment: ""), style: .default, handler: { _ in
-                CCUtility.clearAllKeysEnd(toEnd: self.appDelegate.account)
-                self.isEndToEndEnabled = CCUtility.isEnd(toEndEnabled: self.appDelegate.account)
+                NCKeychain().clearAllKeysEndToEnd(account: self.appDelegate.account)
+                self.isEndToEndEnabled = NCKeychain().isEndToEndEnabled(account: self.appDelegate.account)
             }))
             alertController.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .default, handler: { _ in }))
             appDelegate.window?.rootViewController?.present(alertController, animated: true)
@@ -136,7 +128,7 @@ class NCManageE2EE: NSObject, ObservableObject, NCEndToEndInitializeDelegate, TO
 
     func passcodeViewController(_ passcodeViewController: TOPasscodeViewController, isCorrectCode code: String) -> Bool {
 
-        if code == CCUtility.getPasscode() {
+        if code == NCKeychain().passcode {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
                 self.correctPasscode()
             }
@@ -202,10 +194,10 @@ struct NCViewE2EE: View {
                     }
                     .contentShape(Rectangle())
                     .onTapGesture {
-                        if let passcode = CCUtility.getPasscode(), !passcode.isEmpty {
+                        if NCKeychain().passcode != nil {
                             manageE2EE.requestPasscodeType("readPassphrase")
                         } else {
-                            NCContentPresenter.shared.showInfo(error: NKError(errorCode: 0, errorDescription: "_e2e_settings_lock_not_active_"))
+                            NCContentPresenter().showInfo(error: NKError(errorCode: 0, errorDescription: "_e2e_settings_lock_not_active_"))
                         }
                     }
 
@@ -222,10 +214,10 @@ struct NCViewE2EE: View {
                     }
                     .contentShape(Rectangle())
                     .onTapGesture {
-                        if let passcode = CCUtility.getPasscode(), !passcode.isEmpty {
+                        if NCKeychain().passcode != nil {
                             manageE2EE.requestPasscodeType("removeLocallyEncryption")
                         } else {
-                            NCContentPresenter.shared.showInfo(error: NKError(errorCode: 0, errorDescription: "_e2e_settings_lock_not_active_"))
+                            NCContentPresenter().showInfo(error: NKError(errorCode: 0, errorDescription: "_e2e_settings_lock_not_active_"))
                         }
                     }
 
@@ -252,10 +244,10 @@ struct NCViewE2EE: View {
                         }
                         .contentShape(Rectangle())
                         .onTapGesture {
-                            if let passcode = CCUtility.getPasscode(), !passcode.isEmpty {
+                            if let passcode = NCKeychain().passcode {
                                 manageE2EE.requestPasscodeType("startE2E")
                             } else {
-                                NCContentPresenter.shared.showInfo(error: NKError(errorCode: 0, errorDescription: "_e2e_settings_lock_not_active_"))
+                                NCContentPresenter().showInfo(error: NKError(errorCode: 0, errorDescription: "_e2e_settings_lock_not_active_"))
                             }
                         }
                     }
@@ -291,9 +283,9 @@ struct DeleteCerificateSection: View {
             .onTapGesture {
                 NextcloudKit.shared.deleteE2EECertificate { _, error in
                     if error == .success {
-                        NCContentPresenter.shared.messageNotification("E2E delete certificate", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: .success)
+                        NCContentPresenter().messageNotification("E2E delete certificate", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: .success)
                     } else {
-                        NCContentPresenter.shared.messageNotification("E2E delete certificate", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: .error)
+                        NCContentPresenter().messageNotification("E2E delete certificate", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: .error)
                     }
                 }
             }
@@ -313,9 +305,9 @@ struct DeleteCerificateSection: View {
             .onTapGesture {
                 NextcloudKit.shared.deleteE2EEPrivateKey { _, error in
                     if error == .success {
-                        NCContentPresenter.shared.messageNotification("E2E delete privateKey", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: .success)
+                        NCContentPresenter().messageNotification("E2E delete privateKey", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: .success)
                     } else {
-                        NCContentPresenter.shared.messageNotification("E2E delete privateKey", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: .error)
+                        NCContentPresenter().messageNotification("E2E delete privateKey", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: .error)
                     }
                 }
             }

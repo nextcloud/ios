@@ -27,10 +27,6 @@ import CFNetwork
 import NextcloudKit
 
 class NCContentPresenter: NSObject {
-    @objc static let shared: NCContentPresenter = {
-        let instance = NCContentPresenter()
-        return instance
-    }()
 
     typealias MainFont = Font.HelveticaNeue
     enum Font {
@@ -128,7 +124,7 @@ class NCContentPresenter: NSObject {
                 }
                 if error.errorDescription.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty { return }
                 let description = NSLocalizedString(error.errorDescription, comment: "")
-                self.flatTop(title: NSLocalizedString(title, comment: ""), description: description + responseMessage + " \(error.errorCode)", delay: delay, imageName: nil, type: type, priority: priority, dropEnqueuedEntries: dropEnqueuedEntries)
+                self.flatTop(title: NSLocalizedString(title, comment: ""), description: description + responseMessage, delay: delay, imageName: nil, type: type, priority: priority, dropEnqueuedEntries: dropEnqueuedEntries)
             }
         }
     }

@@ -28,6 +28,7 @@ import Parchment
 import DropDown
 import NextcloudKit
 import MarqueeLabel
+import ContactsUI
 
 class NCShare: UIViewController, NCShareNetworkingDelegate, NCSharePagingContent {
 
@@ -42,12 +43,16 @@ class NCShare: UIViewController, NCShareNetworkingDelegate, NCSharePagingContent
     var textField: UITextField? { searchField }
 
     @IBOutlet weak var tableView: UITableView!
+    @IBOutlet weak var btnContact: UIButton!
 
     weak var appDelegate = UIApplication.shared.delegate as? AppDelegate
 
     public var metadata: tableMetadata?
     public var sharingEnabled = true
     public var height: CGFloat = 0
+    let shareCommon = NCShareCommon()
+    let utilityFileSystem = NCUtilityFileSystem()
+    let utility = NCUtility()
 
     var canReshare: Bool {
         guard let metadata = metadata else { return true }
@@ -103,6 +108,13 @@ class NCShare: UIViewController, NCShareNetworkingDelegate, NCSharePagingContent
             let isVisible = (self.navigationController?.topViewController as? NCSharePaging)?.page == .sharing
             networking?.readShare(showLoadingIndicator: isVisible)
         }
+
+        btnContact.layer.cornerRadius = 5
+        btnContact.layer.masksToBounds = true
+        btnContact.layer.borderWidth = 1
+        btnContact.layer.borderColor = UIColor.gray.cgColor
+        btnContact.tintColor = .gray
+        btnContact.setImage(utility.loadImage(named: "contact", color: .gray, size: 24), for: .normal)
     }
 
     func makeNewLinkShare() {
@@ -110,7 +122,7 @@ class NCShare: UIViewController, NCShareNetworkingDelegate, NCSharePagingContent
             let advancePermission = UIStoryboard(name: "NCShare", bundle: nil).instantiateViewController(withIdentifier: "NCShareAdvancePermission") as? NCShareAdvancePermission,
             let navigationController = self.navigationController,
             let metadata = self.metadata else { return }
-        self.checkEnforcedPassword(shareType: NCShareCommon.shared.SHARE_TYPE_LINK) { password in
+        self.checkEnforcedPassword(shareType: shareCommon.SHARE_TYPE_LINK) { password in
             advancePermission.networking = self.networking
             advancePermission.share = NCTableShareOptions.shareLink(metadata: metadata, password: password)
             advancePermission.metadata = self.metadata
@@ -130,7 +142,7 @@ class NCShare: UIViewController, NCShareNetworkingDelegate, NCSharePagingContent
         searchFieldTopConstraint.constant = 65
         sharedWithYouByView.isHidden = false
         sharedWithYouByLabel.text = NSLocalizedString("_shared_with_you_by_", comment: "") + " " + metadata.ownerDisplayName
-        sharedWithYouByImage.image = NCUtility.shared.loadUserImage(
+        sharedWithYouByImage.image = utility.loadUserImage(
             for: metadata.ownerId,
             displayName: metadata.ownerDisplayName,
             userBaseUrl: appDelegate)
@@ -144,7 +156,7 @@ class NCShare: UIViewController, NCShareNetworkingDelegate, NCSharePagingContent
         if !metadata.note.isEmpty {
             searchFieldTopConstraint.constant = 95
             sharedWithYouByNoteImage.isHidden = false
-            sharedWithYouByNoteImage.image = NCUtility.shared.loadImage(named: "note.text", color: .gray)
+            sharedWithYouByNoteImage.image = utility.loadImage(named: "note.text", color: .gray)
             sharedWithYouByNote.isHidden = false
             sharedWithYouByNote.text = metadata.note
             sharedWithYouByNote.textColor = .label
@@ -157,7 +169,7 @@ class NCShare: UIViewController, NCShareNetworkingDelegate, NCSharePagingContent
         let fileName = appDelegate.userBaseUrl + "-" + metadata.ownerId + ".png"
 
         if NCManageDatabase.shared.getImageAvatarLoaded(fileName: fileName) == nil {
-            let fileNameLocalPath = String(CCUtility.getDirectoryUserData()) + "/" + fileName
+            let fileNameLocalPath = utilityFileSystem.directoryUserData + "/" + fileName
             let etag = NCManageDatabase.shared.getTableAvatar(fileName: fileName)?.etag
 
             NextcloudKit.shared.downloadAvatar(
@@ -195,19 +207,34 @@ class NCShare: UIViewController, NCShareNetworkingDelegate, NCSharePagingContent
     // MARK: - IBAction
 
     @IBAction func searchFieldDidEndOnExit(textField: UITextField) {
+        // https://stackoverflow.com/questions/25471114/how-to-validate-an-e-mail-address-in-swift
+        func isValidEmail(_ email: String) -> Bool {
+
+            let emailRegEx = "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,64}"
+            let emailPred = NSPredicate(format: "SELF MATCHES %@", emailRegEx)
+            return emailPred.evaluate(with: email)
+        }
         guard let searchString = textField.text, !searchString.isEmpty else { return }
-        if searchString.contains("@"), !NCUtility.shared.isValidEmail(searchString) { return }
+        if searchString.contains("@"), !isValidEmail(searchString) { return }
         networking?.getSharees(searchString: searchString)
     }
 
     func checkEnforcedPassword(shareType: Int, completion: @escaping (String?) -> Void) {
         guard NCGlobal.shared.capabilityFileSharingPubPasswdEnforced,
-              shareType == NCShareCommon.shared.SHARE_TYPE_LINK || shareType == NCShareCommon.shared.SHARE_TYPE_EMAIL
+              shareType == shareCommon.SHARE_TYPE_LINK || shareType == shareCommon.SHARE_TYPE_EMAIL
         else { return completion(nil) }
 
         self.present(UIAlertController.password(titleKey: "_enforce_password_protection_", completion: completion), animated: true)
     }
 
+    @IBAction func selectContactClicked(_ sender: Any) {
+        let cnPicker = CNContactPickerViewController()
+        cnPicker.delegate = self
+        cnPicker.displayedPropertyKeys = [CNContactEmailAddressesKey]
+        cnPicker.predicateForEnablingContact = NSPredicate(format: "emailAddresses.@count > 0")
+        cnPicker.predicateForSelectionOfProperty = NSPredicate(format: "emailAddresses.@count > 0")
+        self.present(cnPicker, animated: true)
+    }
     // MARK: - NCShareNetworkingDelegate
 
     func readShareCompleted() {
@@ -244,7 +271,7 @@ class NCShare: UIViewController, NCShareNetworkingDelegate, NCSharePagingContent
 
         for sharee in sharees {
             var label = sharee.label
-            if sharee.shareType == NCShareCommon.shared.SHARE_TYPE_CIRCLE {
+            if sharee.shareType == shareCommon.SHARE_TYPE_CIRCLE {
                 label += " (\(sharee.circleInfo), \(sharee.circleOwner))"
             }
             dropDown.dataSource.append(label)
@@ -338,7 +365,7 @@ extension NCShare: UITableViewDataSource {
         guard let appDelegate = appDelegate, let tableShare = shares.share?[indexPath.row] else { return UITableViewCell() }
 
         // LINK
-        if tableShare.shareType == NCShareCommon.shared.SHARE_TYPE_LINK {
+        if tableShare.shareType == shareCommon.SHARE_TYPE_LINK {
             if let cell = tableView.dequeueReusableCell(withIdentifier: "cellLink", for: indexPath) as? NCShareLinkCell {
                 cell.indexPath = indexPath
                 cell.tableShare = tableShare
@@ -354,11 +381,45 @@ extension NCShare: UITableViewDataSource {
                 cell.delegate = self
                 cell.setupCellUI(userId: appDelegate.userId)
                 let fileName = appDelegate.userBaseUrl + "-" + tableShare.shareWith + ".png"
-                NCOperationQueue.shared.downloadAvatar(user: tableShare.shareWith, dispalyName: tableShare.shareWithDisplayname, fileName: fileName, cell: cell, view: tableView, cellImageView: cell.fileAvatarImageView)
+                NCNetworking.shared.downloadAvatar(user: tableShare.shareWith, dispalyName: tableShare.shareWithDisplayname, fileName: fileName, cell: cell, view: tableView, cellImageView: cell.fileAvatarImageView)
                 return cell
             }
         }
 
         return UITableViewCell()
+    }
+}
+
+// MARK: CNContactPickerDelegate
+
+extension NCShare: CNContactPickerDelegate {
+    func contactPicker(_ picker: CNContactPickerViewController, didSelect contact: CNContact) {
+        if  contact.emailAddresses.count > 1 {
+            showEmailList(arrEmail: contact.emailAddresses.map({$0.value as String}))
+        } else if let email = contact.emailAddresses.first?.value as? String {
+            textField?.text = email
+            networking?.getSharees(searchString: email)
+        }
+    }
+
+    func showEmailList(arrEmail: [String]) {
+        var actions = [NCMenuAction]()
+        for email in arrEmail {
+            actions.append(
+                NCMenuAction(
+                    title: email,
+                    icon: utility.loadImage(named: "email"),
+                    selected: false,
+                    on: false,
+                    action: { _ in
+                        self.textField?.text = email
+                        self.networking?.getSharees(searchString: email)
+                    }
+                )
+            )
+        }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            self.presentMenu(with: actions)
+        }
     }
 }

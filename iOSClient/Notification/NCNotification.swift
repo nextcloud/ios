@@ -29,10 +29,9 @@ import JGProgressHUD
 
 class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmptyDataSetDelegate {
 
-    // swiftlint:disable force_cast
-    let appDelegate = UIApplication.shared.delegate as! AppDelegate
-    // swiftlint:enable force_cast
-
+    let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
+    let utilityFileSystem = NCUtilityFileSystem()
+    let utility = NCUtility()
     var notifications: [NKNotifications] = []
     var emptyDataSet: NCEmptyDataSet?
     var isReloadDataSourceNetworkInProgress: Bool = false
@@ -85,7 +84,7 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmpty
             view.emptyTitle.text = NSLocalizedString("_request_in_progress_", comment: "")
             view.emptyDescription.text = ""
         } else {
-            view.emptyImage.image = NCUtility.shared.loadImage(named: "bell", color: .gray, size: UIScreen.main.bounds.width)
+            view.emptyImage.image = utility.loadImage(named: "bell", color: .gray, size: UIScreen.main.bounds.width)
             view.emptyTitle.text = NSLocalizedString("_no_notification_", comment: "")
             view.emptyDescription.text = ""
         }
@@ -128,14 +127,14 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmpty
         var image: UIImage?
 
         if let urlIcon = urlIcon {
-            let pathFileName = String(CCUtility.getDirectoryUserData()) + "/" + urlIcon.deletingPathExtension().lastPathComponent + ".png"
+            let pathFileName = utilityFileSystem.directoryUserData + "/" + urlIcon.deletingPathExtension().lastPathComponent + ".png"
             image = UIImage(contentsOfFile: pathFileName)
         }
 
         if let image = image {
             cell.icon.image = image.withTintColor(NCBrandColor.shared.brandElement, renderingMode: .alwaysOriginal)
         } else {
-            cell.icon.image = NCUtility.shared.loadImage(named: "bell", color: NCBrandColor.shared.brandElement)
+            cell.icon.image = utility.loadImage(named: "bell", color: NCBrandColor.shared.brandElement)
         }
 
         // Avatar
@@ -148,19 +147,19 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmpty
             cell.avatarLeadingMargin.constant = 50
 
             let fileName = appDelegate.userBaseUrl + "-" + user + ".png"
-            let fileNameLocalPath = String(CCUtility.getDirectoryUserData()) + "/" + fileName
+            let fileNameLocalPath = utilityFileSystem.directoryUserData + "/" + fileName
 
             if let image = UIImage(contentsOfFile: fileNameLocalPath) {
                 cell.avatar.image = image
             } else if !FileManager.default.fileExists(atPath: fileNameLocalPath) {
                 cell.fileUser = user
-                NCOperationQueue.shared.downloadAvatar(user: user, dispalyName: json["user"]?["name"].string, fileName: fileName, cell: cell, view: tableView, cellImageView: cell.fileAvatarImageView)
+                NCNetworking.shared.downloadAvatar(user: user, dispalyName: json["user"]?["name"].string, fileName: fileName, cell: cell, view: tableView, cellImageView: cell.fileAvatarImageView)
             }
         }
 
         cell.date.text = DateFormatter.localizedString(from: notification.date as Date, dateStyle: .medium, timeStyle: .medium)
         cell.notification = notification
-        cell.date.text = CCUtility.dateDiff(notification.date as Date)
+        cell.date.text = utility.dateDiff(notification.date as Date)
         cell.date.textColor = .gray
         cell.subject.text = notification.subject
         cell.subject.textColor = .label
@@ -252,7 +251,7 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmpty
                 }
                 self.tableView.reloadData()
             } else if error != .success {
-                NCContentPresenter.shared.showError(error: error)
+                NCContentPresenter().showError(error: error)
             } else {
                 print("[Error] The user has been changed during networking process.")
             }
@@ -286,7 +285,7 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmpty
                         self.dismiss(animated: true)
                     }
                 } else if error != .success {
-                    NCContentPresenter.shared.showError(error: error)
+                    NCContentPresenter().showError(error: error)
                 } else {
                     print("[Error] The user has been changed during networking process.")
                 }
@@ -312,7 +311,7 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmpty
                 let sortedListOfNotifications = (notifications! as NSArray).sortedArray(using: [NSSortDescriptor(key: "date", ascending: false)])
                 for notification in sortedListOfNotifications {
                     if let icon = (notification as? NKNotifications)?.icon {
-                        NCUtility.shared.convertSVGtoPNGWriteToUserData(svgUrlString: icon, fileName: nil, width: 25, rewrite: false, account: self.appDelegate.account, completion: { _, _ in })
+                        self.utility.convertSVGtoPNGWriteToUserData(svgUrlString: icon, fileName: nil, width: 25, rewrite: false, account: self.appDelegate.account, completion: { _, _ in })
                     }
                     if let notification = (notification as? NKNotifications) {
                         self.notifications.append(notification)

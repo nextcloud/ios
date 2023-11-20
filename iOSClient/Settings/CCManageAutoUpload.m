@@ -205,7 +205,7 @@
     [super viewWillAppear:animated];
     
     appDelegate.activeViewController = self;
-    [[NCAskAuthorization shared] askAuthorizationPhotoLibraryWithViewController:self completion:^(BOOL status) { }];
+    [[[NCAskAuthorization alloc] init] askAuthorizationPhotoLibraryWithViewController:self completion:^(BOOL status) { }];
 }
 
 - (void)changeUser
@@ -399,7 +399,7 @@
             sectionName = NSLocalizedString(@"_autoupload_description_", nil);
             break;
         case 1:
-            if (activeAccount.autoUpload) sectionName = [NSString stringWithFormat:@"%@: %@", NSLocalizedString(@"_autoupload_current_folder_", nil), [CCUtility returnPathfromServerUrl:autoUploadPath urlBase:appDelegate.urlBase userId:appDelegate.userId account:appDelegate.account]];
+            if (activeAccount.autoUpload) sectionName = [NSString stringWithFormat:@"%@: %@", NSLocalizedString(@"_autoupload_current_folder_", nil), [self returnPathfromServerUrl:autoUploadPath urlBase:appDelegate.urlBase userId:appDelegate.userId account:appDelegate.account]];
             else sectionName = @"";
             break;
         case 4:
@@ -422,16 +422,16 @@
 {
     if (serverUrl != nil) {
 
-        NSString* home = [[NCUtilityFileSystem shared] getHomeServerWithUrlBase:appDelegate.urlBase userId:appDelegate.userId];
+        NSString* home = [[[NCUtilityFileSystem alloc] init] getHomeServerWithUrlBase:appDelegate.urlBase userId:appDelegate.userId];
         if ([serverUrl isEqualToString:home]) {
             NKError *error = [[NKError alloc] initWithErrorCode:NCGlobal.shared.errorInternalError errorDescription:@"_autoupload_error_select_folder_" responseData:nil];
-            [[NCContentPresenter shared] messageNotification:@"_error_" error:error delay:[[NCGlobal shared] dismissAfterSecond] type:messageTypeError];
+            [[[NCContentPresenter alloc] init] messageNotification:@"_error_" error:error delay:[[NCGlobal shared] dismissAfterSecond] type:messageTypeError];
             return;
         }
         
         // Settings new folder Automatatic upload
         [[NCManageDatabase shared] setAccountAutoUploadFileName:serverUrl.lastPathComponent];
-        NSString *path = [[NCUtilityFileSystem shared] deleteLastPathWithServerUrlPath:serverUrl home:home];
+        NSString *path = [[[NCUtilityFileSystem alloc] init] deleteLastPathWithServerUrlPath:serverUrl home:home];
         if (path != nil) {
             [[NCManageDatabase shared] setAccountAutoUploadDirectory:path urlBase:appDelegate.urlBase userId:appDelegate.userId account:appDelegate.account];
         }
@@ -452,5 +452,12 @@
          [self.tableView reloadData];
      }];
  }
+
+- (NSString *)returnPathfromServerUrl:(NSString *)serverUrl urlBase:(NSString *)urlBase userId:(NSString *)userId account:(NSString *)account
+{
+   NSString *homeServer = [[[NCUtilityFileSystem alloc] init] getHomeServerWithUrlBase:urlBase userId:userId];
+   NSString *path = [serverUrl stringByReplacingOccurrencesOfString:homeServer withString:@""];
+   return path;
+}
 
 @end

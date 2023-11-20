@@ -32,19 +32,15 @@ extension AppDelegate {
     func toggleMenu(viewController: UIViewController) {
 
         var actions: [NCMenuAction] = []
-
-        // swiftlint:disable force_cast
-        let appDelegate = UIApplication.shared.delegate as! AppDelegate
-        // swiftlint:enable force_cast
-
+        let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
         let directEditingCreators = NCManageDatabase.shared.getDirectEditingCreators(account: appDelegate.account)
-        let isDirectoryE2EE = NCUtility.shared.isDirectoryE2EE(serverUrl: appDelegate.activeServerUrl, userBase: appDelegate)
+        let isDirectoryE2EE = NCUtilityFileSystem().isDirectoryE2EE(serverUrl: appDelegate.activeServerUrl, userBase: appDelegate)
         let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", appDelegate.account, appDelegate.activeServerUrl))
 
         actions.append(
             NCMenuAction(
                 title: NSLocalizedString("_upload_photos_videos_", comment: ""), icon: UIImage(named: "file_photo")!.image(color: UIColor.systemGray, size: 50), action: { _ in
-                    NCAskAuthorization.shared.askAuthorizationPhotoLibrary(viewController: viewController) { hasPermission in
+                    NCAskAuthorization().askAuthorizationPhotoLibrary(viewController: viewController) { hasPermission in
                         if hasPermission {NCPhotosPickerViewController(viewController: viewController, maxSelectedAssets: 0, singleSelectedMode: false)
                         }
                     }
@@ -86,7 +82,7 @@ extension AppDelegate {
 
         actions.append(
             NCMenuAction(
-                title: NSLocalizedString("_scans_document_", comment: ""), icon: NCUtility.shared.loadImage(named: "doc.text.viewfinder"), action: { _ in
+                title: NSLocalizedString("_scans_document_", comment: ""), icon: NCUtility().loadImage(named: "doc.text.viewfinder"), action: { _ in
                     if let viewController = appDelegate.window?.rootViewController {
                         NCDocumentCamera.shared.openScannerDocument(viewController: viewController)
                     }
@@ -97,9 +93,9 @@ extension AppDelegate {
         actions.append(
             NCMenuAction(
                 title: NSLocalizedString("_create_voice_memo_", comment: ""), icon: UIImage(named: "microphone")!.image(color: UIColor.systemGray, size: 50), action: { _ in
-                    NCAskAuthorization.shared.askAuthorizationAudioRecord(viewController: viewController) { hasPermission in
+                    NCAskAuthorization().askAuthorizationAudioRecord(viewController: viewController) { hasPermission in
                         if hasPermission {
-                            let fileName = CCUtility.createFileNameDate(NSLocalizedString("_voice_memo_filename_", comment: ""), extension: "m4a")!
+                            let fileName = NCUtilityFileSystem().createFileNameDate(NSLocalizedString("_voice_memo_filename_", comment: ""), ext: "m4a")
                             if let viewController = UIStoryboard(name: "NCAudioRecorderViewController", bundle: nil).instantiateInitialViewController() as? NCAudioRecorderViewController {
 
                                 viewController.delegate = self
@@ -115,7 +111,7 @@ extension AppDelegate {
             )
         )
 
-        if CCUtility.isEnd(toEndEnabled: appDelegate.account) {
+        if NCKeychain().isEndToEndEnabled(account: appDelegate.account) {
             actions.append(.seperator(order: 0))
         }
 
@@ -132,7 +128,7 @@ extension AppDelegate {
         )
 
         // Folder encrypted
-        if !isDirectoryE2EE && CCUtility.isEnd(toEndEnabled: appDelegate.account) {
+        if !isDirectoryE2EE && NCKeychain().isEndToEndEnabled(account: appDelegate.account) {
             actions.append(
                 NCMenuAction(title: NSLocalizedString("_create_folder_e2ee_", comment: ""),
                              icon: UIImage(named: "folderEncrypted")!.image(color: NCBrandColor.shared.brandElement, size: 50),
@@ -144,7 +140,7 @@ extension AppDelegate {
             )
         }
 
-        if CCUtility.isEnd(toEndEnabled: appDelegate.account) {
+        if NCKeychain().isEndToEndEnabled(account: appDelegate.account) {
             actions.append(.seperator(order: 0))
         }
 
@@ -237,7 +233,7 @@ extension AppDelegate {
             )
         }
 
-        if !NCGlobal.shared.capabilityRichdocumentsMimetypes.isEmpty {
+        if NCGlobal.shared.capabilityRichdocumentsEnabled {
             if NextcloudKit.shared.isNetworkReachable() && !isDirectoryE2EE {
                 actions.append(
                     NCMenuAction(

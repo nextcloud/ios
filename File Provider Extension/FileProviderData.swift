@@ -32,6 +32,7 @@ class fileProviderData: NSObject {
 
     var domain: NSFileProviderDomain?
     var fileProviderManager: NSFileProviderManager = NSFileProviderManager.default
+    let utilityFileSystem = NCUtilityFileSystem()
 
     var account = ""
     var user = ""
@@ -72,13 +73,11 @@ class fileProviderData: NSObject {
         }
 
         // LOG
-        if let pathDirectoryGroup = CCUtility.getDirectoryGroup()?.path {
-            NextcloudKit.shared.nkCommonInstance.pathLog = pathDirectoryGroup
-            let levelLog = CCUtility.getLogLevel()
-            NextcloudKit.shared.nkCommonInstance.levelLog = levelLog
-            let version = NSString(format: NCBrandOptions.shared.textCopyrightNextcloudiOS as NSString, NCUtility.shared.getVersionApp()) as String
-            NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Start File Provider session with level \(levelLog) " + version + " (File Provider Extension)")
-        }
+        NextcloudKit.shared.nkCommonInstance.pathLog = utilityFileSystem.directoryGroup
+        let levelLog = NCKeychain().logLevel
+        NextcloudKit.shared.nkCommonInstance.levelLog = levelLog
+        let version = NSString(format: NCBrandOptions.shared.textCopyrightNextcloudiOS as NSString, NCUtility().getVersionApp()) as String
+        NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Start File Provider session with level \(levelLog) " + version + " (File Provider Extension)")
 
         // NO DOMAIN -> Set default account
         if domain == nil {
@@ -89,11 +88,11 @@ class fileProviderData: NSObject {
             user = activeAccount.user
             userId = activeAccount.userId
             accountUrlBase = activeAccount.urlBase
-            homeServerUrl = NCUtilityFileSystem.shared.getHomeServer(urlBase: activeAccount.urlBase, userId: activeAccount.userId)
+            homeServerUrl = utilityFileSystem.getHomeServer(urlBase: activeAccount.urlBase, userId: activeAccount.userId)
 
             NCManageDatabase.shared.setCapabilities(account: account)
 
-            NextcloudKit.shared.setup(account: activeAccount.account, user: activeAccount.user, userId: activeAccount.userId, password: CCUtility.getPassword(activeAccount.account), urlBase: activeAccount.urlBase, userAgent: userAgent, nextcloudVersion: NCGlobal.shared.capabilityServerVersionMajor, delegate: NCNetworking.shared)
+            NextcloudKit.shared.setup(account: activeAccount.account, user: activeAccount.user, userId: activeAccount.userId, password: NCKeychain().getPassword(account: activeAccount.account), urlBase: activeAccount.urlBase, userAgent: userAgent, nextcloudVersion: NCGlobal.shared.capabilityServerVersionMajor, delegate: NCNetworking.shared)
             NCNetworking.shared.delegate = providerExtension as? NCNetworkingDelegate
 
             return tableAccount.init(value: activeAccount)
@@ -113,11 +112,11 @@ class fileProviderData: NSObject {
                 user = activeAccount.user
                 userId = activeAccount.userId
                 accountUrlBase = activeAccount.urlBase
-                homeServerUrl = NCUtilityFileSystem.shared.getHomeServer(urlBase: activeAccount.urlBase, userId: activeAccount.userId)
+                homeServerUrl = utilityFileSystem.getHomeServer(urlBase: activeAccount.urlBase, userId: activeAccount.userId)
 
                 NCManageDatabase.shared.setCapabilities(account: account)
 
-                NextcloudKit.shared.setup(account: activeAccount.account, user: activeAccount.user, userId: activeAccount.userId, password: CCUtility.getPassword(activeAccount.account), urlBase: activeAccount.urlBase, userAgent: userAgent, nextcloudVersion: NCGlobal.shared.capabilityServerVersionMajor, delegate: NCNetworking.shared)
+                NextcloudKit.shared.setup(account: activeAccount.account, user: activeAccount.user, userId: activeAccount.userId, password: NCKeychain().getPassword(account: activeAccount.account), urlBase: activeAccount.urlBase, userAgent: userAgent, nextcloudVersion: NCGlobal.shared.capabilityServerVersionMajor, delegate: NCNetworking.shared)
                 NCNetworking.shared.delegate = providerExtension as? NCNetworkingDelegate
 
                 return tableAccount.init(value: activeAccount)
@@ -134,7 +133,7 @@ class fileProviderData: NSObject {
 
         guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) else { return nil }
 
-        guard let parentItemIdentifier = fileProviderUtility.shared.getParentItemIdentifier(metadata: metadata) else { return nil }
+        guard let parentItemIdentifier = fileProviderUtility().getParentItemIdentifier(metadata: metadata) else { return nil }
 
         let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier)
 

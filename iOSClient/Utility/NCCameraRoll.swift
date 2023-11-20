@@ -27,6 +27,8 @@ import JGProgressHUD
 
 class NCCameraRoll: NSObject {
 
+    let utilityFileSystem = NCUtilityFileSystem()
+
     func extractCameraRoll(from metadata: tableMetadata, viewController: UIViewController?, hud: JGProgressHUD, completition: @escaping (_ metadatas: [tableMetadata]) -> Void) {
 
         var chunkSize = NCGlobal.shared.chunkSizeMBCellular
@@ -38,16 +40,16 @@ class NCCameraRoll: NSObject {
 
         guard !metadata.isExtractFile else { return  completition([metadataSource]) }
         guard !metadataSource.assetLocalIdentifier.isEmpty else {
-            let filePath = CCUtility.getDirectoryProviderStorageOcId(metadataSource.ocId, fileNameView: metadataSource.fileName)!
-            metadataSource.size = NCUtilityFileSystem.shared.getFileSize(filePath: filePath)
+            let filePath = utilityFileSystem.getDirectoryProviderStorageOcId(metadataSource.ocId, fileNameView: metadataSource.fileName)
+            metadataSource.size = utilityFileSystem.getFileSize(filePath: filePath)
             let results = NextcloudKit.shared.nkCommonInstance.getInternalType(fileName: metadataSource.fileNameView, mimeType: metadataSource.contentType, directory: false)
             metadataSource.contentType = results.mimeType
             metadataSource.iconName = results.iconName
             metadataSource.classFile = results.classFile
-            if let date = NCUtilityFileSystem.shared.getFileCreationDate(filePath: filePath) {
+            if let date = utilityFileSystem.getFileCreationDate(filePath: filePath) {
                 metadataSource.creationDate = date
             }
-            if let date = NCUtilityFileSystem.shared.getFileModificationDate(filePath: filePath) {
+            if let date = utilityFileSystem.getFileModificationDate(filePath: filePath) {
                 metadataSource.date = date
             }
             if metadataSource.size > chunkSize {
@@ -69,8 +71,8 @@ class NCCameraRoll: NSObject {
         extractImageVideoFromAssetLocalIdentifier(metadata: metadataSource, modifyMetadataForUpload: true, viewController: viewController, hud: hud) { metadata, fileNamePath, error in
             if let metadata = metadata, let fileNamePath = fileNamePath, !error {
                 metadatas.append(metadata)
-                let toPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
-                NCUtilityFileSystem.shared.moveFile(atPath: fileNamePath, toPath: toPath)
+                let toPath = self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)
+                self.utilityFileSystem.moveFile(atPath: fileNamePath, toPath: toPath)
                 let fetchAssets = PHAsset.fetchAssets(withLocalIdentifiers: [metadataSource.assetLocalIdentifier], options: nil)
                 // swiftlint:disable empty_count
                 if metadata.livePhoto, fetchAssets.count > 0 {
@@ -139,7 +141,7 @@ class NCCameraRoll: NSObject {
         let creationDate = asset.creationDate ?? Date()
         let modificationDate = asset.modificationDate ?? Date()
 
-        if asset.mediaType == PHAssetMediaType.image && (extensionAsset == "HEIC" || extensionAsset == "DNG") && CCUtility.getFormatCompatibility() {
+        if asset.mediaType == PHAssetMediaType.image && (extensionAsset == "HEIC" || extensionAsset == "DNG") && NCKeychain().formatCompatibility {
             let fileName = (metadata.fileNameView as NSString).deletingPathExtension + ".jpg"
             metadata.contentType = "image/jpeg"
             fileNamePath = NSTemporaryDirectory() + fileName
@@ -178,13 +180,13 @@ class NCCameraRoll: NSObject {
                     guard let ciImage = CIImage(data: data), let colorSpace = ciImage.colorSpace, let dataJPEG = CIContext().jpegRepresentation(of: ciImage, colorSpace: colorSpace) else { return callCompletionWithError() }
                     data = dataJPEG
                 }
-                NCUtilityFileSystem.shared.deleteFile(filePath: fileNamePath)
+                self.utilityFileSystem.removeFile(atPath: fileNamePath)
                 do {
                     try data.write(to: URL(fileURLWithPath: fileNamePath), options: .atomic)
                 } catch { return callCompletionWithError() }
                 metadata.creationDate = creationDate as NSDate
                 metadata.date = modificationDate as NSDate
-                metadata.size = NCUtilityFileSystem.shared.getFileSize(filePath: fileNamePath)
+                metadata.size = self.utilityFileSystem.getFileSize(filePath: fileNamePath)
                 return callCompletionWithError(false)
             }
 
@@ -200,12 +202,12 @@ class NCCameraRoll: NSObject {
 
             PHImageManager.default().requestAVAsset(forVideo: asset, options: options) { asset, _, _ in
                 if let asset = asset as? AVURLAsset {
-                    NCUtilityFileSystem.shared.deleteFile(filePath: fileNamePath)
+                    self.utilityFileSystem.removeFile(atPath: fileNamePath)
                     do {
                         try FileManager.default.copyItem(at: asset.url, to: URL(fileURLWithPath: fileNamePath))
                         metadata.creationDate = creationDate as NSDate
                         metadata.date = modificationDate as NSDate
-                        metadata.size = NCUtilityFileSystem.shared.getFileSize(filePath: fileNamePath)
+                        metadata.size = self.utilityFileSystem.getFileSize(filePath: fileNamePath)
                         return callCompletionWithError(false)
                     } catch { return callCompletionWithError() }
                 } else if let asset = asset as? AVComposition, asset.tracks.count > 1, let exporter = AVAssetExportSession(asset: asset, presetName: AVAssetExportPresetHighestQuality), let viewController = viewController {
@@ -228,7 +230,7 @@ class NCCameraRoll: NSObject {
                         if exporter.status == .completed {
                             metadata.creationDate = creationDate as NSDate
                             metadata.date = modificationDate as NSDate
-                            metadata.size = NCUtilityFileSystem.shared.getFileSize(filePath: fileNamePath)
+                            metadata.size = self.utilityFileSystem.getFileSize(filePath: fileNamePath)
                             return callCompletionWithError(false)
                         } else { return callCompletionWithError() }
                     }
@@ -254,7 +256,7 @@ class NCCameraRoll: NSObject {
         options.isNetworkAccessAllowed = true
         let ocId = NSUUID().uuidString
         let fileName = (metadata.fileName as NSString).deletingPathExtension + ".mov"
-        let fileNamePath = CCUtility.getDirectoryProviderStorageOcId(ocId, fileNameView: fileName)!
+        let fileNamePath = utilityFileSystem.getDirectoryProviderStorageOcId(ocId, fileNameView: fileName)
         var chunkSize = NCGlobal.shared.chunkSizeMBCellular
         if NCNetworking.shared.networkReachability == NKCommon.TypeReachability.reachableEthernetOrWiFi {
             chunkSize = NCGlobal.shared.chunkSizeMBEthernetOrWiFi
@@ -268,7 +270,7 @@ class NCCameraRoll: NSObject {
                 break
             }
             guard let videoResource = videoResource else { return completion(nil) }
-            NCUtilityFileSystem.shared.deleteFile(filePath: fileNamePath)
+            self.utilityFileSystem.removeFile(atPath: fileNamePath)
             PHAssetResourceManager.default().writeData(for: videoResource, toFile: URL(fileURLWithPath: fileNamePath), options: nil) { error in
                 if error != nil { return completion(nil) }
                 let metadataLivePhoto = NCManageDatabase.shared.createMetadata(account: metadata.account,
@@ -282,11 +284,12 @@ class NCCameraRoll: NSObject {
                                                                                url: "",
                                                                                contentType: "",
                                                                                isLivePhoto: true)
+
                 metadataLivePhoto.classFile = NKCommon.TypeClassFile.video.rawValue
                 metadataLivePhoto.isExtractFile = true
                 metadataLivePhoto.session = metadata.session
                 metadataLivePhoto.sessionSelector = metadata.sessionSelector
-                metadataLivePhoto.size = NCUtilityFileSystem.shared.getFileSize(filePath: fileNamePath)
+                metadataLivePhoto.size = self.utilityFileSystem.getFileSize(filePath: fileNamePath)
                 metadataLivePhoto.status = metadata.status
                 if metadataLivePhoto.size > chunkSize {
                     metadataLivePhoto.chunk = chunkSize

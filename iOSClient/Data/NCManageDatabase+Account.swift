@@ -2,7 +2,7 @@
 //  NCManageDatabase+Account.swift
 //  Nextcloud
 //
-//  Created by Henrik Storch on 30.11.21.
+//  Created by Marino Faggiana on 13/11/23.
 //  Copyright © 2021 Marino Faggiana. All rights reserved.
 //
 //  Author Marino Faggiana <marino.faggiana@nextcloud.com>
@@ -106,7 +106,7 @@ extension NCManageDatabase {
                     addObject.autoUploadWWAnVideo = true
                 }
 
-                CCUtility.setPassword(account, password: password)
+                NCKeychain().setPassword(account: account, password: password)
 
                 addObject.urlBase = urlBase
                 addObject.user = user
@@ -243,11 +243,11 @@ extension NCManageDatabase {
             realm.refresh()
             guard let result = realm.objects(tableAccount.self).filter("active == true").first else { return "" }
             if result.autoUploadDirectory.isEmpty {
-                return NCUtilityFileSystem.shared.getHomeServer(urlBase: urlBase, userId: userId)
+                return utilityFileSystem.getHomeServer(urlBase: urlBase, userId: userId)
             } else {
                 // FIX change webdav -> /dav/files/
                 if result.autoUploadDirectory.contains("/webdav") {
-                    return NCUtilityFileSystem.shared.getHomeServer(urlBase: urlBase, userId: userId)
+                    return utilityFileSystem.getHomeServer(urlBase: urlBase, userId: userId)
                 } else {
                     return result.autoUploadDirectory
                 }
@@ -263,8 +263,7 @@ extension NCManageDatabase {
 
         let cameraFileName = self.getAccountAutoUploadFileName()
         let cameraDirectory = self.getAccountAutoUploadDirectory(urlBase: urlBase, userId: userId, account: account)
-
-        let folderPhotos = CCUtility.stringAppendServerUrl(cameraDirectory, addFileName: cameraFileName)!
+        let folderPhotos = utilityFileSystem.stringAppendServerUrl(cameraDirectory, addFileName: cameraFileName)
 
         return folderPhotos
     }

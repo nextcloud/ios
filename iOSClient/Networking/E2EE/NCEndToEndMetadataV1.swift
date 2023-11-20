@@ -95,7 +95,7 @@ extension NCEndToEndMetadata {
         var filesCodable: [String: E2eeV12.Files]?
         var filedrop: [String: E2eeV12.Filedrop] = [:]
         var filedropCodable: [String: E2eeV12.Filedrop]?
-        let privateKey = CCUtility.getEndToEndPrivateKey(account)
+        let privateKey = NCKeychain().getEndToEndPrivateKey(account: account)
         var fileNameIdentifiers: [String] = []
 
         let e2eEncryptions = NCManageDatabase.shared.getE2eEncryptions(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", account, serverUrl))
@@ -166,7 +166,7 @@ extension NCEndToEndMetadata {
         }
 
         // Create checksum
-        let passphrase = CCUtility.getEndToEndPassphrase(account).replacingOccurrences(of: " ", with: "")
+        let passphrase = NCKeychain().getEndToEndPassphrase(account: account)?.replacingOccurrences(of: " ", with: "") ?? ""
         let dataChecksum = (passphrase + fileNameIdentifiers.sorted().joined() + metadataKey).data(using: .utf8)
         let checksum = NCEndToEndEncryption.sharedManager().createSHA256(dataChecksum)
 
@@ -200,7 +200,7 @@ extension NCEndToEndMetadata {
         }
 
         let decoder = JSONDecoder()
-        let privateKey = CCUtility.getEndToEndPrivateKey(account)
+        let privateKey = NCKeychain().getEndToEndPrivateKey(account: account)
         var metadataVersion: Double = 0
         var metadataKey = ""
 
@@ -345,7 +345,7 @@ extension NCEndToEndMetadata {
             }
 
             // verify checksum
-            let passphrase = CCUtility.getEndToEndPassphrase(account).replacingOccurrences(of: " ", with: "")
+            let passphrase = NCKeychain().getEndToEndPassphrase(account: account)?.replacingOccurrences(of: " ", with: "") ?? ""
             let dataChecksum = (passphrase + fileNameIdentifiers.sorted().joined() + metadata.metadataKey).data(using: .utf8)
             let checksum = NCEndToEndEncryption.sharedManager().createSHA256(dataChecksum)
             if metadata.checksum != checksum {
@@ -369,7 +369,7 @@ extension NCEndToEndMetadata {
         }
 
         let decoder = JSONDecoder()
-        let privateKey = CCUtility.getEndToEndPrivateKey(account)
+        let privateKey = NCKeychain().getEndToEndPrivateKey(account: account)
         var metadataVersion: Double = 0
 
         do {

@@ -5,6 +5,21 @@
 //  Created by Marino Faggiana on 19/05/23.
 //  Copyright © 2023 Marino Faggiana. All rights reserved.
 //
+//  Author Marino Faggiana <marino.faggiana@nextcloud.com>
+//
+//  This program is free software: you can redistribute it and/or modify
+//  it under the terms of the GNU General Public License as published by
+//  the Free Software Foundation, either version 3 of the License, or
+//  (at your option) any later version.
+//
+//  This program is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//  GNU General Public License for more details.
+//
+//  You should have received a copy of the GNU General Public License
+//  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
 
 import SwiftUI
 import NextcloudKit
@@ -34,6 +49,7 @@ class NCCapabilitiesViewOO: ObservableObject {
 
     @Published var capabililies: [Capability] = []
     @Published var homeServer = ""
+    let utilityFileSystem = NCUtilityFileSystem()
 
     init() {
         guard let activeAccount = NCManageDatabase.shared.getActiveAccount() else { return }
@@ -76,7 +92,7 @@ class NCCapabilitiesViewOO: ObservableObject {
             capabililies.append(Capability(text: "ONLYOFFICE", image: image, resize: true, available: onlyofficeEditors))
         }
         if let image = UIImage(named: "collabora") {
-            capabililies.append(Capability(text: "Collabora", image: image, resize: true, available: !NCGlobal.shared.capabilityRichdocumentsMimetypes.isEmpty))
+            capabililies.append(Capability(text: "Collabora", image: image, resize: true, available: NCGlobal.shared.capabilityRichdocumentsEnabled))
         }
         if let image = UIImage(systemName: "moon") {
             capabililies.append(Capability(text: "User Status", image: image, resize: false, available: NCGlobal.shared.capabilityUserStatusEnabled))
@@ -91,7 +107,7 @@ class NCCapabilitiesViewOO: ObservableObject {
             capabililies.append(Capability(text: "Group folders", image: image, resize: false, available: NCGlobal.shared.capabilityGroupfoldersEnabled))
         }
 
-        homeServer = NCUtilityFileSystem.shared.getHomeServer(urlBase: activeAccount.urlBase, userId: activeAccount.userId) + "/"
+        homeServer = utilityFileSystem.getHomeServer(urlBase: activeAccount.urlBase, userId: activeAccount.userId) + "/"
     }
 }
 

@@ -37,6 +37,7 @@ class tableLocalFile: Object {
     @objc dynamic var fileName = ""
     @objc dynamic var ocId = ""
     @objc dynamic var offline: Bool = false
+    @objc dynamic var lastOpeningDate = NSDate()
 
     override static func primaryKey() -> String {
         return "ocId"
@@ -205,5 +206,42 @@ extension NCManageDatabase {
         }
 
         return []
+    }
+
+    func getResultsTableLocalFile(predicate: NSPredicate, sorted: String, ascending: Bool) -> Results<tableLocalFile>? {
+
+        do {
+            let realm = try Realm()
+            realm.refresh()
+            return realm.objects(tableLocalFile.self).filter(predicate).sorted(byKeyPath: sorted, ascending: ascending)
+        } catch let error as NSError {
+            NextcloudKit.shared.nkCommonInstance.writeLog("Could not access database: \(error)")
+        }
+
+        return nil
+    }
+
+    func setLastOpeningDate(metadata: tableMetadata) {
+
+        do {
+            let realm = try Realm()
+            try realm.write {
+                if let result = realm.objects(tableLocalFile.self).filter("ocId == %@", metadata.ocId).first {
+                    result.lastOpeningDate = NSDate()
+                } else {
+                    let addObject = tableLocalFile()
+                    addObject.account = metadata.account
+                    addObject.etag = metadata.etag
+                    addObject.exifDate = NSDate()
+                    addObject.exifLatitude = "-1"
+                    addObject.exifLongitude = "-1"
+                    addObject.ocId = metadata.ocId
+                    addObject.fileName = metadata.fileName
+                    realm.add(addObject, update: .all)
+                }
+            }
+        } catch let error {
+            NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
+        }
     }
 }

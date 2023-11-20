@@ -101,6 +101,12 @@
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
     [row.cellConfig setObject:UIColor.labelColor forKey:@"textLabel.textColor"];
     [section addFormRow:row];
+    // Reset app wrong attemps
+    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"resetAppAttemps" rowType:XLFormRowDescriptorTypeBooleanSwitch title:NSLocalizedString(@"_reset_wrong_passcode_", nil)];
+    row.cellConfigAtConfigure[@"backgroundColor"] = UIColor.secondarySystemGroupedBackgroundColor;
+    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
+    [row.cellConfig setObject:UIColor.labelColor forKey:@"textLabel.textColor"];
+    [section addFormRow:row];
 
     // Section : CALDAV CARDAV --------------------------------------------------------------
 
@@ -261,21 +267,23 @@
     XLFormRowDescriptor *rowBloccoPasscode = [self.form formRowWithTag:@"bloccopasscode"];
     XLFormRowDescriptor *rowNotPasscodeAtStart = [self.form formRowWithTag:@"notPasscodeAtStart"];
     XLFormRowDescriptor *rowEnableTouchDaceID = [self.form formRowWithTag:@"enableTouchDaceID"];
+    XLFormRowDescriptor *rowResetAppAttemps = [self.form formRowWithTag:@"resetAppAttemps"];
     XLFormRowDescriptor *rowPrivacyScreen = [self.form formRowWithTag:@"privacyScreen"];
 
     // ------------------------------------------------------------------
     
-    if ([[CCUtility getPasscode] length]) {
+    if ([[NCKeychain alloc] init].passcode) {
         rowBloccoPasscode.title = NSLocalizedString(@"_lock_active_", nil);
         [rowBloccoPasscode.cellConfig setObject:[[UIImage imageNamed:@"lock"] imageWithColor:UIColor.systemGrayColor size:25] forKey:@"imageView.image"];
     } else {
         rowBloccoPasscode.title = NSLocalizedString(@"_lock_not_active_", nil);
         [rowBloccoPasscode.cellConfig setObject:[[UIImage imageNamed:@"lock_open"] imageWithColor:UIColor.systemGrayColor size:25] forKey:@"imageView.image"];
     }
-    
-    if ([CCUtility getEnableTouchFaceID]) [rowEnableTouchDaceID setValue:@1]; else [rowEnableTouchDaceID setValue:@0];
-    if ([CCUtility getNotPasscodeAtStart]) [rowNotPasscodeAtStart setValue:@1]; else [rowNotPasscodeAtStart setValue:@0];
-    if ([CCUtility getPrivacyScreenEnabled]) [rowPrivacyScreen setValue:@1]; else [rowPrivacyScreen setValue:@0];
+
+    if ([[NCKeychain alloc] init].resetAppCounterFail) [rowResetAppAttemps setValue:@1]; else [rowResetAppAttemps setValue:@0];
+    if ([[NCKeychain alloc] init].touchFaceID) [rowEnableTouchDaceID setValue:@1]; else [rowEnableTouchDaceID setValue:@0];
+    if ([[NCKeychain alloc] init].requestPasscodeAtStart) [rowNotPasscodeAtStart setValue:@0]; else [rowNotPasscodeAtStart setValue:@1];
+    if ([[NCKeychain alloc] init].privacyScreenEnabled) [rowPrivacyScreen setValue:@1]; else [rowPrivacyScreen setValue:@0];
 
 
     // -----------------------------------------------------------------
@@ -292,28 +300,34 @@
     if ([rowDescriptor.tag isEqualToString:@"notPasscodeAtStart"]) {
         
         if ([[rowDescriptor.value valueData] boolValue] == YES) {
-            [CCUtility setNotPasscodeAtStart:true];
+            [[NCKeychain alloc] init].requestPasscodeAtStart = false;
         } else {
-            [CCUtility setNotPasscodeAtStart:false];
+            [[NCKeychain alloc] init].requestPasscodeAtStart = true;
         }
     }
     
     if ([rowDescriptor.tag isEqualToString:@"enableTouchDaceID"]) {
         
         if ([[rowDescriptor.value valueData] boolValue] == YES) {
-            [CCUtility setEnableTouchFaceID:true];
+            [[NCKeychain alloc] init].touchFaceID = true;
         } else {
-            [CCUtility setEnableTouchFaceID:false];
+            [[NCKeychain alloc] init].touchFaceID = false;
         }
     }
     
     if ([rowDescriptor.tag isEqualToString:@"privacyScreen"]) {
         
         if ([[rowDescriptor.value valueData] boolValue] == YES) {
-            [CCUtility setPrivacyScreenEnabled:true];
+            [[NCKeychain alloc] init].privacyScreenEnabled = true;
         } else {
-            [CCUtility setPrivacyScreenEnabled:false];
+            [[NCKeychain alloc] init].privacyScreenEnabled = false;
         }
+    }
+
+    if ([rowDescriptor.tag isEqualToString:@"resetAppAttemps"]) {
+
+        NSInteger value = [[rowDescriptor.value valueData] intValue];
+        [[NCKeychain alloc] init].resetAppCounterFail = value;
     }
 }
 
@@ -370,7 +384,7 @@
     [[LAContext new] evaluatePolicy:LAPolicyDeviceOwnerAuthenticationWithBiometrics localizedReason:[[NCBrandOptions shared] brand] reply:^(BOOL success, NSError * _Nullable error) {
         if (success) {
             dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.5 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
-                [CCUtility setPasscode:@""];
+                [[NCKeychain alloc] init].passcode = nil;
                 [passcodeViewController dismissViewControllerAnimated:YES completion:nil];
                 [self reloadForm];
             });
@@ -380,7 +394,7 @@
 
 - (void)passcodeSettingsViewController:(TOPasscodeSettingsViewController *)passcodeSettingsViewController didChangeToNewPasscode:(NSString *)passcode ofType:(TOPasscodeType)type
 {
-    [CCUtility setPasscode:passcode];
+    [[NCKeychain alloc] init].passcode = passcode;
     [passcodeSettingsViewController dismissViewControllerAnimated:YES completion:nil];
     
     [self reloadForm];
@@ -393,8 +407,8 @@
 
 - (BOOL)passcodeViewController:(TOPasscodeViewController *)passcodeViewController isCorrectCode:(NSString *)code
 {
-    if ([code isEqualToString:[CCUtility getPasscode]]) {
-        [CCUtility setPasscode:@""];
+    if ([code isEqualToString:[[NCKeychain alloc] init].passcode]) {
+        [[NCKeychain alloc] init].passcode = nil;
         [self reloadForm];
         
         return YES;
@@ -410,23 +424,13 @@
     
     [self deselectFormRow:sender];
 
-    if ([[CCUtility getPasscode] length] == 0) {
-        
-        passcodeSettingsViewController = [[TOPasscodeSettingsViewController alloc] init];
-        passcodeSettingsViewController.hideOptionsButton = YES;
-        passcodeSettingsViewController.requireCurrentPasscode = NO;
-        passcodeSettingsViewController.passcodeType = TOPasscodeTypeSixDigits;
-        passcodeSettingsViewController.delegate = self;
-        
-        [self presentViewController:passcodeSettingsViewController animated:YES completion:nil];
-        
-    } else {
-     
+    if ([[NCKeychain alloc] init].passcode) {
+
         passcodeViewController = [[TOPasscodeViewController alloc] initPasscodeType:TOPasscodeTypeSixDigits allowCancel:true];
         passcodeViewController.delegate = self;
         passcodeViewController.keypadButtonShowLettering = false;
-        
-        if (CCUtility.getEnableTouchFaceID && [laContext canEvaluatePolicy:LAPolicyDeviceOwnerAuthenticationWithBiometrics error:&error]) {
+
+        if ([[NCKeychain alloc] init].touchFaceID && [laContext canEvaluatePolicy:LAPolicyDeviceOwnerAuthenticationWithBiometrics error:&error]) {
             if (error == NULL) {
                 if (laContext.biometryType == LABiometryTypeFaceID) {
                     passcodeViewController.biometryType = TOPasscodeBiometryTypeFaceID;
@@ -443,6 +447,16 @@
         }
 
         [self presentViewController:passcodeViewController animated:YES completion:nil];
+
+    } else {
+     
+        passcodeSettingsViewController = [[TOPasscodeSettingsViewController alloc] init];
+        passcodeSettingsViewController.hideOptionsButton = YES;
+        passcodeSettingsViewController.requireCurrentPasscode = NO;
+        passcodeSettingsViewController.passcodeType = TOPasscodeTypeSixDigits;
+        passcodeSettingsViewController.delegate = self;
+
+        [self presentViewController:passcodeSettingsViewController animated:YES completion:nil];
     }
 }
 
@@ -458,12 +472,14 @@
     NSInteger numSections = [tableView numberOfSections] - 1;
 
     if (section == 1) {
-        sectionName = NSLocalizedString(@"_lock_protection_no_screen_footer_", nil);
+        NSString *reset = [NSString stringWithFormat:NSLocalizedString(@"_reset_wrong_passcode_desc_", nil), NCBrandOptions.shared.resetAppPasscodeAttempts];
+        NSString *lock = NSLocalizedString(@"_lock_protection_no_screen_footer_", nil);
+        sectionName = [NSString stringWithFormat:@"%@\n%@", reset, lock];
     } else if (section == 2 && !NCBrandOptions.shared.disable_mobileconfig) {
         sectionName = NSLocalizedString(@"_calendar_contacts_footer_", nil);
     } else if (section == numSections) {
         NSString *versionNextcloud = [NSString stringWithFormat:[NCBrandOptions shared].textCopyrightNextcloudServer, versionServer];
-        NSString *versionNextcloudiOS = [NSString stringWithFormat:[NCBrandOptions shared].textCopyrightNextcloudiOS, [[NCUtility shared] getVersionAppWithBuild:true]];
+        NSString *versionNextcloudiOS = [NSString stringWithFormat:[NCBrandOptions shared].textCopyrightNextcloudiOS, [[[NCUtility alloc] init] getVersionAppWithBuild:true]];
         NSString *nameSlogan = [NSString stringWithFormat:@"%@ - %@", themingName, themingSlogan];
         sectionName = [NSString stringWithFormat:@"\n%@\n\n%@\n%@", versionNextcloudiOS, versionNextcloud, nameSlogan];
     }

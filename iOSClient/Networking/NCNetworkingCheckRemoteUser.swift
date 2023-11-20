@@ -5,6 +5,7 @@
 //  Created by Marino Faggiana on 15/05/2020.
 //  Copyright © 2020 Marino Faggiana. All rights reserved.
 //
+//  Author Marino Faggiana <marino.faggiana@nextcloud.com>
 //
 //  This program is free software: you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
@@ -27,11 +28,15 @@ class NCNetworkingCheckRemoteUser {
 
     func checkRemoteUser(account: String, error: NKError) {
 
+        let token = NCKeychain().getPassword(account: account)
         guard let tableAccount = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", account)),
-              let token = CCUtility.getPassword(account), !token.isEmpty,
+              !token.isEmpty,
               let appDelegate = UIApplication.shared.delegate as? AppDelegate else { return }
 
-        NCNetworking.shared.cancelSessions(inBackground: true)
+        NCNetworking.shared.cancelDataTask()
+        NCNetworking.shared.cancelDownloadTasks()
+        NCNetworking.shared.cancelUploadTasks()
+        NCNetworking.shared.cancelUploadBackgroundTask()
 
         if NCGlobal.shared.capabilityServerVersionMajor >= NCGlobal.shared.nextcloudVersion17 {
 
@@ -41,7 +46,7 @@ class NCNetworkingCheckRemoteUser {
 
                     appDelegate.deleteAccount(account, wipe: true)
                     let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_wipe_account_")
-                    NCContentPresenter.shared.messageNotification(tableAccount.user, error: error, delay: NCGlobal.shared.dismissAfterSecondLong, type: NCContentPresenter.messageType.error, priority: .max)
+                    NCContentPresenter().messageNotification(tableAccount.user, error: error, delay: NCGlobal.shared.dismissAfterSecondLong, type: NCContentPresenter.messageType.error, priority: .max)
                     NextcloudKit.shared.setRemoteWipeCompletition(serverUrl: tableAccount.urlBase, token: token) { _, _ in print("wipe") }
 
                 } else {
@@ -49,8 +54,8 @@ class NCNetworkingCheckRemoteUser {
                     if UIApplication.shared.applicationState == .active && NextcloudKit.shared.isNetworkReachable() {
                         let description = String.localizedStringWithFormat(NSLocalizedString("_error_check_remote_user_", comment: ""), tableAccount.user, tableAccount.urlBase)
                         let error = NKError(errorCode: error.errorCode, errorDescription: description)
-                        NCContentPresenter.shared.showError(error: error, priority: .max)
-                        CCUtility.setPassword(account, password: nil)
+                        NCContentPresenter().showError(error: error, priority: .max)
+                        NCKeychain().setPassword(account: account, password: nil)
                         NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Password removed.")
                     }
                 }
@@ -61,8 +66,8 @@ class NCNetworkingCheckRemoteUser {
             if UIApplication.shared.applicationState == .active && NextcloudKit.shared.isNetworkReachable() {
                 let description = String.localizedStringWithFormat(NSLocalizedString("_error_check_remote_user_", comment: ""), tableAccount.user, tableAccount.urlBase)
                 let error = NKError(errorCode: error.errorCode, errorDescription: description)
-                NCContentPresenter.shared.showError(error: error, priority: .max)
-                CCUtility.setPassword(account, password: nil)
+                NCContentPresenter().showError(error: error, priority: .max)
+                NCKeychain().setPassword(account: account, password: nil)
             }
         }
     }

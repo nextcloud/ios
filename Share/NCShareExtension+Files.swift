@@ -99,7 +99,7 @@ class NCFilesExtensionHandler {
 
     @discardableResult
     init(items: [NSExtensionItem], completion: @escaping ([String]) -> Void) {
-        CCUtility.emptyTemporaryDirectory()
+        NCUtilityFileSystem().emptyTemporaryDirectory()
         var counter = 0
 
         self.itemsProvider = items.compactMap({ $0.attachments }).flatMap { $0.filter({
@@ -118,7 +118,8 @@ class NCFilesExtensionHandler {
                 if let url = item as? URL, url.isFileURL, !url.lastPathComponent.isEmpty {
                     originalName = url.lastPathComponent
 
-                    if fileNames.contains(originalName), let incrementalNumber = CCUtility.getIncrementalNumber() {
+                    if fileNames.contains(originalName) {
+                        let incrementalNumber = NCKeychain().incrementalNumber
                         originalName = "\(url.deletingPathExtension().lastPathComponent) \(incrementalNumber).\(url.pathExtension)"
                     }
                 }

@@ -31,7 +31,7 @@ class NCSettingsBundleHelper: NSObject {
     }
 
     class func setVersionAndBuildNumber() {
-        let version = NCUtility.shared.getVersionApp() as String
+        let version = NCUtility().getVersionApp() as String
         UserDefaults.standard.set(version, forKey: SettingsBundleKeys.BuildVersionKey)
     }
 
@@ -39,19 +39,9 @@ class NCSettingsBundleHelper: NSObject {
         if UserDefaults.standard.bool(forKey: SettingsBundleKeys.Reset) {
             UserDefaults.standard.set(false, forKey: SettingsBundleKeys.Reset)
 
-            URLCache.shared.memoryCapacity = 0
-            URLCache.shared.diskCapacity = 0
-
-            CCUtility.removeGroupDirectoryProviderStorage()
-            CCUtility.removeGroupApplicationSupport()
-            CCUtility.removeDocumentsDirectory()
-            CCUtility.removeTemporaryDirectory()
-
-            CCUtility.deleteAllChainStore()
-            NCManageDatabase.shared.removeDB()
-
             DispatchQueue.main.asyncAfter(deadline: .now() + delay) {
-                exit(0)
+                let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
+                appDelegate.resetApplication()
             }
         }
     }

@@ -28,10 +28,7 @@ import MobileVLCKit
 
 class NCPlayer: NSObject {
 
-    // swiftlint:disable force_cast
-    internal let appDelegate = UIApplication.shared.delegate as! AppDelegate
-    // swiftlint:enable force_cast
-
+    internal let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
     internal var url: URL?
     internal var player = VLCMediaPlayer()
     internal var dialogProvider: VLCDialogProvider?
@@ -140,7 +137,7 @@ class NCPlayer: NSObject {
 
             if metadata.isVideo {
                 if position == 0 {
-                    let fileNamePreviewLocalPath = CCUtility.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)!
+                    let fileNamePreviewLocalPath = NCUtilityFileSystem().getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)
                     imageVideoContainer?.image = UIImage(contentsOfFile: fileNamePreviewLocalPath)
                 } else {
                     imageVideoContainer?.image = nil

@@ -237,9 +237,9 @@ struct NCShareConfig {
     init(parentMetadata: tableMetadata, share: NCTableShareable) {
         self.share = share
         self.resharePermission = parentMetadata.sharePermissionsCollaborationServices
-        let type: NCPermission.Type = share.shareType == NCShareCommon.shared.SHARE_TYPE_LINK ? NCLinkPermission.self : NCUserPermission.self
+        let type: NCPermission.Type = share.shareType == NCShareCommon().SHARE_TYPE_LINK ? NCLinkPermission.self : NCUserPermission.self
         self.permissions = parentMetadata.directory ? (parentMetadata.e2eEncrypted ? type.forDirectoryE2EE : type.forDirectory) : type.forFile
-        self.advanced = share.shareType == NCShareCommon.shared.SHARE_TYPE_LINK ? NCShareDetails.forLink : NCShareDetails.forUser
+        self.advanced = share.shareType == NCShareCommon().SHARE_TYPE_LINK ? NCShareDetails.forLink : NCShareDetails.forUser
     }
 
     func cellFor(indexPath: IndexPath) -> UITableViewCell? {
@@ -278,7 +278,7 @@ class NCShareToggleCell: UITableViewCell {
             self.accessoryType = isOn ? .checkmark : .none
             return
         }
-        let image = NCUtility.shared.loadImage(named: iconName, color: NCBrandColor.shared.brandElement, size: self.frame.height - 26)
+        let image = NCUtility().loadImage(named: iconName, color: NCBrandColor.shared.brandElement, size: self.frame.height - 26)
         self.accessoryView = UIImageView(image: image)
     }
 
@@ -292,6 +292,7 @@ class NCShareDateCell: UITableViewCell {
     let textField = UITextField()
     var shareType: Int
     var onReload: (() -> Void)?
+    let shareCommon = NCShareCommon()
 
     init(share: NCTableShareable) {
         self.shareType = share.shareType
@@ -340,17 +341,17 @@ class NCShareDateCell: UITableViewCell {
 
     private func isExpireDateEnforced(account: String) -> Bool {
         switch self.shareType {
-        case NCShareCommon.shared.SHARE_TYPE_LINK,
-            NCShareCommon.shared.SHARE_TYPE_EMAIL,
-            NCShareCommon.shared.SHARE_TYPE_GUEST:
+        case shareCommon.SHARE_TYPE_LINK,
+            shareCommon.SHARE_TYPE_EMAIL,
+            shareCommon.SHARE_TYPE_GUEST:
             return NCGlobal.shared.capabilityFileSharingPubExpireDateEnforced
-        case NCShareCommon.shared.SHARE_TYPE_USER,
-            NCShareCommon.shared.SHARE_TYPE_GROUP,
-            NCShareCommon.shared.SHARE_TYPE_CIRCLE,
-            NCShareCommon.shared.SHARE_TYPE_ROOM:
+        case shareCommon.SHARE_TYPE_USER,
+            shareCommon.SHARE_TYPE_GROUP,
+            shareCommon.SHARE_TYPE_CIRCLE,
+            shareCommon.SHARE_TYPE_ROOM:
             return NCGlobal.shared.capabilityFileSharingInternalExpireDateEnforced
-        case NCShareCommon.shared.SHARE_TYPE_REMOTE,
-            NCShareCommon.shared.SHARE_TYPE_REMOTE_GROUP:
+        case shareCommon.SHARE_TYPE_REMOTE,
+            shareCommon.SHARE_TYPE_REMOTE_GROUP:
             return NCGlobal.shared.capabilityFileSharingRemoteExpireDateEnforced
         default:
             return false
@@ -359,17 +360,17 @@ class NCShareDateCell: UITableViewCell {
 
     private func defaultExpirationDays(account: String) -> Int {
         switch self.shareType {
-        case NCShareCommon.shared.SHARE_TYPE_LINK,
-            NCShareCommon.shared.SHARE_TYPE_EMAIL,
-            NCShareCommon.shared.SHARE_TYPE_GUEST:
+        case shareCommon.SHARE_TYPE_LINK,
+            shareCommon.SHARE_TYPE_EMAIL,
+            shareCommon.SHARE_TYPE_GUEST:
             return NCGlobal.shared.capabilityFileSharingPubExpireDateDays
-        case NCShareCommon.shared.SHARE_TYPE_USER,
-            NCShareCommon.shared.SHARE_TYPE_GROUP,
-            NCShareCommon.shared.SHARE_TYPE_CIRCLE,
-            NCShareCommon.shared.SHARE_TYPE_ROOM:
+        case shareCommon.SHARE_TYPE_USER,
+            shareCommon.SHARE_TYPE_GROUP,
+            shareCommon.SHARE_TYPE_CIRCLE,
+            shareCommon.SHARE_TYPE_ROOM:
             return NCGlobal.shared.capabilityFileSharingInternalExpireDateDays
-        case NCShareCommon.shared.SHARE_TYPE_REMOTE,
-            NCShareCommon.shared.SHARE_TYPE_REMOTE_GROUP:
+        case shareCommon.SHARE_TYPE_REMOTE,
+            shareCommon.SHARE_TYPE_REMOTE_GROUP:
             return NCGlobal.shared.capabilityFileSharingRemoteExpireDateDays
         default:
             return 0
