@@ -360,7 +360,7 @@ extension NCMediaViewModel {
                         if metadatasChanged.metadatasUpdate.isEmpty {
                             self.reloadOldMedia(value: value, limit: limit, withElseReloadDataSource: true)
                         } else {
-                            self.metadatas.append(contentsOf: metadatasChanged.metadatasUpdate)
+                            self.loadMediaFromDB()
                         }
                     }
                 } else {
