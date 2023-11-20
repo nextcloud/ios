@@ -36,7 +36,7 @@ struct NCMediaScrollView: View, Equatable {
 
 //        ScrollViewReader { proxy in
             ScrollView {
-                Spacer(minLength: 50).id(topID)
+                Spacer(minLength: 70).id(topID)
 
                 LazyVStack(alignment: .leading, spacing: 2) {
                     ForEach(metadatas.chunked(into: columnCountStages[columnCountStagesIndex]), id: \.self) { rowMetadatas in
@@ -93,10 +93,10 @@ struct NCMediaScrollView: View, Equatable {
                 //        }
                 //        .preference(key: TitlePreferenceKey.self, value: title)
             }
-            .refreshable {
-                await onRefresh()
-                //            await vm.onPullToRefresh()
-            }
+//            .refreshable {
+//                await onRefresh()
+//                //            await vm.onPullToRefresh()
+//            }
             .onChange(of: shouldScrollToTop) { newValue in
                 if newValue {
                     withAnimation {

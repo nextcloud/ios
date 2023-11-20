@@ -75,7 +75,7 @@ struct NCMediaNew: View {
                         vm.delete(metadatas: selectedMetadata)
                     }
                 } onRefresh: {
-                    await vm.onPullToRefresh()
+//                    await vm.onPullToRefresh()
                 }
                 .equatable()
                 .ignoresSafeArea(.all, edges: .horizontal)
@@ -101,7 +101,8 @@ struct NCMediaNew: View {
     ////                            }
     //                        }
     //                }
-                }.scrollStatusByIntrospect(isScrolledToTop: $isScrolledToTop)
+                }
+                .scrollStatusByIntrospect(isScrolledToTop: $isScrolledToTop)
             }
 
 
@@ -110,6 +111,9 @@ struct NCMediaNew: View {
                     Text(title)
                         .font(.system(size: 20, weight: .bold))
                         .foregroundStyle(titleColor)
+                        .onTapGesture {
+                            vm.onRefresh()
+                        }
 
                     Spacer()
 
@@ -206,20 +210,20 @@ struct NCMediaNew: View {
                 .ignoresSafeArea(.all, edges: [.all])
             )
 
-            Button {
-                shouldScrollToTop = true
-            } label: {
-                Label(NSLocalizedString("_new_media_", comment: ""), systemImage: "arrow.up")
+            if vm.hasNewMedia, !isScrolledToTop {
+                Button {
+                    shouldScrollToTop = true
+                    vm.hasNewMedia = false
+                } label: {
+                    Label(NSLocalizedString("_new_media_", comment: ""), systemImage: "arrow.up")
+                }
+                .foregroundColor(.white)
+                .padding(10)
+                .background(.blue)
+                .clipShape(Capsule())
+                .shadow(radius: 5)
+                .offset(.init(width: 0, height: 50))
             }
-            .foregroundColor(.white)
-//            .padding(.top, 20)
-            .padding(10)
-            .background(.blue)
-            .clipShape(Capsule())
-            .shadow(radius: 5)
-            .offset(.init(width: 0, height: 50))
-//            .buttonStyle(.bordered)
-
         }
         .onRotate { orientation in
             if orientation.isLandscapeHardCheck {
@@ -237,12 +241,12 @@ struct NCMediaNew: View {
         .onChange(of: columnCountStagesIndex) { _ in
             columnCountChanged = true
         }
-        .onChange(of: isScrolledToTop) { value in
+        .onChange(of: isScrolledToTop) { newValue in
             withAnimation(.default) {
-                titleColor = value ? Color.primary : .white
-                loadingIndicatorColor = value ? Color.gray : .white
-                toolbarItemsColor = value ? .blue : .white
-                toolbarColors = value ? [.clear] : [Color.black.opacity(0.8), Color.black.opacity(0.4), .clear]
+                titleColor = newValue ? Color.primary : .white
+                loadingIndicatorColor = newValue ? Color.gray : .white
+                toolbarItemsColor = newValue ? .blue : .white
+                toolbarColors = newValue ? [.clear] : [Color.black.opacity(0.8), Color.black.opacity(0.4), .clear]
             }
         }
         .alert("", isPresented: $showPlayFromURLAlert) {

@@ -12,6 +12,11 @@ import LRUCache
 
 @MainActor class NCMediaViewModel: ObservableObject {
     @Published internal var metadatas: [tableMetadata] = []
+    @Published internal var newMetadatas: [tableMetadata] = []
+    @Published internal var needsLoadingMoreItems = true
+    @Published internal var filter = Filter.all
+    @Published internal var isLoadingMetadata = true
+    @Published internal var hasNewMedia = false
 
     private var account: String = ""
     private var lastContentOffsetY: CGFloat = 0
@@ -22,9 +27,6 @@ import LRUCache
     internal let appDelegate = UIApplication.shared.delegate as? AppDelegate
 
     private var cancellables: Set<AnyCancellable> = []
-
-    @Published internal var needsLoadingMoreItems = true
-    @Published internal var filter = Filter.all
 
     private var isLoadingNewMetadata = false {
         didSet {
@@ -43,8 +45,6 @@ import LRUCache
             updateLoadingMedia()
         }
     }
-
-    @Published internal var isLoadingMetadata = true
 
     private let cache = NCImageCache.shared
 
@@ -87,8 +87,6 @@ import LRUCache
                 case .onlyVideos:
                     self.loadMediaFromDB(showPhotos: false, showVideos: true)
                 }
-
-//                self.cancelSelection()
             }
             .store(in: &cancellables)
     }
@@ -174,8 +172,10 @@ import LRUCache
         appDelegate?.activeServerUrl = metadata.serverUrl
     }
 
-    public func onPullToRefresh() async {
-        await loadNewMedia()
+    public func onRefresh() {
+        Task {
+            await loadNewMedia()
+        }
     }
 
     public func addToFavorites(metadata: tableMetadata) {
@@ -450,7 +450,7 @@ extension NCMediaViewModel {
                         if metadatasChanged.metadatasUpdate.isEmpty {
                             self.reloadOldMedia(value: value, limit: limit, withElseReloadDataSource: true)
                         } else {
-                            self.loadMediaFromDB()
+                            self.metadatas.append(contentsOf: metadatasChanged.metadatasUpdate)
                         }
                     }
                 } else {
@@ -506,6 +506,7 @@ extension NCMediaViewModel {
                             DispatchQueue.main.async {
 //                                print(updateMetadatas.metadatasUpdate.count)
                                 self.metadatas.insert(contentsOf: updateMetadatas.metadatasUpdate, at: 0)
+//                                self.hasNewMedia = true
 //                                //                                self.metadatas.append(contentsOf: updateMetadatas.metadatasUpdate)
                             }
                             //                            self.loadMediaFromDB()

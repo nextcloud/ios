@@ -20,18 +20,6 @@ struct NCMediaRow: View {
     @StateObject private var vm = NCMediaRowViewModel()
     private let spacing: CGFloat = 2
 
-//    init(metadatas: [tableMetadata], isInSelectMode: Binding<Bool>, queuer: Queuer, onCellSelected: @escaping (ScaledThumbnail, Bool) -> Void, onCellContextMenuItemSelected: @escaping (ScaledThumbnail, ContextMenuSelection) -> Void) {
-//        self.metadatas = metadatas
-//        self._isInSelectMode = isInSelectMode
-//        self.queuer = queuer
-//        self.onCellSelected = onCellSelected
-//        self.onCellContextMenuItemSelected = onCellContextMenuItemSelected
-//        self._vm = StateObject(wrappedValue: NCMediaRowViewModel())
-//
-//        self.vm.configure(metadatas: metadatas, queuer: queuer)
-//        self.vm.downloadThumbnails(rowWidth: UIScreen.main.bounds.width, spacing: spacing)
-//    }
-
     var body: some View {
         let _ = Self._printChanges()
 
