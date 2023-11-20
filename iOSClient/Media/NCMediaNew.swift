@@ -74,37 +74,17 @@ struct NCMediaNew: View {
                     case .delete:
                         vm.delete(metadatas: selectedMetadata)
                     }
-                } onRefresh: {
-//                    await vm.onPullToRefresh()
                 }
                 .equatable()
                 .ignoresSafeArea(.all, edges: .horizontal)
                 .introspect(.scrollView, on: .iOS(.v15...)) { scrollView in
-    //                if scrollToTop {
-    ////                    scrollView.setContentOffset(.init(x: 0, y: -100), animated: true)
-    //
-    //                    DispatchQueue.main.async {
-    //                        scrollToTop = false
-    //                    }
-    //                }
 
                     scrollView.refreshControl?.translatesAutoresizingMaskIntoConstraints = false
                     scrollView.refreshControl?.topAnchor.constraint(equalTo: scrollView.superview!.topAnchor, constant: 120).isActive = true
                     scrollView.refreshControl?.centerXAnchor.constraint(equalTo: scrollView.centerXAnchor).isActive = true
-
-    //                scrollView.delegate = delegate
-    //                if vm.offsetPublisherSubscription == nil {
-    //                    vm.offsetPublisherSubscription = scrollView.publisher(for: \.contentOffset)
-    //                        .sink { offset in
-    ////                            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-    ////                                isScrolledToTop = offset.y <= 40
-    ////                            }
-    //                        }
-    //                }
                 }
                 .scrollStatusByIntrospect(isScrolledToTop: $isScrolledToTop)
             }
-
 
             HStack(content: {
                 HStack {
@@ -213,7 +193,6 @@ struct NCMediaNew: View {
             if vm.hasNewMedia, !isScrolledToTop {
                 Button {
                     shouldScrollToTop = true
-                    vm.hasNewMedia = false
                 } label: {
                     Label(NSLocalizedString("_new_media_", comment: ""), systemImage: "arrow.up")
                 }
@@ -247,6 +226,10 @@ struct NCMediaNew: View {
                 loadingIndicatorColor = newValue ? Color.gray : .white
                 toolbarItemsColor = newValue ? .blue : .white
                 toolbarColors = newValue ? [.clear] : [Color.black.opacity(0.8), Color.black.opacity(0.4), .clear]
+            }
+
+            if newValue {
+                vm.hasNewMedia = false
             }
         }
         .alert("", isPresented: $showPlayFromURLAlert) {

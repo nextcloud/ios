@@ -89,8 +89,7 @@ struct NCMediaCell: View {
                 onContextMenuItemSelected(thumbnail, .addToFavorites)
             } label: {
                 Label(isFavorite ?
-                      NSLocalizedString("_remove_favorites_", comment: "") :
-                      NSLocalizedString("_add_favorites_", comment: ""), systemImage: "star.fill")
+                      NSLocalizedString("_remove_favorites_", comment: "") : NSLocalizedString("_add_favorites_", comment: ""), systemImage: "star.fill")
             }
 
             Button {

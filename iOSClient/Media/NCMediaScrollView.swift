@@ -20,16 +20,14 @@ struct NCMediaScrollView: View, Equatable {
     @Binding var columnCountStages: [Int]
     @Binding var columnCountStagesIndex: Int
     @Binding var shouldScrollToTop: Bool
-//    @Binding var title: String
     let proxy: ScrollViewProxy
 
     let queuer: Queuer
 
     let onCellSelected: (ScaledThumbnail, Bool) -> Void
     let onCellContextMenuItemSelected: (ScaledThumbnail, ContextMenuSelection) -> Void
-    let onRefresh: () async -> Void
 
-    @Namespace var topID
+    @Namespace private var topID
 
     var body: some View {
         let _ = Self._printChanges()

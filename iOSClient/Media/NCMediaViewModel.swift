@@ -12,7 +12,6 @@ import LRUCache
 
 @MainActor class NCMediaViewModel: ObservableObject {
     @Published internal var metadatas: [tableMetadata] = []
-    @Published internal var newMetadatas: [tableMetadata] = []
     @Published internal var needsLoadingMoreItems = true
     @Published internal var filter = Filter.all
     @Published internal var isLoadingMetadata = true
@@ -100,47 +99,6 @@ import LRUCache
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeUser), object: nil)
     }
 
-    /*
-    private func queryDB(isForced: Bool = false, showPhotos: Bool = true, showVideos: Bool = true) {
-        guard let appDelegate else { return }
-
-        livePhoto = NCKeychain().livePhoto
-
-        if let activeAccount = NCManageDatabase.shared.getActiveAccount() {
-            self.mediaPath = activeAccount.mediaPath
-        }
-
-        let startServerUrl = NCUtilityFileSystem().getHomeServer(urlBase: appDelegate.urlBase, userId: appDelegate.userId) + mediaPath
-
-        predicateDefault = NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND (classFile == %@ OR classFile == %@) AND NOT (session CONTAINS[c] 'upload')", appDelegate.account, startServerUrl, NKCommon.TypeClassFile.image.rawValue, NKCommon.TypeClassFile.video.rawValue)
-
-        if showPhotos, showVideos {
-            predicate = predicateDefault
-        } else if showPhotos {
-            predicate = NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND classFile == %@ AND NOT (session CONTAINS[c] 'upload')", appDelegate.account, startServerUrl, NKCommon.TypeClassFile.image.rawValue)
-        } else if showVideos {
-            predicate = NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND classFile == %@ AND NOT (session CONTAINS[c] 'upload')", appDelegate.account, startServerUrl, NKCommon.TypeClassFile.video.rawValue)
-        }
-
-        guard let predicate = predicate else { return }
-
-        DispatchQueue.main.async {
-            self.metadatas = NCManageDatabase.shared.getMetadatasMedia(predicate: predicate, livePhoto: self.livePhoto)
-
-            switch NCKeychain().mediaSortDate {
-            case "date":
-                self.metadatas = self.metadatas.sorted(by: {($0.date as Date) > ($1.date as Date)})
-            case "creationDate":
-                self.metadatas = self.metadatas.sorted(by: {($0.creationDate as Date) > ($1.creationDate as Date)})
-            case "uploadDate":
-                self.metadatas = self.metadatas.sorted(by: {($0.uploadDate as Date) > ($1.uploadDate as Date)})
-            default:
-                break
-            }
-        }
-    }
-    */
-
     public func loadMoreItems() {
         loadOldMedia()
         needsLoadingMoreItems = false
@@ -160,12 +118,10 @@ import LRUCache
         NCActionCenter.shared.openSelectView(items: metadatas, indexPath: [], didCancel: {
             self.isLoadingProcessingMetadata = false
         })
-//        cancelSelection()
     }
 
     public func copyMetadata(metadatas: [tableMetadata]) {
         copy(metadatas: metadatas)
-//        cancelSelection()
     }
 
     public func onCellTapped(metadata: tableMetadata) {
@@ -192,23 +148,9 @@ import LRUCache
         if NCUtilityFileSystem().fileProviderStorageExists(metadata) {
             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDownloadedFile, userInfo: ["ocId": metadata.ocId, "selector": NCGlobal.shared.selectorOpenIn, "error": NKError(), "account": metadata.account])
         } else {
-//            hud.show(in: viewController.view)
             NCNetworking.shared.download(metadata: metadata, selector: NCGlobal.shared.selectorOpenIn, notificationCenterProgressTask: false)
-//            { request in
-//                downloadRequest = request
-//            } progressHandler: { progress in
-//                hud.progress = Float(progress.fractionCompleted)
-//            } completion:
             { afError, error in
                 self.isLoadingProcessingMetadata = false
-
-                if error == .success || afError?.isExplicitlyCancelledError ?? false {
-//                    hud.dismiss()
-                } else {
-//                    hud.indicatorView = JGProgressHUDErrorIndicatorView()
-//                    hud.textLabel.text = error.description
-//                    hud.dismiss(afterDelay: NCGlobal.shared.dismissAfterSecond)
-                }
             }
         }
     }
@@ -222,21 +164,8 @@ import LRUCache
         } else if NCUtilityFileSystem().fileProviderStorageExists(metadata) {
             NCActionCenter.shared.saveAlbum(metadata: metadata)
         } else {
-            NCNetworking.shared.download(metadata: metadata, selector: NCGlobal.shared.selectorSaveAlbum, notificationCenterProgressTask: false) { request in
-//                downloadRequest = request
-            } progressHandler: { progress in
-//                hud.progress = Float(progress.fractionCompleted)
-            } completion: { afError, error in
-
+            NCNetworking.shared.download(metadata: metadata, selector: NCGlobal.shared.selectorSaveAlbum, notificationCenterProgressTask: false)  { afError, error in
                 self.isLoadingProcessingMetadata = false
-
-//                if error == .success || afError?.isExplicitlyCancelledError ?? false {
-//                    hud.dismiss()
-//                } else {
-//                    hud.indicatorView = JGProgressHUDErrorIndicatorView()
-//                    hud.textLabel.text = error.description
-//                    hud.dismiss(afterDelay: NCGlobal.shared.dismissAfterSecond)
-//                }
             }
         }
     }
@@ -251,21 +180,8 @@ import LRUCache
         if NCUtilityFileSystem().fileProviderStorageExists(metadata) {
             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDownloadedFile, userInfo: ["ocId": metadata.ocId, "selector": NCGlobal.shared.selectorLoadFileQuickLook, "error": NKError(), "account": metadata.account])
         } else {
-//            hud.show(in: viewController.view)
-            NCNetworking.shared.download(metadata: metadata, selector: NCGlobal.shared.selectorLoadFileQuickLook, notificationCenterProgressTask: false) { request in
-//                downloadRequest = request
-            } progressHandler: { progress in
-//                hud.progress = Float(progress.fractionCompleted)
-            } completion: { afError, error in
+            NCNetworking.shared.download(metadata: metadata, selector: NCGlobal.shared.selectorLoadFileQuickLook, notificationCenterProgressTask: false) { afError, error in
                 self.isLoadingProcessingMetadata = false
-
-//                if error == .success || afError?.isExplicitlyCancelledError ?? false {
-//                    hud.dismiss()
-//                } else {
-//                    hud.indicatorView = JGProgressHUDErrorIndicatorView()
-//                    hud.textLabel.text = error.description
-//                    hud.dismiss(afterDelay: NCGlobal.shared.dismissAfterSecond)
-//                }
             }
         }
     }
@@ -297,9 +213,8 @@ import LRUCache
                     ocId.append(metadata.ocId)
                 }
             }
-            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDeleteFile, userInfo: ["ocId": ocId, "onlyLocalCache": false, "error": error])
 
-//            isInSelectMode = false
+            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDeleteFile, userInfo: ["ocId": ocId, "onlyLocalCache": false, "error": error])
         }
     }
 
@@ -314,11 +229,6 @@ import LRUCache
             self.isLoadingProcessingMetadata = false
         }
     }
-
-//    private func cancelSelection() {
-////        self.isInSelectMode = false
-////        self.selectedMetadatas.removeAll()
-//    }
 
     private func updateLoadingMedia() {
         isLoadingMetadata = isLoadingNewMetadata || isLoadingOldMetadata || isLoadingProcessingMetadata
@@ -502,14 +412,10 @@ extension NCMediaViewModel {
                         let metadatasResult = NCManageDatabase.shared.getMetadatas(predicate: predicateResult)
                         let updateMetadatas = NCManageDatabase.shared.updateMetadatas(metadatas, metadatasResult: metadatasResult, addCompareLivePhoto: false)
                         if !updateMetadatas.metadatasUpdate.isEmpty || !updateMetadatas.metadatasDelete.isEmpty {
-//                                                        self.loadMediaFromDB()
                             DispatchQueue.main.async {
-//                                print(updateMetadatas.metadatasUpdate.count)
-                                self.metadatas.insert(contentsOf: updateMetadatas.metadatasUpdate, at: 0)
-//                                self.hasNewMedia = true
-//                                //                                self.metadatas.append(contentsOf: updateMetadatas.metadatasUpdate)
+                                self.loadMediaFromDB()
+                                self.hasNewMedia = true
                             }
-                            //                            self.loadMediaFromDB()
                         }
                     }
                 } else if error == .success && files.isEmpty && self.metadatas.isEmpty {
