@@ -724,15 +724,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
     var isPasscodeFail: Bool {
         let passcodeCounterFail = NCKeychain().passcodeCounterFail
-        return passcodeCounterFail > 0 && passcodeCounterFail.isMultiple(of: getBiometryMultiple)
-    }
-
-    var getBiometryMultiple: Int {
-        if LAContext().biometryType == .faceID {
-            return 2
-        } else {
-            return 3
-        }
+        return passcodeCounterFail > 0 && passcodeCounterFail.isMultiple(of: 3)
     }
 
     var isPasscodePresented: Bool {
@@ -798,8 +790,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                     if let error = evaluateError {
                         switch error._code {
                         case LAError.userFallback.rawValue, LAError.authenticationFailed.rawValue:
-                            NCKeychain().passcodeCounterFail = self.getBiometryMultiple
-                            NCKeychain().passcodeCounterFailReset += 1
+                            if LAContext().biometryType == .faceID {
+                                NCKeychain().passcodeCounterFail = 2
+                                NCKeychain().passcodeCounterFailReset += 2
+                            } else {
+                                NCKeychain().passcodeCounterFail = 3
+                                NCKeychain().passcodeCounterFailReset += 3
+                            }
                             self.openAlert(passcodeViewController: passcodeViewController)
                         case LAError.biometryLockout.rawValue:
                             LAContext().evaluatePolicy(LAPolicy.deviceOwnerAuthentication, localizedReason: NSLocalizedString("_deviceOwnerAuthentication_", comment: ""), reply: { success, _ in
