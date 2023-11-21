@@ -225,7 +225,7 @@ class NCNetworkingProcessUpload: NSObject {
 
         DispatchQueue.main.async {
 
-            guard !self.appDelegate.isPasscodePresented() else {
+            guard !self.appDelegate.isPasscodePresented else {
                 return completition()
             }
 

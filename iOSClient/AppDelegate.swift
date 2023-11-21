@@ -685,7 +685,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
     func requestAccount() {
 
-        if isPasscodePresented() { return }
+        if isPasscodePresented { return }
         if !NCKeychain().accountRequest { return }
 
         let accounts = NCManageDatabase.shared.getAllAccount()
@@ -724,11 +724,19 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
     var isPasscodeFail: Bool {
         let passcodeCounterFail = NCKeychain().passcodeCounterFail
+        return passcodeCounterFail > 0 && passcodeCounterFail.isMultiple(of: getBiometryMultiple)
+    }
+
+    var getBiometryMultiple: Int {
         if LAContext().biometryType == .faceID {
-            return passcodeCounterFail > 0 && passcodeCounterFail.isMultiple(of: 2)
+            return 2
         } else {
-            return passcodeCounterFail > 0 && passcodeCounterFail.isMultiple(of: 3)
+            return 3
         }
+    }
+
+    var isPasscodePresented: Bool {
+        return privacyProtectionWindow?.rootViewController?.presentedViewController is TOPasscodeViewController
     }
 
     func presentPasscode(completion: @escaping () -> Void) {
@@ -764,9 +772,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         })
     }
 
-    func isPasscodePresented() -> Bool {
-        return privacyProtectionWindow?.rootViewController?.presentedViewController is TOPasscodeViewController
-    }
+
 
     func enableTouchFaceID() {
         guard !account.isEmpty,
@@ -794,7 +800,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                     if let error = evaluateError {
                         switch error._code {
                         case LAError.userFallback.rawValue, LAError.authenticationFailed.rawValue:
-                            NCKeychain().passcodeCounterFail = 3
+                            NCKeychain().passcodeCounterFail = self.getBiometryMultiple
                             NCKeychain().passcodeCounterFailReset += 1
                             self.openAlert(passcodeViewController: passcodeViewController)
                         case LAError.biometryLockout.rawValue:
