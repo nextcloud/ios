@@ -724,7 +724,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
     var isPasscodeFail: Bool {
         let passcodeCounterFail = NCKeychain().passcodeCounterFail
-        return passcodeCounterFail > 0 && passcodeCounterFail.isMultiple(of: 3)
+        if LAContext().biometryType == .faceID {
+            return passcodeCounterFail > 0 && passcodeCounterFail.isMultiple(of: 2)
+        } else {
+            return passcodeCounterFail > 0 && passcodeCounterFail.isMultiple(of: 3)
+        }
     }
 
     func presentPasscode(completion: @escaping () -> Void) {
