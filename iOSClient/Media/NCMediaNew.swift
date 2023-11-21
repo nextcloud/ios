@@ -198,6 +198,7 @@ struct NCMediaNew: View {
                 }
                 .foregroundColor(.white)
                 .padding(10)
+                .padding(.trailing, 3)
                 .background(.blue)
                 .clipShape(Capsule())
                 .shadow(radius: 5)
