@@ -772,8 +772,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         })
     }
 
-
-
     func enableTouchFaceID() {
         guard !account.isEmpty,
               NCKeychain().touchFaceID,
