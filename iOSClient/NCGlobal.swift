@@ -481,5 +481,10 @@ class NCGlobal: NSObject {
     let moreAppsUrl                                             = "itms-apps://search.itunes.apple.com/WebObjects/MZSearch.woa/wa/search?media=software&term=nextcloud"
 
     // SNAPSHOT PREVIEW
+    //
     let defaultSnapshotConfiguration = "DefaultPreviewConfiguration"
+
+    // FORBIDDEN CHARACTERS
+    //
+    let forbiddenCharacters = ["/", "\\", ":", "\"", "|", "?", "*", "<", ">"]
 }
