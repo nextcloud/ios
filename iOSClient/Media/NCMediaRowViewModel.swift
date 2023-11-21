@@ -69,12 +69,6 @@ struct ScaledThumbnail: Hashable {
                     }
                 }
             } else {
-                let fileNamePath = NCUtilityFileSystem().getFileNamePath(metadata.fileName, serverUrl: metadata.serverUrl, urlBase: metadata.urlBase, userId: metadata.userId)
-                let fileNamePreviewLocalPath = NCUtilityFileSystem().getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)
-                let fileNameIconLocalPath = NCUtilityFileSystem().getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)
-
-                let options = NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
-
                 if let queuer, queuer.operations.filter({ ($0 as? NCMediaDownloadThumbnaill)?.metadata.ocId == metadata.ocId }).isEmpty {
                     let concurrentOperation = NCMediaDownloadThumbnaill(metadata: metadata, cache: cache, rowWidth: rowWidth, spacing: spacing, maxWidth: UIScreen.main.bounds.width, maxHeight: UIScreen.main.bounds.height) { thumbnail in
                         DispatchQueue.main.async {
@@ -196,7 +190,6 @@ struct ScaledThumbnail: Hashable {
         metadatas.forEach { metadata in
             for case let operation as NCMediaDownloadThumbnaill in queuer.operations where operation.metadata.ocId == metadata.ocId {
                 operation.cancel()
-                print(queuer.operationCount)
             }
         }
     }

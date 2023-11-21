@@ -10,11 +10,7 @@ import SwiftUI
 import PreviewSnapshots
 import Queuer
 
-struct NCMediaRow: View, Equatable {
-    static func == (lhs: NCMediaRow, rhs: NCMediaRow) -> Bool {
-        return lhs.metadatas == rhs.metadatas
-    }
-
+struct NCMediaRow: View {
     let metadatas: [tableMetadata]
 
     @Binding var isInSelectMode: Bool
@@ -23,7 +19,6 @@ struct NCMediaRow: View, Equatable {
     let onCellContextMenuItemSelected: (ScaledThumbnail, ContextMenuSelection) -> Void
     @StateObject private var vm = NCMediaRowViewModel()
     private let spacing: CGFloat = 2
-
 
     var body: some View {
 //        let _ = Self._printChanges()

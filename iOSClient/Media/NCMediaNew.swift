@@ -38,65 +38,62 @@ struct NCMediaNew: View {
     @State private var selectedMetadatas: [tableMetadata] = []
     @State private var isInSelectMode = false
 
+    @State private var shouldScrollToTop = false
+
     var body: some View {
         ZStack(alignment: .top) {
-            NCMediaScrollView(metadatas: $vm.metadatas, isInSelectMode: $isInSelectMode, selectedMetadatas: $selectedMetadatas, columnCountStages: $columnCountStages, columnCountStagesIndex: $columnCountStagesIndex, title: $title, queuer: downloadThumbnailQueue) { tappedThumbnail, isSelected in
-                if isInSelectMode, isSelected {
-                    selectedMetadatas.append(tappedThumbnail.metadata)
-                } else {
-                    selectedMetadatas.removeAll(where: { $0.ocId == tappedThumbnail.metadata.ocId })
-                }
+            ScrollViewReader { proxy in
+                NCMediaScrollView(metadatas: $vm.metadatas, isInSelectMode: $isInSelectMode, selectedMetadatas: $selectedMetadatas, columnCountStages: $columnCountStages, columnCountStagesIndex: $columnCountStagesIndex, shouldScrollToTop: $shouldScrollToTop, proxy: proxy, queuer: downloadThumbnailQueue) { tappedThumbnail, isSelected in
+                    if isInSelectMode, isSelected {
+                        selectedMetadatas.append(tappedThumbnail.metadata)
+                    } else {
+                        selectedMetadatas.removeAll(where: { $0.ocId == tappedThumbnail.metadata.ocId })
+                    }
 
-                if !isInSelectMode {
-                    let selectedMetadata = tappedThumbnail.metadata
-                    vm.onCellTapped(metadata: selectedMetadata)
-                    NCViewer().view(viewController: parent, metadata: selectedMetadata, metadatas: vm.metadatas, imageIcon: tappedThumbnail.image)
-                }
-            } onCellContextMenuItemSelected: { thumbnail, selection in
-                let selectedMetadata = thumbnail.metadata
+                    if !isInSelectMode {
+                        let selectedMetadata = tappedThumbnail.metadata
+                        vm.onCellTapped(metadata: selectedMetadata)
+                        NCViewer().view(viewController: parent, metadata: selectedMetadata, metadatas: vm.metadatas, imageIcon: tappedThumbnail.image)
+                    }
+                } onCellContextMenuItemSelected: { thumbnail, selection in
+                    let selectedMetadata = thumbnail.metadata
 
-                switch selection {
-                case .addToFavorites:
-                    vm.addToFavorites(metadata: selectedMetadata)
-                case .details:
-                    NCActionCenter.shared.openShare(viewController: parent, metadata: selectedMetadata, page: .activity)
-                case .openIn:
-                    vm.openIn(metadata: selectedMetadata)
-                case .saveToPhotos:
-                    vm.saveToPhotos(metadata: selectedMetadata)
-                case .viewInFolder:
-                    vm.viewInFolder(metadata: selectedMetadata)
-                case .modify:
-                    vm.modify(metadata: selectedMetadata)
-                case .delete:
-                    vm.delete(metadatas: selectedMetadata)
+                    switch selection {
+                    case .addToFavorites:
+                        vm.addToFavorites(metadata: selectedMetadata)
+                    case .details:
+                        NCActionCenter.shared.openShare(viewController: parent, metadata: selectedMetadata, page: .activity)
+                    case .openIn:
+                        vm.openIn(metadata: selectedMetadata)
+                    case .saveToPhotos:
+                        vm.saveToPhotos(metadata: selectedMetadata)
+                    case .viewInFolder:
+                        vm.viewInFolder(metadata: selectedMetadata)
+                    case .modify:
+                        vm.modify(metadata: selectedMetadata)
+                    case .delete:
+                        vm.delete(metadatas: selectedMetadata)
+                    }
                 }
-            } onRefresh: {
-                await vm.onPullToRefresh()
+                .equatable()
+                .ignoresSafeArea(.all, edges: .horizontal)
+                .introspect(.scrollView, on: .iOS(.v15...)) { scrollView in
+
+                    scrollView.refreshControl?.translatesAutoresizingMaskIntoConstraints = false
+                    scrollView.refreshControl?.topAnchor.constraint(equalTo: scrollView.superview!.topAnchor, constant: 120).isActive = true
+                    scrollView.refreshControl?.centerXAnchor.constraint(equalTo: scrollView.centerXAnchor).isActive = true
+                }
+                .scrollStatusByIntrospect(isScrolledToTop: $isScrolledToTop)
             }
-            .equatable()
-            .ignoresSafeArea(.all, edges: .horizontal)
-            .introspect(.scrollView, on: .iOS(.v15...)) { scrollView in
-                scrollView.refreshControl?.translatesAutoresizingMaskIntoConstraints = false
-                scrollView.refreshControl?.topAnchor.constraint(equalTo: scrollView.superview!.topAnchor, constant: 120).isActive = true
-                scrollView.refreshControl?.centerXAnchor.constraint(equalTo: scrollView.centerXAnchor).isActive = true
-
-//                scrollView.delegate = delegate
-//                if vm.offsetPublisherSubscription == nil {
-//                    vm.offsetPublisherSubscription = scrollView.publisher(for: \.contentOffset)
-//                        .sink { offset in
-////                            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-////                                isScrolledToTop = offset.y <= 40
-////                            }
-//                        }
-//                }
-            }.scrollStatusByIntrospect(isScrolledToTop: $isScrolledToTop)
 
             HStack(content: {
                 HStack {
                     Text(title)
                         .font(.system(size: 20, weight: .bold))
                         .foregroundStyle(titleColor)
+                        .onTapGesture {
+                            vm.onRefresh()
+                        }
 
                     Spacer()
 
@@ -192,6 +189,21 @@ struct NCMediaNew: View {
                 .padding(.bottom, -50)
                 .ignoresSafeArea(.all, edges: [.all])
             )
+
+            if vm.hasNewMedia, !isScrolledToTop {
+                Button {
+                    shouldScrollToTop = true
+                } label: {
+                    Label(NSLocalizedString("_new_media_", comment: ""), systemImage: "arrow.up")
+                }
+                .foregroundColor(.white)
+                .padding(10)
+                .padding(.trailing, 3)
+                .background(.blue)
+                .clipShape(Capsule())
+                .shadow(radius: 5)
+                .offset(.init(width: 0, height: 50))
+            }
         }
         .onRotate { orientation in
             if orientation.isLandscapeHardCheck {
@@ -209,12 +221,16 @@ struct NCMediaNew: View {
         .onChange(of: columnCountStagesIndex) { _ in
             columnCountChanged = true
         }
-        .onChange(of: isScrolledToTop) { value in
+        .onChange(of: isScrolledToTop) { newValue in
             withAnimation(.default) {
-                titleColor = value ? Color.primary : .white
-                loadingIndicatorColor = value ? Color.gray : .white
-                toolbarItemsColor = value ? .blue : .white
-                toolbarColors = value ? [.clear] : [Color.black.opacity(0.8), Color.black.opacity(0.4), .clear]
+                titleColor = newValue ? Color.primary : .white
+                loadingIndicatorColor = newValue ? Color.gray : .white
+                toolbarItemsColor = newValue ? .blue : .white
+                toolbarColors = newValue ? [.clear] : [Color.black.opacity(0.8), Color.black.opacity(0.4), .clear]
+            }
+
+            if newValue {
+                vm.hasNewMedia = false
             }
         }
         .alert("", isPresented: $showPlayFromURLAlert) {
