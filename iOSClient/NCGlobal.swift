@@ -253,7 +253,6 @@ class NCGlobal: NSObject {
     @objc let errorE2EENoUserFound: Int             = -98015
     @objc let errorE2EEUploadInProgress: Int        = -98016
 
-
     // Constants to identify the different permissions of a file
     //
     @objc let permissionShared                      = "S"

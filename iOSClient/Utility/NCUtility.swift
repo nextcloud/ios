@@ -352,7 +352,7 @@ class NCUtility: NSObject {
         let arrayForbiddenCharacters = ["/"]
 
         for character in arrayForbiddenCharacters {
-            fileName = fileName.replacingOccurrences(of: character, with: "")
+            // fileName = fileName.replacingOccurrences(of: character, with: "")
         }
         return fileName
     }
