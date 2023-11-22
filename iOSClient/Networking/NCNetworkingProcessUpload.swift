@@ -101,6 +101,7 @@ class NCNetworkingProcessUpload: NSObject {
         let queue = DispatchQueue.global()
         var maxConcurrentOperationUpload = NCBrandOptions.shared.maxConcurrentOperationUpload
         let viewController = appDelegate.window?.rootViewController
+        let hudView = viewController?.view
         let hud = JGProgressHUD()
 
         queue.async {
@@ -174,7 +175,7 @@ class NCNetworkingProcessUpload: NSObject {
                                 }
 
                                 if let metadata = NCManageDatabase.shared.setMetadataStatus(ocId: metadata.ocId, status: NCGlobal.shared.metadataStatusInUpload) {
-                                    NCNetworking.shared.upload(metadata: metadata, hudView: self.appDelegate.window?.rootViewController?.view)
+                                    NCNetworking.shared.upload(metadata: metadata, hudView: hudView)
                                     if isInDirectoryE2EE || metadata.chunk > 0 {
                                         maxConcurrentOperationUpload = 1
                                     }
@@ -224,7 +225,7 @@ class NCNetworkingProcessUpload: NSObject {
 
         DispatchQueue.main.async {
 
-            guard !self.appDelegate.isPasscodePresented() else {
+            guard !self.appDelegate.isPasscodePresented else {
                 return completition()
             }
 

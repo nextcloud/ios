@@ -477,7 +477,7 @@
 "_connection_internet_offline_" = "The internet connection appears to be offline or Wi-Fi is required";
 "_insert_password_"             = "Enter password";
 "_update_in_progress_"          = "Version upgrade, please wait …";
-"_forbidden_characters_"        = "The file or folder name contains invalid characters";
+"_forbidden_characters_"        = "Forbidden characters: %@";
 "_cannot_send_mail_error_"      = "No account set up, or wrong email address entered";
 "_open_url_error_"              = "Cannot open the URL for this action";
 "_photo_camera_"                = "Photos";
@@ -686,7 +686,6 @@
 "_filename_"                        = "Filename";
 "_enter_filename_"                  = "Enter filename …";
 "_preview_filename_"                = "Example preview of filename. You can use the mask %@ for date/time";
-"_forbidden_characters_"            = "Invalid character in filename";
 "_add_filenametype_"                = "Specify type in filename";
 "_filenametype_photo_video_"        = "Photo/Video";
 "_maintain_original_filename_"      = "Maintain original filename";

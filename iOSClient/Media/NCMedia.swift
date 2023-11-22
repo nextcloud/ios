@@ -160,22 +160,13 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate, NCSelectDelegate {
 
         guard let userInfo = notification.userInfo as NSDictionary?,
               let error = userInfo["error"] as? NKError else { return }
-        let onlyLocalCache: Bool = userInfo["onlyLocalCache"] as? Bool ?? false
 
         NCImageCache.shared.getMediaMetadatas(account: appDelegate.account, predicate: getPredicate())
 
-        if error == .success, let indexPath = userInfo["indexPath"] as? [IndexPath], !indexPath.isEmpty, !onlyLocalCache {
-            collectionView?.performBatchUpdates({
-                collectionView?.deleteItems(at: indexPath)
-            }, completion: { _ in
-                self.collectionView?.reloadData()
-            })
-        } else {
-            if error != .success {
-                NCContentPresenter().showError(error: error)
-            }
-            self.collectionView?.reloadData()
+        if error != .success {
+            NCContentPresenter().showError(error: error)
         }
+        self.collectionView?.reloadData()
 
         if let hud = userInfo["hud"] as? JGProgressHUD {
             hud.dismiss()
