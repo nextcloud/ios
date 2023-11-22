@@ -78,15 +78,15 @@ import KeychainAccess
         }
     }
 
-    var biometricsCounterFail: Int {
+    var passcodeCounterFailReset: Int {
         get {
-            if let value = try? keychain.get("biometricsCounterFail"), let result = Int(value) {
+            if let value = try? keychain.get("passcodeCounterFailReset"), let result = Int(value) {
                 return result
             }
             return 0
         }
         set {
-            keychain["biometricsCounterFail"] = String(newValue)
+            keychain["passcodeCounterFailReset"] = String(newValue)
         }
     }
 

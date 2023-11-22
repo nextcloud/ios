@@ -253,7 +253,6 @@ class NCGlobal: NSObject {
     @objc let errorE2EENoUserFound: Int             = -98015
     @objc let errorE2EEUploadInProgress: Int        = -98016
 
-
     // Constants to identify the different permissions of a file
     //
     @objc let permissionShared                      = "S"
@@ -482,5 +481,10 @@ class NCGlobal: NSObject {
     let moreAppsUrl                                             = "itms-apps://search.itunes.apple.com/WebObjects/MZSearch.woa/wa/search?media=software&term=nextcloud"
 
     // SNAPSHOT PREVIEW
+    //
     let defaultSnapshotConfiguration = "DefaultPreviewConfiguration"
+
+    // FORBIDDEN CHARACTERS
+    //
+    let forbiddenCharacters = ["/", "\\", ":", "\"", "|", "?", "*", "<", ">"]
 }

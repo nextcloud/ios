@@ -34,6 +34,8 @@ import NextcloudKit
     // MARK: -
 
     private let limit: Int = 1500
+    private var account: String = ""
+    private var brandElementColor: UIColor?
 
     enum ImageType {
         case placeholder
@@ -45,17 +47,24 @@ import NextcloudKit
         return ThumbnailLRUCache(countLimit: limit)
     }()
     private var ocIdEtag: [String: String] = [:]
-    public var metadatas: [tableMetadata] = []
-    public var livePhoto: Bool = false
+    private var metadatas: [tableMetadata]?
+    private var livePhoto: Bool = false
+    var isLivePhotoEnable: Bool {
+        return livePhoto
+    }
 
     override private init() {}
 
     func createMediaCache(account: String) {
-        ocIdEtag.removeAll()
-        metadatas.removeAll()
-        getMediaMetadatas(account: account)
 
-        guard !metadatas.isEmpty else { return }
+        guard account != self.account, !account.isEmpty else { return }
+        self.account = account
+
+        ocIdEtag.removeAll()
+        self.metadatas = []
+        self.metadatas = getMediaMetadatas(account: account)
+
+        guard let metadatas = self.metadatas, !metadatas.isEmpty else { return }
         let ext = ".preview.ico"
         let manager = FileManager.default
         let resourceKeys = Set<URLResourceKey>([.nameKey, .pathKey, .fileSizeKey, .creationDateKey])
@@ -111,6 +120,12 @@ import NextcloudKit
         NextcloudKit.shared.nkCommonInstance.writeLog("--------- ThumbnailLRUCache image process ---------")
     }
 
+    func initialMetadatas() -> [tableMetadata]? {
+        let metadatas = self.metadatas
+        self.metadatas = nil
+        return metadatas
+    }
+
     func getMediaImage(ocId: String) -> ImageType? {
         return cache.value(forKey: ocId)
     }
@@ -121,34 +136,35 @@ import NextcloudKit
 
     @objc func clearMediaCache() {
 
-        ocIdEtag.removeAll()
-        metadatas.removeAll()
+        self.ocIdEtag.removeAll()
+        self.metadatas?.removeAll()
+        self.metadatas = nil
         cache.removeAllValues()
     }
 
-    func getMediaMetadatas(account: String, predicate: NSPredicate? = nil) {
-        guard let account = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", account)) else { return }
+    func getMediaMetadatas(account: String, predicate: NSPredicate? = nil) -> [tableMetadata] {
+
+        guard let account = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", account)) else { return [] }
         let startServerUrl = NCUtilityFileSystem().getHomeServer(urlBase: account.urlBase, userId: account.userId) + account.mediaPath
 
         let predicateDefault = NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND (classFile == %@ OR classFile == %@) AND NOT (session CONTAINS[c] 'upload')", account.account, startServerUrl, NKCommon.TypeClassFile.image.rawValue, NKCommon.TypeClassFile.video.rawValue)
 
         livePhoto = NCKeychain().livePhoto
 
-        let newMetadatas = NCManageDatabase.shared.getMetadatasMedia(predicate: predicate ?? predicateDefault, livePhoto: livePhoto)
-        if metadatas != newMetadatas {
-            metadatas = newMetadatas
-        }
+        var metadatas = NCManageDatabase.shared.getMetadatasMedia(predicate: predicate ?? predicateDefault, livePhoto: livePhoto)
 
         switch NCKeychain().mediaSortDate {
         case "date":
-            metadatas = self.metadatas.sorted(by: {($0.date as Date) > ($1.date as Date)})
+            metadatas = metadatas.sorted(by: {($0.date as Date) > ($1.date as Date)})
         case "creationDate":
-            metadatas = self.metadatas.sorted(by: {($0.creationDate as Date) > ($1.creationDate as Date)})
+            metadatas = metadatas.sorted(by: {($0.creationDate as Date) > ($1.creationDate as Date)})
         case "uploadDate":
-            metadatas = self.metadatas.sorted(by: {($0.uploadDate as Date) > ($1.uploadDate as Date)})
+            metadatas = metadatas.sorted(by: {($0.uploadDate as Date) > ($1.uploadDate as Date)})
         default:
             break
         }
+
+        return metadatas
     }
 
     // MARK: -
@@ -193,7 +209,6 @@ import NextcloudKit
     }
 
     func createImagesCache() {
-        let brandElement = NCBrandColor.shared.brandElement
         let yellowFavorite = NCBrandColor.shared.yellowFavorite
         let utility = NCUtility()
 
@@ -209,15 +224,6 @@ import NextcloudKit
         images.offlineFlag = UIImage(named: "offlineFlag")!
         images.local = UIImage(named: "local")!
 
-        let folderWidth: CGFloat = UIScreen.main.bounds.width / 3
-        images.folderEncrypted = UIImage(named: "folderEncrypted")!.image(color: brandElement, size: folderWidth)
-        images.folderSharedWithMe = UIImage(named: "folder_shared_with_me")!.image(color: brandElement, size: folderWidth)
-        images.folderPublic = UIImage(named: "folder_public")!.image(color: brandElement, size: folderWidth)
-        images.folderGroup = UIImage(named: "folder_group")!.image(color: brandElement, size: folderWidth)
-        images.folderExternal = UIImage(named: "folder_external")!.image(color: brandElement, size: folderWidth)
-        images.folderAutomaticUpload = UIImage(named: "folderAutomaticUpload")!.image(color: brandElement, size: folderWidth)
-        images.folder = UIImage(named: "folder")!.image(color: brandElement, size: folderWidth)
-
         images.checkedYes = utility.loadImage(named: "checkmark.circle.fill", color: .systemBlue)
         images.checkedNo = utility.loadImage(named: "circle", color: .systemGray)
 
@@ -226,6 +232,24 @@ import NextcloudKit
         images.buttonMoreLock = UIImage(named: "moreLock")!.image(color: .systemGray, size: 50)
         images.buttonRestore = UIImage(named: "restore")!.image(color: .systemGray, size: 50)
         images.buttonTrash = UIImage(named: "trash")!.image(color: .systemGray, size: 50)
+
+        createImagesBrandCache()
+    }
+
+    func createImagesBrandCache() {
+
+        let brandElement = NCBrandColor.shared.brandElement
+        guard brandElement != self.brandElementColor else { return }
+        self.brandElementColor = brandElement
+
+        let folderWidth: CGFloat = UIScreen.main.bounds.width / 3
+        images.folderEncrypted = UIImage(named: "folderEncrypted")!.image(color: brandElement, size: folderWidth)
+        images.folderSharedWithMe = UIImage(named: "folder_shared_with_me")!.image(color: brandElement, size: folderWidth)
+        images.folderPublic = UIImage(named: "folder_public")!.image(color: brandElement, size: folderWidth)
+        images.folderGroup = UIImage(named: "folder_group")!.image(color: brandElement, size: folderWidth)
+        images.folderExternal = UIImage(named: "folder_external")!.image(color: brandElement, size: folderWidth)
+        images.folderAutomaticUpload = UIImage(named: "folderAutomaticUpload")!.image(color: brandElement, size: folderWidth)
+        images.folder = UIImage(named: "folder")!.image(color: brandElement, size: folderWidth)
 
         images.iconContacts = UIImage(named: "icon-contacts")!.image(color: brandElement, size: folderWidth)
         images.iconTalk = UIImage(named: "icon-talk")!.image(color: brandElement, size: folderWidth)

@@ -82,7 +82,7 @@ extension NCShareExtension: NCEmptyDataSetDelegate, NCAccountRequestDelegate {
         // COLORS
         NCBrandColor.shared.settingThemingColor(account: activeAccount.account)
         NCBrandColor.shared.createUserColors()
-        NCImageCache.shared.createImagesCache()
+        NCImageCache.shared.createImagesBrandCache()
 
         // NETWORKING
         NextcloudKit.shared.setup(
