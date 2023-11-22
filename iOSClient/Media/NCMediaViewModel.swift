@@ -319,7 +319,8 @@ extension NCMediaViewModel {
         }
 
         DispatchQueue.global(qos: .background).async {
-            self.metadatas = self.cache.getMediaMetadatas(account: self.account, predicate: self.predicate)
+            let metadatas = self.cache.getMediaMetadatas(account: self.account, predicate: self.predicate)
+            DispatchQueue.main.async { self.metadatas = metadatas }
         }
     }
 
