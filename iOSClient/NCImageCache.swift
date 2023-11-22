@@ -47,8 +47,11 @@ import NextcloudKit
         return ThumbnailLRUCache(countLimit: limit)
     }()
     private var ocIdEtag: [String: String] = [:]
-    public var metadatas: [tableMetadata] = []
-    public var livePhoto: Bool = false
+    private var metadatas: [tableMetadata]?
+    private var livePhoto: Bool = false
+    var isLivePhotoEnable: Bool {
+        return livePhoto
+    }
 
     override private init() {}
 
@@ -58,10 +61,10 @@ import NextcloudKit
         self.account = account
 
         ocIdEtag.removeAll()
-        metadatas.removeAll()
-        getMediaMetadatas(account: account)
+        self.metadatas = []
+        self.metadatas = getMediaMetadatas(account: account)
 
-        guard !metadatas.isEmpty else { return }
+        guard let metadatas = self.metadatas, !metadatas.isEmpty else { return }
         let ext = ".preview.ico"
         let manager = FileManager.default
         let resourceKeys = Set<URLResourceKey>([.nameKey, .pathKey, .fileSizeKey, .creationDateKey])
@@ -117,6 +120,12 @@ import NextcloudKit
         NextcloudKit.shared.nkCommonInstance.writeLog("--------- ThumbnailLRUCache image process ---------")
     }
 
+    func initialMetadatas() -> [tableMetadata]? {
+        let metadatas = self.metadatas
+        self.metadatas = nil
+        return metadatas
+    }
+
     func getMediaImage(ocId: String) -> ImageType? {
         return cache.value(forKey: ocId)
     }
@@ -127,35 +136,35 @@ import NextcloudKit
 
     @objc func clearMediaCache() {
 
-        ocIdEtag.removeAll()
-        metadatas.removeAll()
+        self.ocIdEtag.removeAll()
+        self.metadatas?.removeAll()
+        self.metadatas = nil
         cache.removeAllValues()
     }
 
-    func getMediaMetadatas(account: String, predicate: NSPredicate? = nil) {
+    func getMediaMetadatas(account: String, predicate: NSPredicate? = nil) -> [tableMetadata] {
 
-        guard let account = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", account)) else { return }
+        guard let account = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", account)) else { return [] }
         let startServerUrl = NCUtilityFileSystem().getHomeServer(urlBase: account.urlBase, userId: account.userId) + account.mediaPath
 
         let predicateDefault = NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND (classFile == %@ OR classFile == %@) AND NOT (session CONTAINS[c] 'upload')", account.account, startServerUrl, NKCommon.TypeClassFile.image.rawValue, NKCommon.TypeClassFile.video.rawValue)
 
         livePhoto = NCKeychain().livePhoto
 
-        let newMetadatas = NCManageDatabase.shared.getMetadatasMedia(predicate: predicate ?? predicateDefault, livePhoto: livePhoto)
-        if metadatas != newMetadatas {
-            metadatas = newMetadatas
-        }
+        var metadatas = NCManageDatabase.shared.getMetadatasMedia(predicate: predicate ?? predicateDefault, livePhoto: livePhoto)
 
         switch NCKeychain().mediaSortDate {
         case "date":
-            metadatas = self.metadatas.sorted(by: {($0.date as Date) > ($1.date as Date)})
+            metadatas = metadatas.sorted(by: {($0.date as Date) > ($1.date as Date)})
         case "creationDate":
-            metadatas = self.metadatas.sorted(by: {($0.creationDate as Date) > ($1.creationDate as Date)})
+            metadatas = metadatas.sorted(by: {($0.creationDate as Date) > ($1.creationDate as Date)})
         case "uploadDate":
-            metadatas = self.metadatas.sorted(by: {($0.uploadDate as Date) > ($1.uploadDate as Date)})
+            metadatas = metadatas.sorted(by: {($0.uploadDate as Date) > ($1.uploadDate as Date)})
         default:
             break
         }
+
+        return metadatas
     }
 
     // MARK: -
