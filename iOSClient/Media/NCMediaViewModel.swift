@@ -67,8 +67,8 @@ import LRUCache
         NotificationCenter.default.addObserver(self, selector: #selector(uploadedFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUploadedFile), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(userChanged(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeUser), object: nil)
 
-        DispatchQueue.main.async {
-            self.metadatas = self.cache.metadatas
+        if let metadatas = self.cache.initialMetadatas() {
+            self.metadatas = metadatas
         }
 
         Task {
@@ -148,8 +148,7 @@ import LRUCache
         if NCUtilityFileSystem().fileProviderStorageExists(metadata) {
             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDownloadedFile, userInfo: ["ocId": metadata.ocId, "selector": NCGlobal.shared.selectorOpenIn, "error": NKError(), "account": metadata.account])
         } else {
-            NCNetworking.shared.download(metadata: metadata, selector: NCGlobal.shared.selectorOpenIn, notificationCenterProgressTask: false)
-            { afError, error in
+            NCNetworking.shared.download(metadata: metadata, selector: NCGlobal.shared.selectorOpenIn, notificationCenterProgressTask: false) { afError, error in
                 self.isLoadingProcessingMetadata = false
             }
         }
@@ -164,7 +163,7 @@ import LRUCache
         } else if NCUtilityFileSystem().fileProviderStorageExists(metadata) {
             NCActionCenter.shared.saveAlbum(metadata: metadata)
         } else {
-            NCNetworking.shared.download(metadata: metadata, selector: NCGlobal.shared.selectorSaveAlbum, notificationCenterProgressTask: false)  { afError, error in
+            NCNetworking.shared.download(metadata: metadata, selector: NCGlobal.shared.selectorSaveAlbum, notificationCenterProgressTask: false) { afError, error in
                 self.isLoadingProcessingMetadata = false
             }
         }
@@ -320,11 +319,7 @@ extension NCMediaViewModel {
         }
 
         DispatchQueue.global(qos: .background).async {
-            self.cache.getMediaMetadatas(account: self.account, predicate: self.predicate)
-
-            DispatchQueue.main.async {
-                self.metadatas = self.cache.metadatas
-            }
+            self.metadatas = self.cache.getMediaMetadatas(account: self.account, predicate: self.predicate)
         }
     }
 
