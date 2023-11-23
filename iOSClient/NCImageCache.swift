@@ -47,7 +47,17 @@ import NextcloudKit
         return ThumbnailLRUCache(countLimit: limit)
     }()
     private var ocIdEtag: [String: String] = [:]
-    private var metadatas: [tableMetadata]?
+
+    private var _initialMetadatas: [tableMetadata]?
+
+    var initialMetadatas: [tableMetadata]? {
+        defer { 
+            self._initialMetadatas?.removeAll()
+            self._initialMetadatas = nil
+        }
+        return _initialMetadatas
+    }
+
     private var livePhoto: Bool = false
     var isLivePhotoEnable: Bool {
         return livePhoto
@@ -61,10 +71,10 @@ import NextcloudKit
         self.account = account
 
         ocIdEtag.removeAll()
-        self.metadatas = []
-        self.metadatas = getMediaMetadatas(account: account)
+        self._initialMetadatas = []
+        self._initialMetadatas = getMediaMetadatas(account: account)
 
-        guard let metadatas = self.metadatas, !metadatas.isEmpty else { return }
+        guard let metadatas = self._initialMetadatas, !metadatas.isEmpty else { return }
         let ext = ".preview.ico"
         let manager = FileManager.default
         let resourceKeys = Set<URLResourceKey>([.nameKey, .pathKey, .fileSizeKey, .creationDateKey])
@@ -120,12 +130,6 @@ import NextcloudKit
         NextcloudKit.shared.nkCommonInstance.writeLog("--------- ThumbnailLRUCache image process ---------")
     }
 
-    func initialMetadatas() -> [tableMetadata]? {
-        let metadatas = self.metadatas
-        self.metadatas = nil
-        return metadatas
-    }
-
     func getMediaImage(ocId: String) -> ImageType? {
         return cache.value(forKey: ocId)
     }
@@ -137,8 +141,8 @@ import NextcloudKit
     @objc func clearMediaCache() {
 
         self.ocIdEtag.removeAll()
-        self.metadatas?.removeAll()
-        self.metadatas = nil
+        self._initialMetadatas?.removeAll()
+        self._initialMetadatas = nil
         cache.removeAllValues()
     }
 

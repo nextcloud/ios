@@ -67,7 +67,7 @@ import LRUCache
         NotificationCenter.default.addObserver(self, selector: #selector(uploadedFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUploadedFile), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(userChanged(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeUser), object: nil)
 
-        if let metadatas = self.cache.initialMetadatas() {
+        if let metadatas = self.cache.initialMetadatas {
             self.metadatas = metadatas
         }
 
