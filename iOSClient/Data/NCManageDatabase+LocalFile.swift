@@ -194,6 +194,19 @@ extension NCManageDatabase {
         return nil
     }
 
+    func getResultsTableLocalFile(predicate: NSPredicate) -> Results<tableLocalFile>? {
+
+        do {
+            let realm = try Realm()
+            realm.refresh()
+            return realm.objects(tableLocalFile.self).filter(predicate)
+        } catch let error as NSError {
+            NextcloudKit.shared.nkCommonInstance.writeLog("Could not access database: \(error)")
+        }
+
+        return nil
+    }
+
     func getTableLocalFiles(predicate: NSPredicate, sorted: String, ascending: Bool) -> [tableLocalFile] {
 
         do {

@@ -1042,7 +1042,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
                             let serverUrl = metadata.serverUrl + "/" + metadata.fileName
                             NCManageDatabase.shared.addDirectory(encrypted: metadata.e2eEncrypted, favorite: metadata.favorite, ocId: metadata.ocId, fileId: metadata.fileId, etag: metadata.etag, permissions: metadata.permissions, serverUrl: serverUrl, account: metadata.account)
                         } else if selector == NCGlobal.shared.selectorSynchronizationOffline,
-                                  NCManageDatabase.shared.isDownloadMetadata(metadata, download: true),
+                                  self.synchronizeMetadata(metadata),
                                   let appDelegate = (UIApplication.shared.delegate as? AppDelegate),
                                   appDelegate.downloadQueue.operations.filter({ ($0 as? NCOperationDownload)?.metadata.ocId == metadata.ocId }).isEmpty {
                             appDelegate.downloadQueue.addOperation(NCOperationDownload(metadata: metadata, selector: selector))
@@ -1052,6 +1052,15 @@ class NCNetworking: NSObject, NKCommonDelegate {
             }
         }
 #endif
+    }
+
+    func synchronizeMetadata(_ metadata: tableMetadata) -> Bool {
+
+        let localFile = NCManageDatabase.shared.getResultsTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))?.first
+        if localFile?.etag != metadata.etag || utilityFileSystem.fileProviderStorageSize(metadata.ocId, fileNameView: metadata.fileNameView) == 0 {
+            return true
+        }
+        return false
     }
 
     // MARK: - Search
