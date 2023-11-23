@@ -472,9 +472,9 @@
     NSInteger numSections = [tableView numberOfSections] - 1;
 
     if (section == 1) {
-        NSString *reset = [NSString stringWithFormat:NSLocalizedString(@"_reset_wrong_passcode_desc_", nil), NCBrandOptions.shared.resetAppPasscodeAttempts];
         NSString *lock = NSLocalizedString(@"_lock_protection_no_screen_footer_", nil);
-        sectionName = [NSString stringWithFormat:@"%@\n%@", reset, lock];
+        NSString *reset = [NSString stringWithFormat:NSLocalizedString(@"_reset_wrong_passcode_desc_", nil), NCBrandOptions.shared.resetAppPasscodeAttempts];
+        sectionName = [NSString stringWithFormat:@"%@\n%@", lock, reset];
     } else if (section == 2 && !NCBrandOptions.shared.disable_mobileconfig) {
         sectionName = NSLocalizedString(@"_calendar_contacts_footer_", nil);
     } else if (section == numSections) {
