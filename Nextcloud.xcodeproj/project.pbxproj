@@ -114,6 +114,7 @@
 		F3BB464F2A39EBE500461F6E /* NCMoreUserCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3BB464E2A39EBE500461F6E /* NCMoreUserCell.swift */; };
 		F3BB46522A39EC4900461F6E /* NCMoreAppSuggestionsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3BB46512A39EC4900461F6E /* NCMoreAppSuggestionsCell.swift */; };
 		F3BB46542A3A1E9D00461F6E /* CCCellMore.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3BB46532A3A1E9D00461F6E /* CCCellMore.swift */; };
+		F3C6D0972B0F9BA40078DD25 /* XLForm in Frameworks */ = {isa = PBXBuildFile; productRef = F3C6D0962B0F9BA40078DD25 /* XLForm */; };
 		F700222C1EC479840080073F /* Custom.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F700222B1EC479840080073F /* Custom.xcassets */; };
 		F700222D1EC479840080073F /* Custom.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F700222B1EC479840080073F /* Custom.xcassets */; };
 		F700510122DF63AC003A3356 /* NCShare.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F700510022DF63AC003A3356 /* NCShare.storyboard */; };
@@ -1468,6 +1469,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F3C6D0972B0F9BA40078DD25 /* XLForm in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2755,6 +2757,9 @@
 				AF8ED1FE2757821000B8DBC4 /* PBXTargetDependency */,
 			);
 			name = NextcloudUnitTests;
+			packageProductDependencies = (
+				F3C6D0962B0F9BA40078DD25 /* XLForm */,
+			);
 			productName = NextcloudTests;
 			productReference = AF8ED1F92757821000B8DBC4 /* NextcloudUnitTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
@@ -5331,6 +5336,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = F31F69622A2F929600162F76 /* XCRemoteSwiftPackageReference "swiftui-preview-snapshots" */;
 			productName = PreviewSnapshots;
+		};
+		F3C6D0962B0F9BA40078DD25 /* XLForm */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F74E771E277A2EF40013B958 /* XCRemoteSwiftPackageReference "XLForm" */;
+			productName = XLForm;
 		};
 		F70821D729E59E6D001CA2D7 /* TagListView */ = {
 			isa = XCSwiftPackageProductDependency;
