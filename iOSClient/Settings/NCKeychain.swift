@@ -54,12 +54,12 @@ import KeychainAccess
         }
     }
 
-    @objc var resetAppCounterFail: Int {
+    @objc var resetAppCounterFail: Bool {
         get {
-            if let value = try? keychain.get("resetAppCounterFail"), let result = Int(value) {
+            if let value = try? keychain.get("resetAppCounterFail"), let result = Bool(value) {
                 return result
             }
-            return 0
+            return false
         }
         set {
             keychain["resetAppCounterFail"] = String(newValue)
@@ -74,20 +74,19 @@ import KeychainAccess
             return 0
         }
         set {
-            if newValue == 0 { passcodeSecondsFail = 1 }
             keychain["passcodeCounterFail"] = String(newValue)
         }
     }
 
-    var passcodeSecondsFail: Int {
+    var passcodeCounterFailReset: Int {
         get {
-            if let value = try? keychain.get("passcodeSecondsFail"), let result = Int(value) {
+            if let value = try? keychain.get("passcodeCounterFailReset"), let result = Int(value) {
                 return result
             }
-            return 1
+            return 0
         }
         set {
-            keychain["passcodeSecondsFail"] = String(newValue)
+            keychain["passcodeCounterFailReset"] = String(newValue)
         }
     }
 

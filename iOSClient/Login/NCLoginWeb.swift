@@ -293,10 +293,6 @@ extension NCLoginWeb: WKNavigationDelegate {
 
             if error == .success, let userProfile {
 
-                if NCManageDatabase.shared.getAccounts() == nil {
-                    self.appDelegate.removeAllSettings(killEmAll: false)
-                }
-
                 NCManageDatabase.shared.deleteAccount(account)
                 NCManageDatabase.shared.addAccount(account, urlBase: urlBase, user: user, userId: userProfile.userId, password: password)
 

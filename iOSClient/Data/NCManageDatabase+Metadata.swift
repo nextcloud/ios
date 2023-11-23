@@ -1021,30 +1021,48 @@ extension NCManageDatabase {
         }
     }
 
+    func isMetadataLivePhoto(metadata: tableMetadata) -> tableMetadata? {
+
+        guard metadata.livePhoto, NCKeychain().livePhoto, metadata.livePhotoFile.isEmpty else { return nil }
+
+        return getMetadataLivePhoto(metadata: metadata)
+    }
+
     func getMetadataLivePhoto(metadata: tableMetadata) -> tableMetadata? {
 
+        guard metadata.livePhoto, NCKeychain().livePhoto else { return nil }
         var classFile = metadata.classFile
         var fileName = (metadata.fileNameView as NSString).deletingPathExtension
 
-        if !metadata.livePhoto || !NCKeychain().livePhoto {
-            return nil
-        }
+        if !metadata.livePhotoFile.isEmpty {
 
-        if classFile == NKCommon.TypeClassFile.image.rawValue {
-            classFile = NKCommon.TypeClassFile.video.rawValue
-            fileName = fileName + ".mov"
+            do {
+                let realm = try Realm()
+                realm.refresh()
+                guard let result = realm.objects(tableMetadata.self).filter(NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView == %@", metadata.account, metadata.serverUrl, metadata.livePhotoFile)).first else { return nil }
+                return tableMetadata.init(value: result)
+            } catch let error as NSError {
+                NextcloudKit.shared.nkCommonInstance.writeLog("Could not access database: \(error)")
+            }
+
         } else {
-            classFile = NKCommon.TypeClassFile.image.rawValue
-            fileName = fileName + ".jpg"
-        }
 
-        do {
-            let realm = try Realm()
-            realm.refresh()
-            guard let result = realm.objects(tableMetadata.self).filter(NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView CONTAINS[cd] %@ AND ocId != %@ AND classFile == %@", metadata.account, metadata.serverUrl, fileName, metadata.ocId, classFile)).first else { return nil }
-            return tableMetadata.init(value: result)
-        } catch let error as NSError {
-            NextcloudKit.shared.nkCommonInstance.writeLog("Could not access database: \(error)")
+            if classFile == NKCommon.TypeClassFile.image.rawValue {
+                classFile = NKCommon.TypeClassFile.video.rawValue
+                fileName = fileName + ".mov"
+            } else {
+                classFile = NKCommon.TypeClassFile.image.rawValue
+                fileName = fileName + ".jpg"
+            }
+
+            do {
+                let realm = try Realm()
+                realm.refresh()
+                guard let result = realm.objects(tableMetadata.self).filter(NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView CONTAINS[cd] %@ AND ocId != %@ AND classFile == %@", metadata.account, metadata.serverUrl, fileName, metadata.ocId, classFile)).first else { return nil }
+                return tableMetadata.init(value: result)
+            } catch let error as NSError {
+                NextcloudKit.shared.nkCommonInstance.writeLog("Could not access database: \(error)")
+            }
         }
 
         return nil
@@ -1115,16 +1133,6 @@ extension NCManageDatabase {
         } else {
             return false
         }
-    }
-
-    func isDownloadMetadata(_ metadata: tableMetadata, download: Bool) -> Bool {
-
-        let localFile = getTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
-        let fileSize = utilityFileSystem.fileProviderStorageSize(metadata.ocId, fileNameView: metadata.fileNameView)
-        if (localFile != nil || download) && (localFile?.etag != metadata.etag || fileSize == 0) {
-            return true
-        }
-        return false
     }
 
     func getMetadataConflict(account: String, serverUrl: String, fileNameView: String) -> tableMetadata? {

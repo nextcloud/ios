@@ -1042,7 +1042,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
                             let serverUrl = metadata.serverUrl + "/" + metadata.fileName
                             NCManageDatabase.shared.addDirectory(encrypted: metadata.e2eEncrypted, favorite: metadata.favorite, ocId: metadata.ocId, fileId: metadata.fileId, etag: metadata.etag, permissions: metadata.permissions, serverUrl: serverUrl, account: metadata.account)
                         } else if selector == NCGlobal.shared.selectorSynchronizationOffline,
-                                  NCManageDatabase.shared.isDownloadMetadata(metadata, download: true),
+                                  self.synchronizeMetadata(metadata),
                                   let appDelegate = (UIApplication.shared.delegate as? AppDelegate),
                                   appDelegate.downloadQueue.operations.filter({ ($0 as? NCOperationDownload)?.metadata.ocId == metadata.ocId }).isEmpty {
                             appDelegate.downloadQueue.addOperation(NCOperationDownload(metadata: metadata, selector: selector))
@@ -1052,6 +1052,15 @@ class NCNetworking: NSObject, NKCommonDelegate {
             }
         }
 #endif
+    }
+
+    func synchronizeMetadata(_ metadata: tableMetadata) -> Bool {
+
+        let localFile = NCManageDatabase.shared.getResultsTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))?.first
+        if localFile?.etag != metadata.etag || utilityFileSystem.fileProviderStorageSize(metadata.ocId, fileNameView: metadata.fileNameView) == 0 {
+            return true
+        }
+        return false
     }
 
     // MARK: - Search
@@ -1253,6 +1262,11 @@ class NCNetworking: NSObject, NKCommonDelegate {
     private func createFolderPlain(fileName: String, serverUrl: String, account: String, urlBase: String, overwrite: Bool, withPush: Bool, completion: @escaping (_ error: NKError) -> Void) {
 
         var fileNameFolder = utility.removeForbiddenCharacters(fileName)
+        if fileName != fileNameFolder {
+            let errorDescription = String(format: NSLocalizedString("_forbidden_characters_", comment: ""), NCGlobal.shared.forbiddenCharacters.joined(separator: " "))
+            let error = NKError(errorCode: NCGlobal.shared.errorConflict, errorDescription: errorDescription)
+            return completion(error)
+        }
 
         if !overwrite {
             fileNameFolder = utilityFileSystem.createFileName(fileNameFolder, serverUrl: serverUrl, account: account)
@@ -1371,23 +1385,22 @@ class NCNetworking: NSObject, NKCommonDelegate {
 
             for metadata in metadatas {
 
+                let metadataLive = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata)
                 NCManageDatabase.shared.deleteVideo(metadata: metadata)
                 NCManageDatabase.shared.deleteLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
                 utilityFileSystem.removeFile(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId))
 
-                if let metadataLivePhoto = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata) {
-                    NCManageDatabase.shared.deleteLocalFile(predicate: NSPredicate(format: "ocId == %@", metadataLivePhoto.ocId))
-                    utilityFileSystem.removeFile(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadataLivePhoto.ocId))
+                if let metadataLive {
+                    NCManageDatabase.shared.deleteLocalFile(predicate: NSPredicate(format: "ocId == %@", metadataLive.ocId))
+                    utilityFileSystem.removeFile(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadataLive.ocId))
                 }
             }
             return NKError()
         }
 
-        let metadataLive = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata)
-
         if metadata.isDirectoryE2EE {
 #if !EXTENSION
-            if let metadataLive = metadataLive {
+            if let metadataLive = NCManageDatabase.shared.isMetadataLivePhoto(metadata: metadata) {
                 let error = await NCNetworkingE2EEDelete().delete(metadata: metadataLive)
                 if error == .success {
                     return await NCNetworkingE2EEDelete().delete(metadata: metadata)
@@ -1401,7 +1414,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
             return NKError()
 #endif
         } else {
-            if let metadataLive = metadataLive {
+            if let metadataLive = NCManageDatabase.shared.isMetadataLivePhoto(metadata: metadata) {
                 let error = await deleteMetadataPlain(metadataLive)
                 if error == .success {
                     return await deleteMetadataPlain(metadata)
@@ -1437,6 +1450,16 @@ class NCNetworking: NSObject, NKCommonDelegate {
             NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
             NCManageDatabase.shared.deleteLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
 
+            if let metadataLive = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata) {
+                do {
+                    try FileManager.default.removeItem(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadataLive.ocId))
+                } catch { }
+
+                NCManageDatabase.shared.deleteVideo(metadata: metadataLive)
+                NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadataLive.ocId))
+                NCManageDatabase.shared.deleteLocalFile(predicate: NSPredicate(format: "ocId == %@", metadataLive.ocId))
+            }
+
             if metadata.directory {
                 NCManageDatabase.shared.deleteDirectoryAndSubDirectory(serverUrl: utilityFileSystem.stringAppendServerUrl(metadata.serverUrl, addFileName: metadata.fileName), account: metadata.account)
             }
@@ -1449,7 +1472,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
 
     func favoriteMetadata(_ metadata: tableMetadata, completion: @escaping (_ error: NKError) -> Void) {
 
-        if let metadataLive = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata) {
+        if let metadataLive = NCManageDatabase.shared.isMetadataLivePhoto(metadata: metadata) {
             favoriteMetadataPlain(metadataLive) { error in
                 if error == .success {
                     self.favoriteMetadataPlain(metadata, completion: completion)
@@ -1503,7 +1526,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
 
     func renameMetadata(_ metadata: tableMetadata, fileNameNew: String, indexPath: IndexPath, viewController: UIViewController?, completion: @escaping (_ error: NKError) -> Void) {
 
-        let metadataLive = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata)
+        let metadataLive = NCManageDatabase.shared.isMetadataLivePhoto(metadata: metadata)
         let fileNameNew = fileNameNew.trimmingCharacters(in: .whitespacesAndNewlines)
         let fileNameNewLive = (fileNameNew as NSString).deletingPathExtension + ".mov"
 
@@ -1545,7 +1568,13 @@ class NCNetworking: NSObject, NKCommonDelegate {
         if !metadata.permissions.isEmpty && !permission {
             return completion(NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_no_permission_modify_file_"))
         }
-        let fileNameNew = utility.removeForbiddenCharacters(fileNameNew)
+        let fileName = utility.removeForbiddenCharacters(fileNameNew)
+        if fileName != fileNameNew {
+            let errorDescription = String(format: NSLocalizedString("_forbidden_characters_", comment: ""), NCGlobal.shared.forbiddenCharacters.joined(separator: " "))
+            let error = NKError(errorCode: NCGlobal.shared.errorConflict, errorDescription: errorDescription)
+            return completion(error)
+        }
+        let fileNameNew = fileName
         if fileNameNew.isEmpty || fileNameNew == metadata.fileNameView {
             return completion(NKError())
         }
@@ -1604,7 +1633,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
 
     func moveMetadata(_ metadata: tableMetadata, serverUrlTo: String, overwrite: Bool) async -> NKError {
 
-        if let metadataLive = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata) {
+        if let metadataLive = NCManageDatabase.shared.isMetadataLivePhoto(metadata: metadata) {
             let error = await moveMetadataPlain(metadataLive, serverUrlTo: serverUrlTo, overwrite: overwrite)
             if error == .success {
                 return await moveMetadataPlain(metadata, serverUrlTo: serverUrlTo, overwrite: overwrite)
@@ -1640,7 +1669,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
 
     func copyMetadata(_ metadata: tableMetadata, serverUrlTo: String, overwrite: Bool) async -> NKError {
 
-        if let metadataLive = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata) {
+        if let metadataLive = NCManageDatabase.shared.isMetadataLivePhoto(metadata: metadata) {
             let error = await copyMetadataPlain(metadataLive, serverUrlTo: serverUrlTo, overwrite: overwrite)
             if error == .success {
                 return await copyMetadataPlain(metadata, serverUrlTo: serverUrlTo, overwrite: overwrite)

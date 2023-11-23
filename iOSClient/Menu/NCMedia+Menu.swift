@@ -40,7 +40,7 @@ extension NCMedia {
         defer { presentMenu(with: actions) }
 
         if !isEditMode {
-            if !NCImageCache.shared.metadatas.isEmpty {
+            if !self.metadatas.isEmpty {
                 actions.append(
                     NCMenuAction(
                         title: NSLocalizedString("_select_", comment: ""),

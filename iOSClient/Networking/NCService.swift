@@ -175,7 +175,7 @@ class NCService: NSObject {
         NextcloudKit.shared.getCapabilities(options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { account, data, error in
             guard error == .success, let data = data else {
                 NCBrandColor.shared.settingThemingColor(account: account)
-                NCImageCache.shared.createImagesCache()
+                NCImageCache.shared.createImagesBrandCache()
                 return
             }
 
@@ -184,15 +184,10 @@ class NCService: NSObject {
             NCManageDatabase.shared.addCapabilitiesJSon(data, account: account)
             NCManageDatabase.shared.setCapabilities(account: account, data: data)
 
-            // Setup communication
-            if NCGlobal.shared.capabilityServerVersionMajor > 0 {
-                NextcloudKit.shared.setup(nextcloudVersion: NCGlobal.shared.capabilityServerVersionMajor)
-            }
-
             // Theming
             if NCGlobal.shared.capabilityThemingColor != NCBrandColor.shared.themingColor || NCGlobal.shared.capabilityThemingColorElement != NCBrandColor.shared.themingColorElement || NCGlobal.shared.capabilityThemingColorText != NCBrandColor.shared.themingColorText {
                 NCBrandColor.shared.settingThemingColor(account: account)
-                NCImageCache.shared.createImagesCache()
+                NCImageCache.shared.createImagesBrandCache()
             }
 
             // Sharing & Comments
@@ -306,7 +301,7 @@ class NCService: NSObject {
         let files = NCManageDatabase.shared.getTableLocalFiles(predicate: NSPredicate(format: "account == %@ AND offline == true", account), sorted: "fileName", ascending: true)
         for file: tableLocalFile in files {
             guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(file.ocId) else { continue }
-            if NCManageDatabase.shared.isDownloadMetadata(metadata, download: true),
+            if NCNetworking.shared.synchronizeMetadata(metadata),
                appDelegate.downloadQueue.operations.filter({ ($0 as? NCOperationDownload)?.metadata.ocId == metadata.ocId }).isEmpty {
                 appDelegate.downloadQueue.addOperation(NCOperationDownload(metadata: metadata, selector: NCGlobal.shared.selectorDownloadFile))
             }

@@ -102,10 +102,7 @@
     [row.cellConfig setObject:UIColor.labelColor forKey:@"textLabel.textColor"];
     [section addFormRow:row];
     // Reset app wrong attemps
-    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"resetAppAttemps" rowType:XLFormRowDescriptorTypeStepCounter title:NSLocalizedString(@"_reset_wrong_passcode_", nil)];
-    [row.cellConfigAtConfigure setObject:@5 forKey:@"stepControl.stepValue"];
-    [row.cellConfigAtConfigure setObject:@0 forKey:@"stepControl.minimumValue"];
-    [row.cellConfigAtConfigure setObject:@20 forKey:@"stepControl.maximumValue"];
+    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"resetAppAttemps" rowType:XLFormRowDescriptorTypeBooleanSwitch title:NSLocalizedString(@"_reset_wrong_passcode_", nil)];
     row.cellConfigAtConfigure[@"backgroundColor"] = UIColor.secondarySystemGroupedBackgroundColor;
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
     [row.cellConfig setObject:UIColor.labelColor forKey:@"textLabel.textColor"];
@@ -282,9 +279,8 @@
         rowBloccoPasscode.title = NSLocalizedString(@"_lock_not_active_", nil);
         [rowBloccoPasscode.cellConfig setObject:[[UIImage imageNamed:@"lock_open"] imageWithColor:UIColor.systemGrayColor size:25] forKey:@"imageView.image"];
     }
-    long resetAppCounterFail = [[NCKeychain alloc] init].resetAppCounterFail;
-    [rowResetAppAttemps setValue:[NSString stringWithFormat: @"%ld", resetAppCounterFail]];
 
+    if ([[NCKeychain alloc] init].resetAppCounterFail) [rowResetAppAttemps setValue:@1]; else [rowResetAppAttemps setValue:@0];
     if ([[NCKeychain alloc] init].touchFaceID) [rowEnableTouchDaceID setValue:@1]; else [rowEnableTouchDaceID setValue:@0];
     if ([[NCKeychain alloc] init].requestPasscodeAtStart) [rowNotPasscodeAtStart setValue:@0]; else [rowNotPasscodeAtStart setValue:@1];
     if ([[NCKeychain alloc] init].privacyScreenEnabled) [rowPrivacyScreen setValue:@1]; else [rowPrivacyScreen setValue:@0];
@@ -476,7 +472,9 @@
     NSInteger numSections = [tableView numberOfSections] - 1;
 
     if (section == 1) {
-        sectionName = NSLocalizedString(@"_lock_protection_no_screen_footer_", nil);
+        NSString *lock = NSLocalizedString(@"_lock_protection_no_screen_footer_", nil);
+        NSString *reset = [NSString stringWithFormat:NSLocalizedString(@"_reset_wrong_passcode_desc_", nil), NCBrandOptions.shared.resetAppPasscodeAttempts];
+        sectionName = [NSString stringWithFormat:@"%@\n%@", lock, reset];
     } else if (section == 2 && !NCBrandOptions.shared.disable_mobileconfig) {
         sectionName = NSLocalizedString(@"_calendar_contacts_footer_", nil);
     } else if (section == numSections) {
