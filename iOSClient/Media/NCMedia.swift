@@ -405,7 +405,7 @@ extension NCMedia: UICollectionViewDataSource {
 
             if metadata.isAudioOrVideo {
                 cell.imageStatus.image = cacheImages.cellPlayImage
-            } else if metadata.livePhoto && NCImageCache.shared.isLivePhotoEnable {
+            } else if metadata.livePhoto && NCImageCache.shared.isLivePhotoEnabled {
                 cell.imageStatus.image = cacheImages.cellLivePhotoImage
             } else {
                 cell.imageStatus.image = nil

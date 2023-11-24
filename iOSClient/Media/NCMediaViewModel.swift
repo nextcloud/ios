@@ -17,15 +17,19 @@ import LRUCache
     @Published internal var isLoadingMetadata = true
     @Published internal var hasNewMedia = false
 
+    internal let appDelegate = UIApplication.shared.delegate as? AppDelegate
+
+    private let cache = NCImageCache.shared
+
     private var account: String = ""
     private var lastContentOffsetY: CGFloat = 0
     private var mediaPath = ""
     private var livePhoto: Bool = false
     private var predicateDefault: NSPredicate?
     private var predicate: NSPredicate?
-    internal let appDelegate = UIApplication.shared.delegate as? AppDelegate
-
     private var cancellables: Set<AnyCancellable> = []
+    private var timerSearchNewMedia: Timer?
+    private var timeIntervalSearchNewMedia: TimeInterval = 10.0
 
     private var isLoadingNewMetadata = false {
         didSet {
@@ -44,8 +48,6 @@ import LRUCache
             updateLoadingMedia()
         }
     }
-
-    private let cache = NCImageCache.shared
 
     init() {
         guard let appDelegate, !appDelegate.account.isEmpty else { return }
@@ -88,6 +90,9 @@ import LRUCache
                 }
             }
             .store(in: &cancellables)
+
+//        timerSearchNewMedia?.invalidate()
+        timerSearchNewMedia = Timer.scheduledTimer(timeInterval: 30.0, target: self, selector: #selector(onRefresh), userInfo: nil, repeats: true)
     }
 
     deinit {
@@ -128,7 +133,7 @@ import LRUCache
         appDelegate?.activeServerUrl = metadata.serverUrl
     }
 
-    public func onRefresh() {
+    @objc public func onRefresh() {
         Task {
             await loadNewMedia()
         }
@@ -148,7 +153,7 @@ import LRUCache
         if NCUtilityFileSystem().fileProviderStorageExists(metadata) {
             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDownloadedFile, userInfo: ["ocId": metadata.ocId, "selector": NCGlobal.shared.selectorOpenIn, "error": NKError(), "account": metadata.account])
         } else {
-            NCNetworking.shared.download(metadata: metadata, selector: NCGlobal.shared.selectorOpenIn, notificationCenterProgressTask: false) { afError, error in
+            NCNetworking.shared.download(metadata: metadata, selector: NCGlobal.shared.selectorOpenIn, notificationCenterProgressTask: false) { _, _ in
                 self.isLoadingProcessingMetadata = false
             }
         }
@@ -163,7 +168,7 @@ import LRUCache
         } else if NCUtilityFileSystem().fileProviderStorageExists(metadata) {
             NCActionCenter.shared.saveAlbum(metadata: metadata)
         } else {
-            NCNetworking.shared.download(metadata: metadata, selector: NCGlobal.shared.selectorSaveAlbum, notificationCenterProgressTask: false) { afError, error in
+            NCNetworking.shared.download(metadata: metadata, selector: NCGlobal.shared.selectorSaveAlbum, notificationCenterProgressTask: false) { _, _ in
                 self.isLoadingProcessingMetadata = false
             }
         }
@@ -179,7 +184,7 @@ import LRUCache
         if NCUtilityFileSystem().fileProviderStorageExists(metadata) {
             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDownloadedFile, userInfo: ["ocId": metadata.ocId, "selector": NCGlobal.shared.selectorLoadFileQuickLook, "error": NKError(), "account": metadata.account])
         } else {
-            NCNetworking.shared.download(metadata: metadata, selector: NCGlobal.shared.selectorLoadFileQuickLook, notificationCenterProgressTask: false) { afError, error in
+            NCNetworking.shared.download(metadata: metadata, selector: NCGlobal.shared.selectorLoadFileQuickLook, notificationCenterProgressTask: false) { _, _ in
                 self.isLoadingProcessingMetadata = false
             }
         }

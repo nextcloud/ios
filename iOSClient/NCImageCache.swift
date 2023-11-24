@@ -46,12 +46,13 @@ import NextcloudKit
     private lazy var cache: ThumbnailLRUCache = {
         return ThumbnailLRUCache(countLimit: limit)
     }()
+
     private var ocIdEtag: [String: String] = [:]
 
     private var _initialMetadatas: [tableMetadata]?
 
     var initialMetadatas: [tableMetadata]? {
-        defer { 
+        defer {
             self._initialMetadatas?.removeAll()
             self._initialMetadatas = nil
         }
@@ -59,7 +60,7 @@ import NextcloudKit
     }
 
     private var livePhoto: Bool = false
-    var isLivePhotoEnable: Bool {
+    var isLivePhotoEnabled: Bool {
         return livePhoto
     }
 
