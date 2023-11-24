@@ -252,6 +252,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
         enableTouchFaceID()
 
+        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterApplicationWillEnterForeground)
         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterRichdocumentGrabFocus)
         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSourceNetwork, second: 2)
     }
@@ -615,9 +616,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Initialize Auto upload with \(items) uploads")
         }
 
-        DispatchQueue.global().async { NCImageCache.shared.createMediaCache(account: self.account) }
-
-        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterChangeUser)
+        DispatchQueue.global().async {
+            NCImageCache.shared.createMediaCache(account: self.account)
+            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterChangeUser)
+        }
     }
 
     @objc func deleteAccount(_ account: String, wipe: Bool) {
