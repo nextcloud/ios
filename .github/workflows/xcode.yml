@@ -14,7 +14,7 @@ on:
 jobs:
   build-and-test:
     name: Build and Test
-    runs-on: macOS-latest
+    runs-on: macos-latest
     if: github.event.pull_request.draft == false
     env:
       PROJECT: Nextcloud.xcodeproj
@@ -44,11 +44,7 @@ jobs:
       run: wget "https://raw.githubusercontent.com/firebase/quickstart-ios/master/mock-GoogleService-Info.plist" -O GoogleService-Info.plist
     - name: Install docker
       run: |
-        # Workaround for https://github.com/actions/runner-images/issues/8104
-        brew remove --ignore-dependencies qemu
-        curl -o ./qemu.rb https://raw.githubusercontent.com/Homebrew/homebrew-core/dc0669eca9479e9eeb495397ba3a7480aaa45c2e/Formula/qemu.rb
-        brew install ./qemu.rb
-
+        brew install colima
         brew install docker
         colima start
     - name: Create docker test server and export enviroment variables

@@ -68,34 +68,22 @@
 		AFCE353727E4ED7B00FEA6C2 /* NCShareCells.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFCE353627E4ED7B00FEA6C2 /* NCShareCells.swift */; };
 		AFCE353927E5DE0500FEA6C2 /* NCShare+Helper.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFCE353827E5DE0400FEA6C2 /* NCShare+Helper.swift */; };
 		C0046CDD2A17B98400D87C9D /* LoginUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0046CDC2A17B98400D87C9D /* LoginUITests.swift */; };
-		C03BA14A2A17BC57002C8BA3 /* XLForm in Frameworks */ = {isa = PBXBuildFile; productRef = C03BA1492A17BC57002C8BA3 /* XLForm */; };
-		C04E2F192A17BA78001BAD85 /* XLForm in Frameworks */ = {isa = PBXBuildFile; productRef = C04E2F182A17BA78001BAD85 /* XLForm */; };
 		C04E2F232A17BB4D001BAD85 /* FilesIntegrationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C04E2F222A17BB4D001BAD85 /* FilesIntegrationTests.swift */; };
 		D575039F27146F93008DC9DC /* String+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7A0D1342591FBC5008F8A13 /* String+Extension.swift */; };
 		D5B6AA7827200C7200D49C24 /* NCActivityTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5B6AA7727200C7200D49C24 /* NCActivityTableViewCell.swift */; };
 		F30A962F2A27ADF900D7BCFE /* EnvVars.stencil in Resources */ = {isa = PBXBuildFile; fileRef = F30A962E2A27ADF900D7BCFE /* EnvVars.stencil */; };
 		F30A96312A27AEBF00D7BCFE /* EnvVars.generated.swift in Sources */ = {isa = PBXBuildFile; fileRef = F30A96302A27AEBF00D7BCFE /* EnvVars.generated.swift */; };
 		F30A96322A27AEDD00D7BCFE /* EnvVars.generated.swift in Sources */ = {isa = PBXBuildFile; fileRef = F30A96302A27AEBF00D7BCFE /* EnvVars.generated.swift */; };
-		F30A96342A2DFCD000D7BCFE /* Realm in Frameworks */ = {isa = PBXBuildFile; productRef = F30A96332A2DFCD000D7BCFE /* Realm */; };
-		F30A96362A2DFCD000D7BCFE /* RealmSwift in Frameworks */ = {isa = PBXBuildFile; productRef = F30A96352A2DFCD000D7BCFE /* RealmSwift */; };
-		F30A96382A2DFD2900D7BCFE /* FirebaseDatabase in Frameworks */ = {isa = PBXBuildFile; productRef = F30A96372A2DFD2900D7BCFE /* FirebaseDatabase */; };
-		F30A963A2A2DFD3100D7BCFE /* JGProgressHUD in Frameworks */ = {isa = PBXBuildFile; productRef = F30A96392A2DFD3100D7BCFE /* JGProgressHUD */; };
-		F30A963C2A2DFD3600D7BCFE /* SVGKit in Frameworks */ = {isa = PBXBuildFile; productRef = F30A963B2A2DFD3600D7BCFE /* SVGKit */; };
+		F3131EDD2B038E4A0018DB28 /* XLForm in Frameworks */ = {isa = PBXBuildFile; productRef = F3131EDC2B038E4A0018DB28 /* XLForm */; };
+		F3131EDF2B038F2A0018DB28 /* SnapshotTesting in Frameworks */ = {isa = PBXBuildFile; productRef = F3131EDE2B038F2A0018DB28 /* SnapshotTesting */; };
+		F3131EE12B038F560018DB28 /* SnapshotTestingHEIC in Frameworks */ = {isa = PBXBuildFile; productRef = F3131EE02B038F560018DB28 /* SnapshotTestingHEIC */; };
+		F3131EE32B038F9B0018DB28 /* PreviewSnapshotsTesting in Frameworks */ = {isa = PBXBuildFile; productRef = F3131EE22B038F9B0018DB28 /* PreviewSnapshotsTesting */; };
 		F314F1112A30C11200BC7FAB /* PreviewSnapshots in Frameworks */ = {isa = PBXBuildFile; productRef = F314F1102A30C11200BC7FAB /* PreviewSnapshots */; };
 		F314F1142A30E2DE00BC7FAB /* View+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7E8A390295DC5E0006CB2D0 /* View+Extension.swift */; };
 		F31F69452A2F6D4600162F76 /* NextcloudSnapshotTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F31F69442A2F6D4600162F76 /* NextcloudSnapshotTests.swift */; };
-		F31F694D2A2F6EFB00162F76 /* SnapshotTesting in Frameworks */ = {isa = PBXBuildFile; productRef = F31F694C2A2F6EFB00162F76 /* SnapshotTesting */; };
 		F31F69502A2F707E00162F76 /* SwiftUIView+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = F31F694F2A2F707E00162F76 /* SwiftUIView+Extensions.swift */; };
-		F31F69522A2F89C400162F76 /* SVGKit in Frameworks */ = {isa = PBXBuildFile; productRef = F31F69512A2F89C400162F76 /* SVGKit */; };
-		F31F69542A2F89C400162F76 /* SwiftRichString in Frameworks */ = {isa = PBXBuildFile; productRef = F31F69532A2F89C400162F76 /* SwiftRichString */; };
-		F31F69562A2F89C400162F76 /* FirebaseDatabase in Frameworks */ = {isa = PBXBuildFile; productRef = F31F69552A2F89C400162F76 /* FirebaseDatabase */; };
-		F31F69582A2F89C400162F76 /* XLForm in Frameworks */ = {isa = PBXBuildFile; productRef = F31F69572A2F89C400162F76 /* XLForm */; };
-		F31F695C2A2F89C400162F76 /* Realm in Frameworks */ = {isa = PBXBuildFile; productRef = F31F695B2A2F89C400162F76 /* Realm */; };
-		F31F695E2A2F89C400162F76 /* JGProgressHUD in Frameworks */ = {isa = PBXBuildFile; productRef = F31F695D2A2F89C400162F76 /* JGProgressHUD */; };
 		F31F69612A2F907800162F76 /* __Snapshots__ in Resources */ = {isa = PBXBuildFile; fileRef = F31F69602A2F907800162F76 /* __Snapshots__ */; };
 		F31F69642A2F929600162F76 /* PreviewSnapshots in Frameworks */ = {isa = PBXBuildFile; productRef = F31F69632A2F929600162F76 /* PreviewSnapshots */; };
-		F31F69662A2F929600162F76 /* PreviewSnapshotsTesting in Frameworks */ = {isa = PBXBuildFile; productRef = F31F69652A2F929600162F76 /* PreviewSnapshotsTesting */; };
-		F31F69692A2F92F000162F76 /* SnapshotTestingHEIC in Frameworks */ = {isa = PBXBuildFile; productRef = F31F69682A2F92F000162F76 /* SnapshotTestingHEIC */; };
 		F32ED5062A2F254400EABA81 /* EnvVars.generated.swift in Sources */ = {isa = PBXBuildFile; fileRef = F30A96302A27AEBF00D7BCFE /* EnvVars.generated.swift */; };
 		F33AAF9A2A60394C006ECCBD /* NCMoreUserCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F33AAF992A60394C006ECCBD /* NCMoreUserCell.xib */; };
 		F343A4B32A1E01FF00DDA874 /* PHAsset+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F343A4B22A1E01FF00DDA874 /* PHAsset+Extension.swift */; };
@@ -126,6 +114,7 @@
 		F3BB464F2A39EBE500461F6E /* NCMoreUserCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3BB464E2A39EBE500461F6E /* NCMoreUserCell.swift */; };
 		F3BB46522A39EC4900461F6E /* NCMoreAppSuggestionsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3BB46512A39EC4900461F6E /* NCMoreAppSuggestionsCell.swift */; };
 		F3BB46542A3A1E9D00461F6E /* CCCellMore.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3BB46532A3A1E9D00461F6E /* CCCellMore.swift */; };
+		F3C6D0972B0F9BA40078DD25 /* XLForm in Frameworks */ = {isa = PBXBuildFile; productRef = F3C6D0962B0F9BA40078DD25 /* XLForm */; };
 		F700222C1EC479840080073F /* Custom.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F700222B1EC479840080073F /* Custom.xcassets */; };
 		F700222D1EC479840080073F /* Custom.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F700222B1EC479840080073F /* Custom.xcassets */; };
 		F700510122DF63AC003A3356 /* NCShare.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F700510022DF63AC003A3356 /* NCShare.storyboard */; };
@@ -446,9 +435,6 @@
 		F760DE0B2AE66ED80027D78A /* KeychainAccess in Frameworks */ = {isa = PBXBuildFile; productRef = F760DE0A2AE66ED80027D78A /* KeychainAccess */; };
 		F760DE0D2AE66EDF0027D78A /* KeychainAccess in Frameworks */ = {isa = PBXBuildFile; productRef = F760DE0C2AE66EDF0027D78A /* KeychainAccess */; };
 		F760DE0F2AE66EE60027D78A /* KeychainAccess in Frameworks */ = {isa = PBXBuildFile; productRef = F760DE0E2AE66EE60027D78A /* KeychainAccess */; };
-		F760DE112AE66EF00027D78A /* KeychainAccess in Frameworks */ = {isa = PBXBuildFile; productRef = F760DE102AE66EF00027D78A /* KeychainAccess */; };
-		F760DE132AE66EF80027D78A /* KeychainAccess in Frameworks */ = {isa = PBXBuildFile; productRef = F760DE122AE66EF80027D78A /* KeychainAccess */; };
-		F760DE152AE66F020027D78A /* KeychainAccess in Frameworks */ = {isa = PBXBuildFile; productRef = F760DE142AE66F020027D78A /* KeychainAccess */; };
 		F760DE172AE66F350027D78A /* NCKeychain.swift in Sources */ = {isa = PBXBuildFile; fileRef = F760DE162AE66F350027D78A /* NCKeychain.swift */; };
 		F761856A29E98543006EB3B0 /* NCIntro.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F761856629E98543006EB3B0 /* NCIntro.storyboard */; };
 		F761856B29E98543006EB3B0 /* NCIntroViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F761856729E98543006EB3B0 /* NCIntroViewController.swift */; };
@@ -927,6 +913,8 @@
 		F30A96042A27299D00D7BCFE /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Platforms/iPhoneOS.platform/Developer/Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
 		F30A962E2A27ADF900D7BCFE /* EnvVars.stencil */ = {isa = PBXFileReference; lastKnownFileType = text; path = EnvVars.stencil; sourceTree = "<group>"; };
 		F30A96302A27AEBF00D7BCFE /* EnvVars.generated.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = EnvVars.generated.swift; path = Sourcery/EnvVars.generated.swift; sourceTree = "<group>"; };
+		F3131ED82B038DB20018DB28 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.0.sdk/System/iOSSupport/System/Library/Frameworks/SwiftUI.framework; sourceTree = DEVELOPER_DIR; };
+		F3131EDA2B038DB90018DB28 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.0.sdk/System/iOSSupport/System/Library/Frameworks/WidgetKit.framework; sourceTree = DEVELOPER_DIR; };
 		F31F69422A2F6D4500162F76 /* NextcloudSnapshotTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = NextcloudSnapshotTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		F31F69442A2F6D4600162F76 /* NextcloudSnapshotTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NextcloudSnapshotTests.swift; sourceTree = "<group>"; };
 		F31F694F2A2F707E00162F76 /* SwiftUIView+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SwiftUIView+Extensions.swift"; sourceTree = "<group>"; };
@@ -1481,6 +1469,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F3C6D0972B0F9BA40078DD25 /* XLForm in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1488,8 +1477,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C04E2F192A17BA78001BAD85 /* XLForm in Frameworks */,
-				F760DE152AE66F020027D78A /* KeychainAccess in Frameworks */,
+				F3131EDD2B038E4A0018DB28 /* XLForm in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1497,13 +1485,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F30A96382A2DFD2900D7BCFE /* FirebaseDatabase in Frameworks */,
-				F30A963C2A2DFD3600D7BCFE /* SVGKit in Frameworks */,
-				F30A96362A2DFCD000D7BCFE /* RealmSwift in Frameworks */,
-				F30A96342A2DFCD000D7BCFE /* Realm in Frameworks */,
-				F760DE112AE66EF00027D78A /* KeychainAccess in Frameworks */,
-				F30A963A2A2DFD3100D7BCFE /* JGProgressHUD in Frameworks */,
-				C03BA14A2A17BC57002C8BA3 /* XLForm in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1511,16 +1492,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F31F695C2A2F89C400162F76 /* Realm in Frameworks */,
-				F31F69582A2F89C400162F76 /* XLForm in Frameworks */,
-				F31F69542A2F89C400162F76 /* SwiftRichString in Frameworks */,
-				F760DE132AE66EF80027D78A /* KeychainAccess in Frameworks */,
-				F31F69662A2F929600162F76 /* PreviewSnapshotsTesting in Frameworks */,
-				F31F695E2A2F89C400162F76 /* JGProgressHUD in Frameworks */,
-				F31F69522A2F89C400162F76 /* SVGKit in Frameworks */,
-				F31F69562A2F89C400162F76 /* FirebaseDatabase in Frameworks */,
-				F31F69692A2F92F000162F76 /* SnapshotTestingHEIC in Frameworks */,
-				F31F694D2A2F6EFB00162F76 /* SnapshotTesting in Frameworks */,
+				F3131EE12B038F560018DB28 /* SnapshotTestingHEIC in Frameworks */,
+				F3131EE32B038F9B0018DB28 /* PreviewSnapshotsTesting in Frameworks */,
+				F3131EDF2B038F2A0018DB28 /* SnapshotTesting in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2628,6 +2602,8 @@
 		F7FC7D541DC1F93700BB2C6A /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				F3131EDA2B038DB90018DB28 /* WidgetKit.framework */,
+				F3131ED82B038DB20018DB28 /* SwiftUI.framework */,
 				F30A96042A27299D00D7BCFE /* XCTest.framework */,
 				F7792DE429EEE02D005930CE /* MobileVLCKit.xcframework */,
 				F783031028B4C86200B84583 /* libc++.1.tbd */,
@@ -2781,6 +2757,9 @@
 				AF8ED1FE2757821000B8DBC4 /* PBXTargetDependency */,
 			);
 			name = NextcloudUnitTests;
+			packageProductDependencies = (
+				F3C6D0962B0F9BA40078DD25 /* XLForm */,
+			);
 			productName = NextcloudTests;
 			productReference = AF8ED1F92757821000B8DBC4 /* NextcloudUnitTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
@@ -2800,8 +2779,7 @@
 			);
 			name = NextcloudUITests;
 			packageProductDependencies = (
-				C04E2F182A17BA78001BAD85 /* XLForm */,
-				F760DE142AE66F020027D78A /* KeychainAccess */,
+				F3131EDC2B038E4A0018DB28 /* XLForm */,
 			);
 			productName = NextcloudUITests;
 			productReference = C0046CDA2A17B98400D87C9D /* NextcloudUITests.xctest */;
@@ -2822,13 +2800,6 @@
 			);
 			name = NextcloudIntegrationTests;
 			packageProductDependencies = (
-				C03BA1492A17BC57002C8BA3 /* XLForm */,
-				F30A96332A2DFCD000D7BCFE /* Realm */,
-				F30A96352A2DFCD000D7BCFE /* RealmSwift */,
-				F30A96372A2DFD2900D7BCFE /* FirebaseDatabase */,
-				F30A96392A2DFD3100D7BCFE /* JGProgressHUD */,
-				F30A963B2A2DFD3600D7BCFE /* SVGKit */,
-				F760DE102AE66EF00027D78A /* KeychainAccess */,
 			);
 			productName = NextcloudIntegrationTests;
 			productReference = C04E2F202A17BB4D001BAD85 /* NextcloudIntegrationTests.xctest */;
@@ -2849,16 +2820,9 @@
 			);
 			name = NextcloudSnapshotTests;
 			packageProductDependencies = (
-				F31F694C2A2F6EFB00162F76 /* SnapshotTesting */,
-				F31F69512A2F89C400162F76 /* SVGKit */,
-				F31F69532A2F89C400162F76 /* SwiftRichString */,
-				F31F69552A2F89C400162F76 /* FirebaseDatabase */,
-				F31F69572A2F89C400162F76 /* XLForm */,
-				F31F695B2A2F89C400162F76 /* Realm */,
-				F31F695D2A2F89C400162F76 /* JGProgressHUD */,
-				F31F69652A2F929600162F76 /* PreviewSnapshotsTesting */,
-				F31F69682A2F92F000162F76 /* SnapshotTestingHEIC */,
-				F760DE122AE66EF80027D78A /* KeychainAccess */,
+				F3131EDE2B038F2A0018DB28 /* SnapshotTesting */,
+				F3131EE02B038F560018DB28 /* SnapshotTestingHEIC */,
+				F3131EE22B038F9B0018DB28 /* PreviewSnapshotsTesting */,
 			);
 			productName = NextcloudSnapshotTests;
 			productReference = F31F69422A2F6D4500162F76 /* NextcloudSnapshotTests.xctest */;
@@ -4310,6 +4274,7 @@
 					EXTENSION_NOTIFICATION_SERVICE,
 				);
 				INFOPLIST_FILE = "$(SRCROOT)/Brand/Notification_Service_Extension.plist";
+				OTHER_LDFLAGS = "";
 				PRODUCT_BUNDLE_IDENTIFIER = "it.twsweb.Nextcloud.Notification-Service-Extension";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) EXTENSION EXTENSION_NOTIFICATION_SERVICE";
@@ -4327,6 +4292,7 @@
 					EXTENSION_NOTIFICATION_SERVICE,
 				);
 				INFOPLIST_FILE = "$(SRCROOT)/Brand/Notification_Service_Extension.plist";
+				OTHER_LDFLAGS = "";
 				PRODUCT_BUNDLE_IDENTIFIER = "it.twsweb.Nextcloud.Notification-Service-Extension";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) EXTENSION EXTENSION_NOTIFICATION_SERVICE";
@@ -4337,37 +4303,41 @@
 		AF8ED1FF2757821000B8DBC4 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				ENABLE_HARDENED_RUNTIME = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.2;
+				OTHER_LDFLAGS = "";
 				PRODUCT_BUNDLE_IDENTIFIER = it.twsweb.NextcloudTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "$(SRCROOT)/iOSClient/Nextcloud-Bridging-Header.h";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Nextcloud.app/Nextcloud";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Nextcloud.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Nextcloud";
 			};
 			name = Debug;
 		};
 		AF8ED2002757821000B8DBC4 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				ENABLE_HARDENED_RUNTIME = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.2;
+				OTHER_LDFLAGS = "";
 				PRODUCT_BUNDLE_IDENTIFIER = it.twsweb.NextcloudTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "$(SRCROOT)/iOSClient/Nextcloud-Bridging-Header.h";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Nextcloud.app/Nextcloud";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Nextcloud.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Nextcloud";
 			};
 			name = Release;
 		};
 		C0046CE22A17B98400D87C9D /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = YES;
+				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
@@ -4394,6 +4364,7 @@
 				MARKETING_VERSION = 1.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
+				OTHER_LDFLAGS = "";
 				PRODUCT_BUNDLE_IDENTIFIER = it.twsweb.NextcloudUITests.NextcloudUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
@@ -4408,7 +4379,7 @@
 		C0046CE32A17B98400D87C9D /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = YES;
+				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
@@ -4431,6 +4402,7 @@
 				MARKETING_VERSION = 1.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
+				OTHER_LDFLAGS = "";
 				PRODUCT_BUNDLE_IDENTIFIER = it.twsweb.NextcloudUITests.NextcloudUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = NO;
@@ -4445,7 +4417,7 @@
 		C04E2F272A17BB4E001BAD85 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = YES;
+				ALWAYS_SEARCH_USER_PATHS = NO;
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
@@ -4473,6 +4445,7 @@
 				MARKETING_VERSION = 1.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
+				OTHER_LDFLAGS = "";
 				PRODUCT_BUNDLE_IDENTIFIER = it.twsweb.NextcloudIntegrationTests.NextcloudIntegrationTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
@@ -4487,7 +4460,7 @@
 		C04E2F282A17BB4E001BAD85 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = YES;
+				ALWAYS_SEARCH_USER_PATHS = NO;
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
@@ -4511,6 +4484,7 @@
 				MARKETING_VERSION = 1.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
+				OTHER_LDFLAGS = "";
 				PRODUCT_BUNDLE_IDENTIFIER = it.twsweb.NextcloudIntegrationTests.NextcloudIntegrationTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = NO;
@@ -4548,10 +4522,11 @@
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 16.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.2;
 				MARKETING_VERSION = 1.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
+				OTHER_LDFLAGS = "";
 				PRODUCT_BUNDLE_IDENTIFIER = it.twsweb.NextcloudSnapshotTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
@@ -4586,10 +4561,11 @@
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 16.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.2;
 				MARKETING_VERSION = 1.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
+				OTHER_LDFLAGS = "";
 				PRODUCT_BUNDLE_IDENTIFIER = it.twsweb.NextcloudSnapshotTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = NO;
@@ -4614,6 +4590,7 @@
 				INFOPLIST_KEY_CFBundleDisplayName = "File Provider Extension UI";
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
+				OTHER_LDFLAGS = "";
 				PRODUCT_BUNDLE_IDENTIFIER = "it.twsweb.Nextcloud.File-Provider-Extension-UI";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) EXTENSION EXTENSION_FILE_PROVIDER_EXTENSION_UI";
@@ -4634,6 +4611,7 @@
 				INFOPLIST_KEY_CFBundleDisplayName = "File Provider Extension UI";
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
+				OTHER_LDFLAGS = "";
 				PRODUCT_BUNDLE_IDENTIFIER = "it.twsweb.Nextcloud.File-Provider-Extension-UI";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) EXTENSION EXTENSION_FILE_PROVIDER_EXTENSION_UI";
@@ -4651,6 +4629,7 @@
 					EXTENSION_SHARE,
 				);
 				INFOPLIST_FILE = "$(SRCROOT)/Brand/Share.plist";
+				OTHER_LDFLAGS = "";
 				PRODUCT_BUNDLE_IDENTIFIER = it.twsweb.Nextcloud.Share;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) EXTENSION EXTENSION_SHARE";
@@ -4668,6 +4647,7 @@
 					EXTENSION_SHARE,
 				);
 				INFOPLIST_FILE = "$(SRCROOT)/Brand/Share.plist";
+				OTHER_LDFLAGS = "";
 				PRODUCT_BUNDLE_IDENTIFIER = it.twsweb.Nextcloud.Share;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) EXTENSION EXTENSION_SHARE";
@@ -4694,6 +4674,7 @@
 				INFOPLIST_KEY_CFBundleDisplayName = Nextcloud;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
+				OTHER_LDFLAGS = "";
 				PRODUCT_BUNDLE_IDENTIFIER = it.twsweb.Nextcloud.Widget;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) EXTENSION EXTENSION_WIDGET";
@@ -4721,6 +4702,7 @@
 				INFOPLIST_KEY_CFBundleDisplayName = Nextcloud;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
+				OTHER_LDFLAGS = "";
 				PRODUCT_BUNDLE_IDENTIFIER = it.twsweb.Nextcloud.Widget;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) EXTENSION EXTENSION_WIDGET";
@@ -4740,6 +4722,7 @@
 					EXTENSION_FILE_PROVIDER_EXTENSION,
 				);
 				INFOPLIST_FILE = "$(SRCROOT)/Brand/File_Provider_Extension.plist";
+				OTHER_LDFLAGS = "";
 				PRODUCT_BUNDLE_IDENTIFIER = "it.twsweb.Nextcloud.File-Provider-Extension";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) EXTENSION EXTENSION_FILE_PROVIDER_EXTENSION";
@@ -4757,6 +4740,7 @@
 					EXTENSION_FILE_PROVIDER_EXTENSION,
 				);
 				INFOPLIST_FILE = "$(SRCROOT)/Brand/File_Provider_Extension.plist";
+				OTHER_LDFLAGS = "";
 				PRODUCT_BUNDLE_IDENTIFIER = "it.twsweb.Nextcloud.File-Provider-Extension";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) EXTENSION EXTENSION_FILE_PROVIDER_EXTENSION";
@@ -4771,6 +4755,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = "$(SRCROOT)/Brand/iOSClient.entitlements";
 				INFOPLIST_FILE = "$(SRCROOT)/Brand/iOSClient.plist";
+				OTHER_LDFLAGS = "";
 				PRODUCT_BUNDLE_IDENTIFIER = "it.twsweb.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "$(SRCROOT)/iOSClient/Nextcloud-Bridging-Header.h";
@@ -4784,6 +4769,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = "$(SRCROOT)/Brand/iOSClient.entitlements";
 				INFOPLIST_FILE = "$(SRCROOT)/Brand/iOSClient.plist";
+				OTHER_LDFLAGS = "";
 				PRODUCT_BUNDLE_IDENTIFIER = "it.twsweb.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "$(SRCROOT)/iOSClient/Nextcloud-Bridging-Header.h";
@@ -4815,6 +4801,7 @@
 				INFOPLIST_KEY_CFBundleDisplayName = WidgetDashboardIntentHandler;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
+				OTHER_LDFLAGS = "";
 				PRODUCT_BUNDLE_IDENTIFIER = it.twsweb.Nextcloud.WidgetDashboardIntentHandler;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) EXTENSION EXTENSION_WIDGETDASHBOARDINTENTHANDLER";
@@ -4849,6 +4836,7 @@
 				INFOPLIST_KEY_CFBundleDisplayName = WidgetDashboardIntentHandler;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
+				OTHER_LDFLAGS = "";
 				PRODUCT_BUNDLE_IDENTIFIER = it.twsweb.Nextcloud.WidgetDashboardIntentHandler;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) EXTENSION EXTENSION_WIDGETDASHBOARDINTENTHANDLER";
@@ -5319,95 +5307,40 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		C03BA1492A17BC57002C8BA3 /* XLForm */ = {
+		F3131EDC2B038E4A0018DB28 /* XLForm */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = F74E771E277A2EF40013B958 /* XCRemoteSwiftPackageReference "XLForm" */;
 			productName = XLForm;
 		};
-		C04E2F182A17BA78001BAD85 /* XLForm */ = {
+		F3131EDE2B038F2A0018DB28 /* SnapshotTesting */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = F74E771E277A2EF40013B958 /* XCRemoteSwiftPackageReference "XLForm" */;
-			productName = XLForm;
+			package = F31F694B2A2F6EFA00162F76 /* XCRemoteSwiftPackageReference "swift-snapshot-testing" */;
+			productName = SnapshotTesting;
 		};
-		F30A96332A2DFCD000D7BCFE /* Realm */ = {
+		F3131EE02B038F560018DB28 /* SnapshotTestingHEIC */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = F710FC78277B7CFF00AA9FBF /* XCRemoteSwiftPackageReference "realm-swift" */;
-			productName = Realm;
+			package = F31F69672A2F92F000162F76 /* XCRemoteSwiftPackageReference "SnapshotTestingHEIC" */;
+			productName = SnapshotTestingHEIC;
 		};
-		F30A96352A2DFCD000D7BCFE /* RealmSwift */ = {
+		F3131EE22B038F9B0018DB28 /* PreviewSnapshotsTesting */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = F710FC78277B7CFF00AA9FBF /* XCRemoteSwiftPackageReference "realm-swift" */;
-			productName = RealmSwift;
-		};
-		F30A96372A2DFD2900D7BCFE /* FirebaseDatabase */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = F70B86732642CE3B00ED5349 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
-			productName = FirebaseDatabase;
-		};
-		F30A96392A2DFD3100D7BCFE /* JGProgressHUD */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = F72CD01027A7E92400E59476 /* XCRemoteSwiftPackageReference "JGProgressHUD" */;
-			productName = JGProgressHUD;
-		};
-		F30A963B2A2DFD3600D7BCFE /* SVGKit */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = F75E57A725BF0D61002B72C2 /* XCRemoteSwiftPackageReference "SVGKit" */;
-			productName = SVGKit;
+			package = F31F69622A2F929600162F76 /* XCRemoteSwiftPackageReference "swiftui-preview-snapshots" */;
+			productName = PreviewSnapshotsTesting;
 		};
 		F314F1102A30C11200BC7FAB /* PreviewSnapshots */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = F31F69622A2F929600162F76 /* XCRemoteSwiftPackageReference "swiftui-preview-snapshots" */;
 			productName = PreviewSnapshots;
 		};
-		F31F694C2A2F6EFB00162F76 /* SnapshotTesting */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = F31F694B2A2F6EFA00162F76 /* XCRemoteSwiftPackageReference "swift-snapshot-testing" */;
-			productName = SnapshotTesting;
-		};
-		F31F69512A2F89C400162F76 /* SVGKit */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = F75E57A725BF0D61002B72C2 /* XCRemoteSwiftPackageReference "SVGKit" */;
-			productName = SVGKit;
-		};
-		F31F69532A2F89C400162F76 /* SwiftRichString */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = F72DA9B225F53E4E00B87DB1 /* XCRemoteSwiftPackageReference "SwiftRichString" */;
-			productName = SwiftRichString;
-		};
-		F31F69552A2F89C400162F76 /* FirebaseDatabase */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = F70B86732642CE3B00ED5349 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
-			productName = FirebaseDatabase;
-		};
-		F31F69572A2F89C400162F76 /* XLForm */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = F74E771E277A2EF40013B958 /* XCRemoteSwiftPackageReference "XLForm" */;
-			productName = XLForm;
-		};
-		F31F695B2A2F89C400162F76 /* Realm */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = F710FC78277B7CFF00AA9FBF /* XCRemoteSwiftPackageReference "realm-swift" */;
-			productName = Realm;
-		};
-		F31F695D2A2F89C400162F76 /* JGProgressHUD */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = F72CD01027A7E92400E59476 /* XCRemoteSwiftPackageReference "JGProgressHUD" */;
-			productName = JGProgressHUD;
-		};
 		F31F69632A2F929600162F76 /* PreviewSnapshots */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = F31F69622A2F929600162F76 /* XCRemoteSwiftPackageReference "swiftui-preview-snapshots" */;
 			productName = PreviewSnapshots;
 		};
-		F31F69652A2F929600162F76 /* PreviewSnapshotsTesting */ = {
+		F3C6D0962B0F9BA40078DD25 /* XLForm */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = F31F69622A2F929600162F76 /* XCRemoteSwiftPackageReference "swiftui-preview-snapshots" */;
-			productName = PreviewSnapshotsTesting;
-		};
-		F31F69682A2F92F000162F76 /* SnapshotTestingHEIC */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = F31F69672A2F92F000162F76 /* XCRemoteSwiftPackageReference "SnapshotTestingHEIC" */;
-			productName = SnapshotTestingHEIC;
+			package = F74E771E277A2EF40013B958 /* XCRemoteSwiftPackageReference "XLForm" */;
+			productName = XLForm;
 		};
 		F70821D729E59E6D001CA2D7 /* TagListView */ = {
 			isa = XCSwiftPackageProductDependency;
@@ -5590,21 +5523,6 @@
 			productName = KeychainAccess;
 		};
 		F760DE0E2AE66EE60027D78A /* KeychainAccess */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = F760DE012AE66E860027D78A /* XCRemoteSwiftPackageReference "KeychainAccess" */;
-			productName = KeychainAccess;
-		};
-		F760DE102AE66EF00027D78A /* KeychainAccess */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = F760DE012AE66E860027D78A /* XCRemoteSwiftPackageReference "KeychainAccess" */;
-			productName = KeychainAccess;
-		};
-		F760DE122AE66EF80027D78A /* KeychainAccess */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = F760DE012AE66E860027D78A /* XCRemoteSwiftPackageReference "KeychainAccess" */;
-			productName = KeychainAccess;
-		};
-		F760DE142AE66F020027D78A /* KeychainAccess */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = F760DE012AE66E860027D78A /* XCRemoteSwiftPackageReference "KeychainAccess" */;
 			productName = KeychainAccess;
