@@ -50,8 +50,6 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate, NCSelectDelegate {
     private let maxImageGrid: CGFloat = 7
     private var cellHeigth: CGFloat = 0
 
-    private var oldInProgress = false
-    private var newInProgress = false
     private var searchMediaInProgress = false
 
     private var lastContentOffsetY: CGFloat = 0
@@ -284,7 +282,7 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate, NCSelectDelegate {
     func emptyDataSetView(_ view: NCEmptyView) {
 
         view.emptyImage.image = UIImage(named: "media")?.image(color: .gray, size: UIScreen.main.bounds.width)
-        if oldInProgress || newInProgress {
+        if searchMediaInProgress {
             view.emptyTitle.text = NSLocalizedString("_search_in_progress_", comment: "")
         } else {
             view.emptyTitle.text = NSLocalizedString("_tutorial_photo_view_", comment: "")
@@ -515,7 +513,14 @@ extension NCMedia {
 
         if let visibleCells = self.collectionView?.indexPathsForVisibleItems.sorted(by: { $0.row < $1.row }).compactMap({ self.collectionView?.cellForItem(at: $0) }) {
             if let cell = visibleCells.first as? NCGridMediaCell, let cellDate = cell.date {
-                lessDate = Calendar.current.date(byAdding: .second, value: 1, to: cellDate)!
+
+                if let date = NCManageDatabase.shared.getMetadata(predicate: getPredicate(), sorted: "date", ascending: false)?.date,
+                   cellDate == date as Date {
+                    lessDate = Date.distantFuture
+                } else {
+                    lessDate = Calendar.current.date(byAdding: .second, value: 1, to: cellDate)!
+
+                }
             }
             if let cell = visibleCells.last as? NCGridMediaCell, let cellDate = cell.date {
                 greaterDate = Calendar.current.date(byAdding: .second, value: -1, to: cellDate)!
