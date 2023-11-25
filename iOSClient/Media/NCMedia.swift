@@ -52,6 +52,7 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate, NCSelectDelegate {
 
     private var oldInProgress = false
     private var newInProgress = false
+    private var searchMediaInProgress = false
 
     private var lastContentOffsetY: CGFloat = 0
     private var mediaPath = ""
@@ -625,6 +626,34 @@ extension NCMedia {
                     NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Media search new media error code \(error.errorCode) " + error.errorDescription)
                 }
             }
+        }
+    }
+
+    func searchMedia(account: String, lessDate: Date, greaterDate: Date, predicateDB: NSPredicate) async -> (account: String, lessDate: Date?, greaterDate: Date?, error: NKError, items: Int) {
+
+        if searchMediaInProgress {
+            return(account, lessDate, greaterDate, NKError(), 0)
+        } else {
+            searchMediaInProgress = true
+        }
+
+        let limit: Int = 100
+        let options = NKRequestOptions(timeout: 300, queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
+
+        let results = await NextcloudKit.shared.searchMedia(path: self.mediaPath, lessDate: lessDate, greaterDate: greaterDate, elementDate: "d:getlastmodified/", limit: limit, showHiddenFiles: NCKeychain().showHiddenFiles, includeHiddenFiles: [], options: options)
+
+        if results.account == account, results.error == .success {
+            let resultsConvertFiles = await NCManageDatabase.shared.convertFilesToMetadatas(results.files, useMetadataFolder: false)
+            let predicate = NSPredicate(format: "date > %@ AND date < %@", greaterDate as NSDate, lessDate as NSDate)
+            let predicateResult = NSCompoundPredicate(andPredicateWithSubpredicates: [predicate, predicateDB])
+            let metadatasResult = NCManageDatabase.shared.getMetadatas(predicate: predicateResult)
+            let updateMetadatas = NCManageDatabase.shared.updateMetadatas(resultsConvertFiles.metadatas, metadatasResult: metadatasResult, addCompareLivePhoto: false)
+            let items = updateMetadatas.metadatasDelete.count + updateMetadatas.metadatasLocalUpdate.count + updateMetadatas.metadatasUpdate.count
+            searchMediaInProgress = false
+            return(account, lessDate, greaterDate, results.error, items)
+        } else {
+            searchMediaInProgress = false
+            return(account, lessDate, greaterDate, results.error, 0)
         }
     }
 }
