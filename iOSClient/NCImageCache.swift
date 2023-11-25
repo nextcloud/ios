@@ -156,14 +156,10 @@ import NextcloudKit
 
         self.mediaSortDate = NCKeychain().mediaSortDate
         switch self.mediaSortDate {
-        case "date":
-            metadatas = metadatas.sorted(by: {($0.date as Date) > ($1.date as Date)})
-        case "creationDate":
-            metadatas = metadatas.sorted(by: {($0.creationDate as Date) > ($1.creationDate as Date)})
-        case "uploadDate":
-            metadatas = metadatas.sorted(by: {($0.uploadDate as Date) > ($1.uploadDate as Date)})
-        default:
-            break
+        case "date": metadatas = metadatas.sorted(by: {($0.date as Date) > ($1.date as Date)})
+        case "creationDate": metadatas = metadatas.sorted(by: {($0.creationDate as Date) > ($1.creationDate as Date)})
+        case "uploadDate": metadatas = metadatas.sorted(by: {($0.uploadDate as Date) > ($1.uploadDate as Date)})
+        default: break
         }
 
         return metadatas

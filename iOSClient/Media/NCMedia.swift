@@ -379,14 +379,10 @@ extension NCMedia: UICollectionViewDataSource {
 
             self.cellHeigth = cell.frame.size.height
             switch NCImageCache.shared.mediaSortDate {
-            case "date":
-                cell.date = metadata.date as Date
-            case "creationDate":
-                cell.date = metadata.creationDate as Date
-            case "uploadDate":
-                cell.date = metadata.uploadDate as Date
-            default:
-                break
+            case "date": cell.date = metadata.date as Date
+            case "creationDate": cell.date = metadata.creationDate as Date
+            case "uploadDate": cell.date = metadata.uploadDate as Date
+            default: break
             }
             cell.fileObjectId = metadata.ocId
             cell.indexPath = indexPath
