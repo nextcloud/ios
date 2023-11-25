@@ -491,18 +491,6 @@ extension NCMedia {
 
     // MARK: - Search media
 
-    /*
-    private func searchOldMedia() {
-
-        var lessDate = Date()
-        if let metadata = NCManageDatabase.shared.getMetadata(predicate: getPredicate(), sorted: "date", ascending: true) {
-            lessDate = metadata.date as Date
-        }
-
-        searchMedia(lessDate: lessDate, greaterDate: Date.distantPast)
-    }
-    */
-
     @objc func searchNewMedia() {
 
         var lessDate: Date?
