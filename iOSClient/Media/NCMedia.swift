@@ -510,8 +510,8 @@ extension NCMedia {
 
     @objc func searchNewMedia() {
 
-        guard var lessDate = Calendar.current.date(byAdding: .second, value: 1, to: Date()) else { return }
-        guard var greaterDate = Calendar.current.date(byAdding: .day, value: -30, to: Date()) else { return }
+        var lessDate: Date?
+        var greaterDate: Date?
 
         if let visibleCells = self.collectionView?.indexPathsForVisibleItems.sorted(by: { $0.row < $1.row }).compactMap({ self.collectionView?.cellForItem(at: $0) }) {
             if let cell = visibleCells.first as? NCGridMediaCell, let cellDate = cell.date {
@@ -526,7 +526,11 @@ extension NCMedia {
             }
         }
 
-        searchMedia(lessDate: lessDate, greaterDate: greaterDate)
+        if let lessDate, let greaterDate {
+            searchMedia(lessDate: lessDate, greaterDate: greaterDate)
+        } else {
+            searchMedia(lessDate: Date(), greaterDate: Date.distantPast)
+        }
     }
 
     func searchMedia(lessDate: Date, greaterDate: Date) {
@@ -569,11 +573,11 @@ extension NCMedia {
         let results = await NextcloudKit.shared.searchMedia(path: self.mediaPath, lessDate: lessDate, greaterDate: greaterDate, elementDate: "d:getlastmodified/", limit: limit, showHiddenFiles: NCKeychain().showHiddenFiles, includeHiddenFiles: [], options: options)
 
         if results.account == account, results.error == .success {
-            let resultsConvertFiles = await NCManageDatabase.shared.convertFilesToMetadatas(results.files, useMetadataFolder: false)
+            let metadatas = await NCManageDatabase.shared.convertFilesToMetadatas(results.files, useMetadataFolder: false).metadatas
             let predicate = NSPredicate(format: "date > %@ AND date < %@", greaterDate as NSDate, lessDate as NSDate)
             let predicateResult = NSCompoundPredicate(andPredicateWithSubpredicates: [predicate, predicateDB])
             let metadatasResult = NCManageDatabase.shared.getMetadatas(predicate: predicateResult)
-            let updateMetadatas = NCManageDatabase.shared.updateMetadatas(resultsConvertFiles.metadatas, metadatasResult: metadatasResult, addCompareLivePhoto: false)
+            let updateMetadatas = NCManageDatabase.shared.updateMetadatas(metadatas, metadatasResult: metadatasResult, addCompareLivePhoto: false)
             let items = updateMetadatas.metadatasDelete.count + updateMetadatas.metadatasLocalUpdate.count + updateMetadatas.metadatasUpdate.count
             searchMediaInProgress = false
             return(account, lessDate, greaterDate, results.error, items)
