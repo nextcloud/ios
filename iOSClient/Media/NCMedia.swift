@@ -515,14 +515,10 @@ extension NCMedia {
 
         if let visibleCells = self.collectionView?.indexPathsForVisibleItems.sorted(by: { $0.row < $1.row }).compactMap({ self.collectionView?.cellForItem(at: $0) }) {
             if let cell = visibleCells.first as? NCGridMediaCell, let cellDate = cell.date {
-                if cell.date != self.metadatas.first?.date as Date? {
-                    lessDate = Calendar.current.date(byAdding: .second, value: 1, to: cellDate)!
-                }
+                lessDate = Calendar.current.date(byAdding: .second, value: 1, to: cellDate)!
             }
-            if let cell = visibleCells.last as? NCGridMediaCell {
-                if let cellDate = cell.date {
-                    greaterDate = Calendar.current.date(byAdding: .second, value: -1, to: cellDate)!
-                }
+            if let cell = visibleCells.last as? NCGridMediaCell, let cellDate = cell.date {
+                greaterDate = Calendar.current.date(byAdding: .second, value: -1, to: cellDate)!
             }
         }
 
@@ -547,9 +543,7 @@ extension NCMedia {
 
         Task {
             let results = await searchMedia(account: self.appDelegate.account, lessDate: lessDate, greaterDate: greaterDate, predicateDB: self.getPredicate(true))
-            if results.items > 0 {
-                self.reloadDataSourceWithCompletion { _ in }
-            }
+            self.reloadDataSourceWithCompletion { _ in }
 
             // Indicator OFF
             DispatchQueue.main.async {
