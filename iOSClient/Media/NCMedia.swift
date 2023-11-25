@@ -126,7 +126,7 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate, NCSelectDelegate {
             self.metadatas = metadatas
         }
         timerSearchNewMedia?.invalidate()
-        timerSearchNewMedia = Timer.scheduledTimer(timeInterval: timeIntervalSearchNewMedia, target: self, selector: #selector(searchNewMediaTimer), userInfo: nil, repeats: false)
+        timerSearchNewMedia = Timer.scheduledTimer(timeInterval: timeIntervalSearchNewMedia, target: self, selector: #selector(searchNewMedia), userInfo: nil, repeats: false)
 
         collectionView.reloadData()
     }
@@ -491,6 +491,7 @@ extension NCMedia {
 
     // MARK: - Search media
 
+    /*
     private func searchOldMedia() {
 
         var lessDate = Date()
@@ -500,11 +501,7 @@ extension NCMedia {
 
         searchMedia(lessDate: lessDate, greaterDate: Date.distantPast)
     }
-
-    @objc func searchNewMediaTimer() {
-
-        self.searchNewMedia()
-    }
+    */
 
     @objc func searchNewMedia() {
 
@@ -513,17 +510,20 @@ extension NCMedia {
 
         if let visibleCells = self.collectionView?.indexPathsForVisibleItems.sorted(by: { $0.row < $1.row }).compactMap({ self.collectionView?.cellForItem(at: $0) }) {
             if let cell = visibleCells.first as? NCGridMediaCell, let cellDate = cell.date {
-
                 if let date = NCManageDatabase.shared.getMetadata(predicate: getPredicate(), sorted: "date", ascending: false)?.date,
                    cellDate == date as Date {
                     lessDate = Date.distantFuture
                 } else {
                     lessDate = Calendar.current.date(byAdding: .second, value: 1, to: cellDate)!
-
                 }
             }
             if let cell = visibleCells.last as? NCGridMediaCell, let cellDate = cell.date {
-                greaterDate = Calendar.current.date(byAdding: .second, value: -1, to: cellDate)!
+                if let date = NCManageDatabase.shared.getMetadata(predicate: getPredicate(), sorted: "date", ascending: true)?.date,
+                   cellDate == date as Date {
+                    greaterDate = Date.distantPast
+                } else {
+                    greaterDate = Calendar.current.date(byAdding: .second, value: -1, to: cellDate)!
+                }
             }
         }
 
@@ -566,7 +566,7 @@ extension NCMedia {
         }
     }
 
-    func searchMedia(account: String, lessDate: Date, greaterDate: Date, limit: Int = 100, predicateDB: NSPredicate) async -> (account: String, lessDate: Date?, greaterDate: Date?, error: NKError, items: Int) {
+    func searchMedia(account: String, lessDate: Date, greaterDate: Date, limit: Int = 300, predicateDB: NSPredicate) async -> (account: String, lessDate: Date?, greaterDate: Date?, error: NKError, items: Int) {
 
         let options = NKRequestOptions(timeout: 300, queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
         let results = await NextcloudKit.shared.searchMedia(path: self.mediaPath, lessDate: lessDate, greaterDate: greaterDate, elementDate: "d:getlastmodified/", limit: limit, showHiddenFiles: NCKeychain().showHiddenFiles, includeHiddenFiles: [], options: options)
@@ -604,25 +604,13 @@ extension NCMedia: UIScrollViewDelegate {
     }
 
     func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
-
         if !decelerate {
-            timerSearchNewMedia?.invalidate()
-            timerSearchNewMedia = Timer.scheduledTimer(timeInterval: timeIntervalSearchNewMedia, target: self, selector: #selector(searchNewMediaTimer), userInfo: nil, repeats: false)
-
-            if scrollView.contentOffset.y >= (scrollView.contentSize.height - scrollView.frame.size.height) {
-                searchOldMedia()
-            }
+            timerSearchNewMedia = Timer.scheduledTimer(timeInterval: timeIntervalSearchNewMedia, target: self, selector: #selector(searchNewMedia), userInfo: nil, repeats: false)
         }
     }
 
     func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
-
-        timerSearchNewMedia?.invalidate()
-        timerSearchNewMedia = Timer.scheduledTimer(timeInterval: timeIntervalSearchNewMedia, target: self, selector: #selector(searchNewMediaTimer), userInfo: nil, repeats: false)
-
-        if scrollView.contentOffset.y >= (scrollView.contentSize.height - scrollView.frame.size.height) {
-            searchOldMedia()
-        }
+        timerSearchNewMedia = Timer.scheduledTimer(timeInterval: timeIntervalSearchNewMedia, target: self, selector: #selector(searchNewMedia), userInfo: nil, repeats: false)
     }
 
     func scrollViewDidScrollToTop(_ scrollView: UIScrollView) {
