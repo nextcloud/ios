@@ -516,7 +516,7 @@ extension NCMedia {
                 lessDate = Date.distantFuture
             } else {
                 if let date = firstCellDate {
-                    lessDate = Calendar.current.date(byAdding: .second, value: 1, to: date) ?? Date.distantFuture
+                    lessDate = Calendar.current.date(byAdding: .second, value: 1, to: date)!
                 } else {
                     lessDate = Date.distantFuture
                 }
@@ -528,7 +528,7 @@ extension NCMedia {
                 greaterDate = Date.distantPast
             } else {
                 if let date = lastCellDate {
-                    greaterDate = Calendar.current.date(byAdding: .second, value: -1, to: date) ??  Date.distantPast
+                    greaterDate = Calendar.current.date(byAdding: .second, value: -1, to: date)!
                 } else {
                     greaterDate = Date.distantPast
                 }
@@ -545,6 +545,7 @@ extension NCMedia {
     func searchMedia(lessDate: Date, greaterDate: Date) {
 
         if searchMediaInProgress { return }
+        searchMediaInProgress = true
 
         // Indicator ON
         DispatchQueue.main.async {
@@ -557,7 +558,6 @@ extension NCMedia {
         }
 
         Task {
-            searchMediaInProgress = true
             let results = await searchMedia(account: self.appDelegate.account, lessDate: lessDate, greaterDate: greaterDate, predicateDB: self.getPredicate(true))
             print("Media results items: \(results.items)")
             if results.error != .success {
