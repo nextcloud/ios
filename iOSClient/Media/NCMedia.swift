@@ -531,6 +531,10 @@ extension NCMedia {
 
     func searchMedia(lessDate: Date, greaterDate: Date) {
 
+        if searchMediaInProgress {
+            return
+        }
+
         // Indicator ON
         DispatchQueue.main.async {
             self.collectionView.reloadData()
@@ -542,7 +546,10 @@ extension NCMedia {
         }
 
         Task {
+            searchMediaInProgress = true
             let results = await searchMedia(account: self.appDelegate.account, lessDate: lessDate, greaterDate: greaterDate, predicateDB: self.getPredicate(true))
+            print("Items: \(results.items)")
+            searchMediaInProgress = false
             self.reloadDataSourceWithCompletion { _ in }
 
             // Indicator OFF
@@ -553,17 +560,9 @@ extension NCMedia {
         }
     }
 
-    func searchMedia(account: String, lessDate: Date, greaterDate: Date, predicateDB: NSPredicate) async -> (account: String, lessDate: Date?, greaterDate: Date?, error: NKError, items: Int) {
+    func searchMedia(account: String, lessDate: Date, greaterDate: Date, limit: Int = 100, predicateDB: NSPredicate) async -> (account: String, lessDate: Date?, greaterDate: Date?, error: NKError, items: Int) {
 
-        if searchMediaInProgress {
-            return(account, lessDate, greaterDate, NKError(), 0)
-        } else {
-            searchMediaInProgress = true
-        }
-
-        let limit: Int = 100
         let options = NKRequestOptions(timeout: 300, queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
-
         let results = await NextcloudKit.shared.searchMedia(path: self.mediaPath, lessDate: lessDate, greaterDate: greaterDate, elementDate: "d:getlastmodified/", limit: limit, showHiddenFiles: NCKeychain().showHiddenFiles, includeHiddenFiles: [], options: options)
 
         if results.account == account, results.error == .success {
@@ -573,10 +572,8 @@ extension NCMedia {
             let metadatasResult = NCManageDatabase.shared.getMetadatas(predicate: predicateResult)
             let updateMetadatas = NCManageDatabase.shared.updateMetadatas(metadatas, metadatasResult: metadatasResult, addCompareLivePhoto: false)
             let items = updateMetadatas.metadatasDelete.count + updateMetadatas.metadatasLocalUpdate.count + updateMetadatas.metadatasUpdate.count
-            searchMediaInProgress = false
             return(account, lessDate, greaterDate, results.error, items)
         } else {
-            searchMediaInProgress = false
             return(account, lessDate, greaterDate, results.error, 0)
         }
     }
