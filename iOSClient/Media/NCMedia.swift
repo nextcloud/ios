@@ -510,20 +510,28 @@ extension NCMedia {
 
         if let visibleCells = self.collectionView?.indexPathsForVisibleItems.sorted(by: { $0.row < $1.row }).compactMap({ self.collectionView?.cellForItem(at: $0) }) {
             // first date
-            let firstCellDate = (visibleCells.first as? NCGridMediaCell)?.date ?? Date.distantFuture
+            let firstCellDate = (visibleCells.first as? NCGridMediaCell)?.date
             let firstMetadataDate = metadatas.first?.date as? Date
             if firstCellDate == firstMetadataDate {
                 lessDate = Date.distantFuture
             } else {
-                lessDate = Calendar.current.date(byAdding: .second, value: 1, to: firstCellDate)!
+                if let date = firstCellDate {
+                    lessDate = Calendar.current.date(byAdding: .second, value: 1, to: date) ?? Date.distantFuture
+                } else {
+                    lessDate = Date.distantFuture
+                }
             }
             // last date
-            let lastCellDate = (visibleCells.last as? NCGridMediaCell)?.date ?? Date.distantPast
+            let lastCellDate = (visibleCells.last as? NCGridMediaCell)?.date
             let lastMetadataDate = metadatas.last?.date as? Date
             if lastCellDate == lastMetadataDate {
                 greaterDate = Date.distantPast
             } else {
-                greaterDate = Calendar.current.date(byAdding: .second, value: -1, to: lastCellDate)!
+                if let date = lastCellDate {
+                    greaterDate = Calendar.current.date(byAdding: .second, value: -1, to: date) ??  Date.distantPast
+                } else {
+                    greaterDate = Date.distantPast
+                }
             }
         }
 
