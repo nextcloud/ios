@@ -531,9 +531,7 @@ extension NCMedia {
 
     func searchMedia(lessDate: Date, greaterDate: Date) {
 
-        if searchMediaInProgress {
-            return
-        }
+        if searchMediaInProgress { return }
 
         // Indicator ON
         DispatchQueue.main.async {
@@ -548,7 +546,10 @@ extension NCMedia {
         Task {
             searchMediaInProgress = true
             let results = await searchMedia(account: self.appDelegate.account, lessDate: lessDate, greaterDate: greaterDate, predicateDB: self.getPredicate(true))
-            print("Items: \(results.items)")
+            print("Media results items: \(results.items)")
+            if results.error != .success {
+                NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Media search new media error code \(results.error.errorCode) " + results.error.errorDescription)
+            }
             searchMediaInProgress = false
             self.reloadDataSourceWithCompletion { _ in }
 
