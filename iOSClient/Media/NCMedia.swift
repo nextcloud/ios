@@ -509,21 +509,21 @@ extension NCMedia {
         var greaterDate: Date?
 
         if let visibleCells = self.collectionView?.indexPathsForVisibleItems.sorted(by: { $0.row < $1.row }).compactMap({ self.collectionView?.cellForItem(at: $0) }) {
-            if let cell = visibleCells.first as? NCGridMediaCell, let cellDate = cell.date {
-                if let date = NCManageDatabase.shared.getMetadata(predicate: getPredicate(), sorted: "date", ascending: false)?.date,
-                   cellDate == date as Date {
-                    lessDate = Date.distantFuture
-                } else {
-                    lessDate = Calendar.current.date(byAdding: .second, value: 1, to: cellDate)!
-                }
+            // first date
+            let firstCellDate = (visibleCells.first as? NCGridMediaCell)?.date ?? Date.distantFuture
+            let firstMetadataDate = metadatas.first?.date as? Date
+            if firstCellDate == firstMetadataDate {
+                lessDate = Date.distantFuture
+            } else {
+                lessDate = Calendar.current.date(byAdding: .second, value: 1, to: firstCellDate)!
             }
-            if let cell = visibleCells.last as? NCGridMediaCell, let cellDate = cell.date {
-                if let date = NCManageDatabase.shared.getMetadata(predicate: getPredicate(), sorted: "date", ascending: true)?.date,
-                   cellDate == date as Date {
-                    greaterDate = Date.distantPast
-                } else {
-                    greaterDate = Calendar.current.date(byAdding: .second, value: -1, to: cellDate)!
-                }
+            // last date
+            let lastCellDate = (visibleCells.last as? NCGridMediaCell)?.date ?? Date.distantPast
+            let lastMetadataDate = metadatas.last?.date as? Date
+            if lastCellDate == lastMetadataDate {
+                greaterDate = Date.distantPast
+            } else {
+                greaterDate = Calendar.current.date(byAdding: .second, value: -1, to: lastCellDate)!
             }
         }
 
@@ -566,7 +566,7 @@ extension NCMedia {
         }
     }
 
-    func searchMedia(account: String, lessDate: Date, greaterDate: Date, limit: Int = 300, predicateDB: NSPredicate) async -> (account: String, lessDate: Date?, greaterDate: Date?, error: NKError, items: Int) {
+    func searchMedia(account: String, lessDate: Date, greaterDate: Date, limit: Int = 200, predicateDB: NSPredicate) async -> (account: String, lessDate: Date?, greaterDate: Date?, error: NKError, items: Int) {
 
         let options = NKRequestOptions(timeout: 300, queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
         let results = await NextcloudKit.shared.searchMedia(path: self.mediaPath, lessDate: lessDate, greaterDate: greaterDate, elementDate: "d:getlastmodified/", limit: limit, showHiddenFiles: NCKeychain().showHiddenFiles, includeHiddenFiles: [], options: options)
