@@ -49,6 +49,7 @@ import NextcloudKit
     private var ocIdEtag: [String: String] = [:]
     private var metadatas: [tableMetadata]?
     private var livePhoto: Bool = false
+    var mediaSortDate: String = NCKeychain().mediaSortDate
     var isLivePhotoEnable: Bool {
         return livePhoto
     }
@@ -153,7 +154,8 @@ import NextcloudKit
 
         var metadatas = NCManageDatabase.shared.getMetadatasMedia(predicate: predicate ?? predicateDefault, livePhoto: livePhoto)
 
-        switch NCKeychain().mediaSortDate {
+        self.mediaSortDate = NCKeychain().mediaSortDate
+        switch self.mediaSortDate {
         case "date":
             metadatas = metadatas.sorted(by: {($0.date as Date) > ($1.date as Date)})
         case "creationDate":

@@ -378,8 +378,16 @@ extension NCMedia: UICollectionViewDataSource {
             let metadata = self.metadatas[indexPath.row]
 
             self.cellHeigth = cell.frame.size.height
-
-            cell.date = metadata.date as Date
+            switch NCImageCache.shared.mediaSortDate {
+            case "date":
+                cell.date = metadata.date as Date
+            case "creationDate":
+                cell.date = metadata.creationDate as Date
+            case "uploadDate":
+                cell.date = metadata.uploadDate as Date
+            default:
+                break
+            }
             cell.fileObjectId = metadata.ocId
             cell.indexPath = indexPath
             cell.fileUser = metadata.ownerId
@@ -495,11 +503,23 @@ extension NCMedia {
 
         var lessDate: Date?
         var greaterDate: Date?
+        var firstMetadataDate = metadatas.first?.date as? Date
+        var lastMetadataDate = metadatas.last?.date as? Date
+
+        switch NCImageCache.shared.mediaSortDate {
+        case "creationDate":
+            firstMetadataDate = metadatas.first?.creationDate as? Date
+            lastMetadataDate = metadatas.last?.creationDate as? Date
+        case "uploadDate":
+            firstMetadataDate = metadatas.first?.uploadDate as? Date
+            lastMetadataDate = metadatas.last?.uploadDate as? Date
+        default:
+            break
+        }
 
         if let visibleCells = self.collectionView?.indexPathsForVisibleItems.sorted(by: { $0.row < $1.row }).compactMap({ self.collectionView?.cellForItem(at: $0) }) {
             // first date
             let firstCellDate = (visibleCells.first as? NCGridMediaCell)?.date
-            let firstMetadataDate = metadatas.first?.date as? Date
             if firstCellDate == firstMetadataDate {
                 lessDate = Date.distantFuture
             } else {
@@ -511,7 +531,6 @@ extension NCMedia {
             }
             // last date
             let lastCellDate = (visibleCells.last as? NCGridMediaCell)?.date
-            let lastMetadataDate = metadatas.last?.date as? Date
             if lastCellDate == lastMetadataDate {
                 greaterDate = Date.distantPast
             } else {
