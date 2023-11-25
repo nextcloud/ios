@@ -521,12 +521,10 @@ extension NCMedia {
                     greaterDate = Date.distantPast
                 }
             }
-        }
 
-        if let lessDate, let greaterDate {
-            searchMedia(lessDate: lessDate, greaterDate: greaterDate)
-        } else {
-            searchMedia(lessDate: Date(), greaterDate: Date.distantPast)
+            if let lessDate, let greaterDate {
+                searchMedia(lessDate: lessDate, greaterDate: greaterDate)
+            }
         }
     }
 
