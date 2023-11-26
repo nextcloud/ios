@@ -1079,7 +1079,7 @@ extension NCManageDatabase {
 
     func getMetadatasMedia(predicate: NSPredicate, livePhoto: Bool) -> [tableMetadata] {
 
-        var resultsMetadatas: [tableMetadata] = []
+        var arrayMetadatas = [tableMetadata]()
         let listMetadata = List<tableMetadata>()
 
         do {
@@ -1109,17 +1109,17 @@ extension NCManageDatabase {
                         listMetadata.append(metadata)
                     }
                 }
-                resultsMetadatas = Array(listMetadata)
+                arrayMetadatas = Array(listMetadata)
             } else {
-                resultsMetadatas = Array(results)
+                arrayMetadatas = Array(results)
             }
-            resultsMetadatas = resultsMetadatas.sorted(by: {($0.date as Date) > ($1.date as Date)})
+            arrayMetadatas = arrayMetadatas.sorted(by: {($0.date as Date) > ($1.date as Date)})
         } catch let error {
             NextcloudKit.shared.nkCommonInstance.writeLog("Could not access to database: \(error)")
         }
 
-        var metadatas: [tableMetadata] = []
-        for metadata in resultsMetadatas { metadatas.append(tableMetadata(value: metadata)) }
+        var metadatas = [tableMetadata]()
+        for metadata in arrayMetadatas { metadatas.append(tableMetadata(value: metadata)) }
         return metadatas
     }
 
