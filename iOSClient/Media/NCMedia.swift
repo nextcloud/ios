@@ -540,8 +540,8 @@ extension NCMedia {
         if results.account == account, results.error == .success {
             let metadatas = await NCManageDatabase.shared.convertFilesToMetadatas(results.files, useMetadataFolder: false).metadatas
             let predicate = NSPredicate(format: "date > %@ AND date < %@", greaterDate as NSDate, lessDate as NSDate)
-            let subPredicate = NSCompoundPredicate(andPredicateWithSubpredicates: [predicate, predicateDB])
-            let metadatasResult = NCManageDatabase.shared.getMetadatas(predicate: subPredicate)
+            let compoundPredicate = NSCompoundPredicate(andPredicateWithSubpredicates: [predicate, predicateDB])
+            let metadatasResult = NCManageDatabase.shared.getMetadatas(predicate: compoundPredicate)
             let updateMetadatas = NCManageDatabase.shared.updateMetadatas(metadatas, metadatasResult: metadatasResult, addCompareLivePhoto: false)
             let items = updateMetadatas.metadatasDelete.count + updateMetadatas.metadatasLocalUpdate.count + updateMetadatas.metadatasUpdate.count
             return(account, lessDate, greaterDate, results.error, items)
