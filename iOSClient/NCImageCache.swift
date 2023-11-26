@@ -49,10 +49,7 @@ import NextcloudKit
     private var ocIdEtag: [String: String] = [:]
     private var metadatas: [tableMetadata]?
     private var livePhoto: Bool = false
-    var mediaSortDate: String = NCKeychain().mediaSortDate
-    var isLivePhotoEnable: Bool {
-        return livePhoto
-    }
+    var isLivePhotoEnable: Bool { return livePhoto }
 
     override private init() {}
 
@@ -147,22 +144,10 @@ import NextcloudKit
 
         guard let account = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", account)) else { return [] }
         let startServerUrl = NCUtilityFileSystem().getHomeServer(urlBase: account.urlBase, userId: account.userId) + account.mediaPath
-
         let predicateDefault = NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND (classFile == %@ OR classFile == %@) AND NOT (session CONTAINS[c] 'upload')", account.account, startServerUrl, NKCommon.TypeClassFile.image.rawValue, NKCommon.TypeClassFile.video.rawValue)
 
         livePhoto = NCKeychain().livePhoto
-
-        var metadatas = NCManageDatabase.shared.getMetadatasMedia(predicate: predicate ?? predicateDefault, livePhoto: livePhoto)
-
-        self.mediaSortDate = NCKeychain().mediaSortDate
-        switch self.mediaSortDate {
-        case "date": metadatas = metadatas.sorted(by: {($0.date as Date) > ($1.date as Date)})
-        case "creationDate": metadatas = metadatas.sorted(by: {($0.creationDate as Date) > ($1.creationDate as Date)})
-        case "uploadDate": metadatas = metadatas.sorted(by: {($0.uploadDate as Date) > ($1.uploadDate as Date)})
-        default: break
-        }
-
-        return metadatas
+        return NCManageDatabase.shared.getMetadatasMedia(predicate: predicate ?? predicateDefault, livePhoto: livePhoto)
     }
 
     // MARK: -

@@ -365,12 +365,7 @@ extension NCMedia: UICollectionViewDataSource {
             let metadata = self.metadatas[indexPath.row]
 
             self.cellHeigth = cell.frame.size.height
-            switch NCImageCache.shared.mediaSortDate {
-            case "date": cell.date = metadata.date as Date
-            case "creationDate": cell.date = metadata.creationDate as Date
-            case "uploadDate": cell.date = metadata.uploadDate as Date
-            default: break
-            }
+            cell.date = metadata.date as Date
             cell.fileObjectId = metadata.ocId
             cell.indexPath = indexPath
             cell.fileUser = metadata.ownerId
@@ -497,17 +492,6 @@ extension NCMedia {
             self.collectionView.reloadData()
         }
 
-        switch NCImageCache.shared.mediaSortDate {
-        case "creationDate":
-            firstMetadataDate = metadatas.first?.creationDate as? Date
-            lastMetadataDate = metadatas.last?.creationDate as? Date
-        case "uploadDate":
-            firstMetadataDate = metadatas.first?.uploadDate as? Date
-            lastMetadataDate = metadatas.last?.uploadDate as? Date
-        default:
-            break
-        }
-
         if let visibleCells = self.collectionView?.indexPathsForVisibleItems.sorted(by: { $0.row < $1.row }).compactMap({ self.collectionView?.cellForItem(at: $0) }) {
             // first date
             let firstCellDate = (visibleCells.first as? NCGridMediaCell)?.date
@@ -555,12 +539,7 @@ extension NCMedia {
 
         if results.account == account, results.error == .success {
             let metadatas = await NCManageDatabase.shared.convertFilesToMetadatas(results.files, useMetadataFolder: false).metadatas
-            var predicate = NSPredicate(format: "date > %@ AND date < %@", greaterDate as NSDate, lessDate as NSDate)
-            switch NCImageCache.shared.mediaSortDate {
-            case "creationDate": predicate = NSPredicate(format: "creationDate > %@ AND creationDate < %@", greaterDate as NSDate, lessDate as NSDate)
-            case "uploadDate": predicate = NSPredicate(format: "uploadDate > %@ AND uploadDate < %@", greaterDate as NSDate, lessDate as NSDate)
-            default: break
-            }
+            let predicate = NSPredicate(format: "date > %@ AND date < %@", greaterDate as NSDate, lessDate as NSDate)
             let subPredicate = NSCompoundPredicate(andPredicateWithSubpredicates: [predicate, predicateDB])
             let metadatasResult = NCManageDatabase.shared.getMetadatas(predicate: subPredicate)
             let updateMetadatas = NCManageDatabase.shared.updateMetadatas(metadatas, metadatasResult: metadatasResult, addCompareLivePhoto: false)

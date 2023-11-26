@@ -56,6 +56,27 @@ extension NCMedia {
 
             actions.append(
                 NCMenuAction(
+                    title: NSLocalizedString("_select_media_folder_", comment: ""),
+                    icon: utility.loadImage(named: "folder"),
+                    action: { _ in
+                        if let navigationController = UIStoryboard(name: "NCSelect", bundle: nil).instantiateInitialViewController() as? UINavigationController,
+                           let viewController = navigationController.topViewController as? NCSelect {
+
+                            viewController.delegate = self
+                            viewController.typeOfCommandView = .select
+                            viewController.type = "mediaFolder"
+                            viewController.selectIndexPath = self.selectIndexPath
+
+                            self.present(navigationController, animated: true, completion: nil)
+                        }
+                    }
+                )
+            )
+
+            actions.append(.seperator(order: 0))
+
+            actions.append(
+                NCMenuAction(
                     title: NSLocalizedString("_media_viewimage_show_", comment: ""),
                     icon: utility.loadImage(named: "photo"),
                     selected: showOnlyImages,
@@ -100,27 +121,6 @@ extension NCMedia {
 
             actions.append(
                 NCMenuAction(
-                    title: NSLocalizedString("_select_media_folder_", comment: ""),
-                    icon: utility.loadImage(named: "folder"),
-                    action: { _ in
-                        if let navigationController = UIStoryboard(name: "NCSelect", bundle: nil).instantiateInitialViewController() as? UINavigationController,
-                           let viewController = navigationController.topViewController as? NCSelect {
-
-                            viewController.delegate = self
-                            viewController.typeOfCommandView = .select
-                            viewController.type = "mediaFolder"
-                            viewController.selectIndexPath = self.selectIndexPath
-
-                            self.present(navigationController, animated: true, completion: nil)
-                        }
-                    }
-                )
-            )
-
-            actions.append(.seperator(order: 0))
-
-            actions.append(
-                NCMenuAction(
                     title: NSLocalizedString("_play_from_files_", comment: ""),
                     icon: utility.loadImage(named: "play.circle"),
                     action: { _ in
@@ -154,47 +154,6 @@ extension NCMedia {
 
                         self.present(alert, animated: true)
 
-                    }
-                )
-            )
-
-            actions.append(.seperator(order: 0))
-
-            actions.append(
-                NCMenuAction(
-                    title: NSLocalizedString("_media_by_modified_date_", comment: ""),
-                    icon: utility.loadImage(named: "circle.grid.cross.up.fill"),
-                    selected: NCKeychain().mediaSortDate == "date",
-                    on: true,
-                    action: { _ in
-                        NCKeychain().mediaSortDate = "date"
-                        self.reloadDataSource { }
-                    }
-                )
-            )
-
-            actions.append(
-                NCMenuAction(
-                    title: NSLocalizedString("_media_by_created_date_", comment: ""),
-                    icon: utility.loadImage(named: "circle.grid.cross.down.fill"),
-                    selected: NCKeychain().mediaSortDate == "creationDate",
-                    on: true,
-                    action: { _ in
-                        NCKeychain().mediaSortDate = "creationDate"
-                        self.reloadDataSource { }
-                    }
-                )
-            )
-
-            actions.append(
-                NCMenuAction(
-                    title: NSLocalizedString("_media_by_upload_date_", comment: ""),
-                    icon: utility.loadImage(named: "circle.grid.cross.right.fill"),
-                    selected: NCKeychain().mediaSortDate == "uploadDate",
-                    on: true,
-                    action: { _ in
-                        NCKeychain().mediaSortDate = "uploadDate"
-                        self.reloadDataSource { }
                     }
                 )
             )
