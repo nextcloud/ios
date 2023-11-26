@@ -551,11 +551,7 @@ extension NCMedia {
         // Indicator ON
         DispatchQueue.main.async {
             self.collectionView.reloadData()
-            var bottom: CGFloat = 0
-            if let mainTabBar = self.tabBarController?.tabBar as? NCMainTabBar {
-                bottom = -mainTabBar.getHeight()
-            }
-            NCActivityIndicator.shared.start(backgroundView: self.view, bottom: bottom - 5, style: .medium)
+            self.mediaCommandView?.activityIndicator.startAnimating()
         }
 
         Task {
@@ -569,7 +565,7 @@ extension NCMedia {
 
             // Indicator OFF
             DispatchQueue.main.async {
-                NCActivityIndicator.shared.stop()
+                self.mediaCommandView?.activityIndicator.stopAnimating()
                 self.collectionView.reloadData()
             }
         }
