@@ -26,7 +26,7 @@ import NextcloudKit
 import JGProgressHUD
 import Queuer
 
-class NCMedia: UIViewController, NCEmptyDataSetDelegate, NCSelectDelegate {
+class NCMedia: UIViewController, NCEmptyDataSetDelegate {
 
     @IBOutlet weak var collectionView: UICollectionView!
 
@@ -262,19 +262,6 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate, NCSelectDelegate {
     @objc func openMenuButtonMore(_ sender: Any) {
 
         toggleMenu()
-    }
-
-    // MARK: Select Path
-
-    func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String, items: [Any], indexPath: [IndexPath], overwrite: Bool, copy: Bool, move: Bool) {
-
-        guard let serverUrl = serverUrl else { return }
-        let home = utilityFileSystem.getHomeServer(urlBase: appDelegate.urlBase, userId: appDelegate.userId)
-        mediaPath = serverUrl.replacingOccurrences(of: home, with: "")
-        NCManageDatabase.shared.setAccountMediaPath(mediaPath, account: appDelegate.account)
-        reloadDataSource {
-            self.searchMediaUI()
-        }
     }
 
     // MARK: - Empty
@@ -612,6 +599,22 @@ extension NCMedia: UIScrollViewDelegate {
 
         let y = view.safeAreaInsets.top
         scrollView.contentOffset.y = -(insetsTop + y)
+    }
+}
+
+// MARK: - Select
+
+extension NCMedia: NCSelectDelegate {
+
+    func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String, items: [Any], indexPath: [IndexPath], overwrite: Bool, copy: Bool, move: Bool) {
+
+        guard let serverUrl = serverUrl else { return }
+        let home = utilityFileSystem.getHomeServer(urlBase: appDelegate.urlBase, userId: appDelegate.userId)
+        mediaPath = serverUrl.replacingOccurrences(of: home, with: "")
+        NCManageDatabase.shared.setAccountMediaPath(mediaPath, account: appDelegate.account)
+        reloadDataSource {
+            self.searchMediaUI()
+        }
     }
 }
 
