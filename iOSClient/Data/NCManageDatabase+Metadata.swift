@@ -1079,47 +1079,45 @@ extension NCManageDatabase {
 
     func getMetadatasMedia(predicate: NSPredicate, livePhoto: Bool) -> [tableMetadata] {
 
-        var arrayMetadatas = [tableMetadata]()
-        let listMetadata = List<tableMetadata>()
+        var metadatas = [tableMetadata]()
 
         do {
+            var metadatasResults = [tableMetadata]()
             let realm = try Realm()
             let sortProperties = [SortDescriptor(keyPath: "serverUrl", ascending: false), SortDescriptor(keyPath: "fileNameView", ascending: false)]
-            let results = realm.objects(tableMetadata.self).filter(predicate).sorted(by: sortProperties)
+            for result in realm.objects(tableMetadata.self).filter(predicate).sorted(by: sortProperties) { metadatasResults.append(tableMetadata(value: result))
+            }
             if livePhoto {
-                for index in results.indices {
-                    let metadata = results[index]
-                    if index < results.count - 1, metadata.fileNoExtension == results[index + 1].fileNoExtension {
+                for index in metadatasResults.indices {
+                    let metadata = metadatasResults[index]
+                    if index < metadatasResults.count - 1, metadata.fileNoExtension == metadatasResults[index + 1].fileNoExtension {
                         if !metadata.livePhoto {
                             metadata.livePhoto = true
                         }
-                        if !results[index + 1].livePhoto {
-                            results[index + 1].livePhoto = true
+                        if !metadatasResults[index + 1].livePhoto {
+                            metadatasResults[index + 1].livePhoto = true
                         }
-                        let metadata1 = tableMetadata(value: results[index + 1])
-                        let metadata2 = tableMetadata(value: results[index])
+                        let metadata1 = metadatasResults[index + 1]
+                        let metadata2 = metadatasResults[index]
                         NCLivePhoto().setLivePhoto(metadata1: metadata1, metadata2: metadata2)
                     }
                     if metadata.livePhoto {
                         if metadata.classFile == NKCommon.TypeClassFile.image.rawValue {
-                            listMetadata.append(metadata)
+                            metadatas.append(metadata)
                         }
                         continue
                     } else {
-                        listMetadata.append(metadata)
+                        metadatas.append(metadata)
                     }
                 }
-                arrayMetadatas = Array(listMetadata)
             } else {
-                arrayMetadatas = Array(results)
+                metadatas = metadatasResults
             }
-            arrayMetadatas = arrayMetadatas.sorted(by: {($0.date as Date) > ($1.date as Date)})
         } catch let error {
             NextcloudKit.shared.nkCommonInstance.writeLog("Could not access to database: \(error)")
         }
 
-        var metadatas = [tableMetadata]()
-        for metadata in arrayMetadatas { metadatas.append(tableMetadata(value: metadata)) }
+        metadatas = metadatas.sorted(by: {($0.date as Date) > ($1.date as Date)})
         return metadatas
     }
 
