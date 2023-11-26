@@ -125,10 +125,9 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
         if let metadatas = NCImageCache.shared.initialMetadatas() {
             self.metadatas = metadatas
         }
-        timerSearchNewMedia?.invalidate()
-        timerSearchNewMedia = Timer.scheduledTimer(timeInterval: timeIntervalSearchNewMedia, target: self, selector: #selector(searchMediaUI), userInfo: nil, repeats: false)
 
         collectionView.reloadData()
+        searchMediaUI()
     }
 
     override func viewDidAppear(_ animated: Bool) {
