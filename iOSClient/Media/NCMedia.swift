@@ -126,8 +126,7 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
             self.metadatas = metadatas
         }
 
-        collectionView.reloadData()
-        searchMediaUI()
+        timerSearchNewMedia = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(searchMediaUI), userInfo: nil, repeats: false)
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -480,8 +479,8 @@ extension NCMedia {
 
         var lessDate: Date?
         var greaterDate: Date?
-        var firstMetadataDate = metadatas.first?.date as? Date
-        var lastMetadataDate = metadatas.last?.date as? Date
+        let firstMetadataDate = metadatas.first?.date as? Date
+        let lastMetadataDate = metadatas.last?.date as? Date
 
         if searchMediaInProgress { return }
         searchMediaInProgress = true
