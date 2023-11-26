@@ -126,7 +126,7 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate, NCSelectDelegate {
             self.metadatas = metadatas
         }
         timerSearchNewMedia?.invalidate()
-        timerSearchNewMedia = Timer.scheduledTimer(timeInterval: timeIntervalSearchNewMedia, target: self, selector: #selector(searchNewMedia), userInfo: nil, repeats: false)
+        timerSearchNewMedia = Timer.scheduledTimer(timeInterval: timeIntervalSearchNewMedia, target: self, selector: #selector(searchMediaUI), userInfo: nil, repeats: false)
 
         collectionView.reloadData()
     }
@@ -197,7 +197,7 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate, NCSelectDelegate {
               account == appDelegate.account
         else { return }
 
-        self.reloadDataSourceWithCompletion { _ in }
+        self.reloadDataSource {}
     }
 
     @objc func uploadedFile(_ notification: NSNotification) {
@@ -209,7 +209,7 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate, NCSelectDelegate {
               account == appDelegate.account
         else { return }
 
-        self.reloadDataSourceWithCompletion { _ in }
+        self.reloadDataSource {}
     }
 
     // MARK: - Command
@@ -272,8 +272,8 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate, NCSelectDelegate {
         let home = utilityFileSystem.getHomeServer(urlBase: appDelegate.urlBase, userId: appDelegate.userId)
         mediaPath = serverUrl.replacingOccurrences(of: home, with: "")
         NCManageDatabase.shared.setAccountMediaPath(mediaPath, account: appDelegate.account)
-        reloadDataSourceWithCompletion { _ in
-            self.searchNewMedia()
+        reloadDataSource {
+            self.searchMediaUI()
         }
     }
 
@@ -462,7 +462,7 @@ extension NCMedia {
         }
     }
 
-    @objc func reloadDataSourceWithCompletion(_ completion: @escaping (_ metadatas: [tableMetadata]) -> Void) {
+    @objc func reloadDataSource(completion: @escaping () -> Void) {
         guard !appDelegate.account.isEmpty else { return }
 
         DispatchQueue.global().async {
@@ -471,7 +471,7 @@ extension NCMedia {
                 self.reloadDataThenPerform {
                     self.updateMediaControlVisibility()
                     self.mediaCommandTitle()
-                    completion(self.metadatas)
+                    completion()
                 }
             }
         }
@@ -495,12 +495,20 @@ extension NCMedia {
 
     // MARK: - Search media
 
-    @objc func searchNewMedia() {
+    @objc func searchMediaUI() {
 
         var lessDate: Date?
         var greaterDate: Date?
         var firstMetadataDate = metadatas.first?.date as? Date
         var lastMetadataDate = metadatas.last?.date as? Date
+
+        if searchMediaInProgress { return }
+        searchMediaInProgress = true
+
+        DispatchQueue.main.async {
+            self.mediaCommandView?.activityIndicator.startAnimating()
+            self.collectionView.reloadData()
+        }
 
         switch NCImageCache.shared.mediaSortDate {
         case "creationDate":
@@ -538,35 +546,17 @@ extension NCMedia {
             }
 
             if let lessDate, let greaterDate {
-                searchMedia(lessDate: lessDate, greaterDate: greaterDate)
-            }
-        }
-    }
+                Task {
+                    let results = await searchMedia(account: self.appDelegate.account, lessDate: lessDate, greaterDate: greaterDate, predicateDB: self.getPredicate(true))
+                    print("Media results items: \(results.items)")
+                    if results.error != .success {
+                        NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Media search new media error code \(results.error.errorCode) " + results.error.errorDescription)
+                    }
 
-    func searchMedia(lessDate: Date, greaterDate: Date) {
-
-        if searchMediaInProgress { return }
-        searchMediaInProgress = true
-
-        // Indicator ON
-        DispatchQueue.main.async {
-            self.collectionView.reloadData()
-            self.mediaCommandView?.activityIndicator.startAnimating()
-        }
-
-        Task {
-            let results = await searchMedia(account: self.appDelegate.account, lessDate: lessDate, greaterDate: greaterDate, predicateDB: self.getPredicate(true))
-            print("Media results items: \(results.items)")
-            if results.error != .success {
-                NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Media search new media error code \(results.error.errorCode) " + results.error.errorDescription)
-            }
-            searchMediaInProgress = false
-            self.reloadDataSourceWithCompletion { _ in }
-
-            // Indicator OFF
-            DispatchQueue.main.async {
-                self.mediaCommandView?.activityIndicator.stopAnimating()
-                self.collectionView.reloadData()
+                    DispatchQueue.main.async { self.mediaCommandView?.activityIndicator.stopAnimating() }
+                    searchMediaInProgress = false
+                    self.reloadDataSource { }
+                }
             }
         }
     }
@@ -610,12 +600,12 @@ extension NCMedia: UIScrollViewDelegate {
 
     func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
         if !decelerate {
-            timerSearchNewMedia = Timer.scheduledTimer(timeInterval: timeIntervalSearchNewMedia, target: self, selector: #selector(searchNewMedia), userInfo: nil, repeats: false)
+            timerSearchNewMedia = Timer.scheduledTimer(timeInterval: timeIntervalSearchNewMedia, target: self, selector: #selector(searchMediaUI), userInfo: nil, repeats: false)
         }
     }
 
     func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
-        timerSearchNewMedia = Timer.scheduledTimer(timeInterval: timeIntervalSearchNewMedia, target: self, selector: #selector(searchNewMedia), userInfo: nil, repeats: false)
+        timerSearchNewMedia = Timer.scheduledTimer(timeInterval: timeIntervalSearchNewMedia, target: self, selector: #selector(searchMediaUI), userInfo: nil, repeats: false)
     }
 
     func scrollViewDidScrollToTop(_ scrollView: UIScrollView) {
