@@ -532,9 +532,9 @@ extension NCMedia {
         }
     }
 
-    func searchMedia(account: String, lessDate: Date, greaterDate: Date, limit: Int = 200, predicateDB: NSPredicate) async -> (account: String, lessDate: Date?, greaterDate: Date?, error: NKError, items: Int) {
+    func searchMedia(account: String, lessDate: Date, greaterDate: Date, limit: Int = 200, timeout: TimeInterval = 300, predicateDB: NSPredicate) async -> (account: String, lessDate: Date?, greaterDate: Date?, error: NKError, items: Int) {
 
-        let options = NKRequestOptions(timeout: 300, queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
+        let options = NKRequestOptions(timeout: timeout, queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
         let results = await NextcloudKit.shared.searchMedia(path: self.mediaPath, lessDate: lessDate, greaterDate: greaterDate, elementDate: "d:getlastmodified/", limit: limit, showHiddenFiles: NCKeychain().showHiddenFiles, includeHiddenFiles: [], options: options)
 
         if results.account == account, results.error == .success {
