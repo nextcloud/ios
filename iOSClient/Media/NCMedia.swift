@@ -555,9 +555,14 @@ extension NCMedia {
 
         if results.account == account, results.error == .success {
             let metadatas = await NCManageDatabase.shared.convertFilesToMetadatas(results.files, useMetadataFolder: false).metadatas
-            let predicate = NSPredicate(format: "date > %@ AND date < %@", greaterDate as NSDate, lessDate as NSDate)
-            let predicateResult = NSCompoundPredicate(andPredicateWithSubpredicates: [predicate, predicateDB])
-            let metadatasResult = NCManageDatabase.shared.getMetadatas(predicate: predicateResult)
+            var predicate = NSPredicate(format: "date > %@ AND date < %@", greaterDate as NSDate, lessDate as NSDate)
+            switch NCImageCache.shared.mediaSortDate {
+            case "creationDate": predicate = NSPredicate(format: "creationDate > %@ AND creationDate < %@", greaterDate as NSDate, lessDate as NSDate)
+            case "uploadDate": predicate = NSPredicate(format: "uploadDate > %@ AND uploadDate < %@", greaterDate as NSDate, lessDate as NSDate)
+            default: break
+            }
+            let subPredicate = NSCompoundPredicate(andPredicateWithSubpredicates: [predicate, predicateDB])
+            let metadatasResult = NCManageDatabase.shared.getMetadatas(predicate: subPredicate)
             let updateMetadatas = NCManageDatabase.shared.updateMetadatas(metadatas, metadatasResult: metadatasResult, addCompareLivePhoto: false)
             let items = updateMetadatas.metadatasDelete.count + updateMetadatas.metadatasLocalUpdate.count + updateMetadatas.metadatasUpdate.count
             return(account, lessDate, greaterDate, results.error, items)
