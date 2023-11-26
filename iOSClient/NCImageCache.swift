@@ -147,7 +147,8 @@ import NextcloudKit
         let predicateDefault = NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND (classFile == %@ OR classFile == %@) AND NOT (session CONTAINS[c] 'upload')", account.account, startServerUrl, NKCommon.TypeClassFile.image.rawValue, NKCommon.TypeClassFile.video.rawValue)
 
         livePhoto = NCKeychain().livePhoto
-        return NCManageDatabase.shared.getMetadatasMedia(predicate: predicate ?? predicateDefault, livePhoto: livePhoto)
+        var metadatas = NCManageDatabase.shared.getMetadatasMedia(predicate: predicate ?? predicateDefault, livePhoto: livePhoto)
+        return metadatas.sorted(by: {($0.date as Date) > ($1.date as Date)})
     }
 
     // MARK: -

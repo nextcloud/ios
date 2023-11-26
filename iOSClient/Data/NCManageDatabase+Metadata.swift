@@ -1118,7 +1118,6 @@ extension NCManageDatabase {
             NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
         }
 
-        metadatas = metadatas.sorted(by: {($0.date as Date) > ($1.date as Date)})
         return metadatas
     }
 
