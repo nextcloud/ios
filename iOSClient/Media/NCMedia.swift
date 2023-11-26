@@ -126,7 +126,7 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
             self.metadatas = metadatas
         }
 
-        timerSearchNewMedia = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(searchMediaUI), userInfo: nil, repeats: false)
+        timerSearchNewMedia = Timer.scheduledTimer(timeInterval: timeIntervalSearchNewMedia, target: self, selector: #selector(searchMediaUI), userInfo: nil, repeats: false)
     }
 
     override func viewDidAppear(_ animated: Bool) {
