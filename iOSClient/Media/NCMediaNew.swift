@@ -14,7 +14,7 @@ import Combine
 import Queuer
 
 struct NCMediaNew: View {
-    let downloadThumbnailQueue = Queuer(name: "downloadThumbnailQueue", maxConcurrentOperationCount: 10, qualityOfService: .background)
+    //    let downloadThumbnailQueue = Queuer(name: "downloadThumbnailQueue", maxConcurrentOperationCount: 10, qualityOfService: .background)
 
     @StateObject private var vm = NCMediaViewModel()
     @EnvironmentObject private var parent: NCMediaUIKitWrapper
@@ -45,7 +45,7 @@ struct NCMediaNew: View {
 
         ZStack(alignment: .top) {
             ScrollViewReader { proxy in
-                NCMediaScrollView(metadatas: vm.metadatas, isInSelectMode: $isInSelectMode, selectedMetadatas: $selectedMetadatas, columnCountStages: $columnCountStages, columnCountStagesIndex: $columnCountStagesIndex, shouldScrollToTop: $shouldScrollToTop, title: $title, proxy: proxy, queuer: downloadThumbnailQueue) { tappedThumbnail, isSelected in
+                NCMediaScrollView(metadatas: vm.metadatas, isInSelectMode: $isInSelectMode, selectedMetadatas: $selectedMetadatas, columnCountStages: $columnCountStages, columnCountStagesIndex: $columnCountStagesIndex, shouldScrollToTop: $shouldScrollToTop, title: $title, proxy: proxy) { tappedThumbnail, isSelected in
                     if isInSelectMode, isSelected {
                         selectedMetadatas.append(tappedThumbnail.metadata)
                     } else {
@@ -64,7 +64,6 @@ struct NCMediaNew: View {
                     case .addToFavorites:
                         vm.addToFavorites(metadata: selectedMetadata)
                     case .details:
-                        let _ = print()
                         NCActionCenter.shared.openShare(viewController: parent, metadata: selectedMetadata, page: .activity)
                     case .openIn:
                         vm.openIn(metadata: selectedMetadata)
@@ -78,18 +77,22 @@ struct NCMediaNew: View {
                         vm.delete(metadatas: selectedMetadata)
                     }
                 }
-//                .equatable()
+                .onPreferenceChange(TitlePreferenceKey.self) { title in
+                    self.title = title
+                }
+
+                //                .equatable()
                 .ignoresSafeArea(.all, edges: .horizontal)
                 .scrollStatusByIntrospect(isScrolledToTop: $isScrolledToTop)
             }
 
             HStack {
-//                Text(title)
-//                    .font(.system(size: 20, weight: .bold))
-//                    .foregroundStyle(titleColor)
-//                    .onTapGesture {
-//                        vm.onRefresh()
-//                    }
+                //                Text(title)
+                //                    .font(.system(size: 20, weight: .bold))
+                //                    .foregroundStyle(titleColor)
+                //                    .onTapGesture {
+                //                        vm.onRefresh()
+                //                    }
 
                 ToolbarTitle(title: $title, titleColor: $titleColor)
 
@@ -102,16 +105,7 @@ struct NCMediaNew: View {
                         .padding(.horizontal, 6)
                 }
 
-                Button(action: {
-                    isInSelectMode.toggle()
-                }, label: {
-                    Text(NSLocalizedString(isInSelectMode ? "_cancel_" : "_select_", comment: "")).font(.system(size: 14))
-                        .foregroundStyle(toolbarItemsColor)
-                })
-                .padding(.horizontal, 6)
-                .padding(.vertical, 3)
-                .background(.ultraThinMaterial)
-                .cornerRadius(.infinity)
+                ToolbarSelectButton(isInSelectMode: $isInSelectMode, toolbarItemsColor: $toolbarItemsColor)
 
                 if isInSelectMode, !selectedMetadatas.isEmpty {
                     ToolbarCircularButton(imageSystemName: "trash.fill", color: .red)
@@ -228,7 +222,7 @@ struct NCMediaNew: View {
             }
 
             if newValue {
-                vm.hasNewMedia = false
+                //                vm.hasNewMedia = false
             }
         }
         .alert("", isPresented: $showPlayFromURLAlert) {
@@ -297,6 +291,24 @@ struct ToolbarTitle: View {
             .onPreferenceChange(TitlePreferenceKey.self) { title in
                 print(title)
             }
+    }
+}
+
+struct ToolbarSelectButton: View {
+    @Binding var isInSelectMode: Bool
+    @Binding var toolbarItemsColor: Color
+
+    var body: some View {
+        Button(action: {
+            isInSelectMode.toggle()
+        }, label: {
+            Text(NSLocalizedString(isInSelectMode ? "_cancel_" : "_select_", comment: "")).font(.system(size: 14))
+                .foregroundStyle(toolbarItemsColor)
+        })
+        .padding(.horizontal, 6)
+        .padding(.vertical, 3)
+        .background(.ultraThinMaterial)
+        .cornerRadius(.infinity)
     }
 }
 

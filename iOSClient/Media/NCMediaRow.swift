@@ -14,13 +14,15 @@ struct NCMediaRow: View {
     let metadatas: [tableMetadata]
 
     @Binding var isInSelectMode: Bool
-    let queuer: Queuer
+//    let queuer: Queuer
     let onCellSelected: (ScaledThumbnail, Bool) -> Void
     let onCellContextMenuItemSelected: (ScaledThumbnail, ContextMenuSelection) -> Void
     @StateObject private var vm = NCMediaRowViewModel()
     private let spacing: CGFloat = 2
 
     var body: some View {
+        let _ = Self._printChanges()
+
         HStack(spacing: spacing) {
             if vm.rowData.scaledThumbnails.isEmpty {
                 ForEach(metadatas, id: \.ocId) { metadata in
@@ -33,7 +35,7 @@ struct NCMediaRow: View {
             }
         }
         .onFirstAppear {
-            vm.configure(metadatas: metadatas, queuer: queuer)
+            vm.configure(metadatas: metadatas)
             vm.downloadThumbnails(rowWidth: UIScreen.main.bounds.width, spacing: spacing)
         }
         .onDisappear {

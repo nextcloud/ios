@@ -31,11 +31,10 @@ struct ScaledThumbnail: Hashable {
 
     private var metadatas: [tableMetadata] = []
     private let cache = NCImageCache.shared
-    private var queuer: Queuer?
+    private let queuer: Queuer? = Queuer(name: "downloadThumbnailQueue", maxConcurrentOperationCount: 10, qualityOfService: .background)
 
-    func configure(metadatas: [tableMetadata], queuer: Queuer) {
+    func configure(metadatas: [tableMetadata]) {
         self.metadatas = metadatas
-        self.queuer = queuer
     }
 
     func downloadThumbnails(rowWidth: CGFloat, spacing: CGFloat) {

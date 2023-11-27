@@ -115,10 +115,10 @@
 		F3BB464F2A39EBE500461F6E /* NCMoreUserCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3BB464E2A39EBE500461F6E /* NCMoreUserCell.swift */; };
 		F3BB46522A39EC4900461F6E /* NCMoreAppSuggestionsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3BB46512A39EC4900461F6E /* NCMoreAppSuggestionsCell.swift */; };
 		F3BB46542A3A1E9D00461F6E /* CCCellMore.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3BB46532A3A1E9D00461F6E /* CCCellMore.swift */; };
+		F3C6D0972B0F9BA40078DD25 /* XLForm in Frameworks */ = {isa = PBXBuildFile; productRef = F3C6D0962B0F9BA40078DD25 /* XLForm */; };
 		F3E3B3B92AA73925006D08F5 /* NCMediaRowViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3E3B3B82AA73925006D08F5 /* NCMediaRowViewModel.swift */; };
 		F3E3B3BD2AA73D9E006D08F5 /* NCMediaViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3E3B3BC2AA73D9E006D08F5 /* NCMediaViewModel.swift */; };
 		F3F7ACFE2A98C56C00AE12CF /* NCMediaNew.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3F7ACFD2A98C56C00AE12CF /* NCMediaNew.swift */; };
-		F3C6D0972B0F9BA40078DD25 /* XLForm in Frameworks */ = {isa = PBXBuildFile; productRef = F3C6D0962B0F9BA40078DD25 /* XLForm */; };
 		F700222C1EC479840080073F /* Custom.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F700222B1EC479840080073F /* Custom.xcassets */; };
 		F700222D1EC479840080073F /* Custom.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F700222B1EC479840080073F /* Custom.xcassets */; };
 		F700510122DF63AC003A3356 /* NCShare.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F700510022DF63AC003A3356 /* NCShare.storyboard */; };
@@ -4803,6 +4803,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = "$(SRCROOT)/Brand/iOSClient.entitlements";
 				INFOPLIST_FILE = "$(SRCROOT)/Brand/iOSClient.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				OTHER_LDFLAGS = "";
 				PRODUCT_BUNDLE_IDENTIFIER = "it.twsweb.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -4817,6 +4818,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = "$(SRCROOT)/Brand/iOSClient.entitlements";
 				INFOPLIST_FILE = "$(SRCROOT)/Brand/iOSClient.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				OTHER_LDFLAGS = "";
 				PRODUCT_BUNDLE_IDENTIFIER = "it.twsweb.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";

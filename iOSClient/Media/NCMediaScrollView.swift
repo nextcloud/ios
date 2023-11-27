@@ -23,7 +23,7 @@ struct NCMediaScrollView: View {
     @Binding var title: String
     let proxy: ScrollViewProxy
 
-    let queuer: Queuer
+//    var queuer: Queuer
 
     let onCellSelected: (ScaledThumbnail, Bool) -> Void
     let onCellContextMenuItemSelected: (ScaledThumbnail, ContextMenuSelection) -> Void
@@ -38,16 +38,13 @@ struct NCMediaScrollView: View {
 
             LazyVStack(alignment: .leading, spacing: 2) {
                 ForEach(metadatas.chunked(into: columnCountStages[columnCountStagesIndex]), id: \.self) { rowMetadatas in
-                    NCMediaRow(metadatas: rowMetadatas, isInSelectMode: $isInSelectMode, queuer: queuer) { tappedThumbnail, isSelected in
+                    NCMediaRow(metadatas: rowMetadatas, isInSelectMode: $isInSelectMode) { tappedThumbnail, isSelected in
                         onCellSelected(tappedThumbnail, isSelected)
                     } onCellContextMenuItemSelected: { thumbnail, selection in
                         onCellContextMenuItemSelected(thumbnail, selection)
                     }
                     .onAppear {
                         title = NCUtility().getTitleFromDate(rowMetadatas.first?.date as? Date ?? Date.now)
-                    }
-                    .background {
-                        Color.clear.preference(key: TitlePreferenceKey.self, value: title)
                     }
                 }
             }
