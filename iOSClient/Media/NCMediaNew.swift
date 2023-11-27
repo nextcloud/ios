@@ -17,7 +17,7 @@ struct NCMediaNew: View {
     let downloadThumbnailQueue = Queuer(name: "downloadThumbnailQueue", maxConcurrentOperationCount: 10, qualityOfService: .background)
 
     @StateObject private var vm = NCMediaViewModel()
-    @EnvironmentObject private var parent: NCMediaUIKitWrapper
+//    @EnvironmentObject private var parent: NCMediaUIKitWrapper
     @State private var title = NSLocalizedString("_media_", comment: "")
     @State private var isScrolledToTop = true
     @State private var tappedMetadata = tableMetadata()
@@ -41,9 +41,11 @@ struct NCMediaNew: View {
     @State private var shouldScrollToTop = false
 
     var body: some View {
+        let _ = Self._printChanges()
+
         ZStack(alignment: .top) {
             ScrollViewReader { proxy in
-                NCMediaScrollView(metadatas: $vm.metadatas, isInSelectMode: $isInSelectMode, selectedMetadatas: $selectedMetadatas, columnCountStages: $columnCountStages, columnCountStagesIndex: $columnCountStagesIndex, shouldScrollToTop: $shouldScrollToTop, proxy: proxy, queuer: downloadThumbnailQueue) { tappedThumbnail, isSelected in
+                NCMediaScrollView(metadatas: $vm.metadatas, isInSelectMode: $isInSelectMode, selectedMetadatas: $selectedMetadatas, columnCountStages: $columnCountStages, columnCountStagesIndex: $columnCountStagesIndex, shouldScrollToTop: $shouldScrollToTop, title: $title, proxy: proxy, queuer: downloadThumbnailQueue) { tappedThumbnail, isSelected in
                     if isInSelectMode, isSelected {
                         selectedMetadatas.append(tappedThumbnail.metadata)
                     } else {
@@ -53,7 +55,7 @@ struct NCMediaNew: View {
                     if !isInSelectMode {
                         let selectedMetadata = tappedThumbnail.metadata
                         vm.onCellTapped(metadata: selectedMetadata)
-                        NCViewer().view(viewController: parent, metadata: selectedMetadata, metadatas: vm.metadatas, imageIcon: tappedThumbnail.image)
+//                        NCViewer().view(viewController: parent, metadata: selectedMetadata, metadatas: vm.metadatas, imageIcon: tappedThumbnail.image)
                     }
                 } onCellContextMenuItemSelected: { thumbnail, selection in
                     let selectedMetadata = thumbnail.metadata
@@ -62,7 +64,8 @@ struct NCMediaNew: View {
                     case .addToFavorites:
                         vm.addToFavorites(metadata: selectedMetadata)
                     case .details:
-                        NCActionCenter.shared.openShare(viewController: parent, metadata: selectedMetadata, page: .activity)
+                        let _ = print()
+//                        NCActionCenter.shared.openShare(viewController: parent, metadata: selectedMetadata, page: .activity)
                     case .openIn:
                         vm.openIn(metadata: selectedMetadata)
                     case .saveToPhotos:
@@ -77,111 +80,104 @@ struct NCMediaNew: View {
                 }
                 .equatable()
                 .ignoresSafeArea(.all, edges: .horizontal)
-                .introspect(.scrollView, on: .iOS(.v15...)) { scrollView in
-
-                    scrollView.refreshControl?.translatesAutoresizingMaskIntoConstraints = false
-                    scrollView.refreshControl?.topAnchor.constraint(equalTo: scrollView.superview!.topAnchor, constant: 120).isActive = true
-                    scrollView.refreshControl?.centerXAnchor.constraint(equalTo: scrollView.centerXAnchor).isActive = true
-                }
                 .scrollStatusByIntrospect(isScrolledToTop: $isScrolledToTop)
             }
 
-            HStack(content: {
-                HStack {
-                    Text(title)
-                        .font(.system(size: 20, weight: .bold))
-                        .foregroundStyle(titleColor)
-                        .onTapGesture {
-                            vm.onRefresh()
-                        }
-
-                    Spacer()
-
-                    if vm.isLoadingMetadata {
-                        ProgressView()
-                            .tint(loadingIndicatorColor)
-                            .padding(.horizontal, 6)
+            HStack {
+                // THIS UPDATES VIA THE BINDING
+                Text(title)
+                    .font(.system(size: 20, weight: .bold))
+                    .foregroundStyle(titleColor)
+                    .onTapGesture {
+                        vm.onRefresh()
                     }
 
-                    Button(action: {
-                        isInSelectMode.toggle()
-                    }, label: {
-                        Text(NSLocalizedString(isInSelectMode ? "_cancel_" : "_select_", comment: "")).font(.system(size: 14))
-                            .foregroundStyle(toolbarItemsColor)
-                    })
-                    .padding(.horizontal, 6)
-                    .padding(.vertical, 3)
-                    .background(.ultraThinMaterial)
-                    .cornerRadius(.infinity)
+                Spacer()
 
-                    if isInSelectMode, !selectedMetadatas.isEmpty {
-                        ToolbarCircularButton(imageSystemName: "trash.fill", color: .red)
-                            .onTapGesture {
-                                showDeleteConfirmation = true
-                            }
-                            .confirmationDialog("", isPresented: $showDeleteConfirmation) {
-                                Button(NSLocalizedString("_delete_selected_media_", comment: ""), role: .destructive) {
-                                    vm.deleteMetadata(metadatas: selectedMetadatas)
-                                    cancelSelection()
-                                }
-                            }
-                    }
-
-                    Menu {
-                        if isInSelectMode, !selectedMetadatas.isEmpty {
-                            Section {
-                                Button {
-                                    vm.copyOrMoveMetadataInApp(metadatas: selectedMetadatas)
-                                    cancelSelection()
-                                } label: {
-                                    Label(NSLocalizedString("_move_selected_files_", comment: ""), systemImage: "arrow.up.right.square")
-                                }
-
-                                Button {
-                                    vm.copyMetadata(metadatas: selectedMetadatas)
-                                    cancelSelection()
-                                } label: {
-                                    Label(NSLocalizedString("_copy_file_", comment: ""), systemImage: "doc.on.doc")
-                                }
-                            }
-                        } else {
-                            Section {
-                                Picker(NSLocalizedString("_media_view_options_", comment: ""), selection: $vm.filter) {
-                                    Label(NSLocalizedString("_media_viewimage_show_", comment: ""), systemImage: "photo.fill").tag(Filter.onlyPhotos)
-
-                                    Label(NSLocalizedString("_media_viewvideo_show_", comment: ""), systemImage: "video.fill").tag(Filter.onlyVideos)
-
-                                    Text(NSLocalizedString("_media_show_all_", comment: "")).tag(Filter.all)
-                                }.pickerStyle(.menu)
-
-                                Button {
-                                    selectMediaFolder()
-                                } label: {
-                                    Label(NSLocalizedString("_select_media_folder_", comment: ""), systemImage: "folder")
-                                }
-                            }
-
-                            Section {
-                                Button(action: {
-                                    if let tabBarController = vm.appDelegate?.window?.rootViewController as? UITabBarController {
-                                        NCDocumentPickerViewController(tabBarController: tabBarController, isViewerMedia: true, allowsMultipleSelection: false, viewController: parent)
-                                    }
-                                }, label: {
-                                    Label(NSLocalizedString("_play_from_files_", comment: ""), systemImage: "play.circle")
-                                })
-
-                                Button(action: {
-                                    showPlayFromURLAlert = true
-                                }, label: {
-                                    Label(NSLocalizedString("_play_from_url_", comment: ""), systemImage: "link")
-                                })
-                            }
-                        }
-                    } label: {
-                        ToolbarCircularButton(imageSystemName: "ellipsis", color: $toolbarItemsColor)
-                    }
+                if vm.isLoadingMetadata {
+                    ProgressView()
+                        .tint(loadingIndicatorColor)
+                        .padding(.horizontal, 6)
                 }
-            })
+
+                Button(action: {
+                    isInSelectMode.toggle()
+                }, label: {
+                    Text(NSLocalizedString(isInSelectMode ? "_cancel_" : "_select_", comment: "")).font(.system(size: 14))
+                        .foregroundStyle(toolbarItemsColor)
+                })
+                .padding(.horizontal, 6)
+                .padding(.vertical, 3)
+                .background(.ultraThinMaterial)
+                .cornerRadius(.infinity)
+
+                if isInSelectMode, !selectedMetadatas.isEmpty {
+                    ToolbarCircularButton(imageSystemName: "trash.fill", color: .red)
+                        .onTapGesture {
+                            showDeleteConfirmation = true
+                        }
+                        .confirmationDialog("", isPresented: $showDeleteConfirmation) {
+                            Button(NSLocalizedString("_delete_selected_media_", comment: ""), role: .destructive) {
+                                vm.deleteMetadata(metadatas: selectedMetadatas)
+                                cancelSelection()
+                            }
+                        }
+                }
+
+                Menu {
+                    if isInSelectMode, !selectedMetadatas.isEmpty {
+                        Section {
+                            Button {
+                                vm.copyOrMoveMetadataInApp(metadatas: selectedMetadatas)
+                                cancelSelection()
+                            } label: {
+                                Label(NSLocalizedString("_move_selected_files_", comment: ""), systemImage: "arrow.up.right.square")
+                            }
+
+                            Button {
+                                vm.copyMetadata(metadatas: selectedMetadatas)
+                                cancelSelection()
+                            } label: {
+                                Label(NSLocalizedString("_copy_file_", comment: ""), systemImage: "doc.on.doc")
+                            }
+                        }
+                    } else {
+                        Section {
+                            Picker(NSLocalizedString("_media_view_options_", comment: ""), selection: $vm.filter) {
+                                Label(NSLocalizedString("_media_viewimage_show_", comment: ""), systemImage: "photo.fill").tag(Filter.onlyPhotos)
+
+                                Label(NSLocalizedString("_media_viewvideo_show_", comment: ""), systemImage: "video.fill").tag(Filter.onlyVideos)
+
+                                Text(NSLocalizedString("_media_show_all_", comment: "")).tag(Filter.all)
+                            }.pickerStyle(.menu)
+
+                            Button {
+                                selectMediaFolder()
+                            } label: {
+                                Label(NSLocalizedString("_select_media_folder_", comment: ""), systemImage: "folder")
+                            }
+                        }
+
+                        Section {
+                            Button(action: {
+                                if let tabBarController = vm.appDelegate?.window?.rootViewController as? UITabBarController {
+//                                    NCDocumentPickerViewController(tabBarController: tabBarController, isViewerMedia: true, allowsMultipleSelection: false, viewController: parent)
+                                }
+                            }, label: {
+                                Label(NSLocalizedString("_play_from_files_", comment: ""), systemImage: "play.circle")
+                            })
+
+                            Button(action: {
+                                showPlayFromURLAlert = true
+                            }, label: {
+                                Label(NSLocalizedString("_play_from_url_", comment: ""), systemImage: "link")
+                            })
+                        }
+                    }
+                } label: {
+                    ToolbarCircularButton(imageSystemName: "ellipsis", color: $toolbarItemsColor)
+                }
+            }
             .frame(maxWidth: .infinity)
             .padding([.horizontal, .top], 10)
             .padding(.bottom, 20)
@@ -274,12 +270,12 @@ struct NCMediaNew: View {
         viewController.typeOfCommandView = .select
         viewController.type = "mediaFolder"
 
-        parent.present(navigationController, animated: true, completion: nil)
+//        parent.present(navigationController, animated: true, completion: nil)
     }
 
     private func playVideoFromUrl() {
         guard let metadata = vm.getMetadataFromUrl(playFromUrlString) else { return }
-        NCViewer().view(viewController: parent, metadata: metadata, metadatas: [metadata], imageIcon: nil)
+//        NCViewer().view(viewController: parent, metadata: metadata, metadatas: [metadata], imageIcon: nil)
     }
 
     private func cancelSelection() {
@@ -332,37 +328,37 @@ struct NCMediaNew_Previews: PreviewProvider {
 }
 
 final class ScrollDelegate: NSObject, UITableViewDelegate, UIScrollViewDelegate {
-//    var isScrolling: Binding<Bool>?
+    //    var isScrolling: Binding<Bool>?
     var isScrolledToTop: Binding<Bool>?
 
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         DispatchQueue.main.async {
             self.isScrolledToTop?.wrappedValue = scrollView.contentOffset.y <= -20
         }
-//        if let isScrolling = isScrolling?.wrappedValue,!isScrolling {
-//            self.isScrolling?.wrappedValue = true
-//        }
+        //        if let isScrolling = isScrolling?.wrappedValue,!isScrolling {
+        //            self.isScrolling?.wrappedValue = true
+        //        }
     }
 
     func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
-//        if let isScrolling = isScrolling?.wrappedValue, isScrolling {
-//            self.isScrolling?.wrappedValue = false
-//        }
+        //        if let isScrolling = isScrolling?.wrappedValue, isScrolling {
+        //            self.isScrolling?.wrappedValue = false
+        //        }
     }
-//    // When the user slowly drags the scrollable control, decelerate is false after the user releases their finger, so the scrollViewDidEndDecelerating method is not called.
+    //    // When the user slowly drags the scrollable control, decelerate is false after the user releases their finger, so the scrollViewDidEndDecelerating method is not called.
     func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
         if !decelerate {
-//            if let isScrolling = isScrolling?.wrappedValue, isScrolling {
-//                self.isScrolling?.wrappedValue = false
-//            }
+            //            if let isScrolling = isScrolling?.wrappedValue, isScrolling {
+            //                self.isScrolling?.wrappedValue = false
+            //            }
         }
     }
 
-//    func scrollViewDidScrollToTop(_ scrollView: UIScrollView) {
-//        if let isScrolledToTop = isScrolledToTop?.wrappedValue {
-//            self.isScrolledToTop?.wrappedValue = isScrolledToTop
-//        }
-//    }
+    //    func scrollViewDidScrollToTop(_ scrollView: UIScrollView) {
+    //        if let isScrolledToTop = isScrolledToTop?.wrappedValue {
+    //            self.isScrolledToTop?.wrappedValue = isScrolledToTop
+    //        }
+    //    }
 }
 
 extension View {

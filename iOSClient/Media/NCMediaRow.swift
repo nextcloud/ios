@@ -21,8 +21,6 @@ struct NCMediaRow: View {
     private let spacing: CGFloat = 2
 
     var body: some View {
-//        let _ = Self._printChanges()
-
         HStack(spacing: spacing) {
             if vm.rowData.scaledThumbnails.isEmpty {
                 ForEach(metadatas, id: \.ocId) { metadata in
