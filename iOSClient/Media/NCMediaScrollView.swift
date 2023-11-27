@@ -14,7 +14,7 @@ struct NCMediaScrollView: View {
 //        return lhs.metadatas == rhs.metadatas
 //    }
 
-    var metadatas: [tableMetadata]
+    let metadatas: [tableMetadata]
     @Binding var isInSelectMode: Bool
     @Binding var selectedMetadatas: [tableMetadata]
     @Binding var columnCountStages: [Int]

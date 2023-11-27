@@ -222,7 +222,7 @@ struct NCMediaNew: View {
             }
 
             if newValue {
-                //                vm.hasNewMedia = false
+                vm.hasNewMedia = false
             }
         }
         .alert("", isPresented: $showPlayFromURLAlert) {
