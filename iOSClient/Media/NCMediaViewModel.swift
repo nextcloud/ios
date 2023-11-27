@@ -92,7 +92,7 @@ import LRUCache
             .store(in: &cancellables)
 
 //        timerSearchNewMedia?.invalidate()
-        timerSearchNewMedia = Timer.scheduledTimer(timeInterval: 30.0, target: self, selector: #selector(onRefresh), userInfo: nil, repeats: true)
+        timerSearchNewMedia = Timer.scheduledTimer(timeInterval: 20.0, target: self, selector: #selector(onRefresh), userInfo: nil, repeats: true)
     }
 
     deinit {

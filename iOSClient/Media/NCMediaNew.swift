@@ -77,23 +77,12 @@ struct NCMediaNew: View {
                         vm.delete(metadatas: selectedMetadata)
                     }
                 }
-                .onPreferenceChange(TitlePreferenceKey.self) { title in
-                    self.title = title
-                }
-
                 //                .equatable()
                 .ignoresSafeArea(.all, edges: .horizontal)
                 .scrollStatusByIntrospect(isScrolledToTop: $isScrolledToTop)
             }
 
             HStack {
-                //                Text(title)
-                //                    .font(.system(size: 20, weight: .bold))
-                //                    .foregroundStyle(titleColor)
-                //                    .onTapGesture {
-                //                        vm.onRefresh()
-                //                    }
-
                 ToolbarTitle(title: $title, titleColor: $titleColor)
 
 
@@ -288,9 +277,6 @@ struct ToolbarTitle: View {
         Text(title)
             .font(.system(size: 20, weight: .bold))
             .foregroundStyle(titleColor)
-            .onPreferenceChange(TitlePreferenceKey.self) { title in
-                print(title)
-            }
     }
 }
 
