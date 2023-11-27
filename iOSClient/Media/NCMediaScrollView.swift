@@ -9,10 +9,10 @@
 import SwiftUI
 import Queuer
 
-struct NCMediaScrollView: View, Equatable {
-    static func == (lhs: NCMediaScrollView, rhs: NCMediaScrollView) -> Bool {
-        return lhs.metadatas == rhs.metadatas
-    }
+struct NCMediaScrollView: View {
+//    static func == (lhs: NCMediaScrollView, rhs: NCMediaScrollView) -> Bool {
+//        return lhs.metadatas == rhs.metadatas
+//    }
 
     var metadatas: [tableMetadata]
     @Binding var isInSelectMode: Bool
@@ -44,7 +44,6 @@ struct NCMediaScrollView: View, Equatable {
                         onCellContextMenuItemSelected(thumbnail, selection)
                     }
                     .onAppear {
-                        // BINDING UPDATES HERE
                         title = NCUtility().getTitleFromDate(rowMetadatas.first?.date as? Date ?? Date.now)
                     }
                     .background {

@@ -17,7 +17,7 @@ struct NCMediaNew: View {
     let downloadThumbnailQueue = Queuer(name: "downloadThumbnailQueue", maxConcurrentOperationCount: 10, qualityOfService: .background)
 
     @StateObject private var vm = NCMediaViewModel()
-//    @EnvironmentObject private var parent: NCMediaUIKitWrapper
+    @EnvironmentObject private var parent: NCMediaUIKitWrapper
     @State private var title = NSLocalizedString("_media_", comment: "")
     @State private var isScrolledToTop = true
     @State private var tappedMetadata = tableMetadata()
@@ -55,7 +55,7 @@ struct NCMediaNew: View {
                     if !isInSelectMode {
                         let selectedMetadata = tappedThumbnail.metadata
                         vm.onCellTapped(metadata: selectedMetadata)
-//                        NCViewer().view(viewController: parent, metadata: selectedMetadata, metadatas: vm.metadatas, imageIcon: tappedThumbnail.image)
+                        NCViewer().view(viewController: parent, metadata: selectedMetadata, metadatas: vm.metadatas, imageIcon: tappedThumbnail.image)
                     }
                 } onCellContextMenuItemSelected: { thumbnail, selection in
                     let selectedMetadata = thumbnail.metadata
@@ -65,7 +65,7 @@ struct NCMediaNew: View {
                         vm.addToFavorites(metadata: selectedMetadata)
                     case .details:
                         let _ = print()
-//                        NCActionCenter.shared.openShare(viewController: parent, metadata: selectedMetadata, page: .activity)
+                        NCActionCenter.shared.openShare(viewController: parent, metadata: selectedMetadata, page: .activity)
                     case .openIn:
                         vm.openIn(metadata: selectedMetadata)
                     case .saveToPhotos:
@@ -78,7 +78,7 @@ struct NCMediaNew: View {
                         vm.delete(metadatas: selectedMetadata)
                     }
                 }
-                .equatable()
+//                .equatable()
                 .ignoresSafeArea(.all, edges: .horizontal)
                 .scrollStatusByIntrospect(isScrolledToTop: $isScrolledToTop)
             }
@@ -163,7 +163,7 @@ struct NCMediaNew: View {
                         Section {
                             Button(action: {
                                 if let tabBarController = vm.appDelegate?.window?.rootViewController as? UITabBarController {
-//                                    NCDocumentPickerViewController(tabBarController: tabBarController, isViewerMedia: true, allowsMultipleSelection: false, viewController: parent)
+                                    NCDocumentPickerViewController(tabBarController: tabBarController, isViewerMedia: true, allowsMultipleSelection: false, viewController: parent)
                                 }
                             }, label: {
                                 Label(NSLocalizedString("_play_from_files_", comment: ""), systemImage: "play.circle")
@@ -272,12 +272,12 @@ struct NCMediaNew: View {
         viewController.typeOfCommandView = .select
         viewController.type = "mediaFolder"
 
-//        parent.present(navigationController, animated: true, completion: nil)
+        parent.present(navigationController, animated: true, completion: nil)
     }
 
     private func playVideoFromUrl() {
         guard let metadata = vm.getMetadataFromUrl(playFromUrlString) else { return }
-//        NCViewer().view(viewController: parent, metadata: metadata, metadatas: [metadata], imageIcon: nil)
+        NCViewer().view(viewController: parent, metadata: metadata, metadatas: [metadata], imageIcon: nil)
     }
 
     private func cancelSelection() {
