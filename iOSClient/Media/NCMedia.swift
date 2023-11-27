@@ -520,11 +520,11 @@ extension NCMedia {
                 Task {
                     let results = await searchMedia(account: self.appDelegate.account, lessDate: lessDate, greaterDate: greaterDate, predicateDB: self.getPredicate(true))
                     print("Media results items: \(results.items)")
-                    searchMediaInProgress = false
                     if results.error != .success {
                         NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Media search new media error code \(results.error.errorCode) " + results.error.errorDescription)
                     }
-                    DispatchQueue.main.async { 
+                    DispatchQueue.main.async {
+                        self.searchMediaInProgress = false
                         self.mediaCommandView?.activityIndicator.stopAnimating()
                         if results.error == .success, results.lessDate == Date.distantFuture, results.greaterDate == Date.distantPast, results.items == 0 {
                             self.metadatas.removeAll()
