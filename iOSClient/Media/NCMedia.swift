@@ -524,7 +524,8 @@ extension NCMedia {
                     if results.error != .success {
                         NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Media search new media error code \(results.error.errorCode) " + results.error.errorDescription)
                     }
-                    DispatchQueue.main.async { self.mediaCommandView?.activityIndicator.stopAnimating()
+                    DispatchQueue.main.async { 
+                        self.mediaCommandView?.activityIndicator.stopAnimating()
                         if results.error == .success, results.lessDate == Date.distantFuture, results.greaterDate == Date.distantPast, results.items == 0 {
                             self.metadatas.removeAll()
                             self.collectionView.reloadData()
