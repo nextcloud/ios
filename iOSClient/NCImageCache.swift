@@ -49,7 +49,7 @@ import NextcloudKit
     private var ocIdEtag: [String: String] = [:]
     private var metadatas: [tableMetadata]?
 
-    var isMediaInProcess: Bool = false
+    var isMediaMetadatasInProcess: Bool = false
     var isLivePhotoEnable: Bool = false
 
     override private init() {}
@@ -62,7 +62,6 @@ import NextcloudKit
         ocIdEtag.removeAll()
         self.metadatas = []
         self.metadatas = getMediaMetadatas(account: account)
-
         guard let metadatas = self.metadatas, !metadatas.isEmpty else { return }
         let ext = ".preview.ico"
         let manager = FileManager.default
@@ -120,9 +119,8 @@ import NextcloudKit
     }
 
     func initialMetadatas() -> [tableMetadata]? {
-        let metadatas = self.metadatas
-        self.metadatas = nil
-        return metadatas
+        defer { self.metadatas = nil }
+        return self.metadatas
     }
 
     func getMediaImage(ocId: String) -> ImageType? {
@@ -144,11 +142,11 @@ import NextcloudKit
     func getMediaMetadatas(account: String, predicate: NSPredicate? = nil) -> [tableMetadata] {
 
         defer {
-            self.isMediaInProcess = false
+            self.isMediaMetadatasInProcess = false
             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterFinishedMediaInProcess)
         }
 
-        self.isMediaInProcess = true
+        self.isMediaMetadatasInProcess = true
 
         guard let account = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", account)) else { return [] }
         let startServerUrl = NCUtilityFileSystem().getHomeServer(urlBase: account.urlBase, userId: account.userId) + account.mediaPath
