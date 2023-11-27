@@ -45,7 +45,7 @@ struct NCMediaNew: View {
 
         ZStack(alignment: .top) {
             ScrollViewReader { proxy in
-                NCMediaScrollView(metadatas: $vm.metadatas, isInSelectMode: $isInSelectMode, selectedMetadatas: $selectedMetadatas, columnCountStages: $columnCountStages, columnCountStagesIndex: $columnCountStagesIndex, shouldScrollToTop: $shouldScrollToTop, title: $title, proxy: proxy, queuer: downloadThumbnailQueue) { tappedThumbnail, isSelected in
+                NCMediaScrollView(metadatas: vm.metadatas, isInSelectMode: $isInSelectMode, selectedMetadatas: $selectedMetadatas, columnCountStages: $columnCountStages, columnCountStagesIndex: $columnCountStagesIndex, shouldScrollToTop: $shouldScrollToTop, title: $title, proxy: proxy, queuer: downloadThumbnailQueue) { tappedThumbnail, isSelected in
                     if isInSelectMode, isSelected {
                         selectedMetadatas.append(tappedThumbnail.metadata)
                     } else {
@@ -84,13 +84,15 @@ struct NCMediaNew: View {
             }
 
             HStack {
-                // THIS UPDATES VIA THE BINDING
-                Text(title)
-                    .font(.system(size: 20, weight: .bold))
-                    .foregroundStyle(titleColor)
-                    .onTapGesture {
-                        vm.onRefresh()
-                    }
+//                Text(title)
+//                    .font(.system(size: 20, weight: .bold))
+//                    .foregroundStyle(titleColor)
+//                    .onTapGesture {
+//                        vm.onRefresh()
+//                    }
+
+                ToolbarTitle(title: $title, titleColor: $titleColor)
+
 
                 Spacer()
 
@@ -281,6 +283,20 @@ struct NCMediaNew: View {
     private func cancelSelection() {
         isInSelectMode = false
         selectedMetadatas.removeAll()
+    }
+}
+
+struct ToolbarTitle: View {
+    @Binding var title: String
+    @Binding var titleColor: Color
+
+    var body: some View {
+        Text(title)
+            .font(.system(size: 20, weight: .bold))
+            .foregroundStyle(titleColor)
+            .onPreferenceChange(TitlePreferenceKey.self) { title in
+                print(title)
+            }
     }
 }
 

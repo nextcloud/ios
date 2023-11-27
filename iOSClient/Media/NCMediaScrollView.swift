@@ -14,7 +14,7 @@ struct NCMediaScrollView: View, Equatable {
         return lhs.metadatas == rhs.metadatas
     }
 
-    @Binding var metadatas: [tableMetadata]
+    var metadatas: [tableMetadata]
     @Binding var isInSelectMode: Bool
     @Binding var selectedMetadatas: [tableMetadata]
     @Binding var columnCountStages: [Int]
@@ -45,7 +45,7 @@ struct NCMediaScrollView: View, Equatable {
                     }
                     .onAppear {
                         // BINDING UPDATES HERE
-//                        title = NCUtility().getTitleFromDate(rowMetadatas.first?.date as? Date ?? Date.now)
+                        title = NCUtility().getTitleFromDate(rowMetadatas.first?.date as? Date ?? Date.now)
                     }
                     .background {
                         Color.clear.preference(key: TitlePreferenceKey.self, value: title)
