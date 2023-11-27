@@ -48,8 +48,9 @@ import NextcloudKit
     }()
     private var ocIdEtag: [String: String] = [:]
     private var metadatas: [tableMetadata]?
-    private var livePhoto: Bool = false
-    var isLivePhotoEnable: Bool { return livePhoto }
+
+    var isMediaInProcess: Bool = false
+    var isLivePhotoEnable: Bool = false
 
     override private init() {}
 
@@ -142,12 +143,19 @@ import NextcloudKit
 
     func getMediaMetadatas(account: String, predicate: NSPredicate? = nil) -> [tableMetadata] {
 
+        defer {
+            self.isMediaInProcess = false
+            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterFinishedMediaInProcess)
+        }
+
+        self.isMediaInProcess = true
+
         guard let account = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", account)) else { return [] }
         let startServerUrl = NCUtilityFileSystem().getHomeServer(urlBase: account.urlBase, userId: account.userId) + account.mediaPath
         let predicateDefault = NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND (classFile == %@ OR classFile == %@) AND NOT (session CONTAINS[c] 'upload')", account.account, startServerUrl, NKCommon.TypeClassFile.image.rawValue, NKCommon.TypeClassFile.video.rawValue)
 
-        livePhoto = NCKeychain().livePhoto
-        return NCManageDatabase.shared.getMetadatasMedia(predicate: predicate ?? predicateDefault, livePhoto: livePhoto)
+        isLivePhotoEnable = NCKeychain().livePhoto
+        return NCManageDatabase.shared.getMetadatasMedia(predicate: predicate ?? predicateDefault, livePhoto: isLivePhotoEnable)
     }
 
     // MARK: -
