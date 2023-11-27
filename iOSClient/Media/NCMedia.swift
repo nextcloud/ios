@@ -515,30 +515,32 @@ extension NCMedia {
             if let lessDate, let greaterDate {
                 Task {
                     let results = await searchMedia(account: self.appDelegate.account, lessDate: lessDate, greaterDate: greaterDate, predicateDB: self.getPredicate(true))
-                    print("Media results items: \(results.items)")
+                    print("Media results changed items: \(results.changedItems)")
                     if results.error != .success {
                         NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Media search new media error code \(results.error.errorCode) " + results.error.errorDescription)
                     }
                     DispatchQueue.main.async {
                         self.searchMediaInProgress = false
                         self.mediaCommandView?.activityIndicator.stopAnimating()
-                        if results.error == .success, results.lessDate == Date.distantFuture, results.greaterDate == Date.distantPast, results.items == 0 {
+                        if results.error == .success, results.lessDate == Date.distantFuture, results.greaterDate == Date.distantPast, results.changedItems == 0, results.metadatas.isEmpty {
                             self.metadatas.removeAll()
                             self.collectionView.reloadData()
                         }
                         self.updateMediaControlVisibility()
                         self.mediaCommandTitle()
                     }
-                    if results.items > 0 { self.reloadDataSource { } }
+                    if results.changedItems > 0 {
+                        self.reloadDataSource { }
+                    }
                 }
             }
         }
     }
 
-    func searchMedia(account: String, lessDate: Date, greaterDate: Date, limit: Int = 200, timeout: TimeInterval = 60, predicateDB: NSPredicate) async -> (account: String, lessDate: Date?, greaterDate: Date?, error: NKError, items: Int) {
+    func searchMedia(account: String, lessDate: Date, greaterDate: Date, limit: Int = 200, timeout: TimeInterval = 60, predicateDB: NSPredicate) async -> (account: String, lessDate: Date?, greaterDate: Date?, metadatas: [tableMetadata], changedItems: Int, error: NKError) {
 
         guard let mediaPath = NCManageDatabase.shared.getActiveAccount()?.mediaPath else {
-            return(account, lessDate, greaterDate, NKError(), 0)
+            return(account, lessDate, greaterDate, [], 0, NKError())
         }
         let options = NKRequestOptions(timeout: timeout, queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
         let results = await NextcloudKit.shared.searchMedia(path: mediaPath, lessDate: lessDate, greaterDate: greaterDate, elementDate: "d:getlastmodified/", limit: limit, showHiddenFiles: NCKeychain().showHiddenFiles, includeHiddenFiles: [], options: options)
@@ -549,10 +551,10 @@ extension NCMedia {
             let compoundPredicate = NSCompoundPredicate(andPredicateWithSubpredicates: [predicate, predicateDB])
             let metadatasResult = NCManageDatabase.shared.getMetadatas(predicate: compoundPredicate)
             let updateMetadatas = NCManageDatabase.shared.updateMetadatas(metadatas, metadatasResult: metadatasResult, addCompareLivePhoto: false)
-            let items = updateMetadatas.metadatasDelete.count + updateMetadatas.metadatasLocalUpdate.count + updateMetadatas.metadatasUpdate.count
-            return(account, lessDate, greaterDate, results.error, items)
+            let changedItems = updateMetadatas.metadatasDelete.count + updateMetadatas.metadatasLocalUpdate.count + updateMetadatas.metadatasUpdate.count
+            return(account, lessDate, greaterDate, metadatas, changedItems, results.error)
         } else {
-            return(account, lessDate, greaterDate, results.error, 0)
+            return(account, lessDate, greaterDate, [], 0, results.error)
         }
     }
 }
@@ -603,7 +605,7 @@ extension NCMedia: NCSelectDelegate {
         let mediaPath = serverUrl.replacingOccurrences(of: home, with: "")
         NCManageDatabase.shared.setAccountMediaPath(mediaPath, account: appDelegate.account)
         reloadDataSource {
-            self.searchMediaUI()
+            self.timerSearchNewMedia = Timer.scheduledTimer(timeInterval: self.timeIntervalSearchNewMedia, target: self, selector: #selector(self.searchMediaUI), userInfo: nil, repeats: false)
         }
     }
 }
