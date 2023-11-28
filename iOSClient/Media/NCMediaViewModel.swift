@@ -12,7 +12,6 @@ import LRUCache
 
 @MainActor class NCMediaViewModel: ObservableObject {
     @Published internal var metadatas: [tableMetadata] = []
-    @Published internal var needsLoadingMoreItems = true
     @Published internal var filter = Filter.all
     @Published internal var isLoadingMetadata = true
     @Published internal var hasNewMedia = false
@@ -107,7 +106,6 @@ import LRUCache
 
     public func loadMoreItems() {
         loadOldMedia()
-        needsLoadingMoreItems = false
     }
 
     public func deleteMetadata(metadatas: [tableMetadata]) {
@@ -331,6 +329,8 @@ extension NCMediaViewModel {
     }
 
     private func loadOldMedia(value: Int = -30, limit: Int = 300) {
+        if isLoadingOldMetadata { return }
+        
         var lessDate = Date()
 
         DispatchQueue.main.async {
@@ -362,14 +362,15 @@ extension NCMediaViewModel {
                         let metadatasResult = NCManageDatabase.shared.getMetadatas(predicate: predicateResult)
                         let metadatasChanged = NCManageDatabase.shared.updateMetadatas(metadatas, metadatasResult: metadatasResult, addCompareLivePhoto: false)
                         if metadatasChanged.metadatasUpdate.isEmpty {
-                            self.hasOldMedia = false
                             self.reloadOldMedia(value: value, limit: limit, withElseReloadDataSource: true)
                         } else {
-//                            self.hasOldMedia = true
                             self.loadMediaFromDB()
                         }
                     }
                 } else {
+                    DispatchQueue.main.async {
+                        self.hasOldMedia = false
+                    }
                     self.reloadOldMedia(value: value, limit: limit, withElseReloadDataSource: false)
                 }
             } else if error != .success {
@@ -377,7 +378,6 @@ extension NCMediaViewModel {
             }
 
             DispatchQueue.main.async {
-                self.needsLoadingMoreItems = false
                 self.isLoadingOldMetadata = false
             }
         }

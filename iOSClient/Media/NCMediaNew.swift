@@ -16,6 +16,7 @@ import Queuer
 struct NCMediaNew: View {
     @StateObject private var vm = NCMediaViewModel()
     @EnvironmentObject private var parent: NCMediaUIKitWrapper
+    @State private var metadatas: [tableMetadata] = []
     @State private var title = NSLocalizedString("_media_", comment: "")
     @State private var isScrolledToTop = true
     @State private var isScrolledToBottom = false
@@ -45,7 +46,7 @@ struct NCMediaNew: View {
 
         ZStack(alignment: .top) {
             ScrollViewReader { proxy in
-                NCMediaScrollView(metadatas: vm.metadatas, isInSelectMode: $isInSelectMode, selectedMetadatas: $selectedMetadatas, columnCountStages: $columnCountStages, columnCountStagesIndex: $columnCountStagesIndex, shouldScrollToTop: $shouldScrollToTop, title: $title, shouldShowPaginationLoading: $hasOldMedia, proxy: proxy) { tappedThumbnail, isSelected in
+                NCMediaScrollView(metadatas: $metadatas, isInSelectMode: $isInSelectMode, selectedMetadatas: $selectedMetadatas, columnCountStages: $columnCountStages, columnCountStagesIndex: $columnCountStagesIndex, shouldScrollToTop: $shouldScrollToTop, title: $title, shouldShowPaginationLoading: $hasOldMedia, proxy: proxy) { tappedThumbnail, isSelected in
                     if isInSelectMode, isSelected {
                         selectedMetadatas.append(tappedThumbnail.metadata)
                     } else {
@@ -79,11 +80,11 @@ struct NCMediaNew: View {
                 } shouldLoadMore: {
                     vm.loadMoreItems()
                 }
-//                .onPreferenceChange(ScrollOffsetPreferenceKey.self) { value in
-////                    isScrolledToTop = value <= -20
-////                    isScrolledToBottom = scrollView.contentOffset.y >= (scrollView.contentSize.height - scrollView.frame.size.height)
-//                }
-                                .equatable()
+                //                .onPreferenceChange(ScrollOffsetPreferenceKey.self) { value in
+                ////                    isScrolledToTop = value <= -20
+                ////                    isScrolledToBottom = scrollView.contentOffset.y >= (scrollView.contentSize.height - scrollView.frame.size.height)
+                //                }
+                .equatable()
                 .ignoresSafeArea(.all, edges: .horizontal)
                 .scrollStatusByIntrospect(isScrolledToTop: $isScrolledToTop, isScrolledToBottom: $isScrolledToBottom)
             }
@@ -197,6 +198,9 @@ struct NCMediaNew: View {
             } else {
                 columnCountStages = [2, 3, 4]
             }
+        }
+        .onChange(of: vm.metadatas) { newValue in
+            metadatas = newValue
         }
         .onChange(of: isInSelectMode) { newValue in
             if newValue == false { selectedMetadatas.removeAll() }
