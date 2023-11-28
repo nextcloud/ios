@@ -109,9 +109,6 @@ class NCDataSource: NSObject {
         for metadata in self.metadatas {
             // skipped livePhoto VIDEO part
             if metadata.livePhoto && metadata.classFile == NKCommon.TypeClassFile.video.rawValue {
-                if let metadataImage = self.metadatas.filter({ $0.fileNoExtension == metadata.fileNoExtension && $0.classFile == NKCommon.TypeClassFile.image.rawValue }).first {
-                    NCLivePhoto().setLivePhoto(metadata1: metadataImage, metadata2: metadata)
-                }
                 continue
             }
             let section = NSLocalizedString(self.getSectionValue(metadata: metadata), comment: "")
@@ -428,9 +425,6 @@ class NCMetadataForSection: NSObject {
 
             // skipped livePhoto
             if metadata.livePhoto && metadata.classFile == NKCommon.TypeClassFile.video.rawValue {
-                if let metadataImage = self.metadatas.filter({ $0.fileNoExtension == metadata.fileNoExtension && $0.classFile == NKCommon.TypeClassFile.image.rawValue }).first {
-                    NCLivePhoto().setLivePhoto(metadata1: metadataImage, metadata2: metadata)
-                }
                 continue
             }
 
