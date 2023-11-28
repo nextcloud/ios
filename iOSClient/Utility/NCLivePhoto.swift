@@ -464,24 +464,3 @@ fileprivate extension AVAsset {
         }
     }
 }
-
-extension NCLivePhoto {
-
-    func setLivephotoUpload(metadata: tableMetadata) {
-
-        guard NCGlobal.shared.capabilityServerVersionMajor >= NCGlobal.shared.nextcloudVersion28,
-              metadata.livePhoto,
-              let metadata2 = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND urlBase == %@ AND path == %@ AND fileName == %@ AND status == %d", metadata.account, metadata.urlBase, metadata.path, metadata.livePhotoFile, NCGlobal.shared.metadataStatusNormal)) else {
-            return
-        }
-
-        let serverUrlfileNamePath = metadata.urlBase + metadata.path + metadata.livePhotoFile
-        let serverUrlfileNamePath2 = metadata2.urlBase + metadata2.path + metadata2.livePhotoFile
-
-        Task {
-            _ = await NextcloudKit.shared.setLivephoto(serverUrlfileNamePath: serverUrlfileNamePath, livePhotoFile: metadata2.livePhotoFile)
-
-            _ = await NextcloudKit.shared.setLivephoto(serverUrlfileNamePath: serverUrlfileNamePath2, livePhotoFile: metadata.livePhotoFile)
-        }
-    }
-}

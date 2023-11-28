@@ -691,7 +691,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
                 utilityFileSystem.removeFile(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(ocIdTemp))
             }
 
-            NCLivePhoto().setLivephotoUpload(metadata: metadata)
+            setLivephotoUpload(metadata: metadata)
 
             NextcloudKit.shared.nkCommonInstance.writeLog("[SUCCESS] Upload complete " + serverUrl + "/" + fileName + ", result: success(\(size) bytes)")
             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUploadedFile, userInfo: ["ocId": metadata.ocId, "serverUrl": metadata.serverUrl, "account": metadata.account, "fileName": metadata.fileName, "ocIdTemp": ocIdTemp, "error": error])
@@ -788,6 +788,24 @@ class NCNetworking: NSObject, NKCommonDelegate {
                 queue.async { completion(listOcId) }
             })
         })
+    }
+
+    func setLivephotoUpload(metadata: tableMetadata) {
+
+        guard NCGlobal.shared.capabilityServerVersionMajor >= NCGlobal.shared.nextcloudVersion28,
+              metadata.livePhoto,
+              let metadata2 = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND urlBase == %@ AND path == %@ AND fileName == %@ AND status == %d", metadata.account, metadata.urlBase, metadata.path, metadata.livePhotoFile, NCGlobal.shared.metadataStatusNormal)) else {
+            return
+        }
+
+        let serverUrlfileNamePath = metadata.urlBase + metadata.path + metadata.livePhotoFile
+        let serverUrlfileNamePath2 = metadata2.urlBase + metadata2.path + metadata2.livePhotoFile
+
+        Task {
+            _ = await NextcloudKit.shared.setLivephoto(serverUrlfileNamePath: serverUrlfileNamePath, livePhotoFile: metadata2.livePhotoFile)
+
+            _ = await NextcloudKit.shared.setLivephoto(serverUrlfileNamePath: serverUrlfileNamePath2, livePhotoFile: metadata.livePhotoFile)
+        }
     }
 
     // MARK: - Cancel (Download Upload)
