@@ -790,21 +790,36 @@ class NCNetworking: NSObject, NKCommonDelegate {
         })
     }
 
+    // MARK: - Live Photo
+
     func setLivephotoUpload(metadata: tableMetadata) {
 
         guard NCGlobal.shared.capabilityServerVersionMajor >= NCGlobal.shared.nextcloudVersion28,
               metadata.livePhoto,
-              let metadata2 = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND urlBase == %@ AND path == %@ AND fileName == %@ AND status == %d", metadata.account, metadata.urlBase, metadata.path, metadata.livePhotoFile, NCGlobal.shared.metadataStatusNormal)) else {
+              let metadata1 = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND urlBase == %@ AND path == %@ AND fileName == %@ AND status == %d", metadata.account, metadata.urlBase, metadata.path, metadata.livePhotoFile, NCGlobal.shared.metadataStatusNormal)) else {
             return
         }
 
         let serverUrlfileNamePath = metadata.urlBase + metadata.path + metadata.livePhotoFile
-        let serverUrlfileNamePath2 = metadata2.urlBase + metadata2.path + metadata2.livePhotoFile
+        let serverUrlfileNamePath1 = metadata1.urlBase + metadata1.path + metadata1.livePhotoFile
 
         Task {
-            _ = await NextcloudKit.shared.setLivephoto(serverUrlfileNamePath: serverUrlfileNamePath, livePhotoFile: metadata2.livePhotoFile)
+            let results = await NextcloudKit.shared.setLivephoto(serverUrlfileNamePath: serverUrlfileNamePath, livePhotoFile: metadata1.livePhotoFile)
+            print("Send LivePhoto metadata error \(results.error.errorCode)")
 
-            _ = await NextcloudKit.shared.setLivephoto(serverUrlfileNamePath: serverUrlfileNamePath2, livePhotoFile: metadata.livePhotoFile)
+            let results1 = await NextcloudKit.shared.setLivephoto(serverUrlfileNamePath: serverUrlfileNamePath1, livePhotoFile: metadata.livePhotoFile)
+            print("Send LivePhoto metadata1 error \(results1.error.errorCode)")
+        }
+    }
+
+    func setLivePhoto(metadata: tableMetadata) {
+
+        guard NCGlobal.shared.capabilityServerVersionMajor >= NCGlobal.shared.nextcloudVersion28 else { return }
+
+        Task {
+            let serverUrlfileNamePath = metadata.urlBase + metadata.path + metadata.fileName
+            let results = await NextcloudKit.shared.setLivephoto(serverUrlfileNamePath: serverUrlfileNamePath, livePhotoFile: metadata.livePhotoFile)
+            print("Send LivePhoto metadata error \(results.error.errorCode)")
         }
     }
 
