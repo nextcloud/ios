@@ -123,7 +123,7 @@ class NCManageDatabase: NSObject {
                             migration.deleteData(forType: tableGPS.className())
                         }
 
-                        if oldSchemaVersion < 328 {
+                        if oldSchemaVersion < 330 {
                             migration.deleteData(forType: tableMetadata.className())
                             migration.enumerateObjects(ofType: tableDirectory.className()) { _, newObject in
                                 newObject?["etag"] = ""

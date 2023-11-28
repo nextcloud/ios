@@ -107,10 +107,6 @@ class NCDataSource: NSObject {
 
         // get all Section
         for metadata in self.metadatas {
-            // set Server livePhoto
-            if !metadata.livePhotoMetadata, metadata.livePhoto {
-                NCNetworking.shared.setLivePhoto(metadata: metadata)
-            }
             // skipped livePhoto VIDEO part
             if metadata.livePhoto && metadata.classFile == NKCommon.TypeClassFile.video.rawValue {
                 continue

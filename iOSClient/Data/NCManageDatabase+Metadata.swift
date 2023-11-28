@@ -62,7 +62,7 @@ class tableMetadata: Object, NCUserBaseUrl {
     @objc dynamic var iconUrl = ""
     @objc dynamic var isExtractFile: Bool = false
     @objc dynamic var livePhotoFile = ""
-    @objc dynamic var livePhotoMetadata: Bool = false
+    @objc dynamic var livePhotoServer: Bool = false
     @objc dynamic var mountType = ""
     @objc dynamic var name = ""                                             // for unifiedSearch is the provider.id
     @objc dynamic var note = ""
@@ -346,7 +346,7 @@ extension NCManageDatabase {
         metadata.height = file.height
         metadata.width = file.width
         metadata.livePhotoFile = file.livePhotoFile
-        metadata.livePhotoMetadata = file.livePhotoMetadata
+        metadata.livePhotoServer = file.livePhotoServer
 
         // E2EE find the fileName for fileNameView
         if isDirectoryE2EE || file.e2eEncrypted {
