@@ -14,12 +14,11 @@ import Combine
 import Queuer
 
 struct NCMediaNew: View {
-    //    let downloadThumbnailQueue = Queuer(name: "downloadThumbnailQueue", maxConcurrentOperationCount: 10, qualityOfService: .background)
-
     @StateObject private var vm = NCMediaViewModel()
     @EnvironmentObject private var parent: NCMediaUIKitWrapper
     @State private var title = NSLocalizedString("_media_", comment: "")
     @State private var isScrolledToTop = true
+    @State private var isScrolledToBottom = false
     @State private var tappedMetadata = tableMetadata()
 
     @State private var loadingIndicatorColor = Color.gray
@@ -39,13 +38,14 @@ struct NCMediaNew: View {
     @State private var isInSelectMode = false
 
     @State private var shouldScrollToTop = false
+    @State private var hasOldMedia = true
 
     var body: some View {
         let _ = Self._printChanges()
 
         ZStack(alignment: .top) {
             ScrollViewReader { proxy in
-                NCMediaScrollView(metadatas: vm.metadatas, isInSelectMode: $isInSelectMode, selectedMetadatas: $selectedMetadatas, columnCountStages: $columnCountStages, columnCountStagesIndex: $columnCountStagesIndex, shouldScrollToTop: $shouldScrollToTop, title: $title, proxy: proxy) { tappedThumbnail, isSelected in
+                NCMediaScrollView(metadatas: vm.metadatas, isInSelectMode: $isInSelectMode, selectedMetadatas: $selectedMetadatas, columnCountStages: $columnCountStages, columnCountStagesIndex: $columnCountStagesIndex, shouldScrollToTop: $shouldScrollToTop, title: $title, shouldShowPaginationLoading: $hasOldMedia, proxy: proxy) { tappedThumbnail, isSelected in
                     if isInSelectMode, isSelected {
                         selectedMetadatas.append(tappedThumbnail.metadata)
                     } else {
@@ -76,15 +76,20 @@ struct NCMediaNew: View {
                     case .delete:
                         vm.delete(metadatas: selectedMetadata)
                     }
+                } shouldLoadMore: {
+                    vm.loadMoreItems()
                 }
-                //                .equatable()
+//                .onPreferenceChange(ScrollOffsetPreferenceKey.self) { value in
+////                    isScrolledToTop = value <= -20
+////                    isScrolledToBottom = scrollView.contentOffset.y >= (scrollView.contentSize.height - scrollView.frame.size.height)
+//                }
+                                .equatable()
                 .ignoresSafeArea(.all, edges: .horizontal)
-                .scrollStatusByIntrospect(isScrolledToTop: $isScrolledToTop)
+                .scrollStatusByIntrospect(isScrolledToTop: $isScrolledToTop, isScrolledToBottom: $isScrolledToBottom)
             }
 
             HStack {
                 ToolbarTitle(title: $title, titleColor: $titleColor)
-
 
                 Spacer()
 
@@ -213,6 +218,14 @@ struct NCMediaNew: View {
             if newValue {
                 vm.hasNewMedia = false
             }
+        }
+        .onChange(of: isScrolledToBottom) { newValue in
+            if newValue {
+                vm.loadMoreItems()
+            }
+        }
+        .onChange(of: vm.hasOldMedia) { newValue in
+            hasOldMedia = newValue
         }
         .alert("", isPresented: $showPlayFromURLAlert) {
             TextField("https://...", text: $playFromUrlString)
@@ -344,10 +357,12 @@ struct NCMediaNew_Previews: PreviewProvider {
 final class ScrollDelegate: NSObject, UITableViewDelegate, UIScrollViewDelegate {
     //    var isScrolling: Binding<Bool>?
     var isScrolledToTop: Binding<Bool>?
+    var isScrolledToBottom: Binding<Bool>?
 
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         DispatchQueue.main.async {
             self.isScrolledToTop?.wrappedValue = scrollView.contentOffset.y <= -20
+            self.isScrolledToBottom?.wrappedValue = scrollView.contentOffset.y >= (scrollView.contentSize.height - scrollView.frame.size.height)
         }
         //        if let isScrolling = isScrolling?.wrappedValue,!isScrolling {
         //            self.isScrolling?.wrappedValue = true
@@ -376,19 +391,21 @@ final class ScrollDelegate: NSObject, UITableViewDelegate, UIScrollViewDelegate 
 }
 
 extension View {
-    func scrollStatusByIntrospect(isScrolledToTop: Binding<Bool>) -> some View {
-        modifier(ScrollStatusByIntrospectModifier(isScrolledToTop: isScrolledToTop))
+    func scrollStatusByIntrospect(isScrolledToTop: Binding<Bool>, isScrolledToBottom: Binding<Bool>) -> some View {
+        modifier(ScrollStatusByIntrospectModifier(isScrolledToTop: isScrolledToTop, isScrolledToBottom: isScrolledToBottom))
     }
 }
 
 struct ScrollStatusByIntrospectModifier: ViewModifier {
     @State var delegate = ScrollDelegate()
     @Binding var isScrolledToTop: Bool
+    @Binding var isScrolledToBottom: Bool
 
     func body(content: Content) -> some View {
         content
             .onAppear {
                 self.delegate.isScrolledToTop = $isScrolledToTop
+                self.delegate.isScrolledToBottom = $isScrolledToBottom
             }
             .introspect(.scrollView, on: .iOS(.v15...)) { scrollView in
                 scrollView.delegate = delegate

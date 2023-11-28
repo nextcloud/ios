@@ -16,6 +16,7 @@ import LRUCache
     @Published internal var filter = Filter.all
     @Published internal var isLoadingMetadata = true
     @Published internal var hasNewMedia = false
+    @Published internal var hasOldMedia = true
 
     internal let appDelegate = UIApplication.shared.delegate as? AppDelegate
 
@@ -53,7 +54,7 @@ import LRUCache
         guard let appDelegate, !appDelegate.account.isEmpty else { return }
 
         if account != appDelegate.account {
-            self.metadatas = []
+            DispatchQueue.main.async { self.metadatas = [] }
             account = appDelegate.account
         }
 
@@ -70,7 +71,7 @@ import LRUCache
         NotificationCenter.default.addObserver(self, selector: #selector(userChanged(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeUser), object: nil)
 
         if let metadatas = self.cache.initialMetadatas {
-            self.metadatas = metadatas
+            DispatchQueue.main.async { self.metadatas = metadatas }
         }
 
         Task {
@@ -308,7 +309,7 @@ extension NCMediaViewModel {
         guard let appDelegate, !appDelegate.account.isEmpty else { return }
 
         if account != appDelegate.account {
-            self.metadatas = []
+            DispatchQueue.main.async { self.metadatas = [] }
             account = appDelegate.account
         }
 
@@ -332,7 +333,9 @@ extension NCMediaViewModel {
     private func loadOldMedia(value: Int = -30, limit: Int = 300) {
         var lessDate = Date()
 
-        isLoadingOldMetadata = true
+        DispatchQueue.main.async {
+            self.isLoadingOldMetadata = true
+        }
 
         if let predicateDefault {
             if let metadata = NCManageDatabase.shared.getMetadata(predicate: predicateDefault, sorted: "date", ascending: true) {
@@ -359,8 +362,10 @@ extension NCMediaViewModel {
                         let metadatasResult = NCManageDatabase.shared.getMetadatas(predicate: predicateResult)
                         let metadatasChanged = NCManageDatabase.shared.updateMetadatas(metadatas, metadatasResult: metadatasResult, addCompareLivePhoto: false)
                         if metadatasChanged.metadatasUpdate.isEmpty {
+                            self.hasOldMedia = false
                             self.reloadOldMedia(value: value, limit: limit, withElseReloadDataSource: true)
                         } else {
+//                            self.hasOldMedia = true
                             self.loadMediaFromDB()
                         }
                     }
@@ -401,8 +406,9 @@ extension NCMediaViewModel {
 
         let options = NKRequestOptions(timeout: 300, queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
 
-        isLoadingNewMetadata = true
-
+        DispatchQueue.main.async {
+            self.isLoadingNewMetadata = true
+        }
         return await withCheckedContinuation { continuation in
             NextcloudKit.shared.searchMedia(path: self.mediaPath, lessDate: lessDate, greaterDate: greaterDate, elementDate: "d:getlastmodified/", limit: limit, showHiddenFiles: NCKeychain().showHiddenFiles, options: options) { account, files, _, error in
 
