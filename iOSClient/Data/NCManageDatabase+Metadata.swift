@@ -396,7 +396,7 @@ extension NCManageDatabase {
         completion(metadataFolder, metadataFolders, metadatas)
     }
 
-    func createMetadata(account: String, user: String, userId: String, fileName: String, fileNameView: String, ocId: String, serverUrl: String, urlBase: String, url: String, contentType: String, livePhotoFile: String = "", isUrl: Bool = false, name: String = NCGlobal.shared.appName, subline: String? = nil, iconName: String? = nil, iconUrl: String? = nil) -> tableMetadata {
+    func createMetadata(account: String, user: String, userId: String, fileName: String, fileNameView: String, ocId: String, serverUrl: String, urlBase: String, url: String, contentType: String, isUrl: Bool = false, name: String = NCGlobal.shared.appName, subline: String? = nil, iconName: String? = nil, iconUrl: String? = nil) -> tableMetadata {
 
         let metadata = tableMetadata()
         if isUrl {
@@ -431,7 +431,6 @@ extension NCManageDatabase {
         metadata.etag = ocId
         metadata.fileName = fileName
         metadata.fileNameView = fileName
-        metadata.livePhotoFile = livePhotoFile
         metadata.name = name
         metadata.ocId = ocId
         metadata.permissions = "RGDNVW"
