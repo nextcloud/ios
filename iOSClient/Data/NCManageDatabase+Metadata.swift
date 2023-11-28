@@ -416,6 +416,15 @@ extension NCManageDatabase {
         completion(metadataFolder, metadataFolders, metadataOutput)
     }
 
+    func convertFilesToMetadatas(_ files: [NKFile], useMetadataFolder: Bool) async -> (metadataFolder: tableMetadata, metadatasFolder: [tableMetadata], metadatas: [tableMetadata]) {
+
+        await withUnsafeContinuation({ continuation in
+            convertFilesToMetadatas(files, useMetadataFolder: useMetadataFolder) { metadataFolder, metadatasFolder, metadatas in
+                continuation.resume(returning: (metadataFolder, metadatasFolder, metadatas))
+            }
+        })
+    }
+
     func createMetadata(account: String, user: String, userId: String, fileName: String, fileNameView: String, ocId: String, serverUrl: String, urlBase: String, url: String, contentType: String, isLivePhoto: Bool = false, isUrl: Bool = false, name: String = NCGlobal.shared.appName, subline: String? = nil, iconName: String? = nil, iconUrl: String? = nil) -> tableMetadata {
 
         let metadata = tableMetadata()
@@ -1070,45 +1079,45 @@ extension NCManageDatabase {
 
     func getMetadatasMedia(predicate: NSPredicate, livePhoto: Bool) -> [tableMetadata] {
 
-        var metadatas: [tableMetadata] = []
+        var metadatas = [tableMetadata]()
 
         do {
+            var metadatasResults = [tableMetadata]()
             let realm = try Realm()
-            realm.refresh()
-            try realm.write {
-                let sortProperties = [SortDescriptor(keyPath: "serverUrl", ascending: false), SortDescriptor(keyPath: "fileNameView", ascending: false)]
-                let results = realm.objects(tableMetadata.self).filter(predicate).sorted(by: sortProperties)
-                if livePhoto {
-                    for index in results.indices {
-                        let metadata = results[index]
-                        if index < results.count - 1, metadata.fileNoExtension == results[index + 1].fileNoExtension {
-                            if !metadata.livePhoto {
-                                metadata.livePhoto = true
-                            }
-                            if !results[index + 1].livePhoto {
-                                results[index + 1].livePhoto = true
-                            }
-                            let metadata1 = tableMetadata(value: results[index + 1])
-                            let metadata2 = tableMetadata(value: results[index])
-                            NCLivePhoto().setLivePhoto(metadata1: metadata1, metadata2: metadata2)
+            let sortProperties = [SortDescriptor(keyPath: "serverUrl", ascending: false), SortDescriptor(keyPath: "fileNameView", ascending: false)]
+            for result in realm.objects(tableMetadata.self).filter(predicate).sorted(by: sortProperties) { metadatasResults.append(tableMetadata(value: result))
+            }
+            if livePhoto {
+                for index in metadatasResults.indices {
+                    let metadata = metadatasResults[index]
+                    if index < metadatasResults.count - 1, metadata.fileNoExtension == metadatasResults[index + 1].fileNoExtension {
+                        if !metadata.livePhoto {
+                            metadata.livePhoto = true
                         }
-                        if metadata.livePhoto {
-                            if metadata.classFile == NKCommon.TypeClassFile.image.rawValue {
-                                metadatas.append(tableMetadata.init(value: metadata))
-                            }
-                            continue
-                        } else {
-                            metadatas.append(tableMetadata.init(value: metadata))
+                        if !metadatasResults[index + 1].livePhoto {
+                            metadatasResults[index + 1].livePhoto = true
                         }
+                        let metadata1 = metadatasResults[index + 1]
+                        let metadata2 = metadatasResults[index]
+                        NCLivePhoto().setLivePhoto(metadata1: metadata1, metadata2: metadata2)
                     }
-                } else {
-                    metadatas = Array(results.map { tableMetadata.init(value: $0) })
+                    if metadata.livePhoto {
+                        if metadata.classFile == NKCommon.TypeClassFile.image.rawValue {
+                            metadatas.append(metadata)
+                        }
+                        continue
+                    } else {
+                        metadatas.append(metadata)
+                    }
                 }
+            } else {
+                metadatas = metadatasResults
             }
         } catch let error {
-            NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
+            NextcloudKit.shared.nkCommonInstance.writeLog("Could not access to database: \(error)")
         }
 
+        metadatas = metadatas.sorted(by: {($0.date as Date) > ($1.date as Date)})
         return metadatas
     }
 

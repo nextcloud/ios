@@ -59,10 +59,9 @@ import NextcloudKit
         return _initialMetadatas
     }
 
-    private var livePhoto: Bool = false
-    var isLivePhotoEnabled: Bool {
-        return livePhoto
-    }
+
+    var isMediaMetadatasInProcess: Bool = false
+    var isLivePhotoEnabled: Bool = false
 
     override private init() {}
 
@@ -149,27 +148,19 @@ import NextcloudKit
 
     func getMediaMetadatas(account: String, predicate: NSPredicate? = nil) -> [tableMetadata] {
 
-        guard let account = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", account)) else { return [] }
-        let startServerUrl = NCUtilityFileSystem().getHomeServer(urlBase: account.urlBase, userId: account.userId) + account.mediaPath
-
-        let predicateDefault = NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND (classFile == %@ OR classFile == %@) AND NOT (session CONTAINS[c] 'upload')", account.account, startServerUrl, NKCommon.TypeClassFile.image.rawValue, NKCommon.TypeClassFile.video.rawValue)
-
-        livePhoto = NCKeychain().livePhoto
-
-        var metadatas = NCManageDatabase.shared.getMetadatasMedia(predicate: predicate ?? predicateDefault, livePhoto: livePhoto)
-
-        switch NCKeychain().mediaSortDate {
-        case "date":
-            metadatas = metadatas.sorted(by: {($0.date as Date) > ($1.date as Date)})
-        case "creationDate":
-            metadatas = metadatas.sorted(by: {($0.creationDate as Date) > ($1.creationDate as Date)})
-        case "uploadDate":
-            metadatas = metadatas.sorted(by: {($0.uploadDate as Date) > ($1.uploadDate as Date)})
-        default:
-            break
+        defer {
+            self.isMediaMetadatasInProcess = false
+            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterFinishedMediaInProcess)
         }
 
-        return metadatas
+        self.isMediaMetadatasInProcess = true
+
+        guard let account = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", account)) else { return [] }
+        let startServerUrl = NCUtilityFileSystem().getHomeServer(urlBase: account.urlBase, userId: account.userId) + account.mediaPath
+        let predicateDefault = NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND (classFile == %@ OR classFile == %@) AND NOT (session CONTAINS[c] 'upload')", account.account, startServerUrl, NKCommon.TypeClassFile.image.rawValue, NKCommon.TypeClassFile.video.rawValue)
+
+        isLivePhotoEnable = NCKeychain().livePhoto
+        return NCManageDatabase.shared.getMetadatasMedia(predicate: predicate ?? predicateDefault, livePhoto: isLivePhotoEnable)
     }
 
     // MARK: -
