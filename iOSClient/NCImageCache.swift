@@ -159,8 +159,8 @@ import NextcloudKit
         let startServerUrl = NCUtilityFileSystem().getHomeServer(urlBase: account.urlBase, userId: account.userId) + account.mediaPath
         let predicateDefault = NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND (classFile == %@ OR classFile == %@) AND NOT (session CONTAINS[c] 'upload')", account.account, startServerUrl, NKCommon.TypeClassFile.image.rawValue, NKCommon.TypeClassFile.video.rawValue)
 
-        isLivePhotoEnable = NCKeychain().livePhoto
-        return NCManageDatabase.shared.getMetadatasMedia(predicate: predicate ?? predicateDefault, livePhoto: isLivePhotoEnable)
+        isLivePhotoEnabled = NCKeychain().livePhoto
+        return NCManageDatabase.shared.getMetadatasMedia(predicate: predicate ?? predicateDefault, livePhoto: isLivePhotoEnabled)
     }
 
     // MARK: -

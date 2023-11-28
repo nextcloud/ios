@@ -162,7 +162,7 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
 
     @objc func finishedMediaInProcess (_ notification: NSNotification) {
 
-        if let metadatas = imageCache.initialMetadatas() {
+        if let metadatas = imageCache.initialMetadatas {
             self.metadatas = metadatas
             collectionView.reloadData()
         }
