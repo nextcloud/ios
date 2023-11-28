@@ -65,7 +65,6 @@ class NCFavorite: NCCollectionViewCommon {
                                        ascending: self.layoutForView?.ascending,
                                        directoryOnTop: self.layoutForView?.directoryOnTop,
                                        favoriteOnTop: true,
-                                       filterLivePhoto: true,
                                        groupByField: self.groupByField,
                                        providers: self.providers,
                                        searchResults: self.searchResults)

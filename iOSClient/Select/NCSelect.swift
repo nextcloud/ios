@@ -545,7 +545,6 @@ extension NCSelect {
                                        ascending: true,
                                        directoryOnTop: true,
                                        favoriteOnTop: true,
-                                       filterLivePhoto: true,
                                        groupByField: "none")
 
         if withLoadFolder {

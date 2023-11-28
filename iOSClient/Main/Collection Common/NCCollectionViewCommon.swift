@@ -935,7 +935,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                     ascending: self.layoutForView?.ascending,
                     directoryOnTop: self.layoutForView?.directoryOnTop,
                     favoriteOnTop: true,
-                    filterLivePhoto: true,
                     providers: self.providers,
                     searchResults: self.searchResults)
             } update: { _, _, searchResult, metadatas in
@@ -960,7 +959,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                     ascending: self.layoutForView?.ascending,
                     directoryOnTop: self.layoutForView?.directoryOnTop,
                     favoriteOnTop: true,
-                    filterLivePhoto: true,
                     groupByField: self.groupByField,
                     providers: self.providers,
                     searchResults: self.searchResults)
