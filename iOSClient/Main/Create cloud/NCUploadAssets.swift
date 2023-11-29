@@ -257,8 +257,11 @@ struct UploadAssetsView: View {
             let isRecordInSessions = NCManageDatabase.shared.getAdvancedMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileName == %@ AND session != ''", uploadAssets.userBaseUrl.account, serverUrl, fileName), sorted: "fileName", ascending: false)
             if !isRecordInSessions.isEmpty { continue }
 
-            let metadata = NCManageDatabase.shared.createMetadata(account: uploadAssets.userBaseUrl.account, user: uploadAssets.userBaseUrl.user, userId: uploadAssets.userBaseUrl.userId, fileName: fileName, fileNameView: fileName, ocId: NSUUID().uuidString, serverUrl: serverUrl, urlBase: uploadAssets.userBaseUrl.urlBase, url: "", contentType: "", isLivePhoto: livePhoto)
+            let metadata = NCManageDatabase.shared.createMetadata(account: uploadAssets.userBaseUrl.account, user: uploadAssets.userBaseUrl.user, userId: uploadAssets.userBaseUrl.userId, fileName: fileName, fileNameView: fileName, ocId: NSUUID().uuidString, serverUrl: serverUrl, urlBase: uploadAssets.userBaseUrl.urlBase, url: "", contentType: "")
 
+            if livePhoto {
+                metadata.livePhotoFile = (metadata.fileName as NSString).deletingPathExtension + ".mov"
+            }
             metadata.assetLocalIdentifier = asset.localIdentifier
             metadata.session = NCNetworking.shared.sessionIdentifierBackground
             metadata.sessionSelector = NCGlobal.shared.selectorUploadFile

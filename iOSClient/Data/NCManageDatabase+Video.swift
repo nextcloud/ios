@@ -48,7 +48,7 @@ extension NCManageDatabase {
 
     func addVideo(metadata: tableMetadata, position: Float? = nil, width: Int? = nil, height: Int? = nil, length: Int? = nil, currentAudioTrackIndex: Int? = nil, currentVideoSubTitleIndex: Int? = nil) {
 
-        if metadata.livePhoto { return }
+        if metadata.isLivePhoto { return }
 
         do {
             let realm = try Realm()

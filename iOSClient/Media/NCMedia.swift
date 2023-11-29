@@ -405,7 +405,7 @@ extension NCMedia: UICollectionViewDataSource {
 
             if metadata.isAudioOrVideo {
                 cell.imageStatus.image = cacheImages.cellPlayImage
-            } else if metadata.livePhoto && NCImageCache.shared.isLivePhotoEnable {
+            } else if metadata.isLivePhoto {
                 cell.imageStatus.image = cacheImages.cellLivePhotoImage
             } else {
                 cell.imageStatus.image = nil
@@ -447,7 +447,7 @@ extension NCMedia {
     func getPredicate(_ predicatedefault: Bool = false) -> NSPredicate {
 
         let startServerUrl = NCUtilityFileSystem().getHomeServer(urlBase: appDelegate.urlBase, userId: appDelegate.userId) + mediaPath
-        let showAll = NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND (classFile == %@ OR classFile == %@) AND NOT (session CONTAINS[c] 'upload')", appDelegate.account, startServerUrl, NKCommon.TypeClassFile.image.rawValue, NKCommon.TypeClassFile.video.rawValue)
+        let showAll = NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND (classFile == %@ OR classFile == %@) AND NOT (session CONTAINS[c] 'upload') AND NOT(livePhotoFile != '' AND classFile == %@)", appDelegate.account, startServerUrl, NKCommon.TypeClassFile.image.rawValue, NKCommon.TypeClassFile.video.rawValue, NKCommon.TypeClassFile.video.rawValue)
 
         if predicatedefault { return showAll }
         if showOnlyImages {
@@ -533,7 +533,7 @@ extension NCMedia {
                         let predicateDate = NSPredicate(format: "date > %@ AND date < %@", greaterDate as NSDate, lessDate as NSDate)
                         let predicateResult = NSCompoundPredicate(andPredicateWithSubpredicates: [predicateDate, self.getPredicate(true)])
                         let metadatasResult = NCManageDatabase.shared.getMetadatas(predicate: predicateResult)
-                        let metadatasChanged = NCManageDatabase.shared.updateMetadatas(metadatas, metadatasResult: metadatasResult, addCompareLivePhoto: false)
+                        let metadatasChanged = NCManageDatabase.shared.updateMetadatas(metadatas, metadatasResult: metadatasResult)
                         if metadatasChanged.metadatasUpdate.isEmpty {
                             self.researchOldMedia(value: value, limit: limit, withElseReloadDataSource: true)
                         } else {
@@ -614,7 +614,7 @@ extension NCMedia {
                         let predicate = NSPredicate(format: "date > %@ AND date < %@", greaterDate as NSDate, lessDate as NSDate)
                         let predicateResult = NSCompoundPredicate(andPredicateWithSubpredicates: [predicate, self.getPredicate(true)])
                         let metadatasResult = NCManageDatabase.shared.getMetadatas(predicate: predicateResult)
-                        let updateMetadatas = NCManageDatabase.shared.updateMetadatas(metadatas, metadatasResult: metadatasResult, addCompareLivePhoto: false)
+                        let updateMetadatas = NCManageDatabase.shared.updateMetadatas(metadatas, metadatasResult: metadatasResult)
                         if !updateMetadatas.metadatasUpdate.isEmpty || !updateMetadatas.metadatasDelete.isEmpty {
                             self.reloadDataSourceWithCompletion { _ in }
                         }

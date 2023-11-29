@@ -110,8 +110,6 @@ class NCManageDatabase: NSObject {
                             migration.deleteData(forType: tableActivityLatestId.className())
                             migration.deleteData(forType: tableActivityPreview.className())
                             migration.deleteData(forType: tableActivitySubjectRich.className())
-                            migration.deleteData(forType: tableDirectory.className())
-                            migration.deleteData(forType: tableMetadata.className())
                         }
 
                         if oldSchemaVersion < 292 {
@@ -120,10 +118,16 @@ class NCManageDatabase: NSObject {
 
                         if oldSchemaVersion < 319 {
                             migration.deleteData(forType: tableChunk.className())
-                            migration.deleteData(forType: tableMetadata.className())
                             migration.deleteData(forType: tableDirectory.className())
                             migration.deleteData(forType: tableE2eEncryptionLock.className())
                             migration.deleteData(forType: tableGPS.className())
+                        }
+
+                        if oldSchemaVersion < 330 {
+                            migration.deleteData(forType: tableMetadata.className())
+                            migration.enumerateObjects(ofType: tableDirectory.className()) { _, newObject in
+                                newObject?["etag"] = ""
+                            }
                         }
 
                     }, shouldCompactOnLaunch: { totalBytes, usedBytes in

@@ -285,6 +285,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         NCNetworking.shared.cancelDownloadTasks()
         presentPasscode { }
 
+        //TODO: TESTTTT
+        //NCNetworking.shared.convertLivePhoto()
+
         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterApplicationDidEnterBackground)
     }
 
