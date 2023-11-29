@@ -249,7 +249,7 @@ extension tableMetadata {
         NCUtilityFileSystem().isDirectoryE2EETop(account: account, serverUrl: serverUrl)
     }
 
-    var livePhoto: Bool {
+    var isLivePhoto: Bool {
         !livePhotoFile.isEmpty
     }
 
@@ -1027,7 +1027,7 @@ extension NCManageDatabase {
 
     func getMetadataLivePhoto(metadata: tableMetadata) -> tableMetadata? {
 
-        guard metadata.livePhoto else { return nil }
+        guard metadata.isLivePhoto else { return nil }
 
         do {
             let realm = try Realm()

@@ -71,7 +71,7 @@ private var hasChangesQuickLook: Bool = false
         super.viewDidLoad()
         guard isEditingEnabled else { return }
 
-        if metadata?.livePhoto == true {
+        if metadata?.isLivePhoto == true {
             let error = NKError(errorCode: NCGlobal.shared.errorCharactersForbidden, errorDescription: "_message_disable_overwrite_livephoto_")
             NCContentPresenter().showInfo(error: error)
         }
@@ -126,7 +126,7 @@ private var hasChangesQuickLook: Bool = false
 
         let alertController = UIAlertController(title: NSLocalizedString("_save_", comment: ""), message: nil, preferredStyle: .alert)
         var message: String?
-        if metadata.livePhoto {
+        if metadata.isLivePhoto {
             message = NSLocalizedString("_message_disable_overwrite_livephoto_", comment: "")
         } else if metadata.lock {
             message = NSLocalizedString("_file_locked_no_override_", comment: "")

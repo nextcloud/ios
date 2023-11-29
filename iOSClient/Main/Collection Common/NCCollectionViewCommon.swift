@@ -1447,7 +1447,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         }
 
         // Live Photo
-        if metadata.livePhoto {
+        if metadata.isLivePhoto {
             cell.fileStatusImage?.image = NCImageCache.images.livePhoto
             a11yValues.append(NSLocalizedString("_upload_mov_livephoto_", comment: ""))
         }

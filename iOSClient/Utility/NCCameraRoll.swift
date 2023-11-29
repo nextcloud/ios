@@ -75,7 +75,7 @@ class NCCameraRoll: NSObject {
                 self.utilityFileSystem.moveFile(atPath: fileNamePath, toPath: toPath)
                 let fetchAssets = PHAsset.fetchAssets(withLocalIdentifiers: [metadataSource.assetLocalIdentifier], options: nil)
                 // swiftlint:disable empty_count
-                if metadata.livePhoto, fetchAssets.count > 0 {
+                if metadata.isLivePhoto, fetchAssets.count > 0 {
                     self.createMetadataLivePhoto(metadata: metadata, asset: fetchAssets.firstObject) { metadata in
                         if let metadata = metadata, let metadata = NCManageDatabase.shared.addMetadata(metadata) {
                             metadatas.append(metadata)
