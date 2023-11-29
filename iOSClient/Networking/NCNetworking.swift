@@ -812,14 +812,23 @@ class NCNetworking: NSObject, NKCommonDelegate {
         }
     }
 
-    func setLivePhoto(metadata: tableMetadata) {
+    func convertLivePhoto() {
 
         guard NCGlobal.shared.capabilityServerVersionMajor >= NCGlobal.shared.nextcloudVersion28 else { return }
 
         Task {
-            let serverUrlfileNamePath = metadata.urlBase + metadata.path + metadata.fileName
-            let results = await NextcloudKit.shared.setLivephoto(serverUrlfileNamePath: serverUrlfileNamePath, livePhotoFile: metadata.livePhotoFile)
-            print("Send LivePhoto metadata error \(results.error.errorCode)")
+            if let results = NCManageDatabase.shared.getResultsMetadatas(predicate: NSPredicate(format: "livePhotoServer == false AND livePhotoFile != ''")) {
+                var index: Int = 0
+                for result in results {
+                    index += 1
+                    let serverUrlfileNamePath = result.urlBase + result.path + result.fileName
+                    let error = await NextcloudKit.shared.setLivephoto(serverUrlfileNamePath: serverUrlfileNamePath, livePhotoFile: result.livePhotoFile).error
+                    if error != .success {
+                        break
+                    }
+                    if index >= 20 { break }
+                }
+            }
         }
     }
 
