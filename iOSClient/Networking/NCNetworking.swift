@@ -816,20 +816,20 @@ class NCNetworking: NSObject, NKCommonDelegate {
 
         guard NCGlobal.shared.capabilityServerVersionMajor >= NCGlobal.shared.nextcloudVersion28 else { return }
 
-        Task {
-            if let results = NCManageDatabase.shared.getResultsMetadatas(predicate: NSPredicate(format: "livePhotoServer == false AND livePhotoFile != ''")) {
-                var index: Int = 0
-                for result in results {
-                    index += 1
-                    let serverUrlfileNamePath = result.urlBase + result.path + result.fileName
-                    let error = await NextcloudKit.shared.setLivephoto(serverUrlfileNamePath: serverUrlfileNamePath, livePhotoFile: result.livePhotoFile).error
-                    if error != .success {
-                        break
+        if let results = NCManageDatabase.shared.getResultsMetadatas(predicate: NSPredicate(format: "livePhotoServer == false AND livePhotoFile != ''")) {
+            var index: Int = 0
+            for result in results {
+                index += 1
+                let serverUrlfileNamePath = result.urlBase + result.path + result.fileName
+                NextcloudKit.shared.setLivephoto(serverUrlfileNamePath: serverUrlfileNamePath, livePhotoFile: result.livePhotoFile) { _, error in
+                    if error == .success {
+                        NCManageDatabase.shared.setMetadataLivePhotoServer(account: result.account, ocId: result.ocId)
                     }
-                    if index >= 20 { break }
                 }
+                if index >= 20 { break }
             }
         }
+
     }
 
     // MARK: - Cancel (Download Upload)

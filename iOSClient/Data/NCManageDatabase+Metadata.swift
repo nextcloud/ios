@@ -715,6 +715,19 @@ extension NCManageDatabase {
         }
     }
 
+    func setMetadataLivePhotoServer(account: String, ocId: String) {
+
+        do {
+            let realm = try Realm()
+            try realm.write {
+                let result = realm.objects(tableMetadata.self).filter("account == %@ AND ocId == %@", account, ocId).first
+                result?.livePhotoServer = true
+            }
+        } catch let error {
+            NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
+        }
+    }
+
     func updateMetadatasFavorite(account: String, metadatas: [tableMetadata]) {
 
         do {
