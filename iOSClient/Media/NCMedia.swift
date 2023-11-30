@@ -492,17 +492,7 @@ extension NCMedia {
 
             if error == .success && account == self.appDelegate.account {
                 if !files.isEmpty {
-                    NCManageDatabase.shared.convertFilesToMetadatas(files, useMetadataFolder: false) { _, _, metadatas in
-                        let predicateDate = NSPredicate(format: "date > %@ AND date < %@", greaterDate as NSDate, lessDate as NSDate)
-                        let predicateResult = NSCompoundPredicate(andPredicateWithSubpredicates: [predicateDate, self.getPredicate(true)])
-                        let metadatasResult = NCManageDatabase.shared.getMetadatas(predicate: predicateResult)
-                        let metadatasChanged = NCManageDatabase.shared.updateMetadatas(metadatas, metadatasResult: metadatasResult)
-                        if metadatasChanged.metadatasUpdate.isEmpty {
-                            self.researchOldMedia(value: value, limit: limit, withElseReloadDataSource: true)
-                        } else {
-                            self.reloadDataSource()
-                        }
-                    }
+                    self.reloadDataSource()
                 } else {
                     self.researchOldMedia(value: value, limit: limit, withElseReloadDataSource: false)
                 }
@@ -572,16 +562,8 @@ extension NCMedia {
                 self.mediaCommandView?.activityIndicator.stopAnimating()
             }
 
-            if error == .success, account == self.appDelegate.account, !files.isEmpty {
-                NCManageDatabase.shared.convertFilesToMetadatas(files, useMetadataFolder: false) { _, _, metadatas in
-                    let predicate = NSPredicate(format: "date > %@ AND date < %@", greaterDate as NSDate, lessDate as NSDate)
-                    let predicateResult = NSCompoundPredicate(andPredicateWithSubpredicates: [predicate, self.getPredicate(true)])
-                    let metadatasResult = NCManageDatabase.shared.getMetadatas(predicate: predicateResult)
-                    let updateMetadatas = NCManageDatabase.shared.updateMetadatas(metadatas, metadatasResult: metadatasResult)
-                    if !updateMetadatas.metadatasUpdate.isEmpty || !updateMetadatas.metadatasDelete.isEmpty {
-                        self.reloadDataSource()
-                    }
-                }
+            if error == .success, account == self.appDelegate.account {
+                self.reloadDataSource()
             } else if error == .success, files.isEmpty, let metadatas = self.metadatas, metadatas.isEmpty {
                 self.searchOldMedia()
             } else if error != .success {
