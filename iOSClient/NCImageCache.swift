@@ -24,6 +24,7 @@
 import UIKit
 import LRUCache
 import NextcloudKit
+import RealmSwift
 
 @objc class NCImageCache: NSObject {
     @objc public static let shared: NCImageCache = {
@@ -47,7 +48,7 @@ import NextcloudKit
         return ThumbnailLRUCache(countLimit: limit)
     }()
     private var ocIdEtag: [String: String] = [:]
-    private var metadatas: [tableMetadata]?
+    @ThreadSafe private var metadatas: Results<tableMetadata>?
 
     let showBothPredicateMediaString = "account == %@ AND serverUrl BEGINSWITH %@ AND (classFile == %@ OR classFile == %@) AND NOT (session CONTAINS[c] 'upload') AND NOT (livePhotoFile != '' AND classFile == %@)"
     let showOnlyPredicateMediaString = "account == %@ AND serverUrl BEGINSWITH %@ AND classFile == %@ AND NOT (session CONTAINS[c] 'upload') AND NOT (livePhotoFile != '' AND classFile == %@)"
@@ -61,7 +62,7 @@ import NextcloudKit
         self.account = account
 
         ocIdEtag.removeAll()
-        self.metadatas = []
+        self.metadatas = nil
         self.metadatas = getMediaMetadatas(account: account)
         guard let metadatas = self.metadatas, !metadatas.isEmpty else { return }
         let ext = ".preview.ico"
@@ -119,10 +120,9 @@ import NextcloudKit
         NextcloudKit.shared.nkCommonInstance.writeLog("--------- ThumbnailLRUCache image process ---------")
     }
 
-    func initialMetadatas() -> [tableMetadata]? {
-        let metadatas = self.metadatas
-        self.metadatas = nil
-        return metadatas
+    func initialMetadatas() -> Results<tableMetadata>? {
+        defer { self.metadatas = nil }
+        return self.metadatas
     }
 
     func getMediaImage(ocId: String) -> ImageType? {
@@ -136,12 +136,11 @@ import NextcloudKit
     @objc func clearMediaCache() {
 
         self.ocIdEtag.removeAll()
-        self.metadatas?.removeAll()
         self.metadatas = nil
         cache.removeAllValues()
     }
 
-    func getMediaMetadatas(account: String, predicate: NSPredicate? = nil) -> [tableMetadata] {
+    func getMediaMetadatas(account: String, predicate: NSPredicate? = nil) -> Results<tableMetadata>? {
 
         defer {
             self.isMediaMetadatasInProcess = false
@@ -149,12 +148,12 @@ import NextcloudKit
         }
         self.isMediaMetadatasInProcess = true
 
-        guard let account = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", account)) else { return [] }
+        guard let account = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", account)) else { return nil }
         let startServerUrl = NCUtilityFileSystem().getHomeServer(urlBase: account.urlBase, userId: account.userId) + account.mediaPath
 
-        let predicateDefault = NSPredicate(format: showBothPredicateMediaString, account.account, startServerUrl, NKCommon.TypeClassFile.image.rawValue, NKCommon.TypeClassFile.video.rawValue, NKCommon.TypeClassFile.video.rawValue)
+        let predicateBoth = NSPredicate(format: showBothPredicateMediaString, account.account, startServerUrl, NKCommon.TypeClassFile.image.rawValue, NKCommon.TypeClassFile.video.rawValue, NKCommon.TypeClassFile.video.rawValue)
 
-        return NCManageDatabase.shared.getMetadatasMedia(predicate: predicate ?? predicateDefault)
+        return NCManageDatabase.shared.getResultsMetadatas(predicate: predicate ?? predicateBoth, sorted: "date")
     }
 
     // MARK: -
