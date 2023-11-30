@@ -198,7 +198,7 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate, NCSelectDelegate {
               account == appDelegate.account
         else { return }
 
-        self.reloadDataSourceWithCompletion { _ in }
+        self.reloadDataSource { }
     }
 
     @objc func uploadedFile(_ notification: NSNotification) {
@@ -210,7 +210,7 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate, NCSelectDelegate {
               account == appDelegate.account
         else { return }
 
-        self.reloadDataSourceWithCompletion { _ in }
+        self.reloadDataSource { }
     }
 
     // MARK: - Command
@@ -273,7 +273,7 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate, NCSelectDelegate {
         let home = utilityFileSystem.getHomeServer(urlBase: appDelegate.urlBase, userId: appDelegate.userId)
         mediaPath = serverUrl.replacingOccurrences(of: home, with: "")
         NCManageDatabase.shared.setAccountMediaPath(mediaPath, account: appDelegate.account)
-        reloadDataSourceWithCompletion { _ in
+        reloadDataSource {
             self.searchNewMedia()
         }
     }
@@ -459,7 +459,7 @@ extension NCMedia {
         }
     }
 
-    @objc func reloadDataSourceWithCompletion(_ completion: @escaping (_ metadatas: [tableMetadata]) -> Void) {
+    @objc func reloadDataSource(completion: @escaping () -> Void) {
         guard !appDelegate.account.isEmpty else { return }
 
         DispatchQueue.global().async {
@@ -468,7 +468,7 @@ extension NCMedia {
                 self.reloadDataThenPerform {
                     self.updateMediaControlVisibility()
                     self.mediaCommandTitle()
-                    completion(self.metadatas)
+                    completion()
                 }
             }
         }
@@ -537,7 +537,7 @@ extension NCMedia {
                         if metadatasChanged.metadatasUpdate.isEmpty {
                             self.researchOldMedia(value: value, limit: limit, withElseReloadDataSource: true)
                         } else {
-                            self.reloadDataSourceWithCompletion { _ in }
+                            self.reloadDataSource { }
                         }
                     }
                 } else {
@@ -561,7 +561,7 @@ extension NCMedia {
             searchOldMedia(value: -999, limit: 0)
         } else {
             if withElseReloadDataSource {
-                self.reloadDataSourceWithCompletion { _ in }
+                self.reloadDataSource { }
             }
         }
     }
@@ -616,7 +616,7 @@ extension NCMedia {
                         let metadatasResult = NCManageDatabase.shared.getMetadatas(predicate: predicateResult)
                         let updateMetadatas = NCManageDatabase.shared.updateMetadatas(metadatas, metadatasResult: metadatasResult)
                         if !updateMetadatas.metadatasUpdate.isEmpty || !updateMetadatas.metadatasDelete.isEmpty {
-                            self.reloadDataSourceWithCompletion { _ in }
+                            self.reloadDataSource { }
                         }
                     }
                 } else if error == .success, files.isEmpty, self.metadatas.isEmpty {
