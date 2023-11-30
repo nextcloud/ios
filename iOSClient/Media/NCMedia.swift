@@ -411,7 +411,7 @@ extension NCMedia: UICollectionViewDelegateFlowLayout {
 
 extension NCMedia {
 
-    func getPredicate(_ predicateShowBoth: Bool = false) -> NSPredicate {
+    func getPredicate(predicateShowBoth: Bool = false) -> NSPredicate {
 
         let startServerUrl = NCUtilityFileSystem().getHomeServer(urlBase: appDelegate.urlBase, userId: appDelegate.userId) + mediaPath
         let showBoth = NSPredicate(format: NCImageCache.shared.showBothPredicateMediaString, appDelegate.account, startServerUrl, NKCommon.TypeClassFile.image.rawValue, NKCommon.TypeClassFile.video.rawValue, NKCommon.TypeClassFile.video.rawValue)
@@ -492,7 +492,17 @@ extension NCMedia {
 
             if error == .success && account == self.appDelegate.account {
                 if !files.isEmpty {
-                    self.reloadDataSource()
+                    NCManageDatabase.shared.convertFilesToMetadatas(files, useMetadataFolder: false) { _, _, metadatas in
+                        let predicateDate = NSPredicate(format: "date > %@ AND date < %@", greaterDate as NSDate, lessDate as NSDate)
+                        let predicateResult = NSCompoundPredicate(andPredicateWithSubpredicates: [predicateDate, self.getPredicate(predicateShowBoth: true)])
+                        let metadatasResult = NCManageDatabase.shared.getMetadatas(predicate: predicateResult)
+                        let metadatasChanged = NCManageDatabase.shared.updateMetadatas(metadatas, metadatasResult: metadatasResult)
+                        if metadatasChanged.metadatasUpdate.isEmpty {
+                            self.researchOldMedia(value: value, limit: limit, withElseReloadDataSource: true)
+                        } else {
+                            self.reloadDataSource()
+                        }
+                    }
                 } else {
                     self.researchOldMedia(value: value, limit: limit, withElseReloadDataSource: false)
                 }
@@ -563,9 +573,19 @@ extension NCMedia {
             }
 
             if error == .success, account == self.appDelegate.account {
-                self.reloadDataSource()
-            } else if error == .success, files.isEmpty, let metadatas = self.metadatas, metadatas.isEmpty {
-                self.searchOldMedia()
+                if !files.isEmpty {
+                    NCManageDatabase.shared.convertFilesToMetadatas(files, useMetadataFolder: false) { _, _, metadatas in
+                        let predicate = NSPredicate(format: "date > %@ AND date < %@", greaterDate as NSDate, lessDate as NSDate)
+                        let predicateResult = NSCompoundPredicate(andPredicateWithSubpredicates: [predicate, self.getPredicate(predicateShowBoth: true)])
+                        let metadatasResult = NCManageDatabase.shared.getMetadatas(predicate: predicateResult)
+                        let updateMetadatas = NCManageDatabase.shared.updateMetadatas(metadatas, metadatasResult: metadatasResult)
+                        if !updateMetadatas.metadatasUpdate.isEmpty || !updateMetadatas.metadatasDelete.isEmpty {
+                            self.reloadDataSource()
+                        }
+                    }
+                } else {
+                    self.searchOldMedia()
+                }
             } else if error != .success {
                 NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Media search new media error code \(error.errorCode) " + error.errorDescription)
             }
