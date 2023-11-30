@@ -39,6 +39,8 @@ struct NCMediaCell: View {
             } else {
                 image
             }
+
+            Text(thumbnail.metadata.fileName).foregroundStyle(.white).background(.black)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .overlay(alignment: .bottomLeading) {
