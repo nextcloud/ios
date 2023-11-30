@@ -444,18 +444,18 @@ extension NCMedia: UICollectionViewDelegateFlowLayout {
 
 extension NCMedia {
 
-    func getPredicate(_ predicatedefault: Bool = false) -> NSPredicate {
+    func getPredicate(_ predicateShowBoth: Bool = false) -> NSPredicate {
 
         let startServerUrl = NCUtilityFileSystem().getHomeServer(urlBase: appDelegate.urlBase, userId: appDelegate.userId) + mediaPath
-        let showAll = NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND (classFile == %@ OR classFile == %@) AND NOT (session CONTAINS[c] 'upload') AND NOT (livePhotoFile != '' AND classFile == %@)", appDelegate.account, startServerUrl, NKCommon.TypeClassFile.image.rawValue, NKCommon.TypeClassFile.video.rawValue, NKCommon.TypeClassFile.video.rawValue)
+        let showBoth = NSPredicate(format: NCImageCache.shared.showBothPredicateMediaString, appDelegate.account, startServerUrl, NKCommon.TypeClassFile.image.rawValue, NKCommon.TypeClassFile.video.rawValue, NKCommon.TypeClassFile.video.rawValue)
 
-        if predicatedefault { return showAll }
+        if predicateShowBoth { return showBoth }
         if showOnlyImages {
-            return NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND classFile == %@ AND NOT (session CONTAINS[c] 'upload') AND NOT(livePhotoFile != '' AND classFile == %@)", appDelegate.account, startServerUrl, NKCommon.TypeClassFile.image.rawValue, NKCommon.TypeClassFile.video.rawValue)
+            return NSPredicate(format: NCImageCache.shared.showOnlyPredicateMediaString, appDelegate.account, startServerUrl, NKCommon.TypeClassFile.image.rawValue, NKCommon.TypeClassFile.video.rawValue)
         } else if showOnlyVideos {
-            return NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND classFile == %@ AND NOT (session CONTAINS[c] 'upload') AND NOT(livePhotoFile != '' AND classFile == %@)", appDelegate.account, startServerUrl, NKCommon.TypeClassFile.video.rawValue, NKCommon.TypeClassFile.video.rawValue)
+            return NSPredicate(format: NCImageCache.shared.showOnlyPredicateMediaString, appDelegate.account, startServerUrl, NKCommon.TypeClassFile.video.rawValue, NKCommon.TypeClassFile.video.rawValue)
         } else {
-           return showAll
+           return showBoth
         }
     }
 
