@@ -128,12 +128,12 @@ extension NCManageDatabase {
                             }
 
                             struct Public: Codable {
-                                let upload: Bool
                                 let enabled: Bool
+                                let upload: Bool?
                                 let password: Password?
-                                let sendmail: Bool
-                                let uploadfilesdrop: Bool
-                                let multiplelinks: Bool
+                                let sendmail: Bool?
+                                let uploadfilesdrop: Bool?
+                                let multiplelinks: Bool?
                                 let expiredate: ExpireDate?
                                 let expiredateinternal: ExpireDate?
                                 let expiredateremote: ExpireDate?
