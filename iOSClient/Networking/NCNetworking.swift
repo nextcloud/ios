@@ -819,7 +819,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
 
         guard NCGlobal.shared.isLivePhotoServerAvailable else { return }
 
-        if let results = NCManageDatabase.shared.getResultsMetadatas(predicate: NSPredicate(format: "livePhotoServer == false AND livePhotoFile != ''")) {
+        if let results = NCManageDatabase.shared.getResultsMetadatas(predicate: NSPredicate(format: "isFlaggedAsLivePhotoByServer == false AND livePhotoFile != ''")) {
             var index: Int = 0
             for result in results {
                 index += 1
@@ -828,6 +828,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
                     if error == .success {
                         NCManageDatabase.shared.setMetadataLivePhotoByServer(account: result.account, ocId: result.ocId)
                     }
+                    print("Convert LivePhoto with error \(error.errorCode)")
                 }
                 if index >= 20 { break }
             }
