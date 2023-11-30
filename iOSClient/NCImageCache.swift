@@ -52,7 +52,6 @@ import RealmSwift
 
     let showBothPredicateMediaString = "account == %@ AND serverUrl BEGINSWITH %@ AND (classFile == %@ OR classFile == %@) AND NOT (session CONTAINS[c] 'upload') AND NOT (livePhotoFile != '' AND classFile == %@)"
     let showOnlyPredicateMediaString = "account == %@ AND serverUrl BEGINSWITH %@ AND classFile == %@ AND NOT (session CONTAINS[c] 'upload') AND NOT (livePhotoFile != '' AND classFile == %@)"
-    var isMediaMetadatasInProcess: Bool = false
 
     override private init() {}
 
@@ -141,12 +140,6 @@ import RealmSwift
     }
 
     func getMediaMetadatas(account: String, predicate: NSPredicate? = nil) -> Results<tableMetadata>? {
-
-        defer {
-            self.isMediaMetadatasInProcess = false
-            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterFinishedMediaInProcess)
-        }
-        self.isMediaMetadatasInProcess = true
 
         guard let account = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", account)) else { return nil }
         let startServerUrl = NCUtilityFileSystem().getHomeServer(urlBase: account.urlBase, userId: account.userId) + account.mediaPath
