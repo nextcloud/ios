@@ -59,7 +59,6 @@ import NextcloudKit
         return _initialMetadatas
     }
 
-
     var isMediaMetadatasInProcess: Bool = false
     var isLivePhotoEnabled: Bool = false
 
