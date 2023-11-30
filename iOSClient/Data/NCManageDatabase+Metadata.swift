@@ -1044,8 +1044,7 @@ extension NCManageDatabase {
 
         do {
             let realm = try Realm()
-            let sortProperties = [SortDescriptor(keyPath: "serverUrl", ascending: false), SortDescriptor(keyPath: "fileName", ascending: false)]
-            let results = realm.objects(tableMetadata.self).filter(predicate).sorted(by: sortProperties)
+            let results = realm.objects(tableMetadata.self).filter(predicate).sorted(byKeyPath: "date", ascending: false)
             return Array(results.map { tableMetadata.init(value: $0) })
         } catch let error {
             NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
