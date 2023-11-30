@@ -30,7 +30,7 @@ extension NCMedia {
         self.isEditMode = false
         self.selectOcId.removeAll()
         self.selectIndexPath.removeAll()
-        self.reloadDataThenPerform { }
+        self.collectionView?.reloadData()
     }
 
     func toggleMenu() {
@@ -84,7 +84,7 @@ extension NCMedia {
                     action: { _ in
                         self.showOnlyImages = true
                         self.showOnlyVideos = false
-                        self.reloadDataSource { }
+                        self.reloadDataSource()
                     }
                 )
             )
@@ -98,7 +98,7 @@ extension NCMedia {
                     action: { _ in
                         self.showOnlyImages = false
                         self.showOnlyVideos = true
-                        self.reloadDataSource { }
+                        self.reloadDataSource()
                     }
                 )
             )
@@ -112,7 +112,7 @@ extension NCMedia {
                     action: { _ in
                         self.showOnlyImages = false
                         self.showOnlyVideos = false
-                        self.reloadDataSource { }
+                        self.reloadDataSource()
                     }
                 )
             )
