@@ -794,27 +794,30 @@ class NCNetworking: NSObject, NKCommonDelegate {
 
     func uploadLivePhoto(metadata: tableMetadata) {
 
-        guard NCGlobal.shared.capabilityServerVersionMajor >= NCGlobal.shared.nextcloudVersion28,
+        guard NCGlobal.shared.isLivePhotoServerAvailable,
               metadata.isLivePhoto,
               let metadata1 = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND urlBase == %@ AND path == %@ AND fileName == %@ AND status == %d", metadata.account, metadata.urlBase, metadata.path, metadata.livePhotoFile, NCGlobal.shared.metadataStatusNormal)) else {
             return
         }
 
-        let serverUrlfileNamePath = metadata.urlBase + metadata.path + metadata.livePhotoFile
-        let serverUrlfileNamePath1 = metadata1.urlBase + metadata1.path + metadata1.livePhotoFile
-
         Task {
-            let results = await NextcloudKit.shared.setLivephoto(serverUrlfileNamePath: serverUrlfileNamePath, livePhotoFile: metadata1.livePhotoFile)
-            print("Send LivePhoto metadata error \(results.error.errorCode)")
+            let serverUrlfileNamePath = metadata.urlBase + metadata.path + metadata.livePhotoFile
+            var results = await NextcloudKit.shared.setLivephoto(serverUrlfileNamePath: serverUrlfileNamePath, livePhotoFile: metadata1.livePhotoFile)
+            if results.error == .success {
+                NCManageDatabase.shared.setMetadataLivePhotoByServer(account: metadata.account, ocId: metadata.ocId)
+            }
 
-            let results1 = await NextcloudKit.shared.setLivephoto(serverUrlfileNamePath: serverUrlfileNamePath1, livePhotoFile: metadata.livePhotoFile)
-            print("Send LivePhoto metadata1 error \(results1.error.errorCode)")
+            let serverUrlfileNamePath1 = metadata1.urlBase + metadata1.path + metadata1.livePhotoFile
+            results = await NextcloudKit.shared.setLivephoto(serverUrlfileNamePath: serverUrlfileNamePath1, livePhotoFile: metadata.livePhotoFile)
+            if results.error == .success {
+                NCManageDatabase.shared.setMetadataLivePhotoByServer(account: metadata1.account, ocId: metadata1.ocId)
+            }
         }
     }
 
     func convertLivePhoto() {
 
-        guard NCGlobal.shared.capabilityServerVersionMajor >= NCGlobal.shared.nextcloudVersion28 else { return }
+        guard NCGlobal.shared.isLivePhotoServerAvailable else { return }
 
         if let results = NCManageDatabase.shared.getResultsMetadatas(predicate: NSPredicate(format: "livePhotoServer == false AND livePhotoFile != ''")) {
             var index: Int = 0
@@ -823,7 +826,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
                 let serverUrlfileNamePath = result.urlBase + result.path + result.fileName
                 NextcloudKit.shared.setLivephoto(serverUrlfileNamePath: serverUrlfileNamePath, livePhotoFile: result.livePhotoFile) { _, error in
                     if error == .success {
-                        NCManageDatabase.shared.setMetadataLivePhotoServer(account: result.account, ocId: result.ocId)
+                        NCManageDatabase.shared.setMetadataLivePhotoByServer(account: result.account, ocId: result.ocId)
                     }
                 }
                 if index >= 20 { break }
