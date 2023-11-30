@@ -281,7 +281,7 @@ extension NCManageDatabase {
                 }
                 jsonData = data
             } catch let error as NSError {
-                NextcloudKit.shared.nkCommonInstance.writeLog("I cannot access to database: \(error)")
+                NextcloudKit.shared.nkCommonInstance.writeLog("Could not access database: \(error)")
                 return
             }
         }
@@ -348,7 +348,7 @@ extension NCManageDatabase {
             }
             NCGlobal.shared.capabilityGroupfoldersEnabled = json.ocs.data.capabilities.groupfolders?.hasGroupFolders ?? false
         } catch let error as NSError {
-            NextcloudKit.shared.nkCommonInstance.writeLog("I cannot access to database: \(error)")
+            NextcloudKit.shared.nkCommonInstance.writeLog("Could not access database: \(error)")
             return
         }
     }
