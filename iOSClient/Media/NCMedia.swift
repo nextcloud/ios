@@ -119,9 +119,7 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate, NCSelectDelegate {
         navigationController?.setMediaAppreance()
 
         NotificationCenter.default.addObserver(self, selector: #selector(deleteFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDeleteFile), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(moveFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterMoveFile), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(copyFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterCopyFile), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(renameFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterRenameFile), object: nil)
+
         NotificationCenter.default.addObserver(self, selector: #selector(uploadedFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUploadedFile), object: nil)
 
         if let metadatas = NCImageCache.shared.initialMetadatas() {
@@ -143,9 +141,6 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate, NCSelectDelegate {
         super.viewWillDisappear(animated)
 
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDeleteFile), object: nil)
-        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterMoveFile), object: nil)
-        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterCopyFile), object: nil)
-        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterRenameFile), object: nil)
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUploadedFile), object: nil)
     }
 
@@ -166,40 +161,14 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate, NCSelectDelegate {
         guard let userInfo = notification.userInfo as NSDictionary?,
               let error = userInfo["error"] as? NKError else { return }
 
-        self.metadatas = NCImageCache.shared.getMediaMetadatas(account: appDelegate.account, predicate: getPredicate())
-
         if error != .success {
             NCContentPresenter().showError(error: error)
         }
-        self.collectionView?.reloadData()
-
-        if let hud = userInfo["hud"] as? JGProgressHUD {
-            hud.dismiss()
-        }
-    }
-
-    @objc func moveFile(_ notification: NSNotification) {
-
-        guard let userInfo = notification.userInfo as NSDictionary? else { return }
-
-        if let hud = userInfo["hud"] as? JGProgressHUD {
-            hud.dismiss()
-        }
-    }
-
-    @objc func copyFile(_ notification: NSNotification) {
-
-        moveFile(notification)
-    }
-
-    @objc func renameFile(_ notification: NSNotification) {
-
-        guard let userInfo = notification.userInfo as NSDictionary?,
-              let account = userInfo["account"] as? String,
-              account == appDelegate.account
-        else { return }
-
         self.reloadDataSource()
+
+        if let hud = userInfo["hud"] as? JGProgressHUD {
+            hud.dismiss()
+        }
     }
 
     @objc func uploadedFile(_ notification: NSNotification) {
