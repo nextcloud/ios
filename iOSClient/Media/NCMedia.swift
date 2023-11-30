@@ -199,7 +199,7 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate, NCSelectDelegate {
               account == appDelegate.account
         else { return }
 
-        self.reloadDataSource { }
+        self.reloadDataSource()
     }
 
     @objc func uploadedFile(_ notification: NSNotification) {
@@ -211,7 +211,7 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate, NCSelectDelegate {
               account == appDelegate.account
         else { return }
 
-        self.reloadDataSource { }
+        self.reloadDataSource()
     }
 
     // MARK: - Command
@@ -274,9 +274,8 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate, NCSelectDelegate {
         let home = utilityFileSystem.getHomeServer(urlBase: appDelegate.urlBase, userId: appDelegate.userId)
         mediaPath = serverUrl.replacingOccurrences(of: home, with: "")
         NCManageDatabase.shared.setAccountMediaPath(mediaPath, account: appDelegate.account)
-        reloadDataSource {
-            self.searchNewMedia()
-        }
+        reloadDataSource()
+        searchNewMedia()
     }
 
     // MARK: - Empty
@@ -351,13 +350,6 @@ extension NCMedia: UICollectionViewDataSourcePrefetching {
 }
 
 extension NCMedia: UICollectionViewDataSource {
-
-    func reloadDataThenPerform(_ closure: @escaping (() -> Void)) {
-        CATransaction.begin()
-        CATransaction.setCompletionBlock(closure)
-        collectionView?.reloadData()
-        CATransaction.commit()
-    }
 
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         guard let metadatas = self.metadatas else { return 0 }
@@ -465,18 +457,14 @@ extension NCMedia {
         }
     }
 
-    @objc func reloadDataSource(completion: @escaping () -> Void) {
+    @objc func reloadDataSource() {
         guard !appDelegate.account.isEmpty else { return }
 
-        DispatchQueue.global().async {
-            self.metadatas = NCImageCache.shared.getMediaMetadatas(account: self.appDelegate.account, predicate: self.getPredicate())
-            DispatchQueue.main.sync {
-                self.reloadDataThenPerform {
-                    self.updateMediaControlVisibility()
-                    self.mediaCommandTitle()
-                    completion()
-                }
-            }
+        metadatas = NCImageCache.shared.getMediaMetadatas(account: self.appDelegate.account, predicate: self.getPredicate())
+        DispatchQueue.main.async {
+            self.collectionView?.reloadData()
+            self.updateMediaControlVisibility()
+            self.mediaCommandTitle()
         }
     }
 
@@ -543,7 +531,7 @@ extension NCMedia {
                         if metadatasChanged.metadatasUpdate.isEmpty {
                             self.researchOldMedia(value: value, limit: limit, withElseReloadDataSource: true)
                         } else {
-                            self.reloadDataSource { }
+                            self.reloadDataSource()
                         }
                     }
                 } else {
@@ -567,7 +555,7 @@ extension NCMedia {
             searchOldMedia(value: -999, limit: 0)
         } else {
             if withElseReloadDataSource {
-                self.reloadDataSource { }
+                self.reloadDataSource()
             }
         }
     }
@@ -604,32 +592,31 @@ extension NCMedia {
             }
         }
 
-        reloadDataThenPerform {
+        collectionView?.reloadData()
 
-            let options = NKRequestOptions(timeout: 300, queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
+        let options = NKRequestOptions(timeout: 300, queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
 
-            NextcloudKit.shared.searchMedia(path: self.mediaPath, lessDate: lessDate, greaterDate: greaterDate, elementDate: "d:getlastmodified/", limit: limit, showHiddenFiles: NCKeychain().showHiddenFiles, options: options) { account, files, _, error in
+        NextcloudKit.shared.searchMedia(path: self.mediaPath, lessDate: lessDate, greaterDate: greaterDate, elementDate: "d:getlastmodified/", limit: limit, showHiddenFiles: NCKeychain().showHiddenFiles, options: options) { account, files, _, error in
 
-                self.newInProgress = false
-                DispatchQueue.main.async {
-                    self.mediaCommandView?.activityIndicator.stopAnimating()
-                }
+            self.newInProgress = false
+            DispatchQueue.main.async {
+                self.mediaCommandView?.activityIndicator.stopAnimating()
+            }
 
-                if error == .success, account == self.appDelegate.account, !files.isEmpty {
-                    NCManageDatabase.shared.convertFilesToMetadatas(files, useMetadataFolder: false) { _, _, metadatas in
-                        let predicate = NSPredicate(format: "date > %@ AND date < %@", greaterDate as NSDate, lessDate as NSDate)
-                        let predicateResult = NSCompoundPredicate(andPredicateWithSubpredicates: [predicate, self.getPredicate(true)])
-                        let metadatasResult = NCManageDatabase.shared.getMetadatas(predicate: predicateResult)
-                        let updateMetadatas = NCManageDatabase.shared.updateMetadatas(metadatas, metadatasResult: metadatasResult)
-                        if !updateMetadatas.metadatasUpdate.isEmpty || !updateMetadatas.metadatasDelete.isEmpty {
-                            self.reloadDataSource { }
-                        }
+            if error == .success, account == self.appDelegate.account, !files.isEmpty {
+                NCManageDatabase.shared.convertFilesToMetadatas(files, useMetadataFolder: false) { _, _, metadatas in
+                    let predicate = NSPredicate(format: "date > %@ AND date < %@", greaterDate as NSDate, lessDate as NSDate)
+                    let predicateResult = NSCompoundPredicate(andPredicateWithSubpredicates: [predicate, self.getPredicate(true)])
+                    let metadatasResult = NCManageDatabase.shared.getMetadatas(predicate: predicateResult)
+                    let updateMetadatas = NCManageDatabase.shared.updateMetadatas(metadatas, metadatasResult: metadatasResult)
+                    if !updateMetadatas.metadatasUpdate.isEmpty || !updateMetadatas.metadatasDelete.isEmpty {
+                        self.reloadDataSource()
                     }
-                } else if error == .success, files.isEmpty, let metadatas = self.metadatas, metadatas.isEmpty {
-                    self.searchOldMedia()
-                } else if error != .success {
-                    NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Media search new media error code \(error.errorCode) " + error.errorDescription)
                 }
+            } else if error == .success, files.isEmpty, let metadatas = self.metadatas, metadatas.isEmpty {
+                self.searchOldMedia()
+            } else if error != .success {
+                NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Media search new media error code \(error.errorCode) " + error.errorDescription)
             }
         }
     }
