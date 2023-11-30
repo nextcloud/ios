@@ -814,11 +814,15 @@ extension NCManageDatabase {
         return []
     }
 
-    func getResultsMetadatas(predicate: NSPredicate) -> Results<tableMetadata>? {
+    func getResultsMetadatas(predicate: NSPredicate, sorted: String? = nil, ascending: Bool = false) -> Results<tableMetadata>? {
 
         do {
             let realm = try Realm()
-            return realm.objects(tableMetadata.self).filter(predicate)
+            if let sorted {
+                return realm.objects(tableMetadata.self).filter(predicate).sorted(byKeyPath: sorted, ascending: ascending)
+            } else {
+                return realm.objects(tableMetadata.self).filter(predicate)
+            }
         } catch let error as NSError {
             NextcloudKit.shared.nkCommonInstance.writeLog("Could not access database: \(error)")
         }
@@ -1038,19 +1042,6 @@ extension NCManageDatabase {
         }
 
         return nil
-    }
-
-    func getMetadatasMedia(predicate: NSPredicate) -> [tableMetadata] {
-
-        do {
-            let realm = try Realm()
-            let results = realm.objects(tableMetadata.self).filter(predicate).sorted(byKeyPath: "date", ascending: false)
-            return Array(results.map { tableMetadata.init(value: $0) })
-        } catch let error {
-            NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
-        }
-
-        return []
     }
 
     func isMetadataShareOrMounted(metadata: tableMetadata, metadataFolder: tableMetadata?) -> Bool {
