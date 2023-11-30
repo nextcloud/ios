@@ -25,6 +25,7 @@ import UIKit
 import NextcloudKit
 import JGProgressHUD
 import Queuer
+import RealmSwift
 
 class NCMedia: UIViewController, NCEmptyDataSetDelegate, NCSelectDelegate {
 
@@ -39,7 +40,7 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate, NCSelectDelegate {
     internal let utilityFileSystem = NCUtilityFileSystem()
     internal let utility = NCUtility()
 
-    internal var metadatas: [tableMetadata] = []
+    @ThreadSafe internal var metadatas: Results<tableMetadata>?
     internal var isEditMode = false
     internal var selectOcId: [String] = []
     internal var selectIndexPath: [IndexPath] = []
@@ -298,30 +299,32 @@ extension NCMedia: UICollectionViewDelegate {
 
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
 
-        let metadata = self.metadatas[indexPath.row]
-        if isEditMode {
-            if let index = selectOcId.firstIndex(of: metadata.ocId) {
-                selectOcId.remove(at: index)
-                selectIndexPath.removeAll(where: { $0 == indexPath })
-            } else {
-                selectOcId.append(metadata.ocId)
-                selectIndexPath.append(indexPath)
+        if let metadata = self.metadatas?[indexPath.row] {
+            if isEditMode {
+                if let index = selectOcId.firstIndex(of: metadata.ocId) {
+                    selectOcId.remove(at: index)
+                    selectIndexPath.removeAll(where: { $0 == indexPath })
+                } else {
+                    selectOcId.append(metadata.ocId)
+                    selectIndexPath.append(indexPath)
+                }
+                if indexPath.section < collectionView.numberOfSections && indexPath.row < collectionView.numberOfItems(inSection: indexPath.section) {
+                    collectionView.reloadItems(at: [indexPath])
+                }
+            } else if let metadatas = self.metadatas {
+                // ACTIVE SERVERURL
+                appDelegate.activeServerUrl = metadata.serverUrl
+                let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "gridCell", for: indexPath) as? NCGridMediaCell
+                let arrayMetadatas = Array(metadatas.map { tableMetadata.init(value: $0) })
+                NCViewer().view(viewController: self, metadata: metadata, metadatas: arrayMetadatas, imageIcon: cell?.imageItem.image)
             }
-            if indexPath.section < collectionView.numberOfSections && indexPath.row < collectionView.numberOfItems(inSection: indexPath.section) {
-                collectionView.reloadItems(at: [indexPath])
-            }
-        } else {
-            // ACTIVE SERVERURL
-            appDelegate.activeServerUrl = metadata.serverUrl
-            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "gridCell", for: indexPath) as? NCGridMediaCell
-            NCViewer().view(viewController: self, metadata: metadata, metadatas: self.metadatas, imageIcon: cell?.imageItem.image)
         }
     }
 
     func collectionView(_ collectionView: UICollectionView, contextMenuConfigurationForItemAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
 
-        guard let cell = collectionView.cellForItem(at: indexPath) as? NCGridMediaCell else { return nil }
-        let metadata = self.metadatas[indexPath.row]
+        guard let cell = collectionView.cellForItem(at: indexPath) as? NCGridMediaCell,
+              let metadata = self.metadatas?[indexPath.row] else { return nil }
         let identifier = indexPath as NSCopying
         let image = cell.imageItem.image
 
@@ -357,13 +360,15 @@ extension NCMedia: UICollectionViewDataSource {
     }
 
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        emptyDataSet?.numberOfItemsInSection(self.metadatas.count, section: section)
-        return self.metadatas.count
+        guard let metadatas = self.metadatas else { return 0 }
+        emptyDataSet?.numberOfItemsInSection(metadatas.count, section: section)
+        return metadatas.count
     }
 
     func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
-        if !collectionView.indexPathsForVisibleItems.contains(indexPath) && indexPath.row < self.metadatas.count {
-            let metadata = self.metadatas[indexPath.row]
+        guard let metadatas = self.metadatas else { return }
+        if !collectionView.indexPathsForVisibleItems.contains(indexPath) && indexPath.row < metadatas.count {
+            let metadata = metadatas[indexPath.row]
             for case let operation as NCMediaDownloadThumbnaill in appDelegate.downloadThumbnailQueue.operations where operation.metadata.ocId == metadata.ocId {
                 operation.cancel()
             }
@@ -372,11 +377,12 @@ extension NCMedia: UICollectionViewDataSource {
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
 
-        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "gridCell", for: indexPath) as? NCGridMediaCell else { return UICollectionViewCell() }
+        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "gridCell", for: indexPath) as? NCGridMediaCell,
+              let metadatas = self.metadatas else { return UICollectionViewCell() }
 
-        if indexPath.section < collectionView.numberOfSections && indexPath.row < collectionView.numberOfItems(inSection: indexPath.section) && indexPath.row < self.metadatas.count {
+        if indexPath.section < collectionView.numberOfSections && indexPath.row < collectionView.numberOfItems(inSection: indexPath.section) && indexPath.row < metadatas.count {
 
-            let metadata = self.metadatas[indexPath.row]
+            let metadata = metadatas[indexPath.row]
 
             self.cellHeigth = cell.frame.size.height
 
@@ -476,7 +482,7 @@ extension NCMedia {
 
     func updateMediaControlVisibility() {
 
-        if self.metadatas.isEmpty {
+        if let metadatas = self.metadatas, metadatas.isEmpty {
             if !self.showOnlyImages && !self.showOnlyVideos {
                 self.mediaCommandView?.toggleEmptyView(isEmpty: true)
                 self.mediaCommandView?.isHidden = false
@@ -585,7 +591,7 @@ extension NCMedia {
         if let visibleCells = self.collectionView?.indexPathsForVisibleItems.sorted(by: { $0.row < $1.row }).compactMap({ self.collectionView?.cellForItem(at: $0) }) {
             if let cell = visibleCells.first as? NCGridMediaCell {
                 if cell.date != nil {
-                    if cell.date != self.metadatas.first?.date as Date? {
+                    if cell.date != self.metadatas?.first?.date as Date? {
                         lessDate = Calendar.current.date(byAdding: .second, value: 1, to: cell.date!)!
                         limit = 0
                     }
@@ -619,7 +625,7 @@ extension NCMedia {
                             self.reloadDataSource { }
                         }
                     }
-                } else if error == .success, files.isEmpty, self.metadatas.isEmpty {
+                } else if error == .success, files.isEmpty, let metadatas = self.metadatas, metadatas.isEmpty {
                     self.searchOldMedia()
                 } else if error != .success {
                     NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Media search new media error code \(error.errorCode) " + error.errorDescription)
