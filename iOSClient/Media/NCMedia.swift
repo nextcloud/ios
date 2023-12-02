@@ -493,14 +493,13 @@ extension NCMedia {
             if error == .success && account == self.appDelegate.account {
                 if !files.isEmpty {
                     NCManageDatabase.shared.convertFilesToMetadatas(files, useMetadataFolder: false) { _, _, metadatas in
-                        let predicateDate = NSPredicate(format: "date > %@ AND date < %@", greaterDate as NSDate, lessDate as NSDate)
-                        let predicateResult = NSCompoundPredicate(andPredicateWithSubpredicates: [predicateDate, self.getPredicate(predicateShowBoth: true)])
-                        let metadatasResult = NCManageDatabase.shared.getMetadatas(predicate: predicateResult)
-                        let metadatasChanged = NCManageDatabase.shared.updateMetadatas(metadatas, metadatasResult: metadatasResult)
-                        if metadatasChanged.metadatasUpdate.isEmpty {
+                        var predicate = NSPredicate(format: "date > %@ AND date < %@", greaterDate as NSDate, lessDate as NSDate)
+                        predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [predicate, self.getPredicate(predicateShowBoth: true)])
+                        if NCManageDatabase.shared.updateMetadas(metadatas: metadatas, predicate: predicate) {
                             self.researchOldMedia(value: value, limit: limit, withElseReloadDataSource: true)
                         } else {
                             self.reloadDataSource()
+
                         }
                     }
                 } else {
@@ -575,13 +574,10 @@ extension NCMedia {
             if error == .success, account == self.appDelegate.account {
                 if !files.isEmpty {
                     NCManageDatabase.shared.convertFilesToMetadatas(files, useMetadataFolder: false) { _, _, metadatas in
-                        let predicate = NSPredicate(format: "date > %@ AND date < %@", greaterDate as NSDate, lessDate as NSDate)
-                        let predicateResult = NSCompoundPredicate(andPredicateWithSubpredicates: [predicate, self.getPredicate(predicateShowBoth: true)])
-                        let metadatasResult = NCManageDatabase.shared.getMetadatas(predicate: predicateResult)
-                        let updateMetadatas = NCManageDatabase.shared.updateMetadatas(metadatas, metadatasResult: metadatasResult)
-                        if !updateMetadatas.metadatasUpdate.isEmpty || !updateMetadatas.metadatasDelete.isEmpty {
-                            self.reloadDataSource()
-                        }
+                        var predicate = NSPredicate(format: "date > %@ AND date < %@", greaterDate as NSDate, lessDate as NSDate)
+                        predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [predicate, self.getPredicate(predicateShowBoth: true)])
+                        NCManageDatabase.shared.updateMetadas(metadatas: metadatas, predicate: predicate)
+                        self.reloadDataSource()
                     }
                 } else {
                     self.searchOldMedia()

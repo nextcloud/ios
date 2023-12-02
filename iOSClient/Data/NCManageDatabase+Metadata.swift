@@ -1162,4 +1162,25 @@ extension NCManageDatabase {
             NextcloudKit.shared.nkCommonInstance.writeLog("Could not access database: \(error)")
         }
     }
+
+    @discardableResult
+    func updateMetadas(metadatas: [tableMetadata], predicate: NSPredicate) -> Bool {
+
+        let countMetadatas = metadatas.count
+
+        do {
+            let realm = try Realm()
+            try realm.write {
+                let results = realm.objects(tableMetadata.self).filter(predicate)
+                let countResults = results.count
+                realm.delete(results)
+                realm.add(metadatas, update: .all)
+                return countMetadatas != countResults
+            }
+        } catch let error {
+            NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
+        }
+
+        return false
+    }
 }
