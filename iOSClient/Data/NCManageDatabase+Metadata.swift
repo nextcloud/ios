@@ -1168,7 +1168,6 @@ extension NCManageDatabase {
         // filter LivePhoto video
         let metadatas = metadatas.filter({ !(!$0.livePhotoFile.isEmpty && $0.classFile == NKCommon.TypeClassFile.video.rawValue) })
         let metadatasCount = metadatas.count
-        var resultsCount: Int = 0
         var metadatasChanged: [tableMetadata] = []
         var differentCount: Int = 0
 
@@ -1176,7 +1175,7 @@ extension NCManageDatabase {
             let realm = try Realm()
             try realm.write {
                 let results = realm.objects(tableMetadata.self).filter(predicate)
-                resultsCount = results.count
+                differentCount = metadatasCount - results.count
                 for metadata in metadatas {
                     if let result = results.filter({ $0.ocId == metadata.ocId }).first,
                        metadata.isEqual(result) {
@@ -1185,7 +1184,6 @@ extension NCManageDatabase {
                         metadatasChanged.append(metadata)
                     }
                 }
-                differentCount = metadatasCount - resultsCount
                 if differentCount != 0 || !metadatasChanged.isEmpty {
                     realm.delete(results)
                     realm.add(metadatas, update: .all)
