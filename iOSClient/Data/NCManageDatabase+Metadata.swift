@@ -1163,17 +1163,26 @@ extension NCManageDatabase {
         }
     }
 
-    func updateMetadas(metadatas: [tableMetadata], predicate: NSPredicate) {
+    @discardableResult
+    func updateMetadas(metadatas: [tableMetadata], predicate: NSPredicate) -> Int {
+
+        // filter LivePhoto video
+        let metadatas = metadatas.filter({ !(!$0.livePhotoFile.isEmpty && $0.classFile == NKCommon.TypeClassFile.video.rawValue) })
+        let metadatasCount = metadatas.count
+        var resultsCount: Int = 0
 
         do {
             let realm = try Realm()
             try realm.write {
                 let results = realm.objects(tableMetadata.self).filter(predicate)
+                resultsCount = results.count
                 realm.delete(results)
                 realm.add(metadatas, update: .all)
             }
         } catch let error {
             NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
         }
+
+        return metadatasCount - resultsCount
     }
 }
