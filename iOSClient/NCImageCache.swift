@@ -133,19 +133,15 @@ import RealmSwift
     }
 
     @objc func clearMediaCache() {
-
         self.ocIdEtag.removeAll()
         self.metadatas = nil
         cache.removeAllValues()
     }
 
     func getMediaMetadatas(account: String, predicate: NSPredicate? = nil) -> Results<tableMetadata>? {
-
         guard let account = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", account)) else { return nil }
         let startServerUrl = NCUtilityFileSystem().getHomeServer(urlBase: account.urlBase, userId: account.userId) + account.mediaPath
-
         let predicateBoth = NSPredicate(format: showBothPredicateMediaString, account.account, startServerUrl, NKCommon.TypeClassFile.image.rawValue, NKCommon.TypeClassFile.video.rawValue, NKCommon.TypeClassFile.video.rawValue)
-
         return NCManageDatabase.shared.getResultsMetadatas(predicate: predicate ?? predicateBoth, sorted: "date")
     }
 
