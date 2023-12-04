@@ -815,26 +815,24 @@ class NCNetworking: NSObject, NKCommonDelegate {
         }
     }
 
-    func convertLivePhoto() {
+#if !EXTENSION
+    func convertLivePhoto(account: String) {
 
-        guard NCGlobal.shared.isLivePhotoServerAvailable else { return }
+        guard NCGlobal.shared.isLivePhotoServerAvailable,
+              let appDelegate = (UIApplication.shared.delegate as? AppDelegate) else { return }
 
-        if let results = NCManageDatabase.shared.getResultsMetadatas(predicate: NSPredicate(format: "isFlaggedAsLivePhotoByServer == false AND livePhotoFile != ''")) {
-            var index: Int = 0
+        if let results = NCManageDatabase.shared.getResultsMetadatas(predicate: NSPredicate(format: "account == '\(account)' AND isFlaggedAsLivePhotoByServer == false AND livePhotoFile != ''")) {
+
             for result in results {
-                index += 1
                 let serverUrlfileNamePath = result.urlBase + result.path + result.fileName
-                NextcloudKit.shared.setLivephoto(serverUrlfileNamePath: serverUrlfileNamePath, livePhotoFile: result.livePhotoFile) { _, error in
-                    if error == .success {
-                        NCManageDatabase.shared.setMetadataLivePhotoByServer(account: result.account, ocId: result.ocId)
-                    }
-                    print("Convert LivePhoto with error \(error.errorCode)")
-                }
-                if index >= 20 { break }
+
+                for case let operation as NCOperationConvertLivePhoto in appDelegate.convertLivePhotoQueue.operations where operation.serverUrlfileNamePath == serverUrlfileNamePath { continue }
+
+                appDelegate.convertLivePhotoQueue.addOperation(NCOperationConvertLivePhoto(serverUrlfileNamePath: serverUrlfileNamePath, livePhotoFile: result.livePhotoFile, account: result.account, ocId: result.ocId))
             }
         }
-
     }
+#endif
 
     // MARK: - Cancel (Download Upload)
 
@@ -1828,19 +1826,21 @@ class NCOperationDownload: ConcurrentOperation {
 
 class NCOperationConvertLivePhoto: ConcurrentOperation {
 
-    var metadata: tableMetadata
+    var serverUrlfileNamePath, livePhotoFile, account, ocId: String
 
-    init(metadata: tableMetadata) {
-        self.metadata = tableMetadata.init(value: metadata)
+    init(serverUrlfileNamePath: String, livePhotoFile: String, account: String, ocId: String) {
+        self.serverUrlfileNamePath = serverUrlfileNamePath
+        self.livePhotoFile = livePhotoFile
+        self.account = account
+        self.ocId = ocId
     }
 
     override func start() {
 
         guard !isCancelled else { return self.finish() }
-        let serverUrlfileNamePath = metadata.urlBase + metadata.path + metadata.fileName
-        NextcloudKit.shared.setLivephoto(serverUrlfileNamePath: serverUrlfileNamePath, livePhotoFile: metadata.livePhotoFile) { _, error in
+        NextcloudKit.shared.setLivephoto(serverUrlfileNamePath: serverUrlfileNamePath, livePhotoFile: livePhotoFile) { _, error in
             if error == .success {
-                NCManageDatabase.shared.setMetadataLivePhotoByServer(account: self.metadata.account, ocId: self.metadata.ocId)
+                NCManageDatabase.shared.setMetadataLivePhotoByServer(account: self.account, ocId: self.ocId)
             }
             self.finish()
             print("Convert LivePhoto with error \(error.errorCode)")
