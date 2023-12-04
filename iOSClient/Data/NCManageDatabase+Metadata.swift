@@ -1069,13 +1069,13 @@ extension NCManageDatabase {
     }
 
     @discardableResult
-    func updateMetadatas(_ metadatas: [tableMetadata], predicate: NSPredicate) -> (differentCount: Int, metadatasChanged: [tableMetadata]) {
+    func updateMetadatas(_ metadatas: [tableMetadata], predicate: NSPredicate) -> (differentCount: Int, metadatasChanged: Bool) {
 
         // filter LivePhoto video
         let metadatas = metadatas.filter({ !(!$0.livePhotoFile.isEmpty && $0.classFile == NKCommon.TypeClassFile.video.rawValue) })
         let metadatasCount = metadatas.count
-        var metadatasChanged: [tableMetadata] = []
         var differentCount: Int = 0
+        var metadatasChanged: Bool = false
 
         do {
             let realm = try Realm()
@@ -1087,10 +1087,11 @@ extension NCManageDatabase {
                        metadata.isEqual(result) {
                         // print("same")
                     } else {
-                        metadatasChanged.append(metadata)
+                        metadatasChanged = true
+                        break
                     }
                 }
-                if differentCount != 0 || !metadatasChanged.isEmpty {
+                if differentCount != 0 || metadatasChanged {
                     realm.delete(results)
                     realm.add(metadatas, update: .all)
                 }

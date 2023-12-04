@@ -187,7 +187,7 @@ class NCFiles: NCCollectionViewCommon {
             self.isReloadDataSourceNetworkInProgress = false
             self.richWorkspaceText = tableDirectory?.richWorkspace
 
-            if differentCount != 0 || !(metadatasChanged?.isEmpty ?? true) || isForced {
+            if differentCount != 0 || metadatasChanged || isForced {
                 self.reloadDataSource()
             } else if self.dataSource.getMetadataSourceForAllSections().isEmpty {
                 DispatchQueue.main.async {
