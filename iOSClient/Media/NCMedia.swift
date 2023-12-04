@@ -411,11 +411,11 @@ extension NCMedia: UICollectionViewDelegateFlowLayout {
 
 extension NCMedia {
 
-    func getPredicate(predicateShowAll: Bool = false) -> NSPredicate {
+    func getPredicate(showAll: Bool = false) -> NSPredicate {
 
         let startServerUrl = NCUtilityFileSystem().getHomeServer(urlBase: appDelegate.urlBase, userId: appDelegate.userId) + mediaPath
 
-        if predicateShowAll {
+        if showAll {
             return NSPredicate(format: NCImageCache.shared.showAllPredicateMediaString, appDelegate.account, startServerUrl)
         } else if showOnlyImages {
             return NSPredicate(format: NCImageCache.shared.showOnlyPredicateMediaString, appDelegate.account, startServerUrl, NKCommon.TypeClassFile.image.rawValue)
@@ -494,7 +494,7 @@ extension NCMedia {
                 if !files.isEmpty {
                     NCManageDatabase.shared.convertFilesToMetadatas(files, useMetadataFolder: false) { _, _, metadatas in
                         var predicate = NSPredicate(format: "date > %@ AND date < %@", greaterDate as NSDate, lessDate as NSDate)
-                        predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [predicate, self.getPredicate(predicateShowAll: true)])
+                        predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [predicate, self.getPredicate(showAll: true)])
                         let results = NCManageDatabase.shared.updateMetadatas(metadatas, predicate: predicate)
                         if results.differentCount == 0 {
                             self.researchOldMedia(value: value, limit: limit, withElseReloadDataSource: true)
@@ -575,7 +575,7 @@ extension NCMedia {
                 if !files.isEmpty {
                     NCManageDatabase.shared.convertFilesToMetadatas(files, useMetadataFolder: false) { _, _, metadatas in
                         var predicate = NSPredicate(format: "date > %@ AND date < %@", greaterDate as NSDate, lessDate as NSDate)
-                        predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [predicate, self.getPredicate(predicateShowAll: true)])
+                        predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [predicate, self.getPredicate(showAll: true)])
                         let results = NCManageDatabase.shared.updateMetadatas(metadatas, predicate: predicate)
                         if results.differentCount != 0 || results.metadatasChanged {
                             self.reloadDataSource()
