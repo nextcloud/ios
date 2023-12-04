@@ -1826,6 +1826,28 @@ class NCOperationDownload: ConcurrentOperation {
     }
 }
 
+class NCOperationConvertLivePhoto: ConcurrentOperation {
+
+    var metadata: tableMetadata
+
+    init(metadata: tableMetadata) {
+        self.metadata = tableMetadata.init(value: metadata)
+    }
+
+    override func start() {
+
+        guard !isCancelled else { return self.finish() }
+        let serverUrlfileNamePath = metadata.urlBase + metadata.path + metadata.fileName
+        NextcloudKit.shared.setLivephoto(serverUrlfileNamePath: serverUrlfileNamePath, livePhotoFile: metadata.livePhotoFile) { _, error in
+            if error == .success {
+                NCManageDatabase.shared.setMetadataLivePhotoByServer(account: self.metadata.account, ocId: self.metadata.ocId)
+            }
+            self.finish()
+            print("Convert LivePhoto with error \(error.errorCode)")
+        }
+    }
+}
+
 class NCOperationDownloadAvatar: ConcurrentOperation {
 
     var user: String
