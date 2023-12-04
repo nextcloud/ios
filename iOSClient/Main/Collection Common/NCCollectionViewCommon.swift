@@ -989,13 +989,13 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         }
     }
 
-    @objc func networkReadFolder(isForced: Bool, completion: @escaping(_ tableDirectory: tableDirectory?, _ metadatas: [tableMetadata]?, _ differentCount: Int, _ metadatasChanged: [tableMetadata]?, _ error: NKError) -> Void) {
+    @objc func networkReadFolder(isForced: Bool, completion: @escaping(_ tableDirectory: tableDirectory?, _ metadatas: [tableMetadata]?, _ differentCount: Int, _ metadatasChanged: Bool, _ error: NKError) -> Void) {
 
         var tableDirectory: tableDirectory?
 
         NCNetworking.shared.readFile(serverUrlFileName: serverUrl) { account, metadataFolder, error in
             guard error == .success else {
-                completion(nil, nil, 0, nil, error)
+                completion(nil, nil, 0, false, error)
                 return
             }
 
@@ -1006,7 +1006,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             if isForced || tableDirectory?.etag != metadataFolder?.etag || metadataFolder?.e2eEncrypted ?? true {
                 NCNetworking.shared.readFolder(serverUrl: self.serverUrl, account: self.appDelegate.account) { _, metadataFolder, metadatas, differentCount, metadatasChanged, error in
                     guard error == .success else {
-                        completion(tableDirectory, nil, 0, nil, error)
+                        completion(tableDirectory, nil, 0, false, error)
                         return
                     }
                     self.metadataFolder = metadataFolder
@@ -1043,7 +1043,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                     }
                 }
             } else {
-                completion(tableDirectory, nil, 0, nil, NKError())
+                completion(tableDirectory, nil, 0, false, NKError())
             }
         }
     }

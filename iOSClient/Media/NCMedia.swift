@@ -498,7 +498,7 @@ extension NCMedia {
                         let results = NCManageDatabase.shared.updateMetadatas(metadatas, predicate: predicate)
                         if results.differentCount == 0 {
                             self.researchOldMedia(value: value, limit: limit, withElseReloadDataSource: true)
-                        } else if !results.metadatasChanged.isEmpty {
+                        } else if results.metadatasChanged {
                             self.reloadDataSource()
                         }
                     }
@@ -577,7 +577,7 @@ extension NCMedia {
                         var predicate = NSPredicate(format: "date > %@ AND date < %@", greaterDate as NSDate, lessDate as NSDate)
                         predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [predicate, self.getPredicate(predicateShowBoth: true)])
                         let results = NCManageDatabase.shared.updateMetadatas(metadatas, predicate: predicate)
-                        if results.differentCount != 0 || !results.metadatasChanged.isEmpty {
+                        if results.differentCount != 0 || results.metadatasChanged {
                             self.reloadDataSource()
                         }
                     }

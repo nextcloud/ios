@@ -974,7 +974,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
 
     // MARK: - WebDav Read file, folder
 
-    func readFolder(serverUrl: String, account: String, completion: @escaping (_ account: String, _ metadataFolder: tableMetadata?, _ metadatas: [tableMetadata]?, _ differentCount: Int, _ metadatasChanged: [tableMetadata]?, _ error: NKError) -> Void) {
+    func readFolder(serverUrl: String, account: String, completion: @escaping (_ account: String, _ metadataFolder: tableMetadata?, _ metadatas: [tableMetadata]?, _ differentCount: Int, _ metadatasChanged: Bool, _ error: NKError) -> Void) {
 
         NextcloudKit.shared.readFileOrFolder(serverUrlFileName: serverUrl,
                                              depth: "1",
@@ -983,7 +983,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
                                              options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { account, files, _, error in
 
             guard error == .success else {
-                completion(account, nil, nil, 0, nil, error)
+                completion(account, nil, nil, 0, false, error)
                 return
             }
 
