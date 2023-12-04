@@ -251,6 +251,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
         enableTouchFaceID()
 
+        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterApplicationWillEnterForeground)
         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterRichdocumentGrabFocus)
         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSourceNetwork, second: 2)
     }
@@ -614,9 +615,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Initialize Auto upload with \(items) uploads")
         }
 
-        DispatchQueue.global().async { NCImageCache.shared.createMediaCache(account: self.account) }
-
-        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterChangeUser)
+        DispatchQueue.global().async {
+            NCImageCache.shared.createMediaCache(account: self.account)
+            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterChangeUser)
+        }
     }
 
     @objc func deleteAccount(_ account: String, wipe: Bool) {
@@ -685,7 +687,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
     func requestAccount() {
 
-        if isPasscodePresented() { return }
+        if isPasscodePresented { return }
         if !NCKeychain().accountRequest { return }
 
         let accounts = NCManageDatabase.shared.getAllAccount()
@@ -727,6 +729,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         return passcodeCounterFail > 0 && passcodeCounterFail.isMultiple(of: 3)
     }
 
+    var isPasscodePresented: Bool {
+        return privacyProtectionWindow?.rootViewController?.presentedViewController is TOPasscodeViewController
+    }
+
     func presentPasscode(completion: @escaping () -> Void) {
 
         var error: NSError?
@@ -760,10 +766,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         })
     }
 
-    func isPasscodePresented() -> Bool {
-        return privacyProtectionWindow?.rootViewController?.presentedViewController is TOPasscodeViewController
-    }
-
     func enableTouchFaceID() {
         guard !account.isEmpty,
               NCKeychain().touchFaceID,
@@ -790,8 +792,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                     if let error = evaluateError {
                         switch error._code {
                         case LAError.userFallback.rawValue, LAError.authenticationFailed.rawValue:
-                            NCKeychain().passcodeCounterFail = 3
-                            NCKeychain().passcodeCounterFailReset += 1
+                            if LAContext().biometryType == .faceID {
+                                NCKeychain().passcodeCounterFail = 2
+                                NCKeychain().passcodeCounterFailReset += 2
+                            } else {
+                                NCKeychain().passcodeCounterFail = 3
+                                NCKeychain().passcodeCounterFailReset += 3
+                            }
                             self.openAlert(passcodeViewController: passcodeViewController)
                         case LAError.biometryLockout.rawValue:
                             LAContext().evaluatePolicy(LAPolicy.deviceOwnerAuthentication, localizedReason: NSLocalizedString("_deviceOwnerAuthentication_", comment: ""), reply: { success, _ in

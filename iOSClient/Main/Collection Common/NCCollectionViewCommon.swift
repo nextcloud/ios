@@ -935,7 +935,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                     ascending: self.layoutForView?.ascending,
                     directoryOnTop: self.layoutForView?.directoryOnTop,
                     favoriteOnTop: true,
-                    filterLivePhoto: true,
                     providers: self.providers,
                     searchResults: self.searchResults)
             } update: { _, _, searchResult, metadatas in
@@ -960,7 +959,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                     ascending: self.layoutForView?.ascending,
                     directoryOnTop: self.layoutForView?.directoryOnTop,
                     favoriteOnTop: true,
-                    filterLivePhoto: true,
                     groupByField: self.groupByField,
                     providers: self.providers,
                     searchResults: self.searchResults)
@@ -1380,8 +1378,10 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
 
         } else {
 
+            let tableLocalFile = NCManageDatabase.shared.getResultsTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))?.first
+
             // image local
-            if NCManageDatabase.shared.getTableLocalFile(ocId: metadata.ocId) != nil {
+            if let tableLocalFile, tableLocalFile.offline {
                 a11yValues.append(NSLocalizedString("_offline_", comment: ""))
                 cell.fileLocalImage?.image = NCImageCache.images.offlineFlag
             } else if utilityFileSystem.fileProviderStorageExists(metadata) {
@@ -1447,7 +1447,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         }
 
         // Live Photo
-        if metadata.livePhoto {
+        if metadata.isLivePhoto {
             cell.fileStatusImage?.image = NCImageCache.images.livePhoto
             a11yValues.append(NSLocalizedString("_upload_mov_livephoto_", comment: ""))
         }

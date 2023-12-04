@@ -123,7 +123,6 @@ class NCFiles: NCCollectionViewCommon {
             ascending: self.layoutForView?.ascending,
             directoryOnTop: self.layoutForView?.directoryOnTop,
             favoriteOnTop: true,
-            filterLivePhoto: true,
             groupByField: self.groupByField,
             providers: self.providers,
             searchResults: self.searchResults)
@@ -157,6 +156,20 @@ class NCFiles: NCCollectionViewCommon {
             return
         }
 
+        func downloadMetadata(_ metadata: tableMetadata) -> Bool {
+
+            let fileSize = utilityFileSystem.fileProviderStorageSize(metadata.ocId, fileNameView: metadata.fileNameView)
+            guard fileSize > 0 else { return false }
+
+            if let localFile = NCManageDatabase.shared.getResultsTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))?.first {
+                if localFile.etag != metadata.etag {
+                    return true
+                }
+            }
+
+            return false
+        }
+
         NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Reload data source network files forced \(isForced)")
 
         isReloadDataSourceNetworkInProgress = true
@@ -164,7 +177,7 @@ class NCFiles: NCCollectionViewCommon {
 
         networkReadFolder(isForced: isForced) { tableDirectory, metadatas, metadatasUpdate, metadatasDelete, error in
             if error == .success {
-                for metadata in metadatas ?? [] where !metadata.directory && NCManageDatabase.shared.isDownloadMetadata(metadata, download: false) {
+                for metadata in metadatas ?? [] where !metadata.directory && downloadMetadata(metadata) {
                     if self.appDelegate.downloadQueue.operations.filter({ ($0 as? NCOperationDownload)?.metadata.ocId == metadata.ocId }).isEmpty {
                         self.appDelegate.downloadQueue.addOperation(NCOperationDownload(metadata: metadata, selector: NCGlobal.shared.selectorDownloadFile))
                     }

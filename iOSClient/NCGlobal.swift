@@ -104,7 +104,6 @@ class NCGlobal: NSObject {
     let nextcloudVersion26: Int                     = 26
     let nextcloudVersion27: Int                     = 27
     let nextcloudVersion28: Int                     = 28
-    let nextcloudVersion29: Int                     = 29
 
     // Nextcloud unsupported
     //
@@ -253,7 +252,6 @@ class NCGlobal: NSObject {
     @objc let errorE2EENoUserFound: Int             = -98015
     @objc let errorE2EEUploadInProgress: Int        = -98016
 
-
     // Constants to identify the different permissions of a file
     //
     @objc let permissionShared                      = "S"
@@ -351,6 +349,7 @@ class NCGlobal: NSObject {
     @objc let notificationCenterApplicationDidEnterBackground   = "applicationDidEnterBackground"
     @objc let notificationCenterApplicationDidBecomeActive      = "applicationDidBecomeActive"
     @objc let notificationCenterApplicationWillResignActive     = "applicationWillResignActive"
+    @objc let notificationCenterApplicationWillEnterForeground  = "applicationWillEnterForeground"
 
     @objc let notificationCenterChangeUser                      = "changeUser"
     @objc let notificationCenterChangeTheming                   = "changeTheming"
@@ -395,6 +394,8 @@ class NCGlobal: NSObject {
 
     let notificationCenterEnableSwipeGesture                    = "enableSwipeGesture"
     let notificationCenterDisableSwipeGesture                   = "disableSwipeGesture"
+
+    let notificationCenterFinishedMediaInProcess                = "finishedMediaInProcess"
 
     // TIP
     //
@@ -473,6 +474,9 @@ class NCGlobal: NSObject {
     @objc var capabilityUserStatusEnabled: Bool                 = false
     var capabilityExternalSites: Bool                           = false
     var capabilityGroupfoldersEnabled: Bool                     = false // NC27
+    var isLivePhotoServerAvailable: Bool {                              // NC28
+        return capabilityServerVersionMajor >= nextcloudVersion28
+    }
 
     // MORE NEXTCLOUD APPS
     let talkSchemeUrl                                           = "nextcloudtalk://"
@@ -482,5 +486,10 @@ class NCGlobal: NSObject {
     let moreAppsUrl                                             = "itms-apps://search.itunes.apple.com/WebObjects/MZSearch.woa/wa/search?media=software&term=nextcloud"
 
     // SNAPSHOT PREVIEW
+    //
     let defaultSnapshotConfiguration = "DefaultPreviewConfiguration"
+
+    // FORBIDDEN CHARACTERS
+    //
+    let forbiddenCharacters = ["/", "\\", ":", "\"", "|", "?", "*", "<", ">"]
 }

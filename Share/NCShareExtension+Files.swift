@@ -45,7 +45,6 @@ extension NCShareExtension {
             ascending: layoutForView?.ascending,
             directoryOnTop: layoutForView?.directoryOnTop,
             favoriteOnTop: true,
-            filterLivePhoto: true,
             groupByField: groupByField)
 
         if withLoadFolder {

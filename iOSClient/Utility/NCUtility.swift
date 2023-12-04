@@ -349,9 +349,7 @@ class NCUtility: NSObject {
     func removeForbiddenCharacters(_ fileName: String) -> String {
 
         var fileName = fileName
-        let arrayForbiddenCharacters = ["/"]
-
-        for character in arrayForbiddenCharacters {
+        for character in NCGlobal.shared.forbiddenCharacters {
             fileName = fileName.replacingOccurrences(of: character, with: "")
         }
         return fileName

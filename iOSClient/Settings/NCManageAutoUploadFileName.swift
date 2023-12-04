@@ -144,7 +144,7 @@ class NCManageAutoUploadFileName: XLFormViewController {
         super.formRowDescriptorValueHasChanged(formRow, oldValue: oldValue, newValue: newValue)
 
         if formRow.tag == "addFileNameType" {
-            NCKeychain().setFileNameType(key: NCGlobal.shared.keyFileNameAutoUploadType, prefix: (formRow.value! as AnyObject).boolValue) 
+            NCKeychain().setFileNameType(key: NCGlobal.shared.keyFileNameAutoUploadType, prefix: (formRow.value! as AnyObject).boolValue)
             self.reloadForm()
         } else if formRow.tag == "maintainOriginalFileName" {
             NCKeychain().setOriginalFileName(key: NCGlobal.shared.keyFileNameOriginalAutoUpload, value: (formRow.value! as AnyObject).boolValue)
@@ -171,7 +171,8 @@ class NCManageAutoUploadFileName: XLFormViewController {
 
                     self.reloadFormRow(formRow)
 
-                    let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_forbidden_characters_")
+                    let errorDescription = String(format: NSLocalizedString("_forbidden_characters_", comment: ""), NCGlobal.shared.forbiddenCharacters.joined(separator: " "))
+                    let error = NKError(errorCode: NCGlobal.shared.errorConflict, errorDescription: errorDescription)
                     NCContentPresenter().showInfo(error: error)
                 }
             }

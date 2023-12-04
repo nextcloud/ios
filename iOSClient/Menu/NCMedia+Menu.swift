@@ -40,7 +40,7 @@ extension NCMedia {
         defer { presentMenu(with: actions) }
 
         if !isEditMode {
-            if !NCImageCache.shared.metadatas.isEmpty {
+            if !self.metadatas.isEmpty {
                 actions.append(
                     NCMenuAction(
                         title: NSLocalizedString("_select_", comment: ""),
@@ -51,50 +51,6 @@ extension NCMedia {
                     )
                 )
             }
-
-            actions.append(.seperator(order: 0))
-
-            actions.append(
-                NCMenuAction(
-                    title: NSLocalizedString("_media_viewimage_show_", comment: ""),
-                    icon: utility.loadImage(named: "photo"),
-                    selected: showOnlyImages,
-                    on: true,
-                    action: { _ in
-                        self.showOnlyImages = true
-                        self.showOnlyVideos = false
-                        self.reloadDataSourceWithCompletion { _ in }
-                    }
-                )
-            )
-
-            actions.append(
-                NCMenuAction(
-                    title: NSLocalizedString("_media_viewvideo_show_", comment: ""),
-                    icon: utility.loadImage(named: "video"),
-                    selected: showOnlyVideos,
-                    on: true,
-                    action: { _ in
-                        self.showOnlyImages = false
-                        self.showOnlyVideos = true
-                        self.reloadDataSourceWithCompletion { _ in }
-                    }
-                )
-            )
-
-            actions.append(
-                NCMenuAction(
-                    title: NSLocalizedString("_media_show_all_", comment: ""),
-                    icon: utility.loadImage(named: "photo.on.rectangle.angled"),
-                    selected: !showOnlyImages && !showOnlyVideos,
-                    on: true,
-                    action: { _ in
-                        self.showOnlyImages = false
-                        self.showOnlyVideos = false
-                        self.reloadDataSourceWithCompletion { _ in }
-                    }
-                )
-            )
 
             actions.append(.seperator(order: 0))
 
@@ -113,6 +69,50 @@ extension NCMedia {
 
                             self.present(navigationController, animated: true, completion: nil)
                         }
+                    }
+                )
+            )
+
+            actions.append(.seperator(order: 0))
+
+            actions.append(
+                NCMenuAction(
+                    title: NSLocalizedString("_media_viewimage_show_", comment: ""),
+                    icon: utility.loadImage(named: "photo"),
+                    selected: showOnlyImages,
+                    on: true,
+                    action: { _ in
+                        self.showOnlyImages = true
+                        self.showOnlyVideos = false
+                        self.reloadDataSource { }
+                    }
+                )
+            )
+
+            actions.append(
+                NCMenuAction(
+                    title: NSLocalizedString("_media_viewvideo_show_", comment: ""),
+                    icon: utility.loadImage(named: "video"),
+                    selected: showOnlyVideos,
+                    on: true,
+                    action: { _ in
+                        self.showOnlyImages = false
+                        self.showOnlyVideos = true
+                        self.reloadDataSource { }
+                    }
+                )
+            )
+
+            actions.append(
+                NCMenuAction(
+                    title: NSLocalizedString("_media_show_all_", comment: ""),
+                    icon: utility.loadImage(named: "photo.on.rectangle.angled"),
+                    selected: !showOnlyImages && !showOnlyVideos,
+                    on: true,
+                    action: { _ in
+                        self.showOnlyImages = false
+                        self.showOnlyVideos = false
+                        self.reloadDataSource { }
                     }
                 )
             )
@@ -154,47 +154,6 @@ extension NCMedia {
 
                         self.present(alert, animated: true)
 
-                    }
-                )
-            )
-
-            actions.append(.seperator(order: 0))
-
-            actions.append(
-                NCMenuAction(
-                    title: NSLocalizedString("_media_by_modified_date_", comment: ""),
-                    icon: utility.loadImage(named: "circle.grid.cross.up.fill"),
-                    selected: NCKeychain().mediaSortDate == "date",
-                    on: true,
-                    action: { _ in
-                        NCKeychain().mediaSortDate = "date"
-                        self.reloadDataSourceWithCompletion { _ in }
-                    }
-                )
-            )
-
-            actions.append(
-                NCMenuAction(
-                    title: NSLocalizedString("_media_by_created_date_", comment: ""),
-                    icon: utility.loadImage(named: "circle.grid.cross.down.fill"),
-                    selected: NCKeychain().mediaSortDate == "creationDate",
-                    on: true,
-                    action: { _ in
-                        NCKeychain().mediaSortDate = "creationDate"
-                        self.reloadDataSourceWithCompletion { _ in }
-                    }
-                )
-            )
-
-            actions.append(
-                NCMenuAction(
-                    title: NSLocalizedString("_media_by_upload_date_", comment: ""),
-                    icon: utility.loadImage(named: "circle.grid.cross.right.fill"),
-                    selected: NCKeychain().mediaSortDate == "uploadDate",
-                    on: true,
-                    action: { _ in
-                        NCKeychain().mediaSortDate = "uploadDate"
-                        self.reloadDataSourceWithCompletion { _ in }
                     }
                 )
             )

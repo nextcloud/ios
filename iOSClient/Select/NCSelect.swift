@@ -415,7 +415,7 @@ extension NCSelect: UICollectionViewDataSource {
         cell.selectMode(false)
 
         // Live Photo
-        if metadata.livePhoto {
+        if metadata.isLivePhoto {
             cell.imageStatus.image = NCImageCache.images.livePhoto
         }
 
@@ -545,7 +545,6 @@ extension NCSelect {
                                        ascending: true,
                                        directoryOnTop: true,
                                        favoriteOnTop: true,
-                                       filterLivePhoto: true,
                                        groupByField: "none")
 
         if withLoadFolder {
