@@ -1071,9 +1071,6 @@ extension NCManageDatabase {
     @discardableResult
     func updateMetadatas(_ metadatas: [tableMetadata], predicate: NSPredicate) -> (differentCount: Int, metadatasChanged: Bool) {
 
-        // filter LivePhoto video
-        let metadatas = metadatas.filter({ !(!$0.livePhotoFile.isEmpty && $0.classFile == NKCommon.TypeClassFile.video.rawValue) })
-
         var differentCount: Int = 0
         var metadatasChanged: Bool = false
 
