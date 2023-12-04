@@ -352,14 +352,14 @@ extension NCMedia: UICollectionViewDataSource {
             cell.indexPath = indexPath
             cell.fileUser = metadata.ownerId
 
-            if let cachedImage = NCImageCache.shared.getMediaImage(ocId: metadata.ocId), case let .actual(image) = cachedImage {
+            if let cachedImage = NCImageCache.shared.getMediaImage(ocId: metadata.ocId, etag: metadata.etag), case let .actual(image) = cachedImage {
                 cell.imageItem.backgroundColor = nil
                 cell.imageItem.image = image
             } else if FileManager().fileExists(atPath: utilityFileSystem.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)) {
                 if let image = UIImage(contentsOfFile: utilityFileSystem.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)) {
                     cell.imageItem.backgroundColor = nil
                     cell.imageItem.image = image
-                    NCImageCache.shared.setMediaImage(ocId: metadata.ocId, image: .actual(image))
+                    NCImageCache.shared.setMediaImage(ocId: metadata.ocId, etag: metadata.etag, image: .actual(image))
                 }
             } else {
                 if metadata.hasPreview && metadata.status == NCGlobal.shared.metadataStatusNormal && (!utilityFileSystem.fileProviderStoragePreviewIconExists(metadata.ocId, etag: metadata.etag)) {
@@ -833,7 +833,7 @@ class NCMediaDownloadThumbnaill: ConcurrentOperation {
                         self.collectionView?.reloadData()
                     }
                 }
-                NCImageCache.shared.setMediaImage(ocId: self.metadata.ocId, image: .actual(image))
+                NCImageCache.shared.setMediaImage(ocId: self.metadata.ocId, etag: self.metadata.etag, image: .actual(image))
             }
             self.finish()
         }

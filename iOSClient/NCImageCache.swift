@@ -69,7 +69,7 @@ import RealmSwift
         let resourceKeys = Set<URLResourceKey>([.nameKey, .pathKey, .fileSizeKey, .creationDateKey])
         struct FileInfo {
             var path: URL
-            var ocId: String
+            var ocIdEtag: String
             var date: Date
         }
         var files: [FileInfo] = []
@@ -89,7 +89,7 @@ import RealmSwift
                       let date = resourceValues.creationDate,
                       let etag = ocIdEtag[ocId],
                       fileName == etag + ext else { continue }
-                files.append(FileInfo(path: fileURL, ocId: ocId, date: date))
+                files.append(FileInfo(path: fileURL, ocIdEtag: ocId + etag, date: date))
             }
         }
 
@@ -106,7 +106,7 @@ import RealmSwift
             if counter > limit { break }
             autoreleasepool {
                 if let image = UIImage(contentsOfFile: file.path.path) {
-                    cache.setValue(.actual(image), forKey: file.ocId)
+                    cache.setValue(.actual(image), forKey: file.ocIdEtag)
                 }
             }
         }
@@ -124,12 +124,12 @@ import RealmSwift
         return self.metadatas
     }
 
-    func getMediaImage(ocId: String) -> ImageType? {
-        return cache.value(forKey: ocId)
+    func getMediaImage(ocId: String, etag: String) -> ImageType? {
+        return cache.value(forKey: ocId + etag)
     }
 
-    func setMediaImage(ocId: String, image: ImageType) {
-        cache.setValue(image, forKey: ocId)
+    func setMediaImage(ocId: String, etag: String, image: ImageType) {
+        cache.setValue(image, forKey: ocId + etag)
     }
 
     @objc func clearMediaCache() {
