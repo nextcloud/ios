@@ -411,12 +411,14 @@ extension NCMedia: UICollectionViewDelegateFlowLayout {
 
 extension NCMedia {
 
-    func getPredicate(predicateShowBoth: Bool = false) -> NSPredicate {
+    func getPredicate(predicateShowAll: Bool = false) -> NSPredicate {
 
         let startServerUrl = NCUtilityFileSystem().getHomeServer(urlBase: appDelegate.urlBase, userId: appDelegate.userId) + mediaPath
         let showBoth = NSPredicate(format: NCImageCache.shared.showBothPredicateMediaString, appDelegate.account, startServerUrl, NKCommon.TypeClassFile.image.rawValue, NKCommon.TypeClassFile.video.rawValue, NKCommon.TypeClassFile.video.rawValue)
 
-        if predicateShowBoth { return showBoth }
+        if predicateShowAll { 
+            return NSPredicate(format: NCImageCache.shared.showAllPredicateMediaString, appDelegate.account, startServerUrl, NKCommon.TypeClassFile.image.rawValue, NKCommon.TypeClassFile.video.rawValue)
+        }
         if showOnlyImages {
             return NSPredicate(format: NCImageCache.shared.showOnlyPredicateMediaString, appDelegate.account, startServerUrl, NKCommon.TypeClassFile.image.rawValue, NKCommon.TypeClassFile.video.rawValue)
         } else if showOnlyVideos {
@@ -494,7 +496,7 @@ extension NCMedia {
                 if !files.isEmpty {
                     NCManageDatabase.shared.convertFilesToMetadatas(files, useMetadataFolder: false) { _, _, metadatas in
                         var predicate = NSPredicate(format: "date > %@ AND date < %@", greaterDate as NSDate, lessDate as NSDate)
-                        predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [predicate, self.getPredicate(predicateShowBoth: true)])
+                        predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [predicate, self.getPredicate(predicateShowAll: true)])
                         let results = NCManageDatabase.shared.updateMetadatas(metadatas, predicate: predicate)
                         if results.differentCount == 0 {
                             self.researchOldMedia(value: value, limit: limit, withElseReloadDataSource: true)
@@ -575,7 +577,7 @@ extension NCMedia {
                 if !files.isEmpty {
                     NCManageDatabase.shared.convertFilesToMetadatas(files, useMetadataFolder: false) { _, _, metadatas in
                         var predicate = NSPredicate(format: "date > %@ AND date < %@", greaterDate as NSDate, lessDate as NSDate)
-                        predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [predicate, self.getPredicate(predicateShowBoth: true)])
+                        predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [predicate, self.getPredicate(predicateShowAll: true)])
                         let results = NCManageDatabase.shared.updateMetadatas(metadatas, predicate: predicate)
                         if results.differentCount != 0 || results.metadatasChanged {
                             self.reloadDataSource()
