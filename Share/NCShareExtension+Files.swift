@@ -73,7 +73,7 @@ extension NCShareExtension {
         networkInProgress = true
         collectionView.reloadData()
 
-        NCNetworking.shared.readFolder(serverUrl: serverUrl, account: activeAccount.account) { _, metadataFolder, _, _, _, _, error in
+        NCNetworking.shared.readFolder(serverUrl: serverUrl, account: activeAccount.account) { _, metadataFolder, _, _, _, error in
 
             DispatchQueue.main.async {
                 if error != .success {
