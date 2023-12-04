@@ -974,7 +974,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
 
     // MARK: - WebDav Read file, folder
 
-    func readFolder(serverUrl: String, account: String, completion: @escaping (_ account: String, _ metadataFolder: tableMetadata?, _ metadatas: [tableMetadata]?, _ metadatasUpdate: [tableMetadata]?, _ metadatasLocalUpdate: [tableMetadata]?, _ metadatasDelete: [tableMetadata]?, _ error: NKError) -> Void) {
+    func readFolder(serverUrl: String, account: String, completion: @escaping (_ account: String, _ metadataFolder: tableMetadata?, _ metadatas: [tableMetadata]?, _ differentCount: Int, _ metadatasChanged: [tableMetadata]?, _ error: NKError) -> Void) {
 
         NextcloudKit.shared.readFileOrFolder(serverUrlFileName: serverUrl,
                                              depth: "1",
@@ -983,7 +983,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
                                              options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { account, files, _, error in
 
             guard error == .success else {
-                completion(account, nil, nil, nil, nil, nil, error)
+                completion(account, nil, nil, 0, nil, error)
                 return
             }
 
@@ -1002,10 +1002,10 @@ class NCNetworking: NSObject, NKCommonDelegate {
                     NCManageDatabase.shared.addDirectory(encrypted: metadata.e2eEncrypted, favorite: metadata.favorite, ocId: metadata.ocId, fileId: metadata.fileId, etag: nil, permissions: metadata.permissions, serverUrl: serverUrl, account: account)
                 }
 
-                let metadatasResult = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND status == %d", account, serverUrl, NCGlobal.shared.metadataStatusNormal))
-                let metadatasChanged = NCManageDatabase.shared.updateMetadatas(metadatas, metadatasResult: metadatasResult, addCompareEtagLocal: true)
+                let predicate = NSPredicate(format: "account == %@ AND serverUrl == %@ AND status == %d", account, serverUrl, NCGlobal.shared.metadataStatusNormal)
+                let results = NCManageDatabase.shared.updateMetadatas(metadatas, predicate: predicate)
 
-                completion(account, metadataFolder, metadatas, metadatasChanged.metadatasUpdate, metadatasChanged.metadatasLocalUpdate, metadatasChanged.metadatasDelete, error)
+                completion(account, metadataFolder, metadatas, results.differentCount, results.metadatasChanged, error)
             }
         }
     }
@@ -1081,8 +1081,8 @@ class NCNetworking: NSObject, NKCommonDelegate {
             if error == .success {
                 NCManageDatabase.shared.convertFilesToMetadatas(files, useMetadataFolder: true) { metadataFolder, _, metadatas in
                     NCManageDatabase.shared.addDirectory(encrypted: metadataFolder.e2eEncrypted, favorite: metadataFolder.favorite, ocId: metadataFolder.ocId, fileId: metadataFolder.fileId, etag: metadataFolder.etag, permissions: metadataFolder.permissions, serverUrl: metadataFolder.serverUrl + "/" + metadataFolder.fileName, account: metadataFolder.account)
-                    let metadatasResult = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND status == %d", account, serverUrl, NCGlobal.shared.metadataStatusNormal))
-                    NCManageDatabase.shared.updateMetadatas(metadatas, metadatasResult: metadatasResult)
+                    let predicate = NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND status == %d", account, serverUrl, NCGlobal.shared.metadataStatusNormal)
+                    NCManageDatabase.shared.updateMetadatas(metadatas, predicate: predicate)
                     for metadata in metadatas {
                         if metadata.directory {
                             let serverUrl = metadata.serverUrl + "/" + metadata.fileName

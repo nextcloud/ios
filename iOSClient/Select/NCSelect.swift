@@ -564,7 +564,7 @@ extension NCSelect {
         networkInProgress = true
         collectionView.reloadData()
 
-        NCNetworking.shared.readFolder(serverUrl: serverUrl, account: activeAccount.account) { _, _, _, _, _, _, error in
+        NCNetworking.shared.readFolder(serverUrl: serverUrl, account: activeAccount.account) { _, _, _, _, _, error in
             if error != .success {
                 NCContentPresenter().showError(error: error)
             }

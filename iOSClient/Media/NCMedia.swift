@@ -495,7 +495,7 @@ extension NCMedia {
                     NCManageDatabase.shared.convertFilesToMetadatas(files, useMetadataFolder: false) { _, _, metadatas in
                         var predicate = NSPredicate(format: "date > %@ AND date < %@", greaterDate as NSDate, lessDate as NSDate)
                         predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [predicate, self.getPredicate(predicateShowBoth: true)])
-                        let results = NCManageDatabase.shared.updateMetadas(metadatas: metadatas, predicate: predicate)
+                        let results = NCManageDatabase.shared.updateMetadatas(metadatas, predicate: predicate)
                         if results.differentCount == 0 {
                             self.researchOldMedia(value: value, limit: limit, withElseReloadDataSource: true)
                         } else if !results.metadatasChanged.isEmpty {
@@ -576,7 +576,7 @@ extension NCMedia {
                     NCManageDatabase.shared.convertFilesToMetadatas(files, useMetadataFolder: false) { _, _, metadatas in
                         var predicate = NSPredicate(format: "date > %@ AND date < %@", greaterDate as NSDate, lessDate as NSDate)
                         predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [predicate, self.getPredicate(predicateShowBoth: true)])
-                        let results = NCManageDatabase.shared.updateMetadas(metadatas: metadatas, predicate: predicate)
+                        let results = NCManageDatabase.shared.updateMetadatas(metadatas, predicate: predicate)
                         if results.differentCount != 0 || !results.metadatasChanged.isEmpty {
                             self.reloadDataSource()
                         }

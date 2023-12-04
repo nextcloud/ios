@@ -526,101 +526,6 @@ extension NCManageDatabase {
         }
     }
 
-    @discardableResult
-    func updateMetadatas(_ metadatas: [tableMetadata], metadatasResult: [tableMetadata], addExistsInLocal: Bool = false, addCompareEtagLocal: Bool = false) -> (metadatasUpdate: [tableMetadata], metadatasLocalUpdate: [tableMetadata], metadatasDelete: [tableMetadata]) {
-
-        var ocIdsUdate: [String] = []
-        var ocIdsLocalUdate: [String] = []
-        var metadatasDelete: [tableMetadata] = []
-        var metadatasUpdate: [tableMetadata] = []
-        var metadatasLocalUpdate: [tableMetadata] = []
-
-        do {
-            let realm = try Realm()
-            try realm.write {
-
-                // DELETE
-                for metadataResult in metadatasResult {
-                    if metadatas.firstIndex(where: { $0.ocId == metadataResult.ocId }) == nil {
-                        if let result = realm.objects(tableMetadata.self).filter(NSPredicate(format: "ocId == %@", metadataResult.ocId)).first {
-                            metadatasDelete.append(tableMetadata.init(value: result))
-                            realm.delete(result)
-                        }
-                    }
-                }
-
-                // UPDATE/NEW
-                for metadata in metadatas {
-
-                    if let result = metadatasResult.first(where: { $0.ocId == metadata.ocId }) {
-                        // update
-                        // Workaround: check lock bc no etag changes if lock runs out in directory
-                        // https://github.com/nextcloud/server/issues/8477
-                        if result.status == NCGlobal.shared.metadataStatusNormal &&
-                            (result.etag != metadata.etag ||
-                             result.fileNameView != metadata.fileNameView ||
-                             result.date != metadata.date ||
-                             result.permissions != metadata.permissions ||
-                             result.hasPreview != metadata.hasPreview ||
-                             result.note != metadata.note ||
-                             result.lock != metadata.lock ||
-                             result.shareType != metadata.shareType ||
-                             result.sharePermissionsCloudMesh != metadata.sharePermissionsCloudMesh ||
-                             result.sharePermissionsCollaborationServices != metadata.sharePermissionsCollaborationServices ||
-                             result.favorite != metadata.favorite ||
-                             result.tags != metadata.tags) {
-                            ocIdsUdate.append(metadata.ocId)
-                            realm.add(tableMetadata.init(value: metadata), update: .all)
-                        } else if result.status == NCGlobal.shared.metadataStatusNormal {
-                            ocIdsUdate.append(metadata.ocId)
-                            realm.add(tableMetadata.init(value: metadata), update: .all)
-                        }
-                    } else {
-                        // new
-                        ocIdsUdate.append(metadata.ocId)
-                        realm.add(tableMetadata.init(value: metadata), update: .all)
-                    }
-
-                    if metadata.directory && !ocIdsUdate.contains(metadata.ocId) {
-                        let table = realm.objects(tableDirectory.self).filter(NSPredicate(format: "ocId == %@", metadata.ocId)).first
-                        if table?.etag != metadata.etag {
-                            ocIdsUdate.append(metadata.ocId)
-                        }
-                    }
-
-                    // Local
-                    if !metadata.directory && (addExistsInLocal || addCompareEtagLocal) {
-                        let localFile = realm.objects(tableLocalFile.self).filter(NSPredicate(format: "ocId == %@", metadata.ocId)).first
-                        if addCompareEtagLocal && localFile != nil && localFile?.etag != metadata.etag {
-                            ocIdsLocalUdate.append(metadata.ocId)
-                        }
-                        if addExistsInLocal && (localFile == nil || localFile?.etag != metadata.etag) && !ocIdsLocalUdate.contains(metadata.ocId) {
-                            ocIdsLocalUdate.append(metadata.ocId)
-                        }
-                    }
-                }
-            }
-
-            for ocId in ocIdsUdate {
-                if let result = realm.objects(tableMetadata.self).filter(NSPredicate(format: "ocId == %@", ocId)).first {
-                    metadatasUpdate.append(tableMetadata.init(value: result))
-                }
-            }
-
-            for ocId in ocIdsLocalUdate {
-                if let result = realm.objects(tableMetadata.self).filter(NSPredicate(format: "ocId == %@", ocId)).first {
-                    metadatasLocalUpdate.append(tableMetadata.init(value: result))
-                }
-            }
-
-            return (metadatasUpdate, metadatasLocalUpdate, metadatasDelete)
-        } catch let error {
-            NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
-        }
-
-        return ([], [], [])
-    }
-
     func setMetadataSession(ocId: String, newFileName: String? = nil, session: String?, sessionError: String?, sessionSelector: String?, sessionTaskIdentifier: Int?, status: Int?, etag: String? = nil, errorCode: Int?) {
 
         do {
@@ -1163,7 +1068,8 @@ extension NCManageDatabase {
         }
     }
 
-    func updateMetadas(metadatas: [tableMetadata], predicate: NSPredicate) -> (differentCount: Int, metadatasChanged: [tableMetadata]) {
+    @discardableResult
+    func updateMetadatas(_ metadatas: [tableMetadata], predicate: NSPredicate) -> (differentCount: Int, metadatasChanged: [tableMetadata]) {
 
         // filter LivePhoto video
         let metadatas = metadatas.filter({ !(!$0.livePhotoFile.isEmpty && $0.classFile == NKCommon.TypeClassFile.video.rawValue) })
