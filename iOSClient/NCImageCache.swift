@@ -24,6 +24,7 @@
 import UIKit
 import LRUCache
 import NextcloudKit
+import RealmSwift
 
 @objc class NCImageCache: NSObject {
     @objc public static let shared: NCImageCache = {
@@ -47,11 +48,11 @@ import NextcloudKit
         return ThumbnailLRUCache(countLimit: limit)
     }()
     private var ocIdEtag: [String: String] = [:]
-    private var metadatas: [tableMetadata]?
+    @ThreadSafe private var metadatas: Results<tableMetadata>?
 
-    let showBothPredicateMediaString = "account == %@ AND serverUrl BEGINSWITH %@ AND (classFile == %@ OR classFile == %@) AND NOT (session CONTAINS[c] 'upload') AND NOT (livePhotoFile != '' AND classFile == %@)"
-    let showOnlyPredicateMediaString = "account == %@ AND serverUrl BEGINSWITH %@ AND classFile == %@ AND NOT (session CONTAINS[c] 'upload') AND NOT (livePhotoFile != '' AND classFile == %@)"
-    var isMediaMetadatasInProcess: Bool = false
+    let showAllPredicateMediaString = "account == %@ AND serverUrl BEGINSWITH %@ AND (classFile == '\(NKCommon.TypeClassFile.image.rawValue)' OR classFile == '\(NKCommon.TypeClassFile.video.rawValue)') AND NOT (session CONTAINS[c] 'upload')"
+    let showBothPredicateMediaString = "account == %@ AND serverUrl BEGINSWITH %@ AND (classFile == '\(NKCommon.TypeClassFile.image.rawValue)' OR classFile == '\(NKCommon.TypeClassFile.video.rawValue)') AND NOT (session CONTAINS[c] 'upload') AND NOT (livePhotoFile != '' AND classFile == '\(NKCommon.TypeClassFile.video.rawValue)')"
+    let showOnlyPredicateMediaString = "account == %@ AND serverUrl BEGINSWITH %@ AND classFile == %@ AND NOT (session CONTAINS[c] 'upload') AND NOT (livePhotoFile != '' AND classFile == '\(NKCommon.TypeClassFile.video.rawValue)')"
 
     override private init() {}
 
@@ -61,7 +62,7 @@ import NextcloudKit
         self.account = account
 
         ocIdEtag.removeAll()
-        self.metadatas = []
+        self.metadatas = nil
         self.metadatas = getMediaMetadatas(account: account)
         guard let metadatas = self.metadatas, !metadatas.isEmpty else { return }
         let ext = ".preview.ico"
@@ -69,7 +70,7 @@ import NextcloudKit
         let resourceKeys = Set<URLResourceKey>([.nameKey, .pathKey, .fileSizeKey, .creationDateKey])
         struct FileInfo {
             var path: URL
-            var ocId: String
+            var ocIdEtag: String
             var date: Date
         }
         var files: [FileInfo] = []
@@ -89,7 +90,7 @@ import NextcloudKit
                       let date = resourceValues.creationDate,
                       let etag = ocIdEtag[ocId],
                       fileName == etag + ext else { continue }
-                files.append(FileInfo(path: fileURL, ocId: ocId, date: date))
+                files.append(FileInfo(path: fileURL, ocIdEtag: ocId + etag, date: date))
             }
         }
 
@@ -106,7 +107,7 @@ import NextcloudKit
             if counter > limit { break }
             autoreleasepool {
                 if let image = UIImage(contentsOfFile: file.path.path) {
-                    cache.setValue(.actual(image), forKey: file.ocId)
+                    cache.setValue(.actual(image), forKey: file.ocIdEtag)
                 }
             }
         }
@@ -119,42 +120,30 @@ import NextcloudKit
         NextcloudKit.shared.nkCommonInstance.writeLog("--------- ThumbnailLRUCache image process ---------")
     }
 
-    func initialMetadatas() -> [tableMetadata]? {
-        let metadatas = self.metadatas
-        self.metadatas = nil
-        return metadatas
+    func initialMetadatas() -> Results<tableMetadata>? {
+        defer { self.metadatas = nil }
+        return self.metadatas
     }
 
-    func getMediaImage(ocId: String) -> ImageType? {
-        return cache.value(forKey: ocId)
+    func getMediaImage(ocId: String, etag: String) -> ImageType? {
+        return cache.value(forKey: ocId + etag)
     }
 
-    func setMediaImage(ocId: String, image: ImageType) {
-        cache.setValue(image, forKey: ocId)
+    func setMediaImage(ocId: String, etag: String, image: ImageType) {
+        cache.setValue(image, forKey: ocId + etag)
     }
 
     @objc func clearMediaCache() {
-
         self.ocIdEtag.removeAll()
-        self.metadatas?.removeAll()
         self.metadatas = nil
         cache.removeAllValues()
     }
 
-    func getMediaMetadatas(account: String, predicate: NSPredicate? = nil) -> [tableMetadata] {
-
-        defer {
-            self.isMediaMetadatasInProcess = false
-            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterFinishedMediaInProcess)
-        }
-        self.isMediaMetadatasInProcess = true
-
-        guard let account = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", account)) else { return [] }
+    func getMediaMetadatas(account: String, predicate: NSPredicate? = nil) -> Results<tableMetadata>? {
+        guard let account = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", account)) else { return nil }
         let startServerUrl = NCUtilityFileSystem().getHomeServer(urlBase: account.urlBase, userId: account.userId) + account.mediaPath
-
-        let predicateDefault = NSPredicate(format: showBothPredicateMediaString, account.account, startServerUrl, NKCommon.TypeClassFile.image.rawValue, NKCommon.TypeClassFile.video.rawValue, NKCommon.TypeClassFile.video.rawValue)
-
-        return NCManageDatabase.shared.getMetadatasMedia(predicate: predicate ?? predicateDefault)
+        let predicateBoth = NSPredicate(format: showBothPredicateMediaString, account.account, startServerUrl)
+        return NCManageDatabase.shared.getResultsMetadatas(predicate: predicate ?? predicateBoth, sorted: "date")
     }
 
     // MARK: -

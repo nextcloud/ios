@@ -175,7 +175,7 @@ class NCFiles: NCCollectionViewCommon {
         isReloadDataSourceNetworkInProgress = true
         collectionView?.reloadData()
 
-        networkReadFolder(isForced: isForced) { tableDirectory, metadatas, metadatasUpdate, metadatasDelete, error in
+        networkReadFolder(isForced: isForced) { tableDirectory, metadatas, metadatasChangedCount, metadatasChanged, error in
             if error == .success {
                 for metadata in metadatas ?? [] where !metadata.directory && downloadMetadata(metadata) {
                     if self.appDelegate.downloadQueue.operations.filter({ ($0 as? NCOperationDownload)?.metadata.ocId == metadata.ocId }).isEmpty {
@@ -187,7 +187,7 @@ class NCFiles: NCCollectionViewCommon {
             self.isReloadDataSourceNetworkInProgress = false
             self.richWorkspaceText = tableDirectory?.richWorkspace
 
-            if metadatasUpdate?.count ?? 0 > 0 || metadatasDelete?.count ?? 0 > 0 || isForced {
+            if metadatasChangedCount != 0 || metadatasChanged || isForced {
                 self.reloadDataSource()
             } else if self.dataSource.getMetadataSourceForAllSections().isEmpty {
                 DispatchQueue.main.async {
