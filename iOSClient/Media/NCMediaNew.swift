@@ -200,7 +200,7 @@ struct NCMediaNew: View {
             }
         }
         .onChange(of: vm.metadatas) { newValue in
-            metadatas = newValue
+            metadatas = Array(newValue.map { tableMetadata.init(value: $0) })
         }
         .onChange(of: isInSelectMode) { newValue in
             if newValue == false { selectedMetadatas.removeAll() }

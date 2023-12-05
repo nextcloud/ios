@@ -42,7 +42,7 @@ struct ScaledThumbnail: Hashable {
 
         metadatas.forEach { metadata in
             let thumbnailPath = NCUtilityFileSystem().getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)
-            if let cachedImage = cache.getMediaImage(ocId: metadata.ocId) {
+            if let cachedImage = cache.getMediaImage(ocId: metadata.ocId, etag: metadata.etag) {
                 let thumbnail: ScaledThumbnail
 
                 if case let .actual(image) = cachedImage {
@@ -60,7 +60,7 @@ struct ScaledThumbnail: Hashable {
                 // Load thumbnail from file
                 if let image = UIImage(contentsOfFile: thumbnailPath) {
                     let thumbnail = ScaledThumbnail(image: image, metadata: metadata)
-                    cache.setMediaImage(ocId: metadata.ocId, image: .actual(image))
+                    cache.setMediaImage(ocId: metadata.ocId, etag: metadata.etag, image: .actual(image))
 
                     DispatchQueue.main.async {
                         thumbnails.append(thumbnail)
@@ -131,11 +131,11 @@ struct ScaledThumbnail: Hashable {
 
                     if error == .success, let image = imageIcon {
                         thumbnail = ScaledThumbnail(image: image, metadata: self.metadata)
-                        self.cache.setMediaImage(ocId: self.metadata.ocId, image: .actual(image))
+                        self.cache.setMediaImage(ocId: self.metadata.ocId, etag: self.metadata.etag, image: .actual(image))
                     } else {
                         let image = UIImage(systemName: self.metadata.isVideo ? "video.fill" : "photo.fill")!.withRenderingMode(.alwaysTemplate)
                         thumbnail = ScaledThumbnail(image: image, isPlaceholderImage: true, metadata: self.metadata)
-                        self.cache.setMediaImage(ocId: self.metadata.ocId, image: .placeholder)
+                        self.cache.setMediaImage(ocId: self.metadata.ocId, etag: self.metadata.etag, image: .placeholder)
                     }
 
                     self.onThumbnailDownloaded(thumbnail)

@@ -22,8 +22,8 @@ struct NCMediaScrollView: View, Equatable {
     @Binding var shouldScrollToTop: Bool
     @Binding var title: String
     @Binding var shouldShowPaginationLoading: Bool
-    @Binding var latestDisappearedMetadata: tableMetadata?
-    @Binding var latestVisibleMetadata: tableMetadata?
+//    @Binding var latestDisappearedMetadata: tableMetadata?
+//    @Binding var latestVisibleMetadata: tableMetadata?
 
     let proxy: ScrollViewProxy
 
@@ -49,11 +49,11 @@ struct NCMediaScrollView: View, Equatable {
                         }
                         // NOTE: This only works properly on device. On simulator, for some reason, these get called way too early or way too late.
                         .onAppear {
-                            latestVisibleMetadata = rowMetadatas.first
+//                            latestVisibleMetadata = rowMetadatas.first
                             title = NCUtility().getTitleFromDate(rowMetadatas.first?.date as? Date ?? Date.now)
                         }
                         .onDisappear {
-                            latestDisappearedMetadata = rowMetadatas.last
+//                            latestDisappearedMetadata = rowMetadatas.last
                         }
 //                        .background(GeometryReader { proxy in
 //                            let imageRect = proxy.frame(in: .named("scroll"))
