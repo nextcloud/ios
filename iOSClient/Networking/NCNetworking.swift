@@ -970,7 +970,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
 
     // MARK: - WebDav Read file, folder
 
-    func readFolder(serverUrl: String, account: String, completion: @escaping (_ account: String, _ metadataFolder: tableMetadata?, _ metadatas: [tableMetadata]?, _ differentCount: Int, _ metadatasChanged: Bool, _ error: NKError) -> Void) {
+    func readFolder(serverUrl: String, account: String, completion: @escaping (_ account: String, _ metadataFolder: tableMetadata?, _ metadatas: [tableMetadata]?, _ metadatasChangedCount: Int, _ metadatasChanged: Bool, _ error: NKError) -> Void) {
 
         NextcloudKit.shared.readFileOrFolder(serverUrlFileName: serverUrl,
                                              depth: "1",
@@ -1001,7 +1001,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
                 let predicate = NSPredicate(format: "account == %@ AND serverUrl == %@ AND status == %d", account, serverUrl, NCGlobal.shared.metadataStatusNormal)
                 let results = NCManageDatabase.shared.updateMetadatas(metadatas, predicate: predicate)
 
-                completion(account, metadataFolder, metadatas, results.differentCount, results.metadatasChanged, error)
+                completion(account, metadataFolder, metadatas, results.metadatasChangedCount, results.metadatasChanged, error)
             }
         }
     }

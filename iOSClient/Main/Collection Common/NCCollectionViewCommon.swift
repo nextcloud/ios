@@ -989,7 +989,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         }
     }
 
-    @objc func networkReadFolder(isForced: Bool, completion: @escaping(_ tableDirectory: tableDirectory?, _ metadatas: [tableMetadata]?, _ differentCount: Int, _ metadatasChanged: Bool, _ error: NKError) -> Void) {
+    @objc func networkReadFolder(isForced: Bool, completion: @escaping(_ tableDirectory: tableDirectory?, _ metadatas: [tableMetadata]?, _ metadatasChangedCount: Int, _ metadatasChanged: Bool, _ error: NKError) -> Void) {
 
         var tableDirectory: tableDirectory?
 
@@ -1004,7 +1004,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             }
 
             if isForced || tableDirectory?.etag != metadataFolder?.etag || metadataFolder?.e2eEncrypted ?? true {
-                NCNetworking.shared.readFolder(serverUrl: self.serverUrl, account: self.appDelegate.account) { _, metadataFolder, metadatas, differentCount, metadatasChanged, error in
+                NCNetworking.shared.readFolder(serverUrl: self.serverUrl, account: self.appDelegate.account) { _, metadataFolder, metadatas, metadatasChangedCount, metadatasChanged, error in
                     guard error == .success else {
                         completion(tableDirectory, nil, 0, false, error)
                         return
@@ -1036,10 +1036,10 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                             } else {
                                 NCContentPresenter().showError(error: NKError(errorCode: NCGlobal.shared.errorE2EEKeyDecodeMetadata, errorDescription: "_e2e_error_"))
                             }
-                            completion(tableDirectory, metadatas, differentCount, metadatasChanged, error)
+                            completion(tableDirectory, metadatas, metadatasChangedCount, metadatasChanged, error)
                         }
                     } else {
-                        completion(tableDirectory, metadatas, differentCount, metadatasChanged, error)
+                        completion(tableDirectory, metadatas, metadatasChangedCount, metadatasChanged, error)
                     }
                 }
             } else {
