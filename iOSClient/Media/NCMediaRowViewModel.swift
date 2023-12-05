@@ -31,7 +31,8 @@ struct ScaledThumbnail: Hashable {
 
     private var metadatas: [tableMetadata] = []
     private let cache = NCImageCache.shared
-    private let queuer = NCImageQueuer.shared
+
+    private let queuer = (UIApplication.shared.delegate as? AppDelegate)?.downloadThumbnailQueue
 
     func configure(metadatas: [tableMetadata]) {
         self.metadatas = metadatas
@@ -68,7 +69,7 @@ struct ScaledThumbnail: Hashable {
                     }
                 }
             } else {
-                if queuer.operations.filter({ ($0 as? NCMediaDownloadThumbnaill)?.metadata.ocId == metadata.ocId }).isEmpty {
+                if let queuer, queuer.operations.filter({ ($0 as? NCMediaDownloadThumbnaill)?.metadata.ocId == metadata.ocId }).isEmpty {
                     let concurrentOperation = NCMediaDownloadThumbnaill(metadata: metadata, cache: cache, rowWidth: rowWidth, spacing: spacing, maxWidth: UIScreen.main.bounds.width, maxHeight: UIScreen.main.bounds.height) { thumbnail in
                         DispatchQueue.main.async {
                             thumbnails.append(thumbnail)
@@ -185,19 +186,12 @@ struct ScaledThumbnail: Hashable {
     }
 
     func cancelDownloadingThumbnails() {
+        guard let queuer else { return }
+
         metadatas.forEach { metadata in
             for case let operation as NCMediaDownloadThumbnaill in queuer.operations where operation.metadata.ocId == metadata.ocId {
                 operation.cancel()
             }
         }
     }
-}
-
-private class NCImageQueuer: NSObject {
-    fileprivate static let shared: Queuer = {
-        let instance = Queuer(name: "downloadThumbnailQueue", maxConcurrentOperationCount: 10, qualityOfService: .background)
-        return instance
-    }()
-
-    override private init() {}
 }

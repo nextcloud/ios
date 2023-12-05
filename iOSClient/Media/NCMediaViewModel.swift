@@ -12,24 +12,7 @@ import LRUCache
 import RealmSwift
 
 @MainActor class NCMediaViewModel: ObservableObject {
-    private var scheduledUpdate = false
-
-    //    var metadatas = [tableMetadata]() {
-    //        willSet {
-    //            if !scheduledUpdate {
-    //                scheduledUpdate = true
-    //
-    //                DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { [weak self] in
-    //                    self?.objectWillChange.send()
-    //                    self?.scheduledUpdate = false
-    //                }
-    //            }
-    //        }
-    //    }
-
-    //    @Published var metadatas: [tableMetadata]?
-
-    @Published internal var metadatas: [tableMetadata] = []
+    @Published var metadatas: [tableMetadata] = []
     @Published var filter = Filter.all
     @Published var isLoadingMetadata = true
     @Published var hasNewMedia = false
@@ -71,7 +54,7 @@ import RealmSwift
         guard let appDelegate, !appDelegate.account.isEmpty else { return }
 
         if account != appDelegate.account {
-            //            DispatchQueue.main.async { self.metadatas = [] }
+            DispatchQueue.main.async { self.metadatas = [] }
             account = appDelegate.account
         }
 
@@ -325,7 +308,7 @@ extension NCMediaViewModel {
         guard let appDelegate, !appDelegate.account.isEmpty else { return }
 
         if account != appDelegate.account {
-            //            DispatchQueue.main.async { self.metadatas = [] }
+            DispatchQueue.main.async { self.metadatas = [] }
             account = appDelegate.account
         }
 

@@ -46,7 +46,7 @@ struct NCMediaNew: View {
 
         ZStack(alignment: .top) {
             ScrollViewReader { proxy in
-                NCMediaScrollView(metadatas: $metadatas, isInSelectMode: $isInSelectMode, selectedMetadatas: $selectedMetadatas, columnCountStages: $columnCountStages, columnCountStagesIndex: $columnCountStagesIndex, shouldScrollToTop: $shouldScrollToTop, title: $title, shouldShowPaginationLoading: $hasOldMedia, proxy: proxy) { tappedThumbnail, isSelected in
+                NCMediaScrollView(metadatas: metadatas.chunked(into: columnCountStages[columnCountStagesIndex]), isInSelectMode: $isInSelectMode, selectedMetadatas: $selectedMetadatas, shouldScrollToTop: $shouldScrollToTop, title: $title, shouldShowPaginationLoading: $hasOldMedia, proxy: proxy) { tappedThumbnail, isSelected in
                     if isInSelectMode, isSelected {
                         selectedMetadatas.append(tappedThumbnail.metadata)
                     } else {
@@ -200,7 +200,7 @@ struct NCMediaNew: View {
             }
         }
         .onChange(of: vm.metadatas) { newValue in
-            metadatas = Array(newValue.map { tableMetadata.init(value: $0) })
+            metadatas = newValue
         }
         .onChange(of: isInSelectMode) { newValue in
             if newValue == false { selectedMetadatas.removeAll() }
