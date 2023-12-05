@@ -9,6 +9,7 @@
 import NextcloudKit
 import Combine
 import LRUCache
+import RealmSwift
 
 @MainActor class NCMediaViewModel: ObservableObject {
     private var scheduledUpdate = false
@@ -26,7 +27,9 @@ import LRUCache
 //        }
 //    }
 
-    @Published internal var metadatas: [tableMetadata] = []
+    @Published @ThreadSafe var metadatas: Results<tableMetadata>?
+
+//    @Published internal var metadatas: [tableMetadata] = []
     @Published var filter = Filter.all
     @Published var isLoadingMetadata = true
     @Published var hasNewMedia = false
@@ -84,7 +87,7 @@ import LRUCache
         NotificationCenter.default.addObserver(self, selector: #selector(uploadedFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUploadedFile), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(userChanged(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeUser), object: nil)
 
-        if let metadatas = self.cache.initialMetadatas {
+        if let metadatas = self.cache.initialMetadatas() {
             DispatchQueue.main.async { self.metadatas = metadatas }
         }
 
