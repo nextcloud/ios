@@ -60,7 +60,6 @@ class NCShares: NCCollectionViewCommon {
                                            ascending: layoutForView?.ascending,
                                            directoryOnTop: layoutForView?.directoryOnTop,
                                            favoriteOnTop: true,
-                                           filterLivePhoto: true,
                                            groupByField: groupByField,
                                            providers: providers,
                                            searchResults: searchResults)

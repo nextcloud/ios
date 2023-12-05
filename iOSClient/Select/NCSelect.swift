@@ -417,7 +417,7 @@ extension NCSelect: UICollectionViewDataSource {
         cell.selectMode(false)
 
         // Live Photo
-        if metadata.livePhoto {
+        if metadata.isLivePhoto {
             cell.imageStatus.image = NCImageCache.images.livePhoto
         }
 
@@ -547,7 +547,6 @@ extension NCSelect {
                                        ascending: true,
                                        directoryOnTop: true,
                                        favoriteOnTop: true,
-                                       filterLivePhoto: true,
                                        groupByField: "none")
 
         if withLoadFolder {
@@ -567,7 +566,7 @@ extension NCSelect {
         networkInProgress = true
         collectionView.reloadData()
 
-        NCNetworking.shared.readFolder(serverUrl: serverUrl, account: activeAccount.account) { _, _, _, _, _, _, error in
+        NCNetworking.shared.readFolder(serverUrl: serverUrl, account: activeAccount.account) { _, _, _, _, _, error in
             if error != .success {
                 NCContentPresenter().showError(error: error)
             }

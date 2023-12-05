@@ -691,7 +691,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
                 utilityFileSystem.removeFile(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(ocIdTemp))
             }
 
-            NCLivePhoto().setLivephotoUpload(metadata: metadata)
+            uploadLivePhoto(metadata: metadata)
 
             NextcloudKit.shared.nkCommonInstance.writeLog("[SUCCESS] Upload complete " + serverUrl + "/" + fileName + ", result: success(\(size) bytes)")
             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUploadedFile, userInfo: ["ocId": metadata.ocId, "serverUrl": metadata.serverUrl, "account": metadata.account, "fileName": metadata.fileName, "ocIdTemp": ocIdTemp, "error": error])
@@ -789,6 +789,48 @@ class NCNetworking: NSObject, NKCommonDelegate {
             })
         })
     }
+
+    // MARK: - Live Photo
+
+    func uploadLivePhoto(metadata: tableMetadata) {
+
+        guard NCGlobal.shared.isLivePhotoServerAvailable,
+              metadata.isLivePhoto,
+              let metadata1 = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND urlBase == %@ AND path == %@ AND fileName == %@ AND status == %d", metadata.account, metadata.urlBase, metadata.path, metadata.livePhotoFile, NCGlobal.shared.metadataStatusNormal)) else {
+            return
+        }
+
+        Task {
+            let serverUrlfileNamePath = metadata.urlBase + metadata.path + metadata.livePhotoFile
+            var results = await NextcloudKit.shared.setLivephoto(serverUrlfileNamePath: serverUrlfileNamePath, livePhotoFile: metadata1.livePhotoFile)
+            if results.error == .success {
+                NCManageDatabase.shared.setMetadataLivePhotoByServer(account: metadata.account, ocId: metadata.ocId)
+            }
+
+            let serverUrlfileNamePath1 = metadata1.urlBase + metadata1.path + metadata1.livePhotoFile
+            results = await NextcloudKit.shared.setLivephoto(serverUrlfileNamePath: serverUrlfileNamePath1, livePhotoFile: metadata.livePhotoFile)
+            if results.error == .success {
+                NCManageDatabase.shared.setMetadataLivePhotoByServer(account: metadata1.account, ocId: metadata1.ocId)
+            }
+        }
+    }
+
+#if !EXTENSION
+    func convertLivePhoto(account: String) {
+
+        guard NCGlobal.shared.isLivePhotoServerAvailable,
+              let appDelegate = (UIApplication.shared.delegate as? AppDelegate) else { return }
+
+        if let results = NCManageDatabase.shared.getResultsMetadatas(predicate: NSPredicate(format: "account == '\(account)' AND isFlaggedAsLivePhotoByServer == false AND livePhotoFile != ''"), sorted: "date") {
+
+            for result in results {
+                let serverUrlfileNamePath = result.urlBase + result.path + result.fileName
+                for case let operation as NCOperationConvertLivePhoto in appDelegate.convertLivePhotoQueue.operations where operation.serverUrlfileNamePath == serverUrlfileNamePath { continue }
+                appDelegate.convertLivePhotoQueue.addOperation(NCOperationConvertLivePhoto(serverUrlfileNamePath: serverUrlfileNamePath, livePhotoFile: result.livePhotoFile, account: result.account, ocId: result.ocId))
+            }
+        }
+    }
+#endif
 
     // MARK: - Cancel (Download Upload)
 
@@ -928,7 +970,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
 
     // MARK: - WebDav Read file, folder
 
-    func readFolder(serverUrl: String, account: String, completion: @escaping (_ account: String, _ metadataFolder: tableMetadata?, _ metadatas: [tableMetadata]?, _ metadatasUpdate: [tableMetadata]?, _ metadatasLocalUpdate: [tableMetadata]?, _ metadatasDelete: [tableMetadata]?, _ error: NKError) -> Void) {
+    func readFolder(serverUrl: String, account: String, completion: @escaping (_ account: String, _ metadataFolder: tableMetadata?, _ metadatas: [tableMetadata]?, _ metadatasChangedCount: Int, _ metadatasChanged: Bool, _ error: NKError) -> Void) {
 
         NextcloudKit.shared.readFileOrFolder(serverUrlFileName: serverUrl,
                                              depth: "1",
@@ -937,7 +979,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
                                              options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { account, files, _, error in
 
             guard error == .success else {
-                completion(account, nil, nil, nil, nil, nil, error)
+                completion(account, nil, nil, 0, false, error)
                 return
             }
 
@@ -956,10 +998,10 @@ class NCNetworking: NSObject, NKCommonDelegate {
                     NCManageDatabase.shared.addDirectory(encrypted: metadata.e2eEncrypted, favorite: metadata.favorite, ocId: metadata.ocId, fileId: metadata.fileId, etag: nil, permissions: metadata.permissions, serverUrl: serverUrl, account: account)
                 }
 
-                let metadatasResult = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND status == %d", account, serverUrl, NCGlobal.shared.metadataStatusNormal))
-                let metadatasChanged = NCManageDatabase.shared.updateMetadatas(metadatas, metadatasResult: metadatasResult, addCompareEtagLocal: true)
+                let predicate = NSPredicate(format: "account == %@ AND serverUrl == %@ AND status == %d", account, serverUrl, NCGlobal.shared.metadataStatusNormal)
+                let results = NCManageDatabase.shared.updateMetadatas(metadatas, predicate: predicate)
 
-                completion(account, metadataFolder, metadatas, metadatasChanged.metadatasUpdate, metadatasChanged.metadatasLocalUpdate, metadatasChanged.metadatasDelete, error)
+                completion(account, metadataFolder, metadatas, results.metadatasChangedCount, results.metadatasChanged, error)
             }
         }
     }
@@ -1035,8 +1077,8 @@ class NCNetworking: NSObject, NKCommonDelegate {
             if error == .success {
                 NCManageDatabase.shared.convertFilesToMetadatas(files, useMetadataFolder: true) { metadataFolder, _, metadatas in
                     NCManageDatabase.shared.addDirectory(encrypted: metadataFolder.e2eEncrypted, favorite: metadataFolder.favorite, ocId: metadataFolder.ocId, fileId: metadataFolder.fileId, etag: metadataFolder.etag, permissions: metadataFolder.permissions, serverUrl: metadataFolder.serverUrl + "/" + metadataFolder.fileName, account: metadataFolder.account)
-                    let metadatasResult = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND status == %d", account, serverUrl, NCGlobal.shared.metadataStatusNormal))
-                    NCManageDatabase.shared.updateMetadatas(metadatas, metadatasResult: metadatasResult)
+                    let predicate = NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND status == %d", account, serverUrl, NCGlobal.shared.metadataStatusNormal)
+                    NCManageDatabase.shared.updateMetadatas(metadatas, predicate: predicate)
                     for metadata in metadatas {
                         if metadata.directory {
                             let serverUrl = metadata.serverUrl + "/" + metadata.fileName
@@ -1400,7 +1442,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
 
         if metadata.isDirectoryE2EE {
 #if !EXTENSION
-            if let metadataLive = NCManageDatabase.shared.isMetadataLivePhoto(metadata: metadata) {
+            if let metadataLive = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata) {
                 let error = await NCNetworkingE2EEDelete().delete(metadata: metadataLive)
                 if error == .success {
                     return await NCNetworkingE2EEDelete().delete(metadata: metadata)
@@ -1414,7 +1456,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
             return NKError()
 #endif
         } else {
-            if let metadataLive = NCManageDatabase.shared.isMetadataLivePhoto(metadata: metadata) {
+            if let metadataLive = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata) {
                 let error = await deleteMetadataPlain(metadataLive)
                 if error == .success {
                     return await deleteMetadataPlain(metadata)
@@ -1472,7 +1514,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
 
     func favoriteMetadata(_ metadata: tableMetadata, completion: @escaping (_ error: NKError) -> Void) {
 
-        if let metadataLive = NCManageDatabase.shared.isMetadataLivePhoto(metadata: metadata) {
+        if let metadataLive = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata) {
             favoriteMetadataPlain(metadataLive) { error in
                 if error == .success {
                     self.favoriteMetadataPlain(metadata, completion: completion)
@@ -1526,7 +1568,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
 
     func renameMetadata(_ metadata: tableMetadata, fileNameNew: String, indexPath: IndexPath, viewController: UIViewController?, completion: @escaping (_ error: NKError) -> Void) {
 
-        let metadataLive = NCManageDatabase.shared.isMetadataLivePhoto(metadata: metadata)
+        let metadataLive = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata)
         let fileNameNew = fileNameNew.trimmingCharacters(in: .whitespacesAndNewlines)
         let fileNameNewLive = (fileNameNew as NSString).deletingPathExtension + ".mov"
 
@@ -1633,7 +1675,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
 
     func moveMetadata(_ metadata: tableMetadata, serverUrlTo: String, overwrite: Bool) async -> NKError {
 
-        if let metadataLive = NCManageDatabase.shared.isMetadataLivePhoto(metadata: metadata) {
+        if let metadataLive = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata) {
             let error = await moveMetadataPlain(metadataLive, serverUrlTo: serverUrlTo, overwrite: overwrite)
             if error == .success {
                 return await moveMetadataPlain(metadata, serverUrlTo: serverUrlTo, overwrite: overwrite)
@@ -1669,7 +1711,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
 
     func copyMetadata(_ metadata: tableMetadata, serverUrlTo: String, overwrite: Bool) async -> NKError {
 
-        if let metadataLive = NCManageDatabase.shared.isMetadataLivePhoto(metadata: metadata) {
+        if let metadataLive = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata) {
             let error = await copyMetadataPlain(metadataLive, serverUrlTo: serverUrlTo, overwrite: overwrite)
             if error == .success {
                 return await copyMetadataPlain(metadata, serverUrlTo: serverUrlTo, overwrite: overwrite)
@@ -1775,6 +1817,31 @@ class NCOperationDownload: ConcurrentOperation {
         guard !isCancelled else { return self.finish() }
 
         NCNetworking.shared.download(metadata: metadata, selector: self.selector) { _, _ in
+            self.finish()
+        }
+    }
+}
+
+class NCOperationConvertLivePhoto: ConcurrentOperation {
+
+    var serverUrlfileNamePath, livePhotoFile, account, ocId: String
+
+    init(serverUrlfileNamePath: String, livePhotoFile: String, account: String, ocId: String) {
+        self.serverUrlfileNamePath = serverUrlfileNamePath
+        self.livePhotoFile = livePhotoFile
+        self.account = account
+        self.ocId = ocId
+    }
+
+    override func start() {
+
+        guard !isCancelled else { return self.finish() }
+        NextcloudKit.shared.setLivephoto(serverUrlfileNamePath: serverUrlfileNamePath, livePhotoFile: livePhotoFile) { _, error in
+            if error == .success {
+                NCManageDatabase.shared.setMetadataLivePhotoByServer(account: self.account, ocId: self.ocId)
+            } else {
+                print("Convert LivePhoto with error \(error.errorCode)")
+            }
             self.finish()
         }
     }

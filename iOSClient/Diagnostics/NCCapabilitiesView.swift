@@ -52,9 +52,18 @@ class NCCapabilitiesViewOO: ObservableObject {
     let utilityFileSystem = NCUtilityFileSystem()
 
     init() {
+        loadCapabilities()
+        NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeUser), object: nil, queue: nil) { _ in
+            self.loadCapabilities()
+        }
+    }
+
+    func loadCapabilities() {
         guard let activeAccount = NCManageDatabase.shared.getActiveAccount() else { return }
         var textEditor = false
         var onlyofficeEditors = false
+
+        capabililies.removeAll()
 
         if let image = UIImage(named: "share") {
             capabililies.append(Capability(text: "File sharing", image: image, resize: true, available: NCGlobal.shared.capabilityFileSharingApiEnabled))
@@ -125,13 +134,13 @@ struct NCCapabilitiesView: View {
                 Section {
                     ForEach(capabilitiesViewOO.capabililies, id: \.id) { capability in
                         HStack {
-                            CapabilityName(text: capability.text, image: Image(uiImage: capability.image), resize: capability.resize)
+                            CapabilityName(text: Binding.constant(capability.text), image: Image(uiImage: capability.image), resize: capability.resize)
                             CapabilityStatus(available: capability.available)
                         }
                     }
                 }
                 Section {
-                    CapabilityName(text: capabilitiesViewOO.homeServer, image: Image(systemName: "house"), resize: false)
+                    CapabilityName(text: $capabilitiesViewOO.homeServer, image: Image(systemName: "house"), resize: false)
                 }
             }
         }
@@ -140,7 +149,7 @@ struct NCCapabilitiesView: View {
 
     struct CapabilityName: View {
 
-        @State var text: String = ""
+        @Binding var text: String
         @State var image: Image
         @State var resize: Bool
 

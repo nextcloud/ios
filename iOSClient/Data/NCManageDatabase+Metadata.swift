@@ -60,8 +60,8 @@ class tableMetadata: Object, NCUserBaseUrl {
     @objc dynamic var hidden: Bool = false
     @objc dynamic var iconName = ""
     @objc dynamic var iconUrl = ""
+    @objc dynamic var isFlaggedAsLivePhotoByServer: Bool = false
     @objc dynamic var isExtractFile: Bool = false
-    @objc dynamic var livePhoto: Bool = false
     @objc dynamic var livePhotoFile = ""
     @objc dynamic var mountType = ""
     @objc dynamic var name = ""                                             // for unifiedSearch is the provider.id
@@ -249,6 +249,10 @@ extension tableMetadata {
         NCUtilityFileSystem().isDirectoryE2EETop(account: account, serverUrl: serverUrl)
     }
 
+    var isLivePhoto: Bool {
+        !livePhotoFile.isEmpty
+    }
+
     /// Returns false if the user is lokced out of the file. I.e. The file is locked but by somone else
     func canUnlock(as user: String) -> Bool {
         return !lock || (lockOwner == user && lockOwnerType == 0)
@@ -342,9 +346,7 @@ extension NCManageDatabase {
         metadata.height = file.height
         metadata.width = file.width
         metadata.livePhotoFile = file.livePhotoFile
-        if !metadata.livePhotoFile.isEmpty {
-            metadata.livePhoto = true
-        }
+        metadata.isFlaggedAsLivePhotoByServer = file.isFlaggedAsLivePhotoByServer
 
         // E2EE find the fileName for fileNameView
         if isDirectoryE2EE || file.e2eEncrypted {
@@ -393,39 +395,10 @@ extension NCManageDatabase {
             counter += 1
         }
 
-        //
-        // Detect Live photo
-        //
-        var metadataOutput: [tableMetadata] = []
-        metadatas = metadatas.sorted(by: {$0.fileNameView < $1.fileNameView})
-
-        for index in metadatas.indices {
-            let metadata = metadatas[index]
-            if index < metadatas.count - 1,
-                metadata.fileNoExtension == metadatas[index + 1].fileNoExtension,
-                ((metadata.classFile == NKCommon.TypeClassFile.image.rawValue && metadatas[index + 1].classFile == NKCommon.TypeClassFile.video.rawValue) || (metadata.classFile == NKCommon.TypeClassFile.video.rawValue && metadatas[index + 1].classFile == NKCommon.TypeClassFile.image.rawValue)) {
-                metadata.livePhoto = true
-                metadatas[index + 1].livePhoto = true
-                let metadata1 = metadata
-                let metadata2 = metadatas[index + 1]
-                NCLivePhoto().setLivePhoto(metadata1: metadata1, metadata2: metadata2)
-            }
-            metadataOutput.append(metadata)
-        }
-
-        completion(metadataFolder, metadataFolders, metadataOutput)
+        completion(metadataFolder, metadataFolders, metadatas)
     }
 
-    func convertFilesToMetadatas(_ files: [NKFile], useMetadataFolder: Bool) async -> (metadataFolder: tableMetadata, metadatasFolder: [tableMetadata], metadatas: [tableMetadata]) {
-
-        await withUnsafeContinuation({ continuation in
-            convertFilesToMetadatas(files, useMetadataFolder: useMetadataFolder) { metadataFolder, metadatasFolder, metadatas in
-                continuation.resume(returning: (metadataFolder, metadatasFolder, metadatas))
-            }
-        })
-    }
-
-    func createMetadata(account: String, user: String, userId: String, fileName: String, fileNameView: String, ocId: String, serverUrl: String, urlBase: String, url: String, contentType: String, isLivePhoto: Bool = false, isUrl: Bool = false, name: String = NCGlobal.shared.appName, subline: String? = nil, iconName: String? = nil, iconUrl: String? = nil) -> tableMetadata {
+    func createMetadata(account: String, user: String, userId: String, fileName: String, fileNameView: String, ocId: String, serverUrl: String, urlBase: String, url: String, contentType: String, isUrl: Bool = false, name: String = NCGlobal.shared.appName, subline: String? = nil, iconName: String? = nil, iconUrl: String? = nil) -> tableMetadata {
 
         let metadata = tableMetadata()
         if isUrl {
@@ -460,7 +433,6 @@ extension NCManageDatabase {
         metadata.etag = ocId
         metadata.fileName = fileName
         metadata.fileNameView = fileName
-        metadata.livePhoto = isLivePhoto
         metadata.name = name
         metadata.ocId = ocId
         metadata.permissions = "RGDNVW"
@@ -552,101 +524,6 @@ extension NCManageDatabase {
         } catch let error {
             NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
         }
-    }
-
-    @discardableResult
-    func updateMetadatas(_ metadatas: [tableMetadata], metadatasResult: [tableMetadata], addCompareLivePhoto: Bool = true, addExistsInLocal: Bool = false, addCompareEtagLocal: Bool = false) -> (metadatasUpdate: [tableMetadata], metadatasLocalUpdate: [tableMetadata], metadatasDelete: [tableMetadata]) {
-
-        var ocIdsUdate: [String] = []
-        var ocIdsLocalUdate: [String] = []
-        var metadatasDelete: [tableMetadata] = []
-        var metadatasUpdate: [tableMetadata] = []
-        var metadatasLocalUpdate: [tableMetadata] = []
-
-        do {
-            let realm = try Realm()
-            try realm.write {
-
-                // DELETE
-                for metadataResult in metadatasResult {
-                    if metadatas.firstIndex(where: { $0.ocId == metadataResult.ocId }) == nil {
-                        if let result = realm.objects(tableMetadata.self).filter(NSPredicate(format: "ocId == %@", metadataResult.ocId)).first {
-                            metadatasDelete.append(tableMetadata.init(value: result))
-                            realm.delete(result)
-                        }
-                    }
-                }
-
-                // UPDATE/NEW
-                for metadata in metadatas {
-
-                    if let result = metadatasResult.first(where: { $0.ocId == metadata.ocId }) {
-                        // update
-                        // Workaround: check lock bc no etag changes if lock runs out in directory
-                        // https://github.com/nextcloud/server/issues/8477
-                        if result.status == NCGlobal.shared.metadataStatusNormal &&
-                            (result.etag != metadata.etag ||
-                             result.fileNameView != metadata.fileNameView ||
-                             result.date != metadata.date ||
-                             result.permissions != metadata.permissions ||
-                             result.hasPreview != metadata.hasPreview ||
-                             result.note != metadata.note ||
-                             result.lock != metadata.lock ||
-                             result.shareType != metadata.shareType ||
-                             result.sharePermissionsCloudMesh != metadata.sharePermissionsCloudMesh ||
-                             result.sharePermissionsCollaborationServices != metadata.sharePermissionsCollaborationServices ||
-                             result.favorite != metadata.favorite ||
-                             result.tags != metadata.tags) {
-                            ocIdsUdate.append(metadata.ocId)
-                            realm.add(tableMetadata.init(value: metadata), update: .all)
-                        } else if result.status == NCGlobal.shared.metadataStatusNormal && addCompareLivePhoto && result.livePhoto != metadata.livePhoto {
-                            ocIdsUdate.append(metadata.ocId)
-                            realm.add(tableMetadata.init(value: metadata), update: .all)
-                        }
-                    } else {
-                        // new
-                        ocIdsUdate.append(metadata.ocId)
-                        realm.add(tableMetadata.init(value: metadata), update: .all)
-                    }
-
-                    if metadata.directory && !ocIdsUdate.contains(metadata.ocId) {
-                        let table = realm.objects(tableDirectory.self).filter(NSPredicate(format: "ocId == %@", metadata.ocId)).first
-                        if table?.etag != metadata.etag {
-                            ocIdsUdate.append(metadata.ocId)
-                        }
-                    }
-
-                    // Local
-                    if !metadata.directory && (addExistsInLocal || addCompareEtagLocal) {
-                        let localFile = realm.objects(tableLocalFile.self).filter(NSPredicate(format: "ocId == %@", metadata.ocId)).first
-                        if addCompareEtagLocal && localFile != nil && localFile?.etag != metadata.etag {
-                            ocIdsLocalUdate.append(metadata.ocId)
-                        }
-                        if addExistsInLocal && (localFile == nil || localFile?.etag != metadata.etag) && !ocIdsLocalUdate.contains(metadata.ocId) {
-                            ocIdsLocalUdate.append(metadata.ocId)
-                        }
-                    }
-                }
-            }
-
-            for ocId in ocIdsUdate {
-                if let result = realm.objects(tableMetadata.self).filter(NSPredicate(format: "ocId == %@", ocId)).first {
-                    metadatasUpdate.append(tableMetadata.init(value: result))
-                }
-            }
-
-            for ocId in ocIdsLocalUdate {
-                if let result = realm.objects(tableMetadata.self).filter(NSPredicate(format: "ocId == %@", ocId)).first {
-                    metadatasLocalUpdate.append(tableMetadata.init(value: result))
-                }
-            }
-
-            return (metadatasUpdate, metadatasLocalUpdate, metadatasDelete)
-        } catch let error {
-            NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
-        }
-
-        return ([], [], [])
     }
 
     func setMetadataSession(ocId: String, newFileName: String? = nil, session: String?, sessionError: String?, sessionSelector: String?, sessionTaskIdentifier: Int?, status: Int?, etag: String? = nil, errorCode: Int?) {
@@ -743,6 +620,19 @@ extension NCManageDatabase {
         }
     }
 
+    func setMetadataLivePhotoByServer(account: String, ocId: String) {
+
+        do {
+            let realm = try Realm()
+            try realm.write {
+                let result = realm.objects(tableMetadata.self).filter("account == %@ AND ocId == %@", account, ocId).first
+                result?.isFlaggedAsLivePhotoByServer = true
+            }
+        } catch let error {
+            NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
+        }
+    }
+
     func updateMetadatasFavorite(account: String, metadatas: [tableMetadata]) {
 
         do {
@@ -827,6 +717,22 @@ extension NCManageDatabase {
         }
 
         return []
+    }
+
+    func getResultsMetadatas(predicate: NSPredicate, sorted: String? = nil, ascending: Bool = false) -> Results<tableMetadata>? {
+
+        do {
+            let realm = try Realm()
+            if let sorted {
+                return realm.objects(tableMetadata.self).filter(predicate).sorted(byKeyPath: sorted, ascending: ascending)
+            } else {
+                return realm.objects(tableMetadata.self).filter(predicate)
+            }
+        } catch let error as NSError {
+            NextcloudKit.shared.nkCommonInstance.writeLog("Could not access database: \(error)")
+        }
+
+        return nil
     }
 
     func getAdvancedMetadatas(predicate: NSPredicate, page: Int = 0, limit: Int = 0, sorted: String, ascending: Bool) -> [tableMetadata] {
@@ -1001,7 +907,6 @@ extension NCManageDatabase {
 
         do {
             let realm = try Realm()
-            realm.refresh()
             let results = realm.objects(tableMetadata.self).filter("account == %@ AND assetLocalIdentifier != '' AND deleteAssetLocalIdentifier == true", account)
             for result in results {
                 assetLocalIdentifiers.append(result.assetLocalIdentifier)
@@ -1017,7 +922,6 @@ extension NCManageDatabase {
 
         do {
             let realm = try Realm()
-            realm.refresh()
             try realm.write {
                 let results = realm.objects(tableMetadata.self).filter("account == %@ AND assetLocalIdentifier IN %@", account, assetLocalIdentifiers)
                 for result in results {
@@ -1030,95 +934,19 @@ extension NCManageDatabase {
         }
     }
 
-    func isMetadataLivePhoto(metadata: tableMetadata) -> tableMetadata? {
-
-        guard metadata.livePhoto, NCKeychain().livePhoto, metadata.livePhotoFile.isEmpty else { return nil }
-
-        return getMetadataLivePhoto(metadata: metadata)
-    }
-
     func getMetadataLivePhoto(metadata: tableMetadata) -> tableMetadata? {
 
-        guard metadata.livePhoto, NCKeychain().livePhoto else { return nil }
-        var classFile = metadata.classFile
-        var fileName = (metadata.fileNameView as NSString).deletingPathExtension
+        guard metadata.isLivePhoto else { return nil }
 
-        if !metadata.livePhotoFile.isEmpty {
-
-            do {
-                let realm = try Realm()
-                realm.refresh()
-                guard let result = realm.objects(tableMetadata.self).filter(NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView == %@", metadata.account, metadata.serverUrl, metadata.livePhotoFile)).first else { return nil }
-                return tableMetadata.init(value: result)
-            } catch let error as NSError {
-                NextcloudKit.shared.nkCommonInstance.writeLog("Could not access database: \(error)")
-            }
-
-        } else {
-
-            if classFile == NKCommon.TypeClassFile.image.rawValue {
-                classFile = NKCommon.TypeClassFile.video.rawValue
-                fileName = fileName + ".mov"
-            } else {
-                classFile = NKCommon.TypeClassFile.image.rawValue
-                fileName = fileName + ".jpg"
-            }
-
-            do {
-                let realm = try Realm()
-                realm.refresh()
-                guard let result = realm.objects(tableMetadata.self).filter(NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView CONTAINS[cd] %@ AND ocId != %@ AND classFile == %@", metadata.account, metadata.serverUrl, fileName, metadata.ocId, classFile)).first else { return nil }
-                return tableMetadata.init(value: result)
-            } catch let error as NSError {
-                NextcloudKit.shared.nkCommonInstance.writeLog("Could not access database: \(error)")
-            }
+        do {
+            let realm = try Realm()
+            guard let result = realm.objects(tableMetadata.self).filter(NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileName == %@", metadata.account, metadata.serverUrl, metadata.livePhotoFile)).first else { return nil }
+            return tableMetadata.init(value: result)
+        } catch let error as NSError {
+            NextcloudKit.shared.nkCommonInstance.writeLog("Could not access database: \(error)")
         }
 
         return nil
-    }
-
-    func getMetadatasMedia(predicate: NSPredicate, livePhoto: Bool) -> [tableMetadata] {
-
-        var metadatas = [tableMetadata]()
-
-        do {
-            var metadatasResults = [tableMetadata]()
-            let realm = try Realm()
-            let sortProperties = [SortDescriptor(keyPath: "serverUrl", ascending: false), SortDescriptor(keyPath: "fileNameView", ascending: false)]
-            for result in realm.objects(tableMetadata.self).filter(predicate).sorted(by: sortProperties) { metadatasResults.append(tableMetadata(value: result))
-            }
-            if livePhoto {
-                for index in metadatasResults.indices {
-                    let metadata = metadatasResults[index]
-                    if index < metadatasResults.count - 1, metadata.fileNoExtension == metadatasResults[index + 1].fileNoExtension {
-                        if !metadata.livePhoto {
-                            metadata.livePhoto = true
-                        }
-                        if !metadatasResults[index + 1].livePhoto {
-                            metadatasResults[index + 1].livePhoto = true
-                        }
-                        let metadata1 = metadatasResults[index + 1]
-                        let metadata2 = metadatasResults[index]
-                        NCLivePhoto().setLivePhoto(metadata1: metadata1, metadata2: metadata2)
-                    }
-                    if metadata.livePhoto {
-                        if metadata.classFile == NKCommon.TypeClassFile.image.rawValue {
-                            metadatas.append(metadata)
-                        }
-                        continue
-                    } else {
-                        metadatas.append(metadata)
-                    }
-                }
-            } else {
-                metadatas = metadatasResults
-            }
-        } catch let error {
-            NextcloudKit.shared.nkCommonInstance.writeLog("Could not access to database: \(error)")
-        }
-
-        metadatas = metadatas.sorted(by: {($0.date as Date) > ($1.date as Date)})
-        return metadatas
     }
 
     func isMetadataShareOrMounted(metadata: tableMetadata, metadataFolder: tableMetadata?) -> Bool {
@@ -1238,5 +1066,35 @@ extension NCManageDatabase {
         } catch let error as NSError {
             NextcloudKit.shared.nkCommonInstance.writeLog("Could not access database: \(error)")
         }
+    }
+
+    @discardableResult
+    func updateMetadatas(_ metadatas: [tableMetadata], predicate: NSPredicate) -> (metadatasChangedCount: Int, metadatasChanged: Bool) {
+
+        var metadatasChangedCount: Int = 0
+        var metadatasChanged: Bool = false
+
+        do {
+            let realm = try Realm()
+            try realm.write {
+                let results = realm.objects(tableMetadata.self).filter(predicate)
+                metadatasChangedCount = metadatas.count - results.count
+                for metadata in metadatas {
+                    if let result = results.filter({ $0.ocId == metadata.ocId }).first,
+                       metadata.isEqual(result) { } else {
+                        metadatasChanged = true
+                        break
+                    }
+                }
+                if metadatasChangedCount != 0 || metadatasChanged {
+                    realm.delete(results)
+                    realm.add(metadatas, update: .all)
+                }
+            }
+        } catch let error {
+            NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
+        }
+
+        return (metadatasChangedCount, metadatasChanged)
     }
 }

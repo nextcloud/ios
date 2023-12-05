@@ -678,7 +678,7 @@ extension NCViewerMediaPage: UIGestureRecognizerDelegate {
     // MARK: - Live Photo
     @objc func didLongpressGestureEvent(gestureRecognizer: UITapGestureRecognizer) {
 
-        if !currentViewController.metadata.livePhoto || currentViewController.detailView.isShown { return }
+        if !currentViewController.metadata.isLivePhoto || currentViewController.detailView.isShown { return }
 
         if gestureRecognizer.state == .began {
             let fileName = (currentViewController.metadata.fileNameView as NSString).deletingPathExtension + ".mov"

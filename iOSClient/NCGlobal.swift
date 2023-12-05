@@ -104,7 +104,6 @@ class NCGlobal: NSObject {
     let nextcloudVersion26: Int                     = 26
     let nextcloudVersion27: Int                     = 27
     let nextcloudVersion28: Int                     = 28
-    let nextcloudVersion29: Int                     = 29
 
     // Nextcloud unsupported
     //
@@ -475,6 +474,9 @@ class NCGlobal: NSObject {
     @objc var capabilityUserStatusEnabled: Bool                 = false
     var capabilityExternalSites: Bool                           = false
     var capabilityGroupfoldersEnabled: Bool                     = false // NC27
+    var isLivePhotoServerAvailable: Bool {                              // NC28
+        return capabilityServerVersionMajor >= nextcloudVersion28
+    }
 
     // MORE NEXTCLOUD APPS
     let talkSchemeUrl                                           = "nextcloudtalk://"
