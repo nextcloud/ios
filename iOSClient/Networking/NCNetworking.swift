@@ -821,13 +821,11 @@ class NCNetworking: NSObject, NKCommonDelegate {
         guard NCGlobal.shared.isLivePhotoServerAvailable,
               let appDelegate = (UIApplication.shared.delegate as? AppDelegate) else { return }
 
-        if let results = NCManageDatabase.shared.getResultsMetadatas(predicate: NSPredicate(format: "account == '\(account)' AND isFlaggedAsLivePhotoByServer == false AND livePhotoFile != ''")) {
+        if let results = NCManageDatabase.shared.getResultsMetadatas(predicate: NSPredicate(format: "account == '\(account)' AND isFlaggedAsLivePhotoByServer == false AND livePhotoFile != ''"), sorted: "date") {
 
             for result in results {
                 let serverUrlfileNamePath = result.urlBase + result.path + result.fileName
-
                 for case let operation as NCOperationConvertLivePhoto in appDelegate.convertLivePhotoQueue.operations where operation.serverUrlfileNamePath == serverUrlfileNamePath { continue }
-
                 appDelegate.convertLivePhotoQueue.addOperation(NCOperationConvertLivePhoto(serverUrlfileNamePath: serverUrlfileNamePath, livePhotoFile: result.livePhotoFile, account: result.account, ocId: result.ocId))
             }
         }
@@ -1841,9 +1839,10 @@ class NCOperationConvertLivePhoto: ConcurrentOperation {
         NextcloudKit.shared.setLivephoto(serverUrlfileNamePath: serverUrlfileNamePath, livePhotoFile: livePhotoFile) { _, error in
             if error == .success {
                 NCManageDatabase.shared.setMetadataLivePhotoByServer(account: self.account, ocId: self.ocId)
+            } else {
+                print("Convert LivePhoto with error \(error.errorCode)")
             }
             self.finish()
-            print("Convert LivePhoto with error \(error.errorCode)")
         }
     }
 }

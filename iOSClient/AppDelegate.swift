@@ -286,6 +286,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         NCNetworking.shared.cancelDownloadTasks()
         presentPasscode { }
 
+        NCNetworking.shared.convertLivePhoto(account: account)
+
         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterApplicationDidEnterBackground)
     }
 
@@ -377,6 +379,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                 NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Processing task upload process with \(items) uploads")
                 task.setTaskCompleted(success: true)
                 self.isAppProcessing = false
+            }
+            if items == 0 {
+                NCNetworking.shared.convertLivePhoto(account: self.account)
             }
         }
     }
