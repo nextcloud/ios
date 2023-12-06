@@ -71,7 +71,20 @@ import RealmSwift
         NotificationCenter.default.addObserver(self, selector: #selector(userChanged(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeUser), object: nil)
 
         if let metadatas = self.cache.initialMetadatas() {
-            DispatchQueue.main.async { self.metadatas = Array(metadatas.map { tableMetadata.init(value: $0) }) }
+//            @ThreadSafe var metadatasRef = self.cache.initialMetadatas()
+//
+//            // Pass the reference to a background thread
+//            DispatchQueue(label: "background", autoreleaseFrequency: .workItem).async {
+//                let realm = try! Realm()
+//                try! realm.write {
+//                    // Resolve within the transaction to ensure you get the
+//                    // latest changes from other threads. If the person
+//                    // object was deleted, personRef will be nil.
+//                    guard let metadatas = metadatasRef else {
+//                        DispatchQueue.main.async { self.metadatas = Array()}
+//                    }
+//                }
+//            }
         }
 
         Task {
@@ -323,11 +336,17 @@ extension NCMediaViewModel {
             predicate = NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND classFile == %@ AND NOT (session CONTAINS[c] 'upload')", account, startServerUrl, NKCommon.TypeClassFile.video.rawValue)
         }
 
-        DispatchQueue.global(qos: .background).async {
+
+
+//        DispatchQueue.global(qos: .background).async {
             if let metadatas = self.cache.getMediaMetadatas(account: self.account, predicate: self.predicate) {
+                let realm = try! Realm()
+
+                let metadatasRef = ThreadSafeReference(to: metadatas)
+                let metadatas = realm.resolve(metadatasRef)
                 DispatchQueue.main.async { self.metadatas = Array(metadatas.map { tableMetadata.init(value: $0) }) }
             }
-        }
+//        }
     }
 
     private func loadOldMedia(value: Int = -30, limit: Int = 300) {
