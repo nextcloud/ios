@@ -71,7 +71,7 @@ import RealmSwift
         NotificationCenter.default.addObserver(self, selector: #selector(userChanged(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeUser), object: nil)
 
         if let metadatas = self.cache.initialMetadatas() {
-            self.metadatas = Array(metadatas.map { tableMetadata.init(value: $0) })
+            DispatchQueue.main.async { self.metadatas = Array(metadatas.map { tableMetadata.init(value: $0) }) }
         }
 
         Task {
@@ -410,10 +410,10 @@ extension NCMediaViewModel {
     }
 
     private func updateMedia(account: String, lessDate: Date, greaterDate: Date, limit: Int = 200, timeout: TimeInterval = 60, predicateDB: NSPredicate) async -> MediaResult {
-
         guard let mediaPath = NCManageDatabase.shared.getActiveAccount()?.mediaPath else {
             return MediaResult(account: account, lessDate: lessDate, greaterDate: greaterDate, metadatas: [], changedItems: 0, error: NKError())
         }
+
         let options = NKRequestOptions(timeout: timeout, queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
 
         let results = await NextcloudKit.shared.searchMedia(path: mediaPath, lessDate: lessDate, greaterDate: greaterDate, elementDate: "d:getlastmodified/", limit: limit, showHiddenFiles: NCKeychain().showHiddenFiles, includeHiddenFiles: [], options: options)
@@ -427,9 +427,9 @@ extension NCMediaViewModel {
 
                     if result.metadatasChangedCount != 0 || result.metadatasChanged {
                         continuation.resume(returning: MediaResult(account: account, lessDate: lessDate, greaterDate: greaterDate, metadatas: metadatas, changedItems: result.metadatasChangedCount, error: results.error))
+                    } else {
+                        continuation.resume(returning: MediaResult(account: account, lessDate: lessDate, greaterDate: greaterDate, metadatas: [], changedItems: 0, error: results.error))
                     }
-
-                    continuation.resume(returning: MediaResult(account: account, lessDate: lessDate, greaterDate: greaterDate, metadatas: [], changedItems: 0, error: results.error))
                 }
             }
         }
