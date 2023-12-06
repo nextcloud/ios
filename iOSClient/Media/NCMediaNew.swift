@@ -43,18 +43,18 @@ struct NCMediaNew: View {
 
     var body: some View {
 //        let _ = Self._printChanges()
-        VStack {
-            Image("media")
-                .resizable()
-                .scaledToFit()
-                .frame(width: 100, alignment: .center)
-                .ignoresSafeArea()
-
-            Text("Test")
-        }
-
-
         ZStack(alignment: .top) {
+            VStack {
+                Image(systemName: "photo.on.rectangle.fill")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 130, alignment: .center)
+                    .ignoresSafeArea()
+
+                Text(NSLocalizedString("_new_photos_and_videos_will_appear_here", comment: ""))
+            }
+            .padding(.top, 150)
+
             ScrollViewReader { proxy in
                 NCMediaScrollView(metadatas: metadatas.chunked(into: columnCountStages[columnCountStagesIndex]), isInSelectMode: $isInSelectMode, selectedMetadatas: $selectedMetadatas, shouldScrollToTop: $shouldScrollToTop, title: $title, shouldShowPaginationLoading: $hasOldMedia, proxy: proxy) { tappedThumbnail, isSelected in
                     if isInSelectMode, isSelected {

@@ -336,17 +336,15 @@ extension NCMediaViewModel {
             predicate = NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND classFile == %@ AND NOT (session CONTAINS[c] 'upload')", account, startServerUrl, NKCommon.TypeClassFile.video.rawValue)
         }
 
+        if let metadatas = self.cache.getMediaMetadatas(account: self.account, predicate: self.predicate) {
+            var metadatasRef = NCManageDatabase.shared.getThreadSafeReference(ofRealmObject: metadatas)
 
-
-//        DispatchQueue.global(qos: .background).async {
-            if let metadatas = self.cache.getMediaMetadatas(account: self.account, predicate: self.predicate) {
-                let realm = try! Realm()
-
-                let metadatasRef = ThreadSafeReference(to: metadatas)
-                let metadatas = realm.resolve(metadatasRef)
-                DispatchQueue.main.async { self.metadatas = Array(metadatas.map { tableMetadata.init(value: $0) }) }
+            DispatchQueue.global(qos: .background).async {
+                if let metadatas = NCManageDatabase.shared.resolveThreadSafeReference(of: metadatasRef) {
+                    self.metadatas = Array(metadatas.map { tableMetadata.init(value: $0) })
+                }
             }
-//        }
+        }
     }
 
     private func loadOldMedia(value: Int = -30, limit: Int = 300) {

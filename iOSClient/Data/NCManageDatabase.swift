@@ -271,16 +271,14 @@ class NCManageDatabase: NSObject {
         }
     }
 
-    func getThreadConfined(_ object: Object) -> Any {
-
+    func getThreadSafeReference<T>(ofRealmObject object: T) -> ThreadSafeReference<T>  {
         return ThreadSafeReference(to: object)
     }
 
-    func putThreadConfined(_ tableRef: ThreadSafeReference<Object>) -> Object? {
-
+    func resolveThreadSafeReference<T>(of ref: ThreadSafeReference<T>) -> T? {
         do {
             let realm = try Realm()
-            return realm.resolve(tableRef)
+            return realm.resolve(ref)
         } catch let error as NSError {
             NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
         }
