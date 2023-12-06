@@ -44,16 +44,9 @@ struct NCMediaNew: View {
     var body: some View {
 //        let _ = Self._printChanges()
         ZStack(alignment: .top) {
-            VStack {
-                Image(systemName: "photo.on.rectangle.fill")
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: 130, alignment: .center)
-                    .ignoresSafeArea()
-
-                Text(NSLocalizedString("_new_photos_and_videos_will_appear_here", comment: ""))
+            if metadatas.isEmpty {
+                EmptyMediaView()
             }
-            .padding(.top, 150)
 
             ScrollViewReader { proxy in
                 NCMediaScrollView(metadatas: metadatas.chunked(into: columnCountStages[columnCountStagesIndex]), isInSelectMode: $isInSelectMode, selectedMetadatas: $selectedMetadatas, shouldScrollToTop: $shouldScrollToTop, title: $title, shouldShowPaginationLoading: $hasOldMedia, proxy: proxy) { tappedThumbnail, isSelected in
@@ -424,5 +417,27 @@ struct ScrollStatusByIntrospectModifier: ViewModifier {
             .introspect(.scrollView, on: .iOS(.v15...)) { scrollView in
                 scrollView.delegate = delegate
             }
+    }
+}
+
+struct EmptyMediaView: View {
+    var body: some View {
+        VStack {
+            Image(systemName: "photo.on.rectangle.fill")
+                .resizable()
+                .scaledToFit()
+                .frame(width: 130)
+                .foregroundStyle(.gray)
+                .ignoresSafeArea()
+
+            Text(NSLocalizedString("_no_photos_or_videos_yet", comment: ""))
+                .font(.system(size: 20, weight: .bold))
+                .padding(.bottom, 2)
+
+            Text(NSLocalizedString("_new_photos_and_videos_will_appear_here", comment: ""))
+                .font(.system(size: 14))
+                .foregroundStyle(.gray)
+        }
+        .padding(.top, 250)
     }
 }

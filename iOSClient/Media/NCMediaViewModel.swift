@@ -71,20 +71,7 @@ import RealmSwift
         NotificationCenter.default.addObserver(self, selector: #selector(userChanged(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeUser), object: nil)
 
         if let metadatas = self.cache.initialMetadatas() {
-//            @ThreadSafe var metadatasRef = self.cache.initialMetadatas()
-//
-//            // Pass the reference to a background thread
-//            DispatchQueue(label: "background", autoreleaseFrequency: .workItem).async {
-//                let realm = try! Realm()
-//                try! realm.write {
-//                    // Resolve within the transaction to ensure you get the
-//                    // latest changes from other threads. If the person
-//                    // object was deleted, personRef will be nil.
-//                    guard let metadatas = metadatasRef else {
-//                        DispatchQueue.main.async { self.metadatas = Array()}
-//                    }
-//                }
-//            }
+            DispatchQueue.main.async { self.metadatas = Array(metadatas.map { tableMetadata.init(value: $0) }) }
         }
 
         Task {
@@ -337,10 +324,14 @@ extension NCMediaViewModel {
         }
 
         if let metadatas = self.cache.getMediaMetadatas(account: self.account, predicate: self.predicate) {
-            var metadatasRef = NCManageDatabase.shared.getThreadSafeReference(ofRealmObject: metadatas)
+            // Create reference to current thread
+            let metadatasRef = NCManageDatabase.shared.getThreadSafeReference(ofRealmObject: metadatas)
 
-            DispatchQueue.global(qos: .background).async {
+            DispatchQueue.main.async {
+                // Check if reference is safe to be read on new thread
                 if let metadatas = NCManageDatabase.shared.resolveThreadSafeReference(of: metadatasRef) {
+
+                    // TODO: Remove copying of whole array and use Realm Results<> instead. This will lead to pointer instead of making a whole new array and will be faster.
                     self.metadatas = Array(metadatas.map { tableMetadata.init(value: $0) })
                 }
             }
