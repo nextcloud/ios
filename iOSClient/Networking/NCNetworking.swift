@@ -1590,16 +1590,16 @@ class NCNetworking: NSObject, NKCommonDelegate {
             }
 #endif
         } else {
-            if metadataLive == nil {
-                renameMetadataPlain(metadata, fileNameNew: fileNameNew, indexPath: indexPath, completion: completion)
-            } else {
-                renameMetadataPlain(metadataLive!, fileNameNew: fileNameNewLive, indexPath: indexPath) { error in
+            if let metadataLive, !metadata.isFlaggedAsLivePhotoByServer {
+                renameMetadataPlain(metadataLive, fileNameNew: fileNameNewLive, indexPath: indexPath) { error in
                     if error == .success {
                         self.renameMetadataPlain(metadata, fileNameNew: fileNameNew, indexPath: indexPath, completion: completion)
                     } else {
                         completion(error)
                     }
                 }
+            } else {
+                renameMetadataPlain(metadata, fileNameNew: fileNameNew, indexPath: indexPath, completion: completion)
             }
         }
     }
