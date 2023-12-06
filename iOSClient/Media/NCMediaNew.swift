@@ -43,6 +43,16 @@ struct NCMediaNew: View {
 
     var body: some View {
 //        let _ = Self._printChanges()
+        VStack {
+            Image("media")
+                .resizable()
+                .scaledToFit()
+                .frame(width: 100, alignment: .center)
+                .ignoresSafeArea()
+
+            Text("Test")
+        }
+
 
         ZStack(alignment: .top) {
             ScrollViewReader { proxy in
