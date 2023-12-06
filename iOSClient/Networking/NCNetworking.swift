@@ -1456,7 +1456,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
             return NKError()
 #endif
         } else {
-            if let metadataLive = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata) {
+            if let metadataLive = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata), !metadata.isFlaggedAsLivePhotoByServer {
                 let error = await deleteMetadataPlain(metadataLive)
                 if error == .success {
                     return await deleteMetadataPlain(metadata)
