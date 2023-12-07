@@ -43,8 +43,8 @@ struct NCMediaNew: View {
     @State private var hasOldMedia = true
 
     @State private var showEmptyView = false
-    @State private var topMostVisibleMetadata: tableMetadata?
-    @State private var bottomMostVisibleMetadata: tableMetadata?
+    @State private var topMostVisibleMetadataDate: Date?
+    @State private var bottomMostVisibleMetadataDate: Date?
 
     var body: some View {
         let _ = Self._printChanges()
@@ -54,7 +54,7 @@ struct NCMediaNew: View {
             }
 
             ScrollViewReader { proxy in
-                NCMediaScrollView(metadatas: metadatas.chunked(into: columnCountStages[columnCountStagesIndex]), isInSelectMode: $isInSelectMode, selectedMetadatas: $selectedMetadatas, shouldScrollToTop: $shouldScrollToTop, title: $title, shouldShowPaginationLoading: $hasOldMedia, topMostVisibleMetadata: $topMostVisibleMetadata, bottomMostVisibleMetadata: $bottomMostVisibleMetadata, proxy: proxy) { tappedThumbnail, isSelected in
+                NCMediaScrollView(metadatas: metadatas.chunked(into: columnCountStages[columnCountStagesIndex]), isInSelectMode: $isInSelectMode, selectedMetadatas: $selectedMetadatas, shouldScrollToTop: $shouldScrollToTop, title: $title, shouldShowPaginationLoading: $hasOldMedia, topMostVisibleMetadataDate: $topMostVisibleMetadataDate, bottomMostVisibleMetadataDate: $bottomMostVisibleMetadataDate, proxy: proxy) { tappedThumbnail, isSelected in
                     if isInSelectMode, isSelected {
                         selectedMetadatas.append(tappedThumbnail.metadata)
                     } else {
@@ -145,10 +145,14 @@ struct NCMediaNew: View {
         }
         .onChange(of: vm.shouldLoadNewMediaFromToVisibleMedia) { newValue in
             if newValue {
+                guard let topMostVisibleMetadataDate, let bottomMostVisibleMetadataDate else { return }
+                
+                let fromDate = min(topMostVisibleMetadataDate, bottomMostVisibleMetadataDate)
+                let toDate = max(topMostVisibleMetadataDate, bottomMostVisibleMetadataDate)
 //                Task {
 //                    await vm.loadNewMedia(from: (topMostVisibleMetadata?.date) as Date?, to: (bottomMostVisibleMetadata?.date) as Date?)
 //                    await vm.loadNewMedia(from: (bottomMostVisibleMetadata?.date) as Date?, to: (topMostVisibleMetadata?.date) as Date?)
-                    vm.searchMediaUI(from: (bottomMostVisibleMetadata?.date as? Date), to: (topMostVisibleMetadata?.date as? Date))
+                    vm.searchMediaUI(from: fromDate, to: toDate)
                     vm.shouldLoadNewMediaFromToVisibleMedia = false
 //                }
             }

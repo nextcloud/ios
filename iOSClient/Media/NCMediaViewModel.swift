@@ -325,7 +325,6 @@ extension NCMediaViewModel {
         let firstMetadataDate = metadatas.first?.date as? Date
         let lastMetadataDate = metadatas.last?.date as? Date
 
-        // first date
         if toDate == firstMetadataDate {
             finalFutureDate = Date.distantFuture
         } else {
@@ -335,7 +334,7 @@ extension NCMediaViewModel {
                 finalFutureDate = Date.distantFuture
             }
         }
-        // last date
+
         if fromDate == lastMetadataDate {
             finalPastDate = Date.distantPast
         } else {
@@ -347,6 +346,9 @@ extension NCMediaViewModel {
         }
 
         if let finalFutureDate, let finalPastDate {
+            print("From: \(NCUtility().getTitleFromDate(finalPastDate))")
+            print("To: \(NCUtility().getTitleFromDate(finalFutureDate))")
+
             Task {
                 let results = await updateMedia(account: appDelegate.account, lessDate: finalFutureDate, greaterDate: finalPastDate, predicateDB: self.getPredicate(true))
                 print("Media results changed items: \(results.changedItems)")

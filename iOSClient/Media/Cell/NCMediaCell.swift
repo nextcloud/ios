@@ -40,7 +40,7 @@ struct NCMediaCell: View {
                 image
             }
 
-//            Text(thumbnail.metadata.fileName).foregroundStyle(.white).background(.black)
+            Text(NCUtility().getTitleFromDate(thumbnail.metadata.date as Date)).foregroundStyle(.white).background(.black)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .overlay(alignment: .bottomLeading) {
