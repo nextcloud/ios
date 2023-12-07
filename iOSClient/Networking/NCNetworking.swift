@@ -802,15 +802,19 @@ class NCNetworking: NSObject, NKCommonDelegate {
 
         Task {
             let serverUrlfileNamePath = metadata.urlBase + metadata.path + metadata.livePhotoFile
-            var results = await NextcloudKit.shared.setLivephoto(serverUrlfileNamePath: serverUrlfileNamePath, livePhotoFile: metadata1.livePhotoFile)
+            var livePhotoFile = metadata1.livePhotoFile
+            // var livePhotoFile = metadata.fileId
+            var results = await NextcloudKit.shared.setLivephoto(serverUrlfileNamePath: serverUrlfileNamePath, livePhotoFile: livePhotoFile)
             if results.error == .success {
-                NCManageDatabase.shared.setMetadataLivePhotoByServer(account: metadata.account, ocId: metadata.ocId)
+                NCManageDatabase.shared.setMetadataLivePhotoFile(account: metadata.account, ocId: metadata.ocId, livePhotoFile: livePhotoFile)
             }
 
             let serverUrlfileNamePath1 = metadata1.urlBase + metadata1.path + metadata1.livePhotoFile
-            results = await NextcloudKit.shared.setLivephoto(serverUrlfileNamePath: serverUrlfileNamePath1, livePhotoFile: metadata.livePhotoFile)
+            livePhotoFile = metadata.livePhotoFile
+            // livePhotoFile = metadata1.fileId
+            results = await NextcloudKit.shared.setLivephoto(serverUrlfileNamePath: serverUrlfileNamePath1, livePhotoFile: livePhotoFile)
             if results.error == .success {
-                NCManageDatabase.shared.setMetadataLivePhotoByServer(account: metadata1.account, ocId: metadata1.ocId)
+                NCManageDatabase.shared.setMetadataLivePhotoFile(account: metadata1.account, ocId: metadata1.ocId, livePhotoFile: livePhotoFile)
             }
         }
     }
@@ -1838,7 +1842,7 @@ class NCOperationConvertLivePhoto: ConcurrentOperation {
         guard !isCancelled else { return self.finish() }
         NextcloudKit.shared.setLivephoto(serverUrlfileNamePath: serverUrlfileNamePath, livePhotoFile: livePhotoFile) { _, error in
             if error == .success {
-                NCManageDatabase.shared.setMetadataLivePhotoByServer(account: self.account, ocId: self.ocId)
+                NCManageDatabase.shared.setMetadataLivePhotoFile(account: self.account, ocId: self.ocId, livePhotoFile: self.livePhotoFile)
             } else {
                 print("Convert LivePhoto with error \(error.errorCode)")
             }

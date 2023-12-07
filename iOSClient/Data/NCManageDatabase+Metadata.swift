@@ -620,13 +620,14 @@ extension NCManageDatabase {
         }
     }
 
-    func setMetadataLivePhotoByServer(account: String, ocId: String) {
+    func setMetadataLivePhotoFile(account: String, ocId: String, livePhotoFile: String) {
 
         do {
             let realm = try Realm()
             try realm.write {
                 let result = realm.objects(tableMetadata.self).filter("account == %@ AND ocId == %@", account, ocId).first
                 result?.isFlaggedAsLivePhotoByServer = true
+                result?.livePhotoFile = livePhotoFile
             }
         } catch let error {
             NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
@@ -940,6 +941,7 @@ extension NCManageDatabase {
 
         do {
             let realm = try Realm()
+            // guard let result = realm.objects(tableMetadata.self).filter(NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileId == %@", metadata.account, metadata.serverUrl, metadata.livePhotoFile)).first else { return nil }
             guard let result = realm.objects(tableMetadata.self).filter(NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileName == %@", metadata.account, metadata.serverUrl, metadata.livePhotoFile)).first else { return nil }
             return tableMetadata.init(value: result)
         } catch let error as NSError {
