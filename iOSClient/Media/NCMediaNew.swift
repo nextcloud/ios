@@ -20,6 +20,7 @@ struct NCMediaNew: View {
     @State private var title = NSLocalizedString("_media_", comment: "")
     @State private var isScrolledToTop = true
     @State private var isScrolledToBottom = false
+    @State private var isScrollingStopped = true
     @State private var tappedMetadata = tableMetadata()
 
     @State private var loadingIndicatorColor = Color.gray
@@ -42,16 +43,18 @@ struct NCMediaNew: View {
     @State private var hasOldMedia = true
 
     @State private var showEmptyView = false
+    @State private var topMostVisibleMetadata: tableMetadata?
+    @State private var bottomMostVisibleMetadata: tableMetadata?
 
     var body: some View {
-//        let _ = Self._printChanges()
+        let _ = Self._printChanges()
         ZStack(alignment: .top) {
             if showEmptyView {
                 EmptyMediaView()
             }
 
             ScrollViewReader { proxy in
-                NCMediaScrollView(metadatas: metadatas.chunked(into: columnCountStages[columnCountStagesIndex]), isInSelectMode: $isInSelectMode, selectedMetadatas: $selectedMetadatas, shouldScrollToTop: $shouldScrollToTop, title: $title, shouldShowPaginationLoading: $hasOldMedia, proxy: proxy) { tappedThumbnail, isSelected in
+                NCMediaScrollView(metadatas: metadatas.chunked(into: columnCountStages[columnCountStagesIndex]), isInSelectMode: $isInSelectMode, selectedMetadatas: $selectedMetadatas, shouldScrollToTop: $shouldScrollToTop, title: $title, shouldShowPaginationLoading: $hasOldMedia, topMostVisibleMetadata: $topMostVisibleMetadata, bottomMostVisibleMetadata: $bottomMostVisibleMetadata, proxy: proxy) { tappedThumbnail, isSelected in
                     if isInSelectMode, isSelected {
                         selectedMetadatas.append(tappedThumbnail.metadata)
                     } else {
@@ -64,34 +67,13 @@ struct NCMediaNew: View {
                         NCViewer().view(viewController: parent, metadata: selectedMetadata, metadatas: vm.metadatas, imageIcon: tappedThumbnail.image)
                     }
                 } onCellContextMenuItemSelected: { thumbnail, selection in
-                    let selectedMetadata = thumbnail.metadata
-
-                    switch selection {
-                    case .addToFavorites:
-                        vm.addToFavorites(metadata: selectedMetadata)
-                    case .details:
-                        NCActionCenter.shared.openShare(viewController: parent, metadata: selectedMetadata, page: .activity)
-                    case .openIn:
-                        vm.openIn(metadata: selectedMetadata)
-                    case .saveToPhotos:
-                        vm.saveToPhotos(metadata: selectedMetadata)
-                    case .viewInFolder:
-                        vm.viewInFolder(metadata: selectedMetadata)
-                    case .modify:
-                        vm.modify(metadata: selectedMetadata)
-                    case .delete:
-                        vm.delete(metadatas: selectedMetadata)
-                    }
+                    onCellContentMenuItemSelected(thumbnail: thumbnail, selection: selection)
                 } shouldLoadMore: {
                     vm.loadMoreItems()
                 }
-                //                .onPreferenceChange(ScrollOffsetPreferenceKey.self) { value in
-                ////                    isScrolledToTop = value <= -20
-                ////                    isScrolledToBottom = scrollView.contentOffset.y >= (scrollView.contentSize.height - scrollView.frame.size.height)
-                //                }
                 .equatable()
                 .ignoresSafeArea(.all, edges: .horizontal)
-                .scrollStatusByIntrospect(isScrolledToTop: $isScrolledToTop, isScrolledToBottom: $isScrolledToBottom)
+                .scrollStatusByIntrospect(isScrolledToTop: $isScrolledToTop, isScrolledToBottom: $isScrolledToBottom, isScrollingStopped: $isScrollingStopped)
             }
 
             HStack {
@@ -120,59 +102,7 @@ struct NCMediaNew: View {
                         }
                 }
 
-                Menu {
-                    if isInSelectMode, !selectedMetadatas.isEmpty {
-                        Section {
-                            Button {
-                                vm.copyOrMoveMetadataInApp(metadatas: selectedMetadatas)
-                                cancelSelection()
-                            } label: {
-                                Label(NSLocalizedString("_move_selected_files_", comment: ""), systemImage: "arrow.up.right.square")
-                            }
-
-                            Button {
-                                vm.copyMetadata(metadatas: selectedMetadatas)
-                                cancelSelection()
-                            } label: {
-                                Label(NSLocalizedString("_copy_file_", comment: ""), systemImage: "doc.on.doc")
-                            }
-                        }
-                    } else {
-                        Section {
-                            Picker(NSLocalizedString("_media_view_options_", comment: ""), selection: $vm.filter) {
-                                Label(NSLocalizedString("_media_viewimage_show_", comment: ""), systemImage: "photo.fill").tag(Filter.onlyPhotos)
-
-                                Label(NSLocalizedString("_media_viewvideo_show_", comment: ""), systemImage: "video.fill").tag(Filter.onlyVideos)
-
-                                Text(NSLocalizedString("_media_show_all_", comment: "")).tag(Filter.all)
-                            }.pickerStyle(.menu)
-
-                            Button {
-                                selectMediaFolder()
-                            } label: {
-                                Label(NSLocalizedString("_select_media_folder_", comment: ""), systemImage: "folder")
-                            }
-                        }
-
-                        Section {
-                            Button(action: {
-                                if let tabBarController = vm.appDelegate?.window?.rootViewController as? UITabBarController {
-                                    NCDocumentPickerViewController(tabBarController: tabBarController, isViewerMedia: true, allowsMultipleSelection: false, viewController: parent)
-                                }
-                            }, label: {
-                                Label(NSLocalizedString("_play_from_files_", comment: ""), systemImage: "play.circle")
-                            })
-
-                            Button(action: {
-                                showPlayFromURLAlert = true
-                            }, label: {
-                                Label(NSLocalizedString("_play_from_url_", comment: ""), systemImage: "link")
-                            })
-                        }
-                    }
-                } label: {
-                    ToolbarCircularButton(imageSystemName: "ellipsis", color: $toolbarItemsColor)
-                }
+                ToolbarMenu(isInSelectMode: $isInSelectMode, selectedMetadatas: $selectedMetadatas, showPlayFromURLAlert: $showPlayFromURLAlert, toolbarItemsColor: $toolbarItemsColor)
             }
             .frame(maxWidth: .infinity)
             .padding([.horizontal, .top], 10)
@@ -204,10 +134,31 @@ struct NCMediaNew: View {
                 columnCountStages = [2, 3, 4]
             }
         }
+//        .onAppear {
+//            let helper = SelectorHelper(vm: vm)
+//            let timerSearchNewMedia = Timer.scheduledTimer(timeInterval: 20.0, target: helper, selector: #selector(helper.loadNewMedia), userInfo: nil, repeats: true)
+//
+//        }
         .onChange(of: vm.metadatas) { newValue in
             metadatas = newValue
             showEmptyView = metadatas.isEmpty
         }
+        .onChange(of: vm.shouldLoadNewMediaFromToVisibleMedia) { newValue in
+            if newValue {
+                Task {
+                    await vm.loadNewMedia(from: (topMostVisibleMetadata?.date) as Date?, to: (bottomMostVisibleMetadata?.date) as Date?)
+//                    await vm.loadNewMedia(from: (bottomMostVisibleMetadata?.date) as Date?, to: (topMostVisibleMetadata?.date) as Date?)
+                    vm.shouldLoadNewMediaFromToVisibleMedia = false
+                }
+            }
+//            vm.loadNewMedia(from: bottomMostVisibleMetadata?.date, to: topMostVisibleMetadata?.date)
+        }
+//        .onChange(of: topMostVisibleMetadata) { newValue in
+//            vm.topMostVisibleMetadata = newValue
+//        }
+//        .onChange(of: bottomMostVisibleMetadata) { newValue in
+//            vm.bottomMostVisibleMetadata = newValue
+//        }
         .onChange(of: isInSelectMode) { newValue in
             if newValue == false { selectedMetadatas.removeAll() }
         }
@@ -233,6 +184,14 @@ struct NCMediaNew: View {
             if newValue {
                 vm.loadMoreItems()
             }
+        }
+        .onChange(of: isScrollingStopped) { newValue in
+            if newValue {
+                vm.startLoadingNewMediaTimer()
+            }
+//            } else {
+//                vm.stopLoadingNewMediaTimer()
+//            }
         }
         .onChange(of: vm.hasOldMedia) { newValue in
             hasOldMedia = newValue
@@ -262,11 +221,128 @@ struct NCMediaNew: View {
                     columnCountChanged = false
                 })
         )
+        .environmentObject(vm)
+        .environmentObject(parent)
     }
 
     private func findClosestZoomIndex(value: Double) -> Int {
         let distanceArray = columnCountStages.map { abs(Double($0) - value) } // absolute difference between zoom stages and actual pinch zoom
         return distanceArray.indices.min(by: {distanceArray[$0] < distanceArray[$1]}) ?? 0 // return index of element that is "closest"
+    }
+
+    private func playVideoFromUrl() {
+        guard let metadata = vm.getMetadataFromUrl(playFromUrlString) else { return }
+        NCViewer().view(viewController: parent, metadata: metadata, metadatas: [metadata], imageIcon: nil)
+    }
+
+    private func cancelSelection() {
+        isInSelectMode = false
+        selectedMetadatas.removeAll()
+    }
+
+    private func onCellContentMenuItemSelected(thumbnail: ScaledThumbnail, selection: ContextMenuSelection) {
+        let selectedMetadata = thumbnail.metadata
+
+        switch selection {
+        case .addToFavorites:
+            vm.addToFavorites(metadata: selectedMetadata)
+        case .details:
+            NCActionCenter.shared.openShare(viewController: parent, metadata: selectedMetadata, page: .activity)
+        case .openIn:
+            vm.openIn(metadata: selectedMetadata)
+        case .saveToPhotos:
+            vm.saveToPhotos(metadata: selectedMetadata)
+        case .viewInFolder:
+            vm.viewInFolder(metadata: selectedMetadata)
+        case .modify:
+            vm.modify(metadata: selectedMetadata)
+        case .delete:
+            vm.delete(metadatas: selectedMetadata)
+        }
+    }
+
+//    class SelectorHelper: NSObject {
+//        let vm: NCMediaViewModel
+//
+//        init(vm: NCMediaViewModel) {
+//            self.vm = vm
+//        }
+//
+//        @objc func loadNewMedia() {
+//            Task {
+//                await vm.onRefresh()
+//            }
+//        }
+//    }
+}
+
+struct ToolbarMenu: View {
+    @EnvironmentObject var vm: NCMediaViewModel
+    @EnvironmentObject var parent: NCMediaUIKitWrapper
+    @Binding var isInSelectMode: Bool
+    @Binding var selectedMetadatas: [tableMetadata]
+    @Binding var showPlayFromURLAlert: Bool
+    @Binding var toolbarItemsColor: Color
+
+    var body: some View {
+        Menu {
+            if isInSelectMode, !selectedMetadatas.isEmpty {
+                Section {
+                    Button {
+                        vm.copyOrMoveMetadataInApp(metadatas: selectedMetadatas)
+                        cancelSelection()
+                    } label: {
+                        Label(NSLocalizedString("_move_selected_files_", comment: ""), systemImage: "arrow.up.right.square")
+                    }
+
+                    Button {
+                        vm.copyMetadata(metadatas: selectedMetadatas)
+                        cancelSelection()
+                    } label: {
+                        Label(NSLocalizedString("_copy_file_", comment: ""), systemImage: "doc.on.doc")
+                    }
+                }
+            } else {
+                Section {
+                    Picker(NSLocalizedString("_media_view_options_", comment: ""), selection: $vm.filter) {
+                        Label(NSLocalizedString("_media_viewimage_show_", comment: ""), systemImage: "photo.fill").tag(Filter.onlyPhotos)
+
+                        Label(NSLocalizedString("_media_viewvideo_show_", comment: ""), systemImage: "video.fill").tag(Filter.onlyVideos)
+
+                        Text(NSLocalizedString("_media_show_all_", comment: "")).tag(Filter.all)
+                    }.pickerStyle(.menu)
+
+                    Button {
+                        selectMediaFolder()
+                    } label: {
+                        Label(NSLocalizedString("_select_media_folder_", comment: ""), systemImage: "folder")
+                    }
+                }
+
+                Section {
+                    Button(action: {
+                        if let tabBarController = vm.appDelegate?.window?.rootViewController as? UITabBarController {
+                            NCDocumentPickerViewController(tabBarController: tabBarController, isViewerMedia: true, allowsMultipleSelection: false, viewController: parent)
+                        }
+                    }, label: {
+                        Label(NSLocalizedString("_play_from_files_", comment: ""), systemImage: "play.circle")
+                    })
+
+                    Button(action: {
+                        showPlayFromURLAlert = true
+                    }, label: {
+                        Label(NSLocalizedString("_play_from_url_", comment: ""), systemImage: "link")
+                    })
+                }
+            }
+        } label: {
+            ToolbarCircularButton(imageSystemName: "ellipsis", color: $toolbarItemsColor)
+        }
+    }
+
+    private func cancelSelection() {
+        isInSelectMode = false
+        selectedMetadatas.removeAll()
     }
 
     private func selectMediaFolder() {
@@ -279,16 +355,6 @@ struct NCMediaNew: View {
         viewController.type = "mediaFolder"
 
         parent.present(navigationController, animated: true, completion: nil)
-    }
-
-    private func playVideoFromUrl() {
-        guard let metadata = vm.getMetadataFromUrl(playFromUrlString) else { return }
-        NCViewer().view(viewController: parent, metadata: metadata, metadatas: [metadata], imageIcon: nil)
-    }
-
-    private func cancelSelection() {
-        isInSelectMode = false
-        selectedMetadatas.removeAll()
     }
 }
 
@@ -365,44 +431,28 @@ struct NCMediaNew_Previews: PreviewProvider {
 }
 
 final class ScrollDelegate: NSObject, UITableViewDelegate, UIScrollViewDelegate {
-    //    var isScrolling: Binding<Bool>?
     var isScrolledToTop: Binding<Bool>?
     var isScrolledToBottom: Binding<Bool>?
+    var isScrollingStopped: Binding<Bool>?
 
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         DispatchQueue.main.async {
+            self.isScrollingStopped?.wrappedValue = false
             self.isScrolledToTop?.wrappedValue = scrollView.contentOffset.y <= -20
             self.isScrolledToBottom?.wrappedValue = scrollView.contentOffset.y >= (scrollView.contentSize.height - scrollView.frame.size.height)
         }
-        //        if let isScrolling = isScrolling?.wrappedValue,!isScrolling {
-        //            self.isScrolling?.wrappedValue = true
-        //        }
     }
 
     func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
-        //        if let isScrolling = isScrolling?.wrappedValue, isScrolling {
-        //            self.isScrolling?.wrappedValue = false
-        //        }
-    }
-    //    // When the user slowly drags the scrollable control, decelerate is false after the user releases their finger, so the scrollViewDidEndDecelerating method is not called.
-    func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
-        if !decelerate {
-            //            if let isScrolling = isScrolling?.wrappedValue, isScrolling {
-            //                self.isScrolling?.wrappedValue = false
-            //            }
+        DispatchQueue.main.async {
+            self.isScrollingStopped?.wrappedValue = true
         }
     }
-
-    //    func scrollViewDidScrollToTop(_ scrollView: UIScrollView) {
-    //        if let isScrolledToTop = isScrolledToTop?.wrappedValue {
-    //            self.isScrolledToTop?.wrappedValue = isScrolledToTop
-    //        }
-    //    }
 }
 
 extension View {
-    func scrollStatusByIntrospect(isScrolledToTop: Binding<Bool>, isScrolledToBottom: Binding<Bool>) -> some View {
-        modifier(ScrollStatusByIntrospectModifier(isScrolledToTop: isScrolledToTop, isScrolledToBottom: isScrolledToBottom))
+    func scrollStatusByIntrospect(isScrolledToTop: Binding<Bool>, isScrolledToBottom: Binding<Bool>, isScrollingStopped: Binding<Bool>) -> some View {
+        modifier(ScrollStatusByIntrospectModifier(isScrolledToTop: isScrolledToTop, isScrolledToBottom: isScrolledToBottom, isScrollingStopped: isScrollingStopped))
     }
 }
 
@@ -410,12 +460,14 @@ struct ScrollStatusByIntrospectModifier: ViewModifier {
     @State var delegate = ScrollDelegate()
     @Binding var isScrolledToTop: Bool
     @Binding var isScrolledToBottom: Bool
+    @Binding var isScrollingStopped: Bool
 
     func body(content: Content) -> some View {
         content
             .onAppear {
                 self.delegate.isScrolledToTop = $isScrolledToTop
                 self.delegate.isScrolledToBottom = $isScrolledToBottom
+                self.delegate.isScrollingStopped = $isScrollingStopped
             }
             .introspect(.scrollView, on: .iOS(.v15...)) { scrollView in
                 scrollView.delegate = delegate

@@ -48,23 +48,32 @@ import RealmSwift
         return ThumbnailLRUCache(countLimit: limit)
     }()
     private var ocIdEtag: [String: String] = [:]
-    @ThreadSafe private var metadatas: Results<tableMetadata>?
 
     let showAllPredicateMediaString = "account == %@ AND serverUrl BEGINSWITH %@ AND (classFile == '\(NKCommon.TypeClassFile.image.rawValue)' OR classFile == '\(NKCommon.TypeClassFile.video.rawValue)') AND NOT (session CONTAINS[c] 'upload')"
     let showBothPredicateMediaString = "account == %@ AND serverUrl BEGINSWITH %@ AND (classFile == '\(NKCommon.TypeClassFile.image.rawValue)' OR classFile == '\(NKCommon.TypeClassFile.video.rawValue)') AND NOT (session CONTAINS[c] 'upload') AND NOT (livePhotoFile != '' AND classFile == '\(NKCommon.TypeClassFile.video.rawValue)')"
     let showOnlyPredicateMediaString = "account == %@ AND serverUrl BEGINSWITH %@ AND classFile == %@ AND NOT (session CONTAINS[c] 'upload') AND NOT (livePhotoFile != '' AND classFile == '\(NKCommon.TypeClassFile.video.rawValue)')"
 
+    @ThreadSafe private var _initialMetadatas: Results<tableMetadata>?
+
+    var initialMetadatas: Results<tableMetadata>? {
+        defer {
+            self._initialMetadatas = nil
+        }
+        return _initialMetadatas
+    }
+
     override private init() {}
 
     func createMediaCache(account: String) {
-
         guard account != self.account, !account.isEmpty else { return }
         self.account = account
 
         ocIdEtag.removeAll()
-        self.metadatas = nil
-        self.metadatas = getMediaMetadatas(account: account)
-        guard let metadatas = self.metadatas, !metadatas.isEmpty else { return }
+        _initialMetadatas = nil
+        _initialMetadatas = getMediaMetadatas(account: account)
+
+        guard let metadatas = _initialMetadatas, !metadatas.isEmpty else { return }
+
         let ext = ".preview.ico"
         let manager = FileManager.default
         let resourceKeys = Set<URLResourceKey>([.nameKey, .pathKey, .fileSizeKey, .creationDateKey])
@@ -120,10 +129,6 @@ import RealmSwift
         NextcloudKit.shared.nkCommonInstance.writeLog("--------- ThumbnailLRUCache image process ---------")
     }
 
-    func initialMetadatas() -> Results<tableMetadata>? {
-        defer { self.metadatas = nil }
-        return self.metadatas
-    }
 
     func getMediaImage(ocId: String, etag: String) -> ImageType? {
         return cache.value(forKey: ocId + etag)
@@ -134,8 +139,8 @@ import RealmSwift
     }
 
     @objc func clearMediaCache() {
-        self.ocIdEtag.removeAll()
-        self.metadatas = nil
+        ocIdEtag.removeAll()
+        _initialMetadatas = nil
         cache.removeAllValues()
     }
 

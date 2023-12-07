@@ -17,8 +17,12 @@ import RealmSwift
     @Published var isLoadingMetadata = true
     @Published var hasNewMedia = false
     @Published var hasOldMedia = true
+    @Published var shouldLoadNewMediaFromToVisibleMedia = false
 
-    internal let appDelegate = UIApplication.shared.delegate as? AppDelegate
+    var topMostVisibleMetadata: tableMetadata?
+    var bottomMostVisibleMetadata: tableMetadata?
+
+    let appDelegate = UIApplication.shared.delegate as? AppDelegate
 
     private let cache = NCImageCache.shared
 
@@ -30,7 +34,7 @@ import RealmSwift
     private var predicate: NSPredicate?
     private var cancellables: Set<AnyCancellable> = []
     private var timerSearchNewMedia: Timer?
-    private var timeIntervalSearchNewMedia: TimeInterval = 10.0
+    private var timeIntervalSearchNewMedia: TimeInterval = 5.0
 
     private var isLoadingNewMetadata = false {
         didSet {
@@ -70,7 +74,7 @@ import RealmSwift
         NotificationCenter.default.addObserver(self, selector: #selector(uploadedFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUploadedFile), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(userChanged(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeUser), object: nil)
 
-        if let metadatas = self.cache.initialMetadatas() {
+        if let metadatas = self.cache.initialMetadatas {
             DispatchQueue.main.async { self.metadatas = Array(metadatas.map { tableMetadata.init(value: $0) }) }
         }
 
@@ -91,9 +95,6 @@ import RealmSwift
                 }
             }
             .store(in: &cancellables)
-
-        //        timerSearchNewMedia?.invalidate()
-        timerSearchNewMedia = Timer.scheduledTimer(timeInterval: 20.0, target: self, selector: #selector(onRefresh), userInfo: nil, repeats: true)
     }
 
     deinit {
@@ -105,11 +106,7 @@ import RealmSwift
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeUser), object: nil)
     }
 
-    public func loadMoreItems() {
-        loadOldMedia()
-    }
-
-    public func deleteMetadata(metadatas: [tableMetadata]) {
+    func deleteMetadata(metadatas: [tableMetadata]) {
         let notLocked = metadatas.allSatisfy { !$0.lock }
 
         if notLocked {
@@ -117,7 +114,7 @@ import RealmSwift
         }
     }
 
-    public func copyOrMoveMetadataInApp(metadatas: [tableMetadata]) {
+    func copyOrMoveMetadataInApp(metadatas: [tableMetadata]) {
         isLoadingProcessingMetadata = true
 
         NCActionCenter.shared.openSelectView(items: metadatas, indexPath: [], didCancel: {
@@ -125,21 +122,32 @@ import RealmSwift
         })
     }
 
-    public func copyMetadata(metadatas: [tableMetadata]) {
+    func copyMetadata(metadatas: [tableMetadata]) {
         copy(metadatas: metadatas)
     }
 
-    public func onCellTapped(metadata: tableMetadata) {
+    func onCellTapped(metadata: tableMetadata) {
         appDelegate?.activeServerUrl = metadata.serverUrl
     }
 
-    @objc public func onRefresh() {
-        Task {
-            await loadNewMedia()
-        }
+    func loadMoreItems() {
+        loadOldMedia()
     }
 
-    public func addToFavorites(metadata: tableMetadata) {
+    func startLoadingNewMediaTimer() {
+        timerSearchNewMedia?.invalidate()
+        timerSearchNewMedia = Timer.scheduledTimer(timeInterval: timeIntervalSearchNewMedia, target: self, selector: #selector(notifyLoadNewMediaFromToVisibleMedia), userInfo: nil, repeats: false)
+    }
+
+    func stopLoadingNewMediaTimer() {
+        timerSearchNewMedia?.invalidate()
+    }
+
+    @objc func notifyLoadNewMediaFromToVisibleMedia() {
+        shouldLoadNewMediaFromToVisibleMedia = true
+    }
+
+    func addToFavorites(metadata: tableMetadata) {
         NCNetworking.shared.favoriteMetadata(metadata) { error in
             if error != .success {
                 NCContentPresenter().showError(error: error)
@@ -147,7 +155,7 @@ import RealmSwift
         }
     }
 
-    public func openIn(metadata: tableMetadata) {
+    func openIn(metadata: tableMetadata) {
         isLoadingProcessingMetadata = true
 
         if NCUtilityFileSystem().fileProviderStorageExists(metadata) {
@@ -159,7 +167,7 @@ import RealmSwift
         }
     }
 
-    public func saveToPhotos(metadata: tableMetadata) {
+    func saveToPhotos(metadata: tableMetadata) {
         isLoadingProcessingMetadata = true
 
         if let livePhoto = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata) {
@@ -174,11 +182,11 @@ import RealmSwift
         }
     }
 
-    public func viewInFolder(metadata: tableMetadata) {
+    func viewInFolder(metadata: tableMetadata) {
         NCActionCenter.shared.openFileViewInFolder(serverUrl: metadata.serverUrl, fileNameBlink: metadata.fileName, fileNameOpen: nil)
     }
 
-    public func modify(metadata: tableMetadata) {
+    func modify(metadata: tableMetadata) {
         isLoadingProcessingMetadata = true
 
         if NCUtilityFileSystem().fileProviderStorageExists(metadata) {
@@ -190,7 +198,7 @@ import RealmSwift
         }
     }
 
-    public func getMetadataFromUrl(_ urlString: String) -> tableMetadata? {
+    func getMetadataFromUrl(_ urlString: String) -> tableMetadata? {
         guard let url = URL(string: urlString), let appDelegate else { return nil }
 
         let fileName = url.lastPathComponent
@@ -201,11 +209,11 @@ import RealmSwift
         return metadata
     }
 
-    public func delete(metadatas: tableMetadata...) {
+    func delete(metadatas: tableMetadata...) {
         delete(metadatas: metadatas)
     }
 
-    public func delete(metadatas: [tableMetadata]) {
+    func delete(metadatas: [tableMetadata]) {
         isLoadingProcessingMetadata = true
 
         Task {
@@ -222,11 +230,11 @@ import RealmSwift
         }
     }
 
-    public func copy(metadatas: tableMetadata...) {
+    func copy(metadatas: tableMetadata...) {
         copy(metadatas: metadatas)
     }
 
-    public func copy(metadatas: [tableMetadata]) {
+    func copy(metadatas: [tableMetadata]) {
         isLoadingProcessingMetadata = true
 
         NCActionCenter.shared.copyToPasteboard(pasteboardOcIds: metadatas.compactMap({ $0.ocId })) {
@@ -406,6 +414,26 @@ extension NCMediaViewModel {
             if withElseReloadDataSource {
                 loadMediaFromDB()
             }
+        }
+    }
+
+    func loadNewMedia(from: Date?, to: Date?) async {
+        guard let from, let to else { return }
+        print(from)
+        print(to)
+//        let limit: Int = 1000
+//        guard let lessDate = Calendar.current.date(byAdding: .second, value: 1, to: Date()) else { return }
+//        guard let greaterDate = Calendar.current.date(byAdding: .day, value: -30, to: Date()) else { return }
+
+        isLoadingNewMetadata = true
+
+        let result = await updateMedia(account: account, lessDate: from, greaterDate: to, predicateDB: (self.predicate ?? self.predicateDefault!))
+
+        isLoadingNewMetadata = false
+
+        if result.changedItems > 0 {
+            loadMediaFromDB()
+            hasNewMedia = true
         }
     }
 

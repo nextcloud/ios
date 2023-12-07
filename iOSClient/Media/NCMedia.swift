@@ -122,7 +122,7 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate, NCSelectDelegate {
 
         NotificationCenter.default.addObserver(self, selector: #selector(uploadedFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUploadedFile), object: nil)
 
-        if let metadatas = NCImageCache.shared.initialMetadatas() {
+        if let metadatas = NCImageCache.shared.initialMetadatas {
             self.metadatas = metadatas
         }
         timerSearchNewMedia?.invalidate()
