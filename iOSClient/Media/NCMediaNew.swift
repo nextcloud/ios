@@ -145,11 +145,12 @@ struct NCMediaNew: View {
         }
         .onChange(of: vm.shouldLoadNewMediaFromToVisibleMedia) { newValue in
             if newValue {
-                Task {
-                    await vm.loadNewMedia(from: (topMostVisibleMetadata?.date) as Date?, to: (bottomMostVisibleMetadata?.date) as Date?)
+//                Task {
+//                    await vm.loadNewMedia(from: (topMostVisibleMetadata?.date) as Date?, to: (bottomMostVisibleMetadata?.date) as Date?)
 //                    await vm.loadNewMedia(from: (bottomMostVisibleMetadata?.date) as Date?, to: (topMostVisibleMetadata?.date) as Date?)
+                    vm.searchMediaUI(from: (bottomMostVisibleMetadata?.date as? Date), to: (topMostVisibleMetadata?.date as? Date))
                     vm.shouldLoadNewMediaFromToVisibleMedia = false
-                }
+//                }
             }
 //            vm.loadNewMedia(from: bottomMostVisibleMetadata?.date, to: topMostVisibleMetadata?.date)
         }
@@ -321,7 +322,7 @@ struct ToolbarMenu: View {
 
                 Section {
                     Button(action: {
-                        if let tabBarController = vm.appDelegate?.window?.rootViewController as? UITabBarController {
+                        if let tabBarController = vm.appDelegate.window?.rootViewController as? UITabBarController {
                             NCDocumentPickerViewController(tabBarController: tabBarController, isViewerMedia: true, allowsMultipleSelection: false, viewController: parent)
                         }
                     }, label: {
