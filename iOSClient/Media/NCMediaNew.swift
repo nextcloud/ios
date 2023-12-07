@@ -134,11 +134,6 @@ struct NCMediaNew: View {
                 columnCountStages = [2, 3, 4]
             }
         }
-//        .onAppear {
-//            let helper = SelectorHelper(vm: vm)
-//            let timerSearchNewMedia = Timer.scheduledTimer(timeInterval: 20.0, target: helper, selector: #selector(helper.loadNewMedia), userInfo: nil, repeats: true)
-//
-//        }
         .onChange(of: vm.metadatas) { newValue in
             metadatas = newValue
             showEmptyView = metadatas.isEmpty
@@ -146,24 +141,14 @@ struct NCMediaNew: View {
         .onChange(of: vm.shouldLoadNewMediaFromToVisibleMedia) { newValue in
             if newValue {
                 guard let topMostVisibleMetadataDate, let bottomMostVisibleMetadataDate else { return }
-                
+
                 let fromDate = min(topMostVisibleMetadataDate, bottomMostVisibleMetadataDate)
                 let toDate = max(topMostVisibleMetadataDate, bottomMostVisibleMetadataDate)
-//                Task {
-//                    await vm.loadNewMedia(from: (topMostVisibleMetadata?.date) as Date?, to: (bottomMostVisibleMetadata?.date) as Date?)
-//                    await vm.loadNewMedia(from: (bottomMostVisibleMetadata?.date) as Date?, to: (topMostVisibleMetadata?.date) as Date?)
+
                     vm.searchMediaUI(from: fromDate, to: toDate)
                     vm.shouldLoadNewMediaFromToVisibleMedia = false
-//                }
             }
-//            vm.loadNewMedia(from: bottomMostVisibleMetadata?.date, to: topMostVisibleMetadata?.date)
         }
-//        .onChange(of: topMostVisibleMetadata) { newValue in
-//            vm.topMostVisibleMetadata = newValue
-//        }
-//        .onChange(of: bottomMostVisibleMetadata) { newValue in
-//            vm.bottomMostVisibleMetadata = newValue
-//        }
         .onChange(of: isInSelectMode) { newValue in
             if newValue == false { selectedMetadatas.removeAll() }
         }
@@ -194,9 +179,6 @@ struct NCMediaNew: View {
             if newValue {
                 vm.startLoadingNewMediaTimer()
             }
-//            } else {
-//                vm.stopLoadingNewMediaTimer()
-//            }
         }
         .onChange(of: vm.hasOldMedia) { newValue in
             hasOldMedia = newValue
@@ -265,20 +247,6 @@ struct NCMediaNew: View {
             vm.delete(metadatas: selectedMetadata)
         }
     }
-
-//    class SelectorHelper: NSObject {
-//        let vm: NCMediaViewModel
-//
-//        init(vm: NCMediaViewModel) {
-//            self.vm = vm
-//        }
-//
-//        @objc func loadNewMedia() {
-//            Task {
-//                await vm.onRefresh()
-//            }
-//        }
-//    }
 }
 
 struct ToolbarMenu: View {
