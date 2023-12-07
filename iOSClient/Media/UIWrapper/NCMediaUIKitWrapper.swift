@@ -13,18 +13,35 @@ import SwiftUI
  Wraps the SwiftUI view to a ViewController with a NavigationViewController
  */
 class NCMediaUIKitWrapper: UIViewController, ObservableObject {
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        navigationController?.navigationBar.isHidden = true
-    }
+
+    var mediaView: NCMediaNew?
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        addView()
+
+        view.backgroundColor = .white
+    }
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+
+        if mediaView != nil {
+            navigationController?.navigationBar.isHidden = true
+        }
+    }
+
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+
+        if mediaView == nil {
+            navigationController?.navigationBar.isHidden = true
+            addView()
+        }
     }
 
     func addView() {
-        let mediaView = NCMediaNew()
+
+        mediaView = NCMediaNew()
         let controller = UIHostingController(rootView: mediaView.environmentObject(self))
         addChild(controller)
         controller.view.translatesAutoresizingMaskIntoConstraints = false
