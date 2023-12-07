@@ -286,7 +286,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         NCNetworking.shared.cancelDownloadTasks()
         presentPasscode { }
 
-        NCNetworking.shared.convertLivePhoto(account: account)
+        // NCNetworking.shared.convertLivePhoto(account: account)
 
         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterApplicationDidEnterBackground)
     }
@@ -381,7 +381,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                 self.isAppProcessing = false
             }
             if items == 0 {
-                NCNetworking.shared.convertLivePhoto(account: self.account)
+                // NCNetworking.shared.convertLivePhoto(account: self.account)
             }
         }
     }
