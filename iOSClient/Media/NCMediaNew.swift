@@ -41,10 +41,12 @@ struct NCMediaNew: View {
     @State private var shouldScrollToTop = false
     @State private var hasOldMedia = true
 
+    @State private var showEmptyView = false
+
     var body: some View {
 //        let _ = Self._printChanges()
         ZStack(alignment: .top) {
-            if metadatas.isEmpty {
+            if showEmptyView {
                 EmptyMediaView()
             }
 
@@ -204,6 +206,7 @@ struct NCMediaNew: View {
         }
         .onChange(of: vm.metadatas) { newValue in
             metadatas = newValue
+            showEmptyView = metadatas.isEmpty
         }
         .onChange(of: isInSelectMode) { newValue in
             if newValue == false { selectedMetadatas.removeAll() }
