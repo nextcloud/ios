@@ -127,6 +127,7 @@ struct NCMediaCell: View {
         .confirmationDialog("", isPresented: $showDeleteConfirmation) {
             Button(NSLocalizedString("_delete_file_", comment: ""), role: .destructive) {
                 onContextMenuItemSelected(thumbnail, .delete)
+                showDeleteConfirmation = false
             }
         }
     }

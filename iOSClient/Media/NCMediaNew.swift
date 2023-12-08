@@ -48,13 +48,14 @@ struct NCMediaNew: View {
 
     var body: some View {
         let _ = Self._printChanges()
+
         ZStack(alignment: .top) {
             if showEmptyView {
                 EmptyMediaView()
             }
 
             ScrollViewReader { proxy in
-                NCMediaScrollView(metadatas: metadatas.chunked(into: columnCountStages[columnCountStagesIndex]), isInSelectMode: $isInSelectMode, selectedMetadatas: $selectedMetadatas, shouldScrollToTop: $shouldScrollToTop, title: $title, shouldShowPaginationLoading: $hasOldMedia, topMostVisibleMetadataDate: $topMostVisibleMetadataDate, bottomMostVisibleMetadataDate: $bottomMostVisibleMetadataDate, proxy: proxy) { tappedThumbnail, isSelected in
+                NCMediaScrollView(metadatas: metadatas.chunked(into: columnCountStages[columnCountStagesIndex]), isInSelectMode: $isInSelectMode, selectedMetadatas: $selectedMetadatas, title: $title, shouldShowPaginationLoading: $hasOldMedia, topMostVisibleMetadataDate: $topMostVisibleMetadataDate, bottomMostVisibleMetadataDate: $bottomMostVisibleMetadataDate, proxy: proxy) { tappedThumbnail, isSelected in
                     if isInSelectMode, isSelected {
                         selectedMetadatas.append(tappedThumbnail.metadata)
                     } else {
@@ -68,8 +69,6 @@ struct NCMediaNew: View {
                     }
                 } onCellContextMenuItemSelected: { thumbnail, selection in
                     onCellContentMenuItemSelected(thumbnail: thumbnail, selection: selection)
-                } shouldLoadMore: {
-                    vm.loadMoreItems()
                 }
                 .equatable()
                 .ignoresSafeArea(.all, edges: .horizontal)
@@ -81,7 +80,7 @@ struct NCMediaNew: View {
 
                 Spacer()
 
-                if vm.isLoadingMetadata {
+                if vm.isLoading {
                     ProgressView()
                         .tint(loadingIndicatorColor)
                         .padding(.horizontal, 6)
@@ -112,20 +111,21 @@ struct NCMediaNew: View {
                 .ignoresSafeArea(.all, edges: [.all])
             )
 
-            if vm.hasNewMedia, !isScrolledToTop {
-                Button {
-                    shouldScrollToTop = true
-                } label: {
-                    Label(NSLocalizedString("_new_media_", comment: ""), systemImage: "arrow.up")
-                }
-                .foregroundColor(.white)
-                .padding(10)
-                .padding(.trailing, 3)
-                .background(.blue)
-                .clipShape(Capsule())
-                .shadow(radius: 5)
-                .offset(.init(width: 0, height: 50))
-            }
+            // TODO: Add later
+//            if vm.hasNewMedia, !isScrolledToTop {
+//                Button {
+//                    shouldScrollToTop = true
+//                } label: {
+//                    Label(NSLocalizedString("_new_media_", comment: ""), systemImage: "arrow.up")
+//                }
+//                .foregroundColor(.white)
+//                .padding(10)
+//                .padding(.trailing, 3)
+//                .background(.blue)
+//                .clipShape(Capsule())
+//                .shadow(radius: 5)
+//                .offset(.init(width: 0, height: 50))
+//            }
         }
         .onRotate { orientation in
             if orientation.isLandscapeHardCheck {
@@ -134,27 +134,31 @@ struct NCMediaNew: View {
                 columnCountStages = [2, 3, 4]
             }
         }
-        .onChange(of: vm.metadatas) { newValue in
+        .onReceive(vm.$metadatas) { newValue in
             metadatas = newValue
             showEmptyView = metadatas.isEmpty
         }
-        .onChange(of: vm.shouldLoadNewMediaFromToVisibleMedia) { newValue in
+        .onReceive(vm.$triggerLoadMedia) { newValue in
             if newValue {
+                vm.triggerLoadMedia = false
                 guard let topMostVisibleMetadataDate, let bottomMostVisibleMetadataDate else { return }
 
                 let fromDate = min(topMostVisibleMetadataDate, bottomMostVisibleMetadataDate)
                 let toDate = max(topMostVisibleMetadataDate, bottomMostVisibleMetadataDate)
 
                 vm.searchMedia(from: fromDate, to: toDate, isScrolledToTop: isScrolledToTop, isScrolledToBottom: isScrolledToBottom)
-                    vm.shouldLoadNewMediaFromToVisibleMedia = false
             }
+        }
+        .onReceive(vm.$hasOldMedia) { newValue in
+            hasOldMedia = newValue
+        }
+        .onReceive(vm.$filter) { _ in
+            cancelSelection()
         }
         .onChange(of: isInSelectMode) { newValue in
             if newValue == false { selectedMetadatas.removeAll() }
         }
-        .onChange(of: vm.filter) { _ in
-            cancelSelection()
-        }
+
         .onChange(of: columnCountStagesIndex) { _ in
             columnCountChanged = true
         }
@@ -166,22 +170,14 @@ struct NCMediaNew: View {
                 toolbarColors = newValue ? [.clear] : [Color.black.opacity(0.8), Color.black.opacity(0.4), .clear]
             }
 
-            if newValue {
-                vm.hasNewMedia = false
-            }
-        }
-        .onChange(of: isScrolledToBottom) { newValue in
-            if newValue {
-                vm.loadMoreItems()
-            }
+//            if newValue {
+//                vm.hasNewMedia = false
+//            }
         }
         .onChange(of: isScrollingStopped) { newValue in
             if newValue {
                 vm.startLoadingNewMediaTimer()
             }
-        }
-        .onChange(of: vm.hasOldMedia) { newValue in
-            hasOldMedia = newValue
         }
         .alert("", isPresented: $showPlayFromURLAlert) {
             TextField("https://...", text: $playFromUrlString)

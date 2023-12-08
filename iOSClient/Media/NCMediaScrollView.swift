@@ -17,7 +17,7 @@ struct NCMediaScrollView: View, Equatable {
     var metadatas: [[tableMetadata]]
     @Binding var isInSelectMode: Bool
     @Binding var selectedMetadatas: [tableMetadata]
-    @Binding var shouldScrollToTop: Bool
+//    @Binding var shouldScrollToTop: Bool
     @Binding var title: String
     @Binding var shouldShowPaginationLoading: Bool
     @Binding var topMostVisibleMetadataDate: Date?
@@ -27,7 +27,6 @@ struct NCMediaScrollView: View, Equatable {
 
     let onCellSelected: (ScaledThumbnail, Bool) -> Void
     let onCellContextMenuItemSelected: (ScaledThumbnail, ContextMenuSelection) -> Void
-    let shouldLoadMore: () -> Void
 
     @Namespace private var topID
 
@@ -53,14 +52,11 @@ struct NCMediaScrollView: View, Equatable {
                         topMostVisibleMetadataDate = (rowMetadatas.last?.date as? Date)
                     }
                 }
-
+                
                 if !metadatas.isEmpty, shouldShowPaginationLoading {
                     ProgressView()
                         .frame(maxWidth: .infinity, alignment: .center)
                         .padding(.vertical, 20)
-                        .onAppear {
-                            shouldLoadMore()
-                        }
                 }
             }
             .background(GeometryReader { proxy in
@@ -69,16 +65,16 @@ struct NCMediaScrollView: View, Equatable {
             })
             .padding(.bottom, 40)
         }
-        .onChange(of: shouldScrollToTop) { newValue in
-            if newValue {
-                withAnimation {
-                    proxy.scrollTo(topID)
-                }
-
-                DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                    shouldScrollToTop = false
-                }
-            }
-        }
+//        .onChange(of: shouldScrollToTop) { newValue in
+//            if newValue {
+//                withAnimation {
+//                    proxy.scrollTo(topID)
+//                }
+//
+//                DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+//                    shouldScrollToTop = false
+//                }
+//            }
+//        }
     }
 }
