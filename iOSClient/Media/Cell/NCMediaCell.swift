@@ -39,8 +39,6 @@ struct NCMediaCell: View {
             } else {
                 image
             }
-
-            Text(NCUtility().getTitleFromDate(thumbnail.metadata.date as Date)).foregroundStyle(.white).background(.black)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .overlay(alignment: .bottomLeading) {

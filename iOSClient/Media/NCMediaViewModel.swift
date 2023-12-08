@@ -16,7 +16,7 @@ import RealmSwift
     @Published var filter = Filter.all
     @Published var isLoading = true
 //    @Published var hasNewMedia = false
-    @Published var hasOldMedia = true
+    @Published var hasOldMedia = false
     @Published var triggerLoadMedia = false
 
     var topMostVisibleMetadata: tableMetadata?
@@ -67,8 +67,6 @@ import RealmSwift
         if let metadatas = self.cache.initialMetadatas {
             DispatchQueue.main.async { self.metadatas = Array(metadatas.map { tableMetadata.init(value: $0) }) }
         }
-
-//        notifyLoadNewMedia()
 
         $filter
             .dropFirst()
@@ -129,7 +127,6 @@ import RealmSwift
     }
 
     @objc func notifyLoadNewMedia() {
-//        triggerLoadMedia = false
         triggerLoadMedia = true
     }
 
@@ -303,10 +300,8 @@ extension NCMediaViewModel {
     }
 
     @objc func userChanged(_ notification: NSNotification) {
-        self.loadMediaFromDB()
-
-        Task {
-            //            await loadNewMedia()
+        if let metadatas = self.cache.initialMetadatas {
+            DispatchQueue.main.async { self.metadatas = Array(metadatas.map { tableMetadata.init(value: $0) }) }
         }
     }
 }
@@ -343,10 +338,12 @@ extension NCMediaViewModel {
         print("To: \(NCUtility().getTitleFromDate(finalFutureDate))")
 
         isLoadingMedia = true
+        hasOldMedia = true
 
         Task {
             let results = await updateMedia(account: appDelegate.account, lessDate: finalFutureDate, greaterDate: finalPastDate, predicate: self.getPredicate(true))
             isLoadingMedia = false
+
             print("Media results changed items: \(results.changedItems)")
 
             if results.error != .success {
@@ -370,7 +367,7 @@ extension NCMediaViewModel {
         }
     }
 
-    private func updateMedia(account: String, lessDate: Date, greaterDate: Date, limit: Int = 200, timeout: TimeInterval = 60, predicate: NSPredicate) async -> MediaResult {
+    private func updateMedia(account: String, lessDate: Date, greaterDate: Date, limit: Int = 1000, timeout: TimeInterval = 60, predicate: NSPredicate) async -> MediaResult {
         guard let mediaPath = NCManageDatabase.shared.getActiveAccount()?.mediaPath else {
             return MediaResult(account: account, lessDate: lessDate, greaterDate: greaterDate, metadatas: [], changedItems: 0, error: NKError())
         }
@@ -429,7 +426,7 @@ extension NCMediaViewModel: NCSelectDelegate {
         let path = serverUrl.replacingOccurrences(of: home, with: "")
         NCManageDatabase.shared.setAccountMediaPath(path, account: appDelegate.account)
 
-        //        self.loadMediaFromDB()
+        self.loadMediaFromDB()
     }
 }
 
