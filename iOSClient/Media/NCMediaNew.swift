@@ -145,7 +145,7 @@ struct NCMediaNew: View {
                 let fromDate = min(topMostVisibleMetadataDate, bottomMostVisibleMetadataDate)
                 let toDate = max(topMostVisibleMetadataDate, bottomMostVisibleMetadataDate)
 
-                    vm.searchMediaUI(from: fromDate, to: toDate)
+                vm.searchMedia(from: fromDate, to: toDate, isScrolledToTop: isScrolledToTop, isScrolledToBottom: isScrolledToBottom)
                     vm.shouldLoadNewMediaFromToVisibleMedia = false
             }
         }
