@@ -380,9 +380,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                 task.setTaskCompleted(success: true)
                 self.isAppProcessing = false
             }
-            if items == 0 {
-                NCNetworking.shared.convertLivePhoto(account: self.account)
-            }
         }
     }
 

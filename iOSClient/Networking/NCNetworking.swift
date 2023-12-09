@@ -819,8 +819,6 @@ class NCNetworking: NSObject, NKCommonDelegate {
 
 #if !EXTENSION
     func convertLivePhoto(account: String) {
-
-        return
         
         guard NCGlobal.shared.isLivePhotoServerAvailable,
               let appDelegate = (UIApplication.shared.delegate as? AppDelegate) else { return }
