@@ -802,16 +802,14 @@ class NCNetworking: NSObject, NKCommonDelegate {
 
         Task {
             let serverUrlfileNamePath = metadata.urlBase + metadata.path + metadata.livePhotoFile
-            var livePhotoFile = metadata1.livePhotoFile
-            // var livePhotoFile = metadata.fileId
+            var livePhotoFile = metadata.fileId
             var results = await NextcloudKit.shared.setLivephoto(serverUrlfileNamePath: serverUrlfileNamePath, livePhotoFile: livePhotoFile)
             if results.error == .success {
                 NCManageDatabase.shared.setMetadataLivePhotoFile(account: metadata.account, ocId: metadata.ocId, livePhotoFile: livePhotoFile)
             }
 
             let serverUrlfileNamePath1 = metadata1.urlBase + metadata1.path + metadata1.livePhotoFile
-            livePhotoFile = metadata.livePhotoFile
-            // livePhotoFile = metadata1.fileId
+            livePhotoFile = metadata1.fileId
             results = await NextcloudKit.shared.setLivephoto(serverUrlfileNamePath: serverUrlfileNamePath1, livePhotoFile: livePhotoFile)
             if results.error == .success {
                 NCManageDatabase.shared.setMetadataLivePhotoFile(account: metadata1.account, ocId: metadata1.ocId, livePhotoFile: livePhotoFile)
@@ -822,6 +820,8 @@ class NCNetworking: NSObject, NKCommonDelegate {
 #if !EXTENSION
     func convertLivePhoto(account: String) {
 
+        return
+        
         guard NCGlobal.shared.isLivePhotoServerAvailable,
               let appDelegate = (UIApplication.shared.delegate as? AppDelegate) else { return }
 
