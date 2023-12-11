@@ -830,11 +830,17 @@ class NCNetworking: NSObject, NKCommonDelegate {
 
         guard NCGlobal.shared.isLivePhotoServerAvailable else { return }
 
-        if let result = NCManageDatabase.shared.getResultMetadata(predicate: NSPredicate(format: "account == '\(metadata.account)' AND (fileName == '\(metadata.livePhotoFile)' || fileId == '\(metadata.livePhotoFile)')")) {
-            if metadata.livePhotoFile == result.fileId { return }
-            let serverUrlfileNamePath = metadata.urlBase + metadata.path + metadata.fileName
-            for case let operation as NCOperationConvertLivePhoto in convertLivePhotoQueue.operations where operation.serverUrlfileNamePath == serverUrlfileNamePath { continue }
-            convertLivePhotoQueue.addOperation(NCOperationConvertLivePhoto(serverUrlfileNamePath: serverUrlfileNamePath, livePhotoFile: result.fileId, account: result.account, ocId: result.ocId))
+        let account = metadata.account
+        let livePhotoFile = metadata.livePhotoFile
+        let serverUrlfileNamePath = metadata.urlBase + metadata.path + metadata.fileName
+        let ocId = metadata.ocId
+
+        Task {
+            if let result = NCManageDatabase.shared.getResultMetadata(predicate: NSPredicate(format: "account == '\(account)' AND (fileName == '\(livePhotoFile)' || fileId == '\(livePhotoFile)')")) {
+                if livePhotoFile == result.fileId { return }
+                for case let operation as NCOperationConvertLivePhoto in convertLivePhotoQueue.operations where operation.serverUrlfileNamePath == serverUrlfileNamePath { continue }
+                convertLivePhotoQueue.addOperation(NCOperationConvertLivePhoto(serverUrlfileNamePath: serverUrlfileNamePath, livePhotoFile: result.fileId, account: account, ocId: ocId))
+            }
         }
     }
 
@@ -1839,7 +1845,7 @@ class NCOperationConvertLivePhoto: ConcurrentOperation {
     override func start() {
 
         guard !isCancelled else { return self.finish() }
-        NextcloudKit.shared.setLivephoto(serverUrlfileNamePath: serverUrlfileNamePath, livePhotoFile: livePhotoFile) { _, error in
+        NextcloudKit.shared.setLivephoto(serverUrlfileNamePath: serverUrlfileNamePath, livePhotoFile: livePhotoFile, options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { _, error in
             if error == .success {
                 NCManageDatabase.shared.setMetadataLivePhotoFile(account: self.account, ocId: self.ocId, livePhotoFile: self.livePhotoFile)
             } else {
