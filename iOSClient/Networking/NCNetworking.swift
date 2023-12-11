@@ -1860,9 +1860,8 @@ class NCOperationConvertLivePhoto: ConcurrentOperation {
                 print("Convert LivePhoto with error \(error.errorCode)")
             }
             self.finish()
-            
             if NCNetworking.shared.convertLivePhotoQueue.operationCount == 0 {
-
+                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSource, second: 0.1)
             }
         }
     }

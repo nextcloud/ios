@@ -423,7 +423,7 @@ class NCMetadataForSection: NSObject {
                 continue
             }
 
-            // Verify XXX
+            // Convert OLD Live Photo
             if metadata.isLivePhoto {
                 NCNetworking.shared.convertLivePhoto(metadata: metadata)
             }
