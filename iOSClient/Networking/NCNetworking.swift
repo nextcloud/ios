@@ -408,7 +408,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
         if metadata.isDirectoryE2EE {
 #if !EXTENSION_FILE_PROVIDER_EXTENSION && !EXTENSION_WIDGET
             Task {
-                let error = await NCNetworkingE2EEUpload().upload(metadata: metadata, uploadE2EEDelegate: uploadE2EEDelegate, hudView: hudView)
+                let error = await NCNetworkingE2EEUpload().upload(metadata: metadata, uploadE2EEDelegate: uploadE2EEDelegate, hudView: hudView, hud: hud)
                 completion(error)
             }
 #endif
