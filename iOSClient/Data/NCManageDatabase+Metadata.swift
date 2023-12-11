@@ -624,7 +624,7 @@ extension NCManageDatabase {
         }
     }
 
-    func setMetadataLivePhotoFile(account: String, ocId: String, livePhotoFile: String) {
+    func setMetadataLivePhotoByServer(account: String, ocId: String, livePhotoFile: String) {
 
         do {
             let realm = try Realm()
