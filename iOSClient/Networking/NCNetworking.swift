@@ -828,8 +828,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
 
     func convertLivePhoto(metadata: tableMetadata) {
 
-        guard NCGlobal.shared.isLivePhotoServerAvailable,
-              metadata.status == NCGlobal.shared.metadataStatusNormal else { return }
+        guard metadata.status == NCGlobal.shared.metadataStatusNormal else { return }
 
         let account = metadata.account
         let livePhotoFile = metadata.livePhotoFile
