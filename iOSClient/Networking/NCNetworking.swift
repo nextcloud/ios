@@ -828,7 +828,9 @@ class NCNetworking: NSObject, NKCommonDelegate {
 
     func convertLivePhoto(metadata: tableMetadata) {
 
-        guard NCGlobal.shared.isLivePhotoServerAvailable else { return }
+        guard NCGlobal.shared.isLivePhotoServerAvailable,
+              metadata.status == NCGlobal.shared.metadataStatusNormal,
+              !metadata.isFlaggedAsLivePhotoByServer else { return }
 
         let account = metadata.account
         let livePhotoFile = metadata.livePhotoFile
@@ -836,7 +838,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
         let ocId = metadata.ocId
 
         Task {
-            if let result = NCManageDatabase.shared.getResultMetadata(predicate: NSPredicate(format: "account == '\(account)' AND (fileName == '\(livePhotoFile)' || fileId == '\(livePhotoFile)')")) {
+            if let result = NCManageDatabase.shared.getResultMetadata(predicate: NSPredicate(format: "account == '\(account)' AND status == \(NCGlobal.shared.metadataStatusNormal) AND (fileName == '\(livePhotoFile)' || fileId == '\(livePhotoFile)')")) {
                 if livePhotoFile == result.fileId { return }
                 for case let operation as NCOperationConvertLivePhoto in convertLivePhotoQueue.operations where operation.serverUrlfileNamePath == serverUrlfileNamePath { continue }
                 convertLivePhotoQueue.addOperation(NCOperationConvertLivePhoto(serverUrlfileNamePath: serverUrlfileNamePath, livePhotoFile: result.fileId, account: account, ocId: ocId))

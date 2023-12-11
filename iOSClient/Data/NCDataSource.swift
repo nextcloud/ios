@@ -423,11 +423,6 @@ class NCMetadataForSection: NSObject {
                 continue
             }
 
-            // Convert OLD Live Photo
-            if metadata.isLivePhoto {
-                NCNetworking.shared.convertLivePhoto(metadata: metadata)
-            }
-
             // skipped livePhoto
             if metadata.isLivePhoto && metadata.classFile == NKCommon.TypeClassFile.video.rawValue {
                 continue
