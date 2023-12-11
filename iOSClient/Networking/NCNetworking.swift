@@ -112,6 +112,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
     var requestsUnifiedSearch: [DataRequest] = []
 
     // OPERATIONQUEUE
+    let downloadQueue = Queuer(name: "downloadQueue", maxConcurrentOperationCount: NCGlobal.shared.maxConcurrentOperationCountDownload, qualityOfService: .default)
     let downloadAvatarQueue = Queuer(name: "downloadAvatarQueue", maxConcurrentOperationCount: 10, qualityOfService: .default)
     let convertLivePhotoQueue = Queuer(name: "convertLivePhotoQueue", maxConcurrentOperationCount: 10, qualityOfService: .default)
 
@@ -1083,7 +1084,6 @@ class NCNetworking: NSObject, NKCommonDelegate {
 
     func synchronizationServerUrl(_ serverUrl: String, account: String, selector: String) {
 
-#if !EXTENSION
         NextcloudKit.shared.readFileOrFolder(serverUrlFileName: serverUrl,
                                              depth: "infinity",
                                              showHiddenFiles: NCKeychain().showHiddenFiles,
@@ -1100,15 +1100,13 @@ class NCNetworking: NSObject, NKCommonDelegate {
                             NCManageDatabase.shared.addDirectory(encrypted: metadata.e2eEncrypted, favorite: metadata.favorite, ocId: metadata.ocId, fileId: metadata.fileId, etag: metadata.etag, permissions: metadata.permissions, serverUrl: serverUrl, account: metadata.account)
                         } else if selector == NCGlobal.shared.selectorSynchronizationOffline,
                                   self.synchronizeMetadata(metadata),
-                                  let appDelegate = (UIApplication.shared.delegate as? AppDelegate),
-                                  appDelegate.downloadQueue.operations.filter({ ($0 as? NCOperationDownload)?.metadata.ocId == metadata.ocId }).isEmpty {
-                            appDelegate.downloadQueue.addOperation(NCOperationDownload(metadata: metadata, selector: selector))
+                                  self.downloadQueue.operations.filter({ ($0 as? NCOperationDownload)?.metadata.ocId == metadata.ocId }).isEmpty {
+                            self.downloadQueue.addOperation(NCOperationDownload(metadata: metadata, selector: selector))
                         }
                     }
                 }
             }
         }
-#endif
     }
 
     func synchronizeMetadata(_ metadata: tableMetadata) -> Bool {
