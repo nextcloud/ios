@@ -396,11 +396,11 @@ class NCNetworking: NSObject, NKCommonDelegate {
     func upload(metadata: tableMetadata,
                 uploadE2EEDelegate: uploadE2EEDelegate? = nil,
                 hudView: UIView?,
+                hud: JGProgressHUD?,
                 start: @escaping () -> Void = { },
                 progressHandler: @escaping (_ totalBytesExpected: Int64, _ totalBytes: Int64, _ fractionCompleted: Double) -> Void = { _, _, _ in },
                 completion: @escaping (_ error: NKError) -> Void = { _ in }) {
 
-        let hud = JGProgressHUD()
         let metadata = tableMetadata.init(value: metadata)
         var numChunks: Int = 0
         NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Upload file \(metadata.fileNameView) with Identifier \(metadata.assetLocalIdentifier) with size \(metadata.size) [CHUNK \(metadata.chunk), E2EE \(metadata.isDirectoryE2EE)]")
@@ -415,26 +415,28 @@ class NCNetworking: NSObject, NKCommonDelegate {
         } else if metadata.chunk > 0 {
                 if let hudView {
                     DispatchQueue.main.async {
-                        hud.indicatorView = JGProgressHUDRingIndicatorView()
-                        if let indicatorView = hud.indicatorView as? JGProgressHUDRingIndicatorView {
-                            indicatorView.ringWidth = 1.5
+                        if let hud {
+                            hud.indicatorView = JGProgressHUDRingIndicatorView()
+                            if let indicatorView = hud.indicatorView as? JGProgressHUDRingIndicatorView {
+                                indicatorView.ringWidth = 1.5
+                            }
+                            hud.tapOnHUDViewBlock = { _ in
+                                NotificationCenter.default.postOnMainThread(name: "NextcloudKit.chunkedFile.stop")
+                            }
+                            hud.textLabel.text = NSLocalizedString("_wait_file_preparation_", comment: "")
+                            hud.detailTextLabel.text = NSLocalizedString("_tap_to_cancel_", comment: "")
+                            hud.show(in: hudView)
                         }
-                        hud.tapOnHUDViewBlock = { _ in
-                            NotificationCenter.default.postOnMainThread(name: "NextcloudKit.chunkedFile.stop")
-                        }
-                        hud.textLabel.text = NSLocalizedString("_wait_file_preparation_", comment: "")
-                        hud.detailTextLabel.text = NSLocalizedString("_tap_to_cancel_", comment: "")
-                        hud.show(in: hudView)
                     }
                 }
             uploadChunkFile(metadata: metadata) { num in
                 numChunks = num
             } counterChunk: { counter in
-                DispatchQueue.main.async { hud.progress = Float(counter) / Float(numChunks) }
+                DispatchQueue.main.async { hud?.progress = Float(counter) / Float(numChunks) }
             } start: {
-                DispatchQueue.main.async { hud.dismiss() }
+                DispatchQueue.main.async { hud?.dismiss() }
             } completion: { _, _, _, error in
-                DispatchQueue.main.async { hud.dismiss() }
+                DispatchQueue.main.async { hud?.dismiss() }
                 completion(error)
             }
         } else if metadata.session == NextcloudKit.shared.nkCommonInstance.sessionIdentifierUpload {

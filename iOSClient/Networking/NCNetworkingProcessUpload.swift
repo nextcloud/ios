@@ -179,7 +179,7 @@ class NCNetworkingProcessUpload: NSObject {
                                 }
 
                                 if let metadata = NCManageDatabase.shared.setMetadataStatus(ocId: metadata.ocId, status: NCGlobal.shared.metadataStatusInUpload) {
-                                    NCNetworking.shared.upload(metadata: metadata, hudView: self.hudView)
+                                    NCNetworking.shared.upload(metadata: metadata, hudView: self.hudView, hud: self.hud)
                                     if isInDirectoryE2EE || metadata.chunk > 0 {
                                         maxConcurrentOperationUpload = 1
                                     }
