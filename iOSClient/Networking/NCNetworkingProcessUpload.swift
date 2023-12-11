@@ -39,6 +39,7 @@ class NCNetworkingProcessUpload: NSObject {
     private var notificationToken: NotificationToken?
     private var timerProcess: Timer?
     private var pauseProcess: Bool = false
+    private var hud: JGProgressHUD?
 
     func observeTableMetadata() {
         do {
@@ -102,7 +103,10 @@ class NCNetworkingProcessUpload: NSObject {
         let applicationState = UIApplication.shared.applicationState
         let queue = DispatchQueue.global()
         var maxConcurrentOperationUpload = NCBrandOptions.shared.maxConcurrentOperationUpload
-        let hud = JGProgressHUD()
+
+        if applicationState == .active {
+            hud = JGProgressHUD()
+        }
 
         queue.async {
 
@@ -156,7 +160,7 @@ class NCNetworkingProcessUpload: NSObject {
 
                         let semaphore = DispatchSemaphore(value: 0)
                         let cameraRoll = NCCameraRoll()
-                        cameraRoll.extractCameraRoll(from: metadata, viewController: self.rootViewController, hud: hud) { metadatas in
+                        cameraRoll.extractCameraRoll(from: metadata, viewController: self.rootViewController, hud: self.hud) { metadatas in
                             if metadatas.isEmpty {
                                 NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
                             }
