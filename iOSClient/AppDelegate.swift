@@ -54,12 +54,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     var documentPickerViewController: NCDocumentPickerViewController?
     var timerErrorNetworking: Timer?
     private var privacyProtectionWindow: UIWindow?
-
-    let downloadThumbnailQueue = Queuer(name: "downloadThumbnailQueue", maxConcurrentOperationCount: 10, qualityOfService: .default)
-    let downloadThumbnailActivityQueue = Queuer(name: "downloadThumbnailActivityQueue", maxConcurrentOperationCount: 10, qualityOfService: .default)
-    let unifiedSearchQueue = Queuer(name: "unifiedSearchQueue", maxConcurrentOperationCount: 1, qualityOfService: .default)
-    let saveLivePhotoQueue = Queuer(name: "saveLivePhotoQueue", maxConcurrentOperationCount: 1, qualityOfService: .default)
-
     var isAppRefresh: Bool = false
     var isAppProcessing: Bool = false
 
@@ -941,11 +935,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
     @objc func cancelAllQueue() {
         NCNetworking.shared.downloadQueue.cancelAll()
-        downloadThumbnailQueue.cancelAll()
-        downloadThumbnailActivityQueue.cancelAll()
+        NCNetworking.shared.downloadThumbnailQueue.cancelAll()
+        NCNetworking.shared.downloadThumbnailActivityQueue.cancelAll()
         NCNetworking.shared.downloadAvatarQueue.cancelAll()
-        unifiedSearchQueue.cancelAll()
-        saveLivePhotoQueue.cancelAll()
+        NCNetworking.shared.unifiedSearchQueue.cancelAll()
+        NCNetworking.shared.saveLivePhotoQueue.cancelAll()
+        NCNetworking.shared.convertLivePhotoQueue.cancelAll()
     }
 
     // MARK: - Universal Links
