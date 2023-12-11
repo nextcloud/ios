@@ -1012,6 +1012,15 @@ class NCNetworking: NSObject, NKCommonDelegate {
                     NCManageDatabase.shared.addDirectory(encrypted: metadata.e2eEncrypted, favorite: metadata.favorite, ocId: metadata.ocId, fileId: metadata.fileId, etag: nil, permissions: metadata.permissions, serverUrl: serverUrl, account: account)
                 }
 
+#if !EXTENSION
+                // Convert OLD Live Photo
+                for metadata in metadatas {
+                    if metadata.isLivePhoto {
+                        NCNetworking.shared.convertLivePhoto(metadata: metadata)
+                    }
+                }
+#endif
+
                 let predicate = NSPredicate(format: "account == %@ AND serverUrl == %@ AND status == %d", account, serverUrl, NCGlobal.shared.metadataStatusNormal)
                 let results = NCManageDatabase.shared.updateMetadatas(metadatas, predicate: predicate)
 
