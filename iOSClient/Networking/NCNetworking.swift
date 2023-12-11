@@ -1474,7 +1474,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
             return NKError()
 #endif
         } else {
-            if let metadataLive = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata), !metadata.isFlaggedAsLivePhotoByServer {
+            if let metadataLive = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata), metadata.isNotFlaggedAsLivePhotoByServer {
                 let error = await deleteMetadataPlain(metadataLive)
                 if error == .success {
                     return await deleteMetadataPlain(metadata)
@@ -1608,7 +1608,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
             }
 #endif
         } else {
-            if let metadataLive, !metadata.isFlaggedAsLivePhotoByServer {
+            if let metadataLive, metadata.isNotFlaggedAsLivePhotoByServer {
                 renameMetadataPlain(metadataLive, fileNameNew: fileNameNewLive, indexPath: indexPath) { error in
                     if error == .success {
                         self.renameMetadataPlain(metadata, fileNameNew: fileNameNew, indexPath: indexPath, completion: completion)
