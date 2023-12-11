@@ -370,6 +370,11 @@ extension NCMedia: UICollectionViewDataSource {
                 cell.imageStatus.image = nil
             }
 
+            // Convert OLD Live Photo
+            if metadata.isLivePhoto {
+                NCNetworking.shared.convertLivePhoto(metadata: metadata)
+            }
+
             if metadata.isAudioOrVideo {
                 cell.imageStatus.image = cacheImages.cellPlayImage
             } else if metadata.isLivePhoto {

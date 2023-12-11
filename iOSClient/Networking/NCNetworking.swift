@@ -826,25 +826,11 @@ class NCNetworking: NSObject, NKCommonDelegate {
         }
     }
 
-    func convertLivePhoto(account: String) {
-
-        guard NCGlobal.shared.isLivePhotoServerAvailable else { return }
-
-        if let results = NCManageDatabase.shared.getResultsMetadatas(predicate: NSPredicate(format: "account == '\(account)' AND isFlaggedAsLivePhotoByServer == false AND livePhotoFile != ''"), sorted: "date") {
-
-            for result in results {
-                let serverUrlfileNamePath = result.urlBase + result.path + result.fileName
-                for case let operation as NCOperationConvertLivePhoto in convertLivePhotoQueue.operations where operation.serverUrlfileNamePath == serverUrlfileNamePath { continue }
-                convertLivePhotoQueue.addOperation(NCOperationConvertLivePhoto(serverUrlfileNamePath: serverUrlfileNamePath, livePhotoFile: result.livePhotoFile, account: result.account, ocId: result.ocId))
-            }
-        }
-    }
-
     func convertLivePhoto(metadata: tableMetadata) {
 
         guard NCGlobal.shared.isLivePhotoServerAvailable else { return }
 
-        if let result = NCManageDatabase.shared.getResultsMetadatas(predicate: NSPredicate(format: "account == '\(metadata.account)' AND (fileName == '\(metadata.livePhotoFile)' || fileId == '\(metadata.livePhotoFile)')"))?.first {
+        if let result = NCManageDatabase.shared.getResultMetadata(predicate: NSPredicate(format: "account == '\(metadata.account)' AND (fileName == '\(metadata.livePhotoFile)' || fileId == '\(metadata.livePhotoFile)')")) {
             if metadata.livePhotoFile == result.fileId { return }
             let serverUrlfileNamePath = metadata.urlBase + metadata.path + metadata.fileName
             for case let operation as NCOperationConvertLivePhoto in convertLivePhotoQueue.operations where operation.serverUrlfileNamePath == serverUrlfileNamePath { continue }
