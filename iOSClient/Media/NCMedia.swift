@@ -373,7 +373,7 @@ extension NCMedia: UICollectionViewDataSource {
             }
 
             // Convert OLD Live Photo
-            if metadata.isLivePhoto {
+            if NCGlobal.shared.isLivePhotoServerAvailable, metadata.isLivePhoto, !metadata.isFlaggedAsLivePhotoByServer {
                 NCNetworking.shared.convertLivePhoto(metadata: metadata)
             }
 
