@@ -111,6 +111,10 @@ class NCNetworking: NSObject, NKCommonDelegate {
     // REQUESTS
     var requestsUnifiedSearch: [DataRequest] = []
 
+    // OPERATIONQUEUE
+    let downloadAvatarQueue = Queuer(name: "downloadAvatarQueue", maxConcurrentOperationCount: 10, qualityOfService: .default)
+    let convertLivePhotoQueue = Queuer(name: "convertLivePhotoQueue", maxConcurrentOperationCount: 10, qualityOfService: .default)
+
     // MARK: - init
 
     override init() {
@@ -364,7 +368,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
 
 #if !EXTENSION
     func downloadAvatar(user: String, dispalyName: String?, fileName: String, cell: NCCellProtocol, view: UIView?, cellImageView: UIImageView?) {
-        guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else { return }
+
         let fileNameLocalPath = utilityFileSystem.directoryUserData + "/" + fileName
 
         if let image = NCManageDatabase.shared.getImageAvatarLoaded(fileName: fileName) {
@@ -377,8 +381,8 @@ class NCNetworking: NSObject, NKCommonDelegate {
             cellImageView?.image = utility.loadUserImage(for: user, displayName: dispalyName, userBaseUrl: account)
         }
 
-        for case let operation as NCOperationDownloadAvatar in appDelegate.downloadAvatarQueue.operations where operation.fileName == fileName { return }
-        appDelegate.downloadAvatarQueue.addOperation(NCOperationDownloadAvatar(user: user, fileName: fileName, fileNameLocalPath: fileNameLocalPath, cell: cell, view: view, cellImageView: cellImageView))
+        for case let operation as NCOperationDownloadAvatar in downloadAvatarQueue.operations where operation.fileName == fileName { return }
+        downloadAvatarQueue.addOperation(NCOperationDownloadAvatar(user: user, fileName: fileName, fileNameLocalPath: fileNameLocalPath, cell: cell, view: view, cellImageView: cellImageView))
     }
 #endif
 
@@ -817,22 +821,31 @@ class NCNetworking: NSObject, NKCommonDelegate {
         }
     }
 
-#if !EXTENSION
     func convertLivePhoto(account: String) {
 
-        guard NCGlobal.shared.isLivePhotoServerAvailable,
-              let appDelegate = (UIApplication.shared.delegate as? AppDelegate) else { return }
+        guard NCGlobal.shared.isLivePhotoServerAvailable else { return }
 
         if let results = NCManageDatabase.shared.getResultsMetadatas(predicate: NSPredicate(format: "account == '\(account)' AND isFlaggedAsLivePhotoByServer == false AND livePhotoFile != ''"), sorted: "date") {
 
             for result in results {
                 let serverUrlfileNamePath = result.urlBase + result.path + result.fileName
-                for case let operation as NCOperationConvertLivePhoto in appDelegate.convertLivePhotoQueue.operations where operation.serverUrlfileNamePath == serverUrlfileNamePath { continue }
-                appDelegate.convertLivePhotoQueue.addOperation(NCOperationConvertLivePhoto(serverUrlfileNamePath: serverUrlfileNamePath, livePhotoFile: result.livePhotoFile, account: result.account, ocId: result.ocId))
+                for case let operation as NCOperationConvertLivePhoto in convertLivePhotoQueue.operations where operation.serverUrlfileNamePath == serverUrlfileNamePath { continue }
+                convertLivePhotoQueue.addOperation(NCOperationConvertLivePhoto(serverUrlfileNamePath: serverUrlfileNamePath, livePhotoFile: result.livePhotoFile, account: result.account, ocId: result.ocId))
             }
         }
     }
-#endif
+
+    func convertLivePhoto(metadata: tableMetadata) {
+
+        guard NCGlobal.shared.isLivePhotoServerAvailable else { return }
+
+        if let result = NCManageDatabase.shared.getResultsMetadatas(predicate: NSPredicate(format: "account == '\(metadata.account)' AND (fileName == '\(metadata.livePhotoFile)' || fileId == '\(metadata.livePhotoFile)')"))?.first {
+            if metadata.livePhotoFile == result.fileId { return }
+            let serverUrlfileNamePath = metadata.urlBase + metadata.path + metadata.fileName
+            for case let operation as NCOperationConvertLivePhoto in convertLivePhotoQueue.operations where operation.serverUrlfileNamePath == serverUrlfileNamePath { continue }
+            convertLivePhotoQueue.addOperation(NCOperationConvertLivePhoto(serverUrlfileNamePath: serverUrlfileNamePath, livePhotoFile: result.fileId, account: result.account, ocId: result.ocId))
+        }
+    }
 
     // MARK: - Cancel (Download Upload)
 
@@ -1845,6 +1858,10 @@ class NCOperationConvertLivePhoto: ConcurrentOperation {
                 print("Convert LivePhoto with error \(error.errorCode)")
             }
             self.finish()
+            
+            if NCNetworking.shared.convertLivePhotoQueue.operationCount == 0 {
+
+            }
         }
     }
 }

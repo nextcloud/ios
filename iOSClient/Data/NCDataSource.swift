@@ -423,6 +423,11 @@ class NCMetadataForSection: NSObject {
                 continue
             }
 
+            // Verify XXX
+            if metadata.isLivePhoto {
+                NCNetworking.shared.convertLivePhoto(metadata: metadata)
+            }
+
             // skipped livePhoto
             if metadata.isLivePhoto && metadata.classFile == NKCommon.TypeClassFile.video.rawValue {
                 continue
