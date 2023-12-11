@@ -810,15 +810,15 @@ class NCNetworking: NSObject, NKCommonDelegate {
         }
 
         Task {
-            let serverUrlfileNamePath = metadata.urlBase + metadata.path + metadata.livePhotoFile
-            var livePhotoFile = metadata.fileId
+            let serverUrlfileNamePath = metadata.urlBase + metadata.path + metadata.fileName
+            var livePhotoFile = metadata1.fileId
             var results = await NextcloudKit.shared.setLivephoto(serverUrlfileNamePath: serverUrlfileNamePath, livePhotoFile: livePhotoFile)
             if results.error == .success {
                 NCManageDatabase.shared.setMetadataLivePhotoFile(account: metadata.account, ocId: metadata.ocId, livePhotoFile: livePhotoFile)
             }
 
-            let serverUrlfileNamePath1 = metadata1.urlBase + metadata1.path + metadata1.livePhotoFile
-            livePhotoFile = metadata1.fileId
+            let serverUrlfileNamePath1 = metadata1.urlBase + metadata1.path + metadata1.fileName
+            livePhotoFile = metadata.fileId
             results = await NextcloudKit.shared.setLivephoto(serverUrlfileNamePath: serverUrlfileNamePath1, livePhotoFile: livePhotoFile)
             if results.error == .success {
                 NCManageDatabase.shared.setMetadataLivePhotoFile(account: metadata1.account, ocId: metadata1.ocId, livePhotoFile: livePhotoFile)
@@ -1851,7 +1851,7 @@ class NCOperationConvertLivePhoto: ConcurrentOperation {
             if error == .success {
                 NCManageDatabase.shared.setMetadataLivePhotoFile(account: self.account, ocId: self.ocId, livePhotoFile: self.livePhotoFile)
             } else {
-                print("Convert LivePhoto with error \(error.errorCode)")
+                NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Convert LivePhoto with error \(error.errorCode)")
             }
             self.finish()
             if NCNetworking.shared.convertLivePhotoQueue.operationCount == 0 {

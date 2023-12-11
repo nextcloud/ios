@@ -1239,6 +1239,10 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                     }
                 }
             }
+            // Convert OLD Live Photo
+            if metadata.isLivePhoto {
+                // NCNetworking.shared.convertLivePhoto(metadata: metadata)
+            }
         }
 
         // Avatar
