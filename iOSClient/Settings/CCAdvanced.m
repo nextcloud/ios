@@ -250,18 +250,6 @@
     row.action.formSelector = @selector(clearCacheRequest:);
     [sectionSize addFormRow:row];
 
-#ifdef DEBUG
-    // Clear all cache
-    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"azzeraallcache" rowType:XLFormRowDescriptorTypeButton title:@"Clear all cache"];
-    row.cellConfigAtConfigure[@"backgroundColor"] = UIColor.secondarySystemGroupedBackgroundColor;
-    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
-    [row.cellConfig setObject:[UIColor blueColor] forKey:@"textLabel.textColor"];
-    [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
-    [row.cellConfig setObject:[[UIImage imageNamed:@"trash"] imageWithColor:[UIColor blueColor] size:25] forKey:@"imageView.image"];
-    row.action.formSelector = @selector(clearAllCacheRequest:);
-    [sectionSize addFormRow:row];
-#endif
-
     // Section EXIT --------------------------------------------------------
     
     section = [XLFormSectionDescriptor formSection];
@@ -420,16 +408,6 @@
     alertController.popoverPresentationController.sourceRect = CGRectOffset(cellRect, -self.tableView.contentOffset.x, -self.tableView.contentOffset.y);
     
     [self presentViewController:alertController animated:YES completion:nil];
-}
-
-- (void)clearAllCacheRequest:(XLFormRowDescriptor *)sender
-{
-    [self deselectFormRow:sender];
-
-    [[NCActivityIndicator shared] startActivityWithBackgroundView:nil style: UIActivityIndicatorViewStyleLarge blurEffect:true];
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
-        [self clearCache:nil];
-    });
 }
 
 - (void)calculateSize

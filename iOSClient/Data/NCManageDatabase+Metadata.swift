@@ -1105,7 +1105,9 @@ extension NCManageDatabase {
                 }
                 if metadatasChangedCount != 0 || metadatasChanged {
                     realm.delete(results)
-                    realm.add(metadatas, update: .all)
+                    for metadata in metadatas {
+                        realm.add(tableMetadata(value: metadata), update: .all)
+                    }
                 }
             }
         } catch let error {
