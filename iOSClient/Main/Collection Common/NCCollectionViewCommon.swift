@@ -1036,9 +1036,11 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                             } else {
                                 NCContentPresenter().showError(error: NKError(errorCode: NCGlobal.shared.errorE2EEKeyDecodeMetadata, errorDescription: "_e2e_error_"))
                             }
+                            completion(tableDirectory, metadatas, metadatasChangedCount, metadatasChanged, error)
                         }
+                    } else {
+                        completion(tableDirectory, metadatas, metadatasChangedCount, metadatasChanged, error)
                     }
-                    completion(tableDirectory, metadatas, metadatasChangedCount, metadatasChanged, error)
                 }
             } else {
                 completion(tableDirectory, nil, 0, false, NKError())
