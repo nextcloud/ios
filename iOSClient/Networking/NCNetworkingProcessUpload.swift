@@ -39,6 +39,7 @@ class NCNetworkingProcessUpload: NSObject {
     private var notificationToken: NotificationToken?
     private var timerProcess: Timer?
     private var pauseProcess: Bool = false
+    private var hud: JGProgressHUD?
 
     func observeTableMetadata() {
         do {
@@ -102,7 +103,10 @@ class NCNetworkingProcessUpload: NSObject {
         let applicationState = UIApplication.shared.applicationState
         let queue = DispatchQueue.global()
         var maxConcurrentOperationUpload = NCBrandOptions.shared.maxConcurrentOperationUpload
-        let hud = JGProgressHUD()
+
+        if applicationState == .active {
+            hud = JGProgressHUD()
+        }
 
         queue.async {
 
@@ -156,7 +160,7 @@ class NCNetworkingProcessUpload: NSObject {
 
                         let semaphore = DispatchSemaphore(value: 0)
                         let cameraRoll = NCCameraRoll()
-                        cameraRoll.extractCameraRoll(from: metadata, viewController: self.rootViewController, hud: hud) { metadatas in
+                        cameraRoll.extractCameraRoll(from: metadata, viewController: self.rootViewController, hud: self.hud) { metadatas in
                             if metadatas.isEmpty {
                                 NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
                             }
@@ -175,7 +179,7 @@ class NCNetworkingProcessUpload: NSObject {
                                 }
 
                                 if let metadata = NCManageDatabase.shared.setMetadataStatus(ocId: metadata.ocId, status: NCGlobal.shared.metadataStatusInUpload) {
-                                    NCNetworking.shared.upload(metadata: metadata, hudView: self.hudView)
+                                    NCNetworking.shared.upload(metadata: metadata, hudView: self.hudView, hud: self.hud)
                                     if isInDirectoryE2EE || metadata.chunk > 0 {
                                         maxConcurrentOperationUpload = 1
                                     }

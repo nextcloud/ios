@@ -29,7 +29,7 @@ class NCCameraRoll: NSObject {
 
     let utilityFileSystem = NCUtilityFileSystem()
 
-    func extractCameraRoll(from metadata: tableMetadata, viewController: UIViewController?, hud: JGProgressHUD, completition: @escaping (_ metadatas: [tableMetadata]) -> Void) {
+    func extractCameraRoll(from metadata: tableMetadata, viewController: UIViewController?, hud: JGProgressHUD?, completition: @escaping (_ metadatas: [tableMetadata]) -> Void) {
 
         var chunkSize = NCGlobal.shared.chunkSizeMBCellular
         if NCNetworking.shared.networkReachability == NKCommon.TypeReachability.reachableEthernetOrWiFi {
@@ -95,7 +95,7 @@ class NCCameraRoll: NSObject {
     func extractImageVideoFromAssetLocalIdentifier(metadata: tableMetadata,
                                                    modifyMetadataForUpload: Bool,
                                                    viewController: UIViewController?,
-                                                   hud: JGProgressHUD,
+                                                   hud: JGProgressHUD?,
                                                    completion: @escaping (_ metadata: tableMetadata?, _ fileNamePath: String?, _ error: Bool) -> Void) {
 
         var fileNamePath: String?
@@ -212,21 +212,25 @@ class NCCameraRoll: NSObject {
                     } catch { return callCompletionWithError() }
                 } else if let asset = asset as? AVComposition, asset.tracks.count > 1, let exporter = AVAssetExportSession(asset: asset, presetName: AVAssetExportPresetHighestQuality), let viewController = viewController {
                     DispatchQueue.main.async {
-                        hud.indicatorView = JGProgressHUDRingIndicatorView()
-                        if let indicatorView = hud.indicatorView as? JGProgressHUDRingIndicatorView {
-                            indicatorView.ringWidth = 1.5
-                        }
-                        hud.textLabel.text = NSLocalizedString("_exporting_video_", comment: "")
-                        hud.show(in: viewController.view)
-                        hud.tapOnHUDViewBlock = { _ in
-                            exporter.cancelExport()
+                        if let hud {
+                            hud.indicatorView = JGProgressHUDRingIndicatorView()
+                            if let indicatorView = hud.indicatorView as? JGProgressHUDRingIndicatorView {
+                                indicatorView.ringWidth = 1.5
+                            }
+                            hud.textLabel.text = NSLocalizedString("_exporting_video_", comment: "")
+                            hud.show(in: viewController.view)
+                            hud.tapOnHUDViewBlock = { _ in
+                                exporter.cancelExport()
+                            }
                         }
                     }
                     exporter.outputURL = URL(fileURLWithPath: fileNamePath)
                     exporter.outputFileType = AVFileType.mp4
                     exporter.shouldOptimizeForNetworkUse = true
                     exporter.exportAsynchronously {
-                        DispatchQueue.main.async { hud.dismiss() }
+                        DispatchQueue.main.async {
+                            hud?.dismiss()
+                        }
                         if exporter.status == .completed {
                             metadata.creationDate = creationDate as NSDate
                             metadata.date = modificationDate as NSDate
@@ -235,7 +239,9 @@ class NCCameraRoll: NSObject {
                         } else { return callCompletionWithError() }
                     }
                     while exporter.status == AVAssetExportSession.Status.exporting || exporter.status == AVAssetExportSession.Status.waiting {
-                        hud.progress = exporter.progress
+                        DispatchQueue.main.async {
+                            hud?.progress = exporter.progress
+                        }
                     }
                 } else {
                     return callCompletionWithError()

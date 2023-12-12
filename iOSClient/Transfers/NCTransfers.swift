@@ -139,10 +139,11 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
         guard appDelegate.account == metadata.account else { return }
 
         let cameraRoll = NCCameraRoll()
-        cameraRoll.extractCameraRoll(from: metadata, viewController: self, hud: JGProgressHUD()) { metadatas in
+        let hud = JGProgressHUD()
+        cameraRoll.extractCameraRoll(from: metadata, viewController: self, hud: hud) { metadatas in
             for metadata in metadatas {
                 if let metadata = NCManageDatabase.shared.setMetadataStatus(ocId: metadata.ocId, status: NCGlobal.shared.metadataStatusInUpload) {
-                    NCNetworking.shared.upload(metadata: metadata, hudView: self.appDelegate.window?.rootViewController?.view)
+                    NCNetworking.shared.upload(metadata: metadata, hudView: self.appDelegate.window?.rootViewController?.view, hud: hud)
                 }
             }
         }

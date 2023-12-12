@@ -352,7 +352,7 @@ extension NCShareExtension {
         hud.textLabel.text = NSLocalizedString("_upload_file_", comment: "") + " \(counterUploaded + 1) " + NSLocalizedString("_of_", comment: "") + " \(filesName.count)"
         hud.show(in: self.view)
 
-        NCNetworking.shared.upload(metadata: metadata, uploadE2EEDelegate: self, hudView: self.view) {
+        NCNetworking.shared.upload(metadata: metadata, uploadE2EEDelegate: self, hudView: self.view, hud: JGProgressHUD()) {
             self.hud.progress = 0
         } progressHandler: { _, _, fractionCompleted in
             self.hud.progress = Float(fractionCompleted)
