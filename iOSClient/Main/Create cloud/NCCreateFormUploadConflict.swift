@@ -25,7 +25,6 @@ import UIKit
 import SwiftUI
 import NextcloudKit
 import Photos
-import JGProgressHUD
 
 protocol NCCreateFormUploadConflictDelegate: AnyObject {
     func dismissCreateFormUploadConflict(metadatas: [tableMetadata]?)
@@ -391,7 +390,7 @@ extension NCCreateFormUploadConflict: UITableViewDataSource {
 
                     // PREVIEW
                     let cameraRoll = NCCameraRoll()
-                    cameraRoll.extractImageVideoFromAssetLocalIdentifier(metadata: metadataNewFile, modifyMetadataForUpload: false, viewController: self, hud: JGProgressHUD()) { _, fileNamePath, error in
+                    cameraRoll.extractImageVideoFromAssetLocalIdentifier(metadata: metadataNewFile, modifyMetadataForUpload: false) { _, fileNamePath, error in
                         if !error {
                             self.fileNamesPath[metadataNewFile.fileNameView] = fileNamePath!
                             do {

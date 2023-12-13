@@ -687,11 +687,13 @@ class NCNetworking: NSObject, NKCommonDelegate {
                 utilityFileSystem.removeFile(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(ocIdTemp))
             }
 
-            uploadLivePhoto(metadata: metadata)
-
             NextcloudKit.shared.nkCommonInstance.writeLog("[SUCCESS] Upload complete " + serverUrl + "/" + fileName + ", result: success(\(size) bytes)")
-            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUploadedFile, userInfo: ["ocId": metadata.ocId, "serverUrl": metadata.serverUrl, "account": metadata.account, "fileName": metadata.fileName, "ocIdTemp": ocIdTemp, "error": error])
 
+            if metadata.isLivePhoto, NCGlobal.shared.isLivePhotoServerAvailable {
+                uploadLivePhoto(metadata: metadata, ocIdTemp: ocIdTemp, error: error)
+            } else {
+                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUploadedFile, userInfo: ["ocId": metadata.ocId, "serverUrl": metadata.serverUrl, "account": metadata.account, "fileName": metadata.fileName, "ocIdTemp": ocIdTemp, "error": error])
+            }
         } else {
 
             if error.errorCode == NSURLErrorCancelled || error.errorCode == NCGlobal.shared.errorRequestExplicityCancelled {
@@ -788,28 +790,31 @@ class NCNetworking: NSObject, NKCommonDelegate {
 
     // MARK: - Live Photo
 
-    func uploadLivePhoto(metadata: tableMetadata) {
+    func uploadLivePhoto(metadata: tableMetadata, ocIdTemp: String, error: NKError) {
 
-        guard NCGlobal.shared.isLivePhotoServerAvailable,
-              metadata.isLivePhoto,
-              let metadata1 = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND urlBase == %@ AND path == %@ AND fileName == %@ AND status == %d", metadata.account, metadata.urlBase, metadata.path, metadata.livePhotoFile, NCGlobal.shared.metadataStatusNormal)) else {
+        guard let metadata1 = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND urlBase == %@ AND path == %@ AND fileName == %@ AND status == %d", metadata.account, metadata.urlBase, metadata.path, metadata.livePhotoFile, NCGlobal.shared.metadataStatusNormal)) else {
             return
         }
 
         Task {
             let serverUrlfileNamePath = metadata.urlBase + metadata.path + metadata.fileName
             var livePhotoFile = metadata1.fileId
-            var results = await NextcloudKit.shared.setLivephoto(serverUrlfileNamePath: serverUrlfileNamePath, livePhotoFile: livePhotoFile)
+            let results = await NextcloudKit.shared.setLivephoto(serverUrlfileNamePath: serverUrlfileNamePath, livePhotoFile: livePhotoFile)
             if results.error == .success {
                 NCManageDatabase.shared.setMetadataLivePhotoByServer(account: metadata.account, ocId: metadata.ocId, livePhotoFile: livePhotoFile)
+            } else {
+                NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Uplod set LivePhoto with error \(results.error.errorCode)")
             }
 
             let serverUrlfileNamePath1 = metadata1.urlBase + metadata1.path + metadata1.fileName
             livePhotoFile = metadata.fileId
-            results = await NextcloudKit.shared.setLivephoto(serverUrlfileNamePath: serverUrlfileNamePath1, livePhotoFile: livePhotoFile)
-            if results.error == .success {
+            let results1 = await NextcloudKit.shared.setLivephoto(serverUrlfileNamePath: serverUrlfileNamePath1, livePhotoFile: livePhotoFile)
+            if results1.error == .success {
                 NCManageDatabase.shared.setMetadataLivePhotoByServer(account: metadata1.account, ocId: metadata1.ocId, livePhotoFile: livePhotoFile)
+            } else {
+                NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Upload set LivePhoto with error \(results.error.errorCode)")
             }
+            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUploadedFile, userInfo: ["ocId": metadata.ocId, "serverUrl": metadata.serverUrl, "account": metadata.account, "fileName": metadata.fileName, "ocIdTemp": ocIdTemp, "error": error])
         }
     }
 

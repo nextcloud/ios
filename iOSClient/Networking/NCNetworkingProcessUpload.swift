@@ -160,7 +160,7 @@ class NCNetworkingProcessUpload: NSObject {
 
                         let semaphore = DispatchSemaphore(value: 0)
                         let cameraRoll = NCCameraRoll()
-                        cameraRoll.extractCameraRoll(from: metadata, viewController: self.rootViewController, hud: self.hud) { metadatas in
+                        cameraRoll.extractCameraRoll(from: metadata) { metadatas in
                             if metadatas.isEmpty {
                                 NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
                             }
