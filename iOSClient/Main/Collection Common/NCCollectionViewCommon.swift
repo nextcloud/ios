@@ -353,11 +353,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
               account == appDelegate.account
         else { return }
 
-        if isSearchingMode {
-            reloadDataSourceNetwork()
-        } else {
-            reloadDataSource()
-        }
+        reloadDataSourceNetwork(isForced: true)
     }
 
     @objc func createFolder(_ notification: NSNotification) {
