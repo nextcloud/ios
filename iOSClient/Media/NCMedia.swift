@@ -160,13 +160,10 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate, NCSelectDelegate {
         guard let userInfo = notification.userInfo as NSDictionary?,
               let error = userInfo["error"] as? NKError else { return }
 
-        if error != .success {
-            NCContentPresenter().showError(error: error)
-        }
         self.reloadDataSource()
 
-        if let hud = userInfo["hud"] as? JGProgressHUD {
-            hud.dismiss()
+        if error != .success {
+            NCContentPresenter().showError(error: error)
         }
     }
 

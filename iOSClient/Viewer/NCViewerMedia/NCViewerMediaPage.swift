@@ -407,10 +407,6 @@ class NCViewerMediaPage: UIViewController {
                 shiftCurrentPage()
             }
         }
-
-        if let hud = userInfo["hud"] as? JGProgressHUD {
-            hud.dismiss()
-        }
     }
 
     @objc func moveFile(_ notification: NSNotification) {
@@ -419,10 +415,11 @@ class NCViewerMediaPage: UIViewController {
 
     @objc func copyFile(_ notification: NSNotification) {
 
-        guard let userInfo = notification.userInfo as NSDictionary? else { return }
+        guard let userInfo = notification.userInfo as NSDictionary?,
+              let error = userInfo["error"] as? NKError else { return }
 
-        if let hud = userInfo["hud"] as? JGProgressHUD {
-            hud.dismiss()
+        if error != .success {
+            NCContentPresenter().showError(error: error)
         }
     }
 

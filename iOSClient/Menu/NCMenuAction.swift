@@ -146,12 +146,6 @@ extension NCMenuAction {
                     preferredStyle: .alert)
                 if canDeleteServer {
                     alertController.addAction(UIAlertAction(title: NSLocalizedString("_yes_delete_", comment: ""), style: .default) { (_: UIAlertAction) in
-                        let hud = JGProgressHUD()
-                        hud.textLabel.text = NSLocalizedString("_deletion_progess_", comment: "")
-                        if let appDelegate = UIApplication.shared.delegate as? AppDelegate,
-                           let view = appDelegate.window?.rootViewController?.view {
-                            hud.show(in: view)
-                        }
                         Task {
                             var error = NKError()
                             var ocId: [String] = []
@@ -161,7 +155,7 @@ extension NCMenuAction {
                                     ocId.append(metadata.ocId)
                                 }
                             }
-                            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDeleteFile, userInfo: ["ocId": ocId, "indexPath": indexPath, "onlyLocalCache": false, "error": error, "hud": hud])
+                            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDeleteFile, userInfo: ["ocId": ocId, "indexPath": indexPath, "onlyLocalCache": false, "error": error])
                         }
                         completion?()
                     })
