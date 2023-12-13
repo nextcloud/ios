@@ -435,8 +435,27 @@ class NCNetworking: NSObject, NKCommonDelegate {
                 DispatchQueue.main.async { hud?.progress = Float(counter) / Float(numChunks) }
             } start: {
                 DispatchQueue.main.async { hud?.dismiss() }
-            } completion: { _, _, _, error in
+            } completion: { account, _, afError, error in
                 DispatchQueue.main.async { hud?.dismiss() }
+                var sessionTaskFailedCode = 0
+                let directory = self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId)
+                if let error = NextcloudKit.shared.nkCommonInstance.getSessionErrorFromAFError(afError) {
+                    sessionTaskFailedCode = error.code
+                }
+                switch error.errorCode {
+                case NKError.chunkNoEnoughMemory, NKError.chunkCreateFolder, NKError.chunkFilesNull, NKError.chunkFileNull:
+                    NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
+                    NCManageDatabase.shared.deleteChunks(account: account, ocId: metadata.ocId, directory: directory)
+                    NCContentPresenter().messageNotification("_error_files_upload_", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: .error, afterDelay: 0.5)
+                case NKError.chunkFileUpload:
+                    if let afError, (afError.isExplicitlyCancelledError || sessionTaskFailedCode == NCGlobal.shared.errorExplicitlyCancelled ) {
+                        NCManageDatabase.shared.deleteChunks(account: account, ocId: metadata.ocId, directory: directory)
+                    }
+                case NKError.chunkMoveFile:
+                    NCManageDatabase.shared.deleteChunks(account: account, ocId: metadata.ocId, directory: directory)
+                    NCContentPresenter().messageNotification("_chunk_move_", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: .error, afterDelay: 0.5)
+                default: break
+                }
                 completion(error)
             }
         } else if metadata.session == NextcloudKit.shared.nkCommonInstance.sessionIdentifierUpload {
@@ -570,47 +589,13 @@ class NCNetworking: NSObject, NKCommonDelegate {
 
         } completion: { account, _, file, afError, error in
 
-            var sessionTaskFailedCode = 0
             self.uploadRequest.removeValue(forKey: fileNameLocalPath)
-
             if error == .success {
                 NCManageDatabase.shared.deleteChunks(account: account, ocId: metadata.ocId, directory: directory)
             }
-            if let error = NextcloudKit.shared.nkCommonInstance.getSessionErrorFromAFError(afError) {
-                sessionTaskFailedCode = error.code
-            }
-
-            switch error.errorCode {
-            case NKError.chunkNoEnoughMemory:
-                NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
-                NCManageDatabase.shared.deleteChunks(account: account, ocId: metadata.ocId, directory: directory)
-                NCContentPresenter().messageNotification("_chunk_enough_memory_", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: .error)
-            case NKError.chunkCreateFolder:
-                NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
-                NCManageDatabase.shared.deleteChunks(account: account, ocId: metadata.ocId, directory: directory)
-                NCContentPresenter().messageNotification("_chunk_create_folder_", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: .error)
-            case NKError.chunkFilesNull:
-                NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
-                NCManageDatabase.shared.deleteChunks(account: account, ocId: metadata.ocId, directory: directory)
-                NCContentPresenter().messageNotification("_chunk_files_null_", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: .error)
-            case NKError.chunkFileNull:
-                NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
-                NCManageDatabase.shared.deleteChunks(account: account, ocId: metadata.ocId, directory: directory)
-                NCContentPresenter().messageNotification("_chunk_file_null_", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: .error)
-            case NKError.chunkFileUpload:
-                if let afError, (afError.isExplicitlyCancelledError || sessionTaskFailedCode == NCGlobal.shared.errorExplicitlyCancelled ) {
-                    NCManageDatabase.shared.deleteChunks(account: account, ocId: metadata.ocId, directory: directory)
-                }
-            case NKError.chunkMoveFile:
-                NCManageDatabase.shared.deleteChunks(account: account, ocId: metadata.ocId, directory: directory)
-                NCContentPresenter().messageNotification("_chunk_move_", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: .error)
-            default: break
-            }
-
             if withUploadComplete, let uploadTask {
                 self.uploadComplete(fileName: metadata.fileName, serverUrl: metadata.serverUrl, ocId: file?.ocId, etag: file?.etag, date: file?.date, size: file?.size ?? 0, description: metadata.ocId, task: uploadTask, error: error)
             }
-
             completion(account, file, afError, error)
         }
     }
