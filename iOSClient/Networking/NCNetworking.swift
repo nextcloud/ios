@@ -689,10 +689,11 @@ class NCNetworking: NSObject, NKCommonDelegate {
 
             NextcloudKit.shared.nkCommonInstance.writeLog("[SUCCESS] Upload complete " + serverUrl + "/" + fileName + ", result: success(\(size) bytes)")
 
+            let userInfo: [AnyHashable: Any] = ["ocId": metadata.ocId, "serverUrl": metadata.serverUrl, "account": metadata.account, "fileName": metadata.fileName, "ocIdTemp": ocIdTemp, "error": error]
             if metadata.isLivePhoto, NCGlobal.shared.isLivePhotoServerAvailable {
-                uploadLivePhoto(metadata: metadata, ocIdTemp: ocIdTemp, error: error)
+                uploadLivePhoto(metadata: metadata, userInfo: userInfo)
             } else {
-                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUploadedFile, userInfo: ["ocId": metadata.ocId, "serverUrl": metadata.serverUrl, "account": metadata.account, "fileName": metadata.fileName, "ocIdTemp": ocIdTemp, "error": error])
+                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUploadedFile, userInfo: userInfo)
             }
         } else {
 
@@ -790,7 +791,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
 
     // MARK: - Live Photo
 
-    func uploadLivePhoto(metadata: tableMetadata, ocIdTemp: String, error: NKError) {
+    func uploadLivePhoto(metadata: tableMetadata, userInfo aUserInfo: [AnyHashable: Any]) {
 
         guard let metadata1 = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND urlBase == %@ AND path == %@ AND fileName == %@ AND status == %d", metadata.account, metadata.urlBase, metadata.path, metadata.livePhotoFile, NCGlobal.shared.metadataStatusNormal)) else {
             return
@@ -814,7 +815,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
             } else {
                 NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Upload set LivePhoto with error \(results.error.errorCode)")
             }
-            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUploadedFile, userInfo: ["ocId": metadata.ocId, "serverUrl": metadata.serverUrl, "account": metadata.account, "fileName": metadata.fileName, "ocIdTemp": ocIdTemp, "error": error])
+            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUploadedFile, userInfo: aUserInfo)
         }
     }
 

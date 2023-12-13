@@ -108,7 +108,7 @@ class NCDataSource: NSObject {
         // get all Section
         for metadata in self.metadatas {
             // skipped livePhoto VIDEO part
-            if metadata.isLivePhoto && metadata.classFile == NKCommon.TypeClassFile.video.rawValue {
+            if metadata.isLivePhoto && metadata.classFile == NKCommon.TypeClassFile.video.rawValue && metadata.status <= NCGlobal.shared.metadataStatusNormal {
                 continue
             }
             let section = NSLocalizedString(self.getSectionValue(metadata: metadata), comment: "")
@@ -424,7 +424,7 @@ class NCMetadataForSection: NSObject {
             }
 
             // skipped livePhoto
-            if metadata.isLivePhoto && metadata.classFile == NKCommon.TypeClassFile.video.rawValue {
+            if metadata.isLivePhoto && metadata.classFile == NKCommon.TypeClassFile.video.rawValue && metadata.status <= NCGlobal.shared.metadataStatusNormal {
                 continue
             }
 
