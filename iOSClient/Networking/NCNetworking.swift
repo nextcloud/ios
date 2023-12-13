@@ -1496,12 +1496,10 @@ class NCNetworking: NSObject, NKCommonDelegate {
         if !metadata.permissions.isEmpty && permission == false {
             return NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_no_permission_delete_file_")
         }
-
         let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
         let options = NKRequestOptions(customHeader: customHeader)
 
         let result = await NextcloudKit.shared.deleteFileOrFolder(serverUrlFileName: serverUrlFileName, options: options)
-
         if result.error == .success || result.error.errorCode == NCGlobal.shared.errorResourceNotFound {
 
             do {
@@ -1526,7 +1524,6 @@ class NCNetworking: NSObject, NKCommonDelegate {
                 NCManageDatabase.shared.deleteDirectoryAndSubDirectory(serverUrl: utilityFileSystem.stringAppendServerUrl(metadata.serverUrl, addFileName: metadata.fileName), account: metadata.account)
             }
         }
-
         return result.error
     }
 
@@ -1640,7 +1637,6 @@ class NCNetworking: NSObject, NKCommonDelegate {
         if fileNameNew.isEmpty || fileNameNew == metadata.fileNameView {
             return completion(NKError())
         }
-
         let fileNamePath = metadata.serverUrl + "/" + metadata.fileName
         let fileNameToPath = metadata.serverUrl + "/" + fileNameNew
 
@@ -1671,7 +1667,6 @@ class NCNetworking: NSObject, NKCommonDelegate {
                 }
                 NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterRenameFile, userInfo: ["ocId": metadata.ocId, "account": metadata.account, "indexPath": indexPath])
             }
-
             completion(error)
         }
     }
@@ -1697,7 +1692,6 @@ class NCNetworking: NSObject, NKCommonDelegate {
         if !metadata.permissions.isEmpty && !permission {
             return NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_no_permission_modify_file_")
         }
-
         let serverUrlFileNameSource = metadata.serverUrl + "/" + metadata.fileName
         let serverUrlFileNameDestination = serverUrlTo + "/" + metadata.fileName
 
@@ -1723,7 +1717,6 @@ class NCNetworking: NSObject, NKCommonDelegate {
                 }
             }
         }
-
         return result.error
     }
 
@@ -1748,7 +1741,6 @@ class NCNetworking: NSObject, NKCommonDelegate {
         if !metadata.permissions.isEmpty && !permission {
             return NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_no_permission_modify_file_")
         }
-
         let serverUrlFileNameSource = metadata.serverUrl + "/" + metadata.fileName
         let serverUrlFileNameDestination = serverUrlTo + "/" + metadata.fileName
 
