@@ -1511,7 +1511,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
             NCManageDatabase.shared.deleteVideo(metadata: metadata)
             NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
             NCManageDatabase.shared.deleteLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
-
+            // LIVE PHOTO SERVER
             if let metadataLive = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata), metadataLive.isFlaggedAsLivePhotoByServer {
                 do {
                     try FileManager.default.removeItem(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadataLive.ocId))
@@ -1643,7 +1643,6 @@ class NCNetworking: NSObject, NKCommonDelegate {
 
         let fileNamePath = metadata.serverUrl + "/" + metadata.fileName
         let fileNameToPath = metadata.serverUrl + "/" + fileNameNew
-        let ocId = metadata.ocId
 
         NextcloudKit.shared.moveFileOrFolder(serverUrlFileNameSource: fileNamePath, serverUrlFileNameDestination: fileNameToPath, overwrite: false) { _, error in
             if error == .success {
@@ -1660,7 +1659,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
                     NCManageDatabase.shared.deleteVideo(metadata: metadata)
                     NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
                     NCManageDatabase.shared.deleteLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
-
+                    // LIVE PHOTO SERVER
                     if let metadataLive = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata), metadataLive.isFlaggedAsLivePhotoByServer {
                         do {
                             try FileManager.default.removeItem(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadataLive.ocId))
@@ -1713,7 +1712,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
                 NCManageDatabase.shared.deleteVideo(metadata: metadata)
                 NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
                 NCManageDatabase.shared.deleteLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
-
+                // LIVE PHOTO SERVER
                 if let metadataLive = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata), metadataLive.isFlaggedAsLivePhotoByServer {
                     do {
                         try FileManager.default.removeItem(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadataLive.ocId))
