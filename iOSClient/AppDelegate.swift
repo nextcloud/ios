@@ -54,17 +54,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     var documentPickerViewController: NCDocumentPickerViewController?
     var timerErrorNetworking: Timer?
     private var privacyProtectionWindow: UIWindow?
-
-    let downloadQueue = Queuer(name: "downloadQueue", maxConcurrentOperationCount: NCGlobal.shared.maxConcurrentOperationCountDownload, qualityOfService: .default)
-
-    //TODO: Remove this
-    let downloadThumbnailQueue = Queuer(name: "downloadThumbnailQueue", maxConcurrentOperationCount: 10, qualityOfService: .default)
-    let downloadThumbnailActivityQueue = Queuer(name: "downloadThumbnailActivityQueue", maxConcurrentOperationCount: 10, qualityOfService: .default)
-    let downloadAvatarQueue = Queuer(name: "downloadAvatarQueue", maxConcurrentOperationCount: 10, qualityOfService: .default)
-    let unifiedSearchQueue = Queuer(name: "unifiedSearchQueue", maxConcurrentOperationCount: 1, qualityOfService: .default)
-    let saveLivePhotoQueue = Queuer(name: "saveLivePhotoQueue", maxConcurrentOperationCount: 1, qualityOfService: .default)
-    let convertLivePhotoQueue = Queuer(name: "convertLivePhotoQueue", maxConcurrentOperationCount: 10, qualityOfService: .default)
-
     var isAppRefresh: Bool = false
     var isAppProcessing: Bool = false
 
@@ -288,8 +277,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         NCNetworking.shared.cancelDownloadTasks()
         presentPasscode { }
 
-        NCNetworking.shared.convertLivePhoto(account: account)
-
         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterApplicationDidEnterBackground)
     }
 
@@ -381,9 +368,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                 NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Processing task upload process with \(items) uploads")
                 task.setTaskCompleted(success: true)
                 self.isAppProcessing = false
-            }
-            if items == 0 {
-                NCNetworking.shared.convertLivePhoto(account: self.account)
             }
         }
     }
@@ -948,12 +932,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     // MARK: - Queue
 
     @objc func cancelAllQueue() {
-        downloadQueue.cancelAll()
-        downloadThumbnailQueue.cancelAll()
-        downloadThumbnailActivityQueue.cancelAll()
-        downloadAvatarQueue.cancelAll()
-        unifiedSearchQueue.cancelAll()
-        saveLivePhotoQueue.cancelAll()
+        NCNetworking.shared.downloadQueue.cancelAll()
+        NCNetworking.shared.downloadThumbnailQueue.cancelAll()
+        NCNetworking.shared.downloadThumbnailActivityQueue.cancelAll()
+        NCNetworking.shared.downloadAvatarQueue.cancelAll()
+        NCNetworking.shared.unifiedSearchQueue.cancelAll()
+        NCNetworking.shared.saveLivePhotoQueue.cancelAll()
+        NCNetworking.shared.convertLivePhotoQueue.cancelAll()
     }
 
     // MARK: - Universal Links

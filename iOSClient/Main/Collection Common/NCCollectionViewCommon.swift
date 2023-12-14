@@ -327,10 +327,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         if error != .success {
             NCContentPresenter().showError(error: error)
         }
-
-        if let hud = userInfo["hud"] as? JGProgressHUD {
-            hud.dismiss()
-        }
     }
 
     @objc func moveFile(_ notification: NSNotification) {
@@ -339,10 +335,11 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
     @objc func copyFile(_ notification: NSNotification) {
 
-        guard let userInfo = notification.userInfo as NSDictionary? else { return }
+        guard let userInfo = notification.userInfo as NSDictionary?,
+              let error = userInfo["error"] as? NKError else { return }
 
-        if let hud = userInfo["hud"] as? JGProgressHUD {
-            hud.dismiss()
+        if error != .success {
+            NCContentPresenter().showError(error: error)
         }
     }
 
@@ -353,11 +350,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
               account == appDelegate.account
         else { return }
 
-        if isSearchingMode {
-            reloadDataSourceNetwork()
-        } else {
-            reloadDataSource()
-        }
+        reloadDataSourceNetwork(isForced: true)
     }
 
     @objc func createFolder(_ notification: NSNotification) {
@@ -939,7 +932,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                     searchResults: self.searchResults)
             } update: { _, _, searchResult, metadatas in
                 guard let metadatas, !metadatas.isEmpty, self.isSearchingMode, let searchResult else { return }
-                self.appDelegate.unifiedSearchQueue.addOperation(NCOperationUnifiedSearch(collectionViewCommon: self, metadatas: metadatas, searchResult: searchResult))
+                NCNetworking.shared.unifiedSearchQueue.addOperation(NCOperationUnifiedSearch(collectionViewCommon: self, metadatas: metadatas, searchResult: searchResult))
             } completion: { _, _ in
                 self.refreshControl.endRefreshing()
                 self.isReloadDataSourceNetworkInProgress = false
@@ -1205,8 +1198,8 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                         (cell as? NCCellProtocol)?.filePreviewImageView?.image = UIImage(named: metadata.iconName)
                     }
                     if metadata.hasPreview && metadata.status == NCGlobal.shared.metadataStatusNormal && (!utilityFileSystem.fileProviderStoragePreviewIconExists(metadata.ocId, etag: metadata.etag)) {
-                        for case let operation as NCCollectionViewDownloadThumbnail in appDelegate.downloadThumbnailQueue.operations where operation.metadata.ocId == metadata.ocId { return }
-                        appDelegate.downloadThumbnailQueue.addOperation(NCCollectionViewDownloadThumbnail(metadata: metadata, cell: (cell as? NCCellProtocol), collectionView: collectionView))
+                        for case let operation as NCCollectionViewDownloadThumbnail in NCNetworking.shared.downloadThumbnailQueue.operations where operation.metadata.ocId == metadata.ocId { return }
+                        NCNetworking.shared.downloadThumbnailQueue.addOperation(NCCollectionViewDownloadThumbnail(metadata: metadata, cell: (cell as? NCCellProtocol), collectionView: collectionView))
                     }
                 }
             } else {
@@ -1254,7 +1247,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
         if !collectionView.indexPathsForVisibleItems.contains(indexPath) {
             guard let metadata = dataSource.cellForItemAt(indexPath: indexPath) else { return }
-            for case let operation as NCCollectionViewDownloadThumbnail in appDelegate.downloadThumbnailQueue.operations where operation.metadata.ocId == metadata.ocId {
+            for case let operation as NCCollectionViewDownloadThumbnail in NCNetworking.shared.downloadThumbnailQueue.operations where operation.metadata.ocId == metadata.ocId {
                 operation.cancel()
             }
         }

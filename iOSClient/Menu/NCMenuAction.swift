@@ -146,12 +146,6 @@ extension NCMenuAction {
                     preferredStyle: .alert)
                 if canDeleteServer {
                     alertController.addAction(UIAlertAction(title: NSLocalizedString("_yes_delete_", comment: ""), style: .default) { (_: UIAlertAction) in
-                        let hud = JGProgressHUD()
-                        hud.textLabel.text = NSLocalizedString("_deletion_progess_", comment: "")
-                        if let appDelegate = UIApplication.shared.delegate as? AppDelegate,
-                           let view = appDelegate.window?.rootViewController?.view {
-                            hud.show(in: view)
-                        }
                         Task {
                             var error = NKError()
                             var ocId: [String] = []
@@ -161,7 +155,7 @@ extension NCMenuAction {
                                     ocId.append(metadata.ocId)
                                 }
                             }
-                            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDeleteFile, userInfo: ["ocId": ocId, "indexPath": indexPath, "onlyLocalCache": false, "error": error, "hud": hud])
+                            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDeleteFile, userInfo: ["ocId": ocId, "indexPath": indexPath, "onlyLocalCache": false, "error": error])
                         }
                         completion?()
                     })
@@ -223,15 +217,13 @@ extension NCMenuAction {
                 for metadata in selectedMediaMetadatas {
                     
                     if let metadataMOV = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata) {
-                        if let appDelegate = (UIApplication.shared.delegate as? AppDelegate) {
-                            appDelegate.saveLivePhotoQueue.addOperation(NCOperationSaveLivePhoto(metadata: metadata, metadataMOV: metadataMOV))
-                        }
+                        NCNetworking.shared.saveLivePhotoQueue.addOperation(NCOperationSaveLivePhoto(metadata: metadata, metadataMOV: metadataMOV))
                     } else {
                         if NCUtilityFileSystem().fileProviderStorageExists(metadata) {
                             NCActionCenter.shared.saveAlbum(metadata: metadata)
                         } else {
-                            if let appDelegate = (UIApplication.shared.delegate as? AppDelegate), appDelegate.downloadQueue.operations.filter({ ($0 as? NCOperationDownload)?.metadata.ocId == metadata.ocId }).isEmpty {
-                                appDelegate.downloadQueue.addOperation(NCOperationDownload(metadata: metadata, selector: NCGlobal.shared.selectorSaveAlbum))
+                            if NCNetworking.shared.downloadQueue.operations.filter({ ($0 as? NCOperationDownload)?.metadata.ocId == metadata.ocId }).isEmpty {
+                                NCNetworking.shared.downloadQueue.addOperation(NCOperationDownload(metadata: metadata, selector: NCGlobal.shared.selectorSaveAlbum))
                             }
                         }
                     }

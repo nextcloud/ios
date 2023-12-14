@@ -363,10 +363,6 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
            metadata?.ocId == ocId {
             viewUnload()
         }
-
-        if let hud = userInfo["hud"] as? JGProgressHUD {
-            hud.dismiss()
-        }
     }
 
     @objc func moveFile(_ notification: NSNotification) {
@@ -377,10 +373,6 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
            let ocId = ocIds.first,
            let metadataNew = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
             self.metadata = metadataNew
-        }
-
-        if let hud = userInfo["hud"] as? JGProgressHUD {
-            hud.dismiss()
         }
     }
 

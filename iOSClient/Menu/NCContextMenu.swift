@@ -101,9 +101,7 @@ class NCContextMenu: NSObject {
         let save = UIAction(title: titleSave,
                             image: UIImage(systemName: "square.and.arrow.down")) { _ in
             if let metadataMOV = metadataMOV {
-                if let appDelegate = (UIApplication.shared.delegate as? AppDelegate) {
-                    appDelegate.saveLivePhotoQueue.addOperation(NCOperationSaveLivePhoto(metadata: metadata, metadataMOV: metadataMOV))
-                }
+                NCNetworking.shared.saveLivePhotoQueue.addOperation(NCOperationSaveLivePhoto(metadata: metadata, metadataMOV: metadataMOV))
             } else {
                 if self.utilityFileSystem.fileProviderStorageExists(metadata) {
                     NCActionCenter.shared.saveAlbum(metadata: metadata)
@@ -157,12 +155,6 @@ class NCContextMenu: NSObject {
             }
             let alertController = UIAlertController(title: nil, message: nil, preferredStyle: alertStyle)
             alertController.addAction(UIAlertAction(title: NSLocalizedString("_delete_file_", comment: ""), style: .destructive) { _ in
-                let hud = JGProgressHUD()
-                hud.textLabel.text = NSLocalizedString("_deletion_progess_", comment: "")
-                if let appDelegate = UIApplication.shared.delegate as? AppDelegate,
-                   let view = appDelegate.window?.rootViewController?.view {
-                    hud.show(in: view)
-                }
                 Task {
                     var ocId: [String] = []
                     let error = await NCNetworking.shared.deleteMetadata(metadata, onlyLocalCache: false)
@@ -171,7 +163,7 @@ class NCContextMenu: NSObject {
                     } else {
                         NCContentPresenter().showError(error: error)
                     }
-                    NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDeleteFile, userInfo: ["ocId": ocId, "indexPath": [indexPath], "onlyLocalCache": false, "error": error, "hud": hud])
+                    NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDeleteFile, userInfo: ["ocId": ocId, "indexPath": [indexPath], "onlyLocalCache": false, "error": error])
                 }
             })
             alertController.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel) { _ in })

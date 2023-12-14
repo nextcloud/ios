@@ -253,6 +253,10 @@ extension tableMetadata {
         !livePhotoFile.isEmpty
     }
 
+    var isNotFlaggedAsLivePhotoByServer: Bool {
+        !isFlaggedAsLivePhotoByServer
+    }
+
     /// Returns false if the user is lokced out of the file. I.e. The file is locked but by somone else
     func canUnlock(as user: String) -> Bool {
         return !lock || (lockOwner == user && lockOwnerType == 0)
@@ -620,13 +624,14 @@ extension NCManageDatabase {
         }
     }
 
-    func setMetadataLivePhotoByServer(account: String, ocId: String) {
+    func setMetadataLivePhotoByServer(account: String, ocId: String, livePhotoFile: String) {
 
         do {
             let realm = try Realm()
             try realm.write {
                 let result = realm.objects(tableMetadata.self).filter("account == %@ AND ocId == %@", account, ocId).first
                 result?.isFlaggedAsLivePhotoByServer = true
+                result?.livePhotoFile = livePhotoFile
             }
         } catch let error {
             NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
@@ -728,6 +733,18 @@ extension NCManageDatabase {
             } else {
                 return realm.objects(tableMetadata.self).filter(predicate)
             }
+        } catch let error as NSError {
+            NextcloudKit.shared.nkCommonInstance.writeLog("Could not access database: \(error)")
+        }
+
+        return nil
+    }
+
+    func getResultMetadata(predicate: NSPredicate) -> tableMetadata? {
+
+        do {
+            let realm = try Realm()
+            return realm.objects(tableMetadata.self).filter(predicate).first
         } catch let error as NSError {
             NextcloudKit.shared.nkCommonInstance.writeLog("Could not access database: \(error)")
         }
@@ -940,7 +957,7 @@ extension NCManageDatabase {
 
         do {
             let realm = try Realm()
-            guard let result = realm.objects(tableMetadata.self).filter(NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileName == %@", metadata.account, metadata.serverUrl, metadata.livePhotoFile)).first else { return nil }
+            guard let result = realm.objects(tableMetadata.self).filter(NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileId == %@", metadata.account, metadata.serverUrl, metadata.livePhotoFile)).first else { return nil }
             return tableMetadata.init(value: result)
         } catch let error as NSError {
             NextcloudKit.shared.nkCommonInstance.writeLog("Could not access database: \(error)")
@@ -1088,7 +1105,9 @@ extension NCManageDatabase {
                 }
                 if metadatasChangedCount != 0 || metadatasChanged {
                     realm.delete(results)
-                    realm.add(metadatas, update: .all)
+                    for metadata in metadatas {
+                        realm.add(tableMetadata(value: metadata), update: .all)
+                    }
                 }
             }
         } catch let error {
