@@ -218,6 +218,7 @@ class NCGlobal: NSObject {
     @objc let errorMethodNotSupported: Int          = 405
     @objc let errorConflict: Int                    = 409
     @objc let errorPreconditionFailed: Int          = 412
+    @objc let errorUnsupportedMediaType: Int        = 415
     @objc let errorQuota: Int                       = 507
     @objc let errorUnauthorized997: Int             = 997
     @objc let errorExplicitlyCancelled: Int         = -999
