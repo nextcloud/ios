@@ -426,7 +426,7 @@ extension NCMedia {
         } else if showOnlyVideos {
             return NSPredicate(format: NCImageCache.shared.showOnlyPredicateMediaString, appDelegate.account, startServerUrl, NKCommon.TypeClassFile.video.rawValue)
         } else {
-           return NSPredicate(format: NCImageCache.shared.showBothPredicateMediaString, appDelegate.account, startServerUrl)
+           return NSPredicate(format: NCImageCache.shared.showPhotoVideoPredicateMediaString, appDelegate.account, startServerUrl)
         }
     }
 

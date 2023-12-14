@@ -141,10 +141,14 @@ struct NCMediaNew: View {
         .onReceive(vm.$triggerLoadMedia) { newValue in
             if newValue {
                 vm.triggerLoadMedia = false
-                guard let topMostVisibleMetadataDate, let bottomMostVisibleMetadataDate else { return }
 
-                let fromDate = min(topMostVisibleMetadataDate, bottomMostVisibleMetadataDate)
-                let toDate = max(topMostVisibleMetadataDate, bottomMostVisibleMetadataDate)
+                var fromDate: Date?
+                var toDate: Date?
+
+                if let topMostVisibleMetadataDate, let bottomMostVisibleMetadataDate {
+                    fromDate = min(topMostVisibleMetadataDate, bottomMostVisibleMetadataDate)
+                    toDate = max(topMostVisibleMetadataDate, bottomMostVisibleMetadataDate)
+                }
 
                 vm.searchMedia(from: fromDate, to: toDate, isScrolledToTop: isScrolledToTop, isScrolledToBottom: isScrolledToBottom)
             }

@@ -68,6 +68,8 @@ import RealmSwift
             DispatchQueue.main.async { self.metadatas = Array(metadatas.map { tableMetadata.init(value: $0) }) }
         }
 
+        notifyLoadNewMedia()
+
         $filter
             .dropFirst()
             .sink { filter in
@@ -239,7 +241,7 @@ import RealmSwift
         } else if showOnlyVideos {
             return NSPredicate(format: NCImageCache.shared.showOnlyPredicateMediaString, appDelegate.account, startServerUrl, NKCommon.TypeClassFile.video.rawValue)
         } else {
-           return NSPredicate(format: NCImageCache.shared.showBothPredicateMediaString, appDelegate.account, startServerUrl)
+           return NSPredicate(format: NCImageCache.shared.showPhotoVideoPredicateMediaString, appDelegate.account, startServerUrl)
         }
     }
 }
@@ -301,6 +303,8 @@ extension NCMediaViewModel {
         if let metadatas = self.cache.initialMetadatas {
             DispatchQueue.main.async { self.metadatas = Array(metadatas.map { tableMetadata.init(value: $0) }) }
         }
+
+        notifyLoadNewMedia()
     }
 }
 
@@ -355,7 +359,7 @@ extension NCMediaViewModel {
                 }
             }
 
-            if results.changedItems > 0 {
+            if results.changedItems != 0 {
                 self.loadMediaFromDB()
             } else {
                 if finalPastDate == Date.distantPast {
@@ -365,7 +369,7 @@ extension NCMediaViewModel {
         }
     }
 
-    private func updateMedia(account: String, lessDate: Date, greaterDate: Date, limit: Int = 1000, timeout: TimeInterval = 60, predicate: NSPredicate) async -> MediaResult {
+    private func updateMedia(account: String, lessDate: Date, greaterDate: Date, limit: Int = 200, timeout: TimeInterval = 60, predicate: NSPredicate) async -> MediaResult {
         guard let mediaPath = NCManageDatabase.shared.getActiveAccount()?.mediaPath else {
             return MediaResult(account: account, lessDate: lessDate, greaterDate: greaterDate, metadatas: [], changedItems: 0, error: NKError())
         }
@@ -377,9 +381,9 @@ extension NCMediaViewModel {
         return await withCheckedContinuation { continuation in
             if results.account == account, results.error == .success {
                 NCManageDatabase.shared.convertFilesToMetadatas(results.files, useMetadataFolder: false) { _, _, metadatas in
-                    var predicate = NSPredicate(format: "date > %@ AND date < %@", greaterDate as NSDate, lessDate as NSDate)
-                    predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [predicate, self.getPredicate(showAll: true)])
-                    let result = NCManageDatabase.shared.updateMetadatas(metadatas, predicate: predicate)
+                    let predicate = NSPredicate(format: "date > %@ AND date < %@", greaterDate as NSDate, lessDate as NSDate)
+                    let compoundPredicate = NSCompoundPredicate(andPredicateWithSubpredicates: [predicate, self.getPredicate(showAll: true)])
+                    let result = NCManageDatabase.shared.updateMetadatas(metadatas, predicate: compoundPredicate)
                     if result.metadatasChangedCount != 0 || result.metadatasChanged {
                         continuation.resume(returning: MediaResult(account: account, lessDate: lessDate, greaterDate: greaterDate, metadatas: metadatas, changedItems: result.metadatasChangedCount, error: results.error))
                     } else {
@@ -425,6 +429,8 @@ extension NCMediaViewModel: NCSelectDelegate {
         NCManageDatabase.shared.setAccountMediaPath(path, account: appDelegate.account)
 
         self.loadMediaFromDB()
+
+        notifyLoadNewMedia()
     }
 }
 

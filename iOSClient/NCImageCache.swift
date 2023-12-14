@@ -49,8 +49,13 @@ import RealmSwift
     }()
     private var ocIdEtag: [String: String] = [:]
 
+    /// This shows all photo and videos, including live photos
     let showAllPredicateMediaString = "account == %@ AND serverUrl BEGINSWITH %@ AND (classFile == '\(NKCommon.TypeClassFile.image.rawValue)' OR classFile == '\(NKCommon.TypeClassFile.video.rawValue)') AND NOT (session CONTAINS[c] 'upload')"
-    let showBothPredicateMediaString = "account == %@ AND serverUrl BEGINSWITH %@ AND (classFile == '\(NKCommon.TypeClassFile.image.rawValue)' OR classFile == '\(NKCommon.TypeClassFile.video.rawValue)') AND NOT (session CONTAINS[c] 'upload') AND NOT (livePhotoFile != '' AND classFile == '\(NKCommon.TypeClassFile.video.rawValue)')"
+    
+    // This shows all photo and videos, but no live photos
+    let showPhotoVideoPredicateMediaString = "account == %@ AND serverUrl BEGINSWITH %@ AND (classFile == '\(NKCommon.TypeClassFile.image.rawValue)' OR classFile == '\(NKCommon.TypeClassFile.video.rawValue)') AND NOT (session CONTAINS[c] 'upload') AND NOT (livePhotoFile != '' AND classFile == '\(NKCommon.TypeClassFile.video.rawValue)')"
+    
+    // This will only show an explicitly specified media type, but no live photos
     let showOnlyPredicateMediaString = "account == %@ AND serverUrl BEGINSWITH %@ AND classFile == %@ AND NOT (session CONTAINS[c] 'upload') AND NOT (livePhotoFile != '' AND classFile == '\(NKCommon.TypeClassFile.video.rawValue)')"
 
     @ThreadSafe private var _initialMetadatas: Results<tableMetadata>?
@@ -147,7 +152,7 @@ import RealmSwift
     func getMediaMetadatas(account: String, predicate: NSPredicate? = nil) -> Results<tableMetadata>? {
         guard let account = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", account)) else { return nil }
         let startServerUrl = NCUtilityFileSystem().getHomeServer(urlBase: account.urlBase, userId: account.userId) + account.mediaPath
-        let predicateBoth = NSPredicate(format: showBothPredicateMediaString, account.account, startServerUrl)
+        let predicateBoth = NSPredicate(format: showPhotoVideoPredicateMediaString, account.account, startServerUrl)
         return NCManageDatabase.shared.getResultsMetadatas(predicate: predicate ?? predicateBoth, sorted: "date")
     }
 
