@@ -327,10 +327,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         if error != .success {
             NCContentPresenter().showError(error: error)
         }
-
-        if let hud = userInfo["hud"] as? JGProgressHUD {
-            hud.dismiss()
-        }
     }
 
     @objc func moveFile(_ notification: NSNotification) {
@@ -339,10 +335,11 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
     @objc func copyFile(_ notification: NSNotification) {
 
-        guard let userInfo = notification.userInfo as NSDictionary? else { return }
+        guard let userInfo = notification.userInfo as NSDictionary?,
+              let error = userInfo["error"] as? NKError else { return }
 
-        if let hud = userInfo["hud"] as? JGProgressHUD {
-            hud.dismiss()
+        if error != .success {
+            NCContentPresenter().showError(error: error)
         }
     }
 
@@ -353,11 +350,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
               account == appDelegate.account
         else { return }
 
-        if isSearchingMode {
-            reloadDataSourceNetwork()
-        } else {
-            reloadDataSource()
-        }
+        reloadDataSourceNetwork(isForced: true)
     }
 
     @objc func createFolder(_ notification: NSNotification) {
