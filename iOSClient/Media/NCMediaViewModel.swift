@@ -228,8 +228,8 @@ import RealmSwift
         isLoading = isLoadingMedia || isLoadingProcessing
     }
 
-    private func getPredicate(_ predicatedefault: Bool = false) -> NSPredicate {
-        guard let mediaPath = NCManageDatabase.shared.getActiveAccount()?.mediaPath else { return NSPredicate() }
+    private func getPredicate(showAll: Bool = false) -> NSPredicate {
+
         let startServerUrl = NCUtilityFileSystem().getHomeServer(urlBase: appDelegate.urlBase, userId: appDelegate.userId) + mediaPath
 
         let showAll = NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND (classFile == %@ OR classFile == %@) AND NOT (session CONTAINS[c] 'upload')", appDelegate.account, startServerUrl, NKCommon.TypeClassFile.image.rawValue, NKCommon.TypeClassFile.video.rawValue)
