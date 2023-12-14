@@ -154,7 +154,7 @@ import RealmSwift
         isLoadingProcessing = true
 
         if let livePhoto = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata) {
-            appDelegate.saveLivePhotoQueue.addOperation(NCOperationSaveLivePhoto(metadata: metadata, metadataMOV: livePhoto))
+            NCNetworking.shared.saveLivePhotoQueue.addOperation(NCOperationSaveLivePhoto(metadata: metadata, metadataMOV: livePhoto))
         } else if NCUtilityFileSystem().fileProviderStorageExists(metadata) {
             NCActionCenter.shared.saveAlbum(metadata: metadata)
         } else {
