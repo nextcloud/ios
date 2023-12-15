@@ -60,11 +60,11 @@ class tableMetadata: Object, NCUserBaseUrl {
     @objc dynamic var hidden: Bool = false
     @objc dynamic var iconName = ""
     @objc dynamic var iconUrl = ""
-    @objc dynamic var isFlaggedAsLivePhotoByServer: Bool = false
+    @objc dynamic var isFlaggedAsLivePhotoByServer: Bool = false // Indicating if the file is sent as a live photo from the server, or if we should detect it as such and convert it client-side
     @objc dynamic var isExtractFile: Bool = false
-    @objc dynamic var livePhotoFile = ""
+    @objc dynamic var livePhotoFile = "" // If this is not empty, the media is a live photo. New media gets this straight from server, but old media needs to be detected as live photo (look isFlaggedAsLivePhotoByServer)
     @objc dynamic var mountType = ""
-    @objc dynamic var name = ""                                             // for unifiedSearch is the provider.id
+    @objc dynamic var name = "" // for unifiedSearch is the provider.id
     @objc dynamic var note = ""
     @objc dynamic var ocId = ""
     @objc dynamic var ownerId = ""
