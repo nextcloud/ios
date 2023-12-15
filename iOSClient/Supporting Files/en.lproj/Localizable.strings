@@ -949,6 +949,7 @@
 "_reset_wrong_passcode_"    = "Reset application";
 "_reset_wrong_passcode_desc_" = "Use \"Reset application\" to remove all accounts and local data after %d failed code entry attempts.";
 "_deviceOwnerAuthentication_" = "The biometric sensor has been temporarily disabled due to multiple failed attempts. Enter the device passcode to re-enable the sensor.";
+"_virus_detect_"            = "Virus detected. Upload cannot be completed!";
 
 // Video
 "_select_trace_"            = "Select the trace";
