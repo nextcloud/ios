@@ -629,9 +629,10 @@ extension NCManageDatabase {
         do {
             let realm = try Realm()
             try realm.write {
-                let result = realm.objects(tableMetadata.self).filter("account == %@ AND ocId == %@", account, ocId).first
-                result?.isFlaggedAsLivePhotoByServer = true
-                result?.livePhotoFile = livePhotoFile
+                if let result = realm.objects(tableMetadata.self).filter("account == %@ AND ocId == %@", account, ocId).first {
+                    result.isFlaggedAsLivePhotoByServer = true
+                    result.livePhotoFile = livePhotoFile
+                }
             }
         } catch let error {
             NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
