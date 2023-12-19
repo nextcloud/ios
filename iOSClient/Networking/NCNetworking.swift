@@ -837,11 +837,11 @@ class NCNetworking: NSObject, NKCommonDelegate {
         let serverUrlfileNamePath = metadata.urlBase + metadata.path + metadata.fileName
         let ocId = metadata.ocId
 
-        Task {
+        DispatchQueue.global().async {
             if let result = NCManageDatabase.shared.getResultMetadata(predicate: NSPredicate(format: "account == '\(account)' AND status == \(NCGlobal.shared.metadataStatusNormal) AND (fileName == '\(livePhotoFile)' || fileId == '\(livePhotoFile)')")) {
                 if livePhotoFile == result.fileId { return }
-                for case let operation as NCOperationConvertLivePhoto in convertLivePhotoQueue.operations where operation.serverUrlfileNamePath == serverUrlfileNamePath { continue }
-                convertLivePhotoQueue.addOperation(NCOperationConvertLivePhoto(serverUrlfileNamePath: serverUrlfileNamePath, livePhotoFile: result.fileId, account: account, ocId: ocId))
+                for case let operation as NCOperationConvertLivePhoto in self.convertLivePhotoQueue.operations where operation.serverUrlfileNamePath == serverUrlfileNamePath { continue }
+                self.convertLivePhotoQueue.addOperation(NCOperationConvertLivePhoto(serverUrlfileNamePath: serverUrlfileNamePath, livePhotoFile: result.fileId, account: account, ocId: ocId))
             }
         }
     }
