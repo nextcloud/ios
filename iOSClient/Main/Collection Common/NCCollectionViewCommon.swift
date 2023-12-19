@@ -491,13 +491,13 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     @objc func uploadedLivePhoto(_ notification: NSNotification) {
 
         guard let userInfo = notification.userInfo as NSDictionary?,
-              let ocIdTemp = userInfo["ocIdTemp"] as? String,
-              let ocId = userInfo["ocId"] as? String,
               let serverUrl = userInfo["serverUrl"] as? String,
-              let account = userInfo["account"] as? String
+              serverUrl == self.serverUrl,
+              let account = userInfo["account"] as? String,
+              account == appDelegate.account
         else { return }
 
-        
+        self.reloadDataSource()
     }
 
     @objc func uploadCancelFile(_ notification: NSNotification) {

@@ -824,7 +824,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
             } else {
                 NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Upload set LivePhoto with error \(results.error.errorCode)")
             }
-            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUploadedFile, userInfo: aUserInfo)
+            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUploadedLivePhoto, userInfo: aUserInfo)
         }
     }
 
