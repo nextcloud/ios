@@ -211,32 +211,28 @@ class NCDataSource: NSObject {
         return indexPaths
     }
 
-    @discardableResult
-    func reloadMetadata(ocId: String, ocIdTemp: String? = nil) -> (indexPath: IndexPath?, sameSections: Bool) {
+    func reloadMetadata(ocId: String, ocIdTemp: String? = nil, completion: @escaping () -> Void) {
 
-        let numberOfSections = self.numberOfSections()
-        var ocIdSearch = ocId
-
-        guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) else { return (nil, self.isSameNumbersOfSections(numberOfSections: numberOfSections)) }
-
-        if let ocIdTemp = ocIdTemp {
-            ocIdSearch = ocIdTemp
+        DispatchQueue.global().async {
+            var ocIdSearch = ocId
+            guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) else {
+                return  DispatchQueue.main.async { completion() }
+            }
+            if let ocIdTemp = ocIdTemp {
+                ocIdSearch = ocIdTemp
+            }
+            // UPDATE metadataForSection (IMPORTANT FIRST)
+            let (indexPath, metadataForSection) = self.getIndexPathMetadata(ocId: ocIdSearch)
+            if let indexPath = indexPath, let metadataForSection = metadataForSection {
+                metadataForSection.metadatas[indexPath.row] = metadata
+                metadataForSection.createMetadatas()
+            }
+            // UPDATE metadatasSource (IMPORTANT LAST)
+            if let rowIndex = self.metadatas.firstIndex(where: {$0.ocId == ocIdSearch}) {
+                self.metadatas[rowIndex] = metadata
+            }
+            DispatchQueue.main.async { completion() }
         }
-
-        // UPDATE metadataForSection (IMPORTANT FIRST)
-        let (indexPath, metadataForSection) = self.getIndexPathMetadata(ocId: ocIdSearch)
-        if let indexPath = indexPath, let metadataForSection = metadataForSection {
-            metadataForSection.metadatas[indexPath.row] = metadata
-            metadataForSection.createMetadatas()
-        }
-
-        // UPDATE metadatasSource (IMPORTANT LAST)
-        if let rowIndex = self.metadatas.firstIndex(where: {$0.ocId == ocIdSearch}) {
-            self.metadatas[rowIndex] = metadata
-        }
-
-        let result = self.getIndexPathMetadata(ocId: ocId)
-        return (result.indexPath, self.isSameNumbersOfSections(numberOfSections: numberOfSections))
     }
 
     // MARK: -

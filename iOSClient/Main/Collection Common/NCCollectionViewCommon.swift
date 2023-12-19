@@ -196,6 +196,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
         NotificationCenter.default.addObserver(self, selector: #selector(uploadStartFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUploadStartFile), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(uploadedFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUploadedFile), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(uploadedLivePhoto(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUploadedLivePhoto), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(uploadCancelFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUploadCancelFile), object: nil)
 
         NotificationCenter.default.addObserver(self, selector: #selector(triggerProgressTask(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterProgressTask), object: nil)
@@ -210,7 +211,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         navigationController?.setNavigationBarHidden(false, animated: true)
         setNavigationItem()
 
-        reloadDataSource(isForced: false)
+        reloadDataSource()
         if !isSearchingMode {
             reloadDataSourceNetwork()
         }
@@ -238,6 +239,16 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterCopyFile), object: nil)
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterRenameFile), object: nil)
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterCreateFolder), object: nil)
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterFavoriteFile), object: nil)
+
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDownloadStartFile), object: nil)
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDownloadedFile), object: nil)
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDownloadCancelFile), object: nil)
+
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUploadStartFile), object: nil)
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUploadedFile), object: nil)
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUploadedLivePhoto), object: nil)
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUploadCancelFile), object: nil)
 
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterProgressTask), object: nil)
 
@@ -385,8 +396,9 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             return
         }
 
-        dataSource.reloadMetadata(ocId: ocId)
-        collectionView?.reloadData()
+        dataSource.reloadMetadata(ocId: ocId) {
+            self.collectionView?.reloadData()
+        }
     }
 
     @objc func downloadStartFile(_ notification: NSNotification) {
@@ -395,10 +407,13 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
               let serverUrl = userInfo["serverUrl"] as? String,
               serverUrl == self.serverUrl,
               let account = userInfo["account"] as? String,
-              account == appDelegate.account
+              account == appDelegate.account,
+              let ocId = userInfo["ocId"] as? String
         else { return }
 
-        reloadDataSource()
+        dataSource.reloadMetadata(ocId: ocId) {
+            self.collectionView?.reloadData()
+        }
     }
 
     @objc func downloadedFile(_ notification: NSNotification) {
@@ -407,10 +422,13 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
               let serverUrl = userInfo["serverUrl"] as? String,
               serverUrl == self.serverUrl,
               let account = userInfo["account"] as? String,
-              account == appDelegate.account
+              account == appDelegate.account,
+              let ocId = userInfo["ocId"] as? String
         else { return }
 
-        reloadDataSource()
+        dataSource.reloadMetadata(ocId: ocId) {
+            self.collectionView?.reloadData()
+        }
     }
 
     @objc func downloadCancelFile(_ notification: NSNotification) {
@@ -423,15 +441,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
               account == appDelegate.account
         else { return }
 
-        let (indexPath, sameSections) = dataSource.reloadMetadata(ocId: ocId)
-        if let indexPath = indexPath {
-            if sameSections && (indexPath.section < collectionView.numberOfSections && indexPath.row < collectionView.numberOfItems(inSection: indexPath.section)) {
-                collectionView?.reloadItems(at: [indexPath])
-            } else {
-                self.collectionView?.reloadData()
-            }
-        } else {
-            reloadDataSource()
+        dataSource.reloadMetadata(ocId: ocId) {
+            self.collectionView?.reloadData()
         }
     }
 
@@ -460,6 +471,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
         guard let userInfo = notification.userInfo as NSDictionary?,
               let ocIdTemp = userInfo["ocIdTemp"] as? String,
+              let ocId = userInfo["ocId"] as? String,
               let serverUrl = userInfo["serverUrl"] as? String,
               let account = userInfo["account"] as? String
         else { return }
@@ -470,8 +482,22 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         }
 
         if account == appDelegate.account, serverUrl == self.serverUrl {
-            reloadDataSource()
+            dataSource.reloadMetadata(ocId: ocId, ocIdTemp: ocIdTemp) {
+                self.collectionView?.reloadData()
+            }
         }
+    }
+
+    @objc func uploadedLivePhoto(_ notification: NSNotification) {
+
+        guard let userInfo = notification.userInfo as NSDictionary?,
+              let ocIdTemp = userInfo["ocIdTemp"] as? String,
+              let ocId = userInfo["ocId"] as? String,
+              let serverUrl = userInfo["serverUrl"] as? String,
+              let account = userInfo["account"] as? String
+        else { return }
+
+        
     }
 
     @objc func uploadCancelFile(_ notification: NSNotification) {
@@ -501,25 +527,28 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
               let ocId = userInfo["ocId"] as? String
         else { return }
 
-        let chunk: Int = userInfo["chunk"] as? Int ?? 0
-        let e2eEncrypted: Bool = userInfo["e2eEncrypted"] as? Bool ?? false
+        DispatchQueue.global().async {
+            let chunk: Int = userInfo["chunk"] as? Int ?? 0
+            let e2eEncrypted: Bool = userInfo["e2eEncrypted"] as? Bool ?? false
 
-        // Header Transfer
-        if headerMenuTransferView && (chunk > 0 || e2eEncrypted) {
-            if NCNetworking.shared.transferInForegorund?.ocId == ocId {
-                NCNetworking.shared.transferInForegorund?.progress = progressNumber.floatValue
-            } else {
-                NCNetworking.shared.transferInForegorund = NCNetworking.TransferInForegorund(ocId: ocId, progress: progressNumber.floatValue)
-                collectionView.reloadData()
+            // Header Transfer
+            if self.headerMenuTransferView && (chunk > 0 || e2eEncrypted) {
+                if NCNetworking.shared.transferInForegorund?.ocId == ocId {
+                    NCNetworking.shared.transferInForegorund?.progress = progressNumber.floatValue
+                } else {
+                    NCNetworking.shared.transferInForegorund = NCNetworking.TransferInForegorund(ocId: ocId, progress: progressNumber.floatValue)
+                    DispatchQueue.main.async { self.collectionView.reloadData() }
+                }
+                self.headerMenu?.progressTransfer.progress = progressNumber.floatValue
             }
-            self.headerMenu?.progressTransfer.progress = progressNumber.floatValue
-        }
 
-        let status = userInfo["status"] as? Int ?? NCGlobal.shared.metadataStatusNormal
+            let status = userInfo["status"] as? Int ?? NCGlobal.shared.metadataStatusNormal
+            guard let indexPath = self.dataSource.getIndexPathMetadata(ocId: ocId).indexPath else { return }
 
-        if let (indexPath, _) = self.dataSource.getIndexPathMetadata(ocId: ocId) as? (IndexPath, NCMetadataForSection?),
-           let cell = collectionView?.cellForItem(at: indexPath) {
-            if let cell = cell as? NCCellProtocol {
+            DispatchQueue.main.async {
+                guard let cell = self.collectionView?.cellForItem(at: indexPath),
+                      let cell = cell as? NCCellProtocol else { return }
+
                 if progressNumber.floatValue == 1 && !(cell is NCTransferCell) {
                     cell.fileProgressView?.isHidden = true
                     cell.fileProgressView?.progress = .zero
@@ -534,12 +563,12 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                     cell.fileProgressView?.progress = progressNumber.floatValue
                     cell.setButtonMore(named: NCGlobal.shared.buttonMoreStop, image: NCImageCache.images.buttonStop)
                     if status == NCGlobal.shared.metadataStatusInDownload {
-                        cell.fileInfoLabel?.text = utilityFileSystem.transformedSize(totalBytesExpected) + " - ↓ " + utilityFileSystem.transformedSize(totalBytes)
+                        cell.fileInfoLabel?.text = self.utilityFileSystem.transformedSize(totalBytesExpected) + " - ↓ " + self.utilityFileSystem.transformedSize(totalBytes)
                     } else if status == NCGlobal.shared.metadataStatusInUpload {
                         if totalBytes > 0 {
-                            cell.fileInfoLabel?.text = utilityFileSystem.transformedSize(totalBytesExpected) + " - ↑ " + utilityFileSystem.transformedSize(totalBytes)
+                            cell.fileInfoLabel?.text = self.utilityFileSystem.transformedSize(totalBytesExpected) + " - ↑ " + self.utilityFileSystem.transformedSize(totalBytes)
                         } else {
-                            cell.fileInfoLabel?.text = utilityFileSystem.transformedSize(totalBytesExpected) + " - ↑ …"
+                            cell.fileInfoLabel?.text = self.utilityFileSystem.transformedSize(totalBytesExpected) + " - ↑ …"
                         }
                     }
                 }
