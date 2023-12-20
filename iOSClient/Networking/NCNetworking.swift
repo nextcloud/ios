@@ -802,9 +802,12 @@ class NCNetworking: NSObject, NKCommonDelegate {
 
     func uploadLivePhoto(metadata: tableMetadata, userInfo aUserInfo: [AnyHashable: Any]) {
 
-        guard let metadata1 = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND urlBase == %@ AND path == %@ AND fileName == %@ AND status == %d", metadata.account, metadata.urlBase, metadata.path, metadata.livePhotoFile, NCGlobal.shared.metadataStatusNormal)) else {
-            return
+        guard let metadata1 = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND urlBase == %@ AND path == %@ AND fileName == %@", metadata.account, metadata.urlBase, metadata.path, metadata.livePhotoFile)) else {
+            metadata.livePhotoFile = ""
+            NCManageDatabase.shared.addMetadata(metadata)
+            return NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUploadedLivePhoto, userInfo: aUserInfo)
         }
+        if metadata1.status != NCGlobal.shared.metadataStatusNormal { return }
 
         Task {
             let serverUrlfileNamePath = metadata.urlBase + metadata.path + metadata.fileName
@@ -824,7 +827,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
             } else {
                 NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Upload set LivePhoto with error \(results.error.errorCode)")
             }
-            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUploadedFile, userInfo: aUserInfo)
+            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUploadedLivePhoto, userInfo: aUserInfo)
         }
     }
 
@@ -837,11 +840,11 @@ class NCNetworking: NSObject, NKCommonDelegate {
         let serverUrlfileNamePath = metadata.urlBase + metadata.path + metadata.fileName
         let ocId = metadata.ocId
 
-        Task {
+        DispatchQueue.global().async {
             if let result = NCManageDatabase.shared.getResultMetadata(predicate: NSPredicate(format: "account == '\(account)' AND status == \(NCGlobal.shared.metadataStatusNormal) AND (fileName == '\(livePhotoFile)' || fileId == '\(livePhotoFile)')")) {
                 if livePhotoFile == result.fileId { return }
-                for case let operation as NCOperationConvertLivePhoto in convertLivePhotoQueue.operations where operation.serverUrlfileNamePath == serverUrlfileNamePath { continue }
-                convertLivePhotoQueue.addOperation(NCOperationConvertLivePhoto(serverUrlfileNamePath: serverUrlfileNamePath, livePhotoFile: result.fileId, account: account, ocId: ocId))
+                for case let operation as NCOperationConvertLivePhoto in self.convertLivePhotoQueue.operations where operation.serverUrlfileNamePath == serverUrlfileNamePath { continue }
+                self.convertLivePhotoQueue.addOperation(NCOperationConvertLivePhoto(serverUrlfileNamePath: serverUrlfileNamePath, livePhotoFile: result.fileId, account: account, ocId: ocId))
             }
         }
     }

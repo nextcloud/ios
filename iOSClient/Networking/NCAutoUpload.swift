@@ -50,7 +50,7 @@ class NCAutoUpload: NSObject {
                 NCManageDatabase.shared.setAccountAutoUploadProperty("autoUpload", state: false)
                 return completion(0)
             }
-            Task {
+            DispatchQueue.global().async {
                 self.uploadAssetsNewAndFull(viewController: viewController, selector: NCGlobal.shared.selectorUploadAutoUpload, log: "Init Auto Upload") { items in
                     completion(items)
                 }
@@ -67,7 +67,7 @@ class NCAutoUpload: NSObject {
             let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_create_full_upload_")
             NCContentPresenter().showWarning(error: error, priority: .max)
             NCActivityIndicator.shared.start()
-            Task {
+            DispatchQueue.global().async {
                 self.uploadAssetsNewAndFull(viewController: viewController, selector: NCGlobal.shared.selectorUploadAutoUploadAll, log: log) { _ in
                     NCActivityIndicator.shared.stop()
                 }
