@@ -137,7 +137,7 @@ class NCDataSource: NSObject {
 
         } else {
 
-        // normal
+            // normal
             let directory = NSLocalizedString("directory", comment: "").lowercased().firstUppercased
             self.sectionsValue = self.sectionsValue.sorted {
                 if directoryOnTop && $0 == directory {
