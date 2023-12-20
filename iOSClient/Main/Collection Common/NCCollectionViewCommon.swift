@@ -375,26 +375,24 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
               let withPush = userInfo["withPush"] as? Bool
         else { return }
 
-        if let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
-            reloadDataSource()
-            if withPush {
-                pushMetadata(metadata)
-            }
+        reloadDataSource()
+
+        if withPush, let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
+            pushMetadata(metadata)
         }
     }
 
     @objc func favoriteFile(_ notification: NSNotification) {
 
+        if self is NCFavorite {
+            return reloadDataSource()
+        }
+
         guard let userInfo = notification.userInfo as NSDictionary?,
               let ocId = userInfo["ocId"] as? String,
               let serverUrl = userInfo["serverUrl"] as? String,
               serverUrl == self.serverUrl
-        else {
-            if self is NCFavorite {
-                reloadDataSource()
-            }
-            return
-        }
+        else { return }
 
         dataSource.reloadMetadata(ocId: ocId) {
             self.collectionView?.reloadData()

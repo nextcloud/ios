@@ -191,10 +191,9 @@ class NCDataSource: NSObject {
 
     // MARK: -
 
-    @discardableResult
-    func appendMetadatasToSection(_ metadatas: [tableMetadata], metadataForSection: NCMetadataForSection, lastSearchResult: NKSearchResult) -> [IndexPath] {
+    func appendMetadatasToSection(_ metadatas: [tableMetadata], metadataForSection: NCMetadataForSection, lastSearchResult: NKSearchResult) {
 
-        guard let sectionIndex = getSectionIndex(metadataForSection.sectionValue) else { return [] }
+        guard let sectionIndex = getSectionIndex(metadataForSection.sectionValue) else { return }
         var indexPaths: [IndexPath] = []
 
         self.metadatas.append(contentsOf: metadatas)
@@ -207,8 +206,6 @@ class NCDataSource: NSObject {
                 indexPaths.append(IndexPath(row: rowIndex, section: sectionIndex))
             }
         }
-
-        return indexPaths
     }
 
     func reloadMetadata(ocId: String, ocIdTemp: String? = nil, completion: @escaping () -> Void) {
