@@ -805,12 +805,9 @@ class NCNetworking: NSObject, NKCommonDelegate {
         guard let metadata1 = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND urlBase == %@ AND path == %@ AND fileName == %@", metadata.account, metadata.urlBase, metadata.path, metadata.livePhotoFile)) else {
             metadata.livePhotoFile = ""
             NCManageDatabase.shared.addMetadata(metadata)
-            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUploadedLivePhoto, userInfo: aUserInfo)
-            return
+            return NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUploadedLivePhoto, userInfo: aUserInfo)
         }
-        if metadata1.status != NCGlobal.shared.metadataStatusNormal {
-            return
-        }
+        if metadata1.status != NCGlobal.shared.metadataStatusNormal { return }
 
         Task {
             let serverUrlfileNamePath = metadata.urlBase + metadata.path + metadata.fileName
