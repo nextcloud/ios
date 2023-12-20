@@ -802,7 +802,13 @@ class NCNetworking: NSObject, NKCommonDelegate {
 
     func uploadLivePhoto(metadata: tableMetadata, userInfo aUserInfo: [AnyHashable: Any]) {
 
-        guard let metadata1 = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND urlBase == %@ AND path == %@ AND fileName == %@ AND status == %d", metadata.account, metadata.urlBase, metadata.path, metadata.livePhotoFile, NCGlobal.shared.metadataStatusNormal)) else {
+        guard let metadata1 = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND urlBase == %@ AND path == %@ AND fileName == %@", metadata.account, metadata.urlBase, metadata.path, metadata.livePhotoFile)) else {
+            metadata.livePhotoFile = ""
+            NCManageDatabase.shared.addMetadata(metadata)
+            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUploadedLivePhoto, userInfo: aUserInfo)
+            return
+        }
+        if metadata1.status != NCGlobal.shared.metadataStatusNormal {
             return
         }
 
