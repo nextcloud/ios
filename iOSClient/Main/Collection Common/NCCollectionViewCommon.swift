@@ -290,8 +290,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     @objc func notificationCenterEvents() {
         if notificationReloadDataSource > 0 {
             print("notificationReloadDataSource: \(notificationReloadDataSource)")
-            notificationReloadDataSource = 0
             reloadDataSource()
+            notificationReloadDataSource = 0
         }
     }
 
@@ -321,7 +321,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     }
 
     @objc func reloadDataSourceNetwork(_ notification: NSNotification) {
-
         if !isSearchingMode {
             reloadDataSourceNetwork()
         }
@@ -340,8 +339,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         guard let userInfo = notification.userInfo as NSDictionary?,
               let error = userInfo["error"] as? NKError else { return }
 
-        self.queryDB(isForced: true)
-        self.collectionView?.reloadData()
+        notificationReloadDataSource += 1
 
         if error != .success {
             NCContentPresenter().showError(error: error)
@@ -916,9 +914,9 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
     // MARK: - DataSource + NC Endpoint
 
-    func queryDB(isForced: Bool) { }
+    func queryDB() { }
 
-    @objc func reloadDataSource(isForced: Bool = true) {
+    @objc func reloadDataSource() {
         guard !appDelegate.account.isEmpty else { return }
 
         // get auto upload folder

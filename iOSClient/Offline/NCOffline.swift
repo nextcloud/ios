@@ -49,7 +49,7 @@ class NCOffline: NCCollectionViewCommon {
 
     // MARK: - DataSource + NC Endpoint
 
-    override func queryDB(isForced: Bool) {
+    override func queryDB() {
 
         var ocIds: [String] = []
         var metadatas: [tableMetadata] = []
@@ -81,11 +81,11 @@ class NCOffline: NCCollectionViewCommon {
             searchResults: self.searchResults)
     }
 
-    override func reloadDataSource(isForced: Bool = true) {
+    override func reloadDataSource() {
         super.reloadDataSource()
 
         DispatchQueue.global().async {
-            self.queryDB(isForced: isForced)
+            self.queryDB()
             DispatchQueue.main.async {
                 self.refreshControl.endRefreshing()
                 self.collectionView.reloadData()

@@ -49,7 +49,7 @@ class NCShares: NCCollectionViewCommon {
 
     // MARK: - DataSource + NC Endpoint
 
-    override func queryDB(isForced: Bool) {
+    override func queryDB() {
 
         var metadatas: [tableMetadata] = []
 
@@ -92,11 +92,11 @@ class NCShares: NCCollectionViewCommon {
         reload()
     }
 
-    override func reloadDataSource(isForced: Bool = true) {
+    override func reloadDataSource() {
         super.reloadDataSource()
 
         DispatchQueue.global().async {
-            self.queryDB(isForced: isForced)
+            self.queryDB()
         }
     }
 

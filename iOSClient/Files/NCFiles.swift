@@ -73,7 +73,7 @@ class NCFiles: NCCollectionViewCommon {
                 self.titleCurrentFolder = self.getNavigationTitle()
                 self.setNavigationItem()
 
-                self.reloadDataSource(isForced: false)
+                self.reloadDataSource()
                 self.reloadDataSourceNetwork()
             }
         }
@@ -97,11 +97,8 @@ class NCFiles: NCCollectionViewCommon {
     }
 
     // MARK: - DataSource + NC Endpoint
-    //
-    // forced: do no make the etag of directory test (default)
-    //
 
-    override func queryDB(isForced: Bool) {
+    override func queryDB() {
 
         let metadatas = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", self.appDelegate.account, self.serverUrl))
         let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", self.appDelegate.account, self.serverUrl))
@@ -110,9 +107,11 @@ class NCFiles: NCCollectionViewCommon {
             self.metadataFolder = NCManageDatabase.shared.getMetadataFolder(account: self.appDelegate.account, urlBase: self.appDelegate.urlBase, userId: self.appDelegate.userId, serverUrl: self.serverUrl)
         }
 
-        if !isForced, let directory, directory.etag == self.dataSource.directory?.etag, metadataTransfer == nil, self.fileNameBlink == nil, self.fileNameOpen == nil {
+        /*
+        if metadataTransfer == nil, self.fileNameBlink == nil, self.fileNameOpen == nil {
             return
         }
+        */
 
         self.richWorkspaceText = directory?.richWorkspace
         self.dataSource = NCDataSource(
@@ -128,15 +127,13 @@ class NCFiles: NCCollectionViewCommon {
             searchResults: self.searchResults)
     }
 
-    override func reloadDataSource(isForced: Bool = true) {
+    override func reloadDataSource() {
         super.reloadDataSource()
 
         DispatchQueue.main.async { self.refreshControl.endRefreshing() }
         DispatchQueue.global().async {
             guard !self.isSearchingMode, !self.appDelegate.account.isEmpty, !self.appDelegate.urlBase.isEmpty, !self.serverUrl.isEmpty else { return }
-
-            self.queryDB(isForced: isForced)
-
+            self.queryDB()
             DispatchQueue.main.async {
                 self.collectionView.reloadData()
                 if !self.dataSource.metadatas.isEmpty {
