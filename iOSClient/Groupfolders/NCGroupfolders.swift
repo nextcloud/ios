@@ -82,10 +82,8 @@ class NCGroupfolders: NCCollectionViewCommon {
         }
     }
 
-    override func reloadDataSourceNetwork(isForced: Bool = false) {
-        super.reloadDataSourceNetwork(isForced: isForced)
-
-        NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Reload data source network groupfolders forced \(isForced)")
+    override func reloadDataSourceNetwork() {
+        super.reloadDataSourceNetwork()
 
         isReloadDataSourceNetworkInProgress = true
         collectionView?.reloadData()

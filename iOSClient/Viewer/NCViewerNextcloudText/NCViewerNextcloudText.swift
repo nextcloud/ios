@@ -213,7 +213,7 @@ extension NCViewerNextcloudText: UINavigationControllerDelegate {
         super.didMove(toParent: parent)
 
         if parent == nil {
-            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSourceNetworkForced)
+            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSourceNetwork)
         }
     }
 }

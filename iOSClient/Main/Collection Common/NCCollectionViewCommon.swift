@@ -48,25 +48,23 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     internal var richWorkspaceText: String?
     internal var headerMenu: NCSectionHeaderMenu?
     internal var isSearchingMode: Bool = false
-
     internal var layoutForView: NCDBLayoutForView?
     internal var selectableDataSource: [RealmSwiftObject] { dataSource.getMetadataSourceForAllSections() }
-
     private var autoUploadFileName = ""
     private var autoUploadDirectory = ""
     internal var groupByField = "name"
     internal var providers: [NKSearchProvider]?
     internal var searchResults: [NKSearchResult]?
-
     internal var listLayout: NCListLayout!
     internal var gridLayout: NCGridLayout!
-
     internal var literalSearch: String?
-
     internal var isReloadDataSourceNetworkInProgress: Bool = false
 
-    private var pushed: Bool = false
+    internal var timerNotificationCenter: Timer?
+    internal var notificationReloadDataSource: Int = 0
+    internal var notificationReloadDataSourceNetwork: Int = 0
 
+    private var pushed: Bool = false
     private var tipView: EasyTipView?
     private var isTransitioning: Bool = false
     // DECLARE
@@ -129,7 +127,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         collectionView.refreshControl = refreshControl
         refreshControl.action(for: .valueChanged) { _ in
             self.dataSource.clearDirectory()
-            self.reloadDataSourceNetwork(isForced: true)
+            NCManageDatabase.shared.cleanEtagDirectory(account: self.appDelegate.account, serverUrl: self.serverUrl)
+            self.reloadDataSourceNetwork()
         }
 
         // Empty
@@ -180,8 +179,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         NotificationCenter.default.addObserver(self, selector: #selector(reloadAvatar(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterReloadAvatar), object: nil)
 
         NotificationCenter.default.addObserver(self, selector: #selector(reloadDataSource(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterReloadDataSource), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(reloadDataSourceNetwork), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterReloadDataSourceNetwork), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(reloadDataSourceNetworkForced(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterReloadDataSourceNetworkForced), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(reloadDataSourceNetwork(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterReloadDataSourceNetwork), object: nil)
 
         NotificationCenter.default.addObserver(self, selector: #selector(deleteFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDeleteFile), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(moveFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterMoveFile), object: nil)
@@ -216,6 +214,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             reloadDataSourceNetwork()
         }
 
+        timerNotificationCenter = Timer.scheduledTimer(timeInterval: 1.5, target: self, selector: #selector(notificationCenterEvents), userInfo: nil, repeats: true)
+
         // FIXME: iPAD PDF landscape mode iOS 16
         DispatchQueue.main.async {
             self.collectionView?.collectionViewLayout.invalidateLayout()
@@ -232,7 +232,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterReloadDataSource), object: nil)
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterReloadDataSourceNetwork), object: nil)
-        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterReloadDataSourceNetworkForced), object: nil)
 
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDeleteFile), object: nil)
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterMoveFile), object: nil)
@@ -252,6 +251,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterProgressTask), object: nil)
 
+        timerNotificationCenter?.invalidate()
         pushed = false
 
         // REQUEST
@@ -287,6 +287,14 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
     // MARK: - NotificationCenter
 
+    @objc func notificationCenterEvents() {
+        if notificationReloadDataSource > 0 {
+            print("notificationReloadDataSource: \(notificationReloadDataSource)")
+            notificationReloadDataSource = 0
+            reloadDataSource()
+        }
+    }
+
     @objc func applicationWillResignActive(_ notification: NSNotification) {
         self.refreshControl.endRefreshing()
     }
@@ -309,18 +317,18 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     }
 
     @objc func reloadDataSource(_ notification: NSNotification) {
-        reloadDataSource()
+        notificationReloadDataSource += 1
     }
 
-    @objc func reloadDataSourceNetworkForced(_ notification: NSNotification) {
+    @objc func reloadDataSourceNetwork(_ notification: NSNotification) {
 
         if !isSearchingMode {
-            reloadDataSourceNetwork(isForced: true)
+            reloadDataSourceNetwork()
         }
     }
 
     @objc func changeStatusFolderE2EE(_ notification: NSNotification) {
-        reloadDataSource()
+        notificationReloadDataSource += 1
     }
 
     @objc func closeRichWorkspaceWebView() {
@@ -361,7 +369,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
               account == appDelegate.account
         else { return }
 
-        reloadDataSourceNetwork(isForced: true)
+        reloadDataSourceNetwork()
     }
 
     @objc func createFolder(_ notification: NSNotification) {
@@ -375,7 +383,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
               let withPush = userInfo["withPush"] as? Bool
         else { return }
 
-        reloadDataSource()
+        notificationReloadDataSource += 1
 
         if withPush, let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
             pushMetadata(metadata)
@@ -385,7 +393,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     @objc func favoriteFile(_ notification: NSNotification) {
 
         if self is NCFavorite {
-            return reloadDataSource()
+            return notificationReloadDataSource += 1
         }
 
         guard let userInfo = notification.userInfo as NSDictionary?,
@@ -461,7 +469,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         }
 
         if serverUrl == self.serverUrl, account == appDelegate.account {
-            reloadDataSource()
+            notificationReloadDataSource += 1
         }
     }
 
@@ -495,7 +503,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
               account == appDelegate.account
         else { return }
 
-        self.reloadDataSource()
+        notificationReloadDataSource += 1
     }
 
     @objc func uploadCancelFile(_ notification: NSNotification) {
@@ -512,7 +520,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         }
 
         if account == appDelegate.account, serverUrl == self.serverUrl {
-            reloadDataSource()
+            notificationReloadDataSource += 1
         }
     }
 
@@ -930,7 +938,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         }
     }
 
-    @objc func reloadDataSourceNetwork(isForced: Bool = false) { }
+    @objc func reloadDataSourceNetwork() { }
 
     @objc func networkSearch() {
         guard !appDelegate.account.isEmpty, let literalSearch = literalSearch, !literalSearch.isEmpty
@@ -1005,65 +1013,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
             DispatchQueue.main.async {
                 self.collectionView?.reloadData()
-            }
-        }
-    }
-
-    @objc func networkReadFolder(isForced: Bool, completion: @escaping(_ tableDirectory: tableDirectory?, _ metadatas: [tableMetadata]?, _ metadatasChangedCount: Int, _ metadatasChanged: Bool, _ error: NKError) -> Void) {
-
-        var tableDirectory: tableDirectory?
-
-        NCNetworking.shared.readFile(serverUrlFileName: serverUrl) { account, metadataFolder, error in
-            guard error == .success else {
-                completion(nil, nil, 0, false, error)
-                return
-            }
-
-            if let metadataFolder = metadataFolder {
-                tableDirectory = NCManageDatabase.shared.setDirectory(serverUrl: self.serverUrl, richWorkspace: metadataFolder.richWorkspace, account: account)
-            }
-
-            if isForced || tableDirectory?.etag != metadataFolder?.etag || metadataFolder?.e2eEncrypted ?? true {
-                NCNetworking.shared.readFolder(serverUrl: self.serverUrl, account: self.appDelegate.account) { _, metadataFolder, metadatas, metadatasChangedCount, metadatasChanged, error in
-                    guard error == .success else {
-                        completion(tableDirectory, nil, 0, false, error)
-                        return
-                    }
-                    self.metadataFolder = metadataFolder
-                    // E2EE
-                    if let metadataFolder = metadataFolder,
-                       metadataFolder.e2eEncrypted,
-                       NCKeychain().isEndToEndEnabled(account: self.appDelegate.account),
-                       !NCNetworkingE2EE().isInUpload(account: self.appDelegate.account, serverUrl: self.serverUrl) {
-                        let lock = NCManageDatabase.shared.getE2ETokenLock(account: self.appDelegate.account, serverUrl: self.serverUrl)
-                        NextcloudKit.shared.getE2EEMetadata(fileId: metadataFolder.ocId, e2eToken: lock?.e2eToken) { _, e2eMetadata, signature, _, error in
-                            if error == .success, let e2eMetadata = e2eMetadata {
-                                let error = NCEndToEndMetadata().decodeMetadata(e2eMetadata, signature: signature, serverUrl: self.serverUrl, account: self.appDelegate.account, urlBase: self.appDelegate.urlBase, userId: self.appDelegate.userId)
-                                if error == .success {
-                                    self.reloadDataSource()
-                                } else {
-                                    NCContentPresenter().showError(error: error)
-                                }
-                            } else if error.errorCode == NCGlobal.shared.errorResourceNotFound {
-                                // no metadata found, send a new metadata
-                                Task {
-                                    let serverUrl = metadataFolder.serverUrl + "/" + metadataFolder.fileName
-                                    let error = await NCNetworkingE2EE().uploadMetadata(account: metadataFolder.account, serverUrl: serverUrl, userId: metadataFolder.userId)
-                                    if error != .success {
-                                        NCContentPresenter().showError(error: error)
-                                    }
-                                }
-                            } else {
-                                NCContentPresenter().showError(error: NKError(errorCode: NCGlobal.shared.errorE2EEKeyDecodeMetadata, errorDescription: "_e2e_error_"))
-                            }
-                            completion(tableDirectory, metadatas, metadatasChangedCount, metadatasChanged, error)
-                        }
-                    } else {
-                        completion(tableDirectory, metadatas, metadatasChangedCount, metadatasChanged, error)
-                    }
-                }
-            } else {
-                completion(tableDirectory, nil, 0, false, NKError())
             }
         }
     }

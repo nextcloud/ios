@@ -266,8 +266,8 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
         }
     }
 
-    override func reloadDataSourceNetwork(isForced: Bool = false) {
-        super.reloadDataSourceNetwork(isForced: isForced)
+    override func reloadDataSourceNetwork() {
+        super.reloadDataSourceNetwork()
         reloadDataSource()
     }
 }

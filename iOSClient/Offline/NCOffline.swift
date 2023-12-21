@@ -93,9 +93,8 @@ class NCOffline: NCCollectionViewCommon {
         }
     }
 
-    override func reloadDataSourceNetwork(isForced: Bool = false) {
-        super.reloadDataSourceNetwork(isForced: isForced)
-
+    override func reloadDataSourceNetwork() {
+        super.reloadDataSourceNetwork()
         return self.reloadDataSource()
     }
 }

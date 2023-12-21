@@ -149,11 +149,11 @@ class NCFiles: NCCollectionViewCommon {
         }
     }
 
-    override func reloadDataSourceNetwork(isForced: Bool = false) {
-        super.reloadDataSourceNetwork(isForced: isForced)
+    override func reloadDataSourceNetwork() {
+        super.reloadDataSourceNetwork()
+
         guard !isSearchingMode else {
-            networkSearch()
-            return
+            return networkSearch()
         }
 
         func downloadMetadata(_ metadata: tableMetadata) -> Bool {
@@ -170,12 +170,10 @@ class NCFiles: NCCollectionViewCommon {
             return false
         }
 
-        NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Reload data source network files forced \(isForced)")
-
         isReloadDataSourceNetworkInProgress = true
         collectionView?.reloadData()
 
-        networkReadFolder(isForced: isForced) { tableDirectory, metadatas, metadatasChangedCount, metadatasChanged, error in
+        networkReadFolder { tableDirectory, metadatas, metadatasChangedCount, metadatasChanged, error in
             if error == .success {
                 for metadata in metadatas ?? [] where !metadata.directory && downloadMetadata(metadata) {
                     if NCNetworking.shared.downloadQueue.operations.filter({ ($0 as? NCOperationDownload)?.metadata.ocId == metadata.ocId }).isEmpty {
@@ -187,12 +185,68 @@ class NCFiles: NCCollectionViewCommon {
             self.isReloadDataSourceNetworkInProgress = false
             self.richWorkspaceText = tableDirectory?.richWorkspace
 
-            if metadatasChangedCount != 0 || metadatasChanged || isForced {
+            if metadatasChangedCount != 0 || metadatasChanged {
                 self.reloadDataSource()
             } else if self.dataSource.getMetadataSourceForAllSections().isEmpty {
                 DispatchQueue.main.async {
                     self.collectionView.reloadData()
                 }
+            }
+        }
+    }
+
+    func networkReadFolder(completion: @escaping(_ tableDirectory: tableDirectory?, _ metadatas: [tableMetadata]?, _ metadatasChangedCount: Int, _ metadatasChanged: Bool, _ error: NKError) -> Void) {
+
+        var tableDirectory: tableDirectory?
+
+        NCNetworking.shared.readFile(serverUrlFileName: serverUrl) { account, metadataFolder, error in
+
+            guard error == .success, let metadataFolder else {
+                return completion(nil, nil, 0, false, error)
+            }
+            tableDirectory = NCManageDatabase.shared.setDirectory(serverUrl: self.serverUrl, richWorkspace: metadataFolder.richWorkspace, account: account)
+
+            if tableDirectory?.etag != metadataFolder.etag || metadataFolder.e2eEncrypted {
+                NCNetworking.shared.readFolder(serverUrl: self.serverUrl, account: self.appDelegate.account) { _, metadataFolder, metadatas, metadatasChangedCount, metadatasChanged, error in
+                    guard error == .success else {
+                        completion(tableDirectory, nil, 0, false, error)
+                        return
+                    }
+                    self.metadataFolder = metadataFolder
+                    // E2EE
+                    if let metadataFolder = metadataFolder,
+                       metadataFolder.e2eEncrypted,
+                       NCKeychain().isEndToEndEnabled(account: self.appDelegate.account),
+                       !NCNetworkingE2EE().isInUpload(account: self.appDelegate.account, serverUrl: self.serverUrl) {
+                        let lock = NCManageDatabase.shared.getE2ETokenLock(account: self.appDelegate.account, serverUrl: self.serverUrl)
+                        NextcloudKit.shared.getE2EEMetadata(fileId: metadataFolder.ocId, e2eToken: lock?.e2eToken) { _, e2eMetadata, signature, _, error in
+                            if error == .success, let e2eMetadata = e2eMetadata {
+                                let error = NCEndToEndMetadata().decodeMetadata(e2eMetadata, signature: signature, serverUrl: self.serverUrl, account: self.appDelegate.account, urlBase: self.appDelegate.urlBase, userId: self.appDelegate.userId)
+                                if error == .success {
+                                    self.reloadDataSource()
+                                } else {
+                                    NCContentPresenter().showError(error: error)
+                                }
+                            } else if error.errorCode == NCGlobal.shared.errorResourceNotFound {
+                                // no metadata found, send a new metadata
+                                Task {
+                                    let serverUrl = metadataFolder.serverUrl + "/" + metadataFolder.fileName
+                                    let error = await NCNetworkingE2EE().uploadMetadata(account: metadataFolder.account, serverUrl: serverUrl, userId: metadataFolder.userId)
+                                    if error != .success {
+                                        NCContentPresenter().showError(error: error)
+                                    }
+                                }
+                            } else {
+                                NCContentPresenter().showError(error: NKError(errorCode: NCGlobal.shared.errorE2EEKeyDecodeMetadata, errorDescription: "_e2e_error_"))
+                            }
+                            completion(tableDirectory, metadatas, metadatasChangedCount, metadatasChanged, error)
+                        }
+                    } else {
+                        completion(tableDirectory, metadatas, metadatasChangedCount, metadatasChanged, error)
+                    }
+                }
+            } else {
+                completion(tableDirectory, nil, 0, false, NKError())
             }
         }
     }

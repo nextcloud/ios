@@ -73,8 +73,8 @@ class NCRecent: NCCollectionViewCommon {
         }
     }
 
-    override func reloadDataSourceNetwork(isForced: Bool = false) {
-        super.reloadDataSourceNetwork(isForced: isForced)
+    override func reloadDataSourceNetwork() {
+        super.reloadDataSourceNetwork()
 
         let requestBodyRecent =
         """
@@ -143,8 +143,6 @@ class NCRecent: NCCollectionViewCommon {
         dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ssZZZZZ"
         let lessDateString = dateFormatter.string(from: Date())
         let requestBody = String(format: requestBodyRecent, "/files/" + appDelegate.userId, lessDateString)
-
-        NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Reload data source network recent forced \(isForced)")
 
         isReloadDataSourceNetworkInProgress = true
         collectionView?.reloadData()
