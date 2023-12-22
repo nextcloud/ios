@@ -130,11 +130,15 @@ class NCFiles: NCCollectionViewCommon {
     override func reloadDataSource() {
         super.reloadDataSource()
 
-        DispatchQueue.main.async { self.refreshControl.endRefreshing() }
+        guard !self.isSearchingMode, !self.appDelegate.account.isEmpty, !self.appDelegate.urlBase.isEmpty, !self.serverUrl.isEmpty else {
+            DispatchQueue.main.async { self.refreshControl.endRefreshing() }
+            return
+        }
+
         DispatchQueue.global().async {
-            guard !self.isSearchingMode, !self.appDelegate.account.isEmpty, !self.appDelegate.urlBase.isEmpty, !self.serverUrl.isEmpty else { return }
             self.queryDB()
             DispatchQueue.main.async {
+                self.refreshControl.endRefreshing()
                 self.collectionView.reloadData()
                 if !self.dataSource.metadatas.isEmpty {
                     self.blinkCell(fileName: self.fileNameBlink)
