@@ -44,7 +44,9 @@ class NCShares: NCCollectionViewCommon {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
-        reloadDataSource()
+        if dataSource.metadatas.isEmpty {
+            reloadDataSource()
+        }
         reloadDataSourceNetwork()
     }
 
