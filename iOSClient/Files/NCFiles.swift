@@ -102,16 +102,9 @@ class NCFiles: NCCollectionViewCommon {
 
         let metadatas = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", self.appDelegate.account, self.serverUrl))
         let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", self.appDelegate.account, self.serverUrl))
-        let metadataTransfer = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "status != %i AND serverUrl == %@", NCGlobal.shared.metadataStatusNormal, self.serverUrl))
         if self.metadataFolder == nil {
             self.metadataFolder = NCManageDatabase.shared.getMetadataFolder(account: self.appDelegate.account, urlBase: self.appDelegate.urlBase, userId: self.appDelegate.userId, serverUrl: self.serverUrl)
         }
-
-        /*
-        if metadataTransfer == nil, self.fileNameBlink == nil, self.fileNameOpen == nil {
-            return
-        }
-        */
 
         self.richWorkspaceText = directory?.richWorkspace
         self.dataSource = NCDataSource(
@@ -130,15 +123,16 @@ class NCFiles: NCCollectionViewCommon {
     override func reloadDataSource() {
         super.reloadDataSource()
 
-        guard !self.isSearchingMode, !self.appDelegate.account.isEmpty, !self.appDelegate.urlBase.isEmpty, !self.serverUrl.isEmpty else {
-            DispatchQueue.main.async { self.refreshControl.endRefreshing() }
-            return
-        }
+        DispatchQueue.main.async { self.refreshControl.endRefreshing() }
+
+        guard !self.isSearchingMode,
+              !self.appDelegate.account.isEmpty,
+              !self.serverUrl.isEmpty, NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "status != %i AND serverUrl == %@", NCGlobal.shared.metadataStatusNormal, self.serverUrl)) == nil
+        else { return }
 
         DispatchQueue.global().async {
             self.queryDB()
             DispatchQueue.main.async {
-                self.refreshControl.endRefreshing()
                 self.collectionView.reloadData()
                 if !self.dataSource.metadatas.isEmpty {
                     self.blinkCell(fileName: self.fileNameBlink)
