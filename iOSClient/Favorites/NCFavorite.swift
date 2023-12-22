@@ -100,7 +100,6 @@ class NCFavorite: NCCollectionViewCommon {
                     self.reloadDataSource()
                 }
             }
-            self.reloadDataSource()
         }
     }
 }

@@ -112,8 +112,6 @@ class NCGroupfolders: NCCollectionViewCommon {
                     }
                     self.reloadDataSource()
                 }
-            } else if error != .success {
-                self.reloadDataSource()
             }
         }
     }

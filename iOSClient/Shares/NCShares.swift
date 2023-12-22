@@ -44,6 +44,7 @@ class NCShares: NCCollectionViewCommon {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
+        reloadDataSource()
         reloadDataSourceNetwork()
     }
 
@@ -98,6 +99,10 @@ class NCShares: NCCollectionViewCommon {
 
         DispatchQueue.global().async {
             self.queryDB()
+            DispatchQueue.main.async {
+                self.refreshControl.endRefreshing()
+                self.collectionView.reloadData()
+            }
         }
     }
 
@@ -118,8 +123,8 @@ class NCShares: NCCollectionViewCommon {
                     let home = self.utilityFileSystem.getHomeServer(urlBase: self.appDelegate.urlBase, userId: self.appDelegate.userId)
                     NCManageDatabase.shared.addShare(account: self.appDelegate.account, home: home, shares: shares)
                 }
+                self.reloadDataSource()
             }
-            self.reloadDataSource()
         }
     }
 }
