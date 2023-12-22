@@ -174,16 +174,15 @@ class NCFiles: NCCollectionViewCommon {
                         NCNetworking.shared.downloadQueue.addOperation(NCOperationDownload(metadata: metadata, selector: NCGlobal.shared.selectorDownloadFile))
                     }
                 }
-            }
+                self.isReloadDataSourceNetworkInProgress = false
+                self.richWorkspaceText = tableDirectory?.richWorkspace
 
-            self.isReloadDataSourceNetworkInProgress = false
-            self.richWorkspaceText = tableDirectory?.richWorkspace
-
-            if metadatasChangedCount != 0 || metadatasChanged {
-                self.reloadDataSource()
-            } else if self.dataSource.getMetadataSourceForAllSections().isEmpty {
-                DispatchQueue.main.async {
-                    self.collectionView.reloadData()
+                if metadatasChangedCount != 0 || metadatasChanged {
+                    self.reloadDataSource()
+                } else if self.dataSource.getMetadataSourceForAllSections().isEmpty {
+                    DispatchQueue.main.async {
+                        self.collectionView.reloadData()
+                    }
                 }
             }
         }
