@@ -44,7 +44,7 @@ class NCFavorite: NCCollectionViewCommon {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
-        self.reloadDataSource()
+        reloadDataSource()
         reloadDataSourceNetwork()
     }
 

@@ -87,7 +87,7 @@ class NCFiles: NCCollectionViewCommon {
         }
         super.viewWillAppear(animated)
 
-        self.reloadDataSource()
+        reloadDataSource()
         reloadDataSourceNetwork()
     }
 

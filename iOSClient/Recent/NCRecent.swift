@@ -165,8 +165,6 @@ class NCRecent: NCCollectionViewCommon {
                     NCManageDatabase.shared.addMetadatas(metadatas)
                     self.reloadDataSource()
                 }
-            } else {
-                self.reloadDataSource()
             }
         }
     }
