@@ -44,7 +44,8 @@ class NCGroupfolders: NCCollectionViewCommon {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
-        navigationController?.setFileAppreance()
+        self.reloadDataSource()
+        reloadDataSourceNetwork()
     }
 
     // MARK: - DataSource + NC Endpoint

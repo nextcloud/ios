@@ -56,7 +56,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
-        navigationController?.setFileAppreance()
+        reloadDataSource()
     }
 
     override func setNavigationItem() {

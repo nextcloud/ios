@@ -44,7 +44,7 @@ class NCRecent: NCCollectionViewCommon {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
-        navigationController?.setFileAppreance()
+        reloadDataSourceNetwork()
     }
 
     // MARK: - DataSource + NC Endpoint

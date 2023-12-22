@@ -209,12 +209,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
         navigationController?.navigationBar.prefersLargeTitles = true
         navigationController?.setNavigationBarHidden(false, animated: true)
+        navigationController?.setFileAppreance()
         setNavigationItem()
-
-        reloadDataSource()
-        if !isSearchingMode {
-            reloadDataSourceNetwork()
-        }
 
         // FIXME: iPAD PDF landscape mode iOS 16
         DispatchQueue.main.async {

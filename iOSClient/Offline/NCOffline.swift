@@ -44,7 +44,7 @@ class NCOffline: NCCollectionViewCommon {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
-        navigationController?.setFileAppreance()
+        reloadDataSource()
     }
 
     // MARK: - DataSource + NC Endpoint
@@ -92,10 +92,5 @@ class NCOffline: NCCollectionViewCommon {
                 self.collectionView.reloadData()
             }
         }
-    }
-
-    override func reloadDataSourceNetwork() {
-        super.reloadDataSourceNetwork()
-        return self.reloadDataSource()
     }
 }
