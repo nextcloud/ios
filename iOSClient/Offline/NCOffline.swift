@@ -50,6 +50,7 @@ class NCOffline: NCCollectionViewCommon {
     // MARK: - DataSource + NC Endpoint
 
     override func queryDB() {
+        super.queryDB()
 
         var ocIds: [String] = []
         var metadatas: [tableMetadata] = []

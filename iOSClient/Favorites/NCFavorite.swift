@@ -50,6 +50,7 @@ class NCFavorite: NCCollectionViewCommon {
     // MARK: - DataSource + NC Endpoint
 
     override func queryDB() {
+        super.queryDB()
 
         var metadatas: [tableMetadata] = []
 

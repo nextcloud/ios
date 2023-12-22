@@ -99,6 +99,7 @@ class NCFiles: NCCollectionViewCommon {
     // MARK: - DataSource + NC Endpoint
 
     override func queryDB() {
+        super.queryDB()
 
         let metadatas = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", self.appDelegate.account, self.serverUrl))
         let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", self.appDelegate.account, self.serverUrl))
