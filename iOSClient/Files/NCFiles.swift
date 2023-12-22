@@ -124,11 +124,7 @@ class NCFiles: NCCollectionViewCommon {
         super.reloadDataSource()
 
         DispatchQueue.main.async { self.refreshControl.endRefreshing() }
-
-        guard !self.isSearchingMode,
-              !self.appDelegate.account.isEmpty,
-              !self.serverUrl.isEmpty, NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "status != %i AND serverUrl == %@", NCGlobal.shared.metadataStatusNormal, self.serverUrl)) == nil
-        else { return }
+        guard !self.isSearchingMode, !self.appDelegate.account.isEmpty else { return }
 
         DispatchQueue.global().async {
             self.queryDB()
