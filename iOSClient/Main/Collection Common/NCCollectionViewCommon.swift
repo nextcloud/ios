@@ -396,8 +396,12 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
               serverUrl == self.serverUrl
         else { return }
 
-        dataSource.reloadMetadata(ocId: ocId) {
-            self.collectionView?.reloadData()
+        dataSource.reloadMetadata(ocId: ocId) { done in
+            if done {
+                self.collectionView?.reloadData()
+            } else {
+                self.notificationReloadDataSource += 1
+            }
         }
     }
 
@@ -411,8 +415,12 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
               let ocId = userInfo["ocId"] as? String
         else { return }
 
-        dataSource.reloadMetadata(ocId: ocId) {
-            self.collectionView?.reloadData()
+        dataSource.reloadMetadata(ocId: ocId) { done in
+            if done {
+                self.collectionView?.reloadData()
+            } else {
+                self.notificationReloadDataSource += 1
+            }
         }
     }
 
@@ -426,8 +434,12 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
               let ocId = userInfo["ocId"] as? String
         else { return }
 
-        dataSource.reloadMetadata(ocId: ocId) {
-            self.collectionView?.reloadData()
+        dataSource.reloadMetadata(ocId: ocId) { done in 
+            if done {
+                self.collectionView?.reloadData()
+            } else {
+                self.notificationReloadDataSource += 1
+            }
         }
     }
 
@@ -441,8 +453,12 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
               account == appDelegate.account
         else { return }
 
-        dataSource.reloadMetadata(ocId: ocId) {
-            self.collectionView?.reloadData()
+        dataSource.reloadMetadata(ocId: ocId) { done in
+            if done {
+                self.collectionView?.reloadData()
+            } else {
+                self.notificationReloadDataSource += 1
+            }
         }
     }
 
@@ -482,8 +498,12 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         }
 
         if account == appDelegate.account, serverUrl == self.serverUrl {
-            dataSource.reloadMetadata(ocId: ocId, ocIdTemp: ocIdTemp) {
-                self.collectionView?.reloadData()
+            dataSource.reloadMetadata(ocId: ocId, ocIdTemp: ocIdTemp) { done in
+                if done {
+                    self.collectionView?.reloadData()
+                } else {
+                    self.notificationReloadDataSource += 1
+                }
             }
         }
     }

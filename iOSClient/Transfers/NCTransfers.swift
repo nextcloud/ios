@@ -72,51 +72,43 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
               let ocId = userInfo["ocId"] as? String
         else { return }
 
-        dataSource.reloadMetadata(ocId: ocId) {
-            self.collectionView?.reloadData()
+        dataSource.reloadMetadata(ocId: ocId) { done in
+            if done {
+                self.collectionView?.reloadData()
+            } else {
+                self.notificationReloadDataSource += 1
+            }
         }
     }
 
     override func downloadedFile(_ notification: NSNotification) {
 
-        guard let userInfo = notification.userInfo as NSDictionary?,
-              let ocId = userInfo["ocId"] as? String
-        else { return }
-
-        dataSource.reloadMetadata(ocId: ocId) {
-            self.collectionView?.reloadData()
-        }
+        self.notificationReloadDataSource += 1
     }
 
     override func downloadCancelFile(_ notification: NSNotification) {
 
-        guard let userInfo = notification.userInfo as NSDictionary?,
-              let ocId = userInfo["ocId"] as? String
-        else { return }
-
-        dataSource.reloadMetadata(ocId: ocId) {
-            self.collectionView?.reloadData()
-        }
+        self.notificationReloadDataSource += 1
     }
 
     override func uploadStartFile(_ notification: NSNotification) {
 
-        notificationReloadDataSource += 1
+        self.notificationReloadDataSource += 1
     }
 
     override func uploadedFile(_ notification: NSNotification) {
 
-        notificationReloadDataSource += 1
+        self.notificationReloadDataSource += 1
     }
 
     override func uploadedLivePhoto(_ notification: NSNotification) {
 
-        notificationReloadDataSource += 1
+        self.notificationReloadDataSource += 1
     }
 
     override func uploadCancelFile(_ notification: NSNotification) {
 
-        notificationReloadDataSource += 1
+        self.notificationReloadDataSource += 1
     }
 
     // MARK: TAP EVENT
@@ -290,5 +282,11 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
                 self.collectionView.reloadData()
             }
         }
+    }
+
+    override func reloadDataSourceNetwork() {
+        super.reloadDataSourceNetwork()
+
+        reloadDataSource()
     }
 }
