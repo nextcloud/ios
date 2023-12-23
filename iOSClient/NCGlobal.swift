@@ -332,9 +332,6 @@ class NCGlobal: NSObject {
     let metadataStatusUploading: Int                = 3
     let metadataStatusUploadError: Int              = 4
 
-    // Queue Concurrent Operation Download
-    let maxConcurrentOperationCountDownload: Int    = 10
-
     //  Hidden files included in the read
     //
     let includeHiddenFiles: [String] = [".LivePhoto"]
