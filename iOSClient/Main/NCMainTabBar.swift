@@ -218,18 +218,26 @@ class NCMainTabBar: UITabBar {
                 item.badgeValue = nil
             } else if counterDownload > 0, counterUpload == 0 {
                 var badgeValue = String("↓ \(counterDownload)")
-                if counterDownload >= NCGlobal.shared.maxConcurrentOperationCountDownload {
-                    badgeValue = String("↓ 10+")
+                if counterDownload >= NCBrandOptions.shared.maxConcurrentOperationDownload {
+                    badgeValue = String("↓ \(NCBrandOptions.shared.maxConcurrentOperationDownload)+")
                 }
                 item.badgeValue = badgeValue
             } else if counterDownload == 0, counterUpload > 0 {
-                item.badgeValue = String("↑ \(counterUpload)")
-            } else {
-                var badgeValue = String("↓ \(counterDownload) ↑ \(counterUpload)")
-                if counterDownload >= NCGlobal.shared.maxConcurrentOperationCountDownload {
-                    badgeValue = String("↓ 10+ ↑ \(counterUpload)")
+                var badgeValue = String("↑ \(counterUpload)")
+                if counterUpload >= NCBrandOptions.shared.maxConcurrentOperationUpload {
+                    badgeValue = String("↑ \(NCBrandOptions.shared.maxConcurrentOperationUpload)+")
                 }
                 item.badgeValue = badgeValue
+            } else {
+                var badgeValueDownload = String("↓ \(counterDownload)")
+                if counterDownload >= NCBrandOptions.shared.maxConcurrentOperationDownload {
+                    badgeValueDownload = String("↓ \(NCBrandOptions.shared.maxConcurrentOperationDownload)+")
+                }
+                var badgeValueUpload = String("↑ \(counterUpload)")
+                if counterUpload >= NCBrandOptions.shared.maxConcurrentOperationUpload {
+                    badgeValueUpload = String("↑ \(NCBrandOptions.shared.maxConcurrentOperationUpload)+")
+                }
+                item.badgeValue = badgeValueDownload + " " + badgeValueUpload
             }
         }
     }
