@@ -434,7 +434,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
               let ocId = userInfo["ocId"] as? String
         else { return }
 
-        dataSource.reloadMetadata(ocId: ocId) { done in 
+        dataSource.reloadMetadata(ocId: ocId) { done in
             if done {
                 self.collectionView?.reloadData()
             } else {
