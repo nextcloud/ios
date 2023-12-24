@@ -417,7 +417,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
         dataSource.reloadMetadata(ocId: ocId) { done in
             if done {
-                self.collectionView?.reloadData()
+                DispatchQueue.main.async { self.collectionView?.reloadData() }
             } else {
                 self.notificationReloadDataSource += 1
             }
@@ -436,7 +436,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
         dataSource.reloadMetadata(ocId: ocId) { done in
             if done {
-                self.collectionView?.reloadData()
+                DispatchQueue.main.async { self.collectionView?.reloadData() }
             } else {
                 self.notificationReloadDataSource += 1
             }
@@ -455,7 +455,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
         dataSource.reloadMetadata(ocId: ocId) { done in
             if done {
-                self.collectionView?.reloadData()
+                DispatchQueue.main.async { self.collectionView?.reloadData() }
             } else {
                 self.notificationReloadDataSource += 1
             }
@@ -475,7 +475,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         // Header view trasfer
         if metadata.isTransferInForeground {
             NCNetworking.shared.transferInForegorund = NCNetworking.TransferInForegorund(ocId: ocId, progress: 0)
-            self.collectionView?.reloadData()
+            DispatchQueue.main.async { self.collectionView?.reloadData() }
         }
 
         if serverUrl == self.serverUrl, account == appDelegate.account {
@@ -494,13 +494,13 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
         if ocIdTemp == NCNetworking.shared.transferInForegorund?.ocId {
             NCNetworking.shared.transferInForegorund = nil
-            self.collectionView?.reloadData()
+            DispatchQueue.main.async { self.collectionView?.reloadData() }
         }
 
         if account == appDelegate.account, serverUrl == self.serverUrl {
             dataSource.reloadMetadata(ocId: ocId, ocIdTemp: ocIdTemp) { done in
                 if done {
-                    self.collectionView?.reloadData()
+                    DispatchQueue.main.async { self.collectionView?.reloadData() }
                 } else {
                     self.notificationReloadDataSource += 1
                 }
@@ -530,7 +530,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
         if ocId == NCNetworking.shared.transferInForegorund?.ocId {
             NCNetworking.shared.transferInForegorund = nil
-            self.collectionView?.reloadData()
+            DispatchQueue.main.async { self.collectionView?.reloadData() }
         }
 
         if account == appDelegate.account, serverUrl == self.serverUrl {
