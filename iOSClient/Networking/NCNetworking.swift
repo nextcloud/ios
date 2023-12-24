@@ -538,7 +538,14 @@ class NCNetworking: NSObject, NKCommonDelegate {
 
             uploadTask = task
             NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId, session: nil, sessionError: "", sessionSelector: nil, sessionTaskIdentifier: task.taskIdentifier, status: NCGlobal.shared.metadataStatusUploading, errorCode: nil)
-            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUploadStartFile, userInfo: ["ocId": metadata.ocId, "serverUrl": metadata.serverUrl, "account": metadata.account, "fileName": metadata.fileName, "sessionSelector": metadata.sessionSelector])
+            NotificationCenter.default.post(
+                name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterUploadStartFile),
+                object: nil,
+                userInfo: ["ocId": metadata.ocId,
+                           "serverUrl": metadata.serverUrl,
+                           "account": metadata.account,
+                           "fileName": metadata.fileName,
+                           "sessionSelector": metadata.sessionSelector])
             start()
 
         }, progressHandler: { progress in
@@ -601,7 +608,14 @@ class NCNetworking: NSObject, NKCommonDelegate {
 
             start()
             NCManageDatabase.shared.addChunks(account: metadata.account, ocId: metadata.ocId, chunkFolder: chunkFolder, filesChunk: filesChunk)
-            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUploadStartFile, userInfo: ["ocId": metadata.ocId, "serverUrl": metadata.serverUrl, "account": metadata.account, "fileName": metadata.fileName, "sessionSelector": metadata.sessionSelector])
+            NotificationCenter.default.post(
+                name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterUploadStartFile),
+                object: nil,
+                userInfo: ["ocId": metadata.ocId,
+                           "serverUrl": metadata.serverUrl,
+                           "account": metadata.account,
+                           "fileName": metadata.fileName,
+                           "sessionSelector": metadata.sessionSelector])
 
         } requestHandler: { request in
 
@@ -678,7 +692,14 @@ class NCNetworking: NSObject, NKCommonDelegate {
                 NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Upload file \(metadata.fileNameView) with task with taskIdentifier \(task.taskIdentifier)")
 
                 NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId, session: nil, sessionError: "", sessionSelector: nil, sessionTaskIdentifier: task.taskIdentifier, status: NCGlobal.shared.metadataStatusUploading, errorCode: nil)
-                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUploadStartFile, userInfo: ["ocId": metadata.ocId, "serverUrl": metadata.serverUrl, "account": metadata.account, "fileName": metadata.fileName, "sessionSelector": metadata.sessionSelector])
+                NotificationCenter.default.post(
+                    name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterUploadStartFile),
+                    object: nil,
+                    userInfo: ["ocId": metadata.ocId,
+                               "serverUrl": metadata.serverUrl,
+                               "account": metadata.account,
+                               "fileName": metadata.fileName,
+                               "sessionSelector": metadata.sessionSelector])
                 completion(NKError())
 
             } else {
