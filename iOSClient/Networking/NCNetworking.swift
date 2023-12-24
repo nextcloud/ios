@@ -881,7 +881,10 @@ class NCNetworking: NSObject, NKCommonDelegate {
         guard let metadata1 = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND urlBase == %@ AND path == %@ AND fileName == %@", metadata.account, metadata.urlBase, metadata.path, metadata.livePhotoFile)) else {
             metadata.livePhotoFile = ""
             NCManageDatabase.shared.addMetadata(metadata)
-            return NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUploadedLivePhoto, userInfo: aUserInfo)
+            return NotificationCenter.default.post(
+                name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterUploadedLivePhoto),
+                object: nil,
+                userInfo: aUserInfo)
         }
         if metadata1.status != NCGlobal.shared.metadataStatusNormal { return }
 
@@ -903,7 +906,10 @@ class NCNetworking: NSObject, NKCommonDelegate {
             } else {
                 NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Upload set LivePhoto with error \(results.error.errorCode)")
             }
-            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUploadedLivePhoto, userInfo: aUserInfo)
+            NotificationCenter.default.post(
+                name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterUploadedLivePhoto),
+                object: nil,
+                userInfo: aUserInfo)
         }
     }
 
