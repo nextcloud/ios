@@ -179,6 +179,19 @@ class NCNetworking: NSObject, NKCommonDelegate {
 #endif
     }
 
+    // MARK: - Queue
+
+    func cancelAllQueue() {
+
+        downloadQueue.cancelAll()
+        downloadThumbnailQueue.cancelAll()
+        downloadThumbnailActivityQueue.cancelAll()
+        downloadAvatarQueue.cancelAll()
+        unifiedSearchQueue.cancelAll()
+        saveLivePhotoQueue.cancelAll()
+        convertLivePhotoQueue.cancelAll()
+    }
+
     // MARK: - Pinning check
 
     public func checkTrustedChallenge(_ session: URLSession, didReceive challenge: URLAuthenticationChallenge, completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
@@ -859,9 +872,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
     // sessionIdentifierBackgroundExtension: String = "com.nextcloud.session.upload.extension"
 
     func cancelDataTask() {
-#if !EXTENSION
-        (UIApplication.shared.delegate as? AppDelegate)?.cancelAllQueue()
-#endif
+
         let sessionManager = NextcloudKit.shared.sessionManager
         sessionManager.session.getTasksWithCompletionHandler { dataTasks, _, _ in
             dataTasks.forEach {
@@ -872,7 +883,6 @@ class NCNetworking: NSObject, NKCommonDelegate {
 
     func cancelDownloadTasks() {
 
-        downloadRequest.removeAll()
         let sessionManager = NextcloudKit.shared.sessionManager
         sessionManager.session.getTasksWithCompletionHandler { _, _, downloadTasks in
             downloadTasks.forEach {
@@ -880,12 +890,13 @@ class NCNetworking: NSObject, NKCommonDelegate {
             }
         }
 
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
             let metadatasDownload = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "status < 0"))
             for metadata in metadatasDownload {
                 self.utilityFileSystem.removeFile(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId))
                 NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId, session: "", sessionError: "", sessionSelector: "", sessionTaskIdentifier: 0, status: NCGlobal.shared.metadataStatusNormal, errorCode: 0)
             }
+            self.downloadRequest.removeAll()
         }
     }
 

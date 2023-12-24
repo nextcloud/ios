@@ -68,17 +68,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
 
     override func downloadStartFile(_ notification: NSNotification) {
 
-        guard let userInfo = notification.userInfo as NSDictionary?,
-              let ocId = userInfo["ocId"] as? String
-        else { return }
-
-        dataSource.reloadMetadata(ocId: ocId) { done in
-            if done {
-                self.collectionView?.reloadData()
-            } else {
-                self.notificationReloadDataSource += 1
-            }
-        }
+        self.notificationReloadDataSource += 1
     }
 
     override func downloadedFile(_ notification: NSNotification) {
@@ -121,6 +111,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
 
         alertController.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel, handler: nil))
         alertController.addAction(UIAlertAction(title: NSLocalizedString("_cancel_all_task_", comment: ""), style: .default, handler: { _ in
+            NCNetworking.shared.cancelAllQueue()
             NCNetworking.shared.cancelDataTask()
             NCNetworking.shared.cancelDownloadTasks()
             NCNetworking.shared.cancelUploadTasks()
