@@ -762,7 +762,10 @@ class NCNetworking: NSObject, NKCommonDelegate {
             if metadata.isLivePhoto, NCGlobal.shared.isLivePhotoServerAvailable {
                 uploadLivePhoto(metadata: metadata, userInfo: userInfo)
             } else {
-                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUploadedFile, userInfo: userInfo)
+                NotificationCenter.default.post(
+                    name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterUploadedFile),
+                    object: nil,
+                    userInfo: userInfo)
             }
         } else {
 
@@ -805,7 +808,15 @@ class NCNetworking: NSObject, NKCommonDelegate {
             } else {
 
                 NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId, session: nil, sessionError: error.errorDescription, sessionSelector: nil, sessionTaskIdentifier: 0, status: NCGlobal.shared.metadataStatusUploadError, errorCode: error.errorCode)
-                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUploadedFile, userInfo: ["ocId": metadata.ocId, "serverUrl": metadata.serverUrl, "account": metadata.account, "fileName": metadata.fileName, "ocIdTemp": ocIdTemp, "error": error])
+                NotificationCenter.default.post(
+                    name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterUploadedFile),
+                    object: nil,
+                    userInfo: ["ocId": metadata.ocId,
+                               "serverUrl": metadata.serverUrl,
+                               "account": metadata.account,
+                               "fileName": metadata.fileName,
+                               "ocIdTemp": ocIdTemp,
+                               "error": error])
             }
         }
 
