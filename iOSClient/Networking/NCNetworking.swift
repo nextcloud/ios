@@ -387,12 +387,26 @@ class NCNetworking: NSObject, NKCommonDelegate {
                     NCEndToEndEncryption.sharedManager()?.decryptFile(metadata.fileName, fileNameView: metadata.fileNameView, ocId: metadata.ocId, key: result.key, initializationVector: result.initializationVector, authenticationTag: result.authenticationTag)
                 }
 #endif
-                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDownloadedFile, userInfo: ["ocId": metadata.ocId, "serverUrl": metadata.serverUrl, "account": metadata.account, "selector": selector, "error": error])
+                NotificationCenter.default.post(
+                    name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterDownloadedFile),
+                    object: nil,
+                    userInfo: ["ocId": metadata.ocId,
+                               "serverUrl": metadata.serverUrl,
+                               "account": metadata.account,
+                               "selector": selector,
+                               "error": error])
 
             } else {
 
                 NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId, session: "", sessionError: error.errorDescription, sessionSelector: selector, sessionTaskIdentifier: 0, status: NCGlobal.shared.metadataStatusDownloadError, errorCode: error.errorCode)
-                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDownloadedFile, userInfo: ["ocId": metadata.ocId, "serverUrl": metadata.serverUrl, "account": metadata.account, "selector": selector, "error": error])
+                NotificationCenter.default.post(
+                    name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterDownloadedFile),
+                    object: nil,
+                    userInfo: ["ocId": metadata.ocId,
+                               "serverUrl": metadata.serverUrl,
+                               "account": metadata.account,
+                               "selector": selector,
+                               "error": error])
             }
 
             DispatchQueue.main.async { completion(afError, error) }
