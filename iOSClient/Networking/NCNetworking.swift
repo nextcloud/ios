@@ -345,7 +345,17 @@ class NCNetworking: NSObject, NKCommonDelegate {
         }, progressHandler: { progress in
 
             if notificationCenterProgressTask {
-                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterProgressTask, object: nil, userInfo: ["account": metadata.account, "ocId": metadata.ocId, "fileName": metadata.fileName, "serverUrl": metadata.serverUrl, "status": NSNumber(value: NCGlobal.shared.metadataStatusInDownload), "progress": NSNumber(value: progress.fractionCompleted), "totalBytes": NSNumber(value: progress.totalUnitCount), "totalBytesExpected": NSNumber(value: progress.completedUnitCount)])
+                NotificationCenter.default.post(
+                    name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterProgressTask),
+                    object: nil,
+                    userInfo: ["account": metadata.account,
+                               "ocId": metadata.ocId,
+                               "fileName": metadata.fileName,
+                               "serverUrl": metadata.serverUrl,
+                               "status": NSNumber(value: NCGlobal.shared.metadataStatusInDownload),
+                               "progress": NSNumber(value: progress.fractionCompleted),
+                               "totalBytes": NSNumber(value: progress.totalUnitCount),
+                               "totalBytesExpected": NSNumber(value: progress.completedUnitCount)])
             }
             progressHandler(progress)
 
@@ -509,8 +519,9 @@ class NCNetworking: NSObject, NKCommonDelegate {
 
         }, progressHandler: { progress in
 
-            NotificationCenter.default.postOnMainThread(
-                name: NCGlobal.shared.notificationCenterProgressTask,
+            NotificationCenter.default.post(
+                name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterProgressTask),
+                object: nil,
                 userInfo: [
                     "account": metadata.account,
                     "ocId": metadata.ocId,
@@ -579,8 +590,8 @@ class NCNetworking: NSObject, NKCommonDelegate {
 
         } progressHandler: { totalBytesExpected, totalBytes, fractionCompleted in
 
-            NotificationCenter.default.postOnMainThread(
-                name: NCGlobal.shared.notificationCenterProgressTask,
+            NotificationCenter.default.post(
+                name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterProgressTask),
                 object: nil,
                 userInfo: [
                     "account": metadata.account,
@@ -772,8 +783,9 @@ class NCNetworking: NSObject, NKCommonDelegate {
             }
 
             if let metadata = metadata {
-                NotificationCenter.default.postOnMainThread(
-                    name: NCGlobal.shared.notificationCenterProgressTask,
+                NotificationCenter.default.post(
+                    name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterProgressTask),
+                    object: nil,
                     userInfo: [
                         "account": metadata.account,
                         "ocId": metadata.ocId,

@@ -348,11 +348,13 @@ class NCViewerMediaPage: UIViewController {
               let progressNumber = userInfo["progress"] as? NSNumber
         else { return }
 
-        let progress = progressNumber.floatValue
-        if progress == 1 {
-            self.progressView.progress = 0
-        } else {
-            self.progressView.progress = progress
+        DispatchQueue.main.async {
+            let progress = progressNumber.floatValue
+            if progress == 1 {
+                self.progressView.progress = 0
+            } else {
+                self.progressView.progress = progress
+            }
         }
     }
 
