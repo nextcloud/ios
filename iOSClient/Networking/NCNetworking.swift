@@ -753,11 +753,6 @@ class NCNetworking: NSObject, NKCommonDelegate {
             }
         }
 
-        // Update Badge
-        let counterBadgeDownload = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "status < 0"))
-        let counterBadgeUpload = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "status > 0"))
-        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUpdateBadgeNumber, userInfo: ["counterDownload": counterBadgeDownload.count, "counterUpload": counterBadgeUpload.count])
-
         self.uploadMetadataInBackground.removeValue(forKey: fileName + serverUrl)
         self.delegate?.uploadComplete?(fileName: fileName, serverUrl: serverUrl, ocId: ocId, etag: etag, date: date, size: size, description: description, task: task, error: error)
     }

@@ -354,7 +354,6 @@ class NCGlobal: NSObject {
     let notificationCenterRichdocumentGrabFocus                 = "richdocumentGrabFocus"
     let notificationCenterReloadDataNCShare                     = "reloadDataNCShare"
     let notificationCenterCloseRichWorkspaceWebView             = "closeRichWorkspaceWebView"
-    let notificationCenterUpdateBadgeNumber                     = "updateBadgeNumber"               // userInfo: counterDownload, counterUpload
     let notificationCenterReloadAvatar                          = "reloadAvatar"
 
     @objc let notificationCenterReloadDataSource                = "reloadDataSource"

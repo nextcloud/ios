@@ -45,7 +45,8 @@ class NCMainTabBar: UITabBar {
         appDelegate.mainTabBar = self
 
         NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeTheming), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(updateBadgeNumber(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUpdateBadgeNumber), object: nil)
+
+        let timerNotificationCenter = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(updateBadgeNumber), userInfo: nil, repeats: true)
 
         barTintColor = .secondarySystemBackground
         backgroundColor = .secondarySystemBackground
@@ -205,12 +206,17 @@ class NCMainTabBar: UITabBar {
         self.addSubview(centerButton)
     }
 
-    @objc func updateBadgeNumber(_ notification: NSNotification) {
+    @objc func updateBadgeNumber() {
 
-        guard let userInfo = notification.userInfo as NSDictionary?,
-              let counterDownload = userInfo["counterDownload"] as? Int,
-              let counterUpload = userInfo["counterUpload"] as? Int
-        else { return }
+        var counterDownload = 0
+        var counterUpload = 0
+
+        if let results = NCManageDatabase.shared.getResultsMetadatas(predicate: NSPredicate(format: "status < 0")) {
+            counterDownload = results.count
+        }
+        if let results = NCManageDatabase.shared.getResultsMetadatas(predicate: NSPredicate(format: "status > 0")) {
+            counterUpload = results.count
+        }
 
         UIApplication.shared.applicationIconBadgeNumber = counterUpload
         if let item = self.items?[0] {
