@@ -376,7 +376,12 @@ class NCNetworking: NSObject, NKCommonDelegate {
             if afError?.isExplicitlyCancelledError ?? false || sessionTaskFailedCode == NCGlobal.shared.errorExplicitlyCancelled {
 
                 NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId, session: "", sessionError: "", sessionSelector: selector, sessionTaskIdentifier: 0, status: NCGlobal.shared.metadataStatusNormal, errorCode: 0)
-                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDownloadCancelFile, userInfo: ["ocId": metadata.ocId, "serverUrl": metadata.serverUrl, "account": metadata.account])
+                NotificationCenter.default.post(
+                    name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterDownloadCancelFile),
+                    object: nil,
+                    userInfo: ["ocId": metadata.ocId,
+                               "serverUrl": metadata.serverUrl,
+                               "account": metadata.account])
 
             } else if error == .success {
 
@@ -988,7 +993,12 @@ class NCNetworking: NSObject, NKCommonDelegate {
                 request.cancel()
             } else if let metadata = NCManageDatabase.shared.getMetadataFromOcId(metadata.ocId) {
                 NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId, session: "", sessionError: "", sessionSelector: "", sessionTaskIdentifier: 0, status: NCGlobal.shared.metadataStatusNormal, errorCode: 0)
-                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDownloadCancelFile, userInfo: ["ocId": metadata.ocId, "serverUrl": metadata.serverUrl, "account": metadata.account])
+                NotificationCenter.default.post(
+                    name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterDownloadCancelFile),
+                    object: nil,
+                    userInfo: ["ocId": metadata.ocId,
+                               "serverUrl": metadata.serverUrl,
+                               "account": metadata.account])
             }
             return
         }
