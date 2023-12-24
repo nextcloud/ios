@@ -773,13 +773,23 @@ class NCNetworking: NSObject, NKCommonDelegate {
 
                 utilityFileSystem.removeFile(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId))
                 NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
-                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUploadCancelFile, userInfo: ["ocId": metadata.ocId, "serverUrl": metadata.serverUrl, "account": metadata.account])
+                NotificationCenter.default.post(
+                    name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterUploadCancelFile),
+                    object: nil,
+                    userInfo: ["ocId": metadata.ocId,
+                               "serverUrl": metadata.serverUrl,
+                               "account": metadata.account])
 
             } else if error.errorCode == NCGlobal.shared.errorBadRequest || error.errorCode == NCGlobal.shared.errorUnsupportedMediaType {
 
                 utilityFileSystem.removeFile(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId))
                 NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
-                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUploadCancelFile, userInfo: ["ocId": metadata.ocId, "serverUrl": metadata.serverUrl, "account": metadata.account])
+                NotificationCenter.default.post(
+                    name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterUploadCancelFile),
+                    object: nil,
+                    userInfo: ["ocId": metadata.ocId,
+                               "serverUrl": metadata.serverUrl,
+                               "account": metadata.account])
                 if isApplicationStateActive {
                     NCContentPresenter().showError(error: NKError(errorCode: error.errorCode, errorDescription: "_virus_detect_"))
                 }
@@ -798,7 +808,12 @@ class NCNetworking: NSObject, NKCommonDelegate {
                     alertController.addAction(UIAlertAction(title: NSLocalizedString("_discard_changes_", comment: ""), style: .destructive, handler: { _ in
                         self.utilityFileSystem.removeFile(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId))
                         NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
-                        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUploadCancelFile, userInfo: ["ocId": metadata.ocId, "serverUrl": metadata.serverUrl, "account": metadata.account])
+                        NotificationCenter.default.post(
+                            name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterUploadCancelFile),
+                            object: nil,
+                            userInfo: ["ocId": metadata.ocId,
+                                       "serverUrl": metadata.serverUrl,
+                                       "account": metadata.account])
                     }))
 
                     let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
@@ -1048,7 +1063,12 @@ class NCNetworking: NSObject, NKCommonDelegate {
                 uploadRequest.removeValue(forKey: fileNameLocalPath)
             }
             NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
-            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUploadCancelFile, userInfo: ["ocId": metadata.ocId, "serverUrl": metadata.serverUrl, "account": metadata.account])
+            NotificationCenter.default.post(
+                name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterUploadCancelFile),
+                object: nil,
+                userInfo: ["ocId": metadata.ocId,
+                           "serverUrl": metadata.serverUrl,
+                           "account": metadata.account])
             return
         }
 
@@ -1064,7 +1084,12 @@ class NCNetworking: NSObject, NKCommonDelegate {
                 if task.taskIdentifier == metadata.sessionTaskIdentifier {
                     task.cancel()
                     NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
-                    NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUploadCancelFile, userInfo: ["ocId": metadata.ocId, "serverUrl": metadata.serverUrl, "account": metadata.account])
+                    NotificationCenter.default.post(
+                        name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterUploadCancelFile),
+                        object: nil,
+                        userInfo: ["ocId": metadata.ocId,
+                                   "serverUrl": metadata.serverUrl,
+                                   "account": metadata.account])
                 }
             }
         }
