@@ -429,7 +429,9 @@ extension NCViewerMedia {
     }
 
     @objc func closeDetail(_ notification: NSNotification) {
-        closeDetail()
+        DispatchQueue.main.async {
+            self.closeDetail()
+        }
     }
 
     func toggleDetail () {

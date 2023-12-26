@@ -322,22 +322,24 @@ class NCViewerMediaPage: UIViewController {
             return
         }
 
-        progressView.progress = 0
-        let metadata = currentViewController.metadata
+        DispatchQueue.main.async {
+            self.progressView.progress = 0
+            let metadata = self.currentViewController.metadata
 
-        if metadata.ocId == ocId,
-           metadata.isAudioOrVideo,
-           utilityFileSystem.fileProviderStorageExists(metadata),
-           let ncplayer = currentViewController.ncplayer {
-            let url = URL(fileURLWithPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView))
-            if ncplayer.isPlay() {
-                ncplayer.playerPause()
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+            if metadata.ocId == ocId,
+               metadata.isAudioOrVideo,
+               self.utilityFileSystem.fileProviderStorageExists(metadata),
+               let ncplayer = self.currentViewController.ncplayer {
+                let url = URL(fileURLWithPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView))
+                if ncplayer.isPlay() {
+                    ncplayer.playerPause()
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                        ncplayer.openAVPlayer(url: url)
+                        ncplayer.playerPlay()
+                    }
+                } else {
                     ncplayer.openAVPlayer(url: url)
-                    ncplayer.playerPlay()
                 }
-            } else {
-                ncplayer.openAVPlayer(url: url)
             }
         }
     }
@@ -348,24 +350,17 @@ class NCViewerMediaPage: UIViewController {
               let progressNumber = userInfo["progress"] as? NSNumber
         else { return }
 
-        let progress = progressNumber.floatValue
-        if progress == 1 {
-            self.progressView.progress = 0
-        } else {
-            self.progressView.progress = progress
+        DispatchQueue.main.async {
+            let progress = progressNumber.floatValue
+            if progress == 1 {
+                self.progressView.progress = 0
+            } else {
+                self.progressView.progress = progress
+            }
         }
     }
 
-    @objc func uploadStartFile(_ notification: NSNotification) {
-
-        /*
-        guard let userInfo = notification.userInfo as NSDictionary?,
-              let serverUrl = userInfo["serverUrl"] as? String,
-              let fileName = userInfo["fileName"] as? String,
-              let sessionSelector = userInfo["sessionSelector"] as? String
-        else { return }
-        */
-    }
+    @objc func uploadStartFile(_ notification: NSNotification) { }
 
     @objc func uploadedFile(_ notification: NSNotification) {
 

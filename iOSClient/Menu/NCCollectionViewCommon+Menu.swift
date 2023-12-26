@@ -287,7 +287,13 @@ extension NCCollectionViewCommon {
                     order: 110,
                     action: { _ in
                         if self.utilityFileSystem.fileProviderStorageExists(metadata) {
-                            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDownloadedFile, userInfo: ["ocId": metadata.ocId, "selector": NCGlobal.shared.selectorSaveAsScan, "error": NKError(), "account": metadata.account])
+                            NotificationCenter.default.post(
+                                name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterDownloadedFile),
+                                object: nil,
+                                userInfo: ["ocId": metadata.ocId,
+                                           "selector": NCGlobal.shared.selectorSaveAsScan,
+                                           "error": NKError(),
+                                           "account": metadata.account])
                         } else {
                             NCNetworking.shared.download(metadata: metadata, selector: NCGlobal.shared.selectorSaveAsScan) { _, _ in }
                         }
@@ -347,7 +353,13 @@ extension NCCollectionViewCommon {
                     order: 150,
                     action: { _ in
                         if self.utilityFileSystem.fileProviderStorageExists(metadata) {
-                            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDownloadedFile, userInfo: ["ocId": metadata.ocId, "selector": NCGlobal.shared.selectorLoadFileQuickLook, "error": NKError(), "account": metadata.account])
+                            NotificationCenter.default.post(
+                                name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterDownloadedFile),
+                                object: nil,
+                                userInfo: ["ocId": metadata.ocId,
+                                           "selector": NCGlobal.shared.selectorLoadFileQuickLook,
+                                           "error": NKError(),
+                                           "account": metadata.account])
                         } else {
                             NCNetworking.shared.download(metadata: metadata, selector: NCGlobal.shared.selectorLoadFileQuickLook) { _, _ in }
                         }
