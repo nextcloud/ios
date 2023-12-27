@@ -208,39 +208,6 @@ class NCDataSource: NSObject {
         }
     }
 
-    func reloadMetadata(ocId: String, ocIdTemp: String? = nil, completion: @escaping (_ done: Bool) -> Void) {
-
-        var ocIdSearch = ocId
-        var updateMetadataForSection = false
-        var updateMetadatasSource = false
-
-        guard !metadatas.isEmpty,
-              let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) else {
-            return completion(false)
-        }
-        if let ocIdTemp = ocIdTemp {
-            ocIdSearch = ocIdTemp
-        }
-        // UPDATE metadataForSection (IMPORTANT FIRST)
-        let (indexPath, metadataForSection) = self.getIndexPathMetadata(ocId: ocIdSearch)
-        if let indexPath = indexPath, let metadataForSection = metadataForSection {
-            metadataForSection.metadatas[indexPath.row] = metadata
-            metadataForSection.createMetadatas()
-            updateMetadataForSection = true
-        }
-        // UPDATE metadatasSource (IMPORTANT LAST)
-        if let rowIndex = self.metadatas.firstIndex(where: {$0.ocId == ocIdSearch}) {
-            self.metadatas[rowIndex] = metadata
-            updateMetadatasSource = true
-        }
-
-        if updateMetadataForSection == true, updateMetadatasSource == true {
-            completion(true)
-        } else {
-            completion(false)
-        }
-    }
-
     // MARK: -
 
     func getIndexPathMetadata(ocId: String) -> (indexPath: IndexPath?, metadataForSection: NCMetadataForSection?) {

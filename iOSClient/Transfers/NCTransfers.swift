@@ -68,37 +68,37 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
 
     override func downloadStartFile(_ notification: NSNotification) {
 
-        self.notificationReloadDataSource += 1
+        notificationReloadDataSource += 1
     }
 
     override func downloadedFile(_ notification: NSNotification) {
 
-        self.notificationReloadDataSource += 1
+        notificationReloadDataSource += 1
     }
 
     override func downloadCancelFile(_ notification: NSNotification) {
 
-        self.notificationReloadDataSource += 1
+        notificationReloadDataSource += 1
     }
 
     override func uploadStartFile(_ notification: NSNotification) {
 
-        self.notificationReloadDataSource += 1
+        notificationReloadDataSource += 1
     }
 
     override func uploadedFile(_ notification: NSNotification) {
 
-        self.notificationReloadDataSource += 1
+        notificationReloadDataSource += 1
     }
 
     override func uploadedLivePhoto(_ notification: NSNotification) {
 
-        self.notificationReloadDataSource += 1
+        notificationReloadDataSource += 1
     }
 
     override func uploadCancelFile(_ notification: NSNotification) {
 
-        self.notificationReloadDataSource += 1
+        notificationReloadDataSource += 1
     }
 
     // MARK: TAP EVENT

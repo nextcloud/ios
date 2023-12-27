@@ -391,18 +391,11 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         }
 
         guard let userInfo = notification.userInfo as NSDictionary?,
-              let ocId = userInfo["ocId"] as? String,
               let serverUrl = userInfo["serverUrl"] as? String,
               serverUrl == self.serverUrl
         else { return }
 
-        dataSource.reloadMetadata(ocId: ocId) { done in
-            if done {
-                self.collectionView?.reloadData()
-            } else {
-                self.notificationReloadDataSource += 1
-            }
-        }
+        notificationReloadDataSource += 1
     }
 
     @objc func downloadStartFile(_ notification: NSNotification) {
@@ -411,17 +404,10 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
               let serverUrl = userInfo["serverUrl"] as? String,
               serverUrl == self.serverUrl,
               let account = userInfo["account"] as? String,
-              account == appDelegate.account,
-              let ocId = userInfo["ocId"] as? String
+              account == appDelegate.account
         else { return }
 
-        dataSource.reloadMetadata(ocId: ocId) { done in
-            if done {
-                DispatchQueue.main.async { self.collectionView?.reloadData() }
-            } else {
-                self.notificationReloadDataSource += 1
-            }
-        }
+        self.notificationReloadDataSource += 1
     }
 
     @objc func downloadedFile(_ notification: NSNotification) {
@@ -430,36 +416,22 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
               let serverUrl = userInfo["serverUrl"] as? String,
               serverUrl == self.serverUrl,
               let account = userInfo["account"] as? String,
-              account == appDelegate.account,
-              let ocId = userInfo["ocId"] as? String
+              account == appDelegate.account
         else { return }
 
-        dataSource.reloadMetadata(ocId: ocId) { done in
-            if done {
-                DispatchQueue.main.async { self.collectionView?.reloadData() }
-            } else {
-                self.notificationReloadDataSource += 1
-            }
-        }
+        notificationReloadDataSource += 1
     }
 
     @objc func downloadCancelFile(_ notification: NSNotification) {
 
         guard let userInfo = notification.userInfo as NSDictionary?,
-              let ocId = userInfo["ocId"] as? String,
               let serverUrl = userInfo["serverUrl"] as? String,
               serverUrl == self.serverUrl,
               let account = userInfo["account"] as? String,
               account == appDelegate.account
         else { return }
 
-        dataSource.reloadMetadata(ocId: ocId) { done in
-            if done {
-                DispatchQueue.main.async { self.collectionView?.reloadData() }
-            } else {
-                self.notificationReloadDataSource += 1
-            }
-        }
+        notificationReloadDataSource += 1
     }
 
     @objc func uploadStartFile(_ notification: NSNotification) {
@@ -487,7 +459,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
         guard let userInfo = notification.userInfo as NSDictionary?,
               let ocIdTemp = userInfo["ocIdTemp"] as? String,
-              let ocId = userInfo["ocId"] as? String,
               let serverUrl = userInfo["serverUrl"] as? String,
               let account = userInfo["account"] as? String
         else { return }
@@ -498,13 +469,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         }
 
         if account == appDelegate.account, serverUrl == self.serverUrl {
-            dataSource.reloadMetadata(ocId: ocId, ocIdTemp: ocIdTemp) { done in
-                if done {
-                    DispatchQueue.main.async { self.collectionView?.reloadData() }
-                } else {
-                    self.notificationReloadDataSource += 1
-                }
-            }
+            notificationReloadDataSource += 1
         }
     }
 
