@@ -39,6 +39,7 @@ class NCNetworkingProcessUpload: NSObject {
     private var notificationToken: NotificationToken?
     private var timerProcess: Timer?
     private var pauseProcess: Bool = false
+    private var hud: JGProgressHUD?
 
     func observeTableMetadata() {
         do {
@@ -102,7 +103,10 @@ class NCNetworkingProcessUpload: NSObject {
         let applicationState = UIApplication.shared.applicationState
         let queue = DispatchQueue.global()
         var maxConcurrentOperationUpload = NCBrandOptions.shared.maxConcurrentOperationUpload
-        let hud = JGProgressHUD()
+
+        if applicationState == .active {
+            hud = JGProgressHUD()
+        }
 
         queue.async {
 
@@ -110,11 +114,6 @@ class NCNetworkingProcessUpload: NSObject {
             let isWiFi = NCNetworking.shared.networkReachability == NKCommon.TypeReachability.reachableEthernetOrWiFi
             var counterUpload = metadatasUpload.count
             let sessionSelectors = [NCGlobal.shared.selectorUploadFileNODelete, NCGlobal.shared.selectorUploadFile, NCGlobal.shared.selectorUploadAutoUpload, NCGlobal.shared.selectorUploadAutoUploadAll]
-
-            // Update Badge
-            let counterBadgeDownload = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "status < 0"))
-            let counterBadgeUpload = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "status > 0"))
-            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUpdateBadgeNumber, userInfo: ["counterDownload": counterBadgeDownload.count, "counterUpload": counterBadgeUpload.count])
 
             // ** TEST ONLY ONE **
             // E2EE
@@ -156,7 +155,7 @@ class NCNetworkingProcessUpload: NSObject {
 
                         let semaphore = DispatchSemaphore(value: 0)
                         let cameraRoll = NCCameraRoll()
-                        cameraRoll.extractCameraRoll(from: metadata, viewController: self.rootViewController, hud: hud) { metadatas in
+                        cameraRoll.extractCameraRoll(from: metadata) { metadatas in
                             if metadatas.isEmpty {
                                 NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
                             }
@@ -175,7 +174,7 @@ class NCNetworkingProcessUpload: NSObject {
                                 }
 
                                 if let metadata = NCManageDatabase.shared.setMetadataStatus(ocId: metadata.ocId, status: NCGlobal.shared.metadataStatusInUpload) {
-                                    NCNetworking.shared.upload(metadata: metadata, hudView: self.hudView)
+                                    NCNetworking.shared.upload(metadata: metadata, hudView: self.hudView, hud: self.hud)
                                     if isInDirectoryE2EE || metadata.chunk > 0 {
                                         maxConcurrentOperationUpload = 1
                                     }

@@ -23,13 +23,13 @@
 
 import Foundation
 import NextcloudKit
-import JGProgressHUD
+//import JGProgressHUD
 
 class NCCameraRoll: NSObject {
 
     let utilityFileSystem = NCUtilityFileSystem()
 
-    func extractCameraRoll(from metadata: tableMetadata, viewController: UIViewController?, hud: JGProgressHUD, completition: @escaping (_ metadatas: [tableMetadata]) -> Void) {
+    func extractCameraRoll(from metadata: tableMetadata, completition: @escaping (_ metadatas: [tableMetadata]) -> Void) {
 
         var chunkSize = NCGlobal.shared.chunkSizeMBCellular
         if NCNetworking.shared.networkReachability == NKCommon.TypeReachability.reachableEthernetOrWiFi {
@@ -68,14 +68,14 @@ class NCCameraRoll: NSObject {
             return completition(metadatas)
         }
 
-        extractImageVideoFromAssetLocalIdentifier(metadata: metadataSource, modifyMetadataForUpload: true, viewController: viewController, hud: hud) { metadata, fileNamePath, error in
+        extractImageVideoFromAssetLocalIdentifier(metadata: metadataSource, modifyMetadataForUpload: true) { metadata, fileNamePath, error in
             if let metadata = metadata, let fileNamePath = fileNamePath, !error {
                 metadatas.append(metadata)
                 let toPath = self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)
                 self.utilityFileSystem.moveFile(atPath: fileNamePath, toPath: toPath)
                 let fetchAssets = PHAsset.fetchAssets(withLocalIdentifiers: [metadataSource.assetLocalIdentifier], options: nil)
                 // swiftlint:disable empty_count
-                if metadata.livePhoto, fetchAssets.count > 0 {
+                if metadata.isLivePhoto, fetchAssets.count > 0 {
                     self.createMetadataLivePhoto(metadata: metadata, asset: fetchAssets.firstObject) { metadata in
                         if let metadata = metadata, let metadata = NCManageDatabase.shared.addMetadata(metadata) {
                             metadatas.append(metadata)
@@ -94,8 +94,6 @@ class NCCameraRoll: NSObject {
 
     func extractImageVideoFromAssetLocalIdentifier(metadata: tableMetadata,
                                                    modifyMetadataForUpload: Bool,
-                                                   viewController: UIViewController?,
-                                                   hud: JGProgressHUD,
                                                    completion: @escaping (_ metadata: tableMetadata?, _ fileNamePath: String?, _ error: Bool) -> Void) {
 
         var fileNamePath: String?
@@ -210,32 +208,17 @@ class NCCameraRoll: NSObject {
                         metadata.size = self.utilityFileSystem.getFileSize(filePath: fileNamePath)
                         return callCompletionWithError(false)
                     } catch { return callCompletionWithError() }
-                } else if let asset = asset as? AVComposition, asset.tracks.count > 1, let exporter = AVAssetExportSession(asset: asset, presetName: AVAssetExportPresetHighestQuality), let viewController = viewController {
-                    DispatchQueue.main.async {
-                        hud.indicatorView = JGProgressHUDRingIndicatorView()
-                        if let indicatorView = hud.indicatorView as? JGProgressHUDRingIndicatorView {
-                            indicatorView.ringWidth = 1.5
-                        }
-                        hud.textLabel.text = NSLocalizedString("_exporting_video_", comment: "")
-                        hud.show(in: viewController.view)
-                        hud.tapOnHUDViewBlock = { _ in
-                            exporter.cancelExport()
-                        }
-                    }
+                } else if let asset = asset as? AVComposition, asset.tracks.count > 1, let exporter = AVAssetExportSession(asset: asset, presetName: AVAssetExportPresetHighestQuality) {
                     exporter.outputURL = URL(fileURLWithPath: fileNamePath)
                     exporter.outputFileType = AVFileType.mp4
                     exporter.shouldOptimizeForNetworkUse = true
                     exporter.exportAsynchronously {
-                        DispatchQueue.main.async { hud.dismiss() }
                         if exporter.status == .completed {
                             metadata.creationDate = creationDate as NSDate
                             metadata.date = modificationDate as NSDate
                             metadata.size = self.utilityFileSystem.getFileSize(filePath: fileNamePath)
                             return callCompletionWithError(false)
                         } else { return callCompletionWithError() }
-                    }
-                    while exporter.status == AVAssetExportSession.Status.exporting || exporter.status == AVAssetExportSession.Status.waiting {
-                        hud.progress = exporter.progress
                     }
                 } else {
                     return callCompletionWithError()
@@ -282,9 +265,9 @@ class NCCameraRoll: NSObject {
                                                                                serverUrl: metadata.serverUrl,
                                                                                urlBase: metadata.urlBase,
                                                                                url: "",
-                                                                               contentType: "",
-                                                                               isLivePhoto: true)
+                                                                               contentType: "")
 
+                metadataLivePhoto.livePhotoFile = metadata.fileName
                 metadataLivePhoto.classFile = NKCommon.TypeClassFile.video.rawValue
                 metadataLivePhoto.isExtractFile = true
                 metadataLivePhoto.session = metadata.session

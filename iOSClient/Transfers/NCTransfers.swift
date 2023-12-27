@@ -56,7 +56,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
-        navigationController?.setFileAppreance()
+        reloadDataSource()
     }
 
     override func setNavigationItem() {
@@ -68,32 +68,37 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
 
     override func downloadStartFile(_ notification: NSNotification) {
 
-        reloadDataSource()
+        self.notificationReloadDataSource += 1
     }
 
     override func downloadedFile(_ notification: NSNotification) {
 
-        reloadDataSource()
+        self.notificationReloadDataSource += 1
     }
 
     override func downloadCancelFile(_ notification: NSNotification) {
 
-        reloadDataSource()
+        self.notificationReloadDataSource += 1
     }
 
     override func uploadStartFile(_ notification: NSNotification) {
 
-        reloadDataSource()
+        self.notificationReloadDataSource += 1
     }
 
     override func uploadedFile(_ notification: NSNotification) {
 
-        reloadDataSource()
+        self.notificationReloadDataSource += 1
+    }
+
+    override func uploadedLivePhoto(_ notification: NSNotification) {
+
+        self.notificationReloadDataSource += 1
     }
 
     override func uploadCancelFile(_ notification: NSNotification) {
 
-        reloadDataSource()
+        self.notificationReloadDataSource += 1
     }
 
     // MARK: TAP EVENT
@@ -106,12 +111,11 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
 
         alertController.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel, handler: nil))
         alertController.addAction(UIAlertAction(title: NSLocalizedString("_cancel_all_task_", comment: ""), style: .default, handler: { _ in
-            Task {
-                NCNetworking.shared.cancelDataTask()
-                NCNetworking.shared.cancelDownloadTasks()
-                NCNetworking.shared.cancelUploadTasks()
-                NCNetworking.shared.cancelUploadBackgroundTask()
-            }
+            NCNetworking.shared.cancelAllQueue()
+            NCNetworking.shared.cancelDataTask()
+            NCNetworking.shared.cancelDownloadTasks()
+            NCNetworking.shared.cancelUploadTasks()
+            NCNetworking.shared.cancelUploadBackgroundTask()
         }))
 
         self.present(alertController, animated: true, completion: nil)
@@ -139,10 +143,10 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
         guard appDelegate.account == metadata.account else { return }
 
         let cameraRoll = NCCameraRoll()
-        cameraRoll.extractCameraRoll(from: metadata, viewController: self, hud: JGProgressHUD()) { metadatas in
+        cameraRoll.extractCameraRoll(from: metadata) { metadatas in
             for metadata in metadatas {
                 if let metadata = NCManageDatabase.shared.setMetadataStatus(ocId: metadata.ocId, status: NCGlobal.shared.metadataStatusInUpload) {
-                    NCNetworking.shared.upload(metadata: metadata, hudView: self.appDelegate.window?.rootViewController?.view)
+                    NCNetworking.shared.upload(metadata: metadata, hudView: self.appDelegate.window?.rootViewController?.view, hud: JGProgressHUD())
                 }
             }
         }
@@ -252,24 +256,28 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
 
     // MARK: - DataSource + NC Endpoint
 
-    override func queryDB(isForced: Bool) {
+    override func queryDB() {
+        super.queryDB()
 
         let metadatas = NCManageDatabase.shared.getAdvancedMetadatas(predicate: NSPredicate(format: "status != %i && status != %i", NCGlobal.shared.metadataStatusNormal, NCGlobal.shared.metadataStatusDownloadError), page: 1, limit: 50, sorted: "sessionTaskIdentifier", ascending: false)
         self.dataSource = NCDataSource(metadatas: metadatas, account: self.appDelegate.account)
     }
 
-    override func reloadDataSource(isForced: Bool = true) {
+    override func reloadDataSource() {
         super.reloadDataSource()
 
-        self.queryDB(isForced: isForced)
-        DispatchQueue.main.async {
-            self.refreshControl.endRefreshing()
-            self.collectionView.reloadData()
+        DispatchQueue.global().async {
+            self.queryDB()
+            DispatchQueue.main.async {
+                self.refreshControl.endRefreshing()
+                self.collectionView.reloadData()
+            }
         }
     }
 
-    override func reloadDataSourceNetwork(isForced: Bool = false) {
-        super.reloadDataSourceNetwork(isForced: isForced)
+    override func reloadDataSourceNetwork() {
+        super.reloadDataSourceNetwork()
+
         reloadDataSource()
     }
 }

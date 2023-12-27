@@ -45,7 +45,8 @@ class NCMainTabBar: UITabBar {
         appDelegate.mainTabBar = self
 
         NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeTheming), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(updateBadgeNumber(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUpdateBadgeNumber), object: nil)
+
+        let timerNotificationCenter = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(updateBadgeNumber), userInfo: nil, repeats: true)
 
         barTintColor = .secondarySystemBackground
         backgroundColor = .secondarySystemBackground
@@ -205,12 +206,17 @@ class NCMainTabBar: UITabBar {
         self.addSubview(centerButton)
     }
 
-    @objc func updateBadgeNumber(_ notification: NSNotification) {
+    @objc func updateBadgeNumber() {
 
-        guard let userInfo = notification.userInfo as NSDictionary?,
-              let counterDownload = userInfo["counterDownload"] as? Int,
-              let counterUpload = userInfo["counterUpload"] as? Int
-        else { return }
+        var counterDownload = 0
+        var counterUpload = 0
+
+        if let results = NCManageDatabase.shared.getResultsMetadatas(predicate: NSPredicate(format: "status < 0")) {
+            counterDownload = results.count
+        }
+        if let results = NCManageDatabase.shared.getResultsMetadatas(predicate: NSPredicate(format: "status > 0")) {
+            counterUpload = results.count
+        }
 
         UIApplication.shared.applicationIconBadgeNumber = counterUpload
         if let item = self.items?[0] {
@@ -218,18 +224,26 @@ class NCMainTabBar: UITabBar {
                 item.badgeValue = nil
             } else if counterDownload > 0, counterUpload == 0 {
                 var badgeValue = String("↓ \(counterDownload)")
-                if counterDownload >= NCGlobal.shared.maxConcurrentOperationCountDownload {
-                    badgeValue = String("↓ 10+")
+                if counterDownload >= NCBrandOptions.shared.maxConcurrentOperationDownload {
+                    badgeValue = String("↓ \(NCBrandOptions.shared.maxConcurrentOperationDownload)+")
                 }
                 item.badgeValue = badgeValue
             } else if counterDownload == 0, counterUpload > 0 {
-                item.badgeValue = String("↑ \(counterUpload)")
-            } else {
-                var badgeValue = String("↓ \(counterDownload) ↑ \(counterUpload)")
-                if counterDownload >= NCGlobal.shared.maxConcurrentOperationCountDownload {
-                    badgeValue = String("↓ 10+ ↑ \(counterUpload)")
+                var badgeValue = String("↑ \(counterUpload)")
+                if counterUpload >= NCBrandOptions.shared.maxConcurrentOperationUpload {
+                    badgeValue = String("↑ \(NCBrandOptions.shared.maxConcurrentOperationUpload)+")
                 }
                 item.badgeValue = badgeValue
+            } else {
+                var badgeValueDownload = String("↓ \(counterDownload)")
+                if counterDownload >= NCBrandOptions.shared.maxConcurrentOperationDownload {
+                    badgeValueDownload = String("↓ \(NCBrandOptions.shared.maxConcurrentOperationDownload)+")
+                }
+                var badgeValueUpload = String("↑ \(counterUpload)")
+                if counterUpload >= NCBrandOptions.shared.maxConcurrentOperationUpload {
+                    badgeValueUpload = String("↑ \(NCBrandOptions.shared.maxConcurrentOperationUpload)+")
+                }
+                item.badgeValue = badgeValueDownload + " " + badgeValueUpload
             }
         }
     }

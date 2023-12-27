@@ -204,7 +204,7 @@ class NCViewerMediaDetailView: UIView {
             locationLabel.text = exif.location
         }
 
-        if metadata.livePhoto {
+        if metadata.isLivePhoto {
             livePhotoImageView.isHidden = false
         }
 

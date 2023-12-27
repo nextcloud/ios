@@ -10,9 +10,21 @@ import Foundation
 import SwiftUI
 
 struct ScrollOffsetPreferenceKey: PreferenceKey {
-    static var defaultValue: CGPoint = .zero
+    static var defaultValue: CGFloat = 0
 
-    static func reduce(value: inout CGPoint, nextValue: () -> CGPoint) {}
+    static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) {}
+}
+
+struct ScrollIsOnTopPreferenceKey: PreferenceKey {
+    static var defaultValue: Bool = true
+
+    static func reduce(value: inout Bool, nextValue: () -> Bool) {}
+}
+
+struct ScrollIsOnBottomPreferenceKey: PreferenceKey {
+    static var defaultValue: Bool = true
+
+    static func reduce(value: inout Bool, nextValue: () -> Bool) {}
 }
 
 struct TitlePreferenceKey: PreferenceKey {

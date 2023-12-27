@@ -14,7 +14,6 @@ struct NCMediaRow: View {
     let metadatas: [tableMetadata]
 
     @Binding var isInSelectMode: Bool
-    let queuer: Queuer
     let onCellSelected: (ScaledThumbnail, Bool) -> Void
     let onCellContextMenuItemSelected: (ScaledThumbnail, ContextMenuSelection) -> Void
     @StateObject private var vm = NCMediaRowViewModel()
@@ -34,16 +33,12 @@ struct NCMediaRow: View {
                 }
             }
         }
-        .onFirstAppear {
-            vm.configure(metadatas: metadatas, queuer: queuer)
+        .onAppear {
+            vm.configure(metadatas: metadatas)
             vm.downloadThumbnails(rowWidth: UIScreen.main.bounds.width, spacing: spacing)
         }
         .onDisappear {
             vm.cancelDownloadingThumbnails()
         }
-//        .onRotate { _ in
-//            vm.configure(metadatas: metadatas)
-//            vm.downloadThumbnails(rowWidth: UIScreen.main.bounds.width, spacing: spacing)
-//        }
     }
 }

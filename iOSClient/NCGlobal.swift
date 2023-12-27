@@ -104,7 +104,6 @@ class NCGlobal: NSObject {
     let nextcloudVersion26: Int                     = 26
     let nextcloudVersion27: Int                     = 27
     let nextcloudVersion28: Int                     = 28
-    let nextcloudVersion29: Int                     = 29
 
     // Nextcloud unsupported
     //
@@ -219,6 +218,7 @@ class NCGlobal: NSObject {
     @objc let errorMethodNotSupported: Int          = 405
     @objc let errorConflict: Int                    = 409
     @objc let errorPreconditionFailed: Int          = 412
+    @objc let errorUnsupportedMediaType: Int        = 415
     @objc let errorQuota: Int                       = 507
     @objc let errorUnauthorized997: Int             = 997
     @objc let errorExplicitlyCancelled: Int         = -999
@@ -332,9 +332,6 @@ class NCGlobal: NSObject {
     let metadataStatusUploading: Int                = 3
     let metadataStatusUploadError: Int              = 4
 
-    // Queue Concurrent Operation Download
-    let maxConcurrentOperationCountDownload: Int    = 10
-
     //  Hidden files included in the read
     //
     let includeHiddenFiles: [String] = [".LivePhoto"]
@@ -357,12 +354,10 @@ class NCGlobal: NSObject {
     let notificationCenterRichdocumentGrabFocus                 = "richdocumentGrabFocus"
     let notificationCenterReloadDataNCShare                     = "reloadDataNCShare"
     let notificationCenterCloseRichWorkspaceWebView             = "closeRichWorkspaceWebView"
-    let notificationCenterUpdateBadgeNumber                     = "updateBadgeNumber"               // userInfo: counterDownload, counterUpload
     let notificationCenterReloadAvatar                          = "reloadAvatar"
 
     @objc let notificationCenterReloadDataSource                = "reloadDataSource"
     let notificationCenterReloadDataSourceNetwork               = "reloadDataSourceNetwork"
-    let notificationCenterReloadDataSourceNetworkForced         = "reloadDataSourceNetworkForced"
 
     let notificationCenterChangeStatusFolderE2EE                = "changeStatusFolderE2EE"          // userInfo: serverUrl
 
@@ -372,14 +367,16 @@ class NCGlobal: NSObject {
 
     let notificationCenterUploadStartFile                       = "uploadStartFile"                 // userInfo: ocId, serverUrl, account, fileName, sessionSelector
     @objc let notificationCenterUploadedFile                    = "uploadedFile"                    // userInfo: ocId, serverUrl, account, fileName, ocIdTemp, error
+    let notificationCenterUploadedLivePhoto                     = "uploadedLivePhoto"               // userInfo: ocId, serverUrl, account, fileName, ocIdTemp, error
+
     let notificationCenterUploadCancelFile                      = "uploadCancelFile"                // userInfo: ocId, serverUrl, account
 
     let notificationCenterProgressTask                          = "progressTask"                    // userInfo: account, ocId, serverUrl, status, chunk, e2eEncrypted, progress, totalBytes, totalBytesExpected
 
     let notificationCenterCreateFolder                          = "createFolder"                    // userInfo: ocId, serverUrl, account, withPush
-    let notificationCenterDeleteFile                            = "deleteFile"                      // userInfo: [ocId], [indexPath], onlyLocalCache, error, hud?
-    let notificationCenterMoveFile                              = "moveFile"                        // userInfo: [ocId], [indexPath], error, hud?
-    let notificationCenterCopyFile                              = "copyFile"                        // userInfo: [ocId], [indexPath], error, hud?
+    let notificationCenterDeleteFile                            = "deleteFile"                      // userInfo: [ocId], [indexPath], onlyLocalCache, error
+    let notificationCenterMoveFile                              = "moveFile"                        // userInfo: [ocId], [indexPath], error
+    let notificationCenterCopyFile                              = "copyFile"                        // userInfo: [ocId], [indexPath], error
     let notificationCenterRenameFile                            = "renameFile"                      // userInfo: ocId, account, indexPath
     let notificationCenterFavoriteFile                          = "favoriteFile"                    // userInfo: ocId, serverUrl
 
@@ -395,6 +392,8 @@ class NCGlobal: NSObject {
 
     let notificationCenterEnableSwipeGesture                    = "enableSwipeGesture"
     let notificationCenterDisableSwipeGesture                   = "disableSwipeGesture"
+
+    let notificationCenterFinishedMediaInProcess                = "finishedMediaInProcess"
 
     // TIP
     //
@@ -473,6 +472,9 @@ class NCGlobal: NSObject {
     @objc var capabilityUserStatusEnabled: Bool                 = false
     var capabilityExternalSites: Bool                           = false
     var capabilityGroupfoldersEnabled: Bool                     = false // NC27
+    var isLivePhotoServerAvailable: Bool {                              // NC28
+        return capabilityServerVersionMajor >= nextcloudVersion28
+    }
 
     // MORE NEXTCLOUD APPS
     let talkSchemeUrl                                           = "nextcloudtalk://"

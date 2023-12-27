@@ -324,22 +324,24 @@ class NCViewerMediaPage: UIViewController {
             return
         }
 
-        progressView.progress = 0
-        let metadata = currentViewController.metadata
+        DispatchQueue.main.async {
+            self.progressView.progress = 0
+            let metadata = self.currentViewController.metadata
 
-        if metadata.ocId == ocId,
-           metadata.isAudioOrVideo,
-           utilityFileSystem.fileProviderStorageExists(metadata),
-           let ncplayer = currentViewController.ncplayer {
-            let url = URL(fileURLWithPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView))
-            if ncplayer.isPlay() {
-                ncplayer.playerPause()
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+            if metadata.ocId == ocId,
+               metadata.isAudioOrVideo,
+               self.utilityFileSystem.fileProviderStorageExists(metadata),
+               let ncplayer = self.currentViewController.ncplayer {
+                let url = URL(fileURLWithPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView))
+                if ncplayer.isPlay() {
+                    ncplayer.playerPause()
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                        ncplayer.openAVPlayer(url: url)
+                        ncplayer.playerPlay()
+                    }
+                } else {
                     ncplayer.openAVPlayer(url: url)
-                    ncplayer.playerPlay()
                 }
-            } else {
-                ncplayer.openAVPlayer(url: url)
             }
         }
     }
@@ -350,24 +352,17 @@ class NCViewerMediaPage: UIViewController {
               let progressNumber = userInfo["progress"] as? NSNumber
         else { return }
 
-        let progress = progressNumber.floatValue
-        if progress == 1 {
-            self.progressView.progress = 0
-        } else {
-            self.progressView.progress = progress
+        DispatchQueue.main.async {
+            let progress = progressNumber.floatValue
+            if progress == 1 {
+                self.progressView.progress = 0
+            } else {
+                self.progressView.progress = progress
+            }
         }
     }
 
-    @objc func uploadStartFile(_ notification: NSNotification) {
-
-        /*
-        guard let userInfo = notification.userInfo as NSDictionary?,
-              let serverUrl = userInfo["serverUrl"] as? String,
-              let fileName = userInfo["fileName"] as? String,
-              let sessionSelector = userInfo["sessionSelector"] as? String
-        else { return }
-        */
-    }
+    @objc func uploadStartFile(_ notification: NSNotification) { }
 
     @objc func uploadedFile(_ notification: NSNotification) {
 
@@ -409,10 +404,6 @@ class NCViewerMediaPage: UIViewController {
                 shiftCurrentPage()
             }
         }
-
-        if let hud = userInfo["hud"] as? JGProgressHUD {
-            hud.dismiss()
-        }
     }
 
     @objc func moveFile(_ notification: NSNotification) {
@@ -421,10 +412,11 @@ class NCViewerMediaPage: UIViewController {
 
     @objc func copyFile(_ notification: NSNotification) {
 
-        guard let userInfo = notification.userInfo as NSDictionary? else { return }
+        guard let userInfo = notification.userInfo as NSDictionary?,
+              let error = userInfo["error"] as? NKError else { return }
 
-        if let hud = userInfo["hud"] as? JGProgressHUD {
-            hud.dismiss()
+        if error != .success {
+            NCContentPresenter().showError(error: error)
         }
     }
 
@@ -678,13 +670,13 @@ extension NCViewerMediaPage: UIGestureRecognizerDelegate {
     // MARK: - Live Photo
     @objc func didLongpressGestureEvent(gestureRecognizer: UITapGestureRecognizer) {
 
-        if !currentViewController.metadata.livePhoto || currentViewController.detailView.isShown { return }
+        if !currentViewController.metadata.isLivePhoto || currentViewController.detailView.isShown { return }
 
         if gestureRecognizer.state == .began {
-            let fileName = (currentViewController.metadata.fileNameView as NSString).deletingPathExtension + ".mov"
-            if let metadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView LIKE[c] %@", currentViewController.metadata.account, currentViewController.metadata.serverUrl, fileName)), utilityFileSystem.fileProviderStorageExists(metadata) {
+            if let metadataLive = NCManageDatabase.shared.getMetadataLivePhoto(metadata: currentViewController.metadata),
+               utilityFileSystem.fileProviderStorageExists(metadataLive) {
                 AudioServicesPlaySystemSound(1519) // peek feedback
-                currentViewController.playLivePhoto(filePath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView))
+                currentViewController.playLivePhoto(filePath: utilityFileSystem.getDirectoryProviderStorageOcId(metadataLive.ocId, fileNameView: metadataLive.fileName))
             }
         } else if gestureRecognizer.state == .ended {
             currentViewController.stopLivePhoto()

@@ -44,12 +44,13 @@ class NCOffline: NCCollectionViewCommon {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
-        navigationController?.setFileAppreance()
+        reloadDataSource()
     }
 
     // MARK: - DataSource + NC Endpoint
 
-    override func queryDB(isForced: Bool) {
+    override func queryDB() {
+        super.queryDB()
 
         var ocIds: [String] = []
         var metadatas: [tableMetadata] = []
@@ -76,17 +77,16 @@ class NCOffline: NCCollectionViewCommon {
             ascending: self.layoutForView?.ascending,
             directoryOnTop: self.layoutForView?.directoryOnTop,
             favoriteOnTop: true,
-            filterLivePhoto: true,
             groupByField: self.groupByField,
             providers: self.providers,
             searchResults: self.searchResults)
     }
 
-    override func reloadDataSource(isForced: Bool = true) {
+    override func reloadDataSource() {
         super.reloadDataSource()
 
         DispatchQueue.global().async {
-            self.queryDB(isForced: isForced)
+            self.queryDB()
             DispatchQueue.main.async {
                 self.refreshControl.endRefreshing()
                 self.collectionView.reloadData()
@@ -94,9 +94,9 @@ class NCOffline: NCCollectionViewCommon {
         }
     }
 
-    override func reloadDataSourceNetwork(isForced: Bool = false) {
-        super.reloadDataSourceNetwork(isForced: isForced)
+    override func reloadDataSourceNetwork() {
+        super.reloadDataSourceNetwork()
 
-        return self.reloadDataSource()
+        reloadDataSource()
     }
 }

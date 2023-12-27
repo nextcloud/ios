@@ -110,8 +110,6 @@ class NCManageDatabase: NSObject {
                             migration.deleteData(forType: tableActivityLatestId.className())
                             migration.deleteData(forType: tableActivityPreview.className())
                             migration.deleteData(forType: tableActivitySubjectRich.className())
-                            migration.deleteData(forType: tableDirectory.className())
-                            migration.deleteData(forType: tableMetadata.className())
                         }
 
                         if oldSchemaVersion < 292 {
@@ -120,10 +118,16 @@ class NCManageDatabase: NSObject {
 
                         if oldSchemaVersion < 319 {
                             migration.deleteData(forType: tableChunk.className())
-                            migration.deleteData(forType: tableMetadata.className())
                             migration.deleteData(forType: tableDirectory.className())
                             migration.deleteData(forType: tableE2eEncryptionLock.className())
                             migration.deleteData(forType: tableGPS.className())
+                        }
+
+                        if oldSchemaVersion < 333 {
+                            migration.deleteData(forType: tableMetadata.className())
+                            migration.enumerateObjects(ofType: tableDirectory.className()) { _, newObject in
+                                newObject?["etag"] = ""
+                            }
                         }
 
                     }, shouldCompactOnLaunch: { totalBytes, usedBytes in
@@ -267,16 +271,14 @@ class NCManageDatabase: NSObject {
         }
     }
 
-    func getThreadConfined(_ object: Object) -> Any {
-
+    func getThreadSafeReference<T>(ofRealmObject object: T) -> ThreadSafeReference<T>  {
         return ThreadSafeReference(to: object)
     }
 
-    func putThreadConfined(_ tableRef: ThreadSafeReference<Object>) -> Object? {
-
+    func resolveThreadSafeReference<T>(of ref: ThreadSafeReference<T>) -> T? {
         do {
             let realm = try Realm()
-            return realm.resolve(tableRef)
+            return realm.resolve(ref)
         } catch let error as NSError {
             NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
         }

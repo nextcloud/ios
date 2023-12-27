@@ -9,56 +9,49 @@
 import NextcloudKit
 import Combine
 import LRUCache
+import RealmSwift
 
 @MainActor class NCMediaViewModel: ObservableObject {
-    @Published internal var metadatas: [tableMetadata] = []
-    @Published internal var needsLoadingMoreItems = true
-    @Published internal var filter = Filter.all
-    @Published internal var isLoadingMetadata = true
-    @Published internal var hasNewMedia = false
+    @Published var metadatas: [tableMetadata] = []
+    @Published var filter = Filter.all
+    @Published var isLoading = true
+    @Published var hasOldMedia = false
+    @Published var triggerLoadMedia = false
 
-    private var account: String = ""
-    private var lastContentOffsetY: CGFloat = 0
-    private var mediaPath = ""
-    private var livePhoto: Bool = false
-    private var predicateDefault: NSPredicate?
-    private var predicate: NSPredicate?
-    internal let appDelegate = UIApplication.shared.delegate as? AppDelegate
+    var topMostVisibleMetadata: tableMetadata?
+    var bottomMostVisibleMetadata: tableMetadata?
 
-    private var cancellables: Set<AnyCancellable> = []
-
-    private var isLoadingNewMetadata = false {
-        didSet {
-            updateLoadingMedia()
-        }
-    }
-
-    private var isLoadingOldMetadata = false {
-        didSet {
-            updateLoadingMedia()
-        }
-    }
-
-    private var isLoadingProcessingMetadata = false {
-        didSet {
-            updateLoadingMedia()
-        }
-    }
+    let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
 
     private let cache = NCImageCache.shared
 
+    private var account: String = ""
+    private var cancellables: Set<AnyCancellable> = []
+    private var timerSearchMedia: Timer?
+    private var timeIntervalSearchMedia: TimeInterval = 2.0
+
+    private var showOnlyImages = false
+    private var showOnlyVideos = false
+
+    private var isLoadingMedia = false {
+        didSet {
+            updateLoading()
+        }
+    }
+
+    private var isLoadingProcessing = false {
+        didSet {
+            updateLoading()
+        }
+    }
+
     init() {
-        guard let appDelegate, !appDelegate.account.isEmpty else { return }
+        guard !appDelegate.account.isEmpty else { return }
 
         if account != appDelegate.account {
-            self.metadatas = []
+            DispatchQueue.main.async { self.metadatas = [] }
             account = appDelegate.account
         }
-
-        guard let accountTable = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", account)) else { return }
-        let startServerUrl = NCUtilityFileSystem().getHomeServer(urlBase: accountTable.urlBase, userId: accountTable.userId) + accountTable.mediaPath
-
-        predicateDefault = NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND (classFile == %@ OR classFile == %@) AND NOT (session CONTAINS[c] 'upload')", account, startServerUrl, NKCommon.TypeClassFile.image.rawValue, NKCommon.TypeClassFile.video.rawValue)
 
         NotificationCenter.default.addObserver(self, selector: #selector(deleteFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDeleteFile), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(moveFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterMoveFile), object: nil)
@@ -68,24 +61,27 @@ import LRUCache
         NotificationCenter.default.addObserver(self, selector: #selector(userChanged(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeUser), object: nil)
 
         if let metadatas = self.cache.initialMetadatas {
-            self.metadatas = metadatas
+            DispatchQueue.main.async { self.metadatas = Array(metadatas.map { tableMetadata.init(value: $0) }) }
         }
 
-        Task {
-            await loadNewMedia()
-        }
+        notifyLoadNewMedia()
 
         $filter
             .dropFirst()
             .sink { filter in
                 switch filter {
                 case .all:
-                    self.loadMediaFromDB(showPhotos: true, showVideos: true)
+                    self.showOnlyImages = false
+                    self.showOnlyVideos = false
                 case .onlyPhotos:
-                    self.loadMediaFromDB(showPhotos: true, showVideos: false)
+                    self.showOnlyImages = true
+                    self.showOnlyVideos = false
                 case .onlyVideos:
-                    self.loadMediaFromDB(showPhotos: false, showVideos: true)
+                    self.showOnlyImages = false
+                    self.showOnlyVideos = true
                 }
+
+                self.loadMediaFromDB()
             }
             .store(in: &cancellables)
     }
@@ -99,12 +95,7 @@ import LRUCache
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeUser), object: nil)
     }
 
-    public func loadMoreItems() {
-        loadOldMedia()
-        needsLoadingMoreItems = false
-    }
-
-    public func deleteMetadata(metadatas: [tableMetadata]) {
+    func deleteMetadata(metadatas: [tableMetadata]) {
         let notLocked = metadatas.allSatisfy { !$0.lock }
 
         if notLocked {
@@ -112,29 +103,32 @@ import LRUCache
         }
     }
 
-    public func copyOrMoveMetadataInApp(metadatas: [tableMetadata]) {
-        isLoadingProcessingMetadata = true
+    func copyOrMoveMetadataInApp(metadatas: [tableMetadata]) {
+        isLoadingProcessing = true
 
         NCActionCenter.shared.openSelectView(items: metadatas, indexPath: [], didCancel: {
-            self.isLoadingProcessingMetadata = false
+            self.isLoadingProcessing = false
         })
     }
 
-    public func copyMetadata(metadatas: [tableMetadata]) {
+    func copyMetadata(metadatas: [tableMetadata]) {
         copy(metadatas: metadatas)
     }
 
-    public func onCellTapped(metadata: tableMetadata) {
-        appDelegate?.activeServerUrl = metadata.serverUrl
+    func onCellTapped(metadata: tableMetadata) {
+        appDelegate.activeServerUrl = metadata.serverUrl
     }
 
-    public func onRefresh() {
-        Task {
-            await loadNewMedia()
-        }
+    func startLoadingNewMediaTimer() {
+        timerSearchMedia?.invalidate()
+        timerSearchMedia = Timer.scheduledTimer(timeInterval: timeIntervalSearchMedia, target: self, selector: #selector(notifyLoadNewMedia), userInfo: nil, repeats: false)
     }
 
-    public func addToFavorites(metadata: tableMetadata) {
+    @objc func notifyLoadNewMedia() {
+        triggerLoadMedia = true
+    }
+
+    func addToFavorites(metadata: tableMetadata) {
         NCNetworking.shared.favoriteMetadata(metadata) { error in
             if error != .success {
                 NCContentPresenter().showError(error: error)
@@ -142,51 +136,50 @@ import LRUCache
         }
     }
 
-    public func openIn(metadata: tableMetadata) {
-        isLoadingProcessingMetadata = true
+    func openIn(metadata: tableMetadata) {
+        isLoadingProcessing = true
 
         if NCUtilityFileSystem().fileProviderStorageExists(metadata) {
             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDownloadedFile, userInfo: ["ocId": metadata.ocId, "selector": NCGlobal.shared.selectorOpenIn, "error": NKError(), "account": metadata.account])
         } else {
-            NCNetworking.shared.download(metadata: metadata, selector: NCGlobal.shared.selectorOpenIn, notificationCenterProgressTask: false) { afError, error in
-                self.isLoadingProcessingMetadata = false
+            NCNetworking.shared.download(metadata: metadata, selector: NCGlobal.shared.selectorOpenIn, notificationCenterProgressTask: false) { _, _ in
+                self.isLoadingProcessing = false
             }
         }
     }
 
-    public func saveToPhotos(metadata: tableMetadata) {
-        isLoadingProcessingMetadata = true
+    func saveToPhotos(metadata: tableMetadata) {
+        isLoadingProcessing = true
 
         if let livePhoto = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata) {
-            guard let appDelegate else { return }
-            appDelegate.saveLivePhotoQueue.addOperation(NCOperationSaveLivePhoto(metadata: metadata, metadataMOV: livePhoto))
+            NCNetworking.shared.saveLivePhotoQueue.addOperation(NCOperationSaveLivePhoto(metadata: metadata, metadataMOV: livePhoto))
         } else if NCUtilityFileSystem().fileProviderStorageExists(metadata) {
             NCActionCenter.shared.saveAlbum(metadata: metadata)
         } else {
-            NCNetworking.shared.download(metadata: metadata, selector: NCGlobal.shared.selectorSaveAlbum, notificationCenterProgressTask: false) { afError, error in
-                self.isLoadingProcessingMetadata = false
+            NCNetworking.shared.download(metadata: metadata, selector: NCGlobal.shared.selectorSaveAlbum, notificationCenterProgressTask: false) { _, _ in
+                self.isLoadingProcessing = false
             }
         }
     }
 
-    public func viewInFolder(metadata: tableMetadata) {
+    func viewInFolder(metadata: tableMetadata) {
         NCActionCenter.shared.openFileViewInFolder(serverUrl: metadata.serverUrl, fileNameBlink: metadata.fileName, fileNameOpen: nil)
     }
 
-    public func modify(metadata: tableMetadata) {
-        isLoadingProcessingMetadata = true
+    func modify(metadata: tableMetadata) {
+        isLoadingProcessing = true
 
         if NCUtilityFileSystem().fileProviderStorageExists(metadata) {
             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDownloadedFile, userInfo: ["ocId": metadata.ocId, "selector": NCGlobal.shared.selectorLoadFileQuickLook, "error": NKError(), "account": metadata.account])
         } else {
-            NCNetworking.shared.download(metadata: metadata, selector: NCGlobal.shared.selectorLoadFileQuickLook, notificationCenterProgressTask: false) { afError, error in
-                self.isLoadingProcessingMetadata = false
+            NCNetworking.shared.download(metadata: metadata, selector: NCGlobal.shared.selectorLoadFileQuickLook, notificationCenterProgressTask: false) { _, _ in
+                self.isLoadingProcessing = false
             }
         }
     }
 
-    public func getMetadataFromUrl(_ urlString: String) -> tableMetadata? {
-        guard let url = URL(string: urlString), let appDelegate else { return nil }
+    func getMetadataFromUrl(_ urlString: String) -> tableMetadata? {
+        guard let url = URL(string: urlString) else { return nil }
 
         let fileName = url.lastPathComponent
         let metadata = NCManageDatabase.shared.createMetadata(account: appDelegate.account, user: appDelegate.user, userId: appDelegate.userId, fileName: fileName, fileNameView: fileName, ocId: NSUUID().uuidString, serverUrl: "", urlBase: appDelegate.urlBase, url: urlString, contentType: "")
@@ -196,12 +189,12 @@ import LRUCache
         return metadata
     }
 
-    public func delete(metadatas: tableMetadata...) {
+    func delete(metadatas: tableMetadata...) {
         delete(metadatas: metadatas)
     }
 
-    public func delete(metadatas: [tableMetadata]) {
-        isLoadingProcessingMetadata = true
+    func delete(metadatas: [tableMetadata]) {
+        isLoadingProcessing = true
 
         Task {
             var error = NKError()
@@ -217,20 +210,35 @@ import LRUCache
         }
     }
 
-    public func copy(metadatas: tableMetadata...) {
+    func copy(metadatas: tableMetadata...) {
         copy(metadatas: metadatas)
     }
 
-    public func copy(metadatas: [tableMetadata]) {
-        isLoadingProcessingMetadata = true
+    func copy(metadatas: [tableMetadata]) {
+        isLoadingProcessing = true
 
         NCActionCenter.shared.copyToPasteboard(pasteboardOcIds: metadatas.compactMap({ $0.ocId })) {
-            self.isLoadingProcessingMetadata = false
+            self.isLoadingProcessing = false
         }
     }
 
-    private func updateLoadingMedia() {
-        isLoadingMetadata = isLoadingNewMetadata || isLoadingOldMetadata || isLoadingProcessingMetadata
+    private func updateLoading() {
+        isLoading = isLoadingMedia || isLoadingProcessing
+    }
+
+    private func getPredicate(showAll: Bool = false) -> NSPredicate {
+        guard let mediaPath = NCManageDatabase.shared.getActiveAccount()?.mediaPath else { return NSPredicate() }
+        let startServerUrl = NCUtilityFileSystem().getHomeServer(urlBase: appDelegate.urlBase, userId: appDelegate.userId) + mediaPath
+
+        if showAll {
+            return NSPredicate(format: NCImageCache.shared.showAllPredicateMediaString, appDelegate.account, startServerUrl)
+        } else if showOnlyImages {
+            return NSPredicate(format: NCImageCache.shared.showOnlyPredicateMediaString, appDelegate.account, startServerUrl, NKCommon.TypeClassFile.image.rawValue)
+        } else if showOnlyVideos {
+            return NSPredicate(format: NCImageCache.shared.showOnlyPredicateMediaString, appDelegate.account, startServerUrl, NKCommon.TypeClassFile.video.rawValue)
+        } else {
+           return NSPredicate(format: NCImageCache.shared.showPhotoVideoPredicateMediaString, appDelegate.account, startServerUrl)
+        }
     }
 }
 
@@ -243,7 +251,7 @@ extension NCMediaViewModel {
 
         loadMediaFromDB()
 
-        isLoadingProcessingMetadata = false
+        isLoadingProcessing = false
 
         if error != .success {
             NCContentPresenter().showError(error: error)
@@ -256,7 +264,7 @@ extension NCMediaViewModel {
 
         loadMediaFromDB()
 
-        isLoadingProcessingMetadata = false
+        isLoadingProcessing = false
 
         if error != .success {
             NCContentPresenter().showError(error: error)
@@ -270,7 +278,7 @@ extension NCMediaViewModel {
     @objc func renameFile(_ notification: NSNotification) {
         guard let userInfo = notification.userInfo as NSDictionary?,
               let account = userInfo["account"] as? String,
-              account == appDelegate?.account
+              account == appDelegate.account
         else { return }
 
         self.loadMediaFromDB()
@@ -281,150 +289,126 @@ extension NCMediaViewModel {
               let error = userInfo["error"] as? NKError,
               error == .success,
               let account = userInfo["account"] as? String,
-              account == appDelegate?.account
+              account == appDelegate.account
         else { return }
 
         self.loadMediaFromDB()
     }
 
     @objc func userChanged(_ notification: NSNotification) {
-            self.loadMediaFromDB()
-
-        Task {
-            await loadNewMedia()
+        if let metadatas = self.cache.initialMetadatas {
+            DispatchQueue.main.async { self.metadatas = Array(metadatas.map { tableMetadata.init(value: $0) }) }
         }
+
+        notifyLoadNewMedia()
     }
 }
 
 // MARK: - Load media
 
 extension NCMediaViewModel {
-    func loadMediaFromDB(showPhotos: Bool = true, showVideos: Bool = true) {
-        guard let appDelegate, !appDelegate.account.isEmpty else { return }
+    func searchMedia(from fromDate: Date?, to toDate: Date?, isScrolledToTop: Bool, isScrolledToBottom: Bool) {
+        var finalFutureDate: Date
+        var finalPastDate: Date
 
-        if account != appDelegate.account {
-            self.metadatas = []
-            account = appDelegate.account
-        }
-
-        guard let accountTable = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", account)) else { return }
-        let startServerUrl = NCUtilityFileSystem().getHomeServer(urlBase: accountTable.urlBase, userId: accountTable.userId) + accountTable.mediaPath
-
-        if showPhotos, showVideos {
-            predicate = predicateDefault
-        } else if showPhotos {
-            predicate = NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND classFile == %@ AND NOT (session CONTAINS[c] 'upload')", account, startServerUrl, NKCommon.TypeClassFile.image.rawValue)
-        } else if showVideos {
-            predicate = NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND classFile == %@ AND NOT (session CONTAINS[c] 'upload')", account, startServerUrl, NKCommon.TypeClassFile.video.rawValue)
-        }
-
-        DispatchQueue.global(qos: .background).async {
-            let metadatas = self.cache.getMediaMetadatas(account: self.account, predicate: self.predicate)
-            DispatchQueue.main.async { self.metadatas = metadatas }
-        }
-    }
-
-    private func loadOldMedia(value: Int = -30, limit: Int = 300) {
-        var lessDate = Date()
-
-        isLoadingOldMetadata = true
-
-        if let predicateDefault {
-            if let metadata = NCManageDatabase.shared.getMetadata(predicate: predicateDefault, sorted: "date", ascending: true) {
-                lessDate = metadata.date as Date
+        if isScrolledToTop {
+            finalFutureDate = Date.distantFuture
+        } else {
+            if let date = toDate {
+                finalFutureDate = Calendar.current.date(byAdding: .second, value: 1, to: date)!
+            } else {
+                finalFutureDate = Date.distantFuture
             }
         }
 
-        var greaterDate: Date
-        if value == -999 {
-            greaterDate = Date.distantPast
+        if isScrolledToBottom {
+            finalPastDate = Date.distantPast
         } else {
-            greaterDate = Calendar.current.date(byAdding: .day, value: value, to: lessDate)!
+            if let date = fromDate {
+                finalPastDate = Calendar.current.date(byAdding: .second, value: -1, to: date)!
+            } else {
+                finalPastDate = Date.distantPast
+            }
         }
 
-        let options = NKRequestOptions(timeout: 300, queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
+        print("Searching for media...")
+        print("From: \(NCUtility().getTitleFromDate(finalPastDate))")
+        print("To: \(NCUtility().getTitleFromDate(finalFutureDate))")
 
-        NextcloudKit.shared.searchMedia(path: mediaPath, lessDate: lessDate, greaterDate: greaterDate, elementDate: "d:getlastmodified/", limit: limit, showHiddenFiles: NCKeychain().showHiddenFiles, options: options) { account, files, _, error in
+        isLoadingMedia = true
+        hasOldMedia = true
 
-            if error == .success && account == self.appDelegate?.account {
-                if !files.isEmpty {
-                    NCManageDatabase.shared.convertFilesToMetadatas(files, useMetadataFolder: false) { _, _, metadatas in
-                        let predicateDate = NSPredicate(format: "date > %@ AND date < %@", greaterDate as NSDate, lessDate as NSDate)
-                        let predicateResult = NSCompoundPredicate(andPredicateWithSubpredicates: [predicateDate, self.predicateDefault!])
-                        let metadatasResult = NCManageDatabase.shared.getMetadatas(predicate: predicateResult)
-                        let metadatasChanged = NCManageDatabase.shared.updateMetadatas(metadatas, metadatasResult: metadatasResult, addCompareLivePhoto: false)
-                        if metadatasChanged.metadatasUpdate.isEmpty {
-                            self.reloadOldMedia(value: value, limit: limit, withElseReloadDataSource: true)
-                        } else {
-                            self.loadMediaFromDB()
-                        }
-                    }
-                } else {
-                    self.reloadOldMedia(value: value, limit: limit, withElseReloadDataSource: false)
-                }
-            } else if error != .success {
-                NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Media search old media error code \(error.errorCode) " + error.errorDescription)
+        Task {
+            let results = await updateMedia(account: appDelegate.account, lessDate: finalFutureDate, greaterDate: finalPastDate, predicate: self.getPredicate())
+            isLoadingMedia = false
+
+            print("Media results changed items: \(results.changedItems)")
+
+            if results.error != .success {
+                NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Media search new media error code \(results.error.errorCode) " + results.error.errorDescription)
             }
 
             DispatchQueue.main.async {
-                self.needsLoadingMoreItems = false
-                self.isLoadingOldMetadata = false
+                if results.error == .success, results.lessDate == Date.distantFuture, results.greaterDate == Date.distantPast, results.changedItems == 0, results.metadatas.isEmpty {
+                    self.metadatas.removeAll()
+                    self.loadMediaFromDB()
+                }
+            }
+
+            if results.changedItems != 0 {
+                self.loadMediaFromDB()
+            } else {
+                if finalPastDate == Date.distantPast {
+                    hasOldMedia = false
+                }
             }
         }
     }
 
-    private func reloadOldMedia(value: Int, limit: Int, withElseReloadDataSource: Bool) {
-        if value == -30 {
-            loadOldMedia(value: -90)
-        } else if value == -90 {
-            loadOldMedia(value: -180)
-        } else if value == -180 {
-            loadOldMedia(value: -999)
-        } else if value == -999 && limit > 0 {
-            loadOldMedia(value: -999, limit: 0)
-        } else {
-            if withElseReloadDataSource {
-                loadMediaFromDB()
-            }
+    private func updateMedia(account: String, lessDate: Date, greaterDate: Date, limit: Int = 200, timeout: TimeInterval = 60, predicate: NSPredicate) async -> MediaResult {
+        guard let mediaPath = NCManageDatabase.shared.getActiveAccount()?.mediaPath else {
+            return MediaResult(account: account, lessDate: lessDate, greaterDate: greaterDate, metadatas: [], changedItems: 0, error: NKError())
         }
-    }
 
-    private func loadNewMedia() async {
-        let limit: Int = 1000
-        guard let lessDate = Calendar.current.date(byAdding: .second, value: 1, to: Date()) else { return }
-        guard let greaterDate = Calendar.current.date(byAdding: .day, value: -30, to: Date()) else { return }
+        let options = NKRequestOptions(timeout: timeout, queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
 
-        let options = NKRequestOptions(timeout: 300, queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
-
-        isLoadingNewMetadata = true
+        let results = await NextcloudKit.shared.searchMedia(path: mediaPath, lessDate: lessDate, greaterDate: greaterDate, elementDate: "d:getlastmodified/", limit: limit, showHiddenFiles: NCKeychain().showHiddenFiles, includeHiddenFiles: [], options: options)
 
         return await withCheckedContinuation { continuation in
-            NextcloudKit.shared.searchMedia(path: self.mediaPath, lessDate: lessDate, greaterDate: greaterDate, elementDate: "d:getlastmodified/", limit: limit, showHiddenFiles: NCKeychain().showHiddenFiles, options: options) { account, files, _, error in
-
-                if error == .success && account == self.appDelegate?.account && !files.isEmpty {
-                    NCManageDatabase.shared.convertFilesToMetadatas(files, useMetadataFolder: false) { _, _, metadatas in
-                        let predicate = NSPredicate(format: "date > %@ AND date < %@", greaterDate as NSDate, lessDate as NSDate)
-                        let predicateResult = NSCompoundPredicate(andPredicateWithSubpredicates: [predicate, (self.predicate ?? self.predicateDefault!)])
-                        let metadatasResult = NCManageDatabase.shared.getMetadatas(predicate: predicateResult)
-                        let updateMetadatas = NCManageDatabase.shared.updateMetadatas(metadatas, metadatasResult: metadatasResult, addCompareLivePhoto: false)
-                        if !updateMetadatas.metadatasUpdate.isEmpty || !updateMetadatas.metadatasDelete.isEmpty {
-                            DispatchQueue.main.async {
-                                self.loadMediaFromDB()
-                                self.hasNewMedia = true
-                            }
-                        }
+            if results.account == account, results.error == .success {
+                NCManageDatabase.shared.convertFilesToMetadatas(results.files, useMetadataFolder: false) { _, _, metadatas in
+                    let predicate = NSPredicate(format: "date > %@ AND date < %@", greaterDate as NSDate, lessDate as NSDate)
+                    let compoundPredicate = NSCompoundPredicate(andPredicateWithSubpredicates: [predicate, self.getPredicate(showAll: true)])
+                    let result = NCManageDatabase.shared.updateMetadatas(metadatas, predicate: compoundPredicate)
+                    if result.metadatasChangedCount != 0 || result.metadatasChanged {
+                        continuation.resume(returning: MediaResult(account: account, lessDate: lessDate, greaterDate: greaterDate, metadatas: metadatas, changedItems: result.metadatasChangedCount, error: results.error))
+                    } else {
+                        continuation.resume(returning: MediaResult(account: account, lessDate: lessDate, greaterDate: greaterDate, metadatas: [], changedItems: 0, error: results.error))
                     }
-                } else if error == .success && files.isEmpty && self.metadatas.isEmpty {
-                    self.loadOldMedia()
-                } else if error != .success {
-                    NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Media search new media error code \(error.errorCode) " + error.errorDescription)
                 }
+            }
+        }
+    }
 
-                DispatchQueue.main.async {
-                    self.isLoadingNewMetadata = false
+    func loadMediaFromDB(showPhotos: Bool = true, showVideos: Bool = true) {
+        guard !appDelegate.account.isEmpty else { return }
+
+        if account != appDelegate.account {
+            DispatchQueue.main.async { self.metadatas = [] }
+            account = appDelegate.account
+        }
+
+        if let metadatas = self.cache.getMediaMetadatas(account: self.account, predicate: self.getPredicate()) {
+            // Create reference to current thread
+            let metadatasRef = NCManageDatabase.shared.getThreadSafeReference(ofRealmObject: metadatas)
+
+            DispatchQueue.main.async {
+                // Check if reference is safe to be read on new thread
+                if let metadatas = NCManageDatabase.shared.resolveThreadSafeReference(of: metadatasRef) {
+
+                    // TODO: Remove copying of whole array and use Realm Results<> instead. This will lead to pointer instead of making a whole new array and will be faster.
+                    self.metadatas = Array(metadatas.map { tableMetadata.init(value: $0) })
                 }
-
-                continuation.resume()
             }
         }
     }
@@ -432,7 +416,7 @@ extension NCMediaViewModel {
 
 extension NCMediaViewModel: NCSelectDelegate {
     func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String, items: [Any], indexPath: [IndexPath], overwrite: Bool, copy: Bool, move: Bool) {
-        guard let serverUrl, let appDelegate else { return }
+        guard let serverUrl else { return }
 
         let home = NCUtilityFileSystem().getHomeServer(urlBase: appDelegate.urlBase, userId: appDelegate.userId)
         let path = serverUrl.replacingOccurrences(of: home, with: "")
@@ -440,12 +424,14 @@ extension NCMediaViewModel: NCSelectDelegate {
 
         self.loadMediaFromDB()
 
-        Task {
-            await loadNewMedia()
-        }
+        notifyLoadNewMedia()
     }
 }
 
 enum Filter {
     case onlyPhotos, onlyVideos, all
+}
+
+private struct MediaResult {
+    let account: String, lessDate: Date?, greaterDate: Date?, metadatas: [tableMetadata], changedItems: Int, error: NKError
 }

@@ -24,6 +24,7 @@
 import UIKit
 import LRUCache
 import NextcloudKit
+import RealmSwift
 
 @objc class NCImageCache: NSObject {
     @objc public static let shared: NCImageCache = {
@@ -33,7 +34,7 @@ import NextcloudKit
 
     // MARK: -
 
-    private let limit: Int = 1500
+    private let limit: Int = 1000
     private var account: String = ""
     private var brandElementColor: UIColor?
 
@@ -48,39 +49,42 @@ import NextcloudKit
     }()
     private var ocIdEtag: [String: String] = [:]
 
-    private var _initialMetadatas: [tableMetadata]?
+    /// This shows all photo and videos, including live photos
+    let showAllPredicateMediaString = "account == %@ AND serverUrl BEGINSWITH %@ AND (classFile == '\(NKCommon.TypeClassFile.image.rawValue)' OR classFile == '\(NKCommon.TypeClassFile.video.rawValue)') AND NOT (session CONTAINS[c] 'upload')"
+    
+    /// This shows all photo and videos, but no live photos
+    let showPhotoVideoPredicateMediaString = "account == %@ AND serverUrl BEGINSWITH %@ AND (classFile == '\(NKCommon.TypeClassFile.image.rawValue)' OR classFile == '\(NKCommon.TypeClassFile.video.rawValue)') AND NOT (session CONTAINS[c] 'upload') AND NOT (livePhotoFile != '' AND classFile == '\(NKCommon.TypeClassFile.video.rawValue)')"
+    
+    /// This will only show an explicitly specified media type, but no live photos
+    let showOnlyPredicateMediaString = "account == %@ AND serverUrl BEGINSWITH %@ AND classFile == %@ AND NOT (session CONTAINS[c] 'upload') AND NOT (livePhotoFile != '' AND classFile == '\(NKCommon.TypeClassFile.video.rawValue)')"
 
-    var initialMetadatas: [tableMetadata]? {
-        defer { 
-            self._initialMetadatas?.removeAll()
+    @ThreadSafe private var _initialMetadatas: Results<tableMetadata>?
+
+    var initialMetadatas: Results<tableMetadata>? {
+        defer {
             self._initialMetadatas = nil
         }
         return _initialMetadatas
     }
 
-    private var livePhoto: Bool = false
-    var isLivePhotoEnable: Bool {
-        return livePhoto
-    }
-
     override private init() {}
 
     func createMediaCache(account: String) {
-
         guard account != self.account, !account.isEmpty else { return }
         self.account = account
 
         ocIdEtag.removeAll()
-        self._initialMetadatas = []
-        self._initialMetadatas = getMediaMetadatas(account: account)
+        _initialMetadatas = nil
+        _initialMetadatas = getMediaMetadatas(account: account)
 
-        guard let metadatas = self._initialMetadatas, !metadatas.isEmpty else { return }
+        guard let metadatas = _initialMetadatas, !metadatas.isEmpty else { return }
+
         let ext = ".preview.ico"
         let manager = FileManager.default
         let resourceKeys = Set<URLResourceKey>([.nameKey, .pathKey, .fileSizeKey, .creationDateKey])
         struct FileInfo {
             var path: URL
-            var ocId: String
+            var ocIdEtag: String
             var date: Date
         }
         var files: [FileInfo] = []
@@ -100,7 +104,7 @@ import NextcloudKit
                       let date = resourceValues.creationDate,
                       let etag = ocIdEtag[ocId],
                       fileName == etag + ext else { continue }
-                files.append(FileInfo(path: fileURL, ocId: ocId, date: date))
+                files.append(FileInfo(path: fileURL, ocIdEtag: ocId + etag, date: date))
             }
         }
 
@@ -117,7 +121,7 @@ import NextcloudKit
             if counter > limit { break }
             autoreleasepool {
                 if let image = UIImage(contentsOfFile: file.path.path) {
-                    cache.setValue(.actual(image), forKey: file.ocId)
+                    cache.setValue(.actual(image), forKey: file.ocIdEtag)
                 }
             }
         }
@@ -130,45 +134,26 @@ import NextcloudKit
         NextcloudKit.shared.nkCommonInstance.writeLog("--------- ThumbnailLRUCache image process ---------")
     }
 
-    func getMediaImage(ocId: String) -> ImageType? {
-        return cache.value(forKey: ocId)
+
+    func getMediaImage(ocId: String, etag: String) -> ImageType? {
+        return cache.value(forKey: ocId + etag)
     }
 
-    func setMediaImage(ocId: String, image: ImageType) {
-        cache.setValue(image, forKey: ocId)
+    func setMediaImage(ocId: String, etag: String, image: ImageType) {
+        cache.setValue(image, forKey: ocId + etag)
     }
 
     @objc func clearMediaCache() {
-
-        self.ocIdEtag.removeAll()
-        self._initialMetadatas?.removeAll()
-        self._initialMetadatas = nil
+        ocIdEtag.removeAll()
+        _initialMetadatas = nil
         cache.removeAllValues()
     }
 
-    func getMediaMetadatas(account: String, predicate: NSPredicate? = nil) -> [tableMetadata] {
-
-        guard let account = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", account)) else { return [] }
+    func getMediaMetadatas(account: String, predicate: NSPredicate? = nil) -> Results<tableMetadata>? {
+        guard let account = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", account)) else { return nil }
         let startServerUrl = NCUtilityFileSystem().getHomeServer(urlBase: account.urlBase, userId: account.userId) + account.mediaPath
-
-        let predicateDefault = NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND (classFile == %@ OR classFile == %@) AND NOT (session CONTAINS[c] 'upload')", account.account, startServerUrl, NKCommon.TypeClassFile.image.rawValue, NKCommon.TypeClassFile.video.rawValue)
-
-        livePhoto = NCKeychain().livePhoto
-
-        var metadatas = NCManageDatabase.shared.getMetadatasMedia(predicate: predicate ?? predicateDefault, livePhoto: livePhoto)
-
-        switch NCKeychain().mediaSortDate {
-        case "date":
-            metadatas = metadatas.sorted(by: {($0.date as Date) > ($1.date as Date)})
-        case "creationDate":
-            metadatas = metadatas.sorted(by: {($0.creationDate as Date) > ($1.creationDate as Date)})
-        case "uploadDate":
-            metadatas = metadatas.sorted(by: {($0.uploadDate as Date) > ($1.uploadDate as Date)})
-        default:
-            break
-        }
-
-        return metadatas
+        let predicateBoth = NSPredicate(format: showPhotoVideoPredicateMediaString, account.account, startServerUrl)
+        return NCManageDatabase.shared.getResultsMetadatas(predicate: predicate ?? predicateBoth, sorted: "date")
     }
 
     // MARK: -
@@ -213,6 +198,7 @@ import NextcloudKit
     }
 
     func createImagesCache() {
+
         let yellowFavorite = NCBrandColor.shared.yellowFavorite
         let utility = NCUtility()
 

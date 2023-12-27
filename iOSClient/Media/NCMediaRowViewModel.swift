@@ -31,11 +31,11 @@ struct ScaledThumbnail: Hashable {
 
     private var metadatas: [tableMetadata] = []
     private let cache = NCImageCache.shared
-    private var queuer: Queuer?
 
-    func configure(metadatas: [tableMetadata], queuer: Queuer) {
+    private let queuer = NCNetworking.shared.downloadThumbnailQueue
+
+    func configure(metadatas: [tableMetadata]) {
         self.metadatas = metadatas
-        self.queuer = queuer
     }
 
     func downloadThumbnails(rowWidth: CGFloat, spacing: CGFloat) {
@@ -43,7 +43,7 @@ struct ScaledThumbnail: Hashable {
 
         metadatas.forEach { metadata in
             let thumbnailPath = NCUtilityFileSystem().getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)
-            if let cachedImage = cache.getMediaImage(ocId: metadata.ocId) {
+            if let cachedImage = cache.getMediaImage(ocId: metadata.ocId, etag: metadata.etag) {
                 let thumbnail: ScaledThumbnail
 
                 if case let .actual(image) = cachedImage {
@@ -61,7 +61,7 @@ struct ScaledThumbnail: Hashable {
                 // Load thumbnail from file
                 if let image = UIImage(contentsOfFile: thumbnailPath) {
                     let thumbnail = ScaledThumbnail(image: image, metadata: metadata)
-                    cache.setMediaImage(ocId: metadata.ocId, image: .actual(image))
+                    cache.setMediaImage(ocId: metadata.ocId, etag: metadata.etag, image: .actual(image))
 
                     DispatchQueue.main.async {
                         thumbnails.append(thumbnail)
@@ -69,7 +69,7 @@ struct ScaledThumbnail: Hashable {
                     }
                 }
             } else {
-                if let queuer, queuer.operations.filter({ ($0 as? NCMediaDownloadThumbnaill)?.metadata.ocId == metadata.ocId }).isEmpty {
+                if queuer.operations.filter({ ($0 as? NCMediaDownloadThumbnaill)?.metadata.ocId == metadata.ocId }).isEmpty {
                     let concurrentOperation = NCMediaDownloadThumbnaill(metadata: metadata, cache: cache, rowWidth: rowWidth, spacing: spacing, maxWidth: UIScreen.main.bounds.width, maxHeight: UIScreen.main.bounds.height) { thumbnail in
                         DispatchQueue.main.async {
                             thumbnails.append(thumbnail)
@@ -131,11 +131,11 @@ struct ScaledThumbnail: Hashable {
 
                     if error == .success, let image = imageIcon {
                         thumbnail = ScaledThumbnail(image: image, metadata: self.metadata)
-                        self.cache.setMediaImage(ocId: self.metadata.ocId, image: .actual(image))
+                        self.cache.setMediaImage(ocId: self.metadata.ocId, etag: self.metadata.etag, image: .actual(image))
                     } else {
                         let image = UIImage(systemName: self.metadata.isVideo ? "video.fill" : "photo.fill")!.withRenderingMode(.alwaysTemplate)
                         thumbnail = ScaledThumbnail(image: image, isPlaceholderImage: true, metadata: self.metadata)
-                        self.cache.setMediaImage(ocId: self.metadata.ocId, image: .placeholder)
+                        self.cache.setMediaImage(ocId: self.metadata.ocId, etag: self.metadata.etag, image: .placeholder)
                     }
 
                     self.onThumbnailDownloaded(thumbnail)
@@ -185,8 +185,6 @@ struct ScaledThumbnail: Hashable {
     }
 
     func cancelDownloadingThumbnails() {
-        guard let queuer else { return }
-
         metadatas.forEach { metadata in
             for case let operation as NCMediaDownloadThumbnaill in queuer.operations where operation.metadata.ocId == metadata.ocId {
                 operation.cancel()

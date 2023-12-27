@@ -94,7 +94,7 @@ extension NCShareExtension: UICollectionViewDataSource {
         cell.selectMode(false)
 
         // Live Photo
-        if metadata.livePhoto {
+        if metadata.isLivePhoto {
             cell.imageStatus.image = NCImageCache.images.livePhoto
         }
 

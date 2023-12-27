@@ -485,7 +485,7 @@ extension NCLivePhoto {
             }
         }
 
-        guard metadata.livePhoto,
+        guard metadata.isLivePhoto,
               !livePhotoFile.isEmpty,
               let metadata2 = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND urlBase == %@ AND path == %@ AND fileName == %@ AND status == %d", metadata.account, metadata.urlBase, metadata.path, livePhotoFile, NCGlobal.shared.metadataStatusNormal)) else { return }
 

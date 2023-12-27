@@ -279,11 +279,10 @@ class NCViewerMedia: UIViewController {
         guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(metadata.ocId) else { return }
         self.metadata = metadata
 
-        if metadata.livePhoto {
-            let fileNameMOV = (metadata.fileNameView as NSString).deletingPathExtension + ".mov"
-            if let metadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView LIKE[c] %@", metadata.account, metadata.serverUrl, fileNameMOV)), !utilityFileSystem.fileProviderStorageExists(metadata) {
-                NCNetworking.shared.download(metadata: metadata, selector: "") { _, _ in }
-            }
+        if metadata.isLivePhoto,
+           let metadataLive = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata),
+           !utilityFileSystem.fileProviderStorageExists(metadataLive) {
+            NCNetworking.shared.download(metadata: metadataLive, selector: "") { _, _ in }
         }
 
         if metadata.isImage, (metadata.fileExtension.lowercased() == "gif" || metadata.fileExtension.lowercased() == "svg"), !utilityFileSystem.fileProviderStorageExists(metadata) {
@@ -430,7 +429,9 @@ extension NCViewerMedia {
     }
 
     @objc func closeDetail(_ notification: NSNotification) {
-        closeDetail()
+        DispatchQueue.main.async {
+            self.closeDetail()
+        }
     }
 
     func toggleDetail () {

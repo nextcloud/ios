@@ -116,10 +116,9 @@ class NCViewerProviderContextMenu: UIViewController {
                         maxDownload = NCGlobal.shared.maxAutoDownload
                     }
 
-                    if metadata.size <= maxDownload, 
-                       let appDelegate = (UIApplication.shared.delegate as? AppDelegate),
-                       appDelegate.downloadQueue.operations.filter({ ($0 as? NCOperationDownload)?.metadata.ocId == metadata.ocId }).isEmpty {
-                        appDelegate.downloadQueue.addOperation(NCOperationDownload(metadata: metadata, selector: ""))
+                    if metadata.size <= maxDownload,
+                       NCNetworking.shared.downloadQueue.operations.filter({ ($0 as? NCOperationDownload)?.metadata.ocId == metadata.ocId }).isEmpty {
+                        NCNetworking.shared.downloadQueue.addOperation(NCOperationDownload(metadata: metadata, selector: ""))
                     }
                 }
             }
@@ -127,25 +126,22 @@ class NCViewerProviderContextMenu: UIViewController {
             // AUTO DOWNLOAD IMAGE GIF
             if !utilityFileSystem.fileProviderStorageExists(metadata),
                metadata.contentType == "image/gif",
-               let appDelegate = (UIApplication.shared.delegate as? AppDelegate),
-               appDelegate.downloadQueue.operations.filter({ ($0 as? NCOperationDownload)?.metadata.ocId == metadata.ocId }).isEmpty {
-                appDelegate.downloadQueue.addOperation(NCOperationDownload(metadata: metadata, selector: ""))
+               NCNetworking.shared.downloadQueue.operations.filter({ ($0 as? NCOperationDownload)?.metadata.ocId == metadata.ocId }).isEmpty {
+                NCNetworking.shared.downloadQueue.addOperation(NCOperationDownload(metadata: metadata, selector: ""))
             }
 
             // AUTO DOWNLOAD IMAGE SVG
             if !utilityFileSystem.fileProviderStorageExists(metadata),
                metadata.contentType == "image/svg+xml",
-               let appDelegate = (UIApplication.shared.delegate as? AppDelegate),
-               appDelegate.downloadQueue.operations.filter({ ($0 as? NCOperationDownload)?.metadata.ocId == metadata.ocId }).isEmpty {
-                appDelegate.downloadQueue.addOperation(NCOperationDownload(metadata: metadata, selector: ""))
+               NCNetworking.shared.downloadQueue.operations.filter({ ($0 as? NCOperationDownload)?.metadata.ocId == metadata.ocId }).isEmpty {
+                NCNetworking.shared.downloadQueue.addOperation(NCOperationDownload(metadata: metadata, selector: ""))
             }
 
             // AUTO DOWNLOAD LIVE PHOTO
             if let metadataLivePhoto = self.metadataLivePhoto,
                !utilityFileSystem.fileProviderStorageExists(metadataLivePhoto),
-               let appDelegate = (UIApplication.shared.delegate as? AppDelegate),
-               appDelegate.downloadQueue.operations.filter({ ($0 as? NCOperationDownload)?.metadata.ocId == metadata.ocId }).isEmpty {
-                appDelegate.downloadQueue.addOperation(NCOperationDownload(metadata: metadataLivePhoto, selector: ""))
+               NCNetworking.shared.downloadQueue.operations.filter({ ($0 as? NCOperationDownload)?.metadata.ocId == metadata.ocId }).isEmpty {
+                NCNetworking.shared.downloadQueue.addOperation(NCOperationDownload(metadata: metadataLivePhoto, selector: ""))
             }
 
         }
@@ -197,7 +193,9 @@ class NCViewerProviderContextMenu: UIViewController {
 
         if error == .success && metadata.ocId == self.metadata?.ocId {
             if metadata.isImage {
-                viewImage(metadata: metadata)
+                DispatchQueue.main.async {
+                    self.viewImage(metadata: metadata)
+                }
             } else if metadata.isVideo {
                 viewVideo(metadata: metadata)
             } else if metadata.isAudio {

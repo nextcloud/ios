@@ -50,7 +50,7 @@ class NCAutoUpload: NSObject {
                 NCManageDatabase.shared.setAccountAutoUploadProperty("autoUpload", state: false)
                 return completion(0)
             }
-            Task {
+            DispatchQueue.global().async {
                 self.uploadAssetsNewAndFull(viewController: viewController, selector: NCGlobal.shared.selectorUploadAutoUpload, log: "Init Auto Upload") { items in
                     completion(items)
                 }
@@ -67,7 +67,7 @@ class NCAutoUpload: NSObject {
             let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_create_full_upload_")
             NCContentPresenter().showWarning(error: error, priority: .max)
             NCActivityIndicator.shared.start()
-            Task {
+            DispatchQueue.global().async {
                 self.uploadAssetsNewAndFull(viewController: viewController, selector: NCGlobal.shared.selectorUploadAutoUploadAll, log: log) { _ in
                     NCActivityIndicator.shared.stop()
                 }
@@ -103,7 +103,7 @@ class NCAutoUpload: NSObject {
 
             for asset in assets {
 
-                var livePhoto = false
+                var isLivePhoto = false
                 var session: String = ""
                 let dateFormatter = DateFormatter()
                 let assetDate = asset.creationDate ?? Date()
@@ -118,7 +118,7 @@ class NCAutoUpload: NSObject {
                 let fileName = CCUtility.createFileName(asset.originalFilename as String, fileDate: assetDate, fileType: assetMediaType, keyFileName: NCGlobal.shared.keyFileNameAutoUploadMask, keyFileNameType: NCGlobal.shared.keyFileNameAutoUploadType, keyFileNameOriginal: NCGlobal.shared.keyFileNameOriginalAutoUpload, forcedNewFileName: false)!
 
                 if asset.mediaSubtypes.contains(.photoLive), NCKeychain().livePhoto {
-                    livePhoto = true
+                    isLivePhoto = true
                 }
 
                 if selector == NCGlobal.shared.selectorUploadAutoUploadAll {
@@ -160,7 +160,10 @@ class NCAutoUpload: NSObject {
                         NCManageDatabase.shared.addPhotoLibrary([asset], account: account.account)
                     }
                 } else {
-                    let metadata = NCManageDatabase.shared.createMetadata(account: account.account, user: account.user, userId: account.userId, fileName: fileName, fileNameView: fileName, ocId: NSUUID().uuidString, serverUrl: serverUrl, urlBase: account.urlBase, url: "", contentType: "", isLivePhoto: livePhoto)
+                    let metadata = NCManageDatabase.shared.createMetadata(account: account.account, user: account.user, userId: account.userId, fileName: fileName, fileNameView: fileName, ocId: NSUUID().uuidString, serverUrl: serverUrl, urlBase: account.urlBase, url: "", contentType: "")
+                    if isLivePhoto {
+                        metadata.livePhotoFile = (metadata.fileName as NSString).deletingPathExtension + ".mov"
+                    }
                     metadata.assetLocalIdentifier = asset.localIdentifier
                     metadata.session = session
                     metadata.sessionSelector = selector

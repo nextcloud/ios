@@ -74,7 +74,13 @@ class NCContextMenu: NSObject {
         let openIn = UIAction(title: NSLocalizedString("_open_in_", comment: ""),
                               image: UIImage(systemName: "square.and.arrow.up") ) { _ in
             if self.utilityFileSystem.fileProviderStorageExists(metadata) {
-                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDownloadedFile, userInfo: ["ocId": metadata.ocId, "selector": NCGlobal.shared.selectorOpenIn, "error": NKError(), "account": metadata.account])
+                NotificationCenter.default.post(
+                    name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterDownloadedFile),
+                    object: nil,
+                    userInfo: ["ocId": metadata.ocId,
+                               "selector": NCGlobal.shared.selectorOpenIn,
+                               "error": NKError(),
+                               "account": metadata.account])
             } else {
                 hud.show(in: viewController.view)
                 NCNetworking.shared.download(metadata: metadata, selector: NCGlobal.shared.selectorOpenIn, notificationCenterProgressTask: false) { request in
@@ -101,9 +107,7 @@ class NCContextMenu: NSObject {
         let save = UIAction(title: titleSave,
                             image: UIImage(systemName: "square.and.arrow.down")) { _ in
             if let metadataMOV = metadataMOV {
-                if let appDelegate = (UIApplication.shared.delegate as? AppDelegate) {
-                    appDelegate.saveLivePhotoQueue.addOperation(NCOperationSaveLivePhoto(metadata: metadata, metadataMOV: metadataMOV))
-                }
+                NCNetworking.shared.saveLivePhotoQueue.addOperation(NCOperationSaveLivePhoto(metadata: metadata, metadataMOV: metadataMOV))
             } else {
                 if self.utilityFileSystem.fileProviderStorageExists(metadata) {
                     NCActionCenter.shared.saveAlbum(metadata: metadata)
@@ -129,7 +133,13 @@ class NCContextMenu: NSObject {
         let modify = UIAction(title: NSLocalizedString("_modify_", comment: ""),
                               image: UIImage(systemName: "pencil.tip.crop.circle")) { _ in
             if self.utilityFileSystem.fileProviderStorageExists(metadata) {
-                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDownloadedFile, userInfo: ["ocId": metadata.ocId, "selector": NCGlobal.shared.selectorLoadFileQuickLook, "error": NKError(), "account": metadata.account])
+                NotificationCenter.default.post(
+                    name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterDownloadedFile),
+                    object: nil,
+                    userInfo: ["ocId": metadata.ocId,
+                               "selector": NCGlobal.shared.selectorLoadFileQuickLook,
+                               "error": NKError(),
+                               "account": metadata.account])
             } else {
                 hud.show(in: viewController.view)
                 NCNetworking.shared.download(metadata: metadata, selector: NCGlobal.shared.selectorLoadFileQuickLook, notificationCenterProgressTask: false) { request in
@@ -157,12 +167,6 @@ class NCContextMenu: NSObject {
             }
             let alertController = UIAlertController(title: nil, message: nil, preferredStyle: alertStyle)
             alertController.addAction(UIAlertAction(title: NSLocalizedString("_delete_file_", comment: ""), style: .destructive) { _ in
-                let hud = JGProgressHUD()
-                hud.textLabel.text = NSLocalizedString("_deletion_progess_", comment: "")
-                if let appDelegate = UIApplication.shared.delegate as? AppDelegate,
-                   let view = appDelegate.window?.rootViewController?.view {
-                    hud.show(in: view)
-                }
                 Task {
                     var ocId: [String] = []
                     let error = await NCNetworking.shared.deleteMetadata(metadata, onlyLocalCache: false)
@@ -171,7 +175,7 @@ class NCContextMenu: NSObject {
                     } else {
                         NCContentPresenter().showError(error: error)
                     }
-                    NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDeleteFile, userInfo: ["ocId": ocId, "indexPath": [indexPath], "onlyLocalCache": false, "error": error, "hud": hud])
+                    NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDeleteFile, userInfo: ["ocId": ocId, "indexPath": [indexPath], "onlyLocalCache": false, "error": error])
                 }
             })
             alertController.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel) { _ in })
@@ -224,27 +228,17 @@ class NCContextMenu: NSObject {
                 }
             } else {
                 menu.append(favorite)
-                if metadata.isDocumentViewableOnly {
-                    if viewController is NCMedia {
-                        menu.append(viewInFolder)
-                    }
-                } else {
-                    menu.append(openIn)
-                    // SAVE CAMERA ROLL
-                    menu.append(save)
-                    if viewController is NCMedia {
-                        menu.append(viewInFolder)
-                    }
-                    // MODIFY WITH QUICK LOOK
-                    if metadata.isModifiableWithQuickLook {
-                        menu.append(modify)
-                    }
+
+                menu.append(openIn)
+                // SAVE CAMERA ROLL
+                menu.append(save)
+                // MODIFY WITH QUICK LOOK
+                if metadata.isModifiableWithQuickLook {
+                    menu.append(modify)
                 }
-                if viewController is NCMedia {
-                    menu.append(deleteConfirmFile)
-                } else {
-                    menu.append(deleteSubMenu)
-                }
+
+                menu.append(deleteSubMenu)
+
             }
             return UIMenu(title: "", children: [detail, UIMenu(title: "", options: .displayInline, children: menu)])
         }
