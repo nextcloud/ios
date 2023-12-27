@@ -17,7 +17,6 @@ struct NCMediaScrollView: View, Equatable {
     var metadatas: [[tableMetadata]]
     @Binding var isInSelectMode: Bool
     @Binding var selectedMetadatas: [tableMetadata]
-//    @Binding var shouldScrollToTop: Bool
     @Binding var title: String
     @Binding var shouldShowPaginationLoading: Bool
     @Binding var topMostVisibleMetadataDate: Date?
@@ -31,8 +30,6 @@ struct NCMediaScrollView: View, Equatable {
     @Namespace private var topID
 
     var body: some View {
-        //        let _ = Self._printChanges()
-
         ScrollView {
             Spacer(minLength: 70).id(topID)
 
@@ -65,16 +62,5 @@ struct NCMediaScrollView: View, Equatable {
             })
             .padding(.bottom, 40)
         }
-//        .onChange(of: shouldScrollToTop) { newValue in
-//            if newValue {
-//                withAnimation {
-//                    proxy.scrollTo(topID)
-//                }
-//
-//                DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-//                    shouldScrollToTop = false
-//                }
-//            }
-//        }
     }
 }

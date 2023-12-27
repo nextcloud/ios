@@ -15,7 +15,6 @@ import RealmSwift
     @Published var metadatas: [tableMetadata] = []
     @Published var filter = Filter.all
     @Published var isLoading = true
-//    @Published var hasNewMedia = false
     @Published var hasOldMedia = false
     @Published var triggerLoadMedia = false
 

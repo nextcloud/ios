@@ -110,22 +110,6 @@ struct NCMediaNew: View {
                 .padding(.bottom, -50)
                 .ignoresSafeArea(.all, edges: [.all])
             )
-
-            // TODO: Add later
-//            if vm.hasNewMedia, !isScrolledToTop {
-//                Button {
-//                    shouldScrollToTop = true
-//                } label: {
-//                    Label(NSLocalizedString("_new_media_", comment: ""), systemImage: "arrow.up")
-//                }
-//                .foregroundColor(.white)
-//                .padding(10)
-//                .padding(.trailing, 3)
-//                .background(.blue)
-//                .clipShape(Capsule())
-//                .shadow(radius: 5)
-//                .offset(.init(width: 0, height: 50))
-//            }
         }
         .onRotate { orientation in
             if orientation.isLandscapeHardCheck {
@@ -173,10 +157,6 @@ struct NCMediaNew: View {
                 toolbarItemsColor = newValue ? .blue : .white
                 toolbarColors = newValue ? [.clear] : [Color.black.opacity(0.8), Color.black.opacity(0.4), .clear]
             }
-
-//            if newValue {
-//                vm.hasNewMedia = false
-//            }
         }
         .onChange(of: isScrollingStopped) { newValue in
             if newValue {
