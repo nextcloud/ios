@@ -33,7 +33,7 @@ struct NCMediaRow: View {
                 }
             }
         }
-        .onFirstAppear {
+        .onAppear {
             vm.configure(metadatas: metadatas)
             vm.downloadThumbnails(rowWidth: UIScreen.main.bounds.width, spacing: spacing)
         }

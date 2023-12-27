@@ -54,9 +54,6 @@ import RealmSwift
             account = appDelegate.account
         }
 
-        guard let accountTable = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", account)) else { return }
-        let startServerUrl = NCUtilityFileSystem().getHomeServer(urlBase: accountTable.urlBase, userId: accountTable.userId) + accountTable.mediaPath
-
         NotificationCenter.default.addObserver(self, selector: #selector(deleteFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDeleteFile), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(moveFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterMoveFile), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(copyFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterCopyFile), object: nil)
@@ -401,8 +398,6 @@ extension NCMediaViewModel {
             DispatchQueue.main.async { self.metadatas = [] }
             account = appDelegate.account
         }
-
-        guard let accountTable = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", account)) else { return }
 
         if let metadatas = self.cache.getMediaMetadatas(account: self.account, predicate: self.getPredicate()) {
             // Create reference to current thread

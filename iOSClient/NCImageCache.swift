@@ -52,10 +52,10 @@ import RealmSwift
     /// This shows all photo and videos, including live photos
     let showAllPredicateMediaString = "account == %@ AND serverUrl BEGINSWITH %@ AND (classFile == '\(NKCommon.TypeClassFile.image.rawValue)' OR classFile == '\(NKCommon.TypeClassFile.video.rawValue)') AND NOT (session CONTAINS[c] 'upload')"
     
-    // This shows all photo and videos, but no live photos
+    /// This shows all photo and videos, but no live photos
     let showPhotoVideoPredicateMediaString = "account == %@ AND serverUrl BEGINSWITH %@ AND (classFile == '\(NKCommon.TypeClassFile.image.rawValue)' OR classFile == '\(NKCommon.TypeClassFile.video.rawValue)') AND NOT (session CONTAINS[c] 'upload') AND NOT (livePhotoFile != '' AND classFile == '\(NKCommon.TypeClassFile.video.rawValue)')"
     
-    // This will only show an explicitly specified media type, but no live photos
+    /// This will only show an explicitly specified media type, but no live photos
     let showOnlyPredicateMediaString = "account == %@ AND serverUrl BEGINSWITH %@ AND classFile == %@ AND NOT (session CONTAINS[c] 'upload') AND NOT (livePhotoFile != '' AND classFile == '\(NKCommon.TypeClassFile.video.rawValue)')"
 
     @ThreadSafe private var _initialMetadatas: Results<tableMetadata>?
