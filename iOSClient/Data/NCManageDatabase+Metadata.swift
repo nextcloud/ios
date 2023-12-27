@@ -28,8 +28,7 @@ import NextcloudKit
 class tableMetadata: Object, NCUserBaseUrl {
     override func isEqual(_ object: Any?) -> Bool {
         if let object = object as? tableMetadata {
-            return self.fileId == object.fileId && self.account == object.account
-                   && self.path == object.path && self.fileName == object.fileName
+            return self.etag == object.etag && self.fileId == object.fileId && self.account == object.account && self.path == object.path && self.fileName == object.fileName && self.fileNameView == object.fileNameView && self.date == object.date && self.permissions == object.permissions && self.hasPreview == object.hasPreview && self.note == object.note && self.lock == object.lock && self.shareType == object.shareType && self.sharePermissionsCloudMesh == object.sharePermissionsCloudMesh && self.sharePermissionsCollaborationServices == object.sharePermissionsCollaborationServices && self.favorite == object.favorite && self.tags == object.tags && self.livePhotoFile == object.livePhotoFile
         } else {
             return false
         }
@@ -60,11 +59,11 @@ class tableMetadata: Object, NCUserBaseUrl {
     @objc dynamic var hidden: Bool = false
     @objc dynamic var iconName = ""
     @objc dynamic var iconUrl = ""
-    @objc dynamic var isFlaggedAsLivePhotoByServer: Bool = false
+    @objc dynamic var isFlaggedAsLivePhotoByServer: Bool = false // Indicating if the file is sent as a live photo from the server, or if we should detect it as such and convert it client-side
     @objc dynamic var isExtractFile: Bool = false
-    @objc dynamic var livePhotoFile = ""
+    @objc dynamic var livePhotoFile = "" // If this is not empty, the media is a live photo. New media gets this straight from server, but old media needs to be detected as live photo (look isFlaggedAsLivePhotoByServer)
     @objc dynamic var mountType = ""
-    @objc dynamic var name = ""                                             // for unifiedSearch is the provider.id
+    @objc dynamic var name = "" // for unifiedSearch is the provider.id
     @objc dynamic var note = ""
     @objc dynamic var ocId = ""
     @objc dynamic var ownerId = ""
@@ -629,9 +628,10 @@ extension NCManageDatabase {
         do {
             let realm = try Realm()
             try realm.write {
-                let result = realm.objects(tableMetadata.self).filter("account == %@ AND ocId == %@", account, ocId).first
-                result?.isFlaggedAsLivePhotoByServer = true
-                result?.livePhotoFile = livePhotoFile
+                if let result = realm.objects(tableMetadata.self).filter("account == %@ AND ocId == %@", account, ocId).first {
+                    result.isFlaggedAsLivePhotoByServer = true
+                    result.livePhotoFile = livePhotoFile
+                }
             }
         } catch let error {
             NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")

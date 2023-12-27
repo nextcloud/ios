@@ -123,6 +123,20 @@ extension NCManageDatabase {
         }
     }
 
+    func cleanEtagDirectory(account: String, serverUrl: String) {
+
+        do {
+            let realm = try Realm()
+            try realm.write {
+                if let result = realm.objects(tableDirectory.self).filter("account == %@ AND serverUrl == %@", account, serverUrl).first {
+                    result.etag = ""
+                }
+            }
+        } catch let error {
+            NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
+        }
+    }
+
     func getTableDirectory(predicate: NSPredicate) -> tableDirectory? {
 
         do {

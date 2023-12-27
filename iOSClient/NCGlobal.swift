@@ -218,6 +218,7 @@ class NCGlobal: NSObject {
     @objc let errorMethodNotSupported: Int          = 405
     @objc let errorConflict: Int                    = 409
     @objc let errorPreconditionFailed: Int          = 412
+    @objc let errorUnsupportedMediaType: Int        = 415
     @objc let errorQuota: Int                       = 507
     @objc let errorUnauthorized997: Int             = 997
     @objc let errorExplicitlyCancelled: Int         = -999
@@ -331,9 +332,6 @@ class NCGlobal: NSObject {
     let metadataStatusUploading: Int                = 3
     let metadataStatusUploadError: Int              = 4
 
-    // Queue Concurrent Operation Download
-    let maxConcurrentOperationCountDownload: Int    = 10
-
     //  Hidden files included in the read
     //
     let includeHiddenFiles: [String] = [".LivePhoto"]
@@ -356,12 +354,10 @@ class NCGlobal: NSObject {
     let notificationCenterRichdocumentGrabFocus                 = "richdocumentGrabFocus"
     let notificationCenterReloadDataNCShare                     = "reloadDataNCShare"
     let notificationCenterCloseRichWorkspaceWebView             = "closeRichWorkspaceWebView"
-    let notificationCenterUpdateBadgeNumber                     = "updateBadgeNumber"               // userInfo: counterDownload, counterUpload
     let notificationCenterReloadAvatar                          = "reloadAvatar"
 
     @objc let notificationCenterReloadDataSource                = "reloadDataSource"
     let notificationCenterReloadDataSourceNetwork               = "reloadDataSourceNetwork"
-    let notificationCenterReloadDataSourceNetworkForced         = "reloadDataSourceNetworkForced"
 
     let notificationCenterChangeStatusFolderE2EE                = "changeStatusFolderE2EE"          // userInfo: serverUrl
 
@@ -371,6 +367,8 @@ class NCGlobal: NSObject {
 
     let notificationCenterUploadStartFile                       = "uploadStartFile"                 // userInfo: ocId, serverUrl, account, fileName, sessionSelector
     @objc let notificationCenterUploadedFile                    = "uploadedFile"                    // userInfo: ocId, serverUrl, account, fileName, ocIdTemp, error
+    let notificationCenterUploadedLivePhoto                     = "uploadedLivePhoto"               // userInfo: ocId, serverUrl, account, fileName, ocIdTemp, error
+
     let notificationCenterUploadCancelFile                      = "uploadCancelFile"                // userInfo: ocId, serverUrl, account
 
     let notificationCenterProgressTask                          = "progressTask"                    // userInfo: account, ocId, serverUrl, status, chunk, e2eEncrypted, progress, totalBytes, totalBytesExpected

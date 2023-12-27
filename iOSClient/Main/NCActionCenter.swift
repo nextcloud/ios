@@ -74,42 +74,47 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
 
         switch selector {
         case NCGlobal.shared.selectorLoadFileQuickLook:
-            let fileNamePath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)
-            let fileNameTemp = NSTemporaryDirectory() + metadata.fileNameView
-            let viewerQuickLook = NCViewerQuickLook(with: URL(fileURLWithPath: fileNameTemp), isEditingEnabled: true, metadata: metadata)
-            if let image = UIImage(contentsOfFile: fileNamePath) {
-                if let data = image.jpegData(compressionQuality: 1) {
-                    do {
-                        try data.write(to: URL(fileURLWithPath: fileNameTemp))
-                    } catch {
-                        return
+            DispatchQueue.main.async {
+                let fileNamePath = self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)
+                let fileNameTemp = NSTemporaryDirectory() + metadata.fileNameView
+                let viewerQuickLook = NCViewerQuickLook(with: URL(fileURLWithPath: fileNameTemp), isEditingEnabled: true, metadata: metadata)
+                if let image = UIImage(contentsOfFile: fileNamePath) {
+                    if let data = image.jpegData(compressionQuality: 1) {
+                        do {
+                            try data.write(to: URL(fileURLWithPath: fileNameTemp))
+                        } catch {
+                            return
+                        }
                     }
+                    let navigationController = UINavigationController(rootViewController: viewerQuickLook)
+                    navigationController.modalPresentationStyle = .fullScreen
+                    appDelegate.window?.rootViewController?.present(navigationController, animated: true)
+                } else {
+                    self.utilityFileSystem.copyFile(atPath: fileNamePath, toPath: fileNameTemp)
+                    appDelegate.window?.rootViewController?.present(viewerQuickLook, animated: true)
                 }
-                let navigationController = UINavigationController(rootViewController: viewerQuickLook)
-                navigationController.modalPresentationStyle = .fullScreen
-                appDelegate.window?.rootViewController?.present(navigationController, animated: true)
-            } else {
-                utilityFileSystem.copyFile(atPath: fileNamePath, toPath: fileNameTemp)
-                appDelegate.window?.rootViewController?.present(viewerQuickLook, animated: true)
             }
 
         case NCGlobal.shared.selectorLoadFileView:
-            guard UIApplication.shared.applicationState == .active else { break }
-
-            if metadata.contentType.contains("opendocument") && !utility.isRichDocument(metadata) {
-                self.openDocumentController(metadata: metadata)
-            } else if metadata.classFile == NKCommon.TypeClassFile.compress.rawValue || metadata.classFile == NKCommon.TypeClassFile.unknow.rawValue {
-                self.openDocumentController(metadata: metadata)
-            } else {
-                if let viewController = appDelegate.activeViewController {
-                    let imageIcon = UIImage(contentsOfFile: utilityFileSystem.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag))
-                    NCViewer().view(viewController: viewController, metadata: metadata, metadatas: [metadata], imageIcon: imageIcon)
+            DispatchQueue.main.async {
+                guard UIApplication.shared.applicationState == .active else { return }
+                if metadata.contentType.contains("opendocument") && !self.utility.isRichDocument(metadata) {
+                    self.openDocumentController(metadata: metadata)
+                } else if metadata.classFile == NKCommon.TypeClassFile.compress.rawValue || metadata.classFile == NKCommon.TypeClassFile.unknow.rawValue {
+                    self.openDocumentController(metadata: metadata)
+                } else {
+                    if let viewController = appDelegate.activeViewController {
+                        let imageIcon = UIImage(contentsOfFile: self.utilityFileSystem.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag))
+                        NCViewer().view(viewController: viewController, metadata: metadata, metadatas: [metadata], imageIcon: imageIcon)
+                    }
                 }
             }
 
         case NCGlobal.shared.selectorOpenIn:
-            if UIApplication.shared.applicationState == .active {
-                self.openDocumentController(metadata: metadata)
+            DispatchQueue.main.async {
+                if UIApplication.shared.applicationState == .active {
+                    self.openDocumentController(metadata: metadata)
+                }
             }
 
         case NCGlobal.shared.selectorLoadOffline:
@@ -123,10 +128,14 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
             }
 
         case NCGlobal.shared.selectorSaveAlbum:
-            saveAlbum(metadata: metadata)
+            DispatchQueue.main.async {
+                self.saveAlbum(metadata: metadata)
+            }
 
         case NCGlobal.shared.selectorSaveAsScan:
-            saveAsScan(metadata: metadata)
+            DispatchQueue.main.async {
+                self.saveAsScan(metadata: metadata)
+            }
 
         case NCGlobal.shared.selectorOpenDetail:
             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterOpenMediaDetail, userInfo: ["ocId": metadata.ocId])
@@ -545,7 +554,7 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
                     let toPath = self.utilityFileSystem.getDirectoryProviderStorageOcId(ocId!, fileNameView: fileName)
                     self.utilityFileSystem.moveFile(atPath: fileNameLocalPath, toPath: toPath)
                     NCManageDatabase.shared.addLocalFile(account: account, etag: etag!, ocId: ocId!, fileName: fileName)
-                    NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSourceNetworkForced)
+                    NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSourceNetwork)
                 } else if afError?.isExplicitlyCancelledError ?? false {
                     print("cancel")
                 } else {

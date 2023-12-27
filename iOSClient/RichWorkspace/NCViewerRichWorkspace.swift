@@ -61,15 +61,13 @@ import MarkdownKit
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
-        NCNetworking.shared.readFile(serverUrlFileName: serverUrl) { account, metadata, error in
-
-            if error == .success && account == self.appDelegate.account {
-                guard let metadata = metadata else { return }
-                NCManageDatabase.shared.setDirectory(serverUrl: self.serverUrl, richWorkspace: metadata.richWorkspace, account: account)
-                if self.richWorkspaceText != metadata.richWorkspace && metadata.richWorkspace != nil {
-                    self.delegate?.richWorkspaceText = self.richWorkspaceText
-                    self.richWorkspaceText = metadata.richWorkspace!
-                    DispatchQueue.main.async {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+            NCNetworking.shared.readFile(serverUrlFileName: self.serverUrl, queue: .main) { account, metadata, error in
+                if error == .success, account == self.appDelegate.account, let metadata {
+                    NCManageDatabase.shared.setDirectory(serverUrl: self.serverUrl, richWorkspace: metadata.richWorkspace, account: account)
+                    if self.richWorkspaceText != metadata.richWorkspace, metadata.richWorkspace != nil {
+                        self.delegate?.richWorkspaceText = self.richWorkspaceText
+                        self.richWorkspaceText = metadata.richWorkspace!
                         self.textView.attributedText = self.markdownParser.parse(metadata.richWorkspace!)
                     }
                 }
@@ -86,7 +84,6 @@ import MarkdownKit
     }
 
     @IBAction func editItemAction(_ sender: Any) {
-
         richWorkspaceCommon.openViewerNextcloudText(serverUrl: serverUrl, viewController: self)
     }
 }

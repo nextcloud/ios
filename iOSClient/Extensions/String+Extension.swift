@@ -31,6 +31,12 @@ extension String {
         return self.components(separatedBy: CharacterSet.alphanumerics.inverted).joined().lowercased()
     }
 
+    var isNumber: Bool {
+        return self.allSatisfy { character in
+            character.isNumber
+        }
+    }
+
     public var uppercaseInitials: String? {
         let initials = self.components(separatedBy: .whitespaces)
             .reduce("", {

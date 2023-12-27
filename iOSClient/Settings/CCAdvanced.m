@@ -355,6 +355,7 @@
 
 - (void)clearCache:(NSString *)account
 {
+    [[NCNetworking shared] cancelAllQueue];
     [[NCNetworking shared] cancelDataTask];
     [[NCNetworking shared] cancelDownloadTasks];
     [[NCNetworking shared] cancelUploadTasks];
