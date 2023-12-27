@@ -153,4 +153,3 @@ struct NCMediaLoadingCell: View {
 
     }
 }
-}
