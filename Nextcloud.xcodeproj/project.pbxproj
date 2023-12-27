@@ -116,6 +116,8 @@
 		F3BB46522A39EC4900461F6E /* NCMoreAppSuggestionsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3BB46512A39EC4900461F6E /* NCMoreAppSuggestionsCell.swift */; };
 		F3BB46542A3A1E9D00461F6E /* CCCellMore.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3BB46532A3A1E9D00461F6E /* CCCellMore.swift */; };
 		F3C6D0972B0F9BA40078DD25 /* XLForm in Frameworks */ = {isa = PBXBuildFile; productRef = F3C6D0962B0F9BA40078DD25 /* XLForm */; };
+		F3D7B8F72B3C493200740EC9 /* Color+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3D7B8F62B3C493200740EC9 /* Color+Extension.swift */; };
+		F3D7B8F82B3C493200740EC9 /* Color+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3D7B8F62B3C493200740EC9 /* Color+Extension.swift */; };
 		F3E3B3B92AA73925006D08F5 /* NCMediaRowViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3E3B3B82AA73925006D08F5 /* NCMediaRowViewModel.swift */; };
 		F3E3B3BD2AA73D9E006D08F5 /* NCMediaViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3E3B3BC2AA73D9E006D08F5 /* NCMediaViewModel.swift */; };
 		F3F7ACFE2A98C56C00AE12CF /* NCMediaNew.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3F7ACFD2A98C56C00AE12CF /* NCMediaNew.swift */; };
@@ -937,6 +939,7 @@
 		F3BB464E2A39EBE500461F6E /* NCMoreUserCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCMoreUserCell.swift; sourceTree = "<group>"; };
 		F3BB46512A39EC4900461F6E /* NCMoreAppSuggestionsCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCMoreAppSuggestionsCell.swift; sourceTree = "<group>"; };
 		F3BB46532A3A1E9D00461F6E /* CCCellMore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CCCellMore.swift; sourceTree = "<group>"; };
+		F3D7B8F62B3C493200740EC9 /* Color+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Color+Extension.swift"; sourceTree = "<group>"; };
 		F3E3B3B82AA73925006D08F5 /* NCMediaRowViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCMediaRowViewModel.swift; sourceTree = "<group>"; };
 		F3E3B3BC2AA73D9E006D08F5 /* NCMediaViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCMediaViewModel.swift; sourceTree = "<group>"; };
 		F3F7ACFD2A98C56C00AE12CF /* NCMediaNew.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCMediaNew.swift; sourceTree = "<group>"; };
@@ -2234,6 +2237,7 @@
 				F77BB745289984CA0090FC19 /* UIViewController+Extension.swift */,
 				F7E8A390295DC5E0006CB2D0 /* View+Extension.swift */,
 				F7EE66AC2A20B226009AE765 /* UILabel+Extension.swift */,
+				F3D7B8F62B3C493200740EC9 /* Color+Extension.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -3620,6 +3624,7 @@
 				AF1A9B6527D0CC0500F17A9E /* UIAlertController+Extension.swift in Sources */,
 				AF22B206277B4E4C00DAB0CC /* NCCreateFormUploadConflict.swift in Sources */,
 				F7BD71E62636EAFC00643C34 /* NCNetworkingE2EE.swift in Sources */,
+				F3D7B8F82B3C493200740EC9 /* Color+Extension.swift in Sources */,
 				F7F878AF1FB9E3B900599E4F /* NCEndToEndMetadata.swift in Sources */,
 				AF22B218277D196700DAB0CC /* NCShareExtension+Files.swift in Sources */,
 				F702F2D025EE5B5C008F8E80 /* NCGlobal.swift in Sources */,
@@ -3931,6 +3936,7 @@
 				F7CA212D25F1333300826ABB /* NCAccountRequest.swift in Sources */,
 				F765F73125237E3F00391DBE /* NCRecent.swift in Sources */,
 				F76B3CCE1EAE01BD00921AC9 /* NCBrand.swift in Sources */,
+				F3D7B8F72B3C493200740EC9 /* Color+Extension.swift in Sources */,
 				F359D8672A7D03420023F405 /* NCUtility+Exif.swift in Sources */,
 				F738D4902756740100CD1D38 /* NCLoginNavigationController.swift in Sources */,
 				F77B0E981D118A16002130FE /* CCManageAccount.m in Sources */,

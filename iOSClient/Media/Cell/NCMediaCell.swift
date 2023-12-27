@@ -144,28 +144,13 @@ struct NCMediaLoadingCell: View {
     ])
 
     var body: some View {
-//        let _ = Self._printChanges()
+        Image(uiImage: UIImage())
+            .resizable()
+            .aspectRatio(1.5, contentMode: .fit)
+            .frame(width: (UIScreen.main.bounds.width - spacing) / CGFloat(itemsInRow))
+            .redacted(reason: .placeholder)
+            .shimmering(gradient: gradient, bandSize: 0.7)
 
-        ZStack {
-            Image(uiImage: UIImage())
-                .resizable()
-            //            .background(Color.random)
-                .aspectRatio(1.5, contentMode: .fit)
-                .frame(width: (UIScreen.main.bounds.width - spacing) / CGFloat(itemsInRow))
-                .redacted(reason: .placeholder)
-                .shimmering(gradient: gradient, bandSize: 0.7)
-            
-            Text(metadata.fileName)
-        }
     }
 }
-
-extension Color {
-    static var random: Color {
-        return Color(
-            red: .random(in: 0...1),
-            green: .random(in: 0...1),
-            blue: .random(in: 0...1)
-        )
-    }
 }
