@@ -28,6 +28,7 @@ import Alamofire
 import Photos
 import Queuer
 import JGProgressHUD
+import RealmSwift
 
 @objc public protocol NCNetworkingDelegate {
     @objc optional func downloadProgress(_ progress: Float, totalBytes: Int64, totalBytesExpected: Int64, fileName: String, serverUrl: String, session: URLSession, task: URLSessionTask)
@@ -1551,25 +1552,27 @@ class NCNetworking: NSObject, NKCommonDelegate {
 
         if onlyLocalCache {
 
-            var metadatas = [metadata]
-
-            if metadata.directory {
-                let serverUrl = metadata.serverUrl + "/" + metadata.fileName
-                metadatas = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND directory == false", metadata.account, serverUrl))
-            }
-
-            for metadata in metadatas {
-
-                let metadataLive = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata)
-                NCManageDatabase.shared.deleteVideo(metadata: metadata)
-                NCManageDatabase.shared.deleteLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
-                utilityFileSystem.removeFile(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId))
-
-                if let metadataLive {
+            func delete(metadata: tableMetadata) {
+                if let metadataLive = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata) {
                     NCManageDatabase.shared.deleteLocalFile(predicate: NSPredicate(format: "ocId == %@", metadataLive.ocId))
                     utilityFileSystem.removeFile(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadataLive.ocId))
                 }
+                NCManageDatabase.shared.deleteVideo(metadata: metadata)
+                NCManageDatabase.shared.deleteLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
+                utilityFileSystem.removeFile(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId))
             }
+
+            if metadata.directory {
+                let serverUrl = metadata.serverUrl + "/" + metadata.fileName
+                if let metadatas = NCManageDatabase.shared.getResultsMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND directory == false", metadata.account, serverUrl)) {
+                    for metadata in metadatas {
+                        delete(metadata: metadata)
+                    }
+                }
+            } else {
+                delete(metadata: metadata)
+            }
+
             return NKError()
         }
 
