@@ -25,6 +25,7 @@ import UIKit
 import LRUCache
 import NextcloudKit
 import RealmSwift
+import RealmSwift
 
 @objc class NCImageCache: NSObject {
     @objc public static let shared: NCImageCache = {
@@ -85,6 +86,7 @@ import RealmSwift
         struct FileInfo {
             var path: URL
             var ocIdEtag: String
+            var ocIdEtag: String
             var date: Date
         }
         var files: [FileInfo] = []
@@ -105,6 +107,7 @@ import RealmSwift
                       let etag = ocIdEtag[ocId],
                       fileName == etag + ext else { continue }
                 files.append(FileInfo(path: fileURL, ocIdEtag: ocId + etag, date: date))
+                files.append(FileInfo(path: fileURL, ocIdEtag: ocId + etag, date: date))
             }
         }
 
@@ -122,6 +125,7 @@ import RealmSwift
             autoreleasepool {
                 if let image = UIImage(contentsOfFile: file.path.path) {
                     cache.setValue(.actual(image), forKey: file.ocIdEtag)
+                    cache.setValue(.actual(image), forKey: file.ocIdEtag)
                 }
             }
         }
@@ -137,8 +141,12 @@ import RealmSwift
 
     func getMediaImage(ocId: String, etag: String) -> ImageType? {
         return cache.value(forKey: ocId + etag)
+    func getMediaImage(ocId: String, etag: String) -> ImageType? {
+        return cache.value(forKey: ocId + etag)
     }
 
+    func setMediaImage(ocId: String, etag: String, image: ImageType) {
+        cache.setValue(image, forKey: ocId + etag)
     func setMediaImage(ocId: String, etag: String, image: ImageType) {
         cache.setValue(image, forKey: ocId + etag)
     }
@@ -149,6 +157,8 @@ import RealmSwift
         cache.removeAllValues()
     }
 
+    func getMediaMetadatas(account: String, predicate: NSPredicate? = nil) -> Results<tableMetadata>? {
+        guard let account = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", account)) else { return nil }
     func getMediaMetadatas(account: String, predicate: NSPredicate? = nil) -> Results<tableMetadata>? {
         guard let account = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", account)) else { return nil }
         let startServerUrl = NCUtilityFileSystem().getHomeServer(urlBase: account.urlBase, userId: account.userId) + account.mediaPath
