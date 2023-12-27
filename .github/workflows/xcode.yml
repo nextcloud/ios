@@ -11,6 +11,10 @@ on:
       - master
       - develop
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build-and-test:
     name: Build and Test
@@ -18,7 +22,7 @@ jobs:
     if: github.event.pull_request.draft == false
     env:
       PROJECT: Nextcloud.xcodeproj
-      DESTINATION: platform=iOS Simulator,name=iPhone 14
+      DESTINATION: platform=iOS Simulator,name=iPhone 14,OS=16.2
       SCHEME: Nextcloud
     steps:
     - name: Set env var
