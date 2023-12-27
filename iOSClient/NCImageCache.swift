@@ -25,7 +25,6 @@ import UIKit
 import LRUCache
 import NextcloudKit
 import RealmSwift
-import RealmSwift
 
 @objc class NCImageCache: NSObject {
     @objc public static let shared: NCImageCache = {
@@ -52,10 +51,10 @@ import RealmSwift
 
     /// This shows all photo and videos, including live photos
     let showAllPredicateMediaString = "account == %@ AND serverUrl BEGINSWITH %@ AND (classFile == '\(NKCommon.TypeClassFile.image.rawValue)' OR classFile == '\(NKCommon.TypeClassFile.video.rawValue)') AND NOT (session CONTAINS[c] 'upload')"
-    
+
     /// This shows all photo and videos, but no live photos
     let showPhotoVideoPredicateMediaString = "account == %@ AND serverUrl BEGINSWITH %@ AND (classFile == '\(NKCommon.TypeClassFile.image.rawValue)' OR classFile == '\(NKCommon.TypeClassFile.video.rawValue)') AND NOT (session CONTAINS[c] 'upload') AND NOT (livePhotoFile != '' AND classFile == '\(NKCommon.TypeClassFile.video.rawValue)')"
-    
+
     /// This will only show an explicitly specified media type, but no live photos
     let showOnlyPredicateMediaString = "account == %@ AND serverUrl BEGINSWITH %@ AND classFile == %@ AND NOT (session CONTAINS[c] 'upload') AND NOT (livePhotoFile != '' AND classFile == '\(NKCommon.TypeClassFile.video.rawValue)')"
 
@@ -86,7 +85,6 @@ import RealmSwift
         struct FileInfo {
             var path: URL
             var ocIdEtag: String
-            var ocIdEtag: String
             var date: Date
         }
         var files: [FileInfo] = []
@@ -106,7 +104,6 @@ import RealmSwift
                       let date = resourceValues.creationDate,
                       let etag = ocIdEtag[ocId],
                       fileName == etag + ext else { continue }
-                files.append(FileInfo(path: fileURL, ocIdEtag: ocId + etag, date: date))
                 files.append(FileInfo(path: fileURL, ocIdEtag: ocId + etag, date: date))
             }
         }
@@ -138,15 +135,10 @@ import RealmSwift
         NextcloudKit.shared.nkCommonInstance.writeLog("--------- ThumbnailLRUCache image process ---------")
     }
 
-
-    func getMediaImage(ocId: String, etag: String) -> ImageType? {
-        return cache.value(forKey: ocId + etag)
     func getMediaImage(ocId: String, etag: String) -> ImageType? {
         return cache.value(forKey: ocId + etag)
     }
 
-    func setMediaImage(ocId: String, etag: String, image: ImageType) {
-        cache.setValue(image, forKey: ocId + etag)
     func setMediaImage(ocId: String, etag: String, image: ImageType) {
         cache.setValue(image, forKey: ocId + etag)
     }
@@ -157,8 +149,6 @@ import RealmSwift
         cache.removeAllValues()
     }
 
-    func getMediaMetadatas(account: String, predicate: NSPredicate? = nil) -> Results<tableMetadata>? {
-        guard let account = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", account)) else { return nil }
     func getMediaMetadatas(account: String, predicate: NSPredicate? = nil) -> Results<tableMetadata>? {
         guard let account = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", account)) else { return nil }
         let startServerUrl = NCUtilityFileSystem().getHomeServer(urlBase: account.urlBase, userId: account.userId) + account.mediaPath
