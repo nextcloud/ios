@@ -161,26 +161,6 @@ extension NCMenuAction {
                     })
                 }
 
-                // NCMedia removes image from collection view if removed from cache
-                if !(viewController is NCMedia) {
-                    alertController.addAction(UIAlertAction(title: NSLocalizedString("_remove_local_file_", comment: ""), style: .default) { (_: UIAlertAction) in
-                        Task {
-                            var error = NKError()
-                            var ocId: [String] = []
-                            for metadata in selectedMetadatas where error == .success {
-                                error = await NCNetworking.shared.deleteMetadata(metadata, onlyLocalCache: true)
-                                if error == .success {
-                                    ocId.append(metadata.ocId)
-                                }
-                            }
-                            if error != .success {
-                                NCContentPresenter().showError(error: error)
-                            }
-                            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDeleteFile, userInfo: ["ocId": ocId, "indexPath": indexPath, "onlyLocalCache": true, "error": error])
-                        }
-                        completion?()
-                    })
-                }
                 alertController.addAction(UIAlertAction(title: NSLocalizedString("_no_delete_", comment: ""), style: .default) { (_: UIAlertAction) in })
                 viewController.present(alertController, animated: true, completion: nil)
             }
@@ -215,7 +195,6 @@ extension NCMenuAction {
             order: order,
             action: { _ in
                 for metadata in selectedMediaMetadatas {
-                    
                     if let metadataMOV = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata) {
                         NCNetworking.shared.saveLivePhotoQueue.addOperation(NCOperationSaveLivePhoto(metadata: metadata, metadataMOV: metadataMOV))
                     } else {

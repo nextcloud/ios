@@ -228,27 +228,17 @@ class NCContextMenu: NSObject {
                 }
             } else {
                 menu.append(favorite)
-                if metadata.isDocumentViewableOnly {
-                    if viewController is NCMedia {
-                        menu.append(viewInFolder)
-                    }
-                } else {
-                    menu.append(openIn)
-                    // SAVE CAMERA ROLL
-                    menu.append(save)
-                    if viewController is NCMedia {
-                        menu.append(viewInFolder)
-                    }
-                    // MODIFY WITH QUICK LOOK
-                    if metadata.isModifiableWithQuickLook {
-                        menu.append(modify)
-                    }
+
+                menu.append(openIn)
+                // SAVE CAMERA ROLL
+                menu.append(save)
+                // MODIFY WITH QUICK LOOK
+                if metadata.isModifiableWithQuickLook {
+                    menu.append(modify)
                 }
-                if viewController is NCMedia {
-                    menu.append(deleteConfirmFile)
-                } else {
-                    menu.append(deleteSubMenu)
-                }
+
+                menu.append(deleteSubMenu)
+
             }
             return UIMenu(title: "", children: [detail, UIMenu(title: "", options: .displayInline, children: menu)])
         }
