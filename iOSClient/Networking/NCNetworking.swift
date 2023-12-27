@@ -1552,6 +1552,10 @@ class NCNetworking: NSObject, NKCommonDelegate {
 
         if onlyLocalCache {
 
+#if !EXTENSION
+            NCActivityIndicator.shared.start()
+#endif
+
             func delete(metadata: tableMetadata) {
                 if let metadataLive = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata) {
                     NCManageDatabase.shared.deleteLocalFile(predicate: NSPredicate(format: "ocId == %@", metadataLive.ocId))
@@ -1573,6 +1577,9 @@ class NCNetworking: NSObject, NKCommonDelegate {
                 delete(metadata: metadata)
             }
 
+#if !EXTENSION
+            NCActivityIndicator.shared.stop()
+#endif
             return NKError()
         }
 
