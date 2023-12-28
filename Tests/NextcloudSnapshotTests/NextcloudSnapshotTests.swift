@@ -26,6 +26,7 @@ import PreviewSnapshotsTesting
 import SwiftUI
 @testable import Nextcloud
 
+/// Snapshots were recorded on simulator as iPhone 14 (Regular, not Pro or Pro Max), and must be tested on the same simulator too.
 final class NextcloudSnapshotTests: XCTestCase {
     func test_HUDView() {
         HUDView_Previews.snapshots.assertSnapshots(as: .imageHEIC)
