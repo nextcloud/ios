@@ -922,7 +922,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         }
     }
 
-    @objc func reloadDataSourceNetwork() { 
+    @objc func reloadDataSourceNetwork() {
 
         isReloadDataSourceNetworkInProgress = true
         collectionView?.reloadData()
@@ -930,10 +930,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
     @objc func networkSearch() {
         guard !appDelegate.account.isEmpty, let literalSearch = literalSearch, !literalSearch.isEmpty
-        else {
-            self.refreshControl.endRefreshing()
-            return
-        }
+        else { return self.refreshControl.endRefreshing() }
 
         isReloadDataSourceNetworkInProgress = true
         self.dataSource.clearDataSource()

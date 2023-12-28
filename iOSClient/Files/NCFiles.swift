@@ -139,11 +139,7 @@ class NCFiles: NCCollectionViewCommon {
     }
 
     override func reloadDataSourceNetwork() {
-        super.reloadDataSourceNetwork()
-
-        guard !isSearchingMode else {
-            return networkSearch()
-        }
+        guard !isSearchingMode else { return networkSearch() }
 
         func downloadMetadata(_ metadata: tableMetadata) -> Bool {
 
@@ -159,6 +155,8 @@ class NCFiles: NCCollectionViewCommon {
             return false
         }
 
+        super.reloadDataSourceNetwork()
+
         networkReadFolder { tableDirectory, metadatas, metadatasChangedCount, metadatasChanged, error in
             if error == .success {
                 for metadata in metadatas ?? [] where !metadata.directory && downloadMetadata(metadata) {
@@ -166,7 +164,6 @@ class NCFiles: NCCollectionViewCommon {
                         NCNetworking.shared.downloadQueue.addOperation(NCOperationDownload(metadata: metadata, selector: NCGlobal.shared.selectorDownloadFile))
                     }
                 }
-                self.isReloadDataSourceNetworkInProgress = false
                 self.richWorkspaceText = tableDirectory?.richWorkspace
 
                 if metadatasChangedCount != 0 || metadatasChanged {
