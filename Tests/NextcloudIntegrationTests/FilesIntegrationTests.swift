@@ -47,7 +47,7 @@ final class FilesIntegrationTests: BaseIntegrationXCTestCase {
             Thread.sleep(forTimeInterval: 0.2)
 
             // Test reading folder, should exist
-            NCNetworking.shared.readFolder(serverUrl: serverUrlFileName, account: self.user) { account, metadataFolder, metadatas, metadatasUpdate, metadatasLocalUpdate, metadatasDelete, error in
+            NCNetworking.shared.readFolder(serverUrl: serverUrlFileName, account: self.user) { account, metadataFolder, _, _, _, _ in
                 XCTAssertEqual(self.account, account)
                 XCTAssertEqual(NKError.success.errorCode, error.errorCode)
                 XCTAssertEqual(NKError.success.errorDescription, error.errorDescription)
@@ -69,7 +69,8 @@ final class FilesIntegrationTests: BaseIntegrationXCTestCase {
                     try await Task.sleep(for: .milliseconds(200))
 
                     // Test reading folder, should NOT exist
-                    NCNetworking.shared.readFolder(serverUrl: serverUrlFileName, account: self.user) { account, metadataFolder, metadatas, metadatasUpdate, metadatasLocalUpdate, metadatasDelete, error in
+                    NCNetworking.shared.readFolder(serverUrl: serverUrlFileName, account: self.user) { account, metadataFolder, _, _, _, _ in
+
                         defer { expectation.fulfill() }
 
                         XCTAssertEqual(404, error.errorCode)
