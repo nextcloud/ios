@@ -125,8 +125,8 @@ class NCFiles: NCCollectionViewCommon {
             searchResults: self.searchResults)
     }
 
-    override func reloadDataSource() {
-        super.reloadDataSource()
+    override func reloadDataSource(withQueryDB: Bool = true) {
+        super.reloadDataSource(withQueryDB: withQueryDB)
 
         DispatchQueue.main.async { self.refreshControl.endRefreshing() }
         guard !self.isSearchingMode, !self.appDelegate.account.isEmpty else { return }
@@ -182,10 +182,10 @@ class NCFiles: NCCollectionViewCommon {
                 if metadatasChangedCount != 0 || metadatasChanged {
                     self.reloadDataSource()
                 } else if self.dataSource.getMetadataSourceForAllSections().isEmpty {
-                    DispatchQueue.main.async {
-                        self.collectionView.reloadData()
-                    }
+                    self.reloadDataSource(withQueryDB: false)
                 }
+            } else {
+                self.reloadDataSource(withQueryDB: false)
             }
         }
     }

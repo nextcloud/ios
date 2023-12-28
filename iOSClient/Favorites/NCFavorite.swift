@@ -74,8 +74,8 @@ class NCFavorite: NCCollectionViewCommon {
                                        searchResults: self.searchResults)
     }
 
-    override func reloadDataSource() {
-        super.reloadDataSource()
+    override func reloadDataSource(withQueryDB: Bool = true) {
+        super.reloadDataSource(withQueryDB: withQueryDB)
 
         DispatchQueue.global().async {
             self.queryDB()
@@ -101,6 +101,8 @@ class NCFavorite: NCCollectionViewCommon {
                     NCManageDatabase.shared.updateMetadatasFavorite(account: account, metadatas: metadatas)
                     self.reloadDataSource()
                 }
+            } else {
+                self.reloadDataSource(withQueryDB: false)
             }
         }
     }

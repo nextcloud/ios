@@ -62,8 +62,8 @@ class NCRecent: NCCollectionViewCommon {
                                        searchResults: self.searchResults)
     }
 
-    override func reloadDataSource() {
-        super.reloadDataSource()
+    override func reloadDataSource(withQueryDB: Bool = true) {
+        super.reloadDataSource(withQueryDB: withQueryDB)
 
         DispatchQueue.global().async {
             self.queryDB()
@@ -165,6 +165,8 @@ class NCRecent: NCCollectionViewCommon {
                     NCManageDatabase.shared.addMetadatas(metadatas)
                     self.reloadDataSource()
                 }
+            } else {
+                self.reloadDataSource(withQueryDB: false)
             }
         }
     }

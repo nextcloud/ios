@@ -96,8 +96,8 @@ class NCShares: NCCollectionViewCommon {
         reload()
     }
 
-    override func reloadDataSource() {
-        super.reloadDataSource()
+    override func reloadDataSource(withQueryDB: Bool = true) {
+        super.reloadDataSource(withQueryDB: withQueryDB)
 
         DispatchQueue.global().async {
             self.queryDB()
@@ -116,7 +116,6 @@ class NCShares: NCCollectionViewCommon {
 
         NextcloudKit.shared.readShares(parameters: NKShareParameter()) { account, shares, _, error in
 
-            self.refreshControl.endRefreshing()
             self.isReloadDataSourceNetworkInProgress = false
 
             if error == .success {
@@ -126,6 +125,8 @@ class NCShares: NCCollectionViewCommon {
                     NCManageDatabase.shared.addShare(account: self.appDelegate.account, home: home, shares: shares)
                 }
                 self.reloadDataSource()
+            } else {
+                self.reloadDataSource(withQueryDB: false)
             }
         }
     }

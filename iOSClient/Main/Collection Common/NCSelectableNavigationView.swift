@@ -47,7 +47,7 @@ protocol NCSelectableNavigationView: AnyObject {
     var layoutKey: String { get }
     var selectActions: [NCMenuAction] { get }
 
-    func reloadDataSource()
+    func reloadDataSource(withQueryDB: Bool)
     func setNavigationItem()
 
     func tapSelectMenu()

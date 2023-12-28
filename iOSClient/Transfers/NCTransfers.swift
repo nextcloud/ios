@@ -263,8 +263,8 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
         self.dataSource = NCDataSource(metadatas: metadatas, account: self.appDelegate.account)
     }
 
-    override func reloadDataSource() {
-        super.reloadDataSource()
+    override func reloadDataSource(withQueryDB: Bool = true) {
+        super.reloadDataSource(withQueryDB: withQueryDB)
 
         DispatchQueue.global().async {
             self.queryDB()

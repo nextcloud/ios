@@ -895,7 +895,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
     func queryDB() { }
 
-    @objc func reloadDataSource() {
+    @objc func reloadDataSource(withQueryDB: Bool = true) {
         guard !appDelegate.account.isEmpty else { return }
 
         // get auto upload folder

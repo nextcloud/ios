@@ -82,8 +82,8 @@ class NCOffline: NCCollectionViewCommon {
             searchResults: self.searchResults)
     }
 
-    override func reloadDataSource() {
-        super.reloadDataSource()
+    override func reloadDataSource(withQueryDB: Bool = true) {
+        super.reloadDataSource(withQueryDB: withQueryDB)
 
         DispatchQueue.global().async {
             self.queryDB()

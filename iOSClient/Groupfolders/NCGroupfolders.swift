@@ -75,8 +75,8 @@ class NCGroupfolders: NCCollectionViewCommon {
             searchResults: self.searchResults)
     }
 
-    override func reloadDataSource() {
-        super.reloadDataSource()
+    override func reloadDataSource(withQueryDB: Bool = true) {
+        super.reloadDataSource(withQueryDB: withQueryDB)
 
         self.queryDB()
         DispatchQueue.main.async {
@@ -114,6 +114,8 @@ class NCGroupfolders: NCCollectionViewCommon {
                     }
                     self.reloadDataSource()
                 }
+            } else {
+                self.reloadDataSource(withQueryDB: false)
             }
         }
     }
