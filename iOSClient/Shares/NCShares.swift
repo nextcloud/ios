@@ -96,27 +96,10 @@ class NCShares: NCCollectionViewCommon {
         reload()
     }
 
-    override func reloadDataSource(withQueryDB: Bool = true) {
-        super.reloadDataSource(withQueryDB: withQueryDB)
-
-        DispatchQueue.global().async {
-            self.queryDB()
-            DispatchQueue.main.async {
-                self.refreshControl.endRefreshing()
-                self.collectionView.reloadData()
-            }
-        }
-    }
-
     override func reloadDataSourceNetwork() {
         super.reloadDataSourceNetwork()
 
-        isReloadDataSourceNetworkInProgress = true
-        collectionView?.reloadData()
-
         NextcloudKit.shared.readShares(parameters: NKShareParameter()) { account, shares, _, error in
-
-            self.isReloadDataSourceNetworkInProgress = false
 
             if error == .success {
                 NCManageDatabase.shared.deleteTableShare(account: account)

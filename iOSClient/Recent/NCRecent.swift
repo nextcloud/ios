@@ -62,18 +62,6 @@ class NCRecent: NCCollectionViewCommon {
                                        searchResults: self.searchResults)
     }
 
-    override func reloadDataSource(withQueryDB: Bool = true) {
-        super.reloadDataSource(withQueryDB: withQueryDB)
-
-        DispatchQueue.global().async {
-            self.queryDB()
-            DispatchQueue.main.async {
-                self.refreshControl.endRefreshing()
-                self.collectionView.reloadData()
-            }
-        }
-    }
-
     override func reloadDataSourceNetwork() {
         super.reloadDataSourceNetwork()
 
@@ -145,15 +133,11 @@ class NCRecent: NCCollectionViewCommon {
         let lessDateString = dateFormatter.string(from: Date())
         let requestBody = String(format: requestBodyRecent, "/files/" + appDelegate.userId, lessDateString)
 
-        isReloadDataSourceNetworkInProgress = true
-        collectionView?.reloadData()
-
         NextcloudKit.shared.searchBodyRequest(serverUrl: appDelegate.urlBase,
                                               requestBody: requestBody,
                                               showHiddenFiles: NCKeychain().showHiddenFiles,
                                               options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { account, files, _, error in
 
-            self.isReloadDataSourceNetworkInProgress = false
             if error == .success {
                 NCManageDatabase.shared.convertFilesToMetadatas(files, useMetadataFolder: false) { _, metadatasFolder, metadatas in
                     // Update sub directories

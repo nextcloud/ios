@@ -911,9 +911,22 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         } else {
             groupByField = "name"
         }
+
+        DispatchQueue.global().async {
+            if withQueryDB { self.queryDB() }
+            DispatchQueue.main.async {
+                self.isReloadDataSourceNetworkInProgress = false
+                self.refreshControl.endRefreshing()
+                self.collectionView.reloadData()
+            }
+        }
     }
 
-    @objc func reloadDataSourceNetwork() { }
+    @objc func reloadDataSourceNetwork() { 
+
+        isReloadDataSourceNetworkInProgress = true
+        collectionView?.reloadData()
+    }
 
     @objc func networkSearch() {
         guard !appDelegate.account.isEmpty, let literalSearch = literalSearch, !literalSearch.isEmpty

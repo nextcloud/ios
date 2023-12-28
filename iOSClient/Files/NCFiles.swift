@@ -126,22 +126,15 @@ class NCFiles: NCCollectionViewCommon {
     }
 
     override func reloadDataSource(withQueryDB: Bool = true) {
+
+        guard !self.isSearchingMode, !self.appDelegate.account.isEmpty else { return }
         super.reloadDataSource(withQueryDB: withQueryDB)
 
-        DispatchQueue.main.async { self.refreshControl.endRefreshing() }
-        guard !self.isSearchingMode, !self.appDelegate.account.isEmpty else { return }
-
-        DispatchQueue.global().async {
-            self.queryDB()
-            DispatchQueue.main.async {
-                self.collectionView.reloadData()
-                if !self.dataSource.metadatas.isEmpty {
-                    self.blinkCell(fileName: self.fileNameBlink)
-                    self.openFile(fileName: self.fileNameOpen)
-                    self.fileNameBlink = nil
-                    self.fileNameOpen = nil
-                }
-            }
+        if !self.dataSource.metadatas.isEmpty {
+            self.blinkCell(fileName: self.fileNameBlink)
+            self.openFile(fileName: self.fileNameOpen)
+            self.fileNameBlink = nil
+            self.fileNameOpen = nil
         }
     }
 
@@ -165,9 +158,6 @@ class NCFiles: NCCollectionViewCommon {
 
             return false
         }
-
-        isReloadDataSourceNetworkInProgress = true
-        collectionView?.reloadData()
 
         networkReadFolder { tableDirectory, metadatas, metadatasChangedCount, metadatasChanged, error in
             if error == .success {
