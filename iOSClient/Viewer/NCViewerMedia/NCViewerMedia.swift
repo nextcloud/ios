@@ -61,7 +61,7 @@ class NCViewerMedia: UIViewController {
     var isDetailViewInitializze: Bool = false
     weak var delegate: NCViewerMediaViewDelegate?
 
-    private var allowPanning = true
+    private var allowOpeningDetails = true
 
     // MARK: - View Life Cycle
 
@@ -322,13 +322,13 @@ class NCViewerMedia: UIViewController {
 
     func downloadImage(withSelector selector: String = "") {
         NCNetworking.shared.download(metadata: metadata, selector: selector, progressHandler: { _ in
-            self.allowPanning = false
+            self.allowOpeningDetails = false
         }) { _, _ in
             let image = self.getImageMetadata(self.metadata)
             self.image = image
             self.imageVideoContainer.image = image
 
-            self.allowPanning = true
+            self.allowOpeningDetails = true
         }
     }
 
@@ -376,7 +376,7 @@ class NCViewerMedia: UIViewController {
 
     @objc func didPanWith(gestureRecognizer: UIPanGestureRecognizer) {
 
-        guard metadata.isImage, allowPanning else { return }
+        guard metadata.isImage else { return }
 
         let currentLocation = gestureRecognizer.translation(in: self.view)
 
@@ -424,6 +424,7 @@ class NCViewerMedia: UIViewController {
 extension NCViewerMedia {
     @objc func openDetail(_ notification: NSNotification) {
         if let userInfo = notification.userInfo as NSDictionary?, let ocId = userInfo["ocId"] as? String, ocId == metadata.ocId {
+            allowOpeningDetails = true
             openDetail()
         }
     }
@@ -439,6 +440,8 @@ extension NCViewerMedia {
     }
 
     private func openDetail(animate: Bool = true) {
+        if !allowOpeningDetails { return }
+
         delegate?.didOpenDetail()
         self.dismissTip()
 
@@ -462,7 +465,7 @@ extension NCViewerMedia {
                 var imageContainerHeight = self.imageVideoContainer.frame.height * ratio
                 let height = max(imageHeight, imageContainerHeight)
                 self.imageViewConstraint = self.detailView.frame.height - ((self.view.frame.height - height) / 2) + self.view.safeAreaInsets.bottom
-                
+
                 if self.imageViewConstraint < 0 { self.imageViewConstraint = 0 }
 
                 self.imageViewConstraint = min(self.imageViewConstraint, self.detailView.frame.height + 30)
