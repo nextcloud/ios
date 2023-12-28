@@ -18,11 +18,11 @@ on:
 jobs:
   build-and-test:
     name: Build and Test
-    runs-on: macos-13
+    runs-on: macos-latest
     if: github.event.pull_request.draft == false
     env:
       PROJECT: Nextcloud.xcodeproj
-      DESTINATION: platform=iOS Simulator,name=iPhone 14,OS=17.2
+      DESTINATION: platform=iOS Simulator,name=iPhone 14
       SCHEME: Nextcloud
     steps:
     - name: Set env var
