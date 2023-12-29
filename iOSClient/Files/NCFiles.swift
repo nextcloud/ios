@@ -191,8 +191,7 @@ class NCFiles: NCCollectionViewCommon {
             if tableDirectory?.etag != metadataFolder.etag || metadataFolder.e2eEncrypted {
                 NCNetworking.shared.readFolder(serverUrl: self.serverUrl, account: self.appDelegate.account) { _, metadataFolder, metadatas, metadatasChangedCount, metadatasChanged, error in
                     guard error == .success else {
-                        completion(tableDirectory, nil, 0, false, error)
-                        return
+                        return completion(tableDirectory, nil, 0, false, error)
                     }
                     self.metadataFolder = metadataFolder
                     // E2EE

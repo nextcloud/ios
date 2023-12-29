@@ -439,10 +439,10 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         guard let userInfo = notification.userInfo as NSDictionary?,
               let ocId = userInfo["ocId"] as? String,
               let serverUrl = userInfo["serverUrl"] as? String,
-              let account = userInfo["account"] as? String
+              let account = userInfo["account"] as? String,
+              !isSearchingMode,
+              let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId)
         else { return }
-
-        guard !isSearchingMode, let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) else { return }
 
         // Header view trasfer
         if metadata.isTransferInForeground {
