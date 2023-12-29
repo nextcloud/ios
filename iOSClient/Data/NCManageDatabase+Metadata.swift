@@ -496,6 +496,20 @@ extension NCManageDatabase {
         }
     }
 
+    func deleteMetadata(results: Results<tableMetadata>) {
+
+        do {
+            let realm = try Realm()
+            try realm.write {
+                realm.delete(results)
+            }
+        } catch let error {
+            NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
+        }
+    }
+
+
+
     func moveMetadata(ocId: String, serverUrlTo: String) {
 
         do {

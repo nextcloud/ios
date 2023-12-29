@@ -978,10 +978,11 @@ class NCNetworking: NSObject, NKCommonDelegate {
         }
 
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-            let metadatasDownload = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "status < 0"))
-            for metadata in metadatasDownload {
-                self.utilityFileSystem.removeFile(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId))
-                NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId, session: "", sessionError: "", sessionSelector: "", sessionTaskIdentifier: 0, status: NCGlobal.shared.metadataStatusNormal, errorCode: 0)
+            if let results = NCManageDatabase.shared.getResultsMetadatas(predicate: NSPredicate(format: "status < 0")) {
+                for metadata in results {
+                    self.utilityFileSystem.removeFile(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId))
+                    NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId, session: "", sessionError: "", sessionSelector: "", sessionTaskIdentifier: 0, status: NCGlobal.shared.metadataStatusNormal, errorCode: 0)
+                }
             }
             self.downloadRequest.removeAll()
         }
@@ -998,10 +999,11 @@ class NCNetworking: NSObject, NKCommonDelegate {
         }
 
         DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-            let metadatasUpload = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "status > 0 AND session == %@", NextcloudKit.shared.nkCommonInstance.sessionIdentifierUpload))
-            for metadata in metadatasUpload {
-                self.utilityFileSystem.removeFile(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId))
-                NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
+            if let results = NCManageDatabase.shared.getResultsMetadatas(predicate: NSPredicate(format: "status > 0 AND session == %@", NextcloudKit.shared.nkCommonInstance.sessionIdentifierUpload)) {
+                NCManageDatabase.shared.deleteMetadata(results: results)
+                for metadata in results {
+                    self.utilityFileSystem.removeFile(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId))
+                }
             }
         }
     }
@@ -1021,10 +1023,12 @@ class NCNetworking: NSObject, NKCommonDelegate {
         }
 
         DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-            let metadatasUploadBackground = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "status > 0 AND (session == %@ || session == %@)", NCNetworking.shared.sessionIdentifierBackground, NCNetworking.shared.sessionIdentifierBackgroundWWan))
-            for metadata in metadatasUploadBackground {
-                self.utilityFileSystem.removeFile(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId))
-                NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
+            if let results = NCManageDatabase.shared.getResultsMetadatas(predicate: NSPredicate(format: "status > 0 AND (session == %@ || session == %@)", NCNetworking.shared.sessionIdentifierBackground, NCNetworking.shared.sessionIdentifierBackgroundWWan)) {
+                NCManageDatabase.shared.deleteMetadata(results: results)
+                for metadata in results {
+                    self.utilityFileSystem.removeFile(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId))
+                }
+
             }
         }
     }
