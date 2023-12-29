@@ -297,7 +297,7 @@ extension NCCollectionViewCommon {
                         } else {
                             NCNetworking.shared.download(metadata: metadata,
                                                          selector: NCGlobal.shared.selectorSaveAsScan,
-                                                         withNotificationCenterProgressTask: true)
+                                                         withNotificationProgressTask: true)
                         }
                     }
                 )
@@ -365,7 +365,7 @@ extension NCCollectionViewCommon {
                         } else {
                             NCNetworking.shared.download(metadata: metadata,
                                                          selector: NCGlobal.shared.selectorLoadFileQuickLook,
-                                                         withNotificationCenterProgressTask: true)
+                                                         withNotificationProgressTask: true)
                         }
                     }
                 )

@@ -155,17 +155,35 @@ class NCNetworking: NSObject, NKCommonDelegate {
         networkReachability = typeReachability
     }
 
-    func authenticationChallenge(_ session: URLSession, didReceive challenge: URLAuthenticationChallenge, completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
+    func authenticationChallenge(_ session: URLSession,
+                                 didReceive challenge: URLAuthenticationChallenge,
+                                 completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
         DispatchQueue.global().async {
             self.checkTrustedChallenge(session, didReceive: challenge, completionHandler: completionHandler)
         }
     }
 
-    func downloadProgress(_ progress: Float, totalBytes: Int64, totalBytesExpected: Int64, fileName: String, serverUrl: String, session: URLSession, task: URLSessionTask) {
+    func downloadProgress(_ progress: Float,
+                          totalBytes: Int64,
+                          totalBytesExpected: Int64,
+                          fileName: String,
+                          serverUrl: String,
+                          session: URLSession,
+                          task: URLSessionTask) {
+
         delegate?.downloadProgress?(progress, totalBytes: totalBytes, totalBytesExpected: totalBytesExpected, fileName: fileName, serverUrl: serverUrl, session: session, task: task)
     }
 
-    func downloadComplete(fileName: String, serverUrl: String, etag: String?, date: NSDate?, dateLastModified: NSDate?, length: Int64, description: String?, task: URLSessionTask, error: NKError) {
+    func downloadComplete(fileName: String,
+                          serverUrl: String,
+                          etag: String?,
+                          date: NSDate?,
+                          dateLastModified: NSDate?,
+                          length: Int64,
+                          description: String?,
+                          task: URLSessionTask,
+                          error: NKError) {
+
         delegate?.downloadComplete?(fileName: fileName, serverUrl: serverUrl, etag: etag, date: date, dateLastModified: dateLastModified, length: length, description: description, task: task, error: error)
     }
 
@@ -195,7 +213,9 @@ class NCNetworking: NSObject, NKCommonDelegate {
 
     // MARK: - Pinning check
 
-    public func checkTrustedChallenge(_ session: URLSession, didReceive challenge: URLAuthenticationChallenge, completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
+    public func checkTrustedChallenge(_ session: URLSession,
+                                      didReceive challenge: URLAuthenticationChallenge,
+                                      completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
 
         let protectionSpace: URLProtectionSpace = challenge.protectionSpace
         let directoryCertificate = utilityFileSystem.directoryCertificates
@@ -277,7 +297,9 @@ class NCNetworking: NSObject, NKCommonDelegate {
         BIO_free(mem)
     }
 
-    func checkPushNotificationServerProxyCertificateUntrusted(viewController: UIViewController?, completion: @escaping (_ error: NKError) -> Void) {
+    func checkPushNotificationServerProxyCertificateUntrusted(viewController: UIViewController?,
+                                                              completion: @escaping (_ error: NKError) -> Void) {
+
         guard let host = URL(string: NCBrandOptions.shared.pushNotificationServerProxy)?.host else { return }
 
         NextcloudKit.shared.checkServer(serverUrl: NCBrandOptions.shared.pushNotificationServerProxy) { error in
@@ -313,7 +335,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
     // MARK: - Download
 
     func download(metadata: tableMetadata, selector: String,
-                  withNotificationCenterProgressTask: Bool,
+                  withNotificationProgressTask: Bool,
                   checkfileProviderStorageExists: Bool = false,
                   requestHandler: @escaping (_ request: DownloadRequest) -> Void = { _ in },
                   progressHandler: @escaping (_ progress: Progress) -> Void = { _ in },
@@ -352,7 +374,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
 
         }, progressHandler: { progress in
 
-            if withNotificationCenterProgressTask, Int(floor(progress.fractionCompleted * 100)).isMultiple(of: 5) {
+            if withNotificationProgressTask, Int(floor(progress.fractionCompleted * 100)).isMultiple(of: 5) {
                 NotificationCenter.default.post(
                     name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterProgressTask),
                     object: nil,
@@ -422,7 +444,12 @@ class NCNetworking: NSObject, NKCommonDelegate {
     }
 
 #if !EXTENSION
-    func downloadAvatar(user: String, dispalyName: String?, fileName: String, cell: NCCellProtocol, view: UIView?, cellImageView: UIImageView?) {
+    func downloadAvatar(user: String,
+                        dispalyName: String?,
+                        fileName: String,
+                        cell: NCCellProtocol,
+                        view: UIView?,
+                        cellImageView: UIImageView?) {
 
         let fileNameLocalPath = utilityFileSystem.directoryUserData + "/" + fileName
 
@@ -715,7 +742,15 @@ class NCNetworking: NSObject, NKCommonDelegate {
         }
     }
 
-    func uploadComplete(fileName: String, serverUrl: String, ocId: String?, etag: String?, date: NSDate?, size: Int64, description: String?, task: URLSessionTask, error: NKError) {
+    func uploadComplete(fileName: String,
+                        serverUrl: String,
+                        ocId: String?,
+                        etag: String?,
+                        date: NSDate?,
+                        size: Int64,
+                        description: String?,
+                        task: URLSessionTask,
+                        error: NKError) {
 
         guard self.delegate == nil, let metadata = NCManageDatabase.shared.getMetadataFromOcId(description) else {
             self.delegate?.uploadComplete?(fileName: fileName, serverUrl: serverUrl, ocId: ocId, etag: etag, date: date, size: size, description: description, task: task, error: error)
@@ -844,7 +879,14 @@ class NCNetworking: NSObject, NKCommonDelegate {
         self.delegate?.uploadComplete?(fileName: fileName, serverUrl: serverUrl, ocId: ocId, etag: etag, date: date, size: size, description: description, task: task, error: error)
     }
 
-    func uploadProgress(_ progress: Float, totalBytes: Int64, totalBytesExpected: Int64, fileName: String, serverUrl: String, session: URLSession, task: URLSessionTask) {
+    func uploadProgress(_ progress: Float,
+                        totalBytes: Int64,
+                        totalBytesExpected: Int64,
+                        fileName: String,
+                        serverUrl: String,
+                        session: URLSession,
+                        task: URLSessionTask) {
+
         DispatchQueue.global().async {
             self.delegate?.uploadProgress?(progress, totalBytes: totalBytes, totalBytesExpected: totalBytesExpected, fileName: fileName, serverUrl: serverUrl, session: session, task: task)
 
@@ -877,7 +919,8 @@ class NCNetworking: NSObject, NKCommonDelegate {
         }
     }
 
-    func getOcIdInBackgroundSession(queue: DispatchQueue = .main, completion: @escaping (_ listOcId: [String]) -> Void) {
+    func getOcIdInBackgroundSession(queue: DispatchQueue = .main,
+                                    completion: @escaping (_ listOcId: [String]) -> Void) {
 
         var listOcId: [String] = []
 
@@ -1007,7 +1050,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
         }
     }
 
-    func cancelUploadBackgroundTask(withNotificationCenter: Bool) {
+    func cancelUploadBackgroundTask(withNotification: Bool) {
 
         Task {
             let tasksBackground = await NCNetworking.shared.sessionManagerBackground.tasks
@@ -1022,7 +1065,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
             if let results = NCManageDatabase.shared.getResultsMetadatas(predicate: NSPredicate(format: "status > 0 AND (session == %@ || session == %@)", NCNetworking.shared.sessionIdentifierBackground, NCNetworking.shared.sessionIdentifierBackgroundWWan)) {
                 NCManageDatabase.shared.deleteMetadata(results: results)
             }
-            if withNotificationCenter {
+            if withNotification {
                 NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSource)
             }
         }
@@ -1099,7 +1142,9 @@ class NCNetworking: NSObject, NKCommonDelegate {
 
     // MARK: - WebDav Read file, folder
 
-    func readFolder(serverUrl: String, account: String, completion: @escaping (_ account: String, _ metadataFolder: tableMetadata?, _ metadatas: [tableMetadata]?, _ metadatasChangedCount: Int, _ metadatasChanged: Bool, _ error: NKError) -> Void) {
+    func readFolder(serverUrl: String,
+                    account: String,
+                    completion: @escaping (_ account: String, _ metadataFolder: tableMetadata?, _ metadatas: [tableMetadata]?, _ metadatasChangedCount: Int, _ metadatasChanged: Bool, _ error: NKError) -> Void) {
 
         NextcloudKit.shared.readFileOrFolder(serverUrlFileName: serverUrl,
                                              depth: "1",
@@ -1144,7 +1189,10 @@ class NCNetworking: NSObject, NKCommonDelegate {
         }
     }
 
-    func readFile(serverUrlFileName: String, showHiddenFiles: Bool = NCKeychain().showHiddenFiles, queue: DispatchQueue = NextcloudKit.shared.nkCommonInstance.backgroundQueue, completion: @escaping (_ account: String, _ metadata: tableMetadata?, _ error: NKError) -> Void) {
+    func readFile(serverUrlFileName: String,
+                  showHiddenFiles: Bool = NCKeychain().showHiddenFiles,
+                  queue: DispatchQueue = NextcloudKit.shared.nkCommonInstance.backgroundQueue,
+                  completion: @escaping (_ account: String, _ metadata: tableMetadata?, _ error: NKError) -> Void) {
 
         let options = NKRequestOptions(queue: queue)
 
@@ -1161,7 +1209,8 @@ class NCNetworking: NSObject, NKCommonDelegate {
         }
     }
 
-    func fileExists(serverUrlFileName: String, completion: @escaping (_ account: String, _ exists: Bool?, _ file: NKFile?, _ error: NKError) -> Void) {
+    func fileExists(serverUrlFileName: String,
+                    completion: @escaping (_ account: String, _ exists: Bool?, _ file: NKFile?, _ error: NKError) -> Void) {
 
         /*
         let requestBody =
@@ -1243,7 +1292,9 @@ class NCNetworking: NSObject, NKCommonDelegate {
     // MARK: - Search
 
     /// WebDAV search
-    func searchFiles(urlBase: NCUserBaseUrl, literal: String, completion: @escaping (_ metadatas: [tableMetadata]?, _ error: NKError) -> Void) {
+    func searchFiles(urlBase: NCUserBaseUrl,
+                     literal: String,
+                     completion: @escaping (_ metadatas: [tableMetadata]?, _ error: NKError) -> Void) {
 
         NextcloudKit.shared.searchLiteral(serverUrl: urlBase.urlBase,
                                           depth: "infinity",
@@ -1272,7 +1323,11 @@ class NCNetworking: NSObject, NKCommonDelegate {
 
     /// Unified Search (NC>=20)
     ///
-    func unifiedSearchFiles(userBaseUrl: NCUserBaseUrl, literal: String, providers: @escaping (_ accout: String, _ searchProviders: [NKSearchProvider]?) -> Void, update: @escaping (_ account: String, _ id: String, NKSearchResult?, [tableMetadata]?) -> Void, completion: @escaping (_ account: String, _ error: NKError) -> Void) {
+    func unifiedSearchFiles(userBaseUrl: NCUserBaseUrl,
+                            literal: String,
+                            providers: @escaping (_ accout: String, _ searchProviders: [NKSearchProvider]?) -> Void,
+                            update: @escaping (_ account: String, _ id: String, NKSearchResult?, [tableMetadata]?) -> Void,
+                            completion: @escaping (_ account: String, _ error: NKError) -> Void) {
 
         let dispatchGroup = DispatchGroup()
         dispatchGroup.enter()
@@ -1343,7 +1398,10 @@ class NCNetworking: NSObject, NKCommonDelegate {
         }
     }
 
-    func unifiedSearchFilesProvider(userBaseUrl: NCUserBaseUrl, id: String, term: String, limit: Int, cursor: Int, completion: @escaping (_ account: String, _ searchResult: NKSearchResult?, _ metadatas: [tableMetadata]?, _ error: NKError) -> Void) {
+    func unifiedSearchFilesProvider(userBaseUrl: NCUserBaseUrl,
+                                    id: String, term: String,
+                                    limit: Int, cursor: Int,
+                                    completion: @escaping (_ account: String, _ searchResult: NKSearchResult?, _ metadatas: [tableMetadata]?, _ error: NKError) -> Void) {
 
         var metadatas: [tableMetadata] = []
 
@@ -1405,7 +1463,11 @@ class NCNetworking: NSObject, NKCommonDelegate {
         requestsUnifiedSearch.removeAll()
     }
 
-    private func loadMetadata(userBaseUrl: NCUserBaseUrl, filePath: String, dispatchGroup: DispatchGroup? = nil, completion: @escaping (String, tableMetadata, NKError) -> Void) {
+    private func loadMetadata(userBaseUrl: NCUserBaseUrl,
+                              filePath: String,
+                              dispatchGroup: DispatchGroup? = nil,
+                              completion: @escaping (String, tableMetadata, NKError) -> Void) {
+
         let urlPath = userBaseUrl.urlBase + "/remote.php/dav/files/" + userBaseUrl.user + filePath
         dispatchGroup?.enter()
         self.readFile(serverUrlFileName: urlPath) { account, metadata, error in
@@ -1419,7 +1481,14 @@ class NCNetworking: NSObject, NKCommonDelegate {
 
     // MARK: - WebDav Create Folder
 
-    func createFolder(fileName: String, serverUrl: String, account: String, urlBase: String, userId: String, overwrite: Bool = false, withPush: Bool, completion: @escaping (_ error: NKError) -> Void) {
+    func createFolder(fileName: String,
+                      serverUrl: String,
+                      account: String,
+                      urlBase: String,
+                      userId: String,
+                      overwrite: Bool = false,
+                      withPush: Bool,
+                      completion: @escaping (_ error: NKError) -> Void) {
 
         let isDirectoryEncrypted = utilityFileSystem.isDirectoryE2EE(account: account, urlBase: urlBase, userId: userId, serverUrl: serverUrl)
         let fileName = fileName.trimmingCharacters(in: .whitespacesAndNewlines)
@@ -1436,7 +1505,13 @@ class NCNetworking: NSObject, NKCommonDelegate {
         }
     }
 
-    private func createFolderPlain(fileName: String, serverUrl: String, account: String, urlBase: String, overwrite: Bool, withPush: Bool, completion: @escaping (_ error: NKError) -> Void) {
+    private func createFolderPlain(fileName: String,
+                                   serverUrl: String,
+                                   account: String,
+                                   urlBase: String,
+                                   overwrite: Bool,
+                                   withPush: Bool,
+                                   completion: @escaping (_ error: NKError) -> Void) {
 
         var fileNameFolder = utility.removeForbiddenCharacters(fileName)
         if fileName != fileNameFolder {
@@ -1479,7 +1554,13 @@ class NCNetworking: NSObject, NKCommonDelegate {
         }
     }
 
-    func createFolder(assets: [PHAsset], selector: String, useSubFolder: Bool, account: String, urlBase: String, userId: String, withPush: Bool) -> Bool {
+    func createFolder(assets: [PHAsset],
+                      selector: String,
+                      useSubFolder: Bool,
+                      account: String,
+                      urlBase: String,
+                      userId: String,
+                      withPush: Bool) -> Bool {
 
         let autoUploadPath = NCManageDatabase.shared.getAccountAutoUploadPath(urlBase: urlBase, userId: userId, account: account)
         let serverUrlBase = NCManageDatabase.shared.getAccountAutoUploadDirectory(urlBase: urlBase, userId: userId, account: account)
@@ -1653,7 +1734,8 @@ class NCNetworking: NSObject, NKCommonDelegate {
 
     // MARK: - WebDav Favorite
 
-    func favoriteMetadata(_ metadata: tableMetadata, completion: @escaping (_ error: NKError) -> Void) {
+    func favoriteMetadata(_ metadata: tableMetadata,
+                          completion: @escaping (_ error: NKError) -> Void) {
 
         if let metadataLive = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata) {
             favoriteMetadataPlain(metadataLive) { error in
@@ -1668,7 +1750,8 @@ class NCNetworking: NSObject, NKCommonDelegate {
         }
     }
 
-    private func favoriteMetadataPlain(_ metadata: tableMetadata, completion: @escaping (_ error: NKError) -> Void) {
+    private func favoriteMetadataPlain(_ metadata: tableMetadata,
+                                       completion: @escaping (_ error: NKError) -> Void) {
 
         let fileName = utilityFileSystem.getFileNamePath(metadata.fileName, serverUrl: metadata.serverUrl, urlBase: metadata.urlBase, userId: metadata.userId)
         let favorite = !metadata.favorite
@@ -1690,6 +1773,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
     // MARK: - Lock Files
 
     func lockUnlockFile(_ metadata: tableMetadata, shoulLock: Bool) {
+
         NextcloudKit.shared.lockUnlockFile(serverUrlFileName: metadata.serverUrl + "/" + metadata.fileName, shouldLock: shoulLock) { _, error in
             // 0: lock was successful; 412: lock did not change, no error, refresh
             guard error == .success || error.errorCode == NCGlobal.shared.errorPreconditionFailed else {
@@ -1707,7 +1791,11 @@ class NCNetworking: NSObject, NKCommonDelegate {
 
     // MARK: - WebDav Rename
 
-    func renameMetadata(_ metadata: tableMetadata, fileNameNew: String, indexPath: IndexPath, viewController: UIViewController?, completion: @escaping (_ error: NKError) -> Void) {
+    func renameMetadata(_ metadata: tableMetadata,
+                        fileNameNew: String,
+                        indexPath: IndexPath,
+                        viewController: UIViewController?,
+                        completion: @escaping (_ error: NKError) -> Void) {
 
         let metadataLive = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata)
         let fileNameNew = fileNameNew.trimmingCharacters(in: .whitespacesAndNewlines)
@@ -1745,7 +1833,10 @@ class NCNetworking: NSObject, NKCommonDelegate {
         }
     }
 
-    private func renameMetadataPlain(_ metadata: tableMetadata, fileNameNew: String, indexPath: IndexPath, completion: @escaping (_ error: NKError) -> Void) {
+    private func renameMetadataPlain(_ metadata: tableMetadata,
+                                     fileNameNew: String,
+                                     indexPath: IndexPath,
+                                     completion: @escaping (_ error: NKError) -> Void) {
 
         let permission = utility.permissionsContainsString(metadata.permissions, permissions: NCGlobal.shared.permissionCanRename)
         if !metadata.permissions.isEmpty && !permission {
@@ -1874,7 +1965,8 @@ class NCNetworking: NSObject, NKCommonDelegate {
 
     // MARK: - Direct Download
 
-    func getVideoUrl(metadata: tableMetadata, completition: @escaping (_ url: URL?, _ autoplay: Bool, _ error: NKError) -> Void) {
+    func getVideoUrl(metadata: tableMetadata,
+                     completition: @escaping (_ url: URL?, _ autoplay: Bool, _ error: NKError) -> Void) {
 
         if !metadata.url.isEmpty {
             if metadata.url.hasPrefix("/") {
@@ -1954,7 +2046,7 @@ class NCOperationDownload: ConcurrentOperation {
 
         NCNetworking.shared.download(metadata: metadata,
                                      selector: self.selector,
-                                     withNotificationCenterProgressTask: true,
+                                     withNotificationProgressTask: true,
                                      completion: { _, _ in
             self.finish()
         })

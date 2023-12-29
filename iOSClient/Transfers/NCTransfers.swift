@@ -114,7 +114,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
             NCNetworking.shared.cancelDataTask()
             NCNetworking.shared.cancelDownloadTasks()
             NCNetworking.shared.cancelUploadTasks()
-            NCNetworking.shared.cancelUploadBackgroundTask(withNotificationCenter: true)
+            NCNetworking.shared.cancelUploadBackgroundTask(withNotification: true)
         }))
 
         self.present(alertController, animated: true, completion: nil)

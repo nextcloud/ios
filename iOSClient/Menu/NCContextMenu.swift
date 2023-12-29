@@ -85,7 +85,7 @@ class NCContextMenu: NSObject {
                 hud.show(in: viewController.view)
                 NCNetworking.shared.download(metadata: metadata,
                                              selector: NCGlobal.shared.selectorOpenIn,
-                                             withNotificationCenterProgressTask: false) { request in
+                                             withNotificationProgressTask: false) { request in
                     downloadRequest = request
                 } progressHandler: { progress in
                     hud.progress = Float(progress.fractionCompleted)
@@ -117,7 +117,7 @@ class NCContextMenu: NSObject {
                     hud.show(in: viewController.view)
                     NCNetworking.shared.download(metadata: metadata,
                                                  selector: NCGlobal.shared.selectorSaveAlbum,
-                                                 withNotificationCenterProgressTask: false) { request in
+                                                 withNotificationProgressTask: false) { request in
                         downloadRequest = request
                     } progressHandler: { progress in
                         hud.progress = Float(progress.fractionCompleted)
@@ -148,7 +148,7 @@ class NCContextMenu: NSObject {
                 hud.show(in: viewController.view)
                 NCNetworking.shared.download(metadata: metadata,
                                              selector: NCGlobal.shared.selectorLoadFileQuickLook,
-                                             withNotificationCenterProgressTask: false) { request in
+                                             withNotificationProgressTask: false) { request in
                     downloadRequest = request
                 } progressHandler: { progress in
                     hud.progress = Float(progress.fractionCompleted)

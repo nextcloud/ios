@@ -185,7 +185,7 @@ class NCViewerMedia: UIViewController {
 
                             NCNetworking.shared.download(metadata: self.metadata,
                                                          selector: "",
-                                                         withNotificationCenterProgressTask: false) { request in
+                                                         withNotificationProgressTask: false) { request in
                                 downloadRequest = request
                             } progressHandler: { progress in
                                 hud.progress = Float(progress.fractionCompleted)
@@ -286,7 +286,7 @@ class NCViewerMedia: UIViewController {
            !utilityFileSystem.fileProviderStorageExists(metadataLive) {
             NCNetworking.shared.download(metadata: metadataLive,
                                          selector: "",
-                                         withNotificationCenterProgressTask: true)
+                                         withNotificationProgressTask: true)
         }
 
         if metadata.isImage, (metadata.fileExtension.lowercased() == "gif" || metadata.fileExtension.lowercased() == "svg"), !utilityFileSystem.fileProviderStorageExists(metadata) {
@@ -327,7 +327,7 @@ class NCViewerMedia: UIViewController {
     func downloadImage(withSelector selector: String = "") {
         NCNetworking.shared.download(metadata: metadata,
                                      selector: selector,
-                                     withNotificationCenterProgressTask: true,
+                                     withNotificationProgressTask: true,
                                      progressHandler: { _ in
             self.allowPanning = false
         }) { _, _ in

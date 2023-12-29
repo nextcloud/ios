@@ -889,7 +889,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         NCNetworking.shared.cancelDataTask()
         NCNetworking.shared.cancelDownloadTasks()
         NCNetworking.shared.cancelUploadTasks()
-        NCNetworking.shared.cancelUploadBackgroundTask(withNotificationCenter: false)
+        NCNetworking.shared.cancelUploadBackgroundTask(withNotification: false)
 
         URLCache.shared.memoryCapacity = 0
         URLCache.shared.diskCapacity = 0

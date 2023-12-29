@@ -289,7 +289,7 @@ extension NCMenuAction {
                 } else {
                     NCNetworking.shared.download(metadata: metadata,
                                                  selector: NCGlobal.shared.selectorPrint,
-                                                 withNotificationCenterProgressTask: true)
+                                                 withNotificationProgressTask: true)
                 }
             }
         )

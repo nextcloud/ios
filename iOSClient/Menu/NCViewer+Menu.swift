@@ -121,7 +121,7 @@ extension NCViewer {
                         } else {
                             NCNetworking.shared.download(metadata: metadata,
                                                          selector: NCGlobal.shared.selectorPrint,
-                                                         withNotificationCenterProgressTask: true)
+                                                         withNotificationProgressTask: true)
                         }
                     }
                 )
@@ -176,7 +176,7 @@ extension NCViewer {
                         } else {
                             NCNetworking.shared.download(metadata: metadata,
                                                          selector: NCGlobal.shared.selectorSaveAsScan,
-                                                         withNotificationCenterProgressTask: true)
+                                                         withNotificationProgressTask: true)
                         }
                     }
                 )
@@ -234,7 +234,7 @@ extension NCViewer {
                     action: { _ in
                         NCNetworking.shared.download(metadata: metadata,
                                                      selector: "",
-                                                     withNotificationCenterProgressTask: true)
+                                                     withNotificationProgressTask: true)
                     }
                 )
             )
@@ -285,7 +285,7 @@ extension NCViewer {
                         } else {
                             NCNetworking.shared.download(metadata: metadata,
                                                          selector: NCGlobal.shared.selectorLoadFileQuickLook,
-                                                         withNotificationCenterProgressTask: true)
+                                                         withNotificationProgressTask: true)
                         }
                     }
                 )

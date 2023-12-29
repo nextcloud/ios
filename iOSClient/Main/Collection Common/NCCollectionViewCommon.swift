@@ -1095,7 +1095,7 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
             } else if NextcloudKit.shared.isNetworkReachable() {
                 NCNetworking.shared.download(metadata: metadata,
                                              selector: NCGlobal.shared.selectorLoadFileView,
-                                             withNotificationCenterProgressTask: true)
+                                             withNotificationProgressTask: true)
             } else {
                 let error = NKError(errorCode: NCGlobal.shared.errorOffline, errorDescription: "_go_online_")
                 NCContentPresenter().showInfo(error: error)

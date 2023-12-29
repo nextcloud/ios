@@ -53,7 +53,7 @@ class NCOperationSaveLivePhoto: ConcurrentOperation {
 
         NCNetworking.shared.download(metadata: metadata,
                                      selector: "",
-                                     withNotificationCenterProgressTask: false,
+                                     withNotificationProgressTask: false,
                                      checkfileProviderStorageExists: true) { _ in
         } progressHandler: { progress in
             self.hud.progress = Float(progress.fractionCompleted)
@@ -68,7 +68,7 @@ class NCOperationSaveLivePhoto: ConcurrentOperation {
             }
             NCNetworking.shared.download(metadata: self.metadataMOV,
                                          selector: "",
-                                         withNotificationCenterProgressTask: false,
+                                         withNotificationProgressTask: false,
                                          checkfileProviderStorageExists: true) { _ in
                 DispatchQueue.main.async {
                     self.hud.textLabel.text = NSLocalizedString("_download_video_", comment: "")

@@ -159,11 +159,11 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
         } else {
             NCNetworking.shared.download(metadata: metadata,
                                          selector: NCGlobal.shared.selectorLoadOffline,
-                                         withNotificationCenterProgressTask: true)
+                                         withNotificationProgressTask: true)
             if let metadataLivePhoto = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata) {
                 NCNetworking.shared.download(metadata: metadataLivePhoto,
                                              selector: NCGlobal.shared.selectorLoadOffline,
-                                             withNotificationCenterProgressTask: true)
+                                             withNotificationProgressTask: true)
             }
         }
     }
@@ -336,7 +336,7 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
             processor.execute { completion in
                 NCNetworking.shared.download(metadata: metadata,
                                              selector: "",
-                                             withNotificationCenterProgressTask: false) { _ in
+                                             withNotificationProgressTask: false) { _ in
                 } progressHandler: { progress in
                     processor.hud?.progress = Float(progress.fractionCompleted)
                 } completion: { _, _ in
@@ -484,7 +484,7 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
                 processor.execute { completion in
                     NCNetworking.shared.download(metadata: metadata,
                                                  selector: "",
-                                                 withNotificationCenterProgressTask: false) { _ in
+                                                 withNotificationProgressTask: false) { _ in
                     } progressHandler: { progress in
                         if Float(progress.fractionCompleted) > fractionCompleted || fractionCompleted == 0 {
                             processor.hud?.progress = Float(progress.fractionCompleted)
