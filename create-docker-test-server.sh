@@ -8,12 +8,12 @@ user="admin"
 
 docker run --rm -d --name $container_name -p $port:80 ghcr.io/juliushaertl/nextcloud-dev-php80:latest
 
-timeout=600
+timeout=300
 elapsed=0
 
 echo "Waiting for server..."
 
-sleep 2
+sleep 5
 
 while true; do
     content=$(curl -s $server_url/status.php)
