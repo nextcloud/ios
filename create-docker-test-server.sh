@@ -13,7 +13,7 @@ elapsed=0
 
 echo "Waiting for server..."
 
-sleep 5
+sleep 20
 
 while true; do
     content=$(curl -s $server_url/status.php)
