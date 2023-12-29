@@ -83,7 +83,9 @@ class NCContextMenu: NSObject {
                                "account": metadata.account])
             } else {
                 hud.show(in: viewController.view)
-                NCNetworking.shared.download(metadata: metadata, selector: NCGlobal.shared.selectorOpenIn, notificationCenterProgressTask: false) { request in
+                NCNetworking.shared.download(metadata: metadata,
+                                             selector: NCGlobal.shared.selectorOpenIn,
+                                             withNotificationCenterProgressTask: false) { request in
                     downloadRequest = request
                 } progressHandler: { progress in
                     hud.progress = Float(progress.fractionCompleted)
@@ -113,7 +115,9 @@ class NCContextMenu: NSObject {
                     NCActionCenter.shared.saveAlbum(metadata: metadata)
                 } else {
                     hud.show(in: viewController.view)
-                    NCNetworking.shared.download(metadata: metadata, selector: NCGlobal.shared.selectorSaveAlbum, notificationCenterProgressTask: false) { request in
+                    NCNetworking.shared.download(metadata: metadata,
+                                                 selector: NCGlobal.shared.selectorSaveAlbum,
+                                                 withNotificationCenterProgressTask: false) { request in
                         downloadRequest = request
                     } progressHandler: { progress in
                         hud.progress = Float(progress.fractionCompleted)
@@ -142,7 +146,9 @@ class NCContextMenu: NSObject {
                                "account": metadata.account])
             } else {
                 hud.show(in: viewController.view)
-                NCNetworking.shared.download(metadata: metadata, selector: NCGlobal.shared.selectorLoadFileQuickLook, notificationCenterProgressTask: false) { request in
+                NCNetworking.shared.download(metadata: metadata,
+                                             selector: NCGlobal.shared.selectorLoadFileQuickLook,
+                                             withNotificationCenterProgressTask: false) { request in
                     downloadRequest = request
                 } progressHandler: { progress in
                     hud.progress = Float(progress.fractionCompleted)

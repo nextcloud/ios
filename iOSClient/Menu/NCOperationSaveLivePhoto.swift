@@ -51,7 +51,10 @@ class NCOperationSaveLivePhoto: ConcurrentOperation {
             self.hud.show(in: (self.appDelegate?.window?.rootViewController?.view)!)
         }
 
-        NCNetworking.shared.download(metadata: metadata, selector: "", notificationCenterProgressTask: false, checkfileProviderStorageExists: true) { _ in
+        NCNetworking.shared.download(metadata: metadata,
+                                     selector: "",
+                                     withNotificationCenterProgressTask: false,
+                                     checkfileProviderStorageExists: true) { _ in
         } progressHandler: { progress in
             self.hud.progress = Float(progress.fractionCompleted)
         } completion: { _, error in
@@ -63,7 +66,10 @@ class NCOperationSaveLivePhoto: ConcurrentOperation {
                 }
                 return self.finish()
             }
-            NCNetworking.shared.download(metadata: self.metadataMOV, selector: "", notificationCenterProgressTask: false, checkfileProviderStorageExists: true) { _ in
+            NCNetworking.shared.download(metadata: self.metadataMOV,
+                                         selector: "",
+                                         withNotificationCenterProgressTask: false,
+                                         checkfileProviderStorageExists: true) { _ in
                 DispatchQueue.main.async {
                     self.hud.textLabel.text = NSLocalizedString("_download_video_", comment: "")
                     self.hud.detailTextLabel.text = self.metadataMOV.fileName

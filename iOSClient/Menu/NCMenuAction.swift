@@ -287,7 +287,9 @@ extension NCMenuAction {
                                    "error": NKError(),
                                    "account": metadata.account])
                 } else {
-                    NCNetworking.shared.download(metadata: metadata, selector: NCGlobal.shared.selectorPrint) { _, _ in }
+                    NCNetworking.shared.download(metadata: metadata,
+                                                 selector: NCGlobal.shared.selectorPrint,
+                                                 withNotificationCenterProgressTask: true)
                 }
             }
         )

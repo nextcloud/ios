@@ -157,9 +157,13 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
             NCManageDatabase.shared.setDirectory(serverUrl: serverUrl, offline: true, account: appDelegate.account)
             NCNetworking.shared.synchronizationServerUrl(serverUrl, account: metadata.account, selector: NCGlobal.shared.selectorSynchronizationOffline)
         } else {
-            NCNetworking.shared.download(metadata: metadata, selector: NCGlobal.shared.selectorLoadOffline) { _, _ in }
+            NCNetworking.shared.download(metadata: metadata,
+                                         selector: NCGlobal.shared.selectorLoadOffline,
+                                         withNotificationCenterProgressTask: true)
             if let metadataLivePhoto = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata) {
-                NCNetworking.shared.download(metadata: metadataLivePhoto, selector: NCGlobal.shared.selectorLoadOffline) { _, _ in }
+                NCNetworking.shared.download(metadata: metadataLivePhoto,
+                                             selector: NCGlobal.shared.selectorLoadOffline,
+                                             withNotificationCenterProgressTask: true)
             }
         }
     }
@@ -330,7 +334,9 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
         let processor = ParallelWorker(n: 5, titleKey: "_downloading_", totalTasks: downloadMetadata.count, hudView: appDelegate.window?.rootViewController?.view)
         for (metadata, url) in downloadMetadata {
             processor.execute { completion in
-                NCNetworking.shared.download(metadata: metadata, selector: "", notificationCenterProgressTask: false) { _ in
+                NCNetworking.shared.download(metadata: metadata,
+                                             selector: "",
+                                             withNotificationCenterProgressTask: false) { _ in
                 } progressHandler: { progress in
                     processor.hud?.progress = Float(progress.fractionCompleted)
                 } completion: { _, _ in
@@ -476,7 +482,9 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
 
             for metadata in downloadMetadatas {
                 processor.execute { completion in
-                    NCNetworking.shared.download(metadata: metadata, selector: "", notificationCenterProgressTask: false) { _ in
+                    NCNetworking.shared.download(metadata: metadata,
+                                                 selector: "",
+                                                 withNotificationCenterProgressTask: false) { _ in
                     } progressHandler: { progress in
                         if Float(progress.fractionCompleted) > fractionCompleted || fractionCompleted == 0 {
                             processor.hud?.progress = Float(progress.fractionCompleted)

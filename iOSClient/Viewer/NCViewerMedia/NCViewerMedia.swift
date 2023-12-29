@@ -183,7 +183,9 @@ class NCViewerMedia: UIViewController {
                                 hud.show(in: view)
                             }
 
-                            NCNetworking.shared.download(metadata: self.metadata, selector: "", notificationCenterProgressTask: false) { request in
+                            NCNetworking.shared.download(metadata: self.metadata,
+                                                         selector: "",
+                                                         withNotificationCenterProgressTask: false) { request in
                                 downloadRequest = request
                             } progressHandler: { progress in
                                 hud.progress = Float(progress.fractionCompleted)
@@ -282,7 +284,9 @@ class NCViewerMedia: UIViewController {
         if metadata.isLivePhoto,
            let metadataLive = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata),
            !utilityFileSystem.fileProviderStorageExists(metadataLive) {
-            NCNetworking.shared.download(metadata: metadataLive, selector: "") { _, _ in }
+            NCNetworking.shared.download(metadata: metadataLive,
+                                         selector: "",
+                                         withNotificationCenterProgressTask: true)
         }
 
         if metadata.isImage, (metadata.fileExtension.lowercased() == "gif" || metadata.fileExtension.lowercased() == "svg"), !utilityFileSystem.fileProviderStorageExists(metadata) {
@@ -321,7 +325,10 @@ class NCViewerMedia: UIViewController {
     }
 
     func downloadImage(withSelector selector: String = "") {
-        NCNetworking.shared.download(metadata: metadata, selector: selector, progressHandler: { _ in
+        NCNetworking.shared.download(metadata: metadata,
+                                     selector: selector,
+                                     withNotificationCenterProgressTask: true,
+                                     progressHandler: { _ in
             self.allowPanning = false
         }) { _, _ in
             let image = self.getImageMetadata(self.metadata)

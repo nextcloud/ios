@@ -312,10 +312,12 @@ class NCNetworking: NSObject, NKCommonDelegate {
 
     // MARK: - Download
 
-    func download(metadata: tableMetadata, selector: String, notificationCenterProgressTask: Bool = true, checkfileProviderStorageExists: Bool = false,
+    func download(metadata: tableMetadata, selector: String,
+                  withNotificationCenterProgressTask: Bool,
+                  checkfileProviderStorageExists: Bool = false,
                   requestHandler: @escaping (_ request: DownloadRequest) -> Void = { _ in },
                   progressHandler: @escaping (_ progress: Progress) -> Void = { _ in },
-                  completion: @escaping (_ afError: AFError?, _ error: NKError) -> Void) {
+                  completion: @escaping (_ afError: AFError?, _ error: NKError) -> Void = { _, _ in }) {
 
         guard !metadata.isInTransfer else { return completion(nil, NKError()) }
         if checkfileProviderStorageExists, utilityFileSystem.fileProviderStorageExists(metadata) {
@@ -350,7 +352,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
 
         }, progressHandler: { progress in
 
-            if notificationCenterProgressTask, Int(floor(progress.fractionCompleted * 100)).isMultiple(of: 5) {
+            if withNotificationCenterProgressTask, Int(floor(progress.fractionCompleted * 100)).isMultiple(of: 5) {
                 NotificationCenter.default.post(
                     name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterProgressTask),
                     object: nil,
@@ -1005,7 +1007,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
         }
     }
 
-    func cancelUploadBackgroundTask() {
+    func cancelUploadBackgroundTask(withNotificationCenter: Bool) {
 
         Task {
             let tasksBackground = await NCNetworking.shared.sessionManagerBackground.tasks
@@ -1016,11 +1018,12 @@ class NCNetworking: NSObject, NKCommonDelegate {
             for task in tasksBackgroundWWan.1 { // ([URLSessionDataTask], [URLSessionUploadTask], [URLSessionDownloadTask])
                 task.cancel()
             }
-        }
 
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
             if let results = NCManageDatabase.shared.getResultsMetadatas(predicate: NSPredicate(format: "status > 0 AND (session == %@ || session == %@)", NCNetworking.shared.sessionIdentifierBackground, NCNetworking.shared.sessionIdentifierBackgroundWWan)) {
                 NCManageDatabase.shared.deleteMetadata(results: results)
+            }
+            if withNotificationCenter {
+                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSource)
             }
         }
     }
@@ -1949,9 +1952,12 @@ class NCOperationDownload: ConcurrentOperation {
 
         guard !isCancelled else { return self.finish() }
 
-        NCNetworking.shared.download(metadata: metadata, selector: self.selector) { _, _ in
+        NCNetworking.shared.download(metadata: metadata,
+                                     selector: self.selector,
+                                     withNotificationCenterProgressTask: true,
+                                     completion: { _, _ in
             self.finish()
-        }
+        })
     }
 }
 

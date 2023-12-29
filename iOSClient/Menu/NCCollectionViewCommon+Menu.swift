@@ -295,7 +295,9 @@ extension NCCollectionViewCommon {
                                            "error": NKError(),
                                            "account": metadata.account])
                         } else {
-                            NCNetworking.shared.download(metadata: metadata, selector: NCGlobal.shared.selectorSaveAsScan) { _, _ in }
+                            NCNetworking.shared.download(metadata: metadata,
+                                                         selector: NCGlobal.shared.selectorSaveAsScan,
+                                                         withNotificationCenterProgressTask: true)
                         }
                     }
                 )
@@ -361,7 +363,9 @@ extension NCCollectionViewCommon {
                                            "error": NKError(),
                                            "account": metadata.account])
                         } else {
-                            NCNetworking.shared.download(metadata: metadata, selector: NCGlobal.shared.selectorLoadFileQuickLook) { _, _ in }
+                            NCNetworking.shared.download(metadata: metadata,
+                                                         selector: NCGlobal.shared.selectorLoadFileQuickLook,
+                                                         withNotificationCenterProgressTask: true)
                         }
                     }
                 )
