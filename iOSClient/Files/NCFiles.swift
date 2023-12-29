@@ -126,8 +126,6 @@ class NCFiles: NCCollectionViewCommon {
     }
 
     override func reloadDataSource(withQueryDB: Bool = true) {
-
-        guard !self.isSearchingMode, !self.appDelegate.account.isEmpty else { return }
         super.reloadDataSource(withQueryDB: withQueryDB)
 
         if !self.dataSource.metadatas.isEmpty {
@@ -139,7 +137,9 @@ class NCFiles: NCCollectionViewCommon {
     }
 
     override func reloadDataSourceNetwork() {
-        guard !isSearchingMode else { return networkSearch() }
+        guard !isSearchingMode else {
+            return networkSearch()
+        }
 
         func downloadMetadata(_ metadata: tableMetadata) -> Bool {
 
