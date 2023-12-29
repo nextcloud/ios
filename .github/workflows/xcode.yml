@@ -54,12 +54,6 @@ jobs:
     - name: Create docker test server and export enviroment variables
       run: |
         source ./create-docker-test-server.sh
-        if [ ! -f ".env-vars" ]; then
-            touch .env-vars
-            echo "export TEST_SERVER_URL=$TEST_SERVER_URL" >> .env-vars
-            echo "export TEST_USER=$TEST_USER" >> .env-vars
-            echo "export TEST_APP_PASSWORD=$TEST_APP_PASSWORD" >> .env-vars
-        fi
     - name: Build & Test Nextcloud iOS
       run: |
         set -o pipefail && xcodebuild test -project $PROJECT \

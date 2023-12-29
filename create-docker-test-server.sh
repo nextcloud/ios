@@ -8,7 +8,7 @@ user="admin"
 
 docker run --rm -d --name $container_name -p $port:80 ghcr.io/juliushaertl/nextcloud-dev-php80:latest
 
-timeout=300
+timeout=600
 elapsed=0
 
 echo "Waiting for server..."
@@ -18,6 +18,7 @@ sleep 2
 while true; do
     content=$(curl -s $server_url/status.php)
 
+# wait until server returns status as installed:true, then continue
     if [[ $content == *"installed\":true"* ]]; then
         break
     fi
