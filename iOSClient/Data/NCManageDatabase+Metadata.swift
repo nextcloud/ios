@@ -508,8 +508,6 @@ extension NCManageDatabase {
         }
     }
 
-
-
     func moveMetadata(ocId: String, serverUrlTo: String) {
 
         do {
