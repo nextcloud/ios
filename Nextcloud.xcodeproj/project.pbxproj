@@ -110,6 +110,7 @@
 		F3953BD72A6E87E000EE03F9 /* BaseIntegrationXCTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3953BD62A6E87E000EE03F9 /* BaseIntegrationXCTestCase.swift */; };
 		F3998DFE2B3EF030007CA5DE /* XLForm in Frameworks */ = {isa = PBXBuildFile; productRef = F3998DFD2B3EF030007CA5DE /* XLForm */; };
 		F3998E002B3EF04C007CA5DE /* XLForm in Frameworks */ = {isa = PBXBuildFile; productRef = F3998DFF2B3EF04C007CA5DE /* XLForm */; };
+		F3998E022B3F1AF7007CA5DE /* XLForm in Frameworks */ = {isa = PBXBuildFile; productRef = F3998E012B3F1AF7007CA5DE /* XLForm */; };
 		F3A7AFC62A41AA82001FC89C /* BaseUIXCTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3A7AFC52A41AA82001FC89C /* BaseUIXCTestCase.swift */; };
 		F3BB464D2A39ADCC00461F6E /* NCMoreAppSuggestionsCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F3BB464C2A39ADCC00461F6E /* NCMoreAppSuggestionsCell.xib */; };
 		F3BB464F2A39EBE500461F6E /* NCMoreUserCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3BB464E2A39EBE500461F6E /* NCMoreUserCell.swift */; };
@@ -1494,6 +1495,7 @@
 			files = (
 				F3131EE12B038F560018DB28 /* SnapshotTestingHEIC in Frameworks */,
 				F3131EE32B038F9B0018DB28 /* PreviewSnapshotsTesting in Frameworks */,
+				F3998E022B3F1AF7007CA5DE /* XLForm in Frameworks */,
 				F3131EDF2B038F2A0018DB28 /* SnapshotTesting in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -2823,6 +2825,7 @@
 				F3131EDE2B038F2A0018DB28 /* SnapshotTesting */,
 				F3131EE02B038F560018DB28 /* SnapshotTestingHEIC */,
 				F3131EE22B038F9B0018DB28 /* PreviewSnapshotsTesting */,
+				F3998E012B3F1AF7007CA5DE /* XLForm */,
 			);
 			productName = NextcloudSnapshotTests;
 			productReference = F31F69422A2F6D4500162F76 /* NextcloudSnapshotTests.xctest */;
@@ -5354,6 +5357,11 @@
 			productName = XLForm;
 		};
 		F3998DFF2B3EF04C007CA5DE /* XLForm */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F74E771E277A2EF40013B958 /* XCRemoteSwiftPackageReference "XLForm" */;
+			productName = XLForm;
+		};
+		F3998E012B3F1AF7007CA5DE /* XLForm */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = F74E771E277A2EF40013B958 /* XCRemoteSwiftPackageReference "XLForm" */;
 			productName = XLForm;
