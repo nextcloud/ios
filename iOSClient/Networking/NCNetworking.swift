@@ -1016,7 +1016,6 @@ class NCNetworking: NSObject, NKCommonDelegate {
             for task in tasksBackgroundWWan.1 { // ([URLSessionDataTask], [URLSessionUploadTask], [URLSessionDownloadTask])
                 task.cancel()
             }
-            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSource)
         }
 
         DispatchQueue.main.asyncAfter(deadline: .now() + 1) {

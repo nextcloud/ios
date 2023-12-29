@@ -106,7 +106,6 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
     override func longPressMoreListItem(with objectId: String, namedButtonMore: String, indexPath: IndexPath, gestureRecognizer: UILongPressGestureRecognizer) {
 
         if gestureRecognizer.state != .began { return }
-
         let alertController = UIAlertController(title: nil, message: nil, preferredStyle: .alert)
 
         alertController.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel, handler: nil))
@@ -116,6 +115,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
             NCNetworking.shared.cancelDownloadTasks()
             NCNetworking.shared.cancelUploadTasks()
             NCNetworking.shared.cancelUploadBackgroundTask()
+            self.reloadDataSource()
         }))
 
         self.present(alertController, animated: true, completion: nil)
