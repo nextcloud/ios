@@ -969,6 +969,10 @@ class NCNetworking: NSObject, NKCommonDelegate {
             } else {
                 NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Upload set LivePhoto with error \(results.error.errorCode)")
             }
+            if results.error == .success, results1.error == .success {
+                NextcloudKit.shared.nkCommonInstance.writeLog("[SUCCESS] Upload set LivePhoto for files " + (metadata.fileName as NSString).deletingPathExtension)
+
+            }
             NotificationCenter.default.post(
                 name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterUploadedLivePhoto),
                 object: nil,
