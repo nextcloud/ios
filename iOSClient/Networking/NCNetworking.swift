@@ -1269,7 +1269,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
                         if metadata.directory {
                             NCManageDatabase.shared.addMetadata(metadata)
                         } else if selector == NCGlobal.shared.selectorSynchronizationOffline,
-                                  self.isSynchronizable(metadata),
+                                  metadata.isSynchronizable,
                                   self.downloadQueue.operations.filter({ ($0 as? NCOperationDownload)?.metadata.ocId == metadata.ocId }).isEmpty {
                             self.downloadQueue.addOperation(NCOperationDownload(metadata: metadata, selector: selector))
                         }
@@ -1277,15 +1277,6 @@ class NCNetworking: NSObject, NKCommonDelegate {
                 }
             }
         }
-    }
-
-    func isSynchronizable(_ metadata: tableMetadata) -> Bool {
-
-        let localFile = NCManageDatabase.shared.getResultsTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))?.first
-        if localFile?.etag != metadata.etag || utilityFileSystem.fileProviderStorageSize(metadata.ocId, fileNameView: metadata.fileNameView) == 0 {
-            return true
-        }
-        return false
     }
 
     // MARK: - Search
