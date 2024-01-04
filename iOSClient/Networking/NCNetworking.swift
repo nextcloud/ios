@@ -1256,7 +1256,10 @@ class NCNetworking: NSObject, NKCommonDelegate {
 
     // MARK: - Synchronization ServerUrl
 
-    func synchronizationServerUrl(_ serverUrl: String, account: String, selector: String) {
+    func synchronization(serverUrl: String,
+                         account: String,
+                         selector: String,
+                         completion: @escaping () -> Void = {}) {
 
         let startDate = Date()
         NextcloudKit.shared.readFileOrFolder(serverUrlFileName: serverUrl,
@@ -1267,19 +1270,33 @@ class NCNetworking: NSObject, NKCommonDelegate {
             if error == .success {
                 NCManageDatabase.shared.convertFilesToMetadatas(files, useMetadataFolder: true) { _, _, metadatas in
                     for metadata in metadatas {
-                        if metadata.directory {
-                            NCManageDatabase.shared.addMetadata(metadata)
-                        } else if selector == NCGlobal.shared.selectorSynchronizationOffline,
-                                  metadata.isSynchronizable,
-                                  self.downloadQueue.operations.filter({ ($0 as? NCOperationDownload)?.metadata.ocId == metadata.ocId }).isEmpty {
-                            self.downloadQueue.addOperation(NCOperationDownload(metadata: metadata, selector: selector))
+                        autoreleasepool {
+                            if metadata.directory {
+                                NCManageDatabase.shared.addMetadata(metadata)
+                            } else if selector == NCGlobal.shared.selectorSynchronizationOffline,
+                                      metadata.isSynchronizable,
+                                      self.downloadQueue.operations.filter({ ($0 as? NCOperationDownload)?.metadata.ocId == metadata.ocId }).isEmpty {
+                                self.downloadQueue.addOperation(NCOperationDownload(metadata: metadata, selector: selector))
+                            }
                         }
                     }
                     let diffDate = Date().timeIntervalSinceReferenceDate - startDate.timeIntervalSinceReferenceDate
                     NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Synchronization " + serverUrl + " in \(diffDate)")
+                    completion()
                 }
+            } else {
+                completion()
             }
         }
+    }
+
+    func synchronization(serverUrl: String, account: String, selector: String) async {
+
+        await withUnsafeContinuation({ continuation in
+            synchronization(serverUrl: serverUrl, account: account, selector: selector) {
+                continuation.resume(returning: ())
+            }
+        })
     }
 
     // MARK: - Search
@@ -1755,7 +1772,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
                 NCManageDatabase.shared.setMetadataFavorite(ocId: metadata.ocId, favorite: favorite)
                 if favorite, metadata.directory {
                     let serverUrl = metadata.serverUrl + "/" + metadata.fileName
-                    self.synchronizationServerUrl(serverUrl, account: metadata.account, selector: NCGlobal.shared.selectorSynchronizationFavorite)
+                    self.synchronization(serverUrl: serverUrl, account: metadata.account, selector: NCGlobal.shared.selectorSynchronizationFavorite)
                 }
                 NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterFavoriteFile, userInfo: ["ocId": ocId, "serverUrl": metadata.serverUrl])
             }
