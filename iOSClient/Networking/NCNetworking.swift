@@ -1261,17 +1261,13 @@ class NCNetworking: NSObject, NKCommonDelegate {
         NextcloudKit.shared.readFileOrFolder(serverUrlFileName: serverUrl,
                                              depth: "infinity",
                                              showHiddenFiles: NCKeychain().showHiddenFiles,
-                                             options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { account, files, _, error in
+                                             options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { _, files, _, error in
 
             if error == .success {
-                NCManageDatabase.shared.convertFilesToMetadatas(files, useMetadataFolder: true) { metadataFolder, _, metadatas in
-                    NCManageDatabase.shared.addDirectory(encrypted: metadataFolder.e2eEncrypted, favorite: metadataFolder.favorite, ocId: metadataFolder.ocId, fileId: metadataFolder.fileId, etag: metadataFolder.etag, permissions: metadataFolder.permissions, serverUrl: metadataFolder.serverUrl + "/" + metadataFolder.fileName, account: metadataFolder.account)
-                    let predicate = NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND status == %d", account, serverUrl, NCGlobal.shared.metadataStatusNormal)
-                    NCManageDatabase.shared.updateMetadatas(metadatas, predicate: predicate)
+                NCManageDatabase.shared.convertFilesToMetadatas(files, useMetadataFolder: true) { _, _, metadatas in
                     for metadata in metadatas {
                         if metadata.directory {
-                            let serverUrl = metadata.serverUrl + "/" + metadata.fileName
-                            NCManageDatabase.shared.addDirectory(encrypted: metadata.e2eEncrypted, favorite: metadata.favorite, ocId: metadata.ocId, fileId: metadata.fileId, etag: metadata.etag, permissions: metadata.permissions, serverUrl: serverUrl, account: metadata.account)
+                            NCManageDatabase.shared.addMetadata(metadata)
                         } else if selector == NCGlobal.shared.selectorSynchronizationOffline,
                                   self.isSynchronizable(metadata),
                                   self.downloadQueue.operations.filter({ ($0 as? NCOperationDownload)?.metadata.ocId == metadata.ocId }).isEmpty {

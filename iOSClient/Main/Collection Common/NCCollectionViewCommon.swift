@@ -285,7 +285,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
     @objc func notificationCenterEvents() {
         if notificationReloadDataSource > 0 {
-            let uploadCount = (NCManageDatabase.shared.getResultsMetadatas(predicate: NSPredicate(format: "status > 0 AND account == %@", appDelegate.account))?.count ?? 0) / 5
+            let uploadCount = (NCManageDatabase.shared.getResultsMetadatas(predicate: NSPredicate(format: "account = %@ AND serverUrl == %@ AND status != 0 AND status != %d AND status != %d", appDelegate.account, serverUrl, NCGlobal.shared.metadataStatusDownloadError, NCGlobal.shared.metadataStatusUploadError))?.count ?? 0) / 5
             if notificationReloadDataSource > uploadCount {
                 print("OK \(notificationReloadDataSource) > \(uploadCount)")
                 // reloadDataSource()
