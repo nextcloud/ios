@@ -1258,6 +1258,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
 
     func synchronizationServerUrl(_ serverUrl: String, account: String, selector: String) {
 
+        let startDate = Date()
         NextcloudKit.shared.readFileOrFolder(serverUrlFileName: serverUrl,
                                              depth: "infinity",
                                              showHiddenFiles: NCKeychain().showHiddenFiles,
@@ -1274,6 +1275,8 @@ class NCNetworking: NSObject, NKCommonDelegate {
                             self.downloadQueue.addOperation(NCOperationDownload(metadata: metadata, selector: selector))
                         }
                     }
+                    let diffDate = Date().timeIntervalSinceReferenceDate - startDate.timeIntervalSinceReferenceDate
+                    NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Synchronization " + serverUrl + " in \(diffDate)")
                 }
             }
         }
