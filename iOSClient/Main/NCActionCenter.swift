@@ -155,7 +155,7 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
             }
         } else if metadata.directory {
             NCManageDatabase.shared.setDirectory(serverUrl: serverUrl, offline: true, account: appDelegate.account)
-            NCNetworking.shared.synchronization(serverUrl: serverUrl, account: metadata.account, selector: NCGlobal.shared.selectorSynchronizationOffline)
+            NCNetworking.shared.synchronization(account: metadata.account, serverUrl: serverUrl, selector: NCGlobal.shared.selectorSynchronizationOffline)
         } else {
             NCNetworking.shared.download(metadata: metadata,
                                          selector: NCGlobal.shared.selectorLoadOffline,

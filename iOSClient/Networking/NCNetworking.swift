@@ -1215,22 +1215,6 @@ class NCNetworking: NSObject, NKCommonDelegate {
     func fileExists(serverUrlFileName: String,
                     completion: @escaping (_ account: String, _ exists: Bool?, _ file: NKFile?, _ error: NKError) -> Void) {
 
-        /*
-        let requestBody =
-        """
-        <?xml version=\"1.0\" encoding=\"UTF-8\"?>
-        <d:propfind xmlns:d=\"DAV:\" xmlns:oc=\"http://owncloud.org/ns\" xmlns:nc=\"http://nextcloud.org/ns\">
-            <d:prop>
-                <d:getlastmodified />
-                <d:getetag />
-                <permissions xmlns=\"http://owncloud.org/ns\"/>
-                <id xmlns=\"http://owncloud.org/ns\"/>
-                <fileid xmlns=\"http://owncloud.org/ns\"/>
-                <size xmlns=\"http://owncloud.org/ns\"/>
-            </d:prop>
-        </d:propfind>
-        """
-        */
         let requestBody =
         """
         <?xml version=\"1.0\" encoding=\"UTF-8\"?>
@@ -1256,12 +1240,68 @@ class NCNetworking: NSObject, NKCommonDelegate {
 
     // MARK: - Synchronization ServerUrl
 
-    func synchronization(serverUrl: String,
-                         account: String,
+    func synchronization(account: String,
+                         serverUrl: String,
                          selector: String,
                          completion: @escaping () -> Void = {}) {
 
         let startDate = Date()
+
+        /*
+        let requestBodySearch =
+        """
+        <?xml version=\"1.0\"?>
+        <d:searchrequest xmlns:d=\"DAV:\" xmlns:oc=\"http://owncloud.org/ns\" xmlns:nc=\"http://nextcloud.org/ns\">
+        <d:basicsearch>
+            <d:select>
+                <d:prop>
+                    <oc:fileid/>
+                    <d:displayname/>
+                    <d:getcontenttype/>
+                    <d:getetag/>
+                    <oc:size/>
+                </d:prop>
+            </d:select>
+            <d:from>
+                <d:scope>
+                    <d:href>%@</d:href>
+                    <d:depth>infinity</d:depth>
+                </d:scope>
+            </d:from>
+            <d:where>
+                <d:like>
+                    <d:prop>
+                        <d:getcontenttype/>
+                    </d:prop>
+                    <d:literal>httpd/unix-directory</d:literal>
+                </d:like>
+            </d:where>
+        </d:basicsearch>
+        </d:searchrequest>
+        """
+        let path = serverUrl.replacingOccurrences(of: urlBase + "/remote.php/dav", with: "")
+        let requestBody = String(format: requestBodySearch, path)
+
+        NextcloudKit.shared.searchBodyRequest(serverUrl: urlBase,
+                                              requestBody: requestBody,
+                                              showHiddenFiles: NCKeychain().showHiddenFiles,
+                                              options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { account, files, _, error in
+
+            if error == .success {
+                for file in files {
+                    let result = NCManageDatabase.shared.getTableDirectory(account: account, serverUrl: file.serverUrl)
+                    if result?.etag == file.etag {
+                        continue
+                    }
+                }
+                completion()
+            } else {
+                completion()
+            }
+
+        }
+        */
+
         NextcloudKit.shared.readFileOrFolder(serverUrlFileName: serverUrl,
                                              depth: "infinity",
                                              showHiddenFiles: NCKeychain().showHiddenFiles,
@@ -1290,10 +1330,10 @@ class NCNetworking: NSObject, NKCommonDelegate {
         }
     }
 
-    func synchronization(serverUrl: String, account: String, selector: String) async {
+    func synchronization(account: String, serverUrl: String, selector: String) async {
 
         await withUnsafeContinuation({ continuation in
-            synchronization(serverUrl: serverUrl, account: account, selector: selector) {
+            synchronization(account: account, serverUrl: serverUrl, selector: selector) {
                 continuation.resume(returning: ())
             }
         })
@@ -1772,7 +1812,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
                 NCManageDatabase.shared.setMetadataFavorite(ocId: metadata.ocId, favorite: favorite)
                 if favorite, metadata.directory {
                     let serverUrl = metadata.serverUrl + "/" + metadata.fileName
-                    self.synchronization(serverUrl: serverUrl, account: metadata.account, selector: NCGlobal.shared.selectorSynchronizationFavorite)
+                    self.synchronization(account: metadata.account, serverUrl: serverUrl, selector: NCGlobal.shared.selectorSynchronizationFavorite)
                 }
                 NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterFavoriteFile, userInfo: ["ocId": ocId, "serverUrl": metadata.serverUrl])
             }
