@@ -133,7 +133,6 @@ class NCService: NSObject {
 
     func synchronize() {
 
-        NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] start synchronize Favorite")
         NextcloudKit.shared.listingFavorites(showHiddenFiles: NCKeychain().showHiddenFiles,
                                              options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { account, files, _, error in
 
@@ -141,8 +140,7 @@ class NCService: NSObject {
             NCManageDatabase.shared.convertFilesToMetadatas(files, useMetadataFolder: false) { _, _, metadatas in
                 NCManageDatabase.shared.updateMetadatasFavorite(account: account, metadatas: metadatas)
             }
-            NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] end synchronize Favorite")
-            NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] start synchronize Offline")
+            NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Synchronize Favorite")
             self.synchronizeOffline(account: account)
         }
     }
@@ -308,7 +306,6 @@ class NCService: NSObject {
                 NCNetworking.shared.downloadQueue.addOperation(NCOperationDownload(metadata: metadata, selector: NCGlobal.shared.selectorDownloadFile))
             }
         }
-        NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] end synchronize Offline")
     }
 
     // MARK: -

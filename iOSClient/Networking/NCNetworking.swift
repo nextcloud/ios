@@ -1325,6 +1325,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
                     completion()
                 }
             } else {
+                NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Synchronization " + serverUrl + ", \(error.description)")
                 completion()
             }
         }
