@@ -263,7 +263,7 @@ struct UploadAssetsView: View {
                 metadata.livePhotoFile = (metadata.fileName as NSString).deletingPathExtension + ".mov"
             }
             metadata.assetLocalIdentifier = asset.localIdentifier
-            metadata.session = NCNetworking.shared.sessionIdentifierBackground
+            metadata.session = NCNetworking.shared.sessionUploadBackground
             metadata.sessionSelector = NCGlobal.shared.selectorUploadFile
             metadata.status = NCGlobal.shared.metadataStatusWaitUpload
 

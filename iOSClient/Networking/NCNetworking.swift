@@ -69,12 +69,13 @@ class NCNetworking: NSObject, NKCommonDelegate {
     }()
 
     public let sessionMaximumConnectionsPerHost = 5
-    public let sessionIdentifierBackground: String = "com.nextcloud.session.upload.background"
-    public let sessionIdentifierBackgroundWWan: String = "com.nextcloud.session.upload.backgroundWWan"
-    public let sessionIdentifierBackgroundExtension: String = "com.nextcloud.session.upload.extension"
+    public let sessionDownloadBackground: String = "com.nextcloud.session.download.background"
+    public let sessionUploadBackground: String = "com.nextcloud.session.upload.background"
+    public let sessionUploadBackgroundWWan: String = "com.nextcloud.session.upload.backgroundWWan"
+    public let sessionUploadBackgroundExtension: String = "com.nextcloud.session.upload.extension"
 
-    public lazy var sessionManagerBackground: URLSession = {
-        let configuration = URLSessionConfiguration.background(withIdentifier: sessionIdentifierBackground)
+    public lazy var sessionManagerDownloadBackground: URLSession = {
+        let configuration = URLSessionConfiguration.background(withIdentifier: sessionDownloadBackground)
         configuration.allowsCellularAccess = true
         configuration.sessionSendsLaunchEvents = true
         configuration.isDiscretionary = false
@@ -84,8 +85,19 @@ class NCNetworking: NSObject, NKCommonDelegate {
         return session
     }()
 
-    public lazy var sessionManagerBackgroundWWan: URLSession = {
-        let configuration = URLSessionConfiguration.background(withIdentifier: sessionIdentifierBackgroundWWan)
+    public lazy var sessionManagerUploadBackground: URLSession = {
+        let configuration = URLSessionConfiguration.background(withIdentifier: sessionUploadBackground)
+        configuration.allowsCellularAccess = true
+        configuration.sessionSendsLaunchEvents = true
+        configuration.isDiscretionary = false
+        configuration.httpMaximumConnectionsPerHost = sessionMaximumConnectionsPerHost
+        configuration.requestCachePolicy = NSURLRequest.CachePolicy.reloadIgnoringLocalCacheData
+        let session = URLSession(configuration: configuration, delegate: nkBackground, delegateQueue: OperationQueue.main)
+        return session
+    }()
+
+    public lazy var sessionManagerUploadBackgroundWWan: URLSession = {
+        let configuration = URLSessionConfiguration.background(withIdentifier: sessionUploadBackgroundWWan)
         configuration.allowsCellularAccess = false
         configuration.sessionSendsLaunchEvents = true
         configuration.isDiscretionary = false
@@ -96,8 +108,8 @@ class NCNetworking: NSObject, NKCommonDelegate {
     }()
 
 #if EXTENSION
-    public lazy var sessionManagerBackgroundExtension: URLSession = {
-        let configuration = URLSessionConfiguration.background(withIdentifier: sessionIdentifierBackgroundExtension)
+    public lazy var sessionManagerUploadBackgroundExtension: URLSession = {
+        let configuration = URLSessionConfiguration.background(withIdentifier: sessionUploadBackgroundExtension)
         configuration.allowsCellularAccess = true
         configuration.sessionSendsLaunchEvents = true
         configuration.isDiscretionary = false
@@ -127,10 +139,10 @@ class NCNetworking: NSObject, NKCommonDelegate {
         super.init()
 
 #if EXTENSION
-        print("Start Background Extension: ", sessionIdentifierBackgroundExtension)
+        print("Start Background Extension: ", sessionUploadBackgroundExtension)
 #else
-        print("Start Background: ", sessionManagerBackground)
-        print("Start BackgroundWWan: ", sessionManagerBackgroundWWan)
+        print("Start Background: ", sessionManagerUploadBackground)
+        print("Start BackgroundWWan: ", sessionManagerUploadBackgroundWWan)
 #endif
     }
 
@@ -703,10 +715,10 @@ class NCNetworking: NSObject, NKCommonDelegate {
         let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
         let fileNameLocalPath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)
 
-        if metadata.session == sessionIdentifierBackground || metadata.session == sessionIdentifierBackgroundExtension {
-            session = sessionManagerBackground
-        } else if metadata.session == sessionIdentifierBackgroundWWan {
-            session = sessionManagerBackgroundWWan
+        if metadata.session == sessionUploadBackground || metadata.session == sessionUploadBackgroundExtension {
+            session = sessionManagerUploadBackground
+        } else if metadata.session == sessionUploadBackgroundWWan {
+            session = sessionManagerUploadBackgroundWWan
         }
 
         start()
@@ -924,11 +936,11 @@ class NCNetworking: NSObject, NKCommonDelegate {
 
         var listOcId: [String] = []
 
-        sessionManagerBackground.getAllTasks(completionHandler: { tasks in
+        sessionManagerUploadBackground.getAllTasks(completionHandler: { tasks in
             for task in tasks {
                 listOcId.append(task.description)
             }
-            self.sessionManagerBackgroundWWan.getAllTasks(completionHandler: { tasks in
+            self.sessionManagerUploadBackgroundWWan.getAllTasks(completionHandler: { tasks in
                 for task in tasks {
                     listOcId.append(task.description)
                 }
@@ -1003,9 +1015,9 @@ class NCNetworking: NSObject, NKCommonDelegate {
     // sessionIdentifierDownload: String = "com.nextcloud.nextcloudkit.session.download"
     // sessionIdentifierUpload: String = "com.nextcloud.nextcloudkit.session.upload"
 
-    // sessionIdentifierBackground: String = "com.nextcloud.session.upload.background"
-    // sessionIdentifierBackgroundWWan: String = "com.nextcloud.session.upload.backgroundWWan"
-    // sessionIdentifierBackgroundExtension: String = "com.nextcloud.session.upload.extension"
+    // sessionUploadBackground: String = "com.nextcloud.session.upload.background"
+    // sessionUploadBackgroundWWan: String = "com.nextcloud.session.upload.backgroundWWan"
+    // sessionUploadBackgroundExtension: String = "com.nextcloud.session.upload.extension"
 
     func cancelDataTask() {
 
@@ -1057,16 +1069,16 @@ class NCNetworking: NSObject, NKCommonDelegate {
     func cancelUploadBackgroundTask(withNotification: Bool) {
 
         Task {
-            let tasksBackground = await NCNetworking.shared.sessionManagerBackground.tasks
+            let tasksBackground = await NCNetworking.shared.sessionManagerUploadBackground.tasks
             for task in tasksBackground.1 { // ([URLSessionDataTask], [URLSessionUploadTask], [URLSessionDownloadTask])
                 task.cancel()
             }
-            let tasksBackgroundWWan = await NCNetworking.shared.sessionManagerBackgroundWWan.tasks
+            let tasksBackgroundWWan = await NCNetworking.shared.sessionManagerUploadBackgroundWWan.tasks
             for task in tasksBackgroundWWan.1 { // ([URLSessionDataTask], [URLSessionUploadTask], [URLSessionDownloadTask])
                 task.cancel()
             }
 
-            if let results = NCManageDatabase.shared.getResultsMetadatas(predicate: NSPredicate(format: "status > 0 AND (session == %@ || session == %@)", NCNetworking.shared.sessionIdentifierBackground, NCNetworking.shared.sessionIdentifierBackgroundWWan)) {
+            if let results = NCManageDatabase.shared.getResultsMetadatas(predicate: NSPredicate(format: "status > 0 AND (session == %@ || session == %@)", NCNetworking.shared.sessionUploadBackground, NCNetworking.shared.sessionUploadBackgroundWWan)) {
                 NCManageDatabase.shared.deleteMetadata(results: results)
             }
             if withNotification {
@@ -1123,10 +1135,10 @@ class NCNetworking: NSObject, NKCommonDelegate {
 
         // UPLOAD BACKGROUND
         var session: URLSession?
-        if metadata.session == NCNetworking.shared.sessionIdentifierBackground {
-            session = NCNetworking.shared.sessionManagerBackground
-        } else if metadata.session == NCNetworking.shared.sessionIdentifierBackgroundWWan {
-            session = NCNetworking.shared.sessionManagerBackgroundWWan
+        if metadata.session == NCNetworking.shared.sessionUploadBackground {
+            session = NCNetworking.shared.sessionManagerUploadBackground
+        } else if metadata.session == NCNetworking.shared.sessionUploadBackgroundWWan {
+            session = NCNetworking.shared.sessionManagerUploadBackgroundWWan
         }
         if let tasks = await session?.tasks {
             for task in tasks.1 { // ([URLSessionDataTask], [URLSessionUploadTask], [URLSessionDownloadTask])

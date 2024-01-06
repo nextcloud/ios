@@ -64,7 +64,7 @@ class FileProviderExtension: NSFileProviderExtension, NCNetworkingDelegate {
         // Create directory File Provider Storage
         _ = utilityFileSystem.directoryProviderStorage
         // Configure URLSession
-        _ = NCNetworking.shared.sessionManagerBackgroundExtension
+        _ = NCNetworking.shared.sessionManagerUploadBackgroundExtension
     }
 
     deinit {
@@ -285,7 +285,7 @@ class FileProviderExtension: NSFileProviderExtension, NCNetworkingDelegate {
         let serverUrlFileName = metadata.serverUrl + "/" + fileName
         let fileNameLocalPath = url.path
 
-        if let task = NKBackground(nkCommonInstance: NextcloudKit.shared.nkCommonInstance).upload(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, dateCreationFile: nil, dateModificationFile: nil, description: metadata.ocId, session: NCNetworking.shared.sessionManagerBackgroundExtension) {
+        if let task = NKBackground(nkCommonInstance: NextcloudKit.shared.nkCommonInstance).upload(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, dateCreationFile: nil, dateModificationFile: nil, description: metadata.ocId, session: NCNetworking.shared.sessionManagerUploadBackgroundExtension) {
 
             fileProviderData.shared.fileProviderManager.register(task, forItemWithIdentifier: NSFileProviderItemIdentifier(metadata.fileId)) { _ in }
         }
@@ -356,7 +356,7 @@ class FileProviderExtension: NSFileProviderExtension, NCNetworkingDelegate {
                 fileURL.stopAccessingSecurityScopedResource()
 
                 let metadata = NCManageDatabase.shared.createMetadata(account: fileProviderData.shared.account, user: fileProviderData.shared.user, userId: fileProviderData.shared.userId, fileName: fileName, fileNameView: fileName, ocId: ocIdTemp, serverUrl: tableDirectory.serverUrl, urlBase: fileProviderData.shared.accountUrlBase, url: "", contentType: "")
-                metadata.session = NCNetworking.shared.sessionIdentifierBackgroundExtension
+                metadata.session = NCNetworking.shared.sessionUploadBackgroundExtension
                 metadata.size = size
                 metadata.status = NCGlobal.shared.metadataStatusUploading
 
@@ -365,7 +365,7 @@ class FileProviderExtension: NSFileProviderExtension, NCNetworkingDelegate {
                 let serverUrlFileName = tableDirectory.serverUrl + "/" + fileName
                 let fileNameLocalPath = self.utilityFileSystem.getDirectoryProviderStorageOcId(ocIdTemp, fileNameView: fileName)
 
-                if let task = NKBackground(nkCommonInstance: NextcloudKit.shared.nkCommonInstance).upload(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, dateCreationFile: nil, dateModificationFile: nil, description: ocIdTemp, session: NCNetworking.shared.sessionManagerBackgroundExtension) {
+                if let task = NKBackground(nkCommonInstance: NextcloudKit.shared.nkCommonInstance).upload(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, dateCreationFile: nil, dateModificationFile: nil, description: ocIdTemp, session: NCNetworking.shared.sessionManagerUploadBackgroundExtension) {
 
                     self.outstandingSessionTasks[URL(fileURLWithPath: fileNameLocalPath)] = task as URLSessionTask
 
