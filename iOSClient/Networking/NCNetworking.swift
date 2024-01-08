@@ -350,18 +350,23 @@ class NCNetworking: NSObject, NKCommonDelegate {
     func download(metadata: tableMetadata,
                   withNotificationProgressTask: Bool,
                   checkfileProviderStorageExists: Bool = false,
+                  hudView: UIView? = nil,
+                  hud: JGProgressHUD? = nil,
                   start: @escaping () -> Void = { },
                   requestHandler: @escaping (_ request: DownloadRequest) -> Void = { _ in },
                   progressHandler: @escaping (_ progress: Progress) -> Void = { _ in },
                   completion: @escaping (_ afError: AFError?, _ error: NKError) -> Void = { _, _ in }) {
 
         if metadata.session == NextcloudKit.shared.nkCommonInstance.sessionIdentifierUpload {
-            download(metadata: metadata, withNotificationProgressTask: withNotificationProgressTask, checkfileProviderStorageExists: checkfileProviderStorageExists) {
+            download(metadata: metadata, withNotificationProgressTask: withNotificationProgressTask, checkfileProviderStorageExists: checkfileProviderStorageExists, hudView: hudView, hud: hud) {
                 start()
+            } requestHandler: { request in
+                requestHandler(request)
             } progressHandler: { progress in
                 progressHandler(progress)
             } completion: { afError, error in
                 completion(afError, error)
+
             }
         } else {
             /*
@@ -372,12 +377,15 @@ class NCNetworking: NSObject, NKCommonDelegate {
         }
     }
 
-    private func download(metadata: tableMetadata,
-                          withNotificationProgressTask: Bool,
-                          checkfileProviderStorageExists: Bool = false,
-                          start: @escaping () -> Void = { },
-                          progressHandler: @escaping (_ progress: Progress) -> Void = { _ in },
-                          completion: @escaping (_ afError: AFError?, _ error: NKError) -> Void = { _, _ in }) {
+    private func downloadFile(metadata: tableMetadata,
+                              withNotificationProgressTask: Bool,
+                              checkfileProviderStorageExists: Bool = false,
+                              hudView: UIView?,
+                              hud: JGProgressHUD?,
+                              start: @escaping () -> Void = { },
+                              requestHandler: @escaping (_ request: DownloadRequest) -> Void = { _ in },
+                              progressHandler: @escaping (_ progress: Progress) -> Void = { _ in },
+                              completion: @escaping (_ afError: AFError?, _ error: NKError) -> Void = { _, _ in }) {
 
         guard !metadata.isInTransfer else { return completion(nil, NKError()) }
         if checkfileProviderStorageExists, utilityFileSystem.fileProviderStorageExists(metadata) {
@@ -397,6 +405,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
         NextcloudKit.shared.download(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, options: options, requestHandler: { request in
 
             self.downloadRequest[fileNameLocalPath] = request
+            requestHandler(request)
 
         }, taskHandler: { _ in
 
@@ -513,6 +522,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
                 hudView: UIView?,
                 hud: JGProgressHUD?,
                 start: @escaping () -> Void = { },
+                requestHandler: @escaping (_ request: UploadRequest) -> Void = { _ in },
                 progressHandler: @escaping (_ totalBytesExpected: Int64, _ totalBytes: Int64, _ fractionCompleted: Double) -> Void = { _, _, _ in },
                 completion: @escaping (_ error: NKError) -> Void = { _ in }) {
 
@@ -590,6 +600,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
                     withUploadComplete: Bool = true,
                     customHeaders: [String: String]? = nil,
                     start: @escaping () -> Void = { },
+                    requestHandler: @escaping (_ request: UploadRequest) -> Void = { _ in },
                     progressHandler: @escaping (_ totalBytesExpected: Int64, _ totalBytes: Int64, _ fractionCompleted: Double) -> Void = { _, _, _ in },
                     completion: @escaping (_ account: String, _ ocId: String?, _ etag: String?, _ date: NSDate?, _ size: Int64, _ allHeaderFields: [AnyHashable: Any]?, _ afError: AFError?, _ error: NKError) -> Void) {
 
@@ -601,6 +612,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
         NextcloudKit.shared.upload(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, dateCreationFile: metadata.creationDate as Date, dateModificationFile: metadata.date as Date, options: options, requestHandler: { request in
 
             self.uploadRequest[fileNameLocalPath] = request
+            requestHandler(request)
 
         }, taskHandler: { task in
 
