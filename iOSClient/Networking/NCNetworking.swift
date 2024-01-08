@@ -348,8 +348,6 @@ class NCNetworking: NSObject, NKCommonDelegate {
     // MARK: - Download
 
     func download(metadata: tableMetadata,
-                  hudView: UIView? = nil,
-                  hud: JGProgressHUD? = nil,
                   withNotificationProgressTask: Bool,
                   checkfileProviderStorageExists: Bool = false,
                   start: @escaping () -> Void = { },
@@ -358,8 +356,8 @@ class NCNetworking: NSObject, NKCommonDelegate {
                   completion: @escaping (_ afError: AFError?, _ error: NKError) -> Void = { _, _ in }) {
 
         if metadata.session == NextcloudKit.shared.nkCommonInstance.sessionIdentifierUpload {
-            download(metadata: metadata, withNotificationProgressTask: withNotificationProgressTask, checkfileProviderStorageExists: checkfileProviderStorageExists) { request in
-                requestHandler(request)
+            download(metadata: metadata, withNotificationProgressTask: withNotificationProgressTask, checkfileProviderStorageExists: checkfileProviderStorageExists) {
+                start()
             } progressHandler: { progress in
                 progressHandler(progress)
             } completion: { afError, error in
@@ -377,7 +375,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
     private func download(metadata: tableMetadata,
                           withNotificationProgressTask: Bool,
                           checkfileProviderStorageExists: Bool = false,
-                          requestHandler: @escaping (_ request: DownloadRequest) -> Void = { _ in },
+                          start: @escaping () -> Void = { },
                           progressHandler: @escaping (_ progress: Progress) -> Void = { _ in },
                           completion: @escaping (_ afError: AFError?, _ error: NKError) -> Void = { _, _ in }) {
 
@@ -398,9 +396,9 @@ class NCNetworking: NSObject, NKCommonDelegate {
 
         NextcloudKit.shared.download(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, options: options, requestHandler: { request in
 
-            requestHandler(request)
-
             self.downloadRequest[fileNameLocalPath] = request
+
+        }, taskHandler: { _ in
 
             NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId, sessionError: "", status: NCGlobal.shared.metadataStatusDownloading)
             NotificationCenter.default.post(
@@ -410,7 +408,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
                            "serverUrl": metadata.serverUrl,
                            "account": metadata.account])
 
-        }, taskHandler: { _ in
+            start()
 
         }, progressHandler: { progress in
 

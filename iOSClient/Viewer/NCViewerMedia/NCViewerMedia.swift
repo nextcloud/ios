@@ -327,8 +327,7 @@ class NCViewerMedia: UIViewController {
     func downloadImage(withSelector selector: String = "") {
         NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId, session: NextcloudKit.shared.nkCommonInstance.sessionIdentifierDownload, sessionSelector: selector, status: NCGlobal.shared.metadataStatusWaitDownload)
         NCNetworking.shared.download(metadata: metadata, withNotificationProgressTask: true) {
-        } requestHandler: { request in
-        } progressHandler: { progress in
+        } requestHandler: { _ in
             self.allowPanning = false
         } completion: { _, _ in
             let image = self.getImageMetadata(self.metadata)
