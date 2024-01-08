@@ -84,6 +84,14 @@
 		F3391B022B4C40FB001C0C4B /* XLForm in Frameworks */ = {isa = PBXBuildFile; productRef = F3391B012B4C40FB001C0C4B /* XLForm */; };
 		F3391B042B4C4105001C0C4B /* XLForm in Frameworks */ = {isa = PBXBuildFile; productRef = F3391B032B4C4105001C0C4B /* XLForm */; };
 		F3391B062B4C4111001C0C4B /* XLForm in Frameworks */ = {isa = PBXBuildFile; productRef = F3391B052B4C4111001C0C4B /* XLForm */; };
+		F3391B082B4C52C5001C0C4B /* FirebaseDatabase in Frameworks */ = {isa = PBXBuildFile; productRef = F3391B072B4C52C5001C0C4B /* FirebaseDatabase */; };
+		F3391B0A2B4C52CB001C0C4B /* JGProgressHUD in Frameworks */ = {isa = PBXBuildFile; productRef = F3391B092B4C52CB001C0C4B /* JGProgressHUD */; };
+		F3391B0C2B4C52D5001C0C4B /* SVGKit in Frameworks */ = {isa = PBXBuildFile; productRef = F3391B0B2B4C52D5001C0C4B /* SVGKit */; };
+		F3391B0E2B4C52DC001C0C4B /* Realm in Frameworks */ = {isa = PBXBuildFile; productRef = F3391B0D2B4C52DC001C0C4B /* Realm */; };
+		F3391B102B4C52E6001C0C4B /* SVGKit in Frameworks */ = {isa = PBXBuildFile; productRef = F3391B0F2B4C52E6001C0C4B /* SVGKit */; };
+		F3391B122B4C52EB001C0C4B /* Realm in Frameworks */ = {isa = PBXBuildFile; productRef = F3391B112B4C52EB001C0C4B /* Realm */; };
+		F3391B142B4C52EF001C0C4B /* JGProgressHUD in Frameworks */ = {isa = PBXBuildFile; productRef = F3391B132B4C52EF001C0C4B /* JGProgressHUD */; };
+		F3391B162B4C52F6001C0C4B /* FirebaseDatabase in Frameworks */ = {isa = PBXBuildFile; productRef = F3391B152B4C52F6001C0C4B /* FirebaseDatabase */; };
 		F33AAF9A2A60394C006ECCBD /* NCMoreUserCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F33AAF992A60394C006ECCBD /* NCMoreUserCell.xib */; };
 		F343A4B32A1E01FF00DDA874 /* PHAsset+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F343A4B22A1E01FF00DDA874 /* PHAsset+Extension.swift */; };
 		F343A4B42A1E084100DDA874 /* PHAsset+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F343A4B22A1E01FF00DDA874 /* PHAsset+Extension.swift */; };
@@ -1487,6 +1495,10 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F3391B162B4C52F6001C0C4B /* FirebaseDatabase in Frameworks */,
+				F3391B142B4C52EF001C0C4B /* JGProgressHUD in Frameworks */,
+				F3391B122B4C52EB001C0C4B /* Realm in Frameworks */,
+				F3391B102B4C52E6001C0C4B /* SVGKit in Frameworks */,
 				F3391B062B4C4111001C0C4B /* XLForm in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1495,7 +1507,11 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F3391B082B4C52C5001C0C4B /* FirebaseDatabase in Frameworks */,
+				F3391B0A2B4C52CB001C0C4B /* JGProgressHUD in Frameworks */,
+				F3391B0C2B4C52D5001C0C4B /* SVGKit in Frameworks */,
 				F3391B042B4C4105001C0C4B /* XLForm in Frameworks */,
+				F3391B0E2B4C52DC001C0C4B /* Realm in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2800,6 +2816,10 @@
 			name = NextcloudUITests;
 			packageProductDependencies = (
 				F3391B052B4C4111001C0C4B /* XLForm */,
+				F3391B0F2B4C52E6001C0C4B /* SVGKit */,
+				F3391B112B4C52EB001C0C4B /* Realm */,
+				F3391B132B4C52EF001C0C4B /* JGProgressHUD */,
+				F3391B152B4C52F6001C0C4B /* FirebaseDatabase */,
 			);
 			productName = NextcloudUITests;
 			productReference = C0046CDA2A17B98400D87C9D /* NextcloudUITests.xctest */;
@@ -2821,6 +2841,10 @@
 			name = NextcloudIntegrationTests;
 			packageProductDependencies = (
 				F3391B032B4C4105001C0C4B /* XLForm */,
+				F3391B072B4C52C5001C0C4B /* FirebaseDatabase */,
+				F3391B092B4C52CB001C0C4B /* JGProgressHUD */,
+				F3391B0B2B4C52D5001C0C4B /* SVGKit */,
+				F3391B0D2B4C52DC001C0C4B /* Realm */,
 			);
 			productName = NextcloudIntegrationTests;
 			productReference = C04E2F202A17BB4D001BAD85 /* NextcloudIntegrationTests.xctest */;
@@ -5390,6 +5414,46 @@
 			isa = XCSwiftPackageProductDependency;
 			package = F74E771E277A2EF40013B958 /* XCRemoteSwiftPackageReference "XLForm" */;
 			productName = XLForm;
+		};
+		F3391B072B4C52C5001C0C4B /* FirebaseDatabase */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F70B86732642CE3B00ED5349 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseDatabase;
+		};
+		F3391B092B4C52CB001C0C4B /* JGProgressHUD */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F72CD01027A7E92400E59476 /* XCRemoteSwiftPackageReference "JGProgressHUD" */;
+			productName = JGProgressHUD;
+		};
+		F3391B0B2B4C52D5001C0C4B /* SVGKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F75E57A725BF0D61002B72C2 /* XCRemoteSwiftPackageReference "SVGKit" */;
+			productName = SVGKit;
+		};
+		F3391B0D2B4C52DC001C0C4B /* Realm */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F710FC78277B7CFF00AA9FBF /* XCRemoteSwiftPackageReference "realm-swift" */;
+			productName = Realm;
+		};
+		F3391B0F2B4C52E6001C0C4B /* SVGKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F75E57A725BF0D61002B72C2 /* XCRemoteSwiftPackageReference "SVGKit" */;
+			productName = SVGKit;
+		};
+		F3391B112B4C52EB001C0C4B /* Realm */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F710FC78277B7CFF00AA9FBF /* XCRemoteSwiftPackageReference "realm-swift" */;
+			productName = Realm;
+		};
+		F3391B132B4C52EF001C0C4B /* JGProgressHUD */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F72CD01027A7E92400E59476 /* XCRemoteSwiftPackageReference "JGProgressHUD" */;
+			productName = JGProgressHUD;
+		};
+		F3391B152B4C52F6001C0C4B /* FirebaseDatabase */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F70B86732642CE3B00ED5349 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseDatabase;
 		};
 		F3998E1C2B487D53007CA5DE /* SnapshotTesting */ = {
 			isa = XCSwiftPackageProductDependency;
