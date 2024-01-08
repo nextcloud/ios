@@ -400,7 +400,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
             NCManageDatabase.shared.addMetadata(metadata)
         }
 
-        NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId, 
+        NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId,
                                                    session: NextcloudKit.shared.nkCommonInstance.sessionIdentifierDownload,
                                                    status: NCGlobal.shared.metadataStatusInDownload)
         NextcloudKit.shared.download(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, options: options, requestHandler: { request in
@@ -410,7 +410,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
 
         }, taskHandler: { task in
 
-            NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId, 
+            NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId,
                                                        taskIdentifier: task.taskIdentifier,
                                                        status: NCGlobal.shared.metadataStatusDownloading)
             NotificationCenter.default.post(
@@ -450,7 +450,12 @@ class NCNetworking: NSObject, NKCommonDelegate {
 
             if afError?.isExplicitlyCancelledError ?? false || sessionTaskFailedCode == NCGlobal.shared.errorExplicitlyCancelled {
 
-                NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId, session: "", sessionError: "", selector: "", taskIdentifier: 0, status: NCGlobal.shared.metadataStatusNormal)
+                NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId,
+                                                           session: "",
+                                                           sessionError: "",
+                                                           selector: "",
+                                                           taskIdentifier: 0,
+                                                           status: NCGlobal.shared.metadataStatusNormal)
                 NotificationCenter.default.post(name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterDownloadCancelFile),
                                                 object: nil,
                                                 userInfo: ["ocId": metadata.ocId,
@@ -623,7 +628,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
         }, taskHandler: { task in
 
             uploadTask = task
-            NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId, 
+            NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId,
                                                        taskIdentifier: task.taskIdentifier,
                                                        status: NCGlobal.shared.metadataStatusUploading)
             NotificationCenter.default.post(
@@ -714,7 +719,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
         } taskHandler: { task in
 
             uploadTask = task
-            NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId, 
+            NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId,
                                                        taskIdentifier: task.taskIdentifier,
                                                        status: NCGlobal.shared.metadataStatusUploading)
 
@@ -783,7 +788,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
 
                 NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Upload file \(metadata.fileNameView) with task with taskIdentifier \(task.taskIdentifier)")
 
-                NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId, 
+                NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId,
                                                            taskIdentifier: task.taskIdentifier,
                                                            status: NCGlobal.shared.metadataStatusUploading)
                 NotificationCenter.default.post(
@@ -1101,7 +1106,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
             if let results = NCManageDatabase.shared.getResultsMetadatas(predicate: NSPredicate(format: "status < 0")) {
                 for metadata in results {
                     self.utilityFileSystem.removeFile(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId))
-                    NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId, 
+                    NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId,
                                                                session: "",
                                                                sessionError: "",
                                                                selector: "",
@@ -2177,9 +2182,9 @@ class NCOperationDownload: ConcurrentOperation {
     override func start() {
 
         guard !isCancelled else { return self.finish() }
-        NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId, 
+        NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId,
                                                    session: NextcloudKit.shared.nkCommonInstance.sessionIdentifierDownload,
-                                                   selector: selector, 
+                                                   selector: selector,
                                                    status: NCGlobal.shared.metadataStatusWaitDownload)
         NCNetworking.shared.download(metadata: metadata, withNotificationProgressTask: true) {
         } completion: { _, _ in

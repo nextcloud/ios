@@ -203,7 +203,7 @@ class NCNetworkingProcessUpload: NSObject {
                                 }
                             }
                         } else {
-                            NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId, 
+                            NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId,
                                                                        session: NCNetworking.shared.sessionUploadBackground,
                                                                        sessionError: "",
                                                                        taskIdentifier: 0,
@@ -295,7 +295,7 @@ class NCNetworkingProcessUpload: NSObject {
         for metadata in metadatasInUploadBackground {
             DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
                 if let metadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "ocId == %@ AND status == %d AND sessionTaskIdentifier == 0", metadata.ocId, NCGlobal.shared.metadataStatusInUpload)) {
-                    NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId, 
+                    NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId,
                                                                session: NCNetworking.shared.sessionUploadBackground,
                                                                sessionError: "",
                                                                taskIdentifier: 0,
@@ -353,7 +353,7 @@ class NCNetworkingProcessUpload: NSObject {
         // download
         let metadatasDownload = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "session == %@", NextcloudKit.shared.nkCommonInstance.sessionIdentifierDownload))
         for metadata in metadatasDownload {
-            NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId, 
+            NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId,
                                                        session: "",
                                                        sessionError: "",
                                                        selector: "",

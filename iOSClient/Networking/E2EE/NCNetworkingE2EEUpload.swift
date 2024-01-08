@@ -235,7 +235,7 @@ class NCNetworkingE2EEUpload: NSObject {
 
         } else {
 
-            NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId, 
+            NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId,
                                                        sessionError: resultsSendFile.error.errorDescription,
                                                        taskIdentifier: 0,
                                                        status: NCGlobal.shared.metadataStatusUploadError,
