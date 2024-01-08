@@ -601,7 +601,7 @@ extension NCManageDatabase {
         }
     }
 
-    func setMetadataStatusWaitDownload(ocId: String, selector: String) -> tableMetadata? {
+    func setMetadataSessionInWaitDownload(ocId: String, selector: String) -> tableMetadata? {
 
         var metadata: tableMetadata?
 

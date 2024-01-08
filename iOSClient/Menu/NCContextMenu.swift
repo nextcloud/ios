@@ -82,7 +82,7 @@ class NCContextMenu: NSObject {
                                "error": NKError(),
                                "account": metadata.account])
             } else {
-                guard let metadata = NCManageDatabase.shared.setMetadataStatusWaitDownload(ocId: metadata.ocId, selector: NCGlobal.shared.selectorOpenIn) else { return }
+                guard let metadata = NCManageDatabase.shared.setMetadataSessionInWaitDownload(ocId: metadata.ocId, selector: NCGlobal.shared.selectorOpenIn) else { return }
                 hud.show(in: viewController.view)
                 NCNetworking.shared.download(metadata: metadata, withNotificationProgressTask: false) {
                 } requestHandler: { request in
@@ -114,7 +114,7 @@ class NCContextMenu: NSObject {
                 if self.utilityFileSystem.fileProviderStorageExists(metadata) {
                     NCActionCenter.shared.saveAlbum(metadata: metadata)
                 } else {
-                    guard let metadata = NCManageDatabase.shared.setMetadataStatusWaitDownload(ocId: metadata.ocId, selector: NCGlobal.shared.selectorSaveAlbum) else { return }
+                    guard let metadata = NCManageDatabase.shared.setMetadataSessionInWaitDownload(ocId: metadata.ocId, selector: NCGlobal.shared.selectorSaveAlbum) else { return }
                     hud.show(in: viewController.view)
                     NCNetworking.shared.download(metadata: metadata, withNotificationProgressTask: false) {
                     } requestHandler: { request in
@@ -145,7 +145,7 @@ class NCContextMenu: NSObject {
                                "error": NKError(),
                                "account": metadata.account])
             } else {
-                guard let metadata = NCManageDatabase.shared.setMetadataStatusWaitDownload(ocId: metadata.ocId, selector: NCGlobal.shared.selectorLoadFileQuickLook) else { return }
+                guard let metadata = NCManageDatabase.shared.setMetadataSessionInWaitDownload(ocId: metadata.ocId, selector: NCGlobal.shared.selectorLoadFileQuickLook) else { return }
                 hud.show(in: viewController.view)
                 NCNetworking.shared.download(metadata: metadata, withNotificationProgressTask: false) {
                 } requestHandler: { request in

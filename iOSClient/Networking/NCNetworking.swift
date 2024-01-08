@@ -2182,7 +2182,7 @@ class NCOperationDownload: ConcurrentOperation {
     override func start() {
 
         guard !isCancelled else { return self.finish() }
-        guard let metadata = NCManageDatabase.shared.setMetadataStatusWaitDownload(ocId: metadata.ocId, selector: selector) else { return self.finish() }
+        guard let metadata = NCManageDatabase.shared.setMetadataSessionInWaitDownload(ocId: metadata.ocId, selector: selector) else { return self.finish() }
         NCNetworking.shared.download(metadata: metadata, withNotificationProgressTask: true) {
         } completion: { _, _ in
             self.finish()

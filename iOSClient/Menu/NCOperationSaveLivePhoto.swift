@@ -41,8 +41,8 @@ class NCOperationSaveLivePhoto: ConcurrentOperation {
 
     override func start() {
         guard !isCancelled,
-            let metadata = NCManageDatabase.shared.setMetadataStatusWaitDownload(ocId: metadata.ocId, selector: ""),
-            let metadataLive = NCManageDatabase.shared.setMetadataStatusWaitDownload(ocId: self.metadataMOV.ocId, selector: "") else { return self.finish() }
+            let metadata = NCManageDatabase.shared.setMetadataSessionInWaitDownload(ocId: metadata.ocId, selector: ""),
+            let metadataLive = NCManageDatabase.shared.setMetadataSessionInWaitDownload(ocId: self.metadataMOV.ocId, selector: "") else { return self.finish() }
 
         DispatchQueue.main.async {
             self.hud.indicatorView = JGProgressHUDRingIndicatorView()
