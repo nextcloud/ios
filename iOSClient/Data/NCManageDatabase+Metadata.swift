@@ -557,7 +557,9 @@ extension NCManageDatabase {
                             taskIdentifier: Int? = nil,
                             status: Int? = nil,
                             etag: String? = nil,
-                            errorCode: Int? = nil) {
+                            errorCode: Int? = nil) -> tableMetadata? {
+
+        var metadata: tableMetadata?
 
         do {
             let realm = try Realm()
@@ -594,11 +596,14 @@ extension NCManageDatabase {
                             result.errorCodeDate = Date()
                         }
                     }
+                    metadata = tableMetadata(value: result)
                 }
             }
         } catch let error {
             NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
         }
+
+        return metadata
     }
 
     @discardableResult

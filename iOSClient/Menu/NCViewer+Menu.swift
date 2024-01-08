@@ -119,10 +119,10 @@ extension NCViewer {
                                            "error": NKError(),
                                            "account": metadata.account])
                         } else {
-                            NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId,
-                                                                       session: NextcloudKit.shared.nkCommonInstance.sessionIdentifierDownload,
-                                                                       selector: NCGlobal.shared.selectorPrint,
-                                                                       status: NCGlobal.shared.metadataStatusWaitDownload)
+                            guard let metadata = NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId,
+                                                                                         session: NextcloudKit.shared.nkCommonInstance.sessionIdentifierDownload,
+                                                                                         selector: NCGlobal.shared.selectorPrint,
+                                                                                            status: NCGlobal.shared.metadataStatusWaitDownload) else { return }
                             NCNetworking.shared.download(metadata: metadata, withNotificationProgressTask: true)
                         }
                     }
@@ -176,10 +176,10 @@ extension NCViewer {
                                            "error": NKError(),
                                            "account": metadata.account])
                         } else {
-                            NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId,
-                                                                       session: NextcloudKit.shared.nkCommonInstance.sessionIdentifierDownload,
-                                                                       selector: NCGlobal.shared.selectorSaveAsScan,
-                                                                       status: NCGlobal.shared.metadataStatusWaitDownload)
+                            guard let metadata = NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId,
+                                                                                            session: NextcloudKit.shared.nkCommonInstance.sessionIdentifierDownload,
+                                                                                            selector: NCGlobal.shared.selectorSaveAsScan,
+                                                                                            status: NCGlobal.shared.metadataStatusWaitDownload) else { return }
                             NCNetworking.shared.download(metadata: metadata, withNotificationProgressTask: true)
                         }
                     }
@@ -236,10 +236,10 @@ extension NCViewer {
                     title: NSLocalizedString("_download_locally_", comment: ""),
                     icon: utility.loadImage(named: "icloud.and.arrow.down"),
                     action: { _ in
-                        NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId,
-                                                                   session: NextcloudKit.shared.nkCommonInstance.sessionIdentifierDownload,
-                                                                   selector: "",
-                                                                   status: NCGlobal.shared.metadataStatusWaitDownload)
+                        guard let metadata = NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId,
+                                                                                        session: NextcloudKit.shared.nkCommonInstance.sessionIdentifierDownload,
+                                                                                        selector: "",
+                                                                                        status: NCGlobal.shared.metadataStatusWaitDownload) else { return }
                         NCNetworking.shared.download(metadata: metadata, withNotificationProgressTask: true)
                     }
                 )
@@ -289,10 +289,10 @@ extension NCViewer {
                                            "error": NKError(),
                                            "account": metadata.account])
                         } else {
-                            NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId,
-                                                                       session: NextcloudKit.shared.nkCommonInstance.sessionIdentifierDownload,
-                                                                       selector: NCGlobal.shared.selectorLoadFileQuickLook,
-                                                                       status: NCGlobal.shared.metadataStatusWaitDownload)
+                            guard let metadata = NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId,
+                                                                                         session: NextcloudKit.shared.nkCommonInstance.sessionIdentifierDownload,
+                                                                                         selector: NCGlobal.shared.selectorLoadFileQuickLook,
+                                                                                            status: NCGlobal.shared.metadataStatusWaitDownload) else { return }
                             NCNetworking.shared.download(metadata: metadata, withNotificationProgressTask: true)
                         }
                     }
