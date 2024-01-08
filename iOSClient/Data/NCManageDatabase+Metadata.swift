@@ -606,6 +606,29 @@ extension NCManageDatabase {
         return metadata
     }
 
+    func setMetadataStatusWaitDownload(ocId: String, selector: String) -> tableMetadata? {
+
+        var metadata: tableMetadata?
+
+        do {
+            let realm = try Realm()
+            try realm.write {
+                if let result = realm.objects(tableMetadata.self).filter("ocId == %@", ocId).first {
+                    result.session = NextcloudKit.shared.nkCommonInstance.sessionIdentifierDownload
+                    result.sessionError = ""
+                    result.sessionSelector = selector
+                    result.sessionTaskIdentifier = 0
+                    result.status = NCGlobal.shared.metadataStatusWaitDownload
+                    metadata = tableMetadata(value: result)
+                }
+            }
+        } catch let error {
+            NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
+        }
+
+        return metadata
+    }
+
     @discardableResult
     func setMetadataStatus(ocId: String, status: Int) -> tableMetadata? {
 
