@@ -157,10 +157,16 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
             NCManageDatabase.shared.setDirectory(serverUrl: serverUrl, offline: true, account: appDelegate.account)
             NCNetworking.shared.synchronization(account: metadata.account, serverUrl: serverUrl, selector: NCGlobal.shared.selectorSynchronizationOffline)
         } else {
-            NCManageDatabase.shared.setMetadataSessionIdentifierDownloadWaitDownload(metadata: metadata, sessionSelector: NCGlobal.shared.selectorLoadOffline)
+            NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId,
+                                                       session: NextcloudKit.shared.nkCommonInstance.sessionIdentifierDownload,
+                                                       selector: NCGlobal.shared.selectorLoadOffline,
+                                                       status: NCGlobal.shared.metadataStatusWaitDownload)
             NCNetworking.shared.download(metadata: metadata, withNotificationProgressTask: true)
             if let metadata = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata) {
-                NCManageDatabase.shared.setMetadataSessionIdentifierDownloadWaitDownload(metadata: metadata, sessionSelector: NCGlobal.shared.selectorLoadOffline)
+                NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId,
+                                                           session: NextcloudKit.shared.nkCommonInstance.sessionIdentifierDownload,
+                                                           selector: NCGlobal.shared.selectorLoadOffline,
+                                                           status: NCGlobal.shared.metadataStatusWaitDownload)
                 NCNetworking.shared.download(metadata: metadata, withNotificationProgressTask: true)
             }
         }
@@ -332,7 +338,10 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
         let processor = ParallelWorker(n: 5, titleKey: "_downloading_", totalTasks: downloadMetadata.count, hudView: appDelegate.window?.rootViewController?.view)
         for (metadata, url) in downloadMetadata {
             processor.execute { completion in
-                NCManageDatabase.shared.setMetadataSessionIdentifierDownloadWaitDownload(metadata: metadata, sessionSelector: "")
+                NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId,
+                                                           session: NextcloudKit.shared.nkCommonInstance.sessionIdentifierDownload,
+                                                           selector: "",
+                                                           status: NCGlobal.shared.metadataStatusWaitDownload)
                 NCNetworking.shared.download(metadata: metadata, withNotificationProgressTask: false) {
                 } progressHandler: { progress in
                     processor.hud?.progress = Float(progress.fractionCompleted)
@@ -479,7 +488,10 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
 
             for metadata in downloadMetadatas {
                 processor.execute { completion in
-                    NCManageDatabase.shared.setMetadataSessionIdentifierDownloadWaitDownload(metadata: metadata, sessionSelector: "")
+                    NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId,
+                                                               session: NextcloudKit.shared.nkCommonInstance.sessionIdentifierDownload,
+                                                               selector: "",
+                                                               status: NCGlobal.shared.metadataStatusWaitDownload)
                     NCNetworking.shared.download(metadata: metadata, withNotificationProgressTask: false) {
                     } requestHandler: { _ in
                     } progressHandler: { progress in

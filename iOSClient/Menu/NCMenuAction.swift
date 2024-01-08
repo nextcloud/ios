@@ -287,7 +287,10 @@ extension NCMenuAction {
                                    "error": NKError(),
                                    "account": metadata.account])
                 } else {
-                    NCManageDatabase.shared.setMetadataSessionIdentifierDownloadWaitDownload(metadata: metadata, sessionSelector: NCGlobal.shared.selectorPrint)
+                    NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId,
+                                                               session: NextcloudKit.shared.nkCommonInstance.sessionIdentifierDownload,
+                                                               selector: NCGlobal.shared.selectorPrint,
+                                                               status: NCGlobal.shared.metadataStatusWaitDownload)
                     NCNetworking.shared.download(metadata: metadata, withNotificationProgressTask: true)
                 }
             }

@@ -553,8 +553,8 @@ extension NCManageDatabase {
                             newFileName: String? = nil,
                             session: String? = nil,
                             sessionError: String? = nil,
-                            sessionSelector: String? = nil,
-                            sessionTaskIdentifier: Int? = nil,
+                            selector: String? = nil,
+                            taskIdentifier: Int? = nil,
                             status: Int? = nil,
                             etag: String? = nil,
                             errorCode: Int? = nil) {
@@ -573,11 +573,11 @@ extension NCManageDatabase {
                     if let sessionError {
                         result.sessionError = sessionError
                     }
-                    if let sessionSelector {
-                        result.sessionSelector = sessionSelector
+                    if let selector {
+                        result.sessionSelector = selector
                     }
-                    if let sessionTaskIdentifier {
-                        result.sessionTaskIdentifier = sessionTaskIdentifier
+                    if let taskIdentifier {
+                        result.sessionTaskIdentifier = taskIdentifier
                     }
                     if let status {
                         result.status = status
@@ -595,20 +595,6 @@ extension NCManageDatabase {
                         }
                     }
                 }
-            }
-        } catch let error {
-            NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
-        }
-    }
-
-    func setMetadataSessionIdentifierDownloadWaitDownload(metadata: tableMetadata, sessionSelector: String) {
-
-        do {
-            let realm = try Realm()
-            try realm.write {
-                metadata.session = NextcloudKit.shared.nkCommonInstance.sessionIdentifierDownload
-                metadata.sessionSelector = sessionSelector
-                metadata.status = NCGlobal.shared.metadataStatusWaitDownload
             }
         } catch let error {
             NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
