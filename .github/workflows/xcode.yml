@@ -11,9 +11,9 @@ on:
       - master
       - develop
 
-concurrency:
-  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
-  cancel-in-progress: true
+#concurrency:
+#  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+#  cancel-in-progress: true
 
 jobs:
   build-and-test:
@@ -56,7 +56,7 @@ jobs:
         source ./create-docker-test-server.sh
     - name: Build & Test Nextcloud iOS
       run: |
-        set -o pipefail && xcodebuild test -project $PROJECT \
+        set -o pipefail && xcodebuild clean test -project $PROJECT \
         -scheme "$SCHEME" \
         -destination "$DESTINATION" \
         -enableCodeCoverage YES \
