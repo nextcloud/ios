@@ -295,7 +295,7 @@ extension NCCollectionViewCommon {
                                            "error": NKError(),
                                            "account": metadata.account])
                         } else {
-                            NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId, session: NextcloudKit.shared.nkCommonInstance.sessionIdentifierDownload, sessionSelector: NCGlobal.shared.selectorSaveAsScan, status: NCGlobal.shared.metadataStatusWaitDownload)
+                            NCManageDatabase.shared.setMetadataSessionIdentifierDownloadWaitDownload(metadata: metadata, sessionSelector: NCGlobal.shared.selectorSaveAsScan)
                             NCNetworking.shared.download(metadata: metadata, withNotificationProgressTask: true)
                         }
                     }
@@ -362,7 +362,7 @@ extension NCCollectionViewCommon {
                                            "error": NKError(),
                                            "account": metadata.account])
                         } else {
-                            NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId, session: NextcloudKit.shared.nkCommonInstance.sessionIdentifierDownload, sessionSelector: NCGlobal.shared.selectorLoadFileQuickLook, status: NCGlobal.shared.metadataStatusWaitDownload)
+                            NCManageDatabase.shared.setMetadataSessionIdentifierDownloadWaitDownload(metadata: metadata, sessionSelector: NCGlobal.shared.selectorLoadFileQuickLook)
                             NCNetworking.shared.download(metadata: metadata, withNotificationProgressTask: true)
                         }
                     }

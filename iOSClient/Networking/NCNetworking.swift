@@ -2144,9 +2144,7 @@ class NCOperationDownload: ConcurrentOperation {
     override func start() {
 
         guard !isCancelled else { return self.finish() }
-
-        NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId, session: NextcloudKit.shared.nkCommonInstance.sessionIdentifierDownload, sessionSelector: selector, status: NCGlobal.shared.metadataStatusWaitDownload)
-
+        NCManageDatabase.shared.setMetadataSessionIdentifierDownloadWaitDownload(metadata: metadata, sessionSelector: selector)
         NCNetworking.shared.download(metadata: metadata, withNotificationProgressTask: true) {
         } completion: { _, _ in
             self.finish()

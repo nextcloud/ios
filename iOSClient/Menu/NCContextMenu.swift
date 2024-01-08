@@ -83,7 +83,7 @@ class NCContextMenu: NSObject {
                                "account": metadata.account])
             } else {
                 hud.show(in: viewController.view)
-                NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId, session: NextcloudKit.shared.nkCommonInstance.sessionIdentifierDownload, sessionSelector: NCGlobal.shared.selectorOpenIn, status: NCGlobal.shared.metadataStatusWaitDownload)
+                NCManageDatabase.shared.setMetadataSessionIdentifierDownloadWaitDownload(metadata: metadata, sessionSelector: NCGlobal.shared.selectorOpenIn)
                 NCNetworking.shared.download(metadata: metadata, withNotificationProgressTask: false) {
 
                 } requestHandler: { request in
@@ -116,7 +116,7 @@ class NCContextMenu: NSObject {
                     NCActionCenter.shared.saveAlbum(metadata: metadata)
                 } else {
                     hud.show(in: viewController.view)
-                    NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId, session: NextcloudKit.shared.nkCommonInstance.sessionIdentifierDownload, sessionSelector: NCGlobal.shared.selectorSaveAlbum, status: NCGlobal.shared.metadataStatusWaitDownload)
+                    NCManageDatabase.shared.setMetadataSessionIdentifierDownloadWaitDownload(metadata: metadata, sessionSelector: NCGlobal.shared.selectorSaveAlbum)
                     NCNetworking.shared.download(metadata: metadata, withNotificationProgressTask: false) {
 
                     } requestHandler: { request in
@@ -148,7 +148,7 @@ class NCContextMenu: NSObject {
                                "account": metadata.account])
             } else {
                 hud.show(in: viewController.view)
-                NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId, session: NextcloudKit.shared.nkCommonInstance.sessionIdentifierDownload, sessionSelector: NCGlobal.shared.selectorLoadFileQuickLook, status: NCGlobal.shared.metadataStatusWaitDownload)
+                NCManageDatabase.shared.setMetadataSessionIdentifierDownloadWaitDownload(metadata: metadata, sessionSelector: NCGlobal.shared.selectorLoadFileQuickLook)
                 NCNetworking.shared.download(metadata: metadata, withNotificationProgressTask: false) {
                 } requestHandler: { request in
                     downloadRequest = request

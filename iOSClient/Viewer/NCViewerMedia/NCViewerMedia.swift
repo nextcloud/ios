@@ -182,8 +182,7 @@ class NCViewerMedia: UIViewController {
                             if let view = self.appDelegate.window?.rootViewController?.view {
                                 hud.show(in: view)
                             }
-
-                            NCManageDatabase.shared.setMetadataSession(ocId: self.metadata.ocId, session: NextcloudKit.shared.nkCommonInstance.sessionIdentifierDownload, sessionSelector: "", status: NCGlobal.shared.metadataStatusWaitDownload)
+                            NCManageDatabase.shared.setMetadataSessionIdentifierDownloadWaitDownload(metadata: self.metadata, sessionSelector: "")
                             NCNetworking.shared.download(metadata: self.metadata, withNotificationProgressTask: false) {
 
                             } requestHandler: { request in
@@ -285,7 +284,7 @@ class NCViewerMedia: UIViewController {
         if metadata.isLivePhoto,
            let metadata = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata),
            !utilityFileSystem.fileProviderStorageExists(metadata) {
-            NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId, session: NextcloudKit.shared.nkCommonInstance.sessionIdentifierDownload, sessionSelector: "", status: NCGlobal.shared.metadataStatusWaitDownload)
+            NCManageDatabase.shared.setMetadataSessionIdentifierDownloadWaitDownload(metadata: metadata, sessionSelector: "")
             NCNetworking.shared.download(metadata: metadata, withNotificationProgressTask: true)
         }
 
@@ -325,7 +324,7 @@ class NCViewerMedia: UIViewController {
     }
 
     func downloadImage(withSelector selector: String = "") {
-        NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId, session: NextcloudKit.shared.nkCommonInstance.sessionIdentifierDownload, sessionSelector: selector, status: NCGlobal.shared.metadataStatusWaitDownload)
+        NCManageDatabase.shared.setMetadataSessionIdentifierDownloadWaitDownload(metadata: metadata, sessionSelector: selector)
         NCNetworking.shared.download(metadata: metadata, withNotificationProgressTask: true) {
         } requestHandler: { _ in
             self.allowPanning = false
