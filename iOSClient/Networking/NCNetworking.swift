@@ -357,8 +357,8 @@ class NCNetworking: NSObject, NKCommonDelegate {
                   progressHandler: @escaping (_ progress: Progress) -> Void = { _ in },
                   completion: @escaping (_ afError: AFError?, _ error: NKError) -> Void = { _, _ in }) {
 
-        if metadata.session == NextcloudKit.shared.nkCommonInstance.sessionIdentifierUpload {
-            download(metadata: metadata, withNotificationProgressTask: withNotificationProgressTask, checkfileProviderStorageExists: checkfileProviderStorageExists, hudView: hudView, hud: hud) {
+        if metadata.session == NextcloudKit.shared.nkCommonInstance.sessionIdentifierDownload {
+            downloadFile(metadata: metadata, withNotificationProgressTask: withNotificationProgressTask, checkfileProviderStorageExists: checkfileProviderStorageExists, hudView: hudView, hud: hud) {
                 start()
             } requestHandler: { request in
                 requestHandler(request)
