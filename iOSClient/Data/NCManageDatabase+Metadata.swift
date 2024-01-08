@@ -549,7 +549,15 @@ extension NCManageDatabase {
         }
     }
 
-    func setMetadataSession(ocId: String, newFileName: String? = nil, session: String?, sessionError: String?, sessionSelector: String?, sessionTaskIdentifier: Int?, status: Int?, etag: String? = nil, errorCode: Int?) {
+    func setMetadataSession(ocId: String,
+                            newFileName: String? = nil,
+                            session: String? = nil,
+                            sessionError: String? = nil,
+                            sessionSelector: String? = nil,
+                            sessionTaskIdentifier: Int? = nil,
+                            status: Int? = nil,
+                            etag: String? = nil,
+                            errorCode: Int? = nil) {
 
         do {
             let realm = try Realm()

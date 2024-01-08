@@ -287,9 +287,8 @@ extension NCMenuAction {
                                    "error": NKError(),
                                    "account": metadata.account])
                 } else {
-                    NCNetworking.shared.download(metadata: metadata,
-                                                 selector: NCGlobal.shared.selectorPrint,
-                                                 withNotificationProgressTask: true)
+                    NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId, session: NextcloudKit.shared.nkCommonInstance.sessionIdentifierDownload, sessionSelector: NCGlobal.shared.selectorPrint, status: NCGlobal.shared.metadataStatusWaitDownload)
+                    NCNetworking.shared.download(metadata: metadata, withNotificationProgressTask: true)
                 }
             }
         )

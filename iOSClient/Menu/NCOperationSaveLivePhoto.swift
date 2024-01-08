@@ -24,6 +24,7 @@
 import UIKit
 import Queuer
 import JGProgressHUD
+import NextcloudKit
 
 class NCOperationSaveLivePhoto: ConcurrentOperation {
 
@@ -50,11 +51,9 @@ class NCOperationSaveLivePhoto: ConcurrentOperation {
             self.hud.detailTextLabel.text = self.metadata.fileName
             self.hud.show(in: (self.appDelegate?.window?.rootViewController?.view)!)
         }
-
-        NCNetworking.shared.download(metadata: metadata,
-                                     selector: "",
-                                     withNotificationProgressTask: false,
-                                     checkfileProviderStorageExists: true) { _ in
+        NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId, session: NextcloudKit.shared.nkCommonInstance.sessionIdentifierDownload, sessionSelector: "", status: NCGlobal.shared.metadataStatusWaitDownload)
+        NCNetworking.shared.download(metadata: metadata, withNotificationProgressTask: false) {
+        } requestHandler: { _ in
         } progressHandler: { progress in
             self.hud.progress = Float(progress.fractionCompleted)
         } completion: { _, error in
@@ -66,10 +65,8 @@ class NCOperationSaveLivePhoto: ConcurrentOperation {
                 }
                 return self.finish()
             }
-            NCNetworking.shared.download(metadata: self.metadataMOV,
-                                         selector: "",
-                                         withNotificationProgressTask: false,
-                                         checkfileProviderStorageExists: true) { _ in
+            NCManageDatabase.shared.setMetadataSession(ocId: self.metadataMOV.ocId, session: NextcloudKit.shared.nkCommonInstance.sessionIdentifierDownload, sessionSelector: "", status: NCGlobal.shared.metadataStatusWaitDownload)
+            NCNetworking.shared.download(metadata: self.metadataMOV, withNotificationProgressTask: false, checkfileProviderStorageExists: true) {
                 DispatchQueue.main.async {
                     self.hud.textLabel.text = NSLocalizedString("_download_video_", comment: "")
                     self.hud.detailTextLabel.text = self.metadataMOV.fileName
