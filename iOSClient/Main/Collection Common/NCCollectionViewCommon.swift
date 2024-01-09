@@ -539,7 +539,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         } else {
             guard let indexPath = self.dataSource.getIndexPathMetadata(ocId: ocId).indexPath else { return }
             let status = userInfo["status"] as? Int ?? NCGlobal.shared.metadataStatusNormal
-
             DispatchQueue.main.async {
                 guard let cell = self.collectionView?.cellForItem(at: indexPath),
                       let cell = cell as? NCCellProtocol else { return }
@@ -547,7 +546,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                     cell.fileProgressView?.isHidden = true
                     cell.fileProgressView?.progress = .zero
                     cell.setButtonMore(named: NCGlobal.shared.buttonMoreMore, image: NCImageCache.images.buttonMore)
-                    if let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
+                    if let metadata  = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
                         cell.writeInfoDateSize(date: metadata.date, size: metadata.size)
                     } else {
                         cell.fileInfoLabel?.text = ""
