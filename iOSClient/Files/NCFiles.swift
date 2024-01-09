@@ -168,7 +168,7 @@ class NCFiles: NCCollectionViewCommon {
 
                 if metadatasChangedCount != 0 || metadatasChanged {
                     self.reloadDataSource()
-                } else if self.dataSource.getMetadataSourceForAllSections().isEmpty {
+                } else {
                     self.reloadDataSource(withQueryDB: false)
                 }
             } else {
