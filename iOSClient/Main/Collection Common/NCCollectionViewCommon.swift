@@ -526,7 +526,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         let chunk: Int = userInfo["chunk"] as? Int ?? 0
         let e2eEncrypted: Bool = userInfo["e2eEncrypted"] as? Bool ?? false
 
-        // Header Transfer
         if self.headerMenuTransferView && (chunk > 0 || e2eEncrypted) {
             DispatchQueue.main.async {
                 if NCNetworking.shared.transferInForegorund?.ocId == ocId {
@@ -537,35 +536,34 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                 }
                 self.headerMenu?.progressTransfer.progress = progressNumber.floatValue
             }
-        }
+        } else {
+            guard let indexPath = self.dataSource.getIndexPathMetadata(ocId: ocId).indexPath else { return }
+            let status = userInfo["status"] as? Int ?? NCGlobal.shared.metadataStatusNormal
 
-        let status = userInfo["status"] as? Int ?? NCGlobal.shared.metadataStatusNormal
-        guard let indexPath = self.dataSource.getIndexPathMetadata(ocId: ocId).indexPath else { return }
-
-        DispatchQueue.main.async {
-            guard let cell = self.collectionView?.cellForItem(at: indexPath),
-                  let cell = cell as? NCCellProtocol else { return }
-
-            if progressNumber.floatValue == 1 && !(cell is NCTransferCell) {
-                cell.fileProgressView?.isHidden = true
-                cell.fileProgressView?.progress = .zero
-                cell.setButtonMore(named: NCGlobal.shared.buttonMoreMore, image: NCImageCache.images.buttonMore)
-                if let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
-                    cell.writeInfoDateSize(date: metadata.date, size: metadata.size)
-                } else {
-                    cell.fileInfoLabel?.text = ""
-                }
-            } else {
-                cell.fileProgressView?.isHidden = false
-                cell.fileProgressView?.progress = progressNumber.floatValue
-                cell.setButtonMore(named: NCGlobal.shared.buttonMoreStop, image: NCImageCache.images.buttonStop)
-                if status == NCGlobal.shared.metadataStatusDownloading {
-                    cell.fileInfoLabel?.text = self.utilityFileSystem.transformedSize(totalBytesExpected) + " - ↓ " + self.utilityFileSystem.transformedSize(totalBytes)
-                } else if status == NCGlobal.shared.metadataStatusUploading {
-                    if totalBytes > 0 {
-                        cell.fileInfoLabel?.text = self.utilityFileSystem.transformedSize(totalBytesExpected) + " - ↑ " + self.utilityFileSystem.transformedSize(totalBytes)
+            DispatchQueue.main.async {
+                guard let cell = self.collectionView?.cellForItem(at: indexPath),
+                      let cell = cell as? NCCellProtocol else { return }
+                if progressNumber.floatValue == 1 && !(cell is NCTransferCell) {
+                    cell.fileProgressView?.isHidden = true
+                    cell.fileProgressView?.progress = .zero
+                    cell.setButtonMore(named: NCGlobal.shared.buttonMoreMore, image: NCImageCache.images.buttonMore)
+                    if let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
+                        cell.writeInfoDateSize(date: metadata.date, size: metadata.size)
                     } else {
-                        cell.fileInfoLabel?.text = self.utilityFileSystem.transformedSize(totalBytesExpected) + " - ↑ …"
+                        cell.fileInfoLabel?.text = ""
+                    }
+                } else {
+                    cell.fileProgressView?.isHidden = false
+                    cell.fileProgressView?.progress = progressNumber.floatValue
+                    cell.setButtonMore(named: NCGlobal.shared.buttonMoreStop, image: NCImageCache.images.buttonStop)
+                    if status == NCGlobal.shared.metadataStatusDownloading {
+                        cell.fileInfoLabel?.text = self.utilityFileSystem.transformedSize(totalBytesExpected) + " - ↓ " + self.utilityFileSystem.transformedSize(totalBytes)
+                    } else if status == NCGlobal.shared.metadataStatusUploading {
+                        if totalBytes > 0 {
+                            cell.fileInfoLabel?.text = self.utilityFileSystem.transformedSize(totalBytesExpected) + " - ↑ " + self.utilityFileSystem.transformedSize(totalBytes)
+                        } else {
+                            cell.fileInfoLabel?.text = self.utilityFileSystem.transformedSize(totalBytesExpected) + " - ↑ …"
+                        }
                     }
                 }
             }
