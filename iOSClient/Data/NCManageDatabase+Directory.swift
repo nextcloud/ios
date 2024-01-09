@@ -77,6 +77,14 @@ extension NCManageDatabase {
 
     func deleteDirectoryAndSubDirectory(serverUrl: String, account: String) {
 
+#if !EXTENSION
+        DispatchQueue.main.async {
+            if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
+                appDelegate.listFilesVC[serverUrl] = nil
+            }
+        }
+#endif
+
         do {
             let realm = try Realm()
             let results = realm.objects(tableDirectory.self).filter("account == %@ AND serverUrl BEGINSWITH %@", account, serverUrl)

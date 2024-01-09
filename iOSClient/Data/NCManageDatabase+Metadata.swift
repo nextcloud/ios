@@ -28,7 +28,27 @@ import NextcloudKit
 class tableMetadata: Object, NCUserBaseUrl {
     override func isEqual(_ object: Any?) -> Bool {
         if let object = object as? tableMetadata {
-            return self.etag == object.etag && self.fileId == object.fileId && self.account == object.account && self.path == object.path && self.fileName == object.fileName && self.fileNameView == object.fileNameView && self.date == object.date && self.permissions == object.permissions && self.hasPreview == object.hasPreview && self.note == object.note && self.lock == object.lock && self.shareType == object.shareType && self.sharePermissionsCloudMesh == object.sharePermissionsCloudMesh && self.sharePermissionsCollaborationServices == object.sharePermissionsCollaborationServices && self.favorite == object.favorite && self.tags == object.tags && self.livePhotoFile == object.livePhotoFile
+            if self.account == object.account,
+               self.etag == object.etag,
+               self.fileId == object.fileId,
+               self.path == object.path,
+               self.fileName == object.fileName,
+               self.fileNameView == object.fileNameView,
+               self.date == object.date,
+               self.permissions == object.permissions,
+               self.hasPreview == object.hasPreview,
+               self.note == object.note,
+               self.lock == object.lock,
+               self.favorite == object.favorite,
+               self.livePhotoFile == object.livePhotoFile,
+               self.sharePermissionsCollaborationServices == object.sharePermissionsCollaborationServices,
+               Array(self.tags).elementsEqual(Array(object.tags)),
+               Array(self.shareType).elementsEqual(Array(object.shareType)),
+               Array(self.sharePermissionsCloudMesh).elementsEqual(Array(object.sharePermissionsCloudMesh)) {
+                return true
+            } else {
+                return false
+            }
         } else {
             return false
         }
@@ -1148,7 +1168,7 @@ extension NCManageDatabase {
                 let results = realm.objects(tableMetadata.self).filter(predicate)
                 metadatasChangedCount = metadatas.count - results.count
                 for metadata in metadatas {
-                    if let result = results.filter({ $0.ocId == metadata.ocId }).first,
+                    if let result = results.first(where: { $0.ocId == metadata.ocId }),
                        metadata.isEqual(result) { } else {
                         metadatasChanged = true
                         break

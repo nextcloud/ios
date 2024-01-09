@@ -177,7 +177,7 @@ class NCFiles: NCCollectionViewCommon {
         }
     }
 
-    func networkReadFolder(completion: @escaping(_ tableDirectory: tableDirectory?, _ metadatas: [tableMetadata]?, _ metadatasChangedCount: Int, _ metadatasChanged: Bool, _ error: NKError) -> Void) {
+    private func networkReadFolder(completion: @escaping(_ tableDirectory: tableDirectory?, _ metadatas: [tableMetadata]?, _ metadatasChangedCount: Int, _ metadatasChanged: Bool, _ error: NKError) -> Void) {
 
         var tableDirectory: tableDirectory?
 
@@ -187,9 +187,14 @@ class NCFiles: NCCollectionViewCommon {
                 return completion(nil, nil, 0, false, error)
             }
             tableDirectory = NCManageDatabase.shared.setDirectory(serverUrl: self.serverUrl, richWorkspace: metadataFolder.richWorkspace, account: account)
+            // swiftlint:disable empty_string
+            let forceMetadatasChangedToTrue = tableDirectory?.etag == ""
+            // swiftlint:enable empty_string
 
             if tableDirectory?.etag != metadataFolder.etag || metadataFolder.e2eEncrypted {
-                NCNetworking.shared.readFolder(serverUrl: self.serverUrl, account: self.appDelegate.account) { _, metadataFolder, metadatas, metadatasChangedCount, metadatasChanged, error in
+                NCNetworking.shared.readFolder(serverUrl: self.serverUrl,
+                                               account: self.appDelegate.account,
+                                               forceMetadatasChangedToTrue: forceMetadatasChangedToTrue) { _, metadataFolder, metadatas, metadatasChangedCount, metadatasChanged, error in
                     guard error == .success else {
                         return completion(tableDirectory, nil, 0, false, error)
                     }
