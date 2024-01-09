@@ -225,7 +225,7 @@ extension tableMetadata {
     }
 
     var isInTransfer: Bool {
-        status == NCGlobal.shared.metadataStatusInDownload || status == NCGlobal.shared.metadataStatusDownloading || status == NCGlobal.shared.metadataStatusInUpload || status == NCGlobal.shared.metadataStatusUploading
+        status == NCGlobal.shared.metadataStatusDownloading || status == NCGlobal.shared.metadataStatusUploading
     }
 
     var isTransferInForeground: Bool {
@@ -233,11 +233,11 @@ extension tableMetadata {
     }
 
     var isDownload: Bool {
-        status == NCGlobal.shared.metadataStatusInDownload || status == NCGlobal.shared.metadataStatusDownloading
+        status == NCGlobal.shared.metadataStatusDownloading
     }
 
     var isUpload: Bool {
-        status == NCGlobal.shared.metadataStatusInUpload || status == NCGlobal.shared.metadataStatusUploading
+        status == NCGlobal.shared.metadataStatusUploading
     }
 
     @objc var isDirectoryE2EE: Bool {
@@ -1058,7 +1058,7 @@ extension NCManageDatabase {
         do {
             let realm = try Realm()
             realm.refresh()
-            return realm.objects(tableMetadata.self).filter(NSPredicate(format: "status == %i || status == %i", NCGlobal.shared.metadataStatusInUpload, NCGlobal.shared.metadataStatusUploading)).count
+            return realm.objects(tableMetadata.self).filter(NSPredicate(format: "status == %i", NCGlobal.shared.metadataStatusUploading)).count
         } catch let error as NSError {
             NextcloudKit.shared.nkCommonInstance.writeLog("Could not access database: \(error)")
         }

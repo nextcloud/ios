@@ -144,7 +144,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
         let cameraRoll = NCCameraRoll()
         cameraRoll.extractCameraRoll(from: metadata) { metadatas in
             for metadata in metadatas {
-                if let metadata = NCManageDatabase.shared.setMetadataStatus(ocId: metadata.ocId, status: NCGlobal.shared.metadataStatusInUpload) {
+                if let metadata = NCManageDatabase.shared.setMetadataStatus(ocId: metadata.ocId, status: NCGlobal.shared.metadataStatusUploading) {
                     NCNetworking.shared.upload(metadata: metadata, hudView: self.appDelegate.window?.rootViewController?.view, hud: JGProgressHUD())
                 }
             }
@@ -213,18 +213,12 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
         case NCGlobal.shared.metadataStatusWaitDownload:
             cell.labelStatus.text = NSLocalizedString("_status_wait_download_", comment: "")
             cell.labelInfo.text = utilityFileSystem.transformedSize(metadata.size)
-        case NCGlobal.shared.metadataStatusInDownload:
-            cell.labelStatus.text = NSLocalizedString("_status_in_download_", comment: "")
-            cell.labelInfo.text = utilityFileSystem.transformedSize(metadata.size)
         case NCGlobal.shared.metadataStatusDownloading:
             cell.labelStatus.text = NSLocalizedString("_status_downloading_", comment: "")
             cell.labelInfo.text = utilityFileSystem.transformedSize(metadata.size) + " - ↓ …"
         case NCGlobal.shared.metadataStatusWaitUpload:
             cell.labelStatus.text = NSLocalizedString("_status_wait_upload_", comment: "")
             cell.labelInfo.text = ""
-        case NCGlobal.shared.metadataStatusInUpload:
-            cell.labelStatus.text = NSLocalizedString("_status_in_upload_", comment: "")
-            cell.labelInfo.text = utilityFileSystem.transformedSize(metadata.size)
         case NCGlobal.shared.metadataStatusUploading:
             cell.labelStatus.text = NSLocalizedString("_status_uploading_", comment: "")
             cell.labelInfo.text = utilityFileSystem.transformedSize(metadata.size) + " - ↑ …"

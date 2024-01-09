@@ -400,9 +400,6 @@ class NCNetworking: NSObject, NKCommonDelegate {
             NCManageDatabase.shared.addMetadata(metadata)
         }
 
-        NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId,
-                                                   session: NextcloudKit.shared.nkCommonInstance.sessionIdentifierDownload,
-                                                   status: NCGlobal.shared.metadataStatusInDownload)
         NextcloudKit.shared.download(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, options: options, requestHandler: { request in
 
             self.downloadRequest[fileNameLocalPath] = request
@@ -432,7 +429,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
                                "ocId": metadata.ocId,
                                "fileName": metadata.fileName,
                                "serverUrl": metadata.serverUrl,
-                               "status": NSNumber(value: NCGlobal.shared.metadataStatusInDownload),
+                               "status": NSNumber(value: NCGlobal.shared.metadataStatusDownloading),
                                "progress": NSNumber(value: progress.fractionCompleted),
                                "totalBytes": NSNumber(value: progress.totalUnitCount),
                                "totalBytesExpected": NSNumber(value: progress.completedUnitCount)])
@@ -659,7 +656,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
                         "ocId": metadata.ocId,
                         "fileName": metadata.fileName,
                         "serverUrl": metadata.serverUrl,
-                        "status": NSNumber(value: NCGlobal.shared.metadataStatusInUpload),
+                        "status": NSNumber(value: NCGlobal.shared.metadataStatusUploading),
                         "progress": NSNumber(value: progress.fractionCompleted),
                         "totalBytes": NSNumber(value: progress.totalUnitCount),
                         "totalBytesExpected": NSNumber(value: progress.completedUnitCount)])
@@ -740,7 +737,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
                     "ocId": metadata.ocId,
                     "fileName": metadata.fileName,
                     "serverUrl": metadata.serverUrl,
-                    "status": NSNumber(value: NCGlobal.shared.metadataStatusInUpload),
+                    "status": NSNumber(value: NCGlobal.shared.metadataStatusUploading),
                     "chunk": metadata.chunk,
                     "e2eEncrypted": metadata.e2eEncrypted,
                     "progress": NSNumber(value: fractionCompleted),
@@ -992,7 +989,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
                         "ocId": metadata.ocId,
                         "fileName": metadata.fileName,
                         "serverUrl": serverUrl,
-                        "status": NSNumber(value: NCGlobal.shared.metadataStatusInUpload),
+                        "status": NSNumber(value: NCGlobal.shared.metadataStatusUploading),
                         "chunk": metadata.chunk,
                         "e2eEncrypted": metadata.e2eEncrypted,
                         "progress": NSNumber(value: progress),

@@ -557,9 +557,9 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                 cell.fileProgressView?.isHidden = false
                 cell.fileProgressView?.progress = progressNumber.floatValue
                 cell.setButtonMore(named: NCGlobal.shared.buttonMoreStop, image: NCImageCache.images.buttonStop)
-                if status == NCGlobal.shared.metadataStatusInDownload {
+                if status == NCGlobal.shared.metadataStatusDownloading {
                     cell.fileInfoLabel?.text = self.utilityFileSystem.transformedSize(totalBytesExpected) + " - ↓ " + self.utilityFileSystem.transformedSize(totalBytes)
-                } else if status == NCGlobal.shared.metadataStatusInUpload {
+                } else if status == NCGlobal.shared.metadataStatusUploading {
                     if totalBytes > 0 {
                         cell.fileInfoLabel?.text = self.utilityFileSystem.transformedSize(totalBytesExpected) + " - ↑ " + self.utilityFileSystem.transformedSize(totalBytes)
                     } else {
@@ -1388,15 +1388,10 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         switch metadata.status {
         case NCGlobal.shared.metadataStatusWaitDownload:
             cell.fileInfoLabel?.text = utilityFileSystem.transformedSize(metadata.size) + " - " + NSLocalizedString("_status_wait_download_", comment: "")
-        case NCGlobal.shared.metadataStatusInDownload:
-            cell.fileInfoLabel?.text = utilityFileSystem.transformedSize(metadata.size) + " - " + NSLocalizedString("_status_in_download_", comment: "")
         case NCGlobal.shared.metadataStatusDownloading:
             cell.fileInfoLabel?.text = utilityFileSystem.transformedSize(metadata.size) + " - ↓ …"
         case NCGlobal.shared.metadataStatusWaitUpload:
             cell.fileInfoLabel?.text = utilityFileSystem.transformedSize(metadata.size) + " - " + NSLocalizedString("_status_wait_upload_", comment: "")
-            cell.fileLocalImage?.image = nil
-        case NCGlobal.shared.metadataStatusInUpload:
-            cell.fileInfoLabel?.text = utilityFileSystem.transformedSize(metadata.size) + " - " + NSLocalizedString("_status_in_upload_", comment: "")
             cell.fileLocalImage?.image = nil
         case NCGlobal.shared.metadataStatusUploading:
             cell.fileInfoLabel?.text = utilityFileSystem.transformedSize(metadata.size) + " - ↑ …"

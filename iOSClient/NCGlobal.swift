@@ -323,14 +323,12 @@ class NCGlobal: NSObject {
     let metadataStatusNormal: Int                   = 0
 
     let metadataStatusWaitDownload: Int             = -1
-    let metadataStatusInDownload: Int               = -2
-    let metadataStatusDownloading: Int              = -3
-    let metadataStatusDownloadError: Int            = -4
+    let metadataStatusDownloading: Int              = -2
+    let metadataStatusDownloadError: Int            = -3
 
     let metadataStatusWaitUpload: Int               = 1
-    let metadataStatusInUpload: Int                 = 2
-    let metadataStatusUploading: Int                = 3
-    let metadataStatusUploadError: Int              = 4
+    let metadataStatusUploading: Int                = 2
+    let metadataStatusUploadError: Int              = 3
 
     //  Hidden files included in the read
     //
