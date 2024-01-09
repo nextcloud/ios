@@ -455,7 +455,8 @@ class NCNetworking: NSObject, NKCommonDelegate {
                                                            sessionError: "",
                                                            selector: "",
                                                            taskIdentifier: 0,
-                                                           status: NCGlobal.shared.metadataStatusNormal)
+                                                           status: NCGlobal.shared.metadataStatusNormal,
+                                                           errorCode: 0)
                 NotificationCenter.default.post(name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterDownloadCancelFile),
                                                 object: nil,
                                                 userInfo: ["ocId": metadata.ocId,
@@ -487,7 +488,13 @@ class NCNetworking: NSObject, NKCommonDelegate {
 
             } else {
 
-                NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId, sessionError: error.errorDescription, taskIdentifier: 0, status: NCGlobal.shared.metadataStatusUploadError, errorCode: error.errorCode)
+                NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId,
+                                                           session: "",
+                                                           sessionError: "",
+                                                           selector: "",
+                                                           taskIdentifier: 0,
+                                                           status: NCGlobal.shared.metadataStatusNormal,
+                                                           errorCode: 0)
                 NotificationCenter.default.post(name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterDownloadedFile),
                                                 object: nil,
                                                 userInfo: ["ocId": metadata.ocId,

@@ -422,8 +422,13 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
               let serverUrl = userInfo["serverUrl"] as? String,
               serverUrl == self.serverUrl,
               let account = userInfo["account"] as? String,
-              account == appDelegate.account
+              account == appDelegate.account,
+              let error = userInfo["error"] as? NKError
         else { return }
+
+        if error != .success {
+            NCContentPresenter().showError(error: error)
+        }
 
         notificationReloadDataSource += 1
     }
