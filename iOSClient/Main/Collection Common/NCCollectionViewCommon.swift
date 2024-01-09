@@ -546,7 +546,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                     cell.fileProgressView?.isHidden = true
                     cell.fileProgressView?.progress = .zero
                     cell.setButtonMore(named: NCGlobal.shared.buttonMoreMore, image: NCImageCache.images.buttonMore)
-                    if let metadata  = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
+                    if let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
                         cell.writeInfoDateSize(date: metadata.date, size: metadata.size)
                     } else {
                         cell.fileInfoLabel?.text = ""
