@@ -528,13 +528,15 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
         // Header Transfer
         if self.headerMenuTransferView && (chunk > 0 || e2eEncrypted) {
-            if NCNetworking.shared.transferInForegorund?.ocId == ocId {
-                NCNetworking.shared.transferInForegorund?.progress = progressNumber.floatValue
-            } else {
-                NCNetworking.shared.transferInForegorund = NCNetworking.TransferInForegorund(ocId: ocId, progress: progressNumber.floatValue)
-                DispatchQueue.main.async { self.collectionView.reloadData() }
+            DispatchQueue.main.async {
+                if NCNetworking.shared.transferInForegorund?.ocId == ocId {
+                    NCNetworking.shared.transferInForegorund?.progress = progressNumber.floatValue
+                } else {
+                    NCNetworking.shared.transferInForegorund = NCNetworking.TransferInForegorund(ocId: ocId, progress: progressNumber.floatValue)
+                    self.collectionView.reloadData()
+                }
+                self.headerMenu?.progressTransfer.progress = progressNumber.floatValue
             }
-            self.headerMenu?.progressTransfer.progress = progressNumber.floatValue
         }
 
         let status = userInfo["status"] as? Int ?? NCGlobal.shared.metadataStatusNormal

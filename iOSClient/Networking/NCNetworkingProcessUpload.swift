@@ -278,44 +278,44 @@ class NCNetworkingProcessUpload: NSObject {
         let utilityFileSystem = NCUtilityFileSystem()
 
         // remove leaning upload share extension
-        let metadatasUploadShareExtension = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "session == %@ AND sessionSelector == %@", NextcloudKit.shared.nkCommonInstance.sessionIdentifierUpload, NCGlobal.shared.selectorUploadFileShareExtension))
-        for metadata in metadatasUploadShareExtension {
-            NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
-            utilityFileSystem.removeFile(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId))
+        if let results = NCManageDatabase.shared.getResultsMetadatas(predicate: NSPredicate(format: "session == %@ AND sessionSelector == %@", NextcloudKit.shared.nkCommonInstance.sessionIdentifierUpload, NCGlobal.shared.selectorUploadFileShareExtension)) {
+
+            for metadata in results {
+                NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
+                utilityFileSystem.removeFile(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId))
+            }
         }
 
         // metadataStatusUploading (BACKGROUND)
-        let metadatasUploadingBackground = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "(session == %@ OR session == %@ OR session == %@) AND status == %d", NCNetworking.shared.sessionUploadBackground, NCNetworking.shared.sessionUploadBackgroundWWan, NCNetworking.shared.sessionUploadBackgroundExtension, NCGlobal.shared.metadataStatusUploading))
-        for metadata in metadatasUploadingBackground {
+        if let results = NCManageDatabase.shared.getResultsMetadatas(predicate: NSPredicate(format: "(session == %@ OR session == %@ OR session == %@) AND status == %d", NCNetworking.shared.sessionUploadBackground, NCNetworking.shared.sessionUploadBackgroundWWan, NCNetworking.shared.sessionUploadBackgroundExtension, NCGlobal.shared.metadataStatusUploading)) {
 
-            if metadata.session == NCNetworking.shared.sessionUploadBackground {
-                session = NCNetworking.shared.sessionManagerUploadBackground
-            } else if metadata.session == NCNetworking.shared.sessionUploadBackgroundWWan {
-                session = NCNetworking.shared.sessionManagerUploadBackgroundWWan
-            }
-
-            var taskUpload: URLSessionTask?
-
-            session?.getAllTasks(completionHandler: { tasks in
-                for task in tasks {
-                    if task.taskIdentifier == metadata.sessionTaskIdentifier {
-                        taskUpload = task
-                    }
+            for metadata in results {
+                var taskUpload: URLSessionTask?
+                if metadata.session == NCNetworking.shared.sessionUploadBackground {
+                    session = NCNetworking.shared.sessionManagerUploadBackground
+                } else if metadata.session == NCNetworking.shared.sessionUploadBackgroundWWan {
+                    session = NCNetworking.shared.sessionManagerUploadBackgroundWWan
                 }
 
-                if taskUpload == nil {
-                    if let metadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "ocId == %@ AND status == %d", metadata.ocId, NCGlobal.shared.metadataStatusUploading)) {
+                session?.getAllTasks(completionHandler: { tasks in
+                    for task in tasks {
+                        if task.taskIdentifier == metadata.sessionTaskIdentifier {
+                            taskUpload = task
+                        }
+                    }
+
+                    if taskUpload == nil, let metadata = NCManageDatabase.shared.getResultMetadata(predicate: NSPredicate(format: "ocId == %@ AND status == %d", metadata.ocId, NCGlobal.shared.metadataStatusUploading)) {
                         NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId,
                                                                    session: NCNetworking.shared.sessionUploadBackground,
                                                                    sessionError: "",
                                                                    taskIdentifier: 0,
                                                                    status: NCGlobal.shared.metadataStatusWaitUpload)
                     }
-                }
-            })
+                })
+            }
         }
 
-        // metadataStatusUploading OR metadataStatusInUpload (FOREGROUND)
+        // metadataStatusUploading (FOREGROUND)
         let metadatasUploading = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "session == %@ AND status == %d", NextcloudKit.shared.nkCommonInstance.sessionIdentifierUpload, NCGlobal.shared.metadataStatusUploading))
         if metadatasUploading.isEmpty {
             NCNetworking.shared.transferInForegorund = nil
