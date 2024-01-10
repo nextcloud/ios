@@ -167,8 +167,8 @@ class NCViewerMedia: UIViewController {
                         if error == .success, let url = url {
                             ncplayer.openAVPlayer(url: url, autoplay: autoplay)
                         } else {
+                            guard let metadata = NCManageDatabase.shared.setMetadataSessionInWaitDownload(ocId: self.metadata.ocId, selector: "") else { return }
                             var downloadRequest: DownloadRequest?
-
                             let hud = JGProgressHUD()
                             hud.indicatorView = JGProgressHUDRingIndicatorView()
                             hud.textLabel.text = NSLocalizedString("_downloading_", comment: "")
@@ -182,10 +182,8 @@ class NCViewerMedia: UIViewController {
                             if let view = self.appDelegate.window?.rootViewController?.view {
                                 hud.show(in: view)
                             }
-
-                            NCNetworking.shared.download(metadata: self.metadata,
-                                                         selector: "",
-                                                         withNotificationProgressTask: false) { request in
+                            NCNetworking.shared.download(metadata: metadata, withNotificationProgressTask: false) {
+                            } requestHandler: { request in
                                 downloadRequest = request
                             } progressHandler: { progress in
                                 hud.progress = Float(progress.fractionCompleted)
@@ -282,11 +280,10 @@ class NCViewerMedia: UIViewController {
         self.metadata = metadata
 
         if metadata.isLivePhoto,
-           let metadataLive = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata),
-           !utilityFileSystem.fileProviderStorageExists(metadataLive) {
-            NCNetworking.shared.download(metadata: metadataLive,
-                                         selector: "",
-                                         withNotificationProgressTask: true)
+           let metadata = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata),
+           !utilityFileSystem.fileProviderStorageExists(metadata),
+           let metadata = NCManageDatabase.shared.setMetadataSessionInWaitDownload(ocId: metadata.ocId, selector: "") {
+            NCNetworking.shared.download(metadata: metadata, withNotificationProgressTask: true)
         }
 
         if metadata.isImage, (metadata.fileExtension.lowercased() == "gif" || metadata.fileExtension.lowercased() == "svg"), !utilityFileSystem.fileProviderStorageExists(metadata) {
@@ -325,16 +322,14 @@ class NCViewerMedia: UIViewController {
     }
 
     func downloadImage(withSelector selector: String = "") {
-        NCNetworking.shared.download(metadata: metadata,
-                                     selector: selector,
-                                     withNotificationProgressTask: true,
-                                     progressHandler: { _ in
+        guard let metadata = NCManageDatabase.shared.setMetadataSessionInWaitDownload(ocId: metadata.ocId, selector: selector) else { return }
+        NCNetworking.shared.download(metadata: metadata, withNotificationProgressTask: true) {
+        } requestHandler: { _ in
             self.allowPanning = false
-        }) { _, _ in
+        } completion: { _, _ in
             let image = self.getImageMetadata(self.metadata)
             self.image = image
             self.imageVideoContainer.image = image
-
             self.allowPanning = true
         }
     }

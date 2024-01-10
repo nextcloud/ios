@@ -119,9 +119,8 @@ extension NCViewer {
                                            "error": NKError(),
                                            "account": metadata.account])
                         } else {
-                            NCNetworking.shared.download(metadata: metadata,
-                                                         selector: NCGlobal.shared.selectorPrint,
-                                                         withNotificationProgressTask: true)
+                            guard let metadata = NCManageDatabase.shared.setMetadataSessionInWaitDownload(ocId: metadata.ocId, selector: NCGlobal.shared.selectorPrint) else { return }
+                            NCNetworking.shared.download(metadata: metadata, withNotificationProgressTask: true)
                         }
                     }
                 )
@@ -174,9 +173,8 @@ extension NCViewer {
                                            "error": NKError(),
                                            "account": metadata.account])
                         } else {
-                            NCNetworking.shared.download(metadata: metadata,
-                                                         selector: NCGlobal.shared.selectorSaveAsScan,
-                                                         withNotificationProgressTask: true)
+                            guard let metadata = NCManageDatabase.shared.setMetadataSessionInWaitDownload(ocId: metadata.ocId, selector: NCGlobal.shared.selectorSaveAsScan) else { return }
+                            NCNetworking.shared.download(metadata: metadata, withNotificationProgressTask: true)
                         }
                     }
                 )
@@ -232,9 +230,8 @@ extension NCViewer {
                     title: NSLocalizedString("_download_locally_", comment: ""),
                     icon: utility.loadImage(named: "icloud.and.arrow.down"),
                     action: { _ in
-                        NCNetworking.shared.download(metadata: metadata,
-                                                     selector: "",
-                                                     withNotificationProgressTask: true)
+                        guard let metadata = NCManageDatabase.shared.setMetadataSessionInWaitDownload(ocId: metadata.ocId, selector: "") else { return }
+                        NCNetworking.shared.download(metadata: metadata, withNotificationProgressTask: true)
                     }
                 )
             )
@@ -283,9 +280,8 @@ extension NCViewer {
                                            "error": NKError(),
                                            "account": metadata.account])
                         } else {
-                            NCNetworking.shared.download(metadata: metadata,
-                                                         selector: NCGlobal.shared.selectorLoadFileQuickLook,
-                                                         withNotificationProgressTask: true)
+                            guard let metadata = NCManageDatabase.shared.setMetadataSessionInWaitDownload(ocId: metadata.ocId, selector: NCGlobal.shared.selectorLoadFileQuickLook) else { return }
+                            NCNetworking.shared.download(metadata: metadata, withNotificationProgressTask: true)
                         }
                     }
                 )

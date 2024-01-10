@@ -27,8 +27,25 @@ import NextcloudKit
 
 class tableMetadata: Object, NCUserBaseUrl {
     override func isEqual(_ object: Any?) -> Bool {
-        if let object = object as? tableMetadata {
-            return self.etag == object.etag && self.fileId == object.fileId && self.account == object.account && self.path == object.path && self.fileName == object.fileName && self.fileNameView == object.fileNameView && self.date == object.date && self.permissions == object.permissions && self.hasPreview == object.hasPreview && self.note == object.note && self.lock == object.lock && self.shareType == object.shareType && self.sharePermissionsCloudMesh == object.sharePermissionsCloudMesh && self.sharePermissionsCollaborationServices == object.sharePermissionsCollaborationServices && self.favorite == object.favorite && self.tags == object.tags && self.livePhotoFile == object.livePhotoFile
+        if let object = object as? tableMetadata,
+           self.account == object.account,
+           self.etag == object.etag,
+           self.fileId == object.fileId,
+           self.path == object.path,
+           self.fileName == object.fileName,
+           self.fileNameView == object.fileNameView,
+           self.date == object.date,
+           self.permissions == object.permissions,
+           self.hasPreview == object.hasPreview,
+           self.note == object.note,
+           self.lock == object.lock,
+           self.favorite == object.favorite,
+           self.livePhotoFile == object.livePhotoFile,
+           self.sharePermissionsCollaborationServices == object.sharePermissionsCollaborationServices,
+           Array(self.tags).elementsEqual(Array(object.tags)),
+           Array(self.shareType).elementsEqual(Array(object.shareType)),
+           Array(self.sharePermissionsCloudMesh).elementsEqual(Array(object.sharePermissionsCloudMesh)) {
+            return true
         } else {
             return false
         }
@@ -225,7 +242,7 @@ extension tableMetadata {
     }
 
     var isInTransfer: Bool {
-        status == NCGlobal.shared.metadataStatusInDownload || status == NCGlobal.shared.metadataStatusDownloading || status == NCGlobal.shared.metadataStatusInUpload || status == NCGlobal.shared.metadataStatusUploading
+        status == NCGlobal.shared.metadataStatusDownloading || status == NCGlobal.shared.metadataStatusUploading
     }
 
     var isTransferInForeground: Bool {
@@ -233,11 +250,11 @@ extension tableMetadata {
     }
 
     var isDownload: Bool {
-        status == NCGlobal.shared.metadataStatusInDownload || status == NCGlobal.shared.metadataStatusDownloading
+        status == NCGlobal.shared.metadataStatusDownloading
     }
 
     var isUpload: Bool {
-        status == NCGlobal.shared.metadataStatusInUpload || status == NCGlobal.shared.metadataStatusUploading
+        status == NCGlobal.shared.metadataStatusUploading
     }
 
     @objc var isDirectoryE2EE: Bool {
@@ -549,7 +566,15 @@ extension NCManageDatabase {
         }
     }
 
-    func setMetadataSession(ocId: String, newFileName: String? = nil, session: String?, sessionError: String?, sessionSelector: String?, sessionTaskIdentifier: Int?, status: Int?, etag: String? = nil, errorCode: Int?) {
+    func setMetadataSession(ocId: String,
+                            newFileName: String? = nil,
+                            session: String? = nil,
+                            sessionError: String? = nil,
+                            selector: String? = nil,
+                            taskIdentifier: Int? = nil,
+                            status: Int? = nil,
+                            etag: String? = nil,
+                            errorCode: Int? = nil) {
 
         do {
             let realm = try Realm()
@@ -565,11 +590,11 @@ extension NCManageDatabase {
                     if let sessionError {
                         result.sessionError = sessionError
                     }
-                    if let sessionSelector {
-                        result.sessionSelector = sessionSelector
+                    if let selector {
+                        result.sessionSelector = selector
                     }
-                    if let sessionTaskIdentifier {
-                        result.sessionTaskIdentifier = sessionTaskIdentifier
+                    if let taskIdentifier {
+                        result.sessionTaskIdentifier = taskIdentifier
                     }
                     if let status {
                         result.status = status
@@ -591,6 +616,29 @@ extension NCManageDatabase {
         } catch let error {
             NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
         }
+    }
+
+    func setMetadataSessionInWaitDownload(ocId: String, selector: String) -> tableMetadata? {
+
+        var metadata: tableMetadata?
+
+        do {
+            let realm = try Realm()
+            try realm.write {
+                if let result = realm.objects(tableMetadata.self).filter("ocId == %@", ocId).first {
+                    result.session = NextcloudKit.shared.nkCommonInstance.sessionIdentifierDownload
+                    result.sessionError = ""
+                    result.sessionSelector = selector
+                    result.sessionTaskIdentifier = 0
+                    result.status = NCGlobal.shared.metadataStatusWaitDownload
+                    metadata = tableMetadata(value: result)
+                }
+            }
+        } catch let error {
+            NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
+        }
+
+        return metadata
     }
 
     @discardableResult
@@ -1027,7 +1075,7 @@ extension NCManageDatabase {
         do {
             let realm = try Realm()
             realm.refresh()
-            return realm.objects(tableMetadata.self).filter(NSPredicate(format: "status == %i || status == %i", NCGlobal.shared.metadataStatusInUpload, NCGlobal.shared.metadataStatusUploading)).count
+            return realm.objects(tableMetadata.self).filter(NSPredicate(format: "status == %i", NCGlobal.shared.metadataStatusUploading)).count
         } catch let error as NSError {
             NextcloudKit.shared.nkCommonInstance.writeLog("Could not access database: \(error)")
         }
@@ -1117,7 +1165,7 @@ extension NCManageDatabase {
                 let results = realm.objects(tableMetadata.self).filter(predicate)
                 metadatasChangedCount = metadatas.count - results.count
                 for metadata in metadatas {
-                    if let result = results.filter({ $0.ocId == metadata.ocId }).first,
+                    if let result = results.first(where: { $0.ocId == metadata.ocId }),
                        metadata.isEqual(result) { } else {
                         metadatasChanged = true
                         break
@@ -1135,5 +1183,19 @@ extension NCManageDatabase {
         }
 
         return (metadatasChangedCount, metadatasChanged)
+    }
+
+    func replaceMetadata(_ metadatas: [tableMetadata], predicate: NSPredicate) {
+
+        do {
+            let realm = try Realm()
+            try realm.write {
+                let results = realm.objects(tableMetadata.self).filter(predicate)
+                realm.delete(results)
+                realm.add(metadatas, update: .all)
+            }
+        } catch let error {
+            NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
+        }
     }
 }

@@ -157,13 +157,10 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
             NCManageDatabase.shared.setDirectory(serverUrl: serverUrl, offline: true, account: appDelegate.account)
             NCNetworking.shared.synchronization(account: metadata.account, serverUrl: serverUrl, selector: NCGlobal.shared.selectorSynchronizationOffline)
         } else {
-            NCNetworking.shared.download(metadata: metadata,
-                                         selector: NCGlobal.shared.selectorLoadOffline,
-                                         withNotificationProgressTask: true)
-            if let metadataLivePhoto = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata) {
-                NCNetworking.shared.download(metadata: metadataLivePhoto,
-                                             selector: NCGlobal.shared.selectorLoadOffline,
-                                             withNotificationProgressTask: true)
+            guard let metadata = NCManageDatabase.shared.setMetadataSessionInWaitDownload(ocId: metadata.ocId, selector: NCGlobal.shared.selectorLoadOffline) else { return }
+            NCNetworking.shared.download(metadata: metadata, withNotificationProgressTask: true)
+            if let metadata = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata), let metadata = NCManageDatabase.shared.setMetadataSessionInWaitDownload(ocId: metadata.ocId, selector: NCGlobal.shared.selectorLoadOffline) {
+                NCNetworking.shared.download(metadata: metadata, withNotificationProgressTask: true)
             }
         }
     }
@@ -334,9 +331,8 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
         let processor = ParallelWorker(n: 5, titleKey: "_downloading_", totalTasks: downloadMetadata.count, hudView: appDelegate.window?.rootViewController?.view)
         for (metadata, url) in downloadMetadata {
             processor.execute { completion in
-                NCNetworking.shared.download(metadata: metadata,
-                                             selector: "",
-                                             withNotificationProgressTask: false) { _ in
+                guard let metadata = NCManageDatabase.shared.setMetadataSessionInWaitDownload(ocId: metadata.ocId, selector: "") else { return completion() }
+                NCNetworking.shared.download(metadata: metadata, withNotificationProgressTask: false) {
                 } progressHandler: { progress in
                     processor.hud?.progress = Float(progress.fractionCompleted)
                 } completion: { _, _ in
@@ -482,9 +478,9 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
 
             for metadata in downloadMetadatas {
                 processor.execute { completion in
-                    NCNetworking.shared.download(metadata: metadata,
-                                                 selector: "",
-                                                 withNotificationProgressTask: false) { _ in
+                    guard let metadata = NCManageDatabase.shared.setMetadataSessionInWaitDownload(ocId: metadata.ocId, selector: "") else { return completion() }
+                    NCNetworking.shared.download(metadata: metadata, withNotificationProgressTask: false) {
+                    } requestHandler: { _ in
                     } progressHandler: { progress in
                         if Float(progress.fractionCompleted) > fractionCompleted || fractionCompleted == 0 {
                             processor.hud?.progress = Float(progress.fractionCompleted)

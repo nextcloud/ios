@@ -82,7 +82,7 @@ class NCUploadScanDocument: ObservableObject {
                                                           url: "",
                                                           contentType: "")
 
-        metadata.session = NCNetworking.shared.sessionIdentifierBackground
+        metadata.session = NCNetworking.shared.sessionUploadBackground
         metadata.sessionSelector = NCGlobal.shared.selectorUploadFile
         metadata.status = NCGlobal.shared.metadataStatusWaitUpload
 

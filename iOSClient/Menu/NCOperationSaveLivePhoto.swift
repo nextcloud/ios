@@ -24,6 +24,7 @@
 import UIKit
 import Queuer
 import JGProgressHUD
+import NextcloudKit
 
 class NCOperationSaveLivePhoto: ConcurrentOperation {
 
@@ -39,7 +40,9 @@ class NCOperationSaveLivePhoto: ConcurrentOperation {
     }
 
     override func start() {
-        guard !isCancelled else { return self.finish() }
+        guard !isCancelled,
+            let metadata = NCManageDatabase.shared.setMetadataSessionInWaitDownload(ocId: metadata.ocId, selector: ""),
+            let metadataLive = NCManageDatabase.shared.setMetadataSessionInWaitDownload(ocId: self.metadataMOV.ocId, selector: "") else { return self.finish() }
 
         DispatchQueue.main.async {
             self.hud.indicatorView = JGProgressHUDRingIndicatorView()
@@ -51,10 +54,8 @@ class NCOperationSaveLivePhoto: ConcurrentOperation {
             self.hud.show(in: (self.appDelegate?.window?.rootViewController?.view)!)
         }
 
-        NCNetworking.shared.download(metadata: metadata,
-                                     selector: "",
-                                     withNotificationProgressTask: false,
-                                     checkfileProviderStorageExists: true) { _ in
+        NCNetworking.shared.download(metadata: metadata, withNotificationProgressTask: false) {
+        } requestHandler: { _ in
         } progressHandler: { progress in
             self.hud.progress = Float(progress.fractionCompleted)
         } completion: { _, error in
@@ -66,10 +67,7 @@ class NCOperationSaveLivePhoto: ConcurrentOperation {
                 }
                 return self.finish()
             }
-            NCNetworking.shared.download(metadata: self.metadataMOV,
-                                         selector: "",
-                                         withNotificationProgressTask: false,
-                                         checkfileProviderStorageExists: true) { _ in
+            NCNetworking.shared.download(metadata: metadataLive, withNotificationProgressTask: false, checkfileProviderStorageExists: true) {
                 DispatchQueue.main.async {
                     self.hud.textLabel.text = NSLocalizedString("_download_video_", comment: "")
                     self.hud.detailTextLabel.text = self.metadataMOV.fileName

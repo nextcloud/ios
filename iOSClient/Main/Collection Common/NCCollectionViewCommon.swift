@@ -422,8 +422,13 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
               let serverUrl = userInfo["serverUrl"] as? String,
               serverUrl == self.serverUrl,
               let account = userInfo["account"] as? String,
-              account == appDelegate.account
+              account == appDelegate.account,
+              let error = userInfo["error"] as? NKError
         else { return }
+
+        if error != .success {
+            NCContentPresenter().showError(error: error)
+        }
 
         notificationReloadDataSource += 1
     }
@@ -521,44 +526,43 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         let chunk: Int = userInfo["chunk"] as? Int ?? 0
         let e2eEncrypted: Bool = userInfo["e2eEncrypted"] as? Bool ?? false
 
-        // Header Transfer
         if self.headerMenuTransferView && (chunk > 0 || e2eEncrypted) {
-            if NCNetworking.shared.transferInForegorund?.ocId == ocId {
-                NCNetworking.shared.transferInForegorund?.progress = progressNumber.floatValue
-            } else {
-                NCNetworking.shared.transferInForegorund = NCNetworking.TransferInForegorund(ocId: ocId, progress: progressNumber.floatValue)
-                DispatchQueue.main.async { self.collectionView.reloadData() }
-            }
-            self.headerMenu?.progressTransfer.progress = progressNumber.floatValue
-        }
-
-        let status = userInfo["status"] as? Int ?? NCGlobal.shared.metadataStatusNormal
-        guard let indexPath = self.dataSource.getIndexPathMetadata(ocId: ocId).indexPath else { return }
-
-        DispatchQueue.main.async {
-            guard let cell = self.collectionView?.cellForItem(at: indexPath),
-                  let cell = cell as? NCCellProtocol else { return }
-
-            if progressNumber.floatValue == 1 && !(cell is NCTransferCell) {
-                cell.fileProgressView?.isHidden = true
-                cell.fileProgressView?.progress = .zero
-                cell.setButtonMore(named: NCGlobal.shared.buttonMoreMore, image: NCImageCache.images.buttonMore)
-                if let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
-                    cell.writeInfoDateSize(date: metadata.date, size: metadata.size)
+            DispatchQueue.main.async {
+                if NCNetworking.shared.transferInForegorund?.ocId == ocId {
+                    NCNetworking.shared.transferInForegorund?.progress = progressNumber.floatValue
                 } else {
-                    cell.fileInfoLabel?.text = ""
+                    NCNetworking.shared.transferInForegorund = NCNetworking.TransferInForegorund(ocId: ocId, progress: progressNumber.floatValue)
+                    self.collectionView.reloadData()
                 }
-            } else {
-                cell.fileProgressView?.isHidden = false
-                cell.fileProgressView?.progress = progressNumber.floatValue
-                cell.setButtonMore(named: NCGlobal.shared.buttonMoreStop, image: NCImageCache.images.buttonStop)
-                if status == NCGlobal.shared.metadataStatusInDownload {
-                    cell.fileInfoLabel?.text = self.utilityFileSystem.transformedSize(totalBytesExpected) + " - ↓ " + self.utilityFileSystem.transformedSize(totalBytes)
-                } else if status == NCGlobal.shared.metadataStatusInUpload {
-                    if totalBytes > 0 {
-                        cell.fileInfoLabel?.text = self.utilityFileSystem.transformedSize(totalBytesExpected) + " - ↑ " + self.utilityFileSystem.transformedSize(totalBytes)
+                self.headerMenu?.progressTransfer.progress = progressNumber.floatValue
+            }
+        } else {
+            guard let indexPath = self.dataSource.getIndexPathMetadata(ocId: ocId).indexPath else { return }
+            let status = userInfo["status"] as? Int ?? NCGlobal.shared.metadataStatusNormal
+            DispatchQueue.main.async {
+                guard let cell = self.collectionView?.cellForItem(at: indexPath),
+                      let cell = cell as? NCCellProtocol else { return }
+                if progressNumber.floatValue == 1 && !(cell is NCTransferCell) {
+                    cell.fileProgressView?.isHidden = true
+                    cell.fileProgressView?.progress = .zero
+                    cell.setButtonMore(named: NCGlobal.shared.buttonMoreMore, image: NCImageCache.images.buttonMore)
+                    if let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
+                        cell.writeInfoDateSize(date: metadata.date, size: metadata.size)
                     } else {
-                        cell.fileInfoLabel?.text = self.utilityFileSystem.transformedSize(totalBytesExpected) + " - ↑ …"
+                        cell.fileInfoLabel?.text = ""
+                    }
+                } else {
+                    cell.fileProgressView?.isHidden = false
+                    cell.fileProgressView?.progress = progressNumber.floatValue
+                    cell.setButtonMore(named: NCGlobal.shared.buttonMoreStop, image: NCImageCache.images.buttonStop)
+                    if status == NCGlobal.shared.metadataStatusDownloading {
+                        cell.fileInfoLabel?.text = self.utilityFileSystem.transformedSize(totalBytesExpected) + " - ↓ " + self.utilityFileSystem.transformedSize(totalBytes)
+                    } else if status == NCGlobal.shared.metadataStatusUploading {
+                        if totalBytes > 0 {
+                            cell.fileInfoLabel?.text = self.utilityFileSystem.transformedSize(totalBytesExpected) + " - ↑ " + self.utilityFileSystem.transformedSize(totalBytes)
+                        } else {
+                            cell.fileInfoLabel?.text = self.utilityFileSystem.transformedSize(totalBytesExpected) + " - ↑ …"
+                        }
                     }
                 }
             }
@@ -1098,10 +1102,8 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
 
             if utilityFileSystem.fileProviderStorageExists(metadata) {
                 NCViewer().view(viewController: self, metadata: metadata, metadatas: [metadata], imageIcon: imageIcon)
-            } else if NextcloudKit.shared.isNetworkReachable() {
-                NCNetworking.shared.download(metadata: metadata,
-                                             selector: NCGlobal.shared.selectorLoadFileView,
-                                             withNotificationProgressTask: true)
+            } else if NextcloudKit.shared.isNetworkReachable(), let metadata = NCManageDatabase.shared.setMetadataSessionInWaitDownload(ocId: metadata.ocId, selector: NCGlobal.shared.selectorLoadFileView) {
+                NCNetworking.shared.download(metadata: metadata, withNotificationProgressTask: true)
             } else {
                 let error = NKError(errorCode: NCGlobal.shared.errorOffline, errorDescription: "_go_online_")
                 NCContentPresenter().showInfo(error: error)
@@ -1385,15 +1387,10 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         switch metadata.status {
         case NCGlobal.shared.metadataStatusWaitDownload:
             cell.fileInfoLabel?.text = utilityFileSystem.transformedSize(metadata.size) + " - " + NSLocalizedString("_status_wait_download_", comment: "")
-        case NCGlobal.shared.metadataStatusInDownload:
-            cell.fileInfoLabel?.text = utilityFileSystem.transformedSize(metadata.size) + " - " + NSLocalizedString("_status_in_download_", comment: "")
         case NCGlobal.shared.metadataStatusDownloading:
             cell.fileInfoLabel?.text = utilityFileSystem.transformedSize(metadata.size) + " - ↓ …"
         case NCGlobal.shared.metadataStatusWaitUpload:
             cell.fileInfoLabel?.text = utilityFileSystem.transformedSize(metadata.size) + " - " + NSLocalizedString("_status_wait_upload_", comment: "")
-            cell.fileLocalImage?.image = nil
-        case NCGlobal.shared.metadataStatusInUpload:
-            cell.fileInfoLabel?.text = utilityFileSystem.transformedSize(metadata.size) + " - " + NSLocalizedString("_status_in_upload_", comment: "")
             cell.fileLocalImage?.image = nil
         case NCGlobal.shared.metadataStatusUploading:
             cell.fileInfoLabel?.text = utilityFileSystem.transformedSize(metadata.size) + " - ↑ …"

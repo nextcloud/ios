@@ -82,10 +82,10 @@ class NCContextMenu: NSObject {
                                "error": NKError(),
                                "account": metadata.account])
             } else {
+                guard let metadata = NCManageDatabase.shared.setMetadataSessionInWaitDownload(ocId: metadata.ocId, selector: NCGlobal.shared.selectorOpenIn) else { return }
                 hud.show(in: viewController.view)
-                NCNetworking.shared.download(metadata: metadata,
-                                             selector: NCGlobal.shared.selectorOpenIn,
-                                             withNotificationProgressTask: false) { request in
+                NCNetworking.shared.download(metadata: metadata, withNotificationProgressTask: false) {
+                } requestHandler: { request in
                     downloadRequest = request
                 } progressHandler: { progress in
                     hud.progress = Float(progress.fractionCompleted)
@@ -114,10 +114,10 @@ class NCContextMenu: NSObject {
                 if self.utilityFileSystem.fileProviderStorageExists(metadata) {
                     NCActionCenter.shared.saveAlbum(metadata: metadata)
                 } else {
+                    guard let metadata = NCManageDatabase.shared.setMetadataSessionInWaitDownload(ocId: metadata.ocId, selector: NCGlobal.shared.selectorSaveAlbum) else { return }
                     hud.show(in: viewController.view)
-                    NCNetworking.shared.download(metadata: metadata,
-                                                 selector: NCGlobal.shared.selectorSaveAlbum,
-                                                 withNotificationProgressTask: false) { request in
+                    NCNetworking.shared.download(metadata: metadata, withNotificationProgressTask: false) {
+                    } requestHandler: { request in
                         downloadRequest = request
                     } progressHandler: { progress in
                         hud.progress = Float(progress.fractionCompleted)
@@ -145,10 +145,10 @@ class NCContextMenu: NSObject {
                                "error": NKError(),
                                "account": metadata.account])
             } else {
+                guard let metadata = NCManageDatabase.shared.setMetadataSessionInWaitDownload(ocId: metadata.ocId, selector: NCGlobal.shared.selectorLoadFileQuickLook) else { return }
                 hud.show(in: viewController.view)
-                NCNetworking.shared.download(metadata: metadata,
-                                             selector: NCGlobal.shared.selectorLoadFileQuickLook,
-                                             withNotificationProgressTask: false) { request in
+                NCNetworking.shared.download(metadata: metadata, withNotificationProgressTask: false) {
+                } requestHandler: { request in
                     downloadRequest = request
                 } progressHandler: { progress in
                     hud.progress = Float(progress.fractionCompleted)
