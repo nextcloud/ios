@@ -37,7 +37,7 @@ class NCNetworkingCheckRemoteUser {
         NCNetworking.shared.cancelDataTask()
         NCNetworking.shared.cancelDownloadTasks()
         NCNetworking.shared.cancelUploadTasks()
-        NCNetworking.shared.cancelUploadBackgroundTask()
+        NCNetworking.shared.cancelUploadBackgroundTask(withNotification: false)
 
         if NCGlobal.shared.capabilityServerVersionMajor >= NCGlobal.shared.nextcloudVersion17 {
 

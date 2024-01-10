@@ -34,7 +34,7 @@ import RealmSwift
 
     // MARK: -
 
-    private let limit: Int = 1000
+    private let limit: Int = 500
     private var account: String = ""
     private var brandElementColor: UIColor?
 

@@ -125,14 +125,14 @@ class NCAutoUpload: NSObject {
                     session = NextcloudKit.shared.nkCommonInstance.sessionIdentifierUpload
                 } else {
                     if assetMediaType == PHAssetMediaType.image && account.autoUploadWWAnPhoto == false {
-                        session = NCNetworking.shared.sessionIdentifierBackground
+                        session = NCNetworking.shared.sessionUploadBackground
                     } else if assetMediaType == PHAssetMediaType.video && account.autoUploadWWAnVideo == false {
-                        session = NCNetworking.shared.sessionIdentifierBackground
+                        session = NCNetworking.shared.sessionUploadBackground
                     } else if assetMediaType == PHAssetMediaType.image && account.autoUploadWWAnPhoto {
-                        session = NCNetworking.shared.sessionIdentifierBackgroundWWan
+                        session = NCNetworking.shared.sessionUploadBackgroundWWan
                     } else if assetMediaType == PHAssetMediaType.video && account.autoUploadWWAnVideo {
-                        session = NCNetworking.shared.sessionIdentifierBackgroundWWan
-                    } else { session = NCNetworking.shared.sessionIdentifierBackground }
+                        session = NCNetworking.shared.sessionUploadBackgroundWWan
+                    } else { session = NCNetworking.shared.sessionUploadBackground }
                 }
 
                 if account.autoUploadCreateSubfolder {

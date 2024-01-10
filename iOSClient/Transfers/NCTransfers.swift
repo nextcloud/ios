@@ -68,37 +68,37 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
 
     override func downloadStartFile(_ notification: NSNotification) {
 
-        self.notificationReloadDataSource += 1
+        notificationReloadDataSource += 1
     }
 
     override func downloadedFile(_ notification: NSNotification) {
 
-        self.notificationReloadDataSource += 1
+        notificationReloadDataSource += 1
     }
 
     override func downloadCancelFile(_ notification: NSNotification) {
 
-        self.notificationReloadDataSource += 1
+        notificationReloadDataSource += 1
     }
 
     override func uploadStartFile(_ notification: NSNotification) {
 
-        self.notificationReloadDataSource += 1
+        notificationReloadDataSource += 1
     }
 
     override func uploadedFile(_ notification: NSNotification) {
 
-        self.notificationReloadDataSource += 1
+        notificationReloadDataSource += 1
     }
 
     override func uploadedLivePhoto(_ notification: NSNotification) {
 
-        self.notificationReloadDataSource += 1
+        notificationReloadDataSource += 1
     }
 
     override func uploadCancelFile(_ notification: NSNotification) {
 
-        self.notificationReloadDataSource += 1
+        notificationReloadDataSource += 1
     }
 
     // MARK: TAP EVENT
@@ -106,7 +106,6 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
     override func longPressMoreListItem(with objectId: String, namedButtonMore: String, indexPath: IndexPath, gestureRecognizer: UILongPressGestureRecognizer) {
 
         if gestureRecognizer.state != .began { return }
-
         let alertController = UIAlertController(title: nil, message: nil, preferredStyle: .alert)
 
         alertController.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel, handler: nil))
@@ -115,7 +114,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
             NCNetworking.shared.cancelDataTask()
             NCNetworking.shared.cancelDownloadTasks()
             NCNetworking.shared.cancelUploadTasks()
-            NCNetworking.shared.cancelUploadBackgroundTask()
+            NCNetworking.shared.cancelUploadBackgroundTask(withNotification: true)
         }))
 
         self.present(alertController, animated: true, completion: nil)
@@ -145,7 +144,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
         let cameraRoll = NCCameraRoll()
         cameraRoll.extractCameraRoll(from: metadata) { metadatas in
             for metadata in metadatas {
-                if let metadata = NCManageDatabase.shared.setMetadataStatus(ocId: metadata.ocId, status: NCGlobal.shared.metadataStatusInUpload) {
+                if let metadata = NCManageDatabase.shared.setMetadataStatus(ocId: metadata.ocId, status: NCGlobal.shared.metadataStatusUploading) {
                     NCNetworking.shared.upload(metadata: metadata, hudView: self.appDelegate.window?.rootViewController?.view, hud: JGProgressHUD())
                 }
             }
@@ -214,18 +213,12 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
         case NCGlobal.shared.metadataStatusWaitDownload:
             cell.labelStatus.text = NSLocalizedString("_status_wait_download_", comment: "")
             cell.labelInfo.text = utilityFileSystem.transformedSize(metadata.size)
-        case NCGlobal.shared.metadataStatusInDownload:
-            cell.labelStatus.text = NSLocalizedString("_status_in_download_", comment: "")
-            cell.labelInfo.text = utilityFileSystem.transformedSize(metadata.size)
         case NCGlobal.shared.metadataStatusDownloading:
             cell.labelStatus.text = NSLocalizedString("_status_downloading_", comment: "")
             cell.labelInfo.text = utilityFileSystem.transformedSize(metadata.size) + " - ↓ …"
         case NCGlobal.shared.metadataStatusWaitUpload:
             cell.labelStatus.text = NSLocalizedString("_status_wait_upload_", comment: "")
             cell.labelInfo.text = ""
-        case NCGlobal.shared.metadataStatusInUpload:
-            cell.labelStatus.text = NSLocalizedString("_status_in_upload_", comment: "")
-            cell.labelInfo.text = utilityFileSystem.transformedSize(metadata.size)
         case NCGlobal.shared.metadataStatusUploading:
             cell.labelStatus.text = NSLocalizedString("_status_uploading_", comment: "")
             cell.labelInfo.text = utilityFileSystem.transformedSize(metadata.size) + " - ↑ …"
@@ -240,7 +233,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
             cell.labelInfo.text = NSLocalizedString("_waiting_for_", comment: "") + " " + NSLocalizedString("_user_", comment: "").lowercased() + " \(metadata.userId) " + NSLocalizedString("_in_", comment: "") + " \(metadata.urlBase)"
         }
         let isWiFi = NCNetworking.shared.networkReachability == .reachableEthernetOrWiFi
-        if metadata.session == NCNetworking.shared.sessionIdentifierBackgroundWWan && !isWiFi {
+        if metadata.session == NCNetworking.shared.sessionUploadBackgroundWWan && !isWiFi {
             cell.labelInfo.text = NSLocalizedString("_waiting_for_", comment: "") + " " + NSLocalizedString("_reachable_wifi_", comment: "")
         }
         cell.accessibilityLabel = metadata.fileNameView + ", " + (cell.labelInfo.text ?? "")
@@ -261,18 +254,6 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
 
         let metadatas = NCManageDatabase.shared.getAdvancedMetadatas(predicate: NSPredicate(format: "status != %i && status != %i", NCGlobal.shared.metadataStatusNormal, NCGlobal.shared.metadataStatusDownloadError), page: 1, limit: 50, sorted: "sessionTaskIdentifier", ascending: false)
         self.dataSource = NCDataSource(metadatas: metadatas, account: self.appDelegate.account)
-    }
-
-    override func reloadDataSource() {
-        super.reloadDataSource()
-
-        DispatchQueue.global().async {
-            self.queryDB()
-            DispatchQueue.main.async {
-                self.refreshControl.endRefreshing()
-                self.collectionView.reloadData()
-            }
-        }
     }
 
     override func reloadDataSourceNetwork() {

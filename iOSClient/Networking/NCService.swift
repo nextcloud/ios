@@ -133,7 +133,6 @@ class NCService: NSObject {
 
     func synchronize() {
 
-        NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] start synchronize Favorite")
         NextcloudKit.shared.listingFavorites(showHiddenFiles: NCKeychain().showHiddenFiles,
                                              options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { account, files, _, error in
 
@@ -141,8 +140,7 @@ class NCService: NSObject {
             NCManageDatabase.shared.convertFilesToMetadatas(files, useMetadataFolder: false) { _, _, metadatas in
                 NCManageDatabase.shared.updateMetadatasFavorite(account: account, metadatas: metadatas)
             }
-            NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] end synchronize Favorite")
-            NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] start synchronize Offline")
+            NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Synchronize Favorite")
             self.synchronizeOffline(account: account)
         }
     }
@@ -291,9 +289,11 @@ class NCService: NSObject {
     @objc func synchronizeOffline(account: String) {
 
         // Synchronize Directory
-        if let directories = NCManageDatabase.shared.getTablesDirectory(predicate: NSPredicate(format: "account == %@ AND offline == true", account), sorted: "serverUrl", ascending: true) {
-            for directory: tableDirectory in directories {
-                NCNetworking.shared.synchronizationServerUrl(directory.serverUrl, account: account, selector: NCGlobal.shared.selectorSynchronizationOffline)
+        Task {
+            if let directories = NCManageDatabase.shared.getTablesDirectory(predicate: NSPredicate(format: "account == %@ AND offline == true", account), sorted: "serverUrl", ascending: true) {
+                for directory: tableDirectory in directories {
+                    await NCNetworking.shared.synchronization(account: account, serverUrl: directory.serverUrl, selector: NCGlobal.shared.selectorSynchronizationOffline)
+                }
             }
         }
 
@@ -301,12 +301,11 @@ class NCService: NSObject {
         let files = NCManageDatabase.shared.getTableLocalFiles(predicate: NSPredicate(format: "account == %@ AND offline == true", account), sorted: "fileName", ascending: true)
         for file: tableLocalFile in files {
             guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(file.ocId) else { continue }
-            if NCNetworking.shared.synchronizeMetadata(metadata),
+            if metadata.isSynchronizable,
                NCNetworking.shared.downloadQueue.operations.filter({ ($0 as? NCOperationDownload)?.metadata.ocId == metadata.ocId }).isEmpty {
                 NCNetworking.shared.downloadQueue.addOperation(NCOperationDownload(metadata: metadata, selector: NCGlobal.shared.selectorDownloadFile))
             }
         }
-        NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] end synchronize offline")
     }
 
     // MARK: -

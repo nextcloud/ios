@@ -225,7 +225,7 @@ class NCCreateFormUploadVoiceNote: XLFormViewController, NCSelectDelegate, AVAud
 
         let metadataForUpload = NCManageDatabase.shared.createMetadata(account: self.appDelegate.account, user: self.appDelegate.user, userId: self.appDelegate.userId, fileName: fileNameSave, fileNameView: fileNameSave, ocId: UUID().uuidString, serverUrl: self.serverUrl, urlBase: self.appDelegate.urlBase, url: "", contentType: "")
 
-        metadataForUpload.session = NCNetworking.shared.sessionIdentifierBackground
+        metadataForUpload.session = NCNetworking.shared.sessionUploadBackground
         metadataForUpload.sessionSelector = NCGlobal.shared.selectorUploadFile
         metadataForUpload.status = NCGlobal.shared.metadataStatusWaitUpload
         metadataForUpload.size = utilityFileSystem.getFileSize(filePath: fileNamePath)

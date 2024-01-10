@@ -26,7 +26,7 @@ class NCNetworkingE2EE: NSObject {
 
     func isInUpload(account: String, serverUrl: String) -> Bool {
 
-        let counter = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND (status == %d OR status == %d OR status == %d)", account, serverUrl, NCGlobal.shared.metadataStatusWaitUpload, NCGlobal.shared.metadataStatusInUpload, NCGlobal.shared.metadataStatusUploading)).count
+        let counter = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND (status == %d OR status == %d)", account, serverUrl, NCGlobal.shared.metadataStatusWaitUpload, NCGlobal.shared.metadataStatusUploading)).count
 
         return counter > 0 ? true : false
     }
