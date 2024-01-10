@@ -1240,7 +1240,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
 
     func readFolder(serverUrl: String,
                     account: String,
-                    forceMetadatasChangedToTrue: Bool = false,
+                    forceReplaceMetadatas: Bool = false,
                     completion: @escaping (_ account: String, _ metadataFolder: tableMetadata?, _ metadatas: [tableMetadata]?, _ metadatasChangedCount: Int, _ metadatasChanged: Bool, _ error: NKError) -> Void) {
 
         NextcloudKit.shared.readFileOrFolder(serverUrlFileName: serverUrl,
@@ -1254,6 +1254,8 @@ class NCNetworking: NSObject, NKCommonDelegate {
             }
 
             NCManageDatabase.shared.convertFilesToMetadatas(files, useMetadataFolder: true) { metadataFolder, metadatasFolder, metadatas in
+
+                let predicate = NSPredicate(format: "account == %@ AND serverUrl == %@ AND status == %d", account, serverUrl, NCGlobal.shared.metadataStatusNormal)
 
                 // Add metadata folder
                 NCManageDatabase.shared.addMetadata(tableMetadata.init(value: metadataFolder))
@@ -1277,10 +1279,10 @@ class NCNetworking: NSObject, NKCommonDelegate {
                 }
 #endif
 
-                if forceMetadatasChangedToTrue {
+                if forceReplaceMetadatas {
+                    NCManageDatabase.shared.replaceMetadata(metadatas, predicate: predicate)
                     completion(account, metadataFolder, metadatas, 0, true, error)
                 } else {
-                    let predicate = NSPredicate(format: "account == %@ AND serverUrl == %@ AND status == %d", account, serverUrl, NCGlobal.shared.metadataStatusNormal)
                     let results = NCManageDatabase.shared.updateMetadatas(metadatas, predicate: predicate)
                     completion(account, metadataFolder, metadatas, results.metadatasChangedCount, results.metadatasChanged, error)
                 }

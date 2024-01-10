@@ -188,13 +188,13 @@ class NCFiles: NCCollectionViewCommon {
             }
             tableDirectory = NCManageDatabase.shared.setDirectory(serverUrl: self.serverUrl, richWorkspace: metadataFolder.richWorkspace, account: account)
             // swiftlint:disable empty_string
-            let forceMetadatasChangedToTrue = tableDirectory?.etag == ""
+            let forceReplaceMetadatas = tableDirectory?.etag == ""
             // swiftlint:enable empty_string
 
             if tableDirectory?.etag != metadataFolder.etag || metadataFolder.e2eEncrypted {
                 NCNetworking.shared.readFolder(serverUrl: self.serverUrl,
                                                account: self.appDelegate.account,
-                                               forceMetadatasChangedToTrue: forceMetadatasChangedToTrue) { _, metadataFolder, metadatas, metadatasChangedCount, metadatasChanged, error in
+                                               forceReplaceMetadatas: forceReplaceMetadatas) { _, metadataFolder, metadatas, metadatasChangedCount, metadatasChanged, error in
                     guard error == .success else {
                         return completion(tableDirectory, nil, 0, false, error)
                     }
