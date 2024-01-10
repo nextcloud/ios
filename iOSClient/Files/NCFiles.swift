@@ -125,29 +125,18 @@ class NCFiles: NCCollectionViewCommon {
             searchResults: self.searchResults)
     }
 
-    override func reloadDataSource() {
-        super.reloadDataSource()
+    override func reloadDataSource(withQueryDB: Bool = true) {
+        super.reloadDataSource(withQueryDB: withQueryDB)
 
-        DispatchQueue.main.async { self.refreshControl.endRefreshing() }
-        guard !self.isSearchingMode, !self.appDelegate.account.isEmpty else { return }
-
-        DispatchQueue.global().async {
-            self.queryDB()
-            DispatchQueue.main.async {
-                self.collectionView.reloadData()
-                if !self.dataSource.metadatas.isEmpty {
-                    self.blinkCell(fileName: self.fileNameBlink)
-                    self.openFile(fileName: self.fileNameOpen)
-                    self.fileNameBlink = nil
-                    self.fileNameOpen = nil
-                }
-            }
+        if !self.dataSource.metadatas.isEmpty {
+            self.blinkCell(fileName: self.fileNameBlink)
+            self.openFile(fileName: self.fileNameOpen)
+            self.fileNameBlink = nil
+            self.fileNameOpen = nil
         }
     }
 
     override func reloadDataSourceNetwork() {
-        super.reloadDataSourceNetwork()
-
         guard !isSearchingMode else {
             return networkSearch()
         }
@@ -166,8 +155,7 @@ class NCFiles: NCCollectionViewCommon {
             return false
         }
 
-        isReloadDataSourceNetworkInProgress = true
-        collectionView?.reloadData()
+        super.reloadDataSourceNetwork()
 
         networkReadFolder { tableDirectory, metadatas, metadatasChangedCount, metadatasChanged, error in
             if error == .success {
@@ -176,21 +164,20 @@ class NCFiles: NCCollectionViewCommon {
                         NCNetworking.shared.downloadQueue.addOperation(NCOperationDownload(metadata: metadata, selector: NCGlobal.shared.selectorDownloadFile))
                     }
                 }
-                self.isReloadDataSourceNetworkInProgress = false
                 self.richWorkspaceText = tableDirectory?.richWorkspace
 
                 if metadatasChangedCount != 0 || metadatasChanged {
                     self.reloadDataSource()
-                } else if self.dataSource.getMetadataSourceForAllSections().isEmpty {
-                    DispatchQueue.main.async {
-                        self.collectionView.reloadData()
-                    }
+                } else {
+                    self.reloadDataSource(withQueryDB: false)
                 }
+            } else {
+                self.reloadDataSource(withQueryDB: false)
             }
         }
     }
 
-    func networkReadFolder(completion: @escaping(_ tableDirectory: tableDirectory?, _ metadatas: [tableMetadata]?, _ metadatasChangedCount: Int, _ metadatasChanged: Bool, _ error: NKError) -> Void) {
+    private func networkReadFolder(completion: @escaping(_ tableDirectory: tableDirectory?, _ metadatas: [tableMetadata]?, _ metadatasChangedCount: Int, _ metadatasChanged: Bool, _ error: NKError) -> Void) {
 
         var tableDirectory: tableDirectory?
 
@@ -200,12 +187,16 @@ class NCFiles: NCCollectionViewCommon {
                 return completion(nil, nil, 0, false, error)
             }
             tableDirectory = NCManageDatabase.shared.setDirectory(serverUrl: self.serverUrl, richWorkspace: metadataFolder.richWorkspace, account: account)
+            // swiftlint:disable empty_string
+            let forceReplaceMetadatas = tableDirectory?.etag == ""
+            // swiftlint:enable empty_string
 
             if tableDirectory?.etag != metadataFolder.etag || metadataFolder.e2eEncrypted {
-                NCNetworking.shared.readFolder(serverUrl: self.serverUrl, account: self.appDelegate.account) { _, metadataFolder, metadatas, metadatasChangedCount, metadatasChanged, error in
+                NCNetworking.shared.readFolder(serverUrl: self.serverUrl,
+                                               account: self.appDelegate.account,
+                                               forceReplaceMetadatas: forceReplaceMetadatas) { _, metadataFolder, metadatas, metadatasChangedCount, metadatasChanged, error in
                     guard error == .success else {
-                        completion(tableDirectory, nil, 0, false, error)
-                        return
+                        return completion(tableDirectory, nil, 0, false, error)
                     }
                     self.metadataFolder = metadataFolder
                     // E2EE

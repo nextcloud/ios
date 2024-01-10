@@ -96,28 +96,10 @@ class NCShares: NCCollectionViewCommon {
         reload()
     }
 
-    override func reloadDataSource() {
-        super.reloadDataSource()
-
-        DispatchQueue.global().async {
-            self.queryDB()
-            DispatchQueue.main.async {
-                self.refreshControl.endRefreshing()
-                self.collectionView.reloadData()
-            }
-        }
-    }
-
     override func reloadDataSourceNetwork() {
         super.reloadDataSourceNetwork()
 
-        isReloadDataSourceNetworkInProgress = true
-        collectionView?.reloadData()
-
         NextcloudKit.shared.readShares(parameters: NKShareParameter()) { account, shares, _, error in
-
-            self.refreshControl.endRefreshing()
-            self.isReloadDataSourceNetworkInProgress = false
 
             if error == .success {
                 NCManageDatabase.shared.deleteTableShare(account: account)
@@ -126,6 +108,8 @@ class NCShares: NCCollectionViewCommon {
                     NCManageDatabase.shared.addShare(account: self.appDelegate.account, home: home, shares: shares)
                 }
                 self.reloadDataSource()
+            } else {
+                self.reloadDataSource(withQueryDB: false)
             }
         }
     }
