@@ -29,8 +29,6 @@ struct NCMediaScrollView: View, Equatable {
 
     var body: some View {
         ScrollView {
-            Spacer(minLength: 70)
-
             LazyVStack(alignment: .leading, spacing: 2) {
                 ForEach(metadatas, id: \.self) { rowMetadatas in
                     NCMediaRow(metadatas: rowMetadatas, isInSelectMode: $isInSelectMode) { tappedThumbnail, isSelected in
@@ -50,7 +48,7 @@ struct NCMediaScrollView: View, Equatable {
                         title = NCUtility().getTitleFromDate(max(topMostVisibleMetadataDate, bottomMostVisibleMetadataDate))
                     }
                 }
-                
+
                 if !metadatas.isEmpty, shouldShowPaginationLoading {
                     ProgressView()
                         .frame(maxWidth: .infinity, alignment: .center)
@@ -61,6 +59,7 @@ struct NCMediaScrollView: View, Equatable {
                 let offset = proxy.frame(in: .named("scroll")).minY
                 Color.clear.preference(key: ScrollOffsetPreferenceKey.self, value: offset)
             })
+            .padding(.top, 70)
             .padding(.bottom, 40)
         }
     }
