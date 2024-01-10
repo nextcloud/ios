@@ -325,12 +325,12 @@ class NCViewerMedia: UIViewController {
         guard let metadata = NCManageDatabase.shared.setMetadataSessionInWaitDownload(ocId: metadata.ocId, selector: selector) else { return }
         NCNetworking.shared.download(metadata: metadata, withNotificationProgressTask: true) {
         } requestHandler: { _ in
-            self.allowPanning = false
+            self.allowOpeningDetails = false
         } completion: { _, _ in
             let image = self.getImageMetadata(self.metadata)
             self.image = image
             self.imageVideoContainer.image = image
-            self.allowPanning = true
+            self.allowOpeningDetails = true
         }
     }
 
