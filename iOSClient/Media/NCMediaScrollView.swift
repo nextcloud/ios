@@ -43,10 +43,11 @@ struct NCMediaScrollView: View, Equatable {
                     // NOTE: This only works properly on device. On simulator, for some reason, these get called way too early or way too late.
                     .onAppear {
                         bottomMostVisibleMetadataDate = (rowMetadatas.first?.date as? Date)
-                        title = NCUtility().getTitleFromDate(rowMetadatas.first?.date as? Date ?? Date.now)
+                        title = NCUtility().getTitleFromDate(max(topMostVisibleMetadataDate ?? Date.now, bottomMostVisibleMetadataDate ?? Date.now))
                     }
                     .onDisappear {
                         topMostVisibleMetadataDate = (rowMetadatas.last?.date as? Date)
+                        title = NCUtility().getTitleFromDate(max(topMostVisibleMetadataDate ?? Date.now, bottomMostVisibleMetadataDate ?? Date.now))
                     }
                 }
                 

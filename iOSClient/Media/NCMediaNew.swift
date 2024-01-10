@@ -137,6 +137,9 @@ struct NCMediaNew: View {
                 vm.searchMedia(from: fromDate, to: toDate, isScrolledToTop: isScrolledToTop, isScrolledToBottom: isScrolledToBottom)
             }
         }
+//        .onChange(of: topMostVisibleMetadataDate) { newValue in
+//            title = NCUtility().getTitleFromDate(min(topMostVisibleMetadataDate!, bottomMostVisibleMetadataDate!))
+//        }
         .onReceive(vm.$hasOldMedia) { newValue in
             hasOldMedia = newValue
         }
@@ -146,7 +149,6 @@ struct NCMediaNew: View {
         .onChange(of: isInSelectMode) { newValue in
             if newValue == false { selectedMetadatas.removeAll() }
         }
-
         .onChange(of: columnCountStagesIndex) { _ in
             columnCountChanged = true
         }
