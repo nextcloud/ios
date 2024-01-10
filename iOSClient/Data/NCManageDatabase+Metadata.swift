@@ -27,28 +27,25 @@ import NextcloudKit
 
 class tableMetadata: Object, NCUserBaseUrl {
     override func isEqual(_ object: Any?) -> Bool {
-        if let object = object as? tableMetadata {
-            if self.account == object.account,
-               self.etag == object.etag,
-               self.fileId == object.fileId,
-               self.path == object.path,
-               self.fileName == object.fileName,
-               self.fileNameView == object.fileNameView,
-               self.date == object.date,
-               self.permissions == object.permissions,
-               self.hasPreview == object.hasPreview,
-               self.note == object.note,
-               self.lock == object.lock,
-               self.favorite == object.favorite,
-               self.livePhotoFile == object.livePhotoFile,
-               self.sharePermissionsCollaborationServices == object.sharePermissionsCollaborationServices,
-               Array(self.tags).elementsEqual(Array(object.tags)),
-               Array(self.shareType).elementsEqual(Array(object.shareType)),
-               Array(self.sharePermissionsCloudMesh).elementsEqual(Array(object.sharePermissionsCloudMesh)) {
-                return true
-            } else {
-                return false
-            }
+        if let object = object as? tableMetadata,
+           self.account == object.account,
+           self.etag == object.etag,
+           self.fileId == object.fileId,
+           self.path == object.path,
+           self.fileName == object.fileName,
+           self.fileNameView == object.fileNameView,
+           self.date == object.date,
+           self.permissions == object.permissions,
+           self.hasPreview == object.hasPreview,
+           self.note == object.note,
+           self.lock == object.lock,
+           self.favorite == object.favorite,
+           self.livePhotoFile == object.livePhotoFile,
+           self.sharePermissionsCollaborationServices == object.sharePermissionsCollaborationServices,
+           Array(self.tags).elementsEqual(Array(object.tags)),
+           Array(self.shareType).elementsEqual(Array(object.shareType)),
+           Array(self.sharePermissionsCloudMesh).elementsEqual(Array(object.sharePermissionsCloudMesh)) {
+            return true
         } else {
             return false
         }
