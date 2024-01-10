@@ -141,8 +141,9 @@ import RealmSwift
 
         if NCUtilityFileSystem().fileProviderStorageExists(metadata) {
             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDownloadedFile, userInfo: ["ocId": metadata.ocId, "selector": NCGlobal.shared.selectorOpenIn, "error": NKError(), "account": metadata.account])
-        } else {
-            NCNetworking.shared.download(metadata: metadata, selector: NCGlobal.shared.selectorOpenIn, notificationCenterProgressTask: false) { _, _ in
+        } else if let metadata = NCManageDatabase.shared.setMetadataSessionInWaitDownload(ocId: metadata.ocId, selector: NCGlobal.shared.selectorOpenIn) {
+            NCNetworking.shared.download(metadata: metadata, withNotificationProgressTask: false) {
+            } completion: { _, _ in
                 self.isLoadingProcessing = false
             }
         }
@@ -155,8 +156,9 @@ import RealmSwift
             NCNetworking.shared.saveLivePhotoQueue.addOperation(NCOperationSaveLivePhoto(metadata: metadata, metadataMOV: livePhoto))
         } else if NCUtilityFileSystem().fileProviderStorageExists(metadata) {
             NCActionCenter.shared.saveAlbum(metadata: metadata)
-        } else {
-            NCNetworking.shared.download(metadata: metadata, selector: NCGlobal.shared.selectorSaveAlbum, notificationCenterProgressTask: false) { _, _ in
+        } else if let metadata = NCManageDatabase.shared.setMetadataSessionInWaitDownload(ocId: metadata.ocId, selector: NCGlobal.shared.selectorSaveAlbum) {
+            NCNetworking.shared.download(metadata: metadata, withNotificationProgressTask: false) {
+            } completion: { _, _ in
                 self.isLoadingProcessing = false
             }
         }
@@ -171,8 +173,9 @@ import RealmSwift
 
         if NCUtilityFileSystem().fileProviderStorageExists(metadata) {
             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDownloadedFile, userInfo: ["ocId": metadata.ocId, "selector": NCGlobal.shared.selectorLoadFileQuickLook, "error": NKError(), "account": metadata.account])
-        } else {
-            NCNetworking.shared.download(metadata: metadata, selector: NCGlobal.shared.selectorLoadFileQuickLook, notificationCenterProgressTask: false) { _, _ in
+        } else if let metadata = NCManageDatabase.shared.setMetadataSessionInWaitDownload(ocId: metadata.ocId, selector: NCGlobal.shared.selectorLoadFileQuickLook) {
+            NCNetworking.shared.download(metadata: metadata, withNotificationProgressTask: false) {
+            } completion: { _, _ in
                 self.isLoadingProcessing = false
             }
         }

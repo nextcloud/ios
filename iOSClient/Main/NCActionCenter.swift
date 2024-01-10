@@ -524,9 +524,11 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
 
             for metadata in downloadMetadatas {
                 processor.execute { completion in
-                    NCNetworking.shared.download(metadata: metadata, selector: "", notificationCenterProgressTask: false) { _ in
-                    } completion: { _, _ in
-                        completion()
+                    if let metadata = NCManageDatabase.shared.setMetadataSessionInWaitDownload(ocId: metadata.ocId, selector: "") {
+                        NCNetworking.shared.download(metadata: metadata, withNotificationProgressTask: false) {
+                        } completion: { _, _ in
+                            completion()
+                        }
                     }
                 }
             }
