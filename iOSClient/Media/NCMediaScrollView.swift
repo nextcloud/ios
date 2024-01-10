@@ -19,8 +19,8 @@ struct NCMediaScrollView: View, Equatable {
     @Binding var selectedMetadatas: [tableMetadata]
     @Binding var title: String
     @Binding var shouldShowPaginationLoading: Bool
-    @Binding var topMostVisibleMetadataDate: Date?
-    @Binding var bottomMostVisibleMetadataDate: Date?
+    @Binding var topMostVisibleMetadataDate: Date
+    @Binding var bottomMostVisibleMetadataDate: Date
 
     let proxy: ScrollViewProxy
 
@@ -42,12 +42,14 @@ struct NCMediaScrollView: View, Equatable {
                     }
                     // NOTE: This only works properly on device. On simulator, for some reason, these get called way too early or way too late.
                     .onAppear {
-                        bottomMostVisibleMetadataDate = (rowMetadatas.first?.date as? Date)
-                        title = NCUtility().getTitleFromDate(max(topMostVisibleMetadataDate ?? Date.now, bottomMostVisibleMetadataDate ?? Date.now))
+                        guard let date = rowMetadatas.first?.date as? Date else { return }
+                        bottomMostVisibleMetadataDate = date
+                        title = NCUtility().getTitleFromDate(max(topMostVisibleMetadataDate, bottomMostVisibleMetadataDate))
                     }
                     .onDisappear {
-                        topMostVisibleMetadataDate = (rowMetadatas.last?.date as? Date)
-                        title = NCUtility().getTitleFromDate(max(topMostVisibleMetadataDate ?? Date.now, bottomMostVisibleMetadataDate ?? Date.now))
+                        guard let date = rowMetadatas.last?.date as? Date else { return }
+                        topMostVisibleMetadataDate = date
+                        title = NCUtility().getTitleFromDate(max(topMostVisibleMetadataDate, bottomMostVisibleMetadataDate))
                     }
                 }
                 

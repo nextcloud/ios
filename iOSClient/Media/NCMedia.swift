@@ -1,5 +1,5 @@
 //
-//  NCMediaNew.swift
+//  NCMedia.swift
 //  Nextcloud
 //
 //  Created by Milen on 25.08.23.
@@ -13,7 +13,7 @@ import Combine
 @_spi(Advanced) import SwiftUIIntrospect
 import Queuer
 
-struct NCMediaNew: View {
+struct NCMedia: View {
     @StateObject private var vm = NCMediaViewModel()
     @EnvironmentObject private var parent: NCMediaUIKitWrapper
     @State private var metadatas: [tableMetadata] = []
@@ -43,8 +43,8 @@ struct NCMediaNew: View {
     @State private var hasOldMedia = true
 
     @State private var showEmptyView = false
-    @State private var topMostVisibleMetadataDate: Date?
-    @State private var bottomMostVisibleMetadataDate: Date?
+    @State private var topMostVisibleMetadataDate = Date.now
+    @State private var bottomMostVisibleMetadataDate = Date.now
 
     var body: some View {
         let _ = Self._printChanges()
@@ -129,17 +129,12 @@ struct NCMediaNew: View {
                 var fromDate: Date?
                 var toDate: Date?
 
-                if let topMostVisibleMetadataDate, let bottomMostVisibleMetadataDate {
-                    fromDate = min(topMostVisibleMetadataDate, bottomMostVisibleMetadataDate)
-                    toDate = max(topMostVisibleMetadataDate, bottomMostVisibleMetadataDate)
-                }
+                fromDate = min(topMostVisibleMetadataDate, bottomMostVisibleMetadataDate)
+                toDate = max(topMostVisibleMetadataDate, bottomMostVisibleMetadataDate)
 
                 vm.searchMedia(from: fromDate, to: toDate, isScrolledToTop: isScrolledToTop, isScrolledToBottom: isScrolledToBottom)
             }
         }
-//        .onChange(of: topMostVisibleMetadataDate) { newValue in
-//            title = NCUtility().getTitleFromDate(min(topMostVisibleMetadataDate!, bottomMostVisibleMetadataDate!))
-//        }
         .onReceive(vm.$hasOldMedia) { newValue in
             hasOldMedia = newValue
         }
@@ -379,7 +374,7 @@ struct NCMediaNew_Previews: PreviewProvider {
                 .init(name: NCGlobal.shared.defaultSnapshotConfiguration, state: "")
             ],
             configure: { _ in
-                NCMediaNew()
+                NCMedia()
                     .environmentObject(NCMediaUIKitWrapper())
             })
     }

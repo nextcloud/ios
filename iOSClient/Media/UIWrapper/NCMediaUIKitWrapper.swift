@@ -14,7 +14,7 @@ import SwiftUI
  */
 class NCMediaUIKitWrapper: UIViewController, ObservableObject {
 
-    var mediaView: NCMediaNew?
+    var mediaView: NCMedia?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -46,7 +46,7 @@ class NCMediaUIKitWrapper: UIViewController, ObservableObject {
 
     func addView() {
 
-        mediaView = NCMediaNew()
+        mediaView = NCMedia()
         let controller = UIHostingController(rootView: mediaView.environmentObject(self))
         addChild(controller)
         controller.view.translatesAutoresizingMaskIntoConstraints = false
