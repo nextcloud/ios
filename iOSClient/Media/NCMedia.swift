@@ -175,7 +175,7 @@ struct NCMedia: View {
         .gesture(
             MagnificationGesture(minimumScaleDelta: 0)
                 .onChanged { scale in
-                    if !columnCountChanged {
+                    if !columnCountChanged { 
                         let newZoom = Double(columnCountStages[columnCountStagesIndex]) * 1 / scale
                         let newZoomIndex = findClosestZoomIndex(value: newZoom)
                         columnCountStagesIndex = newZoomIndex

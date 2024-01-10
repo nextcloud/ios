@@ -27,11 +27,9 @@ struct NCMediaScrollView: View, Equatable {
     let onCellSelected: (ScaledThumbnail, Bool) -> Void
     let onCellContextMenuItemSelected: (ScaledThumbnail, ContextMenuSelection) -> Void
 
-    @Namespace private var topID
-
     var body: some View {
         ScrollView {
-            Spacer(minLength: 70).id(topID)
+            Spacer(minLength: 70)
 
             LazyVStack(alignment: .leading, spacing: 2) {
                 ForEach(metadatas, id: \.self) { rowMetadatas in
