@@ -13,6 +13,76 @@ import Combine
 @_spi(Advanced) import SwiftUIIntrospect
 import Queuer
 
+struct Toolbar: View {
+    @State private var loadingIndicatorColor = Color.gray
+    @State private var titleColor = Color.primary
+    @State private var toolbarItemsColor = Color.blue
+    @State private var toolbarColors = [Color.clear]
+
+    @Binding var isInSelectMode: Bool
+    @Binding var selectedMetadatas: [tableMetadata]
+    @Binding var showPlayFromURLAlert: Bool
+    @Binding var columnCountStagesIndex: Int
+    @Binding var columnCountStages: [Int]
+    @Binding var title: String
+    @Binding var showDeleteConfirmation: Bool
+    @Binding var isScrolledToTop: Bool
+
+    @EnvironmentObject var vm: NCMediaViewModel
+    @EnvironmentObject var parent: NCMediaUIKitWrapper
+
+    var body: some View {
+        HStack {
+            ToolbarTitle(title: $title, titleColor: $titleColor)
+
+            Spacer()
+
+            if vm.isLoading {
+                ProgressView()
+                    .tint(loadingIndicatorColor)
+                    .padding(.horizontal, 6)
+            }
+
+            ToolbarSelectButton(isInSelectMode: $isInSelectMode, toolbarItemsColor: $toolbarItemsColor)
+
+            if isInSelectMode, !selectedMetadatas.isEmpty {
+                ToolbarCircularButton(imageSystemName: "trash.fill", color: .red)
+                    .onTapGesture {
+                        showDeleteConfirmation = true
+                    }
+                    .confirmationDialog("", isPresented: $showDeleteConfirmation) {
+                        Button(NSLocalizedString("_delete_selected_media_", comment: ""), role: .destructive) {
+                            vm.deleteMetadata(metadatas: selectedMetadatas)
+                            cancelSelection()
+                        }
+                    }
+            }
+
+            ToolbarMenu(isInSelectMode: $isInSelectMode, selectedMetadatas: $selectedMetadatas, showPlayFromURLAlert: $showPlayFromURLAlert, toolbarItemsColor: $toolbarItemsColor, columnCountStagesIndex: $columnCountStagesIndex, columnCountStages: $columnCountStages)
+        }
+        .frame(maxWidth: .infinity)
+        .padding([.horizontal, .top], 10)
+        .padding(.bottom, 20)
+        .background(LinearGradient(gradient: Gradient(colors: toolbarColors), startPoint: .top, endPoint: .bottom)
+            .padding(.bottom, -50)
+            .ignoresSafeArea(.all, edges: [.all])
+        )
+        .onChange(of: isScrolledToTop) { newValue in
+            withAnimation(.default) {
+                titleColor = newValue ? Color.primary : .white
+                loadingIndicatorColor = newValue ? Color.gray : .white
+                toolbarItemsColor = newValue ? .blue : .white
+                toolbarColors = newValue ? [.clear] : [Color.black.opacity(0.8), Color.black.opacity(0.4), .clear]
+            }
+        }
+    }
+
+    private func cancelSelection() {
+        isInSelectMode = false
+        selectedMetadatas.removeAll()
+    }
+}
+
 struct NCMedia: View {
     @StateObject private var vm = NCMediaViewModel()
     @EnvironmentObject private var parent: NCMediaUIKitWrapper
@@ -23,10 +93,10 @@ struct NCMedia: View {
     @State private var isScrollingStopped = true
     @State private var tappedMetadata = tableMetadata()
 
-    @State private var loadingIndicatorColor = Color.gray
-    @State private var titleColor = Color.primary
-    @State private var toolbarItemsColor = Color.blue
-    @State private var toolbarColors = [Color.clear]
+    //    @State private var loadingIndicatorColor = Color.gray
+    //    @State private var titleColor = Color.primary
+    //    @State private var toolbarItemsColor = Color.blue
+    //    @State private var toolbarColors = [Color.clear]
 
     @State private var showDeleteConfirmation = false
     @State private var showPlayFromURLAlert = false
@@ -73,41 +143,12 @@ struct NCMedia: View {
             .ignoresSafeArea(.all, edges: .horizontal)
             .scrollStatusByIntrospect(isScrolledToTop: $isScrolledToTop, isScrolledToBottom: $isScrolledToBottom, isScrollingStopped: $isScrollingStopped)
 
-            HStack {
-                ToolbarTitle(title: $title, titleColor: $titleColor)
-
-                Spacer()
-
-                if vm.isLoading {
-                    ProgressView()
-                        .tint(loadingIndicatorColor)
-                        .padding(.horizontal, 6)
+            Toolbar(isInSelectMode: $isInSelectMode, selectedMetadatas: $selectedMetadatas, showPlayFromURLAlert: $showPlayFromURLAlert, columnCountStagesIndex: $columnCountStagesIndex, columnCountStages: $columnCountStages, title: $title, showDeleteConfirmation: $showDeleteConfirmation, isScrolledToTop: $isScrolledToTop)
+                .onChange(of: isScrollingStopped) { newValue in
+                    if newValue {
+                        vm.startLoadingNewMediaTimer()
+                    }
                 }
-
-                ToolbarSelectButton(isInSelectMode: $isInSelectMode, toolbarItemsColor: $toolbarItemsColor)
-
-                if isInSelectMode, !selectedMetadatas.isEmpty {
-                    ToolbarCircularButton(imageSystemName: "trash.fill", color: .red)
-                        .onTapGesture {
-                            showDeleteConfirmation = true
-                        }
-                        .confirmationDialog("", isPresented: $showDeleteConfirmation) {
-                            Button(NSLocalizedString("_delete_selected_media_", comment: ""), role: .destructive) {
-                                vm.deleteMetadata(metadatas: selectedMetadatas)
-                                cancelSelection()
-                            }
-                        }
-                }
-
-                ToolbarMenu(isInSelectMode: $isInSelectMode, selectedMetadatas: $selectedMetadatas, showPlayFromURLAlert: $showPlayFromURLAlert, toolbarItemsColor: $toolbarItemsColor, columnCountStagesIndex: $columnCountStagesIndex, columnCountStages: $columnCountStages)
-            }
-            .frame(maxWidth: .infinity)
-            .padding([.horizontal, .top], 10)
-            .padding(.bottom, 20)
-            .background(LinearGradient(gradient: Gradient(colors: toolbarColors), startPoint: .top, endPoint: .bottom)
-                .padding(.bottom, -50)
-                .ignoresSafeArea(.all, edges: [.all])
-            )
         }
         .onRotate { orientation in
             if orientation.isLandscapeHardCheck {
@@ -124,11 +165,8 @@ struct NCMedia: View {
             if newValue {
                 vm.triggerLoadMedia = false
 
-                var fromDate: Date?
-                var toDate: Date?
-
-                fromDate = min(topMostVisibleMetadataDate, bottomMostVisibleMetadataDate)
-                toDate = max(topMostVisibleMetadataDate, bottomMostVisibleMetadataDate)
+                let fromDate = min(topMostVisibleMetadataDate, bottomMostVisibleMetadataDate)
+                let toDate = max(topMostVisibleMetadataDate, bottomMostVisibleMetadataDate)
 
                 vm.searchMedia(from: fromDate, to: toDate, isScrolledToTop: isScrolledToTop, isScrolledToBottom: isScrolledToBottom)
             }
@@ -145,19 +183,19 @@ struct NCMedia: View {
         .onChange(of: columnCountStagesIndex) { _ in
             columnCountChanged = true
         }
-        .onChange(of: isScrolledToTop) { newValue in
-            withAnimation(.default) {
-                titleColor = newValue ? Color.primary : .white
-                loadingIndicatorColor = newValue ? Color.gray : .white
-                toolbarItemsColor = newValue ? .blue : .white
-                toolbarColors = newValue ? [.clear] : [Color.black.opacity(0.8), Color.black.opacity(0.4), .clear]
-            }
-        }
-        .onChange(of: isScrollingStopped) { newValue in
-            if newValue {
-                vm.startLoadingNewMediaTimer()
-            }
-        }
+        //        .onChange(of: isScrolledToTop) { newValue in
+        //            withAnimation(.default) {
+        //                titleColor = newValue ? Color.primary : .white
+        //                loadingIndicatorColor = newValue ? Color.gray : .white
+        //                toolbarItemsColor = newValue ? .blue : .white
+        //                toolbarColors = newValue ? [.clear] : [Color.black.opacity(0.8), Color.black.opacity(0.4), .clear]
+        //            }
+        //        }
+//        .onChange(of: isScrollingStopped) { newValue in
+//            if newValue {
+////                vm.startLoadingNewMediaTimer()
+//            }
+//        }
         .alert("", isPresented: $showPlayFromURLAlert) {
             TextField("https://...", text: $playFromUrlString)
                 .keyboardType(.URL)
