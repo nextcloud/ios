@@ -27,7 +27,7 @@ struct Toolbar: View {
     @Binding var title: String
     @Binding var showDeleteConfirmation: Bool
     @Binding var isScrolledToTop: Bool
-
+    @Binding var isScrollingStopped: Bool
     @EnvironmentObject var vm: NCMediaViewModel
     @EnvironmentObject var parent: NCMediaUIKitWrapper
 
@@ -75,6 +75,11 @@ struct Toolbar: View {
                 toolbarColors = newValue ? [.clear] : [Color.black.opacity(0.8), Color.black.opacity(0.4), .clear]
             }
         }
+        .onChange(of: isScrollingStopped) { newValue in
+                   if newValue {
+                       vm.startLoadingNewMediaTimer()
+                   }
+               }
     }
 
     private func cancelSelection() {
@@ -143,12 +148,7 @@ struct NCMedia: View {
             .ignoresSafeArea(.all, edges: .horizontal)
             .scrollStatusByIntrospect(isScrolledToTop: $isScrolledToTop, isScrolledToBottom: $isScrolledToBottom, isScrollingStopped: $isScrollingStopped)
 
-            Toolbar(isInSelectMode: $isInSelectMode, selectedMetadatas: $selectedMetadatas, showPlayFromURLAlert: $showPlayFromURLAlert, columnCountStagesIndex: $columnCountStagesIndex, columnCountStages: $columnCountStages, title: $title, showDeleteConfirmation: $showDeleteConfirmation, isScrolledToTop: $isScrolledToTop)
-                .onChange(of: isScrollingStopped) { newValue in
-                    if newValue {
-                        vm.startLoadingNewMediaTimer()
-                    }
-                }
+            Toolbar(isInSelectMode: $isInSelectMode, selectedMetadatas: $selectedMetadatas, showPlayFromURLAlert: $showPlayFromURLAlert, columnCountStagesIndex: $columnCountStagesIndex, columnCountStages: $columnCountStages, title: $title, showDeleteConfirmation: $showDeleteConfirmation, isScrolledToTop: $isScrolledToTop, isScrollingStopped: $isScrollingStopped)
         }
         .onRotate { orientation in
             if orientation.isLandscapeHardCheck {
@@ -183,19 +183,6 @@ struct NCMedia: View {
         .onChange(of: columnCountStagesIndex) { _ in
             columnCountChanged = true
         }
-        //        .onChange(of: isScrolledToTop) { newValue in
-        //            withAnimation(.default) {
-        //                titleColor = newValue ? Color.primary : .white
-        //                loadingIndicatorColor = newValue ? Color.gray : .white
-        //                toolbarItemsColor = newValue ? .blue : .white
-        //                toolbarColors = newValue ? [.clear] : [Color.black.opacity(0.8), Color.black.opacity(0.4), .clear]
-        //            }
-        //        }
-//        .onChange(of: isScrollingStopped) { newValue in
-//            if newValue {
-////                vm.startLoadingNewMediaTimer()
-//            }
-//        }
         .alert("", isPresented: $showPlayFromURLAlert) {
             TextField("https://...", text: $playFromUrlString)
                 .keyboardType(.URL)
