@@ -22,8 +22,6 @@ struct NCMediaScrollView: View, Equatable {
     @Binding var topMostVisibleMetadataDate: Date
     @Binding var bottomMostVisibleMetadataDate: Date
 
-    let proxy: ScrollViewProxy
-
     let onCellSelected: (ScaledThumbnail, Bool) -> Void
     let onCellContextMenuItemSelected: (ScaledThumbnail, ContextMenuSelection) -> Void
 

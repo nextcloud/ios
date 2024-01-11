@@ -54,26 +54,24 @@ struct NCMedia: View {
                 EmptyMediaView()
             }
 
-            ScrollViewReader { proxy in
-                NCMediaScrollView(metadatas: metadatas.chunked(into: columnCountStages[columnCountStagesIndex]), isInSelectMode: $isInSelectMode, selectedMetadatas: $selectedMetadatas, title: $title, shouldShowPaginationLoading: $hasOldMedia, topMostVisibleMetadataDate: $topMostVisibleMetadataDate, bottomMostVisibleMetadataDate: $bottomMostVisibleMetadataDate, proxy: proxy) { tappedThumbnail, isSelected in
-                    if isInSelectMode, isSelected {
-                        selectedMetadatas.append(tappedThumbnail.metadata)
-                    } else {
-                        selectedMetadatas.removeAll(where: { $0.ocId == tappedThumbnail.metadata.ocId })
-                    }
-
-                    if !isInSelectMode {
-                        let selectedMetadata = tappedThumbnail.metadata
-                        vm.onCellTapped(metadata: selectedMetadata)
-                        NCViewer().view(viewController: parent, metadata: selectedMetadata, metadatas: vm.metadatas, imageIcon: tappedThumbnail.image)
-                    }
-                } onCellContextMenuItemSelected: { thumbnail, selection in
-                    onCellContentMenuItemSelected(thumbnail: thumbnail, selection: selection)
+            NCMediaScrollView(metadatas: metadatas.chunked(into: columnCountStages[columnCountStagesIndex]), isInSelectMode: $isInSelectMode, selectedMetadatas: $selectedMetadatas, title: $title, shouldShowPaginationLoading: $hasOldMedia, topMostVisibleMetadataDate: $topMostVisibleMetadataDate, bottomMostVisibleMetadataDate: $bottomMostVisibleMetadataDate) { tappedThumbnail, isSelected in
+                if isInSelectMode, isSelected {
+                    selectedMetadatas.append(tappedThumbnail.metadata)
+                } else {
+                    selectedMetadatas.removeAll(where: { $0.ocId == tappedThumbnail.metadata.ocId })
                 }
-                .equatable()
-                .ignoresSafeArea(.all, edges: .horizontal)
-                .scrollStatusByIntrospect(isScrolledToTop: $isScrolledToTop, isScrolledToBottom: $isScrolledToBottom, isScrollingStopped: $isScrollingStopped)
+
+                if !isInSelectMode {
+                    let selectedMetadata = tappedThumbnail.metadata
+                    vm.onCellTapped(metadata: selectedMetadata)
+                    NCViewer().view(viewController: parent, metadata: selectedMetadata, metadatas: vm.metadatas, imageIcon: tappedThumbnail.image)
+                }
+            } onCellContextMenuItemSelected: { thumbnail, selection in
+                onCellContentMenuItemSelected(thumbnail: thumbnail, selection: selection)
             }
+            .equatable()
+            .ignoresSafeArea(.all, edges: .horizontal)
+            .scrollStatusByIntrospect(isScrolledToTop: $isScrolledToTop, isScrolledToBottom: $isScrolledToBottom, isScrollingStopped: $isScrollingStopped)
 
             HStack {
                 ToolbarTitle(title: $title, titleColor: $titleColor)
@@ -175,7 +173,7 @@ struct NCMedia: View {
         .gesture(
             MagnificationGesture(minimumScaleDelta: 0)
                 .onChanged { scale in
-                    if !columnCountChanged { 
+                    if !columnCountChanged {
                         let newZoom = Double(columnCountStages[columnCountStagesIndex]) * 1 / scale
                         let newZoomIndex = findClosestZoomIndex(value: newZoom)
                         columnCountStagesIndex = newZoomIndex
