@@ -99,7 +99,7 @@ struct NCMedia: View {
                         }
                 }
 
-                ToolbarMenu(isInSelectMode: $isInSelectMode, selectedMetadatas: $selectedMetadatas, showPlayFromURLAlert: $showPlayFromURLAlert, toolbarItemsColor: $toolbarItemsColor)
+                ToolbarMenu(isInSelectMode: $isInSelectMode, selectedMetadatas: $selectedMetadatas, showPlayFromURLAlert: $showPlayFromURLAlert, toolbarItemsColor: $toolbarItemsColor, columnCountStagesIndex: $columnCountStagesIndex, columnCountStages: $columnCountStages)
             }
             .frame(maxWidth: .infinity)
             .padding([.horizontal, .top], 10)
@@ -231,9 +231,27 @@ struct ToolbarMenu: View {
     @Binding var selectedMetadatas: [tableMetadata]
     @Binding var showPlayFromURLAlert: Bool
     @Binding var toolbarItemsColor: Color
+    @Binding var columnCountStagesIndex: Int
+    @Binding var columnCountStages: [Int]
 
     var body: some View {
         Menu {
+            Section {
+                Button {
+                    print(max(columnCountStagesIndex - 1, 0))
+                    columnCountStagesIndex = max(columnCountStagesIndex - 1, 0)
+                } label: {
+                    Label(NSLocalizedString("_zoom_in_", comment: ""), systemImage: "plus.magnifyingglass")
+                }
+
+                Button {
+                    print(min(columnCountStagesIndex + 1, columnCountStages.endIndex))
+                    columnCountStagesIndex = min(columnCountStagesIndex + 1, columnCountStages.endIndex)
+                } label: {
+                    Label(NSLocalizedString("_zoom_out_", comment: ""), systemImage: "minus.magnifyingglass")
+                }
+            }
+
             if isInSelectMode, !selectedMetadatas.isEmpty {
                 Section {
                     Button {
@@ -253,11 +271,11 @@ struct ToolbarMenu: View {
             } else {
                 Section {
                     Picker(NSLocalizedString("_media_view_options_", comment: ""), selection: $vm.filter) {
-                        Label(NSLocalizedString("_media_viewimage_show_", comment: ""), systemImage: "photo.fill").tag(Filter.onlyPhotos)
+                        Label(NSLocalizedString("_media_viewimage_show_", comment: ""), systemImage: "photo").tag(Filter.onlyPhotos)
 
-                        Label(NSLocalizedString("_media_viewvideo_show_", comment: ""), systemImage: "video.fill").tag(Filter.onlyVideos)
+                        Label(NSLocalizedString("_media_viewvideo_show_", comment: ""), systemImage: "video").tag(Filter.onlyVideos)
 
-                        Text(NSLocalizedString("_media_show_all_", comment: "")).tag(Filter.all)
+                        Label(NSLocalizedString("_media_show_all_", comment: ""), systemImage: "photo.on.rectangle").tag(Filter.all)
                     }.pickerStyle(.menu)
 
                     Button {

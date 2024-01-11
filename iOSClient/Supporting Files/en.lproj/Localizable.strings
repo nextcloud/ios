@@ -156,6 +156,8 @@
 "_current_"                 = "Current";
 "_buy_"                     = "Buy";
 "_disabled_"                = "Disabled";
+"_zoom_in_"                 = "Zoom in";
+"_zoom_out_"                = "Zoom out";
 
 /* MARK: Files lock */
 
