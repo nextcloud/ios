@@ -75,11 +75,13 @@ struct Toolbar: View {
                 toolbarColors = newValue ? [.clear] : [Color.black.opacity(0.8), Color.black.opacity(0.4), .clear]
             }
         }
+        // This is here instead of in the parent so it does not update the whole view. Pragmatic solution, but there may be a better way.
+        // This is also a result of using Introspect since SwiftUI does not have all features we need.
         .onChange(of: isScrollingStopped) { newValue in
-                   if newValue {
-                       vm.startLoadingNewMediaTimer()
-                   }
-               }
+            if newValue {
+                vm.startLoadingNewMediaTimer()
+            }
+        }
     }
 
     private func cancelSelection() {
@@ -97,11 +99,6 @@ struct NCMedia: View {
     @State private var isScrolledToBottom = false
     @State private var isScrollingStopped = true
     @State private var tappedMetadata = tableMetadata()
-
-    //    @State private var loadingIndicatorColor = Color.gray
-    //    @State private var titleColor = Color.primary
-    //    @State private var toolbarItemsColor = Color.blue
-    //    @State private var toolbarColors = [Color.clear]
 
     @State private var showDeleteConfirmation = false
     @State private var showPlayFromURLAlert = false
@@ -122,8 +119,6 @@ struct NCMedia: View {
     @State private var bottomMostVisibleMetadataDate = Date.now
 
     var body: some View {
-        let _ = Self._printChanges()
-
         ZStack(alignment: .top) {
             if showEmptyView {
                 EmptyMediaView()
