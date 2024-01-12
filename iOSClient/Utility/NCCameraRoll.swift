@@ -23,7 +23,6 @@
 
 import Foundation
 import NextcloudKit
-//import JGProgressHUD
 
 class NCCameraRoll: NSObject {
 

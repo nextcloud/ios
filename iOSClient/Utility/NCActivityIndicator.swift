@@ -117,7 +117,7 @@ class NCActivityIndicator: NSObject {
 
     @objc func stop() {
 
-        DispatchQueue.main.async {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
 
             self.activityIndicator?.stopAnimating()
             self.activityIndicator?.removeFromSuperview()

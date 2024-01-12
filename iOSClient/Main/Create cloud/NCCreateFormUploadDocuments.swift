@@ -212,9 +212,7 @@ import XLForm
 
     func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String, items: [Any], indexPath: [IndexPath], overwrite: Bool, copy: Bool, move: Bool) {
 
-        guard let serverUrl = serverUrl else {
-            return
-        }
+        guard let serverUrl = serverUrl else { return }
 
         self.serverUrl = serverUrl
         if serverUrl == utilityFileSystem.getHomeServer(urlBase: appDelegate.urlBase, userId: appDelegate.userId) {
@@ -246,9 +244,7 @@ import XLForm
 
     @objc func save() {
 
-        guard let selectTemplate = self.selectTemplate else {
-            return
-        }
+        guard let selectTemplate = self.selectTemplate else { return }
         templateIdentifier = selectTemplate.identifier
 
         let rowFileName: XLFormRowDescriptor = self.form.formRow(withTag: "fileName")!

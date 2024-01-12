@@ -45,7 +45,7 @@ class NCViewerProviderContextMenu: UIViewController {
     init(metadata: tableMetadata, image: UIImage?) {
         super.init(nibName: nil, bundle: nil)
 
-        self.metadata = metadata
+        self.metadata = tableMetadata(value: metadata)
         self.metadataLivePhoto = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata)
         self.image = image
 

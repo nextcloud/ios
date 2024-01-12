@@ -75,22 +75,8 @@ class NCGroupfolders: NCCollectionViewCommon {
             searchResults: self.searchResults)
     }
 
-    override func reloadDataSource() {
-        super.reloadDataSource()
-
-        self.queryDB()
-        DispatchQueue.main.async {
-            self.isReloadDataSourceNetworkInProgress = false
-            self.refreshControl.endRefreshing()
-            self.collectionView.reloadData()
-        }
-    }
-
     override func reloadDataSourceNetwork() {
         super.reloadDataSourceNetwork()
-
-        isReloadDataSourceNetworkInProgress = true
-        collectionView?.reloadData()
 
         let homeServerUrl = utilityFileSystem.getHomeServer(urlBase: self.appDelegate.urlBase, userId: self.appDelegate.userId)
 
@@ -114,6 +100,8 @@ class NCGroupfolders: NCCollectionViewCommon {
                     }
                     self.reloadDataSource()
                 }
+            } else {
+                self.reloadDataSource(withQueryDB: false)
             }
         }
     }

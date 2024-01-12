@@ -47,7 +47,7 @@ protocol NCSelectableNavigationView: AnyObject {
     var layoutKey: String { get }
     var selectActions: [NCMenuAction] { get }
 
-    func reloadDataSource()
+    func reloadDataSource(withQueryDB: Bool)
     func setNavigationItem()
 
     func tapSelectMenu()
@@ -154,7 +154,7 @@ extension NCSelectableNavigationView where Self: UIViewController {
             actions.append(.saveMediaAction(selectedMediaMetadatas: selectedMediaMetadatas, completion: tapSelect))
         }
         actions.append(.setAvailableOfflineAction(selectedMetadatas: selectedMetadatas, isAnyOffline: isAnyOffline, viewController: self, completion: {
-            self.reloadDataSource()
+            self.reloadDataSource(withQueryDB: true)
             self.tapSelect()
         }))
 

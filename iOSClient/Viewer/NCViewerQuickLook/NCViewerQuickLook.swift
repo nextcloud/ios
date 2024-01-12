@@ -231,7 +231,7 @@ extension NCViewerQuickLook: QLPreviewControllerDataSource, QLPreviewControllerD
             url: url.path,
             contentType: "")
 
-        metadataForUpload.session = NCNetworking.shared.sessionIdentifierBackground
+        metadataForUpload.session = NCNetworking.shared.sessionUploadBackground
         if override {
             metadataForUpload.sessionSelector = NCGlobal.shared.selectorUploadFileNODelete
         } else {
