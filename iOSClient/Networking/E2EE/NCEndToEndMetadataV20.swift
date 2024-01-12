@@ -58,20 +58,20 @@ extension NCEndToEndMetadata {
         }
 
         struct Filedrop: Codable {
-            let ciphertext: String?
-            let nonce: String?
-            let authenticationTag: String?
-            let users: [UsersFiledrop]?
+            let ciphertext: String
+            let nonce: String
+            let authenticationTag: String
+            let users: [UsersFiledrop]
 
             struct UsersFiledrop: Codable {
-                let userId: String?
-                let encryptedFiledropKey: String?
+                let userId: String
+                let encryptedFiledropKey: String
             }
         }
 
         let metadata: Metadata
         let users: [Users]?
-        let filedrop: [Filedrop]?
+        let filedrop: [String: Filedrop]?
         let version: String
     }
 
@@ -232,7 +232,7 @@ extension NCEndToEndMetadata {
             ciphertextMetadata = ciphertextMetadata + "|" + initializationVector
 
             let metadataCodable = E2eeV20.Metadata(ciphertext: ciphertextMetadata, nonce: initializationVector, authenticationTag: authenticationTag)
-            let e2eeCodable = E2eeV20(metadata: metadataCodable, users: usersCodable, filedrop: filedropCodable, version: NCGlobal.shared.e2eeVersionV20)
+            let e2eeCodable = E2eeV20(metadata: metadataCodable, users: usersCodable, filedrop: nil, version: NCGlobal.shared.e2eeVersionV20)
             let e2eeData = try JSONEncoder().encode(e2eeCodable)
             e2eeData.printJson()
 
@@ -319,30 +319,42 @@ extension NCEndToEndMetadata {
                 return NKError(errorCode: NCGlobal.shared.errorE2EENoUserFound, errorDescription: "_e2e_error_")
             }
 
-            // SIGNATURE CHECK
+            // SIGNATURE CHECK (NO FILESDROP)
             //
-            guard let signature,
-                  verifySignature(account: account, signature: signature, userId: objUsers.userId, metadata: metadata, users: users, version: version, certificate: objUsers.certificate) else {
-                return NKError(errorCode: NCGlobal.shared.errorE2EEKeyVerifySignature, errorDescription: "_e2e_error_")
-
+            if filesdrop == nil {
+                guard let signature,
+                      verifySignature(account: account, signature: signature, userId: objUsers.userId, metadata: metadata, users: users, version: version, certificate: objUsers.certificate) else {
+                    return NKError(errorCode: NCGlobal.shared.errorE2EEKeyVerifySignature, errorDescription: "_e2e_error_")
+                }
             }
 
             // FILEDROP
-            /*
-            if let filesdrop, let filedropKey = tableE2eUsersV2.filedropKey?.base64EncodedString() {
-                for filedrop in filesdrop {
-                    guard let decryptedFiledrop = NCEndToEndEncryption.sharedManager().decryptPayloadFile(filedrop.ciphertext, key: filedropKey, initializationVector: filedrop.nonce, authenticationTag: filedrop.authenticationTag),
-                          decryptedFiledrop.isGzipped else {
-                        return NKError(errorCode: NCGlobal.shared.errorE2EEKeyFiledropCiphertext, errorDescription: "_e2e_error_")
+            //
+            if let filesdrop {
+                for filedop in filesdrop {
+                    let fileNameIdentifier = filedop.key
+                    let ciphertext = filedop.value.ciphertext
+                    let nonce = filedop.value.nonce
+                    let authenticationTag = filedop.value.authenticationTag
+                    for user in filedop.value.users {
+                        let data = Data(base64Encoded: user.encryptedFiledropKey)
+                        if let filedropKeyData = NCEndToEndEncryption.sharedManager().decryptAsymmetricData(data, privateKey: NCKeychain().getEndToEndPrivateKey(account: account)) {
+                            NCManageDatabase.shared.addE2UsersFiledrop(account: account, serverUrl: serverUrl, ocIdServerUrl: ocIdServerUrl, userId: user.userId, encryptedFiledropKey: user.encryptedFiledropKey, filedropKey: filedropKeyData)
+                            let filedropKey = filedropKeyData.base64EncodedString()
+                            //
+                            guard let decryptedFiledrop = NCEndToEndEncryption.sharedManager().decryptPayloadFile(ciphertext, key: filedropKey, initializationVector: nonce, authenticationTag: authenticationTag),
+                                  decryptedFiledrop.isGzipped else {
+                                return NKError(errorCode: NCGlobal.shared.errorE2EEKeyFiledropCiphertext, errorDescription: "_e2e_error_")
+                            }
+                            let data = try decryptedFiledrop.gunzipped()
+                            if let jsonText = String(data: data, encoding: .utf8) { print(jsonText) }
+                            let file = try JSONDecoder().decode(E2eeV20.Files.self, from: data)
+                            print(file)
+                            addE2eEncryption(fileNameIdentifier: fileNameIdentifier, filename: file.filename, authenticationTag: file.authenticationTag, key: file.key, initializationVector: file.nonce, metadataKey: filedropKey, mimetype: file.mimetype, blob: "filedrop")
+                        }
                     }
-                    let data = try decryptedFiledrop.gunzipped()
-                    if let jsonText = String(data: data, encoding: .utf8) { print(jsonText) }
-                    let file = try JSONDecoder().decode(E2eeV20.Files.self, from: data)
-                    print(file)
-                    addE2eEncryption(fileNameIdentifier: file.key, filename: file.filename, authenticationTag: file.authenticationTag, key: file.key, initializationVector: file.nonce, metadataKey: filedropKey, mimetype: file.mimetype, blob: "filedrop")
                 }
             }
-            */
 
             // CIPHERTEXT METADATA
             //

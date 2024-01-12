@@ -136,8 +136,8 @@ class tableE2eUsersFiledrop: Object {
 
     @Persisted(primaryKey: true) var primaryKey = ""
     @Persisted var account = ""
-    @Persisted var certificate = ""
-    @Persisted var encryptedFiledropKey: String?
+    @Persisted var encryptedFiledropKey: String
+    @Persisted var filedropKey: Data
     @Persisted var ocIdServerUrl: String = ""
     @Persisted var serverUrl: String = ""
     @Persisted var userId = ""
@@ -337,6 +337,27 @@ extension NCManageDatabase {
                 object.certificate = certificate
                 object.encryptedMetadataKey = encryptedMetadataKey
                 object.metadataKey = metadataKey
+                object.serverUrl = serverUrl
+                realm.add(object, update: .all)
+            }
+        } catch let error {
+            NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
+        }
+    }
+
+    func addE2UsersFiledrop(account: String,
+                            serverUrl: String,
+                            ocIdServerUrl: String,
+                            userId: String,
+                            encryptedFiledropKey: String,
+                            filedropKey: Data) {
+
+        do {
+            let realm = try Realm()
+            try realm.write {
+                let object = tableE2eUsersFiledrop.init(account: account, ocIdServerUrl: ocIdServerUrl, userId: userId)
+                object.encryptedFiledropKey = encryptedFiledropKey
+                object.filedropKey = filedropKey
                 object.serverUrl = serverUrl
                 realm.add(object, update: .all)
             }
