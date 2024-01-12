@@ -15,16 +15,20 @@ enum ContextMenuSelection {
 }
 
 struct NCMediaCell: View {
+    @EnvironmentObject var selectionManager: SelectionManager
+
     let thumbnail: ScaledThumbnail
     let shrinkRatio: CGFloat
-    @Binding var isInSelectMode: Bool
-    @State var isSelected = false
+    @State var isFavorite: Bool
+
     let onSelected: (ScaledThumbnail, Bool) -> Void
     let onContextMenuItemSelected: (ScaledThumbnail, ContextMenuSelection) -> Void
 
-    @State var isFavorite: Bool
 
+    @State private var isSelected = false
     @State private var showDeleteConfirmation = false
+
+
 
     var body: some View {
         let image = Image(uiImage: thumbnail.image)
@@ -56,12 +60,12 @@ struct NCMediaCell: View {
             }
         }
         .overlay {
-            if isInSelectMode, isSelected {
+            if selectionManager.isInSelectMode, isSelected {
                 Color.black.opacity(0.6).frame(maxWidth: .infinity)
             }
         }
         .overlay(alignment: .bottomTrailing) {
-            if isInSelectMode, isSelected {
+            if selectionManager.isInSelectMode, isSelected {
                 Image(systemName: "checkmark.circle.fill")
                     .resizable()
                     .foregroundColor(.blue)
@@ -75,10 +79,10 @@ struct NCMediaCell: View {
         .frame(width: CGFloat(thumbnail.scaledSize.width * shrinkRatio), height: CGFloat(thumbnail.scaledSize.height * shrinkRatio))
         .background(Color(uiColor: .systemGray6))
         .onTapGesture {
-            if isInSelectMode { isSelected.toggle() }
+            if selectionManager.isInSelectMode { isSelected.toggle() }
             onSelected(thumbnail, isSelected)
         }
-        .onChange(of: isInSelectMode) { newValue in
+        .onChange(of: selectionManager.isInSelectMode) { newValue in
             isSelected = !newValue
         }
         .contextMenu(menuItems: {
@@ -131,6 +135,9 @@ struct NCMediaCell: View {
                 onContextMenuItemSelected(thumbnail, .delete)
                 showDeleteConfirmation = false
             }
+        }
+        .onAppear {
+            isSelected = selectionManager.selectedMetadatas.contains(where: { $0 == thumbnail.metadata })
         }
     }
 }

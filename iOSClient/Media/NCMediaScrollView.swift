@@ -15,8 +15,6 @@ struct NCMediaScrollView: View, Equatable {
     }
 
     var metadatas: [[tableMetadata]]
-    @Binding var isInSelectMode: Bool
-    @Binding var selectedMetadatas: [tableMetadata]
     @Binding var title: String
     @Binding var shouldShowPaginationLoading: Bool
     @Binding var topMostVisibleMetadataDate: Date
@@ -29,7 +27,7 @@ struct NCMediaScrollView: View, Equatable {
         ScrollView {
             LazyVStack(alignment: .leading, spacing: 2) {
                 ForEach(metadatas, id: \.self) { rowMetadatas in
-                    NCMediaRow(metadatas: rowMetadatas, selectedMetadatas: $selectedMetadatas, isInSelectMode: $isInSelectMode) { tappedThumbnail, isSelected in
+                    NCMediaRow(metadatas: rowMetadatas) { tappedThumbnail, isSelected in
                         onCellSelected(tappedThumbnail, isSelected)
                     } onCellContextMenuItemSelected: { thumbnail, selection in
                         onCellContextMenuItemSelected(thumbnail, selection)

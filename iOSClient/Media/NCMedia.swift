@@ -13,87 +13,11 @@ import Combine
 @_spi(Advanced) import SwiftUIIntrospect
 import Queuer
 
-struct Toolbar: View {
-    @State private var loadingIndicatorColor = Color.gray
-    @State private var titleColor = Color.primary
-    @State private var toolbarItemsColor = Color.blue
-    @State private var toolbarColors = [Color.clear]
-
-    @Binding var isInSelectMode: Bool
-    @Binding var selectedMetadatas: [tableMetadata]
-    @Binding var showPlayFromURLAlert: Bool
-    @Binding var columnCountStagesIndex: Int
-    @Binding var columnCountStages: [Int]
-    @Binding var title: String
-    @Binding var showDeleteConfirmation: Bool
-    @Binding var isScrolledToTop: Bool
-    @Binding var isScrollingStopped: Bool
-
-    @EnvironmentObject var vm: NCMediaViewModel
-    @EnvironmentObject var parent: NCMediaUIKitWrapper
-
-    var body: some View {
-        HStack {
-            ToolbarTitle(title: $title, titleColor: $titleColor)
-
-            Spacer()
-
-            if vm.isLoading {
-                ProgressView()
-                    .tint(loadingIndicatorColor)
-                    .padding(.horizontal, 6)
-            }
-
-            ToolbarSelectButton(isInSelectMode: $isInSelectMode, toolbarItemsColor: $toolbarItemsColor)
-
-            if isInSelectMode, !selectedMetadatas.isEmpty {
-                ToolbarCircularButton(imageSystemName: "trash.fill", color: .red)
-                    .onTapGesture {
-                        showDeleteConfirmation = true
-                    }
-                    .confirmationDialog("", isPresented: $showDeleteConfirmation) {
-                        Button(NSLocalizedString("_delete_selected_media_", comment: ""), role: .destructive) {
-                            vm.deleteMetadata(metadatas: selectedMetadatas)
-                            cancelSelection()
-                        }
-                    }
-            }
-
-            ToolbarMenu(isInSelectMode: $isInSelectMode, selectedMetadatas: $selectedMetadatas, showPlayFromURLAlert: $showPlayFromURLAlert, toolbarItemsColor: $toolbarItemsColor, columnCountStagesIndex: $columnCountStagesIndex, columnCountStages: $columnCountStages)
-        }
-        .frame(maxWidth: .infinity)
-        .padding([.horizontal, .top], 10)
-        .padding(.bottom, 20)
-        .background(LinearGradient(gradient: Gradient(colors: toolbarColors), startPoint: .top, endPoint: .bottom)
-            .padding(.bottom, -50)
-            .ignoresSafeArea(.all, edges: [.all])
-        )
-        .onChange(of: isScrolledToTop) { newValue in
-            withAnimation(.default) {
-                titleColor = newValue ? Color.primary : .white
-                loadingIndicatorColor = newValue ? Color.gray : .white
-                toolbarItemsColor = newValue ? .blue : .white
-                toolbarColors = newValue ? [.clear] : [Color.black.opacity(0.8), Color.black.opacity(0.4), .clear]
-            }
-        }
-        // This is here instead of in the parent so it does not update the whole view. Pragmatic solution, but there may be a better way.
-        // This is also a result of using Introspect since SwiftUI does not have all features we need.
-        .onChange(of: isScrollingStopped) { newValue in
-            if newValue {
-                vm.startLoadingNewMediaTimer()
-            }
-        }
-    }
-
-    private func cancelSelection() {
-        isInSelectMode = false
-        selectedMetadatas.removeAll()
-    }
-}
-
 struct NCMedia: View {
     @StateObject private var vm = NCMediaViewModel()
+    @StateObject private var selectionManager = SelectionManager()
     @EnvironmentObject private var parent: NCMediaUIKitWrapper
+
     @State private var metadatas: [tableMetadata] = []
     @State private var title = NSLocalizedString("_media_", comment: "")
     @State private var isScrolledToTop = true
@@ -109,9 +33,6 @@ struct NCMedia: View {
     @State private var columnCountStagesIndex = 0
     @State private var columnCountChanged = false
 
-    @State private var selectedMetadatas: [tableMetadata] = []
-    @State private var isInSelectMode = false
-
     @State private var shouldScrollToTop = false
     @State private var hasOldMedia = true
 
@@ -125,14 +46,14 @@ struct NCMedia: View {
                 EmptyMediaView()
             }
 
-            NCMediaScrollView(metadatas: metadatas.chunked(into: columnCountStages[columnCountStagesIndex]), isInSelectMode: $isInSelectMode, selectedMetadatas: $selectedMetadatas, title: $title, shouldShowPaginationLoading: $hasOldMedia, topMostVisibleMetadataDate: $topMostVisibleMetadataDate, bottomMostVisibleMetadataDate: $bottomMostVisibleMetadataDate) { tappedThumbnail, isSelected in
-                if isInSelectMode, isSelected {
-                    selectedMetadatas.append(tappedThumbnail.metadata)
+            NCMediaScrollView(metadatas: metadatas.chunked(into: columnCountStages[columnCountStagesIndex]), title: $title, shouldShowPaginationLoading: $hasOldMedia, topMostVisibleMetadataDate: $topMostVisibleMetadataDate, bottomMostVisibleMetadataDate: $bottomMostVisibleMetadataDate) { tappedThumbnail, isSelected in
+                if selectionManager.isInSelectMode, isSelected {
+                    selectionManager.selectedMetadatas.append(tappedThumbnail.metadata)
                 } else {
-                    selectedMetadatas.removeAll(where: { $0.ocId == tappedThumbnail.metadata.ocId })
+                    selectionManager.selectedMetadatas.removeAll(where: { $0.ocId == tappedThumbnail.metadata.ocId })
                 }
 
-                if !isInSelectMode {
+                if !selectionManager.isInSelectMode {
                     let selectedMetadata = tappedThumbnail.metadata
                     vm.onCellTapped(metadata: selectedMetadata)
                     NCViewer().view(viewController: parent, metadata: selectedMetadata, metadatas: vm.metadatas, imageIcon: tappedThumbnail.image)
@@ -144,7 +65,7 @@ struct NCMedia: View {
             .ignoresSafeArea(.all, edges: .horizontal)
             .scrollStatusByIntrospect(isScrolledToTop: $isScrolledToTop, isScrolledToBottom: $isScrolledToBottom, isScrollingStopped: $isScrollingStopped)
 
-            Toolbar(isInSelectMode: $isInSelectMode, selectedMetadatas: $selectedMetadatas, showPlayFromURLAlert: $showPlayFromURLAlert, columnCountStagesIndex: $columnCountStagesIndex, columnCountStages: $columnCountStages, title: $title, showDeleteConfirmation: $showDeleteConfirmation, isScrolledToTop: $isScrolledToTop, isScrollingStopped: $isScrollingStopped)
+            Toolbar(showPlayFromURLAlert: $showPlayFromURLAlert, columnCountStagesIndex: $columnCountStagesIndex, columnCountStages: $columnCountStages, title: $title, showDeleteConfirmation: $showDeleteConfirmation, isScrolledToTop: $isScrolledToTop, isScrollingStopped: $isScrollingStopped)
         }
         .onRotate { orientation in
             if orientation.isLandscapeHardCheck {
@@ -171,10 +92,10 @@ struct NCMedia: View {
             hasOldMedia = newValue
         }
         .onReceive(vm.$filter) { _ in
-            cancelSelection()
+            selectionManager.cancelSelection()
         }
-        .onChange(of: isInSelectMode) { newValue in
-            if newValue == false { selectedMetadatas.removeAll() }
+        .onChange(of: selectionManager.isInSelectMode) { newValue in
+            if newValue == false { selectionManager.selectedMetadatas.removeAll() }
         }
         .onChange(of: columnCountStagesIndex) { _ in
             columnCountChanged = true
@@ -206,6 +127,7 @@ struct NCMedia: View {
         )
         .environmentObject(vm)
         .environmentObject(parent)
+        .environmentObject(selectionManager)
     }
 
     private func findClosestZoomIndex(value: Double) -> Int {
@@ -216,11 +138,6 @@ struct NCMedia: View {
     private func playVideoFromUrl() {
         guard let metadata = vm.getMetadataFromUrl(playFromUrlString) else { return }
         NCViewer().view(viewController: parent, metadata: metadata, metadatas: [metadata], imageIcon: nil)
-    }
-
-    private func cancelSelection() {
-        isInSelectMode = false
-        selectedMetadatas.removeAll()
     }
 
     private func onCellContentMenuItemSelected(thumbnail: ScaledThumbnail, selection: ContextMenuSelection) {
@@ -245,11 +162,84 @@ struct NCMedia: View {
     }
 }
 
+struct Toolbar: View {
+    @State private var loadingIndicatorColor = Color.gray
+    @State private var titleColor = Color.primary
+    @State private var toolbarItemsColor = Color.blue
+    @State private var toolbarColors = [Color.clear]
+
+    @Binding var showPlayFromURLAlert: Bool
+    @Binding var columnCountStagesIndex: Int
+    @Binding var columnCountStages: [Int]
+    @Binding var title: String
+    @Binding var showDeleteConfirmation: Bool
+    @Binding var isScrolledToTop: Bool
+    @Binding var isScrollingStopped: Bool
+
+    @EnvironmentObject var vm: NCMediaViewModel
+    @EnvironmentObject var parent: NCMediaUIKitWrapper
+
+    @EnvironmentObject var selectionManager: SelectionManager
+
+    var body: some View {
+        HStack {
+            ToolbarTitle(title: $title, titleColor: $titleColor)
+
+            Spacer()
+
+            if vm.isLoading {
+                ProgressView()
+                    .tint(loadingIndicatorColor)
+                    .padding(.horizontal, 6)
+            }
+
+            ToolbarSelectButton(toolbarItemsColor: $toolbarItemsColor)
+
+            if selectionManager.isInSelectMode, !selectionManager.selectedMetadatas.isEmpty {
+                ToolbarCircularButton(imageSystemName: "trash.fill", color: .red)
+                    .onTapGesture {
+                        showDeleteConfirmation = true
+                    }
+                    .confirmationDialog("", isPresented: $showDeleteConfirmation) {
+                        Button(NSLocalizedString("_delete_selected_media_", comment: ""), role: .destructive) {
+                            vm.deleteMetadata(metadatas: selectionManager.selectedMetadatas)
+                            selectionManager.cancelSelection()
+                        }
+                    }
+            }
+
+            ToolbarMenu(showPlayFromURLAlert: $showPlayFromURLAlert, toolbarItemsColor: $toolbarItemsColor, columnCountStagesIndex: $columnCountStagesIndex, columnCountStages: $columnCountStages)
+        }
+        .frame(maxWidth: .infinity)
+        .padding([.horizontal, .top], 10)
+        .padding(.bottom, 20)
+        .background(LinearGradient(gradient: Gradient(colors: toolbarColors), startPoint: .top, endPoint: .bottom)
+            .padding(.bottom, -50)
+            .ignoresSafeArea(.all, edges: [.all])
+        )
+        .onChange(of: isScrolledToTop) { newValue in
+            withAnimation(.default) {
+                titleColor = newValue ? Color.primary : .white
+                loadingIndicatorColor = newValue ? Color.gray : .white
+                toolbarItemsColor = newValue ? .blue : .white
+                toolbarColors = newValue ? [.clear] : [Color.black.opacity(0.8), Color.black.opacity(0.4), .clear]
+            }
+        }
+        // This is here instead of in the parent so it does not update the whole view. Pragmatic solution, but there may be a better way.
+        // This is also a result of using Introspect since SwiftUI does not have all features we need.
+        .onChange(of: isScrollingStopped) { newValue in
+            if newValue {
+                vm.startLoadingNewMediaTimer()
+            }
+        }
+    }
+}
+
 struct ToolbarMenu: View {
     @EnvironmentObject var vm: NCMediaViewModel
     @EnvironmentObject var parent: NCMediaUIKitWrapper
-    @Binding var isInSelectMode: Bool
-    @Binding var selectedMetadatas: [tableMetadata]
+    @EnvironmentObject var selectionManager: SelectionManager
+
     @Binding var showPlayFromURLAlert: Bool
     @Binding var toolbarItemsColor: Color
     @Binding var columnCountStagesIndex: Int
@@ -258,33 +248,36 @@ struct ToolbarMenu: View {
     var body: some View {
         Menu {
             Section {
-                Button {
-                    print(max(columnCountStagesIndex - 1, 0))
-                    columnCountStagesIndex = max(columnCountStagesIndex - 1, 0)
-                } label: {
-                    Label(NSLocalizedString("_zoom_in_", comment: ""), systemImage: "plus.magnifyingglass")
+                if columnCountStagesIndex > 0 {
+                    Button {
+                        columnCountStagesIndex = max(columnCountStagesIndex - 1, 0)
+                    } label: {
+                        Label(NSLocalizedString("_zoom_in_", comment: ""), systemImage: "plus.magnifyingglass")
+                    }
                 }
 
-                Button {
-                    print(min(columnCountStagesIndex + 1, columnCountStages.endIndex))
-                    columnCountStagesIndex = min(columnCountStagesIndex + 1, columnCountStages.endIndex)
-                } label: {
-                    Label(NSLocalizedString("_zoom_out_", comment: ""), systemImage: "minus.magnifyingglass")
+                if columnCountStagesIndex < columnCountStages.count - 1 {
+                    Button {
+                        print(min(columnCountStagesIndex + 1, columnCountStages.count - 1))
+                        columnCountStagesIndex = min(columnCountStagesIndex + 1, columnCountStages.count - 1)
+                    } label: {
+                        Label(NSLocalizedString("_zoom_out_", comment: ""), systemImage: "minus.magnifyingglass")
+                    }
                 }
             }
 
-            if isInSelectMode, !selectedMetadatas.isEmpty {
+            if selectionManager.isInSelectMode, !selectionManager.selectedMetadatas.isEmpty {
                 Section {
                     Button {
-                        vm.copyOrMoveMetadataInApp(metadatas: selectedMetadatas)
-                        cancelSelection()
+                        vm.copyOrMoveMetadataInApp(metadatas: selectionManager.selectedMetadatas)
+                        selectionManager.cancelSelection()
                     } label: {
                         Label(NSLocalizedString("_move_selected_files_", comment: ""), systemImage: "arrow.up.right.square")
                     }
 
                     Button {
-                        vm.copyMetadata(metadatas: selectedMetadatas)
-                        cancelSelection()
+                        vm.copyMetadata(metadatas: selectionManager.selectedMetadatas)
+                        selectionManager.cancelSelection()
                     } label: {
                         Label(NSLocalizedString("_copy_file_", comment: ""), systemImage: "doc.on.doc")
                     }
@@ -327,11 +320,6 @@ struct ToolbarMenu: View {
         }
     }
 
-    private func cancelSelection() {
-        isInSelectMode = false
-        selectedMetadatas.removeAll()
-    }
-
     private func selectMediaFolder() {
         guard let navigationController = UIStoryboard(name: "NCSelect", bundle: nil).instantiateInitialViewController() as? UINavigationController,
               let viewController = navigationController.topViewController as? NCSelect
@@ -357,14 +345,15 @@ struct ToolbarTitle: View {
 }
 
 struct ToolbarSelectButton: View {
-    @Binding var isInSelectMode: Bool
     @Binding var toolbarItemsColor: Color
+
+    @EnvironmentObject var selectionManager: SelectionManager
 
     var body: some View {
         Button(action: {
-            isInSelectMode.toggle()
+            selectionManager.isInSelectMode.toggle()
         }, label: {
-            Text(NSLocalizedString(isInSelectMode ? "_cancel_" : "_select_", comment: "")).font(.system(size: 14))
+            Text(NSLocalizedString(selectionManager.isInSelectMode ? "_cancel_" : "_select_", comment: "")).font(.system(size: 14))
                 .foregroundStyle(toolbarItemsColor)
         })
         .padding(.horizontal, 6)
