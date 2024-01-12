@@ -18,7 +18,7 @@ struct NCMediaCell: View {
     let thumbnail: ScaledThumbnail
     let shrinkRatio: CGFloat
     @Binding var isInSelectMode: Bool
-    @State private var isSelected = false
+    @State var isSelected = false
     let onSelected: (ScaledThumbnail, Bool) -> Void
     let onContextMenuItemSelected: (ScaledThumbnail, ContextMenuSelection) -> Void
 

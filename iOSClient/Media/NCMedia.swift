@@ -28,6 +28,7 @@ struct Toolbar: View {
     @Binding var showDeleteConfirmation: Bool
     @Binding var isScrolledToTop: Bool
     @Binding var isScrollingStopped: Bool
+
     @EnvironmentObject var vm: NCMediaViewModel
     @EnvironmentObject var parent: NCMediaUIKitWrapper
 

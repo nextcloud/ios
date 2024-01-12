@@ -13,9 +13,12 @@ import Queuer
 struct NCMediaRow: View {
     let metadatas: [tableMetadata]
 
+    @Binding var selectedMetadatas: [tableMetadata]
     @Binding var isInSelectMode: Bool
+
     let onCellSelected: (ScaledThumbnail, Bool) -> Void
     let onCellContextMenuItemSelected: (ScaledThumbnail, ContextMenuSelection) -> Void
+
     @StateObject private var vm = NCMediaRowViewModel()
     private let spacing: CGFloat = 2
 
@@ -29,12 +32,14 @@ struct NCMediaRow: View {
                 }
             } else {
                 ForEach(vm.rowData.scaledThumbnails, id: \.metadata.ocId) { thumbnail in
-                    NCMediaCell(thumbnail: thumbnail, shrinkRatio: vm.rowData.shrinkRatio, isInSelectMode: $isInSelectMode, onSelected: onCellSelected, onContextMenuItemSelected: onCellContextMenuItemSelected, isFavorite: thumbnail.metadata.favorite)
+                    NCMediaCell(thumbnail: thumbnail, shrinkRatio: vm.rowData.shrinkRatio, isInSelectMode: $isInSelectMode, isSelected: selectedMetadatas.contains(where: {$0 == thumbnail.metadata}), onSelected: onCellSelected, onContextMenuItemSelected: onCellContextMenuItemSelected, isFavorite: thumbnail.metadata.favorite)
                 }
             }
         }
-        .onAppear {
+        .onFirstAppear {
             vm.configure(metadatas: metadatas)
+        }
+        .onAppear {
             vm.downloadThumbnails(rowWidth: UIScreen.main.bounds.width, spacing: spacing)
         }
         .onDisappear {

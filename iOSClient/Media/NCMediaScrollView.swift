@@ -26,12 +26,10 @@ struct NCMediaScrollView: View, Equatable {
     let onCellContextMenuItemSelected: (ScaledThumbnail, ContextMenuSelection) -> Void
 
     var body: some View {
-        let _ = Self._printChanges()
-
         ScrollView {
             LazyVStack(alignment: .leading, spacing: 2) {
                 ForEach(metadatas, id: \.self) { rowMetadatas in
-                    NCMediaRow(metadatas: rowMetadatas, isInSelectMode: $isInSelectMode) { tappedThumbnail, isSelected in
+                    NCMediaRow(metadatas: rowMetadatas, selectedMetadatas: $selectedMetadatas, isInSelectMode: $isInSelectMode) { tappedThumbnail, isSelected in
                         onCellSelected(tappedThumbnail, isSelected)
                     } onCellContextMenuItemSelected: { thumbnail, selection in
                         onCellContextMenuItemSelected(thumbnail, selection)
@@ -55,10 +53,6 @@ struct NCMediaScrollView: View, Equatable {
                         .padding(.vertical, 20)
                 }
             }
-            .background(GeometryReader { proxy in
-                let offset = proxy.frame(in: .named("scroll")).minY
-                Color.clear.preference(key: ScrollOffsetPreferenceKey.self, value: offset)
-            })
             .padding(.top, 70)
             .padding(.bottom, 40)
         }
