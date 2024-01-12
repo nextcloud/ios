@@ -189,7 +189,7 @@ struct Toolbar: View {
 
             if vm.isLoading {
                 ProgressView()
-                    .tint(loadingIndicatorColor)
+                    .tint(loadingIndicatorColor).scaleEffect(1.2)
                     .padding(.horizontal, 6)
             }
 
@@ -340,7 +340,9 @@ struct ToolbarTitle: View {
     var body: some View {
         Text(title)
             .font(.system(size: 20, weight: .bold))
+            .minimumScaleFactor(0.7)
             .foregroundStyle(titleColor)
+            .lineLimit(1)
     }
 }
 
@@ -356,8 +358,8 @@ struct ToolbarSelectButton: View {
             Text(NSLocalizedString(selectionManager.isInSelectMode ? "_cancel_" : "_select_", comment: "")).font(.system(size: 14))
                 .foregroundStyle(toolbarItemsColor)
         })
-        .padding(.horizontal, 6)
-        .padding(.vertical, 3)
+        .padding(.horizontal, 10)
+        .padding(.vertical, 6)
         .background(.ultraThinMaterial)
         .cornerRadius(.infinity)
     }
@@ -381,8 +383,8 @@ struct ToolbarCircularButton: View {
         Image(systemName: imageSystemName)
             .resizable()
             .scaledToFit()
-            .frame(width: 13, height: 12)
-            .padding(5)
+            .frame(width: 16, height: 14)
+            .padding(7)
             .background(.ultraThinMaterial)
             .clipShape(Circle())
             .foregroundColor(color)

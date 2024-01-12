@@ -24,10 +24,8 @@ struct NCMediaCell: View {
     let onSelected: (ScaledThumbnail, Bool) -> Void
     let onContextMenuItemSelected: (ScaledThumbnail, ContextMenuSelection) -> Void
 
-
     @State private var isSelected = false
     @State private var showDeleteConfirmation = false
-
 
 
     var body: some View {
