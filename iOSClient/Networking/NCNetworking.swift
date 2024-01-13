@@ -1345,61 +1345,6 @@ class NCNetworking: NSObject, NKCommonDelegate {
 
         let startDate = Date()
 
-        /*
-        let requestBodySearch =
-        """
-        <?xml version=\"1.0\"?>
-        <d:searchrequest xmlns:d=\"DAV:\" xmlns:oc=\"http://owncloud.org/ns\" xmlns:nc=\"http://nextcloud.org/ns\">
-        <d:basicsearch>
-            <d:select>
-                <d:prop>
-                    <oc:fileid/>
-                    <d:displayname/>
-                    <d:getcontenttype/>
-                    <d:getetag/>
-                    <oc:size/>
-                </d:prop>
-            </d:select>
-            <d:from>
-                <d:scope>
-                    <d:href>%@</d:href>
-                    <d:depth>infinity</d:depth>
-                </d:scope>
-            </d:from>
-            <d:where>
-                <d:like>
-                    <d:prop>
-                        <d:getcontenttype/>
-                    </d:prop>
-                    <d:literal>httpd/unix-directory</d:literal>
-                </d:like>
-            </d:where>
-        </d:basicsearch>
-        </d:searchrequest>
-        """
-        let path = serverUrl.replacingOccurrences(of: urlBase + "/remote.php/dav", with: "")
-        let requestBody = String(format: requestBodySearch, path)
-
-        NextcloudKit.shared.searchBodyRequest(serverUrl: urlBase,
-                                              requestBody: requestBody,
-                                              showHiddenFiles: NCKeychain().showHiddenFiles,
-                                              options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { account, files, _, error in
-
-            if error == .success {
-                for file in files {
-                    let result = NCManageDatabase.shared.getTableDirectory(account: account, serverUrl: file.serverUrl)
-                    if result?.etag == file.etag {
-                        continue
-                    }
-                }
-                completion()
-            } else {
-                completion()
-            }
-
-        }
-        */
-
         NextcloudKit.shared.readFileOrFolder(serverUrlFileName: serverUrl,
                                              depth: "infinity",
                                              showHiddenFiles: NCKeychain().showHiddenFiles,
