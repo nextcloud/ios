@@ -404,6 +404,18 @@ extension NCManageDatabase {
         return nil
     }
 
+    func getE2EUsersFiledrop(account: String, ocIdServerUrl: String) -> Results<tableE2eUsersFiledrop>? {
+
+        do {
+            let realm = try Realm()
+            return realm.objects(tableE2eUsersFiledrop.self).filter("account == %@ AND ocIdServerUrl == %@", account, ocIdServerUrl)
+        } catch let error as NSError {
+            NextcloudKit.shared.nkCommonInstance.writeLog("Could not access database: \(error)")
+        }
+
+        return nil
+    }
+
     func getE2EUsersFiledrop(account: String, ocIdServerUrl: String, userId: String) -> tableE2eUsersFiledrop? {
 
         do {

@@ -29,26 +29,26 @@ extension NCEndToEndMetadata {
 
     struct E2eeV20: Codable {
 
-        struct Files: Codable {
-            let authenticationTag: String
-            let filename: String
-            let key: String
-            let mimetype: String
-            let nonce: String
-        }
-
-        struct ciphertext: Codable {
-            let counter: Int
-            let deleted: Bool?
-            let keyChecksums: [String]?
-            let files: [String: Files]?
-            let folders: [String: String]?
-        }
-
         struct Metadata: Codable {
             let ciphertext: String
             let nonce: String
             let authenticationTag: String
+
+            struct ciphertext: Codable {
+                let counter: Int
+                let deleted: Bool?
+                let keyChecksums: [String]?
+                let files: [String: Files]?
+                let folders: [String: String]?
+
+                struct Files: Codable {
+                    let authenticationTag: String
+                    let filename: String
+                    let key: String
+                    let mimetype: String
+                    let nonce: String
+                }
+            }
         }
 
         struct Users: Codable {
@@ -108,7 +108,8 @@ extension NCEndToEndMetadata {
         var metadataKey: String?
         var keyChecksums: [String] = []
         var usersCodable: [E2eeV20.Users] = []
-        var filesCodable: [String: E2eeV20.Files] = [:]
+        var usersFiledropCodable: [E2eeV20.Filedrop.UsersFiledrop] = []
+        var filesCodable: [String: E2eeV20.Metadata.ciphertext.Files] = [:]
         var filesdropCodable: [String: E2eeV20.Filedrop] = [:]
         var folders: [String: String] = [:]
         var counter: Int = 1
@@ -188,12 +189,12 @@ extension NCEndToEndMetadata {
 
         for e2eEncryption in e2eEncryptions {
             if e2eEncryption.blob == "files" {
-                let file = E2eeV20.Files(authenticationTag: e2eEncryption.authenticationTag, filename: e2eEncryption.fileName, key: e2eEncryption.key, mimetype: e2eEncryption.mimeType, nonce: e2eEncryption.initializationVector)
+                let file = E2eeV20.Metadata.ciphertext.Files(authenticationTag: e2eEncryption.authenticationTag, filename: e2eEncryption.fileName, key: e2eEncryption.key, mimetype: e2eEncryption.mimeType, nonce: e2eEncryption.initializationVector)
                 filesCodable.updateValue(file, forKey: e2eEncryption.fileNameIdentifier)
             } else if e2eEncryption.blob == "folders" {
                 folders[e2eEncryption.fileNameIdentifier] = e2eEncryption.fileName
             } else if e2eEncryption.blob == "filedrop" {
-                let filedrop = E2eeV20.Files(authenticationTag: e2eEncryption.authenticationTag, filename: e2eEncryption.fileName, key: e2eEncryption.key, mimetype: e2eEncryption.mimeType, nonce: e2eEncryption.initializationVector)
+                let filedrop = E2eeV20.Metadata.ciphertext.Files(authenticationTag: e2eEncryption.authenticationTag, filename: e2eEncryption.fileName, key: e2eEncryption.key, mimetype: e2eEncryption.mimeType, nonce: e2eEncryption.initializationVector)
                 var authenticationTag: NSString?
                 var initializationVector: NSString?
                 do {
@@ -208,10 +209,14 @@ extension NCEndToEndMetadata {
                     // Add initializationVector [ANDROID]
                     ciphertext = ciphertext + "|" + initializationVector
 
-                    /*
-                    let filedrop = E2eeV20.Filedrop(ciphertext: ciphertext, nonce: initializationVector, authenticationTag: authenticationTag, users: usersFileDropCodable)
-                    filedropCodable.append(filedrop)
-                    */
+                    // Users
+                    if let users = NCManageDatabase.shared.getE2EUsersFiledrop(account: account, ocIdServerUrl: ocIdServerUrl) {
+                        for user in users {
+                            usersFiledropCodable.append(E2eeV20.Filedrop.UsersFiledrop(userId: user.userId, encryptedFiledropKey: user.encryptedFiledropKey))
+                        }
+                    }
+
+                    let filedrop = E2eeV20.Filedrop(ciphertext: ciphertext, nonce: initializationVector, authenticationTag: authenticationTag, users: usersFiledropCodable)
 
                 } catch let error {
                     return (nil, nil, counter, NKError(errorCode: NCGlobal.shared.errorE2EEJSon, errorDescription: error.localizedDescription))
@@ -222,7 +227,7 @@ extension NCEndToEndMetadata {
         do {
             var authenticationTag: NSString?
             var initializationVector: NSString?
-            let json = try JSONEncoder().encode(E2eeV20.ciphertext(counter: counter, deleted: false, keyChecksums: keyChecksums, files: filesCodable, folders: folders))
+            let json = try JSONEncoder().encode(E2eeV20.Metadata.ciphertext(counter: counter, deleted: false, keyChecksums: keyChecksums, files: filesCodable, folders: folders))
             let jsonZip = try json.gzipped()
             let ciphertextMetadata = NCEndToEndEncryption.sharedManager().encryptPayloadFile(jsonZip, key: metadataKey, initializationVector: &initializationVector, authenticationTag: &authenticationTag)
             guard var ciphertextMetadata, let initializationVector = initializationVector as? String, let authenticationTag = authenticationTag as? String else {
@@ -350,14 +355,13 @@ extension NCEndToEndMetadata {
                         if let filedropKeyData = NCEndToEndEncryption.sharedManager().decryptAsymmetricData(data, privateKey: NCKeychain().getEndToEndPrivateKey(account: account)) {
                             NCManageDatabase.shared.addE2UsersFiledrop(account: account, serverUrl: serverUrl, ocIdServerUrl: ocIdServerUrl, userId: user.userId, encryptedFiledropKey: user.encryptedFiledropKey, filedropKey: filedropKeyData)
                             let filedropKey = filedropKeyData.base64EncodedString()
-                            //
                             guard let decryptedFiledrop = NCEndToEndEncryption.sharedManager().decryptPayloadFile(ciphertext, key: filedropKey, initializationVector: nonce, authenticationTag: authenticationTag),
                                   decryptedFiledrop.isGzipped else {
                                 return NKError(errorCode: NCGlobal.shared.errorE2EEKeyFiledropCiphertext, errorDescription: "_e2e_error_")
                             }
                             let data = try decryptedFiledrop.gunzipped()
                             if let jsonText = String(data: data, encoding: .utf8) { print(jsonText) }
-                            let file = try JSONDecoder().decode(E2eeV20.Files.self, from: data)
+                            let file = try JSONDecoder().decode(E2eeV20.Metadata.ciphertext.Files.self, from: data)
                             print(file)
                             addE2eEncryption(fileNameIdentifier: fileNameIdentifier, filename: file.filename, authenticationTag: file.authenticationTag, key: file.key, initializationVector: file.nonce, metadataKey: filedropKey, mimetype: file.mimetype, blob: "filedrop")
                         }
@@ -374,7 +378,7 @@ extension NCEndToEndMetadata {
 
             let data = try decryptedMetadata.gunzipped()
             if let jsonText = String(data: data, encoding: .utf8) { print(jsonText) }
-            let jsonCiphertextMetadata = try JSONDecoder().decode(E2eeV20.ciphertext.self, from: data)
+            let jsonCiphertextMetadata = try JSONDecoder().decode(E2eeV20.Metadata.ciphertext.self, from: data)
 
             // CHECKSUM CHECK
             //
