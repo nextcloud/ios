@@ -1255,8 +1255,6 @@ class NCNetworking: NSObject, NKCommonDelegate {
 
             NCManageDatabase.shared.convertFilesToMetadatas(files, useMetadataFolder: true) { metadataFolder, metadatasFolder, metadatas in
 
-                let predicate = NSPredicate(format: "account == %@ AND serverUrl == %@ AND status == %d", account, serverUrl, NCGlobal.shared.metadataStatusNormal)
-
                 // Add metadata folder
                 NCManageDatabase.shared.addMetadata(tableMetadata.init(value: metadataFolder))
 
@@ -1278,6 +1276,8 @@ class NCNetworking: NSObject, NKCommonDelegate {
                     }
                 }
 #endif
+
+                let predicate = NSPredicate(format: "account == %@ AND serverUrl == %@ AND status == %d", account, serverUrl, NCGlobal.shared.metadataStatusNormal)
 
                 if forceReplaceMetadatas {
                     NCManageDatabase.shared.replaceMetadata(metadatas, predicate: predicate)
@@ -2192,7 +2192,15 @@ class NCOperationDownload: ConcurrentOperation {
     override func start() {
 
         guard !isCancelled else { return self.finish() }
-        guard let metadata = NCManageDatabase.shared.setMetadataSessionInWaitDownload(ocId: metadata.ocId, selector: selector) else { return self.finish() }
+
+        metadata.session = NextcloudKit.shared.nkCommonInstance.sessionIdentifierDownload
+        metadata.sessionError = ""
+        metadata.sessionSelector = selector
+        metadata.sessionTaskIdentifier = 0
+        metadata.status = NCGlobal.shared.metadataStatusWaitDownload
+
+        NCManageDatabase.shared.addMetadata(metadata)
+
         NCNetworking.shared.download(metadata: metadata, withNotificationProgressTask: true) {
         } completion: { _, _ in
             self.finish()
