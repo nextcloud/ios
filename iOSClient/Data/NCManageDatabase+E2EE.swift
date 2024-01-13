@@ -136,8 +136,8 @@ class tableE2eUsersFiledrop: Object {
 
     @Persisted(primaryKey: true) var primaryKey = ""
     @Persisted var account = ""
-    @Persisted var certificate = ""
-    @Persisted var encryptedFiledropKey: String?
+    @Persisted var encryptedFiledropKey: String
+    @Persisted var filedropKey: Data
     @Persisted var ocIdServerUrl: String = ""
     @Persisted var serverUrl: String = ""
     @Persisted var userId = ""
@@ -345,6 +345,27 @@ extension NCManageDatabase {
         }
     }
 
+    func addE2UsersFiledrop(account: String,
+                            serverUrl: String,
+                            ocIdServerUrl: String,
+                            userId: String,
+                            encryptedFiledropKey: String,
+                            filedropKey: Data) {
+
+        do {
+            let realm = try Realm()
+            try realm.write {
+                let object = tableE2eUsersFiledrop.init(account: account, ocIdServerUrl: ocIdServerUrl, userId: userId)
+                object.encryptedFiledropKey = encryptedFiledropKey
+                object.filedropKey = filedropKey
+                object.serverUrl = serverUrl
+                realm.add(object, update: .all)
+            }
+        } catch let error {
+            NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
+        }
+    }
+
     func deleteE2EUsers(account: String, ocIdServerUrl: String, userId: String) {
 
         do {
@@ -376,6 +397,18 @@ extension NCManageDatabase {
         do {
             let realm = try Realm()
             return realm.objects(tableE2eUsers.self).filter("account == %@ && ocIdServerUrl == %@ AND userId == %@", account, ocIdServerUrl, userId).first
+        } catch let error as NSError {
+            NextcloudKit.shared.nkCommonInstance.writeLog("Could not access database: \(error)")
+        }
+
+        return nil
+    }
+
+    func getE2EUsersFiledrop(account: String, ocIdServerUrl: String) -> Results<tableE2eUsersFiledrop>? {
+
+        do {
+            let realm = try Realm()
+            return realm.objects(tableE2eUsersFiledrop.self).filter("account == %@ AND ocIdServerUrl == %@", account, ocIdServerUrl)
         } catch let error as NSError {
             NextcloudKit.shared.nkCommonInstance.writeLog("Could not access database: \(error)")
         }
