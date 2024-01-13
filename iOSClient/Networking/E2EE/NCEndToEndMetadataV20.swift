@@ -108,9 +108,8 @@ extension NCEndToEndMetadata {
         var metadataKey: String?
         var keyChecksums: [String] = []
         var usersCodable: [E2eeV20.Users] = []
-        var usersFileDropCodable: [E2eeV20.Filedrop.UsersFiledrop] = []
         var filesCodable: [String: E2eeV20.Files] = [:]
-        var filedropCodable: [E2eeV20.Filedrop] = []
+        var filesdropCodable: [String: E2eeV20.Filedrop] = [:]
         var folders: [String: String] = [:]
         var counter: Int = 1
 
@@ -209,8 +208,10 @@ extension NCEndToEndMetadata {
                     // Add initializationVector [ANDROID]
                     ciphertext = ciphertext + "|" + initializationVector
 
+                    /*
                     let filedrop = E2eeV20.Filedrop(ciphertext: ciphertext, nonce: initializationVector, authenticationTag: authenticationTag, users: usersFileDropCodable)
                     filedropCodable.append(filedrop)
+                    */
 
                 } catch let error {
                     return (nil, nil, counter, NKError(errorCode: NCGlobal.shared.errorE2EEJSon, errorDescription: error.localizedDescription))
@@ -321,12 +322,20 @@ extension NCEndToEndMetadata {
 
             // SIGNATURE CHECK (NO FILESDROP)
             //
-            if filesdrop == nil {
-                guard let signature,
-                      verifySignature(account: account, signature: signature, userId: objUsers.userId, metadata: metadata, users: users, version: version, certificate: objUsers.certificate) else {
+            if let signature {
+                if !verifySignature(account: account, signature: signature, userId: objUsers.userId, metadata: metadata, users: users, version: version, certificate: objUsers.certificate) {
                     return NKError(errorCode: NCGlobal.shared.errorE2EEKeyVerifySignature, errorDescription: "_e2e_error_")
+
                 }
             }
+            /*
+             if filesdrop == nil {
+                 guard let signature,
+                       verifySignature(account: account, signature: signature, userId: objUsers.userId, metadata: metadata, users: users, version: version, certificate: objUsers.certificate) else {
+                     return NKError(errorCode: NCGlobal.shared.errorE2EEKeyVerifySignature, errorDescription: "_e2e_error_")
+                 }
+             }
+             */
 
             // FILEDROP
             //
