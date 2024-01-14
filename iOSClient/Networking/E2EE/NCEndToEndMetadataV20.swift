@@ -218,6 +218,8 @@ extension NCEndToEndMetadata {
 
                     let filedrop = E2eeV20.Filedrop(ciphertext: ciphertext, nonce: initializationVector, authenticationTag: authenticationTag, users: usersFiledropCodable)
 
+                    filesdropCodable[e2eEncryption.fileNameIdentifier] = filedrop
+
                 } catch let error {
                     return (nil, nil, counter, NKError(errorCode: NCGlobal.shared.errorE2EEJSon, errorDescription: error.localizedDescription))
                 }
@@ -238,7 +240,7 @@ extension NCEndToEndMetadata {
             ciphertextMetadata = ciphertextMetadata + "|" + initializationVector
 
             let metadataCodable = E2eeV20.Metadata(ciphertext: ciphertextMetadata, nonce: initializationVector, authenticationTag: authenticationTag)
-            let e2eeCodable = E2eeV20(metadata: metadataCodable, users: usersCodable, filedrop: nil, version: NCGlobal.shared.e2eeVersionV20)
+            let e2eeCodable = E2eeV20(metadata: metadataCodable, users: usersCodable, filedrop: filesdropCodable, version: NCGlobal.shared.e2eeVersionV20)
             let e2eeData = try JSONEncoder().encode(e2eeCodable)
             e2eeData.printJson()
 
