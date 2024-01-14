@@ -1193,7 +1193,7 @@ extension NCManageDatabase {
                 let results = realm.objects(tableMetadata.self).filter(predicate)
                 realm.delete(results)
                 for metadata in metadatas {
-                    if realm.object(ofType: tableMetadata.self, forPrimaryKey: metadata.ocId) == nil {
+                    if results.where({ $0.ocId == metadata.ocId }).isEmpty {
                         realm.add(tableMetadata(value: metadata), update: .modified)
                     } else {
                         continue
