@@ -46,7 +46,6 @@ class tableE2eEncryptionV3: Object {
     @Persisted var key = ""
     @Persisted var initializationVector = ""
     @Persisted var metadataKey = ""
-    @Persisted var metadataKeyFiledrop = ""
     @Persisted var metadataKeyIndex: Int = 0
     @Persisted var metadataVersion: Double = 0
     @Persisted var mimeType = ""

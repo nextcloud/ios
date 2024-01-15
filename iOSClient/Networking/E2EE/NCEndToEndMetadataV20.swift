@@ -335,14 +335,6 @@ extension NCEndToEndMetadata {
 
                 }
             }
-            /*
-             if filesdrop == nil {
-                 guard let signature,
-                       verifySignature(account: account, signature: signature, userId: objUsers.userId, metadata: metadata, users: users, version: version, certificate: objUsers.certificate) else {
-                     return NKError(errorCode: NCGlobal.shared.errorE2EEKeyVerifySignature, errorDescription: "_e2e_error_")
-                 }
-             }
-             */
 
             // FILEDROP
             //
