@@ -14,7 +14,7 @@ struct NCMediaScrollView: View, Equatable {
         return lhs.metadatas == rhs.metadatas
     }
 
-    @State private var orientation = UIDevice.current.orientation
+    @State private var orientation = UIDevice.current.orientation.isLandscapeHardCheck
     @State private var hasRotated = false
 
     var metadatas: [[tableMetadata]]
@@ -57,10 +57,9 @@ struct NCMediaScrollView: View, Equatable {
                 }
             }
             .onRotate { orientation in
-                print(self.orientation)
-                if orientation.isFlat, self.orientation == orientation { return }
+                if self.orientation == orientation.isLandscapeHardCheck { return }
 
-                self.orientation = orientation
+                self.orientation = orientation.isLandscapeHardCheck
                 hasRotated = true
                 title = NSLocalizedString("_media_", comment: "")
 
