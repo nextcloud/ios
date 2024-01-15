@@ -14,6 +14,9 @@ struct NCMediaScrollView: View, Equatable {
         return lhs.metadatas == rhs.metadatas
     }
 
+    @State private var orientation = UIDevice.current.orientation
+    @State private var hasRotated = false
+
     var metadatas: [[tableMetadata]]
     @Binding var title: String
     @Binding var shouldShowPaginationLoading: Bool
@@ -34,11 +37,13 @@ struct NCMediaScrollView: View, Equatable {
                     }
                     // NOTE: This only works properly on device. On simulator, for some reason, these get called way too early or way too late.
                     .onAppear {
+                        if hasRotated { return }
                         guard let date = rowMetadatas.first?.date as? Date else { return }
                         bottomMostVisibleMetadataDate = date
                         title = NCUtility().getTitleFromDate(max(topMostVisibleMetadataDate, bottomMostVisibleMetadataDate))
                     }
                     .onDisappear {
+                        if hasRotated { return }
                         guard let date = rowMetadatas.last?.date as? Date else { return }
                         topMostVisibleMetadataDate = date
                         title = NCUtility().getTitleFromDate(max(topMostVisibleMetadataDate, bottomMostVisibleMetadataDate))
@@ -49,6 +54,18 @@ struct NCMediaScrollView: View, Equatable {
                     ProgressView()
                         .frame(maxWidth: .infinity, alignment: .center)
                         .padding(.vertical, 20)
+                }
+            }
+            .onRotate { orientation in
+                print(self.orientation)
+                if orientation.isFlat, self.orientation == orientation { return }
+
+                self.orientation = orientation
+                hasRotated = true
+                title = NSLocalizedString("_media_", comment: "")
+
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                    hasRotated = false
                 }
             }
             .padding(.top, 70)
