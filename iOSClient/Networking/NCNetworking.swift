@@ -1255,8 +1255,6 @@ class NCNetworking: NSObject, NKCommonDelegate {
 
             NCManageDatabase.shared.convertFilesToMetadatas(files, useMetadataFolder: true) { metadataFolder, metadatasFolder, metadatas in
 
-                let predicate = NSPredicate(format: "account == %@ AND serverUrl == %@ AND status == %d", account, serverUrl, NCGlobal.shared.metadataStatusNormal)
-
                 // Add metadata folder
                 NCManageDatabase.shared.addMetadata(tableMetadata.init(value: metadataFolder))
 
@@ -1278,6 +1276,8 @@ class NCNetworking: NSObject, NKCommonDelegate {
                     }
                 }
 #endif
+
+                let predicate = NSPredicate(format: "account == %@ AND serverUrl == %@ AND status == %d", account, serverUrl, NCGlobal.shared.metadataStatusNormal)
 
                 if forceReplaceMetadatas {
                     NCManageDatabase.shared.replaceMetadata(metadatas, predicate: predicate)
@@ -1344,61 +1344,6 @@ class NCNetworking: NSObject, NKCommonDelegate {
                          completion: @escaping () -> Void = {}) {
 
         let startDate = Date()
-
-        /*
-        let requestBodySearch =
-        """
-        <?xml version=\"1.0\"?>
-        <d:searchrequest xmlns:d=\"DAV:\" xmlns:oc=\"http://owncloud.org/ns\" xmlns:nc=\"http://nextcloud.org/ns\">
-        <d:basicsearch>
-            <d:select>
-                <d:prop>
-                    <oc:fileid/>
-                    <d:displayname/>
-                    <d:getcontenttype/>
-                    <d:getetag/>
-                    <oc:size/>
-                </d:prop>
-            </d:select>
-            <d:from>
-                <d:scope>
-                    <d:href>%@</d:href>
-                    <d:depth>infinity</d:depth>
-                </d:scope>
-            </d:from>
-            <d:where>
-                <d:like>
-                    <d:prop>
-                        <d:getcontenttype/>
-                    </d:prop>
-                    <d:literal>httpd/unix-directory</d:literal>
-                </d:like>
-            </d:where>
-        </d:basicsearch>
-        </d:searchrequest>
-        """
-        let path = serverUrl.replacingOccurrences(of: urlBase + "/remote.php/dav", with: "")
-        let requestBody = String(format: requestBodySearch, path)
-
-        NextcloudKit.shared.searchBodyRequest(serverUrl: urlBase,
-                                              requestBody: requestBody,
-                                              showHiddenFiles: NCKeychain().showHiddenFiles,
-                                              options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { account, files, _, error in
-
-            if error == .success {
-                for file in files {
-                    let result = NCManageDatabase.shared.getTableDirectory(account: account, serverUrl: file.serverUrl)
-                    if result?.etag == file.etag {
-                        continue
-                    }
-                }
-                completion()
-            } else {
-                completion()
-            }
-
-        }
-        */
 
         NextcloudKit.shared.readFileOrFolder(serverUrlFileName: serverUrl,
                                              depth: "infinity",
@@ -2192,7 +2137,15 @@ class NCOperationDownload: ConcurrentOperation {
     override func start() {
 
         guard !isCancelled else { return self.finish() }
-        guard let metadata = NCManageDatabase.shared.setMetadataSessionInWaitDownload(ocId: metadata.ocId, selector: selector) else { return self.finish() }
+
+        metadata.session = NextcloudKit.shared.nkCommonInstance.sessionIdentifierDownload
+        metadata.sessionError = ""
+        metadata.sessionSelector = selector
+        metadata.sessionTaskIdentifier = 0
+        metadata.status = NCGlobal.shared.metadataStatusWaitDownload
+
+        NCManageDatabase.shared.addMetadata(metadata)
+
         NCNetworking.shared.download(metadata: metadata, withNotificationProgressTask: true) {
         } completion: { _, _ in
             self.finish()

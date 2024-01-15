@@ -153,7 +153,7 @@ extension NCUtility {
 
     func getImage(metadata: tableMetadata) -> UIImage? {
 
-        let ext = (metadata.fileName as NSString).pathExtension.uppercased()
+        let ext = (metadata.fileNameView as NSString).pathExtension.uppercased()
         var image: UIImage?
 
         if utilityFileSystem.fileProviderStorageExists(metadata) && metadata.isImage {
