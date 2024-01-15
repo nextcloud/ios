@@ -86,7 +86,6 @@ class NCManageDatabase: NSObject {
                               tableE2eMetadata.self,
                               tableE2eUsers.self,
                               tableE2eCounter.self,
-                              tableE2eUsersFiledrop.self,
                               tableShare.self,
                               tableChunk.self,
                               tableAvatar.self,
@@ -250,7 +249,6 @@ class NCManageDatabase: NSObject {
         self.clearTable(tableE2eMetadata.self, account: account)
         self.clearTable(tableE2eUsers.self, account: account)
         self.clearTable(tableE2eCounter.self, account: account)
-        self.clearTable(tableE2eUsersFiledrop.self, account: account)
     }
 
     @objc func removeDB() {
