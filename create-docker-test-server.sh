@@ -13,7 +13,7 @@ elapsed=0
 
 echo "Waiting for server..."
 
-sleep 2
+sleep 10
 
 while true; do
     content=$(curl -s $server_url/status.php)
@@ -31,12 +31,15 @@ while true; do
     fi
 
     sleep 1
+
+    echo "Waiting for server..."
+
 done
 
 echo "Server is installed."
 echo "Exporting env vars..."
 
-sleep 2
+sleep 10
 
 password=$(docker exec -e NC_PASS=$user $container_name sudo -E -u www-data php /var/www/html/occ user:add-app-password $user --password-from-env | tail -1)
 
