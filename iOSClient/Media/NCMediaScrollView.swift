@@ -63,7 +63,7 @@ struct NCMediaScrollView: View, Equatable {
                 hasRotated = true
                 title = NSLocalizedString("_media_", comment: "")
 
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
                     hasRotated = false
                 }
             }
