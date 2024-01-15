@@ -2,7 +2,7 @@
 #This script creates a testable Docker enviroment of the Nextcloud server, and is used by the CI for tests.
 
 container_name="nextcloud_test"
-port=8080
+port=8082
 server_url="http://localhost:${port}"
 user="admin"
 
