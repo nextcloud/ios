@@ -311,7 +311,7 @@ extension NCEndToEndMetadata {
                     let ciphertext = filedop.value.ciphertext
                     let nonce = filedop.value.nonce
                     let authenticationTag = filedop.value.authenticationTag
-                    for user in filedop.value.users {
+                    for user in filedop.value.users where user.userId == userId {
                         let data = Data(base64Encoded: user.encryptedFiledropKey)
                         if let decryptedFiledropKey = NCEndToEndEncryption.sharedManager().decryptAsymmetricData(data, privateKey: NCKeychain().getEndToEndPrivateKey(account: account)) {
                             let filedropKey = decryptedFiledropKey.base64EncodedString()
