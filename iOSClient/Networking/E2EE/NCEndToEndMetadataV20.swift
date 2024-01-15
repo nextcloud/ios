@@ -167,7 +167,6 @@ extension NCEndToEndMetadata {
             for user in users {
                 if isDirectoryTop {
                     usersCodable.append(E2eeV20.Users(userId: user.userId, certificate: user.certificate, encryptedMetadataKey: user.encryptedMetadataKey))
-                    // usersFileDropCodable.append(E2eeV20.Filedrop.UsersFiledrop(userId: user.userId, encryptedFiledropKey: user.encryptedFiledropKey))
                 }
                 if let hash = NCEndToEndEncryption.sharedManager().createSHA256(user.metadataKey) {
                     keyChecksums.append(hash)
