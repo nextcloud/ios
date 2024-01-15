@@ -46,7 +46,6 @@ class tableE2eEncryptionV3: Object {
     @Persisted var key = ""
     @Persisted var initializationVector = ""
     @Persisted var metadataKey = ""
-    @Persisted var metadataKeyFiledrop = ""
     @Persisted var metadataKeyIndex: Int = 0
     @Persisted var metadataVersion: Double = 0
     @Persisted var mimeType = ""
@@ -119,25 +118,6 @@ class tableE2eUsers: Object {
     @Persisted var certificate = ""
     @Persisted var encryptedMetadataKey: String?
     @Persisted var metadataKey: Data?
-    @Persisted var ocIdServerUrl: String = ""
-    @Persisted var serverUrl: String = ""
-    @Persisted var userId = ""
-
-    convenience init(account: String, ocIdServerUrl: String, userId: String) {
-        self.init()
-        self.primaryKey = account + ocIdServerUrl + userId
-        self.account = account
-        self.ocIdServerUrl = ocIdServerUrl
-        self.userId = userId
-     }
-}
-
-class tableE2eUsersFiledrop: Object {
-
-    @Persisted(primaryKey: true) var primaryKey = ""
-    @Persisted var account = ""
-    @Persisted var certificate = ""
-    @Persisted var encryptedFiledropKey: String?
     @Persisted var ocIdServerUrl: String = ""
     @Persisted var serverUrl: String = ""
     @Persisted var userId = ""
@@ -376,18 +356,6 @@ extension NCManageDatabase {
         do {
             let realm = try Realm()
             return realm.objects(tableE2eUsers.self).filter("account == %@ && ocIdServerUrl == %@ AND userId == %@", account, ocIdServerUrl, userId).first
-        } catch let error as NSError {
-            NextcloudKit.shared.nkCommonInstance.writeLog("Could not access database: \(error)")
-        }
-
-        return nil
-    }
-
-    func getE2EUsersFiledrop(account: String, ocIdServerUrl: String, userId: String) -> tableE2eUsersFiledrop? {
-
-        do {
-            let realm = try Realm()
-            return realm.objects(tableE2eUsersFiledrop.self).filter("account == %@ && ocIdServerUrl == %@ AND userId == %@", account, ocIdServerUrl, userId).first
         } catch let error as NSError {
             NextcloudKit.shared.nkCommonInstance.writeLog("Could not access database: \(error)")
         }
