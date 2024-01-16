@@ -16,7 +16,7 @@ echo "Waiting for server..."
 sleep 10
 
 while true; do
-    content=$(curl -s $server_url/status.php)
+    content=$(curl -s $server_url/status.php) || { echo "Error fetching status.php"; exit 1; }
 
 # wait until server returns status as installed:true, then continue
     if [[ $content == *"installed\":true"* ]]; then
