@@ -294,7 +294,7 @@ extension NCEndToEndMetadata {
                 return NKError(errorCode: NCGlobal.shared.errorE2EENoUserFound, errorDescription: "_e2e_error_")
             }
 
-            // SIGNATURE CHECK (NO FILESDROP)
+            // SIGNATURE CHECK
             //
             if let signature {
                 if !verifySignature(account: account, signature: signature, userId: objUsers.userId, metadata: metadata, users: users, version: version, certificate: objUsers.certificate) {
