@@ -54,6 +54,7 @@ jobs:
     - name: Create docker test server and export enviroment variables
       run: |
         source ./create-docker-test-server.sh
+        docker logs nextcloud_test
     - name: Build & Test Nextcloud iOS
       run: |
         set -o pipefail && xcodebuild clean test -project $PROJECT \
