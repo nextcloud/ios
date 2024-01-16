@@ -566,7 +566,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     // MARK: - Tip
 
     func showTip() {
-
         if self is NCFiles, self.view.window != nil, !NCBrandOptions.shared.disable_multiaccount, !NCBrandOptions.shared.disable_manage_account, self.serverUrl == utilityFileSystem.getHomeServer(urlBase: appDelegate.urlBase, userId: appDelegate.userId), let view = self.navigationItem.leftBarButtonItem?.customView {
             if !NCManageDatabase.shared.tipExists(NCGlobal.shared.tipNCCollectionViewCommonAccountRequest), !NCManageDatabase.shared.getAllAccountOrderAlias().isEmpty {
                 self.tipView?.show(forView: view)
@@ -594,20 +593,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
         let button = UIButton(type: .custom)
         button.setImage(image, for: .normal)
-
-        if serverUrl == utilityFileSystem.getHomeServer(urlBase: appDelegate.urlBase, userId: appDelegate.userId) {
-
-            var titleButton = "  "
-
-            if getNavigationTitle() == activeAccount?.alias {
-                titleButton = ""
-            } else {
-                titleButton += activeAccount?.displayName ?? ""
-            }
-
-            button.setTitle(titleButton, for: .normal)
-            button.setTitleColor(.systemBlue, for: .normal)
-        }
 
         button.semanticContentAttribute = .forceLeftToRight
         button.sizeToFit()
@@ -638,13 +623,14 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                 self.dismissTip()
             }
         }
+
         navigationItem.setLeftBarButton(UIBarButtonItem(customView: button), animated: true)
         navigationItem.leftItemsSupplementBackButton = true
-        if titlePreviusFolder == nil {
-            navigationController?.navigationBar.topItem?.title = getNavigationTitle()
-        } else {
+
+        if titlePreviusFolder != nil {
             navigationController?.navigationBar.topItem?.title = titlePreviusFolder
         }
+
         navigationItem.title = titleCurrentFolder
     }
 
