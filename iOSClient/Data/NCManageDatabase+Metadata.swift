@@ -288,10 +288,8 @@ extension tableMetadata {
 
     // Return if is sharable
     func isSharable() -> Bool {
-        guard NCGlobal.shared.capabilityFileSharingApiEnabled else { return false }
-        if isDirectoryE2EE || e2eEncrypted {
-            guard directory, NCGlobal.shared.capabilityE2EEEnabled else { return false }
-            return true
+        if !NCGlobal.shared.capabilityFileSharingApiEnabled || (NCGlobal.shared.capabilityE2EEEnabled && isDirectoryE2EE) {
+            return false
         }
         return true
     }
