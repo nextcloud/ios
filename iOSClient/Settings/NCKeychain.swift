@@ -101,7 +101,9 @@ import KeychainAccess
                 }
                 keychainOLD["notPasscodeAtStart"] = nil
             }
-            if let value = try? keychain.get("requestPasscodeAtStart"), let result = Bool(value) {
+            if NCBrandOptions.shared.doNotAskPasscodeAtStartup {
+                return false
+            } else if let value = try? keychain.get("requestPasscodeAtStart"), let result = Bool(value) {
                 return result
             }
             return true

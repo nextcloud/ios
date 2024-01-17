@@ -80,6 +80,7 @@ let userAgent: String = {
     @objc public var disable_log: Bool = false
     @objc public var disable_mobileconfig: Bool = false
     @objc public var disable_show_more_nextcloud_apps_in_settings: Bool = false
+    @objc public var doNotAskPasscodeAtStartup: Bool = false
 
     // Internal option behaviour
     @objc public var cleanUpDay: Int = 0                                                        // Set default "Delete, in the cache, all files older than" possible days value are: 0, 1, 7, 30, 90, 180, 365
