@@ -51,8 +51,9 @@ class NCService: NSObject {
                 requestDashboardWidget()
                 NCNetworkingE2EE().unlockAll(account: account)
                 NCNetworkingProcessUpload.shared.verifyUploadZombie()
-                // TODO: sendClientDiagnosticsRemoteOperation(account: account)
-                // sendClientDiagnosticsRemoteOperation(account: account)
+                if NCGlobal.shared.capabilitySecurityGuardDiagnostics {
+                    sendClientDiagnosticsRemoteOperation(account: account)
+                }
             }
         }
     }
