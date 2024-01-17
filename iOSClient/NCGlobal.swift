@@ -472,6 +472,8 @@ class NCGlobal: NSObject {
         return capabilityServerVersionMajor >= nextcloudVersion28
     }
 
+    var capabilitySecurityGuardDiagnostics                      = false
+
     // MORE NEXTCLOUD APPS
     let talkSchemeUrl                                           = "nextcloudtalk://"
     let notesSchemeUrl                                          = "nextcloudnotes://"
