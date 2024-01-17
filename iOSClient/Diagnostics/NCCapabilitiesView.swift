@@ -115,6 +115,9 @@ class NCCapabilitiesViewOO: ObservableObject {
         if let image = UIImage(systemName: "person.2") {
             capabililies.append(Capability(text: "Group folders", image: image, resize: false, available: NCGlobal.shared.capabilityGroupfoldersEnabled))
         }
+        if let image = UIImage(systemName: "shield") {
+            capabililies.append(Capability(text: "Security Guard Diagnostics", image: image, resize: false, available: NCGlobal.shared.capabilitySecurityGuardDiagnostics))
+        }
 
         homeServer = utilityFileSystem.getHomeServer(urlBase: activeAccount.urlBase, userId: activeAccount.userId) + "/"
     }
