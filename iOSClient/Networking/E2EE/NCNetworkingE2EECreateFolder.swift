@@ -31,6 +31,7 @@ class NCNetworkingE2EECreateFolder: NSObject {
     let networkingE2EE = NCNetworkingE2EE()
     let utilityFileSystem = NCUtilityFileSystem()
     let utility = NCUtility()
+    let version = "v" + NCGlobal.shared.capabilityE2EEApiVersion
 
     func createFolder(fileName: String, serverUrl: String, account: String, urlBase: String, userId: String, withPush: Bool) async -> NKError {
 
@@ -134,7 +135,7 @@ class NCNetworkingE2EECreateFolder: NSObject {
 
         // SET FOLDER AS E2EE
         //
-        let resultsMarkE2EEFolder = await NextcloudKit.shared.markE2EEFolder(fileId: fileId, delete: false)
+        let resultsMarkE2EEFolder = await NextcloudKit.shared.markE2EEFolder(fileId: fileId, delete: false, options: NCNetworkingE2EE().getOptions())
         guard resultsMarkE2EEFolder.error == .success  else {
             await networkingE2EE.unlock(account: account, serverUrl: serverUrl)
             return resultsMarkE2EEFolder.error
