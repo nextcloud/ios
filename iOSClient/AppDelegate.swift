@@ -158,7 +158,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
         // Intro
         if NCBrandOptions.shared.disable_intro {
-            NCKeychain().intro = true
             if account.isEmpty {
                 openLogin(viewController: nil, selector: NCGlobal.shared.introLogin, openLoginWeb: false)
             }
