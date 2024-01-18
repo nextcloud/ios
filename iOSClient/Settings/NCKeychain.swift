@@ -126,7 +126,7 @@ import KeychainAccess
         }
     }
 
-    var intro: Bool {
+    var disableIntro: Bool {
         get {
             migrate(key: "intro")
             if let value = try? keychain.get("intro"), let result = Bool(value) {
