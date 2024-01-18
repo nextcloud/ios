@@ -105,12 +105,12 @@
     NSData *pushPublicKey = [[[NCKeychain alloc] init] getPushNotificationPublicKeyWithAccount:account];
     NSString *pushDevicePublicKey = [[NSString alloc] initWithData:pushPublicKey encoding:NSUTF8StringEncoding];
     NSString *proxyServerPath = [NCBrandOptions shared].pushNotificationServerProxy;
-    NKRequestOptions *options = [[NKRequestOptions alloc] initWithEndpoint:nil customHeader:nil customUserAgent:nil contentType:nil e2eToken:nil timeout:60 queue:dispatch_get_main_queue()];
+    NKRequestOptions *options = [[NKRequestOptions alloc] initWithEndpoint:nil version:nil customHeader:nil customUserAgent:nil contentType:nil e2eToken:nil timeout:60 queue:dispatch_get_main_queue()];
 
     [[NextcloudKit shared] subscribingPushNotificationWithServerUrl:urlBase account:account user:user password:[[[NCKeychain alloc] init] getPasswordWithAccount:account] pushTokenHash:pushTokenHash devicePublicKey:pushDevicePublicKey proxyServerUrl:proxyServerPath options:options completion:^(NSString *account, NSString *deviceIdentifier, NSString *signature, NSString *publicKey, NSData *data, NKError *error) {
         if (error == NKError.success) {
             NSString *userAgent = [NSString stringWithFormat:@"%@  (Strict VoIP)", [[NCBrandOptions shared] getUserAgent]];
-            NKRequestOptions *options = [[NKRequestOptions alloc] initWithEndpoint:nil customHeader:nil customUserAgent:userAgent contentType:nil e2eToken:nil timeout:60 queue:dispatch_get_main_queue()];
+            NKRequestOptions *options = [[NKRequestOptions alloc] initWithEndpoint:nil version:nil customHeader:nil customUserAgent:userAgent contentType:nil e2eToken:nil timeout:60 queue:dispatch_get_main_queue()];
 
             [[NextcloudKit shared] subscribingPushProxyWithProxyServerUrl:proxyServerPath pushToken:self.pushKitToken deviceIdentifier:deviceIdentifier signature:signature publicKey:publicKey options:options completion:^(NKError *error) {
                 if (error == NKError.success) {
@@ -134,13 +134,13 @@
     NSString *deviceIdentifier = [[[NCKeychain alloc] init] getPushNotificationDeviceIdentifierWithAccount:account];
     NSString *signature = [[[NCKeychain alloc] init] getPushNotificationDeviceIdentifierSignatureWithAccount:account];
     NSString *publicKey = [[[NCKeychain alloc] init] getPushNotificationSubscribingPublicKeyWithAccount:account];
-    NKRequestOptions *options = [[NKRequestOptions alloc] initWithEndpoint:nil customHeader:nil customUserAgent:nil contentType:nil e2eToken:nil timeout:60 queue:dispatch_get_main_queue()];
+    NKRequestOptions *options = [[NKRequestOptions alloc] initWithEndpoint:nil version:nil customHeader:nil customUserAgent:nil contentType:nil e2eToken:nil timeout:60 queue:dispatch_get_main_queue()];
 
     [[NextcloudKit shared] unsubscribingPushNotificationWithServerUrl:urlBase account:account user:user password:[[[NCKeychain alloc] init] getPasswordWithAccount:account] options:options completion:^(NSString *account, NKError *error) {
         if (error == NKError.success) {
             NSString *proxyServerPath = [NCBrandOptions shared].pushNotificationServerProxy;
             NSString *userAgent = [NSString stringWithFormat:@"%@  (Strict VoIP)", [[NCBrandOptions shared] getUserAgent]];
-            NKRequestOptions *options = [[NKRequestOptions alloc] initWithEndpoint:nil customHeader:nil customUserAgent:userAgent contentType:nil e2eToken:nil timeout:60 queue:dispatch_get_main_queue()];
+            NKRequestOptions *options = [[NKRequestOptions alloc] initWithEndpoint:nil version:nil customHeader:nil customUserAgent:userAgent contentType:nil e2eToken:nil timeout:60 queue:dispatch_get_main_queue()];
 
             [[NextcloudKit shared] unsubscribingPushProxyWithProxyServerUrl:proxyServerPath deviceIdentifier:deviceIdentifier signature:signature publicKey:publicKey options:options completion:^(NKError *error) {
                 if (error == NKError.success) {
