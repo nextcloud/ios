@@ -31,7 +31,6 @@ class NCNetworkingE2EECreateFolder: NSObject {
     let networkingE2EE = NCNetworkingE2EE()
     let utilityFileSystem = NCUtilityFileSystem()
     let utility = NCUtility()
-    let version = "v" + NCGlobal.shared.capabilityE2EEApiVersion
 
     func createFolder(fileName: String, serverUrl: String, account: String, urlBase: String, userId: String, withPush: Bool) async -> NKError {
 
