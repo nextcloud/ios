@@ -156,13 +156,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             self.handleProcessingTask(task)
         }
 
-        // Intro
-        if NCBrandOptions.shared.disable_intro {
-            if account.isEmpty {
+        if account.isEmpty {
+            if NCBrandOptions.shared.disable_intro {
                 openLogin(viewController: nil, selector: NCGlobal.shared.introLogin, openLoginWeb: false)
-            }
-        } else {
-            if !NCKeychain().disableIntro {
+            } else {
                 if let viewController = UIStoryboard(name: "NCIntro", bundle: nil).instantiateInitialViewController() {
                     let navigationController = NCLoginNavigationController(rootViewController: viewController)
                     window?.rootViewController = navigationController

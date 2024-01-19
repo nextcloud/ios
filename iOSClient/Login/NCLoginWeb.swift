@@ -298,23 +298,18 @@ extension NCLoginWeb: WKNavigationDelegate {
 
                 self.appDelegate.changeAccount(account, userProfile: userProfile)
 
-                if NCKeychain().disableIntro {
-                    self.dismiss(animated: true)
-                } else {
-                    NCKeychain().disableIntro = true
-                    if self.presentingViewController == nil {
-                        if let viewController = UIStoryboard(name: "Main", bundle: nil).instantiateInitialViewController() {
-                            viewController.modalPresentationStyle = .fullScreen
-                            viewController.view.alpha = 0
-                            self.appDelegate.window?.rootViewController = viewController
-                            self.appDelegate.window?.makeKeyAndVisible()
-                            UIView.animate(withDuration: 0.5) {
-                                viewController.view.alpha = 1
-                            }
+                if self.presentingViewController == nil {
+                    if let viewController = UIStoryboard(name: "Main", bundle: nil).instantiateInitialViewController() {
+                        viewController.modalPresentationStyle = .fullScreen
+                        viewController.view.alpha = 0
+                        self.appDelegate.window?.rootViewController = viewController
+                        self.appDelegate.window?.makeKeyAndVisible()
+                        UIView.animate(withDuration: 0.5) {
+                            viewController.view.alpha = 1
                         }
-                    } else {
-                        self.dismiss(animated: true)
                     }
+                } else {
+                    self.dismiss(animated: true)
                 }
 
             } else {
