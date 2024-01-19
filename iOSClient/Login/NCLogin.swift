@@ -400,19 +400,20 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
 
                     self.appDelegate.changeAccount(account, userProfile: userProfile)
 
-                    if NCKeychain().intro {
-                        self.dismiss(animated: true)
-                    } else {
-                        NCKeychain().intro = true
-                        if self.presentingViewController == nil {
-                            let viewController = UIStoryboard(name: "Main", bundle: nil).instantiateInitialViewController()
-                            viewController?.modalPresentationStyle = .fullScreen
+                    if self.presentingViewController == nil {
+                        if let viewController = UIStoryboard(name: "Main", bundle: nil).instantiateInitialViewController() {
+                            viewController.modalPresentationStyle = .fullScreen
+                            viewController.view.alpha = 0
                             self.appDelegate.window?.rootViewController = viewController
-                            self.appDelegate.window?.makeKey()
-                        } else {
-                            self.dismiss(animated: true)
+                            self.appDelegate.window?.makeKeyAndVisible()
+                            UIView.animate(withDuration: 0.5) {
+                                viewController.view.alpha = 1
+                            }
                         }
+                    } else {
+                        self.dismiss(animated: true)
                     }
+
                 } else {
 
                     let alertController = UIAlertController(title: NSLocalizedString("_error_", comment: ""), message: error.errorDescription, preferredStyle: .alert)

@@ -126,19 +126,6 @@ import KeychainAccess
         }
     }
 
-    var intro: Bool {
-        get {
-            migrate(key: "intro")
-            if let value = try? keychain.get("intro"), let result = Bool(value) {
-                return result
-            }
-            return false
-        }
-        set {
-            keychain["intro"] = String(newValue)
-        }
-    }
-
     @objc var incrementalNumber: String {
         migrate(key: "incrementalnumber")
         var incrementalString = String(format: "%04ld", 0)
