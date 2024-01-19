@@ -41,6 +41,8 @@ struct NCMedia: View {
     @State private var bottomMostVisibleMetadataDate = Date.now
 
     var body: some View {
+        let _ = Self._printChanges()
+
         ZStack(alignment: .top) {
             if showEmptyView {
                 EmptyMediaView()
