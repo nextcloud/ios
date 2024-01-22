@@ -324,6 +324,7 @@ class NCService: NSObject {
 
         var problems = Problems()
 
+        /*
         guard let metadatas = NCManageDatabase.shared.getMetadatasInError(account: account), !metadatas.isEmpty else { return }
         for metadata in metadatas {
             guard let oldest = metadata.errorCodeDate?.timeIntervalSince1970 else { continue }
@@ -347,5 +348,6 @@ class NCService: NSObject {
         } catch {
             print("Error: \(error.localizedDescription)")
         }
+        */
     }
 }

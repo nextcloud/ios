@@ -41,10 +41,50 @@ class TableSecurityGuardDiagnostics: Object {
         self.primaryKey = account + issue + (problemserror ?? "")
         self.issue = issue
         self.problemserror = problemserror
+        self.counter = 1
         self.oldest = date.timeIntervalSince1970
      }
 }
 
 extension NCManageDatabase {
+
+    func add(account: String, issue: String, problemserror: String?) {
+
+        do {
+            let realm = try Realm()
+            try realm.write {
+                let primaryKey = account + issue + (problemserror ?? "")
+                if let result = realm.object(ofType: TableSecurityGuardDiagnostics.self, forPrimaryKey: primaryKey) {
+                    result.counter += 1
+                    result.oldest = Date().timeIntervalSince1970
+                } else {
+                    let table = TableSecurityGuardDiagnostics(account: account, issue: issue, problemserror: problemserror, date: Date())
+                    realm.add(table)
+                }
+            }
+        } catch let error {
+            NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
+        }
+    }
+
+    /*
+    func clearErrorCodeMetadatas(metadatas: Results<tableMetadata>?) {
+
+        guard let metadatas else { return }
+
+        do {
+            let realm = try Realm()
+            try realm.write {
+                for metadata in metadatas {
+                    metadata.errorCode = 0
+                    metadata.errorCodeCounter = 0
+                    metadata.errorCodeDate = nil
+                }
+            }
+        } catch let error as NSError {
+            NextcloudKit.shared.nkCommonInstance.writeLog("Could not access database: \(error)")
+        }
+    }
+    */
 
 }
