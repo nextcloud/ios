@@ -48,23 +48,29 @@ struct NCMedia: View {
                 EmptyMediaView()
             }
 
-            NCMediaScrollView(metadatas: $metadatas, title: $title, shouldShowPaginationLoading: $hasOldMedia, topMostVisibleMetadataDate: $topMostVisibleMetadataDate, bottomMostVisibleMetadataDate: $bottomMostVisibleMetadataDate) { tappedThumbnail, isSelected in
-                if selectionManager.isInSelectMode, isSelected {
-                    selectionManager.selectedMetadatas.append(tappedThumbnail.metadata)
-                } else {
-                    selectionManager.selectedMetadatas.removeAll(where: { $0.ocId == tappedThumbnail.metadata.ocId })
-                }
+//            NCMediaScrollView(metadatas: $metadatas, title: $title, shouldShowPaginationLoading: $hasOldMedia, topMostVisibleMetadataDate: $topMostVisibleMetadataDate, bottomMostVisibleMetadataDate: $bottomMostVisibleMetadataDate) { tappedThumbnail, isSelected in
+//                if selectionManager.isInSelectMode, isSelected {
+//                    selectionManager.selectedMetadatas.append(tappedThumbnail.metadata)
+//                } else {
+//                    selectionManager.selectedMetadatas.removeAll(where: { $0.ocId == tappedThumbnail.metadata.ocId })
+//                }
+//
+//                if !selectionManager.isInSelectMode {
+//                    let selectedMetadata = tappedThumbnail.metadata
+//                    vm.onCellTapped(metadata: selectedMetadata)
+//                    NCViewer().view(viewController: parent, metadata: selectedMetadata, metadatas: vm.metadatas, imageIcon: tappedThumbnail.image)
+//                }
+//            } onCellContextMenuItemSelected: { thumbnail, selection in
+//                onCellContentMenuItemSelected(thumbnail: thumbnail, selection: selection)
+//            }
+//            .ignoresSafeArea(.all, edges: .horizontal)
+//            .scrollStatusByIntrospect(isScrolledToTop: $isScrolledToTop, isScrolledToBottom: $isScrolledToBottom, isScrollingStopped: $isScrollingStopped)
 
-                if !selectionManager.isInSelectMode {
-                    let selectedMetadata = tappedThumbnail.metadata
-                    vm.onCellTapped(metadata: selectedMetadata)
-                    NCViewer().view(viewController: parent, metadata: selectedMetadata, metadatas: vm.metadatas, imageIcon: tappedThumbnail.image)
-                }
-            } onCellContextMenuItemSelected: { thumbnail, selection in
-                onCellContentMenuItemSelected(thumbnail: thumbnail, selection: selection)
-            }
-            .ignoresSafeArea(.all, edges: .horizontal)
-            .scrollStatusByIntrospect(isScrolledToTop: $isScrolledToTop, isScrolledToBottom: $isScrolledToBottom, isScrollingStopped: $isScrollingStopped)
+//            ScrollView {
+//                VStack {
+                    MediaCollectionView(items: $metadatas)
+//                }
+//            }
 
             Toolbar(showPlayFromURLAlert: $showPlayFromURLAlert, columnCountStagesIndex: $columnCountStagesIndex, columnCountStages: $columnCountStages, title: $title, showDeleteConfirmation: $showDeleteConfirmation, isScrolledToTop: $isScrolledToTop, isScrollingStopped: $isScrollingStopped)
         }

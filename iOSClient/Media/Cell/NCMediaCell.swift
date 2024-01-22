@@ -17,7 +17,7 @@ enum ContextMenuSelection {
 struct NCMediaCell: View {
     @EnvironmentObject var selectionManager: SelectionManager
 
-    let thumbnail: ScaledThumbnail
+    public let thumbnail: ScaledThumbnail
     let shrinkRatio: CGFloat
     @State var isFavorite: Bool
 

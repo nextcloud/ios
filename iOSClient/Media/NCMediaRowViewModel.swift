@@ -9,6 +9,7 @@
 import Foundation
 import NextcloudKit
 import Queuer
+import UIKit
 
 struct RowData {
     var scaledThumbnails: [ScaledThumbnail] = []

@@ -7,7 +7,7 @@
 //
 
 import Foundation
-
+import UIKit
 //struct RowData {
 //    var scaledThumbnails: [ScaledThumbnail] = []
 //    var shrinkRatio: CGFloat = 0
@@ -35,10 +35,13 @@ class MediaCell: UICollectionViewCell {
     static let identifier = "MediaCell"
     var medatadata: tableMetadata?
     var image = UIImage()
+//    var shrinkRatio: CGFloat
 
 
     let rowWidth = UIScreen.main.bounds.width
     let spacing: CGFloat = 2
+
+//    var thumbnail: ScaledThumbnail
 
     //    @Published private(set) var rowData = RowData()
     //
@@ -62,16 +65,16 @@ class MediaCell: UICollectionViewCell {
         //        contentView.addSubview(titleLabel)
         //        contentView.backgroundColor = .systemBlue
         //        titleLabel.frame = contentView.bounds
-//        imageView.contentMode = .scaleToFill
+        imageView.contentMode = .scaleToFill
 
-//        imageView.translatesAutoresizingMaskIntoConstraints = false
+        imageView.translatesAutoresizingMaskIntoConstraints = false
 
         contentView.addSubview(imageView)
 
-//        imageView.centerXAnchor.constraint(equalTo: contentView.centerXAnchor).isActive = true
-//        imageView.centerYAnchor.constraint(equalTo: contentView.centerYAnchor).isActive = true
-//        imageView.heightAnchor.constraint(equalTo: contentView.heightAnchor).isActive = true
-//        imageView.widthAnchor.constraint(equalTo: contentView.widthAnchor).isActive = true
+        imageView.centerXAnchor.constraint(equalTo: contentView.centerXAnchor).isActive = true
+        imageView.centerYAnchor.constraint(equalTo: contentView.centerYAnchor).isActive = true
+        imageView.heightAnchor.constraint(equalTo: contentView.heightAnchor).isActive = true
+        imageView.widthAnchor.constraint(equalTo: contentView.widthAnchor).isActive = true
     }
 
     required init?(coder: NSCoder) {
@@ -83,6 +86,8 @@ class MediaCell: UICollectionViewCell {
 
 //                self.medatadata = metadata
                 self.imageView.image = thumbnail.image
+//        self.shrinkRatio = shrinkRatio
+//        self.thumbnail = thumbnail
 //                titleLabel.text = metadata.name
 
         var thumbnails: [ScaledThumbnail] = []

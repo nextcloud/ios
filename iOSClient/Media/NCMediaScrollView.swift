@@ -26,12 +26,10 @@ struct NCMediaScrollView: View {
     var body: some View {
         let _ = Self._printChanges()
 
-        ScrollView(.vertical, showsIndicators: false) {
-            VStack(spacing: 0) {
-                MediaCollectionView(items: $metadatas)
-                    .frame(height: 60)
-            }
-        }
+//        ScrollView(.vertical, showsIndicators: false) {
+//                MediaCollectionView(items: $metadatas)
+//                .frame(height: 60)
+//        }
 
 //        MyCustomView()
 //        ScrollView {
