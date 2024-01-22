@@ -312,42 +312,114 @@ class NCService: NSObject {
     // MARK: -
 
     func sendClientDiagnosticsRemoteOperation(account: String) {
-
-        struct Problem: Codable {
-            let count: Int
-            let oldest: TimeInterval
-        }
-
-        struct Problems: Codable {
-            var problems: [String: Problem] = [:]
-        }
-
-        var problems = Problems()
+        if !NCManageDatabase.shared.existsDiagnostics(account: account) { return }
 
         /*
-        guard let metadatas = NCManageDatabase.shared.getMetadatasInError(account: account), !metadatas.isEmpty else { return }
-        for metadata in metadatas {
-            guard let oldest = metadata.errorCodeDate?.timeIntervalSince1970 else { continue }
-            var key = String(metadata.errorCode)
-            if !metadata.sessionError.isEmpty {
-                key = key + " - " + metadata.sessionError
+
+
+         let json = """
+         {
+             "sync_conflicts": {"count": 3, "oldest": 12312332423},
+             "problems": {
+                 "UploadResult.CREDENTIAL_ERROR": {"count": 1, "oldest": 1213123132},
+                 "UploadResult.FOLDER_ERROR": {"count": 5, "oldest": 654654655}
+             },
+             "virus_detected": {"count": 1, "oldest": 13343345},
+             "e2e_errors": {"count": 5, "oldest": 345535454}
+         }
+         """
+
+         if let jsonData = json.data(using: .utf8) {
+             do {
+                 let decoder = JSONDecoder()
+                 let issuesData = try decoder.decode(IssuesData.self, from: jsonData)
+
+                 // Now, issuesData contains the decoded data
+                 print(issuesData)
+
+                 // If you want to encode it back to JSON, you can use JSONEncoder
+                 let encoder = JSONEncoder()
+                 encoder.outputFormatting = .prettyPrinted
+                 let encodedData = try encoder.encode(issuesData)
+
+                 if let encodedJson = String(data: encodedData, encoding: .utf8) {
+                     print(encodedJson)
+                 }
+             } catch {
+                 print("Error decoding JSON: \(error)")
+             }
+         }
+         */
+
+        struct Issues: Codable {
+
+            struct SyncConflicts: Codable {
+                var count: Int
+                var oldest: TimeInterval
             }
-            let value = Problem(count: metadata.errorCodeCounter, oldest: oldest)
-            problems.problems[key] = value
+
+            struct Problem: Codable {
+                struct Upload: Codable {
+                    var count: Int
+                    var oldest: TimeInterval
+                }
+
+                var credentialError: Upload?
+                var folderError: Upload?
+            }
+
+            struct VirusDetected: Codable {
+                var count: Int
+                var oldest: TimeInterval
+            }
+
+            struct E2EError: Codable {
+                var count: Int
+                var oldest: TimeInterval
+            }
+
+            var syncConflicts: SyncConflicts?
+            var problems: Problem?
+            var virusDetected: VirusDetected?
+            var e2eErrors: E2EError?
+        }
+
+        var syncConflicts: Issues.SyncConflicts?
+        var virusDetected: Issues.VirusDetected?
+        var e2eErrors: Issues.E2EError?
+        var problems: Issues.Problem?
+
+        if let result = NCManageDatabase.shared.getDiagnostics(account: account, issue: NCGlobal.shared.diagnosticIssueSyncConflicts)?.first {
+            syncConflicts = Issues.SyncConflicts(count: result.counter, oldest: result.oldest)
+        }
+        if let result = NCManageDatabase.shared.getDiagnostics(account: account, issue: NCGlobal.shared.diagnosticIssueVirusDetected)?.first {
+            virusDetected = Issues.VirusDetected(count: result.counter, oldest: result.oldest)
+        }
+        if let result = NCManageDatabase.shared.getDiagnostics(account: account, issue: NCGlobal.shared.diagnosticIssueE2eeErrors)?.first {
+            e2eErrors = Issues.E2EError(count: result.counter, oldest: result.oldest)
+        }
+        if let results = NCManageDatabase.shared.getDiagnostics(account: account, issue: NCGlobal.shared.diagnosticIssueProblems) {
+            for result in results {
+                switch result.error {
+                case "":
+                    break
+                default:
+                    break
+                }
+            }
         }
 
         do {
-            @ThreadSafe var metadatas = metadatas
-            let data = try JSONEncoder().encode(problems)
-            data.printJson()
-            NextcloudKit.shared.sendClientDiagnosticsRemoteOperation(problems: data, options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { _, error in
+
+            let issues = Issues(syncConflicts: syncConflicts, problems: problems, virusDetected: virusDetected, e2eErrors: e2eErrors)
+            let data = try JSONEncoder().encode(issues)
+            NextcloudKit.shared.sendClientDiagnosticsRemoteOperation(data: data, options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { _, error in
                 if error == .success {
-                    NCManageDatabase.shared.clearErrorCodeMetadatas(metadatas: metadatas)
+                    NCManageDatabase.shared.deleteDiagnostics(account: account)
                 }
             }
         } catch {
             print("Error: \(error.localizedDescription)")
         }
-        */
     }
 }

@@ -29,18 +29,18 @@ class TableSecurityGuardDiagnostics: Object {
 
     @Persisted var account = ""
     @Persisted(primaryKey: true) var primaryKey = ""
-    @Persisted var issue: String = ""                           // "sync_conflicts", "problems", "virus_detected", "e2ee_errors"
-    @Persisted var problemserror: String?
+    @Persisted var issue: String = ""
+    @Persisted var error: String?
     @Persisted var counter: Int = 0
-    @Persisted var oldest: Double
+    @Persisted var oldest: TimeInterval
 
-    convenience init(account: String, issue: String, problemserror: String?, date: Date) {
+    convenience init(account: String, issue: String, error: String?, date: Date) {
         self.init()
 
         self.account = account
-        self.primaryKey = account + issue + (problemserror ?? "")
+        self.primaryKey = account + issue + (error ?? "")
         self.issue = issue
-        self.problemserror = problemserror
+        self.error = error
         self.counter = 1
         self.oldest = date.timeIntervalSince1970
      }
@@ -48,17 +48,17 @@ class TableSecurityGuardDiagnostics: Object {
 
 extension NCManageDatabase {
 
-    func addDiagnostic(account: String, issue: String, problemserror: String? = nil) {
+    func addDiagnostic(account: String, issue: String, error: String? = nil) {
 
         do {
             let realm = try Realm()
             try realm.write {
-                let primaryKey = account + issue + (problemserror ?? "")
+                let primaryKey = account + issue + (error ?? "")
                 if let result = realm.object(ofType: TableSecurityGuardDiagnostics.self, forPrimaryKey: primaryKey) {
                     result.counter += 1
                     result.oldest = Date().timeIntervalSince1970
                 } else {
-                    let table = TableSecurityGuardDiagnostics(account: account, issue: issue, problemserror: problemserror, date: Date())
+                    let table = TableSecurityGuardDiagnostics(account: account, issue: issue, error: error, date: Date())
                     realm.add(table)
                 }
             }
@@ -67,12 +67,27 @@ extension NCManageDatabase {
         }
     }
 
-    func getDiagnostics(account: String) -> Results<TableSecurityGuardDiagnostics>? {
+    func existsDiagnostics(account: String) -> Bool {
 
         do {
             let realm = try Realm()
             let results = realm.objects(TableSecurityGuardDiagnostics.self).where({
                 $0.account == account
+            })
+            if !results.isEmpty { return true }
+        } catch let error as NSError {
+            NextcloudKit.shared.nkCommonInstance.writeLog("Could not access database: \(error)")
+        }
+
+        return false
+    }
+
+    func getDiagnostics(account: String, issue: String) -> Results<TableSecurityGuardDiagnostics>? {
+
+        do {
+            let realm = try Realm()
+            let results = realm.objects(TableSecurityGuardDiagnostics.self).where({
+                $0.account == account && $0.issue == issue
             })
             return results
         } catch let error as NSError {
@@ -82,15 +97,15 @@ extension NCManageDatabase {
         return nil
     }
 
-    func deleteDiagnostic(account: String, issue: String, problemserror: String? = nil) {
+    func deleteDiagnostics(account: String) {
 
         do {
             let realm = try Realm()
             try realm.write {
-                let primaryKey = account + issue + (problemserror ?? "")
-                if let result = realm.object(ofType: TableSecurityGuardDiagnostics.self, forPrimaryKey: primaryKey) {
-                    realm.delete(result)
-                }
+                let results = realm.objects(TableSecurityGuardDiagnostics.self).where({
+                    $0.account == account
+                })
+                realm.delete(results)
             }
         } catch let error {
             NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
