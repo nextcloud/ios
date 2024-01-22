@@ -26,8 +26,14 @@ struct NCMediaScrollView: View {
     var body: some View {
         let _ = Self._printChanges()
 
-        MediaCollectionView(items: $metadatas)
+        ScrollView(.vertical, showsIndicators: false) {
+            VStack(spacing: 0) {
+                MediaCollectionView(items: $metadatas)
+                    .frame(height: 60)
+            }
+        }
 
+//        MyCustomView()
 //        ScrollView {
 //            LazyVStack(alignment: .leading, spacing: 2) {
 //                ForEach(metadatas, id: \.self) { rowMetadatas in
