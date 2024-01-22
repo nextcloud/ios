@@ -122,6 +122,8 @@
 		F3E3B3BD2AA73D9E006D08F5 /* NCMediaViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3E3B3BC2AA73D9E006D08F5 /* NCMediaViewModel.swift */; };
 		F3F6104B2B516EE800F165D0 /* SelectionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3F6104A2B516EE800F165D0 /* SelectionManager.swift */; };
 		F3F7ACFE2A98C56C00AE12CF /* NCMedia.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3F7ACFD2A98C56C00AE12CF /* NCMedia.swift */; };
+		F3FE52CF2B5B02970046A26B /* MediaCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3FE52CE2B5B02970046A26B /* MediaCell.swift */; };
+		F3FE52D12B5B02C80046A26B /* MediaCollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3FE52D02B5B02C80046A26B /* MediaCollectionView.swift */; };
 		F700222C1EC479840080073F /* Custom.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F700222B1EC479840080073F /* Custom.xcassets */; };
 		F700222D1EC479840080073F /* Custom.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F700222B1EC479840080073F /* Custom.xcassets */; };
 		F700510122DF63AC003A3356 /* NCShare.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F700510022DF63AC003A3356 /* NCShare.storyboard */; };
@@ -945,6 +947,8 @@
 		F3E3B3BC2AA73D9E006D08F5 /* NCMediaViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCMediaViewModel.swift; sourceTree = "<group>"; };
 		F3F6104A2B516EE800F165D0 /* SelectionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectionManager.swift; sourceTree = "<group>"; };
 		F3F7ACFD2A98C56C00AE12CF /* NCMedia.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCMedia.swift; sourceTree = "<group>"; };
+		F3FE52CE2B5B02970046A26B /* MediaCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaCell.swift; sourceTree = "<group>"; };
+		F3FE52D02B5B02C80046A26B /* MediaCollectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaCollectionView.swift; sourceTree = "<group>"; };
 		F700222B1EC479840080073F /* Custom.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Custom.xcassets; sourceTree = "<group>"; };
 		F700510022DF63AC003A3356 /* NCShare.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = NCShare.storyboard; sourceTree = "<group>"; };
 		F700510222DF6897003A3356 /* Parchment.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Parchment.framework; path = Carthage/Build/iOS/Parchment.framework; sourceTree = "<group>"; };
@@ -1760,6 +1764,15 @@
 			path = Cells;
 			sourceTree = "<group>";
 		};
+		F3FE52CD2B5B02710046A26B /* UIKit */ = {
+			isa = PBXGroup;
+			children = (
+				F3FE52CE2B5B02970046A26B /* MediaCell.swift */,
+				F3FE52D02B5B02C80046A26B /* MediaCollectionView.swift */,
+			);
+			path = UIKit;
+			sourceTree = "<group>";
+		};
 		F70211F31BAC56E9003FC03E /* Main */ = {
 			isa = PBXGroup;
 			children = (
@@ -2495,6 +2508,7 @@
 		F7EC9CB921185F2000F1C5CE /* Media */ = {
 			isa = PBXGroup;
 			children = (
+				F3FE52CD2B5B02710046A26B /* UIKit */,
 				F720B5B72507B9A5008C94E5 /* Cell */,
 				F3F7ACFD2A98C56C00AE12CF /* NCMedia.swift */,
 				F3AEDCA62AA720F800FDFA44 /* NCMediaRow.swift */,
@@ -3927,6 +3941,7 @@
 				F70BFC7420E0FA7D00C67599 /* NCUtility.swift in Sources */,
 				F79EDAA526B004980007D134 /* NCPlayer.swift in Sources */,
 				F7C1EEA525053A9C00866ACC /* NCDataSource.swift in Sources */,
+				F3FE52D12B5B02C80046A26B /* MediaCollectionView.swift in Sources */,
 				F713FF002472764100214AF6 /* UIImage+animatedGIF.m in Sources */,
 				AFCE353527E4ED5900FEA6C2 /* DateFormatter+Extension.swift in Sources */,
 				F718C24E254D507B00C5C256 /* NCViewerMediaDetailView.swift in Sources */,
@@ -3994,6 +4009,7 @@
 				F7CBC31C24F78E79004D3812 /* NCSortMenu.swift in Sources */,
 				F769454822E9F20D000A798A /* NCShareNetworking.swift in Sources */,
 				F749B64A297B0CBB00087535 /* NCManageDatabase+Share.swift in Sources */,
+				F3FE52CF2B5B02970046A26B /* MediaCell.swift in Sources */,
 				F760DE172AE66F350027D78A /* NCKeychain.swift in Sources */,
 				F7C9555521F0C5470024296E /* NCActivity.swift in Sources */,
 				F7725A60251F33BB00D125E0 /* NCFiles.swift in Sources */,

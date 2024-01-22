@@ -48,7 +48,7 @@ struct NCMedia: View {
                 EmptyMediaView()
             }
 
-            NCMediaScrollView(metadatas: metadatas.chunked(into: columnCountStages[columnCountStagesIndex]), title: $title, shouldShowPaginationLoading: $hasOldMedia, topMostVisibleMetadataDate: $topMostVisibleMetadataDate, bottomMostVisibleMetadataDate: $bottomMostVisibleMetadataDate) { tappedThumbnail, isSelected in
+            NCMediaScrollView(metadatas: $metadatas, title: $title, shouldShowPaginationLoading: $hasOldMedia, topMostVisibleMetadataDate: $topMostVisibleMetadataDate, bottomMostVisibleMetadataDate: $bottomMostVisibleMetadataDate) { tappedThumbnail, isSelected in
                 if selectionManager.isInSelectMode, isSelected {
                     selectionManager.selectedMetadatas.append(tappedThumbnail.metadata)
                 } else {
@@ -63,7 +63,6 @@ struct NCMedia: View {
             } onCellContextMenuItemSelected: { thumbnail, selection in
                 onCellContentMenuItemSelected(thumbnail: thumbnail, selection: selection)
             }
-            .equatable()
             .ignoresSafeArea(.all, edges: .horizontal)
             .scrollStatusByIntrospect(isScrolledToTop: $isScrolledToTop, isScrolledToBottom: $isScrolledToBottom, isScrollingStopped: $isScrollingStopped)
 
