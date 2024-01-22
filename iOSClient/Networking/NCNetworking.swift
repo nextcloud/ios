@@ -905,6 +905,9 @@ class NCNetworking: NSObject, NKCommonDelegate {
                     NCContentPresenter().showError(error: NKError(errorCode: error.errorCode, errorDescription: "_virus_detect_"))
                 }
 
+                // Client Diagnostic
+                NCManageDatabase.shared.addDiagnostic(account: metadata.account, issue: NCGlobal.shared.diagnosticIssueVirusDetected)
+
             } else if error.errorCode == NCGlobal.shared.errorForbidden && isApplicationStateActive {
 #if !EXTENSION
                 DispatchQueue.main.async {

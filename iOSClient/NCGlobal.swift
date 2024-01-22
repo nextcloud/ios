@@ -488,4 +488,11 @@ class NCGlobal: NSObject {
     // FORBIDDEN CHARACTERS
     //
     let forbiddenCharacters = ["/", "\\", ":", "\"", "|", "?", "*", "<", ">"]
+
+    // DIAGNOSTICS CLIENTS
+    //
+    let diagnosticIssueSyncConflicts    = "sync_conflicts"
+    let diagnosticIssueProblems         = "problems"
+    let diagnosticIssueVirusDetected    = "virus_detected"
+    let diagnosticIssueE2eeErrors       = "e2ee_errors"
 }
