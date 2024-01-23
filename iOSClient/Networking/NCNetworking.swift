@@ -836,7 +836,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
 
 
         // Client Diagnostic
-        NCManageDatabase.shared.addDiagnostic(account: metadata.account, issue: NCGlobal.shared.diagnosticIssueVirusDetected)
+        NCManageDatabase.shared.addDiagnostic(account: metadata.account, issue: NCGlobal.shared.diagnosticIssueProblems, error: "pollo")
         
         if error == .success, let ocId = ocId, size == metadata.size {
 

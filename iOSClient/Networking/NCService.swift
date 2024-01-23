@@ -359,13 +359,13 @@ class NCService: NSObject {
             }
 
             struct Problem: Codable {
-                struct Upload: Codable {
+                struct Error: Codable {
                     var count: Int
                     var oldest: TimeInterval
                 }
 
-                var credentialError: Upload?
-                var folderError: Upload?
+                var credentialError: Error?
+                var folderError: Error?
             }
 
             struct VirusDetected: Codable {
@@ -394,7 +394,9 @@ class NCService: NSObject {
         var syncConflicts: Issues.SyncConflicts = Issues.SyncConflicts()
         var virusDetected: Issues.VirusDetected = Issues.VirusDetected()
         var e2eeErrors: Issues.E2EError = Issues.E2EError()
+
         var problems: Issues.Problem? = Issues.Problem()
+        var credentialError: Issues.Problem.Error?
 
         if let result = NCManageDatabase.shared.getDiagnostics(account: account, issue: NCGlobal.shared.diagnosticIssueSyncConflicts)?.first {
             syncConflicts = Issues.SyncConflicts(count: result.counter, oldest: result.oldest)
@@ -408,12 +410,14 @@ class NCService: NSObject {
         if let results = NCManageDatabase.shared.getDiagnostics(account: account, issue: NCGlobal.shared.diagnosticIssueProblems) {
             for result in results {
                 switch result.error {
-                case "":
+                case "pollo":
+                    credentialError = Issues.Problem.Error(count: result.counter, oldest: result.oldest)
                     break
                 default:
                     break
                 }
             }
+            problems = Issues.Problem(credentialError: credentialError, folderError: nil)
         }
 
         do {
@@ -424,7 +428,7 @@ class NCService: NSObject {
 
             NextcloudKit.shared.sendClientDiagnosticsRemoteOperation(data: data, options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { _, error in
                 if error == .success {
-                    NCManageDatabase.shared.deleteDiagnostics(account: account)
+                    //NCManageDatabase.shared.deleteDiagnostics(account: account)
                 }
             }
         } catch {
