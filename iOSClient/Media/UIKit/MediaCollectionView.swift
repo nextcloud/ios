@@ -19,6 +19,27 @@ struct MediaCollectionView: UIViewControllerRepresentable {
         return items.chunked(into: 3)
     }
 
+    struct CellData {
+        var indexPath: IndexPath
+        var ocId: String
+        var shrinkRatio: CGFloat = 0
+        //        var ocId: String
+        var isPlaceholderImage = false
+        var scaledSize: CGSize = .zero
+        var imageHeight: CGFloat
+        var imageWidth: CGFloat
+
+    }
+    //
+    //    struct ScaledThumbnail {
+    ////        let metadata: tableMetadata
+    //
+    ////        func hash(into hasher: inout Hasher) {
+    ////            hasher.combine(metadata.ocId)
+    ////        }
+    //    }
+
+
     func makeUIViewController(context: Context) -> UICollectionViewController {
         let layout = UICollectionViewFlowLayout()
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
@@ -32,14 +53,14 @@ struct MediaCollectionView: UIViewControllerRepresentable {
         collectionView.delegate = context.coordinator
 
         let size = viewController.view.systemLayoutSizeFitting(UIView.layoutFittingCompressedSize)
-                viewController.preferredContentSize = size
+        viewController.preferredContentSize = size
 
-//        if let flowLayout = collectionView.collectionViewLayout as? UICollectionViewFlowLayout {
-//            //            flowLayout.minimumInteritemSpacing = 0
-//            //            flowLayout.minimumLineSpacing = 2
-//            //            flowLayout.sectionInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
-//
-//        }
+        //        if let flowLayout = collectionView.collectionViewLayout as? UICollectionViewFlowLayout {
+        //            //            flowLayout.minimumInteritemSpacing = 0
+        //            //            flowLayout.minimumLineSpacing = 2
+        //            //            flowLayout.sectionInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
+        //
+        //        }
 
         //        collectionView.sepera
 
@@ -64,6 +85,8 @@ struct MediaCollectionView: UIViewControllerRepresentable {
 
         private let rowWidth = UIScreen.main.bounds.width
         private let spacing: CGFloat = 2
+
+        private var cellData: [CellData] = []
 
         let parent: MediaCollectionView
         //        let cellsPerRow: [[tableMetadata]]
@@ -112,65 +135,78 @@ struct MediaCollectionView: UIViewControllerRepresentable {
 
         func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
             let metadatas = parent.itemsPerRow[indexPath.section]
-            var rowData = RowData()
+            //            var rowData = RowData()
 
-            var thumbnails: [ScaledThumbnail] = []
+            //            var thumbnails: [ScaledThumbnail] = []
 
             //            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: MediaCell.identifier, for: indexPath) as? MediaCell
             //
             //            return cell!
 
-            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: MediaCell.identifier, for: indexPath) as? MediaCell
             //            cell?.configure(metadatas: metadatas, index: indexPath.row)
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: MediaCell.identifier, for: indexPath) as? MediaCell
 
             for metadata in metadatas {
                 let thumbnailPath = NCUtilityFileSystem().getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)
                 if let cachedImage = cache.getMediaImage(ocId: metadata.ocId, etag: metadata.etag) {
-                    let thumbnail: ScaledThumbnail
+                    //                    let thumbnail: ScaledThumbnail
 
                     if case let .actual(image) = cachedImage {
-                        thumbnail = ScaledThumbnail(image: image, metadata: metadata)
+                        cellData.append(.init(indexPath: indexPath, ocId: metadata.ocId, imageHeight: image.size.height, imageWidth: image.size.width))
+                        cell?.configure(image: image)
                     } else {
                         let image = UIImage(systemName: metadata.isVideo ? "video.fill" : "photo.fill")!.withRenderingMode(.alwaysTemplate)
-                        thumbnail = ScaledThumbnail(image: image, isPlaceholderImage: true, metadata: metadata)
+                        cellData.append(.init(indexPath: indexPath, ocId: metadata.ocId, isPlaceholderImage: true, imageHeight: image.size.height, imageWidth: image.size.width))
+                        cell?.configure(image: image)
+                        collectionView.reloadItems(at: [indexPath])
                     }
 
-                    //                    DispatchQueue.main.async {
-                    thumbnails.append(thumbnail)
-                    self.calculateShrinkRatio(metadatas: self.metadatas, rowData: &rowData, thumbnails: &thumbnails, rowWidth: self.rowWidth, spacing: self.spacing)
-                    //                        collectionView.collectionViewLayout.invalidateLayout()
+                    DispatchQueue.main.async {
+                        //                    thumbnails.append(thumbnail)
+                        //                    self.calculateShrinkRatio(metadatas: self.metadatas, rowData: &rowData, thumbnails: &thumbnails, rowWidth: self.rowWidth, spacing: self.spacing)
+                        //                                            collectionView.collectionViewLayout.invalidateLayout()
 
-                    //                    }
+                    }
                 } else if FileManager.default.fileExists(atPath: thumbnailPath) {
                     // Load thumbnail from file
                     if let image = UIImage(contentsOfFile: thumbnailPath) {
                         let thumbnail = ScaledThumbnail(image: image, metadata: metadata)
                         cache.setMediaImage(ocId: metadata.ocId, etag: metadata.etag, image: .actual(image))
 
-                        //                        DispatchQueue.main.async {
-                        thumbnails.append(thumbnail)
-                        self.calculateShrinkRatio(metadatas: self.metadatas, rowData: &rowData, thumbnails: &thumbnails, rowWidth: self.rowWidth, spacing: self.spacing)
-                        //                            collectionView.collectionViewLayout.invalidateLayout()
-                        //                        }
+                        DispatchQueue.main.async {
+                            self.cellData.append(.init(indexPath: indexPath, ocId: metadata.ocId, imageHeight: image.size.height, imageWidth: image.size.width))
+                            cell?.configure(image: image)
+                            collectionView.reloadItems(at: [indexPath])
+                            //                        thumbnails.append(thumbnail)
+                            //                        self.calculateShrinkRatio(metadatas: self.metadatas, rowData: &rowData, thumbnails: &thumbnails, rowWidth: self.rowWidth, spacing: self.spacing)
+                            //                            collectionView.collectionViewLayout.invalidateLayout()
+                        }
                     }
                 } else {
                     if queuer.operations.filter({ ($0 as? NCMediaDownloadThumbnaill)?.metadata.ocId == metadata.ocId }).isEmpty {
                         let concurrentOperation = NCMediaDownloadThumbnaill(metadata: metadata, cache: cache, rowWidth: rowWidth, spacing: spacing, maxWidth: UIScreen.main.bounds.width, maxHeight: UIScreen.main.bounds.height) { thumbnail in
-                            //                            DispatchQueue.main.async {
-                            thumbnails.append(thumbnail)
-                            self.calculateShrinkRatio(metadatas: self.metadatas, rowData: &rowData, thumbnails: &thumbnails, rowWidth: self.rowWidth, spacing: self.spacing)
-                            //                                collectionView.collectionViewLayout.invalidateLayout()
-                            //                            }
+                            DispatchQueue.main.async {
+                                self.cellData.append(.init(indexPath: indexPath, ocId: metadata.ocId, imageHeight: thumbnail.image.size.height, imageWidth: thumbnail.image.size.width))
+                                cell?.configure(image: thumbnail.image)
+                                collectionView.reloadItems(at: [indexPath])
+
+                                //                            thumbnails.append(thumbnail)
+                                //                            self.calculateShrinkRatio(metadatas: self.metadatas, rowData: &rowData, thumbnails: &thumbnails, rowWidth: self.rowWidth, spacing: self.spacing)
+                                //                                collectionView.collectionViewLayout.invalidateLayout()
+                            }
                         }
 
                         queuer.addOperation(concurrentOperation)
                     }
                 }
 
-                if indexPath.row < thumbnails.count {
-                    let thumbnail = thumbnails[indexPath.row]
-                    cell?.configure(metadatas: metadatas, index: indexPath.row, thumbnail: thumbnail)
-                }
+
+                if cellData.filter({$0.indexPath == indexPath}).count == 3 {
+//                                    let thumbnail = thumbnails[indexPath.row]
+//                                    cell?.configure(metadatas: metadatas, index: indexPath.row, thumbnail: thumbnail)
+                                }
+
+                //                collectionView.reloadData()
 
                 //                            print("TEST")
                 //                            print(thumbnails.count)
@@ -198,24 +234,60 @@ struct MediaCollectionView: UIViewControllerRepresentable {
 
 
 
-        private func calculateShrinkRatio(metadatas: [tableMetadata], rowData: inout RowData, thumbnails: inout [ScaledThumbnail], rowWidth: CGFloat, spacing: CGFloat) {
-            if thumbnails.count == metadatas.count {
-                thumbnails.enumerated().forEach { index, thumbnail in
-                    thumbnails[index].scaledSize = getScaledThumbnailSize(of: thumbnail, thumbnailsInRow: thumbnails)
+        //        private func calculateShrinkRatio(metadatas: [tableMetadata], rowData: inout RowData, thumbnails: inout [ScaledThumbnail], rowWidth: CGFloat, spacing: CGFloat) {
+        //            if thumbnails.count == metadatas.count {
+        //                thumbnails.enumerated().forEach { index, thumbnail in
+        //                    thumbnails[index].scaledSize = getScaledThumbnailSize(of: thumbnail, thumbnailsInRow: thumbnails)
+        //                }
+        //
+        //                let shrinkRatio = getShrinkRatio(thumbnailsInRow: thumbnails, fullWidth: rowWidth, spacing: spacing)
+        //
+        //                rowData.scaledThumbnails = thumbnails
+        //                rowData.shrinkRatio = shrinkRatio
+        //            }
+        //        }
+
+        private func calculateShrinkRatio(indexPath: IndexPath) {
+
+            let filteredRowData = cellData.enumerated().filter({$0.element.indexPath == indexPath})
+            if filteredRowData.count == 3 {
+                filteredRowData.forEach { index, _ in
+                    cellData[index].scaledSize = getScaledThumbnailSize(of: cellData[index], cellsInRow: filteredRowData.map({ $0.element }))
                 }
-
-                let shrinkRatio = getShrinkRatio(thumbnailsInRow: thumbnails, fullWidth: rowWidth, spacing: spacing)
-
-                rowData.scaledThumbnails = thumbnails
-                rowData.shrinkRatio = shrinkRatio
             }
+
+            //            parent.
+            //            if thumbnails.count == metadatas.count {
+            //                thumbnails.enumerated().forEach { index, thumbnail in
+            //                    thumbnails[index].scaledSize = getScaledThumbnailSize(of: thumbnail, thumbnailsInRow: thumbnails)
+            //                }
+            //
+            //                let shrinkRatio = getShrinkRatio(thumbnailsInRow: thumbnails, fullWidth: rowWidth, spacing: spacing)
+            //
+            //                rowData.scaledThumbnails = thumbnails
+            //                rowData.shrinkRatio = shrinkRatio
+            //            }
         }
 
-        private func getScaledThumbnailSize(of thumbnail: ScaledThumbnail, thumbnailsInRow thumbnails: [ScaledThumbnail]) -> CGSize {
-            let maxHeight = thumbnails.compactMap { CGFloat($0.image.size.height) }.max() ?? 0
+        //        private func getScaledThumbnailSize(of thumbnail: ScaledThumbnail, thumbnailsInRow thumbnails: [ScaledThumbnail]) -> CGSize {
+        //            let maxHeight = thumbnails.compactMap { CGFloat($0.image.size.height) }.max() ?? 0
+        //
+        //            let height = thumbnail.image.size.height
+        //            let width = thumbnail.image.size.width
+        //
+        //            let scaleFactor = maxHeight / height
+        //            let newHeight = height * scaleFactor
+        //            let newWidth = width * scaleFactor
+        //
+        //            return .init(width: newWidth, height: newHeight)
+        //        }
 
-            let height = thumbnail.image.size.height
-            let width = thumbnail.image.size.width
+
+        private func getScaledThumbnailSize(of rowData: CellData, cellsInRow: [CellData] ) -> CGSize {
+            let maxHeight = cellsInRow.compactMap { $0.imageHeight }.max() ?? 0
+
+            let height = rowData.imageHeight
+            let width = rowData.imageWidth
 
             let scaleFactor = maxHeight / height
             let newHeight = height * scaleFactor
@@ -237,26 +309,31 @@ struct MediaCollectionView: UIViewControllerRepresentable {
             return shrinkRatio
         }
 
-//        func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-//            let noOfCellsInRow = 3   // number of column you want
-//            guard let flowLayout = collectionViewLayout as? UICollectionViewFlowLayout else { return .zero }
-//            //            flowLayout.minimumInteritemSpacing = 0
-//            //            flowLayout.minimumLineSpacing = 2
-//            //            flowLayout.sectionInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
-//            let totalSpace = flowLayout.sectionInset.left
-//            + flowLayout.sectionInset.right
-//            + (flowLayout.minimumInteritemSpacing * CGFloat(noOfCellsInRow - 1))
-//
-//            let size = Int((collectionView.bounds.width - totalSpace) / CGFloat(noOfCellsInRow))
-//            return CGSize(width: Double.random(in: 50...200), height: Double.random(in: 50...200))
-//        }
+        //        func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        //            let noOfCellsInRow = 3   // number of column you want
+        //            guard let flowLayout = collectionViewLayout as? UICollectionViewFlowLayout else { return .zero }
+        //            //            flowLayout.minimumInteritemSpacing = 0
+        //            //            flowLayout.minimumLineSpacing = 2
+        //            //            flowLayout.sectionInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
+        //            let totalSpace = flowLayout.sectionInset.left
+        //            + flowLayout.sectionInset.right
+        //            + (flowLayout.minimumInteritemSpacing * CGFloat(noOfCellsInRow - 1))
+        //
+        //            let size = Int((collectionView.bounds.width - totalSpace) / CGFloat(noOfCellsInRow))
+        //            return CGSize(width: Double.random(in: 50...200), height: Double.random(in: 50...200))
+        //        }
 
         func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+//            collectionView.layoutIfNeeded()
 //            guard let cell = collectionView.cellForItem(at: indexPath) as? MediaCell else { return .zero }
-//            .frame(width: CGFloat(thumbnail.scaledSize.width * shrinkRatio), height: CGFloat(thumbnail.scaledSize.height * shrinkRatio))
+            //            .frame(width: CGFloat(thumbnail.scaledSize.width * shrinkRatio), height: CGFloat(thumbnail.scaledSize.height * shrinkRatio))
 
-//            return .init(width: CGFloat(cell.thumbnail.scaledSize.width * cell.shrinkRatio), height: CGFloat(cell.thumbnail.scaledSize.height * cell.shrinkRatio))
-            return .init(width: Double.random(in: 50...150), height: 150)
+            //            return .init(width: CGFloat(cell.thumbnail.scaledSize.width * cell.shrinkRatio), height: CGFloat(cell.thumbnail.scaledSize.height * cell.shrinkRatio))
+//            return .init(width: Double.random(in: 50...150), height: 150)
+            guard let cellData = cellData.first(where: { $0.indexPath == indexPath }) else { return .init(width: 100, height: 100) }
+            let width = CGFloat(cellData.imageWidth * cellData.shrinkRatio)
+            let height = CGFloat(cellData.imageHeight * cellData.shrinkRatio)
+            return .init(width: width, height: height)
         }
 
     }

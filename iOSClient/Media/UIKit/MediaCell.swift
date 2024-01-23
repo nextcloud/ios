@@ -81,11 +81,12 @@ class MediaCell: UICollectionViewCell {
         fatalError("init(coder:) has not been implemented")
     }
 
-    func configure(metadatas: [tableMetadata], index: Int, thumbnail: ScaledThumbnail) {
+//    func configure(metadatas: [tableMetadata], index: Int, thumbnail: ScaledThumbnail) {
+    func configure(image: UIImage) {
 
 
 //                self.medatadata = metadata
-                self.imageView.image = thumbnail.image
+                self.imageView.image = image
 //        self.shrinkRatio = shrinkRatio
 //        self.thumbnail = thumbnail
 //                titleLabel.text = metadata.name
