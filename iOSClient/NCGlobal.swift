@@ -495,4 +495,6 @@ class NCGlobal: NSObject {
     let diagnosticIssueProblems         = "problems"
     let diagnosticIssueVirusDetected    = "virus_detected"
     let diagnosticIssueE2eeErrors       = "e2ee_errors"
+
+    let diagnosticProblemsBadServerResponse = "BAD_SERVER_RESPONSE"
 }

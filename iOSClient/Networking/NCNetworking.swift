@@ -834,6 +834,10 @@ class NCNetworking: NSObject, NKCommonDelegate {
         isApplicationStateActive = UIApplication.shared.applicationState == .active
 #endif
 
+
+        // Client Diagnostic
+        NCManageDatabase.shared.addDiagnostic(account: metadata.account, issue: NCGlobal.shared.diagnosticIssueVirusDetected)
+        
         if error == .success, let ocId = ocId, size == metadata.size {
 
             let metadata = tableMetadata.init(value: metadata)

@@ -382,6 +382,13 @@ class NCService: NSObject {
             var problems: Problem?
             var virusDetected: VirusDetected?
             var e2eErrors: E2EError?
+
+            enum CodingKeys: String, CodingKey {
+                case syncConflicts = "sync_conflicts"
+                case problems
+                case virusDetected = "virus_detected"
+                case e2eErrors = "e2ee_errors"
+            }
         }
 
         var syncConflicts: Issues.SyncConflicts?
@@ -413,6 +420,8 @@ class NCService: NSObject {
 
             let issues = Issues(syncConflicts: syncConflicts, problems: problems, virusDetected: virusDetected, e2eErrors: e2eErrors)
             let data = try JSONEncoder().encode(issues)
+            data.printJson()
+
             NextcloudKit.shared.sendClientDiagnosticsRemoteOperation(data: data, options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { _, error in
                 if error == .success {
                     NCManageDatabase.shared.deleteDiagnostics(account: account)
