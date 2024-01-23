@@ -152,7 +152,7 @@ extension CollectionView {
 
 extension CollectionView {
 
-    final class Coordinator : NSObject, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
+    final class Coordinator: NSObject, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
 
         fileprivate var view: CollectionView
         fileprivate var viewController: ViewController?

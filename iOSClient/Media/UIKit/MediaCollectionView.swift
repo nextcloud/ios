@@ -19,15 +19,15 @@ struct MediaCollectionView: UIViewControllerRepresentable {
         return items.chunked(into: 3)
     }
 
-    struct CellData {
-        var indexPath: IndexPath
-        var ocId: String
-        var shrinkRatio: CGFloat = 0
-        var isPlaceholderImage = false
-        var scaledSize: CGSize = .zero
-        var imageHeight: CGFloat
-        var imageWidth: CGFloat
-    }
+//    struct CellData {
+//        var indexPath: IndexPath
+//        var ocId: String
+//        var shrinkRatio: CGFloat = 0
+//        var isPlaceholderImage = false
+//        var scaledSize: CGSize = .zero
+//        var imageHeight: CGFloat
+//        var imageWidth: CGFloat
+//    }
 
     func makeUIViewController(context: Context) -> ViewController {
         //        let layout = UICollectionViewFlowLayout()
@@ -137,119 +137,130 @@ extension MediaCollectionView {
             return cell!
         }
 
-        private func calculateShrinkRatio(indexPath: IndexPath) {
-
-            let filteredRowData = cellData.enumerated().filter({$0.element.indexPath == indexPath})
-            if filteredRowData.count == 3 {
-                filteredRowData.forEach { index, _ in
-                    cellData[index].scaledSize = getScaledThumbnailSize(of: cellData[index], cellsInRow: filteredRowData.map({ $0.element }))
-                }
-            }
-        }
-
-        private func getScaledThumbnailSize(of rowData: CellData, cellsInRow: [CellData] ) -> CGSize {
-            let maxHeight = cellsInRow.compactMap { $0.imageHeight }.max() ?? 0
-
-            let height = rowData.imageHeight
-            let width = rowData.imageWidth
-
-            let scaleFactor = maxHeight / height
-            let newHeight = height * scaleFactor
-            let newWidth = width * scaleFactor
-
-            return .init(width: newWidth, height: newHeight)
-        }
-
-        private func getShrinkRatio(thumbnailsInRow thumbnails: [ScaledThumbnail], fullWidth: CGFloat, spacing: CGFloat) -> CGFloat {
-            var newSummedWidth: CGFloat = 0
-
-            for thumbnail in thumbnails {
-                newSummedWidth += CGFloat(thumbnail.scaledSize.width)
-            }
-
-            let spacingWidth = spacing * CGFloat(thumbnails.count - 1)
-            let shrinkRatio: CGFloat = (fullWidth - spacingWidth) / newSummedWidth
-
-            return shrinkRatio
-        }
+        //        private func calculateShrinkRatio(indexPath: IndexPath) {
+        //
+        //            let filteredRowData = cellData.enumerated().filter({$0.element.indexPath == indexPath})
+        //            if filteredRowData.count == 3 {
+        //                filteredRowData.forEach { index, _ in
+        //                    cellData[index].scaledSize = getScaledThumbnailSize(of: cellData[index], cellsInRow: filteredRowData.map({ $0.element }))
+        //                }
+        //            }
+        //        }
+        //
+        //        private func getScaledThumbnailSize(of rowData: CellData, cellsInRow: [CellData] ) -> CGSize {
+        //            let maxHeight = cellsInRow.compactMap { $0.imageHeight }.max() ?? 0
+        //
+        //            let height = rowData.imageHeight
+        //            let width = rowData.imageWidth
+        //
+        //            let scaleFactor = maxHeight / height
+        //            let newHeight = height * scaleFactor
+        //            let newWidth = width * scaleFactor
+        //
+        //            return .init(width: newWidth, height: newHeight)
+        //        }
+        //
+        //        private func getShrinkRatio(thumbnailsInRow thumbnails: [ScaledThumbnail], fullWidth: CGFloat, spacing: CGFloat) -> CGFloat {
+        //            var newSummedWidth: CGFloat = 0
+        //
+        //            for thumbnail in thumbnails {
+        //                newSummedWidth += CGFloat(thumbnail.scaledSize.width)
+        //            }
+        //
+        //            let spacingWidth = spacing * CGFloat(thumbnails.count - 1)
+        //            let shrinkRatio: CGFloat = (fullWidth - spacingWidth) / newSummedWidth
+        //
+        //            return shrinkRatio
+        //        }
 
         func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
             //            collectionView.layoutIfNeeded()
 
-            guard let cell = collectionView.cellForItem(at: indexPath) as? MediaCell else { return .init(width: 100, height: 100) }
+//            guard let cell = collectionView.cellForItem(at: indexPath) as? MediaCell else { return .init(width: 100, height: 100) }
+//            guard let cellData = cellDataCol.first(where: ({ $0.indexPath == indexPath })) else { return .init(width: 100, height: 100) }
 
-            if cell.shrinkRatio > 0 {
-                let width = CGFloat(cell.newWidth * cell.shrinkRatio)
-                let height = CGFloat(cell.newHeight * cell.shrinkRatio)
-                print("TEST")
-                print(width)
-                print(height)
+            print(cellDataCol)
+            if let cellData = cellDataCol.last(where: ({ $0.indexPath == indexPath })), cellData.shrinkRatio > 0 {
+                let width = CGFloat(cellData.scaledWidth * cellData.shrinkRatio)
+                let height = CGFloat(cellData.scaledWidth * cellData.shrinkRatio)
+//                print("TEST")
+//                print(width)
+//                print(height)
                 return .init(width: width, height: height)
             } else {
-                print("TEST2")
+//                                print("TEST2")
                 return .init(width: 100, height: 100)
             }
         }
 
+//        struct CellData {
+//            var indexPath: IndexPath = .init()
+//            var newHeight: CGFloat = 0
+//            var newWidth: CGFloat = 0
+//            var shrinkRatio: CGFloat = 0
+//        }
+//
+        var cellDataCol: [CellData] = []
+
+        struct CellData {
+            var height: CGFloat = 0
+            var width: CGFloat = 0
+            var scaledHeight: CGFloat = 0
+            var scaledWidth: CGFloat = 0
+            var indexPath: IndexPath = .init()
+            var shrinkRatio: CGFloat = 0
+        }
+
         func onImageLoaded(indexPath: IndexPath) {
+            var tempCol: [CellData] = []
             let collectionView = viewController?.collectionView
 
             let section = indexPath.section
             guard let numberOfItems = collectionView?.numberOfItems(inSection: section) else { return }
 
-            var maxHeight: CGFloat = 0
-            var summedWidth: CGFloat = 0
+//            var maxHeight: CGFloat = 0
+//            var summedWidth: CGFloat = 0
 
-            for itemNumber in 0..<numberOfItems {
+//            var cellCol: [MediaCell] = []
+
+            for itemNumber in 0..<numberOfItems - 1 {
+                var cellData = CellData()
                 let indexPath = IndexPath(row: itemNumber, section: section)
 
                 guard let cell = collectionView?.cellForItem(at: indexPath) as? MediaCell else { return }
 
-                maxHeight = max(maxHeight, cell.image.size.height)
+                cellData.height = cell.image.size.height
+                cellData.width = cell.image.size.width
+                cellData.indexPath = indexPath
+
+                tempCol.append(cellData)
             }
 
-            for itemNumber in 0..<numberOfItems {
-                let indexPath = IndexPath(row: itemNumber, section: section)
+            let maxHeight = tempCol.compactMap({ $0.height }).max() ?? 0
 
-                guard let cell = collectionView?.cellForItem(at: indexPath) as? MediaCell else { return }
-
-                let height = cell.image.size.height
-                let width = cell.image.size.width
-
-                let scaleFactor = maxHeight / height
-                cell.newHeight = height * scaleFactor
-                cell.newWidth = width * scaleFactor
+            for index in tempCol.indices {
+                let cellData = tempCol[index]
+                let scaleFactor = maxHeight / cellData.height
+                var modifiedCellData = cellData
+                modifiedCellData.scaledHeight = cellData.height * scaleFactor
+                modifiedCellData.scaledWidth = cellData.width * scaleFactor
+                tempCol[index] = modifiedCellData
             }
 
-            for itemNumber in 0..<numberOfItems {
-                let indexPath = IndexPath(row: itemNumber, section: section)
-
-                guard let cell = collectionView?.cellForItem(at: indexPath) as? MediaCell else { return }
-
-                summedWidth += CGFloat(cell.newWidth)
+            let summedWidth = tempCol.reduce(0) { sum, cellData in
+                return sum + cellData.scaledWidth
             }
 
-            for itemNumber in 0..<numberOfItems {
-                let indexPath = IndexPath(row: itemNumber, section: section)
-
-                guard let cell = collectionView?.cellForItem(at: indexPath) as? MediaCell else { return }
-
-                summedWidth += CGFloat(cell.newWidth)
-
-                //                let spacingWidth = spacing * CGFloat(thumbnails.count - 1)
-                let shrinkRatio: CGFloat = (UIScreen.main.bounds.width) / summedWidth
-
-                cell.shrinkRatio = shrinkRatio
-
-                collectionView?.reloadItems(at: [indexPath])
+            for index in tempCol.indices {
+                let cellData = tempCol[index]
+                var modifiedCellData = cellData
+                modifiedCellData.shrinkRatio = UIScreen.main.bounds.width / summedWidth
+                tempCol[index] = modifiedCellData
             }
 
-//            collectionView?.collectionViewLayout.invalidateLayout()
-
-//            collectionView?.collectionViewLayout.invalidateLayout()
-
-//                        collectionView?.reloadData()
+            cellDataCol.append(contentsOf: tempCol)
+            collectionView?.reloadItems(at: [indexPath])
         }
-
     }
+
 }

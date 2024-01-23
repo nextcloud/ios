@@ -32,9 +32,9 @@ class MediaCell: UICollectionViewCell {
     let rowWidth = UIScreen.main.bounds.width
     let spacing: CGFloat = 2
 
-    var newHeight: CGFloat = 0
-    var newWidth: CGFloat = 0
-    var shrinkRatio: CGFloat = 0
+//    var newHeight: CGFloat = 0
+//    var newWidth: CGFloat = 0
+//    var shrinkRatio: CGFloat = 0
 
     weak var delegate: MediaCellDelegate?
 //    var indexPath: IndexPath?
