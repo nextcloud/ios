@@ -67,7 +67,7 @@ struct MediaCollectionView: UIViewControllerRepresentable {
 
 extension MediaCollectionView {
 
-    final class ViewController : UIViewController {
+    final class ViewController: UIViewController {
 
         fileprivate let layout: UICollectionViewFlowLayout
         fileprivate let collectionView: UICollectionView
@@ -91,6 +91,11 @@ extension MediaCollectionView {
         override func loadView() {
             self.view = self.collectionView
         }
+
+        //        override func viewDidLayoutSubviews() {
+        //            super.viewDidLayoutSubviews()
+        ////            collectionView.collectionViewLayout.invalidateLayout()
+        //        }
     }
 }
 
@@ -110,8 +115,6 @@ extension MediaCollectionView {
 
         private var cellData: [CellData] = []
 
-        var collectionView: UICollectionView?
-
         let parent: MediaCollectionView
 
         init(_ parent: MediaCollectionView) {
@@ -129,9 +132,9 @@ extension MediaCollectionView {
         func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
             let metadata = parent.itemsPerRow[indexPath.section][indexPath.row]
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: MediaCell.identifier, for: indexPath) as? MediaCell
+            cell?.delegate = self
             cell?.configure(metadata: metadata, indexPath: indexPath)
             cell?.backgroundColor = UIColor(hue: CGFloat(drand48()), saturation: 1, brightness: 1, alpha: 1)
-            cell?.delegate = self
             return cell!
         }
 
@@ -189,6 +192,8 @@ extension MediaCollectionView {
         }
 
         func onImageLoaded(indexPath: IndexPath) {
+            let collectionView = viewController?.collectionView
+
             let section = indexPath.section
             guard let numberOfItems = collectionView?.numberOfItems(inSection: section) else { return }
 
@@ -218,7 +223,7 @@ extension MediaCollectionView {
 
             for itemNumber in 0..<numberOfItems {
                 let indexPath = IndexPath(row: itemNumber, section: section)
-                
+
                 guard let cell = collectionView?.cellForItem(at: indexPath) as? MediaCell else { return }
 
                 summedWidth += CGFloat(cell.newWidth)
@@ -235,13 +240,12 @@ extension MediaCollectionView {
                 let shrinkRatio: CGFloat = (UIScreen.main.bounds.width) / summedWidth
 
                 cell.shrinkRatio = shrinkRatio
-                //                collectionView?.reloadItems(at: [indexPath])
-                //                collectionView?.collectionViewLayout.invalidateLayout()
+                collectionView?.reloadItems(at: [indexPath])
+                collectionView?.collectionViewLayout.invalidateLayout()
             }
 
-            collectionView?.reloadData()
+            //            collectionView?.reloadData()
         }
 
     }
 }
-
