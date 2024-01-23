@@ -33,6 +33,7 @@ class TableSecurityGuardDiagnostics: Object {
     @Persisted var error: String?
     @Persisted var counter: Int = 0
     @Persisted var oldest: TimeInterval
+    @Persisted var id: ObjectId
 
     convenience init(account: String, issue: String, error: String?, date: Date) {
         self.init()
@@ -97,13 +98,13 @@ extension NCManageDatabase {
         return nil
     }
 
-    func deleteDiagnostics(account: String) {
+    func deleteDiagnostic(account: String, id: ObjectId) {
 
         do {
             let realm = try Realm()
             try realm.write {
                 let results = realm.objects(TableSecurityGuardDiagnostics.self).where({
-                    $0.account == account
+                    $0.account == account && $0.id == id
                 })
                 realm.delete(results)
             }

@@ -314,43 +314,6 @@ class NCService: NSObject {
     func sendClientDiagnosticsRemoteOperation(account: String) {
         if !NCManageDatabase.shared.existsDiagnostics(account: account) { return }
 
-        /*
-
-
-         let json = """
-         {
-             "sync_conflicts": {"count": 3, "oldest": 12312332423},
-             "problems": {
-                 "UploadResult.CREDENTIAL_ERROR": {"count": 1, "oldest": 1213123132},
-                 "UploadResult.FOLDER_ERROR": {"count": 5, "oldest": 654654655}
-             },
-             "virus_detected": {"count": 1, "oldest": 13343345},
-             "e2e_errors": {"count": 5, "oldest": 345535454}
-         }
-         """
-
-         if let jsonData = json.data(using: .utf8) {
-             do {
-                 let decoder = JSONDecoder()
-                 let issuesData = try decoder.decode(IssuesData.self, from: jsonData)
-
-                 // Now, issuesData contains the decoded data
-                 print(issuesData)
-
-                 // If you want to encode it back to JSON, you can use JSONEncoder
-                 let encoder = JSONEncoder()
-                 encoder.outputFormatting = .prettyPrinted
-                 let encodedData = try encoder.encode(issuesData)
-
-                 if let encodedJson = String(data: encodedData, encoding: .utf8) {
-                     print(encodedJson)
-                 }
-             } catch {
-                 print("Error decoding JSON: \(error)")
-             }
-         }
-         */
-
         struct Issues: Codable {
 
             struct SyncConflicts: Codable {
@@ -391,6 +354,8 @@ class NCService: NSObject {
             }
         }
 
+        var ids: [ObjectId] = []
+
         var syncConflicts: Issues.SyncConflicts = Issues.SyncConflicts()
         var virusDetected: Issues.VirusDetected = Issues.VirusDetected()
         var e2eeErrors: Issues.E2EError = Issues.E2EError()
@@ -400,18 +365,24 @@ class NCService: NSObject {
 
         if let result = NCManageDatabase.shared.getDiagnostics(account: account, issue: NCGlobal.shared.diagnosticIssueSyncConflicts)?.first {
             syncConflicts = Issues.SyncConflicts(count: result.counter, oldest: result.oldest)
+            ids.append(result.id)
         }
         if let result = NCManageDatabase.shared.getDiagnostics(account: account, issue: NCGlobal.shared.diagnosticIssueVirusDetected)?.first {
             virusDetected = Issues.VirusDetected(count: result.counter, oldest: result.oldest)
+            ids.append(result.id)
         }
         if let result = NCManageDatabase.shared.getDiagnostics(account: account, issue: NCGlobal.shared.diagnosticIssueE2eeErrors)?.first {
             e2eeErrors = Issues.E2EError(count: result.counter, oldest: result.oldest)
+            ids.append(result.id)
         }
         if let results = NCManageDatabase.shared.getDiagnostics(account: account, issue: NCGlobal.shared.diagnosticIssueProblems) {
             for result in results {
                 switch result.error {
                 case NCGlobal.shared.diagnosticProblemsForbidden:
-                    problemForbidden = Issues.Problem.Error(count: result.counter, oldest: result.oldest)
+                    if result.counter >= 1 {
+                        problemForbidden = Issues.Problem.Error(count: result.counter, oldest: result.oldest)
+                        ids.append(result.id)
+                    }
                 default:
                     break
                 }
@@ -427,7 +398,7 @@ class NCService: NSObject {
 
             NextcloudKit.shared.sendClientDiagnosticsRemoteOperation(data: data, options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { _, error in
                 if error == .success {
-                    NCManageDatabase.shared.deleteDiagnostics(account: account)
+                    NCManageDatabase.shared.deleteDiagnostic(account: account)
                 }
             }
         } catch {
