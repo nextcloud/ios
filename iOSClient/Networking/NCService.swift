@@ -365,7 +365,7 @@ class NCService: NSObject {
                 }
 
                 var credentialError: Error?
-                var folderError: Error?
+                var uploadForbidden: Error?
             }
 
             struct VirusDetected: Codable {
@@ -396,7 +396,7 @@ class NCService: NSObject {
         var e2eeErrors: Issues.E2EError = Issues.E2EError()
 
         var problems: Issues.Problem? = Issues.Problem()
-        var credentialError: Issues.Problem.Error?
+        var uploadForbidden: Issues.Problem.Error?
 
         if let result = NCManageDatabase.shared.getDiagnostics(account: account, issue: NCGlobal.shared.diagnosticIssueSyncConflicts)?.first {
             syncConflicts = Issues.SyncConflicts(count: result.counter, oldest: result.oldest)
@@ -410,14 +410,13 @@ class NCService: NSObject {
         if let results = NCManageDatabase.shared.getDiagnostics(account: account, issue: NCGlobal.shared.diagnosticIssueProblems) {
             for result in results {
                 switch result.error {
-                case "pollo":
-                    credentialError = Issues.Problem.Error(count: result.counter, oldest: result.oldest)
-                    break
+                case NCGlobal.shared.diagnosticProblemsUploadForbidden:
+                    uploadForbidden = Issues.Problem.Error(count: result.counter, oldest: result.oldest)
                 default:
                     break
                 }
             }
-            problems = Issues.Problem(credentialError: credentialError, folderError: nil)
+            problems = Issues.Problem(credentialError: nil, uploadForbidden: uploadForbidden)
         }
 
         do {
@@ -428,7 +427,7 @@ class NCService: NSObject {
 
             NextcloudKit.shared.sendClientDiagnosticsRemoteOperation(data: data, options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { _, error in
                 if error == .success {
-                    //NCManageDatabase.shared.deleteDiagnostics(account: account)
+                    NCManageDatabase.shared.deleteDiagnostics(account: account)
                 }
             }
         } catch {

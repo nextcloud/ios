@@ -491,10 +491,10 @@ class NCGlobal: NSObject {
 
     // DIAGNOSTICS CLIENTS
     //
-    let diagnosticIssueSyncConflicts    = "sync_conflicts"
-    let diagnosticIssueProblems         = "problems"
-    let diagnosticIssueVirusDetected    = "virus_detected"
-    let diagnosticIssueE2eeErrors       = "e2ee_errors"
+    let diagnosticIssueSyncConflicts        = "sync_conflicts"
+    let diagnosticIssueProblems             = "problems"
+    let diagnosticIssueVirusDetected        = "virus_detected"
+    let diagnosticIssueE2eeErrors           = "e2ee_errors"
 
-    let diagnosticProblemsBadServerResponse = "BAD_SERVER_RESPONSE"
+    let diagnosticProblemsUploadForbidden   = "Upload errorForbidden 403"
 }
