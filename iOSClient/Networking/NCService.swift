@@ -365,7 +365,7 @@ class NCService: NSObject {
                 }
 
                 var credentialError: Error?
-                var uploadForbidden: Error?
+                var forbidden: Error?
             }
 
             struct VirusDetected: Codable {
@@ -396,7 +396,7 @@ class NCService: NSObject {
         var e2eeErrors: Issues.E2EError = Issues.E2EError()
 
         var problems: Issues.Problem? = Issues.Problem()
-        var uploadForbidden: Issues.Problem.Error?
+        var problemForbidden: Issues.Problem.Error?
 
         if let result = NCManageDatabase.shared.getDiagnostics(account: account, issue: NCGlobal.shared.diagnosticIssueSyncConflicts)?.first {
             syncConflicts = Issues.SyncConflicts(count: result.counter, oldest: result.oldest)
@@ -410,13 +410,13 @@ class NCService: NSObject {
         if let results = NCManageDatabase.shared.getDiagnostics(account: account, issue: NCGlobal.shared.diagnosticIssueProblems) {
             for result in results {
                 switch result.error {
-                case NCGlobal.shared.diagnosticProblemsUploadForbidden:
-                    uploadForbidden = Issues.Problem.Error(count: result.counter, oldest: result.oldest)
+                case NCGlobal.shared.diagnosticProblemsForbidden:
+                    problemForbidden = Issues.Problem.Error(count: result.counter, oldest: result.oldest)
                 default:
                     break
                 }
             }
-            problems = Issues.Problem(credentialError: nil, uploadForbidden: uploadForbidden)
+            problems = Issues.Problem(credentialError: nil, forbidden: problemForbidden)
         }
 
         do {

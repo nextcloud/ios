@@ -939,7 +939,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
                     appDelegate.window?.rootViewController?.present(alertController, animated: true)
 
                     // Client Diagnostic
-                    NCManageDatabase.shared.addDiagnostic(account: metadata.account, issue: NCGlobal.shared.diagnosticIssueProblems, error: NCGlobal.shared.diagnosticProblemsUploadForbidden)
+                    NCManageDatabase.shared.addDiagnostic(account: metadata.account, issue: NCGlobal.shared.diagnosticIssueProblems, error: NCGlobal.shared.diagnosticProblemsForbidden)
                 }
 #endif
             } else {
