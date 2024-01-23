@@ -354,8 +354,8 @@ class NCService: NSObject {
         struct Issues: Codable {
 
             struct SyncConflicts: Codable {
-                var count: Int
-                var oldest: TimeInterval
+                var count: Int?
+                var oldest: TimeInterval?
             }
 
             struct Problem: Codable {
@@ -369,32 +369,32 @@ class NCService: NSObject {
             }
 
             struct VirusDetected: Codable {
-                var count: Int
-                var oldest: TimeInterval
+                var count: Int?
+                var oldest: TimeInterval?
             }
 
             struct E2EError: Codable {
-                var count: Int
-                var oldest: TimeInterval
+                var count: Int?
+                var oldest: TimeInterval?
             }
 
-            var syncConflicts: SyncConflicts?
+            var syncConflicts: SyncConflicts
             var problems: Problem?
-            var virusDetected: VirusDetected?
-            var e2eErrors: E2EError?
+            var virusDetected: VirusDetected
+            var e2eeErrors: E2EError
 
             enum CodingKeys: String, CodingKey {
                 case syncConflicts = "sync_conflicts"
                 case problems
                 case virusDetected = "virus_detected"
-                case e2eErrors = "e2ee_errors"
+                case e2eeErrors = "e2ee_errors"
             }
         }
 
-        var syncConflicts: Issues.SyncConflicts?
-        var virusDetected: Issues.VirusDetected?
-        var e2eErrors: Issues.E2EError?
-        var problems: Issues.Problem?
+        var syncConflicts: Issues.SyncConflicts = Issues.SyncConflicts()
+        var virusDetected: Issues.VirusDetected = Issues.VirusDetected()
+        var e2eeErrors: Issues.E2EError = Issues.E2EError()
+        var problems: Issues.Problem? = Issues.Problem()
 
         if let result = NCManageDatabase.shared.getDiagnostics(account: account, issue: NCGlobal.shared.diagnosticIssueSyncConflicts)?.first {
             syncConflicts = Issues.SyncConflicts(count: result.counter, oldest: result.oldest)
@@ -403,7 +403,7 @@ class NCService: NSObject {
             virusDetected = Issues.VirusDetected(count: result.counter, oldest: result.oldest)
         }
         if let result = NCManageDatabase.shared.getDiagnostics(account: account, issue: NCGlobal.shared.diagnosticIssueE2eeErrors)?.first {
-            e2eErrors = Issues.E2EError(count: result.counter, oldest: result.oldest)
+            e2eeErrors = Issues.E2EError(count: result.counter, oldest: result.oldest)
         }
         if let results = NCManageDatabase.shared.getDiagnostics(account: account, issue: NCGlobal.shared.diagnosticIssueProblems) {
             for result in results {
@@ -418,7 +418,7 @@ class NCService: NSObject {
 
         do {
 
-            let issues = Issues(syncConflicts: syncConflicts, problems: problems, virusDetected: virusDetected, e2eErrors: e2eErrors)
+            let issues = Issues(syncConflicts: syncConflicts, problems: problems, virusDetected: virusDetected, e2eeErrors: e2eeErrors)
             let data = try JSONEncoder().encode(issues)
             data.printJson()
 
