@@ -27,7 +27,6 @@ struct MediaCollectionView: UIViewControllerRepresentable {
         var scaledSize: CGSize = .zero
         var imageHeight: CGFloat
         var imageWidth: CGFloat
-
     }
 
     func makeUIViewController(context: Context) -> ViewController {
@@ -62,7 +61,6 @@ struct MediaCollectionView: UIViewControllerRepresentable {
     func makeCoordinator() -> Coordinator {
         Coordinator(self)
     }
-
 }
 
 extension MediaCollectionView {
@@ -73,6 +71,7 @@ extension MediaCollectionView {
         fileprivate let collectionView: UICollectionView
         init(coordinator: Coordinator) {
             let layout = UICollectionViewFlowLayout()
+//            layout.estimatedItemSize = .init(width: 100, height: 100)
             self.layout = layout
 
             let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
@@ -187,6 +186,7 @@ extension MediaCollectionView {
                 print(height)
                 return .init(width: width, height: height)
             } else {
+                print("TEST2")
                 return .init(width: 100, height: 100)
             }
         }
@@ -240,11 +240,15 @@ extension MediaCollectionView {
                 let shrinkRatio: CGFloat = (UIScreen.main.bounds.width) / summedWidth
 
                 cell.shrinkRatio = shrinkRatio
+
                 collectionView?.reloadItems(at: [indexPath])
-                collectionView?.collectionViewLayout.invalidateLayout()
             }
 
-            //            collectionView?.reloadData()
+//            collectionView?.collectionViewLayout.invalidateLayout()
+
+//            collectionView?.collectionViewLayout.invalidateLayout()
+
+//                        collectionView?.reloadData()
         }
 
     }
