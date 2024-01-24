@@ -145,6 +145,9 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate, NCSelectDelegate {
         super.viewWillTransition(to: size, with: coordinator)
 
         self.collectionView?.collectionViewLayout.invalidateLayout()
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+            self.mediaCommandTitle()
+        }
     }
 
     override var preferredStatusBarStyle: UIStatusBarStyle {
