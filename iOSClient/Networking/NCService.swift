@@ -338,7 +338,7 @@ class NCService: NSObject {
             @ThreadSafe var metadatas = metadatas
             let data = try JSONEncoder().encode(problems)
             data.printJson()
-            NextcloudKit.shared.sendClientDiagnosticsRemoteOperation(problems: data, options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { _, error in
+            NextcloudKit.shared.sendClientDiagnosticsRemoteOperation(data: data, options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { _, error in
                 if error == .success {
                     NCManageDatabase.shared.clearErrorCodeMetadatas(metadatas: metadatas)
                 }

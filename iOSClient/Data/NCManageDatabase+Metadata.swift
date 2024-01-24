@@ -424,6 +424,15 @@ extension NCManageDatabase {
         completion(metadataFolder, metadataFolders, metadatas)
     }
 
+    func convertFilesToMetadatas(_ files: [NKFile], useMetadataFolder: Bool) async -> (metadataFolder: tableMetadata, metadatasFolder: [tableMetadata], metadatas: [tableMetadata]) {
+
+        await withUnsafeContinuation({ continuation in
+            convertFilesToMetadatas(files, useMetadataFolder: useMetadataFolder) { metadataFolder, metadatasFolder, metadatas in
+                continuation.resume(returning: (metadataFolder, metadatasFolder, metadatas))
+            }
+        })
+    }
+
     func createMetadata(account: String, user: String, userId: String, fileName: String, fileNameView: String, ocId: String, serverUrl: String, urlBase: String, url: String, contentType: String, isUrl: Bool = false, name: String = NCGlobal.shared.appName, subline: String? = nil, iconName: String? = nil, iconUrl: String? = nil) -> tableMetadata {
 
         let metadata = tableMetadata()
