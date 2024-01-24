@@ -321,17 +321,6 @@ class NCService: NSObject {
                 var oldest: TimeInterval?
             }
 
-            struct Problem: Codable {
-                struct Error: Codable {
-                    var count: Int
-                    var oldest: TimeInterval
-                }
-
-                var forbidden: Error?
-                var badResponse: Error?
-                var uploadServerError: Error?
-            }
-
             struct VirusDetected: Codable {
                 var count: Int?
                 var oldest: TimeInterval?
@@ -342,16 +331,27 @@ class NCService: NSObject {
                 var oldest: TimeInterval?
             }
 
+            struct Problem: Codable {
+                struct Error: Codable {
+                    var count: Int
+                    var oldest: TimeInterval
+                }
+
+                var forbidden: Error?               // NCGlobal.shared.diagnosticProblemsForbidden
+                var badResponse: Error?             // NCGlobal.shared.diagnosticProblemsBadResponse
+                var uploadServerError: Error?       // NCGlobal.shared.diagnosticProblemsUploadServerError
+            }
+
             var syncConflicts: SyncConflicts
-            var problems: Problem?
             var virusDetected: VirusDetected
             var e2eeErrors: E2EError
+            var problems: Problem?
 
             enum CodingKeys: String, CodingKey {
                 case syncConflicts = "sync_conflicts"
-                case problems
                 case virusDetected = "virus_detected"
                 case e2eeErrors = "e2ee_errors"
+                case problems
             }
         }
 
@@ -404,7 +404,7 @@ class NCService: NSObject {
         }
 
         do {
-            let issues = Issues(syncConflicts: syncConflicts, problems: problems, virusDetected: virusDetected, e2eeErrors: e2eeErrors)
+            let issues = Issues(syncConflicts: syncConflicts, virusDetected: virusDetected, e2eeErrors: e2eeErrors, problems: problems)
             let data = try JSONEncoder().encode(issues)
             data.printJson()
 
