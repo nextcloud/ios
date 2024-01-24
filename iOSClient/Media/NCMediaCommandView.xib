@@ -16,7 +16,7 @@
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
                 <visualEffectView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="i1s-Qa-dG1">
-                    <rect key="frame" x="297" y="69" width="40" height="40"/>
+                    <rect key="frame" x="293" y="69" width="40" height="40"/>
                     <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" id="e3Q-e0-SQa">
                         <rect key="frame" x="0.0" y="0.0" width="40" height="40"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -99,7 +99,7 @@
                     <blurEffect style="regular"/>
                 </visualEffectView>
                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="IxY-xH-yZQ">
-                    <rect key="frame" x="8" y="69" width="281" height="40"/>
+                    <rect key="frame" x="10" y="69" width="243" height="40"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="40" id="S6o-Pa-sxy"/>
                     </constraints>
@@ -108,7 +108,7 @@
                     <nil key="highlightedColor"/>
                 </label>
                 <visualEffectView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="enp-xt-Y5y">
-                    <rect key="frame" x="345" y="69" width="40" height="40"/>
+                    <rect key="frame" x="343" y="69" width="40" height="40"/>
                     <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" id="KKR-Hr-av8">
                         <rect key="frame" x="0.0" y="0.0" width="40" height="40"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -137,22 +137,22 @@
                     <blurEffect style="regular"/>
                 </visualEffectView>
                 <activityIndicatorView hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" style="white" translatesAutoresizingMaskIntoConstraints="NO" id="XVj-jD-9KA">
-                    <rect key="frame" x="186.66666666666666" y="50" width="20" height="20"/>
+                    <rect key="frame" x="263" y="79" width="20" height="20"/>
                     <color key="color" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                 </activityIndicatorView>
             </subviews>
             <viewLayoutGuide key="safeArea" id="vUN-kp-3ea"/>
             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
             <constraints>
-                <constraint firstItem="XVj-jD-9KA" firstAttribute="top" secondItem="vUN-kp-3ea" secondAttribute="top" constant="-9" id="Cpb-Vg-sov"/>
-                <constraint firstItem="i1s-Qa-dG1" firstAttribute="leading" secondItem="IxY-xH-yZQ" secondAttribute="trailing" constant="8" id="Owq-aa-Sr6"/>
-                <constraint firstItem="enp-xt-Y5y" firstAttribute="leading" secondItem="i1s-Qa-dG1" secondAttribute="trailing" constant="8" id="XcU-G8-k0a"/>
-                <constraint firstItem="IxY-xH-yZQ" firstAttribute="leading" secondItem="vUN-kp-3ea" secondAttribute="leading" constant="8" id="ZhO-pY-Qwi"/>
+                <constraint firstItem="XVj-jD-9KA" firstAttribute="centerY" secondItem="i1s-Qa-dG1" secondAttribute="centerY" id="OsJ-em-CdO"/>
+                <constraint firstItem="i1s-Qa-dG1" firstAttribute="leading" secondItem="XVj-jD-9KA" secondAttribute="trailing" constant="10" id="TqN-Gs-W9d"/>
+                <constraint firstItem="enp-xt-Y5y" firstAttribute="leading" secondItem="i1s-Qa-dG1" secondAttribute="trailing" constant="10" id="XcU-G8-k0a"/>
+                <constraint firstItem="IxY-xH-yZQ" firstAttribute="leading" secondItem="vUN-kp-3ea" secondAttribute="leading" constant="10" id="ZhO-pY-Qwi"/>
                 <constraint firstItem="i1s-Qa-dG1" firstAttribute="top" secondItem="vUN-kp-3ea" secondAttribute="top" constant="10" id="cWc-xe-8un"/>
-                <constraint firstItem="XVj-jD-9KA" firstAttribute="centerX" secondItem="vUN-kp-3ea" secondAttribute="centerX" id="lqb-pC-WUR"/>
                 <constraint firstItem="IxY-xH-yZQ" firstAttribute="centerY" secondItem="i1s-Qa-dG1" secondAttribute="centerY" id="mJJ-pT-yA3"/>
-                <constraint firstItem="vUN-kp-3ea" firstAttribute="trailing" secondItem="enp-xt-Y5y" secondAttribute="trailing" constant="8" id="rSU-Dz-YXW"/>
+                <constraint firstItem="vUN-kp-3ea" firstAttribute="trailing" secondItem="enp-xt-Y5y" secondAttribute="trailing" constant="10" id="rSU-Dz-YXW"/>
                 <constraint firstItem="enp-xt-Y5y" firstAttribute="top" secondItem="vUN-kp-3ea" secondAttribute="top" constant="10" id="z6I-sd-mmD"/>
+                <constraint firstItem="XVj-jD-9KA" firstAttribute="leading" secondItem="IxY-xH-yZQ" secondAttribute="trailing" constant="10" id="ztz-0d-9Mr"/>
             </constraints>
             <connections>
                 <outlet property="activityIndicator" destination="XVj-jD-9KA" id="cSB-RJ-RCZ"/>
