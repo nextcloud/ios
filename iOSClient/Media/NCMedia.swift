@@ -51,7 +51,7 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate, NCSelectDelegate {
     private let maxImageGrid: CGFloat = 7
     private var cellHeigth: CGFloat = 0
 
-    private var loadingTask: Task<Void, Never>?
+    private var loadingTask: Task<Void, any Error>? = nil
 
     private var lastContentOffsetY: CGFloat = 0
     private var mediaPath = ""
@@ -470,7 +470,7 @@ extension NCMedia {
         let firstMetadataDate = metadatas?.first?.date as? Date
         let lastMetadataDate = metadatas?.last?.date as? Date
 
-        if loadingTask != nil {
+        guard loadingTask == nil else {
             return
         }
 
@@ -501,22 +501,26 @@ extension NCMedia {
             if let lessDate, let greaterDate {
                 mediaCommandView?.activityIndicator.startAnimating()
                 collectionView.reloadData()
-                loadingTask = Task(priority: .background) {
-                    let results = await searchMedia(account: appDelegate.account, lessDate: lessDate, greaterDate: greaterDate, predicateDB: getPredicate(showAll: true))
+                loadingTask = Task.detached {
+                    let results = await self.searchMedia(account: self.appDelegate.account, lessDate: lessDate, greaterDate: greaterDate)
                     print("Media results changed items: \(results.isChanged)")
                     if results.error != .success {
                         NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Media search new media error code \(results.error.errorCode) " + results.error.errorDescription)
                     }
-                    self.mediaCommandView?.activityIndicator.stopAnimating()
-                    loadingTask = nil
-                    if results.error == .success, results.lessDate == Date.distantFuture, results.greaterDate == Date.distantPast, !results.isChanged, results.metadatasCount == 0 {
-                        metadatas = nil
-                        collectionView.reloadData()
+                    await self.mediaCommandView?.activityIndicator.stopAnimating()
+                    Task { @MainActor in
+                        self.loadingTask = nil
                     }
-                    updateMediaControlVisibility()
-                    mediaCommandTitle()
+                    if results.error == .success, results.lessDate == Date.distantFuture, results.greaterDate == Date.distantPast, !results.isChanged, results.metadatasCount == 0 {
+                        Task { @MainActor in
+                            self.metadatas = nil
+                        }
+                        await self.collectionView.reloadData()
+                    }
+                    await self.updateMediaControlVisibility()
+                    await self.mediaCommandTitle()
                     if results.isChanged {
-                        reloadDataSource()
+                        await self.reloadDataSource()
                     }
 
                 }
@@ -524,7 +528,7 @@ extension NCMedia {
         }
     }
 
-    func searchMedia(account: String, lessDate: Date, greaterDate: Date, limit: Int = 200, timeout: TimeInterval = 60, predicateDB: NSPredicate) async -> (account: String, lessDate: Date?, greaterDate: Date?, metadatasCount: Int, isChanged: Bool, error: NKError) {
+    func searchMedia(account: String, lessDate: Date, greaterDate: Date, limit: Int = 200, timeout: TimeInterval = 60) async -> (account: String, lessDate: Date?, greaterDate: Date?, metadatasCount: Int, isChanged: Bool, error: NKError) {
 
         guard let mediaPath = NCManageDatabase.shared.getActiveAccount()?.mediaPath else {
             return(account, lessDate, greaterDate, 0, false, NKError())
