@@ -144,10 +144,8 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate, NCSelectDelegate {
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         super.viewWillTransition(to: size, with: coordinator)
 
-        self.collectionView?.collectionViewLayout.invalidateLayout()
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-            self.mediaCommandTitle()
-        }
+        collectionView?.collectionViewLayout.invalidateLayout()
+        mediaCommandTitle()
     }
 
     override var preferredStatusBarStyle: UIStatusBarStyle {
@@ -184,12 +182,14 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate, NCSelectDelegate {
 
     func mediaCommandTitle() {
 
-        mediaCommandView?.title.text = ""
-        if let visibleCells = self.collectionView?.indexPathsForVisibleItems.sorted(by: { $0.row < $1.row }).compactMap({ self.collectionView?.cellForItem(at: $0) }) {
-            if let cell = visibleCells.first as? NCGridMediaCell {
-                mediaCommandView?.title.text = ""
-                if let date = cell.date {
-                    mediaCommandView?.title.text = utility.getTitleFromDate(date)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+            self.mediaCommandView?.title.text = ""
+            if let visibleCells = self.collectionView?.indexPathsForVisibleItems.sorted(by: { $0.row < $1.row }).compactMap({ self.collectionView?.cellForItem(at: $0) }) {
+                if let cell = visibleCells.first as? NCGridMediaCell {
+                    self.mediaCommandView?.title.text = ""
+                    if let date = cell.date {
+                        self.mediaCommandView?.title.text = self.utility.getTitleFromDate(date)
+                    }
                 }
             }
         }
