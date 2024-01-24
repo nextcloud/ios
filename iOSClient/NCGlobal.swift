@@ -496,5 +496,5 @@ class NCGlobal: NSObject {
     let diagnosticIssueVirusDetected        = "virus_detected"
     let diagnosticIssueE2eeErrors           = "e2ee_errors"
 
-    let diagnosticProblemsForbidden         = "Filename forbidden 403"
+    let diagnosticProblemsForbidden         = "CHARACTERS_FORBIDDEN"
 }

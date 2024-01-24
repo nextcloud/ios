@@ -391,14 +391,13 @@ class NCService: NSObject {
         }
 
         do {
-
             let issues = Issues(syncConflicts: syncConflicts, problems: problems, virusDetected: virusDetected, e2eeErrors: e2eeErrors)
             let data = try JSONEncoder().encode(issues)
             data.printJson()
 
             NextcloudKit.shared.sendClientDiagnosticsRemoteOperation(data: data, options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { _, error in
                 if error == .success {
-                    NCManageDatabase.shared.deleteDiagnostic(account: account)
+                    NCManageDatabase.shared.deleteDiagnostics(account: account, ids: ids)
                 }
             }
         } catch {

@@ -98,15 +98,17 @@ extension NCManageDatabase {
         return nil
     }
 
-    func deleteDiagnostic(account: String, id: ObjectId) {
+    func deleteDiagnostics(account: String, ids: [ObjectId]) {
 
         do {
             let realm = try Realm()
             try realm.write {
                 let results = realm.objects(TableSecurityGuardDiagnostics.self).where({
-                    $0.account == account && $0.id == id
+                    $0.account == account
                 })
-                realm.delete(results)
+                for result in results where ids.contains(result.id) {
+                    realm.delete(result)
+                }
             }
         } catch let error {
             NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
