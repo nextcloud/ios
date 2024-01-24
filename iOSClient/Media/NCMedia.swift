@@ -528,7 +528,7 @@ extension NCMedia {
             var predicate = NSPredicate(format: "date > %@ AND date < %@", greaterDate as NSDate, lessDate as NSDate)
             predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [predicate, self.getPredicate(showAll: true)])
             let resultsUpdate = NCManageDatabase.shared.updateMetadatas(metadatas, predicate: predicate)
-            let isChaged = (resultsUpdate.metadatasChanged || resultsUpdate.metadatasChangedCount != 0) ? true : false
+            let isChaged: Bool = resultsUpdate.metadatasChanged || resultsUpdate.metadatasChangedCount != 0
             return(account, lessDate, greaterDate, metadatas.count, isChaged, results.error)
         } else {
             return(account, lessDate, greaterDate, 0, false, results.error)
