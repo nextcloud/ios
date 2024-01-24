@@ -51,7 +51,7 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate, NCSelectDelegate {
     private let maxImageGrid: CGFloat = 7
     private var cellHeigth: CGFloat = 0
 
-    private var searchInProgress = false
+    private var loadingTask: Task<Void, Never>?
 
     private var lastContentOffsetY: CGFloat = 0
     private var mediaPath = ""
@@ -246,7 +246,7 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate, NCSelectDelegate {
     func emptyDataSetView(_ view: NCEmptyView) {
 
         view.emptyImage.image = UIImage(named: "media")?.image(color: .gray, size: UIScreen.main.bounds.width)
-        if searchInProgress {
+        if loadingTask != nil {
             view.emptyTitle.text = NSLocalizedString("_search_in_progress_", comment: "")
         } else {
             view.emptyTitle.text = NSLocalizedString("_tutorial_photo_view_", comment: "")
@@ -466,7 +466,10 @@ extension NCMedia {
         var greaterDate: Date?
         let firstMetadataDate = metadatas?.first?.date as? Date
         let lastMetadataDate = metadatas?.last?.date as? Date
-        guard !searchInProgress else { return }
+
+        if loadingTask != nil {
+            return
+        }
 
         if let visibleCells = self.collectionView?.indexPathsForVisibleItems.sorted(by: { $0.row < $1.row }).compactMap({ self.collectionView?.cellForItem(at: $0) }) {
             // first date
@@ -493,17 +496,16 @@ extension NCMedia {
             }
 
             if let lessDate, let greaterDate {
-                searchInProgress = true
                 mediaCommandView?.activityIndicator.startAnimating()
                 collectionView.reloadData()
-                Task {
+                loadingTask = Task(priority: .background) {
                     let results = await searchMedia(account: appDelegate.account, lessDate: lessDate, greaterDate: greaterDate, predicateDB: getPredicate(showAll: true))
                     print("Media results changed items: \(results.isChanged)")
                     if results.error != .success {
                         NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Media search new media error code \(results.error.errorCode) " + results.error.errorDescription)
                     }
                     self.mediaCommandView?.activityIndicator.stopAnimating()
-                    searchInProgress = false
+                    loadingTask = nil
                     if results.error == .success, results.lessDate == Date.distantFuture, results.greaterDate == Date.distantPast, !results.isChanged, results.metadatasCount == 0 {
                         metadatas = nil
                         collectionView.reloadData()
