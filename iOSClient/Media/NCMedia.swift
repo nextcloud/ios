@@ -315,13 +315,16 @@ extension NCMedia: UICollectionViewDataSourcePrefetching {
 extension NCMedia: UICollectionViewDataSource {
 
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        guard let metadatas = self.metadatas else { return 0 }
-        emptyDataSet?.numberOfItemsInSection(metadatas.count, section: section)
-        return metadatas.count
+        var numberOfItemsInSection = 0
+        if let metadatas {
+            numberOfItemsInSection = metadatas.count
+        }
+        emptyDataSet?.numberOfItemsInSection(numberOfItemsInSection, section: section)
+        return numberOfItemsInSection
     }
 
     func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
-        guard let metadatas = self.metadatas else { return }
+        guard let metadatas else { return }
         if !collectionView.indexPathsForVisibleItems.contains(indexPath) && indexPath.row < metadatas.count {
             let metadata = metadatas[indexPath.row]
             for case let operation as NCMediaDownloadThumbnaill in NCNetworking.shared.downloadThumbnailQueue.operations where operation.metadata.ocId == metadata.ocId {
@@ -500,6 +503,7 @@ extension NCMedia {
                         NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Media search new media error code \(results.error.errorCode) " + results.error.errorDescription)
                     }
                     self.mediaCommandView?.activityIndicator.stopAnimating()
+                    searchInProgress = false
                     if results.error == .success, results.lessDate == Date.distantFuture, results.greaterDate == Date.distantPast, !results.isChanged, results.metadatasCount == 0 {
                         metadatas = nil
                         collectionView.reloadData()
@@ -509,7 +513,7 @@ extension NCMedia {
                     if results.isChanged {
                         reloadDataSource()
                     }
-                    searchInProgress = false
+
                 }
             }
         }
@@ -541,21 +545,17 @@ extension NCMedia {
 extension NCMedia: UIScrollViewDelegate {
 
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
-
         if lastContentOffsetY == 0 || lastContentOffsetY + cellHeigth / 2 <= scrollView.contentOffset.y || lastContentOffsetY - cellHeigth / 2 >= scrollView.contentOffset.y {
-
             mediaCommandTitle()
             lastContentOffsetY = scrollView.contentOffset.y
         }
     }
 
     func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
-
         mediaCommandView?.collapseControlButtonView(true)
     }
 
     func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
-
         if !decelerate {
             if !decelerate {
                 timerSearchNewMedia = Timer.scheduledTimer(timeInterval: timeIntervalSearchNewMedia, target: self, selector: #selector(searchMediaUI), userInfo: nil, repeats: false)
@@ -568,7 +568,6 @@ extension NCMedia: UIScrollViewDelegate {
     }
 
     func scrollViewDidScrollToTop(_ scrollView: UIScrollView) {
-
         let y = view.safeAreaInsets.top
         scrollView.contentOffset.y = -(insetsTop + y)
     }
