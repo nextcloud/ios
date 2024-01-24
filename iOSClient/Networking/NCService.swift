@@ -327,8 +327,9 @@ class NCService: NSObject {
                     var oldest: TimeInterval
                 }
 
-                var credentialError: Error?
                 var forbidden: Error?
+                var badResponse: Error?
+                var uploadServerError: Error?
             }
 
             struct VirusDetected: Codable {
@@ -362,6 +363,8 @@ class NCService: NSObject {
 
         var problems: Issues.Problem? = Issues.Problem()
         var problemForbidden: Issues.Problem.Error?
+        var problemBadResponse: Issues.Problem.Error?
+        var problemUploadServerError: Issues.Problem.Error?
 
         if let result = NCManageDatabase.shared.getDiagnostics(account: account, issue: NCGlobal.shared.diagnosticIssueSyncConflicts)?.first {
             syncConflicts = Issues.SyncConflicts(count: result.counter, oldest: result.oldest)
@@ -383,11 +386,21 @@ class NCService: NSObject {
                         problemForbidden = Issues.Problem.Error(count: result.counter, oldest: result.oldest)
                         ids.append(result.id)
                     }
+                case NCGlobal.shared.diagnosticProblemsBadResponse:
+                    if result.counter >= 2 {
+                        problemBadResponse = Issues.Problem.Error(count: result.counter, oldest: result.oldest)
+                        ids.append(result.id)
+                    }
+                case NCGlobal.shared.diagnosticProblemsUploadServerError:
+                    if result.counter >= 1 {
+                        problemUploadServerError = Issues.Problem.Error(count: result.counter, oldest: result.oldest)
+                        ids.append(result.id)
+                    }
                 default:
                     break
                 }
             }
-            problems = Issues.Problem(credentialError: nil, forbidden: problemForbidden)
+            problems = Issues.Problem(forbidden: problemForbidden, badResponse: problemBadResponse, uploadServerError: problemUploadServerError)
         }
 
         do {
