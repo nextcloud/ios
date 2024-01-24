@@ -497,4 +497,7 @@ class NCGlobal: NSObject {
     let diagnosticIssueE2eeErrors           = "e2ee_errors"
 
     let diagnosticProblemsForbidden         = "CHARACTERS_FORBIDDEN"
+    let diagnosticProblemsBadResponse       = "BAD_SERVER_RESPONSE"
+    let diagnosticProblemsUploadServerError = "UploadError.SERVER_ERROR"
+
 }

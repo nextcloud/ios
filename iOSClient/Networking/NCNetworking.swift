@@ -958,6 +958,9 @@ class NCNetworking: NSObject, NKCommonDelegate {
                                "fileName": metadata.fileName,
                                "ocIdTemp": ocIdTemp,
                                "error": error])
+
+                // Client Diagnostic
+                NCManageDatabase.shared.addDiagnostic(account: metadata.account, issue: NCGlobal.shared.diagnosticIssueProblems, error: NCGlobal.shared.diagnosticProblemsUploadServerError)
             }
         }
 
