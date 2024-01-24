@@ -51,7 +51,7 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate, NCSelectDelegate {
     private let maxImageGrid: CGFloat = 7
     private var cellHeigth: CGFloat = 0
 
-    private var loadingTask: Task<Void, any Error>? = nil
+    private var loadingTask: Task<Void, any Error>?
 
     private var lastContentOffsetY: CGFloat = 0
     private var mediaPath = ""
