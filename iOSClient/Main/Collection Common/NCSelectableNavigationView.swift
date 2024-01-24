@@ -48,7 +48,7 @@ protocol NCSelectableNavigationView: AnyObject {
     var selectActions: [NCMenuAction] { get }
 
     func reloadDataSource(withQueryDB: Bool)
-    func setNavigationItem()
+    func setNavigationItems()
 
     func tapSelectMenu()
     func tapSelect()
@@ -56,7 +56,7 @@ protocol NCSelectableNavigationView: AnyObject {
 
 extension NCSelectableNavigationView {
 
-    func setNavigationItem() {
+    func setNavigationItems() {
         setNavigationRightItems()
     }
 
@@ -79,7 +79,7 @@ extension NCSelectableNavigationView {
         isEditMode = !isEditMode
         selectOcId.removeAll()
         selectIndexPath.removeAll()
-        self.setNavigationItem()
+        self.setNavigationItems()
         self.collectionView.reloadData()
     }
 

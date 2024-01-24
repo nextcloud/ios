@@ -80,34 +80,117 @@ class NCMainTabBar: UITabBar {
         }
     }
 
+//    override func viewWillLayoutSubviews() {
+//
+//        if let tabBar = self.tabBar as? CustomTabBar {
+
+//            let maskLayer = CAShapeLayer()
+//            maskLayer.path = tabBar.createPath()
+//            maskLayer.fillRule = .evenOdd
+//
+//            let blurEffect = UIBlurEffect(style: .light)
+//            let blurEffectView = UIVisualEffectView(effect: blurEffect)
+//            blurEffectView.frame = self.tabBar.frame
+//            blurEffectView.layer.mask = maskLayer
+//
+//            addSubview(blurEffectView)
+//            bringSubviewToFront(tabBar)
+//        }
+//    }
+
+
     override func layoutSubviews() {
         super.layoutSubviews()
 
-        layer.shadowPath = createPath()
-        layer.shadowRadius = 5
-        layer.shadowOffset = .zero
-        layer.shadowOpacity = 0.25
+//        layer.shadowPath = createPath()
+//        layer.shadowRadius = 5
+//        layer.shadowOffset = .zero
+//        layer.shadowOpacity = 0.25
+
+//        let maskLayer = CAShapeLayer()
+//        maskLayer.path = createPath()
+//        maskLayer.fillRule = .evenOdd
+//
+//        let blurEffect = UIBlurEffect(style: .light)
+//        let blurEffectView = UIVisualEffectView(effect: blurEffect)
+//        blurEffectView.frame = frame
+//        blurEffectView.layer.mask = maskLayer
+
+//        addSubview(blurEffectView)
+//        bringSubviewToFront(self)
     }
 
     override func draw(_ rect: CGRect) {
-        addShape()
-        createButtons()
+//        addShape()
+//        createButtons()
     }
 
     private func addShape() {
 
-        let shapeLayer = CAShapeLayer()
-        shapeLayer.path = createPath()
-        shapeLayer.fillColor = backgroundColor?.cgColor
-        shapeLayer.strokeColor = UIColor.clear.cgColor
+//        let shapeLayer = CAShapeLayer()
+//        shapeLayer.path = createPath()
+//        shapeLayer.fillColor = backgroundColor?.cgColor
+//        shapeLayer.strokeColor = UIColor.clear.cgColor
+//
+//        if let oldShapeLayer = self.shapeLayer {
+//            self.layer.replaceSublayer(oldShapeLayer, with: shapeLayer)
+//        } else {
+//            self.layer.insertSublayer(shapeLayer, at: 0)
+//        }
 
-        if let oldShapeLayer = self.shapeLayer {
-            self.layer.replaceSublayer(oldShapeLayer, with: shapeLayer)
-        } else {
-            self.layer.insertSublayer(shapeLayer, at: 0)
-        }
+//        let maskLayer = CAShapeLayer()
+//        maskLayer.path = createPath()
+//        maskLayer.fillRule = .evenOdd
+//
+//        let blurEffect = UIBlurEffect(style: .light)
+//        let blurEffectView = UIVisualEffectView(effect: blurEffect)
+////        blurEffectView.frame = self.tabBar.frame
+//        blurEffectView.layer.mask = maskLayer
+//
+//        addSubview(blurEffectView)
+//        bringSubviewToFront(tabBar)
 
-        self.shapeLayer = shapeLayer
+//        var blur: UIView!
+//        blur = UIVisualEffectView (effect: UIBlurEffect (style: .light))
+//        blur.frame = frame
+//
+//        let maskLayer = CAShapeLayer()
+//        maskLayer.path = createPath()
+//        maskLayer.fillRule = .evenOdd
+//
+//        let borderLayer = CAShapeLayer()
+//        borderLayer.path = createPath()
+//        borderLayer.strokeColor = UIColor.white.cgColor
+//        borderLayer.fillColor = UIColor.clear.cgColor //Remember this line, it caused me some issues
+//        borderLayer.lineWidth = 10
+//
+//        let maskView = UIView(frame: frame)
+//        maskView.backgroundColor = UIColor.black
+//        maskView.layer.mask = maskLayer
+//
+//        blur.layer.addSublayer(borderLayer)
+//        blur.mask = maskView
+//
+//        self.shapeLayer = maskLayer
+
+//        private func addBlurEffect() {
+            // Create a UIBlurEffect
+            let blurEffect = UIBlurEffect(style: .systemMaterial)
+
+            // Create a UIVisualEffectView with the UIBlurEffect
+            let blurView = UIVisualEffectView(effect: blurEffect)
+            blurView.frame = self.bounds
+
+            // Create your shape layer (reuse your existing method)
+            let maskLayer = CAShapeLayer()
+            maskLayer.path = createPath()
+
+            // Set the mask of the blurView's layer to be the shape layer
+            blurView.layer.mask = maskLayer
+
+            // Add the blurView to your view hierarchy
+            self.addSubview(blurView)
+//        }
     }
 
     private func createPath() -> CGPath {
