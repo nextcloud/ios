@@ -44,18 +44,60 @@ class NCMediaCommandView: UIView {
         selectButton.layer.masksToBounds = true
         selectButton.setTitle( NSLocalizedString("_select_", comment: ""), for: .normal)
 
-        moreButton.backgroundColor = .systemGray4.withAlphaComponent(0.6)
-        moreButton.layer.cornerRadius = 15
-        moreButton.layer.masksToBounds = true
-        moreButton.showsMenuAsPrimaryAction = true
         moreButton.changesSelectionAsPrimaryAction = false
-        moreButton.setImage(UIImage(systemName: "ellipsis"), for: .normal)
+        setMoreButton()
 
         gradient.frame = bounds
         gradient.startPoint = CGPoint(x: 0, y: 0.5)
         gradient.endPoint = CGPoint(x: 0, y: 1)
         gradient.colors = [UIColor.black.withAlphaComponent(UIAccessibility.isReduceTransparencyEnabled ? 0.8 : 0.4).cgColor, UIColor.clear.cgColor]
         layer.insertSublayer(gradient, at: 0)
+    }
+
+    override func layoutSublayers(of layer: CALayer) {
+        super.layoutSublayers(of: layer)
+        gradient.frame = bounds
+    }
+
+    @IBAction func selectButtonPressed(_ sender: UIButton) {
+        if let mediaView = self.mediaView {
+            mediaView.isEditMode = !mediaView.isEditMode
+            if mediaView.isEditMode {
+                selectButton.setTitle( NSLocalizedString("_cancel_", comment: ""), for: .normal)
+                setMoreButtonTrash()
+            } else {
+                selectButton.setTitle( NSLocalizedString("_select_", comment: ""), for: .normal)
+                mediaView.isEditMode = false
+                mediaView.selectOcId.removeAll()
+                mediaView.selectIndexPath.removeAll()
+                mediaView.collectionView?.reloadData()
+                setMoreButton()
+            }
+        }
+    }
+
+    @IBAction func trashButtonPressed(_ sender: UIButton) {
+        // actions.append(.deleteAction(selectedMetadatas: selectedMetadatas, indexPath: selectIndexPath, metadataFolder: nil, viewController: self, completion: tapSelect))
+    }
+
+    func setMoreButton() {
+
+        moreButton.backgroundColor = .systemGray4.withAlphaComponent(0.6)
+        moreButton.layer.cornerRadius = 15
+        moreButton.layer.masksToBounds = true
+        moreButton.showsMenuAsPrimaryAction = true
+        moreButton.configuration = UIButton.Configuration.plain()
+        let image = UIImage(systemName: "ellipsis")
+        moreButton.setImage(image, for: .normal)
+    }
+
+    func setMoreButtonTrash() {
+
+        moreButton.backgroundColor = .clear
+        moreButton.showsMenuAsPrimaryAction = false
+        moreButton.configuration = UIButton.Configuration.plain()
+        let image = UIImage(systemName: "trash.circle", withConfiguration: UIImage.SymbolConfiguration(pointSize: 25))?.withTintColor(.red, renderingMode: .alwaysOriginal)
+        moreButton.setImage(image, for: .normal)
     }
 
     func createMenu() {
@@ -151,50 +193,14 @@ class NCMediaCommandView: UIView {
         moreButton.menu = UIMenu(title: "", children: [topAction, playFile, playURL])
     }
 
-    private func updateActionState(actionTitle: String? = nil, menu: UIMenu) -> UIMenu {
-        if let actionTitle = actionTitle {
-            menu.children.forEach { action in
-                guard let action = action as? UIAction else {
-                    return
-                }
-                if action.title == actionTitle {
-                    action.attributes = .disabled
-                }
-            }
-        }
-        return menu
-    }
-
     func toggleEmptyView(isEmpty: Bool) {
         if isEmpty {
             UIView.animate(withDuration: 0.3) {
-               // self.moreView.effect = UIBlurEffect(style: .dark)
                 self.gradient.isHidden = true
             }
         } else {
             UIView.animate(withDuration: 0.3) {
-               //  self.moreView.effect = UIBlurEffect(style: .dark)
                 self.gradient.isHidden = false
-            }
-        }
-    }
-
-    override func layoutSublayers(of layer: CALayer) {
-        super.layoutSublayers(of: layer)
-        gradient.frame = bounds
-    }
-
-    @IBAction func selectButtonPressed(_ sender: UIButton) {
-        if let mediaView = self.mediaView {
-            mediaView.isEditMode = !mediaView.isEditMode
-            if mediaView.isEditMode {
-                selectButton.setTitle( NSLocalizedString("_cancel_", comment: ""), for: .normal)
-            } else {
-                selectButton.setTitle( NSLocalizedString("_select_", comment: ""), for: .normal)
-                mediaView.isEditMode = false
-                mediaView.selectOcId.removeAll()
-                mediaView.selectIndexPath.removeAll()
-                mediaView.collectionView?.reloadData()
             }
         }
     }
