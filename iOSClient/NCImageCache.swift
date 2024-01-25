@@ -34,7 +34,7 @@ import RealmSwift
 
     // MARK: -
 
-    private let limit: Int = 500
+    private let limit: Int = 1000
     private var account: String = ""
     private var brandElementColor: UIColor?
 
@@ -109,7 +109,7 @@ import RealmSwift
         var counter: Int = 0
         for file in files {
             counter += 1
-            if counter > limit { break }
+            if counter > (limit - 100) { break }
             autoreleasepool {
                 if let image = UIImage(contentsOfFile: file.path.path) {
                     cache.setValue(.actual(image), forKey: file.ocIdEtag)
