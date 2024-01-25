@@ -23,43 +23,41 @@
 
 import UIKit
 import NextcloudKit
-import JGProgressHUD
-import Queuer
 import RealmSwift
 
 class NCMedia: UIViewController, NCEmptyDataSetDelegate, NCSelectDelegate {
 
     @IBOutlet weak var collectionView: UICollectionView!
 
-    private var emptyDataSet: NCEmptyDataSet?
-    private var mediaCommandView: NCMediaCommandView?
-    private var gridLayout: NCGridMediaLayout!
-    internal var documentPickerViewController: NCDocumentPickerViewController?
+    var emptyDataSet: NCEmptyDataSet?
+    var mediaCommandView: NCMediaCommandView?
+    var gridLayout: NCGridMediaLayout!
+    var documentPickerViewController: NCDocumentPickerViewController?
 
-    internal let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
-    internal let utilityFileSystem = NCUtilityFileSystem()
-    internal let utility = NCUtility()
+    let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
+    let utilityFileSystem = NCUtilityFileSystem()
+    let utility = NCUtility()
 
     @ThreadSafe internal var metadatas: Results<tableMetadata>?
-    internal var isEditMode = false
-    internal var selectOcId: [String] = []
-    internal var selectIndexPath: [IndexPath] = []
+    var isEditMode = false
+    var selectOcId: [String] = []
+    var selectIndexPath: [IndexPath] = []
 
-    internal var showOnlyImages = false
-    internal var showOnlyVideos = false
+    var showOnlyImages = false
+    var showOnlyVideos = false
 
-    private let maxImageGrid: CGFloat = 7
-    private var cellHeigth: CGFloat = 0
+    let maxImageGrid: CGFloat = 7
+    var cellHeigth: CGFloat = 0
 
-    private var loadingTask: Task<Void, any Error>?
+    var loadingTask: Task<Void, any Error>?
 
-    private var lastContentOffsetY: CGFloat = 0
-    private var mediaPath = ""
+    var lastContentOffsetY: CGFloat = 0
+    var mediaPath = ""
 
-    private var timeIntervalSearchNewMedia: TimeInterval = 3.0
-    private var timerSearchNewMedia: Timer?
+    var timeIntervalSearchNewMedia: TimeInterval = 3.0
+    var timerSearchNewMedia: Timer?
 
-    private let insetsTop: CGFloat = 75
+    let insetsTop: CGFloat = 75
 
     struct cacheImages {
         static var cellLivePhotoImage = UIImage()
@@ -179,6 +177,17 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate, NCSelectDelegate {
     }
 
     // MARK: - Command
+
+    func updateMediaControlVisibility() {
+
+        if let metadatas, metadatas.isEmpty {
+            mediaCommandView?.toggleEmptyView(isEmpty: true)
+            mediaCommandView?.isHidden = false
+        } else {
+            mediaCommandView?.toggleEmptyView(isEmpty: false)
+            mediaCommandView?.isHidden = false
+        }
+    }
 
     func mediaCommandTitle() {
 
@@ -367,7 +376,7 @@ extension NCMedia: UICollectionViewDataSource {
             } else {
                 if metadata.hasPreview && metadata.status == NCGlobal.shared.metadataStatusNormal && (!utilityFileSystem.fileProviderStoragePreviewIconExists(metadata.ocId, etag: metadata.etag)) {
                     if NCNetworking.shared.downloadThumbnailQueue.operations.filter({ ($0 as? NCMediaDownloadThumbnaill)?.metadata.ocId == metadata.ocId }).isEmpty {
-                        NCNetworking.shared.downloadThumbnailQueue.addOperation(NCMediaDownloadThumbnaill(metadata: metadata, cell: cell, collectionView: collectionView))
+                        NCNetworking.shared.downloadThumbnailQueue.addOperation(NCMediaDownloadThumbnaill(metadata: metadata, collectionView: collectionView))
                     }
                 }
                 cell.imageStatus.image = nil
@@ -414,138 +423,6 @@ extension NCMedia: UICollectionViewDelegateFlowLayout {
 
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForFooterInSection section: Int) -> CGSize {
         return CGSize(width: collectionView.frame.width, height: 0)
-    }
-}
-
-extension NCMedia {
-
-    func getPredicate(showAll: Bool = false) -> NSPredicate {
-
-        let startServerUrl = NCUtilityFileSystem().getHomeServer(urlBase: appDelegate.urlBase, userId: appDelegate.userId) + mediaPath
-
-        if showAll {
-            return NSPredicate(format: NCImageCache.shared.showAllPredicateMediaString, appDelegate.account, startServerUrl)
-        } else if showOnlyImages {
-            return NSPredicate(format: NCImageCache.shared.showOnlyPredicateMediaString, appDelegate.account, startServerUrl, NKCommon.TypeClassFile.image.rawValue)
-        } else if showOnlyVideos {
-            return NSPredicate(format: NCImageCache.shared.showOnlyPredicateMediaString, appDelegate.account, startServerUrl, NKCommon.TypeClassFile.video.rawValue)
-        } else {
-           return NSPredicate(format: NCImageCache.shared.showBothPredicateMediaString, appDelegate.account, startServerUrl)
-        }
-    }
-
-    @objc func reloadDataSource() {
-        guard !appDelegate.account.isEmpty else { return }
-
-        metadatas = NCImageCache.shared.getMediaMetadatas(account: self.appDelegate.account, predicate: self.getPredicate())
-        DispatchQueue.main.async {
-            self.collectionView?.reloadData()
-            self.updateMediaControlVisibility()
-            self.mediaCommandTitle()
-        }
-    }
-
-    func updateMediaControlVisibility() {
-
-        if let metadatas = self.metadatas, metadatas.isEmpty {
-            if !self.showOnlyImages && !self.showOnlyVideos {
-                self.mediaCommandView?.toggleEmptyView(isEmpty: true)
-                self.mediaCommandView?.isHidden = false
-            } else {
-                self.mediaCommandView?.toggleEmptyView(isEmpty: true)
-                self.mediaCommandView?.isHidden = false
-            }
-        } else {
-            self.mediaCommandView?.toggleEmptyView(isEmpty: false)
-            self.mediaCommandView?.isHidden = false
-        }
-    }
-
-    // MARK: - Search media
-
-    @objc func searchMediaUI() {
-
-        var lessDate: Date?
-        var greaterDate: Date?
-        let firstMetadataDate = metadatas?.first?.date as? Date
-        let lastMetadataDate = metadatas?.last?.date as? Date
-
-        guard loadingTask == nil else {
-            return
-        }
-
-        if let visibleCells = self.collectionView?.indexPathsForVisibleItems.sorted(by: { $0.row < $1.row }).compactMap({ self.collectionView?.cellForItem(at: $0) }) {
-            // first date
-            let firstCellDate = (visibleCells.first as? NCGridMediaCell)?.date
-            if firstCellDate == firstMetadataDate {
-                lessDate = Date.distantFuture
-            } else {
-                if let date = firstCellDate {
-                    lessDate = Calendar.current.date(byAdding: .second, value: 1, to: date)!
-                } else {
-                    lessDate = Date.distantFuture
-                }
-            }
-            // last date
-            let lastCellDate = (visibleCells.last as? NCGridMediaCell)?.date
-            if lastCellDate == lastMetadataDate {
-                greaterDate = Date.distantPast
-            } else {
-                if let date = lastCellDate {
-                    greaterDate = Calendar.current.date(byAdding: .second, value: -1, to: date)!
-                } else {
-                    greaterDate = Date.distantPast
-                }
-            }
-
-            if let lessDate, let greaterDate {
-                mediaCommandView?.activityIndicator.startAnimating()
-                collectionView.reloadData()
-                loadingTask = Task.detached {
-                    let results = await self.searchMedia(account: self.appDelegate.account, lessDate: lessDate, greaterDate: greaterDate)
-                    print("Media results changed items: \(results.isChanged)")
-                    if results.error != .success {
-                        NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Media search new media error code \(results.error.errorCode) " + results.error.errorDescription)
-                    }
-                    await self.mediaCommandView?.activityIndicator.stopAnimating()
-                    Task { @MainActor in
-                        self.loadingTask = nil
-                    }
-                    if results.error == .success, results.lessDate == Date.distantFuture, results.greaterDate == Date.distantPast, !results.isChanged, results.metadatasCount == 0 {
-                        Task { @MainActor in
-                            self.metadatas = nil
-                        }
-                        await self.collectionView.reloadData()
-                    }
-                    await self.updateMediaControlVisibility()
-                    await self.mediaCommandTitle()
-                    if results.isChanged {
-                        await self.reloadDataSource()
-                    }
-
-                }
-            }
-        }
-    }
-
-    func searchMedia(account: String, lessDate: Date, greaterDate: Date, limit: Int = 200, timeout: TimeInterval = 60) async -> (account: String, lessDate: Date?, greaterDate: Date?, metadatasCount: Int, isChanged: Bool, error: NKError) {
-
-        guard let mediaPath = NCManageDatabase.shared.getActiveAccount()?.mediaPath else {
-            return(account, lessDate, greaterDate, 0, false, NKError())
-        }
-        let options = NKRequestOptions(timeout: timeout, queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
-        let results = await NextcloudKit.shared.searchMedia(path: mediaPath, lessDate: lessDate, greaterDate: greaterDate, elementDate: "d:getlastmodified/", limit: limit, showHiddenFiles: NCKeychain().showHiddenFiles, includeHiddenFiles: [], options: options)
-
-        if results.account == account, results.error == .success {
-            let metadatas = await NCManageDatabase.shared.convertFilesToMetadatas(results.files, useMetadataFolder: false).metadatas
-            var predicate = NSPredicate(format: "date > %@ AND date < %@", greaterDate as NSDate, lessDate as NSDate)
-            predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [predicate, self.getPredicate(showAll: true)])
-            let resultsUpdate = NCManageDatabase.shared.updateMetadatas(metadatas, predicate: predicate)
-            let isChaged: Bool = resultsUpdate.metadatasChanged || resultsUpdate.metadatasChangedCount != 0
-            return(account, lessDate, greaterDate, metadatas.count, isChaged, results.error)
-        } else {
-            return(account, lessDate, greaterDate, 0, false, results.error)
-        }
     }
 }
 
@@ -722,64 +599,5 @@ class NCGridMediaLayout: UICollectionViewFlowLayout {
 
     override func targetContentOffset(forProposedContentOffset proposedContentOffset: CGPoint) -> CGPoint {
         return proposedContentOffset
-    }
-}
-
-// MARK: -
-
-class NCMediaDownloadThumbnaill: ConcurrentOperation {
-
-    var metadata: tableMetadata
-    var cell: NCCellProtocol?
-    var collectionView: UICollectionView?
-    var fileNamePath: String
-    var fileNamePreviewLocalPath: String
-    var fileNameIconLocalPath: String
-    let utilityFileSystem = NCUtilityFileSystem()
-
-    init(metadata: tableMetadata, cell: NCCellProtocol?, collectionView: UICollectionView?) {
-        self.metadata = tableMetadata.init(value: metadata)
-        self.cell = cell
-        self.collectionView = collectionView
-        self.fileNamePath = utilityFileSystem.getFileNamePath(metadata.fileName, serverUrl: metadata.serverUrl, urlBase: metadata.urlBase, userId: metadata.userId)
-        self.fileNamePreviewLocalPath = utilityFileSystem.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)
-        self.fileNameIconLocalPath = utilityFileSystem.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)
-    }
-
-    override func start() {
-
-        guard !isCancelled else { return self.finish() }
-
-        var etagResource: String?
-        if FileManager.default.fileExists(atPath: fileNameIconLocalPath) && FileManager.default.fileExists(atPath: fileNamePreviewLocalPath) {
-            etagResource = metadata.etagResource
-        }
-
-        NextcloudKit.shared.downloadPreview(fileNamePathOrFileId: fileNamePath,
-                                            fileNamePreviewLocalPath: fileNamePreviewLocalPath,
-                                            widthPreview: NCGlobal.shared.sizePreview,
-                                            heightPreview: NCGlobal.shared.sizePreview,
-                                            fileNameIconLocalPath: fileNameIconLocalPath,
-                                            sizeIcon: NCGlobal.shared.sizeIcon,
-                                            etag: etagResource,
-                                            options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { _, imagePreview, _, _, etag, error in
-
-            if error == .success, let image = imagePreview {
-                NCManageDatabase.shared.setMetadataEtagResource(ocId: self.metadata.ocId, etagResource: etag)
-                DispatchQueue.main.async {
-                    if self.metadata.ocId == self.cell?.fileObjectId, let filePreviewImageView = self.cell?.filePreviewImageView {
-                        UIView.transition(with: filePreviewImageView,
-                                          duration: 0.75,
-                                          options: .transitionCrossDissolve,
-                                          animations: { filePreviewImageView.image = image },
-                                          completion: nil)
-                    } else {
-                        self.collectionView?.reloadData()
-                    }
-                }
-                NCImageCache.shared.setMediaImage(ocId: self.metadata.ocId, etag: self.metadata.etag, image: .actual(image))
-            }
-            self.finish()
-        }
     }
 }
