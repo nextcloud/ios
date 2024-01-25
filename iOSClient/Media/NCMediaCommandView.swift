@@ -26,27 +26,18 @@ import UIKit
 class NCMediaCommandView: UIView {
 
     @IBOutlet weak var moreView: UIVisualEffectView!
-    @IBOutlet weak var gridSwitchButton: UIButton!
-    @IBOutlet weak var separatorView: UIView!
-    @IBOutlet weak var buttonControlWidthConstraint: NSLayoutConstraint!
-    @IBOutlet weak var zoomInButton: UIButton!
-    @IBOutlet weak var zoomOutButton: UIButton!
     @IBOutlet weak var moreButton: UIButton!
-    @IBOutlet weak var controlButtonView: UIVisualEffectView!
     @IBOutlet weak var title: UILabel!
     @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
 
     var mediaView: NCMedia?
+    var attributesZoomIn: UIMenuElement.Attributes = []
     private let gradient: CAGradientLayer = CAGradientLayer()
 
     override func awakeFromNib() {
 
         moreView.layer.cornerRadius = 20
         moreView.layer.masksToBounds = true
-
-        controlButtonView.layer.cornerRadius = 20
-        controlButtonView.layer.masksToBounds = true
-        controlButtonView.effect = UIBlurEffect(style: .dark)
 
         gradient.frame = bounds
         gradient.startPoint = CGPoint(x: 0, y: 0.5)
@@ -57,68 +48,114 @@ class NCMediaCommandView: UIView {
         moreButton.showsMenuAsPrimaryAction = true
         moreButton.changesSelectionAsPrimaryAction = false
         moreButton.setImage(UIImage(named: "more")!.image(color: .white, size: 25), for: .normal)
-
-        createMenu()
     }
 
     func createMenu() {
 
+        if mediaView?.gridLayout.itemForLine == 1 {
+            self.attributesZoomIn = .disabled
+        } else {
+            self.attributesZoomIn = []
+        }
+
         let topAction = UIMenu(title: "", options: .displayInline, children: [
+            UIMenu(title: NSLocalizedString("_zoom_", comment: ""), children: [
+                UIAction(title: NSLocalizedString("_zoom_out_", comment: ""), image: UIImage(systemName: "minus.magnifyingglass")) { _ in
+                    guard let mediaView = self.mediaView else { return }
+                    UIView.animate(withDuration: 0.0, animations: {
+                        if mediaView.gridLayout.itemForLine + 1 < mediaView.maxImageGrid {
+                            mediaView.gridLayout.itemForLine += 1
+                            // mediaView.mediaCommandView?.zoomInButton.isEnabled = true
+                        }
+                        if mediaView.gridLayout.itemForLine == mediaView.maxImageGrid - 1 {
+                            // mediaView.mediaCommandView?.zoomOutButton.isEnabled = false
+                        }
+                        self.createMenu()
+                        mediaView.collectionView.collectionViewLayout.invalidateLayout()
+                        NCKeychain().mediaWidthImage = Int(mediaView.gridLayout.itemForLine)
+                    })
+                },
+                UIAction(title: NSLocalizedString("_zoom_in_", comment: ""), image: UIImage(systemName: "plus.magnifyingglass"), attributes: self.attributesZoomIn) { _ in
+                    guard let mediaView = self.mediaView else { return }
+                    UIView.animate(withDuration: 0.0, animations: {
+                        if mediaView.gridLayout.itemForLine - 1 > 0 {
+                            mediaView.gridLayout.itemForLine -= 1
+                        }
+                        self.createMenu()
+                        mediaView.collectionView.collectionViewLayout.invalidateLayout()
+                        NCKeychain().mediaWidthImage = Int(mediaView.gridLayout.itemForLine)
+                    })
+                }
+            ]),
             UIMenu(title: NSLocalizedString("_media_view_options_", comment: ""), children: [
                 UIAction(title: NSLocalizedString("_media_viewimage_show_", comment: ""), image: UIImage(systemName: "photo")) { _ in
-                    self.mediaView?.showOnlyImages = true
-                    self.mediaView?.showOnlyVideos = false
-                    self.mediaView?.reloadDataSource()
+                    guard let mediaView = self.mediaView else { return }
+                    mediaView.showOnlyImages = true
+                    mediaView.showOnlyVideos = false
+                    mediaView.reloadDataSource()
                 },
                 UIAction(title: NSLocalizedString("_media_viewvideo_show_", comment: ""), image: UIImage(systemName: "video")) { _ in
-                    self.mediaView?.showOnlyImages = false
-                    self.mediaView?.showOnlyVideos = true
-                    self.mediaView?.reloadDataSource()
+                    guard let mediaView = self.mediaView else { return }
+                    mediaView.showOnlyImages = false
+                    mediaView.showOnlyVideos = true
+                    mediaView.reloadDataSource()
                 },
                 UIAction(title: NSLocalizedString("_media_show_all_", comment: ""), image: UIImage(systemName: "photo.on.rectangle")) { _ in
-                    self.mediaView?.showOnlyImages = false
-                    self.mediaView?.showOnlyVideos = false
-                    self.mediaView?.reloadDataSource()
+                    guard let mediaView = self.mediaView else { return }
+                    mediaView.showOnlyImages = false
+                    mediaView.showOnlyVideos = false
+                    mediaView.reloadDataSource()
                 }
             ]),
             UIAction(title: NSLocalizedString("_select_media_folder_", comment: ""), image: UIImage(systemName: "folder"), handler: { _ in
-                if let navigationController = UIStoryboard(name: "NCSelect", bundle: nil).instantiateInitialViewController() as? UINavigationController,
-                   let mediaView = self.mediaView,
-                   let viewController = navigationController.topViewController as? NCSelect {
-                    viewController.delegate = mediaView
-                    viewController.typeOfCommandView = .select
-                    viewController.type = "mediaFolder"
-                    viewController.selectIndexPath = mediaView.selectIndexPath
-                    mediaView.present(navigationController, animated: true, completion: nil)
-                }
+                guard let mediaView = self.mediaView,
+                      let navigationController = UIStoryboard(name: "NCSelect", bundle: nil).instantiateInitialViewController() as? UINavigationController,
+                      let viewController = navigationController.topViewController as? NCSelect else { return }
+                viewController.delegate = mediaView
+                viewController.typeOfCommandView = .select
+                viewController.type = "mediaFolder"
+                viewController.selectIndexPath = mediaView.selectIndexPath
+                mediaView.present(navigationController, animated: true, completion: nil)
             })
         ])
 
         let playFile = UIAction(title: NSLocalizedString("_play_from_files_", comment: ""), image: UIImage(systemName: "play.circle")) { _ in
-            if let mediaView = self.mediaView,
-               let tabBarController = mediaView.appDelegate.window?.rootViewController as? UITabBarController {
-                mediaView.documentPickerViewController = NCDocumentPickerViewController(tabBarController: tabBarController, isViewerMedia: true, allowsMultipleSelection: false, viewController: mediaView)
-            }
+            guard let mediaView = self.mediaView,
+                  let tabBarController = mediaView.appDelegate.window?.rootViewController as? UITabBarController else { return }
+            mediaView.documentPickerViewController = NCDocumentPickerViewController(tabBarController: tabBarController, isViewerMedia: true, allowsMultipleSelection: false, viewController: mediaView)
         }
         let playURL = UIAction(title: NSLocalizedString("_play_from_url_", comment: ""), image: UIImage(systemName: "link")) { _ in
-            if let mediaView = self.mediaView {
-                let alert = UIAlertController(title: NSLocalizedString("_valid_video_url_", comment: ""), message: nil, preferredStyle: .alert)
-                alert.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel, handler: nil))
-                alert.addTextField(configurationHandler: { textField in
-                    textField.placeholder = "http://myserver.com/movie.mkv"
-                })
-                alert.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { _ in
-                    guard let stringUrl = alert.textFields?.first?.text, !stringUrl.isEmpty, let url = URL(string: stringUrl) else { return }
-                    let fileName = url.lastPathComponent
-                    let metadata = NCManageDatabase.shared.createMetadata(account: mediaView.appDelegate.account, user: mediaView.appDelegate.user, userId: mediaView.appDelegate.userId, fileName: fileName, fileNameView: fileName, ocId: NSUUID().uuidString, serverUrl: "", urlBase: mediaView.appDelegate.urlBase, url: stringUrl, contentType: "")
-                    NCManageDatabase.shared.addMetadata(metadata)
-                    NCViewer().view(viewController: mediaView, metadata: metadata, metadatas: [metadata], imageIcon: nil)
-                }))
-                mediaView.present(alert, animated: true)
-            }
+            guard let mediaView = self.mediaView else { return }
+            let alert = UIAlertController(title: NSLocalizedString("_valid_video_url_", comment: ""), message: nil, preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel, handler: nil))
+            alert.addTextField(configurationHandler: { textField in
+                textField.placeholder = "http://myserver.com/movie.mkv"
+            })
+            alert.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { _ in
+                guard let stringUrl = alert.textFields?.first?.text, !stringUrl.isEmpty, let url = URL(string: stringUrl) else { return }
+                let fileName = url.lastPathComponent
+                let metadata = NCManageDatabase.shared.createMetadata(account: mediaView.appDelegate.account, user: mediaView.appDelegate.user, userId: mediaView.appDelegate.userId, fileName: fileName, fileNameView: fileName, ocId: NSUUID().uuidString, serverUrl: "", urlBase: mediaView.appDelegate.urlBase, url: stringUrl, contentType: "")
+                NCManageDatabase.shared.addMetadata(metadata)
+                NCViewer().view(viewController: mediaView, metadata: metadata, metadatas: [metadata], imageIcon: nil)
+            }))
+            mediaView.present(alert, animated: true)
         }
 
         moreButton.menu = UIMenu(title: "", children: [topAction, playFile, playURL])
+    }
+
+    private func updateActionState(actionTitle: String? = nil, menu: UIMenu) -> UIMenu {
+        if let actionTitle = actionTitle {
+            menu.children.forEach { action in
+                guard let action = action as? UIAction else {
+                    return
+                }
+                if action.title == actionTitle {
+                    action.attributes = .disabled
+                }
+            }
+        }
+        return menu
     }
 
     func toggleEmptyView(isEmpty: Bool) {
@@ -126,53 +163,13 @@ class NCMediaCommandView: UIView {
             UIView.animate(withDuration: 0.3) {
                 self.moreView.effect = UIBlurEffect(style: .dark)
                 self.gradient.isHidden = true
-                self.controlButtonView.isHidden = true
             }
         } else {
             UIView.animate(withDuration: 0.3) {
                 self.moreView.effect = UIBlurEffect(style: .dark)
                 self.gradient.isHidden = false
-                self.controlButtonView.isHidden = false
             }
         }
-    }
-
-    @IBAction func zoomInPressed(_ sender: UIButton) {
-        mediaView?.zoomInGrid()
-    }
-
-    @IBAction func zoomOutPressed(_ sender: UIButton) {
-        mediaView?.zoomOutGrid()
-    }
-
-    @IBAction func gridSwitchButtonPressed(_ sender: Any) {
-        self.collapseControlButtonView(false)
-    }
-
-    func collapseControlButtonView(_ collapse: Bool) {
-        if collapse {
-            self.buttonControlWidthConstraint.constant = 40
-            UIView.animate(withDuration: 0.25) {
-                self.zoomOutButton.isHidden = true
-                self.zoomInButton.isHidden = true
-                self.separatorView.isHidden = true
-                self.gridSwitchButton.isHidden = false
-                self.layoutIfNeeded()
-            }
-        } else {
-            self.buttonControlWidthConstraint.constant = 80
-            UIView.animate(withDuration: 0.25) {
-                self.zoomOutButton.isHidden = false
-                self.zoomInButton.isHidden = false
-                self.separatorView.isHidden = false
-                self.gridSwitchButton.isHidden = true
-                self.layoutIfNeeded()
-            }
-        }
-    }
-
-    override func point(inside point: CGPoint, with event: UIEvent?) -> Bool {
-        return moreView.frame.contains(point) || controlButtonView.frame.contains(point)
     }
 
     override func layoutSublayers(of layer: CALayer) {
