@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="22505" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
-    <device id="retina4_7" orientation="portrait" appearance="light"/>
+    <device id="retina5_9" orientation="landscape" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="22504"/>
@@ -16,7 +16,7 @@
             <autoresizingMask key="autoresizingMask"/>
             <subviews>
                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="TK1-KX-Qe0">
-                    <rect key="frame" x="10" y="20" width="355" height="30"/>
+                    <rect key="frame" x="60" y="0.0" width="255" height="30"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="30" id="Qvv-k4-hfY"/>
                     </constraints>
@@ -30,10 +30,10 @@
                     </connections>
                 </button>
                 <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" style="gray" translatesAutoresizingMaskIntoConstraints="NO" id="qWG-SR-Qly">
-                    <rect key="frame" x="177.5" y="25" width="20" height="20"/>
+                    <rect key="frame" x="177.66666666666666" y="5" width="20" height="20"/>
                 </activityIndicatorView>
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="s2m-yO-4x0" userLabel="separator">
-                    <rect key="frame" x="10" y="50" width="365" height="1"/>
+                    <rect key="frame" x="60" y="30" width="265" height="1"/>
                     <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     <color key="tintColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     <constraints>
@@ -41,7 +41,7 @@
                     </constraints>
                 </view>
                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="gzy-cT-Gjn" userLabel="LabelFooter">
-                    <rect key="frame" x="10" y="43.5" width="355" height="16"/>
+                    <rect key="frame" x="10" y="13.666666666666664" width="355" height="16"/>
                     <fontDescription key="fontDescription" type="system" pointSize="13"/>
                     <nil key="textColor"/>
                     <nil key="highlightedColor"/>
@@ -53,7 +53,10 @@
                 <constraint firstItem="EFn-SN-cxu" firstAttribute="trailing" secondItem="TK1-KX-Qe0" secondAttribute="trailing" constant="10" id="PoY-CD-99O"/>
                 <constraint firstAttribute="trailing" secondItem="gzy-cT-Gjn" secondAttribute="trailing" constant="10" id="QzY-ac-CRO"/>
                 <constraint firstItem="EFn-SN-cxu" firstAttribute="leading" secondItem="s2m-yO-4x0" secondAttribute="leading" constant="-10" id="ai4-Qy-YWi"/>
-                <constraint firstItem="gzy-cT-Gjn" firstAttribute="centerY" secondItem="Vin-9E-7nW" secondAttribute="centerY" id="avP-sX-JB5"/>
+                <constraint firstItem="gzy-cT-Gjn" firstAttribute="centerY" secondItem="Vin-9E-7nW" secondAttribute="centerY" constant="-30" id="avP-sX-JB5">
+                    <variation key="heightClass=compact-widthClass=regular" constant="-15"/>
+                    <variation key="heightClass=regular-widthClass=compact" constant="-15"/>
+                </constraint>
                 <constraint firstItem="qWG-SR-Qly" firstAttribute="centerY" secondItem="TK1-KX-Qe0" secondAttribute="centerY" id="baS-g9-E8a"/>
                 <constraint firstItem="EFn-SN-cxu" firstAttribute="trailing" secondItem="s2m-yO-4x0" secondAttribute="trailing" id="dWj-wQ-cfb"/>
                 <constraint firstItem="TK1-KX-Qe0" firstAttribute="bottom" secondItem="s2m-yO-4x0" secondAttribute="bottom" constant="-1" id="ekM-Ii-N58"/>
