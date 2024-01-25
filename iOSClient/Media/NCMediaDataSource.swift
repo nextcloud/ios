@@ -21,7 +21,11 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+<<<<<<< HEAD
 import UIKit
+=======
+import Foundation
+>>>>>>> bb0a80216 (cod)
 import NextcloudKit
 
 extension NCMedia {
