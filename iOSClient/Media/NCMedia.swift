@@ -236,11 +236,6 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate, NCSelectDelegate {
         })
     }
 
-    @objc func openMenuButtonMore(_ sender: Any) {
-
-        toggleMenu()
-    }
-
     // MARK: Select Path
 
     func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String, items: [Any], indexPath: [IndexPath], overwrite: Bool, copy: Bool, move: Bool) {
@@ -456,103 +451,6 @@ extension NCMedia: UIScrollViewDelegate {
     func scrollViewDidScrollToTop(_ scrollView: UIScrollView) {
         let y = view.safeAreaInsets.top
         scrollView.contentOffset.y = -(insetsTop + y)
-    }
-}
-
-// MARK: - Media Command View
-
-class NCMediaCommandView: UIView {
-
-    @IBOutlet weak var moreView: UIVisualEffectView!
-    @IBOutlet weak var gridSwitchButton: UIButton!
-    @IBOutlet weak var separatorView: UIView!
-    @IBOutlet weak var buttonControlWidthConstraint: NSLayoutConstraint!
-    @IBOutlet weak var zoomInButton: UIButton!
-    @IBOutlet weak var zoomOutButton: UIButton!
-    @IBOutlet weak var moreButton: UIButton!
-    @IBOutlet weak var controlButtonView: UIVisualEffectView!
-    @IBOutlet weak var title: UILabel!
-    @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
-
-    var mediaView: NCMedia?
-    private let gradient: CAGradientLayer = CAGradientLayer()
-
-    override func awakeFromNib() {
-        moreView.layer.cornerRadius = 20
-        moreView.layer.masksToBounds = true
-        controlButtonView.layer.cornerRadius = 20
-        controlButtonView.layer.masksToBounds = true
-        controlButtonView.effect = UIBlurEffect(style: .dark)
-        gradient.frame = bounds
-        gradient.startPoint = CGPoint(x: 0, y: 0.5)
-        gradient.endPoint = CGPoint(x: 0, y: 1)
-        gradient.colors = [UIColor.black.withAlphaComponent(UIAccessibility.isReduceTransparencyEnabled ? 0.8 : 0.4).cgColor, UIColor.clear.cgColor]
-        layer.insertSublayer(gradient, at: 0)
-        moreButton.setImage(UIImage(named: "more")!.image(color: .white, size: 25), for: .normal)
-        title.text = ""
-    }
-
-    func toggleEmptyView(isEmpty: Bool) {
-        if isEmpty {
-            UIView.animate(withDuration: 0.3) {
-                self.moreView.effect = UIBlurEffect(style: .dark)
-                self.gradient.isHidden = true
-                self.controlButtonView.isHidden = true
-            }
-        } else {
-            UIView.animate(withDuration: 0.3) {
-                self.moreView.effect = UIBlurEffect(style: .dark)
-                self.gradient.isHidden = false
-                self.controlButtonView.isHidden = false
-            }
-        }
-    }
-
-    @IBAction func moreButtonPressed(_ sender: UIButton) {
-        mediaView?.openMenuButtonMore(sender)
-    }
-
-    @IBAction func zoomInPressed(_ sender: UIButton) {
-        mediaView?.zoomInGrid()
-    }
-
-    @IBAction func zoomOutPressed(_ sender: UIButton) {
-        mediaView?.zoomOutGrid()
-    }
-
-    @IBAction func gridSwitchButtonPressed(_ sender: Any) {
-        self.collapseControlButtonView(false)
-    }
-
-    func collapseControlButtonView(_ collapse: Bool) {
-        if collapse {
-            self.buttonControlWidthConstraint.constant = 40
-            UIView.animate(withDuration: 0.25) {
-                self.zoomOutButton.isHidden = true
-                self.zoomInButton.isHidden = true
-                self.separatorView.isHidden = true
-                self.gridSwitchButton.isHidden = false
-                self.layoutIfNeeded()
-            }
-        } else {
-            self.buttonControlWidthConstraint.constant = 80
-            UIView.animate(withDuration: 0.25) {
-                self.zoomOutButton.isHidden = false
-                self.zoomInButton.isHidden = false
-                self.separatorView.isHidden = false
-                self.gridSwitchButton.isHidden = true
-                self.layoutIfNeeded()
-            }
-        }
-    }
-
-    override func point(inside point: CGPoint, with event: UIEvent?) -> Bool {
-        return moreView.frame.contains(point) || controlButtonView.frame.contains(point)
-    }
-
-    override func layoutSublayers(of layer: CALayer) {
-        super.layoutSublayers(of: layer)
-        gradient.frame = bounds
     }
 }
 
