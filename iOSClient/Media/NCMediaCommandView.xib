@@ -113,14 +113,10 @@
                         <rect key="frame" x="0.0" y="0.0" width="40" height="40"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="3qs-Hm-qLL">
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" adjustsImageWhenHighlighted="NO" adjustsImageWhenDisabled="NO" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="3qs-Hm-qLL">
                                 <rect key="frame" x="0.0" y="0.0" width="40" height="40"/>
                                 <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <inset key="imageEdgeInsets" minX="4" minY="4" maxX="4" maxY="4"/>
-                                <state key="normal" image="ellipsis" catalog="system"/>
-                                <connections>
-                                    <action selector="moreButtonPressed:" destination="iN0-l3-epB" eventType="touchUpInside" id="EeF-Eg-Pqi"/>
-                                </connections>
                             </button>
                         </subviews>
                         <constraints>
@@ -170,7 +166,6 @@
         </view>
     </objects>
     <resources>
-        <image name="ellipsis" catalog="system" width="128" height="37"/>
         <image name="minus" catalog="system" width="128" height="26"/>
         <image name="plus" catalog="system" width="128" height="113"/>
         <image name="plus.forwardslash.minus" catalog="system" width="128" height="115"/>

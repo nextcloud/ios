@@ -5,8 +5,6 @@
 //  Created by Marino Faggiana on 25/01/24.
 //  Copyright © 2024 Marino Faggiana. All rights reserved.
 //
-<<<<<<< HEAD
-<<<<<<< HEAD
 //  Author Marino Faggiana <marino.faggiana@nextcloud.com>
 //
 //  This program is free software: you can redistribute it and/or modify
@@ -22,10 +20,6 @@
 //  You should have received a copy of the GNU General Public License
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
-=======
->>>>>>> bb0a80216 (cod)
-=======
->>>>>>> 82083d1cf (cod)
 
 import UIKit
 import NextcloudKit
