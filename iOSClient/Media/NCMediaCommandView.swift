@@ -25,19 +25,16 @@ import UIKit
 
 class NCMediaCommandView: UIView {
 
-    @IBOutlet weak var moreView: UIVisualEffectView!
     @IBOutlet weak var moreButton: UIButton!
     @IBOutlet weak var title: UILabel!
     @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
 
     var mediaView: NCMedia?
     var attributesZoomIn: UIMenuElement.Attributes = []
+    var attributesZoomOut: UIMenuElement.Attributes = []
     private let gradient: CAGradientLayer = CAGradientLayer()
 
     override func awakeFromNib() {
-
-        moreView.layer.cornerRadius = 20
-        moreView.layer.masksToBounds = true
 
         gradient.frame = bounds
         gradient.startPoint = CGPoint(x: 0, y: 0.5)
@@ -45,31 +42,37 @@ class NCMediaCommandView: UIView {
         gradient.colors = [UIColor.black.withAlphaComponent(UIAccessibility.isReduceTransparencyEnabled ? 0.8 : 0.4).cgColor, UIColor.clear.cgColor]
         layer.insertSublayer(gradient, at: 0)
 
+        moreButton.backgroundColor = .systemGray4.withAlphaComponent(0.5)
+        moreButton.layer.cornerRadius = 15
+        moreButton.layer.masksToBounds = true
         moreButton.showsMenuAsPrimaryAction = true
         moreButton.changesSelectionAsPrimaryAction = false
-        moreButton.setImage(UIImage(named: "more")!.image(color: .white, size: 25), for: .normal)
+        moreButton.setImage(UIImage(systemName: "ellipsis"), for: .normal)
+
+        title.text = ""
     }
 
     func createMenu() {
 
-        if mediaView?.gridLayout.itemForLine == 1 {
-            self.attributesZoomIn = .disabled
-        } else {
-            self.attributesZoomIn = []
+        if let itemForLine = mediaView?.gridLayout.itemForLine, let maxImageGrid = mediaView?.maxImageGrid {
+            if itemForLine >= maxImageGrid - 1 {
+                self.attributesZoomIn = []
+                self.attributesZoomOut = .disabled
+            } else if itemForLine <= 1 {
+                self.attributesZoomIn = .disabled
+                self.attributesZoomOut = []
+            } else {
+                self.attributesZoomIn = []
+                self.attributesZoomOut = []
+            }
         }
 
         let topAction = UIMenu(title: "", options: .displayInline, children: [
             UIMenu(title: NSLocalizedString("_zoom_", comment: ""), children: [
-                UIAction(title: NSLocalizedString("_zoom_out_", comment: ""), image: UIImage(systemName: "minus.magnifyingglass")) { _ in
+                UIAction(title: NSLocalizedString("_zoom_out_", comment: ""), image: UIImage(systemName: "minus.magnifyingglass"), attributes: self.attributesZoomOut) { _ in
                     guard let mediaView = self.mediaView else { return }
                     UIView.animate(withDuration: 0.0, animations: {
-                        if mediaView.gridLayout.itemForLine + 1 < mediaView.maxImageGrid {
-                            mediaView.gridLayout.itemForLine += 1
-                            // mediaView.mediaCommandView?.zoomInButton.isEnabled = true
-                        }
-                        if mediaView.gridLayout.itemForLine == mediaView.maxImageGrid - 1 {
-                            // mediaView.mediaCommandView?.zoomOutButton.isEnabled = false
-                        }
+                        mediaView.gridLayout.itemForLine += 1
                         self.createMenu()
                         mediaView.collectionView.collectionViewLayout.invalidateLayout()
                         NCKeychain().mediaWidthImage = Int(mediaView.gridLayout.itemForLine)
@@ -78,9 +81,7 @@ class NCMediaCommandView: UIView {
                 UIAction(title: NSLocalizedString("_zoom_in_", comment: ""), image: UIImage(systemName: "plus.magnifyingglass"), attributes: self.attributesZoomIn) { _ in
                     guard let mediaView = self.mediaView else { return }
                     UIView.animate(withDuration: 0.0, animations: {
-                        if mediaView.gridLayout.itemForLine - 1 > 0 {
-                            mediaView.gridLayout.itemForLine -= 1
-                        }
+                        mediaView.gridLayout.itemForLine -= 1
                         self.createMenu()
                         mediaView.collectionView.collectionViewLayout.invalidateLayout()
                         NCKeychain().mediaWidthImage = Int(mediaView.gridLayout.itemForLine)
@@ -161,12 +162,12 @@ class NCMediaCommandView: UIView {
     func toggleEmptyView(isEmpty: Bool) {
         if isEmpty {
             UIView.animate(withDuration: 0.3) {
-                self.moreView.effect = UIBlurEffect(style: .dark)
+               // self.moreView.effect = UIBlurEffect(style: .dark)
                 self.gradient.isHidden = true
             }
         } else {
             UIView.animate(withDuration: 0.3) {
-                self.moreView.effect = UIBlurEffect(style: .dark)
+               //  self.moreView.effect = UIBlurEffect(style: .dark)
                 self.gradient.isHidden = false
             }
         }
