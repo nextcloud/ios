@@ -6,6 +6,7 @@
 //  Copyright © 2024 Marino Faggiana. All rights reserved.
 //
 <<<<<<< HEAD
+<<<<<<< HEAD
 //  Author Marino Faggiana <marino.faggiana@nextcloud.com>
 //
 //  This program is free software: you can redistribute it and/or modify
@@ -23,6 +24,8 @@
 //
 =======
 >>>>>>> bb0a80216 (cod)
+=======
+>>>>>>> 82083d1cf (cod)
 
 import UIKit
 import NextcloudKit

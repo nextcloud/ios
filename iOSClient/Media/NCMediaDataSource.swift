@@ -22,10 +22,14 @@
 //
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 import UIKit
 =======
 import Foundation
 >>>>>>> bb0a80216 (cod)
+=======
+import Foundation
+>>>>>>> 82083d1cf (cod)
 import NextcloudKit
 
 extension NCMedia {
