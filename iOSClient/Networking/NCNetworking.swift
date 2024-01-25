@@ -905,6 +905,9 @@ class NCNetworking: NSObject, NKCommonDelegate {
                     NCContentPresenter().showError(error: NKError(errorCode: error.errorCode, errorDescription: "_virus_detect_"))
                 }
 
+                // Client Diagnostic
+                NCManageDatabase.shared.addDiagnostic(account: metadata.account, issue: NCGlobal.shared.diagnosticIssueVirusDetected)
+
             } else if error.errorCode == NCGlobal.shared.errorForbidden && isApplicationStateActive {
 #if !EXTENSION
                 DispatchQueue.main.async {
@@ -934,6 +937,9 @@ class NCNetworking: NSObject, NKCommonDelegate {
 
                     let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
                     appDelegate.window?.rootViewController?.present(alertController, animated: true)
+
+                    // Client Diagnostic
+                    NCManageDatabase.shared.addDiagnostic(account: metadata.account, issue: NCGlobal.shared.diagnosticIssueProblems, error: NCGlobal.shared.diagnosticProblemsForbidden)
                 }
 #endif
             } else {
@@ -952,6 +958,13 @@ class NCNetworking: NSObject, NKCommonDelegate {
                                "fileName": metadata.fileName,
                                "ocIdTemp": ocIdTemp,
                                "error": error])
+
+                // Client Diagnostic
+                if error.errorCode == NCGlobal.shared.errorInternalServerError {
+                    NCManageDatabase.shared.addDiagnostic(account: metadata.account, issue: NCGlobal.shared.diagnosticIssueProblems, error: NCGlobal.shared.diagnosticProblemsBadResponse)
+                } else {
+                    NCManageDatabase.shared.addDiagnostic(account: metadata.account, issue: NCGlobal.shared.diagnosticIssueProblems, error: NCGlobal.shared.diagnosticProblemsUploadServerError)
+                }
             }
         }
 

@@ -51,8 +51,9 @@ class NCService: NSObject {
                 requestDashboardWidget()
                 NCNetworkingE2EE().unlockAll(account: account)
                 NCNetworkingProcessUpload.shared.verifyUploadZombie()
-                // TODO: sendClientDiagnosticsRemoteOperation(account: account)
-                // sendClientDiagnosticsRemoteOperation(account: account)
+                if NCGlobal.shared.capabilitySecurityGuardDiagnostics {
+                    sendClientDiagnosticsRemoteOperation(account: account)
+                }
             }
         }
     }
@@ -311,36 +312,104 @@ class NCService: NSObject {
     // MARK: -
 
     func sendClientDiagnosticsRemoteOperation(account: String) {
+        if !NCManageDatabase.shared.existsDiagnostics(account: account) { return }
 
-        struct Problem: Codable {
-            let count: Int
-            let oldest: TimeInterval
-        }
+        struct Issues: Codable {
 
-        struct Problems: Codable {
-            var problems: [String: Problem] = [:]
-        }
-
-        var problems = Problems()
-
-        guard let metadatas = NCManageDatabase.shared.getMetadatasInError(account: account), !metadatas.isEmpty else { return }
-        for metadata in metadatas {
-            guard let oldest = metadata.errorCodeDate?.timeIntervalSince1970 else { continue }
-            var key = String(metadata.errorCode)
-            if !metadata.sessionError.isEmpty {
-                key = key + " - " + metadata.sessionError
+            struct SyncConflicts: Codable {
+                var count: Int?
+                var oldest: TimeInterval?
             }
-            let value = Problem(count: metadata.errorCodeCounter, oldest: oldest)
-            problems.problems[key] = value
+
+            struct VirusDetected: Codable {
+                var count: Int?
+                var oldest: TimeInterval?
+            }
+
+            struct E2EError: Codable {
+                var count: Int?
+                var oldest: TimeInterval?
+            }
+
+            struct Problem: Codable {
+                struct Error: Codable {
+                    var count: Int
+                    var oldest: TimeInterval
+                }
+
+                var forbidden: Error?               // NCGlobal.shared.diagnosticProblemsForbidden
+                var badResponse: Error?             // NCGlobal.shared.diagnosticProblemsBadResponse
+                var uploadServerError: Error?       // NCGlobal.shared.diagnosticProblemsUploadServerError
+            }
+
+            var syncConflicts: SyncConflicts
+            var virusDetected: VirusDetected
+            var e2eeErrors: E2EError
+            var problems: Problem?
+
+            enum CodingKeys: String, CodingKey {
+                case syncConflicts = "sync_conflicts"
+                case virusDetected = "virus_detected"
+                case e2eeErrors = "e2ee_errors"
+                case problems
+            }
+        }
+
+        var ids: [ObjectId] = []
+
+        var syncConflicts: Issues.SyncConflicts = Issues.SyncConflicts()
+        var virusDetected: Issues.VirusDetected = Issues.VirusDetected()
+        var e2eeErrors: Issues.E2EError = Issues.E2EError()
+
+        var problems: Issues.Problem? = Issues.Problem()
+        var problemForbidden: Issues.Problem.Error?
+        var problemBadResponse: Issues.Problem.Error?
+        var problemUploadServerError: Issues.Problem.Error?
+
+        if let result = NCManageDatabase.shared.getDiagnostics(account: account, issue: NCGlobal.shared.diagnosticIssueSyncConflicts)?.first {
+            syncConflicts = Issues.SyncConflicts(count: result.counter, oldest: result.oldest)
+            ids.append(result.id)
+        }
+        if let result = NCManageDatabase.shared.getDiagnostics(account: account, issue: NCGlobal.shared.diagnosticIssueVirusDetected)?.first {
+            virusDetected = Issues.VirusDetected(count: result.counter, oldest: result.oldest)
+            ids.append(result.id)
+        }
+        if let result = NCManageDatabase.shared.getDiagnostics(account: account, issue: NCGlobal.shared.diagnosticIssueE2eeErrors)?.first {
+            e2eeErrors = Issues.E2EError(count: result.counter, oldest: result.oldest)
+            ids.append(result.id)
+        }
+        if let results = NCManageDatabase.shared.getDiagnostics(account: account, issue: NCGlobal.shared.diagnosticIssueProblems) {
+            for result in results {
+                switch result.error {
+                case NCGlobal.shared.diagnosticProblemsForbidden:
+                    if result.counter >= 1 {
+                        problemForbidden = Issues.Problem.Error(count: result.counter, oldest: result.oldest)
+                        ids.append(result.id)
+                    }
+                case NCGlobal.shared.diagnosticProblemsBadResponse:
+                    if result.counter >= 2 {
+                        problemBadResponse = Issues.Problem.Error(count: result.counter, oldest: result.oldest)
+                        ids.append(result.id)
+                    }
+                case NCGlobal.shared.diagnosticProblemsUploadServerError:
+                    if result.counter >= 1 {
+                        problemUploadServerError = Issues.Problem.Error(count: result.counter, oldest: result.oldest)
+                        ids.append(result.id)
+                    }
+                default:
+                    break
+                }
+            }
+            problems = Issues.Problem(forbidden: problemForbidden, badResponse: problemBadResponse, uploadServerError: problemUploadServerError)
         }
 
         do {
-            @ThreadSafe var metadatas = metadatas
-            let data = try JSONEncoder().encode(problems)
+            let issues = Issues(syncConflicts: syncConflicts, virusDetected: virusDetected, e2eeErrors: e2eeErrors, problems: problems)
+            let data = try JSONEncoder().encode(issues)
             data.printJson()
             NextcloudKit.shared.sendClientDiagnosticsRemoteOperation(data: data, options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { _, error in
                 if error == .success {
-                    NCManageDatabase.shared.clearErrorCodeMetadatas(metadatas: metadatas)
+                    NCManageDatabase.shared.deleteDiagnostics(account: account, ids: ids)
                 }
             }
         } catch {

@@ -91,7 +91,8 @@ class NCManageDatabase: NSObject {
                               tableAvatar.self,
                               tableDashboardWidget.self,
                               tableDashboardWidgetButton.self,
-                              NCDBLayoutForView.self]
+                              NCDBLayoutForView.self,
+                              TableSecurityGuardDiagnostics.self]
             )
 
         } else {
@@ -234,6 +235,7 @@ class NCManageDatabase: NSObject {
         self.clearTable(tableMetadata.self, account: account)
         self.clearTable(tablePhotoLibrary.self, account: account)
         self.clearTable(tableShare.self, account: account)
+        self.clearTable(TableSecurityGuardDiagnostics.self, account: account)
         self.clearTable(tableTag.self, account: account)
         self.clearTable(tableTip.self)
         self.clearTable(tableTrash.self, account: account)

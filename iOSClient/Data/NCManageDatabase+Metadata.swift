@@ -123,8 +123,6 @@ class tableMetadata: Object, NCUserBaseUrl {
     @objc dynamic var height: Int = 0
     @objc dynamic var width: Int = 0
     @objc dynamic var errorCode: Int = 0
-    @objc dynamic var errorCodeCounter: Int = 0
-    @objc dynamic var errorCodeDate: Date?
 
     override static func primaryKey() -> String {
         return "ocId"
@@ -602,12 +600,6 @@ extension NCManageDatabase {
                     }
                     if let errorCode {
                         result.errorCode = errorCode
-                        if errorCode == 0 {
-                            result.errorCodeCounter = 0
-                        } else {
-                            result.errorCodeCounter += 1
-                            result.errorCodeDate = Date()
-                        }
                     }
                 }
             }
@@ -1131,24 +1123,6 @@ extension NCManageDatabase {
         }
 
         return nil
-    }
-
-    func clearErrorCodeMetadatas(metadatas: Results<tableMetadata>?) {
-
-        guard let metadatas else { return }
-
-        do {
-            let realm = try Realm()
-            try realm.write {
-                for metadata in metadatas {
-                    metadata.errorCode = 0
-                    metadata.errorCodeCounter = 0
-                    metadata.errorCodeDate = nil
-                }
-            }
-        } catch let error as NSError {
-            NextcloudKit.shared.nkCommonInstance.writeLog("Could not access database: \(error)")
-        }
     }
 
     @discardableResult

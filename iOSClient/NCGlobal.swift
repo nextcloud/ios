@@ -128,7 +128,7 @@ class NCGlobal: NSObject {
     // E2EE
     //
     let e2eePassphraseTest                          = "more over television factory tendency independence international intellectual impress interest sentence pony"
-    @objc let e2eeVersions                          = ["1.1", "1.2", "2.0"] // ["1.1", "1.2", "2.0"]
+    @objc let e2eeVersions                          = ["1.1", "1.2", "2.0"]
     let e2eeVersionV11                              = "1.1"
     let e2eeVersionV12                              = "1.2"
     let e2eeVersionV20                              = "2.0"
@@ -219,6 +219,7 @@ class NCGlobal: NSObject {
     @objc let errorConflict: Int                    = 409
     @objc let errorPreconditionFailed: Int          = 412
     @objc let errorUnsupportedMediaType: Int        = 415
+    @objc let errorInternalServerError: Int         = 500
     @objc let errorQuota: Int                       = 507
     @objc let errorUnauthorized997: Int             = 997
     @objc let errorExplicitlyCancelled: Int         = -999
@@ -472,6 +473,8 @@ class NCGlobal: NSObject {
         return capabilityServerVersionMajor >= nextcloudVersion28
     }
 
+    var capabilitySecurityGuardDiagnostics                      = false
+
     // MORE NEXTCLOUD APPS
     let talkSchemeUrl                                           = "nextcloudtalk://"
     let notesSchemeUrl                                          = "nextcloudnotes://"
@@ -486,4 +489,16 @@ class NCGlobal: NSObject {
     // FORBIDDEN CHARACTERS
     //
     let forbiddenCharacters = ["/", "\\", ":", "\"", "|", "?", "*", "<", ">"]
+
+    // DIAGNOSTICS CLIENTS
+    //
+    let diagnosticIssueSyncConflicts        = "sync_conflicts"
+    let diagnosticIssueProblems             = "problems"
+    let diagnosticIssueVirusDetected        = "virus_detected"
+    let diagnosticIssueE2eeErrors           = "e2ee_errors"
+
+    let diagnosticProblemsForbidden         = "CHARACTERS_FORBIDDEN"
+    let diagnosticProblemsBadResponse       = "BAD_SERVER_RESPONSE"
+    let diagnosticProblemsUploadServerError = "UploadError.SERVER_ERROR"
+
 }
