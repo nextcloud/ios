@@ -90,9 +90,6 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate, NCSelectDelegate {
         mediaCommandView = Bundle.main.loadNibNamed("NCMediaCommandView", owner: self, options: nil)?.first as? NCMediaCommandView
         self.view.addSubview(mediaCommandView!)
         mediaCommandView?.mediaView = self
-        mediaCommandView?.zoomInButton.isEnabled = !(gridLayout.itemForLine == 1)
-        mediaCommandView?.zoomOutButton.isEnabled = !(gridLayout.itemForLine == maxImageGrid - 1)
-        mediaCommandView?.collapseControlButtonView(true)
         mediaCommandView?.translatesAutoresizingMaskIntoConstraints = false
         mediaCommandView?.topAnchor.constraint(equalTo: view.topAnchor, constant: 0).isActive = true
         mediaCommandView?.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 0).isActive = true
@@ -130,6 +127,7 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate, NCSelectDelegate {
         super.viewDidAppear(animated)
 
         mediaCommandTitle()
+        mediaCommandView?.createMenu()
     }
 
     override func viewWillDisappear(_ animated: Bool) {
@@ -202,38 +200,6 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate, NCSelectDelegate {
                 }
             }
         }
-    }
-
-    @objc func zoomOutGrid() {
-
-        UIView.animate(withDuration: 0.0, animations: {
-            if self.gridLayout.itemForLine + 1 < self.maxImageGrid {
-                self.gridLayout.itemForLine += 1
-                self.mediaCommandView?.zoomInButton.isEnabled = true
-            }
-            if self.gridLayout.itemForLine == self.maxImageGrid - 1 {
-                self.mediaCommandView?.zoomOutButton.isEnabled = false
-            }
-
-            self.collectionView.collectionViewLayout.invalidateLayout()
-            NCKeychain().mediaWidthImage = Int(self.gridLayout.itemForLine)
-        })
-    }
-
-    @objc func zoomInGrid() {
-
-        UIView.animate(withDuration: 0.0, animations: {
-            if self.gridLayout.itemForLine - 1 > 0 {
-                self.gridLayout.itemForLine -= 1
-                self.mediaCommandView?.zoomOutButton.isEnabled = true
-            }
-            if self.gridLayout.itemForLine == 1 {
-                self.mediaCommandView?.zoomInButton.isEnabled = false
-            }
-
-            self.collectionView.collectionViewLayout.invalidateLayout()
-            NCKeychain().mediaWidthImage = Int(self.gridLayout.itemForLine)
-        })
     }
 
     // MARK: Select Path
@@ -433,7 +399,7 @@ extension NCMedia: UIScrollViewDelegate {
     }
 
     func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
-        mediaCommandView?.collapseControlButtonView(true)
+
     }
 
     func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
