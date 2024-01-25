@@ -25,9 +25,10 @@ import UIKit
 
 class NCMediaCommandView: UIView {
 
-    @IBOutlet weak var moreButton: UIButton!
     @IBOutlet weak var title: UILabel!
+    @IBOutlet weak var selectButton: UIButton!
     @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
+    @IBOutlet weak var moreButton: UIButton!
 
     var mediaView: NCMedia?
     var attributesZoomIn: UIMenuElement.Attributes = []
@@ -36,20 +37,25 @@ class NCMediaCommandView: UIView {
 
     override func awakeFromNib() {
 
-        gradient.frame = bounds
-        gradient.startPoint = CGPoint(x: 0, y: 0.5)
-        gradient.endPoint = CGPoint(x: 0, y: 1)
-        gradient.colors = [UIColor.black.withAlphaComponent(UIAccessibility.isReduceTransparencyEnabled ? 0.8 : 0.4).cgColor, UIColor.clear.cgColor]
-        layer.insertSublayer(gradient, at: 0)
+        title.text = ""
 
-        moreButton.backgroundColor = .systemGray4.withAlphaComponent(0.5)
+        selectButton.backgroundColor = .systemGray4.withAlphaComponent(0.6)
+        selectButton.layer.cornerRadius = 15
+        selectButton.layer.masksToBounds = true
+        selectButton.setTitle( NSLocalizedString("_select_", comment: ""), for: .normal)
+
+        moreButton.backgroundColor = .systemGray4.withAlphaComponent(0.6)
         moreButton.layer.cornerRadius = 15
         moreButton.layer.masksToBounds = true
         moreButton.showsMenuAsPrimaryAction = true
         moreButton.changesSelectionAsPrimaryAction = false
         moreButton.setImage(UIImage(systemName: "ellipsis"), for: .normal)
 
-        title.text = ""
+        gradient.frame = bounds
+        gradient.startPoint = CGPoint(x: 0, y: 0.5)
+        gradient.endPoint = CGPoint(x: 0, y: 1)
+        gradient.colors = [UIColor.black.withAlphaComponent(UIAccessibility.isReduceTransparencyEnabled ? 0.8 : 0.4).cgColor, UIColor.clear.cgColor]
+        layer.insertSublayer(gradient, at: 0)
     }
 
     func createMenu() {
@@ -176,5 +182,20 @@ class NCMediaCommandView: UIView {
     override func layoutSublayers(of layer: CALayer) {
         super.layoutSublayers(of: layer)
         gradient.frame = bounds
+    }
+
+    @IBAction func selectButtonPressed(_ sender: UIButton) {
+        if let mediaView = self.mediaView {
+            mediaView.isEditMode = !mediaView.isEditMode
+            if mediaView.isEditMode {
+                selectButton.setTitle( NSLocalizedString("_cancel_", comment: ""), for: .normal)
+            } else {
+                selectButton.setTitle( NSLocalizedString("_select_", comment: ""), for: .normal)
+                mediaView.isEditMode = false
+                mediaView.selectOcId.removeAll()
+                mediaView.selectIndexPath.removeAll()
+                mediaView.collectionView?.reloadData()
+            }
+        }
     }
 }
