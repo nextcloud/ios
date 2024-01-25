@@ -43,11 +43,16 @@ import RealmSwift
         case actual(_ image: UIImage)
     }
 
+    struct metadataInfo {
+        var etag: String
+        var date: NSDate
+    }
+
     private typealias ThumbnailLRUCache = LRUCache<String, ImageType>
     private lazy var cache: ThumbnailLRUCache = {
         return ThumbnailLRUCache(countLimit: limit)
     }()
-    private var ocIdEtag: [String: String] = [:]
+    private var metadatasInfo: [String: metadataInfo] = [:]
     @ThreadSafe private var metadatas: Results<tableMetadata>?
 
     let showAllPredicateMediaString = "account == %@ AND serverUrl BEGINSWITH %@ AND (classFile == '\(NKCommon.TypeClassFile.image.rawValue)' OR classFile == '\(NKCommon.TypeClassFile.video.rawValue)') AND NOT (session CONTAINS[c] 'upload')"
@@ -61,7 +66,7 @@ import RealmSwift
         guard account != self.account, !account.isEmpty else { return }
         self.account = account
 
-        ocIdEtag.removeAll()
+        self.metadatasInfo.removeAll()
         self.metadatas = nil
         self.metadatas = getMediaMetadatas(account: account)
         guard let metadatas = self.metadatas, !metadatas.isEmpty else { return }
@@ -77,7 +82,7 @@ import RealmSwift
         let startDate = Date()
 
         for metadata in metadatas {
-            ocIdEtag[metadata.ocId] = metadata.etag
+            metadatasInfo[metadata.ocId] = metadataInfo(etag: metadata.etag, date: metadata.date)
         }
 
         if let enumerator = manager.enumerator(at: URL(fileURLWithPath: NCUtilityFileSystem().directoryProviderStorage), includingPropertiesForKeys: [.isRegularFileKey], options: [.skipsHiddenFiles]) {
@@ -87,10 +92,10 @@ import RealmSwift
                 guard let resourceValues = try? fileURL.resourceValues(forKeys: resourceKeys),
                       let size = resourceValues.fileSize,
                       size > 0,
-                      let date = resourceValues.creationDate,
-                      let etag = ocIdEtag[ocId],
+                      let date = metadatasInfo[ocId]?.date,
+                      let etag = metadatasInfo[ocId]?.etag,
                       fileName == etag + ext else { continue }
-                files.append(FileInfo(path: fileURL, ocIdEtag: ocId + etag, date: date))
+                files.append(FileInfo(path: fileURL, ocIdEtag: ocId + etag, date: date as Date))
             }
         }
 
@@ -134,7 +139,7 @@ import RealmSwift
     }
 
     @objc func clearMediaCache() {
-        self.ocIdEtag.removeAll()
+        self.metadatasInfo.removeAll()
         self.metadatas = nil
         cache.removeAllValues()
     }
