@@ -76,12 +76,12 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
         collectionView.alwaysBounceVertical = true
         collectionView.contentInset = UIEdgeInsets(top: insetsTop, left: 0, bottom: 50, right: 0)
         collectionView.backgroundColor = .systemBackground
+        collectionView.prefetchDataSource = self
+        collectionView.collectionViewLayout = gridLayout
 
         gridLayout = NCGridMediaLayout()
         gridLayout.itemForLine = CGFloat(NCKeychain().mediaWidthImage)
         gridLayout.sectionHeadersPinToVisibleBounds = true
-
-        collectionView.collectionViewLayout = gridLayout
 
         // Empty
         emptyDataSet = NCEmptyDataSet(view: collectionView, offset: 0, delegate: self)
@@ -95,8 +95,6 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
         mediaCommandView?.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 0).isActive = true
         mediaCommandView?.heightAnchor.constraint(equalToConstant: 150).isActive = true
         self.updateMediaControlVisibility()
-
-        collectionView.prefetchDataSource = self
 
         cacheImages.cellLivePhotoImage = utility.loadImage(named: "livephoto", color: .white)
         cacheImages.cellPlayImage = utility.loadImage(named: "play.fill", color: .white)
