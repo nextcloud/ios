@@ -76,13 +76,12 @@ class NCMediaCommandView: UIView {
            !mediaView.selectOcId.isEmpty {
             let selectOcId = mediaView.selectOcId
             var title = NSLocalizedString("_delete_", comment: "")
-            var message = ""
             if selectOcId.count > 1 {
                 title = NSLocalizedString("_delete_selected_files_", comment: "")
             }
             let alertController = UIAlertController(
                 title: title,
-                message: message,
+                message: "",
                 preferredStyle: .alert)
             alertController.addAction(UIAlertAction(title: NSLocalizedString("_yes_delete_", comment: ""), style: .default) { (_: UIAlertAction) in
 
