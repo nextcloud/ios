@@ -209,8 +209,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
         navigationController?.navigationBar.prefersLargeTitles = true
         navigationController?.setNavigationBarHidden(false, animated: true)
-        navigationController?.setFileAppreance()
-        setNavigationItem()
+        navigationController?.setNavigationBarAppearance()
+        setNavigationItems()
 
         // FIXME: iPAD PDF landscape mode iOS 16
         DispatchQueue.main.async {
@@ -305,7 +305,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
               let error = userInfo["error"] as? NKError,
               error.errorCode != NCGlobal.shared.errorNotModified else { return }
 
-        setNavigationItem()
+        setNavigationItems()
     }
 
     @objc func changeTheming() {
@@ -575,7 +575,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
     // MARK: - Layout
 
-    func setNavigationItem() {
+    func setNavigationItems() {
 
         self.setNavigationRightItems()
         navigationItem.title = titleCurrentFolder

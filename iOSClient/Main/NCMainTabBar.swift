@@ -48,9 +48,6 @@ class NCMainTabBar: UITabBar {
 
         let timerNotificationCenter = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(updateBadgeNumber), userInfo: nil, repeats: true)
 
-        barTintColor = .secondarySystemBackground
-        backgroundColor = .secondarySystemBackground
-
         changeTheming()
     }
 
@@ -80,34 +77,31 @@ class NCMainTabBar: UITabBar {
         }
     }
 
-    override func layoutSubviews() {
-        super.layoutSubviews()
-
-        layer.shadowPath = createPath()
-        layer.shadowRadius = 5
-        layer.shadowOffset = .zero
-        layer.shadowOpacity = 0.25
-    }
-
     override func draw(_ rect: CGRect) {
+        self.subviews.forEach({ $0.removeFromSuperview() })
+
         addShape()
         createButtons()
     }
 
     private func addShape() {
+        let blurEffect = UIBlurEffect(style: .systemThinMaterial)
 
-        let shapeLayer = CAShapeLayer()
-        shapeLayer.path = createPath()
-        shapeLayer.fillColor = backgroundColor?.cgColor
-        shapeLayer.strokeColor = UIColor.clear.cgColor
+        let blurView = UIVisualEffectView(effect: blurEffect)
+        blurView.frame = self.bounds
 
-        if let oldShapeLayer = self.shapeLayer {
-            self.layer.replaceSublayer(oldShapeLayer, with: shapeLayer)
-        } else {
-            self.layer.insertSublayer(shapeLayer, at: 0)
-        }
+        let maskLayer = CAShapeLayer()
+        maskLayer.path = createPath()
 
-        self.shapeLayer = shapeLayer
+        blurView.layer.mask = maskLayer
+
+        var border = CALayer()
+        border.backgroundColor = UIColor.separator.cgColor
+        border.frame = CGRect(x: 0, y: 0, width: blurView.frame.width, height: 0.5)
+
+        blurView.layer.addSublayer(border)
+
+        self.addSubview(blurView)
     }
 
     private func createPath() -> CGPath {

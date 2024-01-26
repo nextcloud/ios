@@ -407,7 +407,6 @@ class NCService: NSObject {
             let issues = Issues(syncConflicts: syncConflicts, virusDetected: virusDetected, e2eeErrors: e2eeErrors, problems: problems)
             let data = try JSONEncoder().encode(issues)
             data.printJson()
-
             NextcloudKit.shared.sendClientDiagnosticsRemoteOperation(data: data, options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { _, error in
                 if error == .success {
                     NCManageDatabase.shared.deleteDiagnostics(account: account, ids: ids)

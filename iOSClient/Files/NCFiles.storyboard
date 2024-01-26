@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="17156" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="EFX-fO-Oip">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="22505" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="EFX-fO-Oip">
     <device id="retina5_9" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17125"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="22504"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -17,7 +17,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="Zaz-Cl-qpZ">
-                                <rect key="frame" x="0.0" y="0.0" width="375" height="812"/>
+                                <rect key="frame" x="0.0" y="0.0" width="375" height="862"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="0.0" minimumInteritemSpacing="0.0" id="fF1-wd-0xN">
                                     <size key="itemSize" width="0.0" height="0.0"/>
@@ -37,7 +37,7 @@
                         <constraints>
                             <constraint firstItem="Zaz-Cl-qpZ" firstAttribute="leading" secondItem="Meh-VD-wWh" secondAttribute="leading" id="1bp-sm-u0X"/>
                             <constraint firstItem="Meh-VD-wWh" firstAttribute="trailing" secondItem="Zaz-Cl-qpZ" secondAttribute="trailing" id="aNd-UL-hmu"/>
-                            <constraint firstItem="Meh-VD-wWh" firstAttribute="bottom" secondItem="Zaz-Cl-qpZ" secondAttribute="bottom" constant="-34" id="aNr-tf-2AH"/>
+                            <constraint firstItem="Meh-VD-wWh" firstAttribute="bottom" secondItem="Zaz-Cl-qpZ" secondAttribute="bottom" constant="-84" id="aNr-tf-2AH"/>
                             <constraint firstItem="Zaz-Cl-qpZ" firstAttribute="top" secondItem="QEs-gO-Cmp" secondAttribute="top" id="tji-wt-R7s"/>
                         </constraints>
                     </view>
