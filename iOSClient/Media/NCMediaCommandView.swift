@@ -22,6 +22,7 @@
 //
 
 import UIKit
+import NextcloudKit
 
 class NCMediaCommandView: UIView {
 
@@ -61,23 +62,50 @@ class NCMediaCommandView: UIView {
 
     @IBAction func selectButtonPressed(_ sender: UIButton) {
         if let mediaView = self.mediaView {
-            mediaView.isEditMode = !mediaView.isEditMode
             if mediaView.isEditMode {
-                selectButton.setTitle( NSLocalizedString("_cancel_", comment: ""), for: .normal)
-                setMoreButtonTrash()
-            } else {
-                selectButton.setTitle( NSLocalizedString("_select_", comment: ""), for: .normal)
-                mediaView.isEditMode = false
-                mediaView.selectOcId.removeAll()
-                mediaView.selectIndexPath.removeAll()
-                mediaView.collectionView?.reloadData()
                 setMoreButton()
+            } else {
+                setMoreButtonDelete()
             }
         }
     }
 
     @IBAction func trashButtonPressed(_ sender: UIButton) {
-        // actions.append(.deleteAction(selectedMetadatas: selectedMetadatas, indexPath: selectIndexPath, metadataFolder: nil, viewController: self, completion: tapSelect))
+
+        if let mediaView = self.mediaView,
+           !mediaView.selectOcId.isEmpty {
+            let selectOcId = mediaView.selectOcId
+            var title = NSLocalizedString("_delete_", comment: "")
+            var message = ""
+            if selectOcId.count > 1 {
+                title = NSLocalizedString("_delete_selected_files_", comment: "")
+            }
+            let alertController = UIAlertController(
+                title: title,
+                message: message,
+                preferredStyle: .alert)
+            alertController.addAction(UIAlertAction(title: NSLocalizedString("_yes_delete_", comment: ""), style: .default) { (_: UIAlertAction) in
+
+                self.setMoreButton()
+
+                Task {
+                    var error = NKError()
+                    var ocIds: [String] = []
+                    for ocId in selectOcId where error == .success {
+                        if let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
+                            error = await NCNetworking.shared.deleteMetadata(metadata, onlyLocalCache: false)
+                            if error == .success {
+                                ocIds.append(metadata.ocId)
+                            }
+                        }
+                    }
+                    NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDeleteFile, userInfo: ["ocId": ocIds, "onlyLocalCache": false, "error": error])
+                }
+            })
+            alertController.addAction(UIAlertAction(title: NSLocalizedString("_no_delete_", comment: ""), style: .default) { (_: UIAlertAction) in })
+
+            mediaView.present(alertController, animated: true, completion: { })
+        }
     }
 
     func setMoreButton() {
@@ -89,15 +117,25 @@ class NCMediaCommandView: UIView {
         moreButton.configuration = UIButton.Configuration.plain()
         let image = UIImage(systemName: "ellipsis")
         moreButton.setImage(image, for: .normal)
+
+        mediaView?.isEditMode = false
+        mediaView?.selectOcId.removeAll()
+        mediaView?.collectionView?.reloadData()
+
+        selectButton.setTitle( NSLocalizedString("_select_", comment: ""), for: .normal)
     }
 
-    func setMoreButtonTrash() {
+    func setMoreButtonDelete() {
 
         moreButton.backgroundColor = .clear
         moreButton.showsMenuAsPrimaryAction = false
         moreButton.configuration = UIButton.Configuration.plain()
         let image = UIImage(systemName: "trash.circle", withConfiguration: UIImage.SymbolConfiguration(pointSize: 25))?.withTintColor(.red, renderingMode: .alwaysOriginal)
         moreButton.setImage(image, for: .normal)
+
+        mediaView?.isEditMode = true
+
+        selectButton.setTitle( NSLocalizedString("_cancel_", comment: ""), for: .normal)
     }
 
     func createMenu() {
@@ -163,7 +201,6 @@ class NCMediaCommandView: UIView {
                 viewController.delegate = mediaView
                 viewController.typeOfCommandView = .select
                 viewController.type = "mediaFolder"
-                viewController.selectIndexPath = mediaView.selectIndexPath
                 mediaView.present(navigationController, animated: true, completion: nil)
             })
         ])
