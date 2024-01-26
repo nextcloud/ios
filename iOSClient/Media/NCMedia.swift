@@ -121,7 +121,7 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
-        mediaCommandTitle()
+        mediaCommandView?.setMediaCommand()
         mediaCommandView?.createMenu()
     }
 
@@ -136,7 +136,7 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
         super.viewWillTransition(to: size, with: coordinator)
 
         collectionView?.collectionViewLayout.invalidateLayout()
-        mediaCommandTitle()
+        mediaCommandView?.setMediaCommand()
     }
 
     override var preferredStatusBarStyle: UIStatusBarStyle {
@@ -167,34 +167,6 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
         else { return }
 
         self.reloadDataSource()
-    }
-
-    // MARK: - Command
-
-    func updateMediaControlVisibility() {
-
-        if let metadatas, metadatas.isEmpty {
-            mediaCommandView?.toggleEmptyView(isEmpty: true)
-            mediaCommandView?.isHidden = false
-        } else {
-            mediaCommandView?.toggleEmptyView(isEmpty: false)
-            mediaCommandView?.isHidden = false
-        }
-    }
-
-    func mediaCommandTitle() {
-
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-            self.mediaCommandView?.title.text = ""
-            if let visibleCells = self.collectionView?.indexPathsForVisibleItems.sorted(by: { $0.row < $1.row }).compactMap({ self.collectionView?.cellForItem(at: $0) }) {
-                if let cell = visibleCells.first as? NCGridMediaCell {
-                    self.mediaCommandView?.title.text = ""
-                    if let date = cell.date {
-                        self.mediaCommandView?.title.text = self.utility.getTitleFromDate(date)
-                    }
-                }
-            }
-        }
     }
 
     // MARK: - Empty
@@ -374,7 +346,7 @@ extension NCMedia: UIScrollViewDelegate {
 
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         if lastContentOffsetY == 0 || lastContentOffsetY + cellHeigth / 2 <= scrollView.contentOffset.y || lastContentOffsetY - cellHeigth / 2 >= scrollView.contentOffset.y {
-            mediaCommandTitle()
+            mediaCommandView?.setMediaCommand()
             lastContentOffsetY = scrollView.contentOffset.y
         }
     }

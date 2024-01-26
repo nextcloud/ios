@@ -34,7 +34,7 @@ class NCMediaCommandView: UIView {
     var mediaView: NCMedia?
     var attributesZoomIn: UIMenuElement.Attributes = []
     var attributesZoomOut: UIMenuElement.Attributes = []
-    private let gradient: CAGradientLayer = CAGradientLayer()
+    let gradient: CAGradientLayer = CAGradientLayer()
 
     override func awakeFromNib() {
 
@@ -229,14 +229,34 @@ class NCMediaCommandView: UIView {
         moreButton.menu = UIMenu(title: "", children: [topAction, playFile, playURL])
     }
 
-    func toggleEmptyView(isEmpty: Bool) {
-        if isEmpty {
-            UIView.animate(withDuration: 0.3) {
-                self.gradient.isHidden = true
+    func setMediaCommand() {
+
+        guard let mediaView = self.mediaView else { return }
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+            self.title.text = ""
+            if let visibleCells = mediaView.collectionView?.indexPathsForVisibleItems.sorted(by: { $0.row < $1.row }).compactMap({ mediaView.collectionView?.cellForItem(at: $0) }) {
+                if let cell = visibleCells.first as? NCGridMediaCell {
+                    self.title.text = ""
+                    if let date = cell.date {
+                        self.title.text = mediaView.utility.getTitleFromDate(date)
+                    }
+                }
             }
-        } else {
-            UIView.animate(withDuration: 0.3) {
-                self.gradient.isHidden = false
+            if let metadatas = mediaView.metadatas, !metadatas.isEmpty {
+                self.selectButton.isHidden = false
+                if self.gradient.isHidden {
+                    UIView.animate(withDuration: 0.3) {
+                        self.gradient.isHidden = false
+                    }
+                }
+            } else {
+                self.selectButton.isHidden = true
+                if !self.gradient.isHidden {
+                    UIView.animate(withDuration: 0.3) {
+                        self.gradient.isHidden = true
+                    }
+                }
             }
         }
     }
