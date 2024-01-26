@@ -47,8 +47,7 @@ extension NCMedia {
         metadatas = NCImageCache.shared.getMediaMetadatas(account: self.appDelegate.account, predicate: self.getPredicate())
         DispatchQueue.main.async {
             self.collectionView?.reloadData()
-            self.updateMediaControlVisibility()
-            self.mediaCommandTitle()
+            self.mediaCommandView?.setMediaCommand()
         }
     }
 
@@ -108,10 +107,10 @@ extension NCMedia {
                         }
                         await self.collectionView.reloadData()
                     }
-                    await self.updateMediaControlVisibility()
-                    await self.mediaCommandTitle()
                     if results.isChanged {
                         await self.reloadDataSource()
+                    } else {
+                        await self.mediaCommandView?.setMediaCommand()
                     }
                 }
             }
