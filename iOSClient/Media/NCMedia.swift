@@ -25,7 +25,7 @@ import UIKit
 import NextcloudKit
 import RealmSwift
 
-class NCMedia: UIViewController, NCEmptyDataSetDelegate, NCSelectDelegate {
+class NCMedia: UIViewController, NCEmptyDataSetDelegate {
 
     @IBOutlet weak var collectionView: UICollectionView!
 
@@ -41,7 +41,6 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate, NCSelectDelegate {
     @ThreadSafe internal var metadatas: Results<tableMetadata>?
     var isEditMode = false
     var selectOcId: [String] = []
-    var selectIndexPath: [IndexPath] = []
 
     var showOnlyImages = false
     var showOnlyVideos = false
@@ -202,18 +201,6 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate, NCSelectDelegate {
         }
     }
 
-    // MARK: Select Path
-
-    func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String, items: [Any], indexPath: [IndexPath], overwrite: Bool, copy: Bool, move: Bool) {
-
-        guard let serverUrl = serverUrl else { return }
-        let home = utilityFileSystem.getHomeServer(urlBase: appDelegate.urlBase, userId: appDelegate.userId)
-        mediaPath = serverUrl.replacingOccurrences(of: home, with: "")
-        NCManageDatabase.shared.setAccountMediaPath(mediaPath, account: appDelegate.account)
-        reloadDataSource()
-        timerSearchNewMedia = Timer.scheduledTimer(timeInterval: timeIntervalSearchNewMedia, target: self, selector: #selector(self.searchMediaUI), userInfo: nil, repeats: false)
-    }
-
     // MARK: - Empty
 
     func emptyDataSetView(_ view: NCEmptyView) {
@@ -238,10 +225,8 @@ extension NCMedia: UICollectionViewDelegate {
             if isEditMode {
                 if let index = selectOcId.firstIndex(of: metadata.ocId) {
                     selectOcId.remove(at: index)
-                    selectIndexPath.removeAll(where: { $0 == indexPath })
                 } else {
                     selectOcId.append(metadata.ocId)
-                    selectIndexPath.append(indexPath)
                 }
                 if indexPath.section < collectionView.numberOfSections && indexPath.row < collectionView.numberOfItems(inSection: indexPath.section) {
                     collectionView.reloadItems(at: [indexPath])
@@ -417,6 +402,21 @@ extension NCMedia: UIScrollViewDelegate {
     func scrollViewDidScrollToTop(_ scrollView: UIScrollView) {
         let y = view.safeAreaInsets.top
         scrollView.contentOffset.y = -(insetsTop + y)
+    }
+}
+
+// MARK: - NCSelect Delegate
+
+extension NCMedia: NCSelectDelegate {
+
+    func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String, items: [Any], indexPath: [IndexPath], overwrite: Bool, copy: Bool, move: Bool) {
+
+        guard let serverUrl = serverUrl else { return }
+        let home = utilityFileSystem.getHomeServer(urlBase: appDelegate.urlBase, userId: appDelegate.userId)
+        mediaPath = serverUrl.replacingOccurrences(of: home, with: "")
+        NCManageDatabase.shared.setAccountMediaPath(mediaPath, account: appDelegate.account)
+        reloadDataSource()
+        timerSearchNewMedia = Timer.scheduledTimer(timeInterval: timeIntervalSearchNewMedia, target: self, selector: #selector(self.searchMediaUI), userInfo: nil, repeats: false)
     }
 }
 
