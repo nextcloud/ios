@@ -71,19 +71,17 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
 
         view.backgroundColor = .systemBackground
 
-        collectionView.register(UINib(nibName: "NCGridMediaCell", bundle: nil), forCellWithReuseIdentifier: "gridCell")
+        gridLayout = NCGridMediaLayout()
+        gridLayout.itemForLine = CGFloat(NCKeychain().mediaWidthImage)
+        gridLayout.sectionHeadersPinToVisibleBounds = true
 
+        collectionView.register(UINib(nibName: "NCGridMediaCell", bundle: nil), forCellWithReuseIdentifier: "gridCell")
         collectionView.alwaysBounceVertical = true
         collectionView.contentInset = UIEdgeInsets(top: insetsTop, left: 0, bottom: 50, right: 0)
         collectionView.backgroundColor = .systemBackground
         collectionView.prefetchDataSource = self
         collectionView.collectionViewLayout = gridLayout
 
-        gridLayout = NCGridMediaLayout()
-        gridLayout.itemForLine = CGFloat(NCKeychain().mediaWidthImage)
-        gridLayout.sectionHeadersPinToVisibleBounds = true
-
-        // Empty
         emptyDataSet = NCEmptyDataSet(view: collectionView, offset: 0, delegate: self)
 
         mediaCommandView = Bundle.main.loadNibNamed("NCMediaCommandView", owner: self, options: nil)?.first as? NCMediaCommandView
@@ -94,7 +92,6 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
         mediaCommandView?.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 0).isActive = true
         mediaCommandView?.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 0).isActive = true
         mediaCommandView?.heightAnchor.constraint(equalToConstant: 150).isActive = true
-        self.updateMediaControlVisibility()
 
         cacheImages.cellLivePhotoImage = utility.loadImage(named: "livephoto", color: .white)
         cacheImages.cellPlayImage = utility.loadImage(named: "play.fill", color: .white)
