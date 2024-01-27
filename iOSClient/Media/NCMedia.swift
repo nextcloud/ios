@@ -267,65 +267,58 @@ extension NCMedia: UICollectionViewDataSource {
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "gridCell", for: indexPath) as? NCGridMediaCell,
               let metadatas = self.metadatas else { return UICollectionViewCell() }
 
-        if indexPath.section < collectionView.numberOfSections && indexPath.row < collectionView.numberOfItems(inSection: indexPath.section) && indexPath.row < metadatas.count {
+        let metadata = metadatas[indexPath.row]
 
-            let metadata = metadatas[indexPath.row]
+        self.cellHeigth = cell.frame.size.height
 
-            self.cellHeigth = cell.frame.size.height
+        cell.date = metadata.date as Date
+        cell.fileObjectId = metadata.ocId
+        cell.indexPath = indexPath
+        cell.fileUser = metadata.ownerId
 
-            cell.date = metadata.date as Date
-            cell.fileObjectId = metadata.ocId
-            cell.indexPath = indexPath
-            cell.fileUser = metadata.ownerId
-
-            if let cachedImage = NCImageCache.shared.getMediaImage(ocId: metadata.ocId, etag: metadata.etag), case let .actual(image) = cachedImage {
+        if let cachedImage = NCImageCache.shared.getMediaImage(ocId: metadata.ocId, etag: metadata.etag), case let .actual(image) = cachedImage {
+            cell.imageItem.backgroundColor = nil
+            cell.imageItem.image = image
+        } else if FileManager().fileExists(atPath: utilityFileSystem.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)) {
+            if let image = UIImage(contentsOfFile: utilityFileSystem.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)) {
                 cell.imageItem.backgroundColor = nil
                 cell.imageItem.image = image
-            } else if FileManager().fileExists(atPath: utilityFileSystem.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)) {
-                if let image = UIImage(contentsOfFile: utilityFileSystem.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)) {
-                    cell.imageItem.backgroundColor = nil
-                    cell.imageItem.image = image
-                    NCImageCache.shared.setMediaImage(ocId: metadata.ocId, etag: metadata.etag, image: .actual(image))
-                }
-            } else {
-                if metadata.hasPreview && metadata.status == NCGlobal.shared.metadataStatusNormal && (!utilityFileSystem.fileProviderStoragePreviewIconExists(metadata.ocId, etag: metadata.etag)) {
-                    if NCNetworking.shared.downloadThumbnailQueue.operations.filter({ ($0 as? NCMediaDownloadThumbnaill)?.metadata.ocId == metadata.ocId }).isEmpty {
-                        NCNetworking.shared.downloadThumbnailQueue.addOperation(NCMediaDownloadThumbnaill(metadata: metadata, collectionView: collectionView))
-                    }
-                }
-                cell.imageStatus.image = nil
+                NCImageCache.shared.setMediaImage(ocId: metadata.ocId, etag: metadata.etag, image: .actual(image))
             }
-
-            // Convert OLD Live Photo
-            if NCGlobal.shared.isLivePhotoServerAvailable, metadata.isLivePhoto, metadata.isNotFlaggedAsLivePhotoByServer {
-                NCNetworking.shared.convertLivePhoto(metadata: metadata)
-            }
-
-            if metadata.isAudioOrVideo {
-                cell.imageStatus.image = cacheImages.cellPlayImage
-            } else if metadata.isLivePhoto {
-                cell.imageStatus.image = cacheImages.cellLivePhotoImage
-            } else {
-                cell.imageStatus.image = nil
-            }
-
-            if isEditMode {
-                cell.selectMode(true)
-                if selectOcId.contains(metadata.ocId) {
-                    cell.selected(true)
-                } else {
-                    cell.selected(false)
-                }
-            } else {
-                cell.selectMode(false)
-            }
-
-            return cell
-
         } else {
-
-            return cell
+            if metadata.hasPreview && metadata.status == NCGlobal.shared.metadataStatusNormal && (!utilityFileSystem.fileProviderStoragePreviewIconExists(metadata.ocId, etag: metadata.etag)) {
+                if NCNetworking.shared.downloadThumbnailQueue.operations.filter({ ($0 as? NCMediaDownloadThumbnaill)?.metadata.ocId == metadata.ocId }).isEmpty {
+                    NCNetworking.shared.downloadThumbnailQueue.addOperation(NCMediaDownloadThumbnaill(metadata: metadata, collectionView: collectionView))
+                }
+            }
+            cell.imageStatus.image = nil
         }
+
+        // Convert OLD Live Photo
+        if NCGlobal.shared.isLivePhotoServerAvailable, metadata.isLivePhoto, metadata.isNotFlaggedAsLivePhotoByServer {
+            NCNetworking.shared.convertLivePhoto(metadata: metadata)
+        }
+
+        if metadata.isAudioOrVideo {
+            cell.imageStatus.image = cacheImages.cellPlayImage
+        } else if metadata.isLivePhoto {
+            cell.imageStatus.image = cacheImages.cellLivePhotoImage
+        } else {
+            cell.imageStatus.image = nil
+        }
+
+        if isEditMode {
+            cell.selectMode(true)
+            if selectOcId.contains(metadata.ocId) {
+                cell.selected(true)
+            } else {
+                cell.selected(false)
+            }
+        } else {
+            cell.selectMode(false)
+        }
+
+        return cell
     }
 }
 
