@@ -31,7 +31,7 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
 
     var emptyDataSet: NCEmptyDataSet?
     var mediaCommandView: NCMediaCommandView?
-    var gridLayout: NCGridMediaLayout!
+    var layout: NCMediaGridLayout!
     var documentPickerViewController: NCDocumentPickerViewController?
 
     let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
@@ -71,16 +71,16 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
 
         view.backgroundColor = .systemBackground
 
-        gridLayout = NCGridMediaLayout()
-        gridLayout.itemForLine = CGFloat(NCKeychain().mediaWidthImage)
-        gridLayout.sectionHeadersPinToVisibleBounds = true
+        layout = NCMediaGridLayout()
+        layout.itemForLine = CGFloat(NCKeychain().mediaWidthImage)
+        layout.sectionHeadersPinToVisibleBounds = true
 
         collectionView.register(UINib(nibName: "NCGridMediaCell", bundle: nil), forCellWithReuseIdentifier: "gridCell")
         collectionView.alwaysBounceVertical = true
         collectionView.contentInset = UIEdgeInsets(top: insetsTop, left: 0, bottom: 50, right: 0)
         collectionView.backgroundColor = .systemBackground
         collectionView.prefetchDataSource = self
-        collectionView.collectionViewLayout = gridLayout
+        collectionView.collectionViewLayout = layout
 
         emptyDataSet = NCEmptyDataSet(view: collectionView, offset: 0, delegate: self)
 
@@ -388,51 +388,5 @@ extension NCMedia: NCSelectDelegate {
         reloadDataSource()
         timerSearchNewMedia?.invalidate()
         timerSearchNewMedia = Timer.scheduledTimer(timeInterval: timeIntervalSearchNewMedia, target: self, selector: #selector(self.searchMediaUI), userInfo: nil, repeats: false)
-    }
-}
-
-// MARK: - Media Grid Layout
-
-class NCGridMediaLayout: UICollectionViewFlowLayout {
-
-    var marginLeftRight: CGFloat = 2
-    var itemForLine: CGFloat = 3
-
-    override init() {
-        super.init()
-
-        sectionHeadersPinToVisibleBounds = false
-
-        minimumInteritemSpacing = 0
-        minimumLineSpacing = marginLeftRight
-
-        self.scrollDirection = .vertical
-        self.sectionInset = UIEdgeInsets(top: 0, left: marginLeftRight, bottom: 0, right: marginLeftRight)
-    }
-
-    required init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-
-    override var itemSize: CGSize {
-        get {
-            if let collectionView = collectionView {
-
-                let itemWidth: CGFloat = (collectionView.frame.width - marginLeftRight * 2 - marginLeftRight * (itemForLine - 1)) / itemForLine
-                let itemHeight: CGFloat = itemWidth
-
-                return CGSize(width: itemWidth, height: itemHeight)
-            }
-
-            // Default fallback
-            return CGSize(width: 100, height: 100)
-        }
-        set {
-            super.itemSize = newValue
-        }
-    }
-
-    override func targetContentOffset(forProposedContentOffset proposedContentOffset: CGPoint) -> CGPoint {
-        return proposedContentOffset
     }
 }

@@ -139,7 +139,7 @@ class NCMediaCommandView: UIView {
 
     func createMenu() {
 
-        if let itemForLine = mediaView?.gridLayout.itemForLine, let maxImageGrid = mediaView?.maxImageGrid {
+        if let itemForLine = mediaView?.layout.itemForLine, let maxImageGrid = mediaView?.maxImageGrid {
             if itemForLine >= maxImageGrid - 1 {
                 self.attributesZoomIn = []
                 self.attributesZoomOut = .disabled
@@ -157,19 +157,19 @@ class NCMediaCommandView: UIView {
                 UIAction(title: NSLocalizedString("_zoom_out_", comment: ""), image: UIImage(systemName: "minus.magnifyingglass"), attributes: self.attributesZoomOut) { _ in
                     guard let mediaView = self.mediaView else { return }
                     UIView.animate(withDuration: 0.0, animations: {
-                        mediaView.gridLayout.itemForLine += 1
+                        mediaView.layout.itemForLine += 1
                         self.createMenu()
                         mediaView.collectionView.collectionViewLayout.invalidateLayout()
-                        NCKeychain().mediaWidthImage = Int(mediaView.gridLayout.itemForLine)
+                        NCKeychain().mediaWidthImage = Int(mediaView.layout.itemForLine)
                     })
                 },
                 UIAction(title: NSLocalizedString("_zoom_in_", comment: ""), image: UIImage(systemName: "plus.magnifyingglass"), attributes: self.attributesZoomIn) { _ in
                     guard let mediaView = self.mediaView else { return }
                     UIView.animate(withDuration: 0.0, animations: {
-                        mediaView.gridLayout.itemForLine -= 1
+                        mediaView.layout.itemForLine -= 1
                         self.createMenu()
                         mediaView.collectionView.collectionViewLayout.invalidateLayout()
-                        NCKeychain().mediaWidthImage = Int(mediaView.gridLayout.itemForLine)
+                        NCKeychain().mediaWidthImage = Int(mediaView.layout.itemForLine)
                     })
                 }
             ]),
