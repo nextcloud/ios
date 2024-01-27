@@ -148,8 +148,7 @@ import RealmSwift
         guard let account = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", account)) else { return nil }
         let startServerUrl = NCUtilityFileSystem().getHomeServer(urlBase: account.urlBase, userId: account.userId) + account.mediaPath
         let predicateBoth = NSPredicate(format: showBothPredicateMediaString, account.account, startServerUrl)
-        let sorted = [SortDescriptor(keyPath: "date", ascending: false), SortDescriptor(keyPath: "serverUrl", ascending: false), SortDescriptor(keyPath: "fileName", ascending: false)]
-        return NCManageDatabase.shared.getResultsMetadatas(predicate: predicate ?? predicateBoth, sorted: sorted)
+        return NCManageDatabase.shared.getResultsMetadatas(predicate: predicate ?? predicateBoth, sorted: "date")
     }
 
     // MARK: -
