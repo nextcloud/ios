@@ -72,7 +72,7 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
         view.backgroundColor = .systemBackground
 
         layout = NCMediaGridLayout()
-        layout.itemForLine = CGFloat(NCKeychain().mediaWidthImage)
+        layout.itemForLine = CGFloat(NCKeychain().mediaItemForLine)
         layout.sectionHeadersPinToVisibleBounds = true
 
         collectionView.register(UINib(nibName: "NCGridMediaCell", bundle: nil), forCellWithReuseIdentifier: "gridCell")
