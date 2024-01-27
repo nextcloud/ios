@@ -267,16 +267,15 @@ import KeychainAccess
         }
     }
 
-    var mediaWidthImage: Int {
+    var mediaItemForLine: Int {
         get {
-            migrate(key: "mediaWidthImage")
-            if let value = try? keychain.get("mediaWidthImage"), let result = Int(value) {
+            if let value = try? keychain.get("itemForLine"), let result = Int(value) {
                 return result
             }
-            return 80
+            return 3
         }
         set {
-            keychain["mediaWidthImage"] = String(newValue)
+            keychain["itemForLine"] = String(newValue)
         }
     }
 

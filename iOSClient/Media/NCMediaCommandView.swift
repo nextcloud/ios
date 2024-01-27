@@ -160,7 +160,7 @@ class NCMediaCommandView: UIView {
                         mediaView.layout.itemForLine += 1
                         self.createMenu()
                         mediaView.collectionView.collectionViewLayout.invalidateLayout()
-                        NCKeychain().mediaWidthImage = Int(mediaView.layout.itemForLine)
+                        NCKeychain().mediaItemForLine = Int(mediaView.layout.itemForLine)
                     })
                 },
                 UIAction(title: NSLocalizedString("_zoom_in_", comment: ""), image: UIImage(systemName: "plus.magnifyingglass"), attributes: self.attributesZoomIn) { _ in
@@ -169,7 +169,7 @@ class NCMediaCommandView: UIView {
                         mediaView.layout.itemForLine -= 1
                         self.createMenu()
                         mediaView.collectionView.collectionViewLayout.invalidateLayout()
-                        NCKeychain().mediaWidthImage = Int(mediaView.layout.itemForLine)
+                        NCKeychain().mediaItemForLine = Int(mediaView.layout.itemForLine)
                     })
                 }
             ]),

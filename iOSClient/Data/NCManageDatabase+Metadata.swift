@@ -807,6 +807,18 @@ extension NCManageDatabase {
         return nil
     }
 
+    func getResultsMetadatas(predicate: NSPredicate, sorted: [RealmSwift.SortDescriptor]) -> Results<tableMetadata>? {
+
+        do {
+            let realm = try Realm()
+            return realm.objects(tableMetadata.self).filter(predicate).sorted(by: sorted)
+        } catch let error as NSError {
+            NextcloudKit.shared.nkCommonInstance.writeLog("Could not access database: \(error)")
+        }
+
+        return nil
+    }
+
     func getResultMetadata(predicate: NSPredicate) -> tableMetadata? {
 
         do {
