@@ -182,6 +182,26 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
         }
         view.emptyDescription.text = ""
     }
+
+    // MARK: - Image
+    func getImage(metadata: tableMetadata) -> UIImage? {
+
+        if let cachedImage = NCImageCache.shared.getMediaImage(ocId: metadata.ocId, etag: metadata.etag), case let .actual(image) = cachedImage {
+            return image
+        } else if FileManager().fileExists(atPath: utilityFileSystem.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)) {
+            if let image = UIImage(contentsOfFile: utilityFileSystem.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)) {
+                NCImageCache.shared.setMediaImage(ocId: metadata.ocId, etag: metadata.etag, image: .actual(image))
+                return image
+            }
+        } else {
+            if metadata.hasPreview && metadata.status == NCGlobal.shared.metadataStatusNormal && (!utilityFileSystem.fileProviderStoragePreviewIconExists(metadata.ocId, etag: metadata.etag)) {
+                if NCNetworking.shared.downloadThumbnailQueue.operations.filter({ ($0 as? NCMediaDownloadThumbnaill)?.metadata.ocId == metadata.ocId }).isEmpty {
+                    NCNetworking.shared.downloadThumbnailQueue.addOperation(NCMediaDownloadThumbnaill(metadata: metadata, collectionView: collectionView))
+                }
+            }
+        }
+        return nil
+    }
 }
 
 // MARK: - Collection View
@@ -203,9 +223,7 @@ extension NCMedia: UICollectionViewDelegate {
             } else if let metadatas = self.metadatas {
                 // ACTIVE SERVERURL
                 appDelegate.activeServerUrl = metadata.serverUrl
-                let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "gridCell", for: indexPath) as? NCGridMediaCell
-                let arrayMetadatas = Array(metadatas.map { tableMetadata.init(value: $0) })
-                NCViewer().view(viewController: self, metadata: metadata, metadatas: arrayMetadatas, imageIcon: cell?.imageItem.image)
+                NCViewer().view(viewController: self, metadata: metadata, metadatas: metadatas, imageIcon: getImage(metadata: metadata))
             }
         }
     }
@@ -276,23 +294,11 @@ extension NCMedia: UICollectionViewDataSource {
         cell.fileObjectId = metadata.ocId
         cell.indexPath = indexPath
         cell.fileUser = metadata.ownerId
+        cell.imageStatus.image = nil
 
-        if let cachedImage = NCImageCache.shared.getMediaImage(ocId: metadata.ocId, etag: metadata.etag), case let .actual(image) = cachedImage {
+        if let image = getImage(metadata: metadata) {
             cell.imageItem.backgroundColor = nil
             cell.imageItem.image = image
-        } else if FileManager().fileExists(atPath: utilityFileSystem.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)) {
-            if let image = UIImage(contentsOfFile: utilityFileSystem.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)) {
-                cell.imageItem.backgroundColor = nil
-                cell.imageItem.image = image
-                NCImageCache.shared.setMediaImage(ocId: metadata.ocId, etag: metadata.etag, image: .actual(image))
-            }
-        } else {
-            if metadata.hasPreview && metadata.status == NCGlobal.shared.metadataStatusNormal && (!utilityFileSystem.fileProviderStoragePreviewIconExists(metadata.ocId, etag: metadata.etag)) {
-                if NCNetworking.shared.downloadThumbnailQueue.operations.filter({ ($0 as? NCMediaDownloadThumbnaill)?.metadata.ocId == metadata.ocId }).isEmpty {
-                    NCNetworking.shared.downloadThumbnailQueue.addOperation(NCMediaDownloadThumbnaill(metadata: metadata, collectionView: collectionView))
-                }
-            }
-            cell.imageStatus.image = nil
         }
 
         // Convert OLD Live Photo
