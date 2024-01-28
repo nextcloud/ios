@@ -110,12 +110,12 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
         NotificationCenter.default.addObserver(self, selector: #selector(deleteFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDeleteFile), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(uploadedFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUploadedFile), object: nil)
 
-        if let results = NCImageCache.shared.initialMetadatas() {
-            self.metadatas = Array(results.map { tableMetadata.init(value: $0) })
-        }
         timerSearchNewMedia?.invalidate()
         timerSearchNewMedia = Timer.scheduledTimer(timeInterval: timeIntervalSearchNewMedia, target: self, selector: #selector(searchMediaUI), userInfo: nil, repeats: false)
 
+        if let metadatas = NCImageCache.shared.initialMetadatas() {
+            self.metadatas = metadatas
+        }
         collectionView.reloadData()
     }
 
