@@ -576,7 +576,6 @@ extension NCManageDatabase {
                             session: String? = nil,
                             sessionError: String? = nil,
                             selector: String? = nil,
-                            taskIdentifier: Int? = nil,
                             status: Int? = nil,
                             etag: String? = nil,
                             errorCode: Int? = nil) {
@@ -598,9 +597,6 @@ extension NCManageDatabase {
                     if let selector {
                         result.sessionSelector = selector
                     }
-                    if let taskIdentifier {
-                        result.sessionTaskIdentifier = taskIdentifier
-                    }
                     if let status {
                         result.status = status
                     }
@@ -609,6 +605,27 @@ extension NCManageDatabase {
                     }
                     if let errorCode {
                         result.errorCode = errorCode
+                    }
+                }
+            }
+        } catch let error {
+            NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
+        }
+    }
+
+    func setMetadataSession(ocId: String,
+                            status: Int? = nil,
+                            taskIdentifier: Int? = nil) {
+
+        do {
+            let realm = try Realm()
+            try realm.write {
+                if let result = realm.objects(tableMetadata.self).filter("ocId == %@", ocId).first {
+                    if let status {
+                        result.status = status
+                    }
+                    if let taskIdentifier {
+                        result.sessionTaskIdentifier = taskIdentifier
                     }
                 }
             }
@@ -628,7 +645,6 @@ extension NCManageDatabase {
                     result.session = NextcloudKit.shared.nkCommonInstance.sessionIdentifierDownload
                     result.sessionError = ""
                     result.sessionSelector = selector
-                    result.sessionTaskIdentifier = 0
                     result.status = NCGlobal.shared.metadataStatusWaitDownload
                     metadata = tableMetadata(value: result)
                 }

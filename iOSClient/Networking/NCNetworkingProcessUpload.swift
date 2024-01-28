@@ -198,7 +198,6 @@ class NCNetworkingProcessUpload: NSObject {
                                     NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId,
                                                                                session: NCNetworking.shared.sessionUploadBackground,
                                                                                sessionError: "",
-                                                                               taskIdentifier: 0,
                                                                                status: NCGlobal.shared.metadataStatusWaitUpload)
                                 }
                             }
@@ -206,7 +205,6 @@ class NCNetworkingProcessUpload: NSObject {
                             NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId,
                                                                        session: NCNetworking.shared.sessionUploadBackground,
                                                                        sessionError: "",
-                                                                       taskIdentifier: 0,
                                                                        status: NCGlobal.shared.metadataStatusWaitUpload)
                         }
                     }
@@ -294,8 +292,6 @@ class NCNetworkingProcessUpload: NSObject {
                     let fileNameLocalPath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)
                     if NCNetworking.shared.uploadRequest[fileNameLocalPath] == nil {
                         NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId,
-                                                                   sessionError: "",
-                                                                   taskIdentifier: 0,
                                                                    status: NCGlobal.shared.metadataStatusWaitUpload)
                         notificationCenter = true
                     }
@@ -309,7 +305,6 @@ class NCNetworkingProcessUpload: NSObject {
                                                                session: "",
                                                                sessionError: "",
                                                                selector: "",
-                                                               taskIdentifier: 0,
                                                                status: NCGlobal.shared.metadataStatusNormal,
                                                                errorCode: 0)
                     notificationCenter = true
@@ -334,7 +329,6 @@ class NCNetworkingProcessUpload: NSObject {
                         NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId,
                                                                    session: NCNetworking.shared.sessionUploadBackground,
                                                                    sessionError: "",
-                                                                   taskIdentifier: 0,
                                                                    status: NCGlobal.shared.metadataStatusWaitUpload)
                         notificationCenter = true
                     }
