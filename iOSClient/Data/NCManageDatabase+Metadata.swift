@@ -795,7 +795,7 @@ extension NCManageDatabase {
 
         do {
             let realm = try Realm()
-            let results =  realm.objects(tableMetadata.self).filter(predicate).sorted(byKeyPath: sorted, ascending: ascending)
+            let results = realm.objects(tableMetadata.self).filter(predicate).sorted(byKeyPath: sorted, ascending: ascending)
             return Array(results.map { tableMetadata.init(value: $0) })
         } catch let error as NSError {
             NextcloudKit.shared.nkCommonInstance.writeLog("Could not access database: \(error)")
