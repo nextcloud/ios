@@ -37,6 +37,7 @@ class NCMediaCommandView: UIView {
     let gradient: CAGradientLayer = CAGradientLayer()
 
     override func awakeFromNib() {
+        super.awakeFromNib()
 
         title.text = ""
 
