@@ -44,7 +44,11 @@ extension NCMedia {
     @objc func reloadDataSource() {
         guard !appDelegate.account.isEmpty else { return }
 
-        metadatas = NCImageCache.shared.getMediaMetadatas(account: self.appDelegate.account, predicate: self.getPredicate())
+        if let results = NCImageCache.shared.getMediaMetadatas(account: self.appDelegate.account, predicate: self.getPredicate()) {
+            self.metadatas = Array(results.map { tableMetadata.init(value: $0) })
+        } else {
+            self.metadatas = nil
+        }
         DispatchQueue.main.async {
             self.collectionView?.reloadData()
             self.mediaCommandView?.setMediaCommand()
