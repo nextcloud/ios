@@ -44,12 +44,7 @@ extension NCMedia {
     @objc func reloadDataSource() {
         guard !appDelegate.account.isEmpty else { return }
 
-        if let metadatas = NCImageCache.shared.getMediaMetadatas(account: self.appDelegate.account, predicate: self.getPredicate()) {
-            self.metadatas = Array(metadatas.map { tableMetadata.init(value: $0) })
-        } else {
-            self.metadatas.removeAll()
-        }
-
+        metadatas = NCImageCache.shared.getMediaMetadatas(account: self.appDelegate.account, predicate: self.getPredicate())
         DispatchQueue.main.async {
             self.collectionView?.reloadData()
             self.mediaCommandView?.setMediaCommand()
@@ -62,8 +57,8 @@ extension NCMedia {
 
         var lessDate: Date?
         var greaterDate: Date?
-        let firstMetadataDate = metadatas.first?.date as? Date
-        let lastMetadataDate = metadatas.last?.date as? Date
+        let firstMetadataDate = metadatas?.first?.date as? Date
+        let lastMetadataDate = metadatas?.last?.date as? Date
 
         guard loadingTask == nil else {
             return
@@ -108,7 +103,7 @@ extension NCMedia {
                     }
                     if results.error == .success, results.lessDate == Date.distantFuture, results.greaterDate == Date.distantPast, !results.isChanged, results.metadatasCount == 0 {
                         Task { @MainActor in
-                            self.metadatas = []
+                            self.metadatas = nil
                         }
                         await self.collectionView.reloadData()
                     }
