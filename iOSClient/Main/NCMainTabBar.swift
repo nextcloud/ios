@@ -202,15 +202,25 @@ class NCMainTabBar: UITabBar {
 
     @objc func updateBadgeNumber() {
 
-        var counterDownload = 0
-        var counterUpload = 0
+        DispatchQueue.global().async {
 
-        if let results = NCManageDatabase.shared.getResultsMetadatas(predicate: NSPredicate(format: "status < 0")) {
-            counterDownload = results.count
+            var counterDownload = 0
+            var counterUpload = 0
+
+            if let results = NCManageDatabase.shared.getResultsMetadatas(predicate: NSPredicate(format: "status < 0")) {
+                counterDownload = results.count
+            }
+            if let results = NCManageDatabase.shared.getResultsMetadatas(predicate: NSPredicate(format: "status > 0")) {
+                counterUpload = results.count
+            }
+
+            DispatchQueue.main.async {
+                self.updateBadgeNumberUI(counterDownload: counterDownload, counterUpload: counterUpload)
+            }
         }
-        if let results = NCManageDatabase.shared.getResultsMetadatas(predicate: NSPredicate(format: "status > 0")) {
-            counterUpload = results.count
-        }
+    }
+
+    func updateBadgeNumberUI(counterDownload: Int, counterUpload: Int) {
 
         UIApplication.shared.applicationIconBadgeNumber = counterUpload
         if let item = self.items?[0] {
