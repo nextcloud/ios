@@ -95,6 +95,7 @@ extension NCMedia {
             if let lessDate, let greaterDate {
                 mediaCommandView?.activityIndicator.startAnimating()
                 loadingTask = Task.detached {
+                    await self.collectionView.reloadData()
                     let results = await self.searchMedia(account: self.appDelegate.account, lessDate: lessDate, greaterDate: greaterDate)
                     print("Media results changed items: \(results.isChanged)")
                     if results.error != .success {
