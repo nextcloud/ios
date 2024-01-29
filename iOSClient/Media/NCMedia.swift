@@ -184,6 +184,7 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
     }
 
     // MARK: - Image
+
     func getImage(metadata: tableMetadata) -> UIImage? {
 
         if let cachedImage = NCImageCache.shared.getMediaImage(ocId: metadata.ocId, etag: metadata.etag), case let .actual(image) = cachedImage {

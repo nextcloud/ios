@@ -94,7 +94,6 @@ extension NCMedia {
 
             if let lessDate, let greaterDate {
                 mediaCommandView?.activityIndicator.startAnimating()
-                collectionView.reloadData()
                 loadingTask = Task.detached {
                     let results = await self.searchMedia(account: self.appDelegate.account, lessDate: lessDate, greaterDate: greaterDate)
                     print("Media results changed items: \(results.isChanged)")
@@ -113,15 +112,13 @@ extension NCMedia {
                     }
                     if results.isChanged {
                         await self.reloadDataSource()
-                    } else {
-                        await self.mediaCommandView?.setMediaCommand()
                     }
                 }
             }
         }
     }
 
-    func searchMedia(account: String, lessDate: Date, greaterDate: Date, limit: Int = 200, timeout: TimeInterval = 60) async -> (account: String, lessDate: Date?, greaterDate: Date?, metadatasCount: Int, isChanged: Bool, error: NKError) {
+    func searchMedia(account: String, lessDate: Date, greaterDate: Date, limit: Int = 300, timeout: TimeInterval = 60) async -> (account: String, lessDate: Date?, greaterDate: Date?, metadatasCount: Int, isChanged: Bool, error: NKError) {
 
         guard let mediaPath = NCManageDatabase.shared.getActiveAccount()?.mediaPath else {
             return(account, lessDate, greaterDate, 0, false, NKError())
