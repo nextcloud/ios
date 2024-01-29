@@ -46,12 +46,15 @@ protocol NCSelectableNavigationView: AnyObject {
     var navigationController: UINavigationController? { get }
     var layoutKey: String { get }
     var selectActions: [NCMenuAction] { get }
+    var serverUrl: String { get }
 
     func reloadDataSource(withQueryDB: Bool)
     func setNavigationItems()
 
     func tapSelectMenu()
     func tapSelect()
+    func onListSelected()
+    func onGridSelected()
 }
 
 extension NCSelectableNavigationView {
@@ -85,24 +88,76 @@ extension NCSelectableNavigationView {
     }
 
     private func createMenuActions() -> [UIMenuElement] {
+        guard let layoutForView = NCManageDatabase.shared.getLayoutForView(account: appDelegate.account, key: layoutKey, serverUrl: serverUrl) else { return [] }
+
         let select = UIAction(title: NSLocalizedString("_select_", comment: ""), image: .init(systemName: "checkmark.circle")) { _ in self.tapSelect() }
 
-        let list = UIAction(title: NSLocalizedString("_list_", comment: ""), image: .init(systemName: "list.bullet")) { _ in self.tapSelectMenu() }
-        let grid = UIAction(title: NSLocalizedString("_grid_", comment: ""), image: .init(systemName: "square.grid.2x2")) { _ in self.tapSelectMenu() }
+        let list = UIAction(title: NSLocalizedString("_list_", comment: ""), image: .init(systemName: "list.bullet"), state: layoutForView.layout == NCGlobal.shared.layoutList ? .on : .off) { _ in
+            self.onListSelected()
+            self.setNavigationRightItems()
+        }
+
+        let grid = UIAction(title: NSLocalizedString("_grid_", comment: ""), image: .init(systemName: "square.grid.2x2"), state: layoutForView.layout == NCGlobal.shared.layoutGrid ? .on : .off) { _ in
+            self.onGridSelected()
+            self.setNavigationRightItems()
+        }
 
         let viewStyleSubmenu = UIMenu(title: "", options: .displayInline, children: [list, grid])
 
-        let byName = UIAction(title: NSLocalizedString("_order_by_name_a_z_", comment: ""), image: nil) { _ in self.tapSelectMenu() }
-        let byNewest = UIAction(title: NSLocalizedString("_order_by_date_more_recent_", comment: ""), image: nil) { _ in self.tapSelectMenu() }
-        let byLargest = UIAction(title: NSLocalizedString("_order_by_size_smallest_", comment: ""), image: nil) { _ in self.tapSelectMenu() }
+        let ascending = layoutForView.ascending
+        let ascendingChevronImage = UIImage(systemName: ascending ? "chevron.down" : "chevron.up")
+        let isName = layoutForView.sort == "fileName"
+        let isDate = layoutForView.sort == "date"
+        let isSize = layoutForView.sort == "size"
 
-        let sortSubmenu = UIMenu(title: "", options: .displayInline, children: [byName, byNewest, byLargest])
+        let byName = UIAction(title: NSLocalizedString("_name_", comment: ""), image: isName ? ascendingChevronImage : nil, state: isName ? .on : .off) { _ in
+            if isName { // repeated press
+                layoutForView.ascending = !layoutForView.ascending
+            }
 
-        let foldersOnTop = UIAction(title: NSLocalizedString("_directory_on_top_no_", comment: ""), image: nil) { _ in self.tapSelectMenu() }
+            layoutForView.sort = "fileName"
+            self.saveLayout(layoutForView)
+        }
+
+        let byNewest = UIAction(title: NSLocalizedString("_date_", comment: ""), image: isDate ? ascendingChevronImage : nil, state: isDate ? .on : .off) { _ in
+            if isDate { // repeated press
+                layoutForView.ascending = !layoutForView.ascending
+            }
+
+            layoutForView.sort = "date"
+            self.saveLayout(layoutForView)
+        }
+
+        let byLargest = UIAction(title: NSLocalizedString("_size_", comment: ""), image: isSize ? ascendingChevronImage : nil, state: isSize ? .on : .off) { _ in
+            if isSize { // repeated press
+                layoutForView.ascending = !layoutForView.ascending
+            }
+
+            layoutForView.sort = "size"
+            self.saveLayout(layoutForView)
+        }
+
+        let sortSubmenu = UIMenu(title: NSLocalizedString("_order_by_", comment: ""), options: .displayInline, children: [byName, byNewest, byLargest])
+
+        let foldersOnTop = UIAction(title: NSLocalizedString("_directory_on_top_no_", comment: ""), image: UIImage(systemName: "folder"), state: layoutForView.directoryOnTop ? .on : .off) { _ in
+            layoutForView.directoryOnTop = !layoutForView.directoryOnTop
+            self.saveLayout(layoutForView)
+        }
 
         let foldersSubmenu = UIMenu(title: "", options: .displayInline, children: [foldersOnTop])
 
-        return [select, viewStyleSubmenu, sortSubmenu, foldersSubmenu]
+        if layoutKey == NCGlobal.shared.layoutViewRecent {
+            return [select]
+        } else {
+            return [select, viewStyleSubmenu, sortSubmenu, foldersSubmenu]
+        }
+    }
+
+    private func saveLayout(_ layoutForView: NCDBLayoutForView) {
+        NCManageDatabase.shared.setLayoutForView(layoutForView: layoutForView)
+        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSource)
+
+        setNavigationRightItems()
     }
 
     func tapSelect() {

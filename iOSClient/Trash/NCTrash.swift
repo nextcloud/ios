@@ -27,7 +27,7 @@ import Realm
 import UIKit
 import NextcloudKit
 
-class NCTrash: UIViewController, NCSelectableNavigationView, NCTrashListCellDelegate, NCSectionHeaderMenuDelegate, NCEmptyDataSetDelegate, NCGridCellDelegate {
+class NCTrash: UIViewController, NCTrashListCellDelegate, NCSectionHeaderMenuDelegate, NCEmptyDataSetDelegate, NCGridCellDelegate {
 
     @IBOutlet weak var collectionView: UICollectionView!
 
@@ -134,7 +134,7 @@ class NCTrash: UIViewController, NCSelectableNavigationView, NCTrashListCellDele
 
             // list layout
             layoutForView?.layout = NCGlobal.shared.layoutList
-            NCManageDatabase.shared.setLayoutForView(account: appDelegate.account, key: NCGlobal.shared.layoutViewTrash, serverUrl: "", layout: layoutForView?.layout)
+            NCManageDatabase.shared.setLayoutForView(account: appDelegate.account, key: layoutKey, serverUrl: "", layout: layoutForView?.layout)
 
             self.collectionView.reloadData()
             self.collectionView.collectionViewLayout.invalidateLayout()
@@ -144,7 +144,7 @@ class NCTrash: UIViewController, NCSelectableNavigationView, NCTrashListCellDele
 
             // grid layout
             layoutForView?.layout = NCGlobal.shared.layoutGrid
-            NCManageDatabase.shared.setLayoutForView(account: appDelegate.account, key: NCGlobal.shared.layoutViewTrash, serverUrl: "", layout: layoutForView?.layout)
+            NCManageDatabase.shared.setLayoutForView(account: appDelegate.account, key: layoutKey, serverUrl: "", layout: layoutForView?.layout)
 
             self.collectionView.reloadData()
             self.collectionView.collectionViewLayout.invalidateLayout()
@@ -154,7 +154,7 @@ class NCTrash: UIViewController, NCSelectableNavigationView, NCTrashListCellDele
 
     func tapButtonOrder(_ sender: Any) {
         let sortMenu = NCSortMenu()
-        sortMenu.toggleMenu(viewController: self, account: appDelegate.account, key: NCGlobal.shared.layoutViewTrash, sortButton: sender as? UIButton, serverUrl: "", hideDirectoryOnTop: true)
+        sortMenu.toggleMenu(viewController: self, account: appDelegate.account, key: layoutKey, sortButton: sender as? UIButton, serverUrl: "", hideDirectoryOnTop: true)
     }
 
     func tapButtonMore(_ sender: Any) {
@@ -369,4 +369,26 @@ extension NCTrash {
             } // else: undefined cell
         }
     }
+}
+
+extension NCTrash: NCSelectableNavigationView {
+    var serverUrl: String {
+        ""
+    }
+
+    func onListSelected() {
+        if layoutForView?.layout == NCGlobal.shared.layoutList {
+            collectionView.collectionViewLayout = listLayout
+            reloadDataSource()
+        }
+    }
+    
+    func onGridSelected() {
+        if layoutForView?.layout == NCGlobal.shared.layoutGrid {
+            collectionView.collectionViewLayout = gridLayout
+            reloadDataSource()
+        }
+    }
+    
+
 }

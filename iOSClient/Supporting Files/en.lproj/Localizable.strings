@@ -487,6 +487,9 @@
 "_file_saved_local_"            = "File saved on local storage.";
 "_file_not_present_"            = "Error: File not present, please reload.";
 "_order_by_"                    = "Sort by";
+"_name_"                        = "Name";
+"_date_"                        = "Date";
+"_size_"                        = "Size";
 "_order_by_name_a_z_"           = "Sort by name (from A to Z)";
 "_sorted_by_name_a_z_"          = "Sorted by name (from A to Z)";
 "_order_by_name_z_a_"           = "Sort by name (from Z to A)";
