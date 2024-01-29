@@ -422,6 +422,15 @@ extension NCManageDatabase {
         completion(metadataFolder, metadataFolders, metadatas)
     }
 
+    func convertFilesToMetadatas(_ files: [NKFile], useMetadataFolder: Bool) async -> (metadataFolder: tableMetadata, metadatasFolder: [tableMetadata], metadatas: [tableMetadata]) {
+
+        await withUnsafeContinuation({ continuation in
+            convertFilesToMetadatas(files, useMetadataFolder: useMetadataFolder) { metadataFolder, metadatasFolder, metadatas in
+                continuation.resume(returning: (metadataFolder, metadatasFolder, metadatas))
+            }
+        })
+    }
+
     func createMetadata(account: String, user: String, userId: String, fileName: String, fileNameView: String, ocId: String, serverUrl: String, urlBase: String, url: String, contentType: String, isUrl: Bool = false, name: String = NCGlobal.shared.appName, subline: String? = nil, iconName: String? = nil, iconUrl: String? = nil) -> tableMetadata {
 
         let metadata = tableMetadata()
@@ -567,7 +576,6 @@ extension NCManageDatabase {
                             session: String? = nil,
                             sessionError: String? = nil,
                             selector: String? = nil,
-                            taskIdentifier: Int? = nil,
                             status: Int? = nil,
                             etag: String? = nil,
                             errorCode: Int? = nil) {
@@ -589,9 +597,6 @@ extension NCManageDatabase {
                     if let selector {
                         result.sessionSelector = selector
                     }
-                    if let taskIdentifier {
-                        result.sessionTaskIdentifier = taskIdentifier
-                    }
                     if let status {
                         result.status = status
                     }
@@ -600,6 +605,27 @@ extension NCManageDatabase {
                     }
                     if let errorCode {
                         result.errorCode = errorCode
+                    }
+                }
+            }
+        } catch let error {
+            NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
+        }
+    }
+
+    func setMetadataSession(ocId: String,
+                            status: Int? = nil,
+                            taskIdentifier: Int? = nil) {
+
+        do {
+            let realm = try Realm()
+            try realm.write {
+                if let result = realm.objects(tableMetadata.self).filter("ocId == %@", ocId).first {
+                    if let status {
+                        result.status = status
+                    }
+                    if let taskIdentifier {
+                        result.sessionTaskIdentifier = taskIdentifier
                     }
                 }
             }
@@ -619,7 +645,6 @@ extension NCManageDatabase {
                     result.session = NextcloudKit.shared.nkCommonInstance.sessionIdentifierDownload
                     result.sessionError = ""
                     result.sessionSelector = selector
-                    result.sessionTaskIdentifier = 0
                     result.status = NCGlobal.shared.metadataStatusWaitDownload
                     metadata = tableMetadata(value: result)
                 }
@@ -782,6 +807,19 @@ extension NCManageDatabase {
         return []
     }
 
+    func getMetadatas(predicate: NSPredicate, sorted: String, ascending: Bool = false) -> [tableMetadata]? {
+
+        do {
+            let realm = try Realm()
+            let results = realm.objects(tableMetadata.self).filter(predicate).sorted(byKeyPath: sorted, ascending: ascending)
+            return Array(results.map { tableMetadata.init(value: $0) })
+        } catch let error as NSError {
+            NextcloudKit.shared.nkCommonInstance.writeLog("Could not access database: \(error)")
+        }
+
+        return nil
+    }
+
     func getResultsMetadatas(predicate: NSPredicate, sorted: String? = nil, ascending: Bool = false) -> Results<tableMetadata>? {
 
         do {
@@ -791,6 +829,18 @@ extension NCManageDatabase {
             } else {
                 return realm.objects(tableMetadata.self).filter(predicate)
             }
+        } catch let error as NSError {
+            NextcloudKit.shared.nkCommonInstance.writeLog("Could not access database: \(error)")
+        }
+
+        return nil
+    }
+
+    func getResultsMetadatas(predicate: NSPredicate, sorted: [RealmSwift.SortDescriptor]) -> Results<tableMetadata>? {
+
+        do {
+            let realm = try Realm()
+            return realm.objects(tableMetadata.self).filter(predicate).sorted(by: sorted)
         } catch let error as NSError {
             NextcloudKit.shared.nkCommonInstance.writeLog("Could not access database: \(error)")
         }
