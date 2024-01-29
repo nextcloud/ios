@@ -94,6 +94,18 @@ extension NCEndToEndMetadata {
         let version: String
     }
 
+    struct E2eeV20SignatureWithoutUsers: Codable {
+
+        struct Metadata: Codable {
+            let ciphertext: String
+            let nonce: String
+            let authenticationTag: String
+        }
+
+        let metadata: Metadata
+        let version: String
+    }
+
     // --------------------------------------------------------------------------------------------
     // MARK: Ecode JSON Metadata V2.0
     // --------------------------------------------------------------------------------------------
@@ -347,8 +359,7 @@ extension NCEndToEndMetadata {
             // CHECKSUM CHECK
             //
             if let keyChecksums = jsonCiphertextMetadata.keyChecksums {
-                guard let keyChecksums = jsonCiphertextMetadata.keyChecksums,
-                      let hash = NCEndToEndEncryption.sharedManager().createSHA256(decryptedMetadataKey),
+                guard let hash = NCEndToEndEncryption.sharedManager().createSHA256(decryptedMetadataKey),
                       keyChecksums.contains(hash) else {
                     return NKError(errorCode: NCGlobal.shared.errorE2EEKeyChecksums, errorDescription: NSLocalizedString("_e2e_error_", comment: ""))
                 }
@@ -451,46 +462,43 @@ extension NCEndToEndMetadata {
     func verifySignature(account: String, signature: String, userId: String, metadata: E2eeV20.Metadata, users: [E2eeV20.Users]?, version: String, certificate: String) -> Bool {
 
         var usersSignatureCodable: [E2eeV20Signature.Users] = []
+        var decodedSignatureCodable: Data?
+        var certificates: [String] = []
 
         if let users {
             for user in users {
                 usersSignatureCodable.append(E2eeV20Signature.Users(userId: user.userId, certificate: user.certificate, encryptedMetadataKey: user.encryptedMetadataKey))
             }
             let signatureCodable = E2eeV20Signature(metadata: E2eeV20Signature.Metadata(ciphertext: metadata.ciphertext, nonce: metadata.nonce, authenticationTag: metadata.authenticationTag), users: usersSignatureCodable, version: version)
+            certificates = users.map { $0.certificate }
 
             do {
                 let jsonEncoder = JSONEncoder()
                 let json = try jsonEncoder.encode(signatureCodable)
                 let dataSerialization = try JSONSerialization.jsonObject(with: json, options: [])
-                let decoded = try? JSONSerialization.data(withJSONObject: dataSerialization, options: [.sortedKeys, .withoutEscapingSlashes])
-                let base64 = decoded!.base64EncodedString()
-                if let base64Data = base64.data(using: .utf8),
-                   let signatureData = Data(base64Encoded: signature) {
-                    let certificates = users.map { $0.certificate }
-                    return NCEndToEndEncryption.sharedManager().verifySignatureCMS(signatureData, data: base64Data, certificates: certificates)
-                }
-
+                decodedSignatureCodable = try JSONSerialization.data(withJSONObject: dataSerialization, options: [.sortedKeys, .withoutEscapingSlashes])
             } catch {
                 print("Error: \(error.localizedDescription)")
             }
         } else {
-            let signatureCodable = E2eeV20Signature(metadata: E2eeV20Signature.Metadata(ciphertext: metadata.ciphertext, nonce: metadata.nonce, authenticationTag: metadata.authenticationTag), users: usersSignatureCodable, version: version)
+            let signatureCodable = E2eeV20SignatureWithoutUsers(metadata: E2eeV20SignatureWithoutUsers.Metadata(ciphertext: metadata.ciphertext, nonce: metadata.nonce, authenticationTag: metadata.authenticationTag), version: version)
+            certificates = [certificate]
 
             do {
                 let jsonEncoder = JSONEncoder()
                 let json = try jsonEncoder.encode(signatureCodable)
                 let dataSerialization = try JSONSerialization.jsonObject(with: json, options: [])
-                let decoded = try? JSONSerialization.data(withJSONObject: dataSerialization, options: [.sortedKeys, .withoutEscapingSlashes])
-                let base64 = decoded!.base64EncodedString()
-                if let base64Data = base64.data(using: .utf8),
-                   let signatureData = Data(base64Encoded: signature) {
-                    return NCEndToEndEncryption.sharedManager().verifySignatureCMS(signatureData, data: base64Data, certificates: [certificate])
-                }
-
+                decodedSignatureCodable = try JSONSerialization.data(withJSONObject: dataSerialization, options: [.sortedKeys, .withoutEscapingSlashes])
             } catch {
                 print("Error: \(error.localizedDescription)")
             }
-            return true
+        }
+
+        if let decodedSignatureCodable {
+            let base64 = decodedSignatureCodable.base64EncodedString()
+            if let data = base64.data(using: .utf8), let signatureData = Data(base64Encoded: signature) {
+                return NCEndToEndEncryption.sharedManager().verifySignatureCMS(signatureData, data: data, certificates: certificates)
+            }
         }
 
         return false
