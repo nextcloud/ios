@@ -81,13 +81,11 @@ extension NCSelectableNavigationView {
             } else {
                 navigationItem.rightBarButtonItems = [menuButton]
             }
-
-            //            navigationItem.rightBarButtonItems = [menuButton]
         }
     }
 
     private func createMenuActions() -> [UIMenuElement] {
-        let select = UIAction(title: NSLocalizedString("_select_", comment: ""), image: .init(systemName: "checkmark.circle")) { _ in self.tapSelectMenu() }
+        let select = UIAction(title: NSLocalizedString("_select_", comment: ""), image: .init(systemName: "checkmark.circle")) { _ in self.tapSelect() }
 
         let list = UIAction(title: NSLocalizedString("_list_", comment: ""), image: .init(systemName: "list.bullet")) { _ in self.tapSelectMenu() }
         let grid = UIAction(title: NSLocalizedString("_grid_", comment: ""), image: .init(systemName: "square.grid.2x2")) { _ in self.tapSelectMenu() }
