@@ -45,8 +45,7 @@ class NCMainTabBar: UITabBar {
         appDelegate.mainTabBar = self
 
         NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeTheming), object: nil)
-
-        let timerNotificationCenter = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(updateBadgeNumber), userInfo: nil, repeats: true)
+        NotificationCenter.default.addObserver(self, selector: #selector(updateBadgeNumber), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUpdateBadgeNumber), object: nil)
 
         changeTheming()
     }

@@ -187,6 +187,11 @@ class NCNetworkingProcessUpload: NSObject {
                     }
                 }
 
+                // Update Badge Number
+                NotificationCenter.default.post(
+                    name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterUpdateBadgeNumber),
+                    object: nil)
+
                 // No upload available ? --> Retry Upload in Error
                 if counterUpload == 0 {
                     let metadatas = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND status == %d", self.appDelegate.account, NCGlobal.shared.metadataStatusUploadError))
