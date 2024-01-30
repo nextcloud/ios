@@ -375,24 +375,32 @@ extension NCTrash: NCSelectableNavigationView {
     var viewController: UIViewController {
         self
     }
-    
+
     var serverUrl: String {
         ""
     }
 
     func onListSelected() {
         if layoutForView?.layout == NCGlobal.shared.layoutGrid {
-            collectionView.collectionViewLayout = listLayout
-            reloadDataSource()
+            // list layout
+            layoutForView?.layout = NCGlobal.shared.layoutList
+            NCManageDatabase.shared.setLayoutForView(account: appDelegate.account, key: layoutKey, serverUrl: "", layout: layoutForView?.layout)
+
+            self.collectionView.reloadData()
+            self.collectionView.collectionViewLayout.invalidateLayout()
+            self.collectionView.setCollectionViewLayout(self.listLayout, animated: true)
         }
     }
-    
+
     func onGridSelected() {
         if layoutForView?.layout == NCGlobal.shared.layoutList {
-            collectionView.collectionViewLayout = gridLayout
-            reloadDataSource()
+            // grid layout
+            layoutForView?.layout = NCGlobal.shared.layoutGrid
+            NCManageDatabase.shared.setLayoutForView(account: appDelegate.account, key: layoutKey, serverUrl: "", layout: layoutForView?.layout)
+
+            self.collectionView.reloadData()
+            self.collectionView.collectionViewLayout.invalidateLayout()
+            self.collectionView.setCollectionViewLayout(self.gridLayout, animated: true)
         }
     }
-    
-
 }

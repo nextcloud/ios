@@ -74,7 +74,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     internal var titlePreviusFolder: String?
     internal var enableSearchBar: Bool = false
     internal var headerMenuTransferView = false
-    internal var headerMenuButtonsView: Bool = true
     internal var headerRichWorkspaceDisable: Bool = false
     internal var emptyImage: UIImage?
     internal var emptyTitle: String = ""
@@ -720,46 +719,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     func accountRequestAddAccount() {
         appDelegate.openLogin(viewController: self, selector: NCGlobal.shared.introLogin, openLoginWeb: false)
     }
-
-//    func tapButtonSwitch(_ sender: Any) {
-//
-//        guard isTransitioning == false else { return }
-//        isTransitioning = true
-//
-//        if layoutForView?.layout == NCGlobal.shared.layoutGrid {
-//
-//            // list layout
-//            headerMenu?.buttonSwitch.accessibilityLabel = NSLocalizedString("_grid_view_", comment: "")
-//            layoutForView?.layout = NCGlobal.shared.layoutList
-//            NCManageDatabase.shared.setLayoutForView(account: appDelegate.account, key: layoutKey, serverUrl: serverUrl, layout: layoutForView?.layout)
-//            self.groupByField = "name"
-//            if self.dataSource.groupByField != self.groupByField {
-//                self.dataSource.changeGroupByField(self.groupByField)
-//            }
-//
-//            self.collectionView.reloadData()
-//            self.collectionView.collectionViewLayout.invalidateLayout()
-//            self.collectionView.setCollectionViewLayout(self.listLayout, animated: true) {_ in self.isTransitioning = false }
-//        } else {
-//
-//            // grid layout
-//            headerMenu?.buttonSwitch.accessibilityLabel = NSLocalizedString("_list_view_", comment: "")
-//            layoutForView?.layout = NCGlobal.shared.layoutGrid
-//            NCManageDatabase.shared.setLayoutForView(account: appDelegate.account, key: layoutKey, serverUrl: serverUrl, layout: layoutForView?.layout)
-//            if isSearchingMode {
-//                self.groupByField = "name"
-//            } else {
-//                self.groupByField = "classFile"
-//            }
-//            if self.dataSource.groupByField != self.groupByField {
-//                self.dataSource.changeGroupByField(self.groupByField)
-//            }
-//
-//            self.collectionView.reloadData()
-//            self.collectionView.collectionViewLayout.invalidateLayout()
-//            self.collectionView.setCollectionViewLayout(self.gridLayout, animated: true) {_ in self.isTransitioning = false }
-//        }
-//    }
 
     func tapButtonOrder(_ sender: Any) {
 
@@ -1459,14 +1418,6 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
 
                 self.headerMenu = header
 
-//                if layoutForView?.layout == NCGlobal.shared.layoutGrid {
-//                    header.setImageSwitchList()
-//                    header.buttonSwitch.accessibilityLabel = NSLocalizedString("_list_view_", comment: "")
-//                } else {
-//                    header.setImageSwitchGrid()
-//                    header.buttonSwitch.accessibilityLabel = NSLocalizedString("_grid_view_", comment: "")
-//                }
-
                 header.delegate = self
 
                 if !isSearchingMode, headerMenuTransferView, let ocId = NCNetworking.shared.transferInForegorund?.ocId {
@@ -1476,18 +1427,10 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                     header.setViewTransfer(isHidden: true)
                 }
 
-//                if headerMenuButtonsView {
-//                    header.setStatusButtonsView(enable: !dataSource.getMetadataSourceForAllSections().isEmpty)
-//                    header.setButtonsView(height: NCGlobal.shared.heightButtonsView)
-//                    header.setSortedTitle(layoutForView?.titleButtonHeader ?? "")
-//                } else {
-//                    header.setButtonsView(height: 0)
-//                }
-
                 header.setRichWorkspaceHeight(heightHeaderRichWorkspace)
                 header.setRichWorkspaceText(richWorkspaceText)
 
-                header.setSectionHeight(20)
+                header.setSectionHeight(heightHeaderSection)
                 if heightHeaderSection == 0 {
                     header.labelSection.text = ""
                 } else {
@@ -1572,10 +1515,6 @@ extension NCCollectionViewCommon: UICollectionViewDelegateFlowLayout {
             }
         } else {
             NCNetworking.shared.transferInForegorund = nil
-        }
-
-        if headerMenuButtonsView {
-            size += NCGlobal.shared.heightButtonsView
         }
 
         return size

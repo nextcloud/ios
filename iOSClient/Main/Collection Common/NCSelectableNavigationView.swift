@@ -224,14 +224,14 @@ extension NCSelectableNavigationView {
                     self.toggleSelect()
                 }
             })
-            
+
             alertController.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel) { (_: UIAlertAction) in })
             self.viewController.present(alertController, animated: true, completion: nil)
         }
-        
+
         return [download, lock, share, move, delete]
     }
-    
+
     private func createMenuActions() -> [UIMenuElement] {
         guard let layoutForView = NCManageDatabase.shared.getLayoutForView(account: appDelegate.account, key: layoutKey, serverUrl: serverUrl) else { return [] }
 

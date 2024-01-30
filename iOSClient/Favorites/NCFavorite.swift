@@ -34,7 +34,6 @@ class NCFavorite: NCCollectionViewCommon {
         titleCurrentFolder = NSLocalizedString("_favorites_", comment: "")
         layoutKey = NCGlobal.shared.layoutViewFavorite
         enableSearchBar = false
-        headerMenuButtonsView = true
         headerRichWorkspaceDisable = true
         emptyImage = UIImage(named: "star.fill")?.image(color: NCBrandColor.shared.yellowFavorite, size: UIScreen.main.bounds.width)
         emptyTitle = "_favorite_no_files_"
