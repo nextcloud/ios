@@ -403,13 +403,15 @@ class NCNetworking: NSObject, NKCommonDelegate {
         NextcloudKit.shared.download(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, options: options, requestHandler: { request in
 
             self.downloadRequest[fileNameLocalPath] = request
+            NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId,
+                                                       status: NCGlobal.shared.metadataStatusDownloading)
             requestHandler(request)
 
         }, taskHandler: { task in
 
             NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId,
-                                                       taskIdentifier: task.taskIdentifier,
-                                                       status: NCGlobal.shared.metadataStatusDownloading)
+                                                       taskIdentifier: task.taskIdentifier)
+
             NotificationCenter.default.post(
                 name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterDownloadStartFile),
                 object: nil,
@@ -451,7 +453,6 @@ class NCNetworking: NSObject, NKCommonDelegate {
                                                            session: "",
                                                            sessionError: "",
                                                            selector: "",
-                                                           taskIdentifier: 0,
                                                            status: NCGlobal.shared.metadataStatusNormal,
                                                            errorCode: 0)
                 NotificationCenter.default.post(name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterDownloadCancelFile),
@@ -471,7 +472,6 @@ class NCNetworking: NSObject, NKCommonDelegate {
                 NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId,
                                                            session: "",
                                                            sessionError: "",
-                                                           taskIdentifier: 0,
                                                            status: NCGlobal.shared.metadataStatusNormal,
                                                            etag: etag,
                                                            errorCode: 0)
@@ -489,7 +489,6 @@ class NCNetworking: NSObject, NKCommonDelegate {
                                                            session: "",
                                                            sessionError: "",
                                                            selector: "",
-                                                           taskIdentifier: 0,
                                                            status: NCGlobal.shared.metadataStatusNormal,
                                                            errorCode: 0)
                 NotificationCenter.default.post(name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterDownloadedFile),
@@ -627,14 +626,16 @@ class NCNetworking: NSObject, NKCommonDelegate {
         NextcloudKit.shared.upload(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, dateCreationFile: metadata.creationDate as Date, dateModificationFile: metadata.date as Date, options: options, requestHandler: { request in
 
             self.uploadRequest[fileNameLocalPath] = request
+            NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId,
+                                                       status: NCGlobal.shared.metadataStatusUploading)
             requestHandler(request)
 
         }, taskHandler: { task in
 
             uploadTask = task
             NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId,
-                                                       taskIdentifier: task.taskIdentifier,
-                                                       status: NCGlobal.shared.metadataStatusUploading)
+                                                       taskIdentifier: task.taskIdentifier)
+
             NotificationCenter.default.post(
                 name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterUploadStartFile),
                 object: nil,
@@ -719,13 +720,14 @@ class NCNetworking: NSObject, NKCommonDelegate {
         } requestHandler: { request in
 
             self.uploadRequest[fileNameLocalPath] = request
+            NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId,
+                                                       status: NCGlobal.shared.metadataStatusUploading)
 
         } taskHandler: { task in
 
             uploadTask = task
             NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId,
-                                                       taskIdentifier: task.taskIdentifier,
-                                                       status: NCGlobal.shared.metadataStatusUploading)
+                                                       taskIdentifier: task.taskIdentifier)
 
         } progressHandler: { totalBytesExpected, totalBytes, fractionCompleted in
 
@@ -793,8 +795,9 @@ class NCNetworking: NSObject, NKCommonDelegate {
                 NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Upload file \(metadata.fileNameView) with task with taskIdentifier \(task.taskIdentifier)")
 
                 NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId,
-                                                           taskIdentifier: task.taskIdentifier,
-                                                           status: NCGlobal.shared.metadataStatusUploading)
+                                                           status: NCGlobal.shared.metadataStatusUploading,
+                                                           taskIdentifier: task.taskIdentifier)
+
                 NotificationCenter.default.post(
                     name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterUploadStartFile),
                     object: nil,
@@ -849,7 +852,6 @@ class NCNetworking: NSObject, NKCommonDelegate {
 
             metadata.session = ""
             metadata.sessionError = ""
-            metadata.sessionTaskIdentifier = 0
             metadata.status = NCGlobal.shared.metadataStatusNormal
 
             // Delete Asset on Photos album
@@ -920,7 +922,6 @@ class NCNetworking: NSObject, NKCommonDelegate {
                         NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId,
                                                                    newFileName: newFileName,
                                                                    sessionError: "",
-                                                                   taskIdentifier: 0,
                                                                    status: NCGlobal.shared.metadataStatusWaitUpload,
                                                                    errorCode: error.errorCode)
                     }))
@@ -946,7 +947,6 @@ class NCNetworking: NSObject, NKCommonDelegate {
 
                 NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId,
                                                            sessionError: error.errorDescription,
-                                                           taskIdentifier: 0,
                                                            status: NCGlobal.shared.metadataStatusUploadError,
                                                            errorCode: error.errorCode)
                 NotificationCenter.default.post(
@@ -1127,7 +1127,6 @@ class NCNetworking: NSObject, NKCommonDelegate {
                                                                session: "",
                                                                sessionError: "",
                                                                selector: "",
-                                                               taskIdentifier: 0,
                                                                status: NCGlobal.shared.metadataStatusNormal,
                                                                errorCode: 0)
                 }
@@ -1197,7 +1196,6 @@ class NCNetworking: NSObject, NKCommonDelegate {
                                                            session: "",
                                                            sessionError: "",
                                                            selector: "",
-                                                           taskIdentifier: 0,
                                                            status: NCGlobal.shared.metadataStatusNormal,
                                                            errorCode: 0)
                 NotificationCenter.default.post(

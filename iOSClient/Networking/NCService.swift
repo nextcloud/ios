@@ -51,9 +51,7 @@ class NCService: NSObject {
                 requestDashboardWidget()
                 NCNetworkingE2EE().unlockAll(account: account)
                 NCNetworkingProcessUpload.shared.verifyUploadZombie()
-                if NCGlobal.shared.capabilitySecurityGuardDiagnostics {
-                    sendClientDiagnosticsRemoteOperation(account: account)
-                }
+                sendClientDiagnosticsRemoteOperation(account: account)
             }
         }
     }
@@ -312,7 +310,9 @@ class NCService: NSObject {
     // MARK: -
 
     func sendClientDiagnosticsRemoteOperation(account: String) {
-        if !NCManageDatabase.shared.existsDiagnostics(account: account) { return }
+
+        guard NCGlobal.shared.capabilitySecurityGuardDiagnostics,
+              NCManageDatabase.shared.existsDiagnostics(account: account) else { return }
 
         struct Issues: Codable {
 

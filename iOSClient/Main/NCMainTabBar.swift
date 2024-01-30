@@ -45,8 +45,7 @@ class NCMainTabBar: UITabBar {
         appDelegate.mainTabBar = self
 
         NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeTheming), object: nil)
-
-        let timerNotificationCenter = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(updateBadgeNumber), userInfo: nil, repeats: true)
+        NotificationCenter.default.addObserver(self, selector: #selector(updateBadgeNumber), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUpdateBadgeNumber), object: nil)
 
         changeTheming()
     }
@@ -202,17 +201,28 @@ class NCMainTabBar: UITabBar {
 
     @objc func updateBadgeNumber() {
 
-        var counterDownload = 0
-        var counterUpload = 0
+        DispatchQueue.global().async {
 
-        if let results = NCManageDatabase.shared.getResultsMetadatas(predicate: NSPredicate(format: "status < 0")) {
-            counterDownload = results.count
+            var counterDownload = 0
+            var counterUpload = 0
+
+            if let results = NCManageDatabase.shared.getResultsMetadatas(predicate: NSPredicate(format: "status < 0")) {
+                counterDownload = results.count
+            }
+            if let results = NCManageDatabase.shared.getResultsMetadatas(predicate: NSPredicate(format: "status > 0")) {
+                counterUpload = results.count
+            }
+
+            DispatchQueue.main.async {
+                self.updateBadgeNumberUI(counterDownload: counterDownload, counterUpload: counterUpload)
+            }
         }
-        if let results = NCManageDatabase.shared.getResultsMetadatas(predicate: NSPredicate(format: "status > 0")) {
-            counterUpload = results.count
-        }
+    }
+
+    func updateBadgeNumberUI(counterDownload: Int, counterUpload: Int) {
 
         UIApplication.shared.applicationIconBadgeNumber = counterUpload
+
         if let item = self.items?[0] {
             if counterDownload == 0, counterUpload == 0 {
                 item.badgeValue = nil

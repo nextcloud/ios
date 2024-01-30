@@ -372,6 +372,8 @@ class NCGlobal: NSObject {
 
     let notificationCenterProgressTask                          = "progressTask"                    // userInfo: account, ocId, serverUrl, status, chunk, e2eEncrypted, progress, totalBytes, totalBytesExpected
 
+    let notificationCenterUpdateBadgeNumber                     = "updateBadgeNumber"
+
     let notificationCenterCreateFolder                          = "createFolder"                    // userInfo: ocId, serverUrl, account, withPush
     let notificationCenterDeleteFile                            = "deleteFile"                      // userInfo: [ocId], [indexPath], onlyLocalCache, error
     let notificationCenterMoveFile                              = "moveFile"                        // userInfo: [ocId], [indexPath], error

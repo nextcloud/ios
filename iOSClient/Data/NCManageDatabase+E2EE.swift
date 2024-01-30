@@ -351,7 +351,7 @@ extension NCManageDatabase {
         return nil
     }
 
-    func getE2EUsers(account: String, ocIdServerUrl: String, userId: String) -> tableE2eUsers? {
+    func getE2EUser(account: String, ocIdServerUrl: String, userId: String) -> tableE2eUsers? {
 
         do {
             let realm = try Realm()
