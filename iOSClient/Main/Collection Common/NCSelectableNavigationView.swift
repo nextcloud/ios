@@ -66,18 +66,16 @@ extension NCSelectableNavigationView {
         if isEditMode {
             let select = UIBarButtonItem(title: NSLocalizedString("_done_", comment: ""), style: .done) { self.toggleSelect() }
 
-            let menu = UIMenu(children: createSelectMenuActions())
+            let selectAll = UIAction(title: NSLocalizedString("_select_all_", comment: ""), image: .init(systemName: "checkmark")) { _ in self.collectionViewSelectAll() }
+
+            var actions = layoutKey == NCGlobal.shared.layoutViewTrash ? createTrashMenuActions() : createSelectMenuActions()
+            actions.insert(selectAll, at: 0)
+            let menu = UIMenu(children: actions)
             let menuButton = UIBarButtonItem(image: .init(systemName: "ellipsis.circle"), menu: menu)
 
             navigationItem.rightBarButtonItems = [select, menuButton]
         } else {
-            //            let select = UIBarButtonItem(title: NSLocalizedString("_select_", comment: ""), style: UIBarButtonItem.Style.plain, action: tapSelect)
             let notification = UIBarButtonItem(image: .init(systemName: "bell"), style: .plain, action: tapNotification)
-            //            if layoutKey == NCGlobal.shared.layoutViewFiles {
-            //                navigationItem.rightBarButtonItems = [select, notification]
-            //            } else {
-            //                navigationItem.rightBarButtonItems = [select]
-            //            }
 
             let menu = UIMenu(children: createMenuActions())
             let menuButton = UIBarButtonItem(image: .init(systemName: "ellipsis.circle"), menu: menu)
@@ -88,6 +86,27 @@ extension NCSelectableNavigationView {
                 navigationItem.rightBarButtonItems = [menuButton]
             }
         }
+    }
+
+    private func createTrashMenuActions() -> [UIMenuElement] {
+        guard let trashVC = (viewController as? NCTrash) else { return [] }
+
+        let recover = UIAction(title: NSLocalizedString("_recover_", comment: ""), image: .init(systemName: "trash.slash"), attributes: selectOcId.isEmpty ? [.disabled] : []) { _ in
+            self.selectOcId.forEach(trashVC.restoreItem)
+            self.toggleSelect()
+        }
+
+        let delete = UIAction(title: NSLocalizedString("_delete_", comment: ""), image: .init(systemName: "trash"), attributes: selectOcId.isEmpty ? [.disabled, .destructive] : [.destructive]) { _ in
+            let alert = UIAlertController(title: NSLocalizedString("_trash_delete_selected_", comment: ""), message: "", preferredStyle: .actionSheet)
+            alert.addAction(UIAlertAction(title: NSLocalizedString("_delete_", comment: ""), style: .destructive, handler: { _ in
+                self.selectOcId.forEach(trashVC.deleteItem)
+                self.toggleSelect()
+            }))
+            alert.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel, handler: { _ in }))
+            trashVC.present(alert, animated: true, completion: nil)
+        }
+
+        return [recover, delete]
     }
 
     private func createSelectMenuActions() -> [UIMenuElement] {
@@ -121,8 +140,6 @@ extension NCSelectableNavigationView {
             } // else: file is not offline, continue
         }
 
-        let selectAll = UIAction(title: NSLocalizedString("_select_all_", comment: ""), image: .init(systemName: "checkmark")) { _ in self.collectionViewSelectAll() }
-
         let download = UIAction(title: NSLocalizedString("_download_", comment: ""), image: .init(systemName: "icloud.and.arrow.down"), attributes: selectOcId.isEmpty ? .disabled : []) { _ in
             if !isAnyOffline, selectedMetadatas.count > 3 {
                 let alert = UIAlertController(
@@ -147,7 +164,7 @@ extension NCSelectableNavigationView {
 
         let enableLock = !isAnyFolder && canUnlock && !NCGlobal.shared.capabilityFilesLockVersion.isEmpty
 
-        let lock = UIAction(title: NSLocalizedString(isAnyLocked ? "_unlock_file_" : "_lock_file_", comment: ""), image: .init(systemName: isAnyLocked ? "lock.open" : "lock"), attributes: enableLock && !selectOcId.isEmpty ? [] : [.disabled]) { _ in
+        let lock = UIAction(title: NSLocalizedString(isAnyLocked ? "_unlock_" : "_lock_", comment: ""), image: .init(systemName: isAnyLocked ? "lock.open" : "lock"), attributes: enableLock && !selectOcId.isEmpty ? [] : [.disabled]) { _ in
             for metadata in selectedMetadatas where metadata.lock == isAnyLocked {
                 NCNetworking.shared.lockUnlockFile(metadata, shoulLock: !isAnyLocked)
             }
@@ -207,18 +224,14 @@ extension NCSelectableNavigationView {
                     self.toggleSelect()
                 }
             })
-
+            
             alertController.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel) { (_: UIAlertAction) in })
             self.viewController.present(alertController, animated: true, completion: nil)
         }
-
-//        if layoutKey == NCGlobal.shared.layoutViewRecent {
-//            return [select]
-//        } else {
-            return [selectAll, download, lock, share, move, delete]
-//        }
+        
+        return [download, lock, share, move, delete]
     }
-
+    
     private func createMenuActions() -> [UIMenuElement] {
         guard let layoutForView = NCManageDatabase.shared.getLayoutForView(account: appDelegate.account, key: layoutKey, serverUrl: serverUrl) else { return [] }
 

@@ -37,6 +37,7 @@ extension NCTrash: UICollectionViewDelegate {
                 selectOcId.append(tableTrash.fileId)
             }
             collectionView.reloadItems(at: [indexPath])
+            setNavigationRightItems()
             return
         }
 

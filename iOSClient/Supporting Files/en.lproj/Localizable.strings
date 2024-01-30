@@ -159,13 +159,15 @@
 
 /* MARK: Files lock */
 
+"_lock_"                            = "Lock";
+"_unlock_"                          = "Unlock";
 "_lock_file_"                       = "Lock file";
 "_unlock_file_"                     = "Unlock file";
 "_lock_selected_files_"             = "Lock files";
 "_unlock_selected_files_"           = "Unlock files";
 "_locked_by_"                       = "Locked by %@";
 "_file_locked_no_override_"         = "This file is locked. It cannot be overridden.";
-"_lock_no_permissions_selected_"    = "You don't have the required permissions for some files";
+"_lock_no_permissions_selected_"    = "Not permitted for some selected files";
 
 /* Remove a file from a list, don't delete it entirely */
 "_remove_file_"             = "Remove file";
@@ -755,8 +757,9 @@
 "_trash_delete_all_description_"    = "Do you want to empty the trash bin?";
 "_trash_no_trash_"                  = "No files deleted";
 "_trash_no_trash_description_"      = "You can restore deleted files from here";
-"_trash_restore_selected_"          = "Restore selected files";
-"_trash_delete_selected_"           = "Delete selected files";
+"_trash_restore_selected_"          = "Restore selected files?";
+"_trash_delete_selected_"           = "Delete selected files?";
+"_recover_"                         = "Recover";
 "_confirm_delete_selected_"         = "Are you sure you want to delete the selected items?";
 "_manage_file_offline_"             = "Manage offline files";
 "_set_available_offline_"           = "Set as available offline";

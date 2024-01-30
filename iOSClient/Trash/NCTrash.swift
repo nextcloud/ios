@@ -381,14 +381,14 @@ extension NCTrash: NCSelectableNavigationView {
     }
 
     func onListSelected() {
-        if layoutForView?.layout == NCGlobal.shared.layoutList {
+        if layoutForView?.layout == NCGlobal.shared.layoutGrid {
             collectionView.collectionViewLayout = listLayout
             reloadDataSource()
         }
     }
     
     func onGridSelected() {
-        if layoutForView?.layout == NCGlobal.shared.layoutGrid {
+        if layoutForView?.layout == NCGlobal.shared.layoutList {
             collectionView.collectionViewLayout = gridLayout
             reloadDataSource()
         }

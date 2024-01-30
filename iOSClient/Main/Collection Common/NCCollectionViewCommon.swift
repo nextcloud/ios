@@ -67,6 +67,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     private var pushed: Bool = false
     private var tipView: EasyTipView?
     private var isTransitioning: Bool = false
+
     // DECLARE
     internal var layoutKey = ""
     internal var titleCurrentFolder = ""
