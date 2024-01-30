@@ -720,45 +720,45 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         appDelegate.openLogin(viewController: self, selector: NCGlobal.shared.introLogin, openLoginWeb: false)
     }
 
-    func tapButtonSwitch(_ sender: Any) {
-
-        guard isTransitioning == false else { return }
-        isTransitioning = true
-
-        if layoutForView?.layout == NCGlobal.shared.layoutGrid {
-
-            // list layout
-            headerMenu?.buttonSwitch.accessibilityLabel = NSLocalizedString("_grid_view_", comment: "")
-            layoutForView?.layout = NCGlobal.shared.layoutList
-            NCManageDatabase.shared.setLayoutForView(account: appDelegate.account, key: layoutKey, serverUrl: serverUrl, layout: layoutForView?.layout)
-            self.groupByField = "name"
-            if self.dataSource.groupByField != self.groupByField {
-                self.dataSource.changeGroupByField(self.groupByField)
-            }
-
-            self.collectionView.reloadData()
-            self.collectionView.collectionViewLayout.invalidateLayout()
-            self.collectionView.setCollectionViewLayout(self.listLayout, animated: true) {_ in self.isTransitioning = false }
-        } else {
-
-            // grid layout
-            headerMenu?.buttonSwitch.accessibilityLabel = NSLocalizedString("_list_view_", comment: "")
-            layoutForView?.layout = NCGlobal.shared.layoutGrid
-            NCManageDatabase.shared.setLayoutForView(account: appDelegate.account, key: layoutKey, serverUrl: serverUrl, layout: layoutForView?.layout)
-            if isSearchingMode {
-                self.groupByField = "name"
-            } else {
-                self.groupByField = "classFile"
-            }
-            if self.dataSource.groupByField != self.groupByField {
-                self.dataSource.changeGroupByField(self.groupByField)
-            }
-
-            self.collectionView.reloadData()
-            self.collectionView.collectionViewLayout.invalidateLayout()
-            self.collectionView.setCollectionViewLayout(self.gridLayout, animated: true) {_ in self.isTransitioning = false }
-        }
-    }
+//    func tapButtonSwitch(_ sender: Any) {
+//
+//        guard isTransitioning == false else { return }
+//        isTransitioning = true
+//
+//        if layoutForView?.layout == NCGlobal.shared.layoutGrid {
+//
+//            // list layout
+//            headerMenu?.buttonSwitch.accessibilityLabel = NSLocalizedString("_grid_view_", comment: "")
+//            layoutForView?.layout = NCGlobal.shared.layoutList
+//            NCManageDatabase.shared.setLayoutForView(account: appDelegate.account, key: layoutKey, serverUrl: serverUrl, layout: layoutForView?.layout)
+//            self.groupByField = "name"
+//            if self.dataSource.groupByField != self.groupByField {
+//                self.dataSource.changeGroupByField(self.groupByField)
+//            }
+//
+//            self.collectionView.reloadData()
+//            self.collectionView.collectionViewLayout.invalidateLayout()
+//            self.collectionView.setCollectionViewLayout(self.listLayout, animated: true) {_ in self.isTransitioning = false }
+//        } else {
+//
+//            // grid layout
+//            headerMenu?.buttonSwitch.accessibilityLabel = NSLocalizedString("_list_view_", comment: "")
+//            layoutForView?.layout = NCGlobal.shared.layoutGrid
+//            NCManageDatabase.shared.setLayoutForView(account: appDelegate.account, key: layoutKey, serverUrl: serverUrl, layout: layoutForView?.layout)
+//            if isSearchingMode {
+//                self.groupByField = "name"
+//            } else {
+//                self.groupByField = "classFile"
+//            }
+//            if self.dataSource.groupByField != self.groupByField {
+//                self.dataSource.changeGroupByField(self.groupByField)
+//            }
+//
+//            self.collectionView.reloadData()
+//            self.collectionView.collectionViewLayout.invalidateLayout()
+//            self.collectionView.setCollectionViewLayout(self.gridLayout, animated: true) {_ in self.isTransitioning = false }
+//        }
+//    }
 
     func tapButtonOrder(_ sender: Any) {
 
@@ -1030,7 +1030,6 @@ extension NCCollectionViewCommon: NCEndToEndInitializeDelegate {
 extension NCCollectionViewCommon: UICollectionViewDelegate {
 
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-
         guard let metadata = dataSource.cellForItemAt(indexPath: indexPath) else { return }
         appDelegate.activeMetadata = metadata
         let metadataSourceForAllSections = dataSource.getMetadataSourceForAllSections()
@@ -1044,6 +1043,9 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
                 selectIndexPath.append(indexPath)
             }
             collectionView.reloadItems(at: [indexPath])
+
+            self.setNavigationRightItems()
+
             return
         }
 
@@ -1456,13 +1458,13 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
 
                 self.headerMenu = header
 
-                if layoutForView?.layout == NCGlobal.shared.layoutGrid {
-                    header.setImageSwitchList()
-                    header.buttonSwitch.accessibilityLabel = NSLocalizedString("_list_view_", comment: "")
-                } else {
-                    header.setImageSwitchGrid()
-                    header.buttonSwitch.accessibilityLabel = NSLocalizedString("_grid_view_", comment: "")
-                }
+//                if layoutForView?.layout == NCGlobal.shared.layoutGrid {
+//                    header.setImageSwitchList()
+//                    header.buttonSwitch.accessibilityLabel = NSLocalizedString("_list_view_", comment: "")
+//                } else {
+//                    header.setImageSwitchGrid()
+//                    header.buttonSwitch.accessibilityLabel = NSLocalizedString("_grid_view_", comment: "")
+//                }
 
                 header.delegate = self
 
@@ -1473,18 +1475,18 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                     header.setViewTransfer(isHidden: true)
                 }
 
-                if headerMenuButtonsView {
-                    header.setStatusButtonsView(enable: !dataSource.getMetadataSourceForAllSections().isEmpty)
-                    header.setButtonsView(height: NCGlobal.shared.heightButtonsView)
-                    header.setSortedTitle(layoutForView?.titleButtonHeader ?? "")
-                } else {
-                    header.setButtonsView(height: 0)
-                }
+//                if headerMenuButtonsView {
+//                    header.setStatusButtonsView(enable: !dataSource.getMetadataSourceForAllSections().isEmpty)
+//                    header.setButtonsView(height: NCGlobal.shared.heightButtonsView)
+//                    header.setSortedTitle(layoutForView?.titleButtonHeader ?? "")
+//                } else {
+//                    header.setButtonsView(height: 0)
+//                }
 
                 header.setRichWorkspaceHeight(heightHeaderRichWorkspace)
                 header.setRichWorkspaceText(richWorkspaceText)
 
-                header.setSectionHeight(heightHeaderSection)
+                header.setSectionHeight(20)
                 if heightHeaderSection == 0 {
                     header.labelSection.text = ""
                 } else {
@@ -1645,11 +1647,15 @@ extension NCCollectionViewCommon: EasyTipViewDelegate {
 }
 
 extension NCCollectionViewCommon: NCSelectableNavigationView {
+    var viewController: UIViewController {
+        self
+    }
+    
     func onListSelected() {
         if layoutForView?.layout == NCGlobal.shared.layoutGrid {
 
             // list layout
-            headerMenu?.buttonSwitch.accessibilityLabel = NSLocalizedString("_grid_view_", comment: "")
+//            headerMenu?.buttonSwitch.accessibilityLabel = NSLocalizedString("_grid_view_", comment: "")
             layoutForView?.layout = NCGlobal.shared.layoutList
             NCManageDatabase.shared.setLayoutForView(account: appDelegate.account, key: layoutKey, serverUrl: serverUrl, layout: layoutForView?.layout)
             self.groupByField = "name"
@@ -1662,10 +1668,10 @@ extension NCCollectionViewCommon: NCSelectableNavigationView {
             self.collectionView.setCollectionViewLayout(self.listLayout, animated: true) {_ in self.isTransitioning = false }
         }
     }
-    
+
     func onGridSelected() {
         if layoutForView?.layout == NCGlobal.shared.layoutList {
-            headerMenu?.buttonSwitch.accessibilityLabel = NSLocalizedString("_list_view_", comment: "")
+            //            headerMenu?.buttonSwitch.accessibilityLabel = NSLocalizedString("_list_view_", comment: "")
             layoutForView?.layout = NCGlobal.shared.layoutGrid
             NCManageDatabase.shared.setLayoutForView(account: appDelegate.account, key: layoutKey, serverUrl: serverUrl, layout: layoutForView?.layout)
             if isSearchingMode {

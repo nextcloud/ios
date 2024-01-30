@@ -146,18 +146,18 @@ extension NCTrash: UICollectionViewDataSource {
             guard let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionHeaderMenu", for: indexPath) as? NCSectionHeaderMenu
             else { return UICollectionReusableView() }
 
-            if layoutForView?.layout == NCGlobal.shared.layoutGrid {
-                header.setImageSwitchList()
-                header.buttonSwitch.accessibilityLabel = NSLocalizedString("_list_view_", comment: "")
-            } else {
-                header.setImageSwitchGrid()
-                header.buttonSwitch.accessibilityLabel = NSLocalizedString("_grid_view_", comment: "")
-            }
+//            if layoutForView?.layout == NCGlobal.shared.layoutGrid {
+//                header.setImageSwitchList()
+//                header.buttonSwitch.accessibilityLabel = NSLocalizedString("_list_view_", comment: "")
+//            } else {
+//                header.setImageSwitchGrid()
+//                header.buttonSwitch.accessibilityLabel = NSLocalizedString("_grid_view_", comment: "")
+//            }
 
             header.delegate = self
-            header.setStatusButtonsView(enable: !datasource.isEmpty)
-            header.setSortedTitle(layoutForView?.titleButtonHeader ?? "")
-            header.setButtonsView(height: NCGlobal.shared.heightButtonsView)
+//            header.setStatusButtonsView(enable: !datasource.isEmpty)
+//            header.setSortedTitle(layoutForView?.titleButtonHeader ?? "")
+//            header.setButtonsView(height: NCGlobal.shared.heightButtonsView)
             header.setRichWorkspaceHeight(0)
             header.setSectionHeight(0)
             header.setViewTransfer(isHidden: true)
