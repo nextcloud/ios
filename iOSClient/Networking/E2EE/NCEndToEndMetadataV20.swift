@@ -94,18 +94,6 @@ extension NCEndToEndMetadata {
         let version: String
     }
 
-    struct E2eeV20SignatureWithoutUsers: Codable {
-
-        struct Metadata: Codable {
-            let ciphertext: String
-            let nonce: String
-            let authenticationTag: String
-        }
-
-        let metadata: Metadata
-        let version: String
-    }
-
     // --------------------------------------------------------------------------------------------
     // MARK: Ecode JSON Metadata V2.0
     // --------------------------------------------------------------------------------------------
