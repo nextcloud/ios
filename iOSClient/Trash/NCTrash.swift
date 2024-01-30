@@ -27,7 +27,7 @@ import Realm
 import UIKit
 import NextcloudKit
 
-class NCTrash: UIViewController, NCTrashListCellDelegate, NCSectionHeaderMenuDelegate, NCEmptyDataSetDelegate, NCGridCellDelegate {
+class NCTrash: UIViewController, NCTrashListCellDelegate, NCEmptyDataSetDelegate, NCGridCellDelegate {
 
     @IBOutlet weak var collectionView: UICollectionView!
 
@@ -64,8 +64,7 @@ class NCTrash: UIViewController, NCTrashListCellDelegate, NCSectionHeaderMenuDel
         collectionView.register(UINib(nibName: "NCTrashListCell", bundle: nil), forCellWithReuseIdentifier: "listCell")
         collectionView.register(UINib(nibName: "NCGridCell", bundle: nil), forCellWithReuseIdentifier: "gridCell")
 
-        // Header - Footer
-        collectionView.register(UINib(nibName: "NCSectionHeaderMenu", bundle: nil), forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: "sectionHeaderMenu")
+        // Footer
         collectionView.register(UINib(nibName: "NCSectionFooter", bundle: nil), forSupplementaryViewOfKind: UICollectionView.elementKindSectionFooter, withReuseIdentifier: "sectionFooter")
 
         collectionView.alwaysBounceVertical = true
@@ -128,39 +127,6 @@ class NCTrash: UIViewController, NCTrashListCellDelegate, NCSectionHeaderMenuDel
 
     // MARK: TAP EVENT
 
-    func tapButtonSwitch(_ sender: Any) {
-
-        if collectionView.collectionViewLayout == gridLayout {
-
-            // list layout
-            layoutForView?.layout = NCGlobal.shared.layoutList
-            NCManageDatabase.shared.setLayoutForView(account: appDelegate.account, key: layoutKey, serverUrl: "", layout: layoutForView?.layout)
-
-            self.collectionView.reloadData()
-            self.collectionView.collectionViewLayout.invalidateLayout()
-            self.collectionView.setCollectionViewLayout(self.listLayout, animated: true)
-
-        } else {
-
-            // grid layout
-            layoutForView?.layout = NCGlobal.shared.layoutGrid
-            NCManageDatabase.shared.setLayoutForView(account: appDelegate.account, key: layoutKey, serverUrl: "", layout: layoutForView?.layout)
-
-            self.collectionView.reloadData()
-            self.collectionView.collectionViewLayout.invalidateLayout()
-            self.collectionView.setCollectionViewLayout(self.gridLayout, animated: true)
-        }
-    }
-
-    func tapButtonOrder(_ sender: Any) {
-        let sortMenu = NCSortMenu()
-        sortMenu.toggleMenu(viewController: self, account: appDelegate.account, key: layoutKey, sortButton: sender as? UIButton, serverUrl: "", hideDirectoryOnTop: true)
-    }
-
-    func tapButtonMore(_ sender: Any) {
-        toggleMenuMoreHeader()
-    }
-
     func tapRestoreListItem(with ocId: String, image: UIImage?, sender: Any) {
 
         if !isEditMode {
@@ -194,39 +160,6 @@ class NCTrash: UIViewController, NCTrashListCellDelegate, NCSectionHeaderMenuDel
         }
     }
 
-    func tapButton1(_ sender: Any) {
-
-        if isEditMode {
-            if selectOcId.isEmpty { return }
-            self.selectOcId.forEach(self.restoreItem)
-            self.toggleSelect()
-        } else {
-            if datasource.isEmpty { return }
-            datasource.forEach({ self.restoreItem(with: $0.fileId) })
-        }
-    }
-
-    func tapButton2(_ sender: Any) {
-
-        if isEditMode {
-            if selectOcId.isEmpty { return }
-            let alert = UIAlertController(title: NSLocalizedString("_trash_delete_selected_", comment: ""), message: "", preferredStyle: .alert)
-            alert.addAction(UIAlertAction(title: NSLocalizedString("_delete_", comment: ""), style: .destructive, handler: { _ in
-                self.selectOcId.forEach(self.deleteItem)
-                self.toggleSelect()
-            }))
-            alert.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel, handler: { _ in }))
-            self.present(alert, animated: true, completion: nil)
-        } else {
-            if datasource.isEmpty { return }
-            let alert = UIAlertController(title: NSLocalizedString("_trash_delete_all_description_", comment: ""), message: "", preferredStyle: .alert)
-            alert.addAction(UIAlertAction(title: NSLocalizedString("_trash_delete_all_", comment: ""), style: .destructive, handler: { _ in
-                self.emptyTrash()
-            }))
-            alert.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel))
-            self.present(alert, animated: true, completion: nil)
-        }
-    }
 
     func longPressGridItem(with objectId: String, gestureRecognizer: UILongPressGestureRecognizer) { }
 
