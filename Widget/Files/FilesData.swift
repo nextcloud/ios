@@ -213,6 +213,7 @@ func getFilesDataEntry(configuration: AccountIntent?, isPreview: Bool, displaySi
             var datas: [FilesData] = []
             var imageRecent = UIImage(named: "file")!
             let title = getTitleFilesWidget(account: account)
+            let files = files.sorted(by: { ($0.date as Date) > ($1.date as Date) })
 
             for file in files {
 
