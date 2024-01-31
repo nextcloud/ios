@@ -98,7 +98,7 @@ extension NCViewer {
         // OPEN IN
         //
         if !webView, metadata.canOpenIn {
-            actions.append(.openInAction(selectedMetadatas: [metadata], viewController: viewController))
+            actions.append(.share(selectedMetadatas: [metadata], viewController: viewController))
         }
 
         //
@@ -212,13 +212,6 @@ extension NCViewer {
         //
         if !webView, metadata.isCopyableMovable {
             actions.append(.moveOrCopyAction(selectedMetadatas: [metadata], indexPath: []))
-        }
-
-        //
-        // COPY IN PASTEBOARD
-        //
-        if !webView, metadata.isCopyableInPasteboard {
-            actions.append(.copyAction(selectOcId: [metadata.ocId]))
         }
 
         //

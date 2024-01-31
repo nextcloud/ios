@@ -144,7 +144,7 @@ extension NCSelectableNavigationView where Self: UIViewController {
             } // else: file is not offline, continue
         }
 
-        actions.append(.openInAction(selectedMetadatas: selectedMetadatas, viewController: self, completion: tapSelect))
+        actions.append(.share(selectedMetadatas: selectedMetadatas, viewController: self, completion: tapSelect))
 
         if !isAnyFolder, canUnlock, !NCGlobal.shared.capabilityFilesLockVersion.isEmpty {
             actions.append(.lockUnlockFiles(shouldLock: !isAnyLocked, metadatas: selectedMetadatas, completion: tapSelect))
@@ -159,7 +159,6 @@ extension NCSelectableNavigationView where Self: UIViewController {
         }))
 
         actions.append(.moveOrCopyAction(selectedMetadatas: selectedMetadatas, indexPath: selectIndexPath, completion: tapSelect))
-        actions.append(.copyAction(selectOcId: selectOcId, completion: tapSelect))
         actions.append(.deleteAction(selectedMetadatas: selectedMetadatas, indexPath: selectIndexPath, viewController: self, completion: tapSelect))
         return actions
     }

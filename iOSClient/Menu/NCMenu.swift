@@ -103,7 +103,16 @@ class NCMenu: UITableViewController {
         } else {
             actionIconView?.image = action.icon
             actionNameLabel?.text = action.title
+            if action.boldTitle {
+                actionNameLabel?.font = .systemFont(ofSize: 18, weight: .medium)
+            }
             actionNameLabel?.textColor = textColor
+        }
+
+        if action.destructive {
+            actionIconView?.image = actionIconView?.image?.withRenderingMode(.alwaysTemplate)
+            actionIconView?.tintColor = .red
+            actionNameLabel?.textColor = .red
         }
 
         cell.accessoryType = action.selectable && action.selected ? .checkmark : .none

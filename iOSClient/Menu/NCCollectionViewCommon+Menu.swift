@@ -65,11 +65,14 @@ extension NCCollectionViewCommon {
         actions.append(
             NCMenuAction(
                 title: metadata.fileNameView,
+                boldTitle: true,
                 icon: iconHeader,
                 order: 0,
                 action: nil
             )
         )
+
+        actions.append(.seperator(order: 1))
 
         //
         // DETAILS
@@ -190,8 +193,6 @@ extension NCCollectionViewCommon {
             )
         }
 
-        actions.append(.seperator(order: 40))
-
         //
         // FAVORITE
         // FIXME: PROPPATCH doesn't work
@@ -259,7 +260,7 @@ extension NCCollectionViewCommon {
         // OPEN IN
         //
         if metadata.canOpenIn {
-            actions.append(.openInAction(selectedMetadatas: [metadata], viewController: self, order: 80))
+            actions.append(.share(selectedMetadatas: [metadata], viewController: self, order: 80))
         }
 
         //
@@ -283,7 +284,7 @@ extension NCCollectionViewCommon {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_save_as_scan_", comment: ""),
-                    icon: utility.loadImage(named: "viewfinder.circle"),
+                    icon: utility.loadImage(named: "doc.viewfinder.fill"),
                     order: 110,
                     action: { _ in
                         if self.utilityFileSystem.fileProviderStorageExists(metadata) {
@@ -337,13 +338,6 @@ extension NCCollectionViewCommon {
         }
 
         //
-        // COPY IN PASTEBOARD
-        //
-        if metadata.isCopyableInPasteboard {
-            actions.append(.copyAction(selectOcId: [metadata.ocId], order: 140))
-        }
-
-        //
         // MODIFY WITH QUICK LOOK
         //
         if metadata.isModifiableWithQuickLook {
@@ -377,7 +371,7 @@ extension NCCollectionViewCommon {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_change_color_", comment: ""),
-                    icon: utility.loadImage(named: "palette"),
+                    icon: utility.loadImage(named: "paintpalette"),
                     order: 160,
                     action: { _ in
                         if let picker = UIStoryboard(name: "NCColorPicker", bundle: nil).instantiateInitialViewController() as? NCColorPicker {

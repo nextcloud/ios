@@ -537,6 +537,7 @@
 "_offline_folder_confirm_"      = "After enabling the offline folder, all files in it will be synchronized with the server, continue?";
 "_file_not_found_reload_"       = "File not found, pull down to refresh";
 "_title_section_download_"      = "DOWNLOAD";
+"_download_"                    = "Download";
 "_title_section_upload_"        = "UPLOAD";
 "_group_alphabetic_yes_"        = "✓ Group alphabetically";
 "_group_alphabetic_no_"         = "Group alphabetically";
@@ -755,7 +756,7 @@
 "_trash_delete_selected_"           = "Delete selected files";
 "_manage_file_offline_"             = "Manage offline files";
 "_set_available_offline_"           = "Set as available offline";
-"_remove_available_offline_"        = "Remove as available offline";
+"_remove_available_offline_"        = "Remove locally";
 "_create_new_document_"             = "Create new document";
 "_create_new_spreadsheet_"          = "Create new spreadsheet";
 "_create_new_presentation_"         = "Create new presentation";
