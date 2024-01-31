@@ -38,7 +38,7 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
     let utilityFileSystem = NCUtilityFileSystem()
     let utility = NCUtility()
 
-    var metadatas: [tableMetadata]?
+    var metadatas: ThreadSafeArray<tableMetadata>?
     var isEditMode = false
     var selectOcId: [String] = []
 
@@ -152,7 +152,10 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
               let ocIds = userInfo["ocId"] as? [String],
               let error = userInfo["error"] as? NKError else { return }
 
-        self.reloadDataSource()
+        if !ocIds.isEmpty {
+            self.metadatas = self.metadatas?.filter({ !ocIds.contains($0.ocId )})
+            collectionView.reloadData()
+        }
 
         if error != .success {
             NCContentPresenter().showError(error: error)
@@ -222,10 +225,12 @@ extension NCMedia: UICollectionViewDelegate {
                 if indexPath.section < collectionView.numberOfSections && indexPath.row < collectionView.numberOfItems(inSection: indexPath.section) {
                     collectionView.reloadItems(at: [indexPath])
                 }
-            } else if let metadatas = self.metadatas {
+            } else {
                 // ACTIVE SERVERURL
                 appDelegate.activeServerUrl = metadata.serverUrl
-                NCViewer().view(viewController: self, metadata: metadata, metadatas: metadatas, imageIcon: getImage(metadata: metadata))
+                if let metadatas = self.metadatas?.getArray() {
+                    NCViewer().view(viewController: self, metadata: metadata, metadatas: metadatas, imageIcon: getImage(metadata: metadata))
+                }
             }
         }
     }
@@ -273,7 +278,7 @@ extension NCMedia: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
         guard let metadatas else { return }
         if !collectionView.indexPathsForVisibleItems.contains(indexPath) && indexPath.row < metadatas.count {
-            let metadata = metadatas[indexPath.row]
+            guard let metadata = metadatas[indexPath.row] else { return }
             for case let operation as NCMediaDownloadThumbnaill in NCNetworking.shared.downloadThumbnailQueue.operations where operation.metadata.ocId == metadata.ocId {
                 operation.cancel()
             }
@@ -286,9 +291,8 @@ extension NCMedia: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
 
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "gridCell", for: indexPath) as? NCGridMediaCell,
-              let metadatas = self.metadatas else { return UICollectionViewCell() }
-
-        let metadata = metadatas[indexPath.row]
+              let metadatas = self.metadatas,
+              let metadata = metadatas[indexPath.row] else { return UICollectionViewCell() }
 
         self.cellHeigth = cell.frame.size.height
 

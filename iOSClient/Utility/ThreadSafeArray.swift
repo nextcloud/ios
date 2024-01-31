@@ -187,6 +187,15 @@ public extension ThreadSafeArray {
         queue.sync { result = self.array.allSatisfy(predicate) }
         return result
     }
+
+    /// Returns the array
+    ///
+    /// - Returns: the array part.
+    func getArray() -> [Element]? {
+        var results: [Element]?
+        queue.sync { results = self.array }
+        return results
+    }
 }
 
 // MARK: - Mutable
