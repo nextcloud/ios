@@ -218,7 +218,7 @@ extension NCCollectionViewCommon {
         // OFFLINE
         //
         if metadata.isSettableOnOffline {
-            actions.append(.setAvailableOfflineAction(selectedMetadatas: [metadata], isAnyOffline: isOffline, viewController: self, order: 60, completion: {
+            actions.append(.setDownloadAction(selectedMetadatas: [metadata], isAnyOffline: isOffline, viewController: self, order: 60, completion: {
                 self.reloadDataSource()
             }))
         }
@@ -261,20 +261,6 @@ extension NCCollectionViewCommon {
         //
         if metadata.canOpenIn {
             actions.append(.share(selectedMetadatas: [metadata], viewController: self, order: 80))
-        }
-
-        //
-        // PRINT
-        //
-        if metadata.isPrintable {
-            actions.append(.printAction(metadata: metadata, order: 90))
-        }
-
-        //
-        // SAVE CAMERA ROLL
-        //
-        if metadata.isSavebleInCameraRoll {
-            actions.append(.saveMediaAction(selectedMediaMetadatas: [metadata], order: 100))
         }
 
         //

@@ -91,7 +91,7 @@ extension NCViewer {
         // OFFLINE
         //
         if !webView, metadata.isSettableOnOffline {
-            actions.append(.setAvailableOfflineAction(selectedMetadatas: [metadata], isAnyOffline: isOffline, viewController: viewController))
+            actions.append(.setDownloadAction(selectedMetadatas: [metadata], isAnyOffline: isOffline, viewController: viewController))
         }
 
         //
@@ -148,13 +148,6 @@ extension NCViewer {
         }
 #endif
         */
-        //
-        // SAVE CAMERA ROLL
-        //
-        if !webView, metadata.isSavebleInCameraRoll {
-            actions.append(.saveMediaAction(selectedMediaMetadatas: [metadata]))
-        }
-
         //
         // SAVE AS SCAN
         //

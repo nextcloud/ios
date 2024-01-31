@@ -150,10 +150,7 @@ extension NCSelectableNavigationView where Self: UIViewController {
             actions.append(.lockUnlockFiles(shouldLock: !isAnyLocked, metadatas: selectedMetadatas, completion: tapSelect))
         }
 
-        if !selectedMediaMetadatas.isEmpty {
-            actions.append(.saveMediaAction(selectedMediaMetadatas: selectedMediaMetadatas, completion: tapSelect))
-        }
-        actions.append(.setAvailableOfflineAction(selectedMetadatas: selectedMetadatas, isAnyOffline: isAnyOffline, viewController: self, completion: {
+        actions.append(.setDownloadAction(selectedMetadatas: selectedMetadatas, isAnyOffline: isAnyOffline, viewController: self, completion: {
             self.reloadDataSource(withQueryDB: true)
             self.tapSelect()
         }))
