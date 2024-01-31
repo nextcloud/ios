@@ -1,5 +1,5 @@
 //
-//  SynchronizedArray.swift
+//  ThreadSafeArray.swift
 //  Nextcloud
 //
 //  Created by Marino Faggiana on 31/01/24.
@@ -10,9 +10,10 @@
 import Foundation
 
 /// A thread-safe array.
-public class SynchronizedArray<Element> {
-    private let queue = DispatchQueue(label: "com.nextcloud.synchronizedarray", attributes: .concurrent)
+public class ThreadSafeArray<Element> {
+
     private var array = [Element]()
+    private let queue = DispatchQueue(label: "com.nextcloud.ThreadSafeArray", attributes: .concurrent)
 
     public init() { }
 
@@ -24,7 +25,7 @@ public class SynchronizedArray<Element> {
 
 // MARK: - Properties
 
-public extension SynchronizedArray {
+public extension ThreadSafeArray {
 
     /// The first element of the collection.
     var first: Element? {
@@ -64,7 +65,7 @@ public extension SynchronizedArray {
 
 // MARK: - Immutable
 
-public extension SynchronizedArray {
+public extension ThreadSafeArray {
 
     /// Returns the first element of the sequence that satisfies the given predicate.
     ///
@@ -90,9 +91,9 @@ public extension SynchronizedArray {
     ///
     /// - Parameter isIncluded: A closure that takes an element of the sequence as its argument and returns a Boolean value indicating whether the element should be included in the returned array.
     /// - Returns: An array of the elements that includeElement allowed.
-    func filter(_ isIncluded: @escaping (Element) -> Bool) -> SynchronizedArray {
-        var result: SynchronizedArray?
-        queue.sync { result = SynchronizedArray(self.array.filter(isIncluded)) }
+    func filter(_ isIncluded: @escaping (Element) -> Bool) -> ThreadSafeArray {
+        var result: ThreadSafeArray?
+        queue.sync { result = ThreadSafeArray(self.array.filter(isIncluded)) }
         return result!
     }
 
@@ -110,9 +111,9 @@ public extension SynchronizedArray {
     ///
     /// - Parameter areInIncreasingOrder: A predicate that returns true if its first argument should be ordered before its second argument; otherwise, false.
     /// - Returns: A sorted array of the collection’s elements.
-    func sorted(by areInIncreasingOrder: (Element, Element) -> Bool) -> SynchronizedArray {
-        var result: SynchronizedArray?
-        queue.sync { result = SynchronizedArray(self.array.sorted(by: areInIncreasingOrder)) }
+    func sorted(by areInIncreasingOrder: (Element, Element) -> Bool) -> ThreadSafeArray {
+        var result: ThreadSafeArray?
+        queue.sync { result = ThreadSafeArray(self.array.sorted(by: areInIncreasingOrder)) }
         return result!
     }
 
@@ -154,7 +155,7 @@ public extension SynchronizedArray {
     ///   - initialResult: The value to use as the initial accumulating value.
     ///   - updateAccumulatingResult: A closure that updates the accumulating value with an element of the sequence.
     /// - Returns: The final accumulated value. If the sequence has no elements, the result is initialResult.
-    func reduce<ElementOfResult>(into initialResult: ElementOfResult, _ updateAccumulatingResult: @escaping (inout ElementOfResult, Element) -> ()) -> ElementOfResult {
+    func reduce<ElementOfResult>(into initialResult: ElementOfResult, _ updateAccumulatingResult: @escaping (inout ElementOfResult, Element) -> Void) -> ElementOfResult {
         var result: ElementOfResult?
         queue.sync { result = self.array.reduce(into: initialResult, updateAccumulatingResult) }
         return result ?? initialResult
@@ -190,7 +191,7 @@ public extension SynchronizedArray {
 
 // MARK: - Mutable
 
-public extension SynchronizedArray {
+public extension ThreadSafeArray {
 
     /// Adds a new element at the end of the array.
     ///
@@ -262,7 +263,7 @@ public extension SynchronizedArray {
     }
 }
 
-public extension SynchronizedArray {
+public extension ThreadSafeArray {
 
     /// Accesses the element at the specified position if it exists.
     ///
@@ -291,7 +292,7 @@ public extension SynchronizedArray {
 
 // MARK: - Equatable
 
-public extension SynchronizedArray where Element: Equatable {
+public extension ThreadSafeArray where Element: Equatable {
 
     /// Returns a Boolean value indicating whether the sequence contains the given element.
     ///
@@ -306,14 +307,14 @@ public extension SynchronizedArray where Element: Equatable {
 
 // MARK: - Infix operators
 
-public extension SynchronizedArray {
+public extension ThreadSafeArray {
 
     /// Adds a new element at the end of the array.
     ///
     /// - Parameters:
     ///   - left: The collection to append to.
     ///   - right: The element to append to the array.
-    static func +=(left: inout SynchronizedArray, right: Element) {
+    static func += (left: inout ThreadSafeArray, right: Element) {
         left.append(right)
     }
 
@@ -322,7 +323,7 @@ public extension SynchronizedArray {
     /// - Parameters:
     ///   - left: The collection to append to.
     ///   - right: The elements to append to the array.
-    static func +=(left: inout SynchronizedArray, right: [Element]) {
+    static func += (left: inout ThreadSafeArray, right: [Element]) {
         left.append(right)
     }
 }

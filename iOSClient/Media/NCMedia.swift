@@ -149,6 +149,7 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
     @objc func deleteFile(_ notification: NSNotification) {
 
         guard let userInfo = notification.userInfo as NSDictionary?,
+              let ocIds = userInfo["ocId"] as? [String],
               let error = userInfo["error"] as? NKError else { return }
 
         self.reloadDataSource()
