@@ -107,7 +107,6 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
         navigationController?.setMediaAppreance()
 
         NotificationCenter.default.addObserver(self, selector: #selector(deleteFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDeleteFile), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(uploadedFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUploadedFile), object: nil)
 
         timerSearchNewMedia?.invalidate()
         timerSearchNewMedia = Timer.scheduledTimer(timeInterval: timeIntervalSearchNewMedia, target: self, selector: #selector(searchMediaUI), userInfo: nil, repeats: false)
@@ -130,7 +129,6 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
         super.viewWillDisappear(animated)
 
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDeleteFile), object: nil)
-        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUploadedFile), object: nil)
     }
 
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
@@ -153,25 +151,25 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
               let error = userInfo["error"] as? NKError else { return }
 
         if !ocIds.isEmpty {
+            var items: [IndexPath] = []
             self.metadatas = self.metadatas?.filter({ !ocIds.contains($0.ocId )})
-            collectionView.reloadData()
+            if let visibleCells = self.collectionView?.indexPathsForVisibleItems.sorted(by: { $0.row < $1.row }).compactMap({ self.collectionView?.cellForItem(at: $0) }) {
+                for case let cell as NCGridMediaCell in visibleCells {
+                    if let ocId = cell.fileObjectId, ocIds.contains(ocId) {
+                        items.append(cell.indexPath)
+                    }
+                }
+                collectionView?.performBatchUpdates({
+                    collectionView?.deleteItems(at: items)
+                }, completion: { _ in
+                    self.collectionView?.reloadData()
+                })
+            }
         }
 
         if error != .success {
             NCContentPresenter().showError(error: error)
         }
-    }
-
-    @objc func uploadedFile(_ notification: NSNotification) {
-
-        guard let userInfo = notification.userInfo as NSDictionary?,
-              let error = userInfo["error"] as? NKError,
-              error == .success,
-              let account = userInfo["account"] as? String,
-              account == appDelegate.account
-        else { return }
-
-        self.reloadDataSource()
     }
 
     // MARK: - Empty
