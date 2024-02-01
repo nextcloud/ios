@@ -114,8 +114,8 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
 
         if let metadatas = NCImageCache.shared.initialMetadatas() {
             self.metadatas = metadatas
-            self.mediaCommandView?.setMoreButton()
         }
+
         collectionView.reloadData()
     }
 
@@ -154,17 +154,21 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
         if !ocIds.isEmpty {
             var items: [IndexPath] = []
             self.metadatas = self.metadatas?.filter({ !ocIds.contains($0.ocId )})
-            if let visibleCells = self.collectionView?.indexPathsForVisibleItems.sorted(by: { $0.row < $1.row }).compactMap({ self.collectionView?.cellForItem(at: $0) }) {
-                for case let cell as NCGridMediaCell in visibleCells {
-                    if let ocId = cell.fileObjectId, ocIds.contains(ocId) {
-                        items.append(cell.indexPath)
+            if self.metadatas?.count ?? 0 > 0 {
+                if let visibleCells = self.collectionView?.indexPathsForVisibleItems.sorted(by: { $0.row < $1.row }).compactMap({ self.collectionView?.cellForItem(at: $0) }) {
+                    for case let cell as NCGridMediaCell in visibleCells {
+                        if let ocId = cell.fileObjectId, ocIds.contains(ocId) {
+                            items.append(cell.indexPath)
+                        }
                     }
+                    collectionView?.performBatchUpdates({
+                        collectionView?.deleteItems(at: items)
+                    }, completion: { _ in
+                        self.collectionView?.reloadData()
+                    })
                 }
-                collectionView?.performBatchUpdates({
-                    collectionView?.deleteItems(at: items)
-                }, completion: { _ in
-                    self.collectionView?.reloadData()
-                })
+            } else {
+                reloadDataSource()
             }
         }
 
@@ -248,6 +252,7 @@ extension NCMedia: UICollectionViewDelegate {
     }
 
     func collectionView(_ collectionView: UICollectionView, willPerformPreviewActionForMenuWith configuration: UIContextMenuConfiguration, animator: UIContextMenuInteractionCommitAnimating) {
+
         animator.addCompletion {
             if let indexPath = configuration.identifier as? IndexPath {
                 self.collectionView(collectionView, didSelectItemAt: indexPath)
@@ -257,6 +262,7 @@ extension NCMedia: UICollectionViewDelegate {
 }
 
 extension NCMedia: UICollectionViewDataSourcePrefetching {
+
     func collectionView(_ collectionView: UICollectionView, prefetchItemsAt indexPaths: [IndexPath]) {
         // print("[LOG] n. " + String(indexPaths.count))
     }
@@ -265,16 +271,23 @@ extension NCMedia: UICollectionViewDataSourcePrefetching {
 extension NCMedia: UICollectionViewDataSource {
 
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+
         var numberOfItemsInSection = 0
+
         if let metadatas {
             numberOfItemsInSection = metadatas.count
         }
+
+        mediaCommandView?.setButtonsHidden(numberOfItemsInSection: numberOfItemsInSection)
         emptyDataSet?.numberOfItemsInSection(numberOfItemsInSection, section: section)
+
         return numberOfItemsInSection
     }
 
     func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
+
         guard let metadatas else { return }
+
         if !collectionView.indexPathsForVisibleItems.contains(indexPath) && indexPath.row < metadatas.count {
             guard let metadata = metadatas[indexPath.row] else { return }
             for case let operation as NCMediaDownloadThumbnaill in NCNetworking.shared.downloadThumbnailQueue.operations where operation.metadata.ocId == metadata.ocId {
@@ -338,6 +351,15 @@ extension NCMedia: UICollectionViewDataSource {
 extension NCMedia: UIScrollViewDelegate {
 
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
+
+        if scrollView.contentOffset.y <= -(insetsTop + view.safeAreaInsets.top - 35) {
+            self.mediaCommandView?.title.textColor = .black
+            self.mediaCommandView?.gradient.isHidden = true
+        } else {
+            self.mediaCommandView?.title.textColor = .white
+            self.mediaCommandView?.gradient.isHidden = false
+        }
+
         if lastContentOffsetY == 0 || lastContentOffsetY + cellHeigth / 2 <= scrollView.contentOffset.y || lastContentOffsetY - cellHeigth / 2 >= scrollView.contentOffset.y {
             mediaCommandView?.setTitleDate()
             lastContentOffsetY = scrollView.contentOffset.y

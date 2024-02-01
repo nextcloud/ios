@@ -20,7 +20,7 @@
                         <constraint firstAttribute="height" constant="40" id="S6o-Pa-sxy"/>
                     </constraints>
                     <fontDescription key="fontDescription" type="boldSystem" pointSize="20"/>
-                    <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    <nil key="textColor"/>
                     <nil key="highlightedColor"/>
                 </label>
                 <activityIndicatorView hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" style="white" translatesAutoresizingMaskIntoConstraints="NO" id="XVj-jD-9KA">
@@ -65,7 +65,7 @@
             </constraints>
             <connections>
                 <outlet property="activityIndicator" destination="XVj-jD-9KA" id="cSB-RJ-RCZ"/>
-                <outlet property="moreButton" destination="3qs-Hm-qLL" id="OPi-J6-wkl"/>
+                <outlet property="menuButton" destination="3qs-Hm-qLL" id="7uo-w1-pml"/>
                 <outlet property="selectButton" destination="EFV-eb-pFF" id="AJu-vY-GS3"/>
                 <outlet property="title" destination="IxY-xH-yZQ" id="ZNZ-Jy-JbH"/>
             </connections>

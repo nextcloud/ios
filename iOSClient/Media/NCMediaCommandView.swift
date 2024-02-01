@@ -27,9 +27,9 @@ import NextcloudKit
 class NCMediaCommandView: UIView {
 
     @IBOutlet weak var title: UILabel!
-    @IBOutlet weak var selectButton: UIButton!
     @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
-    @IBOutlet weak var moreButton: UIButton!
+    @IBOutlet weak var selectButton: UIButton!
+    @IBOutlet weak var menuButton: UIButton!
 
     var mediaView: NCMedia!
     var tabBarController: UITabBarController?
@@ -48,7 +48,14 @@ class NCMediaCommandView: UIView {
         selectButton.layer.masksToBounds = true
         selectButton.setTitle( NSLocalizedString("_select_", comment: ""), for: .normal)
 
-        moreButton.changesSelectionAsPrimaryAction = false
+        menuButton.backgroundColor = .systemGray4.withAlphaComponent(0.6)
+        menuButton.layer.cornerRadius = 15
+        menuButton.layer.masksToBounds = true
+        menuButton.showsMenuAsPrimaryAction = true
+        menuButton.configuration = UIButton.Configuration.plain()
+        let image = UIImage(systemName: "ellipsis")
+        menuButton.setImage(image, for: .normal)
+        menuButton.changesSelectionAsPrimaryAction = false
 
         gradient.frame = bounds
         gradient.startPoint = CGPoint(x: 0, y: 0.5)
@@ -65,66 +72,8 @@ class NCMediaCommandView: UIView {
     @IBAction func selectButtonPressed(_ sender: UIButton) {
 
         mediaView.isEditMode = true
-
-        selectButton.isHidden = true
-        moreButton.isHidden = true
-
+        mediaView.collectionView.reloadData()
         tabBarSelect = NCMediaTabbarSelect(tabBarController: tabBarController, height: 80, delegate: self)
-    }
-
-    /*
-    @IBAction func trashButtonPressed(_ sender: UIButton) {
-
-        if !mediaView.selectOcId.isEmpty {
-            let selectOcId = mediaView.selectOcId
-            var title = NSLocalizedString("_delete_", comment: "")
-            if selectOcId.count > 1 {
-                title = NSLocalizedString("_delete_selected_files_", comment: "")
-            }
-            let alertController = UIAlertController(
-                title: title,
-                message: "",
-                preferredStyle: .alert)
-            alertController.addAction(UIAlertAction(title: NSLocalizedString("_yes_delete_", comment: ""), style: .default) { (_: UIAlertAction) in
-
-                self.setMoreButton()
-
-                Task {
-                    var error = NKError()
-                    var ocIds: [String] = []
-                    for ocId in selectOcId where error == .success {
-                        if let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
-                            error = await NCNetworking.shared.deleteMetadata(metadata, onlyLocalCache: false)
-                            if error == .success {
-                                ocIds.append(metadata.ocId)
-                            }
-                        }
-                    }
-                    NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDeleteFile, userInfo: ["ocId": ocIds, "onlyLocalCache": false, "error": error])
-                }
-            })
-            alertController.addAction(UIAlertAction(title: NSLocalizedString("_no_delete_", comment: ""), style: .default) { (_: UIAlertAction) in })
-
-            mediaView.present(alertController, animated: true, completion: { })
-        }
-    }
-    */
-
-    func setMoreButton() {
-
-        moreButton.backgroundColor = .systemGray4.withAlphaComponent(0.6)
-        moreButton.layer.cornerRadius = 15
-        moreButton.layer.masksToBounds = true
-        moreButton.showsMenuAsPrimaryAction = true
-        moreButton.configuration = UIButton.Configuration.plain()
-        let image = UIImage(systemName: "ellipsis")
-        moreButton.setImage(image, for: .normal)
-
-        mediaView.isEditMode = false
-        mediaView.selectOcId.removeAll()
-        mediaView.collectionView?.reloadData()
-
-        selectButton.setTitle( NSLocalizedString("_select_", comment: ""), for: .normal)
     }
 
     func createMenu() {
@@ -210,7 +159,7 @@ class NCMediaCommandView: UIView {
             self.mediaView.present(alert, animated: true)
         }
 
-        moreButton.menu = UIMenu(title: "", children: [topAction, playFile, playURL])
+        menuButton.menu = UIMenu(title: "", children: [topAction, playFile, playURL])
     }
 
     func setTitleDate() {
@@ -225,23 +174,20 @@ class NCMediaCommandView: UIView {
                     }
                 }
             }
-            /*
-            if let metadatas = self.mediaView.metadatas, !metadatas.isEmpty {
-                self.selectButton.isHidden = false
-                if self.gradient.isHidden {
-                    UIView.animate(withDuration: 0.3) {
-                        self.gradient.isHidden = false
-                    }
-                }
-            } else {
-                self.selectButton.isHidden = true
-                if !self.gradient.isHidden {
-                    UIView.animate(withDuration: 0.3) {
-                        self.gradient.isHidden = true
-                    }
-                }
-            }
-            */
+        }
+    }
+
+    func setButtonsHidden(numberOfItemsInSection: Int) {
+
+        if numberOfItemsInSection == 0 {
+            selectButton.isHidden = true
+            menuButton.isHidden = false
+        } else if mediaView.isEditMode {
+            selectButton.isHidden = true
+            menuButton.isHidden = true
+        } else {
+            selectButton.isHidden = false
+            menuButton.isHidden = false
         }
     }
 }
@@ -293,7 +239,7 @@ extension NCMediaCommandView: NCTabBarSelectDelegate {
         mediaView.collectionView.reloadData()
 
         selectButton.isHidden = false
-        moreButton.isHidden = false
+        menuButton.isHidden = false
 
         tabBarSelect.removeTabBar()
     }
