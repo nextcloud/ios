@@ -87,6 +87,7 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
         mediaCommandView = Bundle.main.loadNibNamed("NCMediaCommandView", owner: self, options: nil)?.first as? NCMediaCommandView
         self.view.addSubview(mediaCommandView!)
         mediaCommandView?.mediaView = self
+        mediaCommandView?.tabBarController = tabBarController
         mediaCommandView?.translatesAutoresizingMaskIntoConstraints = false
         mediaCommandView?.topAnchor.constraint(equalTo: view.topAnchor, constant: 0).isActive = true
         mediaCommandView?.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 0).isActive = true
@@ -220,9 +221,8 @@ extension NCMedia: UICollectionViewDelegate {
                 } else {
                     selectOcId.append(metadata.ocId)
                 }
-                if indexPath.section < collectionView.numberOfSections && indexPath.row < collectionView.numberOfItems(inSection: indexPath.section) {
-                    collectionView.reloadItems(at: [indexPath])
-                }
+                collectionView.reloadItems(at: [indexPath])
+                mediaCommandView?.tabBarSelect?.count = selectOcId.count
             } else {
                 // ACTIVE SERVERURL
                 appDelegate.activeServerUrl = metadata.serverUrl

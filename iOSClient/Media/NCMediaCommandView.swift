@@ -32,6 +32,8 @@ class NCMediaCommandView: UIView {
     @IBOutlet weak var moreButton: UIButton!
 
     var mediaView: NCMedia!
+    var tabBarController: UITabBarController?
+    var tabBarSelect: NCMediaTabbarSelect?
     var attributesZoomIn: UIMenuElement.Attributes = []
     var attributesZoomOut: UIMenuElement.Attributes = []
     let gradient: CAGradientLayer = CAGradientLayer()
@@ -66,6 +68,7 @@ class NCMediaCommandView: UIView {
         } else {
             setMoreButtonDelete()
         }
+        tabBarSelect = NCMediaTabbarSelect(tabBarController: tabBarController, delegate: self)
     }
 
     @IBAction func trashButtonPressed(_ sender: UIButton) {
@@ -248,5 +251,13 @@ class NCMediaCommandView: UIView {
                 }
             }
         }
+    }
+}
+
+// MARK: - NCTabBarSelectDelegate
+
+extension NCMediaCommandView: NCTabBarSelectDelegate {
+    func unselect(tabBarSelect: NCMediaTabbarSelect, animation: Bool) {
+        tabBarSelect.removeTabBar(animation: animation)
     }
 }
