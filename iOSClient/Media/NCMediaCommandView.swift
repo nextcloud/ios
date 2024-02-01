@@ -249,7 +249,44 @@ class NCMediaCommandView: UIView {
 // MARK: - NCTabBarSelectDelegate
 
 extension NCMediaCommandView: NCTabBarSelectDelegate {
-    func unselect(tabBarSelect: NCMediaTabbarSelect, animation: Bool) {
+
+    func delete(tabBarSelect: NCMediaTabbarSelect) {
+
+        if !mediaView.selectOcId.isEmpty {
+            let selectOcId = mediaView.selectOcId
+            var title = NSLocalizedString("_delete_", comment: "")
+            if selectOcId.count > 1 {
+                title = NSLocalizedString("_delete_selected_files_", comment: "")
+            }
+            let alertController = UIAlertController(
+                title: title,
+                message: "",
+                preferredStyle: .alert)
+            alertController.addAction(UIAlertAction(title: NSLocalizedString("_yes_delete_", comment: ""), style: .default) { (_: UIAlertAction) in
+
+                Task {
+                    var error = NKError()
+                    var ocIds: [String] = []
+                    for ocId in selectOcId where error == .success {
+                        if let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
+                            error = await NCNetworking.shared.deleteMetadata(metadata, onlyLocalCache: false)
+                            if error == .success {
+                                ocIds.append(metadata.ocId)
+                            }
+                        }
+                    }
+                    NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDeleteFile, userInfo: ["ocId": ocIds, "onlyLocalCache": false, "error": error])
+                }
+
+                self.unselect(tabBarSelect: tabBarSelect)
+            })
+            alertController.addAction(UIAlertAction(title: NSLocalizedString("_no_delete_", comment: ""), style: .default) { (_: UIAlertAction) in })
+
+            mediaView.present(alertController, animated: true, completion: { })
+        }
+    }
+
+    func unselect(tabBarSelect: NCMediaTabbarSelect) {
 
         mediaView.isEditMode = false
         mediaView.selectOcId.removeAll()
@@ -258,6 +295,6 @@ extension NCMediaCommandView: NCTabBarSelectDelegate {
         selectButton.isHidden = false
         moreButton.isHidden = false
 
-        tabBarSelect.removeTabBar(animation: animation)
+        tabBarSelect.removeTabBar()
     }
 }
