@@ -60,7 +60,7 @@ extension NCMedia {
         let firstMetadataDate = metadatas?.first?.date as? Date
         let lastMetadataDate = metadatas?.last?.date as? Date
 
-        guard loadingTask == nil else {
+        guard loadingTask == nil, !isEditMode else {
             return
         }
 
