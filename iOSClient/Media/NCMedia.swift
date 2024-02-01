@@ -122,7 +122,7 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
-        mediaCommandView?.setMediaCommand()
+        mediaCommandView?.setTitleDate()
         mediaCommandView?.createMenu()
     }
 
@@ -136,7 +136,7 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
         super.viewWillTransition(to: size, with: coordinator)
 
         collectionView?.collectionViewLayout.invalidateLayout()
-        mediaCommandView?.setMediaCommand()
+        mediaCommandView?.setTitleDate()
     }
 
     override var preferredStatusBarStyle: UIStatusBarStyle {
@@ -339,7 +339,7 @@ extension NCMedia: UIScrollViewDelegate {
 
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         if lastContentOffsetY == 0 || lastContentOffsetY + cellHeigth / 2 <= scrollView.contentOffset.y || lastContentOffsetY - cellHeigth / 2 >= scrollView.contentOffset.y {
-            mediaCommandView?.setMediaCommand()
+            mediaCommandView?.setTitleDate()
             lastContentOffsetY = scrollView.contentOffset.y
         }
     }

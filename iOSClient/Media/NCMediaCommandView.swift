@@ -63,14 +63,16 @@ class NCMediaCommandView: UIView {
     }
 
     @IBAction func selectButtonPressed(_ sender: UIButton) {
-        if mediaView.isEditMode {
-            setMoreButton()
-        } else {
-            setMoreButtonDelete()
-        }
-        tabBarSelect = NCMediaTabbarSelect(tabBarController: tabBarController, delegate: self)
+
+        mediaView.isEditMode = true
+
+        selectButton.isHidden = true
+        moreButton.isHidden = true
+
+        tabBarSelect = NCMediaTabbarSelect(tabBarController: tabBarController, height: 80, delegate: self)
     }
 
+    /*
     @IBAction func trashButtonPressed(_ sender: UIButton) {
 
         if !mediaView.selectOcId.isEmpty {
@@ -106,6 +108,7 @@ class NCMediaCommandView: UIView {
             mediaView.present(alertController, animated: true, completion: { })
         }
     }
+    */
 
     func setMoreButton() {
 
@@ -122,19 +125,6 @@ class NCMediaCommandView: UIView {
         mediaView.collectionView?.reloadData()
 
         selectButton.setTitle( NSLocalizedString("_select_", comment: ""), for: .normal)
-    }
-
-    func setMoreButtonDelete() {
-
-        moreButton.backgroundColor = .clear
-        moreButton.showsMenuAsPrimaryAction = false
-        moreButton.configuration = UIButton.Configuration.plain()
-        let image = UIImage(systemName: "trash.circle", withConfiguration: UIImage.SymbolConfiguration(pointSize: 25))?.withTintColor(.red, renderingMode: .alwaysOriginal)
-        moreButton.setImage(image, for: .normal)
-
-        mediaView.isEditMode = true
-
-        selectButton.setTitle( NSLocalizedString("_cancel_", comment: ""), for: .normal)
     }
 
     func createMenu() {
@@ -223,7 +213,7 @@ class NCMediaCommandView: UIView {
         moreButton.menu = UIMenu(title: "", children: [topAction, playFile, playURL])
     }
 
-    func setMediaCommand() {
+    func setTitleDate() {
 
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
             self.title.text = ""
@@ -235,6 +225,7 @@ class NCMediaCommandView: UIView {
                     }
                 }
             }
+            /*
             if let metadatas = self.mediaView.metadatas, !metadatas.isEmpty {
                 self.selectButton.isHidden = false
                 if self.gradient.isHidden {
@@ -250,6 +241,7 @@ class NCMediaCommandView: UIView {
                     }
                 }
             }
+            */
         }
     }
 }
@@ -258,6 +250,14 @@ class NCMediaCommandView: UIView {
 
 extension NCMediaCommandView: NCTabBarSelectDelegate {
     func unselect(tabBarSelect: NCMediaTabbarSelect, animation: Bool) {
+
+        mediaView.isEditMode = false
+        mediaView.selectOcId.removeAll()
+        mediaView.collectionView.reloadData()
+
+        selectButton.isHidden = false
+        moreButton.isHidden = false
+
         tabBarSelect.removeTabBar(animation: animation)
     }
 }
