@@ -226,7 +226,7 @@ extension NCMedia: UICollectionViewDelegate {
                     selectOcId.append(metadata.ocId)
                 }
                 collectionView.reloadItems(at: [indexPath])
-                mediaCommandView?.tabBarSelect?.count = selectOcId.count
+                mediaCommandView?.tabBarSelect?.selectCount = selectOcId.count
             } else {
                 // ACTIVE SERVERURL
                 appDelegate.activeServerUrl = metadata.serverUrl

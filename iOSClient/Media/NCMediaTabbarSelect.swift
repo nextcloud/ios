@@ -19,7 +19,7 @@ class NCMediaTabbarSelect: ObservableObject {
     var hostingController: UIViewController?
     open weak var delegate: NCTabBarSelectDelegate?
 
-    @Published var count: Int = 0
+    @Published var selectCount: Int = 0
 
     init(tabBarController: UITabBarController? = nil, height: CGFloat, delegate: NCTabBarSelectDelegate? = nil) {
 
@@ -62,11 +62,13 @@ struct MediaTabBarSelectView: View {
                 }
                 Button("delete") {
                     tabBarSelect.delegate?.delete(tabBarSelect: tabBarSelect)
-                }
-                Text("Counter" + String(self.tabBarSelect.count))
+                }.disabled(self.tabBarSelect.selectCount == 0)
+                Text("Counter" + String(self.tabBarSelect.selectCount))
                     .font(.system(size: 15))
                     .frame(maxWidth: .infinity, alignment: .trailing)
             }
+        }.onAppear {
+
         }
         .edgesIgnoringSafeArea(.all)
     }
