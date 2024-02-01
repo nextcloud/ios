@@ -20,11 +20,10 @@ class NCMediaTabbarSelect: ObservableObject {
 
     @Published var count: Int = 0
 
-    init(tabBarController: UITabBarController? = nil, delegate: NCTabBarSelectDelegate? = nil) {
+    init(tabBarController: UITabBarController? = nil, height: CGFloat, delegate: NCTabBarSelectDelegate? = nil) {
 
         guard let tabBarController else { return }
         let hostingController = UIHostingController(rootView: MediaTabBarSelectView(tabBarSelect: self))
-        let height: CGFloat = tabBarController.tabBar.frame.height
 
         self.tabBarController = tabBarController
         self.hostingController = hostingController
@@ -70,5 +69,5 @@ struct MediaTabBarSelectView: View {
 }
 
 #Preview {
-    MediaTabBarSelectView(tabBarSelect: NCMediaTabbarSelect())
+    MediaTabBarSelectView(tabBarSelect: NCMediaTabbarSelect(height: 80))
 }
