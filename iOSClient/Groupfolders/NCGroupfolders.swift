@@ -44,12 +44,16 @@ class NCGroupfolders: NCCollectionViewCommon {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
-        navigationController?.setFileAppreance()
+        if dataSource.metadatas.isEmpty {
+            reloadDataSource()
+        }
+        reloadDataSourceNetwork()
     }
 
     // MARK: - DataSource + NC Endpoint
 
-    override func queryDB(isForced: Bool) {
+    override func queryDB() {
+        super.queryDB()
 
         var metadatas: [tableMetadata] = []
 
@@ -71,24 +75,8 @@ class NCGroupfolders: NCCollectionViewCommon {
             searchResults: self.searchResults)
     }
 
-    override func reloadDataSource(isForced: Bool = true) {
-        super.reloadDataSource()
-
-        self.queryDB(isForced: isForced)
-        DispatchQueue.main.async {
-            self.isReloadDataSourceNetworkInProgress = false
-            self.refreshControl.endRefreshing()
-            self.collectionView.reloadData()
-        }
-    }
-
-    override func reloadDataSourceNetwork(isForced: Bool = false) {
-        super.reloadDataSourceNetwork(isForced: isForced)
-
-        NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Reload data source network groupfolders forced \(isForced)")
-
-        isReloadDataSourceNetworkInProgress = true
-        collectionView?.reloadData()
+    override func reloadDataSourceNetwork() {
+        super.reloadDataSourceNetwork()
 
         let homeServerUrl = utilityFileSystem.getHomeServer(urlBase: self.appDelegate.urlBase, userId: self.appDelegate.userId)
 
@@ -112,8 +100,8 @@ class NCGroupfolders: NCCollectionViewCommon {
                     }
                     self.reloadDataSource()
                 }
-            } else if error != .success {
-                self.reloadDataSource()
+            } else {
+                self.reloadDataSource(withQueryDB: false)
             }
         }
     }

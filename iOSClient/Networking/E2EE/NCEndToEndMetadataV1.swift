@@ -146,7 +146,7 @@ extension NCEndToEndMetadata {
                 var encryptedInitializationVector: NSString?
                 var encryptedTag: NSString?
 
-                if let metadataKeyFiledrop = (e2eEncryption.metadataKeyFiledrop.data(using: .utf8)?.base64EncodedString().data(using: .utf8)),
+                if let metadataKeyFiledrop = (e2eEncryption.metadataKey.data(using: .utf8)?.base64EncodedString().data(using: .utf8)),
                    let metadataKeyEncrypted = NCEndToEndEncryption.sharedManager().encryptAsymmetricData(metadataKeyFiledrop, privateKey: privateKey) {
                     encryptedKey = metadataKeyEncrypted.base64EncodedString()
                 }
@@ -155,7 +155,7 @@ extension NCEndToEndMetadata {
                     // Create "encrypted"
                     var json = try encoder.encode(encrypted)
                     json = json.base64EncodedString().data(using: .utf8)!
-                    if let encrypted = NCEndToEndEncryption.sharedManager().encryptPayloadFile(json, key: e2eEncryption.metadataKeyFiledrop, initializationVector: &encryptedInitializationVector, authenticationTag: &encryptedTag) {
+                    if let encrypted = NCEndToEndEncryption.sharedManager().encryptPayloadFile(json, key: e2eEncryption.metadataKey, initializationVector: &encryptedInitializationVector, authenticationTag: &encryptedTag) {
                         let record = E2eeV12.Filedrop(initializationVector: e2eEncryption.initializationVector, authenticationTag: e2eEncryption.authenticationTag, encrypted: encrypted, encryptedKey: encryptedKey, encryptedTag: encryptedTag as? String, encryptedInitializationVector: encryptedInitializationVector as? String)
                         filedrop.updateValue(record, forKey: e2eEncryption.fileNameIdentifier)
                     }
@@ -315,7 +315,6 @@ extension NCEndToEndMetadata {
                                 object.blob = "filedrop"
                                 object.fileName = encrypted.filename
                                 object.key = encrypted.key
-                                object.metadataKeyFiledrop = metadataKeyFiledrop ?? ""
                                 object.initializationVector = filedrop.initializationVector
                                 object.metadataKey = metadataKey
                                 object.metadataVersion = metadataVersion

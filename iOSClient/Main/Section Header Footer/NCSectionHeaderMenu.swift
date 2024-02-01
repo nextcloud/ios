@@ -320,9 +320,9 @@ class NCSectionFooter: UICollectionReusableView, NCSectionFooterDelegate {
         }
 
         if files > 1 {
-            filesText = "\(files) " + NSLocalizedString("_files_", comment: "") + " " + utilityFileSystem.transformedSize(size)
+            filesText = "\(files) " + NSLocalizedString("_files_", comment: "") + " • " + utilityFileSystem.transformedSize(size)
         } else if files == 1 {
-            filesText = "1 " + NSLocalizedString("_file_", comment: "") + " " + utilityFileSystem.transformedSize(size)
+            filesText = "1 " + NSLocalizedString("_file_", comment: "") + " • " + utilityFileSystem.transformedSize(size)
         }
 
         if foldersText.isEmpty {
@@ -330,7 +330,7 @@ class NCSectionFooter: UICollectionReusableView, NCSectionFooterDelegate {
         } else if filesText.isEmpty {
             labelSection.text = foldersText
         } else {
-            labelSection.text = foldersText + ", " + filesText
+            labelSection.text = foldersText + " • " + filesText
         }
     }
 

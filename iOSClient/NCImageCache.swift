@@ -43,12 +43,17 @@ import RealmSwift
         case actual(_ image: UIImage)
     }
 
+    struct metadataInfo {
+        var etag: String
+        var date: NSDate
+    }
+
     private typealias ThumbnailLRUCache = LRUCache<String, ImageType>
     private lazy var cache: ThumbnailLRUCache = {
         return ThumbnailLRUCache(countLimit: limit)
     }()
-    private var ocIdEtag: [String: String] = [:]
-    @ThreadSafe private var metadatas: Results<tableMetadata>?
+    private var metadatasInfo: [String: metadataInfo] = [:]
+    private var metadatas: ThreadSafeArray<tableMetadata>?
 
     let showAllPredicateMediaString = "account == %@ AND serverUrl BEGINSWITH %@ AND (classFile == '\(NKCommon.TypeClassFile.image.rawValue)' OR classFile == '\(NKCommon.TypeClassFile.video.rawValue)') AND NOT (session CONTAINS[c] 'upload')"
     let showBothPredicateMediaString = "account == %@ AND serverUrl BEGINSWITH %@ AND (classFile == '\(NKCommon.TypeClassFile.image.rawValue)' OR classFile == '\(NKCommon.TypeClassFile.video.rawValue)') AND NOT (session CONTAINS[c] 'upload') AND NOT (livePhotoFile != '' AND classFile == '\(NKCommon.TypeClassFile.video.rawValue)')"
@@ -61,7 +66,7 @@ import RealmSwift
         guard account != self.account, !account.isEmpty else { return }
         self.account = account
 
-        ocIdEtag.removeAll()
+        self.metadatasInfo.removeAll()
         self.metadatas = nil
         self.metadatas = getMediaMetadatas(account: account)
         guard let metadatas = self.metadatas, !metadatas.isEmpty else { return }
@@ -76,8 +81,8 @@ import RealmSwift
         var files: [FileInfo] = []
         let startDate = Date()
 
-        for metadata in metadatas {
-            ocIdEtag[metadata.ocId] = metadata.etag
+        metadatas.forEach { metadata in
+            metadatasInfo[metadata.ocId] = metadataInfo(etag: metadata.etag, date: metadata.date)
         }
 
         if let enumerator = manager.enumerator(at: URL(fileURLWithPath: NCUtilityFileSystem().directoryProviderStorage), includingPropertiesForKeys: [.isRegularFileKey], options: [.skipsHiddenFiles]) {
@@ -87,10 +92,10 @@ import RealmSwift
                 guard let resourceValues = try? fileURL.resourceValues(forKeys: resourceKeys),
                       let size = resourceValues.fileSize,
                       size > 0,
-                      let date = resourceValues.creationDate,
-                      let etag = ocIdEtag[ocId],
+                      let date = metadatasInfo[ocId]?.date,
+                      let etag = metadatasInfo[ocId]?.etag,
                       fileName == etag + ext else { continue }
-                files.append(FileInfo(path: fileURL, ocIdEtag: ocId + etag, date: date))
+                files.append(FileInfo(path: fileURL, ocIdEtag: ocId + etag, date: date as Date))
             }
         }
 
@@ -104,7 +109,7 @@ import RealmSwift
         var counter: Int = 0
         for file in files {
             counter += 1
-            if counter > limit { break }
+            if counter > (limit - 100) { break }
             autoreleasepool {
                 if let image = UIImage(contentsOfFile: file.path.path) {
                     cache.setValue(.actual(image), forKey: file.ocIdEtag)
@@ -120,7 +125,7 @@ import RealmSwift
         NextcloudKit.shared.nkCommonInstance.writeLog("--------- ThumbnailLRUCache image process ---------")
     }
 
-    func initialMetadatas() -> Results<tableMetadata>? {
+    func initialMetadatas() -> ThreadSafeArray<tableMetadata>? {
         defer { self.metadatas = nil }
         return self.metadatas
     }
@@ -134,16 +139,16 @@ import RealmSwift
     }
 
     @objc func clearMediaCache() {
-        self.ocIdEtag.removeAll()
+        self.metadatasInfo.removeAll()
         self.metadatas = nil
         cache.removeAllValues()
     }
 
-    func getMediaMetadatas(account: String, predicate: NSPredicate? = nil) -> Results<tableMetadata>? {
+    func getMediaMetadatas(account: String, predicate: NSPredicate? = nil) -> ThreadSafeArray<tableMetadata>? {
         guard let account = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", account)) else { return nil }
         let startServerUrl = NCUtilityFileSystem().getHomeServer(urlBase: account.urlBase, userId: account.userId) + account.mediaPath
         let predicateBoth = NSPredicate(format: showBothPredicateMediaString, account.account, startServerUrl)
-        return NCManageDatabase.shared.getResultsMetadatas(predicate: predicate ?? predicateBoth, sorted: "date")
+        return NCManageDatabase.shared.getMediaMetadatas(predicate: predicate ?? predicateBoth)
     }
 
     // MARK: -

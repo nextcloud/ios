@@ -50,7 +50,7 @@ class NCAutoUpload: NSObject {
                 NCManageDatabase.shared.setAccountAutoUploadProperty("autoUpload", state: false)
                 return completion(0)
             }
-            Task {
+            DispatchQueue.global().async {
                 self.uploadAssetsNewAndFull(viewController: viewController, selector: NCGlobal.shared.selectorUploadAutoUpload, log: "Init Auto Upload") { items in
                     completion(items)
                 }
@@ -67,7 +67,7 @@ class NCAutoUpload: NSObject {
             let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_create_full_upload_")
             NCContentPresenter().showWarning(error: error, priority: .max)
             NCActivityIndicator.shared.start()
-            Task {
+            DispatchQueue.global().async {
                 self.uploadAssetsNewAndFull(viewController: viewController, selector: NCGlobal.shared.selectorUploadAutoUploadAll, log: log) { _ in
                     NCActivityIndicator.shared.stop()
                 }
@@ -125,14 +125,14 @@ class NCAutoUpload: NSObject {
                     session = NextcloudKit.shared.nkCommonInstance.sessionIdentifierUpload
                 } else {
                     if assetMediaType == PHAssetMediaType.image && account.autoUploadWWAnPhoto == false {
-                        session = NCNetworking.shared.sessionIdentifierBackground
+                        session = NCNetworking.shared.sessionUploadBackground
                     } else if assetMediaType == PHAssetMediaType.video && account.autoUploadWWAnVideo == false {
-                        session = NCNetworking.shared.sessionIdentifierBackground
+                        session = NCNetworking.shared.sessionUploadBackground
                     } else if assetMediaType == PHAssetMediaType.image && account.autoUploadWWAnPhoto {
-                        session = NCNetworking.shared.sessionIdentifierBackgroundWWan
+                        session = NCNetworking.shared.sessionUploadBackgroundWWan
                     } else if assetMediaType == PHAssetMediaType.video && account.autoUploadWWAnVideo {
-                        session = NCNetworking.shared.sessionIdentifierBackgroundWWan
-                    } else { session = NCNetworking.shared.sessionIdentifierBackground }
+                        session = NCNetworking.shared.sessionUploadBackgroundWWan
+                    } else { session = NCNetworking.shared.sessionUploadBackground }
                 }
 
                 if account.autoUploadCreateSubfolder {

@@ -100,7 +100,7 @@ class NCActivity: UIViewController, NCSharePagingContent {
 
         appDelegate.activeViewController = self
 
-        navigationController?.setFileAppreance()
+        navigationController?.setNavigationBarAppearance()
 
         fetchAll(isInitial: true)
     }

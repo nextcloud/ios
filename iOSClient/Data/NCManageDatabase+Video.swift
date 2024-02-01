@@ -155,8 +155,9 @@ extension NCManageDatabase {
         do {
             let realm = try Realm()
             try realm.write {
-                let result = realm.objects(tableVideo.self).filter("account == %@ AND ocId == %@", metadata.account, metadata.ocId)
-                realm.delete(result)
+                if let result = realm.objects(tableVideo.self).filter("account == %@ AND ocId == %@", metadata.account, metadata.ocId).first {
+                    realm.delete(result)
+                }
             }
         } catch let error {
             NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")

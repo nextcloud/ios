@@ -111,9 +111,16 @@ extension NCViewer {
                     icon: utility.loadImage(named: "printer"),
                     action: { _ in
                         if self.utilityFileSystem.fileProviderStorageExists(metadata) {
-                            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDownloadedFile, userInfo: ["ocId": metadata.ocId, "selector": NCGlobal.shared.selectorPrint, "error": NKError(), "account": metadata.account])
+                            NotificationCenter.default.post(
+                                name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterDownloadedFile),
+                                object: nil,
+                                userInfo: ["ocId": metadata.ocId,
+                                           "selector": NCGlobal.shared.selectorPrint,
+                                           "error": NKError(),
+                                           "account": metadata.account])
                         } else {
-                            NCNetworking.shared.download(metadata: metadata, selector: NCGlobal.shared.selectorPrint) { _, _ in }
+                            guard let metadata = NCManageDatabase.shared.setMetadataSessionInWaitDownload(ocId: metadata.ocId, selector: NCGlobal.shared.selectorPrint) else { return }
+                            NCNetworking.shared.download(metadata: metadata, withNotificationProgressTask: true)
                         }
                     }
                 )
@@ -158,9 +165,16 @@ extension NCViewer {
                     icon: utility.loadImage(named: "viewfinder.circle"),
                     action: { _ in
                         if self.utilityFileSystem.fileProviderStorageExists(metadata) {
-                            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDownloadedFile, userInfo: ["ocId": metadata.ocId, "selector": NCGlobal.shared.selectorSaveAsScan, "error": NKError(), "account": metadata.account])
+                            NotificationCenter.default.post(
+                                name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterDownloadedFile),
+                                object: nil,
+                                userInfo: ["ocId": metadata.ocId,
+                                           "selector": NCGlobal.shared.selectorSaveAsScan,
+                                           "error": NKError(),
+                                           "account": metadata.account])
                         } else {
-                            NCNetworking.shared.download(metadata: metadata, selector: NCGlobal.shared.selectorSaveAsScan) { _, _ in }
+                            guard let metadata = NCManageDatabase.shared.setMetadataSessionInWaitDownload(ocId: metadata.ocId, selector: NCGlobal.shared.selectorSaveAsScan) else { return }
+                            NCNetworking.shared.download(metadata: metadata, withNotificationProgressTask: true)
                         }
                     }
                 )
@@ -216,7 +230,8 @@ extension NCViewer {
                     title: NSLocalizedString("_download_locally_", comment: ""),
                     icon: utility.loadImage(named: "icloud.and.arrow.down"),
                     action: { _ in
-                        NCNetworking.shared.download(metadata: metadata, selector: "") { _, _ in }
+                        guard let metadata = NCManageDatabase.shared.setMetadataSessionInWaitDownload(ocId: metadata.ocId, selector: "") else { return }
+                        NCNetworking.shared.download(metadata: metadata, withNotificationProgressTask: true)
                     }
                 )
             )
@@ -257,9 +272,16 @@ extension NCViewer {
                     icon: utility.loadImage(named: "pencil.tip.crop.circle"),
                     action: { _ in
                         if self.utilityFileSystem.fileProviderStorageExists(metadata) {
-                            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDownloadedFile, userInfo: ["ocId": metadata.ocId, "selector": NCGlobal.shared.selectorLoadFileQuickLook, "error": NKError(), "account": metadata.account])
+                            NotificationCenter.default.post(
+                                name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterDownloadedFile),
+                                object: nil,
+                                userInfo: ["ocId": metadata.ocId,
+                                           "selector": NCGlobal.shared.selectorLoadFileQuickLook,
+                                           "error": NKError(),
+                                           "account": metadata.account])
                         } else {
-                            NCNetworking.shared.download(metadata: metadata, selector: NCGlobal.shared.selectorLoadFileQuickLook) { _, _ in }
+                            guard let metadata = NCManageDatabase.shared.setMetadataSessionInWaitDownload(ocId: metadata.ocId, selector: NCGlobal.shared.selectorLoadFileQuickLook) else { return }
+                            NCNetworking.shared.download(metadata: metadata, withNotificationProgressTask: true)
                         }
                     }
                 )

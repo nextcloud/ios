@@ -67,7 +67,7 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmpty
         super.viewWillAppear(animated)
 
         appDelegate.activeViewController = self
-        navigationController?.setFileAppreance()
+        navigationController?.setNavigationBarAppearance()
         getNetwokingNotification()
     }
 

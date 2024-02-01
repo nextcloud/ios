@@ -279,9 +279,16 @@ extension NCMenuAction {
             order: order,
             action: { _ in
                 if NCUtilityFileSystem().fileProviderStorageExists(metadata) {
-                    NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDownloadedFile, userInfo: ["ocId": metadata.ocId, "selector": NCGlobal.shared.selectorPrint, "error": NKError(), "account": metadata.account])
+                    NotificationCenter.default.post(
+                        name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterDownloadedFile),
+                        object: nil,
+                        userInfo: ["ocId": metadata.ocId,
+                                   "selector": NCGlobal.shared.selectorPrint,
+                                   "error": NKError(),
+                                   "account": metadata.account])
                 } else {
-                    NCNetworking.shared.download(metadata: metadata, selector: NCGlobal.shared.selectorPrint) { _, _ in }
+                    guard let metadata = NCManageDatabase.shared.setMetadataSessionInWaitDownload(ocId: metadata.ocId, selector: NCGlobal.shared.selectorPrint) else { return }
+                    NCNetworking.shared.download(metadata: metadata, withNotificationProgressTask: true)
                 }
             }
         )

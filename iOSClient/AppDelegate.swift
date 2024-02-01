@@ -156,13 +156,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             self.handleProcessingTask(task)
         }
 
-        // Intro
-        if NCBrandOptions.shared.disable_intro {
-            if account.isEmpty {
+        if account.isEmpty {
+            if NCBrandOptions.shared.disable_intro {
                 openLogin(viewController: nil, selector: NCGlobal.shared.introLogin, openLoginWeb: false)
-            }
-        } else {
-            if !NCKeychain().intro {
+            } else {
                 if let viewController = UIStoryboard(name: "NCIntro", bundle: nil).instantiateInitialViewController() {
                     let navigationController = NCLoginNavigationController(rootViewController: viewController)
                     window?.rootViewController = navigationController
@@ -272,6 +269,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
         scheduleAppRefresh()
         scheduleAppProcessing()
+        NCNetworking.shared.cancelAllQueue()
         NCNetworking.shared.cancelDataTask()
         NCNetworking.shared.cancelDownloadTasks()
         presentPasscode { }
@@ -579,6 +577,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
     @objc func changeAccount(_ account: String, userProfile: NKUserProfile?) {
 
+        NCNetworking.shared.cancelAllQueue()
         NCNetworking.shared.cancelDataTask()
         NCNetworking.shared.cancelDownloadTasks()
         NCNetworking.shared.cancelUploadTasks()
@@ -882,10 +881,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
         let utilityFileSystem = NCUtilityFileSystem()
 
+        NCNetworking.shared.cancelAllQueue()
         NCNetworking.shared.cancelDataTask()
         NCNetworking.shared.cancelDownloadTasks()
         NCNetworking.shared.cancelUploadTasks()
-        NCNetworking.shared.cancelUploadBackgroundTask()
+        NCNetworking.shared.cancelUploadBackgroundTask(withNotification: false)
 
         URLCache.shared.memoryCapacity = 0
         URLCache.shared.diskCapacity = 0
@@ -926,18 +926,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             self.privacyProtectionWindow?.isHidden = true
             self.privacyProtectionWindow = nil
         }
-    }
-
-    // MARK: - Queue
-
-    @objc func cancelAllQueue() {
-        NCNetworking.shared.downloadQueue.cancelAll()
-        NCNetworking.shared.downloadThumbnailQueue.cancelAll()
-        NCNetworking.shared.downloadThumbnailActivityQueue.cancelAll()
-        NCNetworking.shared.downloadAvatarQueue.cancelAll()
-        NCNetworking.shared.unifiedSearchQueue.cancelAll()
-        NCNetworking.shared.saveLivePhotoQueue.cancelAll()
-        NCNetworking.shared.convertLivePhotoQueue.cancelAll()
     }
 
     // MARK: - Universal Links

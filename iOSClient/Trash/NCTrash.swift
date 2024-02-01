@@ -89,7 +89,7 @@ class NCTrash: UIViewController, NCSelectableNavigationView, NCTrashListCellDele
 
         appDelegate.activeViewController = self
 
-        navigationController?.setFileAppreance()
+        navigationController?.setNavigationBarAppearance()
         navigationItem.title = titleCurrentFolder
 
         layoutForView = NCManageDatabase.shared.getLayoutForView(account: appDelegate.account, key: NCGlobal.shared.layoutViewTrash, serverUrl: "")
@@ -101,7 +101,7 @@ class NCTrash: UIViewController, NCSelectableNavigationView, NCTrashListCellDele
             collectionView.collectionViewLayout = gridLayout
         }
 
-        setNavigationItem()
+        setNavigationItems()
         reloadDataSource()
     }
 
@@ -234,7 +234,7 @@ class NCTrash: UIViewController, NCSelectableNavigationView, NCTrashListCellDele
 
     // MARK: - DataSource
 
-    @objc func reloadDataSource(isForced: Bool = true) {
+    @objc func reloadDataSource(withQueryDB: Bool = true) {
 
         layoutForView = NCManageDatabase.shared.getLayoutForView(account: appDelegate.account, key: NCGlobal.shared.layoutViewTrash, serverUrl: "")
         datasource.removeAll()

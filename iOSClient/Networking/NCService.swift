@@ -51,8 +51,7 @@ class NCService: NSObject {
                 requestDashboardWidget()
                 NCNetworkingE2EE().unlockAll(account: account)
                 NCNetworkingProcessUpload.shared.verifyUploadZombie()
-                // TODO: sendClientDiagnosticsRemoteOperation(account: account)
-                // sendClientDiagnosticsRemoteOperation(account: account)
+                sendClientDiagnosticsRemoteOperation(account: account)
             }
         }
     }
@@ -133,7 +132,6 @@ class NCService: NSObject {
 
     func synchronize() {
 
-        NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] start synchronize Favorite")
         NextcloudKit.shared.listingFavorites(showHiddenFiles: NCKeychain().showHiddenFiles,
                                              options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { account, files, _, error in
 
@@ -141,8 +139,7 @@ class NCService: NSObject {
             NCManageDatabase.shared.convertFilesToMetadatas(files, useMetadataFolder: false) { _, _, metadatas in
                 NCManageDatabase.shared.updateMetadatasFavorite(account: account, metadatas: metadatas)
             }
-            NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] end synchronize Favorite")
-            NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] start synchronize Offline")
+            NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Synchronize Favorite")
             self.synchronizeOffline(account: account)
         }
     }
@@ -291,9 +288,11 @@ class NCService: NSObject {
     @objc func synchronizeOffline(account: String) {
 
         // Synchronize Directory
-        if let directories = NCManageDatabase.shared.getTablesDirectory(predicate: NSPredicate(format: "account == %@ AND offline == true", account), sorted: "serverUrl", ascending: true) {
-            for directory: tableDirectory in directories {
-                NCNetworking.shared.synchronizationServerUrl(directory.serverUrl, account: account, selector: NCGlobal.shared.selectorSynchronizationOffline)
+        Task {
+            if let directories = NCManageDatabase.shared.getTablesDirectory(predicate: NSPredicate(format: "account == %@ AND offline == true", account), sorted: "serverUrl", ascending: true) {
+                for directory: tableDirectory in directories {
+                    await NCNetworking.shared.synchronization(account: account, serverUrl: directory.serverUrl, selector: NCGlobal.shared.selectorSynchronizationOffline)
+                }
             }
         }
 
@@ -301,47 +300,116 @@ class NCService: NSObject {
         let files = NCManageDatabase.shared.getTableLocalFiles(predicate: NSPredicate(format: "account == %@ AND offline == true", account), sorted: "fileName", ascending: true)
         for file: tableLocalFile in files {
             guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(file.ocId) else { continue }
-            if NCNetworking.shared.synchronizeMetadata(metadata),
+            if metadata.isSynchronizable,
                NCNetworking.shared.downloadQueue.operations.filter({ ($0 as? NCOperationDownload)?.metadata.ocId == metadata.ocId }).isEmpty {
                 NCNetworking.shared.downloadQueue.addOperation(NCOperationDownload(metadata: metadata, selector: NCGlobal.shared.selectorDownloadFile))
             }
         }
-        NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] end synchronize offline")
     }
 
     // MARK: -
 
     func sendClientDiagnosticsRemoteOperation(account: String) {
 
-        struct Problem: Codable {
-            let count: Int
-            let oldest: TimeInterval
-        }
+        guard NCGlobal.shared.capabilitySecurityGuardDiagnostics,
+              NCManageDatabase.shared.existsDiagnostics(account: account) else { return }
 
-        struct Problems: Codable {
-            var problems: [String: Problem] = [:]
-        }
+        struct Issues: Codable {
 
-        var problems = Problems()
-
-        guard let metadatas = NCManageDatabase.shared.getMetadatasInError(account: account), !metadatas.isEmpty else { return }
-        for metadata in metadatas {
-            guard let oldest = metadata.errorCodeDate?.timeIntervalSince1970 else { continue }
-            var key = String(metadata.errorCode)
-            if !metadata.sessionError.isEmpty {
-                key = key + " - " + metadata.sessionError
+            struct SyncConflicts: Codable {
+                var count: Int?
+                var oldest: TimeInterval?
             }
-            let value = Problem(count: metadata.errorCodeCounter, oldest: oldest)
-            problems.problems[key] = value
+
+            struct VirusDetected: Codable {
+                var count: Int?
+                var oldest: TimeInterval?
+            }
+
+            struct E2EError: Codable {
+                var count: Int?
+                var oldest: TimeInterval?
+            }
+
+            struct Problem: Codable {
+                struct Error: Codable {
+                    var count: Int
+                    var oldest: TimeInterval
+                }
+
+                var forbidden: Error?               // NCGlobal.shared.diagnosticProblemsForbidden
+                var badResponse: Error?             // NCGlobal.shared.diagnosticProblemsBadResponse
+                var uploadServerError: Error?       // NCGlobal.shared.diagnosticProblemsUploadServerError
+            }
+
+            var syncConflicts: SyncConflicts
+            var virusDetected: VirusDetected
+            var e2eeErrors: E2EError
+            var problems: Problem?
+
+            enum CodingKeys: String, CodingKey {
+                case syncConflicts = "sync_conflicts"
+                case virusDetected = "virus_detected"
+                case e2eeErrors = "e2ee_errors"
+                case problems
+            }
+        }
+
+        var ids: [ObjectId] = []
+
+        var syncConflicts: Issues.SyncConflicts = Issues.SyncConflicts()
+        var virusDetected: Issues.VirusDetected = Issues.VirusDetected()
+        var e2eeErrors: Issues.E2EError = Issues.E2EError()
+
+        var problems: Issues.Problem? = Issues.Problem()
+        var problemForbidden: Issues.Problem.Error?
+        var problemBadResponse: Issues.Problem.Error?
+        var problemUploadServerError: Issues.Problem.Error?
+
+        if let result = NCManageDatabase.shared.getDiagnostics(account: account, issue: NCGlobal.shared.diagnosticIssueSyncConflicts)?.first {
+            syncConflicts = Issues.SyncConflicts(count: result.counter, oldest: result.oldest)
+            ids.append(result.id)
+        }
+        if let result = NCManageDatabase.shared.getDiagnostics(account: account, issue: NCGlobal.shared.diagnosticIssueVirusDetected)?.first {
+            virusDetected = Issues.VirusDetected(count: result.counter, oldest: result.oldest)
+            ids.append(result.id)
+        }
+        if let result = NCManageDatabase.shared.getDiagnostics(account: account, issue: NCGlobal.shared.diagnosticIssueE2eeErrors)?.first {
+            e2eeErrors = Issues.E2EError(count: result.counter, oldest: result.oldest)
+            ids.append(result.id)
+        }
+        if let results = NCManageDatabase.shared.getDiagnostics(account: account, issue: NCGlobal.shared.diagnosticIssueProblems) {
+            for result in results {
+                switch result.error {
+                case NCGlobal.shared.diagnosticProblemsForbidden:
+                    if result.counter >= 1 {
+                        problemForbidden = Issues.Problem.Error(count: result.counter, oldest: result.oldest)
+                        ids.append(result.id)
+                    }
+                case NCGlobal.shared.diagnosticProblemsBadResponse:
+                    if result.counter >= 2 {
+                        problemBadResponse = Issues.Problem.Error(count: result.counter, oldest: result.oldest)
+                        ids.append(result.id)
+                    }
+                case NCGlobal.shared.diagnosticProblemsUploadServerError:
+                    if result.counter >= 1 {
+                        problemUploadServerError = Issues.Problem.Error(count: result.counter, oldest: result.oldest)
+                        ids.append(result.id)
+                    }
+                default:
+                    break
+                }
+            }
+            problems = Issues.Problem(forbidden: problemForbidden, badResponse: problemBadResponse, uploadServerError: problemUploadServerError)
         }
 
         do {
-            @ThreadSafe var metadatas = metadatas
-            let data = try JSONEncoder().encode(problems)
+            let issues = Issues(syncConflicts: syncConflicts, virusDetected: virusDetected, e2eeErrors: e2eeErrors, problems: problems)
+            let data = try JSONEncoder().encode(issues)
             data.printJson()
-            NextcloudKit.shared.sendClientDiagnosticsRemoteOperation(problems: data, options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { _, error in
+            NextcloudKit.shared.sendClientDiagnosticsRemoteOperation(data: data, options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { _, error in
                 if error == .success {
-                    NCManageDatabase.shared.clearErrorCodeMetadatas(metadatas: metadatas)
+                    NCManageDatabase.shared.deleteDiagnostics(account: account, ids: ids)
                 }
             }
         } catch {

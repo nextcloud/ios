@@ -137,7 +137,7 @@ class NCDataSource: NSObject {
 
         } else {
 
-        // normal
+            // normal
             let directory = NSLocalizedString("directory", comment: "").lowercased().firstUppercased
             self.sectionsValue = self.sectionsValue.sorted {
                 if directoryOnTop && $0 == directory {
@@ -191,10 +191,9 @@ class NCDataSource: NSObject {
 
     // MARK: -
 
-    @discardableResult
-    func appendMetadatasToSection(_ metadatas: [tableMetadata], metadataForSection: NCMetadataForSection, lastSearchResult: NKSearchResult) -> [IndexPath] {
+    func appendMetadatasToSection(_ metadatas: [tableMetadata], metadataForSection: NCMetadataForSection, lastSearchResult: NKSearchResult) {
 
-        guard let sectionIndex = getSectionIndex(metadataForSection.sectionValue) else { return [] }
+        guard let sectionIndex = getSectionIndex(metadataForSection.sectionValue) else { return }
         var indexPaths: [IndexPath] = []
 
         self.metadatas.append(contentsOf: metadatas)
@@ -207,36 +206,6 @@ class NCDataSource: NSObject {
                 indexPaths.append(IndexPath(row: rowIndex, section: sectionIndex))
             }
         }
-
-        return indexPaths
-    }
-
-    @discardableResult
-    func reloadMetadata(ocId: String, ocIdTemp: String? = nil) -> (indexPath: IndexPath?, sameSections: Bool) {
-
-        let numberOfSections = self.numberOfSections()
-        var ocIdSearch = ocId
-
-        guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) else { return (nil, self.isSameNumbersOfSections(numberOfSections: numberOfSections)) }
-
-        if let ocIdTemp = ocIdTemp {
-            ocIdSearch = ocIdTemp
-        }
-
-        // UPDATE metadataForSection (IMPORTANT FIRST)
-        let (indexPath, metadataForSection) = self.getIndexPathMetadata(ocId: ocIdSearch)
-        if let indexPath = indexPath, let metadataForSection = metadataForSection {
-            metadataForSection.metadatas[indexPath.row] = metadata
-            metadataForSection.createMetadatas()
-        }
-
-        // UPDATE metadatasSource (IMPORTANT LAST)
-        if let rowIndex = self.metadatas.firstIndex(where: {$0.ocId == ocIdSearch}) {
-            self.metadatas[rowIndex] = metadata
-        }
-
-        let result = self.getIndexPathMetadata(ocId: ocId)
-        return (result.indexPath, self.isSameNumbersOfSections(numberOfSections: numberOfSections))
     }
 
     // MARK: -

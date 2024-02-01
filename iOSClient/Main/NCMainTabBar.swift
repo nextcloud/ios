@@ -45,10 +45,7 @@ class NCMainTabBar: UITabBar {
         appDelegate.mainTabBar = self
 
         NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeTheming), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(updateBadgeNumber(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUpdateBadgeNumber), object: nil)
-
-        barTintColor = .secondarySystemBackground
-        backgroundColor = .secondarySystemBackground
+        NotificationCenter.default.addObserver(self, selector: #selector(updateBadgeNumber), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUpdateBadgeNumber), object: nil)
 
         changeTheming()
     }
@@ -79,34 +76,31 @@ class NCMainTabBar: UITabBar {
         }
     }
 
-    override func layoutSubviews() {
-        super.layoutSubviews()
-
-        layer.shadowPath = createPath()
-        layer.shadowRadius = 5
-        layer.shadowOffset = .zero
-        layer.shadowOpacity = 0.25
-    }
-
     override func draw(_ rect: CGRect) {
+        self.subviews.forEach({ $0.removeFromSuperview() })
+
         addShape()
         createButtons()
     }
 
     private func addShape() {
+        let blurEffect = UIBlurEffect(style: .systemThinMaterial)
 
-        let shapeLayer = CAShapeLayer()
-        shapeLayer.path = createPath()
-        shapeLayer.fillColor = backgroundColor?.cgColor
-        shapeLayer.strokeColor = UIColor.clear.cgColor
+        let blurView = UIVisualEffectView(effect: blurEffect)
+        blurView.frame = self.bounds
 
-        if let oldShapeLayer = self.shapeLayer {
-            self.layer.replaceSublayer(oldShapeLayer, with: shapeLayer)
-        } else {
-            self.layer.insertSublayer(shapeLayer, at: 0)
-        }
+        let maskLayer = CAShapeLayer()
+        maskLayer.path = createPath()
 
-        self.shapeLayer = shapeLayer
+        blurView.layer.mask = maskLayer
+
+        var border = CALayer()
+        border.backgroundColor = UIColor.separator.cgColor
+        border.frame = CGRect(x: 0, y: 0, width: blurView.frame.width, height: 0.5)
+
+        blurView.layer.addSublayer(border)
+
+        self.addSubview(blurView)
     }
 
     private func createPath() -> CGPath {
@@ -205,31 +199,55 @@ class NCMainTabBar: UITabBar {
         self.addSubview(centerButton)
     }
 
-    @objc func updateBadgeNumber(_ notification: NSNotification) {
+    @objc func updateBadgeNumber() {
 
-        guard let userInfo = notification.userInfo as NSDictionary?,
-              let counterDownload = userInfo["counterDownload"] as? Int,
-              let counterUpload = userInfo["counterUpload"] as? Int
-        else { return }
+        DispatchQueue.global().async {
+
+            var counterDownload = 0
+            var counterUpload = 0
+
+            if let results = NCManageDatabase.shared.getResultsMetadatas(predicate: NSPredicate(format: "status < 0")) {
+                counterDownload = results.count
+            }
+            if let results = NCManageDatabase.shared.getResultsMetadatas(predicate: NSPredicate(format: "status > 0")) {
+                counterUpload = results.count
+            }
+
+            DispatchQueue.main.async {
+                self.updateBadgeNumberUI(counterDownload: counterDownload, counterUpload: counterUpload)
+            }
+        }
+    }
+
+    func updateBadgeNumberUI(counterDownload: Int, counterUpload: Int) {
 
         UIApplication.shared.applicationIconBadgeNumber = counterUpload
+
         if let item = self.items?[0] {
             if counterDownload == 0, counterUpload == 0 {
                 item.badgeValue = nil
             } else if counterDownload > 0, counterUpload == 0 {
                 var badgeValue = String("↓ \(counterDownload)")
-                if counterDownload >= NCGlobal.shared.maxConcurrentOperationCountDownload {
-                    badgeValue = String("↓ 10+")
+                if counterDownload >= NCBrandOptions.shared.maxConcurrentOperationDownload {
+                    badgeValue = String("↓ \(NCBrandOptions.shared.maxConcurrentOperationDownload)+")
                 }
                 item.badgeValue = badgeValue
             } else if counterDownload == 0, counterUpload > 0 {
-                item.badgeValue = String("↑ \(counterUpload)")
-            } else {
-                var badgeValue = String("↓ \(counterDownload) ↑ \(counterUpload)")
-                if counterDownload >= NCGlobal.shared.maxConcurrentOperationCountDownload {
-                    badgeValue = String("↓ 10+ ↑ \(counterUpload)")
+                var badgeValue = String("↑ \(counterUpload)")
+                if counterUpload >= NCBrandOptions.shared.maxConcurrentOperationUpload {
+                    badgeValue = String("↑ \(NCBrandOptions.shared.maxConcurrentOperationUpload)+")
                 }
                 item.badgeValue = badgeValue
+            } else {
+                var badgeValueDownload = String("↓ \(counterDownload)")
+                if counterDownload >= NCBrandOptions.shared.maxConcurrentOperationDownload {
+                    badgeValueDownload = String("↓ \(NCBrandOptions.shared.maxConcurrentOperationDownload)+")
+                }
+                var badgeValueUpload = String("↑ \(counterUpload)")
+                if counterUpload >= NCBrandOptions.shared.maxConcurrentOperationUpload {
+                    badgeValueUpload = String("↑ \(NCBrandOptions.shared.maxConcurrentOperationUpload)+")
+                }
+                item.badgeValue = badgeValueDownload + " " + badgeValueUpload
             }
         }
     }

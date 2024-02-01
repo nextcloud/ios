@@ -44,12 +44,16 @@ class NCShares: NCCollectionViewCommon {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
-        navigationController?.setFileAppreance()
+        if dataSource.metadatas.isEmpty {
+            reloadDataSource()
+        }
+        reloadDataSourceNetwork()
     }
 
     // MARK: - DataSource + NC Endpoint
 
-    override func queryDB(isForced: Bool) {
+    override func queryDB() {
+        super.queryDB()
 
         var metadatas: [tableMetadata] = []
 
@@ -92,26 +96,10 @@ class NCShares: NCCollectionViewCommon {
         reload()
     }
 
-    override func reloadDataSource(isForced: Bool = true) {
-        super.reloadDataSource()
-
-        DispatchQueue.global().async {
-            self.queryDB(isForced: isForced)
-        }
-    }
-
-    override func reloadDataSourceNetwork(isForced: Bool = false) {
-        super.reloadDataSourceNetwork(isForced: isForced)
-
-        NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Reload data source network shares forced \(isForced)")
-
-        isReloadDataSourceNetworkInProgress = true
-        collectionView?.reloadData()
+    override func reloadDataSourceNetwork() {
+        super.reloadDataSourceNetwork()
 
         NextcloudKit.shared.readShares(parameters: NKShareParameter()) { account, shares, _, error in
-
-            self.refreshControl.endRefreshing()
-            self.isReloadDataSourceNetworkInProgress = false
 
             if error == .success {
                 NCManageDatabase.shared.deleteTableShare(account: account)
@@ -119,8 +107,10 @@ class NCShares: NCCollectionViewCommon {
                     let home = self.utilityFileSystem.getHomeServer(urlBase: self.appDelegate.urlBase, userId: self.appDelegate.userId)
                     NCManageDatabase.shared.addShare(account: self.appDelegate.account, home: home, shares: shares)
                 }
+                self.reloadDataSource()
+            } else {
+                self.reloadDataSource(withQueryDB: false)
             }
-            self.reloadDataSource()
         }
     }
 }

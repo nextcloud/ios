@@ -44,12 +44,16 @@ class NCFavorite: NCCollectionViewCommon {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
-        navigationController?.setFileAppreance()
+        if dataSource.metadatas.isEmpty {
+            reloadDataSource()
+        }
+        reloadDataSourceNetwork()
     }
 
     // MARK: - DataSource + NC Endpoint
 
-    override func queryDB(isForced: Bool) {
+    override func queryDB() {
+        super.queryDB()
 
         var metadatas: [tableMetadata] = []
 
@@ -70,37 +74,20 @@ class NCFavorite: NCCollectionViewCommon {
                                        searchResults: self.searchResults)
     }
 
-    override func reloadDataSource(isForced: Bool = true) {
-        super.reloadDataSource()
-
-        DispatchQueue.global().async {
-            self.queryDB(isForced: isForced)
-            DispatchQueue.main.async {
-                self.refreshControl.endRefreshing()
-                self.collectionView.reloadData()
-            }
-        }
-    }
-
-    override func reloadDataSourceNetwork(isForced: Bool = false) {
-        super.reloadDataSourceNetwork(isForced: isForced)
-
-        NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Reload data source network favorite forced \(isForced)")
-
-        isReloadDataSourceNetworkInProgress = true
-        collectionView?.reloadData()
+    override func reloadDataSourceNetwork() {
+        super.reloadDataSourceNetwork()
 
         NextcloudKit.shared.listingFavorites(showHiddenFiles: NCKeychain().showHiddenFiles,
                                              options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { account, files, _, error in
 
-            self.isReloadDataSourceNetworkInProgress = false
             if error == .success {
                 NCManageDatabase.shared.convertFilesToMetadatas(files, useMetadataFolder: false) { _, _, metadatas in
                     NCManageDatabase.shared.updateMetadatasFavorite(account: account, metadatas: metadatas)
                     self.reloadDataSource()
                 }
+            } else {
+                self.reloadDataSource(withQueryDB: false)
             }
-            self.reloadDataSource()
         }
     }
 }

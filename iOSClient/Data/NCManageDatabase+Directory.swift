@@ -77,6 +77,14 @@ extension NCManageDatabase {
 
     func deleteDirectoryAndSubDirectory(serverUrl: String, account: String) {
 
+#if !EXTENSION
+        DispatchQueue.main.async {
+            if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
+                appDelegate.listFilesVC[serverUrl] = nil
+            }
+        }
+#endif
+
         do {
             let realm = try Realm()
             let results = realm.objects(tableDirectory.self).filter("account == %@ AND serverUrl BEGINSWITH %@", account, serverUrl)
@@ -123,6 +131,20 @@ extension NCManageDatabase {
         }
     }
 
+    func cleanEtagDirectory(account: String, serverUrl: String) {
+
+        do {
+            let realm = try Realm()
+            try realm.write {
+                if let result = realm.objects(tableDirectory.self).filter("account == %@ AND serverUrl == %@", account, serverUrl).first {
+                    result.etag = ""
+                }
+            }
+        } catch let error {
+            NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
+        }
+    }
+
     func getTableDirectory(predicate: NSPredicate) -> tableDirectory? {
 
         do {
@@ -141,7 +163,6 @@ extension NCManageDatabase {
 
         do {
             let realm = try Realm()
-            realm.refresh()
             return realm.objects(tableDirectory.self).filter("account == %@ AND serverUrl == %@", account, serverUrl).first
         } catch let error as NSError {
             NextcloudKit.shared.nkCommonInstance.writeLog("Could not access database: \(error)")

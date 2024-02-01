@@ -47,8 +47,8 @@ protocol NCSelectableNavigationView: AnyObject {
     var layoutKey: String { get }
     var selectActions: [NCMenuAction] { get }
 
-    func reloadDataSource(isForced: Bool)
-    func setNavigationItem()
+    func reloadDataSource(withQueryDB: Bool)
+    func setNavigationItems()
 
     func tapSelectMenu()
     func tapSelect()
@@ -56,7 +56,7 @@ protocol NCSelectableNavigationView: AnyObject {
 
 extension NCSelectableNavigationView {
 
-    func setNavigationItem() {
+    func setNavigationItems() {
         setNavigationRightItems()
     }
 
@@ -79,7 +79,7 @@ extension NCSelectableNavigationView {
         isEditMode = !isEditMode
         selectOcId.removeAll()
         selectIndexPath.removeAll()
-        self.setNavigationItem()
+        self.setNavigationItems()
         self.collectionView.reloadData()
     }
 
@@ -154,7 +154,7 @@ extension NCSelectableNavigationView where Self: UIViewController {
             actions.append(.saveMediaAction(selectedMediaMetadatas: selectedMediaMetadatas, completion: tapSelect))
         }
         actions.append(.setAvailableOfflineAction(selectedMetadatas: selectedMetadatas, isAnyOffline: isAnyOffline, viewController: self, completion: {
-            self.reloadDataSource(isForced: true)
+            self.reloadDataSource(withQueryDB: true)
             self.tapSelect()
         }))
 

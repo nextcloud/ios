@@ -94,6 +94,9 @@
     row.cellConfigAtConfigure[@"backgroundColor"] = UIColor.secondarySystemGroupedBackgroundColor;
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
     [row.cellConfig setObject:UIColor.labelColor forKey:@"textLabel.textColor"];
+    if ([[NCBrandOptions shared] doNotAskPasscodeAtStartup]) {
+        row.disabled = @YES;
+    }
     [section addFormRow:row];
     // Privacy screen
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"privacyScreen" rowType:XLFormRowDescriptorTypeBooleanSwitch title:NSLocalizedString(@"_privacy_screen_", nil)];

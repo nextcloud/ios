@@ -41,18 +41,18 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
     var documentController: UIDocumentInteractionController?
     let utilityFileSystem = NCUtilityFileSystem()
     let utility = NCUtility()
+    let appDelegate = UIApplication.shared.delegate as? AppDelegate
 
     // MARK: - Download
 
     @objc func downloadedFile(_ notification: NSNotification) {
 
-        guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else { return }
         guard let userInfo = notification.userInfo as NSDictionary?,
               let ocId = userInfo["ocId"] as? String,
               let selector = userInfo["selector"] as? String,
               let error = userInfo["error"] as? NKError,
               let account = userInfo["account"] as? String,
-              account == appDelegate.account
+              account == appDelegate?.account
         else { return }
 
         guard error == .success else {
@@ -72,42 +72,47 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
 
         switch selector {
         case NCGlobal.shared.selectorLoadFileQuickLook:
-            let fileNamePath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)
-            let fileNameTemp = NSTemporaryDirectory() + metadata.fileNameView
-            let viewerQuickLook = NCViewerQuickLook(with: URL(fileURLWithPath: fileNameTemp), isEditingEnabled: true, metadata: metadata)
-            if let image = UIImage(contentsOfFile: fileNamePath) {
-                if let data = image.jpegData(compressionQuality: 1) {
-                    do {
-                        try data.write(to: URL(fileURLWithPath: fileNameTemp))
-                    } catch {
-                        return
+            DispatchQueue.main.async {
+                let fileNamePath = self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)
+                let fileNameTemp = NSTemporaryDirectory() + metadata.fileNameView
+                let viewerQuickLook = NCViewerQuickLook(with: URL(fileURLWithPath: fileNameTemp), isEditingEnabled: true, metadata: metadata)
+                if let image = UIImage(contentsOfFile: fileNamePath) {
+                    if let data = image.jpegData(compressionQuality: 1) {
+                        do {
+                            try data.write(to: URL(fileURLWithPath: fileNameTemp))
+                        } catch {
+                            return
+                        }
                     }
+                    let navigationController = UINavigationController(rootViewController: viewerQuickLook)
+                    navigationController.modalPresentationStyle = .fullScreen
+                    self.appDelegate?.window?.rootViewController?.present(navigationController, animated: true)
+                } else {
+                    self.utilityFileSystem.copyFile(atPath: fileNamePath, toPath: fileNameTemp)
+                    self.appDelegate?.window?.rootViewController?.present(viewerQuickLook, animated: true)
                 }
-                let navigationController = UINavigationController(rootViewController: viewerQuickLook)
-                navigationController.modalPresentationStyle = .fullScreen
-                appDelegate.window?.rootViewController?.present(navigationController, animated: true)
-            } else {
-                utilityFileSystem.copyFile(atPath: fileNamePath, toPath: fileNameTemp)
-                appDelegate.window?.rootViewController?.present(viewerQuickLook, animated: true)
             }
 
         case NCGlobal.shared.selectorLoadFileView:
-            guard UIApplication.shared.applicationState == .active else { break }
-
-            if metadata.contentType.contains("opendocument") && !utility.isRichDocument(metadata) {
-                self.openDocumentController(metadata: metadata)
-            } else if metadata.classFile == NKCommon.TypeClassFile.compress.rawValue || metadata.classFile == NKCommon.TypeClassFile.unknow.rawValue {
-                self.openDocumentController(metadata: metadata)
-            } else {
-                if let viewController = appDelegate.activeViewController {
-                    let imageIcon = UIImage(contentsOfFile: utilityFileSystem.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag))
-                    NCViewer().view(viewController: viewController, metadata: metadata, metadatas: [metadata], imageIcon: imageIcon)
+            DispatchQueue.main.async {
+                guard UIApplication.shared.applicationState == .active else { return }
+                if metadata.contentType.contains("opendocument") && !self.utility.isRichDocument(metadata) {
+                    self.openDocumentController(metadata: metadata)
+                } else if metadata.classFile == NKCommon.TypeClassFile.compress.rawValue || metadata.classFile == NKCommon.TypeClassFile.unknow.rawValue {
+                    self.openDocumentController(metadata: metadata)
+                } else {
+                    if let viewController = self.appDelegate?.activeViewController {
+                        let imageIcon = UIImage(contentsOfFile: self.utilityFileSystem.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag))
+                        NCViewer().view(viewController: viewController, metadata: metadata, metadatas: [metadata], imageIcon: imageIcon)
+                    }
                 }
             }
 
         case NCGlobal.shared.selectorOpenIn:
-            if UIApplication.shared.applicationState == .active {
-                self.openDocumentController(metadata: metadata)
+            DispatchQueue.main.async {
+                if UIApplication.shared.applicationState == .active {
+                    self.openDocumentController(metadata: metadata)
+                }
             }
 
         case NCGlobal.shared.selectorLoadOffline:
@@ -121,10 +126,14 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
             }
 
         case NCGlobal.shared.selectorSaveAlbum:
-            saveAlbum(metadata: metadata)
+            DispatchQueue.main.async {
+                self.saveAlbum(metadata: metadata)
+            }
 
         case NCGlobal.shared.selectorSaveAsScan:
-            saveAsScan(metadata: metadata)
+            DispatchQueue.main.async {
+                self.saveAsScan(metadata: metadata)
+            }
 
         case NCGlobal.shared.selectorOpenDetail:
             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterOpenMediaDetail, userInfo: ["ocId": metadata.ocId])
@@ -146,11 +155,12 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
             }
         } else if metadata.directory {
             NCManageDatabase.shared.setDirectory(serverUrl: serverUrl, offline: true, account: appDelegate.account)
-            NCNetworking.shared.synchronizationServerUrl(serverUrl, account: metadata.account, selector: NCGlobal.shared.selectorSynchronizationOffline)
+            NCNetworking.shared.synchronization(account: metadata.account, serverUrl: serverUrl, selector: NCGlobal.shared.selectorSynchronizationOffline)
         } else {
-            NCNetworking.shared.download(metadata: metadata, selector: NCGlobal.shared.selectorLoadOffline) { _, _ in }
-            if let metadataLivePhoto = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata) {
-                NCNetworking.shared.download(metadata: metadataLivePhoto, selector: NCGlobal.shared.selectorLoadOffline) { _, _ in }
+            guard let metadata = NCManageDatabase.shared.setMetadataSessionInWaitDownload(ocId: metadata.ocId, selector: NCGlobal.shared.selectorLoadOffline) else { return }
+            NCNetworking.shared.download(metadata: metadata, withNotificationProgressTask: true)
+            if let metadata = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata), let metadata = NCManageDatabase.shared.setMetadataSessionInWaitDownload(ocId: metadata.ocId, selector: NCGlobal.shared.selectorLoadOffline) {
+                NCNetworking.shared.download(metadata: metadata, withNotificationProgressTask: true)
             }
         }
     }
@@ -321,7 +331,8 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
         let processor = ParallelWorker(n: 5, titleKey: "_downloading_", totalTasks: downloadMetadata.count, hudView: appDelegate.window?.rootViewController?.view)
         for (metadata, url) in downloadMetadata {
             processor.execute { completion in
-                NCNetworking.shared.download(metadata: metadata, selector: "", notificationCenterProgressTask: false) { _ in
+                guard let metadata = NCManageDatabase.shared.setMetadataSessionInWaitDownload(ocId: metadata.ocId, selector: "") else { return completion() }
+                NCNetworking.shared.download(metadata: metadata, withNotificationProgressTask: false) {
                 } progressHandler: { progress in
                     processor.hud?.progress = Float(progress.fractionCompleted)
                 } completion: { _, _ in
@@ -467,7 +478,9 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
 
             for metadata in downloadMetadatas {
                 processor.execute { completion in
-                    NCNetworking.shared.download(metadata: metadata, selector: "", notificationCenterProgressTask: false) { _ in
+                    guard let metadata = NCManageDatabase.shared.setMetadataSessionInWaitDownload(ocId: metadata.ocId, selector: "") else { return completion() }
+                    NCNetworking.shared.download(metadata: metadata, withNotificationProgressTask: false) {
+                    } requestHandler: { _ in
                     } progressHandler: { progress in
                         if Float(progress.fractionCompleted) > fractionCompleted || fractionCompleted == 0 {
                             processor.hud?.progress = Float(progress.fractionCompleted)
@@ -506,7 +519,7 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
                     let toPath = self.utilityFileSystem.getDirectoryProviderStorageOcId(ocId!, fileNameView: fileName)
                     self.utilityFileSystem.moveFile(atPath: fileNameLocalPath, toPath: toPath)
                     NCManageDatabase.shared.addLocalFile(account: account, etag: etag!, ocId: ocId!, fileName: fileName)
-                    NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSourceNetworkForced)
+                    NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSourceNetwork)
                 } else if afError?.isExplicitlyCancelledError ?? false {
                     print("cancel")
                 } else {

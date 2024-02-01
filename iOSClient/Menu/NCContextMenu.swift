@@ -74,10 +74,18 @@ class NCContextMenu: NSObject {
         let openIn = UIAction(title: NSLocalizedString("_open_in_", comment: ""),
                               image: UIImage(systemName: "square.and.arrow.up") ) { _ in
             if self.utilityFileSystem.fileProviderStorageExists(metadata) {
-                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDownloadedFile, userInfo: ["ocId": metadata.ocId, "selector": NCGlobal.shared.selectorOpenIn, "error": NKError(), "account": metadata.account])
+                NotificationCenter.default.post(
+                    name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterDownloadedFile),
+                    object: nil,
+                    userInfo: ["ocId": metadata.ocId,
+                               "selector": NCGlobal.shared.selectorOpenIn,
+                               "error": NKError(),
+                               "account": metadata.account])
             } else {
+                guard let metadata = NCManageDatabase.shared.setMetadataSessionInWaitDownload(ocId: metadata.ocId, selector: NCGlobal.shared.selectorOpenIn) else { return }
                 hud.show(in: viewController.view)
-                NCNetworking.shared.download(metadata: metadata, selector: NCGlobal.shared.selectorOpenIn, notificationCenterProgressTask: false) { request in
+                NCNetworking.shared.download(metadata: metadata, withNotificationProgressTask: false) {
+                } requestHandler: { request in
                     downloadRequest = request
                 } progressHandler: { progress in
                     hud.progress = Float(progress.fractionCompleted)
@@ -106,8 +114,10 @@ class NCContextMenu: NSObject {
                 if self.utilityFileSystem.fileProviderStorageExists(metadata) {
                     NCActionCenter.shared.saveAlbum(metadata: metadata)
                 } else {
+                    guard let metadata = NCManageDatabase.shared.setMetadataSessionInWaitDownload(ocId: metadata.ocId, selector: NCGlobal.shared.selectorSaveAlbum) else { return }
                     hud.show(in: viewController.view)
-                    NCNetworking.shared.download(metadata: metadata, selector: NCGlobal.shared.selectorSaveAlbum, notificationCenterProgressTask: false) { request in
+                    NCNetworking.shared.download(metadata: metadata, withNotificationProgressTask: false) {
+                    } requestHandler: { request in
                         downloadRequest = request
                     } progressHandler: { progress in
                         hud.progress = Float(progress.fractionCompleted)
@@ -127,10 +137,18 @@ class NCContextMenu: NSObject {
         let modify = UIAction(title: NSLocalizedString("_modify_", comment: ""),
                               image: UIImage(systemName: "pencil.tip.crop.circle")) { _ in
             if self.utilityFileSystem.fileProviderStorageExists(metadata) {
-                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDownloadedFile, userInfo: ["ocId": metadata.ocId, "selector": NCGlobal.shared.selectorLoadFileQuickLook, "error": NKError(), "account": metadata.account])
+                NotificationCenter.default.post(
+                    name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterDownloadedFile),
+                    object: nil,
+                    userInfo: ["ocId": metadata.ocId,
+                               "selector": NCGlobal.shared.selectorLoadFileQuickLook,
+                               "error": NKError(),
+                               "account": metadata.account])
             } else {
+                guard let metadata = NCManageDatabase.shared.setMetadataSessionInWaitDownload(ocId: metadata.ocId, selector: NCGlobal.shared.selectorLoadFileQuickLook) else { return }
                 hud.show(in: viewController.view)
-                NCNetworking.shared.download(metadata: metadata, selector: NCGlobal.shared.selectorLoadFileQuickLook, notificationCenterProgressTask: false) { request in
+                NCNetworking.shared.download(metadata: metadata, withNotificationProgressTask: false) {
+                } requestHandler: { request in
                     downloadRequest = request
                 } progressHandler: { progress in
                     hud.progress = Float(progress.fractionCompleted)
