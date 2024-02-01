@@ -53,8 +53,7 @@ class NCMediaCommandView: UIView {
         menuButton.layer.masksToBounds = true
         menuButton.showsMenuAsPrimaryAction = true
         menuButton.configuration = UIButton.Configuration.plain()
-        let image = UIImage(systemName: "ellipsis")
-        menuButton.setImage(image, for: .normal)
+        menuButton.setImage(UIImage(systemName: "ellipsis"), for: .normal)
         menuButton.changesSelectionAsPrimaryAction = false
 
         gradient.frame = bounds
@@ -188,6 +187,21 @@ class NCMediaCommandView: UIView {
         } else {
             selectButton.isHidden = false
             menuButton.isHidden = false
+        }
+    }
+
+    func setColor(isTop: Bool) {
+
+        if isTop {
+            title.textColor = .label
+            selectButton.setTitleColor(.label, for: .normal)
+            menuButton.setImage(UIImage(systemName: "ellipsis")?.withTintColor(.label, renderingMode: .alwaysOriginal), for: .normal)
+            gradient.isHidden = true
+        } else {
+            title.textColor = .white
+            selectButton.setTitleColor(.white, for: .normal)
+            menuButton.setImage(UIImage(systemName: "ellipsis")?.withTintColor(.white, renderingMode: .alwaysOriginal), for: .normal)
+            gradient.isHidden = false
         }
     }
 }

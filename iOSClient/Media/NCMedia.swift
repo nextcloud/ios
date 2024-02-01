@@ -352,13 +352,9 @@ extension NCMedia: UIScrollViewDelegate {
 
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
 
-        if scrollView.contentOffset.y <= -(insetsTop + view.safeAreaInsets.top - 35) {
-            self.mediaCommandView?.title.textColor = .black
-            self.mediaCommandView?.gradient.isHidden = true
-        } else {
-            self.mediaCommandView?.title.textColor = .white
-            self.mediaCommandView?.gradient.isHidden = false
-        }
+        let isTop = scrollView.contentOffset.y <= -(insetsTop + view.safeAreaInsets.top - 35)
+
+        mediaCommandView?.setColor(isTop: isTop)
 
         if lastContentOffsetY == 0 || lastContentOffsetY + cellHeigth / 2 <= scrollView.contentOffset.y || lastContentOffsetY - cellHeigth / 2 >= scrollView.contentOffset.y {
             mediaCommandView?.setTitleDate()
