@@ -6,6 +6,7 @@
 //  Copyright © 2024 Marino Faggiana. All rights reserved.
 //
 
+import UIKit
 import SwiftUI
 
 protocol NCTabBarSelectDelegate: AnyObject {
@@ -21,10 +22,10 @@ class NCMediaTabbarSelect: ObservableObject {
 
     @Published var selectCount: Int = 0
 
-    init(tabBarController: UITabBarController? = nil, height: CGFloat, delegate: NCTabBarSelectDelegate? = nil) {
+    init(tabBarController: UITabBarController? = nil, height: CGFloat, backgroundColor: UIColor, delegate: NCTabBarSelectDelegate? = nil) {
 
         guard let tabBarController else { return }
-        let hostingController = UIHostingController(rootView: MediaTabBarSelectView(tabBarSelect: self))
+        let hostingController = UIHostingController(rootView: MediaTabBarSelectView(object: self))
 
         self.tabBarController = tabBarController
         self.hostingController = hostingController
@@ -39,6 +40,8 @@ class NCMediaTabbarSelect: ObservableObject {
         hostingController.view.rightAnchor.constraint(equalTo: tabBarController.view.rightAnchor).isActive = true
         hostingController.view.leftAnchor.constraint(equalTo: tabBarController.view.leftAnchor).isActive = true
         hostingController.view.heightAnchor.constraint(equalToConstant: height).isActive = true
+
+        hostingController.view.backgroundColor = backgroundColor
     }
 
     func removeTabBar() {
@@ -50,20 +53,18 @@ class NCMediaTabbarSelect: ObservableObject {
 
 struct MediaTabBarSelectView: View {
 
-    @ObservedObject var tabBarSelect: NCMediaTabbarSelect
+    @ObservedObject var object: NCMediaTabbarSelect
 
     var body: some View {
         ZStack(alignment: .top) {
-            Color(UIColor.systemBackground).ignoresSafeArea()
             VStack {
-                Divider()
                 Button("Unselect") {
-                    tabBarSelect.delegate?.unselect(tabBarSelect: tabBarSelect)
+                    object.delegate?.unselect(tabBarSelect: object)
                 }
                 Button("delete") {
-                    tabBarSelect.delegate?.delete(tabBarSelect: tabBarSelect)
-                }.disabled(self.tabBarSelect.selectCount == 0)
-                Text("Counter" + String(self.tabBarSelect.selectCount))
+                    object.delegate?.delete(tabBarSelect: object)
+                }.disabled(self.object.selectCount == 0)
+                Text("Counter" + String(self.object.selectCount))
                     .font(.system(size: 15))
                     .frame(maxWidth: .infinity, alignment: .trailing)
             }
@@ -75,5 +76,5 @@ struct MediaTabBarSelectView: View {
 }
 
 #Preview {
-    MediaTabBarSelectView(tabBarSelect: NCMediaTabbarSelect(height: 80))
+    MediaTabBarSelectView(object: NCMediaTabbarSelect(height: 80, backgroundColor: .green))
 }
