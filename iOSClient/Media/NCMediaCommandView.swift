@@ -72,7 +72,7 @@ class NCMediaCommandView: UIView {
 
         mediaView.isEditMode = true
         mediaView.collectionView.reloadData()
-        tabBarSelect = NCMediaTabbarSelect(tabBarController: tabBarController, height: 80, backgroundColor: .systemGray2.withAlphaComponent(0.98), delegate: self)
+        tabBarSelect = NCMediaTabbarSelect(tabBarController: tabBarController, height: 80, delegate: self)
     }
 
     func createMenu() {

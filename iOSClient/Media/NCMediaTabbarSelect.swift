@@ -22,7 +22,7 @@ class NCMediaTabbarSelect: ObservableObject {
 
     @Published var selectCount: Int = 0
 
-    init(tabBarController: UITabBarController? = nil, height: CGFloat, backgroundColor: UIColor, delegate: NCTabBarSelectDelegate? = nil) {
+    init(tabBarController: UITabBarController? = nil, height: CGFloat, delegate: NCTabBarSelectDelegate? = nil) {
 
         guard let tabBarController else { return }
         let hostingController = UIHostingController(rootView: MediaTabBarSelectView(object: self))
@@ -36,12 +36,14 @@ class NCMediaTabbarSelect: ObservableObject {
         tabBarController.view.addSubview(hostingController.view)
 
         hostingController.view.translatesAutoresizingMaskIntoConstraints = false
-        hostingController.view.bottomAnchor.constraint(equalTo: tabBarController.view.bottomAnchor).isActive = true
-        hostingController.view.rightAnchor.constraint(equalTo: tabBarController.view.rightAnchor).isActive = true
-        hostingController.view.leftAnchor.constraint(equalTo: tabBarController.view.leftAnchor).isActive = true
-        hostingController.view.heightAnchor.constraint(equalToConstant: height).isActive = true
+        NSLayoutConstraint.activate([
+            hostingController.view.bottomAnchor.constraint(equalTo: tabBarController.view.bottomAnchor, constant: tabBarController.view.safeAreaInsets.bottom),
+            hostingController.view.rightAnchor.constraint(equalTo: tabBarController.view.rightAnchor),
+            hostingController.view.leftAnchor.constraint(equalTo: tabBarController.view.leftAnchor),
+            hostingController.view.heightAnchor.constraint(equalToConstant: height + tabBarController.view.safeAreaInsets.bottom)
+        ])
 
-        hostingController.view.backgroundColor = backgroundColor
+        hostingController.view.backgroundColor = .clear
     }
 
     func removeTabBar() {
@@ -56,25 +58,29 @@ struct MediaTabBarSelectView: View {
     @ObservedObject var object: NCMediaTabbarSelect
 
     var body: some View {
-        ZStack(alignment: .top) {
-            VStack {
-                Button("Unselect") {
-                    object.delegate?.unselect(tabBarSelect: object)
+        GeometryReader { geo in
+            ZStack {
+                VStack {
+                    Button("Unselect") {
+                        object.delegate?.unselect(tabBarSelect: object)
+                    }
+                    Button("delete") {
+                        object.delegate?.delete(tabBarSelect: object)
+                    }.disabled(self.object.selectCount == 0)
+                    Text("Counter" + String(self.object.selectCount))
+                        .font(.system(size: 15))
+                        .frame(maxWidth: .infinity, alignment: .trailing)
                 }
-                Button("delete") {
-                    object.delegate?.delete(tabBarSelect: object)
-                }.disabled(self.object.selectCount == 0)
-                Text("Counter" + String(self.object.selectCount))
-                    .font(.system(size: 15))
-                    .frame(maxWidth: .infinity, alignment: .trailing)
-            }
-        }.onAppear {
+            }.onAppear {
 
+            }
+            .frame(width: geo.size.width, height: geo.size.height, alignment: .top)
+            .ignoresSafeArea(edges: .all)
+            .background(.ultraThinMaterial)
         }
-        .edgesIgnoringSafeArea(.all)
     }
 }
 
 #Preview {
-    MediaTabBarSelectView(object: NCMediaTabbarSelect(height: 80, backgroundColor: .green))
+    MediaTabBarSelectView(object: NCMediaTabbarSelect(height: 100))
 }
