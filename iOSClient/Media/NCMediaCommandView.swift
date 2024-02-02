@@ -194,11 +194,13 @@ class NCMediaCommandView: UIView {
 
         if isTop {
             title.textColor = .label
+            activityIndicator.color = .label
             selectButton.setTitleColor(.label, for: .normal)
             menuButton.setImage(UIImage(systemName: "ellipsis")?.withTintColor(.label, renderingMode: .alwaysOriginal), for: .normal)
             gradient.isHidden = true
         } else {
             title.textColor = .white
+            activityIndicator.color = .white
             selectButton.setTitleColor(.white, for: .normal)
             menuButton.setImage(UIImage(systemName: "ellipsis")?.withTintColor(.white, renderingMode: .alwaysOriginal), for: .normal)
             gradient.isHidden = false

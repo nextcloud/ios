@@ -53,7 +53,7 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
     var lastContentOffsetY: CGFloat = 0
     var mediaPath = ""
 
-    var timeIntervalSearchNewMedia: TimeInterval = 3.0
+    var timeIntervalSearchNewMedia: TimeInterval = 2.0
     var timerSearchNewMedia: Timer?
 
     let insetsTop: CGFloat = 75
