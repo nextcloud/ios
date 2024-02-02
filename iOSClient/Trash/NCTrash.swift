@@ -41,21 +41,25 @@ class NCTrash: UIViewController, NCTrashListCellDelegate, NCEmptyDataSetDelegate
     let utilityFileSystem = NCUtilityFileSystem()
     let utility = NCUtility()
 
-    internal var isEditMode = false
-    internal var selectOcId: [String] = []
-    internal var selectIndexPath: [IndexPath] = []
+    var isEditMode = false
+    var selectOcId: [String] = []
+    var selectIndexPath: [IndexPath] = []
 
     var datasource: [tableTrash] = []
     var layoutForView: NCDBLayoutForView?
     var listLayout: NCListLayout!
     var gridLayout: NCGridLayout!
     var layoutKey = NCGlobal.shared.layoutViewTrash
+    var tabBarSelect: NCCollectionViewCommonSelectTabBar?
 
     private let refreshControl = UIRefreshControl()
 
     // MARK: - View Life Cycle
 
     override func viewDidLoad() {
+        super.viewDidLoad()
+
+        tabBarSelect = NCCollectionViewCommonSelectTabBar(tabBarController: tabBarController, height: 80, delegate: self)
 
         view.backgroundColor = .systemBackground
         self.navigationController?.navigationBar.prefersLargeTitles = true
@@ -305,6 +309,10 @@ extension NCTrash {
 }
 
 extension NCTrash: NCSelectableNavigationView {
+    func unselect(tabBarSelect: NCCollectionViewCommonSelectTabBar, animation: Bool) {
+        
+    }
+    
     var viewController: UIViewController {
         self
     }

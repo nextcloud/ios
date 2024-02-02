@@ -32,52 +32,59 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
     @IBOutlet weak var collectionView: UICollectionView!
 
-    internal let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
-    internal let utilityFileSystem = NCUtilityFileSystem()
-    internal let utility = NCUtility()
-    internal let refreshControl = UIRefreshControl()
-    internal var searchController: UISearchController?
-    internal var emptyDataSet: NCEmptyDataSet?
-    internal var backgroundImageView = UIImageView()
-    internal var serverUrl: String = ""
-    internal var isEditMode = false
-    internal var selectOcId: [String] = []
-    internal var selectIndexPath: [IndexPath] = []
-    internal var metadataFolder: tableMetadata?
-    internal var dataSource = NCDataSource()
-    internal var richWorkspaceText: String?
-    internal var headerMenu: NCSectionHeaderMenu?
-    internal var isSearchingMode: Bool = false
-    internal var layoutForView: NCDBLayoutForView?
-    internal var selectableDataSource: [RealmSwiftObject] { dataSource.getMetadataSourceForAllSections() }
     private var autoUploadFileName = ""
     private var autoUploadDirectory = ""
-    internal var groupByField = "name"
-    internal var providers: [NKSearchProvider]?
-    internal var searchResults: [NKSearchResult]?
-    internal var listLayout: NCListLayout!
-    internal var gridLayout: NCGridLayout!
-    internal var literalSearch: String?
-    internal var isReloadDataSourceNetworkInProgress: Bool = false
-
-    internal var timerNotificationCenter: Timer?
-    internal var notificationReloadDataSource: Int = 0
-    internal var notificationReloadDataSourceNetwork: Int = 0
 
     private var pushed: Bool = false
     private var tipView: EasyTipView?
     private var isTransitioning: Bool = false
 
+    let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
+    let utilityFileSystem = NCUtilityFileSystem()
+    let utility = NCUtility()
+    let refreshControl = UIRefreshControl()
+    var searchController: UISearchController?
+    var emptyDataSet: NCEmptyDataSet?
+    var backgroundImageView = UIImageView()
+    var serverUrl: String = ""
+    var isEditMode = false
+    var selectOcId: [String] = []
+    var selectIndexPath: [IndexPath] = []
+    var metadataFolder: tableMetadata?
+    var dataSource = NCDataSource()
+    var richWorkspaceText: String?
+    var headerMenu: NCSectionHeaderMenu?
+    var isSearchingMode: Bool = false
+    var layoutForView: NCDBLayoutForView?
+    var selectableDataSource: [RealmSwiftObject] { dataSource.getMetadataSourceForAllSections() }
+
+    var groupByField = "name"
+    var providers: [NKSearchProvider]?
+    var searchResults: [NKSearchResult]?
+    var listLayout: NCListLayout!
+    var gridLayout: NCGridLayout!
+    var literalSearch: String?
+    var isReloadDataSourceNetworkInProgress: Bool = false
+    var tabBarSelect: NCCollectionViewCommonSelectTabBar?
+
+//    internal var /*tabBarController*/: UITabBarController?
+//    internal var tabBarSelect: NCCollectionViewCommonSelectTabBar?
+
+    var timerNotificationCenter: Timer?
+    var notificationReloadDataSource: Int = 0
+    var notificationReloadDataSourceNetwork: Int = 0
+
+
     // DECLARE
-    internal var layoutKey = ""
-    internal var titleCurrentFolder = ""
-    internal var titlePreviusFolder: String?
-    internal var enableSearchBar: Bool = false
-    internal var headerMenuTransferView = false
-    internal var headerRichWorkspaceDisable: Bool = false
-    internal var emptyImage: UIImage?
-    internal var emptyTitle: String = ""
-    internal var emptyDescription: String = ""
+    var layoutKey = ""
+    var titleCurrentFolder = ""
+    var titlePreviusFolder: String?
+    var enableSearchBar: Bool = false
+    var headerMenuTransferView = false
+    var headerRichWorkspaceDisable: Bool = false
+    var emptyImage: UIImage?
+    var emptyTitle: String = ""
+    var emptyDescription: String = ""
 
     // MARK: - View Life Cycle
 
@@ -87,6 +94,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
     override func viewDidLoad() {
         super.viewDidLoad()
+
+        tabBarSelect = NCCollectionViewCommonSelectTabBar(tabBarController: tabBarController, delegate: self)
 
         self.navigationController?.presentationController?.delegate = self
 
@@ -1586,9 +1595,9 @@ extension NCCollectionViewCommon: EasyTipViewDelegate {
     }
 }
 
-extension NCCollectionViewCommon: NCSelectableNavigationView {
-    var viewController: UIViewController {
-        self
+extension NCCollectionViewCommon: NCSelectableNavigationView {    
+    func unselect(tabBarSelect: NCCollectionViewCommonSelectTabBar, animation: Bool) {
+        
     }
     
     func onListSelected() {
