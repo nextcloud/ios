@@ -26,7 +26,7 @@ class NCMediaTabbarSelect: ObservableObject {
 
         guard let tabBarController else { return }
         let height = height + tabBarController.view.safeAreaInsets.bottom
-        let hostingController = UIHostingController(rootView: MediaTabBarSelectView(tabBarSelect: self, height: height))
+        let hostingController = UIHostingController(rootView: MediaTabBarSelectView(tabBarSelect: self))
 
         self.tabBarController = tabBarController
         self.hostingController = hostingController
@@ -57,18 +57,23 @@ class NCMediaTabbarSelect: ObservableObject {
 struct MediaTabBarSelectView: View {
 
     @ObservedObject var tabBarSelect: NCMediaTabbarSelect
-    let height: CGFloat
 
     var body: some View {
         VStack {
+            Spacer().frame(height: 10)
             HStack {
+                Spacer()
+                .frame(width: 15.0)
+
                 Button(NSLocalizedString("_cancel_", comment: "")) {
                     tabBarSelect.delegate?.cancel(tabBarSelect: tabBarSelect)
                 }
+                Spacer()
 
                 Text(String(tabBarSelect.selectCount) + " " + NSLocalizedString("_selected_photos_", comment: ""))
-                    .font(.system(size: 15))
-                    .fontWeight(.bold)
+                .font(.system(size: 15))
+                .fontWeight(.bold)
+                Spacer()
 
                 Button {
                     tabBarSelect.delegate?.delete(tabBarSelect: tabBarSelect)
@@ -77,9 +82,11 @@ struct MediaTabBarSelectView: View {
                 }
                 .tint(.red)
                 .disabled(tabBarSelect.selectCount == 0)
+
+                Spacer()
+                .frame(width: 15.0)
             }
             .frame(maxWidth: .infinity)
-            // Spacer().frame(height: 50)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         .background(.thinMaterial)
@@ -88,5 +95,5 @@ struct MediaTabBarSelectView: View {
 }
 
 #Preview {
-    MediaTabBarSelectView(tabBarSelect: NCMediaTabbarSelect(), height: 83)
+    MediaTabBarSelectView(tabBarSelect: NCMediaTabbarSelect())
 }
