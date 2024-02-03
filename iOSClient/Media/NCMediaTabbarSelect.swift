@@ -17,6 +17,7 @@ protocol NCTabBarSelectDelegate: AnyObject {
 class NCMediaUIHostingController<Content>: UIHostingController<Content> where Content: View {
 
     var heightAnchor: NSLayoutConstraint?
+    var bottomAnchor: NSLayoutConstraint?
 
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         super.viewWillTransition(to: size, with: coordinator)
@@ -25,6 +26,7 @@ class NCMediaUIHostingController<Content>: UIHostingController<Content> where Co
             if let height = self.tabBarController?.tabBar.frame.height,
                let safeAreaInsetsBottom = self.tabBarController?.view.safeAreaInsets.bottom {
                 self.heightAnchor?.constant = height + safeAreaInsetsBottom
+                self.bottomAnchor?.constant = safeAreaInsetsBottom
             }
         }
     }
@@ -32,7 +34,7 @@ class NCMediaUIHostingController<Content>: UIHostingController<Content> where Co
 
 class NCMediaTabbarSelect: ObservableObject {
 
-    var tabBarController: UITabBarController?
+    var mediaTabBarController: UITabBarController?
     var hostingController: UIViewController?
     open weak var delegate: NCTabBarSelectDelegate?
 
@@ -42,9 +44,10 @@ class NCMediaTabbarSelect: ObservableObject {
 
         guard let tabBarController else { return }
         let height = tabBarController.tabBar.frame.height + tabBarController.view.safeAreaInsets.bottom
-        let hostingController = NCMediaUIHostingController(rootView: MediaTabBarSelectView(tabBarSelect: self))
+        let mediaTabBarSelectView = MediaTabBarSelectView(tabBarSelect: self, height: height)
+        let hostingController = NCMediaUIHostingController(rootView: mediaTabBarSelectView)
 
-        self.tabBarController = tabBarController
+        self.mediaTabBarController = tabBarController
         self.hostingController = hostingController
         self.delegate = delegate
 
@@ -53,11 +56,12 @@ class NCMediaTabbarSelect: ObservableObject {
         tabBarController.view.addSubview(hostingController.view)
 
         hostingController.view.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            hostingController.view.bottomAnchor.constraint(equalTo: tabBarController.view.bottomAnchor, constant: tabBarController.view.safeAreaInsets.bottom),
-            hostingController.view.rightAnchor.constraint(equalTo: tabBarController.view.rightAnchor),
-            hostingController.view.leftAnchor.constraint(equalTo: tabBarController.view.leftAnchor)
-        ])
+        hostingController.view.rightAnchor.constraint(equalTo: tabBarController.view.rightAnchor).isActive = true
+        hostingController.view.leftAnchor.constraint(equalTo: tabBarController.view.leftAnchor).isActive = true
+
+        hostingController.bottomAnchor = hostingController.view.bottomAnchor.constraint(equalTo: tabBarController.view.bottomAnchor, constant: tabBarController.view.safeAreaInsets.bottom)
+        hostingController.bottomAnchor?.isActive = true
+
         hostingController.heightAnchor = hostingController.view.heightAnchor.constraint(equalToConstant: height)
         hostingController.heightAnchor?.isActive = true
 
@@ -67,13 +71,14 @@ class NCMediaTabbarSelect: ObservableObject {
     func removeTabBar() {
 
         hostingController?.view.removeFromSuperview()
-        tabBarController?.tabBar.isHidden = false
+        mediaTabBarController?.tabBar.isHidden = false
     }
 }
 
 struct MediaTabBarSelectView: View {
 
     @ObservedObject var tabBarSelect: NCMediaTabbarSelect
+    var height: CGFloat
 
     var body: some View {
         VStack {
@@ -114,11 +119,12 @@ struct MediaTabBarSelectView: View {
             .frame(maxWidth: .infinity)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+        .frame(height: height)
         .background(.thinMaterial)
         .overlay(Rectangle().frame(width: nil, height: 0.5, alignment: .top).foregroundColor(Color(UIColor.separator)), alignment: .top)
     }
 }
 
 #Preview {
-    MediaTabBarSelectView(tabBarSelect: NCMediaTabbarSelect())
+    MediaTabBarSelectView(tabBarSelect: NCMediaTabbarSelect(), height: 83)
 }
