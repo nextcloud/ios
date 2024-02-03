@@ -64,7 +64,6 @@ class NCMediaTabbarSelect: ObservableObject {
         self.mediaTabBarController = tabBarController
         self.delegate = delegate
 
-        tabBarController.tabBar.isHidden = true
         tabBarController.addChild(mediaUIHostingController)
         tabBarController.view.addSubview(mediaUIHostingController.view)
 
@@ -94,16 +93,6 @@ class NCMediaTabbarSelect: ObservableObject {
         mediaUIHostingController.view.isHidden = true
         mediaTabBarController?.tabBar.isHidden = false
     }
-
-    /*
-    func removeTabBar() {
-
-        hostingController?.bottomAnchor = nil
-        hostingController?.heightAnchor = nil
-        hostingController?.view.removeFromSuperview()
-        mediaTabBarController?.tabBar.isHidden = false
-    }
-    */
 }
 
 struct MediaTabBarSelectView: View {
