@@ -68,11 +68,19 @@ struct MediaTabBarSelectView: View {
                 Button(NSLocalizedString("_cancel_", comment: "")) {
                     tabBarSelect.delegate?.cancel(tabBarSelect: tabBarSelect)
                 }
+
                 Spacer()
 
-                Text(String(tabBarSelect.selectCount) + " " + NSLocalizedString("_selected_photos_", comment: ""))
-                .font(.system(size: 15))
-                .fontWeight(.bold)
+                if tabBarSelect.selectCount == 1 {
+                    Text(String(tabBarSelect.selectCount) + " " + NSLocalizedString("_selected_photo_", comment: ""))
+                    .font(.system(size: 15))
+                    .fontWeight(.bold)
+                } else {
+                    Text(String(tabBarSelect.selectCount) + " " + NSLocalizedString("_selected_photos_", comment: ""))
+                    .font(.system(size: 15))
+                    .fontWeight(.bold)
+                }
+
                 Spacer()
 
                 Button {
