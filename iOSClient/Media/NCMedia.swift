@@ -159,12 +159,11 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
                         items.append(cell.indexPath)
                     }
                 }
-                collectionView?.performBatchUpdates({
+                if !items.isEmpty {
                     collectionView?.deleteItems(at: items)
-                }, completion: { _ in
-                    self.collectionView?.reloadData()
-                })
+                }
             }
+            self.collectionView?.reloadData()
         }
 
         if error != .success {
