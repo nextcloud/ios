@@ -14,7 +14,7 @@ protocol NCTabBarSelectDelegate: AnyObject {
     func delete(tabBarSelect: NCMediaTabbarSelect)
 }
 
-class NCMediaUIHostingController<Content>: UIHostingController<Content> where Content: View {
+class NCMediaUIHostingController: UIHostingController<MediaTabBarSelectView> {
 
     var mediaTabBarController: UITabBarController?
     var heightAnchor: NSLayoutConstraint?
@@ -49,7 +49,7 @@ class NCMediaUIHostingController<Content>: UIHostingController<Content> where Co
 class NCMediaTabbarSelect: ObservableObject {
 
     var mediaTabBarController: UITabBarController?
-    var hostingController: UIViewController?
+    var mediaUIHostingController: NCMediaUIHostingController!
     open weak var delegate: NCTabBarSelectDelegate?
 
     @Published var selectCount: Int = 0
@@ -59,35 +59,51 @@ class NCMediaTabbarSelect: ObservableObject {
         guard let tabBarController else { return }
         let height = tabBarController.tabBar.frame.height + tabBarController.view.safeAreaInsets.bottom
         let mediaTabBarSelectView = MediaTabBarSelectView(tabBarSelect: self)
-        let hostingController: NCMediaUIHostingController = NCMediaUIHostingController(rootView: mediaTabBarSelectView)
+        mediaUIHostingController = NCMediaUIHostingController(rootView: mediaTabBarSelectView)
 
         self.mediaTabBarController = tabBarController
-        self.hostingController = hostingController
         self.delegate = delegate
 
         tabBarController.tabBar.isHidden = true
-        tabBarController.addChild(hostingController)
-        tabBarController.view.addSubview(hostingController.view)
+        tabBarController.addChild(mediaUIHostingController)
+        tabBarController.view.addSubview(mediaUIHostingController.view)
 
-        hostingController.mediaTabBarController = mediaTabBarController
-        hostingController.view.translatesAutoresizingMaskIntoConstraints = false
-        hostingController.view.rightAnchor.constraint(equalTo: tabBarController.view.rightAnchor).isActive = true
-        hostingController.view.leftAnchor.constraint(equalTo: tabBarController.view.leftAnchor).isActive = true
+        mediaUIHostingController.mediaTabBarController = mediaTabBarController
+        mediaUIHostingController.view.translatesAutoresizingMaskIntoConstraints = false
+        mediaUIHostingController.view.rightAnchor.constraint(equalTo: tabBarController.view.rightAnchor).isActive = true
+        mediaUIHostingController.view.leftAnchor.constraint(equalTo: tabBarController.view.leftAnchor).isActive = true
 
-        hostingController.bottomAnchor = hostingController.view.bottomAnchor.constraint(equalTo: tabBarController.view.bottomAnchor, constant: tabBarController.view.safeAreaInsets.bottom)
-        hostingController.bottomAnchor?.isActive = true
+        mediaUIHostingController.bottomAnchor = mediaUIHostingController.view.bottomAnchor.constraint(equalTo: tabBarController.view.bottomAnchor, constant: tabBarController.view.safeAreaInsets.bottom)
+        mediaUIHostingController.bottomAnchor?.isActive = true
 
-        hostingController.heightAnchor = hostingController.view.heightAnchor.constraint(equalToConstant: height)
-        hostingController.heightAnchor?.isActive = true
+        mediaUIHostingController.heightAnchor = mediaUIHostingController.view.heightAnchor.constraint(equalToConstant: height)
+        mediaUIHostingController.heightAnchor?.isActive = true
 
-        hostingController.view.backgroundColor = .red
+        mediaUIHostingController.view.backgroundColor = .clear
+        mediaUIHostingController.view.isHidden = true
     }
 
+    func show(animation: Bool) {
+
+        mediaTabBarController?.tabBar.isHidden = true
+        mediaUIHostingController.view.isHidden = false
+    }
+
+    func hide(animation: Bool) {
+
+        mediaUIHostingController.view.isHidden = true
+        mediaTabBarController?.tabBar.isHidden = false
+    }
+
+    /*
     func removeTabBar() {
 
+        hostingController?.bottomAnchor = nil
+        hostingController?.heightAnchor = nil
         hostingController?.view.removeFromSuperview()
         mediaTabBarController?.tabBar.isHidden = false
     }
+    */
 }
 
 struct MediaTabBarSelectView: View {

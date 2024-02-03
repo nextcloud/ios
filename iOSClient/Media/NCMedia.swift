@@ -33,6 +33,7 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
     var mediaCommandView: NCMediaCommandView?
     var layout: NCMediaGridLayout!
     var documentPickerViewController: NCDocumentPickerViewController?
+    var tabBarSelect: NCMediaTabbarSelect?
 
     let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
     let utilityFileSystem = NCUtilityFileSystem()
@@ -93,6 +94,8 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
         mediaCommandView?.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 0).isActive = true
         mediaCommandView?.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 0).isActive = true
         mediaCommandView?.heightAnchor.constraint(equalToConstant: 150).isActive = true
+
+        tabBarSelect = NCMediaTabbarSelect(tabBarController: self.tabBarController, delegate: mediaCommandView)
 
         cacheImages.cellLivePhotoImage = utility.loadImage(named: "livephoto", color: .white)
         cacheImages.cellPlayImage = utility.loadImage(named: "play.fill", color: .white)
@@ -221,7 +224,7 @@ extension NCMedia: UICollectionViewDelegate {
                     selectOcId.append(metadata.ocId)
                 }
                 collectionView.reloadItems(at: [indexPath])
-                mediaCommandView?.tabBarSelect?.selectCount = selectOcId.count
+                tabBarSelect?.selectCount = selectOcId.count
             } else {
                 // ACTIVE SERVERURL
                 appDelegate.activeServerUrl = metadata.serverUrl

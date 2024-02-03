@@ -33,7 +33,6 @@ class NCMediaCommandView: UIView {
 
     var mediaView: NCMedia!
     var tabBarController: UITabBarController?
-    var tabBarSelect: NCMediaTabbarSelect?
     var attributesZoomIn: UIMenuElement.Attributes = []
     var attributesZoomOut: UIMenuElement.Attributes = []
     let gradient: CAGradientLayer = CAGradientLayer()
@@ -72,7 +71,8 @@ class NCMediaCommandView: UIView {
 
         mediaView.isEditMode = true
         mediaView.collectionView.reloadData()
-        tabBarSelect = NCMediaTabbarSelect(tabBarController: tabBarController, delegate: self)
+
+        mediaView.tabBarSelect?.show(animation: true)
     }
 
     func createMenu() {
@@ -257,6 +257,6 @@ extension NCMediaCommandView: NCTabBarSelectDelegate {
         selectButton.isHidden = false
         menuButton.isHidden = false
 
-        tabBarSelect.removeTabBar()
+        mediaView.tabBarSelect?.hide(animation: true)
     }
 }
