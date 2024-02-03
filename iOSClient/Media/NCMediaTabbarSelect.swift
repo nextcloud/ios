@@ -10,7 +10,7 @@ import UIKit
 import SwiftUI
 
 protocol NCTabBarSelectDelegate: AnyObject {
-    func unselect(tabBarSelect: NCMediaTabbarSelect)
+    func cancel(tabBarSelect: NCMediaTabbarSelect)
     func delete(tabBarSelect: NCMediaTabbarSelect)
 }
 
@@ -25,6 +25,7 @@ class NCMediaTabbarSelect: ObservableObject {
     init(tabBarController: UITabBarController? = nil, height: CGFloat = 83, delegate: NCTabBarSelectDelegate? = nil) {
 
         guard let tabBarController else { return }
+        let height = height + tabBarController.view.safeAreaInsets.bottom
         let hostingController = UIHostingController(rootView: MediaTabBarSelectView(tabBarSelect: self, height: height))
 
         self.tabBarController = tabBarController
@@ -40,7 +41,7 @@ class NCMediaTabbarSelect: ObservableObject {
             hostingController.view.bottomAnchor.constraint(equalTo: tabBarController.view.bottomAnchor, constant: tabBarController.view.safeAreaInsets.bottom),
             hostingController.view.rightAnchor.constraint(equalTo: tabBarController.view.rightAnchor),
             hostingController.view.leftAnchor.constraint(equalTo: tabBarController.view.leftAnchor),
-            hostingController.view.heightAnchor.constraint(equalToConstant: height + tabBarController.view.safeAreaInsets.bottom)
+            hostingController.view.heightAnchor.constraint(equalToConstant: height)
         ])
 
         hostingController.view.backgroundColor = .clear
@@ -59,15 +60,15 @@ struct MediaTabBarSelectView: View {
     let height: CGFloat
 
     var body: some View {
-        VStack(alignment: .leading) {
+        VStack {
             HStack {
-                Button("Unselect") {
-                    tabBarSelect.delegate?.unselect(tabBarSelect: tabBarSelect)
+                Button(NSLocalizedString("_cancel_", comment: "")) {
+                    tabBarSelect.delegate?.cancel(tabBarSelect: tabBarSelect)
                 }
 
-                Text("Counter" + String(tabBarSelect.selectCount))
+                Text(String(tabBarSelect.selectCount) + " " + NSLocalizedString("_selected_photos_", comment: ""))
                     .font(.system(size: 15))
-                    // .frame(maxWidth: .infinity, alignment: .trailing)
+                    .fontWeight(.bold)
 
                 Button {
                     tabBarSelect.delegate?.delete(tabBarSelect: tabBarSelect)
@@ -75,12 +76,12 @@ struct MediaTabBarSelectView: View {
                     Image(systemName: "trash")
                 }
                 .tint(.red)
-                .frame(maxWidth: .infinity)
                 .disabled(tabBarSelect.selectCount == 0)
             }
-            Spacer().frame(height: 30)
+            .frame(maxWidth: .infinity)
+            // Spacer().frame(height: 50)
         }
-        .frame(height: height)
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         .background(.thinMaterial)
         .overlay(Rectangle().frame(width: nil, height: 0.5, alignment: .top).foregroundColor(Color(UIColor.separator)), alignment: .top)
     }

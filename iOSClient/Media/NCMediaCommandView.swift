@@ -240,7 +240,7 @@ extension NCMediaCommandView: NCTabBarSelectDelegate {
                     NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDeleteFile, userInfo: ["ocId": ocIds, "onlyLocalCache": false, "error": error])
                 }
 
-                self.unselect(tabBarSelect: tabBarSelect)
+                self.cancel(tabBarSelect: tabBarSelect)
             })
             alertController.addAction(UIAlertAction(title: NSLocalizedString("_no_delete_", comment: ""), style: .default) { (_: UIAlertAction) in })
 
@@ -248,7 +248,7 @@ extension NCMediaCommandView: NCTabBarSelectDelegate {
         }
     }
 
-    func unselect(tabBarSelect: NCMediaTabbarSelect) {
+    func cancel(tabBarSelect: NCMediaTabbarSelect) {
 
         mediaView.isEditMode = false
         mediaView.selectOcId.removeAll()
