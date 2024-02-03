@@ -14,6 +14,22 @@ protocol NCTabBarSelectDelegate: AnyObject {
     func delete(tabBarSelect: NCMediaTabbarSelect)
 }
 
+class NCMediaUIHostingController<Content>: UIHostingController<Content> where Content: View {
+
+    var heightAnchor: NSLayoutConstraint?
+
+    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        super.viewWillTransition(to: size, with: coordinator)
+
+        coordinator.animate(alongsideTransition: nil) { _ in
+            if let height = self.tabBarController?.tabBar.frame.height,
+               let safeAreaInsetsBottom = self.tabBarController?.view.safeAreaInsets.bottom {
+                self.heightAnchor?.constant = height + safeAreaInsetsBottom
+            }
+        }
+    }
+}
+
 class NCMediaTabbarSelect: ObservableObject {
 
     var tabBarController: UITabBarController?
@@ -22,11 +38,11 @@ class NCMediaTabbarSelect: ObservableObject {
 
     @Published var selectCount: Int = 0
 
-    init(tabBarController: UITabBarController? = nil, height: CGFloat = 83, delegate: NCTabBarSelectDelegate? = nil) {
+    init(tabBarController: UITabBarController? = nil, delegate: NCTabBarSelectDelegate? = nil) {
 
         guard let tabBarController else { return }
-        let height = height + tabBarController.view.safeAreaInsets.bottom
-        let hostingController = UIHostingController(rootView: MediaTabBarSelectView(tabBarSelect: self))
+        let height = tabBarController.tabBar.frame.height + tabBarController.view.safeAreaInsets.bottom
+        let hostingController = NCMediaUIHostingController(rootView: MediaTabBarSelectView(tabBarSelect: self))
 
         self.tabBarController = tabBarController
         self.hostingController = hostingController
@@ -40,9 +56,10 @@ class NCMediaTabbarSelect: ObservableObject {
         NSLayoutConstraint.activate([
             hostingController.view.bottomAnchor.constraint(equalTo: tabBarController.view.bottomAnchor, constant: tabBarController.view.safeAreaInsets.bottom),
             hostingController.view.rightAnchor.constraint(equalTo: tabBarController.view.rightAnchor),
-            hostingController.view.leftAnchor.constraint(equalTo: tabBarController.view.leftAnchor),
-            hostingController.view.heightAnchor.constraint(equalToConstant: height)
+            hostingController.view.leftAnchor.constraint(equalTo: tabBarController.view.leftAnchor)
         ])
+        hostingController.heightAnchor = hostingController.view.heightAnchor.constraint(equalToConstant: height)
+        hostingController.heightAnchor?.isActive = true
 
         hostingController.view.backgroundColor = .clear
     }
