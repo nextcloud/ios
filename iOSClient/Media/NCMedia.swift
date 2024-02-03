@@ -154,22 +154,17 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
         if !ocIds.isEmpty {
             var items: [IndexPath] = []
             self.metadatas = self.metadatas?.filter({ !ocIds.contains($0.ocId )})
-            if self.metadatas?.count ?? 0 > 0 {
-                if let visibleCells = self.collectionView?.indexPathsForVisibleItems.sorted(by: { $0.row < $1.row }).compactMap({ self.collectionView?.cellForItem(at: $0) }) {
-                    for case let cell as NCGridMediaCell in visibleCells {
-                        if let ocId = cell.fileObjectId, ocIds.contains(ocId) {
-                            items.append(cell.indexPath)
-                        }
+            if let visibleCells = self.collectionView?.indexPathsForVisibleItems.sorted(by: { $0.row < $1.row }).compactMap({ self.collectionView?.cellForItem(at: $0) }) {
+                for case let cell as NCGridMediaCell in visibleCells {
+                    if let ocId = cell.fileObjectId, ocIds.contains(ocId) {
+                        items.append(cell.indexPath)
                     }
-                    collectionView?.performBatchUpdates({
-                        collectionView?.deleteItems(at: items)
-                    }, completion: { _ in
-                        self.collectionView?.reloadData()
-                    })
                 }
-            } else {
-                reloadDataSource()
+                if !items.isEmpty {
+                    collectionView?.deleteItems(at: items)
+                }
             }
+            self.collectionView?.reloadData()
         }
 
         if error != .success {
