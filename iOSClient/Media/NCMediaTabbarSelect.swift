@@ -32,10 +32,12 @@ class NCMediaUIHostingController<Content>: UIHostingController<Content> where Co
                 let height = tabBarController.tabBar.frame.height
                 let safeAreaInsetsBottom = tabBarController.view.safeAreaInsets.bottom
 
+                self.bottomAnchor?.isActive = false
                 self.view.removeConstraint(bottomAnchor)
                 self.bottomAnchor = self.view.bottomAnchor.constraint(equalTo: tabBarController.view.bottomAnchor, constant: safeAreaInsetsBottom)
                 self.bottomAnchor?.isActive = true
 
+                self.heightAnchor?.isActive = false
                 self.view.removeConstraint(heightAnchor)
                 self.heightAnchor = self.view.heightAnchor.constraint(equalToConstant: height + safeAreaInsetsBottom)
                 self.heightAnchor?.isActive = true
@@ -57,7 +59,7 @@ class NCMediaTabbarSelect: ObservableObject {
         guard let tabBarController else { return }
         let height = tabBarController.tabBar.frame.height + tabBarController.view.safeAreaInsets.bottom
         let mediaTabBarSelectView = MediaTabBarSelectView(tabBarSelect: self)
-        let hostingController = NCMediaUIHostingController(rootView: mediaTabBarSelectView)
+        let hostingController: NCMediaUIHostingController = NCMediaUIHostingController(rootView: mediaTabBarSelectView)
 
         self.mediaTabBarController = tabBarController
         self.hostingController = hostingController
