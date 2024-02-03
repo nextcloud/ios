@@ -25,8 +25,8 @@ class NCMediaUIHostingController<Content>: UIHostingController<Content> where Co
         coordinator.animate(alongsideTransition: nil) { _ in
             if let height = self.tabBarController?.tabBar.frame.height,
                let safeAreaInsetsBottom = self.tabBarController?.view.safeAreaInsets.bottom {
-                self.heightAnchor?.constant = height + safeAreaInsetsBottom
-                self.bottomAnchor?.constant = safeAreaInsetsBottom
+                // self.heightAnchor?.constant = height + safeAreaInsetsBottom
+                // self.bottomAnchor?.constant = safeAreaInsetsBottom
             }
         }
     }
@@ -44,7 +44,7 @@ class NCMediaTabbarSelect: ObservableObject {
 
         guard let tabBarController else { return }
         let height = tabBarController.tabBar.frame.height + tabBarController.view.safeAreaInsets.bottom
-        let mediaTabBarSelectView = MediaTabBarSelectView(tabBarSelect: self, height: height)
+        let mediaTabBarSelectView = MediaTabBarSelectView(tabBarSelect: self)
         let hostingController = NCMediaUIHostingController(rootView: mediaTabBarSelectView)
 
         self.mediaTabBarController = tabBarController
@@ -78,7 +78,6 @@ class NCMediaTabbarSelect: ObservableObject {
 struct MediaTabBarSelectView: View {
 
     @ObservedObject var tabBarSelect: NCMediaTabbarSelect
-    var height: CGFloat
 
     var body: some View {
         VStack {
@@ -119,12 +118,11 @@ struct MediaTabBarSelectView: View {
             .frame(maxWidth: .infinity)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-        .frame(height: height)
         .background(.thinMaterial)
         .overlay(Rectangle().frame(width: nil, height: 0.5, alignment: .top).foregroundColor(Color(UIColor.separator)), alignment: .top)
     }
 }
 
 #Preview {
-    MediaTabBarSelectView(tabBarSelect: NCMediaTabbarSelect(), height: 83)
+    MediaTabBarSelectView(tabBarSelect: NCMediaTabbarSelect())
 }
