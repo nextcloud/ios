@@ -22,10 +22,10 @@ class NCMediaTabbarSelect: ObservableObject {
 
     @Published var selectCount: Int = 0
 
-    init(tabBarController: UITabBarController? = nil, height: CGFloat, delegate: NCTabBarSelectDelegate? = nil) {
+    init(tabBarController: UITabBarController? = nil, height: CGFloat = 83, delegate: NCTabBarSelectDelegate? = nil) {
 
         guard let tabBarController else { return }
-        let hostingController = UIHostingController(rootView: MediaTabBarSelectView(object: self))
+        let hostingController = UIHostingController(rootView: MediaTabBarSelectView(tabBarSelect: self, height: height))
 
         self.tabBarController = tabBarController
         self.hostingController = hostingController
@@ -55,32 +55,37 @@ class NCMediaTabbarSelect: ObservableObject {
 
 struct MediaTabBarSelectView: View {
 
-    @ObservedObject var object: NCMediaTabbarSelect
+    @ObservedObject var tabBarSelect: NCMediaTabbarSelect
+    let height: CGFloat
 
     var body: some View {
-        GeometryReader { geo in
-            ZStack {
-                VStack {
-                    Button("Unselect") {
-                        object.delegate?.unselect(tabBarSelect: object)
-                    }
-                    Button("delete") {
-                        object.delegate?.delete(tabBarSelect: object)
-                    }.disabled(self.object.selectCount == 0)
-                    Text("Counter" + String(self.object.selectCount))
-                        .font(.system(size: 15))
-                        .frame(maxWidth: .infinity, alignment: .trailing)
+        VStack(alignment: .leading) {
+            HStack {
+                Button("Unselect") {
+                    tabBarSelect.delegate?.unselect(tabBarSelect: tabBarSelect)
                 }
-            }.onAppear {
 
+                Text("Counter" + String(tabBarSelect.selectCount))
+                    .font(.system(size: 15))
+                    // .frame(maxWidth: .infinity, alignment: .trailing)
+
+                Button {
+                    tabBarSelect.delegate?.delete(tabBarSelect: tabBarSelect)
+                } label: {
+                    Image(systemName: "trash")
+                }
+                .tint(.red)
+                .frame(maxWidth: .infinity)
+                .disabled(tabBarSelect.selectCount == 0)
             }
-            .frame(width: geo.size.width, height: geo.size.height, alignment: .top)
-            .ignoresSafeArea(edges: .all)
-            .background(.ultraThinMaterial)
+            Spacer().frame(height: 30)
         }
+        .frame(height: height)
+        .background(.thinMaterial)
+        .overlay(Rectangle().frame(width: nil, height: 0.5, alignment: .top).foregroundColor(Color(UIColor.separator)), alignment: .top)
     }
 }
 
 #Preview {
-    MediaTabBarSelectView(object: NCMediaTabbarSelect(height: 100))
+    MediaTabBarSelectView(tabBarSelect: NCMediaTabbarSelect(), height: 83)
 }
