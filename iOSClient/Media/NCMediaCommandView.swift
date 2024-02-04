@@ -257,6 +257,6 @@ extension NCMediaCommandView: NCTabBarSelectDelegate {
         selectButton.isHidden = false
         menuButton.isHidden = false
 
-        mediaView.tabBarSelect?.hide(animation: true)
+        tabBarSelect.hide(animation: true)
     }
 }
