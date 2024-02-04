@@ -67,26 +67,20 @@ struct MediaTabBarSelectView: View {
         VStack {
             Spacer().frame(height: 10)
             HStack {
-                Spacer()
-                .frame(width: 15.0)
-
                 Button(NSLocalizedString("_cancel_", comment: "")) {
                     tabBarSelect.delegate?.cancel(tabBarSelect: tabBarSelect)
                 }
+                .frame(maxWidth: .infinity)
 
-                Spacer()
-
-                if tabBarSelect.selectCount == 1 {
-                    Text(String(tabBarSelect.selectCount) + " " + NSLocalizedString("_selected_photo_", comment: ""))
-                    .font(.system(size: 15))
-                    .fontWeight(.bold)
-                } else {
-                    Text(String(tabBarSelect.selectCount) + " " + NSLocalizedString("_selected_photos_", comment: ""))
-                    .font(.system(size: 15))
-                    .fontWeight(.bold)
+                Group {
+                    if tabBarSelect.selectCount == 1 {
+                        Text(String(tabBarSelect.selectCount) + " " + NSLocalizedString("_selected_photo_", comment: ""))
+                    } else {
+                        Text(String(tabBarSelect.selectCount) + " " + NSLocalizedString("_selected_photos_", comment: ""))
+                    }
                 }
-
-                Spacer()
+                .font(.system(size: 16, weight: .bold, design: .default))
+                .frame(minWidth: 220, maxWidth: .infinity)
 
                 Button {
                     tabBarSelect.delegate?.delete(tabBarSelect: tabBarSelect)
@@ -95,9 +89,7 @@ struct MediaTabBarSelectView: View {
                 }
                 .tint(.red)
                 .disabled(tabBarSelect.selectCount == 0)
-
-                Spacer()
-                .frame(width: 15.0)
+                .frame(maxWidth: .infinity)
             }
             .frame(maxWidth: .infinity)
         }
