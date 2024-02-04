@@ -954,6 +954,8 @@
 "_zoom_"                    = "Zoom";
 "_zoom_in_"                 = "Zoom in";
 "_zoom_out_"                = "Zoom out";
+"_selected_photo_"          = "selected photo";
+"_selected_photos_"         = "selected photos";
 
 // Video
 "_select_trace_"            = "Select the trace";
