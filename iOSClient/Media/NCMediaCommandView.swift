@@ -212,7 +212,7 @@ class NCMediaCommandView: UIView {
 
 extension NCMediaCommandView: NCTabBarSelectDelegate {
 
-    func delete(tabBarSelect: NCMediaTabbarSelect) {
+    func delete(tabBarController: NCMediaTabbarSelect) {
 
         if !mediaView.selectOcId.isEmpty {
             let selectOcId = mediaView.selectOcId
@@ -240,7 +240,7 @@ extension NCMediaCommandView: NCTabBarSelectDelegate {
                     NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDeleteFile, userInfo: ["ocId": ocIds, "onlyLocalCache": false, "error": error])
                 }
 
-                self.cancel(tabBarSelect: tabBarSelect)
+                self.cancel(tabBarController: tabBarController)
             })
             alertController.addAction(UIAlertAction(title: NSLocalizedString("_no_delete_", comment: ""), style: .default) { (_: UIAlertAction) in })
 
@@ -248,7 +248,7 @@ extension NCMediaCommandView: NCTabBarSelectDelegate {
         }
     }
 
-    func cancel(tabBarSelect: NCMediaTabbarSelect) {
+    func cancel(tabBarController: NCMediaTabbarSelect) {
 
         mediaView.isEditMode = false
         mediaView.selectOcId.removeAll()
@@ -257,6 +257,6 @@ extension NCMediaCommandView: NCTabBarSelectDelegate {
         selectButton.isHidden = false
         menuButton.isHidden = false
 
-        tabBarSelect.hide(animation: true)
+        tabBarController.hide(animation: true)
     }
 }
