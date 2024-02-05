@@ -72,6 +72,7 @@ class NCMediaCommandView: UIView {
         mediaView.isEditMode = true
         mediaView.collectionView.reloadData()
 
+        mediaView.tabBarSelect?.selectCount = mediaView.selectOcId.count
         mediaView.tabBarSelect?.show(animation: true)
     }
 
