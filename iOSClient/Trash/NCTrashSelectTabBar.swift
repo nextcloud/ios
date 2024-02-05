@@ -54,7 +54,7 @@ class NCTrashSelectTabBar: NCSelectableViewTabBar, ObservableObject {
 
     func show(animation: Bool) {
         guard let tabBarController, let hostingController else { return }
-
+        
         tabBarController.tabBar.isHidden = true
         
         if hostingController.view.isHidden {
