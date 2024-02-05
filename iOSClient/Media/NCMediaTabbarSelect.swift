@@ -68,13 +68,9 @@ class NCMediaTabbarSelect: ObservableObject {
     }
 
     func hide() {
-        hostingController.view.transform = .init(translationX: 0, y: 0)
-        UIView.animate(withDuration: 0.2) {
-            self.hostingController.view.transform = .init(translationX: 0, y: self.hostingController.view.frame.height)
-        } completion: { _ in
-            self.mediaTabBarController?.tabBar.isHidden = false
-            self.hostingController.view.isHidden = true
-        }
+
+        self.mediaTabBarController?.tabBar.isHidden = false
+        self.hostingController.view.isHidden = true
     }
 }
 
@@ -83,7 +79,7 @@ struct MediaTabBarSelectView: View {
 
     var body: some View {
         VStack {
-            Spacer().frame(height: 8)
+            Spacer().frame(height: 10)
             HStack {
                 Spacer().frame(maxWidth: .infinity)
                 Group {
