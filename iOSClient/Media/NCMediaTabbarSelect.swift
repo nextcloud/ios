@@ -25,8 +25,7 @@ import UIKit
 import SwiftUI
 
 protocol NCTabBarSelectDelegate: AnyObject {
-    func cancel(tabBarController: NCMediaTabbarSelect)
-    func delete(tabBarController: NCMediaTabbarSelect)
+    func delete()
 }
 
 class NCMediaTabbarSelect: ObservableObject {
@@ -93,7 +92,7 @@ struct MediaTabBarSelectView: View {
                 .frame(minWidth: 250, maxWidth: .infinity)
 
                 Button {
-                    tabBarSelect.delegate?.delete(tabBarController: tabBarSelect)
+                    tabBarSelect.delegate?.delete()
                 } label: {
                     Image(systemName: "trash")
                 }
