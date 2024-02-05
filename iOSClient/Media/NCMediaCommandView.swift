@@ -43,18 +43,20 @@ class NCMediaCommandView: UIView {
 
         title.text = ""
 
-        selectOrCancelButton.backgroundColor = .systemGray4.withAlphaComponent(0.6)
+        selectOrCancelButton.backgroundColor = nil
         selectOrCancelButton.layer.cornerRadius = 15
         selectOrCancelButton.layer.masksToBounds = true
         selectOrCancelButton.setTitle( NSLocalizedString("_select_", comment: ""), for: .normal)
+        selectOrCancelButton.addBlur(style: .systemThinMaterial)
 
-        menuButton.backgroundColor = .systemGray4.withAlphaComponent(0.6)
+        menuButton.backgroundColor = nil
         menuButton.layer.cornerRadius = 15
         menuButton.layer.masksToBounds = true
         menuButton.showsMenuAsPrimaryAction = true
         menuButton.configuration = UIButton.Configuration.plain()
         menuButton.setImage(UIImage(systemName: "ellipsis"), for: .normal)
         menuButton.changesSelectionAsPrimaryAction = false
+        menuButton.addBlur(style: .systemThinMaterial)
 
         gradient.frame = bounds
         gradient.startPoint = CGPoint(x: 0, y: 0.5)

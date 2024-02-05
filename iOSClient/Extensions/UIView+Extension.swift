@@ -45,4 +45,12 @@ extension UIView {
         hiddenView.fillSuperview()
         hiddenView.addSubview(view)
     }
+
+    func addBlur(style: UIBlurEffect.Style) {
+        let blur = UIBlurEffect(style: style)
+        let blurredEffectView = UIVisualEffectView(effect: blur)
+        blurredEffectView.frame = self.bounds
+        blurredEffectView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        self.addSubview(blurredEffectView)
+    }
 }
