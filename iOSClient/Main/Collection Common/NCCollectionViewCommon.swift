@@ -71,7 +71,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     var notificationReloadDataSource: Int = 0
     var notificationReloadDataSourceNetwork: Int = 0
 
-
     // DECLARE
     var layoutKey = ""
     var titleCurrentFolder = ""
@@ -1627,10 +1626,6 @@ extension NCCollectionViewCommon: NCSelectableNavigationView, NCCollectionViewCo
             } // else: file is not offline, continue
         }
 
-//        if tabBarSelect == nil {
-//            tabBarSelect = NCCollectionViewCommonSelectTabBar(tabBarController: viewController.tabBarController, delegate: viewController as? NCCollectionViewCommonSelectTabBarDelegate)
-//        }
-
         guard let tabBarSelect = tabBarSelect as? NCCollectionViewCommonSelectTabBar else { return }
 
         tabBarSelect.isAnyOffline = isAnyOffline
@@ -1666,9 +1661,6 @@ extension NCCollectionViewCommon: NCSelectableNavigationView, NCCollectionViewCo
 
     func onListSelected() {
         if layoutForView?.layout == NCGlobal.shared.layoutGrid {
-
-            // list layout
-//            headerMenu?.buttonSwitch.accessibilityLabel = NSLocalizedString("_grid_view_", comment: "")
             layoutForView?.layout = NCGlobal.shared.layoutList
             NCManageDatabase.shared.setLayoutForView(account: appDelegate.account, key: layoutKey, serverUrl: serverUrl, layout: layoutForView?.layout)
             self.groupByField = "name"
@@ -1684,7 +1676,6 @@ extension NCCollectionViewCommon: NCSelectableNavigationView, NCCollectionViewCo
 
     func onGridSelected() {
         if layoutForView?.layout == NCGlobal.shared.layoutList {
-            //            headerMenu?.buttonSwitch.accessibilityLabel = NSLocalizedString("_list_view_", comment: "")
             layoutForView?.layout = NCGlobal.shared.layoutGrid
             NCManageDatabase.shared.setLayoutForView(account: appDelegate.account, key: layoutKey, serverUrl: serverUrl, layout: layoutForView?.layout)
             if isSearchingMode {
@@ -1702,7 +1693,94 @@ extension NCCollectionViewCommon: NCSelectableNavigationView, NCCollectionViewCo
         }
     }
 
-    private func createMenuActions() -> [UIMenuElement] {
+    func selectAll() {
+        collectionViewSelectAll()
+    }
+
+    func delete(selectedMetadatas: [tableMetadata]) {
+        let alertController = UIAlertController(
+            title: NSLocalizedString("_confirm_delete_selected_", comment: ""),
+            message: nil,
+            preferredStyle: .actionSheet)
+
+        let canDeleteServer = selectedMetadatas.allSatisfy { !$0.lock }
+
+        if canDeleteServer {
+            let copyMetadatas = selectedMetadatas
+
+            alertController.addAction(UIAlertAction(title: NSLocalizedString("_yes_", comment: ""), style: .destructive) { _ in
+                Task {
+                    var error = NKError()
+                    var ocId: [String] = []
+                    for metadata in copyMetadatas where error == .success {
+                        error = await NCNetworking.shared.deleteMetadata(metadata, onlyLocalCache: false)
+                        if error == .success {
+                            ocId.append(metadata.ocId)
+                        }
+                    }
+                    NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDeleteFile, userInfo: ["ocId": ocId, "indexPath": self.selectIndexPath, "onlyLocalCache": false, "error": error])
+                    self.toggleSelect()
+                }
+            })
+        }
+
+        alertController.addAction(UIAlertAction(title: NSLocalizedString("_remove_local_file_", comment: ""), style: .default) { (_: UIAlertAction) in
+            let copyMetadatas = selectedMetadatas
+
+            Task {
+                var error = NKError()
+                var ocId: [String] = []
+                for metadata in copyMetadatas where error == .success {
+                    error = await NCNetworking.shared.deleteMetadata(metadata, onlyLocalCache: true)
+                    if error == .success {
+                        ocId.append(metadata.ocId)
+                    }
+                }
+                if error != .success {
+                    NCContentPresenter().showError(error: error)
+                }
+                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDeleteFile, userInfo: ["ocId": ocId, "indexPath": self.selectIndexPath, "onlyLocalCache": true, "error": error])
+                self.toggleSelect()
+            }
+        })
+
+        alertController.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel) { (_: UIAlertAction) in })
+        self.viewController.present(alertController, animated: true, completion: nil)
+    }
+
+    func move(selectedMetadatas: [tableMetadata]) {
+        NCActionCenter.shared.openSelectView(items: selectedMetadatas, indexPath: self.selectIndexPath)
+    }
+
+    func share(selectedMetadatas: [tableMetadata]) {
+        NCActionCenter.shared.openActivityViewController(selectedMetadata: selectedMetadatas)
+    }
+
+    func download(selectedMetadatas: [tableMetadata], isAnyOffline: Bool) {
+        if !isAnyOffline, selectedMetadatas.count > 3 {
+            let alert = UIAlertController(
+                title: NSLocalizedString("_set_available_offline_", comment: ""),
+                message: NSLocalizedString("_select_offline_warning_", comment: ""),
+                preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: NSLocalizedString("_continue_", comment: ""), style: .default, handler: { _ in
+                selectedMetadatas.forEach { NCActionCenter.shared.setMetadataAvalableOffline($0, isOffline: isAnyOffline) }
+                self.toggleSelect()
+            }))
+            alert.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel))
+            self.viewController.present(alert, animated: true)
+        } else {
+            selectedMetadatas.forEach { NCActionCenter.shared.setMetadataAvalableOffline($0, isOffline: isAnyOffline) }
+            self.toggleSelect()
+        }
+    }
+
+    func lock(selectedMetadatas: [tableMetadata], isAnyLocked: Bool) {
+        for metadata in selectedMetadatas where metadata.lock == isAnyLocked {
+            NCNetworking.shared.lockUnlockFile(metadata, shoulLock: !isAnyLocked)
+        }
+    }
+
+    func createMenuActions() -> [UIMenuElement] {
         guard let layoutForView = NCManageDatabase.shared.getLayoutForView(account: appDelegate.account, key: layoutKey, serverUrl: serverUrl) else { return [] }
 
         let select = UIAction(title: NSLocalizedString("_select_", comment: ""), image: .init(systemName: "checkmark.circle")) { _ in self.toggleSelect() }

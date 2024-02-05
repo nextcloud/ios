@@ -53,6 +53,7 @@ protocol NCSelectableNavigationView: AnyObject {
     func reloadDataSource(withQueryDB: Bool)
     func setNavigationItems()
     func setNavigationRightItems()
+    func createMenuActions() -> [UIMenuElement]
 
     func toggleSelect()
     func onListSelected()
@@ -60,93 +61,6 @@ protocol NCSelectableNavigationView: AnyObject {
 }
 
 extension NCSelectableNavigationView {
-//    func selectAll() {
-//        self.collectionViewSelectAll()
-//    }
-//
-//    func delete(selectedMetadatas: [tableMetadata]) {
-//        let alertController = UIAlertController(
-//            title: NSLocalizedString("_confirm_delete_selected_", comment: ""),
-//            message: nil,
-//            preferredStyle: .actionSheet)
-//
-//        let canDeleteServer = selectedMetadatas.allSatisfy { !$0.lock }
-//
-//        if canDeleteServer {
-//            let copyMetadatas = selectedMetadatas
-//
-//            alertController.addAction(UIAlertAction(title: NSLocalizedString("_yes_", comment: ""), style: .destructive) { _ in
-//                Task {
-//                    var error = NKError()
-//                    var ocId: [String] = []
-//                    for metadata in copyMetadatas where error == .success {
-//                        error = await NCNetworking.shared.deleteMetadata(metadata, onlyLocalCache: false)
-//                        if error == .success {
-//                            ocId.append(metadata.ocId)
-//                        }
-//                    }
-//                    NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDeleteFile, userInfo: ["ocId": ocId, "indexPath": self.selectIndexPath, "onlyLocalCache": false, "error": error])
-//                    self.toggleSelect()
-//                }
-//            })
-//        }
-//
-//        alertController.addAction(UIAlertAction(title: NSLocalizedString("_remove_local_file_", comment: ""), style: .default) { (_: UIAlertAction) in
-//            let copyMetadatas = selectedMetadatas
-//
-//            Task {
-//                var error = NKError()
-//                var ocId: [String] = []
-//                for metadata in copyMetadatas where error == .success {
-//                    error = await NCNetworking.shared.deleteMetadata(metadata, onlyLocalCache: true)
-//                    if error == .success {
-//                        ocId.append(metadata.ocId)
-//                    }
-//                }
-//                if error != .success {
-//                    NCContentPresenter().showError(error: error)
-//                }
-//                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDeleteFile, userInfo: ["ocId": ocId, "indexPath": self.selectIndexPath, "onlyLocalCache": true, "error": error])
-//                self.toggleSelect()
-//            }
-//        })
-//
-//        alertController.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel) { (_: UIAlertAction) in })
-//        self.viewController.present(alertController, animated: true, completion: nil)
-//    }
-//
-//    func move(selectedMetadatas: [tableMetadata]) {
-//        NCActionCenter.shared.openSelectView(items: selectedMetadatas, indexPath: self.selectIndexPath)
-//    }
-//
-//    func share(selectedMetadatas: [tableMetadata]) {
-//        NCActionCenter.shared.openActivityViewController(selectedMetadata: selectedMetadatas)
-//    }
-//
-//    func download(selectedMetadatas: [tableMetadata], isAnyOffline: Bool) {
-//        if !isAnyOffline, selectedMetadatas.count > 3 {
-//            let alert = UIAlertController(
-//                title: NSLocalizedString("_set_available_offline_", comment: ""),
-//                message: NSLocalizedString("_select_offline_warning_", comment: ""),
-//                preferredStyle: .alert)
-//            alert.addAction(UIAlertAction(title: NSLocalizedString("_continue_", comment: ""), style: .default, handler: { _ in
-//                selectedMetadatas.forEach { NCActionCenter.shared.setMetadataAvalableOffline($0, isOffline: isAnyOffline) }
-//                self.toggleSelect()
-//            }))
-//            alert.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel))
-//            self.viewController.present(alert, animated: true)
-//        } else {
-//            selectedMetadatas.forEach { NCActionCenter.shared.setMetadataAvalableOffline($0, isOffline: isAnyOffline) }
-//            self.toggleSelect()
-//        }
-//    }
-//
-//    func lock(selectedMetadatas: [tableMetadata], isAnyLocked: Bool) {
-//        for metadata in selectedMetadatas where metadata.lock == isAnyLocked {
-//            NCNetworking.shared.lockUnlockFile(metadata, shoulLock: !isAnyLocked)
-//        }
-//    }
-
     func setNavigationItems() {
         setNavigationRightItems()
     }
@@ -326,108 +240,7 @@ extension NCSelectableNavigationView {
 }
 
 extension NCSelectableNavigationView where Self: UIViewController {
-//    var tabBarSelect: NCCollectionViewCommonSelectTabBar {
-////        NCCollectionViewCommonSelectTabBar(tabBarController: tabBarController, height: 80, delegate: self)
-////    }
-
     var viewController: UIViewController {
         self
-    }
-}
-
-extension NCSelectableNavigationView where Self: NCCollectionViewCommon, Self: NCCollectionViewCommonSelectTabBarDelegate {
-//    var tabBarSelect: NCCollectionViewCommonSelectTabBar {
-////        NCCollectionViewCommonSelectTabBar(tabBarController: tabBarController, height: 80, delegate: self)
-////    }
-
-    var viewController: UIViewController {
-        self
-    }
-
-    func selectAll() {
-        self.collectionViewSelectAll()
-    }
-
-    func delete(selectedMetadatas: [tableMetadata]) {
-        let alertController = UIAlertController(
-            title: NSLocalizedString("_confirm_delete_selected_", comment: ""),
-            message: nil,
-            preferredStyle: .actionSheet)
-
-        let canDeleteServer = selectedMetadatas.allSatisfy { !$0.lock }
-
-        if canDeleteServer {
-            let copyMetadatas = selectedMetadatas
-
-            alertController.addAction(UIAlertAction(title: NSLocalizedString("_yes_", comment: ""), style: .destructive) { _ in
-                Task {
-                    var error = NKError()
-                    var ocId: [String] = []
-                    for metadata in copyMetadatas where error == .success {
-                        error = await NCNetworking.shared.deleteMetadata(metadata, onlyLocalCache: false)
-                        if error == .success {
-                            ocId.append(metadata.ocId)
-                        }
-                    }
-                    await NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDeleteFile, userInfo: ["ocId": ocId, "indexPath": self.selectIndexPath, "onlyLocalCache": false, "error": error])
-                    self.toggleSelect()
-                }
-            })
-        }
-
-        alertController.addAction(UIAlertAction(title: NSLocalizedString("_remove_local_file_", comment: ""), style: .default) { (_: UIAlertAction) in
-            let copyMetadatas = selectedMetadatas
-
-            Task {
-                var error = NKError()
-                var ocId: [String] = []
-                for metadata in copyMetadatas where error == .success {
-                    error = await NCNetworking.shared.deleteMetadata(metadata, onlyLocalCache: true)
-                    if error == .success {
-                        ocId.append(metadata.ocId)
-                    }
-                }
-                if error != .success {
-                    NCContentPresenter().showError(error: error)
-                }
-                await NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDeleteFile, userInfo: ["ocId": ocId, "indexPath": self.selectIndexPath, "onlyLocalCache": true, "error": error])
-                self.toggleSelect()
-            }
-        })
-
-        alertController.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel) { (_: UIAlertAction) in })
-        self.viewController.present(alertController, animated: true, completion: nil)
-    }
-
-    func move(selectedMetadatas: [tableMetadata]) {
-        NCActionCenter.shared.openSelectView(items: selectedMetadatas, indexPath: self.selectIndexPath)
-    }
-
-    func share(selectedMetadatas: [tableMetadata]) {
-        NCActionCenter.shared.openActivityViewController(selectedMetadata: selectedMetadatas)
-    }
-
-    func download(selectedMetadatas: [tableMetadata], isAnyOffline: Bool) {
-        if !isAnyOffline, selectedMetadatas.count > 3 {
-            let alert = UIAlertController(
-                title: NSLocalizedString("_set_available_offline_", comment: ""),
-                message: NSLocalizedString("_select_offline_warning_", comment: ""),
-                preferredStyle: .alert)
-            alert.addAction(UIAlertAction(title: NSLocalizedString("_continue_", comment: ""), style: .default, handler: { _ in
-                selectedMetadatas.forEach { NCActionCenter.shared.setMetadataAvalableOffline($0, isOffline: isAnyOffline) }
-                self.toggleSelect()
-            }))
-            alert.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel))
-            self.viewController.present(alert, animated: true)
-        } else {
-            selectedMetadatas.forEach { NCActionCenter.shared.setMetadataAvalableOffline($0, isOffline: isAnyOffline) }
-            self.toggleSelect()
-        }
-    }
-
-    func lock(selectedMetadatas: [tableMetadata], isAnyLocked: Bool) {
-        for metadata in selectedMetadatas where metadata.lock == isAnyLocked {
-            NCNetworking.shared.lockUnlockFile(metadata, shoulLock: !isAnyLocked)
-        }
     }
 }

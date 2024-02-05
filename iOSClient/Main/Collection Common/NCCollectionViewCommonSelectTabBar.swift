@@ -22,7 +22,7 @@ class NCCollectionViewCommonSelectTabBar: NCSelectableViewTabBar, ObservableObje
     private var tabBarController: UITabBarController?
     private var hostingController: UIViewController?
     open weak var delegate: NCCollectionViewCommonSelectTabBarDelegate?
-
+    
     var selectedMetadatas: [tableMetadata] = []
     
     @Published var isAnyOffline = false

@@ -44,6 +44,7 @@ class NCTrash: UIViewController, NCTrashListCellDelegate, NCEmptyDataSetDelegate
     var isEditMode = false
     var selectOcId: [String] = []
     var selectIndexPath: [IndexPath] = []
+    var tabBarSelect: NCSelectableViewTabBar?
 
     var datasource: [tableTrash] = []
     var layoutForView: NCDBLayoutForView?
@@ -57,6 +58,8 @@ class NCTrash: UIViewController, NCTrashListCellDelegate, NCEmptyDataSetDelegate
 
     override func viewDidLoad() {
         super.viewDidLoad()
+
+        tabBarSelect = NCTrashSelectTabBar(tabBarController: tabBarController, delegate: self)
 
         view.backgroundColor = .systemBackground
         self.navigationController?.navigationBar.prefersLargeTitles = true
@@ -305,30 +308,30 @@ extension NCTrash {
     }
 }
 
-extension NCTrash: NCSelectableNavigationView {
-    var tabBarSelect: NCSelectableViewTabBar? {
-        get {
-            NCCollectionViewCommonSelectTabBar(tabBarController: viewController.tabBarController, delegate: viewController as? NCCollectionViewCommonSelectTabBarDelegate)
-        }
-        set {
-//            tabBarSelect = newValue
-        }
+extension NCTrash: NCSelectableNavigationView, NCTrashSelectTabBarDelegate {
+    var serverUrl: String {
+        ""
     }
 
     func setNavigationRightItems() {
-        
-    }
-    
-    func unselect(tabBarSelect: NCCollectionViewCommonSelectTabBar, animation: Bool) {
-        
-    }
-    
-    var viewController: UIViewController {
-        self
-    }
+        guard let tabBarSelect = tabBarSelect as? NCTrashSelectTabBar else { return }
 
-    var serverUrl: String {
-        ""
+        tabBarSelect.isSelectedEmpty = selectOcId.isEmpty
+
+        if isEditMode {
+            tabBarSelect.show(animation: false)
+
+            let select = UIBarButtonItem(title: NSLocalizedString("_done_", comment: ""), style: .done) { self.toggleSelect() }
+
+            navigationItem.rightBarButtonItems = [select]
+        } else {
+            tabBarSelect.hide(animation: true)
+
+            let menu = UIMenu(children: createMenuActions())
+            let menuButton = UIBarButtonItem(image: .init(systemName: "ellipsis.circle"), menu: menu)
+
+            navigationItem.rightBarButtonItems = [menuButton]
+        }
     }
 
     func onListSelected() {
@@ -353,5 +356,39 @@ extension NCTrash: NCSelectableNavigationView {
             self.collectionView.collectionViewLayout.invalidateLayout()
             self.collectionView.setCollectionViewLayout(self.gridLayout, animated: true)
         }
+    }
+
+    func selectAll() {
+        collectionViewSelectAll()
+    }
+
+    func recover() {
+        self.selectOcId.forEach(restoreItem)
+        self.toggleSelect()
+    }
+
+    func delete() {
+        self.selectOcId.forEach(deleteItem)
+        self.toggleSelect()
+    }
+
+    func createMenuActions() -> [UIMenuElement] {
+        guard let layoutForView = NCManageDatabase.shared.getLayoutForView(account: appDelegate.account, key: layoutKey, serverUrl: serverUrl) else { return [] }
+
+        let select = UIAction(title: NSLocalizedString("_select_", comment: ""), image: .init(systemName: "checkmark.circle")) { _ in self.toggleSelect() }
+
+        let list = UIAction(title: NSLocalizedString("_list_", comment: ""), image: .init(systemName: "list.bullet"), state: layoutForView.layout == NCGlobal.shared.layoutList ? .on : .off) { _ in
+            self.onListSelected()
+            self.setNavigationRightItems()
+        }
+
+        let grid = UIAction(title: NSLocalizedString("_grid_", comment: ""), image: .init(systemName: "square.grid.2x2"), state: layoutForView.layout == NCGlobal.shared.layoutGrid ? .on : .off) { _ in
+            self.onGridSelected()
+            self.setNavigationRightItems()
+        }
+
+        let viewStyleSubmenu = UIMenu(title: "", options: .displayInline, children: [list, grid])
+
+        return [select, viewStyleSubmenu]
     }
 }
