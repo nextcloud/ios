@@ -59,15 +59,18 @@ class NCCollectionViewCommonSelectTabBar: NCSelectableViewTabBar, ObservableObje
         guard let tabBarController, let hostingController else { return }
 
         tabBarController.tabBar.isHidden = true
-        hostingController.view.isHidden = false
-        
-        hostingController.view.transform = .init(translationX: 0, y: hostingController.view.frame.height)
-        
-        UIView.animate(withDuration: 0.2) {
-            hostingController.view.transform = .init(translationX: 0, y: 0)
+
+        if hostingController.view.isHidden {
+            hostingController.view.isHidden = false
+
+            hostingController.view.transform = .init(translationX: 0, y: hostingController.view.frame.height)
+
+            UIView.animate(withDuration: 0.2) {
+                hostingController.view.transform = .init(translationX: 0, y: 0)
+            }
         }
     }
-    
+
     func hide(animation: Bool) {
         guard let tabBarController, let hostingController else { return }
 
