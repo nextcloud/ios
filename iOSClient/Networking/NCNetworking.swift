@@ -588,7 +588,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
                 start: @escaping () -> Void = { },
                 requestHandler: @escaping (_ request: UploadRequest) -> Void = { _ in },
                 progressHandler: @escaping (_ totalBytesExpected: Int64, _ totalBytes: Int64, _ fractionCompleted: Double) -> Void = { _, _, _ in },
-                completion: @escaping (_ error: NKError) -> Void = { _ in }) {
+                completion: @escaping (_ afError: AFError?, _ error: NKError) -> Void = { _, _ in }) {
 
         let metadata = tableMetadata.init(value: metadata)
         var numChunks: Int = 0
@@ -598,7 +598,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
 #if !EXTENSION_FILE_PROVIDER_EXTENSION && !EXTENSION_WIDGET
             Task {
                 let error = await NCNetworkingE2EEUpload().upload(metadata: metadata, uploadE2EEDelegate: uploadE2EEDelegate, hudView: hudView, hud: hud)
-                completion(error)
+                completion(nil, error)
             }
 #endif
         } else if metadata.chunk > 0 {
@@ -645,16 +645,16 @@ class NCNetworking: NSObject, NKCommonDelegate {
                     NCContentPresenter().messageNotification("_chunk_move_", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: .error, afterDelay: 0.5)
                 default: break
                 }
-                completion(error)
+                completion(afError, error)
             }
         } else if metadata.session == NextcloudKit.shared.nkCommonInstance.sessionIdentifierUpload {
             let fileNameLocalPath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)
-            uploadFile(metadata: metadata, fileNameLocalPath: fileNameLocalPath, start: start, progressHandler: progressHandler) { _, _, _, _, _, _, _, error in
-                completion(error)
+            uploadFile(metadata: metadata, fileNameLocalPath: fileNameLocalPath, start: start, progressHandler: progressHandler) { _, _, _, _, _, _, afError, error in
+                completion(afError, error)
             }
         } else {
             uploadFileInBackground(metadata: metadata, start: start) { error in
-                completion(error)
+                completion(nil, error)
             }
         }
     }
