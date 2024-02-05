@@ -1,5 +1,5 @@
 //
-//  NCNetworkingProcessUpload.swift
+//  NCNetworkingProcess.swift
 //  Nextcloud
 //
 //  Created by Marino Faggiana on 25/06/2020.
@@ -27,9 +27,9 @@ import Photos
 import JGProgressHUD
 import RealmSwift
 
-class NCNetworkingProcessUpload: NSObject {
-    public static let shared: NCNetworkingProcessUpload = {
-        let instance = NCNetworkingProcessUpload()
+class NCNetworkingProcess: NSObject {
+    public static let shared: NCNetworkingProcess = {
+        let instance = NCNetworkingProcess()
         return instance
     }()
 

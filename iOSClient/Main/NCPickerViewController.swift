@@ -182,7 +182,7 @@ class NCDocumentPickerViewController: NSObject, UIDocumentPickerDelegate {
                 }
             }
 
-            NCNetworkingProcessUpload.shared.createProcessUploads(metadatas: metadatas, completion: { _ in })
+            NCNetworkingProcess.shared.createProcessUploads(metadatas: metadatas, completion: { _ in })
 
             if !metadatasInConflict.isEmpty {
                 if let conflict = UIStoryboard(name: "NCCreateFormUploadConflict", bundle: nil).instantiateInitialViewController() as? NCCreateFormUploadConflict {
