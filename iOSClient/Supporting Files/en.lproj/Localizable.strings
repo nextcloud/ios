@@ -201,7 +201,7 @@
 "_source_code_"             = "Get source code";
 "_account_select_"          = "Select the account";
 "_account_select_to_add_"   = "Select the account to add";
-"_host_insert_"             = "Insert the host name, for example:";
+"_host_insert_"             = "Insert the hostname, for example:";
 "_certificate_not_found_"   = "File %@ in documents directory not found.";
 "_copy_failed_"             = "Copy failed";
 "_certificate_installed_"   = "Certificate installed";
@@ -963,6 +963,8 @@
 "_zoom_"                    = "Zoom";
 "_zoom_in_"                 = "Zoom in";
 "_zoom_out_"                = "Zoom out";
+"_selected_photo_"          = "selected photo";
+"_selected_photos_"         = "selected photos";
 
 // Video
 "_select_trace_"            = "Select the trace";

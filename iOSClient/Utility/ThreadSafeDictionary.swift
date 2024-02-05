@@ -7,7 +7,7 @@
 class ThreadSafeDictionary<V: Hashable, T>: Collection {
 
     private var dictionary: [V: T]
-    private let concurrentQueue = DispatchQueue(label: "Dictionary Barrier Queue", attributes: .concurrent)
+    private let concurrentQueue = DispatchQueue(label: "com.nextcloud.ThreadSafeDictionary", attributes: .concurrent)
 
     var startIndex: Dictionary<V, T>.Index {
         self.concurrentQueue.sync {

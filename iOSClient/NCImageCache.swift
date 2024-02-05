@@ -53,7 +53,7 @@ import RealmSwift
         return ThumbnailLRUCache(countLimit: limit)
     }()
     private var metadatasInfo: [String: metadataInfo] = [:]
-    private var metadatas: [tableMetadata]?
+    private var metadatas: ThreadSafeArray<tableMetadata>?
 
     let showAllPredicateMediaString = "account == %@ AND serverUrl BEGINSWITH %@ AND (classFile == '\(NKCommon.TypeClassFile.image.rawValue)' OR classFile == '\(NKCommon.TypeClassFile.video.rawValue)') AND NOT (session CONTAINS[c] 'upload')"
     let showBothPredicateMediaString = "account == %@ AND serverUrl BEGINSWITH %@ AND (classFile == '\(NKCommon.TypeClassFile.image.rawValue)' OR classFile == '\(NKCommon.TypeClassFile.video.rawValue)') AND NOT (session CONTAINS[c] 'upload') AND NOT (livePhotoFile != '' AND classFile == '\(NKCommon.TypeClassFile.video.rawValue)')"
@@ -81,7 +81,7 @@ import RealmSwift
         var files: [FileInfo] = []
         let startDate = Date()
 
-        for metadata in metadatas {
+        metadatas.forEach { metadata in
             metadatasInfo[metadata.ocId] = metadataInfo(etag: metadata.etag, date: metadata.date)
         }
 
@@ -125,7 +125,7 @@ import RealmSwift
         NextcloudKit.shared.nkCommonInstance.writeLog("--------- ThumbnailLRUCache image process ---------")
     }
 
-    func initialMetadatas() -> [tableMetadata]? {
+    func initialMetadatas() -> ThreadSafeArray<tableMetadata>? {
         defer { self.metadatas = nil }
         return self.metadatas
     }
@@ -144,11 +144,11 @@ import RealmSwift
         cache.removeAllValues()
     }
 
-    func getMediaMetadatas(account: String, predicate: NSPredicate? = nil) -> [tableMetadata]? {
+    func getMediaMetadatas(account: String, predicate: NSPredicate? = nil) -> ThreadSafeArray<tableMetadata>? {
         guard let account = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", account)) else { return nil }
         let startServerUrl = NCUtilityFileSystem().getHomeServer(urlBase: account.urlBase, userId: account.userId) + account.mediaPath
         let predicateBoth = NSPredicate(format: showBothPredicateMediaString, account.account, startServerUrl)
-        return NCManageDatabase.shared.getMetadatas(predicate: predicate ?? predicateBoth, sorted: "date")
+        return NCManageDatabase.shared.getMediaMetadatas(predicate: predicate ?? predicateBoth)
     }
 
     // MARK: -

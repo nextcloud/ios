@@ -41,18 +41,18 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
     var documentController: UIDocumentInteractionController?
     let utilityFileSystem = NCUtilityFileSystem()
     let utility = NCUtility()
+    let appDelegate = UIApplication.shared.delegate as? AppDelegate
 
     // MARK: - Download
 
     @objc func downloadedFile(_ notification: NSNotification) {
 
-        guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else { return }
         guard let userInfo = notification.userInfo as NSDictionary?,
               let ocId = userInfo["ocId"] as? String,
               let selector = userInfo["selector"] as? String,
               let error = userInfo["error"] as? NKError,
               let account = userInfo["account"] as? String,
-              account == appDelegate.account
+              account == appDelegate?.account
         else { return }
 
         guard error == .success else {
@@ -86,10 +86,10 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
                     }
                     let navigationController = UINavigationController(rootViewController: viewerQuickLook)
                     navigationController.modalPresentationStyle = .fullScreen
-                    appDelegate.window?.rootViewController?.present(navigationController, animated: true)
+                    self.appDelegate?.window?.rootViewController?.present(navigationController, animated: true)
                 } else {
                     self.utilityFileSystem.copyFile(atPath: fileNamePath, toPath: fileNameTemp)
-                    appDelegate.window?.rootViewController?.present(viewerQuickLook, animated: true)
+                    self.appDelegate?.window?.rootViewController?.present(viewerQuickLook, animated: true)
                 }
             }
 
@@ -101,7 +101,7 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
                 } else if metadata.classFile == NKCommon.TypeClassFile.compress.rawValue || metadata.classFile == NKCommon.TypeClassFile.unknow.rawValue {
                     self.openDocumentController(metadata: metadata)
                 } else {
-                    if let viewController = appDelegate.activeViewController {
+                    if let viewController = self.appDelegate?.activeViewController {
                         let imageIcon = UIImage(contentsOfFile: self.utilityFileSystem.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag))
                         NCViewer().view(viewController: viewController, metadata: metadata, metadatas: [metadata], imageIcon: imageIcon)
                     }
