@@ -77,7 +77,7 @@ struct NCTrashSelectTabBarView: View {
                 Button {
                     tabBarSelect.delegate?.recover()
                 } label: {
-                    Image(systemName: "trash.slash")
+                    Image(systemName: "arrow.circlepath")
                 }
                 .frame(maxWidth: .infinity)
                 .disabled(tabBarSelect.isSelectedEmpty || tabBarSelect.isAllDirectory)
