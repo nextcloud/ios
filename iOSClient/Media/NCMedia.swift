@@ -277,13 +277,13 @@ extension NCMedia: UICollectionViewDataSource {
         }
 
         if numberOfItemsInSection == 0 {
-            mediaCommandView?.selectcancelButton.isHidden = true
+            mediaCommandView?.selectOrCancelButton.isHidden = true
             mediaCommandView?.menuButton.isHidden = false
         } else if isEditMode {
-            mediaCommandView?.selectcancelButton.isHidden = false
+            mediaCommandView?.selectOrCancelButton.isHidden = false
             mediaCommandView?.menuButton.isHidden = true
         } else {
-            mediaCommandView?.selectcancelButton.isHidden = false
+            mediaCommandView?.selectOrCancelButton.isHidden = false
             mediaCommandView?.menuButton.isHidden = false
         }
 

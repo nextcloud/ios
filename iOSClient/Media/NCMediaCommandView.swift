@@ -28,8 +28,8 @@ class NCMediaCommandView: UIView {
 
     @IBOutlet weak var title: UILabel!
     @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
-    @IBOutlet weak var selectcancelButton: UIButton!
-    @IBOutlet weak var selectcancelButtonTrailing: NSLayoutConstraint!
+    @IBOutlet weak var selectOrCancelButton: UIButton!
+    @IBOutlet weak var selectOrCancelButtonTrailing: NSLayoutConstraint!
     @IBOutlet weak var menuButton: UIButton!
 
     var mediaView: NCMedia!
@@ -43,10 +43,10 @@ class NCMediaCommandView: UIView {
 
         title.text = ""
 
-        selectcancelButton.backgroundColor = .systemGray4.withAlphaComponent(0.6)
-        selectcancelButton.layer.cornerRadius = 15
-        selectcancelButton.layer.masksToBounds = true
-        selectcancelButton.setTitle( NSLocalizedString("_select_", comment: ""), for: .normal)
+        selectOrCancelButton.backgroundColor = .systemGray4.withAlphaComponent(0.6)
+        selectOrCancelButton.layer.cornerRadius = 15
+        selectOrCancelButton.layer.masksToBounds = true
+        selectOrCancelButton.setTitle( NSLocalizedString("_select_", comment: ""), for: .normal)
 
         menuButton.backgroundColor = .systemGray4.withAlphaComponent(0.6)
         menuButton.layer.cornerRadius = 15
@@ -68,7 +68,7 @@ class NCMediaCommandView: UIView {
         gradient.frame = bounds
     }
 
-    @IBAction func selectcancelButtonPressed(_ sender: UIButton) {
+    @IBAction func selectOrCancelButtonPressed(_ sender: UIButton) {
 
         mediaView.isEditMode = !mediaView.isEditMode
         setSelectcancelButton()
@@ -80,13 +80,13 @@ class NCMediaCommandView: UIView {
         mediaView.tabBarSelect?.selectCount = mediaView.selectOcId.count
 
         if mediaView.isEditMode {
-            selectcancelButton.setTitle( NSLocalizedString("_cancel_", comment: ""), for: .normal)
-            selectcancelButtonTrailing.constant = 8
-            mediaView.tabBarSelect?.show(animation: true)
+            selectOrCancelButton.setTitle( NSLocalizedString("_cancel_", comment: ""), for: .normal)
+            selectOrCancelButtonTrailing.constant = 8
+            mediaView.tabBarSelect?.show()
         } else {
-            selectcancelButton.setTitle( NSLocalizedString("_select_", comment: ""), for: .normal)
-            selectcancelButtonTrailing.constant = 46
-            mediaView.tabBarSelect?.hide(animation: true)
+            selectOrCancelButton.setTitle( NSLocalizedString("_select_", comment: ""), for: .normal)
+            selectOrCancelButtonTrailing.constant = 46
+            mediaView.tabBarSelect?.hide()
         }
 
         mediaView.collectionView.reloadData()
@@ -112,13 +112,13 @@ class NCMediaCommandView: UIView {
         if isTop {
             title.textColor = .label
             activityIndicator.color = .label
-            selectcancelButton.setTitleColor(.label, for: .normal)
+            selectOrCancelButton.setTitleColor(.label, for: .normal)
             menuButton.setImage(UIImage(systemName: "ellipsis")?.withTintColor(.label, renderingMode: .alwaysOriginal), for: .normal)
             gradient.isHidden = true
         } else {
             title.textColor = .white
             activityIndicator.color = .white
-            selectcancelButton.setTitleColor(.white, for: .normal)
+            selectOrCancelButton.setTitleColor(.white, for: .normal)
             menuButton.setImage(UIImage(systemName: "ellipsis")?.withTintColor(.white, renderingMode: .alwaysOriginal), for: .normal)
             gradient.isHidden = false
         }
