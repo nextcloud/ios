@@ -9,61 +9,34 @@
 import Foundation
 import SwiftUI
 
-protocol NCTabBarSelectDelegate: AnyObject {
+protocol NCCollectionViewCommonSelectTabBarDelegate: AnyObject {
     func selectAll()
     func delete(selectedMetadatas: [tableMetadata])
     func move(selectedMetadatas: [tableMetadata])
     func share(selectedMetadatas: [tableMetadata])
     func download(selectedMetadatas: [tableMetadata], isAnyOffline: Bool)
     func lock(selectedMetadatas: [tableMetadata], isAnyLocked: Bool)
-//    func unselect(tabBarSelect: NCCollectionViewCommonSelectTabBar, animation: Bool)
 }
 
 class NCCollectionViewCommonSelectTabBar: ObservableObject {
     private var tabBarController: UITabBarController?
     private var hostingController: UIViewController?
-    open weak var delegate: NCTabBarSelectDelegate?
+    open weak var delegate: NCCollectionViewCommonSelectTabBarDelegate?
 
     var selectedMetadatas: [tableMetadata] = []
-//    var appDelegate: AppDelegate!
-//
-//    var selectOcId: [String] = [] {
-//        didSet {
-//            var selectedMetadatas: [tableMetadata] = []
-//
-//            for ocId in selectOcId {
-//                guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) else { continue }
-//                selectedMetadatas.append(metadata)
-//                if metadata.directory { isAnyFolder = true }
-//                if metadata.lock {
-//                    isAnyLocked = true
-//                    if metadata.lockOwner != appDelegate.userId {
-//                        canUnlock = false
-//                    }
-//                }
-//
-//                guard !isAnyOffline else { continue }
-//                if metadata.directory,
-//                   let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", appDelegate.account, metadata.serverUrl + "/" + metadata.fileName)) {
-//                    isAnyOffline = directory.offline
-//                } else if let localFile = NCManageDatabase.shared.getTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId)) {
-//                    isAnyOffline = localFile.offline
-//                } // else: file is not offline, continue
-//            }
-//        }
-//    }
-//    var selectedMediaMetadatas: [tableMetadata] = []
+    
     @Published var isAnyOffline = false
-    @Published var isAnyFolder = false
+    @Published var isAnyDirectory = false
+    @Published var isAllDirectory = false
     @Published var isAnyLocked = false
     @Published var canUnlock = true
     @Published var enableLock = false
     @Published var isSelectedEmpty = true
 
-    init(tabBarController: UITabBarController? = nil, height: CGFloat = 83, delegate: NCTabBarSelectDelegate? = nil) {
+    init(tabBarController: UITabBarController? = nil, height: CGFloat = 83, delegate: NCCollectionViewCommonSelectTabBarDelegate? = nil) {
         guard let tabBarController else { return }
 
-        let hostingController = UIHostingController(rootView: MediaTabBarSelectView(height: height, tabBarSelect: self))
+        let hostingController = UIHostingController(rootView: NCCollectionViewCommonSelectTabBarView(height: height, tabBarSelect: self))
 
         self.tabBarController = tabBarController
         self.hostingController = hostingController
@@ -97,7 +70,7 @@ class NCCollectionViewCommonSelectTabBar: ObservableObject {
     }
 }
 
-struct MediaTabBarSelectView: View {
+struct NCCollectionViewCommonSelectTabBarView: View {
     let height: CGFloat
     @ObservedObject var tabBarSelect: NCCollectionViewCommonSelectTabBar
 
@@ -110,7 +83,7 @@ struct MediaTabBarSelectView: View {
                     Image(systemName: "square.and.arrow.up")
                 }
                 .frame(maxWidth: .infinity)
-                .disabled(tabBarSelect.isSelectedEmpty)
+                .disabled(tabBarSelect.isSelectedEmpty || tabBarSelect.isAllDirectory)
 
                 Button {
                     tabBarSelect.delegate?.move(selectedMetadatas: tabBarSelect.selectedMetadatas)
@@ -131,9 +104,9 @@ struct MediaTabBarSelectView: View {
 
                 Menu("", systemImage: "ellipsis.circle") {
                     Button(action: {
-                        tabBarSelect.delegate?.delete(selectedMetadatas: tabBarSelect.selectedMetadatas)
+                        tabBarSelect.delegate?.download(selectedMetadatas: tabBarSelect.selectedMetadatas, isAnyOffline: tabBarSelect.isAnyOffline)
                     }, label: {
-                        Label(NSLocalizedString("_download_", comment: ""), systemImage: "icloud.and.arrow.down")
+                        Label(NSLocalizedString(tabBarSelect.isAnyOffline ? "_remove_local_file_" : "_download_", comment: ""), systemImage: tabBarSelect.isAnyOffline ? "icloud.slash" : "icloud.and.arrow.down")
                     })
                     .disabled(tabBarSelect.isSelectedEmpty)
 
@@ -166,5 +139,5 @@ struct MediaTabBarSelectView: View {
 }
 
 #Preview {
-    MediaTabBarSelectView(height: 83, tabBarSelect: NCCollectionViewCommonSelectTabBar())
+    NCCollectionViewCommonSelectTabBarView(height: 83, tabBarSelect: NCCollectionViewCommonSelectTabBar())
 }

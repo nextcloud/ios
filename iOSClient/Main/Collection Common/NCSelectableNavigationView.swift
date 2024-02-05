@@ -33,7 +33,11 @@ extension RealmSwiftObject {
     }
 }
 
-protocol NCSelectableNavigationView: AnyObject, NCTabBarSelectDelegate, NCTabBarSelectDelegate {
+//protocol NCSelectableViewTabBar {
+//    var delegate: AnyObject? { get }
+//}
+
+protocol NCSelectableNavigationView: AnyObject, NCCollectionViewCommonSelectTabBarDelegate {
     var viewController: UIViewController { get }
     var appDelegate: AppDelegate { get }
     var selectableDataSource: [RealmSwiftObject] { get }
@@ -51,7 +55,6 @@ protocol NCSelectableNavigationView: AnyObject, NCTabBarSelectDelegate, NCTabBar
     func reloadDataSource(withQueryDB: Bool)
     func setNavigationItems()
 
-//    func tapSelectMenu()
     func toggleSelect()
     func onListSelected()
     func onGridSelected()
@@ -152,7 +155,8 @@ extension NCSelectableNavigationView {
     func setNavigationRightItems() {
         var selectedMetadatas: [tableMetadata] = []
         var isAnyOffline = false
-        var isAnyFolder = false
+        var isAnyDirectory = false
+        var isAllDirectory = true
         var isAnyLocked = false
         var canUnlock = true
 
@@ -160,7 +164,12 @@ extension NCSelectableNavigationView {
             guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) else { continue }
             selectedMetadatas.append(metadata)
 
-            if metadata.directory { isAnyFolder = true }
+            if metadata.directory {
+                isAnyDirectory = true
+            } else {
+                isAllDirectory = false
+            }
+
             if metadata.lock {
                 isAnyLocked = true
                 if metadata.lockOwner != appDelegate.userId {
@@ -178,15 +187,15 @@ extension NCSelectableNavigationView {
         }
 
         tabBarSelect?.isAnyOffline = isAnyOffline
-        tabBarSelect?.isAnyFolder = isAnyFolder
+        tabBarSelect?.isAnyDirectory = isAnyDirectory
+        tabBarSelect?.isAllDirectory = isAllDirectory
         tabBarSelect?.isAnyLocked = isAnyLocked
         tabBarSelect?.canUnlock = canUnlock
-        tabBarSelect?.enableLock = !isAnyFolder && canUnlock && !NCGlobal.shared.capabilityFilesLockVersion.isEmpty
+        tabBarSelect?.enableLock = !isAnyDirectory && canUnlock && !NCGlobal.shared.capabilityFilesLockVersion.isEmpty
         tabBarSelect?.isSelectedEmpty = selectOcId.isEmpty
         tabBarSelect?.selectedMetadatas = selectedMetadatas
 
         if isEditMode {
-//            tabBarSelect?.selectOcId = selectOcId
             tabBarSelect?.show(animation: false)
 
             let select = UIBarButtonItem(title: NSLocalizedString("_done_", comment: ""), style: .done) { self.toggleSelect() }
@@ -433,11 +442,13 @@ extension NCSelectableNavigationView {
     }
 
     func toggleSelect() {
-        isEditMode = !isEditMode
-        selectOcId.removeAll()
-        selectIndexPath.removeAll()
-        self.setNavigationItems()
-        self.collectionView.reloadData()
+        DispatchQueue.main.async {
+            self.isEditMode = !self.isEditMode
+            self.selectOcId.removeAll()
+            self.selectIndexPath.removeAll()
+            self.setNavigationItems()
+            self.collectionView.reloadData()
+        }
     }
 
     func collectionViewSelectAll() {

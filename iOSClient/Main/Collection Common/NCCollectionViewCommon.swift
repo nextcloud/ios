@@ -1595,7 +1595,8 @@ extension NCCollectionViewCommon: EasyTipViewDelegate {
     }
 }
 
-extension NCCollectionViewCommon: NCSelectableNavigationView {    
+extension NCCollectionViewCommon: NCSelectableNavigationView {
+
     func unselect(tabBarSelect: NCCollectionViewCommonSelectTabBar, animation: Bool) {
         
     }
