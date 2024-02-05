@@ -957,6 +957,7 @@
 "_select_photo_"            = "Select photo";
 "_selected_photo_"          = "selected photo";
 "_selected_photos_"         = "selected photos";
+"_delete_selected_photos_"  = "Delected selected photos";
 
 // Video
 "_select_trace_"            = "Select the trace";
