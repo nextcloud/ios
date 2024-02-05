@@ -1405,9 +1405,8 @@ class NCNetworking: NSObject, NKCommonDelegate {
                             if metadata.directory {
                                 NCManageDatabase.shared.addMetadata(metadata)
                             } else if selector == NCGlobal.shared.selectorSynchronizationOffline,
-                                      metadata.isSynchronizable,
-                                      self.downloadQueue.operations.filter({ ($0 as? NCOperationDownload)?.metadata.ocId == metadata.ocId }).isEmpty {
-                                self.downloadQueue.addOperation(NCOperationDownload(metadata: metadata, selector: selector))
+                                      metadata.isSynchronizable {
+                                NCManageDatabase.shared.setMetadataSessionInWaitDownload(ocId: metadata.ocId, selector: selector)
                             }
                         }
                     }
