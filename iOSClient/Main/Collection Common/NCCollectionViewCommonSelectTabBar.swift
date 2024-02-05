@@ -18,7 +18,7 @@ protocol NCCollectionViewCommonSelectTabBarDelegate: AnyObject {
     func lock(selectedMetadatas: [tableMetadata], isAnyLocked: Bool)
 }
 
-class NCCollectionViewCommonSelectTabBar: ObservableObject {
+class NCCollectionViewCommonSelectTabBar: NCSelectableViewTabBar, ObservableObject {
     private var tabBarController: UITabBarController?
     private var hostingController: UIViewController?
     open weak var delegate: NCCollectionViewCommonSelectTabBarDelegate?

@@ -50,7 +50,6 @@ class NCTrash: UIViewController, NCTrashListCellDelegate, NCEmptyDataSetDelegate
     var listLayout: NCListLayout!
     var gridLayout: NCGridLayout!
     var layoutKey = NCGlobal.shared.layoutViewTrash
-    var tabBarSelect: NCCollectionViewCommonSelectTabBar?
 
     private let refreshControl = UIRefreshControl()
 
@@ -58,8 +57,6 @@ class NCTrash: UIViewController, NCTrashListCellDelegate, NCEmptyDataSetDelegate
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        tabBarSelect = NCCollectionViewCommonSelectTabBar(tabBarController: tabBarController, height: 80, delegate: self)
 
         view.backgroundColor = .systemBackground
         self.navigationController?.navigationBar.prefersLargeTitles = true
@@ -309,6 +306,19 @@ extension NCTrash {
 }
 
 extension NCTrash: NCSelectableNavigationView {
+    var tabBarSelect: NCSelectableViewTabBar? {
+        get {
+            NCCollectionViewCommonSelectTabBar(tabBarController: viewController.tabBarController, delegate: viewController as? NCCollectionViewCommonSelectTabBarDelegate)
+        }
+        set {
+//            tabBarSelect = newValue
+        }
+    }
+
+    func setNavigationRightItems() {
+        
+    }
+    
     func unselect(tabBarSelect: NCCollectionViewCommonSelectTabBar, animation: Bool) {
         
     }
