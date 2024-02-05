@@ -22,41 +22,37 @@ class NCTrashSelectTabBar: NCSelectableViewTabBar, ObservableObject {
 
     var selectedMetadatas: [tableMetadata] = []
 
-    @Published var isAnyOffline = false
-    @Published var isAnyDirectory = false
-    @Published var isAllDirectory = false
-    @Published var isAnyLocked = false
-    @Published var canUnlock = true
-    @Published var enableLock = false
     @Published var isSelectedEmpty = true
 
-    init(tabBarController: UITabBarController? = nil, height: CGFloat = 83, delegate: NCTrashSelectTabBarDelegate? = nil) {
-        guard let tabBarController else { return }
-
-        let hostingController = UIHostingController(rootView: NCTrashSelectTabBarView(height: height, tabBarSelect: self))
+    init(tabBarController: UITabBarController? = nil, delegate: NCTrashSelectTabBarDelegate? = nil) {
+        let rootView = NCTrashSelectTabBarView(tabBarSelect: self)
+        hostingController = UIHostingController(rootView: rootView)
 
         self.tabBarController = tabBarController
-        self.hostingController = hostingController
         self.delegate = delegate
+
+        guard let tabBarController, let hostingController else { return }
 
         tabBarController.addChild(hostingController)
         tabBarController.view.addSubview(hostingController.view)
 
         hostingController.view.translatesAutoresizingMaskIntoConstraints = false
-        hostingController.view.bottomAnchor.constraint(equalTo: tabBarController.view.bottomAnchor).isActive = true
-        hostingController.view.rightAnchor.constraint(equalTo: tabBarController.view.rightAnchor).isActive = true
-        hostingController.view.leftAnchor.constraint(equalTo: tabBarController.view.leftAnchor).isActive = true
-        hostingController.view.heightAnchor.constraint(equalToConstant: height).isActive = true
-        hostingController.view.backgroundColor = .clear
+        NSLayoutConstraint.activate([
+            hostingController.view.rightAnchor.constraint(equalTo: tabBarController.tabBar.rightAnchor),
+            hostingController.view.leftAnchor.constraint(equalTo: tabBarController.tabBar.leftAnchor),
+            hostingController.view.topAnchor.constraint(equalTo: tabBarController.tabBar.topAnchor),
+            hostingController.view.bottomAnchor.constraint(equalTo: tabBarController.tabBar.bottomAnchor)
+        ])
 
+        hostingController.view.backgroundColor = .clear
         hostingController.view.isHidden = true
     }
 
-    func show(animation: Bool) {
+    func show() {
         guard let tabBarController, let hostingController else { return }
-        
+
         tabBarController.tabBar.isHidden = true
-        
+
         if hostingController.view.isHidden {
             hostingController.view.isHidden = false
 
@@ -68,7 +64,7 @@ class NCTrashSelectTabBar: NCSelectableViewTabBar, ObservableObject {
         }
     }
 
-    func hide(animation: Bool) {
+    func hide() {
         guard let tabBarController, let hostingController else { return }
 
         hostingController.view.isHidden = true
@@ -77,45 +73,55 @@ class NCTrashSelectTabBar: NCSelectableViewTabBar, ObservableObject {
 }
 
 struct NCTrashSelectTabBarView: View {
-    let height: CGFloat
     @ObservedObject var tabBarSelect: NCTrashSelectTabBar
+    @Environment(\.verticalSizeClass) var sizeClass
 
     var body: some View {
-        VStack(alignment: .leading) {
+        VStack {
+            Spacer().frame(height: 10)
+
             HStack {
                 Button {
                     tabBarSelect.delegate?.recover()
                 } label: {
                     Image(systemName: "arrow.circlepath")
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(width: sizeClass == .compact ? 19 : 23)
                 }
                 .frame(maxWidth: .infinity)
-                .disabled(tabBarSelect.isSelectedEmpty || tabBarSelect.isAllDirectory)
+                .disabled(tabBarSelect.isSelectedEmpty)
 
                 Button {
                     tabBarSelect.delegate?.delete()
                 } label: {
-                    Image(systemName: "trash").tint(.red)
+                    Image(systemName: "trash")
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .tint(.red)
+                        .frame(width: sizeClass == .compact ? 16 : 20)
                 }
                 .frame(maxWidth: .infinity)
-                .disabled(tabBarSelect.isSelectedEmpty || tabBarSelect.isAllDirectory)
+                .disabled(tabBarSelect.isSelectedEmpty)
 
-                Button {                                   tabBarSelect.delegate?.selectAll()
+                Button {
+                    tabBarSelect.delegate?.selectAll()
                 } label: {
                     Image(systemName: "checkmark")
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(width: sizeClass == .compact ? 15 : 19)
                 }
                 .frame(maxWidth: .infinity)
-                .disabled(tabBarSelect.isSelectedEmpty || tabBarSelect.isAllDirectory)
             }
-
-            Spacer().frame(height: 20)
         }
-        .frame(height: height)
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         .background(.thinMaterial)
         .overlay(Rectangle().frame(width: nil, height: 0.5, alignment: .top).foregroundColor(Color(UIColor.separator)), alignment: .top)
     }
 }
 
 #Preview {
-    NCTrashSelectTabBarView(height: 83, tabBarSelect: NCTrashSelectTabBar())
+    NCTrashSelectTabBarView(tabBarSelect: NCTrashSelectTabBar())
 }
 

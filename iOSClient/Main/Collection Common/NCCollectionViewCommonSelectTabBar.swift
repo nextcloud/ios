@@ -33,29 +33,31 @@ class NCCollectionViewCommonSelectTabBar: NCSelectableViewTabBar, ObservableObje
     @Published var enableLock = false
     @Published var isSelectedEmpty = true
 
-    init(tabBarController: UITabBarController? = nil, height: CGFloat = 83, delegate: NCCollectionViewCommonSelectTabBarDelegate? = nil) {
-        guard let tabBarController else { return }
-
-        let hostingController = UIHostingController(rootView: NCCollectionViewCommonSelectTabBarView(height: height, tabBarSelect: self))
+    init(tabBarController: UITabBarController? = nil, delegate: NCCollectionViewCommonSelectTabBarDelegate? = nil) {
+        let rootView = NCCollectionViewCommonSelectTabBarView(tabBarSelect: self)
+        hostingController = UIHostingController(rootView: rootView)
 
         self.tabBarController = tabBarController
-        self.hostingController = hostingController
         self.delegate = delegate
+
+        guard let tabBarController, let hostingController else { return }
 
         tabBarController.addChild(hostingController)
         tabBarController.view.addSubview(hostingController.view)
 
         hostingController.view.translatesAutoresizingMaskIntoConstraints = false
-        hostingController.view.bottomAnchor.constraint(equalTo: tabBarController.view.bottomAnchor).isActive = true
-        hostingController.view.rightAnchor.constraint(equalTo: tabBarController.view.rightAnchor).isActive = true
-        hostingController.view.leftAnchor.constraint(equalTo: tabBarController.view.leftAnchor).isActive = true
-        hostingController.view.heightAnchor.constraint(equalToConstant: height).isActive = true
-        hostingController.view.backgroundColor = .clear
+        NSLayoutConstraint.activate([
+            hostingController.view.rightAnchor.constraint(equalTo: tabBarController.tabBar.rightAnchor),
+            hostingController.view.leftAnchor.constraint(equalTo: tabBarController.tabBar.leftAnchor),
+            hostingController.view.topAnchor.constraint(equalTo: tabBarController.tabBar.topAnchor),
+            hostingController.view.bottomAnchor.constraint(equalTo: tabBarController.tabBar.bottomAnchor)
+        ])
 
+        hostingController.view.backgroundColor = .clear
         hostingController.view.isHidden = true
     }
 
-    func show(animation: Bool) {
+    func show() {
         guard let tabBarController, let hostingController else { return }
 
         tabBarController.tabBar.isHidden = true
@@ -71,7 +73,7 @@ class NCCollectionViewCommonSelectTabBar: NCSelectableViewTabBar, ObservableObje
         }
     }
 
-    func hide(animation: Bool) {
+    func hide() {
         guard let tabBarController, let hostingController else { return }
 
         hostingController.view.isHidden = true
@@ -80,16 +82,22 @@ class NCCollectionViewCommonSelectTabBar: NCSelectableViewTabBar, ObservableObje
 }
 
 struct NCCollectionViewCommonSelectTabBarView: View {
-    let height: CGFloat
     @ObservedObject var tabBarSelect: NCCollectionViewCommonSelectTabBar
+    @Environment(\.verticalSizeClass) var sizeClass
 
     var body: some View {
-        VStack(alignment: .leading) {
+        VStack {
+            Spacer().frame(height: 10)
+
             HStack {
                 Button {
                     tabBarSelect.delegate?.share(selectedMetadatas: tabBarSelect.selectedMetadatas)
                 } label: {
                     Image(systemName: "square.and.arrow.up")
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(width: sizeClass == .compact ? 16 : 20)
+
                 }
                 .frame(maxWidth: .infinity)
                 .disabled(tabBarSelect.isSelectedEmpty || tabBarSelect.isAllDirectory)
@@ -98,6 +106,9 @@ struct NCCollectionViewCommonSelectTabBarView: View {
                     tabBarSelect.delegate?.move(selectedMetadatas: tabBarSelect.selectedMetadatas)
                 } label: {
                     Image(systemName: "arrow.up.and.down.and.arrow.left.and.right")
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(width: sizeClass == .compact ? 18 : 22)
                 }
                 .frame(maxWidth: .infinity)
                 .disabled(tabBarSelect.isSelectedEmpty)
@@ -106,12 +117,15 @@ struct NCCollectionViewCommonSelectTabBarView: View {
                     tabBarSelect.delegate?.delete(selectedMetadatas: tabBarSelect.selectedMetadatas)
                 } label: {
                     Image(systemName: "trash")
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(width: sizeClass == .compact ? 16 : 20)
                 }
                 .tint(.red)
                 .frame(maxWidth: .infinity)
                 .disabled(tabBarSelect.isSelectedEmpty)
 
-                Menu("", systemImage: "ellipsis.circle") {
+                Menu {
                     Button(action: {
                         tabBarSelect.delegate?.download(selectedMetadatas: tabBarSelect.selectedMetadatas, isAnyOffline: tabBarSelect.isAnyOffline)
                     }, label: {
@@ -135,18 +149,21 @@ struct NCCollectionViewCommonSelectTabBarView: View {
                     }, label: {
                         Label(NSLocalizedString("_select_all_", comment: ""), systemImage: "checkmark")
                     })
+                } label: {
+                    Image(systemName: "ellipsis.circle")
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(width: sizeClass == .compact ? 18 : 22)
                 }
                 .frame(maxWidth: .infinity)
             }
-
-            Spacer().frame(height: 20)
         }
-        .frame(height: height)
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         .background(.thinMaterial)
         .overlay(Rectangle().frame(width: nil, height: 0.5, alignment: .top).foregroundColor(Color(UIColor.separator)), alignment: .top)
     }
 }
 
 #Preview {
-    NCCollectionViewCommonSelectTabBarView(height: 83, tabBarSelect: NCCollectionViewCommonSelectTabBar())
+    NCCollectionViewCommonSelectTabBarView(tabBarSelect: NCCollectionViewCommonSelectTabBar())
 }

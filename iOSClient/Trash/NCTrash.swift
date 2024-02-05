@@ -113,6 +113,11 @@ class NCTrash: UIViewController, NCTrashListCellDelegate, NCEmptyDataSetDelegate
         loadListingTrash()
     }
 
+    override func viewWillDisappear(_ animated: Bool) {
+        isEditMode = false
+        setNavigationItems()
+    }
+
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         super.viewWillTransition(to: size, with: coordinator)
 
@@ -163,7 +168,6 @@ class NCTrash: UIViewController, NCTrashListCellDelegate, NCEmptyDataSetDelegate
             collectionView(self.collectionView, didSelectItemAt: indexPath!)
         }
     }
-
 
     func longPressGridItem(with objectId: String, gestureRecognizer: UILongPressGestureRecognizer) { }
 
@@ -319,13 +323,13 @@ extension NCTrash: NCSelectableNavigationView, NCTrashSelectTabBarDelegate {
         tabBarSelect.isSelectedEmpty = selectOcId.isEmpty
 
         if isEditMode {
-            tabBarSelect.show(animation: false)
+            tabBarSelect.show()
 
             let select = UIBarButtonItem(title: NSLocalizedString("_done_", comment: ""), style: .done) { self.toggleSelect() }
 
             navigationItem.rightBarButtonItems = [select]
         } else {
-            tabBarSelect.hide(animation: true)
+            tabBarSelect.hide()
 
             let menu = UIMenu(children: createMenuActions())
             let menuButton = UIBarButtonItem(image: .init(systemName: "ellipsis.circle"), menu: menu)

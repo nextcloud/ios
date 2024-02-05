@@ -1638,13 +1638,13 @@ extension NCCollectionViewCommon: NCSelectableNavigationView, NCCollectionViewCo
         tabBarSelect.selectedMetadatas = selectedMetadatas
 
         if isEditMode {
-            tabBarSelect.show(animation: false)
+            tabBarSelect.show()
 
             let select = UIBarButtonItem(title: NSLocalizedString("_done_", comment: ""), style: .done) { self.toggleSelect() }
 
             navigationItem.rightBarButtonItems = [select]
         } else {
-            tabBarSelect.hide(animation: true)
+            tabBarSelect.hide()
 
             let notification = UIBarButtonItem(image: .init(systemName: "bell"), style: .plain, action: tapNotification)
 
