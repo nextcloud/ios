@@ -82,11 +82,7 @@ struct MediaTabBarSelectView: View {
         VStack {
             Spacer().frame(height: 10)
             HStack {
-                Button(NSLocalizedString("_cancel_", comment: "")) {
-                    tabBarSelect.delegate?.cancel(tabBarController: tabBarSelect)
-                }
-                .frame(maxWidth: .infinity)
-
+                Spacer().frame(maxWidth: .infinity)
                 Group {
                     if tabBarSelect.selectCount == 1 {
                         Text(String(tabBarSelect.selectCount) + " " + NSLocalizedString("_selected_photo_", comment: ""))
@@ -94,8 +90,7 @@ struct MediaTabBarSelectView: View {
                         Text(String(tabBarSelect.selectCount) + " " + NSLocalizedString("_selected_photos_", comment: ""))
                     }
                 }
-                .font(.system(size: 16, weight: .bold, design: .default))
-                .frame(minWidth: 220, maxWidth: .infinity)
+                .frame(minWidth: 250, maxWidth: .infinity)
 
                 Button {
                     tabBarSelect.delegate?.delete(tabBarController: tabBarSelect)
