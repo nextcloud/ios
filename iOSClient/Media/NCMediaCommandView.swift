@@ -219,15 +219,11 @@ extension NCMediaCommandView: NCMediaTabBarSelectDelegate {
 
         if !mediaView.selectOcId.isEmpty {
             let selectOcId = mediaView.selectOcId
-            var title = NSLocalizedString("_delete_", comment: "")
-            if selectOcId.count > 1 {
-                title = NSLocalizedString("_delete_selected_files_", comment: "")
-            }
             let alertController = UIAlertController(
-                title: title,
+                title: NSLocalizedString("_delete_selected_photos_", comment: ""),
                 message: "",
                 preferredStyle: .alert)
-            alertController.addAction(UIAlertAction(title: NSLocalizedString("_yes_delete_", comment: ""), style: .default) { (_: UIAlertAction) in
+            alertController.addAction(UIAlertAction(title: NSLocalizedString("_yes_", comment: ""), style: .default) { (_: UIAlertAction) in
 
                 Task {
                     var error = NKError()
@@ -246,7 +242,7 @@ extension NCMediaCommandView: NCMediaTabBarSelectDelegate {
                 self.mediaView.isEditMode = false
                 self.setSelectcancelButton()
             })
-            alertController.addAction(UIAlertAction(title: NSLocalizedString("_no_delete_", comment: ""), style: .default) { (_: UIAlertAction) in })
+            alertController.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .default) { (_: UIAlertAction) in })
 
             mediaView.present(alertController, animated: true, completion: { })
         }
