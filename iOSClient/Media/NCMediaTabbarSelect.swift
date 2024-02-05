@@ -24,7 +24,7 @@
 import UIKit
 import SwiftUI
 
-protocol NCTabBarSelectDelegate: AnyObject {
+protocol NCMediaTabBarSelectDelegate: AnyObject {
     func delete()
 }
 
@@ -32,11 +32,11 @@ class NCMediaTabbarSelect: ObservableObject {
 
     var hostingController: UIViewController!
     var mediaTabBarController: UITabBarController?
-    open weak var delegate: NCTabBarSelectDelegate?
+    open weak var delegate: NCMediaTabBarSelectDelegate?
 
     @Published var selectCount: Int = 0
 
-    init(tabBarController: UITabBarController? = nil, delegate: NCTabBarSelectDelegate? = nil) {
+    init(tabBarController: UITabBarController? = nil, delegate: NCMediaTabBarSelectDelegate? = nil) {
 
         guard let tabBarController else { return }
         let mediaTabBarSelectView = MediaTabBarSelectView(tabBarSelect: self)
