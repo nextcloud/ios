@@ -1049,7 +1049,10 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
 
             if utilityFileSystem.fileProviderStorageExists(metadata) {
                 NCViewer().view(viewController: self, metadata: metadata, metadatas: [metadata], imageIcon: imageIcon)
-            } else if NextcloudKit.shared.isNetworkReachable(), let metadata = NCManageDatabase.shared.setMetadataSessionInWaitDownload(ocId: metadata.ocId, selector: NCGlobal.shared.selectorLoadFileView) {
+            } else if NextcloudKit.shared.isNetworkReachable(),
+                      let metadata = NCManageDatabase.shared.setMetadataSessionInWaitDownload(ocId: metadata.ocId,
+                                                                                              session: NextcloudKit.shared.nkCommonInstance.sessionIdentifierDownload,
+                                                                                              selector: NCGlobal.shared.selectorLoadFileView) {
                 NCNetworking.shared.download(metadata: metadata, withNotificationProgressTask: true)
             } else {
                 let error = NKError(errorCode: NCGlobal.shared.errorOffline, errorDescription: "_go_online_")

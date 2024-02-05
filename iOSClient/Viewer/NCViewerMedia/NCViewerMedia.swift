@@ -167,7 +167,9 @@ class NCViewerMedia: UIViewController {
                         if error == .success, let url = url {
                             ncplayer.openAVPlayer(url: url, autoplay: autoplay)
                         } else {
-                            guard let metadata = NCManageDatabase.shared.setMetadataSessionInWaitDownload(ocId: self.metadata.ocId, selector: "") else { return }
+                            guard let metadata = NCManageDatabase.shared.setMetadataSessionInWaitDownload(ocId: self.metadata.ocId,
+                                                                                                          session: NextcloudKit.shared.nkCommonInstance.sessionIdentifierDownload,
+                                                                                                          selector: "") else { return }
                             var downloadRequest: DownloadRequest?
                             let hud = JGProgressHUD()
                             hud.indicatorView = JGProgressHUDRingIndicatorView()
@@ -282,7 +284,9 @@ class NCViewerMedia: UIViewController {
         if metadata.isLivePhoto,
            let metadata = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata),
            !utilityFileSystem.fileProviderStorageExists(metadata),
-           let metadata = NCManageDatabase.shared.setMetadataSessionInWaitDownload(ocId: metadata.ocId, selector: "") {
+           let metadata = NCManageDatabase.shared.setMetadataSessionInWaitDownload(ocId: metadata.ocId,
+                                                                                   session: NextcloudKit.shared.nkCommonInstance.sessionIdentifierDownload,
+                                                                                   selector: "") {
             NCNetworking.shared.download(metadata: metadata, withNotificationProgressTask: true)
         }
 
@@ -322,7 +326,9 @@ class NCViewerMedia: UIViewController {
     }
 
     func downloadImage(withSelector selector: String = "") {
-        guard let metadata = NCManageDatabase.shared.setMetadataSessionInWaitDownload(ocId: metadata.ocId, selector: selector) else { return }
+        guard let metadata = NCManageDatabase.shared.setMetadataSessionInWaitDownload(ocId: metadata.ocId,
+                                                                                      session: NextcloudKit.shared.nkCommonInstance.sessionIdentifierDownload,
+                                                                                      selector: selector) else { return }
         NCNetworking.shared.download(metadata: metadata, withNotificationProgressTask: true) {
         } requestHandler: { _ in
             self.allowOpeningDetails = false
