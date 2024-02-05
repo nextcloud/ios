@@ -636,7 +636,7 @@ extension NCManageDatabase {
     }
 
     @discardableResult
-    func setMetadataSessionInWaitDownload(ocId: String, selector: String) -> tableMetadata? {
+    func setMetadataSessionInWaitDownload(ocId: String, session: String, selector: String) -> tableMetadata? {
 
         var metadata: tableMetadata?
 
@@ -644,7 +644,7 @@ extension NCManageDatabase {
             let realm = try Realm()
             try realm.write {
                 if let result = realm.objects(tableMetadata.self).filter("ocId == %@", ocId).first {
-                    result.session = NextcloudKit.shared.nkCommonInstance.sessionIdentifierDownload
+                    result.session = session
                     result.sessionError = ""
                     result.sessionSelector = selector
                     result.status = NCGlobal.shared.metadataStatusWaitDownload

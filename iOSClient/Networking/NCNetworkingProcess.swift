@@ -53,7 +53,7 @@ class NCNetworkingProcess: NSObject {
                     if !deletions.isEmpty || !insertions.isEmpty || !modifications.isEmpty {
                         self?.invalidateObserveTableMetadata()
                         self?.start(completition: { items in
-                            print("[LOG] PROCESS-UPLOAD-OBSERVE \(items)")
+                            print("[LOG] PROCESS-OBSERVE \(items)")
                             DispatchQueue.main.async {
                                 self?.observeTableMetadata()
                             }
@@ -88,7 +88,7 @@ class NCNetworkingProcess: NSObject {
 
     @objc private func processTimer() {
         start { items in
-            print("[LOG] PROCESS-UPLOAD-TIMER \(items)")
+            print("[LOG] PROCESS TIMER \(items)")
         }
     }
 
@@ -110,10 +110,16 @@ class NCNetworkingProcess: NSObject {
 
         queue.async {
 
+            let metadatasDownload = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND status == %d", self.appDelegate.account, NCGlobal.shared.metadataStatusDownloading))
             let metadatasUpload = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND status == %d", self.appDelegate.account, NCGlobal.shared.metadataStatusUploading))
             let isWiFi = NCNetworking.shared.networkReachability == NKCommon.TypeReachability.reachableEthernetOrWiFi
+            var counterDownload = metadatasDownload.count
             var counterUpload = metadatasUpload.count
-            let sessionSelectors = [NCGlobal.shared.selectorUploadFileNODelete, NCGlobal.shared.selectorUploadFile, NCGlobal.shared.selectorUploadAutoUpload, NCGlobal.shared.selectorUploadAutoUploadAll]
+            let sessionUploadSelectors = [NCGlobal.shared.selectorUploadFileNODelete, NCGlobal.shared.selectorUploadFile, NCGlobal.shared.selectorUploadAutoUpload, NCGlobal.shared.selectorUploadAutoUploadAll]
+
+            // DOWNLOAD
+
+            // UPLOAD
 
             // ** TEST ONLY ONE **
             // E2EE
@@ -132,12 +138,12 @@ class NCNetworkingProcess: NSObject {
 
             NCNetworking.shared.getOcIdInBackgroundSession(queue: queue, completion: { listOcId in
 
-                for sessionSelector in sessionSelectors where counterUpload < maxConcurrentOperationUpload {
+                for sessionSelector in sessionUploadSelectors where counterUpload < maxConcurrentOperationUpload {
 
                     let limit = maxConcurrentOperationUpload - counterUpload
                     let metadatas = NCManageDatabase.shared.getAdvancedMetadatas(predicate: NSPredicate(format: "account == %@ AND sessionSelector == %@ AND status == %d", self.appDelegate.account, sessionSelector, NCGlobal.shared.metadataStatusWaitUpload), page: 1, limit: limit, sorted: "date", ascending: true)
                     if !metadatas.isEmpty {
-                        NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] PROCESS-UPLOAD find \(metadatas.count) items")
+                        NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] PROCESS (UPLOAD) find \(metadatas.count) items")
                     }
 
                     for metadata in metadatas where counterUpload < maxConcurrentOperationUpload {
