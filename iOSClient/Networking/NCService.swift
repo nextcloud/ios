@@ -50,7 +50,7 @@ class NCService: NSObject {
                 requestServerCapabilities()
                 requestDashboardWidget()
                 NCNetworkingE2EE().unlockAll(account: account)
-                NCNetworkingProcessUpload.shared.verifyUploadZombie()
+                NCNetworkingProcess.shared.verifyUploadZombie()
                 sendClientDiagnosticsRemoteOperation(account: account)
             }
         }
