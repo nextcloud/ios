@@ -53,7 +53,7 @@ class NCNetworkingProcess: NSObject {
                     if !deletions.isEmpty || !insertions.isEmpty || !modifications.isEmpty {
                         self?.invalidateObserveTableMetadata()
                         self?.start(completition: { items in
-                            print("[LOG] PROCESS-OBSERVE \(items)")
+                            print("[LOG] PROCESS (OBSERVE) \(items)")
                             DispatchQueue.main.async {
                                 self?.observeTableMetadata()
                             }
@@ -88,7 +88,7 @@ class NCNetworkingProcess: NSObject {
 
     @objc private func processTimer() {
         start { items in
-            print("[LOG] PROCESS TIMER \(items)")
+            print("[LOG] PROCESS (TIMER) \(items)")
         }
     }
 
