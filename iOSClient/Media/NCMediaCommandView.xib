@@ -46,7 +46,7 @@
                     <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
                     <state key="normal" title="Title"/>
                     <connections>
-                        <action selector="selectcancelButtonPressed:" destination="iN0-l3-epB" eventType="touchUpInside" id="2i8-sg-0de"/>
+                        <action selector="selectOrCancelButtonPressed:" destination="iN0-l3-epB" eventType="touchUpInside" id="0dX-pC-icF"/>
                     </connections>
                 </button>
             </subviews>
@@ -66,8 +66,8 @@
             <connections>
                 <outlet property="activityIndicator" destination="XVj-jD-9KA" id="cSB-RJ-RCZ"/>
                 <outlet property="menuButton" destination="3qs-Hm-qLL" id="7uo-w1-pml"/>
-                <outlet property="selectcancelButton" destination="EFV-eb-pFF" id="V1m-oU-jN0"/>
-                <outlet property="selectcancelButtonTrailing" destination="OIB-Zp-XkO" id="dnU-zA-Kes"/>
+                <outlet property="selectOrCancelButton" destination="EFV-eb-pFF" id="2ve-si-IjY"/>
+                <outlet property="selectOrCancelButtonTrailing" destination="OIB-Zp-XkO" id="2gp-In-Snh"/>
                 <outlet property="title" destination="IxY-xH-yZQ" id="ZNZ-Jy-JbH"/>
             </connections>
             <point key="canvasLocation" x="140" y="148"/>

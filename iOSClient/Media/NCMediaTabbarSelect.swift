@@ -33,11 +33,9 @@ class NCMediaTabbarSelect: ObservableObject {
     var hostingController: UIViewController!
     var mediaTabBarController: UITabBarController?
     open weak var delegate: NCMediaTabBarSelectDelegate?
-
     @Published var selectCount: Int = 0
 
     init(tabBarController: UITabBarController? = nil, delegate: NCMediaTabBarSelectDelegate? = nil) {
-
         guard let tabBarController else { return }
         let mediaTabBarSelectView = MediaTabBarSelectView(tabBarSelect: self)
         hostingController = UIHostingController(rootView: mediaTabBarSelectView)
@@ -60,26 +58,32 @@ class NCMediaTabbarSelect: ObservableObject {
         hostingController.view.isHidden = true
     }
 
-    func show(animation: Bool) {
-
-        mediaTabBarController?.tabBar.isHidden = true
+    func show() {
         hostingController.view.isHidden = false
+        hostingController.view.transform = .init(translationX: 0, y: hostingController.view.frame.height)
+        UIView.animate(withDuration: 0.2) {
+            self.hostingController.view.transform = .init(translationX: 0, y: 0)
+        }
+        mediaTabBarController?.tabBar.isHidden = true
     }
 
-    func hide(animation: Bool) {
-
-        hostingController.view.isHidden = true
-        mediaTabBarController?.tabBar.isHidden = false
+    func hide() {
+        hostingController.view.transform = .init(translationX: 0, y: 0)
+        UIView.animate(withDuration: 0.2) {
+            self.hostingController.view.transform = .init(translationX: 0, y: self.hostingController.view.frame.height)
+        } completion: { _ in
+            self.mediaTabBarController?.tabBar.isHidden = false
+            self.hostingController.view.isHidden = true
+        }
     }
 }
 
 struct MediaTabBarSelectView: View {
-
     @ObservedObject var tabBarSelect: NCMediaTabbarSelect
 
     var body: some View {
         VStack {
-            Spacer().frame(height: 10)
+            Spacer().frame(height: 8)
             HStack {
                 Spacer().frame(maxWidth: .infinity)
                 Group {
