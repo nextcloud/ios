@@ -211,9 +211,9 @@ class NCMediaCommandView: UIView {
     }
 }
 
-// MARK: - NCTabBarSelectDelegate
+// MARK: - NCMediaTabBarSelectDelegate
 
-extension NCMediaCommandView: NCTabBarSelectDelegate {
+extension NCMediaCommandView: NCMediaTabBarSelectDelegate {
 
     func delete() {
 
