@@ -70,7 +70,7 @@ class NCOperationSaveLivePhoto: ConcurrentOperation {
                 }
                 return self.finish()
             }
-            NCNetworking.shared.download(metadata: metadataLive, withNotificationProgressTask: false, checkfileProviderStorageExists: true) {
+            NCNetworking.shared.download(metadata: metadataLive, withNotificationProgressTask: false) {
                 DispatchQueue.main.async {
                     self.hud.textLabel.text = NSLocalizedString("_download_video_", comment: "")
                     self.hud.detailTextLabel.text = self.metadataMOV.fileName

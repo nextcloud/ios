@@ -326,7 +326,6 @@ class NCNetworking: NSObject, NKCommonDelegate {
 
     func download(metadata: tableMetadata,
                   withNotificationProgressTask: Bool,
-                  checkfileProviderStorageExists: Bool = false,
                   hudView: UIView? = nil,
                   hud: JGProgressHUD? = nil,
                   start: @escaping () -> Void = { },
@@ -335,7 +334,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
                   completion: @escaping (_ afError: AFError?, _ error: NKError) -> Void = { _, _ in }) {
 
         if metadata.session == NextcloudKit.shared.nkCommonInstance.sessionIdentifierDownload {
-            downloadFile(metadata: metadata, withNotificationProgressTask: withNotificationProgressTask, checkfileProviderStorageExists: checkfileProviderStorageExists, hudView: hudView, hud: hud) {
+            downloadFile(metadata: metadata, withNotificationProgressTask: withNotificationProgressTask, hudView: hudView, hud: hud) {
                 start()
             } requestHandler: { request in
                 requestHandler(request)
@@ -353,7 +352,6 @@ class NCNetworking: NSObject, NKCommonDelegate {
 
     private func downloadFile(metadata: tableMetadata,
                               withNotificationProgressTask: Bool,
-                              checkfileProviderStorageExists: Bool = false,
                               hudView: UIView?,
                               hud: JGProgressHUD?,
                               start: @escaping () -> Void = { },
@@ -362,10 +360,6 @@ class NCNetworking: NSObject, NKCommonDelegate {
                               completion: @escaping (_ afError: AFError?, _ error: NKError) -> Void = { _, _ in }) {
 
         guard !metadata.isInTransfer else { return completion(nil, NKError()) }
-        if checkfileProviderStorageExists, utilityFileSystem.fileProviderStorageExists(metadata) {
-            return completion(nil, NKError())
-        }
-
         let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
         let fileNameLocalPath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileName)
         let options = NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
