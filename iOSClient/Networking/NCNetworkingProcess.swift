@@ -102,6 +102,7 @@ class NCNetworkingProcess: NSObject {
 
         let applicationState = UIApplication.shared.applicationState
         let queue = DispatchQueue.global()
+        var maxConcurrentOperationDownload = NCBrandOptions.shared.maxConcurrentOperationDownload
         var maxConcurrentOperationUpload = NCBrandOptions.shared.maxConcurrentOperationUpload
 
         if applicationState == .active {
@@ -110,20 +111,25 @@ class NCNetworkingProcess: NSObject {
 
         queue.async {
 
-            let metadatasDownload = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND status == %d", self.appDelegate.account, NCGlobal.shared.metadataStatusDownloading))
-            let metadatasUpload = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND status == %d", self.appDelegate.account, NCGlobal.shared.metadataStatusUploading))
+            let metadatasDownloading = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND status == %d", self.appDelegate.account, NCGlobal.shared.metadataStatusDownloading))
+            let metadatasUploading = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND status == %d", self.appDelegate.account, NCGlobal.shared.metadataStatusUploading))
             let isWiFi = NCNetworking.shared.networkReachability == NKCommon.TypeReachability.reachableEthernetOrWiFi
-            var counterDownload = metadatasDownload.count
-            var counterUpload = metadatasUpload.count
-            let sessionUploadSelectors = [NCGlobal.shared.selectorUploadFileNODelete, NCGlobal.shared.selectorUploadFile, NCGlobal.shared.selectorUploadAutoUpload, NCGlobal.shared.selectorUploadAutoUploadAll]
+            var counterDownload = metadatasDownloading.count
+            var counterUpload = metadatasUploading.count
 
             // DOWNLOAD
+            let limitDownload = maxConcurrentOperationDownload - counterDownload
+            let metadatasDownload = NCManageDatabase.shared.getAdvancedMetadatas(predicate: NSPredicate(format: "account == %@ AND status == %d", self.appDelegate.account, NCGlobal.shared.metadataStatusWaitDownload), page: 1, limit: limitDownload, sorted: "date", ascending: true)
+            for metadata in metadatasDownload where counterDownload < maxConcurrentOperationDownload {
+                NCNetworking.shared.download(metadata: metadata, withNotificationProgressTask: true)
+                counterDownload += 1
+            }
 
             // UPLOAD
 
             // ** TEST ONLY ONE **
             // E2EE
-            let uniqueMetadatas = metadatasUpload.unique(map: { $0.serverUrl })
+            let uniqueMetadatas = metadatasUploading.unique(map: { $0.serverUrl })
             for metadata in uniqueMetadatas {
                 if metadata.isDirectoryE2EE {
                     self.pauseProcess = false
@@ -131,22 +137,24 @@ class NCNetworkingProcess: NSObject {
                 }
             }
             // CHUNK
-            if !metadatasUpload.filter({ $0.chunk > 0 }).isEmpty {
+            if !metadatasUploading.filter({ $0.chunk > 0 }).isEmpty {
                 self.pauseProcess = false
                 return completition(counterUpload)
             }
 
             NCNetworking.shared.getOcIdInBackgroundSession(queue: queue, completion: { listOcId in
 
+                let sessionUploadSelectors = [NCGlobal.shared.selectorUploadFileNODelete, NCGlobal.shared.selectorUploadFile, NCGlobal.shared.selectorUploadAutoUpload, NCGlobal.shared.selectorUploadAutoUploadAll]
+
                 for sessionSelector in sessionUploadSelectors where counterUpload < maxConcurrentOperationUpload {
 
-                    let limit = maxConcurrentOperationUpload - counterUpload
-                    let metadatas = NCManageDatabase.shared.getAdvancedMetadatas(predicate: NSPredicate(format: "account == %@ AND sessionSelector == %@ AND status == %d", self.appDelegate.account, sessionSelector, NCGlobal.shared.metadataStatusWaitUpload), page: 1, limit: limit, sorted: "date", ascending: true)
-                    if !metadatas.isEmpty {
-                        NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] PROCESS (UPLOAD) find \(metadatas.count) items")
+                    let limitUpload = maxConcurrentOperationUpload - counterUpload
+                    let metadatasUpload = NCManageDatabase.shared.getAdvancedMetadatas(predicate: NSPredicate(format: "account == %@ AND sessionSelector == %@ AND status == %d", self.appDelegate.account, sessionSelector, NCGlobal.shared.metadataStatusWaitUpload), page: 1, limit: limitUpload, sorted: "date", ascending: true)
+                    if !metadatasUpload.isEmpty {
+                        NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] PROCESS (UPLOAD) find \(metadatasUpload.count) items")
                     }
 
-                    for metadata in metadatas where counterUpload < maxConcurrentOperationUpload {
+                    for metadata in metadatasUpload where counterUpload < maxConcurrentOperationUpload {
 
                         // Is already in upload background? skipped
                         if listOcId.contains(metadata.ocId) {
