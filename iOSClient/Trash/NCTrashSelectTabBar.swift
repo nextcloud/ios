@@ -57,6 +57,12 @@ class NCTrashSelectTabBar: NCSelectableViewTabBar, ObservableObject {
 
         tabBarController.tabBar.isHidden = true
         hostingController.view.isHidden = false
+
+        hostingController.view.transform = .init(translationX: 0, y: hostingController.view.frame.height)
+
+        UIView.animate(withDuration: 0.2) {
+            hostingController.view.transform = .init(translationX: 0, y: 0)
+        }
     }
 
     func hide(animation: Bool) {

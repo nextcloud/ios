@@ -22,9 +22,9 @@ class NCCollectionViewCommonSelectTabBar: NCSelectableViewTabBar, ObservableObje
     private var tabBarController: UITabBarController?
     private var hostingController: UIViewController?
     open weak var delegate: NCCollectionViewCommonSelectTabBarDelegate?
-    
+
     var selectedMetadatas: [tableMetadata] = []
-    
+
     @Published var isAnyOffline = false
     @Published var isAnyDirectory = false
     @Published var isAllDirectory = false
@@ -60,8 +60,14 @@ class NCCollectionViewCommonSelectTabBar: NCSelectableViewTabBar, ObservableObje
 
         tabBarController.tabBar.isHidden = true
         hostingController.view.isHidden = false
+        
+        hostingController.view.transform = .init(translationX: 0, y: hostingController.view.frame.height)
+        
+        UIView.animate(withDuration: 0.2) {
+            hostingController.view.transform = .init(translationX: 0, y: 0)
+        }
     }
-
+    
     func hide(animation: Bool) {
         guard let tabBarController, let hostingController else { return }
 
