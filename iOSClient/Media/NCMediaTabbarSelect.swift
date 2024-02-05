@@ -83,7 +83,9 @@ struct MediaTabBarSelectView: View {
             HStack {
                 Spacer().frame(maxWidth: .infinity)
                 Group {
-                    if tabBarSelect.selectCount == 1 {
+                    if tabBarSelect.selectCount == 0 {
+                        Text(NSLocalizedString("_select_photo_", comment: ""))
+                    } else if tabBarSelect.selectCount == 1 {
                         Text(String(tabBarSelect.selectCount) + " " + NSLocalizedString("_selected_photo_", comment: ""))
                     } else {
                         Text(String(tabBarSelect.selectCount) + " " + NSLocalizedString("_selected_photos_", comment: ""))
