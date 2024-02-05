@@ -51,6 +51,7 @@ extension UIView {
         let blurredEffectView = UIVisualEffectView(effect: blur)
         blurredEffectView.frame = self.bounds
         blurredEffectView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        blurredEffectView.isUserInteractionEnabled = false
         self.addSubview(blurredEffectView)
     }
 }
