@@ -1400,7 +1400,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
                                 NCManageDatabase.shared.addMetadata(metadata)
                             } else if selector == NCGlobal.shared.selectorSynchronizationOffline,
                                       metadata.isSynchronizable {
-                                NCManageDatabase.shared.setMetadataSessionInWaitDownload(ocId: metadata.ocId, 
+                                NCManageDatabase.shared.setMetadataSessionInWaitDownload(ocId: metadata.ocId,
                                                                                          session: NCNetworking.shared.sessionDownloadBackground,
                                                                                          selector: selector)
                             }
