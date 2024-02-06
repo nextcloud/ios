@@ -81,7 +81,7 @@ extension NCCollectionViewCommon {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_details_", comment: ""),
-                    icon: utility.loadImage(named: "info"),
+                    icon: utility.loadImage(named: "info.circle"),
                     order: 10,
                     action: { _ in
                         NCActionCenter.shared.openShare(viewController: self, metadata: metadata, page: .activity)
@@ -201,7 +201,7 @@ extension NCCollectionViewCommon {
             actions.append(
                 NCMenuAction(
                     title: metadata.favorite ? NSLocalizedString("_remove_favorites_", comment: "") : NSLocalizedString("_add_favorites_", comment: ""),
-                    icon: utility.loadImage(named: "star.fill", color: NCBrandColor.shared.yellowFavorite),
+                    icon: utility.loadImage(named: metadata.favorite ? "star.slash.fill" : "star.fill", color: NCBrandColor.shared.yellowFavorite),
                     order: 50,
                     action: { _ in
                         NCNetworking.shared.favoriteMetadata(metadata) { error in
@@ -264,13 +264,29 @@ extension NCCollectionViewCommon {
         }
 
         //
+        // SAVE LIVE PHOTO
+        //
+        if let metadataMOV = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata) {
+            actions.append(
+                NCMenuAction(
+                    title: NSLocalizedString("_livephoto_save_", comment: ""),
+                    icon: NCUtility().loadImage(named: "livephoto"),
+                    order: 100,
+                    action: { _ in
+                        NCNetworking.shared.saveLivePhotoQueue.addOperation(NCOperationSaveLivePhoto(metadata: metadata, metadataMOV: metadataMOV))
+                    }
+                )
+            )
+        }
+
+        //
         // SAVE AS SCAN
         //
         if metadata.isSavebleAsImage {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_save_as_scan_", comment: ""),
-                    icon: utility.loadImage(named: "doc.viewfinder.fill"),
+                    icon: utility.loadImage(named: "doc"),
                     order: 110,
                     action: { _ in
                         if self.utilityFileSystem.fileProviderStorageExists(metadata) {
@@ -297,7 +313,7 @@ extension NCCollectionViewCommon {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_rename_", comment: ""),
-                    icon: utility.loadImage(named: "pencil"),
+                    icon: utility.loadImage(named: "text.cursor"),
                     order: 120,
                     action: { _ in
 
@@ -379,7 +395,7 @@ extension NCCollectionViewCommon {
         }
 
         applicationHandle.addCollectionViewCommonMenu(metadata: metadata, imageIcon: imageIcon, actions: &actions)
-
+        
         presentMenu(with: actions)
     }
 }

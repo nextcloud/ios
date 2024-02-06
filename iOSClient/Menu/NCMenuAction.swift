@@ -98,19 +98,6 @@ extension NCMenuAction {
         )
     }
 
-//    /// Copy files to pasteboard
-//    static func copyAction(selectOcId: [String], order: Int = 0, completion: (() -> Void)? = nil) -> NCMenuAction {
-//        NCMenuAction(
-//            title: NSLocalizedString("_copy_file_", comment: ""),
-//            icon: NCUtility().loadImage(named: "doc.on.doc"),
-//            order: order,
-//            action: { _ in
-//                NCActionCenter.shared.copyPasteboard(pasteboardOcIds: selectOcId)
-//                completion?()
-//            }
-//        )
-//    }
-
     /// Delete files either from cache or from Nextcloud
     static func deleteAction(selectedMetadatas: [tableMetadata], indexPath: [IndexPath], metadataFolder: tableMetadata? = nil, viewController: UIViewController, order: Int = 0, completion: (() -> Void)? = nil) -> NCMenuAction {
         var titleDelete = NSLocalizedString("_delete_", comment: "")
@@ -243,8 +230,8 @@ extension NCMenuAction {
     /// Open view that lets the user move or copy the files within Nextcloud
     static func moveOrCopyAction(selectedMetadatas: [tableMetadata], indexPath: [IndexPath], order: Int = 0, completion: (() -> Void)? = nil) -> NCMenuAction {
         NCMenuAction(
-            title: NSLocalizedString("_move_", comment: ""),
-            icon: NCUtility().loadImage(named: "arrow.up.and.down.and.arrow.left.and.right"),
+            title: NSLocalizedString("_move_or_copy_", comment: ""),
+            icon: NCUtility().loadImage(named: "rectangle.portrait.and.arrow.right"),
             order: order,
             action: { _ in
                 NCActionCenter.shared.openSelectView(items: selectedMetadatas, indexPath: indexPath)

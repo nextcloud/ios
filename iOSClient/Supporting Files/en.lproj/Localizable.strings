@@ -135,7 +135,7 @@
 "_internal_modify_"         = "Edit with internal editor";
 "_database_corrupt_"        = "Oops something went wrong, please enter your credentials but don't worry, your files have remained secure";
 "_download_locally_"        = "Download locally";
-"_livephoto_save_"          = "Save Live Photo to photo album";
+"_livephoto_save_"          = "Save Live Photo to Photo Album";
 "_livephoto_save_error_"    = "Error during save of Live Photo";
 "_file_conflict_num_"       = "file conflict";
 "_file_conflicts_num_"      = "file conflicts";
@@ -143,7 +143,7 @@
 "_file_conflict_new_"       = "New files";
 "_file_conflict_exists_"    = "Already existing files";
 "_file_not_rewite_doc_"     = "It is not possible to overwrite a document but only to create a new one";
-"_move_or_copy_"            = "Move";
+"_move_or_copy_"            = "Move or copy";
 "_copy_"                    = "Copy";
 "_now_"                     = "Now";
 "_wait_"                    = "Please wait …";
