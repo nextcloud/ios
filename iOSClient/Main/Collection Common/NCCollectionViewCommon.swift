@@ -1640,7 +1640,7 @@ extension NCCollectionViewCommon: NCSelectableNavigationView, NCCollectionViewCo
         if isEditMode {
             tabBarSelect.show()
 
-            let select = UIBarButtonItem(title: NSLocalizedString("_done_", comment: ""), style: .done) { self.toggleSelect() }
+            let select = UIBarButtonItem(title: NSLocalizedString("_cancel_", comment: ""), style: .done) { self.toggleSelect() }
 
             navigationItem.rightBarButtonItems = [select]
         } else {
@@ -1798,7 +1798,7 @@ extension NCCollectionViewCommon: NCSelectableNavigationView, NCCollectionViewCo
         let viewStyleSubmenu = UIMenu(title: "", options: .displayInline, children: [list, grid])
 
         let ascending = layoutForView.ascending
-        let ascendingChevronImage = UIImage(systemName: ascending ? "chevron.down" : "chevron.up")
+        let ascendingChevronImage = UIImage(systemName: ascending ? "chevron.up" : "chevron.down")
         let isName = layoutForView.sort == "fileName"
         let isDate = layoutForView.sort == "date"
         let isSize = layoutForView.sort == "size"

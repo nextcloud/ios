@@ -87,7 +87,7 @@ struct NCCollectionViewCommonSelectTabBarView: View {
 
     var body: some View {
         VStack {
-            Spacer().frame(height: 10)
+            Spacer().frame(height: sizeClass == .compact ? 5 : 10)
 
             HStack {
                 Button {
@@ -105,10 +105,10 @@ struct NCCollectionViewCommonSelectTabBarView: View {
                 Button {
                     tabBarSelect.delegate?.move(selectedMetadatas: tabBarSelect.selectedMetadatas)
                 } label: {
-                    Image(systemName: "arrow.up.and.down.and.arrow.left.and.right")
+                    Image(systemName: "rectangle.portrait.and.arrow.right")
                         .resizable()
                         .aspectRatio(contentMode: .fit)
-                        .frame(width: sizeClass == .compact ? 18 : 22)
+                        .frame(width: sizeClass == .compact ? 19 : 23)
                 }
                 .frame(maxWidth: .infinity)
                 .disabled(tabBarSelect.isSelectedEmpty)

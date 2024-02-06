@@ -325,7 +325,7 @@ extension NCTrash: NCSelectableNavigationView, NCTrashSelectTabBarDelegate {
         if isEditMode {
             tabBarSelect.show()
 
-            let select = UIBarButtonItem(title: NSLocalizedString("_done_", comment: ""), style: .done) { self.toggleSelect() }
+            let select = UIBarButtonItem(title: NSLocalizedString("_cancel_", comment: ""), style: .done) { self.toggleSelect() }
 
             navigationItem.rightBarButtonItems = [select]
         } else {

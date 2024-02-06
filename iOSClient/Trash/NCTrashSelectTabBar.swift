@@ -78,7 +78,7 @@ struct NCTrashSelectTabBarView: View {
 
     var body: some View {
         VStack {
-            Spacer().frame(height: 10)
+            Spacer().frame(height: sizeClass == .compact ? 5 : 10)
 
             HStack {
                 Button {
@@ -124,4 +124,3 @@ struct NCTrashSelectTabBarView: View {
 #Preview {
     NCTrashSelectTabBarView(tabBarSelect: NCTrashSelectTabBar())
 }
-
