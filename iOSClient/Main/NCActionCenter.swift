@@ -115,9 +115,6 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
                 }
             }
 
-        case NCGlobal.shared.selectorLoadOffline:
-            NCManageDatabase.shared.setLocalFile(ocId: metadata.ocId, offline: true)
-
         case NCGlobal.shared.selectorPrint:
             // waiting close menu
             // https://github.com/nextcloud/ios/issues/2278
@@ -157,10 +154,16 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
             NCManageDatabase.shared.setDirectory(serverUrl: serverUrl, offline: true, account: appDelegate.account)
             NCNetworking.shared.synchronization(account: metadata.account, serverUrl: serverUrl, selector: NCGlobal.shared.selectorSynchronizationOffline)
         } else {
-            guard let metadata = NCManageDatabase.shared.setMetadataSessionInWaitDownload(ocId: metadata.ocId, selector: NCGlobal.shared.selectorLoadOffline) else { return }
-            NCNetworking.shared.download(metadata: metadata, withNotificationProgressTask: true)
-            if let metadata = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata), let metadata = NCManageDatabase.shared.setMetadataSessionInWaitDownload(ocId: metadata.ocId, selector: NCGlobal.shared.selectorLoadOffline) {
-                NCNetworking.shared.download(metadata: metadata, withNotificationProgressTask: true)
+            NCManageDatabase.shared.setLocalFile(ocId: metadata.ocId, offline: true)
+            guard let metadata = NCManageDatabase.shared.setMetadataSessionInWaitDownload(ocId: metadata.ocId,
+                                                                                          session: NCNetworking.shared.sessionDownloadBackground,
+                                                                                          selector: NCGlobal.shared.selectorSynchronizationOffline,
+                                                                                          addMetadata: metadata) else { return }
+            if let metadata = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata) {
+              NCManageDatabase.shared.setMetadataSessionInWaitDownload(ocId: metadata.ocId,
+                                                                       session: NCNetworking.shared.sessionDownloadBackground,
+                                                                       selector: NCGlobal.shared.selectorSynchronizationOffline,
+                                                                       addMetadata: metadata)
             }
         }
     }
@@ -331,7 +334,9 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
         let processor = ParallelWorker(n: 5, titleKey: "_downloading_", totalTasks: downloadMetadata.count, hudView: appDelegate.window?.rootViewController?.view)
         for (metadata, url) in downloadMetadata {
             processor.execute { completion in
-                guard let metadata = NCManageDatabase.shared.setMetadataSessionInWaitDownload(ocId: metadata.ocId, selector: "") else { return completion() }
+                guard let metadata = NCManageDatabase.shared.setMetadataSessionInWaitDownload(ocId: metadata.ocId,
+                                                                                              session: NextcloudKit.shared.nkCommonInstance.sessionIdentifierDownload,
+                                                                                              selector: "") else { return completion() }
                 NCNetworking.shared.download(metadata: metadata, withNotificationProgressTask: false) {
                 } progressHandler: { progress in
                     processor.hud?.progress = Float(progress.fractionCompleted)
@@ -478,7 +483,9 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
 
             for metadata in downloadMetadatas {
                 processor.execute { completion in
-                    guard let metadata = NCManageDatabase.shared.setMetadataSessionInWaitDownload(ocId: metadata.ocId, selector: "") else { return completion() }
+                    guard let metadata = NCManageDatabase.shared.setMetadataSessionInWaitDownload(ocId: metadata.ocId,
+                                                                                                  session: NextcloudKit.shared.nkCommonInstance.sessionIdentifierDownload,
+                                                                                                  selector: "") else { return completion() }
                     NCNetworking.shared.download(metadata: metadata, withNotificationProgressTask: false) {
                     } requestHandler: { _ in
                     } progressHandler: { progress in

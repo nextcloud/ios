@@ -188,8 +188,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         NCSettingsBundleHelper.checkAndExecuteSettings(delay: 0.5)
 
         // START OBSERVE/TIMER UPLOAD PROCESS
-        NCNetworkingProcessUpload.shared.observeTableMetadata()
-        NCNetworkingProcessUpload.shared.startTimer()
+        NCNetworkingProcess.shared.observeTableMetadata()
+        NCNetworkingProcess.shared.startTimer()
 
         if !NCAskAuthorization().isRequesting {
             hidePrivacyProtectionWindow()
@@ -212,8 +212,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         guard !account.isEmpty else { return }
 
         // STOP OBSERVE/TIMER UPLOAD PROCESS
-        NCNetworkingProcessUpload.shared.invalidateObserveTableMetadata()
-        NCNetworkingProcessUpload.shared.stopTimer()
+        NCNetworkingProcess.shared.invalidateObserveTableMetadata()
+        NCNetworkingProcess.shared.stopTimer()
 
         if NCKeychain().privacyScreenEnabled {
             showPrivacyProtectionWindow()
@@ -341,8 +341,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
         NCAutoUpload.shared.initAutoUpload(viewController: nil) { items in
             NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Refresh task auto upload with \(items) uploads")
-            NCNetworkingProcessUpload.shared.start { items in
-                NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Refresh task upload process with \(items) uploads")
+            NCNetworkingProcess.shared.start { counterDownload, counterUpload in
+                NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Processing task upload process with download: \(counterDownload) upload: \(counterUpload)")
                 task.setTaskCompleted(success: true)
                 self.isAppRefresh = false
             }
@@ -361,8 +361,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
         NCAutoUpload.shared.initAutoUpload(viewController: nil) { items in
             NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Processing task auto upload with \(items) uploads")
-            NCNetworkingProcessUpload.shared.start { items in
-                NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Processing task upload process with \(items) uploads")
+            NCNetworkingProcess.shared.start { counterDownload, counterUpload in
+                NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Processing task upload process with download: \(counterDownload) upload: \(counterUpload)")
                 task.setTaskCompleted(success: true)
                 self.isAppProcessing = false
             }
@@ -1127,6 +1127,6 @@ extension AppDelegate: NCAudioRecorderViewControllerDelegate {
 extension AppDelegate: NCCreateFormUploadConflictDelegate {
     func dismissCreateFormUploadConflict(metadatas: [tableMetadata]?) {
         guard let metadatas = metadatas, !metadatas.isEmpty else { return }
-        NCNetworkingProcessUpload.shared.createProcessUploads(metadatas: metadatas) { _ in }
+        NCNetworkingProcess.shared.createProcessUploads(metadatas: metadatas) { _ in }
     }
 }

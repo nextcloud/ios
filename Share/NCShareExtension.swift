@@ -356,7 +356,7 @@ extension NCShareExtension {
             self.hud.progress = 0
         } progressHandler: { _, _, fractionCompleted in
             self.hud.progress = Float(fractionCompleted)
-        } completion: { error in
+        } completion: { _, error in
             if error != .success {
                 NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
                 self.utilityFileSystem.removeFile(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId))

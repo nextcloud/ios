@@ -116,7 +116,7 @@ class NCUploadAssets: NSObject, ObservableObject, NCCreateFormUploadConflictDele
 
         func createProcessUploads() {
             if !self.dismiss {
-                NCNetworkingProcessUpload.shared.createProcessUploads(metadatas: metadatas, completion: { _ in
+                NCNetworkingProcess.shared.createProcessUploads(metadatas: metadatas, completion: { _ in
                     self.dismiss = true
                 })
             }
