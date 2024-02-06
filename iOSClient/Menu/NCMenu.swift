@@ -104,10 +104,12 @@ class NCMenu: UITableViewController {
         } else {
             actionIconView?.image = action.icon
             actionNameLabel?.text = action.title
+            actionNameLabel?.textColor = textColor
+            actionNameLabel?.lineBreakMode = .byTruncatingMiddle
+
             if action.boldTitle {
                 actionNameLabel?.font = .systemFont(ofSize: 18, weight: .medium)
             }
-            actionNameLabel?.textColor = textColor
         }
 
         if action.destructive {
