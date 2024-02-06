@@ -407,7 +407,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
             }
             progressHandler(progress)
 
-        }) { _, etag, date, lenght, allHeaderFields, afError, error in
+        }) { _, etag, date, length, allHeaderFields, afError, error in
 
             var error = error
             self.downloadRequest.removeValue(forKey: fileNameLocalPath)
@@ -420,7 +420,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
                 if afError?.isExplicitlyCancelledError ?? false {
                     error = NKError(errorCode: NCGlobal.shared.errorRequestExplicityCancelled, errorDescription: "error request explicity cancelled")
                 }
-                self.downloadComplete(fileName: metadata.fileName, serverUrl: metadata.serverUrl, etag: etag, date: date, dateLastModified: dateLastModified, length: lenght, description: description, task: downloadTask, error: error)
+                self.downloadComplete(fileName: metadata.fileName, serverUrl: metadata.serverUrl, etag: etag, date: date, dateLastModified: dateLastModified, length: length, description: description, task: downloadTask, error: error)
             }
            completion(afError, error)
         }
@@ -451,7 +451,6 @@ class NCNetworking: NSObject, NKCommonDelegate {
                                                        "account": metadata.account])
 
             start()
-
             completion(nil, NKError())
 
         } else {
