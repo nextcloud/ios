@@ -48,12 +48,11 @@ class NCNetworkingProcess: NSObject {
             notificationToken = results.observe { [weak self] (changes: RealmCollectionChange) in
                 switch changes {
                 case .initial:
-                    print("Initial")
+                    break
                 case .update(_, let deletions, let insertions, let modifications):
                     if !deletions.isEmpty || !insertions.isEmpty || !modifications.isEmpty {
                         self?.invalidateObserveTableMetadata()
-                        self?.start(completition: { items in
-                            print("[LOG] PROCESS (OBSERVE) \(items)")
+                        self?.start(completition: { _, _ in
                             DispatchQueue.main.async {
                                 self?.observeTableMetadata()
                             }
@@ -87,15 +86,16 @@ class NCNetworkingProcess: NSObject {
     }
 
     @objc private func processTimer() {
-        start { items in
-            print("[LOG] PROCESS (TIMER) \(items)")
+        start { itemsDownload, itemsUpload in
+            print("[LOG] PROCESS (TIMER) Download: \(itemsDownload) Upload: \(itemsUpload)")
+            NotificationCenter.default.post(name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterUpdateBadgeNumber), object: nil)
         }
     }
 
-    func start(completition: @escaping (_ items: Int) -> Void) {
+    func start(completition: @escaping (_ itemsDownload: Int, _ itemsUpload: Int) -> Void) {
 
         if appDelegate.account.isEmpty || pauseProcess {
-            return completition(0)
+            return completition(0, 0)
         } else {
             pauseProcess = true
         }
@@ -135,13 +135,13 @@ class NCNetworkingProcess: NSObject {
             for metadata in uniqueMetadatas {
                 if metadata.isDirectoryE2EE {
                     self.pauseProcess = false
-                    return completition(counterUpload)
+                    return completition(counterDownload, counterUpload)
                 }
             }
             // CHUNK
             if !metadatasUploading.filter({ $0.chunk > 0 }).isEmpty {
                 self.pauseProcess = false
-                return completition(counterUpload)
+                return completition(counterDownload, counterUpload)
             }
 
             NCNetworking.shared.getOcIdInBackgroundSession(queue: queue, completion: { listOcId in
@@ -203,11 +203,6 @@ class NCNetworkingProcess: NSObject {
                     }
                 }
 
-                // Update Badge Number
-                NotificationCenter.default.post(
-                    name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterUpdateBadgeNumber),
-                    object: nil)
-
                 // No upload available ? --> Retry Upload in Error
                 if counterUpload == 0 {
                     let metadatas = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND status == %d", self.appDelegate.account, NCGlobal.shared.metadataStatusUploadError))
@@ -242,7 +237,7 @@ class NCNetworkingProcess: NSObject {
                     self.pauseProcess = false
                 }
 
-                completition(counterUpload)
+                completition(counterDownload, counterUpload)
             })
         }
     }

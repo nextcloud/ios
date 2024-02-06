@@ -272,7 +272,7 @@ extension tableMetadata {
     }
 
     var isSynchronizable: Bool {
-        guard self.status == NCGlobal.shared.metadataStatusNormal || self.status == NCGlobal.shared.metadataStatusDownloadError else { return false }
+        guard status != NCGlobal.shared.metadataStatusDownloading else { return false }
         let localFile = NCManageDatabase.shared.getResultsTableLocalFile(predicate: NSPredicate(format: "ocId == %@", ocId))?.first
         if localFile?.etag != etag || NCUtilityFileSystem().fileProviderStorageSize(ocId, fileNameView: fileNameView) == 0 {
             return true
