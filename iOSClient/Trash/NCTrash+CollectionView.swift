@@ -37,6 +37,7 @@ extension NCTrash: UICollectionViewDelegate {
                 selectOcId.append(tableTrash.fileId)
             }
             collectionView.reloadItems(at: [indexPath])
+            setNavigationRightItems()
             return
         }
 
@@ -141,49 +142,18 @@ extension NCTrash: UICollectionViewDataSource {
 
     func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
 
-        if kind == UICollectionView.elementKindSectionHeader {
+        guard let footer = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionFooter", for: indexPath) as? NCSectionFooter
+        else { return UICollectionReusableView() }
 
-            guard let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionHeaderMenu", for: indexPath) as? NCSectionHeaderMenu
-            else { return UICollectionReusableView() }
+        footer.setTitleLabel(setTextFooter(datasource: datasource))
+        footer.separatorIsHidden(true)
 
-            if layoutForView?.layout == NCGlobal.shared.layoutGrid {
-                header.setImageSwitchList()
-                header.buttonSwitch.accessibilityLabel = NSLocalizedString("_list_view_", comment: "")
-            } else {
-                header.setImageSwitchGrid()
-                header.buttonSwitch.accessibilityLabel = NSLocalizedString("_grid_view_", comment: "")
-            }
-
-            header.delegate = self
-            header.setStatusButtonsView(enable: !datasource.isEmpty)
-            header.setSortedTitle(layoutForView?.titleButtonHeader ?? "")
-            header.setButtonsView(height: NCGlobal.shared.heightButtonsView)
-            header.setRichWorkspaceHeight(0)
-            header.setSectionHeight(0)
-            header.setViewTransfer(isHidden: true)
-
-            return header
-
-        } else {
-
-            guard let footer = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionFooter", for: indexPath) as? NCSectionFooter
-            else { return UICollectionReusableView() }
-
-            footer.setTitleLabel(setTextFooter(datasource: datasource))
-            footer.separatorIsHidden(true)
-
-            return footer
-        }
+        return footer
     }
 }
 
 // MARK: UICollectionViewDelegateFlowLayout
 extension NCTrash: UICollectionViewDelegateFlowLayout {
-
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
-        return CGSize(width: collectionView.frame.width, height: NCGlobal.shared.heightButtonsView)
-    }
-
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForFooterInSection section: Int) -> CGSize {
         return CGSize(width: collectionView.frame.width, height: NCGlobal.shared.endHeightFooter)
     }

@@ -33,6 +33,7 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
     var mediaCommandView: NCMediaCommandView?
     var layout: NCMediaGridLayout!
     var documentPickerViewController: NCDocumentPickerViewController?
+    var tabBarSelect: NCMediaTabbarSelect?
 
     let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
     let utilityFileSystem = NCUtilityFileSystem()
@@ -53,7 +54,7 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
     var lastContentOffsetY: CGFloat = 0
     var mediaPath = ""
 
-    var timeIntervalSearchNewMedia: TimeInterval = 3.0
+    var timeIntervalSearchNewMedia: TimeInterval = 2.0
     var timerSearchNewMedia: Timer?
 
     let insetsTop: CGFloat = 75
@@ -87,11 +88,14 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
         mediaCommandView = Bundle.main.loadNibNamed("NCMediaCommandView", owner: self, options: nil)?.first as? NCMediaCommandView
         self.view.addSubview(mediaCommandView!)
         mediaCommandView?.mediaView = self
+        mediaCommandView?.tabBarController = tabBarController
         mediaCommandView?.translatesAutoresizingMaskIntoConstraints = false
         mediaCommandView?.topAnchor.constraint(equalTo: view.topAnchor, constant: 0).isActive = true
         mediaCommandView?.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 0).isActive = true
         mediaCommandView?.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 0).isActive = true
         mediaCommandView?.heightAnchor.constraint(equalToConstant: 150).isActive = true
+
+        tabBarSelect = NCMediaTabbarSelect(tabBarController: self.tabBarController, delegate: mediaCommandView)
 
         cacheImages.cellLivePhotoImage = utility.loadImage(named: "livephoto", color: .white)
         cacheImages.cellPlayImage = utility.loadImage(named: "play.fill", color: .white)
@@ -107,22 +111,21 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
         navigationController?.setMediaAppreance()
 
         NotificationCenter.default.addObserver(self, selector: #selector(deleteFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDeleteFile), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(uploadedFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUploadedFile), object: nil)
 
         timerSearchNewMedia?.invalidate()
         timerSearchNewMedia = Timer.scheduledTimer(timeInterval: timeIntervalSearchNewMedia, target: self, selector: #selector(searchMediaUI), userInfo: nil, repeats: false)
 
         if let metadatas = NCImageCache.shared.initialMetadatas() {
             self.metadatas = metadatas
-            self.mediaCommandView?.setMoreButton()
         }
+
         collectionView.reloadData()
     }
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
-        mediaCommandView?.setMediaCommand()
+        mediaCommandView?.setTitleDate()
         mediaCommandView?.createMenu()
     }
 
@@ -130,14 +133,13 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
         super.viewWillDisappear(animated)
 
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDeleteFile), object: nil)
-        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUploadedFile), object: nil)
     }
 
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         super.viewWillTransition(to: size, with: coordinator)
 
         collectionView?.collectionViewLayout.invalidateLayout()
-        mediaCommandView?.setMediaCommand()
+        mediaCommandView?.setTitleDate()
     }
 
     override var preferredStatusBarStyle: UIStatusBarStyle {
@@ -153,25 +155,24 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
               let error = userInfo["error"] as? NKError else { return }
 
         if !ocIds.isEmpty {
+            var items: [IndexPath] = []
             self.metadatas = self.metadatas?.filter({ !ocIds.contains($0.ocId )})
-            collectionView.reloadData()
+            if let visibleCells = self.collectionView?.indexPathsForVisibleItems.sorted(by: { $0.row < $1.row }).compactMap({ self.collectionView?.cellForItem(at: $0) }) {
+                for case let cell as NCGridMediaCell in visibleCells {
+                    if let ocId = cell.fileObjectId, ocIds.contains(ocId) {
+                        items.append(cell.indexPath)
+                    }
+                }
+                if !items.isEmpty {
+                    collectionView?.deleteItems(at: items)
+                }
+            }
+            self.collectionView?.reloadData()
         }
 
         if error != .success {
             NCContentPresenter().showError(error: error)
         }
-    }
-
-    @objc func uploadedFile(_ notification: NSNotification) {
-
-        guard let userInfo = notification.userInfo as NSDictionary?,
-              let error = userInfo["error"] as? NKError,
-              error == .success,
-              let account = userInfo["account"] as? String,
-              account == appDelegate.account
-        else { return }
-
-        self.reloadDataSource()
     }
 
     // MARK: - Empty
@@ -222,9 +223,8 @@ extension NCMedia: UICollectionViewDelegate {
                 } else {
                     selectOcId.append(metadata.ocId)
                 }
-                if indexPath.section < collectionView.numberOfSections && indexPath.row < collectionView.numberOfItems(inSection: indexPath.section) {
-                    collectionView.reloadItems(at: [indexPath])
-                }
+                collectionView.reloadItems(at: [indexPath])
+                tabBarSelect?.selectCount = selectOcId.count
             } else {
                 // ACTIVE SERVERURL
                 appDelegate.activeServerUrl = metadata.serverUrl
@@ -250,6 +250,7 @@ extension NCMedia: UICollectionViewDelegate {
     }
 
     func collectionView(_ collectionView: UICollectionView, willPerformPreviewActionForMenuWith configuration: UIContextMenuConfiguration, animator: UIContextMenuInteractionCommitAnimating) {
+
         animator.addCompletion {
             if let indexPath = configuration.identifier as? IndexPath {
                 self.collectionView(collectionView, didSelectItemAt: indexPath)
@@ -259,6 +260,7 @@ extension NCMedia: UICollectionViewDelegate {
 }
 
 extension NCMedia: UICollectionViewDataSourcePrefetching {
+
     func collectionView(_ collectionView: UICollectionView, prefetchItemsAt indexPaths: [IndexPath]) {
         // print("[LOG] n. " + String(indexPaths.count))
     }
@@ -267,16 +269,23 @@ extension NCMedia: UICollectionViewDataSourcePrefetching {
 extension NCMedia: UICollectionViewDataSource {
 
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+
         var numberOfItemsInSection = 0
+
         if let metadatas {
             numberOfItemsInSection = metadatas.count
         }
+
+        mediaCommandView?.setButtonsHidden(numberOfItemsInSection: numberOfItemsInSection)
         emptyDataSet?.numberOfItemsInSection(numberOfItemsInSection, section: section)
+
         return numberOfItemsInSection
     }
 
     func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
+
         guard let metadatas else { return }
+
         if !collectionView.indexPathsForVisibleItems.contains(indexPath) && indexPath.row < metadatas.count {
             guard let metadata = metadatas[indexPath.row] else { return }
             for case let operation as NCMediaDownloadThumbnaill in NCNetworking.shared.downloadThumbnailQueue.operations where operation.metadata.ocId == metadata.ocId {
@@ -340,8 +349,13 @@ extension NCMedia: UICollectionViewDataSource {
 extension NCMedia: UIScrollViewDelegate {
 
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
+
+        let isTop = scrollView.contentOffset.y <= -(insetsTop + view.safeAreaInsets.top - 35)
+
+        mediaCommandView?.setColor(isTop: isTop)
+
         if lastContentOffsetY == 0 || lastContentOffsetY + cellHeigth / 2 <= scrollView.contentOffset.y || lastContentOffsetY - cellHeigth / 2 >= scrollView.contentOffset.y {
-            mediaCommandView?.setMediaCommand()
+            mediaCommandView?.setTitleDate()
             lastContentOffsetY = scrollView.contentOffset.y
         }
     }

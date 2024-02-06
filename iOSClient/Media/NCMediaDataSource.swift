@@ -47,7 +47,7 @@ extension NCMedia {
         self.metadatas = NCImageCache.shared.getMediaMetadatas(account: self.appDelegate.account, predicate: self.getPredicate())
         DispatchQueue.main.async {
             self.collectionView?.reloadData()
-            self.mediaCommandView?.setMediaCommand()
+            self.mediaCommandView?.setTitleDate()
         }
     }
 
@@ -60,7 +60,7 @@ extension NCMedia {
         let firstMetadataDate = metadatas?.first?.date as? Date
         let lastMetadataDate = metadatas?.last?.date as? Date
 
-        guard loadingTask == nil else {
+        guard loadingTask == nil, !isEditMode else {
             return
         }
 

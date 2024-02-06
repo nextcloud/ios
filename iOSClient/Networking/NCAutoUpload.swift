@@ -207,10 +207,9 @@ class NCAutoUpload: NSObject {
 
         NCAskAuthorization().askAuthorizationPhotoLibrary(viewController: viewController) { hasPermission in
 
+            guard hasPermission else { return completion(nil) }
             let assetCollection = PHAssetCollection.fetchAssetCollections(with: PHAssetCollectionType.smartAlbum, subtype: PHAssetCollectionSubtype.smartAlbumUserLibrary, options: nil)
-            // swiftlint:disable empty_count
-            guard hasPermission, assetCollection.count != 0 else { return completion(nil) }
-            // swiftlint:enable empty_count
+            guard let assetCollection = assetCollection.firstObject else { return completion(nil) }
 
             let predicateImage = NSPredicate(format: "mediaType == %i", PHAssetMediaType.image.rawValue)
             let predicateVideo = NSPredicate(format: "mediaType == %i", PHAssetMediaType.video.rawValue)
@@ -229,7 +228,7 @@ class NCAutoUpload: NSObject {
             }
 
             fetchOptions.predicate = predicate
-            let assets: PHFetchResult<PHAsset> = PHAsset.fetchAssets(in: assetCollection.firstObject!, options: fetchOptions)
+            let assets: PHFetchResult<PHAsset> = PHAsset.fetchAssets(in: assetCollection, options: fetchOptions)
 
             if selector == NCGlobal.shared.selectorUploadAutoUpload {
                 let idAssets = NCManageDatabase.shared.getPhotoLibraryIdAsset(image: account.autoUploadImage, video: account.autoUploadVideo, account: account.account)

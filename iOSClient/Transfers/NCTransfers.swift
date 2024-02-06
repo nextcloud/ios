@@ -37,7 +37,6 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
         titleCurrentFolder = NSLocalizedString("_transfers_", comment: "")
         layoutKey = NCGlobal.shared.layoutViewTransfers
         enableSearchBar = false
-        headerMenuButtonsView = false
         headerRichWorkspaceDisable = true
         headerMenuTransferView = true
         emptyImage = utility.loadImage(named: "arrow.left.arrow.right", color: .gray, size: UIScreen.main.bounds.width)
