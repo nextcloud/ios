@@ -1426,15 +1426,6 @@ class NCNetworking: NSObject, NKCommonDelegate {
         }
     }
 
-    func synchronization(account: String, serverUrl: String, selector: String) async {
-
-        await withUnsafeContinuation({ continuation in
-            synchronization(account: account, serverUrl: serverUrl, selector: selector) {
-                continuation.resume(returning: ())
-            }
-        })
-    }
-
     // MARK: - Search
 
     /// WebDAV search
