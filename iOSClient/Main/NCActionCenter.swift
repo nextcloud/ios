@@ -115,9 +115,6 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
                 }
             }
 
-        case NCGlobal.shared.selectorLoadOffline:
-            NCManageDatabase.shared.setLocalFile(ocId: metadata.ocId, offline: true)
-
         case NCGlobal.shared.selectorPrint:
             // waiting close menu
             // https://github.com/nextcloud/ios/issues/2278
@@ -157,15 +154,15 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
             NCManageDatabase.shared.setDirectory(serverUrl: serverUrl, offline: true, account: appDelegate.account)
             NCNetworking.shared.synchronization(account: metadata.account, serverUrl: serverUrl, selector: NCGlobal.shared.selectorSynchronizationOffline)
         } else {
+            NCManageDatabase.shared.setLocalFile(ocId: metadata.ocId, offline: true)
             guard let metadata = NCManageDatabase.shared.setMetadataSessionInWaitDownload(ocId: metadata.ocId,
-                                                                                          session: NextcloudKit.shared.nkCommonInstance.sessionIdentifierDownload,
-                                                                                          selector: NCGlobal.shared.selectorLoadOffline,
+                                                                                          session: NCNetworking.shared.sessionDownloadBackground,
+                                                                                          selector: NCGlobal.shared.selectorSynchronizationOffline,
                                                                                           addMetadata: metadata) else { return }
-            NCNetworking.shared.download(metadata: metadata, withNotificationProgressTask: true)
             if let metadata = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata) {
               NCManageDatabase.shared.setMetadataSessionInWaitDownload(ocId: metadata.ocId,
                                                                        session: NCNetworking.shared.sessionDownloadBackground,
-                                                                       selector: NCGlobal.shared.selectorLoadOffline,
+                                                                       selector: NCGlobal.shared.selectorSynchronizationOffline,
                                                                        addMetadata: metadata)
             }
         }
