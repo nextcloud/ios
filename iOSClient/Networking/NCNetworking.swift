@@ -1407,11 +1407,11 @@ class NCNetworking: NSObject, NKCommonDelegate {
                         autoreleasepool {
                             if metadata.directory {
                                 NCManageDatabase.shared.addMetadata(metadata)
-                            } else if selector == NCGlobal.shared.selectorSynchronizationOffline,
-                                      metadata.isSynchronizable {
+                            } else if selector == NCGlobal.shared.selectorSynchronizationOffline, metadata.isSynchronizable {
                                 NCManageDatabase.shared.setMetadataSessionInWaitDownload(ocId: metadata.ocId,
                                                                                          session: NCNetworking.shared.sessionDownloadBackground,
-                                                                                         selector: selector)
+                                                                                         selector: selector,
+                                                                                         addMetadata: metadata)
                             }
                         }
                     }

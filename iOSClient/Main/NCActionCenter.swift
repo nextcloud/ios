@@ -159,12 +159,14 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
         } else {
             guard let metadata = NCManageDatabase.shared.setMetadataSessionInWaitDownload(ocId: metadata.ocId,
                                                                                           session: NextcloudKit.shared.nkCommonInstance.sessionIdentifierDownload,
-                                                                                          selector: NCGlobal.shared.selectorLoadOffline) else { return }
+                                                                                          selector: NCGlobal.shared.selectorLoadOffline,
+                                                                                          addMetadata: metadata) else { return }
             NCNetworking.shared.download(metadata: metadata, withNotificationProgressTask: true)
             if let metadata = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata) {
               NCManageDatabase.shared.setMetadataSessionInWaitDownload(ocId: metadata.ocId,
                                                                        session: NCNetworking.shared.sessionDownloadBackground,
-                                                                       selector: NCGlobal.shared.selectorLoadOffline)
+                                                                       selector: NCGlobal.shared.selectorLoadOffline,
+                                                                       addMetadata: metadata)
             }
         }
     }
