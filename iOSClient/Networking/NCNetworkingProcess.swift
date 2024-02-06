@@ -102,7 +102,7 @@ class NCNetworkingProcess: NSObject {
 
         let applicationState = UIApplication.shared.applicationState
         let queue = DispatchQueue.global()
-        var maxConcurrentOperationDownload = NCBrandOptions.shared.maxConcurrentOperationDownload
+        let maxConcurrentOperationDownload = NCBrandOptions.shared.maxConcurrentOperationDownload
         var maxConcurrentOperationUpload = NCBrandOptions.shared.maxConcurrentOperationUpload
 
         if applicationState == .active {
@@ -118,6 +118,7 @@ class NCNetworkingProcess: NSObject {
             var counterUpload = metadatasUploading.count
 
             // DOWNLOAD
+            //
             let limitDownload = maxConcurrentOperationDownload - counterDownload
             let metadatasDownload = NCManageDatabase.shared.getAdvancedMetadatas(predicate: NSPredicate(format: "account == %@ AND status == %d", self.appDelegate.account, NCGlobal.shared.metadataStatusWaitDownload), page: 1, limit: limitDownload, sorted: "date", ascending: true)
             for metadata in metadatasDownload where counterDownload < maxConcurrentOperationDownload {
@@ -126,6 +127,7 @@ class NCNetworkingProcess: NSObject {
             }
 
             // UPLOAD
+            //
 
             // ** TEST ONLY ONE **
             // E2EE
