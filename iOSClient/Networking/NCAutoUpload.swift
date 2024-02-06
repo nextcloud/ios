@@ -184,7 +184,7 @@ class NCAutoUpload: NSObject {
             self.endForAssetToUpload = true
 
             NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Start createProcessUploads")
-            NCNetworkingProcessUpload.shared.createProcessUploads(metadatas: metadatas, completion: completion)
+            NCNetworkingProcess.shared.createProcessUploads(metadatas: metadatas, completion: completion)
         }
     }
 

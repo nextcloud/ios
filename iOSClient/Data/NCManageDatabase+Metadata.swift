@@ -272,6 +272,7 @@ extension tableMetadata {
     }
 
     var isSynchronizable: Bool {
+        guard status != NCGlobal.shared.metadataStatusDownloading else { return false }
         let localFile = NCManageDatabase.shared.getResultsTableLocalFile(predicate: NSPredicate(format: "ocId == %@", ocId))?.first
         if localFile?.etag != etag || NCUtilityFileSystem().fileProviderStorageSize(ocId, fileNameView: fileNameView) == 0 {
             return true
@@ -634,7 +635,8 @@ extension NCManageDatabase {
         }
     }
 
-    func setMetadataSessionInWaitDownload(ocId: String, selector: String) -> tableMetadata? {
+    @discardableResult
+    func setMetadataSessionInWaitDownload(ocId: String, session: String, selector: String, addMetadata: tableMetadata? = nil) -> tableMetadata? {
 
         var metadata: tableMetadata?
 
@@ -642,11 +644,18 @@ extension NCManageDatabase {
             let realm = try Realm()
             try realm.write {
                 if let result = realm.objects(tableMetadata.self).filter("ocId == %@", ocId).first {
-                    result.session = NextcloudKit.shared.nkCommonInstance.sessionIdentifierDownload
+                    result.session = session
                     result.sessionError = ""
                     result.sessionSelector = selector
                     result.status = NCGlobal.shared.metadataStatusWaitDownload
                     metadata = tableMetadata(value: result)
+                } else if let addMetadata = addMetadata {
+                    addMetadata.session = session
+                    addMetadata.sessionError = ""
+                    addMetadata.sessionSelector = selector
+                    addMetadata.status = NCGlobal.shared.metadataStatusWaitDownload
+                    realm.add(addMetadata, update: .all)
+                    metadata = tableMetadata(value: addMetadata)
                 }
             }
         } catch let error {

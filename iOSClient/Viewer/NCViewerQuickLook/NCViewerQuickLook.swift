@@ -240,7 +240,7 @@ extension NCViewerQuickLook: QLPreviewControllerDataSource, QLPreviewControllerD
         metadataForUpload.size = size
         metadataForUpload.status = NCGlobal.shared.metadataStatusWaitUpload
 
-        NCNetworkingProcessUpload.shared.createProcessUploads(metadatas: [metadataForUpload]) { _ in
+        NCNetworkingProcess.shared.createProcessUploads(metadatas: [metadataForUpload]) { _ in
             self.dismiss(animated: true)
         }
     }

@@ -1049,7 +1049,10 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
 
             if utilityFileSystem.fileProviderStorageExists(metadata) {
                 NCViewer().view(viewController: self, metadata: metadata, metadatas: [metadata], imageIcon: imageIcon)
-            } else if NextcloudKit.shared.isNetworkReachable(), let metadata = NCManageDatabase.shared.setMetadataSessionInWaitDownload(ocId: metadata.ocId, selector: NCGlobal.shared.selectorLoadFileView) {
+            } else if NextcloudKit.shared.isNetworkReachable(),
+                      let metadata = NCManageDatabase.shared.setMetadataSessionInWaitDownload(ocId: metadata.ocId,
+                                                                                              session: NextcloudKit.shared.nkCommonInstance.sessionIdentifierDownload,
+                                                                                              selector: NCGlobal.shared.selectorLoadFileView) {
                 NCNetworking.shared.download(metadata: metadata, withNotificationProgressTask: true)
             } else {
                 let error = NKError(errorCode: NCGlobal.shared.errorOffline, errorDescription: "_go_online_")
@@ -1188,12 +1191,12 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
 
         // LAYOUT LIST
         if layoutForView?.layout == NCGlobal.shared.layoutList {
-            guard let listCell = collectionView.dequeueReusableCell(withReuseIdentifier: "listCell", for: indexPath) as? NCListCell else { return UICollectionViewCell() }
+            guard let listCell = collectionView.dequeueReusableCell(withReuseIdentifier: "listCell", for: indexPath) as? NCListCell else { return NCListCell() }
             listCell.delegate = self
             cell = listCell
         } else {
         // LAYOUT GRID
-            guard let gridCell = collectionView.dequeueReusableCell(withReuseIdentifier: "gridCell", for: indexPath) as? NCGridCell else { return UICollectionViewCell() }
+            guard let gridCell = collectionView.dequeueReusableCell(withReuseIdentifier: "gridCell", for: indexPath) as? NCGridCell else { return NCGridCell() }
             gridCell.delegate = self
             cell = gridCell
         }
