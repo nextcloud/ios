@@ -636,7 +636,7 @@ extension NCManageDatabase {
     }
 
     @discardableResult
-    func setMetadataSessionInWaitDownload(ocId: String, session: String, selector: String) -> tableMetadata? {
+    func setMetadataSessionInWaitDownload(ocId: String, session: String, selector: String, addMetadata: tableMetadata? = nil) -> tableMetadata? {
 
         var metadata: tableMetadata?
 
@@ -649,6 +649,13 @@ extension NCManageDatabase {
                     result.sessionSelector = selector
                     result.status = NCGlobal.shared.metadataStatusWaitDownload
                     metadata = tableMetadata(value: result)
+                } else if let addMetadata = addMetadata {
+                    addMetadata.session = session
+                    addMetadata.sessionError = ""
+                    addMetadata.sessionSelector = selector
+                    addMetadata.status = NCGlobal.shared.metadataStatusWaitDownload
+                    realm.add(addMetadata, update: .all)
+                    metadata = tableMetadata(value: addMetadata)
                 }
             }
         } catch let error {
