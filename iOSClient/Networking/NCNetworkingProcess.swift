@@ -125,6 +125,14 @@ class NCNetworkingProcess: NSObject {
                 NCNetworking.shared.download(metadata: metadata, withNotificationProgressTask: true)
                 counterDownload += 1
             }
+            if counterDownload == 0 {
+                let metadatasDownloadInError = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND session == %@ AND status == %d", self.appDelegate.account, NCNetworking.shared.sessionDownloadBackground, NCGlobal.shared.metadataStatusDownloadError))
+                for metadata in metadatasDownloadInError {
+                    NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId,
+                                                               sessionError: "",
+                                                               status: NCGlobal.shared.metadataStatusWaitDownload)
+                }
+            }
 
             // UPLOAD
             //
@@ -205,8 +213,8 @@ class NCNetworkingProcess: NSObject {
 
                 // No upload available ? --> Retry Upload in Error
                 if counterUpload == 0 {
-                    let metadatas = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND status == %d", self.appDelegate.account, NCGlobal.shared.metadataStatusUploadError))
-                    for metadata in metadatas {
+                    let metadatasUploadInError = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND status == %d", self.appDelegate.account, NCGlobal.shared.metadataStatusUploadError))
+                    for metadata in metadatasUploadInError {
                         // Verify QUOTA
                         if metadata.sessionError.contains("\(NCGlobal.shared.errorQuota)") {
                             NextcloudKit.shared.getUserProfile { _, userProfile, _, error in
@@ -226,7 +234,7 @@ class NCNetworkingProcess: NSObject {
                     }
 
                     // verify delete Asset Local Identifiers in auto upload (DELETE Photos album)
-                    if applicationState == .active && metadatas.isEmpty {
+                    if applicationState == .active && metadatasUploadInError.isEmpty {
                         self.deleteAssetLocalIdentifiers(account: self.appDelegate.account) {
                             self.pauseProcess = false
                         }
