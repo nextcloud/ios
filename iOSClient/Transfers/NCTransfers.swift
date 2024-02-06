@@ -176,7 +176,9 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
 
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "transferCell", for: indexPath) as? NCTransferCell,
-              let metadata = dataSource.cellForItemAt(indexPath: indexPath) else { return UICollectionViewCell() }
+              let metadata = dataSource.cellForItemAt(indexPath: indexPath) else {
+            return NCTransferCell()
+        }
 
         cell.delegate = self
 

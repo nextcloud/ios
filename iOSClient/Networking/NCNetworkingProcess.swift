@@ -120,7 +120,7 @@ class NCNetworkingProcess: NSObject {
             // DOWNLOAD
             //
             let limitDownload = maxConcurrentOperationDownload - counterDownload
-            let metadatasDownload = NCManageDatabase.shared.getAdvancedMetadatas(predicate: NSPredicate(format: "account == %@ AND sessionSelector == %@ AND status == %d", self.appDelegate.account, NCNetworking.shared.sessionDownloadBackground, NCGlobal.shared.metadataStatusWaitDownload), page: 1, limit: limitDownload, sorted: "date", ascending: true)
+            let metadatasDownload = NCManageDatabase.shared.getAdvancedMetadatas(predicate: NSPredicate(format: "account == %@ AND session == %@ AND status == %d", self.appDelegate.account, NCNetworking.shared.sessionDownloadBackground, NCGlobal.shared.metadataStatusWaitDownload), page: 1, limit: limitDownload, sorted: "date", ascending: true)
             for metadata in metadatasDownload where counterDownload < maxConcurrentOperationDownload {
                 NCNetworking.shared.download(metadata: metadata, withNotificationProgressTask: true)
                 counterDownload += 1
@@ -328,8 +328,8 @@ class NCNetworkingProcess: NSObject {
             }
 
             // metadataStatusUploading (BACKGROUND)
-            let results = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "(session == %@ OR session == %@ OR session == %@) AND status == %d", NCNetworking.shared.sessionUploadBackground, NCNetworking.shared.sessionUploadBackgroundWWan, NCNetworking.shared.sessionUploadBackgroundExtension, NCGlobal.shared.metadataStatusUploading))
-            for metadata in results {
+            let resultsUpload = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "(session == %@ OR session == %@ OR session == %@) AND status == %d", NCNetworking.shared.sessionUploadBackground, NCNetworking.shared.sessionUploadBackgroundWWan, NCNetworking.shared.sessionUploadBackgroundExtension, NCGlobal.shared.metadataStatusUploading))
+            for metadata in resultsUpload {
                 var taskUpload: URLSessionTask?
                 var session: URLSession?
                 if metadata.session == NCNetworking.shared.sessionUploadBackground {
@@ -346,6 +346,25 @@ class NCNetworkingProcess: NSObject {
                                                                    session: NCNetworking.shared.sessionUploadBackground,
                                                                    sessionError: "",
                                                                    status: NCGlobal.shared.metadataStatusWaitUpload)
+                        notificationCenter = true
+                    }
+                }
+            }
+
+            // metadataStatusDowloading (BACKGROUND)
+            let resultsDownload = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "session == %@ AND status == %d", NCNetworking.shared.sessionDownloadBackground, NCGlobal.shared.metadataStatusDownloading))
+            for metadata in resultsDownload {
+                var taskDownload: URLSessionTask?
+                let session: URLSession? = NCNetworking.shared.sessionManagerDownloadBackground
+                if let tasks = await session?.allTasks {
+                    for task in tasks {
+                        if task.taskIdentifier == metadata.sessionTaskIdentifier { taskDownload = task }
+                    }
+                    if taskDownload == nil, let metadata = NCManageDatabase.shared.getResultMetadata(predicate: NSPredicate(format: "ocId == %@ AND status == %d", metadata.ocId, NCGlobal.shared.metadataStatusDownloading)) {
+                        NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId,
+                                                                   session: NCNetworking.shared.sessionDownloadBackground,
+                                                                   sessionError: "",
+                                                                   status: NCGlobal.shared.metadataStatusWaitDownload)
                         notificationCenter = true
                     }
                 }
