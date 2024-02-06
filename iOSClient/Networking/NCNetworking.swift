@@ -409,12 +409,16 @@ class NCNetworking: NSObject, NKCommonDelegate {
 
         }) { _, etag, date, lenght, allHeaderFields, afError, error in
 
+            var error = error
             self.downloadRequest.removeValue(forKey: fileNameLocalPath)
 
             var dateLastModified: NSDate?
             if let downloadTask = downloadTask {
                 if let header = allHeaderFields, let dateString = header["Last-Modified"] as? String {
                     dateLastModified = NextcloudKit.shared.nkCommonInstance.convertDate(dateString, format: "EEE, dd MMM y HH:mm:ss zzz")
+                }
+                if afError?.isExplicitlyCancelledError ?? false {
+                    error = NKError(errorCode: NCGlobal.shared.errorRequestExplicityCancelled, errorDescription: "error request explicity cancelled")
                 }
                 self.downloadComplete(fileName: metadata.fileName, serverUrl: metadata.serverUrl, etag: etag, date: date, dateLastModified: dateLastModified, length: lenght, description: description, task: downloadTask, error: error)
             }
@@ -492,7 +496,6 @@ class NCNetworking: NSObject, NKCommonDelegate {
                                                        "error": error])
 
         } else if error.errorCode == NSURLErrorCancelled || error.errorCode == NCGlobal.shared.errorRequestExplicityCancelled {
-            // afError?.isExplicitlyCancelledError ?? false || sessionTaskFailedCode == NCGlobal.shared.errorExplicitlyCancelled
 
                 NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId,
                                                            session: "",
@@ -723,8 +726,12 @@ class NCNetworking: NSObject, NKCommonDelegate {
 
         }) { account, ocId, etag, date, size, allHeaderFields, afError, error in
 
+            var error = error
             self.uploadRequest.removeValue(forKey: fileNameLocalPath)
             if withUploadComplete, let uploadTask = uploadTask {
+                if afError?.isExplicitlyCancelledError ?? false {
+                    error = NKError(errorCode: NCGlobal.shared.errorRequestExplicityCancelled, errorDescription: "error request explicity cancelled")
+                }
                 self.uploadComplete(fileName: metadata.fileName, serverUrl: metadata.serverUrl, ocId: ocId, etag: etag, date: date, size: size, description: description, task: uploadTask, error: error)
             }
             completion(account, ocId, etag, date, size, allHeaderFields, afError, error)

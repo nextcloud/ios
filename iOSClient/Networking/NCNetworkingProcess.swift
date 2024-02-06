@@ -120,7 +120,7 @@ class NCNetworkingProcess: NSObject {
             // DOWNLOAD
             //
             let limitDownload = maxConcurrentOperationDownload - counterDownload
-            let metadatasDownload = NCManageDatabase.shared.getAdvancedMetadatas(predicate: NSPredicate(format: "account == %@ AND status == %d", self.appDelegate.account, NCGlobal.shared.metadataStatusWaitDownload), page: 1, limit: limitDownload, sorted: "date", ascending: true)
+            let metadatasDownload = NCManageDatabase.shared.getAdvancedMetadatas(predicate: NSPredicate(format: "account == %@ AND sessionSelector == %@ AND status == %d", self.appDelegate.account, NCNetworking.shared.sessionDownloadBackground, NCGlobal.shared.metadataStatusWaitDownload), page: 1, limit: limitDownload, sorted: "date", ascending: true)
             for metadata in metadatasDownload where counterDownload < maxConcurrentOperationDownload {
                 NCNetworking.shared.download(metadata: metadata, withNotificationProgressTask: true)
                 counterDownload += 1
