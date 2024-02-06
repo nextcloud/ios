@@ -76,10 +76,11 @@ class NCMediaTabbarSelect: ObservableObject {
 
 struct MediaTabBarSelectView: View {
     @ObservedObject var tabBarSelect: NCMediaTabbarSelect
+    @Environment(\.verticalSizeClass) var sizeClass
 
     var body: some View {
         VStack {
-            Spacer().frame(height: 10)
+            Spacer().frame(height: sizeClass == .compact ? 5 : 10)
             HStack {
                 Spacer().frame(maxWidth: .infinity)
                 Group {
@@ -97,6 +98,7 @@ struct MediaTabBarSelectView: View {
                     tabBarSelect.delegate?.delete()
                 } label: {
                     Image(systemName: "trash")
+                    .imageScale(sizeClass == .compact ? .medium : .large)
                 }
                 .tint(.red)
                 .disabled(tabBarSelect.selectCount == 0)
