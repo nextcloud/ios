@@ -85,9 +85,7 @@ struct NCTrashSelectTabBarView: View {
                     tabBarSelect.delegate?.recover()
                 } label: {
                     Image(systemName: "arrow.circlepath")
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                        .frame(width: sizeClass == .compact ? 19 : 23)
+                        .imageScale(sizeClass == .compact ? .medium : .large)
                 }
                 .frame(maxWidth: .infinity)
                 .disabled(tabBarSelect.isSelectedEmpty)
@@ -96,10 +94,8 @@ struct NCTrashSelectTabBarView: View {
                     tabBarSelect.delegate?.delete()
                 } label: {
                     Image(systemName: "trash")
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
+                        .imageScale(sizeClass == .compact ? .medium : .large)
                         .tint(.red)
-                        .frame(width: sizeClass == .compact ? 16 : 20)
                 }
                 .frame(maxWidth: .infinity)
                 .disabled(tabBarSelect.isSelectedEmpty)
@@ -108,9 +104,8 @@ struct NCTrashSelectTabBarView: View {
                     tabBarSelect.delegate?.selectAll()
                 } label: {
                     Image(systemName: "checkmark")
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                        .frame(width: sizeClass == .compact ? 15 : 19)
+                        .imageScale(sizeClass == .compact ? .medium : .large)
+
                 }
                 .frame(maxWidth: .infinity)
             }

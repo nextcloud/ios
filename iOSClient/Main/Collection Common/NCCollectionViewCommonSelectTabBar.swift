@@ -94,9 +94,7 @@ struct NCCollectionViewCommonSelectTabBarView: View {
                     tabBarSelect.delegate?.share(selectedMetadatas: tabBarSelect.selectedMetadatas)
                 } label: {
                     Image(systemName: "square.and.arrow.up")
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                        .frame(width: sizeClass == .compact ? 16 : 20)
+                        .imageScale(sizeClass == .compact ? .medium : .large)
 
                 }
                 .frame(maxWidth: .infinity)
@@ -106,9 +104,7 @@ struct NCCollectionViewCommonSelectTabBarView: View {
                     tabBarSelect.delegate?.move(selectedMetadatas: tabBarSelect.selectedMetadatas)
                 } label: {
                     Image(systemName: "rectangle.portrait.and.arrow.right")
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                        .frame(width: sizeClass == .compact ? 19 : 23)
+                        .imageScale(sizeClass == .compact ? .medium : .large)
                 }
                 .frame(maxWidth: .infinity)
                 .disabled(tabBarSelect.isSelectedEmpty)
@@ -117,9 +113,7 @@ struct NCCollectionViewCommonSelectTabBarView: View {
                     tabBarSelect.delegate?.delete(selectedMetadatas: tabBarSelect.selectedMetadatas)
                 } label: {
                     Image(systemName: "trash")
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                        .frame(width: sizeClass == .compact ? 16 : 20)
+                        .imageScale(sizeClass == .compact ? .medium : .large)
                 }
                 .tint(.red)
                 .frame(maxWidth: .infinity)
@@ -151,9 +145,7 @@ struct NCCollectionViewCommonSelectTabBarView: View {
                     })
                 } label: {
                     Image(systemName: "ellipsis.circle")
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                        .frame(width: sizeClass == .compact ? 18 : 22)
+                        .imageScale(sizeClass == .compact ? .medium : .large)
                 }
                 .frame(maxWidth: .infinity)
             }
