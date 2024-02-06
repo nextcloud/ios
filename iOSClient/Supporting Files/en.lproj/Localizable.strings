@@ -143,7 +143,7 @@
 "_file_conflict_new_"       = "New files";
 "_file_conflict_exists_"    = "Already existing files";
 "_file_not_rewite_doc_"     = "It is not possible to overwrite a document but only to create a new one";
-"_move_or_copy_"            = "Move or copy";
+"_move_or_copy_"            = "Move";
 "_copy_"                    = "Copy";
 "_now_"                     = "Now";
 "_wait_"                    = "Please wait …";
@@ -159,12 +159,15 @@
 
 /* MARK: Files lock */
 
+"_lock_"                            = "Lock";
+"_unlock_"                          = "Unlock";
 "_lock_file_"                       = "Lock file";
 "_unlock_file_"                     = "Unlock file";
 "_lock_selected_files_"             = "Lock files";
 "_unlock_selected_files_"           = "Unlock files";
 "_locked_by_"                       = "Locked by %@";
 "_file_locked_no_override_"         = "This file is locked. It cannot be overridden.";
+"_lock_no_permissions_selected_"    = "Not permitted for some selected files";
 
 /* Remove a file from a list, don't delete it entirely */
 "_remove_file_"             = "Remove file";
@@ -487,6 +490,9 @@
 "_file_saved_local_"            = "File saved on local storage.";
 "_file_not_present_"            = "Error: File not present, please reload.";
 "_order_by_"                    = "Sort by";
+"_name_"                        = "Name";
+"_date_"                        = "Date";
+"_size_"                        = "Size";
 "_order_by_name_a_z_"           = "Sort by name (from A to Z)";
 "_sorted_by_name_a_z_"          = "Sorted by name (from A to Z)";
 "_order_by_name_z_a_"           = "Sort by name (from Z to A)";
@@ -518,7 +524,7 @@
 "_reload_"                      = "Reload";
 "_open_in_"                     = "Open in …";
 "_open_"                        = "Open …";
-"_remove_local_file_"           = "Remove from cache";
+"_remove_local_file_"           = "Remove locally";
 "_add_local_"                   = "Add to local storage";
 "_comm_erro_pull_down_"         = "Attention: Communication error with the server. Pull down to refresh.";
 "_file_not_downloaded_"         = "file not downloaded";
@@ -537,6 +543,7 @@
 "_offline_folder_confirm_"      = "After enabling the offline folder, all files in it will be synchronized with the server, continue?";
 "_file_not_found_reload_"       = "File not found, pull down to refresh";
 "_title_section_download_"      = "DOWNLOAD";
+"_download_"                    = "Download";
 "_title_section_upload_"        = "UPLOAD";
 "_group_alphabetic_yes_"        = "✓ Group alphabetically";
 "_group_alphabetic_no_"         = "Group alphabetically";
@@ -751,8 +758,10 @@
 "_trash_delete_all_description_"    = "Do you want to empty the trash bin?";
 "_trash_no_trash_"                  = "No files deleted";
 "_trash_no_trash_description_"      = "You can restore deleted files from here";
-"_trash_restore_selected_"          = "Restore selected files";
-"_trash_delete_selected_"           = "Delete selected files";
+"_trash_restore_selected_"          = "Restore selected files?";
+"_trash_delete_selected_"           = "Delete selected files?";
+"_recover_"                         = "Recover";
+"_confirm_delete_selected_"         = "Are you sure you want to delete the selected items?";
 "_manage_file_offline_"             = "Manage offline files";
 "_set_available_offline_"           = "Set as available offline";
 "_remove_available_offline_"        = "Remove as available offline";
@@ -1000,6 +1009,8 @@
 "_off_"                         = "Off";
 "_grid_view_"                   = "Show grid view";
 "_list_view_"                   = "Show list view";
+"_list_"                        = "List";
+"_grid_"                        = "Grid";
 
 // MARK: Plan customer
 "_leave_plan_title"             = "We're sorry to see you go";

@@ -34,7 +34,7 @@ extension NCTrash {
                 title: NSLocalizedString("_cancel_", comment: ""),
                 icon: utility.loadImage(named: "xmark"),
                 action: { _ in
-                    self.tapSelect()
+                    self.toggleSelect()
                 }
             ),
             NCMenuAction(
@@ -51,7 +51,7 @@ extension NCTrash {
                 icon: utility.loadImage(named: "restore"),
                 action: { _ in
                     self.selectOcId.forEach(self.restoreItem)
-                    self.tapSelect()
+                    self.toggleSelect()
                 }
             ),
             NCMenuAction(
@@ -61,7 +61,7 @@ extension NCTrash {
                     let alert = UIAlertController(title: NSLocalizedString("_trash_delete_selected_", comment: ""), message: "", preferredStyle: .alert)
                     alert.addAction(UIAlertAction(title: NSLocalizedString("_delete_", comment: ""), style: .destructive, handler: { _ in
                         self.selectOcId.forEach(self.deleteItem)
-                        self.tapSelect()
+                        self.toggleSelect()
                     }))
                     alert.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel, handler: { _ in }))
                     self.present(alert, animated: true, completion: nil)

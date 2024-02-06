@@ -94,7 +94,7 @@ class NCMainTabBar: UITabBar {
 
         blurView.layer.mask = maskLayer
 
-        var border = CALayer()
+        let border = CALayer()
         border.backgroundColor = UIColor.separator.cgColor
         border.frame = CGRect(x: 0, y: 0, width: blurView.frame.width, height: 0.5)
 
