@@ -86,6 +86,8 @@ class NCMenuPanelController: FloatingPanelController {
 
         surfaceView.grabberHandle.accessibilityCustomActions = [collapseAction]
         surfaceView.grabberHandle.isAccessibilityElement = true
+
+        contentInsetAdjustmentBehavior = .never
     }
 
     @objc private func accessibilityActionCollapsePanel() {

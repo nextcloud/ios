@@ -50,6 +50,7 @@ class NCMenu: UITableViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        tableView.contentInset.top = 10
         tableView.estimatedRowHeight = 60
         tableView.rowHeight = UITableView.automaticDimension
         self.view.backgroundColor = menuColor
