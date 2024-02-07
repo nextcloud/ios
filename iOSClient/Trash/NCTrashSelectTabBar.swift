@@ -16,8 +16,8 @@ protocol NCTrashSelectTabBarDelegate: AnyObject {
 }
 
 class NCTrashSelectTabBar: NCSelectableViewTabBar, ObservableObject {
-    private var tabBarController: UITabBarController?
-    private var hostingController: UIViewController?
+    var tabBarController: UITabBarController?
+    var hostingController: UIViewController?
     open weak var delegate: NCTrashSelectTabBarDelegate?
 
     var selectedMetadatas: [tableMetadata] = []
@@ -36,14 +36,8 @@ class NCTrashSelectTabBar: NCSelectableViewTabBar, ObservableObject {
         tabBarController.addChild(hostingController)
         tabBarController.view.addSubview(hostingController.view)
 
-        hostingController.view.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            hostingController.view.rightAnchor.constraint(equalTo: tabBarController.tabBar.rightAnchor),
-            hostingController.view.leftAnchor.constraint(equalTo: tabBarController.tabBar.leftAnchor),
-            hostingController.view.topAnchor.constraint(equalTo: tabBarController.tabBar.topAnchor),
-            hostingController.view.bottomAnchor.constraint(equalTo: tabBarController.tabBar.bottomAnchor)
-        ])
-
+        hostingController.view.frame = tabBarController.tabBar.frame
+        hostingController.view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         hostingController.view.backgroundColor = .clear
         hostingController.view.isHidden = true
     }
