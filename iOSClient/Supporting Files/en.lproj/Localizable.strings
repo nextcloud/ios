@@ -764,7 +764,7 @@
 "_confirm_delete_selected_"         = "Are you sure you want to delete the selected items?";
 "_manage_file_offline_"             = "Manage offline files";
 "_set_available_offline_"           = "Set as available offline";
-"_remove_available_offline_"        = "Remove locally";
+"_remove_available_offline_"        = "Remove as available offline";
 "_create_new_document_"             = "Create new document";
 "_create_new_spreadsheet_"          = "Create new spreadsheet";
 "_create_new_presentation_"         = "Create new presentation";

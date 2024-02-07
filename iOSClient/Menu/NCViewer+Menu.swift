@@ -91,7 +91,7 @@ extension NCViewer {
         // OFFLINE
         //
         if !webView, metadata.isSettableOnOffline {
-            actions.append(.setDownloadAction(selectedMetadatas: [metadata], isAnyOffline: isOffline, viewController: viewController))
+            actions.append(.setAvailableOfflineAction(selectedMetadatas: [metadata], isAnyOffline: isOffline, viewController: viewController))
         }
 
         //

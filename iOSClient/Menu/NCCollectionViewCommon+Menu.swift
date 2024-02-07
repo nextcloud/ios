@@ -218,7 +218,7 @@ extension NCCollectionViewCommon {
         // OFFLINE
         //
         if metadata.isSettableOnOffline {
-            actions.append(.setDownloadAction(selectedMetadatas: [metadata], isAnyOffline: isOffline, viewController: self, order: 60, completion: {
+            actions.append(.setAvailableOfflineAction(selectedMetadatas: [metadata], isAnyOffline: isOffline, viewController: self, order: 60, completion: {
                 self.reloadDataSource()
             }))
         }
