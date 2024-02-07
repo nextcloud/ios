@@ -257,7 +257,7 @@ extension NCCollectionViewCommon {
         }
 
         //
-        // OPEN IN
+        // SHARE
         //
         if metadata.canOpenIn {
             actions.append(.share(selectedMetadatas: [metadata], viewController: self, order: 80))
@@ -399,7 +399,7 @@ extension NCCollectionViewCommon {
         }
 
         applicationHandle.addCollectionViewCommonMenu(metadata: metadata, imageIcon: imageIcon, actions: &actions)
-        
+
         presentMenu(with: actions)
     }
 }
