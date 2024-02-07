@@ -33,8 +33,8 @@ import RealmSwift
 @objc public protocol NCNetworkingDelegate {
     @objc optional func downloadProgress(_ progress: Float, totalBytes: Int64, totalBytesExpected: Int64, fileName: String, serverUrl: String, session: URLSession, task: URLSessionTask)
     @objc optional func uploadProgress(_ progress: Float, totalBytes: Int64, totalBytesExpected: Int64, fileName: String, serverUrl: String, session: URLSession, task: URLSessionTask)
-    @objc optional func downloadComplete(fileName: String, serverUrl: String, etag: String?, date: NSDate?, dateLastModified: NSDate?, length: Int64, description: String?, task: URLSessionTask, error: NKError)
-    @objc optional func uploadComplete(fileName: String, serverUrl: String, ocId: String?, etag: String?, date: NSDate?, size: Int64, description: String?, task: URLSessionTask, error: NKError)
+    @objc optional func downloadComplete(fileName: String, serverUrl: String, etag: String?, date: NSDate?, dateLastModified: NSDate?, length: Int64, fileNameLocalPath: String?, task: URLSessionTask, error: NKError)
+    @objc optional func uploadComplete(fileName: String, serverUrl: String, ocId: String?, etag: String?, date: NSDate?, size: Int64, fileNameLocalPath: String?, task: URLSessionTask, error: NKError)
 }
 
 #if EXTENSION_FILE_PROVIDER_EXTENSION || EXTENSION_WIDGET
@@ -53,6 +53,12 @@ class NCNetworking: NSObject, NKCommonDelegate {
         var progress: Float
     }
 
+    struct FileNameServerUrl: Hashable {
+        var fileName: String
+        var serverUrl: String
+
+    }
+
     weak var delegate: NCNetworkingDelegate?
     let utilityFileSystem = NCUtilityFileSystem()
     let utility = NCUtility()
@@ -60,8 +66,8 @@ class NCNetworking: NSObject, NKCommonDelegate {
     var networkReachability: NKCommon.TypeReachability?
     let downloadRequest = ThreadSafeDictionary<String, DownloadRequest>()
     let uploadRequest = ThreadSafeDictionary<String, UploadRequest>()
-    let uploadMetadataInBackground = ThreadSafeDictionary<String, tableMetadata>()
-    let downloadMetadataInBackground = ThreadSafeDictionary<String, tableMetadata>()
+    let uploadMetadataInBackground = ThreadSafeDictionary<FileNameServerUrl, tableMetadata>()
+    let downloadMetadataInBackground = ThreadSafeDictionary<FileNameServerUrl, tableMetadata>()
     var transferInForegorund: TransferInForegorund?
 
     lazy var nkBackground: NKBackground = {
@@ -363,7 +369,6 @@ class NCNetworking: NSObject, NKCommonDelegate {
         var downloadTask: URLSessionTask?
         let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
         let fileNameLocalPath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileName)
-        let description = metadata.ocId
         let options = NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
 
         if NCManageDatabase.shared.getMetadataFromOcId(metadata.ocId) == nil {
@@ -420,7 +425,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
                 if afError?.isExplicitlyCancelledError ?? false {
                     error = NKError(errorCode: NCGlobal.shared.errorRequestExplicityCancelled, errorDescription: "error request explicity cancelled")
                 }
-                self.downloadComplete(fileName: metadata.fileName, serverUrl: metadata.serverUrl, etag: etag, date: date, dateLastModified: dateLastModified, length: length, description: description, task: downloadTask, error: error)
+                self.downloadComplete(fileName: metadata.fileName, serverUrl: metadata.serverUrl, etag: etag, date: date, dateLastModified: dateLastModified, length: length, fileNameLocalPath: fileNameLocalPath, task: downloadTask, error: error)
             }
            completion(afError, error)
         }
@@ -436,7 +441,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
         let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
         let fileNameLocalPath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)
 
-        if let task = nkBackground.download(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, description: metadata.ocId, session: session) {
+        if let task = nkBackground.download(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, session: session) {
 
             NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Download file \(metadata.fileNameView) with task with taskIdentifier \(task.taskIdentifier)")
 
@@ -466,13 +471,13 @@ class NCNetworking: NSObject, NKCommonDelegate {
                           date: NSDate?,
                           dateLastModified: NSDate?,
                           length: Int64,
-                          description: String?,
+                          fileNameLocalPath: String?,
                           task: URLSessionTask,
                           error: NKError) {
 
         DispatchQueue.global().async {
 
-            guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(description) else { return }
+            guard let metadata = NCManageDatabase.shared.getMetadataFromFileNameLocalPath(fileNameLocalPath) else { return }
 
             if error == .success {
 
@@ -527,8 +532,8 @@ class NCNetworking: NSObject, NKCommonDelegate {
                                                            "error": error])
             }
 
-            self.downloadMetadataInBackground.removeValue(forKey: fileName + serverUrl)
-            self.delegate?.downloadComplete?(fileName: fileName, serverUrl: serverUrl, etag: etag, date: date, dateLastModified: dateLastModified, length: length, description: description, task: task, error: error)
+            self.downloadMetadataInBackground.removeValue(forKey: FileNameServerUrl(fileName: fileName, serverUrl: serverUrl))
+            self.delegate?.downloadComplete?(fileName: fileName, serverUrl: serverUrl, etag: etag, date: date, dateLastModified: dateLastModified, length: length, fileNameLocalPath: fileNameLocalPath, task: task, error: error)
         }
     }
 
@@ -541,15 +546,15 @@ class NCNetworking: NSObject, NKCommonDelegate {
                           task: URLSessionTask) {
 
         DispatchQueue.global().async {
+
             self.delegate?.downloadProgress?(progress, totalBytes: totalBytes, totalBytesExpected: totalBytesExpected, fileName: fileName, serverUrl: serverUrl, session: session, task: task)
 
             var metadata: tableMetadata?
-            let description: String = task.taskDescription ?? ""
 
-            if let metadataTmp = self.downloadMetadataInBackground[fileName + serverUrl] {
+            if let metadataTmp = self.downloadMetadataInBackground[FileNameServerUrl(fileName: fileName, serverUrl: serverUrl)] {
                 metadata = metadataTmp
-            } else if let metadataTmp = NCManageDatabase.shared.getMetadataFromOcId(description) {
-                self.downloadMetadataInBackground[fileName + serverUrl] = metadataTmp
+            } else if let metadataTmp = NCManageDatabase.shared.getMetadataFromFileName(fileName, serverUrl: serverUrl) {
+                self.downloadMetadataInBackground[FileNameServerUrl(fileName: fileName, serverUrl: serverUrl)] = metadataTmp
                 metadata = metadataTmp
             }
 
@@ -684,7 +689,6 @@ class NCNetworking: NSObject, NKCommonDelegate {
 
         let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
         var uploadTask: URLSessionTask?
-        let description = metadata.ocId
         let options = NKRequestOptions(customHeader: customHeaders, queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
 
         NextcloudKit.shared.upload(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, dateCreationFile: metadata.creationDate as Date, dateModificationFile: metadata.date as Date, options: options, requestHandler: { request in
@@ -734,7 +738,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
                 if afError?.isExplicitlyCancelledError ?? false {
                     error = NKError(errorCode: NCGlobal.shared.errorRequestExplicityCancelled, errorDescription: "error request explicity cancelled")
                 }
-                self.uploadComplete(fileName: metadata.fileName, serverUrl: metadata.serverUrl, ocId: ocId, etag: etag, date: date, size: size, description: description, task: uploadTask, error: error)
+                self.uploadComplete(fileName: metadata.fileName, serverUrl: metadata.serverUrl, ocId: ocId, etag: etag, date: date, size: size, fileNameLocalPath: fileNameLocalPath, task: uploadTask, error: error)
             }
             completion(account, ocId, etag, date, size, allHeaderFields, afError, error)
         }
@@ -821,7 +825,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
                 NCManageDatabase.shared.deleteChunks(account: account, ocId: metadata.ocId, directory: directory)
             }
             if withUploadComplete, let uploadTask {
-                self.uploadComplete(fileName: metadata.fileName, serverUrl: metadata.serverUrl, ocId: file?.ocId, etag: file?.etag, date: file?.date, size: file?.size ?? 0, description: metadata.ocId, task: uploadTask, error: error)
+                self.uploadComplete(fileName: metadata.fileName, serverUrl: metadata.serverUrl, ocId: file?.ocId, etag: file?.etag, date: file?.date, size: file?.size ?? 0, fileNameLocalPath: fileNameLocalPath, task: uploadTask, error: error)
             }
             completion(account, file, afError, error)
         }
@@ -852,7 +856,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
 
         } else {
 
-            if let task = nkBackground.upload(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, dateCreationFile: metadata.creationDate as Date, dateModificationFile: metadata.date as Date, description: metadata.ocId, session: session!) {
+            if let task = nkBackground.upload(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, dateCreationFile: metadata.creationDate as Date, dateModificationFile: metadata.date as Date, session: session!) {
 
                 NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Upload file \(metadata.fileNameView) with task with taskIdentifier \(task.taskIdentifier)")
 
@@ -883,7 +887,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
                         etag: String?,
                         date: NSDate?,
                         size: Int64,
-                        description: String?,
+                        fileNameLocalPath: String?,
                         task: URLSessionTask,
                         error: NKError) {
 
@@ -894,10 +898,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
 
         DispatchQueue.global().async {
 
-            guard self.delegate == nil, let metadata = NCManageDatabase.shared.getMetadataFromOcId(description) else {
-                self.delegate?.uploadComplete?(fileName: fileName, serverUrl: serverUrl, ocId: ocId, etag: etag, date: date, size: size, description: description, task: task, error: error)
-                return
-            }
+            guard let metadata = NCManageDatabase.shared.getMetadataFromFileNameLocalPath(fileNameLocalPath) else { return }
             let ocIdTemp = metadata.ocId
             let selector = metadata.sessionSelector
 
@@ -1027,8 +1028,8 @@ class NCNetworking: NSObject, NKCommonDelegate {
                 }
             }
 
-            self.uploadMetadataInBackground.removeValue(forKey: fileName + serverUrl)
-            self.delegate?.uploadComplete?(fileName: fileName, serverUrl: serverUrl, ocId: ocId, etag: etag, date: date, size: size, description: description, task: task, error: error)
+            self.uploadMetadataInBackground.removeValue(forKey: FileNameServerUrl(fileName: fileName, serverUrl: serverUrl))
+            self.delegate?.uploadComplete?(fileName: fileName, serverUrl: serverUrl, ocId: ocId, etag: etag, date: date, size: size, fileNameLocalPath: fileNameLocalPath, task: task, error: error)
         }
     }
 
@@ -1041,15 +1042,15 @@ class NCNetworking: NSObject, NKCommonDelegate {
                         task: URLSessionTask) {
 
         DispatchQueue.global().async {
+
             self.delegate?.uploadProgress?(progress, totalBytes: totalBytes, totalBytesExpected: totalBytesExpected, fileName: fileName, serverUrl: serverUrl, session: session, task: task)
 
             var metadata: tableMetadata?
-            let description: String = task.taskDescription ?? ""
 
-            if let metadataTmp = self.uploadMetadataInBackground[fileName + serverUrl] {
+            if let metadataTmp = self.uploadMetadataInBackground[FileNameServerUrl(fileName: fileName, serverUrl: serverUrl)] {
                 metadata = metadataTmp
-            } else if let metadataTmp = NCManageDatabase.shared.getMetadataFromOcId(description) {
-                self.uploadMetadataInBackground[fileName + serverUrl] = metadataTmp
+            } else if let metadataTmp = NCManageDatabase.shared.getMetadataFromFileName(fileName, serverUrl: serverUrl) {
+                self.uploadMetadataInBackground[FileNameServerUrl(fileName: fileName, serverUrl: serverUrl)] = metadataTmp
                 metadata = metadataTmp
             }
 
@@ -1071,19 +1072,19 @@ class NCNetworking: NSObject, NKCommonDelegate {
     }
 
     func getOcIdInBackgroundSession(queue: DispatchQueue = .main,
-                                    completion: @escaping (_ listOcId: [String]) -> Void) {
+                                    completion: @escaping (_ filesNameLocalPath: [String]) -> Void) {
 
-        var listOcId: [String] = []
+        var filesNameLocalPath: [String] = []
 
         sessionManagerUploadBackground.getAllTasks(completionHandler: { tasks in
             for task in tasks {
-                listOcId.append(task.description)
+                filesNameLocalPath.append(task.description)
             }
             self.sessionManagerUploadBackgroundWWan.getAllTasks(completionHandler: { tasks in
                 for task in tasks {
-                    listOcId.append(task.description)
+                    filesNameLocalPath.append(task.description)
                 }
-                queue.async { completion(listOcId) }
+                queue.async { completion(filesNameLocalPath) }
             })
         })
     }
