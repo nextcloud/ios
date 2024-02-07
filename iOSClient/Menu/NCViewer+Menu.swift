@@ -32,8 +32,7 @@ extension NCViewer {
         guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(metadata.ocId) else { return }
 
         var actions = [NCMenuAction]()
-        var titleFavorite = NSLocalizedString("_add_favorites_", comment: "")
-        if metadata.favorite { titleFavorite = NSLocalizedString("_remove_favorites_", comment: "") }
+
         let localFile = NCManageDatabase.shared.getTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
         let isOffline = localFile?.offline == true
 

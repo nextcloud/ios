@@ -36,11 +36,9 @@ class NCContextMenu: NSObject {
 
         var downloadRequest: DownloadRequest?
         var titleDeleteConfirmFile = NSLocalizedString("_delete_file_", comment: "")
-        var titleSave: String = NSLocalizedString("_save_selected_files_", comment: "")
         let metadataMOV = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata)
 
         if metadata.directory { titleDeleteConfirmFile = NSLocalizedString("_delete_folder_", comment: "") }
-        if metadataMOV != nil { titleSave = NSLocalizedString("_livephoto_save_", comment: "") }
 
         let hud = JGProgressHUD()
         hud.indicatorView = JGProgressHUDRingIndicatorView()
@@ -56,14 +54,14 @@ class NCContextMenu: NSObject {
         // MENU ITEMS
 
         let detail = UIAction(title: NSLocalizedString("_details_", comment: ""),
-                              image: UIImage(systemName: "info")) { _ in
+                              image: UIImage(systemName: "info.circle")) { _ in
             NCActionCenter.shared.openShare(viewController: viewController, metadata: metadata, page: .activity)
         }
 
         let favorite = UIAction(title: metadata.favorite ?
                                 NSLocalizedString("_remove_favorites_", comment: "") :
                                 NSLocalizedString("_add_favorites_", comment: ""),
-                                image: utility.loadImage(named: "star.fill", color: NCBrandColor.shared.yellowFavorite)) { _ in
+                                image: utility.loadImage(named: metadata.favorite ? "star.slash" : "star", color: NCBrandColor.shared.yellowFavorite)) { _ in
             NCNetworking.shared.favoriteMetadata(metadata) { error in
                 if error != .success {
                     NCContentPresenter().showError(error: error)
@@ -71,7 +69,7 @@ class NCContextMenu: NSObject {
             }
         }
 
-        let openIn = UIAction(title: NSLocalizedString("_open_in_", comment: ""),
+        let share = UIAction(title: NSLocalizedString("_share_", comment: ""),
                               image: UIImage(systemName: "square.and.arrow.up") ) { _ in
             if self.utilityFileSystem.fileProviderStorageExists(metadata) {
                 NotificationCenter.default.post(
@@ -108,33 +106,10 @@ class NCContextMenu: NSObject {
             NCActionCenter.shared.openFileViewInFolder(serverUrl: metadata.serverUrl, fileNameBlink: metadata.fileName, fileNameOpen: nil)
         }
 
-        let save = UIAction(title: titleSave,
-                            image: UIImage(systemName: "square.and.arrow.down")) { _ in
+        let livePhotoSave = UIAction(title: NSLocalizedString("_livephoto_save_", comment: ""),
+                                     image: NCUtility().loadImage(named: "livephoto")) { _ in
             if let metadataMOV = metadataMOV {
                 NCNetworking.shared.saveLivePhotoQueue.addOperation(NCOperationSaveLivePhoto(metadata: metadata, metadataMOV: metadataMOV))
-            } else {
-                if self.utilityFileSystem.fileProviderStorageExists(metadata) {
-                    NCActionCenter.shared.saveAlbum(metadata: metadata)
-                } else {
-                    guard let metadata = NCManageDatabase.shared.setMetadataSessionInWaitDownload(ocId: metadata.ocId,
-                                                                                                  session: NextcloudKit.shared.nkCommonInstance.sessionIdentifierDownload,
-                                                                                                  selector: NCGlobal.shared.selectorSaveAlbum) else { return }
-                    hud.show(in: viewController.view)
-                    NCNetworking.shared.download(metadata: metadata, withNotificationProgressTask: false) {
-                    } requestHandler: { request in
-                        downloadRequest = request
-                    } progressHandler: { progress in
-                        hud.progress = Float(progress.fractionCompleted)
-                    } completion: { afError, error in
-                        if error == .success || afError?.isExplicitlyCancelledError ?? false {
-                            hud.dismiss()
-                        } else {
-                            hud.indicatorView = JGProgressHUDErrorIndicatorView()
-                            hud.textLabel.text = error.description
-                            hud.dismiss(afterDelay: NCGlobal.shared.dismissAfterSecond)
-                        }
-                    }
-                }
             }
         }
 
@@ -234,9 +209,10 @@ class NCContextMenu: NSObject {
                 if metadata.isDocumentViewableOnly {
                     //
                 } else {
-                    menu.append(openIn)
-                    // SAVE CAMERA ROLL
-                    menu.append(save)
+                    menu.append(share)
+                    if NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata) != nil {
+                        menu.append(livePhotoSave)
+                    }
                 }
             } else {
                 menu.append(favorite)
@@ -245,12 +221,15 @@ class NCContextMenu: NSObject {
                         menu.append(viewInFolder)
                     }
                 } else {
-                    menu.append(openIn)
-                    // SAVE CAMERA ROLL
-                    menu.append(save)
+                    menu.append(share)
+                    if NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata) != nil {
+                        menu.append(livePhotoSave)
+                    }
+
                     if viewController is NCMedia {
                         menu.append(viewInFolder)
                     }
+
                     // MODIFY WITH QUICK LOOK
                     if metadata.isModifiableWithQuickLook {
                         menu.append(modify)
