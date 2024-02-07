@@ -470,31 +470,33 @@ class NCNetworking: NSObject, NKCommonDelegate {
                           task: URLSessionTask,
                           error: NKError) {
 
-        guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(description) else { return }
+        DispatchQueue.global().async {
 
-        if error == .success {
+            guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(description) else { return }
+
+            if error == .success {
 
 #if !EXTENSION
-            if let result = NCManageDatabase.shared.getE2eEncryption(predicate: NSPredicate(format: "fileNameIdentifier == %@ AND serverUrl == %@", metadata.fileName, metadata.serverUrl)) {
-                NCEndToEndEncryption.sharedManager()?.decryptFile(metadata.fileName, fileNameView: metadata.fileNameView, ocId: metadata.ocId, key: result.key, initializationVector: result.initializationVector, authenticationTag: result.authenticationTag)
-            }
+                if let result = NCManageDatabase.shared.getE2eEncryption(predicate: NSPredicate(format: "fileNameIdentifier == %@ AND serverUrl == %@", metadata.fileName, metadata.serverUrl)) {
+                    NCEndToEndEncryption.sharedManager()?.decryptFile(metadata.fileName, fileNameView: metadata.fileNameView, ocId: metadata.ocId, key: result.key, initializationVector: result.initializationVector, authenticationTag: result.authenticationTag)
+                }
 #endif
-            NCManageDatabase.shared.addLocalFile(metadata: metadata)
-            NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId,
-                                                       session: "",
-                                                       sessionError: "",
-                                                       status: NCGlobal.shared.metadataStatusNormal,
-                                                       etag: etag,
-                                                       errorCode: 0)
-            NotificationCenter.default.post(name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterDownloadedFile),
-                                            object: nil,
-                                            userInfo: ["ocId": metadata.ocId,
-                                                       "serverUrl": metadata.serverUrl,
-                                                       "account": metadata.account,
-                                                       "selector": metadata.sessionSelector,
-                                                       "error": error])
+                NCManageDatabase.shared.addLocalFile(metadata: metadata)
+                NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId,
+                                                           session: "",
+                                                           sessionError: "",
+                                                           status: NCGlobal.shared.metadataStatusNormal,
+                                                           etag: etag,
+                                                           errorCode: 0)
+                NotificationCenter.default.post(name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterDownloadedFile),
+                                                object: nil,
+                                                userInfo: ["ocId": metadata.ocId,
+                                                           "serverUrl": metadata.serverUrl,
+                                                           "account": metadata.account,
+                                                           "selector": metadata.sessionSelector,
+                                                           "error": error])
 
-        } else if error.errorCode == NSURLErrorCancelled || error.errorCode == NCGlobal.shared.errorRequestExplicityCancelled {
+            } else if error.errorCode == NSURLErrorCancelled || error.errorCode == NCGlobal.shared.errorRequestExplicityCancelled {
 
                 NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId,
                                                            session: "",
@@ -508,25 +510,26 @@ class NCNetworking: NSObject, NKCommonDelegate {
                                                            "serverUrl": metadata.serverUrl,
                                                            "account": metadata.account])
 
-        } else {
+            } else {
 
-            NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId,
-                                                       session: "",
-                                                       sessionError: "",
-                                                       selector: "",
-                                                       status: NCGlobal.shared.metadataStatusNormal,
-                                                       errorCode: 0)
-            NotificationCenter.default.post(name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterDownloadedFile),
-                                            object: nil,
-                                            userInfo: ["ocId": metadata.ocId,
-                                                       "serverUrl": metadata.serverUrl,
-                                                       "account": metadata.account,
-                                                       "selector": metadata.sessionSelector,
-                                                       "error": error])
+                NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId,
+                                                           session: "",
+                                                           sessionError: "",
+                                                           selector: "",
+                                                           status: NCGlobal.shared.metadataStatusNormal,
+                                                           errorCode: 0)
+                NotificationCenter.default.post(name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterDownloadedFile),
+                                                object: nil,
+                                                userInfo: ["ocId": metadata.ocId,
+                                                           "serverUrl": metadata.serverUrl,
+                                                           "account": metadata.account,
+                                                           "selector": metadata.sessionSelector,
+                                                           "error": error])
+            }
+
+            self.downloadMetadataInBackground.removeValue(forKey: fileName + serverUrl)
+            self.delegate?.downloadComplete?(fileName: fileName, serverUrl: serverUrl, etag: etag, date: date, dateLastModified: dateLastModified, length: length, description: description, task: task, error: error)
         }
-
-        self.downloadMetadataInBackground.removeValue(forKey: fileName + serverUrl)
-        delegate?.downloadComplete?(fileName: fileName, serverUrl: serverUrl, etag: etag, date: date, dateLastModified: dateLastModified, length: length, description: description, task: task, error: error)
     }
 
     func downloadProgress(_ progress: Float,
@@ -884,145 +887,149 @@ class NCNetworking: NSObject, NKCommonDelegate {
                         task: URLSessionTask,
                         error: NKError) {
 
-        guard self.delegate == nil, let metadata = NCManageDatabase.shared.getMetadataFromOcId(description) else {
-            self.delegate?.uploadComplete?(fileName: fileName, serverUrl: serverUrl, ocId: ocId, etag: etag, date: date, size: size, description: description, task: task, error: error)
-            return
-        }
-        let ocIdTemp = metadata.ocId
-        let selector = metadata.sessionSelector
         var isApplicationStateActive = false
 #if !EXTENSION
         isApplicationStateActive = UIApplication.shared.applicationState == .active
 #endif
 
-        if error == .success, let ocId = ocId, size == metadata.size {
+        DispatchQueue.global().async {
 
-            let metadata = tableMetadata.init(value: metadata)
-
-            metadata.uploadDate = date ?? NSDate()
-            metadata.etag = etag ?? ""
-            metadata.ocId = ocId
-            metadata.chunk = 0
-
-            if let fileId = utility.ocIdToFileId(ocId: ocId) {
-                metadata.fileId = fileId
+            guard self.delegate == nil, let metadata = NCManageDatabase.shared.getMetadataFromOcId(description) else {
+                self.delegate?.uploadComplete?(fileName: fileName, serverUrl: serverUrl, ocId: ocId, etag: etag, date: date, size: size, description: description, task: task, error: error)
+                return
             }
+            let ocIdTemp = metadata.ocId
+            let selector = metadata.sessionSelector
 
-            metadata.session = ""
-            metadata.sessionError = ""
-            metadata.status = NCGlobal.shared.metadataStatusNormal
+            if error == .success, let ocId = ocId, size == metadata.size {
 
-            // Delete Asset on Photos album
-            if NCKeychain().removePhotoCameraRoll, !metadata.assetLocalIdentifier.isEmpty {
-                metadata.deleteAssetLocalIdentifier = true
-            }
+                let metadata = tableMetadata.init(value: metadata)
 
-            NCManageDatabase.shared.addMetadata(metadata)
-            NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", ocIdTemp))
+                metadata.uploadDate = date ?? NSDate()
+                metadata.etag = etag ?? ""
+                metadata.ocId = ocId
+                metadata.chunk = 0
 
-            if selector == NCGlobal.shared.selectorUploadFileNODelete {
-                utilityFileSystem.moveFile(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(ocIdTemp), toPath: utilityFileSystem.getDirectoryProviderStorageOcId(ocId))
-                NCManageDatabase.shared.addLocalFile(metadata: metadata)
-            } else {
-                utilityFileSystem.removeFile(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(ocIdTemp))
-            }
-
-            NextcloudKit.shared.nkCommonInstance.writeLog("[SUCCESS] Upload complete " + serverUrl + "/" + fileName + ", result: success(\(size) bytes)")
-
-            let userInfo: [AnyHashable: Any] = ["ocId": metadata.ocId, "serverUrl": metadata.serverUrl, "account": metadata.account, "fileName": metadata.fileName, "ocIdTemp": ocIdTemp, "error": error]
-            if metadata.isLivePhoto, NCGlobal.shared.isLivePhotoServerAvailable {
-                uploadLivePhoto(metadata: metadata, userInfo: userInfo)
-            } else {
-                NotificationCenter.default.post(name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterUploadedFile),
-                                                object: nil,
-                                                userInfo: userInfo)
-            }
-        } else {
-
-            if error.errorCode == NSURLErrorCancelled || error.errorCode == NCGlobal.shared.errorRequestExplicityCancelled {
-
-                utilityFileSystem.removeFile(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId))
-                NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
-                NotificationCenter.default.post(name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterUploadCancelFile),
-                                                object: nil,
-                                                userInfo: ["ocId": metadata.ocId,
-                                                           "serverUrl": metadata.serverUrl,
-                                                           "account": metadata.account])
-
-            } else if error.errorCode == NCGlobal.shared.errorBadRequest || error.errorCode == NCGlobal.shared.errorUnsupportedMediaType {
-
-                utilityFileSystem.removeFile(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId))
-                NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
-                NotificationCenter.default.post(name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterUploadCancelFile),
-                                                object: nil,
-                                                userInfo: ["ocId": metadata.ocId,
-                                                           "serverUrl": metadata.serverUrl,
-                                                           "account": metadata.account])
-                if isApplicationStateActive {
-                    NCContentPresenter().showError(error: NKError(errorCode: error.errorCode, errorDescription: "_virus_detect_"))
+                if let fileId = self.utility.ocIdToFileId(ocId: ocId) {
+                    metadata.fileId = fileId
                 }
 
-                // Client Diagnostic
-                NCManageDatabase.shared.addDiagnostic(account: metadata.account, issue: NCGlobal.shared.diagnosticIssueVirusDetected)
+                metadata.session = ""
+                metadata.sessionError = ""
+                metadata.status = NCGlobal.shared.metadataStatusNormal
 
-            } else if error.errorCode == NCGlobal.shared.errorForbidden && isApplicationStateActive {
-#if !EXTENSION
-                DispatchQueue.main.async {
-                    let newFileName = self.utilityFileSystem.createFileName(metadata.fileName, serverUrl: metadata.serverUrl, account: metadata.account)
-                    let alertController = UIAlertController(title: error.errorDescription, message: NSLocalizedString("_change_upload_filename_", comment: ""), preferredStyle: .alert)
-                    alertController.addAction(UIAlertAction(title: String(format: NSLocalizedString("_save_file_as_", comment: ""), newFileName), style: .default, handler: { _ in
-                        let atpath = self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId) + "/" + metadata.fileName
-                        let toPath = self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId) + "/" + newFileName
-                        self.utilityFileSystem.moveFile(atPath: atpath, toPath: toPath)
-                        NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId,
-                                                                   newFileName: newFileName,
-                                                                   sessionError: "",
-                                                                   status: NCGlobal.shared.metadataStatusWaitUpload,
-                                                                   errorCode: error.errorCode)
-                    }))
-                    alertController.addAction(UIAlertAction(title: NSLocalizedString("_discard_changes_", comment: ""), style: .destructive, handler: { _ in
-                        self.utilityFileSystem.removeFile(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId))
-                        NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
-                        NotificationCenter.default.post(name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterUploadCancelFile),
-                                                        object: nil,
-                                                        userInfo: ["ocId": metadata.ocId,
-                                                                   "serverUrl": metadata.serverUrl,
-                                                                   "account": metadata.account])
-                    }))
+                // Delete Asset on Photos album
+                if NCKeychain().removePhotoCameraRoll, !metadata.assetLocalIdentifier.isEmpty {
+                    metadata.deleteAssetLocalIdentifier = true
+                }
 
-                    let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
-                    appDelegate.window?.rootViewController?.present(alertController, animated: true)
+                NCManageDatabase.shared.addMetadata(metadata)
+                NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", ocIdTemp))
+
+                if selector == NCGlobal.shared.selectorUploadFileNODelete {
+                    self.utilityFileSystem.moveFile(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(ocIdTemp), toPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(ocId))
+                    NCManageDatabase.shared.addLocalFile(metadata: metadata)
+                } else {
+                    self.utilityFileSystem.removeFile(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(ocIdTemp))
+                }
+
+                NextcloudKit.shared.nkCommonInstance.writeLog("[SUCCESS] Upload complete " + serverUrl + "/" + fileName + ", result: success(\(size) bytes)")
+
+                let userInfo: [AnyHashable: Any] = ["ocId": metadata.ocId, "serverUrl": metadata.serverUrl, "account": metadata.account, "fileName": metadata.fileName, "ocIdTemp": ocIdTemp, "error": error]
+                if metadata.isLivePhoto, NCGlobal.shared.isLivePhotoServerAvailable {
+                    self.uploadLivePhoto(metadata: metadata, userInfo: userInfo)
+                } else {
+                    NotificationCenter.default.post(name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterUploadedFile),
+                                                    object: nil,
+                                                    userInfo: userInfo)
+                }
+            } else {
+
+                if error.errorCode == NSURLErrorCancelled || error.errorCode == NCGlobal.shared.errorRequestExplicityCancelled {
+
+                    self.utilityFileSystem.removeFile(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId))
+                    NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
+                    NotificationCenter.default.post(name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterUploadCancelFile),
+                                                    object: nil,
+                                                    userInfo: ["ocId": metadata.ocId,
+                                                               "serverUrl": metadata.serverUrl,
+                                                               "account": metadata.account])
+
+                } else if error.errorCode == NCGlobal.shared.errorBadRequest || error.errorCode == NCGlobal.shared.errorUnsupportedMediaType {
+
+                    self.utilityFileSystem.removeFile(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId))
+                    NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
+                    NotificationCenter.default.post(name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterUploadCancelFile),
+                                                    object: nil,
+                                                    userInfo: ["ocId": metadata.ocId,
+                                                               "serverUrl": metadata.serverUrl,
+                                                               "account": metadata.account])
+                    if isApplicationStateActive {
+                        NCContentPresenter().showError(error: NKError(errorCode: error.errorCode, errorDescription: "_virus_detect_"))
+                    }
 
                     // Client Diagnostic
-                    NCManageDatabase.shared.addDiagnostic(account: metadata.account, issue: NCGlobal.shared.diagnosticIssueProblems, error: NCGlobal.shared.diagnosticProblemsForbidden)
-                }
+                    NCManageDatabase.shared.addDiagnostic(account: metadata.account, issue: NCGlobal.shared.diagnosticIssueVirusDetected)
+
+                } else if error.errorCode == NCGlobal.shared.errorForbidden && isApplicationStateActive {
+#if !EXTENSION
+                    DispatchQueue.main.async {
+                        let newFileName = self.utilityFileSystem.createFileName(metadata.fileName, serverUrl: metadata.serverUrl, account: metadata.account)
+                        let alertController = UIAlertController(title: error.errorDescription, message: NSLocalizedString("_change_upload_filename_", comment: ""), preferredStyle: .alert)
+                        alertController.addAction(UIAlertAction(title: String(format: NSLocalizedString("_save_file_as_", comment: ""), newFileName), style: .default, handler: { _ in
+                            let atpath = self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId) + "/" + metadata.fileName
+                            let toPath = self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId) + "/" + newFileName
+                            self.utilityFileSystem.moveFile(atPath: atpath, toPath: toPath)
+                            NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId,
+                                                                       newFileName: newFileName,
+                                                                       sessionError: "",
+                                                                       status: NCGlobal.shared.metadataStatusWaitUpload,
+                                                                       errorCode: error.errorCode)
+                        }))
+                        alertController.addAction(UIAlertAction(title: NSLocalizedString("_discard_changes_", comment: ""), style: .destructive, handler: { _ in
+                            self.utilityFileSystem.removeFile(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId))
+                            NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
+                            NotificationCenter.default.post(name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterUploadCancelFile),
+                                                            object: nil,
+                                                            userInfo: ["ocId": metadata.ocId,
+                                                                       "serverUrl": metadata.serverUrl,
+                                                                       "account": metadata.account])
+                        }))
+
+                        let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
+                        appDelegate.window?.rootViewController?.present(alertController, animated: true)
+
+                        // Client Diagnostic
+                        NCManageDatabase.shared.addDiagnostic(account: metadata.account, issue: NCGlobal.shared.diagnosticIssueProblems, error: NCGlobal.shared.diagnosticProblemsForbidden)
+                    }
 #endif
-            } else {
-
-                NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId,
-                                                           sessionError: error.errorDescription,
-                                                           status: NCGlobal.shared.metadataStatusUploadError,
-                                                           errorCode: error.errorCode)
-                NotificationCenter.default.post(name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterUploadedFile),
-                                                object: nil,
-                                                userInfo: ["ocId": metadata.ocId,
-                                                           "serverUrl": metadata.serverUrl,
-                                                           "account": metadata.account,
-                                                           "fileName": metadata.fileName,
-                                                           "ocIdTemp": ocIdTemp,
-                                                           "error": error])
-
-                // Client Diagnostic
-                if error.errorCode == NCGlobal.shared.errorInternalServerError {
-                    NCManageDatabase.shared.addDiagnostic(account: metadata.account, issue: NCGlobal.shared.diagnosticIssueProblems, error: NCGlobal.shared.diagnosticProblemsBadResponse)
                 } else {
-                    NCManageDatabase.shared.addDiagnostic(account: metadata.account, issue: NCGlobal.shared.diagnosticIssueProblems, error: NCGlobal.shared.diagnosticProblemsUploadServerError)
+
+                    NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId,
+                                                               sessionError: error.errorDescription,
+                                                               status: NCGlobal.shared.metadataStatusUploadError,
+                                                               errorCode: error.errorCode)
+                    NotificationCenter.default.post(name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterUploadedFile),
+                                                    object: nil,
+                                                    userInfo: ["ocId": metadata.ocId,
+                                                               "serverUrl": metadata.serverUrl,
+                                                               "account": metadata.account,
+                                                               "fileName": metadata.fileName,
+                                                               "ocIdTemp": ocIdTemp,
+                                                               "error": error])
+
+                    // Client Diagnostic
+                    if error.errorCode == NCGlobal.shared.errorInternalServerError {
+                        NCManageDatabase.shared.addDiagnostic(account: metadata.account, issue: NCGlobal.shared.diagnosticIssueProblems, error: NCGlobal.shared.diagnosticProblemsBadResponse)
+                    } else {
+                        NCManageDatabase.shared.addDiagnostic(account: metadata.account, issue: NCGlobal.shared.diagnosticIssueProblems, error: NCGlobal.shared.diagnosticProblemsUploadServerError)
+                    }
                 }
             }
-        }
 
-        self.uploadMetadataInBackground.removeValue(forKey: fileName + serverUrl)
-        self.delegate?.uploadComplete?(fileName: fileName, serverUrl: serverUrl, ocId: ocId, etag: etag, date: date, size: size, description: description, task: task, error: error)
+            self.uploadMetadataInBackground.removeValue(forKey: fileName + serverUrl)
+            self.delegate?.uploadComplete?(fileName: fileName, serverUrl: serverUrl, ocId: ocId, etag: etag, date: date, size: size, description: description, task: task, error: error)
+        }
     }
 
     func uploadProgress(_ progress: Float,
@@ -1410,16 +1417,15 @@ class NCNetworking: NSObject, NKCommonDelegate {
             if error == .success {
                 NCManageDatabase.shared.convertFilesToMetadatas(files, useMetadataFolder: true) { _, _, metadatas in
                     for metadata in metadatas {
-                        autoreleasepool {
-                            if metadata.directory {
-                                NCManageDatabase.shared.addMetadata(metadata)
-                            } else if selector == NCGlobal.shared.selectorSynchronizationOffline, metadata.isSynchronizable {
-                                NCManageDatabase.shared.setMetadataSessionInWaitDownload(ocId: metadata.ocId,
-                                                                                         session: NCNetworking.shared.sessionDownloadBackground,
-                                                                                         selector: selector,
-                                                                                         addMetadata: metadata)
-                            }
+                        if metadata.directory {
+                            NCManageDatabase.shared.addMetadata(metadata)
+                        } else if selector == NCGlobal.shared.selectorSynchronizationOffline, metadata.isSynchronizable {
+                            NCManageDatabase.shared.setMetadataSessionInWaitDownload(ocId: metadata.ocId,
+                                                                                     session: NCNetworking.shared.sessionDownloadBackground,
+                                                                                     selector: selector,
+                                                                                     addMetadata: metadata)
                         }
+
                     }
                     let diffDate = Date().timeIntervalSinceReferenceDate - startDate.timeIntervalSinceReferenceDate
                     NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Synchronization " + serverUrl + " in \(diffDate)")
