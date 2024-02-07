@@ -502,6 +502,21 @@ extension NCManageDatabase {
         return tableMetadata.init(value: result)
     }
 
+    func addMetadataWithoutUpdate(_ metadata: tableMetadata) {
+
+        do {
+            let realm = try Realm()
+            if realm.objects(tableMetadata.self).filter("ocId == %@", metadata.ocId).first != nil {
+                return
+            }
+            try realm.write {
+                realm.add(metadata, update: .all)
+            }
+        } catch let error {
+            NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
+        }
+    }
+
     func addMetadatas(_ metadatas: [tableMetadata]) {
 
         do {
