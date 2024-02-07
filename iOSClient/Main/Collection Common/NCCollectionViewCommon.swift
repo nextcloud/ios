@@ -753,7 +753,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             toggleMenu(metadata: metadata, indexPath: indexPath, imageIcon: image)
         } else if namedButtonMore == NCGlobal.shared.buttonMoreStop {
             Task {
-                await NCNetworking.shared.cancel(metadata: metadata)
+                await cancelSession(metadata: metadata)
             }
         }
     }
@@ -780,7 +780,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         if let ocId = NCNetworking.shared.transferInForegorund?.ocId,
            let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
             Task {
-                await NCNetworking.shared.cancel(metadata: metadata)
+                await cancelSession(metadata: metadata)
             }
         }
     }
@@ -1867,6 +1867,86 @@ extension NCCollectionViewCommon {
             }
         }
         return ownerId
+    }
+
+    // MARK: - Cancel (Download Upload)
+
+    // sessionIdentifierDownload: String = "com.nextcloud.nextcloudkit.session.download"
+    // sessionIdentifierUpload: String = "com.nextcloud.nextcloudkit.session.upload"
+
+    // sessionUploadBackground: String = "com.nextcloud.session.upload.background"
+    // sessionUploadBackgroundWWan: String = "com.nextcloud.session.upload.backgroundWWan"
+    // sessionUploadBackgroundExtension: String = "com.nextcloud.session.upload.extension"
+
+    func cancelSession(metadata: tableMetadata) async {
+
+        let fileNameLocalPath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)
+        utilityFileSystem.removeFile(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId))
+
+        // No session found
+        if metadata.session.isEmpty {
+            NCNetworking.shared.uploadRequest.removeValue(forKey: fileNameLocalPath)
+            NCNetworking.shared.downloadRequest.removeValue(forKey: fileNameLocalPath)
+            NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
+            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSource)
+            return
+        }
+
+        // DOWNLOAD
+        if metadata.session == NextcloudKit.shared.nkCommonInstance.sessionIdentifierDownload {
+            if let request = NCNetworking.shared.downloadRequest[fileNameLocalPath] {
+                request.cancel()
+            } else if let metadata = NCManageDatabase.shared.getMetadataFromOcId(metadata.ocId) {
+                NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId,
+                                                           session: "",
+                                                           sessionError: "",
+                                                           selector: "",
+                                                           status: NCGlobal.shared.metadataStatusNormal,
+                                                           errorCode: 0)
+                NotificationCenter.default.post(name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterDownloadCancelFile),
+                                                object: nil,
+                                                userInfo: ["ocId": metadata.ocId,
+                                                           "serverUrl": metadata.serverUrl,
+                                                           "account": metadata.account])
+            }
+            return
+        }
+
+        // UPLOAD FOREGROUND
+        if metadata.session == NextcloudKit.shared.nkCommonInstance.sessionIdentifierUpload {
+            if let request = NCNetworking.shared.uploadRequest[fileNameLocalPath] {
+                request.cancel()
+                NCNetworking.shared.uploadRequest.removeValue(forKey: fileNameLocalPath)
+            }
+            NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
+            NotificationCenter.default.post(name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterUploadCancelFile),
+                                            object: nil,
+                                            userInfo: ["ocId": metadata.ocId,
+                                                       "serverUrl": metadata.serverUrl,
+                                                       "account": metadata.account])
+            return
+        }
+
+        // UPLOAD BACKGROUND
+        var session: URLSession?
+        if metadata.session == NCNetworking.shared.sessionUploadBackground {
+            session = NCNetworking.shared.sessionManagerUploadBackground
+        } else if metadata.session == NCNetworking.shared.sessionUploadBackgroundWWan {
+            session = NCNetworking.shared.sessionManagerUploadBackgroundWWan
+        }
+        if let tasks = await session?.tasks {
+            for task in tasks.1 { // ([URLSessionDataTask], [URLSessionUploadTask], [URLSessionDownloadTask])
+                if task.taskIdentifier == metadata.sessionTaskIdentifier {
+                    task.cancel()
+                    NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
+                    NotificationCenter.default.post(name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterUploadCancelFile),
+                                                    object: nil,
+                                                    userInfo: ["ocId": metadata.ocId,
+                                                               "serverUrl": metadata.serverUrl,
+                                                               "account": metadata.account])
+                }
+            }
+        }
     }
 }
 
