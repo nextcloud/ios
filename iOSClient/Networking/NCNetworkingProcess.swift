@@ -34,6 +34,7 @@ class NCNetworkingProcess: NSObject {
     }()
 
     private let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
+    private let utilityFileSystem = NCUtilityFileSystem()
     private lazy var rootViewController = appDelegate.window?.rootViewController
     private lazy var hudView = rootViewController?.view
     private var notificationToken: NotificationToken?
@@ -152,7 +153,7 @@ class NCNetworkingProcess: NSObject {
                 return completition(counterDownload, counterUpload)
             }
 
-            NCNetworking.shared.getOcIdInBackgroundSession(queue: queue, completion: { listOcId in
+            NCNetworking.shared.getOcIdInBackgroundSession(queue: queue, completion: { filesNameLocalPath in
 
                 let sessionUploadSelectors = [NCGlobal.shared.selectorUploadFileNODelete, NCGlobal.shared.selectorUploadFile, NCGlobal.shared.selectorUploadAutoUpload, NCGlobal.shared.selectorUploadAutoUploadAll]
 
@@ -167,7 +168,8 @@ class NCNetworkingProcess: NSObject {
                     for metadata in metadatasUpload where counterUpload < maxConcurrentOperationUpload {
 
                         // Is already in upload background? skipped
-                        if listOcId.contains(metadata.ocId) {
+                        let fileNameLocalPath = self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)
+                        if filesNameLocalPath.contains(fileNameLocalPath) {
                             NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Process auto upload skipped file: \(metadata.serverUrl)/\(metadata.fileNameView), because is already in session.")
                             continue
                         }
@@ -297,7 +299,6 @@ class NCNetworkingProcess: NSObject {
     func verifyUploadZombie() {
 
         Task {
-            let utilityFileSystem = NCUtilityFileSystem()
             var notificationCenter: Bool = false
 
             // selectorUploadFileShareExtension (FOREGROUND)

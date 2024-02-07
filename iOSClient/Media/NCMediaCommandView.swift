@@ -28,7 +28,8 @@ class NCMediaCommandView: UIView {
 
     @IBOutlet weak var title: UILabel!
     @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
-    @IBOutlet weak var selectButton: UIButton!
+    @IBOutlet weak var selectOrCancelButton: UIButton!
+    @IBOutlet weak var selectOrCancelButtonTrailing: NSLayoutConstraint!
     @IBOutlet weak var menuButton: UIButton!
 
     var mediaView: NCMedia!
@@ -42,18 +43,20 @@ class NCMediaCommandView: UIView {
 
         title.text = ""
 
-        selectButton.backgroundColor = .systemGray4.withAlphaComponent(0.6)
-        selectButton.layer.cornerRadius = 15
-        selectButton.layer.masksToBounds = true
-        selectButton.setTitle( NSLocalizedString("_select_", comment: ""), for: .normal)
+        selectOrCancelButton.backgroundColor = nil
+        selectOrCancelButton.layer.cornerRadius = 15
+        selectOrCancelButton.layer.masksToBounds = true
+        selectOrCancelButton.setTitle( NSLocalizedString("_select_", comment: ""), for: .normal)
+        selectOrCancelButton.addBlur(style: .systemThinMaterial)
 
-        menuButton.backgroundColor = .systemGray4.withAlphaComponent(0.6)
+        menuButton.backgroundColor = nil
         menuButton.layer.cornerRadius = 15
         menuButton.layer.masksToBounds = true
         menuButton.showsMenuAsPrimaryAction = true
         menuButton.configuration = UIButton.Configuration.plain()
         menuButton.setImage(UIImage(systemName: "ellipsis"), for: .normal)
         menuButton.changesSelectionAsPrimaryAction = false
+        menuButton.addBlur(style: .systemThinMaterial)
 
         gradient.frame = bounds
         gradient.startPoint = CGPoint(x: 0, y: 0.5)
@@ -67,12 +70,60 @@ class NCMediaCommandView: UIView {
         gradient.frame = bounds
     }
 
-    @IBAction func selectButtonPressed(_ sender: UIButton) {
+    @IBAction func selectOrCancelButtonPressed(_ sender: UIButton) {
 
-        mediaView.isEditMode = true
+        mediaView.isEditMode = !mediaView.isEditMode
+        setSelectcancelButton()
+    }
+
+    func setSelectcancelButton() {
+
+        mediaView.selectOcId.removeAll()
+        mediaView.tabBarSelect?.selectCount = mediaView.selectOcId.count
+
+        if mediaView.isEditMode {
+            selectOrCancelButton.setTitle( NSLocalizedString("_cancel_", comment: ""), for: .normal)
+            selectOrCancelButtonTrailing.constant = 8
+            mediaView.tabBarSelect?.show()
+        } else {
+            selectOrCancelButton.setTitle( NSLocalizedString("_select_", comment: ""), for: .normal)
+            selectOrCancelButtonTrailing.constant = 46
+            mediaView.tabBarSelect?.hide()
+        }
+
         mediaView.collectionView.reloadData()
+    }
 
-        mediaView.tabBarSelect?.show(animation: true)
+    func setTitleDate() {
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+            self.title.text = ""
+            if let visibleCells = self.mediaView.collectionView?.indexPathsForVisibleItems.sorted(by: { $0.row < $1.row }).compactMap({ self.mediaView.collectionView?.cellForItem(at: $0) }) {
+                if let cell = visibleCells.first as? NCGridMediaCell {
+                    self.title.text = ""
+                    if let date = cell.date {
+                        self.title.text = self.mediaView.utility.getTitleFromDate(date)
+                    }
+                }
+            }
+        }
+    }
+
+    func setColor(isTop: Bool) {
+
+        if isTop {
+            title.textColor = .label
+            activityIndicator.color = .label
+            selectOrCancelButton.setTitleColor(.label, for: .normal)
+            menuButton.setImage(UIImage(systemName: "ellipsis")?.withTintColor(.label, renderingMode: .alwaysOriginal), for: .normal)
+            gradient.isHidden = true
+        } else {
+            title.textColor = .white
+            activityIndicator.color = .white
+            selectOrCancelButton.setTitleColor(.white, for: .normal)
+            menuButton.setImage(UIImage(systemName: "ellipsis")?.withTintColor(.white, renderingMode: .alwaysOriginal), for: .normal)
+            gradient.isHidden = false
+        }
     }
 
     func createMenu() {
@@ -160,71 +211,21 @@ class NCMediaCommandView: UIView {
 
         menuButton.menu = UIMenu(title: "", children: [topAction, playFile, playURL])
     }
-
-    func setTitleDate() {
-
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-            self.title.text = ""
-            if let visibleCells = self.mediaView.collectionView?.indexPathsForVisibleItems.sorted(by: { $0.row < $1.row }).compactMap({ self.mediaView.collectionView?.cellForItem(at: $0) }) {
-                if let cell = visibleCells.first as? NCGridMediaCell {
-                    self.title.text = ""
-                    if let date = cell.date {
-                        self.title.text = self.mediaView.utility.getTitleFromDate(date)
-                    }
-                }
-            }
-        }
-    }
-
-    func setButtonsHidden(numberOfItemsInSection: Int) {
-
-        if numberOfItemsInSection == 0 {
-            selectButton.isHidden = true
-            menuButton.isHidden = false
-        } else if mediaView.isEditMode {
-            selectButton.isHidden = true
-            menuButton.isHidden = true
-        } else {
-            selectButton.isHidden = false
-            menuButton.isHidden = false
-        }
-    }
-
-    func setColor(isTop: Bool) {
-
-        if isTop {
-            title.textColor = .label
-            activityIndicator.color = .label
-            selectButton.setTitleColor(.label, for: .normal)
-            menuButton.setImage(UIImage(systemName: "ellipsis")?.withTintColor(.label, renderingMode: .alwaysOriginal), for: .normal)
-            gradient.isHidden = true
-        } else {
-            title.textColor = .white
-            activityIndicator.color = .white
-            selectButton.setTitleColor(.white, for: .normal)
-            menuButton.setImage(UIImage(systemName: "ellipsis")?.withTintColor(.white, renderingMode: .alwaysOriginal), for: .normal)
-            gradient.isHidden = false
-        }
-    }
 }
 
-// MARK: - NCTabBarSelectDelegate
+// MARK: - NCMediaTabBarSelectDelegate
 
-extension NCMediaCommandView: NCTabBarSelectDelegate {
+extension NCMediaCommandView: NCMediaTabBarSelectDelegate {
 
-    func delete(tabBarController: NCMediaTabbarSelect) {
+    func delete() {
 
         if !mediaView.selectOcId.isEmpty {
             let selectOcId = mediaView.selectOcId
-            var title = NSLocalizedString("_delete_", comment: "")
-            if selectOcId.count > 1 {
-                title = NSLocalizedString("_delete_selected_files_", comment: "")
-            }
             let alertController = UIAlertController(
-                title: title,
+                title: NSLocalizedString("_delete_selected_photos_", comment: ""),
                 message: "",
                 preferredStyle: .alert)
-            alertController.addAction(UIAlertAction(title: NSLocalizedString("_yes_delete_", comment: ""), style: .default) { (_: UIAlertAction) in
+            alertController.addAction(UIAlertAction(title: NSLocalizedString("_yes_", comment: ""), style: .default) { (_: UIAlertAction) in
 
                 Task {
                     var error = NKError()
@@ -240,23 +241,12 @@ extension NCMediaCommandView: NCTabBarSelectDelegate {
                     NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDeleteFile, userInfo: ["ocId": ocIds, "onlyLocalCache": false, "error": error])
                 }
 
-                self.cancel(tabBarController: tabBarController)
+                self.mediaView.isEditMode = false
+                self.setSelectcancelButton()
             })
-            alertController.addAction(UIAlertAction(title: NSLocalizedString("_no_delete_", comment: ""), style: .default) { (_: UIAlertAction) in })
+            alertController.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .default) { (_: UIAlertAction) in })
 
             mediaView.present(alertController, animated: true, completion: { })
         }
-    }
-
-    func cancel(tabBarController: NCMediaTabbarSelect) {
-
-        mediaView.isEditMode = false
-        mediaView.selectOcId.removeAll()
-        mediaView.collectionView.reloadData()
-
-        selectButton.isHidden = false
-        menuButton.isHidden = false
-
-        tabBarController.hide(animation: true)
     }
 }

@@ -24,21 +24,18 @@
 import UIKit
 import SwiftUI
 
-protocol NCTabBarSelectDelegate: AnyObject {
-    func cancel(tabBarController: NCMediaTabbarSelect)
-    func delete(tabBarController: NCMediaTabbarSelect)
+protocol NCMediaTabBarSelectDelegate: AnyObject {
+    func delete()
 }
 
 class NCMediaTabbarSelect: ObservableObject {
 
     var hostingController: UIViewController!
     var mediaTabBarController: UITabBarController?
-    open weak var delegate: NCTabBarSelectDelegate?
-
+    open weak var delegate: NCMediaTabBarSelectDelegate?
     @Published var selectCount: Int = 0
 
-    init(tabBarController: UITabBarController? = nil, delegate: NCTabBarSelectDelegate? = nil) {
-
+    init(tabBarController: UITabBarController? = nil, delegate: NCMediaTabBarSelectDelegate? = nil) {
         guard let tabBarController else { return }
         let mediaTabBarSelectView = MediaTabBarSelectView(tabBarSelect: self)
         hostingController = UIHostingController(rootView: mediaTabBarSelectView)
@@ -61,46 +58,47 @@ class NCMediaTabbarSelect: ObservableObject {
         hostingController.view.isHidden = true
     }
 
-    func show(animation: Bool) {
-
-        mediaTabBarController?.tabBar.isHidden = true
+    func show() {
         hostingController.view.isHidden = false
+        hostingController.view.transform = .init(translationX: 0, y: hostingController.view.frame.height)
+        UIView.animate(withDuration: 0.2) {
+            self.hostingController.view.transform = .init(translationX: 0, y: 0)
+        }
+        mediaTabBarController?.tabBar.isHidden = true
     }
 
-    func hide(animation: Bool) {
+    func hide() {
 
-        hostingController.view.isHidden = true
-        mediaTabBarController?.tabBar.isHidden = false
+        self.mediaTabBarController?.tabBar.isHidden = false
+        self.hostingController.view.isHidden = true
     }
 }
 
 struct MediaTabBarSelectView: View {
-
     @ObservedObject var tabBarSelect: NCMediaTabbarSelect
+    @Environment(\.verticalSizeClass) var sizeClass
 
     var body: some View {
         VStack {
-            Spacer().frame(height: 10)
+            Spacer().frame(height: sizeClass == .compact ? 5 : 10)
             HStack {
-                Button(NSLocalizedString("_cancel_", comment: "")) {
-                    tabBarSelect.delegate?.cancel(tabBarController: tabBarSelect)
-                }
-                .frame(maxWidth: .infinity)
-
+                Spacer().frame(maxWidth: .infinity)
                 Group {
-                    if tabBarSelect.selectCount == 1 {
+                    if tabBarSelect.selectCount == 0 {
+                        Text(NSLocalizedString("_select_photo_", comment: ""))
+                    } else if tabBarSelect.selectCount == 1 {
                         Text(String(tabBarSelect.selectCount) + " " + NSLocalizedString("_selected_photo_", comment: ""))
                     } else {
                         Text(String(tabBarSelect.selectCount) + " " + NSLocalizedString("_selected_photos_", comment: ""))
                     }
                 }
-                .font(.system(size: 16, weight: .bold, design: .default))
-                .frame(minWidth: 220, maxWidth: .infinity)
+                .frame(minWidth: 250, maxWidth: .infinity)
 
                 Button {
-                    tabBarSelect.delegate?.delete(tabBarController: tabBarSelect)
+                    tabBarSelect.delegate?.delete()
                 } label: {
                     Image(systemName: "trash")
+                    .imageScale(sizeClass == .compact ? .medium : .large)
                 }
                 .tint(.red)
                 .disabled(tabBarSelect.selectCount == 0)
