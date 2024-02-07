@@ -153,7 +153,7 @@ class NCNetworkingProcess: NSObject {
                 return completition(counterDownload, counterUpload)
             }
 
-            NCNetworking.shared.getOcIdInBackgroundSession(queue: queue, completion: { filesNameLocalPath in
+            NCNetworking.shared.getUploadBackgroundSession(queue: queue, completion: { filesNameLocalPath in
 
                 let sessionUploadSelectors = [NCGlobal.shared.selectorUploadFileNODelete, NCGlobal.shared.selectorUploadFile, NCGlobal.shared.selectorUploadAutoUpload, NCGlobal.shared.selectorUploadAutoUploadAll]
 
