@@ -1012,7 +1012,7 @@
 "_grid_view_"                   = "Show grid view";
 "_list_view_"                   = "Show list view";
 "_list_"                        = "List";
-"_grid_"                        = "Grid";
+"_icons_"                       = "Icons";
 
 // MARK: Plan customer
 "_leave_plan_title"             = "We're sorry to see you go";
