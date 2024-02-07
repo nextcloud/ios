@@ -25,6 +25,7 @@ import UIKit
 import JGProgressHUD
 import NextcloudKit
 import Alamofire
+import Queuer
 
 extension NCNetworking {
 
@@ -296,4 +297,57 @@ extension NCNetworking {
     }
 #endif
 
+    func cancelDownloadTasks() {
+
+        let sessionManager = NextcloudKit.shared.sessionManager
+        sessionManager.session.getTasksWithCompletionHandler { _, _, downloadTasks in
+            downloadTasks.forEach {
+                $0.cancel()
+            }
+        }
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+            if let results = NCManageDatabase.shared.getResultsMetadatas(predicate: NSPredicate(format: "status < 0")) {
+                for metadata in results {
+                    self.utilityFileSystem.removeFile(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId))
+                    NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId,
+                                                               session: "",
+                                                               sessionError: "",
+                                                               selector: "",
+                                                               status: NCGlobal.shared.metadataStatusNormal,
+                                                               errorCode: 0)
+                }
+            }
+            self.downloadRequest.removeAll()
+        }
+    }
+}
+
+class NCOperationDownload: ConcurrentOperation {
+
+    var metadata: tableMetadata
+    var selector: String
+
+    init(metadata: tableMetadata, selector: String) {
+        self.metadata = tableMetadata.init(value: metadata)
+        self.selector = selector
+    }
+
+    override func start() {
+
+        guard !isCancelled else { return self.finish() }
+
+        metadata.session = NextcloudKit.shared.nkCommonInstance.sessionIdentifierDownload
+        metadata.sessionError = ""
+        metadata.sessionSelector = selector
+        metadata.sessionTaskIdentifier = 0
+        metadata.status = NCGlobal.shared.metadataStatusWaitDownload
+
+        NCManageDatabase.shared.addMetadata(metadata)
+
+        NCNetworking.shared.download(metadata: metadata, withNotificationProgressTask: true) {
+        } completion: { _, _ in
+            self.finish()
+        }
+    }
 }
