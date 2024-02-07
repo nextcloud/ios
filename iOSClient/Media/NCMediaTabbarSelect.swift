@@ -29,7 +29,6 @@ protocol NCMediaTabBarSelectDelegate: AnyObject {
 }
 
 class NCMediaTabbarSelect: ObservableObject {
-
     var hostingController: UIViewController!
     var mediaTabBarController: UITabBarController?
     open weak var delegate: NCMediaTabBarSelectDelegate?
