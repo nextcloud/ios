@@ -25,9 +25,10 @@ import UIKit
 import JGProgressHUD
 import NextcloudKit
 import Alamofire
+import Queuer
 
 extension NCNetworking {
-    
+
     // MARK: - Read file, folder
 
     func readFolder(serverUrl: String,
@@ -593,6 +594,85 @@ extension NCNetworking {
         }
     }
 
+    // MARK: - Lock Files
+
+    func lockUnlockFile(_ metadata: tableMetadata, shoulLock: Bool) {
+
+        NextcloudKit.shared.lockUnlockFile(serverUrlFileName: metadata.serverUrl + "/" + metadata.fileName, shouldLock: shoulLock) { _, error in
+            // 0: lock was successful; 412: lock did not change, no error, refresh
+            guard error == .success || error.errorCode == NCGlobal.shared.errorPreconditionFailed else {
+                let error = NKError(errorCode: error.errorCode, errorDescription: "_files_lock_error_")
+                NCContentPresenter().messageNotification(metadata.fileName, error: error, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, priority: .max)
+                return
+            }
+            NCNetworking.shared.readFile(serverUrlFileName: metadata.serverUrl + "/" + metadata.fileName) { _, metadata, error in
+                guard error == .success, let metadata = metadata else { return }
+                NCManageDatabase.shared.addMetadata(metadata)
+                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSource)
+            }
+        }
+    }
+
+    // MARK: - Direct Download
+
+    func getVideoUrl(metadata: tableMetadata,
+                     completition: @escaping (_ url: URL?, _ autoplay: Bool, _ error: NKError) -> Void) {
+
+        if !metadata.url.isEmpty {
+            if metadata.url.hasPrefix("/") {
+                completition(URL(fileURLWithPath: metadata.url), true, .success)
+            } else {
+                completition(URL(string: metadata.url), true, .success)
+            }
+        } else if utilityFileSystem.fileProviderStorageExists(metadata) {
+            completition(URL(fileURLWithPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)), false, .success)
+        } else {
+            NextcloudKit.shared.getDirectDownload(fileId: metadata.fileId) { _, url, _, error in
+                if error == .success && url != nil {
+                    if let url = URL(string: url!) {
+                        completition(url, false, error)
+                    } else {
+                        completition(nil, false, error)
+                    }
+                } else {
+                    completition(nil, false, error)
+                }
+            }
+        }
+    }
+
+    // MARK: - Get Preview
+
+    func getPreview(url: URL,
+                    options: NKRequestOptions = NKRequestOptions()) async -> (account: String, data: Data?, error: NKError) {
+
+        await withUnsafeContinuation({ continuation in
+            NextcloudKit.shared.getPreview(url: url, options: options) { account, data, error in
+                continuation.resume(returning: (account: account, data: data, error: error))
+            }
+        })
+    }
+
+    // MARK: - Download Preview
+
+    func downloadPreview(fileNamePathOrFileId: String,
+                         fileNamePreviewLocalPath: String,
+                         widthPreview: Int,
+                         heightPreview: Int,
+                         fileNameIconLocalPath: String? = nil,
+                         sizeIcon: Int = 0,
+                         etag: String? = nil,
+                         endpointTrashbin: Bool = false,
+                         useInternalEndpoint: Bool = true,
+                         options: NKRequestOptions = NKRequestOptions()) async -> (account: String, imagePreview: UIImage?, imageIcon: UIImage?, imageOriginal: UIImage?, etag: String?, error: NKError) {
+
+        await withUnsafeContinuation({ continuation in
+            NextcloudKit.shared.downloadPreview(fileNamePathOrFileId: fileNamePathOrFileId, fileNamePreviewLocalPath: fileNamePreviewLocalPath, widthPreview: widthPreview, heightPreview: heightPreview, fileNameIconLocalPath: fileNameIconLocalPath, sizeIcon: sizeIcon, etag: etag, options: options) { account, imagePreview, imageIcon, imageOriginal, etag, error in
+                continuation.resume(returning: (account: account, imagePreview: imagePreview, imageIcon: imageIcon, imageOriginal: imageOriginal, etag: etag, error: error))
+            }
+        })
+    }
+
     // MARK: - Search
 
     /// WebDAV search
@@ -783,4 +863,69 @@ extension NCNetworking {
         }
     }
 
+    func cancelDataTask() {
+
+        let sessionManager = NextcloudKit.shared.sessionManager
+        sessionManager.session.getTasksWithCompletionHandler { dataTasks, _, _ in
+            dataTasks.forEach {
+                $0.cancel()
+            }
+        }
+    }
+}
+
+class NCOperationDownloadAvatar: ConcurrentOperation {
+
+    var user: String
+    var fileName: String
+    var etag: String?
+    var fileNameLocalPath: String
+    var cell: NCCellProtocol!
+    var view: UIView?
+    var cellImageView: UIImageView?
+
+    init(user: String, fileName: String, fileNameLocalPath: String, cell: NCCellProtocol, view: UIView?, cellImageView: UIImageView?) {
+        self.user = user
+        self.fileName = fileName
+        self.fileNameLocalPath = fileNameLocalPath
+        self.cell = cell
+        self.view = view
+        self.etag = NCManageDatabase.shared.getTableAvatar(fileName: fileName)?.etag
+        self.cellImageView = cellImageView
+    }
+
+    override func start() {
+
+        guard !isCancelled else { return self.finish() }
+
+        NextcloudKit.shared.downloadAvatar(user: user,
+                                           fileNameLocalPath: fileNameLocalPath,
+                                           sizeImage: NCGlobal.shared.avatarSize,
+                                           avatarSizeRounded: NCGlobal.shared.avatarSizeRounded,
+                                           etag: self.etag,
+                                           options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { _, imageAvatar, _, etag, error in
+
+            if error == .success, let imageAvatar = imageAvatar, let etag = etag {
+                NCManageDatabase.shared.addAvatar(fileName: self.fileName, etag: etag)
+                DispatchQueue.main.async {
+                    if self.user == self.cell.fileUser, let avatarImageView = self.cellImageView {
+                        UIView.transition(with: avatarImageView,
+                                          duration: 0.75,
+                                          options: .transitionCrossDissolve,
+                                          animations: { avatarImageView.image = imageAvatar },
+                                          completion: nil)
+                    } else {
+                        if self.view is UICollectionView {
+                            (self.view as? UICollectionView)?.reloadData()
+                        } else if self.view is UITableView {
+                            (self.view as? UITableView)?.reloadData()
+                        }
+                    }
+                }
+            } else if error.errorCode == NCGlobal.shared.errorNotModified {
+                NCManageDatabase.shared.setAvatarLoaded(fileName: self.fileName)
+            }
+            self.finish()
+        }
+    }
 }

@@ -516,4 +516,41 @@ extension NCNetworking {
         })
     }
 
+    func cancelUploadTasks() {
+
+        uploadRequest.removeAll()
+        let sessionManager = NextcloudKit.shared.sessionManager
+        sessionManager.session.getTasksWithCompletionHandler { _, uploadTasks, _ in
+            uploadTasks.forEach {
+                $0.cancel()
+            }
+        }
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+            if let results = NCManageDatabase.shared.getResultsMetadatas(predicate: NSPredicate(format: "status > 0 AND session == %@", NextcloudKit.shared.nkCommonInstance.sessionIdentifierUpload)) {
+                NCManageDatabase.shared.deleteMetadata(results: results)
+            }
+        }
+    }
+
+    func cancelUploadBackgroundTask(withNotification: Bool) {
+
+        Task {
+            let tasksBackground = await NCNetworking.shared.sessionManagerUploadBackground.tasks
+            for task in tasksBackground.1 { // ([URLSessionDataTask], [URLSessionUploadTask], [URLSessionDownloadTask])
+                task.cancel()
+            }
+            let tasksBackgroundWWan = await NCNetworking.shared.sessionManagerUploadBackgroundWWan.tasks
+            for task in tasksBackgroundWWan.1 { // ([URLSessionDataTask], [URLSessionUploadTask], [URLSessionDownloadTask])
+                task.cancel()
+            }
+
+            if let results = NCManageDatabase.shared.getResultsMetadatas(predicate: NSPredicate(format: "status > 0 AND (session == %@ || session == %@)", NCNetworking.shared.sessionUploadBackground, NCNetworking.shared.sessionUploadBackgroundWWan)) {
+                NCManageDatabase.shared.deleteMetadata(results: results)
+            }
+            if withNotification {
+                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSource)
+            }
+        }
+    }
 }

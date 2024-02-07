@@ -262,6 +262,10 @@
 		F7327E312B73A86700A462C7 /* NCNetworking+WebDAV.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7327E2F2B73A86700A462C7 /* NCNetworking+WebDAV.swift */; };
 		F7327E322B73A86700A462C7 /* NCNetworking+WebDAV.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7327E2F2B73A86700A462C7 /* NCNetworking+WebDAV.swift */; };
 		F7327E332B73A86700A462C7 /* NCNetworking+WebDAV.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7327E2F2B73A86700A462C7 /* NCNetworking+WebDAV.swift */; };
+		F7327E352B73AEDE00A462C7 /* NCNetworking+LivePhoto.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7327E342B73AEDE00A462C7 /* NCNetworking+LivePhoto.swift */; };
+		F7327E362B73AEDE00A462C7 /* NCNetworking+LivePhoto.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7327E342B73AEDE00A462C7 /* NCNetworking+LivePhoto.swift */; };
+		F7327E372B73AEDE00A462C7 /* NCNetworking+LivePhoto.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7327E342B73AEDE00A462C7 /* NCNetworking+LivePhoto.swift */; };
+		F7327E382B73AEDE00A462C7 /* NCNetworking+LivePhoto.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7327E342B73AEDE00A462C7 /* NCNetworking+LivePhoto.swift */; };
 		F732D23327CF8AED000B0F1B /* NCPlayerToolBar.xib in Resources */ = {isa = PBXBuildFile; fileRef = F732D23227CF8AED000B0F1B /* NCPlayerToolBar.xib */; };
 		F733598125C1C188002ABA72 /* NCAskAuthorization.swift in Sources */ = {isa = PBXBuildFile; fileRef = F733598025C1C188002ABA72 /* NCAskAuthorization.swift */; };
 		F7346E1228B0EF5B006CE2D2 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7346E1128B0EF5B006CE2D2 /* WidgetKit.framework */; };
@@ -1100,6 +1104,7 @@
 		F7327E1F2B73A42F00A462C7 /* NCNetworking+Download.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NCNetworking+Download.swift"; sourceTree = "<group>"; };
 		F7327E272B73A53400A462C7 /* NCNetworking+Upload.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NCNetworking+Upload.swift"; sourceTree = "<group>"; };
 		F7327E2F2B73A86700A462C7 /* NCNetworking+WebDAV.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NCNetworking+WebDAV.swift"; sourceTree = "<group>"; };
+		F7327E342B73AEDE00A462C7 /* NCNetworking+LivePhoto.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NCNetworking+LivePhoto.swift"; sourceTree = "<group>"; };
 		F732D23227CF8AED000B0F1B /* NCPlayerToolBar.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = NCPlayerToolBar.xib; sourceTree = "<group>"; };
 		F733598025C1C188002ABA72 /* NCAskAuthorization.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCAskAuthorization.swift; sourceTree = "<group>"; };
 		F733B65121997CC1001C1FFA /* TLPhotoPicker.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = TLPhotoPicker.framework; path = Carthage/Build/iOS/TLPhotoPicker.framework; sourceTree = "<group>"; };
@@ -2008,6 +2013,7 @@
 				F7327E1F2B73A42F00A462C7 /* NCNetworking+Download.swift */,
 				F7327E272B73A53400A462C7 /* NCNetworking+Upload.swift */,
 				F7327E2F2B73A86700A462C7 /* NCNetworking+WebDAV.swift */,
+				F7327E342B73AEDE00A462C7 /* NCNetworking+LivePhoto.swift */,
 				F7D96FCB246ED7E100536D73 /* NCNetworkingCheckRemoteUser.swift */,
 				F70D8D8024A4A9BF000A5756 /* NCNetworkingProcess.swift */,
 				F755BD9A20594AC7008C5FBB /* NCService.swift */,
@@ -3625,6 +3631,7 @@
 				AF4BF61F27562B3F0081CEEF /* NCManageDatabase+Activity.swift in Sources */,
 				F7A0D1362591FBC5008F8A13 /* String+Extension.swift in Sources */,
 				F7EDE4D6262D7B9600414FE6 /* NCListCell.swift in Sources */,
+				F7327E372B73AEDE00A462C7 /* NCNetworking+LivePhoto.swift in Sources */,
 				F73EF7D22B0225BA0087E6E9 /* NCManageDatabase+Tag.swift in Sources */,
 				F74B6D982A7E239A00F03C5F /* NCManageDatabase+Chunk.swift in Sources */,
 				F7707687263A853700A1BA94 /* NCContentPresenter.swift in Sources */,
@@ -3759,6 +3766,7 @@
 				F72EA95228B7BA2A00C88F0C /* DashboardWidgetProvider.swift in Sources */,
 				F7327E292B73A53400A462C7 /* NCNetworking+Upload.swift in Sources */,
 				F343A4BC2A1E734600DDA874 /* Optional+Extension.swift in Sources */,
+				F7327E362B73AEDE00A462C7 /* NCNetworking+LivePhoto.swift in Sources */,
 				F783031228B4C8EC00B84583 /* CCUtility.m in Sources */,
 				F72EA95828B7BC4F00C88F0C /* FilesData.swift in Sources */,
 				F7327E312B73A86700A462C7 /* NCNetworking+WebDAV.swift in Sources */,
@@ -3798,6 +3806,7 @@
 				F7327E332B73A86700A462C7 /* NCNetworking+WebDAV.swift in Sources */,
 				F785EE9E2461A09900B3F945 /* NCNetworking.swift in Sources */,
 				F749B655297B0F2400087535 /* NCManageDatabase+Avatar.swift in Sources */,
+				F7327E382B73AEDE00A462C7 /* NCNetworking+LivePhoto.swift in Sources */,
 				F771E3D320E2392D00AFB62D /* FileProviderExtension.swift in Sources */,
 				F771E3D520E2392D00AFB62D /* FileProviderItem.swift in Sources */,
 				AF4BF616275629E20081CEEF /* NCManageDatabase+Account.swift in Sources */,
@@ -4040,6 +4049,7 @@
 				F3BB46522A39EC4900461F6E /* NCMoreAppSuggestionsCell.swift in Sources */,
 				F704B5E52430AA8000632F5F /* NCCreateFormUploadConflict.swift in Sources */,
 				F765608F23BF813600765969 /* NCContentPresenter.swift in Sources */,
+				F7327E352B73AEDE00A462C7 /* NCNetworking+LivePhoto.swift in Sources */,
 				F343A4BB2A1E734600DDA874 /* Optional+Extension.swift in Sources */,
 				F7D68FCC28CB9051009139F3 /* NCManageDatabase+DashboardWidget.swift in Sources */,
 				F78E2D6529AF02DB0024D4F3 /* Database.swift in Sources */,
