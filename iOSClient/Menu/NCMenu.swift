@@ -109,6 +109,8 @@ class NCMenu: UITableViewController {
 
             if action.boldTitle {
                 actionNameLabel?.font = .systemFont(ofSize: 18, weight: .medium)
+            } else {
+                actionNameLabel?.font = .systemFont(ofSize: 18, weight: .regular)
             }
         }
 
