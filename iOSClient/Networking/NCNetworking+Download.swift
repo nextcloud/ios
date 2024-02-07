@@ -92,7 +92,6 @@ extension NCNetworking {
                                             userInfo: ["ocId": metadata.ocId,
                                                        "serverUrl": metadata.serverUrl,
                                                        "account": metadata.account])
-
             start()
 
         }, progressHandler: { progress in
@@ -126,7 +125,7 @@ extension NCNetworking {
                 }
                 self.downloadComplete(fileName: metadata.fileName, serverUrl: metadata.serverUrl, etag: etag, date: date, dateLastModified: dateLastModified, length: length, fileNameLocalPath: fileNameLocalPath, task: downloadTask, error: error)
             }
-           completion(afError, error)
+            completion(afError, error)
         }
     }
 
@@ -153,7 +152,6 @@ extension NCNetworking {
                                             userInfo: ["ocId": metadata.ocId,
                                                        "serverUrl": metadata.serverUrl,
                                                        "account": metadata.account])
-
             start()
             completion(nil, NKError())
 
