@@ -276,7 +276,17 @@ extension NCMedia: UICollectionViewDataSource {
             numberOfItemsInSection = metadatas.count
         }
 
-        mediaCommandView?.setButtonsHidden(numberOfItemsInSection: numberOfItemsInSection)
+        if numberOfItemsInSection == 0 {
+            mediaCommandView?.selectOrCancelButton.isHidden = true
+            mediaCommandView?.menuButton.isHidden = false
+        } else if isEditMode {
+            mediaCommandView?.selectOrCancelButton.isHidden = false
+            mediaCommandView?.menuButton.isHidden = true
+        } else {
+            mediaCommandView?.selectOrCancelButton.isHidden = false
+            mediaCommandView?.menuButton.isHidden = false
+        }
+
         emptyDataSet?.numberOfItemsInSection(numberOfItemsInSection, section: section)
 
         return numberOfItemsInSection

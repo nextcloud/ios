@@ -596,7 +596,7 @@
 "_status_in_upload_"            = "In upload";
 "_status_uploading_"            = "Uploading";
 "_status_upload_error_"         = "Error, waiting for upload";
-"_select_media_folder_"         = "Select the \"Media\" folder";
+"_select_media_folder_"         = "Set Media folder";
 "_media_viewimage_show_"        = "Show only images";
 "_media_viewvideo_show_"        = "Show only video";
 "_media_show_all_"              = "Show both";
@@ -963,8 +963,10 @@
 "_zoom_"                    = "Zoom";
 "_zoom_in_"                 = "Zoom in";
 "_zoom_out_"                = "Zoom out";
+"_select_photo_"            = "Select photo";
 "_selected_photo_"          = "selected photo";
 "_selected_photos_"         = "selected photos";
+"_delete_selected_photos_"  = "Delected selected photos";
 
 // Video
 "_select_trace_"            = "Select the trace";
