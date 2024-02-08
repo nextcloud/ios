@@ -286,7 +286,7 @@ extension NCCollectionViewCommon {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_save_as_scan_", comment: ""),
-                    icon: utility.loadImage(named: "doc"),
+                    icon: utility.loadImage(named: "doc.viewfinder"),
                     order: 110,
                     action: { _ in
                         if self.utilityFileSystem.fileProviderStorageExists(metadata) {
