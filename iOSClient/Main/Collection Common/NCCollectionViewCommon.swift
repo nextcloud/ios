@@ -1058,9 +1058,9 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
             if utilityFileSystem.fileProviderStorageExists(metadata) {
                 NCViewer().view(viewController: self, metadata: metadata, metadatas: [metadata], imageIcon: imageIcon)
             } else if NextcloudKit.shared.isNetworkReachable(),
-                      let metadata = NCManageDatabase.shared.setMetadataSessionInWaitDownload(ocId: metadata.ocId,
-                                                                                              session: NextcloudKit.shared.nkCommonInstance.sessionIdentifierDownload,
-                                                                                              selector: NCGlobal.shared.selectorLoadFileView) {
+                      let metadata = NCManageDatabase.shared.setMetadatasSessionInWaitDownload(metadatas: [metadata],
+                                                                                               session: NextcloudKit.shared.nkCommonInstance.sessionIdentifierDownload,
+                                                                                               selector: NCGlobal.shared.selectorLoadFileView) {
                 NCNetworking.shared.download(metadata: metadata, withNotificationProgressTask: true)
             } else {
                 let error = NKError(errorCode: NCGlobal.shared.errorOffline, errorDescription: "_go_online_")
@@ -1909,8 +1909,7 @@ extension NCCollectionViewCommon {
                                                            session: "",
                                                            sessionError: "",
                                                            selector: "",
-                                                           status: NCGlobal.shared.metadataStatusNormal,
-                                                           errorCode: 0)
+                                                           status: NCGlobal.shared.metadataStatusNormal)
                 NotificationCenter.default.post(name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterDownloadCancelFile),
                                                 object: nil,
                                                 userInfo: ["ocId": metadata.ocId,

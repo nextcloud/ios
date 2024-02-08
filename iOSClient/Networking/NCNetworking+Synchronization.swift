@@ -38,20 +38,24 @@ extension NCNetworking {
                                              showHiddenFiles: NCKeychain().showHiddenFiles,
                                              options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { _, files, _, error in
 
+            var metadatasWithoutUpdate: [tableMetadata] = []
+            var metadatasSynchronizationOffline: [tableMetadata] = []
+
             if error == .success {
                 NCManageDatabase.shared.convertFilesToMetadatas(files, useMetadataFolder: true) { _, _, metadatas in
                     for metadata in metadatas {
                         if metadata.directory {
-                            NCManageDatabase.shared.addMetadata(metadata)
+                            metadatasWithoutUpdate.append(metadata)
                         } else if selector == NCGlobal.shared.selectorSynchronizationOffline, metadata.isSynchronizable {
-                            NCManageDatabase.shared.setMetadataSessionInWaitDownload(ocId: metadata.ocId,
-                                                                                     session: NCNetworking.shared.sessionDownloadBackground,
-                                                                                     selector: selector,
-                                                                                     addMetadata: metadata)
+                            metadatasSynchronizationOffline.append(metadata)
                         } else if selector == NCGlobal.shared.selectorSynchronizationFavorite {
-                            NCManageDatabase.shared.addMetadataWithoutUpdate(metadata)
+                            metadatasWithoutUpdate.append(metadata)
                         }
                     }
+                    NCManageDatabase.shared.setMetadatasSessionInWaitDownload(metadatas: metadatasSynchronizationOffline,
+                                                                              session: NCNetworking.shared.sessionDownloadBackground,
+                                                                              selector: selector)
+                    NCManageDatabase.shared.addMetadatasWithoutUpdate(metadatas)
                     completion()
                 }
             } else {
