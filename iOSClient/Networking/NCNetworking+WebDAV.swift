@@ -139,44 +139,51 @@ extension NCNetworking {
         })
     }
 
-    func createFileName(fileNameBase: String, serverUrl: String) async -> String {
+    func createFileName(fileNameBase: String, account: String, serverUrl: String) async -> String {
 
-        let serverUrlFileName = serverUrl + "/" + fileNameBase
         var exitLoop = false
         var resultFileName = fileNameBase
 
-        while exitLoop {
-            let results = await fileExists(serverUrlFileName: serverUrlFileName)
-            if let exists = results.exists, exists {
-                var name = NSString(string: resultFileName).deletingPathExtension
-                let ext = NSString(string: resultFileName).pathExtension
-                let characters = Array(name)
-                if characters.count < 2 {
+        func newFileName() {
+            var name = NSString(string: resultFileName).deletingPathExtension
+            let ext = NSString(string: resultFileName).pathExtension
+            let characters = Array(name)
+            if characters.count < 2 {
+                if ext.isEmpty {
+                    resultFileName = name + " 1"
+                } else {
+                    resultFileName = name + " 1" + "." + ext
+                }
+            } else {
+                let space = characters[characters.count - 2]
+                let numChar = characters[characters.count - 1]
+                var num = Int(String(numChar))
+                if space == " " && num != nil {
+                    name = String(name.dropLast())
+                    num = num! + 1
+                    if ext.isEmpty {
+                        resultFileName = name + "\(num!)"
+                    } else {
+                        resultFileName = name + "\(num!)" + "." + ext
+                    }
+                } else {
                     if ext.isEmpty {
                         resultFileName = name + " 1"
                     } else {
                         resultFileName = name + " 1" + "." + ext
                     }
-                } else {
-                    let space = characters[characters.count - 2]
-                    let numChar = characters[characters.count - 1]
-                    var num = Int(String(numChar))
-                    if space == " " && num != nil {
-                        name = String(name.dropLast())
-                        num = num! + 1
-                        if ext.isEmpty {
-                            resultFileName = name + "\(num!)"
-                        } else {
-                            resultFileName = name + "\(num!)" + "." + ext
-                        }
-                    } else {
-                        if ext.isEmpty {
-                            resultFileName = name + " 1"
-                        } else {
-                            resultFileName = name + " 1" + "." + ext
-                        }
-                    }
                 }
+            }
+        }
+
+        while !exitLoop {
+            if NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "fileNameView == %@ AND serverUrl == %@ AND account == %@", resultFileName, serverUrl, account)) != nil {
+                newFileName()
+                continue
+            }
+            let results = await fileExists(serverUrlFileName: serverUrl + "/" + resultFileName)
+            if let exists = results.exists, exists {
+                newFileName()
             } else {
                 exitLoop = true
             }
