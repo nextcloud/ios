@@ -25,7 +25,7 @@ import UIKit
 import WebKit
 import NextcloudKit
 
-class NCViewerRichdocument: UIViewController, WKNavigationDelegate, WKScriptMessageHandler, NCSelectDelegate {
+class NCViewerRichDocument: UIViewController, WKNavigationDelegate, WKScriptMessageHandler, NCSelectDelegate {
 
     let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
     let utilityFileSystem = NCUtilityFileSystem()
@@ -349,7 +349,7 @@ class NCViewerRichdocument: UIViewController, WKNavigationDelegate, WKScriptMess
     }
 }
 
-extension NCViewerRichdocument: UINavigationControllerDelegate {
+extension NCViewerRichDocument: UINavigationControllerDelegate {
 
     override func didMove(toParent parent: UIViewController?) {
         super.didMove(toParent: parent)
