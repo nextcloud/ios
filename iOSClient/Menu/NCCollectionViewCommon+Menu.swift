@@ -65,11 +65,14 @@ extension NCCollectionViewCommon {
         actions.append(
             NCMenuAction(
                 title: metadata.fileNameView,
+                boldTitle: true,
                 icon: iconHeader,
                 order: 0,
                 action: nil
             )
         )
+
+        actions.append(.seperator(order: 1))
 
         //
         // DETAILS
@@ -78,7 +81,7 @@ extension NCCollectionViewCommon {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_details_", comment: ""),
-                    icon: utility.loadImage(named: "info"),
+                    icon: utility.loadImage(named: "info.circle"),
                     order: 10,
                     action: { _ in
                         NCActionCenter.shared.openShare(viewController: self, metadata: metadata, page: .activity)
@@ -190,8 +193,6 @@ extension NCCollectionViewCommon {
             )
         }
 
-        actions.append(.seperator(order: 40))
-
         //
         // FAVORITE
         // FIXME: PROPPATCH doesn't work
@@ -200,7 +201,7 @@ extension NCCollectionViewCommon {
             actions.append(
                 NCMenuAction(
                     title: metadata.favorite ? NSLocalizedString("_remove_favorites_", comment: "") : NSLocalizedString("_add_favorites_", comment: ""),
-                    icon: utility.loadImage(named: "star.fill", color: NCBrandColor.shared.yellowFavorite),
+                    icon: utility.loadImage(named: metadata.favorite ? "star.slash.fill" : "star.fill", color: NCBrandColor.shared.yellowFavorite),
                     order: 50,
                     action: { _ in
                         NCNetworking.shared.favoriteMetadata(metadata) { error in
@@ -256,24 +257,26 @@ extension NCCollectionViewCommon {
         }
 
         //
-        // OPEN IN
+        // SHARE
         //
         if metadata.canOpenIn {
-            actions.append(.openInAction(selectedMetadatas: [metadata], viewController: self, order: 80))
+            actions.append(.share(selectedMetadatas: [metadata], viewController: self, order: 80))
         }
 
         //
-        // PRINT
+        // SAVE LIVE PHOTO
         //
-        if metadata.isPrintable {
-            actions.append(.printAction(metadata: metadata, order: 90))
-        }
-
-        //
-        // SAVE CAMERA ROLL
-        //
-        if metadata.isSavebleInCameraRoll {
-            actions.append(.saveMediaAction(selectedMediaMetadatas: [metadata], order: 100))
+        if let metadataMOV = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata) {
+            actions.append(
+                NCMenuAction(
+                    title: NSLocalizedString("_livephoto_save_", comment: ""),
+                    icon: NCUtility().loadImage(named: "livephoto"),
+                    order: 100,
+                    action: { _ in
+                        NCNetworking.shared.saveLivePhotoQueue.addOperation(NCOperationSaveLivePhoto(metadata: metadata, metadataMOV: metadataMOV))
+                    }
+                )
+            )
         }
 
         //
@@ -283,7 +286,7 @@ extension NCCollectionViewCommon {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_save_as_scan_", comment: ""),
-                    icon: utility.loadImage(named: "viewfinder.circle"),
+                    icon: utility.loadImage(named: "doc.viewfinder"),
                     order: 110,
                     action: { _ in
                         if self.utilityFileSystem.fileProviderStorageExists(metadata) {
@@ -312,7 +315,7 @@ extension NCCollectionViewCommon {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_rename_", comment: ""),
-                    icon: utility.loadImage(named: "pencil"),
+                    icon: utility.loadImage(named: "text.cursor"),
                     order: 120,
                     action: { _ in
 
@@ -336,13 +339,6 @@ extension NCCollectionViewCommon {
         //
         if metadata.isCopyableMovable {
             actions.append(.moveOrCopyAction(selectedMetadatas: [metadata], indexPath: [indexPath], order: 130))
-        }
-
-        //
-        // COPY IN PASTEBOARD
-        //
-        if metadata.isCopyableInPasteboard {
-            actions.append(.copyAction(selectOcId: [metadata.ocId], order: 140))
         }
 
         //
@@ -381,7 +377,7 @@ extension NCCollectionViewCommon {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_change_color_", comment: ""),
-                    icon: utility.loadImage(named: "palette"),
+                    icon: utility.loadImage(named: "paintpalette"),
                     order: 160,
                     action: { _ in
                         if let picker = UIStoryboard(name: "NCColorPicker", bundle: nil).instantiateInitialViewController() as? NCColorPicker {

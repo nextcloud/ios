@@ -29,19 +29,23 @@ import JGProgressHUD
 
 class NCMenuAction {
     let title: String
+    let boldTitle: Bool
     let details: String?
     let icon: UIImage
     let selectable: Bool
     var onTitle: String?
     var onIcon: UIImage?
+    let destructive: Bool
     var selected: Bool = false
     var isOn: Bool = false
     var action: ((_ menuAction: NCMenuAction) -> Void)?
-    var rowHeight: CGFloat { self.title == NCMenuAction.seperatorIdentifier ? NCMenuAction.seperatorHeight : self.details != nil ? 80 : 60 }
+    var rowHeight: CGFloat { self.title == NCMenuAction.seperatorIdentifier ? NCMenuAction.seperatorHeight : self.details != nil ? 76 : 56 }
     var order: Int = 0
 
-    init(title: String, details: String? = nil, icon: UIImage, order: Int = 0, action: ((_ menuAction: NCMenuAction) -> Void)?) {
+    init(title: String, boldTitle: Bool = false, destructive: Bool = false, details: String? = nil, icon: UIImage, order: Int = 0, action: ((_ menuAction: NCMenuAction) -> Void)?) {
         self.title = title
+        self.boldTitle = boldTitle
+        self.destructive = destructive
         self.details = details
         self.icon = icon
         self.action = action
@@ -49,8 +53,10 @@ class NCMenuAction {
         self.order = order
     }
 
-    init(title: String, details: String? = nil, icon: UIImage, onTitle: String? = nil, onIcon: UIImage? = nil, selected: Bool, on: Bool, order: Int = 0, action: ((_ menuAction: NCMenuAction) -> Void)?) {
+    init(title: String, boldTitle: Bool = false, destructive: Bool = false, details: String? = nil, icon: UIImage, onTitle: String? = nil, onIcon: UIImage? = nil, selected: Bool, on: Bool, order: Int = 0, action: ((_ menuAction: NCMenuAction) -> Void)?) {
         self.title = title
+        self.boldTitle = boldTitle
+        self.destructive = destructive
         self.details = details
         self.icon = icon
         self.onTitle = onTitle ?? title
@@ -92,31 +98,25 @@ extension NCMenuAction {
         )
     }
 
-    /// Copy files to pasteboard
-    static func copyAction(selectOcId: [String], order: Int = 0, completion: (() -> Void)? = nil) -> NCMenuAction {
-        NCMenuAction(
-            title: NSLocalizedString("_copy_file_", comment: ""),
-            icon: NCUtility().loadImage(named: "doc.on.doc"),
-            order: order,
-            action: { _ in
-                NCActionCenter.shared.copyPasteboard(pasteboardOcIds: selectOcId)
-                completion?()
-            }
-        )
-    }
-
     /// Delete files either from cache or from Nextcloud
     static func deleteAction(selectedMetadatas: [tableMetadata], indexPath: [IndexPath], metadataFolder: tableMetadata? = nil, viewController: UIViewController, order: Int = 0, completion: (() -> Void)? = nil) -> NCMenuAction {
         var titleDelete = NSLocalizedString("_delete_", comment: "")
+        var icon = "trash"
+        var destructive = false
+
         if selectedMetadatas.count > 1 {
             titleDelete = NSLocalizedString("_delete_selected_files_", comment: "")
+            destructive = true
         } else if let metadata = selectedMetadatas.first {
             if NCManageDatabase.shared.isMetadataShareOrMounted(metadata: metadata, metadataFolder: metadataFolder) {
                 titleDelete = NSLocalizedString("_leave_share_", comment: "")
+                icon = "person.2.slash"
             } else if metadata.directory {
                 titleDelete = NSLocalizedString("_delete_folder_", comment: "")
+                destructive = true
             } else {
                 titleDelete = NSLocalizedString("_delete_file_", comment: "")
+                destructive = true
             }
 
             if let metadataFolder = metadataFolder {
@@ -124,6 +124,7 @@ extension NCMenuAction {
                 let isMounted = metadata.permissions.contains(NCGlobal.shared.permissionMounted) && !metadataFolder.permissions.contains(NCGlobal.shared.permissionMounted)
                 if isShare || isMounted {
                     titleDelete = NSLocalizedString("_leave_share_", comment: "")
+                    icon = "person.2.slash"
                 }
             }
         } // else: no metadata selected
@@ -137,7 +138,8 @@ extension NCMenuAction {
 
         return NCMenuAction(
             title: titleDelete,
-            icon: NCUtility().loadImage(named: "trash"),
+            destructive: destructive,
+            icon: NCUtility().loadImage(named: icon),
             order: order,
             action: { _ in
                 let alertController = UIAlertController(
@@ -188,9 +190,9 @@ extension NCMenuAction {
     }
 
     /// Open "share view" (activity VC) to open files in another app
-    static func openInAction(selectedMetadatas: [tableMetadata], viewController: UIViewController, order: Int = 0, completion: (() -> Void)? = nil) -> NCMenuAction {
+    static func share(selectedMetadatas: [tableMetadata], viewController: UIViewController, order: Int = 0, completion: (() -> Void)? = nil) -> NCMenuAction {
         NCMenuAction(
-            title: NSLocalizedString("_open_in_", comment: ""),
+            title: NSLocalizedString("_share_", comment: ""),
             icon: NCUtility().loadImage(named: "square.and.arrow.up"),
             order: order,
             action: { _ in
@@ -199,6 +201,7 @@ extension NCMenuAction {
             }
         )
     }
+
 
     /// Save selected files to user's photo library
     static func saveMediaAction(selectedMediaMetadatas: [tableMetadata], order: Int = 0, completion: (() -> Void)? = nil) -> NCMenuAction {
@@ -236,7 +239,7 @@ extension NCMenuAction {
     static func setAvailableOfflineAction(selectedMetadatas: [tableMetadata], isAnyOffline: Bool, viewController: UIViewController, order: Int = 0, completion: (() -> Void)? = nil) -> NCMenuAction {
         NCMenuAction(
             title: isAnyOffline ? NSLocalizedString("_remove_available_offline_", comment: "") : NSLocalizedString("_set_available_offline_", comment: ""),
-            icon: NCUtility().loadImage(named: "tray.and.arrow.down"),
+            icon: NCUtility().loadImage(named: "icloud.and.arrow.down"),
             order: order,
             action: { _ in
                 if !isAnyOffline, selectedMetadatas.count > 3 {
@@ -260,37 +263,12 @@ extension NCMenuAction {
     /// Open view that lets the user move or copy the files within Nextcloud
     static func moveOrCopyAction(selectedMetadatas: [tableMetadata], indexPath: [IndexPath], order: Int = 0, completion: (() -> Void)? = nil) -> NCMenuAction {
         NCMenuAction(
-            title: NSLocalizedString("_move_or_copy_selected_files_", comment: ""),
-            icon: NCUtility().loadImage(named: "arrow.up.right.square"),
+            title: NSLocalizedString("_move_or_copy_", comment: ""),
+            icon: NCUtility().loadImage(named: "rectangle.portrait.and.arrow.right"),
             order: order,
             action: { _ in
                 NCActionCenter.shared.openSelectView(items: selectedMetadatas, indexPath: indexPath)
                 completion?()
-            }
-        )
-    }
-
-    /// Open AirPrint view to print a single file
-    static func printAction(metadata: tableMetadata, order: Int = 0) -> NCMenuAction {
-        NCMenuAction(
-            title: NSLocalizedString("_print_", comment: ""),
-            icon: NCUtility().loadImage(named: "printer"),
-            order: order,
-            action: { _ in
-                if NCUtilityFileSystem().fileProviderStorageExists(metadata) {
-                    NotificationCenter.default.post(
-                        name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterDownloadedFile),
-                        object: nil,
-                        userInfo: ["ocId": metadata.ocId,
-                                   "selector": NCGlobal.shared.selectorPrint,
-                                   "error": NKError(),
-                                   "account": metadata.account])
-                } else {
-                    guard let metadata = NCManageDatabase.shared.setMetadatasSessionInWaitDownload(metadatas: [metadata],
-                                                                                                   session: NextcloudKit.shared.nkCommonInstance.sessionIdentifierDownload,
-                                                                                                   selector: NCGlobal.shared.selectorPrint) else { return }
-                    NCNetworking.shared.download(metadata: metadata, withNotificationProgressTask: true)
-                }
             }
         )
     }

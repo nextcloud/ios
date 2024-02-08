@@ -393,7 +393,7 @@ extension NCTrash: NCSelectableNavigationView, NCTrashSelectTabBarDelegate {
             self.setNavigationRightItems()
         }
 
-        let grid = UIAction(title: NSLocalizedString("_grid_", comment: ""), image: .init(systemName: "square.grid.2x2"), state: layoutForView.layout == NCGlobal.shared.layoutGrid ? .on : .off) { _ in
+        let grid = UIAction(title: NSLocalizedString("_icons_", comment: ""), image: .init(systemName: "square.grid.2x2"), state: layoutForView.layout == NCGlobal.shared.layoutGrid ? .on : .off) { _ in
             self.onGridSelected()
             self.setNavigationRightItems()
         }

@@ -260,6 +260,9 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
         // TIP
         self.tipView?.dismiss()
+
+        isEditMode = false
+        setNavigationItems()
     }
 
     func presentationControllerDidDismiss( _ presentationController: UIPresentationController) {
@@ -1767,7 +1770,7 @@ extension NCCollectionViewCommon: NCSelectableNavigationView, NCCollectionViewCo
         NCActionCenter.shared.openActivityViewController(selectedMetadata: selectedMetadatas)
     }
 
-    func download(selectedMetadatas: [tableMetadata], isAnyOffline: Bool) {
+    func saveAsAvailableOffline(selectedMetadatas: [tableMetadata], isAnyOffline: Bool) {
         if !isAnyOffline, selectedMetadatas.count > 3 {
             let alert = UIAlertController(
                 title: NSLocalizedString("_set_available_offline_", comment: ""),
@@ -1801,7 +1804,7 @@ extension NCCollectionViewCommon: NCSelectableNavigationView, NCCollectionViewCo
             self.setNavigationRightItems()
         }
 
-        let grid = UIAction(title: NSLocalizedString("_grid_", comment: ""), image: .init(systemName: "square.grid.2x2"), state: layoutForView.layout == NCGlobal.shared.layoutGrid ? .on : .off) { _ in
+        let grid = UIAction(title: NSLocalizedString("_icons_", comment: ""), image: .init(systemName: "square.grid.2x2"), state: layoutForView.layout == NCGlobal.shared.layoutGrid ? .on : .off) { _ in
             self.onGridSelected()
             self.setNavigationRightItems()
         }

@@ -14,7 +14,7 @@ protocol NCCollectionViewCommonSelectTabBarDelegate: AnyObject {
     func delete(selectedMetadatas: [tableMetadata])
     func move(selectedMetadatas: [tableMetadata])
     func share(selectedMetadatas: [tableMetadata])
-    func download(selectedMetadatas: [tableMetadata], isAnyOffline: Bool)
+    func saveAsAvailableOffline(selectedMetadatas: [tableMetadata], isAnyOffline: Bool)
     func lock(selectedMetadatas: [tableMetadata], isAnyLocked: Bool)
 }
 
@@ -115,9 +115,9 @@ struct NCCollectionViewCommonSelectTabBarView: View {
 
                 Menu {
                     Button(action: {
-                        tabBarSelect.delegate?.download(selectedMetadatas: tabBarSelect.selectedMetadatas, isAnyOffline: tabBarSelect.isAnyOffline)
+                        tabBarSelect.delegate?.saveAsAvailableOffline(selectedMetadatas: tabBarSelect.selectedMetadatas, isAnyOffline: tabBarSelect.isAnyOffline)
                     }, label: {
-                        Label(NSLocalizedString(tabBarSelect.isAnyOffline ? "_remove_local_file_" : "_download_", comment: ""), systemImage: tabBarSelect.isAnyOffline ? "icloud.slash" : "icloud.and.arrow.down")
+                        Label(NSLocalizedString(tabBarSelect.isAnyOffline ? "_remove_available_offline_" : "_set_available_offline_", comment: ""), systemImage: tabBarSelect.isAnyOffline ? "icloud.slash" : "icloud.and.arrow.down")
                     })
                     .disabled(tabBarSelect.isSelectedEmpty)
 

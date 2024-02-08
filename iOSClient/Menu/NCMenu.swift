@@ -50,6 +50,7 @@ class NCMenu: UITableViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        tableView.contentInset.top = 10
         tableView.estimatedRowHeight = 60
         tableView.rowHeight = UITableView.automaticDimension
         self.view.backgroundColor = menuColor
@@ -104,6 +105,19 @@ class NCMenu: UITableViewController {
             actionIconView?.image = action.icon
             actionNameLabel?.text = action.title
             actionNameLabel?.textColor = textColor
+            actionNameLabel?.lineBreakMode = .byTruncatingMiddle
+
+            if action.boldTitle {
+                actionNameLabel?.font = .systemFont(ofSize: 18, weight: .medium)
+            } else {
+                actionNameLabel?.font = .systemFont(ofSize: 18, weight: .regular)
+            }
+        }
+
+        if action.destructive {
+            actionIconView?.image = actionIconView?.image?.withRenderingMode(.alwaysTemplate)
+            actionIconView?.tintColor = .red
+            actionNameLabel?.textColor = .red
         }
 
         cell.accessoryType = action.selectable && action.selected ? .checkmark : .none
