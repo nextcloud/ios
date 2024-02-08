@@ -126,6 +126,13 @@ class NCTrash: UIViewController, NCTrashListCellDelegate, NCEmptyDataSetDelegate
         }
     }
 
+    override func viewWillLayoutSubviews() {
+        super.viewWillLayoutSubviews()
+        if let frame = tabBarController?.tabBar.frame {
+            (tabBarSelect as? NCTrashSelectTabBar)?.hostingController?.view.frame = frame
+        }
+    }
+
     // MARK: - Empty
 
     func emptyDataSetView(_ view: NCEmptyView) {

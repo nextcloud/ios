@@ -146,6 +146,13 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
         return .lightContent
     }
 
+    override func viewWillLayoutSubviews() {
+        super.viewWillLayoutSubviews()
+        if let frame = tabBarController?.tabBar.frame {
+            tabBarSelect?.hostingController.view.frame = frame
+        }
+    }
+
     // MARK: - NotificationCenter
 
     @objc func deleteFile(_ notification: NSNotification) {

@@ -29,7 +29,6 @@ protocol NCMediaTabBarSelectDelegate: AnyObject {
 }
 
 class NCMediaTabbarSelect: ObservableObject {
-
     var hostingController: UIViewController!
     var mediaTabBarController: UITabBarController?
     open weak var delegate: NCMediaTabBarSelectDelegate?
@@ -46,14 +45,8 @@ class NCMediaTabbarSelect: ObservableObject {
         tabBarController.addChild(hostingController)
         tabBarController.view.addSubview(hostingController.view)
 
-        hostingController.view.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            hostingController.view.rightAnchor.constraint(equalTo: tabBarController.tabBar.rightAnchor),
-            hostingController.view.leftAnchor.constraint(equalTo: tabBarController.tabBar.leftAnchor),
-            hostingController.view.topAnchor.constraint(equalTo: tabBarController.tabBar.topAnchor),
-            hostingController.view.bottomAnchor.constraint(equalTo: tabBarController.tabBar.bottomAnchor)
-        ])
-
+        hostingController.view.frame = tabBarController.tabBar.frame
+        hostingController.view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         hostingController.view.backgroundColor = .clear
         hostingController.view.isHidden = true
     }
@@ -68,9 +61,8 @@ class NCMediaTabbarSelect: ObservableObject {
     }
 
     func hide() {
-
-        self.mediaTabBarController?.tabBar.isHidden = false
-        self.hostingController.view.isHidden = true
+        mediaTabBarController?.tabBar.isHidden = false
+        hostingController.view.isHidden = true
     }
 }
 
@@ -85,7 +77,7 @@ struct MediaTabBarSelectView: View {
                 Spacer().frame(maxWidth: .infinity)
                 Group {
                     if tabBarSelect.selectCount == 0 {
-                        Text(NSLocalizedString("_select_photo_", comment: ""))
+                        Text(NSLocalizedString("_select_photos_", comment: ""))
                     } else if tabBarSelect.selectCount == 1 {
                         Text(String(tabBarSelect.selectCount) + " " + NSLocalizedString("_selected_photo_", comment: ""))
                     } else {

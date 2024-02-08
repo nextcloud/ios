@@ -962,10 +962,10 @@
 "_zoom_"                    = "Zoom";
 "_zoom_in_"                 = "Zoom in";
 "_zoom_out_"                = "Zoom out";
-"_select_photo_"            = "Select photo";
+"_select_photos_"           = "Select photos";
 "_selected_photo_"          = "selected photo";
 "_selected_photos_"         = "selected photos";
-"_delete_selected_photos_"  = "Delected selected photos";
+"_delete_selected_photos_"  = "Delete selected photos";
 
 // Video
 "_select_trace_"            = "Select the trace";
