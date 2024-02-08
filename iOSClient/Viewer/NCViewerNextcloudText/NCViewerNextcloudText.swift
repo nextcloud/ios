@@ -82,6 +82,9 @@ class NCViewerNextcloudText: UIViewController, WKNavigationDelegate, WKScriptMes
             request.addValue("true", forHTTPHeaderField: "OCS-APIRequest")
             let language = NSLocale.preferredLanguages[0] as String
             request.addValue(language, forHTTPHeaderField: "Accept-Language")
+
+            NCActivityIndicator.shared.start(backgroundView: view)
+
             webView.load(request)
         }
     }

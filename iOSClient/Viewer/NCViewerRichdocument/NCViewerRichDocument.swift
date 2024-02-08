@@ -74,6 +74,8 @@ class NCViewerRichDocument: UIViewController, WKNavigationDelegate, WKScriptMess
 
         webView.customUserAgent = userAgent
 
+        NCActivityIndicator.shared.start(backgroundView: view)
+
         webView.load(request)
     }
 
