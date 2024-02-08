@@ -77,7 +77,7 @@ struct MediaTabBarSelectView: View {
                 Spacer().frame(maxWidth: .infinity)
                 Group {
                     if tabBarSelect.selectCount == 0 {
-                        Text(NSLocalizedString("_select_photo_", comment: ""))
+                        Text(NSLocalizedString("_select_photos_", comment: ""))
                     } else if tabBarSelect.selectCount == 1 {
                         Text(String(tabBarSelect.selectCount) + " " + NSLocalizedString("_selected_photo_", comment: ""))
                     } else {
