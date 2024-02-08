@@ -143,7 +143,13 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
     }
 
     override var preferredStatusBarStyle: UIStatusBarStyle {
-        return .lightContent
+        if self.traitCollection.userInterfaceStyle == .dark {
+            return .lightContent
+        } else if let gradient = mediaCommandView?.gradient, gradient.isHidden {
+            return .darkContent
+        } else {
+            return .lightContent
+        }
     }
 
     override func viewWillLayoutSubviews() {
@@ -370,6 +376,7 @@ extension NCMedia: UIScrollViewDelegate {
         let isTop = scrollView.contentOffset.y <= -(insetsTop + view.safeAreaInsets.top - 35)
 
         mediaCommandView?.setColor(isTop: isTop)
+        setNeedsStatusBarAppearanceUpdate()
 
         if lastContentOffsetY == 0 || lastContentOffsetY + cellHeigth / 2 <= scrollView.contentOffset.y || lastContentOffsetY - cellHeigth / 2 >= scrollView.contentOffset.y {
             mediaCommandView?.setTitleDate()
