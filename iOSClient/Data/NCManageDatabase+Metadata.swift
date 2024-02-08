@@ -612,6 +612,9 @@ extension NCManageDatabase {
                     }
                     if let sessionError {
                         result.sessionError = sessionError
+                        if sessionError.isEmpty {
+                            result.errorCode = 0
+                        }
                     }
                     if let selector {
                         result.sessionSelector = selector

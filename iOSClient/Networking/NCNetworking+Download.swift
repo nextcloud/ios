@@ -188,8 +188,7 @@ extension NCNetworking {
                                                            session: "",
                                                            sessionError: "",
                                                            status: NCGlobal.shared.metadataStatusNormal,
-                                                           etag: etag,
-                                                           errorCode: 0)
+                                                           etag: etag)
                 NotificationCenter.default.post(name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterDownloadedFile),
                                                 object: nil,
                                                 userInfo: ["ocId": metadata.ocId,
@@ -204,8 +203,7 @@ extension NCNetworking {
                                                            session: "",
                                                            sessionError: "",
                                                            selector: "",
-                                                           status: NCGlobal.shared.metadataStatusNormal,
-                                                           errorCode: 0)
+                                                           status: NCGlobal.shared.metadataStatusNormal)
                 NotificationCenter.default.post(name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterDownloadCancelFile),
                                                 object: nil,
                                                 userInfo: ["ocId": metadata.ocId,
@@ -218,8 +216,7 @@ extension NCNetworking {
                                                            session: "",
                                                            sessionError: "",
                                                            selector: "",
-                                                           status: NCGlobal.shared.metadataStatusNormal,
-                                                           errorCode: 0)
+                                                           status: NCGlobal.shared.metadataStatusNormal)
                 NotificationCenter.default.post(name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterDownloadedFile),
                                                 object: nil,
                                                 userInfo: ["ocId": metadata.ocId,
@@ -312,8 +309,7 @@ extension NCNetworking {
                                                                session: "",
                                                                sessionError: "",
                                                                selector: "",
-                                                               status: NCGlobal.shared.metadataStatusNormal,
-                                                               errorCode: 0)
+                                                               status: NCGlobal.shared.metadataStatusNormal)
                 }
             }
             self.downloadRequest.removeAll()

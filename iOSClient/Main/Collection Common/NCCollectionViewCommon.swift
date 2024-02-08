@@ -1909,8 +1909,7 @@ extension NCCollectionViewCommon {
                                                            session: "",
                                                            sessionError: "",
                                                            selector: "",
-                                                           status: NCGlobal.shared.metadataStatusNormal,
-                                                           errorCode: 0)
+                                                           status: NCGlobal.shared.metadataStatusNormal)
                 NotificationCenter.default.post(name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterDownloadCancelFile),
                                                 object: nil,
                                                 userInfo: ["ocId": metadata.ocId,

@@ -331,8 +331,7 @@ class NCNetworkingProcess: NSObject {
                                                                session: "",
                                                                sessionError: "",
                                                                selector: "",
-                                                               status: NCGlobal.shared.metadataStatusNormal,
-                                                               errorCode: 0)
+                                                               status: NCGlobal.shared.metadataStatusNormal)
                     notificationCenter = true
                 }
             }
