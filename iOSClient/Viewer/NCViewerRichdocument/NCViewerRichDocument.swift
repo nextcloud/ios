@@ -74,8 +74,6 @@ class NCViewerRichDocument: UIViewController, WKNavigationDelegate, WKScriptMess
 
         webView.customUserAgent = userAgent
 
-        NCActivityIndicator.shared.start(backgroundView: view)
-
         webView.load(request)
     }
 
@@ -91,6 +89,12 @@ class NCViewerRichDocument: UIViewController, WKNavigationDelegate, WKScriptMess
 
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardDidShow), name: UIResponder.keyboardDidShowNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
+    }
+
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+
+        NCActivityIndicator.shared.start()
     }
 
     override func viewWillDisappear(_ animated: Bool) {

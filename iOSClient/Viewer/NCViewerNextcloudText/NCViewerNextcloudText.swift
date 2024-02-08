@@ -83,8 +83,6 @@ class NCViewerNextcloudText: UIViewController, WKNavigationDelegate, WKScriptMes
             let language = NSLocale.preferredLanguages[0] as String
             request.addValue(language, forHTTPHeaderField: "Accept-Language")
 
-            NCActivityIndicator.shared.start(backgroundView: view)
-
             webView.load(request)
         }
     }
@@ -99,6 +97,12 @@ class NCViewerNextcloudText: UIViewController, WKNavigationDelegate, WKScriptMes
 
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardDidShow), name: UIResponder.keyboardDidShowNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
+    }
+
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+
+        NCActivityIndicator.shared.start()
     }
 
     override func viewWillDisappear(_ animated: Bool) {
