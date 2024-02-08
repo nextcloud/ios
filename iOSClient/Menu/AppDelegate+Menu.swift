@@ -59,16 +59,16 @@ extension AppDelegate {
         )
 
         if NextcloudKit.shared.isNetworkReachable() && directEditingCreators != nil && directEditingCreators!.contains(where: { $0.editor == NCGlobal.shared.editorText}) && !isDirectoryE2EE {
-            let directEditingCreator = directEditingCreators!.first(where: { $0.editor == NCGlobal.shared.editorText})!
-
             actions.append(
                 NCMenuAction(title: NSLocalizedString("_create_nextcloudtext_document_", comment: ""), icon: UIImage(named: "file_txt")!.image(color: UIColor.systemGray, size: 50), action: { _ in
-
                     let directEditingCreator = directEditingCreators!.first(where: { $0.editor == NCGlobal.shared.editorText})!
-                    let fileName = NCUtilityFileSystem().createFileName("Untitled.txt", serverUrl: self.activeServerUrl, account: self.account)
 
-                    let fileNamePath = NCUtilityFileSystem().getFileNamePath(String(describing: fileName), serverUrl: appDelegate.activeServerUrl, urlBase: appDelegate.urlBase, userId: appDelegate.userId)
-                    self.createTextDocument(fileNamePath: fileNamePath, fileName: String(describing: fileName), creatorId: directEditingCreator.identifier)
+                    Task {
+                        let fileName = await NCNetworking.shared.createFileName(fileNameBase: "Untitled.txt", serverUrl: self.activeServerUrl)
+
+                        let fileNamePath = NCUtilityFileSystem().getFileNamePath(String(describing: fileName), serverUrl: appDelegate.activeServerUrl, urlBase: appDelegate.urlBase, userId: appDelegate.userId)
+                        self.createTextDocument(fileNamePath: fileNamePath, fileName: String(describing: fileName), creatorId: directEditingCreator.identifier)
+                    }
                 })
             )
         }
@@ -231,16 +231,14 @@ extension AppDelegate {
                 actions.append(
                     NCMenuAction(
                         title: NSLocalizedString("_create_new_document_", comment: ""), icon: UIImage(named: "create_file_document")!, action: { _ in
-                            guard let navigationController = UIStoryboard(name: "NCCreateFormUploadDocuments", bundle: nil).instantiateInitialViewController() else {
-                                return
-                            }
-                            navigationController.modalPresentationStyle = UIModalPresentationStyle.formSheet
-
                             let directEditingCreator = directEditingCreators!.first(where: { $0.editor == NCGlobal.shared.editorText})!
-                            let fileName = NCUtilityFileSystem().createFileName("Untitled.txt", serverUrl: self.activeServerUrl, account: self.account)
 
-                            let fileNamePath = NCUtilityFileSystem().getFileNamePath(String(describing: fileName), serverUrl: appDelegate.activeServerUrl, urlBase: appDelegate.urlBase, userId: appDelegate.userId)
-                            self.createTextDocument(fileNamePath: fileNamePath, fileName: String(describing: fileName), creatorId: directEditingCreator.identifier)
+                            Task {
+                                let fileName = await NCNetworking.shared.createFileName(fileNameBase: "Untitled.txt", serverUrl: self.activeServerUrl)
+
+                                let fileNamePath = NCUtilityFileSystem().getFileNamePath(String(describing: fileName), serverUrl: appDelegate.activeServerUrl, urlBase: appDelegate.urlBase, userId: appDelegate.userId)
+                                self.createTextDocument(fileNamePath: fileNamePath, fileName: String(describing: fileName), creatorId: directEditingCreator.identifier)
+                            }
                         }
                     )
                 )
@@ -294,7 +292,7 @@ extension AppDelegate {
         var UUID = NSUUID().uuidString
         UUID = "TEMP" + UUID.replacingOccurrences(of: "-", with: "")
 
-        var options = NKRequestOptions(customUserAgent: NCUtility().getCustomUserAgentNCText())
+        let options = NKRequestOptions(customUserAgent: NCUtility().getCustomUserAgentNCText())
 
         NextcloudKit.shared.NCTextCreateFile(fileNamePath: fileNamePath, editorId: NCGlobal.shared.editorText, creatorId: creatorId, templateId: NCGlobal.shared.templateDocument, options: options) { account, url, _, error in
             guard error == .success, account == self.account, let url = url else {

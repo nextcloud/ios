@@ -102,7 +102,7 @@ class NCViewerNextcloudText: UIViewController, WKNavigationDelegate, WKScriptMes
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
-        NCActivityIndicator.shared.start()
+        NCActivityIndicator.shared.start(backgroundView: view)
     }
 
     override func viewWillDisappear(_ animated: Bool) {
