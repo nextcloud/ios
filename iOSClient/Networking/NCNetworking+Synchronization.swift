@@ -52,7 +52,9 @@ extension NCNetworking {
                             metadatasWithoutUpdate.append(metadata)
                         }
                     }
-                    NCManageDatabase.shared.setMetadatasSessionInWaitDownload(metadatas: metadatasSynchronizationOffline, session: NCNetworking.shared.sessionDownloadBackground, selector: selector)
+                    NCManageDatabase.shared.setMetadatasSessionInWaitDownload(metadatas: metadatasSynchronizationOffline,
+                                                                              session: NCNetworking.shared.sessionDownloadBackground,
+                                                                              selector: selector)
                     NCManageDatabase.shared.addMetadatasWithoutUpdate(metadatas)
                     completion()
                 }
