@@ -120,6 +120,7 @@ class NCNetworkingProcess: NSObject {
 
             // DOWNLOAD
             //
+
             let limitDownload = maxConcurrentOperationDownload - counterDownload
             let metadatasDownload = NCManageDatabase.shared.getAdvancedMetadatas(predicate: NSPredicate(format: "account == %@ AND session == %@ AND status == %d", self.appDelegate.account, NCNetworking.shared.sessionDownloadBackground, NCGlobal.shared.metadataStatusWaitDownload), page: 1, limit: limitDownload, sorted: "date", ascending: true)
             for metadata in metadatasDownload where counterDownload < maxConcurrentOperationDownload {
@@ -153,7 +154,7 @@ class NCNetworkingProcess: NSObject {
                 return completition(counterDownload, counterUpload)
             }
 
-            NCNetworking.shared.getOcIdInBackgroundSession(queue: queue, completion: { filesNameLocalPath in
+            NCNetworking.shared.getUploadBackgroundSession(queue: queue, completion: { filesNameLocalPath in
 
                 let sessionUploadSelectors = [NCGlobal.shared.selectorUploadFileNODelete, NCGlobal.shared.selectorUploadFile, NCGlobal.shared.selectorUploadAutoUpload, NCGlobal.shared.selectorUploadAutoUploadAll]
 
@@ -330,8 +331,7 @@ class NCNetworkingProcess: NSObject {
                                                                session: "",
                                                                sessionError: "",
                                                                selector: "",
-                                                               status: NCGlobal.shared.metadataStatusNormal,
-                                                               errorCode: 0)
+                                                               status: NCGlobal.shared.metadataStatusNormal)
                     notificationCenter = true
                 }
             }
