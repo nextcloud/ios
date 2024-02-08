@@ -26,6 +26,7 @@ import JGProgressHUD
 import NextcloudKit
 import Alamofire
 import Queuer
+import Photos
 
 extension NCNetworking {
 
@@ -117,7 +118,7 @@ extension NCNetworking {
         NextcloudKit.shared.readFileOrFolder(serverUrlFileName: serverUrlFileName,
                                              depth: "0",
                                              requestBody: requestBody.data(using: .utf8),
-                                             options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { account, files, _, error in
+                                             options: NKRequestOptions(timeout: 10, queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { account, files, _, error in
 
             if error == .success, let file = files.first {
                 completion(account, true, file, error)
@@ -127,6 +128,60 @@ extension NCNetworking {
                 completion(account, nil, nil, error)
             }
         }
+    }
+
+    func fileExists(serverUrlFileName: String) async -> (account: String, exists: Bool?, file: NKFile?, error: NKError) {
+
+        await withUnsafeContinuation({ continuation in
+            fileExists(serverUrlFileName: serverUrlFileName) { account, exists, file, error in
+                continuation.resume(returning: (account, exists, file, error))
+            }
+        })
+    }
+
+    func createFileName(fileNameBase: String, serverUrl: String) async -> String {
+
+        let serverUrlFileName = serverUrl + "/" + fileNameBase
+        var exitLoop = false
+        var resultFileName = fileNameBase
+
+        while exitLoop {
+            let results = await fileExists(serverUrlFileName: serverUrlFileName)
+            if let exists = results.exists, exists {
+                var name = NSString(string: resultFileName).deletingPathExtension
+                let ext = NSString(string: resultFileName).pathExtension
+                let characters = Array(name)
+                if characters.count < 2 {
+                    if ext.isEmpty {
+                        resultFileName = name + " 1"
+                    } else {
+                        resultFileName = name + " 1" + "." + ext
+                    }
+                } else {
+                    let space = characters[characters.count - 2]
+                    let numChar = characters[characters.count - 1]
+                    var num = Int(String(numChar))
+                    if space == " " && num != nil {
+                        name = String(name.dropLast())
+                        num = num! + 1
+                        if ext.isEmpty {
+                            resultFileName = name + "\(num!)"
+                        } else {
+                            resultFileName = name + "\(num!)" + "." + ext
+                        }
+                    } else {
+                        if ext.isEmpty {
+                            resultFileName = name + " 1"
+                        } else {
+                            resultFileName = name + " 1" + "." + ext
+                        }
+                    }
+                }
+            } else {
+                exitLoop = true
+            }
+        }
+        return resultFileName
     }
 
     // MARK: - Create Folder
