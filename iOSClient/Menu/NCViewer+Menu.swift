@@ -175,7 +175,7 @@ extension NCViewer {
                                            "error": NKError(),
                                            "account": metadata.account])
                         } else {
-                            guard let metadata = NCManageDatabase.shared.setMetadatasSessionInWaitDownload(ocId: metadatas: [metadata],
+                            guard let metadata = NCManageDatabase.shared.setMetadatasSessionInWaitDownload(metadatas: [metadata],
                                                                                                            session: NextcloudKit.shared.nkCommonInstance.sessionIdentifierDownload,
                                                                                                            selector: NCGlobal.shared.selectorSaveAsScan) else { return }
                             NCNetworking.shared.download(metadata: metadata, withNotificationProgressTask: true)
