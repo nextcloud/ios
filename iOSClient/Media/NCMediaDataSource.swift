@@ -94,21 +94,21 @@ extension NCMedia {
                     await self.collectionView.reloadData()
                     let results = await self.searchMedia(account: self.appDelegate.account, lessDate: lessDate, greaterDate: greaterDate)
                     print("Media results changed items: \(results.isChanged)")
-                    if results.error != .success {
-                        NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Media search new media error code \(results.error.errorCode) " + results.error.errorDescription)
-                    }
                     await self.mediaCommandView?.activityIndicator.stopAnimating()
                     Task { @MainActor in
                         self.loadingTask = nil
                     }
-                    if results.error == .success, results.lessDate == Date.distantFuture, results.greaterDate == Date.distantPast, !results.isChanged, results.metadatasCount == 0 {
+                    if results.error != .success {
+                        NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Media search new media error code \(results.error.errorCode) " + results.error.errorDescription)
+                    } else if results.error == .success, results.lessDate == Date.distantFuture, results.greaterDate == Date.distantPast, !results.isChanged, results.metadatasCount == 0 {
                         Task { @MainActor in
                             self.metadatas = nil
                         }
-                        await self.collectionView.reloadData()
                     }
                     if results.isChanged {
                         await self.reloadDataSource()
+                    } else {
+                        await self.collectionView.reloadData()
                     }
                 }
             }
