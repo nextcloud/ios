@@ -28,6 +28,7 @@ class NCMediaCommandView: UIView {
 
     @IBOutlet weak var title: UILabel!
     @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
+    @IBOutlet weak var activityIndicatorTrailing: NSLayoutConstraint!
     @IBOutlet weak var selectOrCancelButton: UIButton!
     @IBOutlet weak var selectOrCancelButtonTrailing: NSLayoutConstraint!
     @IBOutlet weak var menuButton: UIButton!

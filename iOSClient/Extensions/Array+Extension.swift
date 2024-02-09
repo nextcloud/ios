@@ -44,4 +44,3 @@ extension Array where Element == URLQueryItem {
         first(where: { $0.name == name })
     }
 }
-

@@ -36,8 +36,9 @@ extension NCNetworking {
         NextcloudKit.shared.readFileOrFolder(serverUrlFileName: serverUrl,
                                              depth: "infinity",
                                              showHiddenFiles: NCKeychain().showHiddenFiles,
-                                             options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { _, files, _, error in
+                                             options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { resultAccount, files, _, error in
 
+            guard account == resultAccount else { return }
             var metadatasWithoutUpdate: [tableMetadata] = []
             var metadatasSynchronizationOffline: [tableMetadata] = []
 

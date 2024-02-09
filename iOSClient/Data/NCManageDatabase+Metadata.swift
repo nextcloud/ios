@@ -100,6 +100,7 @@ class tableMetadata: Object, NCUserBaseUrl {
     @objc dynamic var richWorkspace: String?
     @objc dynamic var serverUrl = ""
     @objc dynamic var session = ""
+    @objc dynamic var sessionDate: Date?
     @objc dynamic var sessionError = ""
     @objc dynamic var sessionSelector = ""
     @objc dynamic var sessionTaskIdentifier: Int = 0
@@ -621,6 +622,9 @@ extension NCManageDatabase {
                     }
                     if let status {
                         result.status = status
+                        if status == NCGlobal.shared.metadataStatusWaitDownload || status == NCGlobal.shared.metadataStatusWaitUpload {
+                            result.sessionDate = Date()
+                        }
                     }
                     if let etag {
                         result.etag = etag
@@ -645,6 +649,9 @@ extension NCManageDatabase {
                 if let result = realm.objects(tableMetadata.self).filter("ocId == %@", ocId).first {
                     if let status {
                         result.status = status
+                        if status == NCGlobal.shared.metadataStatusWaitDownload || status == NCGlobal.shared.metadataStatusWaitUpload {
+                            result.sessionDate = Date()
+                        }
                     }
                     if let taskIdentifier {
                         result.sessionTaskIdentifier = taskIdentifier
@@ -670,12 +677,14 @@ extension NCManageDatabase {
                         result.sessionError = ""
                         result.sessionSelector = selector
                         result.status = NCGlobal.shared.metadataStatusWaitDownload
+                        result.sessionDate = Date()
                         metadataUpdated = tableMetadata(value: result)
                     } else {
                         metadata.session = session
                         metadata.sessionError = ""
                         metadata.sessionSelector = selector
                         metadata.status = NCGlobal.shared.metadataStatusWaitDownload
+                        metadata.sessionDate = Date()
                         realm.add(metadata, update: .all)
                         metadataUpdated = tableMetadata(value: metadata)
                     }

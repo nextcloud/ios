@@ -292,12 +292,15 @@ extension NCMedia: UICollectionViewDataSource {
         if numberOfItemsInSection == 0 {
             mediaCommandView?.selectOrCancelButton.isHidden = true
             mediaCommandView?.menuButton.isHidden = false
+            mediaCommandView?.activityIndicatorTrailing.constant = 46
         } else if isEditMode {
             mediaCommandView?.selectOrCancelButton.isHidden = false
             mediaCommandView?.menuButton.isHidden = true
+            mediaCommandView?.activityIndicatorTrailing.constant = 144
         } else {
             mediaCommandView?.selectOrCancelButton.isHidden = false
             mediaCommandView?.menuButton.isHidden = false
+            mediaCommandView?.activityIndicatorTrailing.constant = 144
         }
 
         emptyDataSet?.numberOfItemsInSection(numberOfItemsInSection, section: section)
