@@ -64,7 +64,7 @@ extension AppDelegate {
                     let directEditingCreator = directEditingCreators!.first(where: { $0.editor == NCGlobal.shared.editorText})!
 
                     Task {
-                        let fileName = await NCNetworking.shared.createFileName(fileNameBase: NSLocalizedString("_untitled_md_", comment: ""), account: appDelegate.account, serverUrl: self.activeServerUrl)
+                        let fileName = await NCNetworking.shared.createFileName(fileNameBase: NSLocalizedString("_untitled_", comment: "") + ".md", account: appDelegate.account, serverUrl: self.activeServerUrl)
 
                         let fileNamePath = NCUtilityFileSystem().getFileNamePath(String(describing: fileName), serverUrl: appDelegate.activeServerUrl, urlBase: appDelegate.urlBase, userId: appDelegate.userId)
                         self.createTextDocument(fileNamePath: fileNamePath, fileName: String(describing: fileName), creatorId: directEditingCreator.identifier)
