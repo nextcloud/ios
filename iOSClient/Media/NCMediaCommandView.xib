@@ -27,15 +27,6 @@
                     <rect key="frame" x="229" y="77" width="20" height="20"/>
                     <color key="color" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                 </activityIndicatorView>
-                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" adjustsImageWhenHighlighted="NO" adjustsImageWhenDisabled="NO" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="3qs-Hm-qLL">
-                    <rect key="frame" x="355" y="72" width="30" height="30"/>
-                    <constraints>
-                        <constraint firstAttribute="height" constant="30" id="l6a-hf-7l2"/>
-                        <constraint firstAttribute="width" constant="30" id="uVw-bC-TZq"/>
-                    </constraints>
-                    <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                    <inset key="imageEdgeInsets" minX="4" minY="4" maxX="4" maxY="4"/>
-                </button>
                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="EFV-eb-pFF">
                     <rect key="frame" x="257" y="72" width="90" height="30"/>
                     <constraints>
@@ -49,6 +40,15 @@
                         <action selector="selectOrCancelButtonPressed:" destination="iN0-l3-epB" eventType="touchUpInside" id="0dX-pC-icF"/>
                     </connections>
                 </button>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" adjustsImageWhenHighlighted="NO" adjustsImageWhenDisabled="NO" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="3qs-Hm-qLL">
+                    <rect key="frame" x="355" y="72" width="30" height="30"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="30" id="l6a-hf-7l2"/>
+                        <constraint firstAttribute="width" constant="30" id="uVw-bC-TZq"/>
+                    </constraints>
+                    <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    <inset key="imageEdgeInsets" minX="4" minY="4" maxX="4" maxY="4"/>
+                </button>
             </subviews>
             <viewLayoutGuide key="safeArea" id="vUN-kp-3ea"/>
             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -56,15 +56,16 @@
                 <constraint firstItem="XVj-jD-9KA" firstAttribute="centerY" secondItem="IxY-xH-yZQ" secondAttribute="centerY" id="4nZ-Ea-KMB"/>
                 <constraint firstItem="3qs-Hm-qLL" firstAttribute="centerY" secondItem="IxY-xH-yZQ" secondAttribute="centerY" id="AgJ-WD-mqU"/>
                 <constraint firstItem="vUN-kp-3ea" firstAttribute="trailing" secondItem="3qs-Hm-qLL" secondAttribute="trailing" constant="8" id="FtF-ES-dyl"/>
-                <constraint firstItem="EFV-eb-pFF" firstAttribute="leading" secondItem="XVj-jD-9KA" secondAttribute="trailing" constant="8" id="I7N-mB-wyc"/>
                 <constraint firstItem="vUN-kp-3ea" firstAttribute="trailing" secondItem="EFV-eb-pFF" secondAttribute="trailing" constant="46" id="OIB-Zp-XkO"/>
                 <constraint firstItem="IxY-xH-yZQ" firstAttribute="leading" secondItem="vUN-kp-3ea" secondAttribute="leading" constant="8" id="ZhO-pY-Qwi"/>
                 <constraint firstItem="IxY-xH-yZQ" firstAttribute="top" secondItem="vUN-kp-3ea" secondAttribute="top" constant="8" id="mX3-Fm-K1m"/>
                 <constraint firstItem="EFV-eb-pFF" firstAttribute="centerY" secondItem="IxY-xH-yZQ" secondAttribute="centerY" id="ozT-m6-dct"/>
+                <constraint firstItem="vUN-kp-3ea" firstAttribute="trailing" secondItem="XVj-jD-9KA" secondAttribute="trailing" constant="144" id="uEq-dt-udC"/>
                 <constraint firstItem="XVj-jD-9KA" firstAttribute="leading" secondItem="IxY-xH-yZQ" secondAttribute="trailing" constant="8" id="ztz-0d-9Mr"/>
             </constraints>
             <connections>
                 <outlet property="activityIndicator" destination="XVj-jD-9KA" id="cSB-RJ-RCZ"/>
+                <outlet property="activityIndicatorTrailing" destination="uEq-dt-udC" id="pvB-8X-Jpb"/>
                 <outlet property="menuButton" destination="3qs-Hm-qLL" id="7uo-w1-pml"/>
                 <outlet property="selectOrCancelButton" destination="EFV-eb-pFF" id="2ve-si-IjY"/>
                 <outlet property="selectOrCancelButtonTrailing" destination="OIB-Zp-XkO" id="2gp-In-Snh"/>
