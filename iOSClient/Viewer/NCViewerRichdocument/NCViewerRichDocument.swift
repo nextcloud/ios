@@ -77,6 +77,10 @@ class NCViewerRichDocument: UIViewController, WKNavigationDelegate, WKScriptMess
         webView.load(request)
     }
 
+    deinit {
+        print("dealloc")
+    }
+
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
@@ -108,6 +112,8 @@ class NCViewerRichDocument: UIViewController, WKNavigationDelegate, WKScriptMess
                 }
             }
         }
+
+        webView.configuration.userContentController.removeScriptMessageHandler(forName: "RichDocumentsMobileInterface")
 
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterFavoriteFile), object: nil)
 
