@@ -51,6 +51,15 @@ class NCViewerRichWorkspaceWebView: UIViewController, WKNavigationDelegate, WKSc
         webView.load(request)
     }
 
+    deinit {
+        print("dealloc")
+    }
+
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        webView.configuration.userContentController.removeScriptMessageHandler(forName: "DirectEditingMobileInterface")
+    }
+
     @objc func keyboardDidShow(notification: Notification) {
         let window = UIApplication.shared.connectedScenes.flatMap { ($0 as? UIWindowScene)?.windows ?? [] }.first { $0.isKeyWindow }
         let safeAreaInsetsBottom = window?.safeAreaInsets.bottom ?? 0
