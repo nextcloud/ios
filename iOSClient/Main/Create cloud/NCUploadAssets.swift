@@ -266,6 +266,7 @@ struct UploadAssetsView: View {
             metadata.session = NCNetworking.shared.sessionUploadBackground
             metadata.sessionSelector = NCGlobal.shared.selectorUploadFile
             metadata.status = NCGlobal.shared.metadataStatusWaitUpload
+            metadata.sessionDate = Date()
 
             // Modified
             if let previewStore = uploadAssets.previewStore.first(where: { $0.id == asset.localIdentifier }), let data = previewStore.data {

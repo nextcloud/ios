@@ -122,13 +122,13 @@ class NCNetworkingProcess: NSObject {
             //
 
             let limitDownload = maxConcurrentOperationDownload - counterDownload
-            let metadatasDownload = NCManageDatabase.shared.getAdvancedMetadatas(predicate: NSPredicate(format: "account == %@ AND session == %@ AND status == %d", self.appDelegate.account, NCNetworking.shared.sessionDownloadBackground, NCGlobal.shared.metadataStatusWaitDownload), page: 1, limit: limitDownload, sorted: "date", ascending: true)
+            let metadatasDownload = NCManageDatabase.shared.getAdvancedMetadatas(predicate: NSPredicate(format: "account == %@ AND session == %@ AND status == %d", self.appDelegate.account, NCNetworking.shared.sessionDownloadBackground, NCGlobal.shared.metadataStatusWaitDownload), page: 1, limit: limitDownload, sorted: "sessionDate", ascending: true)
             for metadata in metadatasDownload where counterDownload < maxConcurrentOperationDownload {
                 NCNetworking.shared.download(metadata: metadata, withNotificationProgressTask: true)
                 counterDownload += 1
             }
             if counterDownload == 0 {
-                let metadatasDownloadInError = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND session == %@ AND status == %d", self.appDelegate.account, NCNetworking.shared.sessionDownloadBackground, NCGlobal.shared.metadataStatusDownloadError))
+                let metadatasDownloadInError: [tableMetadata] = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND session == %@ AND status == %d", self.appDelegate.account, NCNetworking.shared.sessionDownloadBackground, NCGlobal.shared.metadataStatusDownloadError), sorted: "sessionDate", ascending: true) ?? []
                 for metadata in metadatasDownloadInError {
                     NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId,
                                                                sessionError: "",
@@ -161,7 +161,7 @@ class NCNetworkingProcess: NSObject {
                 for sessionSelector in sessionUploadSelectors where counterUpload < maxConcurrentOperationUpload {
 
                     let limitUpload = maxConcurrentOperationUpload - counterUpload
-                    let metadatasUpload = NCManageDatabase.shared.getAdvancedMetadatas(predicate: NSPredicate(format: "account == %@ AND sessionSelector == %@ AND status == %d", self.appDelegate.account, sessionSelector, NCGlobal.shared.metadataStatusWaitUpload), page: 1, limit: limitUpload, sorted: "date", ascending: true)
+                    let metadatasUpload = NCManageDatabase.shared.getAdvancedMetadatas(predicate: NSPredicate(format: "account == %@ AND sessionSelector == %@ AND status == %d", self.appDelegate.account, sessionSelector, NCGlobal.shared.metadataStatusWaitUpload), page: 1, limit: limitUpload, sorted: "sessionDate", ascending: true)
                     if !metadatasUpload.isEmpty {
                         NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] PROCESS (UPLOAD) find \(metadatasUpload.count) items")
                     }
@@ -216,7 +216,7 @@ class NCNetworkingProcess: NSObject {
 
                 // No upload available ? --> Retry Upload in Error
                 if counterUpload == 0 {
-                    let metadatasUploadInError = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND status == %d", self.appDelegate.account, NCGlobal.shared.metadataStatusUploadError))
+                    let metadatasUploadInError: [tableMetadata] = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND status == %d", self.appDelegate.account, NCGlobal.shared.metadataStatusUploadError), sorted: "sessionDate", ascending: true) ?? []
                     for metadata in metadatasUploadInError {
                         // Verify QUOTA
                         if metadata.sessionError.contains("\(NCGlobal.shared.errorQuota)") {

@@ -168,6 +168,7 @@ class NCAutoUpload: NSObject {
                     metadata.session = session
                     metadata.sessionSelector = selector
                     metadata.status = NCGlobal.shared.metadataStatusWaitUpload
+                    metadata.sessionDate = Date()
                     if assetMediaType == PHAssetMediaType.video {
                         metadata.classFile = NKCommon.TypeClassFile.video.rawValue
                     } else if assetMediaType == PHAssetMediaType.image {
