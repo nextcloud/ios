@@ -231,25 +231,19 @@ extension AppDelegate {
                 actions.append(
                     NCMenuAction(
                         title: NSLocalizedString("_create_new_document_", comment: ""), icon: UIImage(named: "create_file_document")!, action: { _ in
-                            actions.append(
-                                NCMenuAction(
-                                    title: NSLocalizedString("_create_new_document_", comment: ""), icon: UIImage(named: "create_file_document")!, action: { _ in
-                                        guard let navigationController = UIStoryboard(name: "NCCreateFormUploadDocuments", bundle: nil).instantiateInitialViewController() else {
-                                            return
-                                        }
-                                        navigationController.modalPresentationStyle = UIModalPresentationStyle.formSheet
+                            guard let navigationController = UIStoryboard(name: "NCCreateFormUploadDocuments", bundle: nil).instantiateInitialViewController() else {
+                                return
+                            }
+                            navigationController.modalPresentationStyle = UIModalPresentationStyle.formSheet
 
-                                        if let viewController = (navigationController as? UINavigationController)?.topViewController as? NCCreateFormUploadDocuments {
-                                            viewController.editorId = NCGlobal.shared.editorOnlyoffice
-                                            viewController.typeTemplate = NCGlobal.shared.templateDocument
-                                            viewController.serverUrl = appDelegate.activeServerUrl
-                                            viewController.titleForm = NSLocalizedString("_create_new_document_", comment: "")
+                            if let viewController = (navigationController as? UINavigationController)?.topViewController as? NCCreateFormUploadDocuments {
+                                viewController.editorId = NCGlobal.shared.editorCollabora
+                                viewController.typeTemplate = NCGlobal.shared.templateDocument
+                                viewController.serverUrl = appDelegate.activeServerUrl
+                                viewController.titleForm = NSLocalizedString("_create_nextcloudtext_document_", comment: "")
 
-                                            appDelegate.window?.rootViewController?.present(navigationController, animated: true, completion: nil)
-                                        }
-                                    }
-                                )
-                            )
+                                appDelegate.window?.rootViewController?.present(navigationController, animated: true, completion: nil)
+                            }
                         }
                     )
                 )
