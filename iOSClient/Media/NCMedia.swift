@@ -143,7 +143,13 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
     }
 
     override var preferredStatusBarStyle: UIStatusBarStyle {
-        return .lightContent
+        if self.traitCollection.userInterfaceStyle == .dark {
+            return .lightContent
+        } else if let gradient = mediaCommandView?.gradient, gradient.isHidden {
+            return .darkContent
+        } else {
+            return .lightContent
+        }
     }
 
     override func viewWillLayoutSubviews() {
@@ -366,19 +372,20 @@ extension NCMedia: UICollectionViewDataSource {
 extension NCMedia: UIScrollViewDelegate {
 
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
-
-        let isTop = scrollView.contentOffset.y <= -(insetsTop + view.safeAreaInsets.top - 35)
-
-        mediaCommandView?.setColor(isTop: isTop)
-
-        if lastContentOffsetY == 0 || lastContentOffsetY + cellHeigth / 2 <= scrollView.contentOffset.y || lastContentOffsetY - cellHeigth / 2 >= scrollView.contentOffset.y {
-            mediaCommandView?.setTitleDate()
-            lastContentOffsetY = scrollView.contentOffset.y
+        if let metadatas, !metadatas.isEmpty {
+            let isTop = scrollView.contentOffset.y <= -(insetsTop + view.safeAreaInsets.top - 35)
+            mediaCommandView?.setColor(isTop: isTop)
+            setNeedsStatusBarAppearanceUpdate()
+            if lastContentOffsetY == 0 || lastContentOffsetY + cellHeigth / 2 <= scrollView.contentOffset.y || lastContentOffsetY - cellHeigth / 2 >= scrollView.contentOffset.y {
+                mediaCommandView?.setTitleDate()
+                lastContentOffsetY = scrollView.contentOffset.y
+            }
+        } else {
+            mediaCommandView?.setColor(isTop: true)
         }
     }
 
     func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
-
     }
 
     func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
@@ -406,7 +413,6 @@ extension NCMedia: UIScrollViewDelegate {
 extension NCMedia: NCSelectDelegate {
 
     func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String, items: [Any], indexPath: [IndexPath], overwrite: Bool, copy: Bool, move: Bool) {
-
         guard let serverUrl = serverUrl else { return }
         let home = utilityFileSystem.getHomeServer(urlBase: appDelegate.urlBase, userId: appDelegate.userId)
         mediaPath = serverUrl.replacingOccurrences(of: home, with: "")
