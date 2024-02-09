@@ -700,7 +700,7 @@
 "_notifications_"                   = "Notifications";
 "_no_notification_"                 = "No notifications yet";
 "_autoupload_filename_title_"       = "Auto upload filename";
-"_untitled_txt_"                    = "Untitled.txt";
+"_untitled_"                        = "Untitled";
 "_text_upload_title_"               = "Upload text file";
 "_e2e_settings_title_"              = "Encryption";
 "_e2e_settings_"                    = "End-to-end encryption";

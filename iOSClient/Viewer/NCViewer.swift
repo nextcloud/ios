@@ -123,7 +123,7 @@ class NCViewer: NSObject {
                         if error == .success && account == self.appDelegate.account && url != nil {
 
                             if let navigationController = viewController.navigationController,
-                               let viewController: NCViewerRichdocument = UIStoryboard(name: "NCViewerRichdocument", bundle: nil).instantiateInitialViewController() as? NCViewerRichdocument {
+                               let viewController: NCViewerRichDocument = UIStoryboard(name: "NCViewerRichdocument", bundle: nil).instantiateInitialViewController() as? NCViewerRichDocument {
 
                                 viewController.metadata = metadata
                                 viewController.link = url!
@@ -141,7 +141,7 @@ class NCViewer: NSObject {
                 } else {
 
                     if let navigationController = viewController.navigationController,
-                       let viewController: NCViewerRichdocument = UIStoryboard(name: "NCViewerRichdocument", bundle: nil).instantiateInitialViewController() as? NCViewerRichdocument {
+                       let viewController: NCViewerRichDocument = UIStoryboard(name: "NCViewerRichdocument", bundle: nil).instantiateInitialViewController() as? NCViewerRichDocument {
 
                         viewController.metadata = metadata
                         viewController.link = metadata.url

@@ -25,10 +25,7 @@ import UIKit
 import OpenSSL
 import NextcloudKit
 import Alamofire
-import Photos
 import Queuer
-import JGProgressHUD
-import RealmSwift
 
 @objc public protocol NCNetworkingDelegate {
     @objc optional func downloadProgress(_ progress: Float, totalBytes: Int64, totalBytesExpected: Int64, fileName: String, serverUrl: String, session: URLSession, task: URLSessionTask)
