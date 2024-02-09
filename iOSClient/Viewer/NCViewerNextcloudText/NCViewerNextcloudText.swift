@@ -86,6 +86,10 @@ class NCViewerNextcloudText: UIViewController, WKNavigationDelegate, WKScriptMes
         }
     }
 
+    deinit {
+        print("dealloc")
+    }
+
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
@@ -100,6 +104,8 @@ class NCViewerNextcloudText: UIViewController, WKNavigationDelegate, WKScriptMes
 
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
+
+        webView.configuration.userContentController.removeScriptMessageHandler(forName: "DirectEditingMobileInterface")
 
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterFavoriteFile), object: nil)
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeUser), object: nil)
