@@ -31,7 +31,7 @@ extension NCNetworking {
     func synchronization(account: String,
                          serverUrl: String,
                          selector: String,
-                         completion: @escaping (_ success: Bool) -> Void = { _ in }) {
+                         completion: @escaping (_ errorCode: Int) -> Void = { _ in }) {
 
         let startDate = Date()
         NextcloudKit.shared.readFileOrFolder(serverUrlFileName: serverUrl,
@@ -61,21 +61,21 @@ extension NCNetworking {
                     NCManageDatabase.shared.setDirectorySynchronizationDate(serverUrl: serverUrl, account: account)
                     let diffDate = Date().timeIntervalSinceReferenceDate - startDate.timeIntervalSinceReferenceDate
                     NextcloudKit.shared.nkCommonInstance.writeLog("[LOG] Synchronization \(serverUrl) in \(diffDate)")
-                    completion(true)
+                    completion(0)
                 }
             } else {
-                NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Synchronization " + serverUrl + ", \(error.description)")
-                completion(false)
+                NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Synchronization \(serverUrl), \(error.errorCode), \(error.description)")
+                completion(error.errorCode)
             }
         }
     }
 
     @discardableResult
-    func synchronization(account: String, serverUrl: String, selector: String) async -> Bool {
+    func synchronization(account: String, serverUrl: String, selector: String) async -> Int {
 
         await withUnsafeContinuation({ continuation in
-            synchronization(account: account, serverUrl: serverUrl, selector: selector) { success in
-                continuation.resume(returning: (success))
+            synchronization(account: account, serverUrl: serverUrl, selector: selector) { errorCode in
+                continuation.resume(returning: (errorCode))
             }
         })
     }
