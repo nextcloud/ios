@@ -117,6 +117,7 @@ class NCNetworkingProcess: NSObject {
             let isWiFi = NCNetworking.shared.networkReachability == NKCommon.TypeReachability.reachableEthernetOrWiFi
             var counterDownload = metadatasDownloading.count
             var counterUpload = metadatasUploading.count
+            let semaphore = DispatchSemaphore(value: 0)
 
             // DOWNLOAD
             //
@@ -124,8 +125,12 @@ class NCNetworkingProcess: NSObject {
             let limitDownload = maxConcurrentOperationDownload - counterDownload
             let metadatasDownload = NCManageDatabase.shared.getAdvancedMetadatas(predicate: NSPredicate(format: "account == %@ AND session == %@ AND status == %d", self.appDelegate.account, NCNetworking.shared.sessionDownloadBackground, NCGlobal.shared.metadataStatusWaitDownload), page: 1, limit: limitDownload, sorted: "sessionDate", ascending: true)
             for metadata in metadatasDownload where counterDownload < maxConcurrentOperationDownload {
-                NCNetworking.shared.download(metadata: metadata, withNotificationProgressTask: true)
-                counterDownload += 1
+                NCNetworking.shared.download(metadata: metadata, withNotificationProgressTask: true) {
+                } completion: { _, _ in
+                    counterDownload += 1
+                    semaphore.signal()
+                }
+                semaphore.wait()
             }
             if counterDownload == 0 {
                 let metadatasDownloadInError: [tableMetadata] = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND session == %@ AND status == %d", self.appDelegate.account, NCNetworking.shared.sessionDownloadBackground, NCGlobal.shared.metadataStatusDownloadError), sorted: "sessionDate", ascending: true) ?? []
@@ -180,7 +185,6 @@ class NCNetworkingProcess: NSObject {
                             continue
                         }
 
-                        let semaphore = DispatchSemaphore(value: 0)
                         let cameraRoll = NCCameraRoll()
                         cameraRoll.extractCameraRoll(from: metadata) { metadatas in
                             if metadatas.isEmpty {

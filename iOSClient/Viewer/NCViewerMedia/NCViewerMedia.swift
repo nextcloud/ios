@@ -190,16 +190,18 @@ class NCViewerMedia: UIViewController {
                             } progressHandler: { progress in
                                 hud.progress = Float(progress.fractionCompleted)
                             } completion: { _, error in
-                                if error == .success {
-                                    hud.dismiss()
-                                    if self.utilityFileSystem.fileProviderStorageExists(self.metadata) {
-                                        let url = URL(fileURLWithPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(self.metadata.ocId, fileNameView: self.metadata.fileNameView))
-                                        ncplayer.openAVPlayer(url: url, autoplay: autoplay)
+                                DispatchQueue.main.async {
+                                    if error == .success {
+                                        hud.dismiss()
+                                        if self.utilityFileSystem.fileProviderStorageExists(self.metadata) {
+                                            let url = URL(fileURLWithPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(self.metadata.ocId, fileNameView: self.metadata.fileNameView))
+                                            ncplayer.openAVPlayer(url: url, autoplay: autoplay)
+                                        }
+                                    } else {
+                                        hud.indicatorView = JGProgressHUDErrorIndicatorView()
+                                        hud.textLabel.text = error.errorDescription
+                                        hud.dismiss(afterDelay: NCGlobal.shared.dismissAfterSecond)
                                     }
-                                } else {
-                                    hud.indicatorView = JGProgressHUDErrorIndicatorView()
-                                    hud.textLabel.text = error.errorDescription
-                                    hud.dismiss(afterDelay: NCGlobal.shared.dismissAfterSecond)
                                 }
                             }
                         }
@@ -333,10 +335,12 @@ class NCViewerMedia: UIViewController {
         } requestHandler: { _ in
             self.allowOpeningDetails = false
         } completion: { _, _ in
-            let image = self.getImageMetadata(self.metadata)
-            self.image = image
-            self.imageVideoContainer.image = image
-            self.allowOpeningDetails = true
+            DispatchQueue.main.async {
+                let image = self.getImageMetadata(self.metadata)
+                self.image = image
+                self.imageVideoContainer.image = image
+                self.allowOpeningDetails = true
+            }
         }
     }
 

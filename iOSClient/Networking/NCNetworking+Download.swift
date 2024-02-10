@@ -46,11 +46,11 @@ extension NCNetworking {
             } progressHandler: { progress in
                 progressHandler(progress)
             } completion: { afError, error in
-                DispatchQueue.main.async { completion(afError, error) }
+                completion(afError, error)
             }
         } else {
             downloadFileInBackground(metadata: metadata, start: start, completion: { afError, error in
-                DispatchQueue.main.async { completion(afError, error) }
+                completion(afError, error)
             })
         }
     }
@@ -139,6 +139,8 @@ extension NCNetworking {
         let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
         let fileNameLocalPath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)
 
+        start()
+
         if let task = nkBackground.download(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, session: session) {
 
             NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Download file \(metadata.fileNameView) with task with taskIdentifier \(task.taskIdentifier)")
@@ -152,12 +154,15 @@ extension NCNetworking {
                                             userInfo: ["ocId": metadata.ocId,
                                                        "serverUrl": metadata.serverUrl,
                                                        "account": metadata.account])
-            start()
             completion(nil, NKError())
 
         } else {
 
-            NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
+            NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId,
+                                                       session: "",
+                                                       sessionError: "",
+                                                       selector: "",
+                                                       status: NCGlobal.shared.metadataStatusNormal)
             completion(nil, NKError(errorCode: NCGlobal.shared.errorResourceNotFound, errorDescription: "task null"))
         }
     }
