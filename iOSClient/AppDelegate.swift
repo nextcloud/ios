@@ -373,7 +373,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                         if let directories = NCManageDatabase.shared.getTablesDirectory(predicate: NSPredicate(format: "account == %@ AND offline == true", self.account), sorted: "serverUrl", ascending: true) {
                             for directory: tableDirectory in directories {
                                 NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] \(taskText) start synchronization for \(directory.serverUrl)")
-                                await NCNetworking.shared.synchronization(account: self.account, serverUrl: directory.serverUrl, selector: NCGlobal.shared.selectorSynchronizationOffline)
+                                let success = await NCNetworking.shared.synchronization(account: self.account, serverUrl: directory.serverUrl, selector: NCGlobal.shared.selectorSynchronizationOffline)
+                                if !success {
+                                    return completion()
+                                }
                             }
                         }
                         completion()

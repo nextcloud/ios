@@ -31,7 +31,7 @@ extension NCNetworking {
     func synchronization(account: String,
                          serverUrl: String,
                          selector: String,
-                         completion: @escaping () -> Void = {}) {
+                         completion: @escaping (_ success: Bool) -> Void = { _ in }) {
 
         let startDate = Date()
         NextcloudKit.shared.readFileOrFolder(serverUrlFileName: serverUrl,
@@ -58,22 +58,24 @@ extension NCNetworking {
                                                                               session: NCNetworking.shared.sessionDownloadBackground,
                                                                               selector: selector)
                     NCManageDatabase.shared.addMetadatasWithoutUpdate(metadatas)
-                    completion()
+                    NCManageDatabase.shared.setDirectorySynchronizationDate(serverUrl: serverUrl, account: account)
+                    let diffDate = Date().timeIntervalSinceReferenceDate - startDate.timeIntervalSinceReferenceDate
+                    NextcloudKit.shared.nkCommonInstance.writeLog("[LOG] Synchronization \(serverUrl) in \(diffDate)")
+                    completion(true)
                 }
-                let diffDate = Date().timeIntervalSinceReferenceDate - startDate.timeIntervalSinceReferenceDate
-                NextcloudKit.shared.nkCommonInstance.writeLog("[LOG] Synchronization \(serverUrl) in \(diffDate)")
             } else {
                 NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Synchronization " + serverUrl + ", \(error.description)")
-                completion()
+                completion(false)
             }
         }
     }
 
-    func synchronization(account: String, serverUrl: String, selector: String) async {
+    @discardableResult
+    func synchronization(account: String, serverUrl: String, selector: String) async -> Bool {
 
         await withUnsafeContinuation({ continuation in
-            synchronization(account: account, serverUrl: serverUrl, selector: selector) {
-                continuation.resume(returning: ())
+            synchronization(account: account, serverUrl: serverUrl, selector: selector) { success in
+                continuation.resume(returning: (success))
             }
         })
     }
