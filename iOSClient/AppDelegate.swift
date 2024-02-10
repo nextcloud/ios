@@ -343,8 +343,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Refresh task auto upload with \(items) uploads")
             NCNetworkingProcess.shared.start { counterDownload, counterUpload in
                 NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Processing task upload process with download: \(counterDownload) upload: \(counterUpload)")
-                task.setTaskCompleted(success: true)
-                self.isAppRefresh = false
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                    task.setTaskCompleted(success: true)
+                    self.isAppRefresh = false
+                }
             }
         }
     }
@@ -363,8 +365,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Processing task auto upload with \(items) uploads")
             NCNetworkingProcess.shared.start { counterDownload, counterUpload in
                 NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Processing task upload process with download: \(counterDownload) upload: \(counterUpload)")
-                task.setTaskCompleted(success: true)
-                self.isAppProcessing = false
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                    task.setTaskCompleted(success: true)
+                    self.isAppProcessing = false
+                }
             }
         }
     }

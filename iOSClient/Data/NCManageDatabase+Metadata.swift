@@ -624,6 +624,8 @@ extension NCManageDatabase {
                         result.status = status
                         if status == NCGlobal.shared.metadataStatusWaitDownload || status == NCGlobal.shared.metadataStatusWaitUpload {
                             result.sessionDate = Date()
+                        } else if status == NCGlobal.shared.metadataStatusNormal {
+                            result.sessionDate = nil
                         }
                     }
                     if let etag {
@@ -651,6 +653,8 @@ extension NCManageDatabase {
                         result.status = status
                         if status == NCGlobal.shared.metadataStatusWaitDownload || status == NCGlobal.shared.metadataStatusWaitUpload {
                             result.sessionDate = Date()
+                        } else if status == NCGlobal.shared.metadataStatusNormal {
+                            result.sessionDate = nil
                         }
                     }
                     if let taskIdentifier {

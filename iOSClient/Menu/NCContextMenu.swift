@@ -90,12 +90,14 @@ class NCContextMenu: NSObject {
                 } progressHandler: { progress in
                     hud.progress = Float(progress.fractionCompleted)
                 } completion: { afError, error in
-                    if error == .success || afError?.isExplicitlyCancelledError ?? false {
-                        hud.dismiss()
-                    } else {
-                        hud.indicatorView = JGProgressHUDErrorIndicatorView()
-                        hud.textLabel.text = error.description
-                        hud.dismiss(afterDelay: NCGlobal.shared.dismissAfterSecond)
+                    DispatchQueue.main.async {
+                        if error == .success || afError?.isExplicitlyCancelledError ?? false {
+                            hud.dismiss()
+                        } else {
+                            hud.indicatorView = JGProgressHUDErrorIndicatorView()
+                            hud.textLabel.text = error.description
+                            hud.dismiss(afterDelay: NCGlobal.shared.dismissAfterSecond)
+                        }
                     }
                 }
             }
@@ -134,12 +136,14 @@ class NCContextMenu: NSObject {
                 } progressHandler: { progress in
                     hud.progress = Float(progress.fractionCompleted)
                 } completion: { afError, error in
-                    if error == .success || afError?.isExplicitlyCancelledError ?? false {
-                        hud.dismiss()
-                    } else {
-                        hud.indicatorView = JGProgressHUDErrorIndicatorView()
-                        hud.textLabel.text = error.description
-                        hud.dismiss(afterDelay: NCGlobal.shared.dismissAfterSecond)
+                    DispatchQueue.main.async {
+                        if error == .success || afError?.isExplicitlyCancelledError ?? false {
+                            hud.dismiss()
+                        } else {
+                            hud.indicatorView = JGProgressHUDErrorIndicatorView()
+                            hud.textLabel.text = error.description
+                            hud.dismiss(afterDelay: NCGlobal.shared.dismissAfterSecond)
+                        }
                     }
                 }
             }
