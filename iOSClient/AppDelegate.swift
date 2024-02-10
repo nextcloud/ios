@@ -367,8 +367,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             NCNetworkingProcess.shared.start { counterDownload, counterUpload in
                 NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] \(taskText) task upload process with download: \(counterDownload) upload: \(counterUpload)")
 
-                if items == 0, counterDownload == 0, counterUpload == 0 {
-
+                if taskText == "ProcessingTask", items == 0, counterDownload == 0, counterUpload == 0 {
                     Task {
                         if let directories = NCManageDatabase.shared.getTablesDirectory(predicate: NSPredicate(format: "account == %@ AND offline == true", self.account), sorted: "serverUrl", ascending: true) {
                             for directory: tableDirectory in directories {
