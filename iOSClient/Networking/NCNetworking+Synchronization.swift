@@ -33,6 +33,7 @@ extension NCNetworking {
                          selector: String,
                          completion: @escaping () -> Void = {}) {
 
+        let startDate = Date()
         NextcloudKit.shared.readFileOrFolder(serverUrlFileName: serverUrl,
                                              depth: "infinity",
                                              showHiddenFiles: NCKeychain().showHiddenFiles,
@@ -59,6 +60,8 @@ extension NCNetworking {
                     NCManageDatabase.shared.addMetadatasWithoutUpdate(metadatas)
                     completion()
                 }
+                let diffDate = Date().timeIntervalSinceReferenceDate - startDate.timeIntervalSinceReferenceDate
+                NextcloudKit.shared.nkCommonInstance.writeLog("[LOG] Synchronization \(serverUrl) in \(diffDate)")
             } else {
                 NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Synchronization " + serverUrl + ", \(error.description)")
                 completion()

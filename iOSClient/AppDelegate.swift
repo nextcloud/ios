@@ -55,7 +55,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     var timerErrorNetworking: Timer?
     private var privacyProtectionWindow: UIWindow?
     var isAppRefresh: Bool = false
-    var isAppProcessing: Bool = false
+    var isProcessingTask: Bool = false
 
     var isUiTestingEnabled: Bool {
         return ProcessInfo.processInfo.arguments.contains("UI_TESTING")
@@ -332,22 +332,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     func handleAppRefresh(_ task: BGTask) {
         scheduleAppRefresh()
 
-        if isAppProcessing {
-            NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Processing task already in progress, abort.")
-            task.setTaskCompleted(success: true)
-            return
+        if isProcessingTask {
+            NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] ProcessingTask already in progress, abort.")
+            return task.setTaskCompleted(success: true)
         }
         isAppRefresh = true
 
-        NCAutoUpload.shared.initAutoUpload(viewController: nil) { items in
-            NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Refresh task auto upload with \(items) uploads")
-            NCNetworkingProcess.shared.start { counterDownload, counterUpload in
-                NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Processing task upload process with download: \(counterDownload) upload: \(counterUpload)")
-                DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                    task.setTaskCompleted(success: true)
-                    self.isAppRefresh = false
-                }
-            }
+        handleAppRefreshProcessingTask(taskText: "AppRefresh") {
+            task.setTaskCompleted(success: true)
+            self.isAppRefresh = false
         }
     }
 
@@ -355,20 +348,38 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         scheduleAppProcessing()
 
         if isAppRefresh {
-            NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Refresh task already in progress, abort.")
-            task.setTaskCompleted(success: true)
-            return
+            NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] AppRefresh already in progress, abort.")
+            return task.setTaskCompleted(success: true)
         }
-        isAppProcessing = true
+        isProcessingTask = true
+
+        handleAppRefreshProcessingTask(taskText: "ProcessingTask") {
+            task.setTaskCompleted(success: true)
+            self.isProcessingTask = false
+        }
+    }
+
+    func handleAppRefreshProcessingTask(taskText: String, completion: @escaping () -> Void = {}) {
 
         NCAutoUpload.shared.initAutoUpload(viewController: nil) { items in
-            NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Processing task auto upload with \(items) uploads")
+            NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] \(taskText) auto upload with \(items) uploads")
+
             NCNetworkingProcess.shared.start { counterDownload, counterUpload in
-                NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Processing task upload process with download: \(counterDownload) upload: \(counterUpload)")
-                DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                    task.setTaskCompleted(success: true)
-                    self.isAppProcessing = false
+                NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] \(taskText) task upload process with download: \(counterDownload) upload: \(counterUpload)")
+
+                if items == 0, counterDownload == 0, counterUpload == 0 {
+
+                    Task {
+                        if let directories = NCManageDatabase.shared.getTablesDirectory(predicate: NSPredicate(format: "account == %@ AND offline == true", self.account), sorted: "serverUrl", ascending: true) {
+                            for directory: tableDirectory in directories {
+                                NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] \(taskText) start synchronization for \(directory.serverUrl)")
+                                await NCNetworking.shared.synchronization(account: self.account, serverUrl: directory.serverUrl, selector: NCGlobal.shared.selectorSynchronizationOffline)
+                            }
+                        }
+                        completion()
+                    }
                 }
+                completion()
             }
         }
     }
