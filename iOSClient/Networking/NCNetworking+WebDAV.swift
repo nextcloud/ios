@@ -645,11 +645,6 @@ extension NCNetworking {
 
         NextcloudKit.shared.setFavorite(fileName: fileName, favorite: favorite) { account, error in
             if error == .success && metadata.account == account {
-                NCManageDatabase.shared.setMetadataFavorite(ocId: metadata.ocId, favorite: favorite)
-                if favorite, metadata.directory {
-                    let serverUrl = metadata.serverUrl + "/" + metadata.fileName
-                    self.synchronization(account: metadata.account, serverUrl: serverUrl, selector: NCGlobal.shared.selectorSynchronizationFavorite)
-                }
                 NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterFavoriteFile, userInfo: ["ocId": ocId, "serverUrl": metadata.serverUrl])
             }
             completion(error)

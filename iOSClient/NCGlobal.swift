@@ -311,7 +311,6 @@ class NCGlobal: NSObject {
     let selectorSaveAsScan                          = "saveAsScan"
     let selectorOpenDetail                          = "openDetail"
     let selectorSynchronizationOffline              = "synchronizationOffline"
-    let selectorSynchronizationFavorite             = "synchronizationFavorite"
 
     // Metadata : Status
     //

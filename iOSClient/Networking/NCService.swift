@@ -291,7 +291,7 @@ class NCService: NSObject {
         Task {
             if let directories = NCManageDatabase.shared.getTablesDirectory(predicate: NSPredicate(format: "account == %@ AND offline == true", account), sorted: "serverUrl", ascending: true) {
                 for directory: tableDirectory in directories {
-                    await NCNetworking.shared.synchronization(account: account, serverUrl: directory.serverUrl, selector: NCGlobal.shared.selectorSynchronizationOffline)
+                    await NCNetworking.shared.synchronization(account: account, serverUrl: directory.serverUrl)
                 }
             }
         }
@@ -300,7 +300,7 @@ class NCService: NSObject {
         let files = NCManageDatabase.shared.getTableLocalFiles(predicate: NSPredicate(format: "account == %@ AND offline == true", account), sorted: "fileName", ascending: true)
         for file: tableLocalFile in files {
             guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(file.ocId) else { continue }
-            if metadata.isSynchronizable {
+            if NCNetworking.shared.isSynchronizable(ocId: metadata.ocId, fileName: metadata.fileName, etag: metadata.etag) {
                 NCManageDatabase.shared.setMetadatasSessionInWaitDownload(metadatas: [metadata],
                                                                           session: NCNetworking.shared.sessionDownloadBackground,
                                                                           selector: NCGlobal.shared.selectorSynchronizationOffline)

@@ -152,7 +152,7 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
             }
         } else if metadata.directory {
             NCManageDatabase.shared.setDirectory(serverUrl: serverUrl, offline: true, account: appDelegate.account)
-            NCNetworking.shared.synchronization(account: metadata.account, serverUrl: serverUrl, selector: NCGlobal.shared.selectorSynchronizationOffline)
+            NCNetworking.shared.synchronization(account: metadata.account, serverUrl: serverUrl)
         } else {
             var metadatasSynchronizationOffline: [tableMetadata] = []
             NCManageDatabase.shared.setLocalFile(ocId: metadata.ocId, offline: true)

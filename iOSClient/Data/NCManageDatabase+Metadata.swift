@@ -272,15 +272,6 @@ extension tableMetadata {
         !isFlaggedAsLivePhotoByServer
     }
 
-    var isSynchronizable: Bool {
-        guard status != NCGlobal.shared.metadataStatusDownloading, status != NCGlobal.shared.metadataStatusWaitDownload else { return false }
-        let localFile = NCManageDatabase.shared.getResultsTableLocalFile(predicate: NSPredicate(format: "ocId == %@", ocId))?.first
-        if localFile?.etag != etag || NCUtilityFileSystem().fileProviderStorageSize(ocId, fileNameView: fileNameView) == 0 {
-            return true
-        }
-        return false
-    }
-
     /// Returns false if the user is lokced out of the file. I.e. The file is locked but by somone else
     func canUnlock(as user: String) -> Bool {
         return !lock || (lockOwner == user && lockOwnerType == 0)
