@@ -382,7 +382,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                             }
                             NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] \(taskText) start synchronization for \(directory.serverUrl)")
 
-                            NCNetworking.shared.synchronization(account: self.account, serverUrl: directory.serverUrl, selector: NCGlobal.shared.selectorSynchronizationOffline) { errorCode in
+                            NCNetworking.shared.synchronization(account: self.account, serverUrl: directory.serverUrl, selector: NCGlobal.shared.selectorSynchronizationOffline) { errorCode, items in
+
+                                NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] \(taskText) end synchronization for \(directory.serverUrl), errorCode: \(errorCode), item: \(items)")
                                 synchErrorCode = errorCode
                                 semaphore.signal()
                             }
