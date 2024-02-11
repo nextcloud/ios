@@ -34,10 +34,11 @@ extension NCNetworking {
                          completion: @escaping (_ errorCode: Int, _ items: Int) -> Void = { _, _ in }) {
 
         let startDate = Date()
+        let options = NKRequestOptions(timeout: 240, queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
         NextcloudKit.shared.readFileOrFolder(serverUrlFileName: serverUrl,
                                              depth: "infinity",
                                              showHiddenFiles: NCKeychain().showHiddenFiles,
-                                             options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { resultAccount, files, _, error in
+                                             options: options) { resultAccount, files, _, error in
 
             guard account == resultAccount else { return }
             var metadatasDirectory: [tableMetadata] = []
