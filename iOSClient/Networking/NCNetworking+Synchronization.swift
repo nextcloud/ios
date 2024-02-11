@@ -40,8 +40,7 @@ extension NCNetworking {
                                              options: options) { resultAccount, files, _, error in
 
             guard account == resultAccount else { return }
-            let isSynchronizationInQueue = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND sessionSelector == %@ AND (status == %@ OR status ==%@)", account, NCGlobal.shared.selectorSynchronizationOffline, NCGlobal.shared.metadataStatusWaitDownload, NCGlobal.shared.metadataStatusDownloading))
-            if isSynchronizationInQueue != nil { return}
+            if NCManageDatabase.shared.getResultMetadata(predicate: NSPredicate(format: "account == %@ AND sessionSelector == %@ AND (status == %d OR status == %d)", account, NCGlobal.shared.selectorSynchronizationOffline, NCGlobal.shared.metadataStatusWaitDownload, NCGlobal.shared.metadataStatusDownloading)) != nil { return }
 
             var metadatasDirectory: [tableMetadata] = []
             var metadatasSynchronizationOffline: [tableMetadata] = []

@@ -211,7 +211,7 @@ extension tableMetadata {
     }
 
     var isSettableOnOffline: Bool {
-        return session.isEmpty && !isDocumentViewableOnly
+        return session.isEmpty && !isDocumentViewableOnly && !isDirectoryE2EE && !e2eEncrypted
     }
 
     var canOpenIn: Bool {
@@ -1072,7 +1072,7 @@ extension NCManageDatabase {
         do {
             let realm = try Realm()
             try realm.write {
-                let results = realm.objects(tableMetadata.self).filter("account == %@ AND (status == %d OR status == %@)", account, NCGlobal.shared.metadataStatusWaitUpload, NCGlobal.shared.metadataStatusUploadError)
+                let results = realm.objects(tableMetadata.self).filter("account == %@ AND (status == %d OR status == %d)", account, NCGlobal.shared.metadataStatusWaitUpload, NCGlobal.shared.metadataStatusUploadError)
                 realm.delete(results)
             }
         } catch let error {
