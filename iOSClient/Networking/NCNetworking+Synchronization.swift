@@ -31,46 +31,56 @@ extension NCNetworking {
     func synchronization(account: String,
                          serverUrl: String,
                          selector: String,
-                         completion: @escaping () -> Void = {}) {
+                         completion: @escaping (_ errorCode: Int, _ items: Int) -> Void = { _, _ in }) {
 
+        let startDate = Date()
+        let options = NKRequestOptions(timeout: 240, queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
         NextcloudKit.shared.readFileOrFolder(serverUrlFileName: serverUrl,
                                              depth: "infinity",
                                              showHiddenFiles: NCKeychain().showHiddenFiles,
-                                             options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { resultAccount, files, _, error in
+                                             options: options) { resultAccount, files, _, error in
 
             guard account == resultAccount else { return }
-            var metadatasWithoutUpdate: [tableMetadata] = []
+            var metadatasDirectory: [tableMetadata] = []
             var metadatasSynchronizationOffline: [tableMetadata] = []
+            var metadatasSynchronizationFavorite: [tableMetadata] = []
 
             if error == .success {
                 NCManageDatabase.shared.convertFilesToMetadatas(files, useMetadataFolder: true) { _, _, metadatas in
                     for metadata in metadatas {
                         if metadata.directory {
-                            metadatasWithoutUpdate.append(metadata)
+                            metadatasDirectory.append(metadata)
                         } else if selector == NCGlobal.shared.selectorSynchronizationOffline, metadata.isSynchronizable {
                             metadatasSynchronizationOffline.append(metadata)
                         } else if selector == NCGlobal.shared.selectorSynchronizationFavorite {
-                            metadatasWithoutUpdate.append(metadata)
+                            metadatasSynchronizationFavorite.append(metadata)
                         }
                     }
+
+                    NCManageDatabase.shared.addMetadatas(metadatasDirectory)
                     NCManageDatabase.shared.setMetadatasSessionInWaitDownload(metadatas: metadatasSynchronizationOffline,
                                                                               session: NCNetworking.shared.sessionDownloadBackground,
                                                                               selector: selector)
-                    NCManageDatabase.shared.addMetadatasWithoutUpdate(metadatas)
-                    completion()
+                    NCManageDatabase.shared.addMetadatasWithoutUpdate(metadatasSynchronizationFavorite)
+
+                    NCManageDatabase.shared.setDirectorySynchronizationDate(serverUrl: serverUrl, account: account)
+                    let diffDate = Date().timeIntervalSinceReferenceDate - startDate.timeIntervalSinceReferenceDate
+                    NextcloudKit.shared.nkCommonInstance.writeLog("[LOG] Synchronization \(serverUrl) in \(diffDate)")
+                    completion(0, metadatasSynchronizationOffline.count + metadatasSynchronizationFavorite.count)
                 }
             } else {
-                NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Synchronization " + serverUrl + ", \(error.description)")
-                completion()
+                NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Synchronization \(serverUrl), \(error.errorCode), \(error.description)")
+                completion(error.errorCode, metadatasSynchronizationOffline.count + metadatasSynchronizationFavorite.count)
             }
         }
     }
 
-    func synchronization(account: String, serverUrl: String, selector: String) async {
+    @discardableResult
+    func synchronization(account: String, serverUrl: String, selector: String) async -> (Int, Int) {
 
         await withUnsafeContinuation({ continuation in
-            synchronization(account: account, serverUrl: serverUrl, selector: selector) {
-                continuation.resume(returning: ())
+            synchronization(account: account, serverUrl: serverUrl, selector: selector) { errorCode, items in
+                continuation.resume(returning: (errorCode, items))
             }
         })
     }

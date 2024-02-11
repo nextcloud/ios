@@ -35,6 +35,7 @@ class tableDirectory: Object {
     @objc dynamic var fileId = ""
     @objc dynamic var ocId = ""
     @objc dynamic var offline: Bool = false
+    @objc dynamic var offlineDate: Date?
     @objc dynamic var permissions = ""
     @objc dynamic var richWorkspace: String?
     @objc dynamic var serverUrl = ""
@@ -221,6 +222,19 @@ extension NCManageDatabase {
             try realm.write {
                 let result = realm.objects(tableDirectory.self).filter("account == %@ AND serverUrl == %@", account, serverUrl).first
                 result?.offline = offline
+            }
+        } catch let error {
+            NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
+        }
+    }
+
+    func setDirectorySynchronizationDate(serverUrl: String, account: String) {
+
+        do {
+            let realm = try Realm()
+            try realm.write {
+                let result = realm.objects(tableDirectory.self).filter("account == %@ AND serverUrl == %@", account, serverUrl).first
+                result?.offlineDate = Date()
             }
         } catch let error {
             NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
