@@ -147,7 +147,7 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
         if isOffline {
             if metadata.directory {
                 NCManageDatabase.shared.setDirectory(serverUrl: serverUrl, offline: false, account: appDelegate.account)
-                if let metadatas = NCManageDatabase.shared.getResultsMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND sessionSelector == %d AND status == %d", metadata.account, serverUrl, NCGlobal.shared.selectorSynchronizationOffline, NCGlobal.shared.metadataStatusWaitDownload)) {
+                if let metadatas = NCManageDatabase.shared.getResultsMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND sessionSelector == %@ AND status == %d", metadata.account, serverUrl, NCGlobal.shared.selectorSynchronizationOffline, NCGlobal.shared.metadataStatusWaitDownload)) {
                     NCManageDatabase.shared.clearMetadataSession(metadatas: metadatas)
                 }
             } else {
@@ -165,7 +165,7 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
             }
             NCManageDatabase.shared.setMetadatasSessionInWaitDownload(metadatas: metadatasSynchronizationOffline,
                                                                       session: NCNetworking.shared.sessionDownloadBackground,
-                                                                      selector: "NCGlobal.shared.selectorSynchronizationOffline")
+                                                                      selector: NCGlobal.shared.selectorSynchronizationOffline)
         }
     }
 
