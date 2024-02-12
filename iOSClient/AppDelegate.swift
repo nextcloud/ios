@@ -373,15 +373,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                    let directories = NCManageDatabase.shared.getTablesDirectory(predicate: NSPredicate(format: "account == %@ AND offline == true", self.account), sorted: "offlineDate", ascending: true) {
 
                     for directory: tableDirectory in directories {
-                        // only 1 time for day
-                        if let offlineDate = directory.offlineDate, offlineDate.addingTimeInterval(86400) > Date() {
+                        // only 3 time for day
+                        if let offlineDate = directory.offlineDate, offlineDate.addingTimeInterval(28800) > Date() {
                             NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] \(taskText) skip synchronization for \(directory.serverUrl) in date \(offlineDate)")
                             continue
                         }
-                        NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] \(taskText) start synchronization for \(directory.serverUrl)")
 
                         NCNetworking.shared.synchronization(account: self.account, serverUrl: directory.serverUrl) { errorCode, items in
-
                             NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] \(taskText) end synchronization for \(directory.serverUrl), errorCode: \(errorCode), item: \(items)")
                             semaphore.signal()
                         }
