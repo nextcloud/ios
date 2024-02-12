@@ -147,16 +147,9 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
         if isOffline {
             if metadata.directory {
                 NCManageDatabase.shared.setDirectory(serverUrl: serverUrl, offline: false, account: appDelegate.account)
-                if let results = NCManageDatabase.shared.getResultsMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND sessionSelector == %d AND status == %d", metadata.account, serverUrl, NCGlobal.shared.selectorSynchronizationOffline, NCGlobal.shared.metadataStatusWaitDownload)) {
-                    for result in results {
-                        NCManageDatabase.shared.setMetadataSession(ocId: result.ocId,
-                                                                   session: "",
-                                                                   sessionError: "",
-                                                                   selector: "",
-                                                                   status: NCGlobal.shared.metadataStatusNormal)
-                    }
+                if let metadatas = NCManageDatabase.shared.getResultsMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND sessionSelector == %d AND status == %d", metadata.account, serverUrl, NCGlobal.shared.selectorSynchronizationOffline, NCGlobal.shared.metadataStatusWaitDownload)) {
+                    NCManageDatabase.shared.clearMetadataSession(metadatas: metadatas)
                 }
-
             } else {
                 NCManageDatabase.shared.setLocalFile(ocId: metadata.ocId, offline: false)
             }
