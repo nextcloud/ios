@@ -645,6 +645,8 @@ extension NCNetworking {
 
         NextcloudKit.shared.setFavorite(fileName: fileName, favorite: favorite) { account, error in
             if error == .success && metadata.account == account {
+                metadata.favorite = favorite
+                NCManageDatabase.shared.addMetadata(metadata)
                 NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterFavoriteFile, userInfo: ["ocId": ocId, "serverUrl": metadata.serverUrl])
             }
             completion(error)
