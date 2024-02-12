@@ -362,7 +362,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     func handleAppRefreshProcessingTask(taskText: String, completion: @escaping () -> Void = {}) {
 
         let semaphore = DispatchSemaphore(value: 0)
-        var synchErrorCode = 0
         let dateOne = Calendar.current.date(byAdding: .day, value: 1, to: Date())
 
         NCAutoUpload.shared.initAutoUpload(viewController: nil) { items in
@@ -383,16 +382,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                         }
                         NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] \(taskText) start synchronization for \(directory.serverUrl)")
 
-                        NCNetworking.shared.synchronization(account: self.account, serverUrl: directory.serverUrl, selector: NCGlobal.shared.selectorSynchronizationOffline) { errorCode, items in
+                        NCNetworking.shared.synchronization(account: self.account, serverUrl: directory.serverUrl) { errorCode, items in
 
                             NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] \(taskText) end synchronization for \(directory.serverUrl), errorCode: \(errorCode), item: \(items)")
-                            synchErrorCode = errorCode
                             semaphore.signal()
                         }
                         semaphore.wait()
-                        if synchErrorCode != 0 {
-                            return completion()
-                        }
                     }
                 }
                 completion()
@@ -912,11 +907,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
         let utilityFileSystem = NCUtilityFileSystem()
 
-        NCNetworking.shared.cancelAllQueue()
-        NCNetworking.shared.cancelDataTask()
-        NCNetworking.shared.cancelDownloadTasks()
-        NCNetworking.shared.cancelUploadTasks()
-        NCNetworking.shared.cancelUploadBackgroundTask(withNotification: false)
+        NCNetworking.shared.cancelAllTask()
 
         URLCache.shared.memoryCapacity = 0
         URLCache.shared.diskCapacity = 0

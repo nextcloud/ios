@@ -191,10 +191,9 @@ class NCNetworking: NSObject, NKCommonDelegate {
 #endif
     }
 
-    // MARK: - Queue
+    // MARK: -
 
     func cancelAllQueue() {
-
         downloadQueue.cancelAll()
         downloadThumbnailQueue.cancelAll()
         downloadThumbnailActivityQueue.cancelAll()
@@ -202,6 +201,15 @@ class NCNetworking: NSObject, NKCommonDelegate {
         unifiedSearchQueue.cancelAll()
         saveLivePhotoQueue.cancelAll()
         convertLivePhotoQueue.cancelAll()
+    }
+
+    func cancelAllTask() {
+        cancelAllQueue()
+        cancelDataTask()
+        cancelDownloadTasks()
+        cancelUploadTasks()
+        cancelDownloadBackgroundTask()
+        cancelUploadBackgroundTask()
     }
 
     // MARK: - Pinning check

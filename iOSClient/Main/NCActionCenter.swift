@@ -147,12 +147,15 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
         if isOffline {
             if metadata.directory {
                 NCManageDatabase.shared.setDirectory(serverUrl: serverUrl, offline: false, account: appDelegate.account)
+                if let metadatas = NCManageDatabase.shared.getResultsMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND sessionSelector == %@ AND status == %d", metadata.account, serverUrl, NCGlobal.shared.selectorSynchronizationOffline, NCGlobal.shared.metadataStatusWaitDownload)) {
+                    NCManageDatabase.shared.clearMetadataSession(metadatas: metadatas)
+                }
             } else {
                 NCManageDatabase.shared.setLocalFile(ocId: metadata.ocId, offline: false)
             }
         } else if metadata.directory {
-            NCManageDatabase.shared.setDirectory(serverUrl: serverUrl, offline: true, account: appDelegate.account)
-            NCNetworking.shared.synchronization(account: metadata.account, serverUrl: serverUrl, selector: NCGlobal.shared.selectorSynchronizationOffline)
+            NCManageDatabase.shared.setDirectory(serverUrl: serverUrl, offline: true, account: metadata.account)
+            NCNetworking.shared.synchronization(account: metadata.account, serverUrl: serverUrl)
         } else {
             var metadatasSynchronizationOffline: [tableMetadata] = []
             NCManageDatabase.shared.setLocalFile(ocId: metadata.ocId, offline: true)
@@ -162,7 +165,7 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
             }
             NCManageDatabase.shared.setMetadatasSessionInWaitDownload(metadatas: metadatasSynchronizationOffline,
                                                                       session: NCNetworking.shared.sessionDownloadBackground,
-                                                                      selector: "NCGlobal.shared.selectorSynchronizationOffline")
+                                                                      selector: NCGlobal.shared.selectorSynchronizationOffline)
         }
     }
 

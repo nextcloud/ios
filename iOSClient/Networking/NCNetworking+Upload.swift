@@ -526,14 +526,12 @@ extension NCNetworking {
             }
         }
 
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-            if let results = NCManageDatabase.shared.getResultsMetadatas(predicate: NSPredicate(format: "status > 0 AND session == %@", NextcloudKit.shared.nkCommonInstance.sessionIdentifierUpload)) {
-                NCManageDatabase.shared.deleteMetadata(results: results)
-            }
+        if let results = NCManageDatabase.shared.getResultsMetadatas(predicate: NSPredicate(format: "status > 0 AND session == %@", NextcloudKit.shared.nkCommonInstance.sessionIdentifierUpload)) {
+            NCManageDatabase.shared.deleteMetadata(results: results)
         }
     }
 
-    func cancelUploadBackgroundTask(withNotification: Bool) {
+    func cancelUploadBackgroundTask() {
 
         Task {
             let tasksBackground = await NCNetworking.shared.sessionManagerUploadBackground.tasks
@@ -544,12 +542,8 @@ extension NCNetworking {
             for task in tasksBackgroundWWan.1 { // ([URLSessionDataTask], [URLSessionUploadTask], [URLSessionDownloadTask])
                 task.cancel()
             }
-
             if let results = NCManageDatabase.shared.getResultsMetadatas(predicate: NSPredicate(format: "status > 0 AND (session == %@ || session == %@)", NCNetworking.shared.sessionUploadBackground, NCNetworking.shared.sessionUploadBackgroundWWan)) {
                 NCManageDatabase.shared.deleteMetadata(results: results)
-            }
-            if withNotification {
-                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSource)
             }
         }
     }
