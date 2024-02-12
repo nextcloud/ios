@@ -270,7 +270,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         scheduleAppRefresh()
         scheduleAppProcessing()
         NCNetworking.shared.cancelAllQueue()
-        NCNetworking.shared.cancelDataTask()
         NCNetworking.shared.cancelDownloadTasks()
         presentPasscode { }
 
