@@ -33,4 +33,8 @@ extension View {
     func frameForPreview() -> some View {
         return frame(width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height)
     }
+
+    func hiddenConditionally(isHidden: Bool) -> some View {
+        isHidden ? AnyView(self.hidden()) : AnyView(self)
+    }
 }

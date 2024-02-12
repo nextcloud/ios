@@ -50,11 +50,11 @@ struct PreviewStore {
 }
 
 class NCUploadAssets: NSObject, ObservableObject, NCCreateFormUploadConflictDelegate {
-
     @Published var serverUrl: String
     @Published var assets: [TLPHAsset]
     @Published var userBaseUrl: NCUserBaseUrl
     @Published var dismiss = false
+    @Published var isHiddenSave = true
     @Published var isUseAutoUploadFolder: Bool = false
     @Published var isUseAutoUploadSubFolder: Bool = false
     @Published var previewStore: [PreviewStore] = []
@@ -74,13 +74,16 @@ class NCUploadAssets: NSObject, ObservableObject, NCCreateFormUploadConflictDele
 
     func loadImages() {
         var previewStore: [PreviewStore] = []
+        self.showHUD = true
         DispatchQueue.global().async {
             for asset in self.assets {
                 guard let image = asset.fullResolutionImage?.resizeImage(size: CGSize(width: 300, height: 300), isAspectRation: true), let localIdentifier = asset.phAsset?.localIdentifier else { continue }
                 previewStore.append(PreviewStore(id: localIdentifier, asset: asset, assetType: asset.type, fileName: "", image: image))
             }
             DispatchQueue.main.async {
+                self.showHUD = false
                 self.previewStore = previewStore
+                self.isHiddenSave = false
             }
         }
     }
@@ -146,7 +149,6 @@ class NCUploadAssets: NSObject, ObservableObject, NCCreateFormUploadConflictDele
 // MARK: - View
 
 struct UploadAssetsView: View {
-
     @State private var fileName: String = NCKeychain().getFileNameMask(key: NCGlobal.shared.keyFileNameMask)
     @State private var isMaintainOriginalFilename: Bool = NCKeychain().getOriginalFileName(key: NCGlobal.shared.keyFileNameOriginal)
     @State private var isAddFilenametype: Bool = NCKeychain().getFileNameType(key: NCGlobal.shared.keyFileNameType)
@@ -163,7 +165,6 @@ struct UploadAssetsView: View {
     var gridItems: [GridItem] = [GridItem()]
 
     @ObservedObject var uploadAssets: NCUploadAssets
-
     @Environment(\.presentationMode) var presentationMode
 
     init(uploadAssets: NCUploadAssets) {
@@ -180,7 +181,6 @@ struct UploadAssetsView: View {
     }
 
     private func setFileNameMaskForPreview(fileName: String?) -> String {
-
         guard let asset = uploadAssets.assets.first?.phAsset else { return "" }
         var preview: String = ""
         let creationDate = asset.creationDate ?? Date()
@@ -298,15 +298,12 @@ struct UploadAssetsView: View {
     }
 
     private func presentedQuickLook(index: Int) {
-
         var image: UIImage?
-
         if let imageData = uploadAssets.previewStore[index].data {
             image = UIImage(data: imageData)
         } else if let imageFullResolution = uploadAssets.previewStore[index].asset.fullResolutionImage?.fixedOrientation() {
             image = imageFullResolution
         }
-
         if let image = image {
             if let data = image.jpegData(compressionQuality: 1) {
                 do {
@@ -329,7 +326,6 @@ struct UploadAssetsView: View {
 
     private func getOriginalFilenameForPreview() -> NSString {
         NCKeychain().setOriginalFileName(key: NCGlobal.shared.keyFileNameOriginal, value: isMaintainOriginalFilename)
-
         if let asset = uploadAssets.assets.first?.phAsset {
             return asset.originalFilename
         } else {
@@ -338,7 +334,6 @@ struct UploadAssetsView: View {
     }
 
     var body: some View {
-
         let utilityFileSystem = NCUtilityFileSystem()
 
         NavigationView {
@@ -409,7 +404,7 @@ struct UploadAssetsView: View {
                             }
                         }
                     }
-                    .redacted(reason: uploadAssets.previewStore.isEmpty ? .placeholder : [])
+                    // .redacted(reason: uploadAssets.previewStore.isEmpty ? .placeholder : [])
 
                     Section {
                         Toggle(isOn: $isMaintainOriginalFilename, label: {
@@ -513,6 +508,7 @@ struct UploadAssetsView: View {
                     .buttonStyle(ButtonRounded(disabled: uploadAssets.uploadInProgress))
                     .listRowBackground(Color(UIColor.systemGroupedBackground))
                     .disabled(uploadAssets.uploadInProgress)
+                    .hiddenConditionally(isHidden: uploadAssets.isHiddenSave)
                 }
                 .navigationTitle(NSLocalizedString("_upload_photos_videos_", comment: ""))
                 .navigationBarTitleDisplayMode(.inline)
@@ -547,7 +543,6 @@ struct UploadAssetsView: View {
     }
 
     struct ImageAsset: View {
-
         @ObservedObject var uploadAssets: NCUploadAssets
         @State var index: Int
 
