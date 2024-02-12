@@ -42,7 +42,7 @@ class NCCollectionViewCommonSelectTabBar: NCSelectableViewTabBar, ObservableObje
 
         guard let tabBarController, let hostingController else { return }
 
-        tabBarController.addChild(hostingController)
+        
         tabBarController.view.addSubview(hostingController.view)
 
         hostingController.view.frame = tabBarController.tabBar.frame
