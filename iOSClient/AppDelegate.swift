@@ -378,7 +378,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                             NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] \(taskText) skip synchronization for \(directory.serverUrl) in date \(offlineDate)")
                             continue
                         }
-
                         NCNetworking.shared.synchronization(account: self.account, serverUrl: directory.serverUrl) { errorCode, items in
                             NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] \(taskText) end synchronization for \(directory.serverUrl), errorCode: \(errorCode), item: \(items)")
                             semaphore.signal()
