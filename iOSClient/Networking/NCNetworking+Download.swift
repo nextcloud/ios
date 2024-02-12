@@ -299,25 +299,28 @@ extension NCNetworking {
 
     func cancelDownloadTasks() {
 
+        downloadRequest.removeAll()
         let sessionManager = NextcloudKit.shared.sessionManager
         sessionManager.session.getTasksWithCompletionHandler { _, _, downloadTasks in
             downloadTasks.forEach {
                 $0.cancel()
             }
         }
+        if let results = NCManageDatabase.shared.getResultsMetadatas(predicate: NSPredicate(format: "status < 0 AND session == %@", NextcloudKit.shared.nkCommonInstance.sessionIdentifierDownload)) {
+            NCManageDatabase.shared.clearMetadataSession(metadatas: results)
+        }
+    }
 
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-            if let results = NCManageDatabase.shared.getResultsMetadatas(predicate: NSPredicate(format: "status < 0")) {
-                for metadata in results {
-                    self.utilityFileSystem.removeFile(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId))
-                    NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId,
-                                                               session: "",
-                                                               sessionError: "",
-                                                               selector: "",
-                                                               status: NCGlobal.shared.metadataStatusNormal)
-                }
+    func cancelDownloadBackgroundTask() {
+
+        Task {
+            let tasksBackground = await NCNetworking.shared.sessionManagerDownloadBackground.tasks
+            for task in tasksBackground.2 { // ([URLSessionDataTask], [URLSessionUploadTask], [URLSessionDownloadTask])
+                task.cancel()
             }
-            self.downloadRequest.removeAll()
+            if let results = NCManageDatabase.shared.getResultsMetadatas(predicate: NSPredicate(format: "status < 0 AND session == %@", NCNetworking.shared.sessionDownloadBackground)) {
+                NCManageDatabase.shared.clearMetadataSession(metadatas: results)
+            }
         }
     }
 }

@@ -109,11 +109,10 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
 
         alertController.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel, handler: nil))
         alertController.addAction(UIAlertAction(title: NSLocalizedString("_cancel_all_task_", comment: ""), style: .default, handler: { _ in
-            NCNetworking.shared.cancelAllQueue()
-            NCNetworking.shared.cancelDataTask()
-            NCNetworking.shared.cancelDownloadTasks()
-            NCNetworking.shared.cancelUploadTasks()
-            NCNetworking.shared.cancelUploadBackgroundTask(withNotification: true)
+            NCNetworking.shared.cancelAllTask()
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                self.reloadDataSource()
+            }
         }))
 
         self.present(alertController, animated: true, completion: nil)

@@ -355,11 +355,7 @@
 
 - (void)clearCache:(NSString *)account
 {
-    [[NCNetworking shared] cancelAllQueue];
-    [[NCNetworking shared] cancelDataTask];
-    [[NCNetworking shared] cancelDownloadTasks];
-    [[NCNetworking shared] cancelUploadTasks];
-    [[NCNetworking shared] cancelUploadBackgroundTaskWithNotification:false];
+    [[NCNetworking shared] cancelAllTask];
 
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
 

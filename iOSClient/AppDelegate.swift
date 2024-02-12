@@ -907,11 +907,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
         let utilityFileSystem = NCUtilityFileSystem()
 
-        NCNetworking.shared.cancelAllQueue()
-        NCNetworking.shared.cancelDataTask()
-        NCNetworking.shared.cancelDownloadTasks()
-        NCNetworking.shared.cancelUploadTasks()
-        NCNetworking.shared.cancelUploadBackgroundTask(withNotification: false)
+        NCNetworking.shared.cancelAllTask()
 
         URLCache.shared.memoryCapacity = 0
         URLCache.shared.diskCapacity = 0
