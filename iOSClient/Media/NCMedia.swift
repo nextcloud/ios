@@ -33,7 +33,7 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
     var mediaCommandView: NCMediaCommandView?
     var layout: NCMediaGridLayout!
     var documentPickerViewController: NCDocumentPickerViewController?
-    var tabBarSelect: NCMediaTabbarSelect?
+    var tabBarSelect: NCMediaSelectTabBar?
 
     let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
     let utilityFileSystem = NCUtilityFileSystem()
@@ -95,7 +95,7 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
         mediaCommandView?.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 0).isActive = true
         mediaCommandView?.heightAnchor.constraint(equalToConstant: 150).isActive = true
 
-        tabBarSelect = NCMediaTabbarSelect(tabBarController: self.tabBarController, delegate: mediaCommandView)
+        tabBarSelect = NCMediaSelectTabBar(tabBarController: self.tabBarController, delegate: mediaCommandView)
 
         cacheImages.cellLivePhotoImage = utility.loadImage(named: "livephoto", color: .white)
         cacheImages.cellPlayImage = utility.loadImage(named: "play.fill", color: .white)

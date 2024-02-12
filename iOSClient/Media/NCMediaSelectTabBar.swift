@@ -24,17 +24,17 @@
 import UIKit
 import SwiftUI
 
-protocol NCMediaTabBarSelectDelegate: AnyObject {
+protocol NCMediaSelectTabBarDelegate: AnyObject {
     func delete()
 }
 
-class NCMediaTabbarSelect: ObservableObject {
+class NCMediaSelectTabBar: ObservableObject {
     var hostingController: UIViewController!
     var mediaTabBarController: UITabBarController?
-    open weak var delegate: NCMediaTabBarSelectDelegate?
+    open weak var delegate: NCMediaSelectTabBarDelegate?
     @Published var selectCount: Int = 0
 
-    init(tabBarController: UITabBarController? = nil, delegate: NCMediaTabBarSelectDelegate? = nil) {
+    init(tabBarController: UITabBarController? = nil, delegate: NCMediaSelectTabBarDelegate? = nil) {
         guard let tabBarController else { return }
         let mediaTabBarSelectView = MediaTabBarSelectView(tabBarSelect: self)
         hostingController = UIHostingController(rootView: mediaTabBarSelectView)
@@ -42,7 +42,6 @@ class NCMediaTabbarSelect: ObservableObject {
         self.mediaTabBarController = tabBarController
         self.delegate = delegate
 
-        tabBarController.addChild(hostingController)
         tabBarController.view.addSubview(hostingController.view)
 
         hostingController.view.frame = tabBarController.tabBar.frame
@@ -67,7 +66,7 @@ class NCMediaTabbarSelect: ObservableObject {
 }
 
 struct MediaTabBarSelectView: View {
-    @ObservedObject var tabBarSelect: NCMediaTabbarSelect
+    @ObservedObject var tabBarSelect: NCMediaSelectTabBar
     @Environment(\.verticalSizeClass) var sizeClass
 
     var body: some View {
@@ -105,5 +104,5 @@ struct MediaTabBarSelectView: View {
 }
 
 #Preview {
-    MediaTabBarSelectView(tabBarSelect: NCMediaTabbarSelect())
+    MediaTabBarSelectView(tabBarSelect: NCMediaSelectTabBar())
 }
