@@ -360,9 +360,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     }
 
     func handleAppRefreshProcessingTask(taskText: String, completion: @escaping () -> Void = {}) {
-
         let semaphore = DispatchSemaphore(value: 0)
-        let dateOne = Calendar.current.date(byAdding: .day, value: 1, to: Date())
 
         NCAutoUpload.shared.initAutoUpload(viewController: nil) { items in
             NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] \(taskText) auto upload with \(items) uploads")
@@ -436,7 +434,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     }
 
     func nextcloudPushNotificationAction(data: [String: AnyObject]) {
-
         guard let data = NCApplicationHandle().nextcloudPushNotificationAction(data: data) else { return }
         var findAccount: Bool = false
 
