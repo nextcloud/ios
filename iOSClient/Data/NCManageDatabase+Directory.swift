@@ -48,7 +48,6 @@ class tableDirectory: Object {
 extension NCManageDatabase {
 
     func addDirectory(encrypted: Bool, favorite: Bool, ocId: String, fileId: String, etag: String? = nil, permissions: String? = nil, serverUrl: String, account: String) {
-
         do {
             let realm = try Realm()
             try realm.write {
@@ -102,7 +101,6 @@ extension NCManageDatabase {
     }
 
     func setDirectory(serverUrl: String, serverUrlTo: String? = nil, etag: String? = nil, ocId: String? = nil, fileId: String? = nil, encrypted: Bool, richWorkspace: String? = nil, account: String) {
-
         do {
             let realm = try Realm()
             try realm.write {
@@ -133,7 +131,6 @@ extension NCManageDatabase {
     }
 
     func cleanEtagDirectory(account: String, serverUrl: String) {
-
         do {
             let realm = try Realm()
             try realm.write {
@@ -147,7 +144,6 @@ extension NCManageDatabase {
     }
 
     func getTableDirectory(predicate: NSPredicate) -> tableDirectory? {
-
         do {
             let realm = try Realm()
             realm.refresh()
@@ -156,24 +152,20 @@ extension NCManageDatabase {
         } catch let error as NSError {
             NextcloudKit.shared.nkCommonInstance.writeLog("Could not access database: \(error)")
         }
-
         return nil
     }
 
     func getTableDirectory(account: String, serverUrl: String) -> tableDirectory? {
-
         do {
             let realm = try Realm()
             return realm.objects(tableDirectory.self).filter("account == %@ AND serverUrl == %@", account, serverUrl).first
         } catch let error as NSError {
             NextcloudKit.shared.nkCommonInstance.writeLog("Could not access database: \(error)")
         }
-
         return nil
     }
 
     func getTableDirectory(ocId: String) -> tableDirectory? {
-
         do {
             let realm = try Realm()
             realm.refresh()
@@ -185,7 +177,6 @@ extension NCManageDatabase {
     }
 
     func getTablesDirectory(predicate: NSPredicate, sorted: String, ascending: Bool) -> [tableDirectory]? {
-
         do {
             let realm = try Realm()
             realm.refresh()
@@ -203,7 +194,6 @@ extension NCManageDatabase {
     }
 
     func renameDirectory(ocId: String, serverUrl: String) {
-
         do {
             let realm = try Realm()
             try realm.write {
@@ -216,7 +206,6 @@ extension NCManageDatabase {
     }
 
     func setDirectory(serverUrl: String, offline: Bool, account: String) {
-
         do {
             let realm = try Realm()
             try realm.write {
@@ -229,7 +218,6 @@ extension NCManageDatabase {
     }
 
     func setDirectorySynchronizationDate(serverUrl: String, account: String) {
-
         do {
             let realm = try Realm()
             try realm.write {
@@ -243,7 +231,6 @@ extension NCManageDatabase {
 
     @discardableResult
     func setDirectory(serverUrl: String, richWorkspace: String?, account: String) -> tableDirectory? {
-
         var result: tableDirectory?
 
         do {

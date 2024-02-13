@@ -129,6 +129,38 @@ class NCContentPresenter: NSObject {
         }
     }
 
+    func showProcessingNote() {
+        DispatchQueue.main.async {
+            var attributes = EKAttributes.topFloat
+            let text = "Waiting for the goodies to arrive!"
+            let style = EKProperty.LabelStyle(
+                font: MainFont.light.with(size: 14),
+                color: .white,
+                alignment: .center,
+                displayMode: EKAttributes.DisplayMode.inferred
+            )
+            let labelContent = EKProperty.LabelContent(
+                text: text,
+                style: style
+            )
+            let contentView = EKProcessingNoteMessageView(
+                with: labelContent,
+                activityIndicator: .medium
+            )
+            attributes.windowLevel = .normal
+            attributes.entryBackground = .color(color: EKColor(self.getBackgroundColorFromType(.info)))
+            attributes.displayDuration = .infinity
+            attributes.positionConstraints.verticalOffset = 20
+            attributes.positionConstraints.size = .init(width: .offset(value: 20), height: .intrinsic)
+            attributes.positionConstraints.maxSize = .init(width: .constant(value: min(UIScreen.main.bounds.width, UIScreen.main.bounds.height)), height: .intrinsic)
+            attributes.shadow = .active(with: .init(color: .black, opacity: 0.5, radius: 10, offset: .zero))
+            attributes.scroll = .enabled(swipeable: true, pullbackAnimation: .jolt)
+            attributes.popBehavior = .animated(animation: .init(translate: .init(duration: 0.2)))
+
+            SwiftEntryKit.display(entry: contentView, using: attributes)
+        }
+    }
+
     // MARK: - Flat message
 
     private func flatTop(title: String, description: String, delay: TimeInterval, imageName: String?, type: messageType, priority: EKAttributes.Precedence.Priority = .normal, dropEnqueuedEntries: Bool = false) {

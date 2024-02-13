@@ -270,8 +270,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         scheduleAppRefresh()
         scheduleAppProcessing()
         NCNetworking.shared.cancelAllQueue()
-        NCNetworking.shared.cancelDataTask()
         NCNetworking.shared.cancelDownloadTasks()
+        NCNetworking.shared.cancelUploadTasks()
         presentPasscode { }
 
         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterApplicationDidEnterBackground)
@@ -360,30 +360,25 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     }
 
     func handleAppRefreshProcessingTask(taskText: String, completion: @escaping () -> Void = {}) {
-
         let semaphore = DispatchSemaphore(value: 0)
-        let dateOne = Calendar.current.date(byAdding: .day, value: 1, to: Date())
 
         NCAutoUpload.shared.initAutoUpload(viewController: nil) { items in
             NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] \(taskText) auto upload with \(items) uploads")
 
             NCNetworkingProcess.shared.start { counterDownload, counterUpload in
-                NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] \(taskText) task upload process with download: \(counterDownload) upload: \(counterUpload)")
+                NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] \(taskText) networking process with download: \(counterDownload) upload: \(counterUpload)")
 
                 if taskText == "ProcessingTask",
                    items == 0, counterDownload == 0, counterUpload == 0,
                    let directories = NCManageDatabase.shared.getTablesDirectory(predicate: NSPredicate(format: "account == %@ AND offline == true", self.account), sorted: "offlineDate", ascending: true) {
 
                     for directory: tableDirectory in directories {
-                        // only 1 time for day
-                        if let offlineDate = directory.offlineDate, offlineDate.addingTimeInterval(86400) > Date() {
+                        // only 3 time for day
+                        if let offlineDate = directory.offlineDate, offlineDate.addingTimeInterval(28800) > Date() {
                             NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] \(taskText) skip synchronization for \(directory.serverUrl) in date \(offlineDate)")
                             continue
                         }
-                        NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] \(taskText) start synchronization for \(directory.serverUrl)")
-
                         NCNetworking.shared.synchronization(account: self.account, serverUrl: directory.serverUrl) { errorCode, items in
-
                             NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] \(taskText) end synchronization for \(directory.serverUrl), errorCode: \(errorCode), item: \(items)")
                             semaphore.signal()
                         }
@@ -436,7 +431,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     }
 
     func nextcloudPushNotificationAction(data: [String: AnyObject]) {
-
         guard let data = NCApplicationHandle().nextcloudPushNotificationAction(data: data) else { return }
         var findAccount: Bool = false
 
