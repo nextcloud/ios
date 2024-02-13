@@ -512,6 +512,7 @@ extension NCNetworking {
 
         NextcloudKit.shared.moveFileOrFolder(serverUrlFileNameSource: fileNamePath, serverUrlFileNameDestination: fileNameToPath, overwrite: false) { _, error in
             if error == .success {
+                NCManageDatabase.shared.renameMetadata(fileNameTo: fileNameNew, ocId: metadata.ocId)
                 if metadata.directory {
                     let serverUrl = self.utilityFileSystem.stringAppendServerUrl(metadata.serverUrl, addFileName: metadata.fileName)
                     let serverUrlTo = self.utilityFileSystem.stringAppendServerUrl(metadata.serverUrl, addFileName: fileNameNew)
@@ -519,20 +520,14 @@ extension NCNetworking {
                         NCManageDatabase.shared.setDirectory(serverUrl: serverUrl, serverUrlTo: serverUrlTo, etag: "", ocId: nil, fileId: nil, encrypted: directory.e2eEncrypted, richWorkspace: nil, account: metadata.account)
                     }
                 } else {
-                    do {
-                        try FileManager.default.removeItem(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId))
-                    } catch { }
-                    NCManageDatabase.shared.deleteVideo(metadata: metadata)
-                    NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
-                    NCManageDatabase.shared.deleteLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
-                    // LIVE PHOTO SERVER
-                    if let metadataLive = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata), metadataLive.isFlaggedAsLivePhotoByServer {
-                        do {
-                            try FileManager.default.removeItem(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadataLive.ocId))
-                        } catch { }
-                        NCManageDatabase.shared.deleteVideo(metadata: metadataLive)
-                        NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadataLive.ocId))
-                        NCManageDatabase.shared.deleteLocalFile(predicate: NSPredicate(format: "ocId == %@", metadataLive.ocId))
+                    if (metadata.fileName as NSString).pathExtension != (fileNameNew as NSString).pathExtension {
+                        let path = self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId)
+                        self.utilityFileSystem.removeFile(atPath: path)
+                    } else {
+                        NCManageDatabase.shared.setLocalFile(ocId: metadata.ocId, fileName: fileNameNew)
+                        let atPath = self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId) + "/" + metadata.fileName
+                        let toPath = self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId) + "/" + fileNameNew
+                        self.utilityFileSystem.moveFile(atPath: atPath, toPath: toPath)
                     }
                 }
                 NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterRenameFile, userInfo: ["ocId": metadata.ocId, "account": metadata.account, "indexPath": indexPath])

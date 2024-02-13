@@ -115,17 +115,14 @@ extension NCManageDatabase {
         }
     }
 
-    func setLocalFile(ocId: String, fileName: String?, etag: String?) {
+    func setLocalFile(ocId: String, fileName: String?) {
 
         do {
             let realm = try Realm()
             try realm.write {
                 let result = realm.objects(tableLocalFile.self).filter("ocId == %@", ocId).first
-                if let fileName = fileName {
+                if let fileName {
                     result?.fileName = fileName
-                }
-                if let etag = etag {
-                    result?.etag = etag
                 }
             }
         } catch let error {

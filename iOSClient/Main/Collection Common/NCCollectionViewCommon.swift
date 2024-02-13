@@ -379,7 +379,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
               account == appDelegate.account
         else { return }
 
-        reloadDataSourceNetwork()
+        notificationReloadDataSource += 1
     }
 
     @objc func createFolder(_ notification: NSNotification) {
