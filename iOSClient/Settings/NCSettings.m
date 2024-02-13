@@ -26,7 +26,6 @@
 #import "CCManageAccount.h"
 #import "CCManageAutoUpload.h"
 #import "NCBridgeSwift.h"
-#import "NSNotificationCenter+MainThread.h"
 #import <LocalAuthentication/LocalAuthentication.h>
 #import <TOPasscodeViewController/TOPasscodeViewController.h>
 
