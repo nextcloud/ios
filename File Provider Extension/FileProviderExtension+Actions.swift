@@ -207,7 +207,7 @@ extension FileProviderExtension {
 
                     _ = self.fpUtility.moveFile(self.utilityFileSystem.getDirectoryProviderStorageIconOcId(itemIdentifier.rawValue, etag: metadata.etag), toPath: self.utilityFileSystem.getDirectoryProviderStorageIconOcId(itemIdentifier.rawValue, etag: metadata.etag))
 
-                    NCManageDatabase.shared.setLocalFile(ocId: ocId, fileName: itemName, etag: nil)
+                    NCManageDatabase.shared.setLocalFile(ocId: ocId, fileName: itemName)
                 }
 
                 guard let parentItemIdentifier = self.fpUtility.getParentItemIdentifier(metadata: metadata) else {
