@@ -160,6 +160,9 @@ class NCShareExtension: UIViewController {
             self.filesName = fileNames
             DispatchQueue.main.async { self.setCommandView() }
         }
+        NCPasscode.shared.presentPasscode(viewController: self, delegate: self) {
+            NCPasscode.shared.enableTouchFaceID()
+        }
     }
 
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
@@ -393,5 +396,16 @@ extension NCShareExtension: uploadE2EEDelegate {
 
     func uploadE2EEProgress(_ totalBytesExpected: Int64, _ totalBytes: Int64, _ fractionCompleted: Double) {
         self.hud.progress = Float(fractionCompleted)
+    }
+}
+
+extension NCShareExtension: NCPasscodeDelegate {
+    func passcodeReset() {
+    }
+
+    func passcodeCounterFail() {
+    }
+
+    func correctPasscode(correct: Bool) {
     }
 }

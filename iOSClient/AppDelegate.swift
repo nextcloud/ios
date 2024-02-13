@@ -171,7 +171,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                 }
             }
         } else {
-            NCPasscode.shared.presentPasscode {
+            NCPasscode.shared.presentPasscode(delegate: self) {
                 NCPasscode.shared.enableTouchFaceID()
             }
         }
@@ -277,7 +277,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         NCNetworking.shared.cancelAllQueue()
         NCNetworking.shared.cancelDownloadTasks()
         NCNetworking.shared.cancelUploadTasks()
-        NCPasscode.shared.presentPasscode { }
+        NCPasscode.shared.presentPasscode(delegate: self) { }
 
         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterApplicationDidEnterBackground)
     }
@@ -981,5 +981,16 @@ extension AppDelegate: NCCreateFormUploadConflictDelegate {
     func dismissCreateFormUploadConflict(metadatas: [tableMetadata]?) {
         guard let metadatas = metadatas, !metadatas.isEmpty else { return }
         NCNetworkingProcess.shared.createProcessUploads(metadatas: metadatas) { _ in }
+    }
+}
+
+extension AppDelegate: NCPasscodeDelegate {
+    func passcodeReset() {
+    }
+
+    func passcodeCounterFail() {
+    }
+
+    func correctPasscode(correct: Bool) {
     }
 }

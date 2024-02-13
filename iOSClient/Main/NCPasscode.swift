@@ -25,6 +25,12 @@ import UIKit
 import LocalAuthentication
 import TOPasscodeViewController
 
+public protocol NCPasscodeDelegate: AnyObject {
+    func correctPasscode(correct: Bool)
+    func passcodeReset()
+    func passcodeCounterFail()
+}
+
 class NCPasscode: NSObject, TOPasscodeViewControllerDelegate {
     public static let shared: NCPasscode = {
         let instance = NCPasscode()
@@ -34,12 +40,13 @@ class NCPasscode: NSObject, TOPasscodeViewControllerDelegate {
         let passcodeCounterFailReset = NCKeychain().passcodeCounterFailReset
         return NCKeychain().resetAppCounterFail && passcodeCounterFailReset >= NCBrandOptions.shared.resetAppPasscodeAttempts
     }
-    var isPasscodeFail: Bool {
+    var isPasscodeCounterFail: Bool {
         let passcodeCounterFail = NCKeychain().passcodeCounterFail
         return passcodeCounterFail > 0 && passcodeCounterFail.isMultiple(of: 3)
     }
+    var delegate: NCPasscodeDelegate?
 
-    func presentPasscode(viewController: UIViewController? = nil, completion: @escaping () -> Void) {
+    func presentPasscode(viewController: UIViewController? = nil, delegate: NCPasscodeDelegate?, completion: @escaping () -> Void) {
         var error: NSError?
         var viewController = viewController
 #if !EXTENSION
@@ -58,8 +65,9 @@ class NCPasscode: NSObject, TOPasscodeViewControllerDelegate {
         // Make sure we have a privacy window (in case it's not enabled)
         (UIApplication.shared.delegate as? AppDelegate)?.showPrivacyProtectionWindow()
 #endif
-
         let passcodeViewController = TOPasscodeViewController(passcodeType: .sixDigits, allowCancel: false)
+
+        self.delegate = delegate
         passcodeViewController.delegate = self
         passcodeViewController.keypadButtonShowLettering = false
         if NCKeychain().touchFaceID, LAContext().canEvaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, error: &error) {
@@ -87,7 +95,7 @@ class NCPasscode: NSObject, TOPasscodeViewControllerDelegate {
         guard NCKeychain().touchFaceID,
               NCKeychain().passcode != nil,
               NCKeychain().requestPasscodeAtStart,
-              !isPasscodeFail,
+              !isPasscodeCounterFail,
               !isPasscodeReset
         else { return }
 
@@ -188,8 +196,9 @@ class NCPasscode: NSObject, TOPasscodeViewControllerDelegate {
                 passcodeViewController.present(alertController, animated: true, completion: { })
 
                 NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterResetApplication, second: 3)
+                self.delegate?.passcodeReset()
 
-            } else if self.isPasscodeFail {
+            } else if self.isPasscodeCounterFail {
 
                 passcodeViewController.setContentHidden(true, animated: true)
 
@@ -208,6 +217,7 @@ class NCPasscode: NSObject, TOPasscodeViewControllerDelegate {
                         self.enableTouchFaceID()
                     }
                 }
+                self.delegate?.passcodeCounterFail()
             }
         }
     }
