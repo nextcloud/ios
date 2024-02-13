@@ -168,6 +168,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             }
         }
 
+        NotificationCenter.default.addObserver(self, selector: #selector(resetApplication), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterResetApplication), object: nil)
+
         self.presentPasscode {
             self.enableTouchFaceID()
         }

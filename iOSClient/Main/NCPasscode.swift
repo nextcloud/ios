@@ -180,13 +180,7 @@ class NCPasscode: NSObject, TOPasscodeViewControllerDelegate {
                 let alertController = UIAlertController(title: NSLocalizedString("_reset_wrong_passcode_", comment: ""), message: nil, preferredStyle: .alert)
                 passcodeViewController.present(alertController, animated: true, completion: { })
 
-                #if !EXTENSION
-                DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
-                    if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
-                        appDelegate.resetApplication()
-                    }
-                }
-                #endif
+                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterResetApplication, second: 3)
 
             } else if self.isPasscodeFail {
 

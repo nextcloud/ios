@@ -23,7 +23,6 @@
 
 #import "CCUtility.h"
 #import "NCBridgeSwift.h"
-#import "NSNotificationCenter+MainThread.h"
 #import <OpenSSL/OpenSSL.h>
 #import <CoreLocation/CoreLocation.h>
 #include <sys/stat.h>

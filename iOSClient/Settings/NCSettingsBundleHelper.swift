@@ -38,11 +38,7 @@ class NCSettingsBundleHelper: NSObject {
     class func checkAndExecuteSettings(delay: Double) {
         if UserDefaults.standard.bool(forKey: SettingsBundleKeys.Reset) {
             UserDefaults.standard.set(false, forKey: SettingsBundleKeys.Reset)
-
-            DispatchQueue.main.asyncAfter(deadline: .now() + delay) {
-                let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
-                appDelegate.resetApplication()
-            }
+            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterResetApplication, second: delay)
         }
     }
 }
