@@ -404,7 +404,7 @@ extension NCShareExtension: NCPasscodeDelegate {
 
     }
     func passcodeReset() {
-        
+
     }
     func correctPasscode(correct: Bool) {
 

@@ -954,11 +954,11 @@ extension AppDelegate: NCPasscodeDelegate {
     func requestedAccount() {
         requestAccount()
     }
-    
+
     func passcodeReset() {
 
     }
     func correctPasscode(correct: Bool) {
-        
+
     }
 }

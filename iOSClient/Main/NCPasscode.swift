@@ -48,11 +48,13 @@ class NCPasscode: NSObject, TOPasscodeViewControllerDelegate {
         return privacyProtectionWindow?.rootViewController?.presentedViewController is TOPasscodeViewController
     }
     var privacyProtectionWindow: UIWindow?
+    var passcodeViewController: TOPasscodeViewController!
     var delegate: NCPasscodeDelegate?
 
     func presentPasscode(viewController: UIViewController? = nil, delegate: NCPasscodeDelegate?, completion: @escaping () -> Void) {
         var error: NSError?
         var viewController = viewController
+        self.delegate = delegate
         defer {
             self.delegate?.requestedAccount()
         }
@@ -68,9 +70,7 @@ class NCPasscode: NSObject, TOPasscodeViewControllerDelegate {
         viewController = self.privacyProtectionWindow?.rootViewController
 #endif
 
-        let passcodeViewController = TOPasscodeViewController(passcodeType: .sixDigits, allowCancel: false)
-
-        self.delegate = delegate
+        passcodeViewController = TOPasscodeViewController(passcodeType: .sixDigits, allowCancel: false)
         passcodeViewController.delegate = self
         passcodeViewController.keypadButtonShowLettering = false
         if NCKeychain().touchFaceID, LAContext().canEvaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, error: &error) {
@@ -85,7 +85,7 @@ class NCPasscode: NSObject, TOPasscodeViewControllerDelegate {
             }
         }
         viewController?.present(passcodeViewController, animated: true, completion: {
-            self.openAlert(passcodeViewController: passcodeViewController)
+            self.openAlert(passcodeViewController: self.passcodeViewController)
             completion()
         })
     }
@@ -95,18 +95,10 @@ class NCPasscode: NSObject, TOPasscodeViewControllerDelegate {
               NCKeychain().passcode != nil,
               NCKeychain().requestPasscodeAtStart,
               !isPasscodeCounterFail,
-              !isPasscodeReset
+              let passcodeViewController
         else { return }
 
-        var passcodeViewController: TOPasscodeViewController?
-#if !EXTENSION
-        passcodeViewController = self.privacyProtectionWindow?.rootViewController?.presentedViewController as? TOPasscodeViewController
-#else
-#endif
-        guard let passcodeViewController else { return }
-
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-
             LAContext().evaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, localizedReason: NCBrandOptions.shared.brand) { success, evaluateError in
                 if success {
                     DispatchQueue.main.async {
