@@ -26,7 +26,7 @@ import LocalAuthentication
 import TOPasscodeViewController
 
 public protocol NCPasscodeDelegate: AnyObject {
-    func correctPasscode(correct: Bool)
+    func evaluatePolicy(_ passcodeViewController: TOPasscodeViewController, isCorrectCode: Bool)
     func passcodeReset()
     func requestedAccount()
 }
@@ -106,6 +106,7 @@ class NCPasscode: NSObject, TOPasscodeViewControllerDelegate {
                             NCKeychain().passcodeCounterFail = 0
                             NCKeychain().passcodeCounterFailReset = 0
                             self.hidePrivacyProtectionWindow()
+                            self.delegate?.evaluatePolicy(passcodeViewController, isCorrectCode: true)
                             self.delegate?.requestedAccount()
                         }
                     }
@@ -121,6 +122,7 @@ class NCPasscode: NSObject, TOPasscodeViewControllerDelegate {
                                 NCKeychain().passcodeCounterFailReset += 3
                             }
                             self.openAlert(passcodeViewController: passcodeViewController)
+                            self.delegate?.evaluatePolicy(passcodeViewController, isCorrectCode: false)
                         case LAError.biometryLockout.rawValue:
                             LAContext().evaluatePolicy(LAPolicy.deviceOwnerAuthentication, localizedReason: NSLocalizedString("_deviceOwnerAuthentication_", comment: ""), reply: { success, _ in
                                 if success {
@@ -155,11 +157,13 @@ class NCPasscode: NSObject, TOPasscodeViewControllerDelegate {
 
     func passcodeViewController(_ passcodeViewController: TOPasscodeViewController, isCorrectCode code: String) -> Bool {
         if code == NCKeychain().passcode {
+            self.delegate?.evaluatePolicy(passcodeViewController, isCorrectCode: true)
             return true
         } else {
             NCKeychain().passcodeCounterFail += 1
             NCKeychain().passcodeCounterFailReset += 1
             openAlert(passcodeViewController: passcodeViewController)
+            self.delegate?.evaluatePolicy(passcodeViewController, isCorrectCode: false)
             return false
         }
     }

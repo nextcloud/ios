@@ -26,6 +26,7 @@
 import UIKit
 import NextcloudKit
 import JGProgressHUD
+import TOPasscodeViewController
 
 enum NCShareExtensionError: Error {
     case cancel, fileUpload, noAccount, noFiles
@@ -406,7 +407,12 @@ extension NCShareExtension: NCPasscodeDelegate {
     func passcodeReset() {
 
     }
-    func correctPasscode(correct: Bool) {
-
+    func evaluatePolicy(_ passcodeViewController: TOPasscodeViewController, isCorrectCode: Bool) {
+        if !isCorrectCode {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                passcodeViewController.dismiss(animated: false)
+                self.cancel(with: .noAccount)
+            }
+        }
     }
 }
