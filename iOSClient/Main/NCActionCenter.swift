@@ -151,14 +151,13 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
                     NCManageDatabase.shared.clearMetadataSession(metadatas: metadatas)
                 }
             } else {
-                NCManageDatabase.shared.setLocalFile(ocId: metadata.ocId, offline: false)
+                NCManageDatabase.shared.setOffLocalFile(ocId: metadata.ocId)
             }
         } else if metadata.directory {
             NCManageDatabase.shared.setDirectory(serverUrl: serverUrl, offline: true, account: metadata.account)
             NCNetworking.shared.synchronization(account: metadata.account, serverUrl: serverUrl)
         } else {
             var metadatasSynchronizationOffline: [tableMetadata] = []
-            NCManageDatabase.shared.setLocalFile(ocId: metadata.ocId, offline: true)
             metadatasSynchronizationOffline.append(metadata)
             if let metadata = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata) {
                 metadatasSynchronizationOffline.append(metadata)
