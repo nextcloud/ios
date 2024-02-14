@@ -261,7 +261,7 @@ class NCNetworkingProcess: NSObject {
 
         DispatchQueue.main.async {
 
-            guard !self.appDelegate.isPasscodePresented else {
+            guard !NCPasscode.shared.isPasscodePresented else {
                 return completition()
             }
 

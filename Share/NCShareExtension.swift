@@ -400,12 +400,13 @@ extension NCShareExtension: uploadE2EEDelegate {
 }
 
 extension NCShareExtension: NCPasscodeDelegate {
+    func requestedAccount() {
+
+    }
     func passcodeReset() {
+        
     }
-
-    func passcodeCounterFail() {
-    }
-
     func correctPasscode(correct: Bool) {
+
     }
 }

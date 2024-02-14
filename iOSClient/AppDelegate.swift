@@ -53,16 +53,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     var disableSharesView: Bool = false
     var documentPickerViewController: NCDocumentPickerViewController?
     var timerErrorNetworking: Timer?
-    var privacyProtectionWindow: UIWindow?
     var isAppRefresh: Bool = false
     var isProcessingTask: Bool = false
 
     var isUiTestingEnabled: Bool {
         return ProcessInfo.processInfo.arguments.contains("UI_TESTING")
-    }
-
-    var isPasscodePresented: Bool {
-        return privacyProtectionWindow?.rootViewController?.presentedViewController is TOPasscodeViewController
     }
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
@@ -197,7 +192,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         NCNetworkingProcess.shared.startTimer()
 
         if !NCAskAuthorization().isRequesting {
-            hidePrivacyProtectionWindow()
+            NCPasscode.shared.hidePrivacyProtectionWindow()
         }
 
         NCService().startRequestServicesServer()
@@ -221,7 +216,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         NCNetworkingProcess.shared.stopTimer()
 
         if NCKeychain().privacyScreenEnabled {
-            showPrivacyProtectionWindow()
+            NCPasscode.shared.showPrivacyProtectionWindow()
         }
 
         // Reload Widget
@@ -702,7 +697,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
     func requestAccount() {
 
-        if isPasscodePresented { return }
+        if NCPasscode.shared.isPasscodePresented { return }
         if !NCKeychain().accountRequest { return }
 
         let accounts = NCManageDatabase.shared.getAllAccount()
@@ -750,35 +745,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
         NCKeychain().removeAll()
         exit(0)
-    }
-
-    // MARK: - Privacy Protection
-
-    func showPrivacyProtectionWindow() {
-        guard privacyProtectionWindow == nil else {
-            privacyProtectionWindow?.isHidden = false
-            return
-        }
-
-        privacyProtectionWindow = UIWindow(frame: UIScreen.main.bounds)
-
-        let storyboard = UIStoryboard(name: "LaunchScreen", bundle: nil)
-        let initialViewController = storyboard.instantiateInitialViewController()
-
-        self.privacyProtectionWindow?.rootViewController = initialViewController
-
-        privacyProtectionWindow?.windowLevel = .alert + 1
-        privacyProtectionWindow?.makeKeyAndVisible()
-    }
-
-    func hidePrivacyProtectionWindow() {
-        guard !(privacyProtectionWindow?.rootViewController?.presentedViewController is TOPasscodeViewController) else { return }
-        UIWindow.animate(withDuration: 0.25) {
-            self.privacyProtectionWindow?.alpha = 0
-        } completion: { _ in
-            self.privacyProtectionWindow?.isHidden = true
-            self.privacyProtectionWindow = nil
-        }
     }
 
     // MARK: - Universal Links
@@ -985,12 +951,14 @@ extension AppDelegate: NCCreateFormUploadConflictDelegate {
 }
 
 extension AppDelegate: NCPasscodeDelegate {
+    func requestedAccount() {
+        requestAccount()
+    }
+    
     func passcodeReset() {
-    }
 
-    func passcodeCounterFail() {
     }
-
     func correctPasscode(correct: Bool) {
+        
     }
 }
