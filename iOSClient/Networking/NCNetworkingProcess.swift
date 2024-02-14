@@ -284,7 +284,7 @@ class NCNetworkingProcess: NSObject {
 
     // MARK: -
 
-    func createProcessUploads(metadatas: [tableMetadata], verifyAlreadyExists: Bool = false, completion: @escaping (_ items: Int) -> Void) {
+    func createProcessUploads(metadatas: [tableMetadata], verifyAlreadyExists: Bool = false, completion: @escaping (_ items: Int) -> Void = {_ in}) {
 
         var metadatasForUpload: [tableMetadata] = []
         for metadata in metadatas {

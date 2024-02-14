@@ -819,14 +819,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
                     NCAskAuthorization().askAuthorizationAudioRecord(viewController: rootViewController) { hasPermission in
                         if hasPermission {
-                            let fileName = NCUtilityFileSystem().createFileNameDate(NSLocalizedString("_voice_memo_filename_", comment: ""), ext: "m4a")
                             if let viewController = UIStoryboard(name: "NCAudioRecorderViewController", bundle: nil).instantiateInitialViewController() as? NCAudioRecorderViewController {
-
-                                viewController.delegate = self
-                                viewController.createRecorder(fileName: fileName)
                                 viewController.modalTransitionStyle = .crossDissolve
                                 viewController.modalPresentationStyle = UIModalPresentationStyle.overCurrentContext
-
                                 rootViewController.present(viewController, animated: true, completion: nil)
                             }
                         }
@@ -926,28 +921,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     }
 }
 
-// MARK: - NCAudioRecorder ViewController Delegate
-
-extension AppDelegate: NCAudioRecorderViewControllerDelegate {
-
-    func didFinishRecording(_ viewController: NCAudioRecorderViewController, fileName: String) {
-
-        guard let navigationController = UIStoryboard(name: "NCCreateFormUploadVoiceNote", bundle: nil).instantiateInitialViewController() as? UINavigationController,
-              let viewController = navigationController.topViewController as? NCCreateFormUploadVoiceNote else { return }
-        navigationController.modalPresentationStyle = .formSheet
-        viewController.setup(serverUrl: activeServerUrl, fileNamePath: NSTemporaryDirectory() + fileName, fileName: fileName)
-        window?.rootViewController?.present(navigationController, animated: true)
-    }
-
-    func didFinishWithoutRecording(_ viewController: NCAudioRecorderViewController, fileName: String) { }
-}
+// MARK: -
 
 extension AppDelegate: NCCreateFormUploadConflictDelegate {
     func dismissCreateFormUploadConflict(metadatas: [tableMetadata]?) {
         guard let metadatas = metadatas, !metadatas.isEmpty else { return }
-        NCNetworkingProcess.shared.createProcessUploads(metadatas: metadatas) { _ in }
+        NCNetworkingProcess.shared.createProcessUploads(metadatas: metadatas)
     }
 }
+
+// MARK: -
 
 extension AppDelegate: NCPasscodeDelegate {
     func requestedAccount() {
