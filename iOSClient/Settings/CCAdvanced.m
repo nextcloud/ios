@@ -23,7 +23,6 @@
 
 #import "CCAdvanced.h"
 #import "CCUtility.h"
-#import "NSNotificationCenter+MainThread.h"
 #import "NCBridgeSwift.h"
 
 @interface CCAdvanced ()

@@ -26,6 +26,7 @@
 import UIKit
 import NextcloudKit
 import JGProgressHUD
+import TOPasscodeViewController
 
 enum NCShareExtensionError: Error {
     case cancel, fileUpload, noAccount, noFiles
@@ -144,13 +145,12 @@ class NCShareExtension: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         guard serverUrl.isEmpty else { return }
-
-        guard let activeAccount = NCManageDatabase.shared.getActiveAccount() else {
+        guard let activeAccount = NCManageDatabase.shared.getActiveAccount(),
+              !NCPasscode.shared.isPasscodeReset else {
             return showAlert(description: "_no_active_account_") {
                 self.cancel(with: .noAccount)
             }
         }
-
         accountRequestChangeAccount(account: activeAccount.account)
         guard let inputItems = extensionContext?.inputItems as? [NSExtensionItem] else {
             cancel(with: .noFiles)
@@ -159,6 +159,9 @@ class NCShareExtension: UIViewController {
         NCFilesExtensionHandler(items: inputItems) { fileNames in
             self.filesName = fileNames
             DispatchQueue.main.async { self.setCommandView() }
+        }
+        NCPasscode.shared.presentPasscode(viewController: self, delegate: self) {
+            NCPasscode.shared.enableTouchFaceID()
         }
     }
 
@@ -350,13 +353,19 @@ extension NCShareExtension {
         // E2EE
         metadata.e2eEncrypted = metadata.isDirectoryE2EE
 
-        hud.textLabel.text = NSLocalizedString("_upload_file_", comment: "") + " \(counterUploaded + 1) " + NSLocalizedString("_of_", comment: "") + " \(filesName.count)"
-        hud.show(in: self.view)
+        DispatchQueue.main.async {
+            self.hud.show(in: self.view)
+            self.hud.textLabel.text = NSLocalizedString("_upload_file_", comment: "") + " \(self.counterUploaded + 1) " + NSLocalizedString("_of_", comment: "") + " \(self.filesName.count)"
+        }
 
         NCNetworking.shared.upload(metadata: metadata, uploadE2EEDelegate: self, hudView: self.view, hud: JGProgressHUD()) {
-            self.hud.progress = 0
+            DispatchQueue.main.async {
+                self.hud.progress = 0
+            }
         } progressHandler: { _, _, fractionCompleted in
-            self.hud.progress = Float(fractionCompleted)
+            DispatchQueue.main.async {
+                self.hud.progress = Float(fractionCompleted)
+            }
         } completion: { _, error in
             if error != .success {
                 NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
@@ -393,5 +402,23 @@ extension NCShareExtension: uploadE2EEDelegate {
 
     func uploadE2EEProgress(_ totalBytesExpected: Int64, _ totalBytes: Int64, _ fractionCompleted: Double) {
         self.hud.progress = Float(fractionCompleted)
+    }
+}
+
+extension NCShareExtension: NCPasscodeDelegate {
+    func passcodeReset(_ passcodeViewController: TOPasscodeViewController) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+            passcodeViewController.dismiss(animated: false)
+            self.cancel(with: .noAccount)
+        }
+    }
+
+    func evaluatePolicy(_ passcodeViewController: TOPasscodeViewController, isCorrectCode: Bool) {
+        if !isCorrectCode {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                passcodeViewController.dismiss(animated: false)
+                self.cancel(with: .noAccount)
+            }
+        }
     }
 }
