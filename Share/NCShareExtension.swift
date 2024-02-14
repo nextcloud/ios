@@ -353,13 +353,19 @@ extension NCShareExtension {
         // E2EE
         metadata.e2eEncrypted = metadata.isDirectoryE2EE
 
-        hud.textLabel.text = NSLocalizedString("_upload_file_", comment: "") + " \(counterUploaded + 1) " + NSLocalizedString("_of_", comment: "") + " \(filesName.count)"
-        hud.show(in: self.view)
+        DispatchQueue.main.async {
+            self.hud.show(in: self.view)
+            self.hud.textLabel.text = NSLocalizedString("_upload_file_", comment: "") + " \(self.counterUploaded + 1) " + NSLocalizedString("_of_", comment: "") + " \(self.filesName.count)"
+        }
 
         NCNetworking.shared.upload(metadata: metadata, uploadE2EEDelegate: self, hudView: self.view, hud: JGProgressHUD()) {
-            self.hud.progress = 0
+            DispatchQueue.main.async {
+                self.hud.progress = 0
+            }
         } progressHandler: { _, _, fractionCompleted in
-            self.hud.progress = Float(fractionCompleted)
+            DispatchQueue.main.async {
+                self.hud.progress = Float(fractionCompleted)
+            }
         } completion: { _, error in
             if error != .success {
                 NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
@@ -406,6 +412,7 @@ extension NCShareExtension: NCPasscodeDelegate {
             self.cancel(with: .noAccount)
         }
     }
+
     func evaluatePolicy(_ passcodeViewController: TOPasscodeViewController, isCorrectCode: Bool) {
         if !isCorrectCode {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
