@@ -145,13 +145,12 @@ class NCShareExtension: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         guard serverUrl.isEmpty else { return }
-
-        guard let activeAccount = NCManageDatabase.shared.getActiveAccount() else {
+        guard let activeAccount = NCManageDatabase.shared.getActiveAccount(),
+              !NCPasscode.shared.isPasscodeReset else {
             return showAlert(description: "_no_active_account_") {
                 self.cancel(with: .noAccount)
             }
         }
-
         accountRequestChangeAccount(account: activeAccount.account)
         guard let inputItems = extensionContext?.inputItems as? [NSExtensionItem] else {
             cancel(with: .noFiles)

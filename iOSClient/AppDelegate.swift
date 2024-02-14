@@ -957,7 +957,4 @@ extension AppDelegate: NCPasscodeDelegate {
     func passcodeReset(_ passcodeViewController: TOPasscodeViewController) {
         resetApplication()
     }
-    func evaluatePolicy(_ passcodeViewController: TOPasscodeViewController, isCorrectCode: Bool) {
-
-    }
 }
