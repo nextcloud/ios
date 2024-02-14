@@ -28,17 +28,12 @@ import UIKit
 import AVFoundation
 import QuartzCore
 
-@objc protocol NCAudioRecorderViewControllerDelegate: AnyObject {
-    func didFinishRecording(_ viewController: NCAudioRecorderViewController, fileName: String)
-    func didFinishWithoutRecording(_ viewController: NCAudioRecorderViewController, fileName: String)
-}
-
 class NCAudioRecorderViewController: UIViewController, NCAudioRecorderDelegate {
 
-    open weak var delegate: NCAudioRecorderViewControllerDelegate?
     var recording: NCAudioRecorder!
     var startDate: Date = Date()
     var fileName: String = ""
+    let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
 
     @IBOutlet weak var contentContainerView: UIView!
     @IBOutlet weak var durationLabel: UILabel!
@@ -52,11 +47,23 @@ class NCAudioRecorderViewController: UIViewController, NCAudioRecorderDelegate {
 
         voiceRecordHUD.update(0.0)
         durationLabel.text = ""
-        startStopLabel.text = NSLocalizedString("_voice_memo_start_", comment: "")
+        startStopLabel.text = NSLocalizedString("_wait_", comment: "")
 
         view.backgroundColor = .clear
         contentContainerView.backgroundColor = UIColor.lightGray
         voiceRecordHUD.fillColor = UIColor.green
+
+        Task {
+            self.fileName = await NCNetworking.shared.createFileName(fileNameBase: NSLocalizedString("_untitled_", comment: "") + ".m4a", account: self.appDelegate.account, serverUrl: self.appDelegate.activeServerUrl)
+            recording = NCAudioRecorder(to: self.fileName)
+            recording.delegate = self
+            do {
+                try self.recording.prepare()
+                startStopLabel.text = NSLocalizedString("_voice_memo_start_", comment: "")
+            } catch {
+                print(error)
+            }
+        }
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -74,29 +81,21 @@ class NCAudioRecorderViewController: UIViewController, NCAudioRecorderDelegate {
     // MARK: - Action
 
     @IBAction func touchViewController() {
-
         if recording.state == .record {
             startStop()
         } else {
-            dismiss(animated: true) {
-                self.delegate?.didFinishWithoutRecording(self, fileName: self.fileName)
-            }
+            dismiss(animated: true)
         }
     }
 
     @IBAction func startStop() {
-
         if recording.state == .record {
-
             recording.stop()
             voiceRecordHUD.update(0.0)
-
             dismiss(animated: true) {
-                self.delegate?.didFinishRecording(self, fileName: self.fileName)
+                self.uploadMetadata()
             }
-
         } else {
-
             do {
                 try recording.record()
                 startDate = Date()
@@ -107,22 +106,16 @@ class NCAudioRecorderViewController: UIViewController, NCAudioRecorderDelegate {
         }
     }
 
-    // MARK: - Code
-
-    func createRecorder(fileName: String) {
-
-        self.fileName = fileName
-        recording = NCAudioRecorder(to: fileName)
-        recording.delegate = self
-
-        DispatchQueue.global().async {
-            // Background thread
-            do {
-                try self.recording.prepare()
-            } catch {
-                print(error)
-            }
-        }
+    func uploadMetadata() {
+        let fileNamePath = NSTemporaryDirectory() + self.fileName
+        let metadata = NCManageDatabase.shared.createMetadata(account: appDelegate.account, user: appDelegate.user, userId: appDelegate.userId, fileName: fileName, fileNameView: fileName, ocId: UUID().uuidString, serverUrl: appDelegate.activeServerUrl, urlBase: appDelegate.urlBase, url: "", contentType: "")
+        metadata.session = NCNetworking.shared.sessionUploadBackground
+        metadata.sessionSelector = NCGlobal.shared.selectorUploadFile
+        metadata.status = NCGlobal.shared.metadataStatusWaitUpload
+        metadata.sessionDate = Date()
+        metadata.size = NCUtilityFileSystem().getFileSize(filePath: fileNamePath)
+        NCUtilityFileSystem().copyFile(atPath: fileNamePath, toPath: NCUtilityFileSystem().getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView))
+        NCNetworkingProcess.shared.createProcessUploads(metadatas: [metadata])
     }
 
     func audioMeterDidUpdate(_ db: Float) {
@@ -225,11 +218,9 @@ open class NCAudioRecorder: NSObject {
     }
 
     open func record() throws {
-
         if recorder == nil {
             try prepare()
         }
-
         self.state = .record
         if self.metering {
             self.startMetering()
@@ -238,7 +229,6 @@ open class NCAudioRecorder: NSObject {
     }
 
     open func stop() {
-
         switch state {
         case .play:
             player?.stop()
@@ -250,7 +240,6 @@ open class NCAudioRecorder: NSObject {
         default:
             break
         }
-
         state = .none
     }
 
@@ -258,16 +247,12 @@ open class NCAudioRecorder: NSObject {
 
     @objc func updateMeter() {
         guard let recorder = recorder else { return }
-
         recorder.updateMeters()
-
         let dB = recorder.averagePower(forChannel: 0)
-
         delegate?.audioMeterDidUpdate?(dB)
     }
 
     fileprivate func startMetering() {
-
         link = CADisplayLink(target: self, selector: #selector(NCAudioRecorder.updateMeter))
         link?.add(to: RunLoop.current, forMode: RunLoop.Mode.common)
     }
@@ -281,7 +266,6 @@ open class NCAudioRecorder: NSObject {
 @IBDesignable
 class VoiceRecordHUD: UIView {
     @IBInspectable var rate: CGFloat = 0.0
-
     @IBInspectable var fillColor: UIColor = UIColor.green {
         didSet {
             setNeedsDisplay()

@@ -127,7 +127,7 @@ class NCUploadScanDocument: ObservableObject {
             do {
                 try pdfData.write(to: URL(fileURLWithPath: fileNamePath), options: .atomic)
                 metadata.size = self.utilityFileSystem.getFileSize(filePath: fileNamePath)
-                NCNetworkingProcess.shared.createProcessUploads(metadatas: [metadata], completion: { _ in })
+                NCNetworkingProcess.shared.createProcessUploads(metadatas: [metadata])
                 if self.removeAllFiles {
                     let path = self.utilityFileSystem.directoryScan
                     let filePaths = try FileManager.default.contentsOfDirectory(atPath: path)
