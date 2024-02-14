@@ -188,7 +188,7 @@ extension NCNetworking {
                     NCEndToEndEncryption.sharedManager()?.decryptFile(metadata.fileName, fileNameView: metadata.fileNameView, ocId: metadata.ocId, key: result.key, initializationVector: result.initializationVector, authenticationTag: result.authenticationTag)
                 }
 #endif
-
+                NCManageDatabase.shared.addLocalFile(metadata: metadata)
                 NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId,
                                                            session: "",
                                                            sessionError: "",
