@@ -30,6 +30,7 @@ extension NCNetworking {
 
     func synchronization(account: String,
                          serverUrl: String,
+                         add: Bool,
                          completion: @escaping (_ errorCode: Int, _ items: Int) -> Void = { _, _ in }) {
 
         let startDate = Date()
@@ -40,10 +41,11 @@ extension NCNetworking {
                                              options: options) { resultAccount, files, _, error in
 
             guard account == resultAccount else { return }
-            if NCManageDatabase.shared.getResultMetadata(predicate: NSPredicate(format: "account == %@ AND sessionSelector == %@ AND (status == %d OR status == %d)", account, NCGlobal.shared.selectorSynchronizationOffline, NCGlobal.shared.metadataStatusWaitDownload, NCGlobal.shared.metadataStatusDownloading)) != nil { return }
-
             var metadatasDirectory: [tableMetadata] = []
             var metadatasSynchronizationOffline: [tableMetadata] = []
+            if !add {
+                if NCManageDatabase.shared.getResultMetadata(predicate: NSPredicate(format: "account == %@ AND sessionSelector == %@ AND (status == %d OR status == %d)", account, NCGlobal.shared.selectorSynchronizationOffline, NCGlobal.shared.metadataStatusWaitDownload, NCGlobal.shared.metadataStatusDownloading)) != nil { return }
+            }
 
             if error == .success {
                 for file in files {
@@ -69,9 +71,9 @@ extension NCNetworking {
     }
 
     @discardableResult
-    func synchronization(account: String, serverUrl: String) async -> (Int, Int) {
+    func synchronization(account: String, serverUrl: String, add: Bool) async -> (Int, Int) {
         await withUnsafeContinuation({ continuation in
-            synchronization(account: account, serverUrl: serverUrl) { errorCode, items in
+            synchronization(account: account, serverUrl: serverUrl, add: add) { errorCode, items in
                 continuation.resume(returning: (errorCode, items))
             }
         })

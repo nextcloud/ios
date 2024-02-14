@@ -291,7 +291,7 @@ class NCService: NSObject {
         Task {
             if let directories = NCManageDatabase.shared.getTablesDirectory(predicate: NSPredicate(format: "account == %@ AND offline == true", account), sorted: "serverUrl", ascending: true) {
                 for directory: tableDirectory in directories {
-                    await NCNetworking.shared.synchronization(account: account, serverUrl: directory.serverUrl)
+                    await NCNetworking.shared.synchronization(account: account, serverUrl: directory.serverUrl, add: false)
                 }
             }
         }

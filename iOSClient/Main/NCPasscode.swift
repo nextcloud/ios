@@ -129,7 +129,6 @@ class NCPasscode: NSObject, TOPasscodeViewControllerDelegate {
                                 NCKeychain().passcodeCounterFailReset += 3
                             }
                             self.openAlert(passcodeViewController: passcodeViewController)
-                            self.delegate?.evaluatePolicy(passcodeViewController, isCorrectCode: false)
                         case LAError.biometryLockout.rawValue:
                             LAContext().evaluatePolicy(LAPolicy.deviceOwnerAuthentication, localizedReason: NSLocalizedString("_deviceOwnerAuthentication_", comment: ""), reply: { success, _ in
                                 if success {
