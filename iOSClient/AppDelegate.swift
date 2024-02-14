@@ -170,7 +170,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                 NCPasscode.shared.enableTouchFaceID()
             }
         }
-        NotificationCenter.default.addObserver(self, selector: #selector(resetApplication), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterResetApplication), object: nil)
 
         return true
     }
@@ -955,8 +954,8 @@ extension AppDelegate: NCPasscodeDelegate {
         requestAccount()
     }
 
-    func passcodeReset() {
-
+    func passcodeReset(_ passcodeViewController: TOPasscodeViewController) {
+        resetApplication()
     }
     func evaluatePolicy(_ passcodeViewController: TOPasscodeViewController, isCorrectCode: Bool) {
 

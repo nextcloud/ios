@@ -27,8 +27,15 @@ import TOPasscodeViewController
 
 public protocol NCPasscodeDelegate: AnyObject {
     func evaluatePolicy(_ passcodeViewController: TOPasscodeViewController, isCorrectCode: Bool)
-    func passcodeReset()
+    func passcodeReset(_ passcodeViewController: TOPasscodeViewController)
     func requestedAccount()
+}
+
+// optional func
+public extension NCPasscodeDelegate {
+    func evaluatePolicy(_ passcodeViewController: TOPasscodeViewController, isCorrectCode: Bool) {}
+    func passcodeReset() {}
+    func requestedAccount() {}
 }
 
 class NCPasscode: NSObject, TOPasscodeViewControllerDelegate {
@@ -182,8 +189,6 @@ class NCPasscode: NSObject, TOPasscodeViewControllerDelegate {
 
                 let alertController = UIAlertController(title: NSLocalizedString("_reset_wrong_passcode_", comment: ""), message: nil, preferredStyle: .alert)
                 passcodeViewController.present(alertController, animated: true, completion: { })
-
-                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterResetApplication, second: 3)
                 self.delegate?.passcodeReset()
 
             } else if self.isPasscodeCounterFail {

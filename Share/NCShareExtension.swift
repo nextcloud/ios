@@ -401,11 +401,11 @@ extension NCShareExtension: uploadE2EEDelegate {
 }
 
 extension NCShareExtension: NCPasscodeDelegate {
-    func requestedAccount() {
-
-    }
-    func passcodeReset() {
-
+    func passcodeReset(_ passcodeViewController: TOPasscodeViewController) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+            passcodeViewController.dismiss(animated: false)
+            self.cancel(with: .noAccount)
+        }
     }
     func evaluatePolicy(_ passcodeViewController: TOPasscodeViewController, isCorrectCode: Bool) {
         if !isCorrectCode {
