@@ -880,8 +880,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
         DispatchQueue.global().async {
             if withQueryDB { self.queryDB() }
+            self.isReloadDataSourceNetworkInProgress = false
             DispatchQueue.main.async {
-                self.isReloadDataSourceNetworkInProgress = false
                 self.refreshControl.endRefreshing()
                 self.collectionView.reloadData()
             }
@@ -889,9 +889,10 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     }
 
     @objc func reloadDataSourceNetwork() {
-
-        isReloadDataSourceNetworkInProgress = true
-        collectionView?.reloadData()
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+            self.isReloadDataSourceNetworkInProgress = true
+            self.collectionView?.reloadData()
+        }
     }
 
     @objc func networkSearch() {
