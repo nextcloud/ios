@@ -149,7 +149,7 @@ extension NCCollectionViewCommon {
         //
         // SET FOLDER E2EE
         //
-        if metadata.isDirectoySettableE2EE {
+        if metadata.canSetDirectoryAsE2EE {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_e2e_set_folder_encrypted_", comment: ""),
@@ -170,7 +170,7 @@ extension NCCollectionViewCommon {
         //
         // UNSET FOLDER E2EE
         //
-        if metadata.isDirectoryUnsettableE2EE {
+        if metadata.canUnsetDirectoryAsE2EE {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_e2e_remove_folder_encrypted_", comment: ""),
@@ -217,7 +217,7 @@ extension NCCollectionViewCommon {
         //
         // OFFLINE
         //
-        if metadata.isSettableOnOffline {
+        if metadata.canSetAsAvailableOffline {
             actions.append(.setAvailableOfflineAction(selectedMetadatas: [metadata], isAnyOffline: isOffline, viewController: self, order: 60, completion: {
                 self.reloadDataSource()
             }))

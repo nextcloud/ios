@@ -210,7 +210,7 @@ extension tableMetadata {
         return true
     }
 
-    var isSettableOnOffline: Bool {
+    var canSetAsAvailableOffline: Bool {
         return session.isEmpty && !isDocumentViewableOnly && !isDirectoryE2EE && !e2eEncrypted
     }
 
@@ -218,11 +218,11 @@ extension tableMetadata {
         return session.isEmpty && !isDocumentViewableOnly && !directory && !NCBrandOptions.shared.disable_openin_file
     }
 
-    var isDirectoySettableE2EE: Bool {
+    var canSetDirectoryAsE2EE: Bool {
         return directory && size == 0 && !e2eEncrypted && NCKeychain().isEndToEndEnabled(account: account)
     }
 
-    var isDirectoryUnsettableE2EE: Bool {
+    var canUnsetDirectoryAsE2EE: Bool {
         return !isDirectoryE2EE && directory && size == 0 && e2eEncrypted && NCKeychain().isEndToEndEnabled(account: account)
     }
 

@@ -1617,6 +1617,7 @@ extension NCCollectionViewCommon: NCSelectableNavigationView, NCCollectionViewCo
         var isAllDirectory = true
         var isAnyLocked = false
         var canUnlock = true
+        var canSetAsOffline = true
 
         for ocId in selectOcId {
             guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) else { continue }
@@ -1626,6 +1627,10 @@ extension NCCollectionViewCommon: NCSelectableNavigationView, NCCollectionViewCo
                 isAnyDirectory = true
             } else {
                 isAllDirectory = false
+            }
+
+            if !metadata.canSetAsAvailableOffline {
+                canSetAsOffline = false
             }
 
             if metadata.lock {
@@ -1647,6 +1652,7 @@ extension NCCollectionViewCommon: NCSelectableNavigationView, NCCollectionViewCo
         guard let tabBarSelect = tabBarSelect as? NCCollectionViewCommonSelectTabBar else { return }
 
         tabBarSelect.isAnyOffline = isAnyOffline
+        tabBarSelect.canSetAsOffline = canSetAsOffline
         tabBarSelect.isAnyDirectory = isAnyDirectory
         tabBarSelect.isAllDirectory = isAllDirectory
         tabBarSelect.isAnyLocked = isAnyLocked
@@ -1768,10 +1774,12 @@ extension NCCollectionViewCommon: NCSelectableNavigationView, NCCollectionViewCo
 
     func move(selectedMetadatas: [tableMetadata]) {
         NCActionCenter.shared.openSelectView(items: selectedMetadatas, indexPath: self.selectIndexPath)
+        self.toggleSelect()
     }
 
     func share(selectedMetadatas: [tableMetadata]) {
         NCActionCenter.shared.openActivityViewController(selectedMetadata: selectedMetadatas)
+        self.toggleSelect()
     }
 
     func saveAsAvailableOffline(selectedMetadatas: [tableMetadata], isAnyOffline: Bool) {
@@ -1796,6 +1804,8 @@ extension NCCollectionViewCommon: NCSelectableNavigationView, NCCollectionViewCo
         for metadata in selectedMetadatas where metadata.lock == isAnyLocked {
             NCNetworking.shared.lockUnlockFile(metadata, shoulLock: !isAnyLocked)
         }
+
+        self.toggleSelect()
     }
 
     func createMenuActions() -> [UIMenuElement] {

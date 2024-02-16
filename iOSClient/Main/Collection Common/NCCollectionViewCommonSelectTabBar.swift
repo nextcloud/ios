@@ -26,6 +26,7 @@ class NCCollectionViewCommonSelectTabBar: NCSelectableViewTabBar, ObservableObje
     var selectedMetadatas: [tableMetadata] = []
 
     @Published var isAnyOffline = false
+    @Published var canSetAsOffline = false
     @Published var isAnyDirectory = false
     @Published var isAllDirectory = false
     @Published var isAnyLocked = false
@@ -118,8 +119,12 @@ struct NCCollectionViewCommonSelectTabBarView: View {
                         tabBarSelect.delegate?.saveAsAvailableOffline(selectedMetadatas: tabBarSelect.selectedMetadatas, isAnyOffline: tabBarSelect.isAnyOffline)
                     }, label: {
                         Label(NSLocalizedString(tabBarSelect.isAnyOffline ? "_remove_available_offline_" : "_set_available_offline_", comment: ""), systemImage: tabBarSelect.isAnyOffline ? "icloud.slash" : "icloud.and.arrow.down")
+
+                        if !tabBarSelect.canSetAsOffline && !tabBarSelect.isAnyOffline {
+                            Text(NSLocalizedString("_e2ee_set_as_offline_", comment: ""))
+                        }
                     })
-                    .disabled(tabBarSelect.isSelectedEmpty)
+                    .disabled(!tabBarSelect.isAnyOffline && (!tabBarSelect.canSetAsOffline || tabBarSelect.isSelectedEmpty))
 
                     Button(action: {
                         tabBarSelect.delegate?.lock(selectedMetadatas: tabBarSelect.selectedMetadatas, isAnyLocked: tabBarSelect.isAnyLocked)
