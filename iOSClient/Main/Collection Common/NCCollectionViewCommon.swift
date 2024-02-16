@@ -629,7 +629,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         button.sizeToFit()
         button.menu = menu
         button.showsMenuAsPrimaryAction = true
-        button.adjustsImageWhenHighlighted = false
+        button.configuration = .plain()
+
         button.onMenuOpened = {
             self.dismissTip()
         }
