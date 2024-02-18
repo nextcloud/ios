@@ -1194,6 +1194,9 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
 
         let numberItems = dataSource.numberOfItemsInSection(section)
         emptyDataSet?.numberOfItemsInSection(numberItems, section: section)
+
+        setNavigationRightItems()
+
         return numberItems
     }
 
@@ -1614,6 +1617,7 @@ extension NCCollectionViewCommon: NCSelectableNavigationView, NCCollectionViewCo
         var isAllDirectory = true
         var isAnyLocked = false
         var canUnlock = true
+        var canSetAsOffline = true
 
         for ocId in selectOcId {
             guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) else { continue }
@@ -1623,6 +1627,10 @@ extension NCCollectionViewCommon: NCSelectableNavigationView, NCCollectionViewCo
                 isAnyDirectory = true
             } else {
                 isAllDirectory = false
+            }
+
+            if !metadata.canSetAsAvailableOffline {
+                canSetAsOffline = false
             }
 
             if metadata.lock {
@@ -1644,6 +1652,7 @@ extension NCCollectionViewCommon: NCSelectableNavigationView, NCCollectionViewCo
         guard let tabBarSelect = tabBarSelect as? NCCollectionViewCommonSelectTabBar else { return }
 
         tabBarSelect.isAnyOffline = isAnyOffline
+        tabBarSelect.canSetAsOffline = canSetAsOffline
         tabBarSelect.isAnyDirectory = isAnyDirectory
         tabBarSelect.isAllDirectory = isAllDirectory
         tabBarSelect.isAnyLocked = isAnyLocked
@@ -1765,10 +1774,12 @@ extension NCCollectionViewCommon: NCSelectableNavigationView, NCCollectionViewCo
 
     func move(selectedMetadatas: [tableMetadata]) {
         NCActionCenter.shared.openSelectView(items: selectedMetadatas, indexPath: self.selectIndexPath)
+        self.toggleSelect()
     }
 
     func share(selectedMetadatas: [tableMetadata]) {
         NCActionCenter.shared.openActivityViewController(selectedMetadata: selectedMetadatas)
+        self.toggleSelect()
     }
 
     func saveAsAvailableOffline(selectedMetadatas: [tableMetadata], isAnyOffline: Bool) {
@@ -1793,12 +1804,14 @@ extension NCCollectionViewCommon: NCSelectableNavigationView, NCCollectionViewCo
         for metadata in selectedMetadatas where metadata.lock == isAnyLocked {
             NCNetworking.shared.lockUnlockFile(metadata, shoulLock: !isAnyLocked)
         }
+
+        self.toggleSelect()
     }
 
     func createMenuActions() -> [UIMenuElement] {
         guard let layoutForView = NCManageDatabase.shared.getLayoutForView(account: appDelegate.account, key: layoutKey, serverUrl: serverUrl) else { return [] }
 
-        let select = UIAction(title: NSLocalizedString("_select_", comment: ""), image: .init(systemName: "checkmark.circle")) { _ in self.toggleSelect() }
+        let select = UIAction(title: NSLocalizedString("_select_", comment: ""), image: .init(systemName: "checkmark.circle"), attributes: selectableDataSource.isEmpty ? .disabled : []) { _ in self.toggleSelect() }
 
         let list = UIAction(title: NSLocalizedString("_list_", comment: ""), image: .init(systemName: "list.bullet"), state: layoutForView.layout == NCGlobal.shared.layoutList ? .on : .off) { _ in
             self.onListSelected()
