@@ -612,9 +612,23 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         let accountActions: [UIAction] = accounts.map { account in
             let image = utility.loadUserImage(for: account.user, displayName: account.displayName, userBaseUrl: account)
 
-            return UIAction(title: account.displayName, image: image, state: account.active ? .on : .off) { _ in
+            var name: String = ""
+            var url: String = ""
+
+            if account.alias.isEmpty {
+                name = account.displayName
+                url = (URL(string: account.urlBase)?.host ?? "")
+            } else {
+                name = account.alias
+            }
+
+            let action = UIAction(title: name, image: image, state: account.active ? .on : .off) { _ in
                 self.appDelegate.changeAccount(account.account, userProfile: nil)
             }
+
+            action.subtitle = url
+
+            return action
         }
 
         let addAccountAction = UIAction(title: NSLocalizedString("_add_account_", comment: ""), image: .init(systemName: "plus")) { _ in
