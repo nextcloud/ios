@@ -1725,7 +1725,7 @@ extension NCCollectionViewCommon: NCSelectableNavigationView, NCCollectionViewCo
         let alertController = UIAlertController(
             title: NSLocalizedString("_confirm_delete_selected_", comment: ""),
             message: nil,
-            preferredStyle: .actionSheet)
+            preferredStyle: .alert)
 
         let canDeleteServer = selectedMetadatas.allSatisfy { !$0.lock }
 
