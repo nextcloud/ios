@@ -1743,8 +1743,9 @@ extension NCCollectionViewCommon: NCSelectableNavigationView, NCCollectionViewCo
                         }
                     }
                     NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDeleteFile, userInfo: ["ocId": ocId, "indexPath": self.selectIndexPath, "onlyLocalCache": false, "error": error])
-                    self.toggleSelect()
                 }
+
+                self.toggleSelect()
             })
         }
 
