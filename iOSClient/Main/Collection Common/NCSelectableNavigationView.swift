@@ -33,7 +33,10 @@ extension RealmSwiftObject {
     }
 }
 
-public protocol NCSelectableViewTabBar {}
+public protocol NCSelectableViewTabBar {
+    var tabBarController: UITabBarController? { get }
+    var hostingController: UIViewController? { get }
+}
 
 protocol NCSelectableNavigationView: AnyObject {
     var viewController: UIViewController { get }
