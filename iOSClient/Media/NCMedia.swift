@@ -33,6 +33,7 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
     var mediaCommandView: NCMediaCommandView?
     var layout: NCMediaGridLayout!
     var documentPickerViewController: NCDocumentPickerViewController?
+    var tabBarSelect: NCMediaSelectTabBar?
 
     let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
     let utilityFileSystem = NCUtilityFileSystem()
@@ -53,7 +54,7 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
     var lastContentOffsetY: CGFloat = 0
     var mediaPath = ""
 
-    var timeIntervalSearchNewMedia: TimeInterval = 3.0
+    var timeIntervalSearchNewMedia: TimeInterval = 2.0
     var timerSearchNewMedia: Timer?
 
     let insetsTop: CGFloat = 75
@@ -87,11 +88,14 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
         mediaCommandView = Bundle.main.loadNibNamed("NCMediaCommandView", owner: self, options: nil)?.first as? NCMediaCommandView
         self.view.addSubview(mediaCommandView!)
         mediaCommandView?.mediaView = self
+        mediaCommandView?.tabBarController = tabBarController
         mediaCommandView?.translatesAutoresizingMaskIntoConstraints = false
         mediaCommandView?.topAnchor.constraint(equalTo: view.topAnchor, constant: 0).isActive = true
         mediaCommandView?.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 0).isActive = true
         mediaCommandView?.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 0).isActive = true
         mediaCommandView?.heightAnchor.constraint(equalToConstant: 150).isActive = true
+
+        tabBarSelect = NCMediaSelectTabBar(tabBarController: self.tabBarController, delegate: mediaCommandView)
 
         cacheImages.cellLivePhotoImage = utility.loadImage(named: "livephoto", color: .white)
         cacheImages.cellPlayImage = utility.loadImage(named: "play.fill", color: .white)
@@ -113,15 +117,15 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
 
         if let metadatas = NCImageCache.shared.initialMetadatas() {
             self.metadatas = metadatas
-            self.mediaCommandView?.setMoreButton()
         }
+
         collectionView.reloadData()
     }
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
-        mediaCommandView?.setMediaCommand()
+        mediaCommandView?.setTitleDate()
         mediaCommandView?.createMenu()
     }
 
@@ -135,11 +139,24 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
         super.viewWillTransition(to: size, with: coordinator)
 
         collectionView?.collectionViewLayout.invalidateLayout()
-        mediaCommandView?.setMediaCommand()
+        mediaCommandView?.setTitleDate()
     }
 
     override var preferredStatusBarStyle: UIStatusBarStyle {
-        return .lightContent
+        if self.traitCollection.userInterfaceStyle == .dark {
+            return .lightContent
+        } else if let gradient = mediaCommandView?.gradient, gradient.isHidden {
+            return .darkContent
+        } else {
+            return .lightContent
+        }
+    }
+
+    override func viewWillLayoutSubviews() {
+        super.viewWillLayoutSubviews()
+        if let frame = tabBarController?.tabBar.frame {
+            tabBarSelect?.hostingController.view.frame = frame
+        }
     }
 
     // MARK: - NotificationCenter
@@ -219,9 +236,8 @@ extension NCMedia: UICollectionViewDelegate {
                 } else {
                     selectOcId.append(metadata.ocId)
                 }
-                if indexPath.section < collectionView.numberOfSections && indexPath.row < collectionView.numberOfItems(inSection: indexPath.section) {
-                    collectionView.reloadItems(at: [indexPath])
-                }
+                collectionView.reloadItems(at: [indexPath])
+                tabBarSelect?.selectCount = selectOcId.count
             } else {
                 // ACTIVE SERVERURL
                 appDelegate.activeServerUrl = metadata.serverUrl
@@ -247,6 +263,7 @@ extension NCMedia: UICollectionViewDelegate {
     }
 
     func collectionView(_ collectionView: UICollectionView, willPerformPreviewActionForMenuWith configuration: UIContextMenuConfiguration, animator: UIContextMenuInteractionCommitAnimating) {
+
         animator.addCompletion {
             if let indexPath = configuration.identifier as? IndexPath {
                 self.collectionView(collectionView, didSelectItemAt: indexPath)
@@ -256,6 +273,7 @@ extension NCMedia: UICollectionViewDelegate {
 }
 
 extension NCMedia: UICollectionViewDataSourcePrefetching {
+
     func collectionView(_ collectionView: UICollectionView, prefetchItemsAt indexPaths: [IndexPath]) {
         // print("[LOG] n. " + String(indexPaths.count))
     }
@@ -264,16 +282,36 @@ extension NCMedia: UICollectionViewDataSourcePrefetching {
 extension NCMedia: UICollectionViewDataSource {
 
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+
         var numberOfItemsInSection = 0
+
         if let metadatas {
             numberOfItemsInSection = metadatas.count
         }
+
+        if numberOfItemsInSection == 0 {
+            mediaCommandView?.selectOrCancelButton.isHidden = true
+            mediaCommandView?.menuButton.isHidden = false
+            mediaCommandView?.activityIndicatorTrailing.constant = 46
+        } else if isEditMode {
+            mediaCommandView?.selectOrCancelButton.isHidden = false
+            mediaCommandView?.menuButton.isHidden = true
+            mediaCommandView?.activityIndicatorTrailing.constant = 144
+        } else {
+            mediaCommandView?.selectOrCancelButton.isHidden = false
+            mediaCommandView?.menuButton.isHidden = false
+            mediaCommandView?.activityIndicatorTrailing.constant = 144
+        }
+
         emptyDataSet?.numberOfItemsInSection(numberOfItemsInSection, section: section)
+
         return numberOfItemsInSection
     }
 
     func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
+
         guard let metadatas else { return }
+
         if !collectionView.indexPathsForVisibleItems.contains(indexPath) && indexPath.row < metadatas.count {
             guard let metadata = metadatas[indexPath.row] else { return }
             for case let operation as NCMediaDownloadThumbnaill in NCNetworking.shared.downloadThumbnailQueue.operations where operation.metadata.ocId == metadata.ocId {
@@ -337,14 +375,20 @@ extension NCMedia: UICollectionViewDataSource {
 extension NCMedia: UIScrollViewDelegate {
 
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        if lastContentOffsetY == 0 || lastContentOffsetY + cellHeigth / 2 <= scrollView.contentOffset.y || lastContentOffsetY - cellHeigth / 2 >= scrollView.contentOffset.y {
-            mediaCommandView?.setMediaCommand()
-            lastContentOffsetY = scrollView.contentOffset.y
+        if let metadatas, !metadatas.isEmpty {
+            let isTop = scrollView.contentOffset.y <= -(insetsTop + view.safeAreaInsets.top - 35)
+            mediaCommandView?.setColor(isTop: isTop)
+            setNeedsStatusBarAppearanceUpdate()
+            if lastContentOffsetY == 0 || lastContentOffsetY + cellHeigth / 2 <= scrollView.contentOffset.y || lastContentOffsetY - cellHeigth / 2 >= scrollView.contentOffset.y {
+                mediaCommandView?.setTitleDate()
+                lastContentOffsetY = scrollView.contentOffset.y
+            }
+        } else {
+            mediaCommandView?.setColor(isTop: true)
         }
     }
 
     func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
-
     }
 
     func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
@@ -372,7 +416,6 @@ extension NCMedia: UIScrollViewDelegate {
 extension NCMedia: NCSelectDelegate {
 
     func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String, items: [Any], indexPath: [IndexPath], overwrite: Bool, copy: Bool, move: Bool) {
-
         guard let serverUrl = serverUrl else { return }
         let home = utilityFileSystem.getHomeServer(urlBase: appDelegate.urlBase, userId: appDelegate.userId)
         mediaPath = serverUrl.replacingOccurrences(of: home, with: "")

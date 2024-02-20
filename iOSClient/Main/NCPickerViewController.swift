@@ -174,6 +174,7 @@ class NCDocumentPickerViewController: NSObject, UIDocumentPickerDelegate {
                 metadataForUpload.sessionSelector = NCGlobal.shared.selectorUploadFile
                 metadataForUpload.size = utilityFileSystem.getFileSize(filePath: toPath)
                 metadataForUpload.status = NCGlobal.shared.metadataStatusWaitUpload
+                metadataForUpload.sessionDate = Date()
 
                 if NCManageDatabase.shared.getMetadataConflict(account: appDelegate.account, serverUrl: serverUrl, fileNameView: fileName) != nil {
                     metadatasInConflict.append(metadataForUpload)
@@ -182,7 +183,7 @@ class NCDocumentPickerViewController: NSObject, UIDocumentPickerDelegate {
                 }
             }
 
-            NCNetworkingProcessUpload.shared.createProcessUploads(metadatas: metadatas, completion: { _ in })
+            NCNetworkingProcess.shared.createProcessUploads(metadatas: metadatas)
 
             if !metadatasInConflict.isEmpty {
                 if let conflict = UIStoryboard(name: "NCCreateFormUploadConflict", bundle: nil).instantiateInitialViewController() as? NCCreateFormUploadConflict {

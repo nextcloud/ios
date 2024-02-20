@@ -85,6 +85,7 @@ class NCUploadScanDocument: ObservableObject {
         metadata.session = NCNetworking.shared.sessionUploadBackground
         metadata.sessionSelector = NCGlobal.shared.selectorUploadFile
         metadata.status = NCGlobal.shared.metadataStatusWaitUpload
+        metadata.sessionDate = Date()
 
         if NCManageDatabase.shared.getMetadataConflict(account: userBaseUrl.account, serverUrl: serverUrl, fileNameView: fileName) != nil {
             completion(true, false)
@@ -126,7 +127,7 @@ class NCUploadScanDocument: ObservableObject {
             do {
                 try pdfData.write(to: URL(fileURLWithPath: fileNamePath), options: .atomic)
                 metadata.size = self.utilityFileSystem.getFileSize(filePath: fileNamePath)
-                NCNetworkingProcessUpload.shared.createProcessUploads(metadatas: [metadata], completion: { _ in })
+                NCNetworkingProcess.shared.createProcessUploads(metadatas: [metadata])
                 if self.removeAllFiles {
                     let path = self.utilityFileSystem.directoryScan
                     let filePaths = try FileManager.default.contentsOfDirectory(atPath: path)

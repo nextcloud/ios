@@ -27,7 +27,7 @@ import Realm
 import UIKit
 import NextcloudKit
 
-class NCTrash: UIViewController, NCSelectableNavigationView, NCTrashListCellDelegate, NCSectionHeaderMenuDelegate, NCEmptyDataSetDelegate, NCGridCellDelegate {
+class NCTrash: UIViewController, NCTrashListCellDelegate, NCEmptyDataSetDelegate, NCGridCellDelegate {
 
     @IBOutlet weak var collectionView: UICollectionView!
 
@@ -41,9 +41,10 @@ class NCTrash: UIViewController, NCSelectableNavigationView, NCTrashListCellDele
     let utilityFileSystem = NCUtilityFileSystem()
     let utility = NCUtility()
 
-    internal var isEditMode = false
-    internal var selectOcId: [String] = []
-    internal var selectIndexPath: [IndexPath] = []
+    var isEditMode = false
+    var selectOcId: [String] = []
+    var selectIndexPath: [IndexPath] = []
+    var tabBarSelect: NCSelectableViewTabBar?
 
     var datasource: [tableTrash] = []
     var layoutForView: NCDBLayoutForView?
@@ -56,6 +57,9 @@ class NCTrash: UIViewController, NCSelectableNavigationView, NCTrashListCellDele
     // MARK: - View Life Cycle
 
     override func viewDidLoad() {
+        super.viewDidLoad()
+
+        tabBarSelect = NCTrashSelectTabBar(tabBarController: tabBarController, delegate: self)
 
         view.backgroundColor = .systemBackground
         self.navigationController?.navigationBar.prefersLargeTitles = true
@@ -64,8 +68,7 @@ class NCTrash: UIViewController, NCSelectableNavigationView, NCTrashListCellDele
         collectionView.register(UINib(nibName: "NCTrashListCell", bundle: nil), forCellWithReuseIdentifier: "listCell")
         collectionView.register(UINib(nibName: "NCGridCell", bundle: nil), forCellWithReuseIdentifier: "gridCell")
 
-        // Header - Footer
-        collectionView.register(UINib(nibName: "NCSectionHeaderMenu", bundle: nil), forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: "sectionHeaderMenu")
+        // Footer
         collectionView.register(UINib(nibName: "NCSectionFooter", bundle: nil), forSupplementaryViewOfKind: UICollectionView.elementKindSectionFooter, withReuseIdentifier: "sectionFooter")
 
         collectionView.alwaysBounceVertical = true
@@ -110,11 +113,23 @@ class NCTrash: UIViewController, NCSelectableNavigationView, NCTrashListCellDele
         loadListingTrash()
     }
 
+    override func viewWillDisappear(_ animated: Bool) {
+        isEditMode = false
+        setNavigationItems()
+    }
+
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         super.viewWillTransition(to: size, with: coordinator)
 
         coordinator.animate(alongsideTransition: nil) { _ in
             self.collectionView?.collectionViewLayout.invalidateLayout()
+        }
+    }
+
+    override func viewWillLayoutSubviews() {
+        super.viewWillLayoutSubviews()
+        if let frame = tabBarController?.tabBar.frame {
+            (tabBarSelect as? NCTrashSelectTabBar)?.hostingController?.view.frame = frame
         }
     }
 
@@ -127,39 +142,6 @@ class NCTrash: UIViewController, NCSelectableNavigationView, NCTrashListCellDele
     }
 
     // MARK: TAP EVENT
-
-    func tapButtonSwitch(_ sender: Any) {
-
-        if collectionView.collectionViewLayout == gridLayout {
-
-            // list layout
-            layoutForView?.layout = NCGlobal.shared.layoutList
-            NCManageDatabase.shared.setLayoutForView(account: appDelegate.account, key: NCGlobal.shared.layoutViewTrash, serverUrl: "", layout: layoutForView?.layout)
-
-            self.collectionView.reloadData()
-            self.collectionView.collectionViewLayout.invalidateLayout()
-            self.collectionView.setCollectionViewLayout(self.listLayout, animated: true)
-
-        } else {
-
-            // grid layout
-            layoutForView?.layout = NCGlobal.shared.layoutGrid
-            NCManageDatabase.shared.setLayoutForView(account: appDelegate.account, key: NCGlobal.shared.layoutViewTrash, serverUrl: "", layout: layoutForView?.layout)
-
-            self.collectionView.reloadData()
-            self.collectionView.collectionViewLayout.invalidateLayout()
-            self.collectionView.setCollectionViewLayout(self.gridLayout, animated: true)
-        }
-    }
-
-    func tapButtonOrder(_ sender: Any) {
-        let sortMenu = NCSortMenu()
-        sortMenu.toggleMenu(viewController: self, account: appDelegate.account, key: NCGlobal.shared.layoutViewTrash, sortButton: sender as? UIButton, serverUrl: "", hideDirectoryOnTop: true)
-    }
-
-    func tapButtonMore(_ sender: Any) {
-        toggleMenuMoreHeader()
-    }
 
     func tapRestoreListItem(with ocId: String, image: UIImage?, sender: Any) {
 
@@ -191,40 +173,6 @@ class NCTrash: UIViewController, NCSelectableNavigationView, NCTrashListCellDele
             let buttonPosition = button.convert(CGPoint.zero, to: collectionView)
             let indexPath = collectionView.indexPathForItem(at: buttonPosition)
             collectionView(self.collectionView, didSelectItemAt: indexPath!)
-        }
-    }
-
-    func tapButton1(_ sender: Any) {
-
-        if isEditMode {
-            if selectOcId.isEmpty { return }
-            self.selectOcId.forEach(self.restoreItem)
-            self.tapSelect()
-        } else {
-            if datasource.isEmpty { return }
-            datasource.forEach({ self.restoreItem(with: $0.fileId) })
-        }
-    }
-
-    func tapButton2(_ sender: Any) {
-
-        if isEditMode {
-            if selectOcId.isEmpty { return }
-            let alert = UIAlertController(title: NSLocalizedString("_trash_delete_selected_", comment: ""), message: "", preferredStyle: .alert)
-            alert.addAction(UIAlertAction(title: NSLocalizedString("_delete_", comment: ""), style: .destructive, handler: { _ in
-                self.selectOcId.forEach(self.deleteItem)
-                self.tapSelect()
-            }))
-            alert.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel, handler: { _ in }))
-            self.present(alert, animated: true, completion: nil)
-        } else {
-            if datasource.isEmpty { return }
-            let alert = UIAlertController(title: NSLocalizedString("_trash_delete_all_description_", comment: ""), message: "", preferredStyle: .alert)
-            alert.addAction(UIAlertAction(title: NSLocalizedString("_trash_delete_all_", comment: ""), style: .destructive, handler: { _ in
-                self.emptyTrash()
-            }))
-            alert.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel))
-            self.present(alert, animated: true, completion: nil)
         }
     }
 
@@ -368,5 +316,90 @@ extension NCTrash {
                 cell.imageItem.image = imageIcon
             } // else: undefined cell
         }
+    }
+}
+
+extension NCTrash: NCSelectableNavigationView, NCTrashSelectTabBarDelegate {
+    var serverUrl: String {
+        ""
+    }
+
+    func setNavigationRightItems() {
+        guard let tabBarSelect = tabBarSelect as? NCTrashSelectTabBar else { return }
+
+        tabBarSelect.isSelectedEmpty = selectOcId.isEmpty
+
+        if isEditMode {
+            tabBarSelect.show()
+
+            let select = UIBarButtonItem(title: NSLocalizedString("_cancel_", comment: ""), style: .done) { self.toggleSelect() }
+
+            navigationItem.rightBarButtonItems = [select]
+        } else {
+            tabBarSelect.hide()
+
+            let menu = UIMenu(children: createMenuActions())
+            let menuButton = UIBarButtonItem(image: .init(systemName: "ellipsis.circle"), menu: menu)
+
+            navigationItem.rightBarButtonItems = [menuButton]
+        }
+    }
+
+    func onListSelected() {
+        if layoutForView?.layout == NCGlobal.shared.layoutGrid {
+            // list layout
+            layoutForView?.layout = NCGlobal.shared.layoutList
+            NCManageDatabase.shared.setLayoutForView(account: appDelegate.account, key: layoutKey, serverUrl: "", layout: layoutForView?.layout)
+
+            self.collectionView.reloadData()
+            self.collectionView.collectionViewLayout.invalidateLayout()
+            self.collectionView.setCollectionViewLayout(self.listLayout, animated: true)
+        }
+    }
+
+    func onGridSelected() {
+        if layoutForView?.layout == NCGlobal.shared.layoutList {
+            // grid layout
+            layoutForView?.layout = NCGlobal.shared.layoutGrid
+            NCManageDatabase.shared.setLayoutForView(account: appDelegate.account, key: layoutKey, serverUrl: "", layout: layoutForView?.layout)
+
+            self.collectionView.reloadData()
+            self.collectionView.collectionViewLayout.invalidateLayout()
+            self.collectionView.setCollectionViewLayout(self.gridLayout, animated: true)
+        }
+    }
+
+    func selectAll() {
+        collectionViewSelectAll()
+    }
+
+    func recover() {
+        self.selectOcId.forEach(restoreItem)
+        self.toggleSelect()
+    }
+
+    func delete() {
+        self.selectOcId.forEach(deleteItem)
+        self.toggleSelect()
+    }
+
+    func createMenuActions() -> [UIMenuElement] {
+        guard let layoutForView = NCManageDatabase.shared.getLayoutForView(account: appDelegate.account, key: layoutKey, serverUrl: serverUrl) else { return [] }
+
+        let select = UIAction(title: NSLocalizedString("_select_", comment: ""), image: .init(systemName: "checkmark.circle"), attributes: selectableDataSource.isEmpty ? .disabled : []) { _ in self.toggleSelect() }
+
+        let list = UIAction(title: NSLocalizedString("_list_", comment: ""), image: .init(systemName: "list.bullet"), state: layoutForView.layout == NCGlobal.shared.layoutList ? .on : .off) { _ in
+            self.onListSelected()
+            self.setNavigationRightItems()
+        }
+
+        let grid = UIAction(title: NSLocalizedString("_icons_", comment: ""), image: .init(systemName: "square.grid.2x2"), state: layoutForView.layout == NCGlobal.shared.layoutGrid ? .on : .off) { _ in
+            self.onGridSelected()
+            self.setNavigationRightItems()
+        }
+
+        let viewStyleSubmenu = UIMenu(title: "", options: .displayInline, children: [list, grid])
+
+        return [select, viewStyleSubmenu]
     }
 }

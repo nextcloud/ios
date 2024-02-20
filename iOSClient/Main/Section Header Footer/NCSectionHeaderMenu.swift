@@ -26,9 +26,6 @@ import MarkdownKit
 
 class NCSectionHeaderMenu: UICollectionReusableView, UIGestureRecognizerDelegate {
 
-    @IBOutlet weak var buttonSwitch: UIButton!
-    @IBOutlet weak var buttonOrder: UIButton!
-    @IBOutlet weak var buttonMore: UIButton!
     @IBOutlet weak var buttonTransfer: UIButton!
     @IBOutlet weak var imageButtonTransfer: UIImageView!
     @IBOutlet weak var labelTransfer: UILabel!
@@ -37,14 +34,10 @@ class NCSectionHeaderMenu: UICollectionReusableView, UIGestureRecognizerDelegate
     @IBOutlet weak var textViewRichWorkspace: UITextView!
     @IBOutlet weak var labelSection: UILabel!
     @IBOutlet weak var viewTransfer: UIView!
-    @IBOutlet weak var viewButtonsView: UIView!
-    @IBOutlet weak var viewSeparator: UIView!
     @IBOutlet weak var viewRichWorkspace: UIView!
     @IBOutlet weak var viewSection: UIView!
 
     @IBOutlet weak var viewTransferHeightConstraint: NSLayoutConstraint!
-    @IBOutlet weak var viewButtonsViewHeightConstraint: NSLayoutConstraint!
-    @IBOutlet weak var viewSeparatorHeightConstraint: NSLayoutConstraint!
     @IBOutlet weak var viewRichWorkspaceHeightConstraint: NSLayoutConstraint!
     @IBOutlet weak var viewSectionHeightConstraint: NSLayoutConstraint!
     @IBOutlet weak var transferSeparatorBottomHeightConstraint: NSLayoutConstraint!
@@ -61,12 +54,6 @@ class NCSectionHeaderMenu: UICollectionReusableView, UIGestureRecognizerDelegate
 
         backgroundColor = .clear
 
-        buttonSwitch.setImage(UIImage(systemName: "list.bullet")!.image(color: .systemGray, size: 25), for: .normal)
-
-        buttonOrder.setTitle("", for: .normal)
-        buttonOrder.setTitleColor(.systemBlue, for: .normal)
-        buttonMore.setImage(UIImage(named: "more")!.image(color: .systemGray, size: 25), for: .normal)
-
         // Gradient
         gradient.startPoint = CGPoint(x: 0, y: 0.50)
         gradient.endPoint = CGPoint(x: 0, y: 1)
@@ -75,9 +62,6 @@ class NCSectionHeaderMenu: UICollectionReusableView, UIGestureRecognizerDelegate
         let tap = UITapGestureRecognizer(target: self, action: #selector(touchUpInsideViewRichWorkspace(_:)))
         tap.delegate = self
         viewRichWorkspace?.addGestureRecognizer(tap)
-
-        viewSeparatorHeightConstraint.constant = 0.5
-        viewSeparator.backgroundColor = .separator
 
         markdownParser = MarkdownParser(font: UIFont.systemFont(ofSize: 15), color: .label)
         markdownParser.header.font = UIFont.systemFont(ofSize: 25)
@@ -114,46 +98,6 @@ class NCSectionHeaderMenu: UICollectionReusableView, UIGestureRecognizerDelegate
         super.traitCollectionDidChange(previousTraitCollection)
 
         setInterfaceColor()
-    }
-
-    // MARK: - View
-
-    func setStatusButtonsView(enable: Bool) {
-
-        buttonSwitch.isEnabled = enable
-        buttonOrder.isEnabled = enable
-        buttonMore.isEnabled = enable
-    }
-
-    func buttonMoreIsHidden(_ isHidden: Bool) {
-
-        buttonMore.isHidden = isHidden
-    }
-
-    func setImageSwitchList() {
-
-        buttonSwitch.setImage(UIImage(systemName: "list.bullet")!.image(color: .systemGray, width: 20, height: 15), for: .normal)
-    }
-
-    func setImageSwitchGrid() {
-
-        buttonSwitch.setImage(UIImage(systemName: "square.grid.2x2")!.image(color: .systemGray, size: 20), for: .normal)
-    }
-
-    func setButtonsView(height: CGFloat) {
-
-        viewButtonsViewHeightConstraint.constant = height
-        if height == 0 {
-            viewButtonsView.isHidden = true
-        } else {
-            viewButtonsView.isHidden = false
-        }
-    }
-
-    func setSortedTitle(_ title: String) {
-
-        let title = NSLocalizedString(title, comment: "")
-        buttonOrder.setTitle(title, for: .normal)
     }
 
     // MARK: - RichWorkspace

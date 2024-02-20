@@ -117,8 +117,7 @@ import RealmSwift
             }
         }
 
-        let endDate = Date()
-        let diffDate = endDate.timeIntervalSinceReferenceDate - startDate.timeIntervalSinceReferenceDate
+        let diffDate = Date().timeIntervalSinceReferenceDate - startDate.timeIntervalSinceReferenceDate
         NextcloudKit.shared.nkCommonInstance.writeLog("--------- ThumbnailLRUCache image process ---------")
         NextcloudKit.shared.nkCommonInstance.writeLog("Counter process: \(cache.count)")
         NextcloudKit.shared.nkCommonInstance.writeLog("Time process: \(diffDate)")

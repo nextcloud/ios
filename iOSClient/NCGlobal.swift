@@ -300,7 +300,6 @@ class NCGlobal: NSObject {
     let selectorListingFavorite                     = "listingFavorite"
     let selectorLoadFileView                        = "loadFileView"
     let selectorLoadFileQuickLook                   = "loadFileQuickLook"
-    let selectorLoadOffline                         = "loadOffline"
     let selectorOpenIn                              = "openIn"
     let selectorPrint                               = "print"
     let selectorUploadAutoUpload                    = "uploadAutoUpload"
@@ -312,7 +311,6 @@ class NCGlobal: NSObject {
     let selectorSaveAsScan                          = "saveAsScan"
     let selectorOpenDetail                          = "openDetail"
     let selectorSynchronizationOffline              = "synchronizationOffline"
-    let selectorSynchronizationFavorite             = "synchronizationFavorite"
 
     // Metadata : Status
     //

@@ -59,22 +59,15 @@ extension AppDelegate {
         )
 
         if NextcloudKit.shared.isNetworkReachable() && directEditingCreators != nil && directEditingCreators!.contains(where: { $0.editor == NCGlobal.shared.editorText}) && !isDirectoryE2EE {
-            let directEditingCreator = directEditingCreators!.first(where: { $0.editor == NCGlobal.shared.editorText})!
             actions.append(
                 NCMenuAction(title: NSLocalizedString("_create_nextcloudtext_document_", comment: ""), icon: UIImage(named: "file_txt")!.image(color: UIColor.systemGray, size: 50), action: { _ in
-                    guard let navigationController = UIStoryboard(name: "NCCreateFormUploadDocuments", bundle: nil).instantiateInitialViewController() else {
-                        return
-                    }
-                    navigationController.modalPresentationStyle = UIModalPresentationStyle.formSheet
+                    let directEditingCreator = directEditingCreators!.first(where: { $0.editor == NCGlobal.shared.editorText})!
 
-                    if let viewController = (navigationController as? UINavigationController)?.topViewController as? NCCreateFormUploadDocuments {
-                        viewController.editorId = NCGlobal.shared.editorText
-                        viewController.creatorId = directEditingCreator.identifier
-                        viewController.typeTemplate = NCGlobal.shared.templateDocument
-                        viewController.serverUrl = appDelegate.activeServerUrl
-                        viewController.titleForm = NSLocalizedString("_create_nextcloudtext_document_", comment: "")
+                    Task {
+                        let fileName = await NCNetworking.shared.createFileName(fileNameBase: NSLocalizedString("_untitled_", comment: "") + ".md", account: appDelegate.account, serverUrl: self.activeServerUrl)
 
-                        appDelegate.window?.rootViewController?.present(navigationController, animated: true, completion: nil)
+                        let fileNamePath = NCUtilityFileSystem().getFileNamePath(String(describing: fileName), serverUrl: appDelegate.activeServerUrl, urlBase: appDelegate.urlBase, userId: appDelegate.userId)
+                        self.createTextDocument(fileNamePath: fileNamePath, fileName: String(describing: fileName), creatorId: directEditingCreator.identifier)
                     }
                 })
             )
@@ -95,14 +88,9 @@ extension AppDelegate {
                 title: NSLocalizedString("_create_voice_memo_", comment: ""), icon: UIImage(named: "microphone")!.image(color: UIColor.systemGray, size: 50), action: { _ in
                     NCAskAuthorization().askAuthorizationAudioRecord(viewController: viewController) { hasPermission in
                         if hasPermission {
-                            let fileName = NCUtilityFileSystem().createFileNameDate(NSLocalizedString("_voice_memo_filename_", comment: ""), ext: "m4a")
                             if let viewController = UIStoryboard(name: "NCAudioRecorderViewController", bundle: nil).instantiateInitialViewController() as? NCAudioRecorderViewController {
-
-                                viewController.delegate = self
-                                viewController.createRecorder(fileName: fileName)
                                 viewController.modalTransitionStyle = .crossDissolve
                                 viewController.modalPresentationStyle = UIModalPresentationStyle.overCurrentContext
-
                                 appDelegate.window?.rootViewController?.present(viewController, animated: true, completion: nil)
                             }
                         }
@@ -298,5 +286,30 @@ extension AppDelegate {
         }
 
         viewController.presentMenu(with: actions)
+    }
+
+    func createTextDocument(fileNamePath: String, fileName: String, creatorId: String) {
+        var UUID = NSUUID().uuidString
+        UUID = "TEMP" + UUID.replacingOccurrences(of: "-", with: "")
+
+        let options = NKRequestOptions(customUserAgent: NCUtility().getCustomUserAgentNCText())
+
+        NextcloudKit.shared.NCTextCreateFile(fileNamePath: fileNamePath, editorId: NCGlobal.shared.editorText, creatorId: creatorId, templateId: NCGlobal.shared.templateDocument, options: options) { account, url, _, error in
+            guard error == .success, account == self.account, let url = url else {
+                NCContentPresenter().showError(error: error)
+                return
+            }
+
+            var results = NextcloudKit.shared.nkCommonInstance.getInternalType(fileName: fileName, mimeType: "", directory: false)
+            // FIXME: iOS 12.0,* don't detect UTI text/markdown, text/x-markdown
+            if results.mimeType.isEmpty {
+                results.mimeType = "text/x-markdown"
+            }
+
+            let metadata = NCManageDatabase.shared.createMetadata(account: self.account, user: self.user, userId: self.userId, fileName: fileName, fileNameView: fileName, ocId: UUID, serverUrl: self.activeServerUrl, urlBase: self.urlBase, url: url, contentType: results.mimeType)
+            if let viewController = self.activeViewController {
+                NCViewer().view(viewController: viewController, metadata: metadata, metadatas: [metadata], imageIcon: nil)
+            }
+        }
     }
 }

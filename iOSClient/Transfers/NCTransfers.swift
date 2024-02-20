@@ -37,7 +37,6 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
         titleCurrentFolder = NSLocalizedString("_transfers_", comment: "")
         layoutKey = NCGlobal.shared.layoutViewTransfers
         enableSearchBar = false
-        headerMenuButtonsView = false
         headerRichWorkspaceDisable = true
         headerMenuTransferView = true
         emptyImage = utility.loadImage(named: "arrow.left.arrow.right", color: .gray, size: UIScreen.main.bounds.width)
@@ -110,11 +109,10 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
 
         alertController.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel, handler: nil))
         alertController.addAction(UIAlertAction(title: NSLocalizedString("_cancel_all_task_", comment: ""), style: .default, handler: { _ in
-            NCNetworking.shared.cancelAllQueue()
-            NCNetworking.shared.cancelDataTask()
-            NCNetworking.shared.cancelDownloadTasks()
-            NCNetworking.shared.cancelUploadTasks()
-            NCNetworking.shared.cancelUploadBackgroundTask(withNotification: true)
+            NCNetworking.shared.cancelAllTask()
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                self.reloadDataSource()
+            }
         }))
 
         self.present(alertController, animated: true, completion: nil)
@@ -177,7 +175,9 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
 
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "transferCell", for: indexPath) as? NCTransferCell,
-              let metadata = dataSource.cellForItemAt(indexPath: indexPath) else { return UICollectionViewCell() }
+              let metadata = dataSource.cellForItemAt(indexPath: indexPath) else {
+            return NCTransferCell()
+        }
 
         cell.delegate = self
 
@@ -252,7 +252,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
     override func queryDB() {
         super.queryDB()
 
-        let metadatas = NCManageDatabase.shared.getAdvancedMetadatas(predicate: NSPredicate(format: "status != %i", NCGlobal.shared.metadataStatusNormal), page: 1, limit: 50, sorted: "sessionTaskIdentifier", ascending: false)
+        let metadatas: [tableMetadata] = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "status != %i", NCGlobal.shared.metadataStatusNormal), sorted: "sessionDate", ascending: true) ?? []
         self.dataSource = NCDataSource(metadatas: metadatas, account: self.appDelegate.account)
     }
 

@@ -82,8 +82,13 @@ class NCViewerNextcloudText: UIViewController, WKNavigationDelegate, WKScriptMes
             request.addValue("true", forHTTPHeaderField: "OCS-APIRequest")
             let language = NSLocale.preferredLanguages[0] as String
             request.addValue(language, forHTTPHeaderField: "Accept-Language")
+
             webView.load(request)
         }
+    }
+
+    deinit {
+        print("dealloc")
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -98,8 +103,16 @@ class NCViewerNextcloudText: UIViewController, WKNavigationDelegate, WKScriptMes
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
     }
 
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+
+        NCActivityIndicator.shared.start(backgroundView: view)
+    }
+
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
+
+        webView.configuration.userContentController.removeScriptMessageHandler(forName: "DirectEditingMobileInterface")
 
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterFavoriteFile), object: nil)
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeUser), object: nil)

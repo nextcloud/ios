@@ -168,6 +168,7 @@ class NCAutoUpload: NSObject {
                     metadata.session = session
                     metadata.sessionSelector = selector
                     metadata.status = NCGlobal.shared.metadataStatusWaitUpload
+                    metadata.sessionDate = Date()
                     if assetMediaType == PHAssetMediaType.video {
                         metadata.classFile = NKCommon.TypeClassFile.video.rawValue
                     } else if assetMediaType == PHAssetMediaType.image {
@@ -184,7 +185,7 @@ class NCAutoUpload: NSObject {
             self.endForAssetToUpload = true
 
             NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Start createProcessUploads")
-            NCNetworkingProcessUpload.shared.createProcessUploads(metadatas: metadatas, completion: completion)
+            NCNetworkingProcess.shared.createProcessUploads(metadatas: metadatas, completion: completion)
         }
     }
 
@@ -207,10 +208,9 @@ class NCAutoUpload: NSObject {
 
         NCAskAuthorization().askAuthorizationPhotoLibrary(viewController: viewController) { hasPermission in
 
+            guard hasPermission else { return completion(nil) }
             let assetCollection = PHAssetCollection.fetchAssetCollections(with: PHAssetCollectionType.smartAlbum, subtype: PHAssetCollectionSubtype.smartAlbumUserLibrary, options: nil)
-            // swiftlint:disable empty_count
-            guard hasPermission, assetCollection.count != 0 else { return completion(nil) }
-            // swiftlint:enable empty_count
+            guard let assetCollection = assetCollection.firstObject else { return completion(nil) }
 
             let predicateImage = NSPredicate(format: "mediaType == %i", PHAssetMediaType.image.rawValue)
             let predicateVideo = NSPredicate(format: "mediaType == %i", PHAssetMediaType.video.rawValue)
@@ -229,7 +229,7 @@ class NCAutoUpload: NSObject {
             }
 
             fetchOptions.predicate = predicate
-            let assets: PHFetchResult<PHAsset> = PHAsset.fetchAssets(in: assetCollection.firstObject!, options: fetchOptions)
+            let assets: PHFetchResult<PHAsset> = PHAsset.fetchAssets(in: assetCollection, options: fetchOptions)
 
             if selector == NCGlobal.shared.selectorUploadAutoUpload {
                 let idAssets = NCManageDatabase.shared.getPhotoLibraryIdAsset(image: account.autoUploadImage, video: account.autoUploadVideo, account: account.account)

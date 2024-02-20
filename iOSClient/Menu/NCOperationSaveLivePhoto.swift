@@ -41,9 +41,12 @@ class NCOperationSaveLivePhoto: ConcurrentOperation {
 
     override func start() {
         guard !isCancelled,
-            let metadata = NCManageDatabase.shared.setMetadataSessionInWaitDownload(ocId: metadata.ocId, selector: ""),
-            let metadataLive = NCManageDatabase.shared.setMetadataSessionInWaitDownload(ocId: self.metadataMOV.ocId, selector: "") else { return self.finish() }
-
+            let metadata = NCManageDatabase.shared.setMetadatasSessionInWaitDownload(metadatas: [metadata],
+                                                                                     session: NextcloudKit.shared.nkCommonInstance.sessionIdentifierDownload,
+                                                                                     selector: ""),
+            let metadataLive = NCManageDatabase.shared.setMetadatasSessionInWaitDownload(metadatas: [metadataMOV],
+                                                                                         session: NextcloudKit.shared.nkCommonInstance.sessionIdentifierDownload,
+                                                                                         selector: "") else { return self.finish() }
         DispatchQueue.main.async {
             self.hud.indicatorView = JGProgressHUDRingIndicatorView()
             if let indicatorView = self.hud.indicatorView as? JGProgressHUDRingIndicatorView {
@@ -67,7 +70,7 @@ class NCOperationSaveLivePhoto: ConcurrentOperation {
                 }
                 return self.finish()
             }
-            NCNetworking.shared.download(metadata: metadataLive, withNotificationProgressTask: false, checkfileProviderStorageExists: true) {
+            NCNetworking.shared.download(metadata: metadataLive, withNotificationProgressTask: false) {
                 DispatchQueue.main.async {
                     self.hud.textLabel.text = NSLocalizedString("_download_video_", comment: "")
                     self.hud.detailTextLabel.text = self.metadataMOV.fileName

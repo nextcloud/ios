@@ -167,7 +167,9 @@ class NCViewerMedia: UIViewController {
                         if error == .success, let url = url {
                             ncplayer.openAVPlayer(url: url, autoplay: autoplay)
                         } else {
-                            guard let metadata = NCManageDatabase.shared.setMetadataSessionInWaitDownload(ocId: self.metadata.ocId, selector: "") else { return }
+                            guard let metadata = NCManageDatabase.shared.setMetadatasSessionInWaitDownload(metadatas: [self.metadata],
+                                                                                                           session: NextcloudKit.shared.nkCommonInstance.sessionIdentifierDownload,
+                                                                                                           selector: "") else { return }
                             var downloadRequest: DownloadRequest?
                             let hud = JGProgressHUD()
                             hud.indicatorView = JGProgressHUDRingIndicatorView()
@@ -188,16 +190,18 @@ class NCViewerMedia: UIViewController {
                             } progressHandler: { progress in
                                 hud.progress = Float(progress.fractionCompleted)
                             } completion: { _, error in
-                                if error == .success {
-                                    hud.dismiss()
-                                    if self.utilityFileSystem.fileProviderStorageExists(self.metadata) {
-                                        let url = URL(fileURLWithPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(self.metadata.ocId, fileNameView: self.metadata.fileNameView))
-                                        ncplayer.openAVPlayer(url: url, autoplay: autoplay)
+                                DispatchQueue.main.async {
+                                    if error == .success {
+                                        hud.dismiss()
+                                        if self.utilityFileSystem.fileProviderStorageExists(self.metadata) {
+                                            let url = URL(fileURLWithPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(self.metadata.ocId, fileNameView: self.metadata.fileNameView))
+                                            ncplayer.openAVPlayer(url: url, autoplay: autoplay)
+                                        }
+                                    } else {
+                                        hud.indicatorView = JGProgressHUDErrorIndicatorView()
+                                        hud.textLabel.text = error.errorDescription
+                                        hud.dismiss(afterDelay: NCGlobal.shared.dismissAfterSecond)
                                     }
-                                } else {
-                                    hud.indicatorView = JGProgressHUDErrorIndicatorView()
-                                    hud.textLabel.text = error.errorDescription
-                                    hud.dismiss(afterDelay: NCGlobal.shared.dismissAfterSecond)
                                 }
                             }
                         }
@@ -282,7 +286,9 @@ class NCViewerMedia: UIViewController {
         if metadata.isLivePhoto,
            let metadata = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata),
            !utilityFileSystem.fileProviderStorageExists(metadata),
-           let metadata = NCManageDatabase.shared.setMetadataSessionInWaitDownload(ocId: metadata.ocId, selector: "") {
+           let metadata = NCManageDatabase.shared.setMetadatasSessionInWaitDownload(metadatas: [metadata],
+                                                                                    session: NextcloudKit.shared.nkCommonInstance.sessionIdentifierDownload,
+                                                                                    selector: "") {
             NCNetworking.shared.download(metadata: metadata, withNotificationProgressTask: true)
         }
 
@@ -322,15 +328,19 @@ class NCViewerMedia: UIViewController {
     }
 
     func downloadImage(withSelector selector: String = "") {
-        guard let metadata = NCManageDatabase.shared.setMetadataSessionInWaitDownload(ocId: metadata.ocId, selector: selector) else { return }
+        guard let metadata = NCManageDatabase.shared.setMetadatasSessionInWaitDownload(metadatas: [metadata],
+                                                                                       session: NextcloudKit.shared.nkCommonInstance.sessionIdentifierDownload,
+                                                                                       selector: selector) else { return }
         NCNetworking.shared.download(metadata: metadata, withNotificationProgressTask: true) {
         } requestHandler: { _ in
             self.allowOpeningDetails = false
         } completion: { _, _ in
-            let image = self.getImageMetadata(self.metadata)
-            self.image = image
-            self.imageVideoContainer.image = image
-            self.allowOpeningDetails = true
+            DispatchQueue.main.async {
+                let image = self.getImageMetadata(self.metadata)
+                self.image = image
+                self.imageVideoContainer.image = image
+                self.allowOpeningDetails = true
+            }
         }
     }
 

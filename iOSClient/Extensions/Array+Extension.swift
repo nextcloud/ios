@@ -38,3 +38,9 @@ extension Array {
         return arrayOrdered
     }
 }
+
+extension Array where Element == URLQueryItem {
+    subscript(name: String) -> URLQueryItem? {
+        first(where: { $0.name == name })
+    }
+}

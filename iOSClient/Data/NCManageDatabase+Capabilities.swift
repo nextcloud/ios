@@ -294,9 +294,9 @@ extension NCManageDatabase {
         guard let jsonData = jsonData else { return }
 
         do {
-            var global = NCGlobal.shared
+            let global = NCGlobal.shared
             let json = try JSONDecoder().decode(CapabilityNextcloud.self, from: jsonData)
-            var data = json.ocs.data
+            let data = json.ocs.data
 
             global.capabilityServerVersion = data.version.string
             global.capabilityServerVersionMajor = data.version.major

@@ -442,7 +442,7 @@ extension NCSelect: UICollectionViewDataSource {
             self.headerMenu = header
 
             header.delegate = self
-            header.setButtonsView(height: 0)
+//            header.setButtonsView(height: 0)
             header.setRichWorkspaceHeight(heightHeaderRichWorkspace)
             header.setRichWorkspaceText(richWorkspaceText)
             header.setViewTransfer(isHidden: true)

@@ -62,7 +62,7 @@ extension NCManageDatabase {
     // MARK: -
     // MARK: Table LocalFile
 
-    func addLocalFile(metadata: tableMetadata) {
+    func addLocalFile(metadata: tableMetadata, offline: Bool? = nil) {
 
         do {
             let realm = try Realm()
@@ -75,6 +75,9 @@ extension NCManageDatabase {
                 addObject.exifLongitude = "-1"
                 addObject.ocId = metadata.ocId
                 addObject.fileName = metadata.fileName
+                if let offline {
+                    addObject.offline = offline
+                }
                 realm.add(addObject, update: .all)
             }
         } catch let error {
@@ -115,17 +118,14 @@ extension NCManageDatabase {
         }
     }
 
-    func setLocalFile(ocId: String, fileName: String?, etag: String?) {
+    func setLocalFile(ocId: String, fileName: String?) {
 
         do {
             let realm = try Realm()
             try realm.write {
                 let result = realm.objects(tableLocalFile.self).filter("ocId == %@", ocId).first
-                if let fileName = fileName {
+                if let fileName {
                     result?.fileName = fileName
-                }
-                if let etag = etag {
-                    result?.etag = etag
                 }
             }
         } catch let error {
@@ -152,13 +152,13 @@ extension NCManageDatabase {
         }
     }
 
-    func setLocalFile(ocId: String, offline: Bool) {
+    func setOffLocalFile(ocId: String) {
 
         do {
             let realm = try Realm()
             try realm.write {
                 let result = realm.objects(tableLocalFile.self).filter("ocId == %@", ocId).first
-                result?.offline = offline
+                result?.offline = false
             }
         } catch let error {
             NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
