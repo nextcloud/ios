@@ -31,7 +31,7 @@ import WidgetKit
 import Queuer
 
 @UIApplicationMain
-class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterDelegate, NCAccountRequestDelegate, NCViewCertificateDetailsDelegate, NCUserBaseUrl {
+class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterDelegate, NCUserBaseUrl {
 
     var backgroundSessionCompletionHandler: (() -> Void)?
     var window: UIWindow?
@@ -588,10 +588,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         window?.rootViewController?.present(alertController, animated: true)
     }
 
-    func viewCertificateDetailsDismiss(host: String) {
-        trustCertificateError(host: host)
-    }
-
     // MARK: - Account
 
     @objc func changeAccount(_ account: String, userProfile: NKUserProfile?) {
@@ -686,44 +682,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             accounts.append(NKShareAccounts.DataAccounts(withUrl: account.urlBase, user: account.user, name: name, image: image))
         }
         return NKShareAccounts().putShareAccounts(at: dirGroupApps, app: NCGlobal.shared.appScheme, dataAccounts: accounts)
-    }
-
-    // MARK: - Account Request
-
-    func accountRequestChangeAccount(account: String) {
-        changeAccount(account, userProfile: nil)
-    }
-
-    func requestAccount() {
-
-        if NCPasscode.shared.isPasscodePresented { return }
-        if !NCKeychain().accountRequest { return }
-
-        let accounts = NCManageDatabase.shared.getAllAccount()
-
-        if accounts.count > 1 {
-
-            if let vcAccountRequest = UIStoryboard(name: "NCAccountRequest", bundle: nil).instantiateInitialViewController() as? NCAccountRequest {
-
-                vcAccountRequest.activeAccount = NCManageDatabase.shared.getActiveAccount()
-                vcAccountRequest.accounts = accounts
-                vcAccountRequest.enableTimerProgress = true
-                vcAccountRequest.enableAddAccount = false
-                vcAccountRequest.dismissDidEnterBackground = false
-                vcAccountRequest.delegate = self
-
-                let screenHeighMax = UIScreen.main.bounds.height - (UIScreen.main.bounds.height / 5)
-                let numberCell = accounts.count
-                let height = min(CGFloat(numberCell * Int(vcAccountRequest.heightCell) + 45), screenHeighMax)
-
-                let popup = NCPopupViewController(contentController: vcAccountRequest, popupWidth: 300, popupHeight: height + 20)
-                popup.backgroundAlpha = 0.8
-
-                window?.rootViewController?.present(popup, animated: true)
-
-                vcAccountRequest.startTimer()
-            }
-        }
     }
 
     // MARK: - Reset Application
@@ -923,6 +881,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
 // MARK: -
 
+extension AppDelegate: NCViewCertificateDetailsDelegate {
+    func viewCertificateDetailsDismiss(host: String) {
+        trustCertificateError(host: host)
+    }
+}
+
 extension AppDelegate: NCCreateFormUploadConflictDelegate {
     func dismissCreateFormUploadConflict(metadatas: [tableMetadata]?) {
         guard let metadatas = metadatas, !metadatas.isEmpty else { return }
@@ -930,14 +894,44 @@ extension AppDelegate: NCCreateFormUploadConflictDelegate {
     }
 }
 
-// MARK: -
-
 extension AppDelegate: NCPasscodeDelegate {
     func requestedAccount() {
-        requestAccount()
+        guard !NCPasscode.shared.isPasscodePresented, NCKeychain().accountRequest else {
+            return
+        }
+
+        let accounts = NCManageDatabase.shared.getAllAccount()
+        if accounts.count > 1 {
+
+            if let viewController = UIStoryboard(name: "NCAccountRequest", bundle: nil).instantiateInitialViewController() as? NCAccountRequest {
+
+                viewController.activeAccount = NCManageDatabase.shared.getActiveAccount()
+                viewController.accounts = accounts
+                viewController.enableTimerProgress = true
+                viewController.enableAddAccount = false
+                viewController.dismissDidEnterBackground = false
+                viewController.delegate = self
+
+                let screenHeighMax = UIScreen.main.bounds.height - (UIScreen.main.bounds.height / 5)
+                let numberCell = accounts.count
+                let height = min(CGFloat(numberCell * Int(viewController.heightCell) + 45), screenHeighMax)
+
+                let popup = NCPopupViewController(contentController: viewController, popupWidth: 300, popupHeight: height + 20)
+                popup.backgroundAlpha = 0.8
+
+                window?.rootViewController?.present(popup, animated: true)
+                viewController.startTimer()
+            }
+        }
     }
 
     func passcodeReset(_ passcodeViewController: TOPasscodeViewController) {
         resetApplication()
+    }
+}
+
+extension AppDelegate: NCAccountRequestDelegate {
+    func accountRequestChangeAccount(account: String) {
+        changeAccount(account, userProfile: nil)
     }
 }
