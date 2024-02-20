@@ -599,53 +599,53 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         guard layoutKey == NCGlobal.shared.layoutViewFiles else { return }
 
         // PROFILE BUTTON
-        
+
         let activeAccount = NCManageDatabase.shared.getActiveAccount()
-        
+
         let image = utility.loadUserImage(for: appDelegate.user, displayName: activeAccount?.displayName, userBaseUrl: appDelegate)
-        
+
         let button = AccountSwitcherButton(type: .custom)
         button.setImage(image, for: .normal)
+        button.setImage(image, for: .highlighted)
         button.semanticContentAttribute = .forceLeftToRight
         button.sizeToFit()
-        
+
         let accounts = NCManageDatabase.shared.getAllAccountOrderAlias()
-        
+
         if !accounts.isEmpty, !NCBrandOptions.shared.disable_multiaccount, !NCBrandOptions.shared.disable_manage_account {
             let accountActions: [UIAction] = accounts.map { account in
                 let image = utility.loadUserImage(for: account.user, displayName: account.displayName, userBaseUrl: account)
-                
+
                 var name: String = ""
                 var url: String = ""
-                
+
                 if account.alias.isEmpty {
                     name = account.displayName
                     url = (URL(string: account.urlBase)?.host ?? "")
                 } else {
                     name = account.alias
                 }
-                
+
                 let action = UIAction(title: name, image: image, state: account.active ? .on : .off) { _ in
                     self.appDelegate.changeAccount(account.account, userProfile: nil)
                 }
-                
+
                 action.subtitle = url
-                
+
                 return action
             }
-            
+
             let addAccountAction = UIAction(title: NSLocalizedString("_add_account_", comment: ""), image: .init(systemName: "plus")) { _ in
                 self.appDelegate.openLogin(viewController: self, selector: NCGlobal.shared.introLogin, openLoginWeb: false)
             }
-            
+
             let addAccountSubmenu = UIMenu(title: "", options: .displayInline, children: [addAccountAction])
-            
+
             let menu = UIMenu(children: accountActions + [addAccountSubmenu])
-            
+
             button.menu = menu
             button.showsMenuAsPrimaryAction = true
-            button.adjustsImageWhenHighlighted = false
-            
+
             button.onMenuOpened = {
                 self.dismissTip()
             }
