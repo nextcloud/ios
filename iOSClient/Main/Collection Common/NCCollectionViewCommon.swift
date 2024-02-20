@@ -602,40 +602,51 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
         let activeAccount = NCManageDatabase.shared.getActiveAccount()
 
-        let image = utility.loadUserImage(
-            for: appDelegate.user,
-               displayName: activeAccount?.displayName,
-               userBaseUrl: appDelegate)
+        let image = utility.loadUserImage(for: appDelegate.user, displayName: activeAccount?.displayName, userBaseUrl: appDelegate)
 
-        let button = UIButton(type: .custom)
+        let button = AccountSwitcherButton(type: .custom)
         button.setImage(image, for: .normal)
-
+        button.setImage(image, for: .highlighted)
         button.semanticContentAttribute = .forceLeftToRight
         button.sizeToFit()
-        button.action(for: .touchUpInside) { _ in
 
-            let accounts = NCManageDatabase.shared.getAllAccountOrderAlias()
-            if !accounts.isEmpty, !NCBrandOptions.shared.disable_multiaccount, !NCBrandOptions.shared.disable_manage_account {
+        let accounts = NCManageDatabase.shared.getAllAccountOrderAlias()
 
-                if let vcAccountRequest = UIStoryboard(name: "NCAccountRequest", bundle: nil).instantiateInitialViewController() as? NCAccountRequest {
+        if !accounts.isEmpty, !NCBrandOptions.shared.disable_multiaccount, !NCBrandOptions.shared.disable_manage_account {
+            let accountActions: [UIAction] = accounts.map { account in
+                let image = utility.loadUserImage(for: account.user, displayName: account.displayName, userBaseUrl: account)
 
-                    vcAccountRequest.activeAccount = NCManageDatabase.shared.getActiveAccount()
-                    vcAccountRequest.accounts = accounts
-                    vcAccountRequest.enableTimerProgress = false
-                    vcAccountRequest.enableAddAccount = true
-                    vcAccountRequest.delegate = self
-                    vcAccountRequest.dismissDidEnterBackground = true
+                var name: String = ""
+                var url: String = ""
 
-                    let screenHeighMax = UIScreen.main.bounds.height - (UIScreen.main.bounds.height / 5)
-                    let numberCell = accounts.count + 1
-                    let height = min(CGFloat(numberCell * Int(vcAccountRequest.heightCell) + 45), screenHeighMax)
-
-                    let popup = NCPopupViewController(contentController: vcAccountRequest, popupWidth: 300, popupHeight: height)
-
-                    self.present(popup, animated: true)
+                if account.alias.isEmpty {
+                    name = account.displayName
+                    url = (URL(string: account.urlBase)?.host ?? "")
+                } else {
+                    name = account.alias
                 }
 
-                // TIP
+                let action = UIAction(title: name, image: image, state: account.active ? .on : .off) { _ in
+                    self.appDelegate.changeAccount(account.account, userProfile: nil)
+                }
+
+                action.subtitle = url
+
+                return action
+            }
+
+            let addAccountAction = UIAction(title: NSLocalizedString("_add_account_", comment: ""), image: .init(systemName: "plus")) { _ in
+                self.appDelegate.openLogin(viewController: self, selector: NCGlobal.shared.introLogin, openLoginWeb: false)
+            }
+
+            let addAccountSubmenu = UIMenu(title: "", options: .displayInline, children: [addAccountAction])
+
+            let menu = UIMenu(children: accountActions + [addAccountSubmenu])
+
+            button.menu = menu
+            button.showsMenuAsPrimaryAction = true
+
+            button.onMenuOpened = {
                 self.dismissTip()
             }
         }
@@ -2063,5 +2074,14 @@ class NCCollectionViewDownloadThumbnail: ConcurrentOperation {
             }
             self.finish()
         }
+    }
+}
+
+private class AccountSwitcherButton: UIButton {
+    var onMenuOpened: (() -> Void)?
+
+    override func contextMenuInteraction(_ interaction: UIContextMenuInteraction, willDisplayMenuFor configuration: UIContextMenuConfiguration, animator: UIContextMenuInteractionAnimating?) {
+        super.contextMenuInteraction(interaction, willDisplayMenuFor: configuration, animator: animator)
+        onMenuOpened?()
     }
 }
