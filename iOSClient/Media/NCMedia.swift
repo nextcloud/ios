@@ -31,7 +31,7 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
 
     var emptyDataSet: NCEmptyDataSet?
     var mediaCommandView: NCMediaCommandView?
-    var layout: NCMediaGridLayout!
+    var layout: NCMediaDynamicLayout!
     var documentPickerViewController: NCDocumentPickerViewController?
     var tabBarSelect: NCMediaSelectTabBar?
 
@@ -72,8 +72,8 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
 
         view.backgroundColor = .systemBackground
 
-        layout = NCMediaGridLayout()
-        layout.itemForLine = CGFloat(NCKeychain().mediaItemForLine)
+        layout = NCMediaDynamicLayout()
+        // layout.itemForLine = CGFloat(NCKeychain().mediaItemForLine)
         layout.sectionHeadersPinToVisibleBounds = true
 
         collectionView.register(UINib(nibName: "NCGridMediaCell", bundle: nil), forCellWithReuseIdentifier: "gridCell")
@@ -370,7 +370,20 @@ extension NCMedia: UICollectionViewDataSource {
     }
 }
 
-// MARK: - ScrollView
+// MARK: -
+
+extension NCMedia: UICollectionViewDelegateFlowLayout {
+
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
+        return CGSize(width: collectionView.frame.width, height: 0)
+    }
+
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForFooterInSection section: Int) -> CGSize {
+        return CGSize(width: collectionView.frame.width, height: 0)
+    }
+}
+
+// MARK: -
 
 extension NCMedia: UIScrollViewDelegate {
 
@@ -411,7 +424,7 @@ extension NCMedia: UIScrollViewDelegate {
     }
 }
 
-// MARK: - NCSelect Delegate
+// MARK: -
 
 extension NCMedia: NCSelectDelegate {
 

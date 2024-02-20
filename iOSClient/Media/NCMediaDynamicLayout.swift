@@ -1,8 +1,8 @@
 //
-//  NCMediaGridLayout.swift
+//  NCMediaDynamicLayout.swift
 //  Nextcloud
 //
-//  Created by Marino Faggiana on 27/01/24.
+//  Created by Marino Faggiana on 20/02/24.
 //  Copyright © 2024 Marino Faggiana. All rights reserved.
 //
 //  Author Marino Faggiana <marino.faggiana@nextcloud.com>
@@ -23,7 +23,7 @@
 
 import UIKit
 
-class NCMediaGridLayout: UICollectionViewFlowLayout {
+class NCMediaDynamicLayout: UICollectionViewFlowLayout {
 
     var marginLeftRight: CGFloat = 2
     var itemForLine: CGFloat = 3
