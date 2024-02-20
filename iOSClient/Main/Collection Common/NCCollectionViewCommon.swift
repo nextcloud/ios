@@ -1736,7 +1736,7 @@ extension NCCollectionViewCommon: NCSelectableNavigationView, NCCollectionViewCo
         let alertController = UIAlertController(
             title: NSLocalizedString("_confirm_delete_selected_", comment: ""),
             message: nil,
-            preferredStyle: .actionSheet)
+            preferredStyle: .alert)
 
         let canDeleteServer = selectedMetadatas.allSatisfy { !$0.lock }
 
@@ -1754,8 +1754,9 @@ extension NCCollectionViewCommon: NCSelectableNavigationView, NCCollectionViewCo
                         }
                     }
                     NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDeleteFile, userInfo: ["ocId": ocId, "indexPath": self.selectIndexPath, "onlyLocalCache": false, "error": error])
-                    self.toggleSelect()
                 }
+
+                self.toggleSelect()
             })
         }
 
