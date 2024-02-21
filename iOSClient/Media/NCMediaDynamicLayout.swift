@@ -48,18 +48,6 @@ class NCMediaDynamicLayout: UICollectionViewLayout {
         let sectionCount = collectionView?.numberOfSections ?? 0
         var layoutMaxY: CGFloat = 0
 
-        for section in 0..<sectionCount {
-            if let supplementaryViewAttributes = layoutAttributesForSupplementaryView(ofKind: UICollectionView.elementKindSectionHeader, at: IndexPath(item: 0, section: section)) {
-                var supplementaryViewSize: CGSize = CGSize.zero
-                if let delegate = delegate {
-//                    supplementaryViewSize = delegate.sizeForSupplementaryElementOfKind(UICollectionView.elementKindSectionHeader, at: IndexPath(row:0, section: section), collectionView)
-                }
-                supplementaryViewAttributes.frame = CGRect(x: 0, y: layoutMaxY, width: supplementaryViewSize.width, height: supplementaryViewSize.height)
-                layoutMaxY += supplementaryViewSize.height
-                attributesArray.append(supplementaryViewAttributes)
-            }
-        }
-
         for _ in 0..<itemForLine {
             maxYsArray.append(NSNumber(value: Float(sectionInset.top + layoutMaxY)))
         }
@@ -79,7 +67,6 @@ class NCMediaDynamicLayout: UICollectionViewLayout {
                 maxValue = value
             }
         }
-
         return CGSize(width: 0, height: CGFloat(maxValue) + sectionInset.bottom)
     }
 
