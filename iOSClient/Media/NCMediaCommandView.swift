@@ -130,7 +130,7 @@ class NCMediaCommandView: UIView {
     func createMenu() {
 
         if let itemForLine = mediaView?.layout.itemForLine, let maxImageGrid = mediaView?.maxImageGrid {
-            if itemForLine >= maxImageGrid - 1 {
+            if CGFloat(itemForLine) >= maxImageGrid - 1 {
                 self.attributesZoomIn = []
                 self.attributesZoomOut = .disabled
             } else if itemForLine <= 1 {

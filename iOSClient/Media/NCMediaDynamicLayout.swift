@@ -23,46 +23,116 @@
 
 import UIKit
 
-class NCMediaDynamicLayout: UICollectionViewFlowLayout {
+@objc
+protocol NCMediaDynamicLayoutDelegate {
 
-    var marginLeftRight: CGFloat = 2
-    var itemForLine: CGFloat = 3
+    func itemSize(_ collectionView: UICollectionView?, indexPath: IndexPath) -> CGSize
 
-    override init() {
-        super.init()
+    @objc optional
+    func sizeForSupplementaryElementOfKind(_ kind: String, at indexPath: IndexPath, _ collectionView: UICollectionView?) -> CGSize
+}
 
-        sectionHeadersPinToVisibleBounds = false
+class NCMediaDynamicLayout: UICollectionViewLayout {
 
-        minimumInteritemSpacing = 0
-        minimumLineSpacing = marginLeftRight
+    weak var delegate: NCMediaDynamicLayoutDelegate?
+    var itemForLine: Int = 0
+    var columSpacing: CGFloat = 0
+    var rowSpacing: CGFloat = 0
+    var sectionInset: UIEdgeInsets = UIEdgeInsets.zero
 
-        self.scrollDirection = .vertical
-        self.sectionInset = UIEdgeInsets(top: 0, left: marginLeftRight, bottom: 0, right: marginLeftRight)
-    }
+    private var maxYsArray: [NSNumber] = []
+    private var attributesArray: [UICollectionViewLayoutAttributes] = []
 
-    required init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
+    override func prepare() {
+        super.prepare()
 
-    override var itemSize: CGSize {
-        get {
-            if let collectionView = collectionView {
+        maxYsArray.removeAll()
+        attributesArray.removeAll()
 
-                let itemWidth: CGFloat = (collectionView.frame.width - marginLeftRight * 2 - marginLeftRight * (itemForLine - 1)) / itemForLine
-                let itemHeight: CGFloat = itemWidth
+        let itemCount = collectionView?.numberOfItems(inSection: 0) ?? 0
+        let sectionCount = collectionView?.numberOfSections ?? 0
+        var layoutMaxY: CGFloat = 0
+        let sectionInset: UIEdgeInsets = UIEdgeInsets.zero
 
-                return CGSize(width: itemWidth, height: itemHeight)
+        for section in 0..<sectionCount {
+            if let supplementaryViewAttributes = layoutAttributesForSupplementaryView(ofKind: UICollectionView.elementKindSectionHeader, at: IndexPath(item: 0, section: section)){
+                var supplementaryViewSize: CGSize = CGSize.zero
+                if let delegate = delegate {
+//                    supplementaryViewSize = delegate.sizeForSupplementaryElementOfKind(UICollectionView.elementKindSectionHeader, at: IndexPath(row:0, section: section), collectionView)
+                }
+                supplementaryViewAttributes.frame = CGRect(x: 0, y: layoutMaxY, width: supplementaryViewSize.width, height: supplementaryViewSize.height)
+                layoutMaxY += supplementaryViewSize.height
+                attributesArray.append(supplementaryViewAttributes)
             }
-
-            // Default fallback
-            return CGSize(width: 100, height: 100)
         }
-        set {
-            super.itemSize = newValue
+
+        for _ in 0..<itemForLine {
+            maxYsArray.append(NSNumber(value: Float(sectionInset.top + layoutMaxY)))
+        }
+
+        for index in 0..<itemCount {
+            if let attribute = layoutAttributesForItem(at: IndexPath(item: index, section: 0)) {
+                attributesArray.append(attribute)
+            }
         }
     }
 
-    override func targetContentOffset(forProposedContentOffset proposedContentOffset: CGPoint) -> CGPoint {
-        return proposedContentOffset
+    override var collectionViewContentSize: CGSize {
+        var maxValue: Float = 0
+        for i in 0..<maxYsArray.count {
+            let value = maxYsArray[i].floatValue
+            if maxValue < value {
+                maxValue = value
+            }
+        }
+
+        return CGSize(width: 0, height: CGFloat(maxValue) + sectionInset.bottom)
+    }
+
+    override func layoutAttributesForItem(at indexPath: IndexPath) -> UICollectionViewLayoutAttributes? {
+
+        guard let collectionView = collectionView else { return nil }
+
+        let attributes = UICollectionViewLayoutAttributes(forCellWith: indexPath)
+
+        let columnTotalSpacing: CGFloat = CGFloat(itemForLine - 1) * columSpacing
+
+        let itemWidth = ((collectionView.frame.size.width - sectionInset.left - sectionInset.right) - columnTotalSpacing) / CGFloat(itemForLine)
+
+        var itemHeight: CGFloat = 0
+        if let delegate = delegate {
+            let size = delegate.itemSize(collectionView, indexPath: indexPath)
+            itemHeight = size.height
+        }
+        var minValue: Float = maxYsArray.first?.floatValue ?? 0
+        var minIndex: Int = 0
+        for i in 0..<maxYsArray.count {
+            let value = maxYsArray[i].floatValue
+            if minValue >= value {
+                minValue = value
+                minIndex = i
+            }
+        }
+
+        let itemX: CGFloat = sectionInset.left + (columSpacing + itemWidth) * CGFloat(minIndex)
+
+        let itemY: CGFloat = CGFloat(minValue) + rowSpacing
+
+        attributes.frame = CGRect(x: itemX, y: itemY, width: itemWidth, height: itemHeight)
+
+        maxYsArray[minIndex] = NSNumber(value: Float(attributes.frame.maxY))
+
+        return attributes
+    }
+
+    override func layoutAttributesForElements(in rect: CGRect) -> [UICollectionViewLayoutAttributes]? {
+        return attributesArray
+    }
+
+    override func layoutAttributesForSupplementaryView(ofKind elementKind: String, at indexPath: IndexPath) -> UICollectionViewLayoutAttributes? {
+
+        let supplementaryViewattributes = UICollectionViewLayoutAttributes(forSupplementaryViewOfKind: elementKind, with: indexPath)
+
+        return supplementaryViewattributes
     }
 }

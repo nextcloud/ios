@@ -73,8 +73,11 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
         view.backgroundColor = .systemBackground
 
         layout = NCMediaDynamicLayout()
-        // layout.itemForLine = CGFloat(NCKeychain().mediaItemForLine)
-        layout.sectionHeadersPinToVisibleBounds = true
+        layout.itemForLine = NCKeychain().mediaItemForLine
+        layout.sectionInset = UIEdgeInsets(top: 0, left: 2, bottom: 0, right: 2)
+        layout.columSpacing = 2
+        layout.rowSpacing = 2
+        layout.delegate = self
 
         collectionView.register(UINib(nibName: "NCGridMediaCell", bundle: nil), forCellWithReuseIdentifier: "gridCell")
         collectionView.alwaysBounceVertical = true
@@ -380,6 +383,20 @@ extension NCMedia: UICollectionViewDelegateFlowLayout {
 
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForFooterInSection section: Int) -> CGSize {
         return CGSize(width: collectionView.frame.width, height: 0)
+    }
+}
+
+// MARK: -
+
+extension NCMedia: NCMediaDynamicLayoutDelegate {
+    func itemSize(_ collectionView: UICollectionView?, indexPath: IndexPath) -> CGSize {
+        guard let metadatas = self.metadatas,
+              let metadata = metadatas[indexPath.row] else { return CGSize(width: 100, height: 100) }
+        if let image = getImage(metadata: metadata) {
+            print(image.size)
+            return image.size
+        }
+        return CGSize(width: 100, height: 100)
     }
 }
 
