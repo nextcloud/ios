@@ -23,39 +23,33 @@
 
 import UIKit
 
-@objc
-protocol NCMediaDynamicLayoutDelegate {
-
+protocol NCMediaDynamicLayoutDelegate: AnyObject {
     func itemSize(_ collectionView: UICollectionView?, indexPath: IndexPath) -> CGSize
-
-    @objc optional
-    func sizeForSupplementaryElementOfKind(_ kind: String, at indexPath: IndexPath, _ collectionView: UICollectionView?) -> CGSize
 }
 
 class NCMediaDynamicLayout: UICollectionViewLayout {
 
-    weak var delegate: NCMediaDynamicLayoutDelegate?
+    var delegate: NCMediaDynamicLayoutDelegate?
     var itemForLine: Int = 0
     var columSpacing: CGFloat = 0
     var rowSpacing: CGFloat = 0
     var sectionInset: UIEdgeInsets = UIEdgeInsets.zero
 
-    private var maxYsArray: [NSNumber] = []
     private var attributesArray: [UICollectionViewLayoutAttributes] = []
+    private var maxYsArray: [NSNumber] = []
 
     override func prepare() {
         super.prepare()
 
-        maxYsArray.removeAll()
         attributesArray.removeAll()
+        maxYsArray.removeAll()
 
         let itemCount = collectionView?.numberOfItems(inSection: 0) ?? 0
         let sectionCount = collectionView?.numberOfSections ?? 0
         var layoutMaxY: CGFloat = 0
-        let sectionInset: UIEdgeInsets = UIEdgeInsets.zero
 
         for section in 0..<sectionCount {
-            if let supplementaryViewAttributes = layoutAttributesForSupplementaryView(ofKind: UICollectionView.elementKindSectionHeader, at: IndexPath(item: 0, section: section)){
+            if let supplementaryViewAttributes = layoutAttributesForSupplementaryView(ofKind: UICollectionView.elementKindSectionHeader, at: IndexPath(item: 0, section: section)) {
                 var supplementaryViewSize: CGSize = CGSize.zero
                 if let delegate = delegate {
 //                    supplementaryViewSize = delegate.sizeForSupplementaryElementOfKind(UICollectionView.elementKindSectionHeader, at: IndexPath(row:0, section: section), collectionView)
@@ -91,19 +85,15 @@ class NCMediaDynamicLayout: UICollectionViewLayout {
 
     override func layoutAttributesForItem(at indexPath: IndexPath) -> UICollectionViewLayoutAttributes? {
 
-        guard let collectionView = collectionView else { return nil }
-
+        guard let collectionView, let delegate = self.delegate else { return nil }
         let attributes = UICollectionViewLayoutAttributes(forCellWith: indexPath)
-
         let columnTotalSpacing: CGFloat = CGFloat(itemForLine - 1) * columSpacing
 
+        let size = delegate.itemSize(collectionView, indexPath: indexPath)
         let itemWidth = ((collectionView.frame.size.width - sectionInset.left - sectionInset.right) - columnTotalSpacing) / CGFloat(itemForLine)
+        let ratio = itemWidth / size.width
+        let itemHeight = size.height * ratio
 
-        var itemHeight: CGFloat = 0
-        if let delegate = delegate {
-            let size = delegate.itemSize(collectionView, indexPath: indexPath)
-            itemHeight = size.height
-        }
         var minValue: Float = maxYsArray.first?.floatValue ?? 0
         var minIndex: Int = 0
         for i in 0..<maxYsArray.count {
@@ -115,11 +105,8 @@ class NCMediaDynamicLayout: UICollectionViewLayout {
         }
 
         let itemX: CGFloat = sectionInset.left + (columSpacing + itemWidth) * CGFloat(minIndex)
-
         let itemY: CGFloat = CGFloat(minValue) + rowSpacing
-
         attributes.frame = CGRect(x: itemX, y: itemY, width: itemWidth, height: itemHeight)
-
         maxYsArray[minIndex] = NSNumber(value: Float(attributes.frame.maxY))
 
         return attributes
@@ -130,9 +117,7 @@ class NCMediaDynamicLayout: UICollectionViewLayout {
     }
 
     override func layoutAttributesForSupplementaryView(ofKind elementKind: String, at indexPath: IndexPath) -> UICollectionViewLayoutAttributes? {
-
         let supplementaryViewattributes = UICollectionViewLayoutAttributes(forSupplementaryViewOfKind: elementKind, with: indexPath)
-
         return supplementaryViewattributes
     }
 }

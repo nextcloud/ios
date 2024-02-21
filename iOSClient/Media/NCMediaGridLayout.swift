@@ -26,7 +26,7 @@ import UIKit
 class NCMediaGridLayout: UICollectionViewFlowLayout {
 
     var marginLeftRight: CGFloat = 2
-    var itemForLine: CGFloat = 3
+    var itemForLine = 3
 
     override init() {
         super.init()
@@ -47,10 +47,9 @@ class NCMediaGridLayout: UICollectionViewFlowLayout {
     override var itemSize: CGSize {
         get {
             if let collectionView = collectionView {
-
+                let itemForLine = CGFloat(self.itemForLine)
                 let itemWidth: CGFloat = (collectionView.frame.width - marginLeftRight * 2 - marginLeftRight * (itemForLine - 1)) / itemForLine
                 let itemHeight: CGFloat = itemWidth
-
                 return CGSize(width: itemWidth, height: itemHeight)
             }
 

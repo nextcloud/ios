@@ -31,7 +31,6 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
 
     var emptyDataSet: NCEmptyDataSet?
     var mediaCommandView: NCMediaCommandView?
-    var layout: NCMediaDynamicLayout!
     var documentPickerViewController: NCDocumentPickerViewController?
     var tabBarSelect: NCMediaSelectTabBar?
 
@@ -72,20 +71,14 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
 
         view.backgroundColor = .systemBackground
 
-        layout = NCMediaDynamicLayout()
-        layout.itemForLine = NCKeychain().mediaItemForLine
-        layout.sectionInset = UIEdgeInsets(top: 0, left: 2, bottom: 0, right: 2)
-        layout.columSpacing = 2
-        layout.rowSpacing = 2
-        layout.delegate = self
-
         collectionView.register(UINib(nibName: "NCGridMediaCell", bundle: nil), forCellWithReuseIdentifier: "gridCell")
         collectionView.alwaysBounceVertical = true
         collectionView.contentInset = UIEdgeInsets(top: insetsTop, left: 0, bottom: 50, right: 0)
         collectionView.backgroundColor = .systemBackground
         collectionView.prefetchDataSource = self
-        collectionView.collectionViewLayout = layout
 
+        NCKeychain().mediaLayout = NCGlobal.shared.mediaLayoutDynamic
+        selectLayout()
         emptyDataSet = NCEmptyDataSet(view: collectionView, offset: 0, delegate: self)
 
         mediaCommandView = Bundle.main.loadNibNamed("NCMediaCommandView", owner: self, options: nil)?.first as? NCMediaCommandView
@@ -159,6 +152,26 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
         super.viewWillLayoutSubviews()
         if let frame = tabBarController?.tabBar.frame {
             tabBarSelect?.hostingController.view.frame = frame
+        }
+    }
+
+    // MARK: -
+
+    func selectLayout() {
+        let media = NCKeychain().mediaLayout
+        if media == NCGlobal.shared.mediaLayoutDynamic {
+            let layout = NCMediaDynamicLayout()
+            layout.itemForLine = NCKeychain().mediaItemForLine
+            layout.sectionInset = UIEdgeInsets(top: 0, left: 2, bottom: 0, right: 2)
+            layout.columSpacing = 2
+            layout.rowSpacing = 2
+            layout.delegate = self
+            collectionView.collectionViewLayout = layout
+        } else if media == NCGlobal.shared.mediaLayoutGrid {
+            let layout = NCMediaGridLayout()
+            layout.itemForLine = NCKeychain().mediaItemForLine
+            layout.sectionHeadersPinToVisibleBounds = true
+            collectionView.collectionViewLayout = layout
         }
     }
 

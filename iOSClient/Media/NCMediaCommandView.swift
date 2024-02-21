@@ -129,7 +129,15 @@ class NCMediaCommandView: UIView {
 
     func createMenu() {
 
-        if let itemForLine = mediaView?.layout.itemForLine, let maxImageGrid = mediaView?.maxImageGrid {
+        var itemForLine = 0
+
+        if let layout = (mediaView.collectionView.collectionViewLayout as? NCMediaDynamicLayout) {
+            itemForLine = layout.itemForLine
+        } else if let layout = (mediaView.collectionView.collectionViewLayout as? NCMediaGridLayout) {
+            itemForLine = Int(layout.itemForLine)
+        }
+
+        if let maxImageGrid = mediaView?.maxImageGrid {
             if CGFloat(itemForLine) >= maxImageGrid - 1 {
                 self.attributesZoomIn = []
                 self.attributesZoomOut = .disabled
@@ -147,18 +155,29 @@ class NCMediaCommandView: UIView {
                 UIAction(title: NSLocalizedString("_zoom_out_", comment: ""), image: UIImage(systemName: "minus.magnifyingglass"), attributes: self.attributesZoomOut) { _ in
                     guard let mediaView = self.mediaView else { return }
                     UIView.animate(withDuration: 0.0, animations: {
-                        mediaView.layout.itemForLine += 1
+                        let newItemForLine = itemForLine + 1
+                        if let layout = (mediaView.collectionView.collectionViewLayout as? NCMediaDynamicLayout) {
+                            layout.itemForLine = newItemForLine
+                        } else if let layout = (mediaView.collectionView.collectionViewLayout as? NCMediaGridLayout) {
+                            layout.itemForLine = newItemForLine
+                        }
                         self.createMenu()
                         mediaView.collectionView.collectionViewLayout.invalidateLayout()
-                        NCKeychain().mediaItemForLine = Int(mediaView.layout.itemForLine)
+                        NCKeychain().mediaItemForLine = newItemForLine
                     })
                 },
                 UIAction(title: NSLocalizedString("_zoom_in_", comment: ""), image: UIImage(systemName: "plus.magnifyingglass"), attributes: self.attributesZoomIn) { _ in
                     UIView.animate(withDuration: 0.0, animations: {
-                        self.mediaView.layout.itemForLine -= 1
+                        guard let mediaView = self.mediaView else { return }
+                        let newItemForLine = itemForLine - 1
+                        if let layout = (mediaView.collectionView.collectionViewLayout as? NCMediaDynamicLayout) {
+                            layout.itemForLine = newItemForLine
+                        } else if let layout = (mediaView.collectionView.collectionViewLayout as? NCMediaGridLayout) {
+                            layout.itemForLine = newItemForLine
+                        }
                         self.createMenu()
                         self.mediaView.collectionView.collectionViewLayout.invalidateLayout()
-                        NCKeychain().mediaItemForLine = Int(self.mediaView.layout.itemForLine)
+                        NCKeychain().mediaItemForLine = newItemForLine
                     })
                 }
             ]),
