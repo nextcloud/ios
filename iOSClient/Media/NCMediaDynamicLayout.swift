@@ -104,7 +104,8 @@ class NCMediaDynamicLayout: UICollectionViewLayout {
             }
         }
 
-        let itemX: CGFloat = sectionInset.left + (columSpacing + itemWidth) * CGFloat(minIndex)
+        let multiplo = (itemForLine - minIndex) - 1
+        let itemX: CGFloat = sectionInset.left + (columSpacing + itemWidth) * CGFloat(multiplo)
         let itemY: CGFloat = CGFloat(minValue) + rowSpacing
         attributes.frame = CGRect(x: itemX, y: itemY, width: itemWidth, height: itemHeight)
         maxYsArray[minIndex] = NSNumber(value: Float(attributes.frame.maxY))
