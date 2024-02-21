@@ -403,13 +403,17 @@ extension NCMedia: UICollectionViewDelegateFlowLayout {
 
 extension NCMedia: NCMediaDynamicLayoutDelegate {
     func itemSize(_ collectionView: UICollectionView?, indexPath: IndexPath) -> CGSize {
+        var size = CGSize(width: 100, height: 100)
         guard let metadatas = self.metadatas,
-              let metadata = metadatas[indexPath.row] else { return CGSize(width: 100, height: 100) }
-        if let image = getImage(metadata: metadata) {
-            print(image.size)
-            return image.size
+              let metadata = metadatas[indexPath.row] else { return size }
+
+        if metadata.imageSize != CGSize.zero {
+            size = metadata.imageSize
+        } else if let image = getImage(metadata: metadata) {
+            size = image.size
         }
-        return CGSize(width: 100, height: 100)
+        print(size)
+        return size
     }
 }
 

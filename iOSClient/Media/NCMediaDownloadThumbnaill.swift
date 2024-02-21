@@ -74,6 +74,11 @@ class NCMediaDownloadThumbnaill: ConcurrentOperation {
                                 break
                             }
                         }
+                        let countVisibleCell = visibleCells.count / 2
+                        let operationCount = NCNetworking.shared.downloadThumbnailQueue.operationCount
+                        if operationCount.isMultiple(of: countVisibleCell) || operationCount == 0 {
+                            self.collectionView?.collectionViewLayout.invalidateLayout()
+                        }
                     }
                 }
                 NCImageCache.shared.setMediaImage(ocId: self.metadata.ocId, etag: self.metadata.etag, image: .actual(image))
