@@ -71,7 +71,6 @@ class NCMediaDynamicLayout: UICollectionViewLayout {
     }
 
     override func layoutAttributesForItem(at indexPath: IndexPath) -> UICollectionViewLayoutAttributes? {
-
         guard let collectionView, let delegate = self.delegate else { return nil }
         let attributes = UICollectionViewLayoutAttributes(forCellWith: indexPath)
         let columnTotalSpacing: CGFloat = CGFloat(itemForLine - 1) * columSpacing
