@@ -130,10 +130,12 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
 
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         var indexPath: IndexPath?
+        let offset: CGFloat = 10
+        let top = self.insetsTop + self.view.safeAreaInsets.top + offset
 
         if let collectionView = self.collectionView {
-            let centerPoint = CGPoint(x: collectionView.center.x + collectionView.contentOffset.x, y: collectionView.center.y + collectionView.contentOffset.y)
-            indexPath = collectionView.indexPathForItem(at: centerPoint)
+            let point = CGPoint(x: offset, y: top + collectionView.contentOffset.y)
+            indexPath = collectionView.indexPathForItem(at: point)
         }
         coordinator.animate(alongsideTransition: nil) { _ in
             if let indexPath {
