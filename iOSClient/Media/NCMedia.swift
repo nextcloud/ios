@@ -45,8 +45,6 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
     var showOnlyImages = false
     var showOnlyVideos = false
 
-    let maxImageGrid: CGFloat = 7
-    var cellHeigth: CGFloat = 0
 
     var loadingTask: Task<Void, any Error>?
 
@@ -57,6 +55,7 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
     var timerSearchNewMedia: Timer?
 
     let insetsTop: CGFloat = 75
+    let maxImageGrid: CGFloat = 7
 
     struct cacheImages {
         static var cellLivePhotoImage = UIImage()
@@ -132,8 +131,8 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
     }
 
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
-
         var indexPath: IndexPath?
+
         if let collectionView = self.collectionView {
             let centerPoint = CGPoint(x: collectionView.center.x + collectionView.contentOffset.x, y: collectionView.center.y + collectionView.contentOffset.y)
             indexPath = collectionView.indexPathForItem(at: centerPoint)
@@ -157,6 +156,7 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
 
     override func viewWillLayoutSubviews() {
         super.viewWillLayoutSubviews()
+
         if let frame = tabBarController?.tabBar.frame {
             tabBarSelect?.hostingController.view.frame = frame
         }
@@ -166,6 +166,7 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
 
     func selectLayout() {
         let media = NCKeychain().mediaLayout
+
         if media == NCGlobal.shared.mediaLayoutDynamic {
             let layout = NCMediaDynamicLayout()
             layout.itemForLine = NCKeychain().mediaItemForLine
@@ -232,9 +233,7 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
 // MARK: - Collection View
 
 extension NCMedia: UICollectionViewDelegate {
-
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-
         if let metadata = self.metadatas?[indexPath.row] {
             if isEditMode {
                 if let index = selectOcId.firstIndex(of: metadata.ocId) {
@@ -255,7 +254,6 @@ extension NCMedia: UICollectionViewDelegate {
     }
 
     func collectionView(_ collectionView: UICollectionView, contextMenuConfigurationForItemAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
-
         guard let cell = collectionView.cellForItem(at: indexPath) as? NCGridMediaCell,
               let metadata = self.metadatas?[indexPath.row] else { return nil }
         let identifier = indexPath as NSCopying
@@ -269,7 +267,6 @@ extension NCMedia: UICollectionViewDelegate {
     }
 
     func collectionView(_ collectionView: UICollectionView, willPerformPreviewActionForMenuWith configuration: UIContextMenuConfiguration, animator: UIContextMenuInteractionCommitAnimating) {
-
         animator.addCompletion {
             if let indexPath = configuration.identifier as? IndexPath {
                 self.collectionView(collectionView, didSelectItemAt: indexPath)
@@ -279,16 +276,13 @@ extension NCMedia: UICollectionViewDelegate {
 }
 
 extension NCMedia: UICollectionViewDataSourcePrefetching {
-
     func collectionView(_ collectionView: UICollectionView, prefetchItemsAt indexPaths: [IndexPath]) {
         // print("[LOG] n. " + String(indexPaths.count))
     }
 }
 
 extension NCMedia: UICollectionViewDataSource {
-
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-
         var numberOfItemsInSection = 0
 
         if let metadatas {
@@ -315,7 +309,6 @@ extension NCMedia: UICollectionViewDataSource {
     }
 
     func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
-
         guard let metadatas else { return }
 
         if !collectionView.indexPathsForVisibleItems.contains(indexPath) && indexPath.row < metadatas.count {
@@ -330,12 +323,9 @@ extension NCMedia: UICollectionViewDataSource {
     }
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "gridCell", for: indexPath) as? NCGridMediaCell,
               let metadatas = self.metadatas,
               let metadata = metadatas[indexPath.row] else { return UICollectionViewCell() }
-
-        self.cellHeigth = cell.frame.size.height
 
         cell.date = metadata.date as Date
         cell.fileObjectId = metadata.ocId
@@ -374,7 +364,6 @@ extension NCMedia: UICollectionViewDataSource {
 // MARK: -
 
 extension NCMedia: UICollectionViewDelegateFlowLayout {
-
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
         return CGSize(width: collectionView.frame.width, height: 0)
     }
@@ -405,13 +394,12 @@ extension NCMedia: NCMediaDynamicLayoutDelegate {
 // MARK: -
 
 extension NCMedia: UIScrollViewDelegate {
-
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         if let metadatas, !metadatas.isEmpty {
             let isTop = scrollView.contentOffset.y <= -(insetsTop + view.safeAreaInsets.top - 35)
             mediaCommandView?.setColor(isTop: isTop)
             setNeedsStatusBarAppearanceUpdate()
-            if lastContentOffsetY == 0 || lastContentOffsetY + cellHeigth / 2 <= scrollView.contentOffset.y || lastContentOffsetY - cellHeigth / 2 >= scrollView.contentOffset.y {
+            if lastContentOffsetY == 0 || lastContentOffsetY / 2 <= scrollView.contentOffset.y || lastContentOffsetY / 2 >= scrollView.contentOffset.y {
                 mediaCommandView?.setTitleDate()
                 lastContentOffsetY = scrollView.contentOffset.y
             }
@@ -446,7 +434,6 @@ extension NCMedia: UIScrollViewDelegate {
 // MARK: -
 
 extension NCMedia: NCSelectDelegate {
-
     func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String, items: [Any], indexPath: [IndexPath], overwrite: Bool, copy: Bool, move: Bool) {
         guard let serverUrl = serverUrl else { return }
         let home = utilityFileSystem.getHomeServer(urlBase: appDelegate.urlBase, userId: appDelegate.userId)
