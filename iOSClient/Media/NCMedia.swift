@@ -188,16 +188,17 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
         guard let userInfo = notification.userInfo as NSDictionary?,
               let error = userInfo["error"] as? NKError else { return }
 
-        reloadDataSource()
-        if error != .success {
-            NCContentPresenter().showError(error: error)
+        DispatchQueue.global().async {
+            self.reloadDataSource()
+            if error != .success {
+                NCContentPresenter().showError(error: error)
+            }
         }
     }
 
     // MARK: - Empty
 
     func emptyDataSetView(_ view: NCEmptyView) {
-
         view.emptyImage.image = UIImage(named: "media")?.image(color: .gray, size: UIScreen.main.bounds.width)
         if loadingTask != nil {
             view.emptyTitle.text = NSLocalizedString("_search_in_progress_", comment: "")
@@ -210,7 +211,6 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
     // MARK: - Image
 
     func getImage(metadata: tableMetadata) -> UIImage? {
-
         if let cachedImage = NCImageCache.shared.getMediaImage(ocId: metadata.ocId, etag: metadata.etag), case let .actual(image) = cachedImage {
             return image
         } else if FileManager().fileExists(atPath: utilityFileSystem.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)) {
