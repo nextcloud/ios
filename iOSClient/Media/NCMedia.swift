@@ -39,21 +39,19 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
     let utility = NCUtility()
 
     var metadatas: ThreadSafeArray<tableMetadata>?
+    var loadingTask: Task<Void, any Error>?
+
     var isEditMode = false
     var selectOcId: [String] = []
 
     var showOnlyImages = false
     var showOnlyVideos = false
 
-
-    var loadingTask: Task<Void, any Error>?
-
     var lastContentOffsetY: CGFloat = 0
     var mediaPath = ""
 
     var timeIntervalSearchNewMedia: TimeInterval = 2.0
     var timerSearchNewMedia: Timer?
-
     let insetsTop: CGFloat = 75
     let maxImageGrid: CGFloat = 7
 
@@ -327,7 +325,7 @@ extension NCMedia: UICollectionViewDataSource {
               let metadatas = self.metadatas,
               let metadata = metadatas[indexPath.row] else { return UICollectionViewCell() }
 
-        cell.date = metadata.date as Date
+        cell.fileDate = metadata.date as Date
         cell.fileObjectId = metadata.ocId
         cell.indexPath = indexPath
         cell.fileUser = metadata.ownerId
@@ -386,7 +384,6 @@ extension NCMedia: NCMediaDynamicLayoutDelegate {
         } else if let image = getImage(metadata: metadata) {
             size = image.size
         }
-        print(size)
         return size
     }
 }

@@ -66,7 +66,7 @@ extension NCMedia {
 
         if let visibleCells = self.collectionView?.indexPathsForVisibleItems.sorted(by: { $0.row < $1.row }).compactMap({ self.collectionView?.cellForItem(at: $0) }) {
             // first date
-            let firstCellDate = (visibleCells.first as? NCGridMediaCell)?.date
+            let firstCellDate = (visibleCells.first as? NCGridMediaCell)?.fileDate
             if firstCellDate == firstMetadataDate {
                 lessDate = Date.distantFuture
             } else {
@@ -77,7 +77,7 @@ extension NCMedia {
                 }
             }
             // last date
-            let lastCellDate = (visibleCells.last as? NCGridMediaCell)?.date
+            let lastCellDate = (visibleCells.last as? NCGridMediaCell)?.fileDate
             if lastCellDate == lastMetadataDate {
                 greaterDate = Date.distantPast
             } else {

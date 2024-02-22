@@ -72,13 +72,11 @@ class NCMediaCommandView: UIView {
     }
 
     @IBAction func selectOrCancelButtonPressed(_ sender: UIButton) {
-
         mediaView.isEditMode = !mediaView.isEditMode
         setSelectcancelButton()
     }
 
     func setSelectcancelButton() {
-
         mediaView.selectOcId.removeAll()
         mediaView.tabBarSelect?.selectCount = mediaView.selectOcId.count
 
@@ -96,13 +94,15 @@ class NCMediaCommandView: UIView {
     }
 
     func setTitleDate() {
-
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
             self.title.text = ""
-            if let visibleCells = self.mediaView.collectionView?.indexPathsForVisibleItems.sorted(by: { $0.row < $1.row }).compactMap({ self.mediaView.collectionView?.cellForItem(at: $0) }) {
-                if let cell = visibleCells.first as? NCGridMediaCell {
-                    self.title.text = ""
-                    if let date = cell.date {
+            let offset: CGFloat = 10
+            let top = self.mediaView.insetsTop + self.mediaView.view.safeAreaInsets.top + offset
+            if let collectionView = self.mediaView.collectionView {
+                let point = CGPoint(x: offset, y: top + collectionView.contentOffset.y)
+                if let indexPath = collectionView.indexPathForItem(at: point) {
+                    let cell = self.mediaView.collectionView(collectionView, cellForItemAt: indexPath) as? NCGridMediaCell
+                    if let date = cell?.fileDate {
                         self.title.text = self.mediaView.utility.getTitleFromDate(date)
                     }
                 }
@@ -111,7 +111,6 @@ class NCMediaCommandView: UIView {
     }
 
     func setColor(isTop: Bool) {
-
         if isTop {
             title.textColor = .label
             activityIndicator.color = .label
@@ -128,7 +127,6 @@ class NCMediaCommandView: UIView {
     }
 
     func createMenu() {
-
         var itemForLine = 0
 
         if let layout = (mediaView.collectionView.collectionViewLayout as? NCMediaDynamicLayout) {
@@ -236,9 +234,7 @@ class NCMediaCommandView: UIView {
 // MARK: - NCMediaTabBarSelectDelegate
 
 extension NCMediaCommandView: NCMediaSelectTabBarDelegate {
-
     func delete() {
-
         if !mediaView.selectOcId.isEmpty {
             let selectOcId = mediaView.selectOcId
             let alertController = UIAlertController(
