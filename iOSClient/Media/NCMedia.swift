@@ -140,6 +140,8 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
         coordinator.animate(alongsideTransition: nil) { _ in
             if let indexPath {
                 self.collectionView.scrollToItem(at: indexPath, at: [], animated: false)
+            } else {
+                print("no indexPath found")
             }
         }
     }
@@ -376,8 +378,8 @@ extension NCMedia: UICollectionViewDelegateFlowLayout {
 // MARK: -
 
 extension NCMedia: NCMediaDynamicLayoutDelegate {
-    func itemSize(_ collectionView: UICollectionView?, indexPath: IndexPath) -> CGSize {
-        var size = CGSize(width: 100, height: 100)
+    func itemSize(_ collectionView: UICollectionView, indexPath: IndexPath) -> CGSize {
+        var size = CGSize(width: collectionView.frame.width / 3, height: collectionView.frame.width / 3)
         guard let metadatas = self.metadatas,
               let metadata = metadatas[indexPath.row] else { return size }
 

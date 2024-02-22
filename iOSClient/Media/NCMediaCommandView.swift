@@ -105,6 +105,8 @@ class NCMediaCommandView: UIView {
                     if let date = cell?.fileDate {
                         self.title.text = self.mediaView.utility.getTitleFromDate(date)
                     }
+                } else {
+                    print("no indexPath found")
                 }
             }
         }

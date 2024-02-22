@@ -24,7 +24,7 @@
 import UIKit
 
 protocol NCMediaDynamicLayoutDelegate: AnyObject {
-    func itemSize(_ collectionView: UICollectionView?, indexPath: IndexPath) -> CGSize
+    func itemSize(_ collectionView: UICollectionView, indexPath: IndexPath) -> CGSize
 }
 
 class NCMediaDynamicLayout: UICollectionViewLayout {
