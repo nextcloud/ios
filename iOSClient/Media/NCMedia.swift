@@ -185,27 +185,10 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
     // MARK: - NotificationCenter
 
     @objc func deleteFile(_ notification: NSNotification) {
-
         guard let userInfo = notification.userInfo as NSDictionary?,
-              let ocIds = userInfo["ocId"] as? [String],
               let error = userInfo["error"] as? NKError else { return }
 
-        if !ocIds.isEmpty {
-            var items: [IndexPath] = []
-            self.metadatas = self.metadatas?.filter({ !ocIds.contains($0.ocId )})
-            if let visibleCells = self.collectionView?.indexPathsForVisibleItems.sorted(by: { $0.row < $1.row }).compactMap({ self.collectionView?.cellForItem(at: $0) }) {
-                for case let cell as NCGridMediaCell in visibleCells {
-                    if let ocId = cell.fileObjectId, ocIds.contains(ocId) {
-                        items.append(cell.indexPath)
-                    }
-                }
-                if !items.isEmpty {
-                    collectionView?.deleteItems(at: items)
-                }
-            }
-            self.collectionView?.reloadData()
-        }
-
+        reloadDataSource()
         if error != .success {
             NCContentPresenter().showError(error: error)
         }
