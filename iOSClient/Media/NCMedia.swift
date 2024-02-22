@@ -132,7 +132,6 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
     }
 
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
-        super.viewWillTransition(to: size, with: coordinator)
 
         var indexPath: IndexPath?
         if let collectionView = self.collectionView {
