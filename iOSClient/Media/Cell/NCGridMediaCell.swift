@@ -63,22 +63,16 @@ class NCGridMediaCell: UICollectionViewCell, NCCellProtocol {
         imageItem.backgroundColor = .secondarySystemBackground
         imageStatus.image = nil
         imageItem.image = nil
-    }
-
-    func selectMode(_ status: Bool) {
-        if status {
-            imageSelect.isHidden = false
-        } else {
-            imageSelect.isHidden = true
-            imageVisualEffect.isHidden = true
-        }
+        imageVisualEffect.alpha = 0.4
+        imageSelect.image = NCImageCache.images.checkedYes
+        imageVisualEffect.isHidden = true
+        imageSelect.isHidden = true
     }
 
     func selected(_ status: Bool) {
         if status {
-            imageSelect.image = NCImageCache.images.checkedYes
+            imageSelect.isHidden = false
             imageVisualEffect.isHidden = false
-            imageVisualEffect.alpha = 0.4
         } else {
             imageSelect.isHidden = true
             imageVisualEffect.isHidden = true

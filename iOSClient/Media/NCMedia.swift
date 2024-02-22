@@ -259,7 +259,7 @@ extension NCMedia: UICollectionViewDelegate {
                 } else {
                     selectOcId.append(metadata.ocId)
                 }
-                collectionView.reloadItems(at: [indexPath])
+                collectionView.reloadData()
                 tabBarSelect?.selectCount = selectOcId.count
             } else {
                 // ACTIVE SERVERURL
@@ -378,15 +378,10 @@ extension NCMedia: UICollectionViewDataSource {
             cell.imageStatus.image = nil
         }
 
-        if isEditMode {
-            cell.selectMode(true)
-            if selectOcId.contains(metadata.ocId) {
-                cell.selected(true)
-            } else {
-                cell.selected(false)
-            }
+        if isEditMode, selectOcId.contains(metadata.ocId) {
+            cell.selected(true)
         } else {
-            cell.selectMode(false)
+            cell.selected(false)
         }
 
         return cell
