@@ -381,7 +381,7 @@ extension NCMedia: NCMediaDynamicLayoutDelegate {
 
         if metadata.imageSize != CGSize.zero {
             size = metadata.imageSize
-        } else if let image = getImage(metadata: metadata) {
+        } else if let image = NCImageCache.shared.getMediaImage(ocId: metadata.ocId, etag: metadata.etag) {
             size = image.size
         }
         return size

@@ -84,12 +84,11 @@ class NCMediaDownloadThumbnaill: ConcurrentOperation {
     override func finish(success: Bool = true) {
         super.finish(success: success)
 
-        let operationCount = NCNetworking.shared.downloadThumbnailQueue.operationCount
-        if operationCount == 0 {
+        if NCNetworking.shared.downloadThumbnailQueue.operationCount == 0 {
             DispatchQueue.main.async {
                 self.collectionView?.reloadData()
             }
         }
-        print("in queue \(operationCount)")
+        print("Download Thumbnail in queue \(NCNetworking.shared.downloadThumbnailQueue.operationCount)")
     }
 }
