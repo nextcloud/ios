@@ -155,7 +155,7 @@ class NCMediaCommandView: UIView {
                 UIAction(title: NSLocalizedString("_zoom_out_", comment: ""), image: UIImage(systemName: "minus.magnifyingglass"), attributes: self.attributesZoomOut) { _ in
                     guard let mediaView = self.mediaView else { return }
                     UIView.animate(withDuration: 0.0, animations: {
-                        let newItemForLine = itemForLine + 1
+                        let newItemForLine = itemForLine + 2
                         if let layout = (mediaView.collectionView.collectionViewLayout as? NCMediaDynamicLayout) {
                             layout.itemForLine = newItemForLine
                         } else if let layout = (mediaView.collectionView.collectionViewLayout as? NCMediaGridLayout) {
@@ -169,7 +169,7 @@ class NCMediaCommandView: UIView {
                 UIAction(title: NSLocalizedString("_zoom_in_", comment: ""), image: UIImage(systemName: "plus.magnifyingglass"), attributes: self.attributesZoomIn) { _ in
                     UIView.animate(withDuration: 0.0, animations: {
                         guard let mediaView = self.mediaView else { return }
-                        let newItemForLine = itemForLine - 1
+                        let newItemForLine = itemForLine - 2
                         if let layout = (mediaView.collectionView.collectionViewLayout as? NCMediaDynamicLayout) {
                             layout.itemForLine = newItemForLine
                         } else if let layout = (mediaView.collectionView.collectionViewLayout as? NCMediaGridLayout) {

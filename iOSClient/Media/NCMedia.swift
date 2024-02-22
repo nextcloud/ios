@@ -138,13 +138,10 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
             let centerPoint = CGPoint(x: collectionView.center.x + collectionView.contentOffset.x, y: collectionView.center.y + collectionView.contentOffset.y)
             indexPath = collectionView.indexPathForItem(at: centerPoint)
         }
-
         coordinator.animate(alongsideTransition: nil) { _ in
             if let indexPath {
-                self.collectionView.scrollToItem(at: indexPath, at: [.centeredVertically, .centeredHorizontally], animated: false)
+                self.collectionView.scrollToItem(at: indexPath, at: [], animated: false)
             }
-            self.collectionView?.collectionViewLayout.invalidateLayout()
-            self.mediaCommandView?.setTitleDate()
         }
     }
 
