@@ -54,6 +54,7 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
     var timerSearchNewMedia: Timer?
     let insetsTop: CGFloat = 75
     let maxImageGrid: CGFloat = 7
+    var scroolToTop: Bool = false
 
     struct cacheImages {
         static var cellLivePhotoImage = UIImage()
@@ -110,7 +111,7 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
 
         if let metadatas = NCImageCache.shared.initialMetadatas() {
             self.metadatas = metadatas
-            self.collectionView.reloadData()
+            scroolToTop = true
         }
     }
 
@@ -119,6 +120,13 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
 
         mediaCommandView?.setTitleDate()
         mediaCommandView?.createMenu()
+        if scroolToTop {
+            collectionView.setContentOffset(CGPoint(x: 0, y: -(insetsTop + view.safeAreaInsets.top)), animated: false)
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                self.collectionView.reloadData()
+                self.scroolToTop = false
+            }
+        }
     }
 
     override func viewWillDisappear(_ animated: Bool) {
