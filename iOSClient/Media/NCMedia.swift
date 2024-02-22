@@ -139,8 +139,6 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
         coordinator.animate(alongsideTransition: nil) { _ in
             if let indexPath {
                 self.collectionView.scrollToItem(at: indexPath, at: [], animated: false)
-            } else {
-                print("no indexPath found")
             }
         }
     }
