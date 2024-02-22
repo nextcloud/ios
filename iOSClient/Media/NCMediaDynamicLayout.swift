@@ -24,7 +24,7 @@
 import UIKit
 
 protocol NCMediaDynamicLayoutDelegate: AnyObject {
-    func itemSize(_ collectionView: UICollectionView, indexPath: IndexPath) -> CGSize
+    func itemSize(_ collectionView: UICollectionView, indexPath: IndexPath, itemForLine: CGFloat) -> CGSize
 }
 
 class NCMediaDynamicLayout: UICollectionViewLayout {
@@ -74,7 +74,7 @@ class NCMediaDynamicLayout: UICollectionViewLayout {
         let attributes = UICollectionViewLayoutAttributes(forCellWith: indexPath)
         let columnTotalSpacing: CGFloat = CGFloat(itemForLine - 1) * columSpacing
 
-        let size = delegate.itemSize(collectionView, indexPath: indexPath)
+        let size = delegate.itemSize(collectionView, indexPath: indexPath, itemForLine: CGFloat(itemForLine))
         let itemWidth = ((collectionView.frame.size.width - sectionInset.left - sectionInset.right) - columnTotalSpacing) / CGFloat(itemForLine)
         let ratio = itemWidth / size.width
         let itemHeight = size.height * ratio

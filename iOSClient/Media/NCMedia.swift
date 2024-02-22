@@ -130,10 +130,11 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
         var indexPath: IndexPath?
         let offset: CGFloat = 10
         let top = self.insetsTop + self.view.safeAreaInsets.top + offset
-
         if let collectionView = self.collectionView {
-            let point = CGPoint(x: offset, y: top + collectionView.contentOffset.y)
-            indexPath = collectionView.indexPathForItem(at: point)
+            indexPath = collectionView.indexPathForItem(at: CGPoint(x: offset, y: top + collectionView.contentOffset.y))
+            if indexPath == nil {
+                indexPath = collectionView.indexPathForItem(at: CGPoint(x: offset, y: top + offset + collectionView.contentOffset.y))
+            }
         }
         coordinator.animate(alongsideTransition: nil) { _ in
             if let indexPath {
@@ -374,8 +375,8 @@ extension NCMedia: UICollectionViewDelegateFlowLayout {
 // MARK: -
 
 extension NCMedia: NCMediaDynamicLayoutDelegate {
-    func itemSize(_ collectionView: UICollectionView, indexPath: IndexPath) -> CGSize {
-        var size = CGSize(width: collectionView.frame.width / 3, height: collectionView.frame.width / 3)
+    func itemSize(_ collectionView: UICollectionView, indexPath: IndexPath, itemForLine: CGFloat) -> CGSize {
+        var size = CGSize(width: collectionView.frame.width / itemForLine, height: collectionView.frame.width / itemForLine)
         guard let metadatas = self.metadatas,
               let metadata = metadatas[indexPath.row] else { return size }
 

@@ -93,10 +93,9 @@ class NCMediaCommandView: UIView {
         mediaView.collectionView.reloadData()
     }
 
-    func setTitleDate() {
+    func setTitleDate(_ offset: CGFloat = 10) {
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
             self.title.text = ""
-            let offset: CGFloat = 10
             let top = self.mediaView.insetsTop + self.mediaView.view.safeAreaInsets.top + offset
             if let collectionView = self.mediaView.collectionView {
                 let point = CGPoint(x: offset, y: top + collectionView.contentOffset.y)
@@ -106,7 +105,11 @@ class NCMediaCommandView: UIView {
                         self.title.text = self.mediaView.utility.getTitleFromDate(date)
                     }
                 } else {
-                    print("no indexPath found")
+                    if offset < 20 {
+                        self.setTitleDate(20)
+                    } else {
+                        print("no indexPath found")
+                    }
                 }
             }
         }
