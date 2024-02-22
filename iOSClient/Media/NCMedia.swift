@@ -111,8 +111,6 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
         if let metadatas = NCImageCache.shared.initialMetadatas() {
             self.metadatas = metadatas
         }
-
-        collectionView.reloadData()
     }
 
     override func viewDidAppear(_ animated: Bool) {

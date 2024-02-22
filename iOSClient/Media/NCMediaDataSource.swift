@@ -56,6 +56,7 @@ extension NCMedia {
         var greaterDate: Date?
         let firstMetadataDate = metadatas?.first?.date as? Date
         let lastMetadataDate = metadatas?.last?.date as? Date
+        let countMetadatas = self.metadatas?.count ?? 0
 
         guard loadingTask == nil, !isEditMode else {
             return
@@ -88,7 +89,9 @@ extension NCMedia {
             if let lessDate, let greaterDate {
                 mediaCommandView?.activityIndicator.startAnimating()
                 loadingTask = Task.detached {
-                    await self.collectionView.reloadData()
+                    if countMetadatas == 0 {
+                        await self.collectionView.reloadData()
+                    }
                     let results = await self.searchMedia(account: self.appDelegate.account, lessDate: lessDate, greaterDate: greaterDate)
                     print("Media results changed items: \(results.isChanged)")
                     await self.mediaCommandView?.activityIndicator.stopAnimating()
@@ -105,7 +108,9 @@ extension NCMedia {
                     if results.isChanged {
                         await self.reloadDataSource()
                     } else {
-                        await self.collectionView.reloadData()
+                        if countMetadatas == 0 {
+                            await self.collectionView.reloadData()
+                        }
                     }
                 }
             }
