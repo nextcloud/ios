@@ -110,6 +110,7 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
 
         if let metadatas = NCImageCache.shared.initialMetadatas() {
             self.metadatas = metadatas
+            self.collectionView.reloadData()
         }
     }
 
