@@ -28,7 +28,6 @@ protocol NCMediaDynamicLayoutDelegate: AnyObject {
 }
 
 class NCMediaDynamicLayout: UICollectionViewLayout {
-
     var delegate: NCMediaDynamicLayoutDelegate?
     var itemForLine: Int = 0
     var columSpacing: CGFloat = 0

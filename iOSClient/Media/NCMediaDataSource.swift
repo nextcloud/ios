@@ -25,9 +25,7 @@ import UIKit
 import NextcloudKit
 
 extension NCMedia {
-
     func getPredicate(showAll: Bool = false) -> NSPredicate {
-
         let startServerUrl = NCUtilityFileSystem().getHomeServer(urlBase: appDelegate.urlBase, userId: appDelegate.userId) + mediaPath
 
         if showAll {
@@ -54,7 +52,6 @@ extension NCMedia {
     // MARK: - Search media
 
     @objc func searchMediaUI() {
-
         var lessDate: Date?
         var greaterDate: Date?
         let firstMetadataDate = metadatas?.first?.date as? Date

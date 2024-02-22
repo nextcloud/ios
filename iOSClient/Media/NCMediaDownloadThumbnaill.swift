@@ -43,7 +43,6 @@ class NCMediaDownloadThumbnaill: ConcurrentOperation {
     }
 
     override func start() {
-
         guard !isCancelled else { return self.finish() }
 
         var etagResource: String?

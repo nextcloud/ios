@@ -24,7 +24,6 @@
 import UIKit
 
 class NCMediaGridLayout: UICollectionViewFlowLayout {
-
     var marginLeftRight: CGFloat = 2
     var itemForLine = 3
 
@@ -32,7 +31,6 @@ class NCMediaGridLayout: UICollectionViewFlowLayout {
         super.init()
 
         sectionHeadersPinToVisibleBounds = false
-
         minimumInteritemSpacing = 0
         minimumLineSpacing = marginLeftRight
 
