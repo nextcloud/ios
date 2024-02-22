@@ -134,8 +134,19 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         super.viewWillTransition(to: size, with: coordinator)
 
-        collectionView?.collectionViewLayout.invalidateLayout()
-        mediaCommandView?.setTitleDate()
+        var indexPath: IndexPath?
+        if let collectionView = self.collectionView {
+            let centerPoint = CGPoint(x: collectionView.center.x + collectionView.contentOffset.x, y: collectionView.center.y + collectionView.contentOffset.y)
+            indexPath = collectionView.indexPathForItem(at: centerPoint)
+        }
+
+        coordinator.animate(alongsideTransition: nil) { _ in
+            if let indexPath {
+                self.collectionView.scrollToItem(at: indexPath, at: [.centeredVertically, .centeredHorizontally], animated: false)
+            }
+            self.collectionView?.collectionViewLayout.invalidateLayout()
+            self.mediaCommandView?.setTitleDate()
+        }
     }
 
     override var preferredStatusBarStyle: UIStatusBarStyle {
