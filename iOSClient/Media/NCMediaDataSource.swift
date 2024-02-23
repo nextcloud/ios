@@ -108,9 +108,7 @@ extension NCMedia {
                     if results.isChanged {
                         await self.reloadDataSource()
                     } else {
-                        if countMetadatas == 0 {
-                            await self.collectionView.reloadData()
-                        }
+                        await self.collectionView.reloadData()
                     }
                 }
             }
