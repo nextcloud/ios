@@ -100,6 +100,10 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
             self.collectionView.reloadData()
             DispatchQueue.main.async { self.reloadDataSource() }
         }
+
+        NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationWillEnterForeground), object: nil, queue: nil) { _ in
+            self.startTimer()
+        }
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -111,8 +115,7 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
 
         NotificationCenter.default.addObserver(self, selector: #selector(deleteFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDeleteFile), object: nil)
 
-        timerSearchNewMedia?.invalidate()
-        timerSearchNewMedia = Timer.scheduledTimer(timeInterval: timeIntervalSearchNewMedia, target: self, selector: #selector(searchMediaUI), userInfo: nil, repeats: false)
+        startTimer()
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -153,6 +156,11 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
         if let frame = tabBarController?.tabBar.frame {
             tabBarSelect?.hostingController.view.frame = frame
         }
+    }
+
+    func startTimer() {
+        timerSearchNewMedia?.invalidate()
+        timerSearchNewMedia = Timer.scheduledTimer(timeInterval: timeIntervalSearchNewMedia, target: self, selector: #selector(searchMediaUI), userInfo: nil, repeats: false)
     }
 
     // MARK: -
@@ -422,15 +430,13 @@ extension NCMedia: UIScrollViewDelegate {
     func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
         if !decelerate {
             if !decelerate {
-                timerSearchNewMedia?.invalidate()
-                timerSearchNewMedia = Timer.scheduledTimer(timeInterval: timeIntervalSearchNewMedia, target: self, selector: #selector(searchMediaUI), userInfo: nil, repeats: false)
+                startTimer()
             }
         }
     }
 
     func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
-        timerSearchNewMedia?.invalidate()
-        timerSearchNewMedia = Timer.scheduledTimer(timeInterval: timeIntervalSearchNewMedia, target: self, selector: #selector(searchMediaUI), userInfo: nil, repeats: false)
+        startTimer()
     }
 
     func scrollViewDidScrollToTop(_ scrollView: UIScrollView) {
@@ -450,7 +456,6 @@ extension NCMedia: NCSelectDelegate {
         mediaPath = serverUrl.replacingOccurrences(of: home, with: "")
         NCManageDatabase.shared.setAccountMediaPath(mediaPath, account: appDelegate.account)
         reloadDataSource()
-        timerSearchNewMedia?.invalidate()
-        timerSearchNewMedia = Timer.scheduledTimer(timeInterval: timeIntervalSearchNewMedia, target: self, selector: #selector(self.searchMediaUI), userInfo: nil, repeats: false)
+        startTimer()
     }
 }
