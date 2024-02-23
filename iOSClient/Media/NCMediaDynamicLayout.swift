@@ -29,11 +29,11 @@ protocol NCMediaDynamicLayoutDelegate: AnyObject {
 
 class NCMediaDynamicLayout: UICollectionViewLayout {
     var delegate: NCMediaDynamicLayoutDelegate?
-    var itemForLine: Int = 0
     var columSpacing: CGFloat = 0
     var rowSpacing: CGFloat = 0
     var sectionInset: UIEdgeInsets = UIEdgeInsets.zero
 
+    private var itemForLine: Int = 0
     private var attributesArray: [UICollectionViewLayoutAttributes] = []
     private var maxYsArray: [NSNumber] = []
 
@@ -44,8 +44,14 @@ class NCMediaDynamicLayout: UICollectionViewLayout {
         maxYsArray.removeAll()
 
         let itemCount = collectionView?.numberOfItems(inSection: 0) ?? 0
-        let sectionCount = collectionView?.numberOfSections ?? 0
-        var layoutMaxY: CGFloat = 0
+        let layoutMaxY: CGFloat = 0
+
+        if UIDevice.current.userInterfaceIdiom == .phone,
+           (UIDevice.current.orientation == .landscapeLeft || UIDevice.current.orientation == .landscapeRight) {
+            itemForLine = NCKeychain().mediaItemForLine + 2
+        } else {
+            itemForLine = NCKeychain().mediaItemForLine
+        }
 
         for _ in 0..<itemForLine {
             maxYsArray.append(NSNumber(value: Float(sectionInset.top + layoutMaxY)))

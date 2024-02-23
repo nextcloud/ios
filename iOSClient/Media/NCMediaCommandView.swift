@@ -133,24 +133,25 @@ class NCMediaCommandView: UIView {
 
     func createMenu() {
         var itemForLine = 0
+        guard var maxImageGrid = mediaView?.maxImageGrid else { return }
 
-        if let layout = (mediaView.collectionView.collectionViewLayout as? NCMediaDynamicLayout) {
-            itemForLine = layout.itemForLine
-        } else if let layout = (mediaView.collectionView.collectionViewLayout as? NCMediaGridLayout) {
-            itemForLine = Int(layout.itemForLine)
+        if UIDevice.current.userInterfaceIdiom == .phone,
+           (UIDevice.current.orientation == .landscapeLeft || UIDevice.current.orientation == .landscapeRight) {
+            itemForLine = NCKeychain().mediaItemForLine + 2
+            maxImageGrid += 2
+        } else {
+            itemForLine = NCKeychain().mediaItemForLine
         }
 
-        if let maxImageGrid = mediaView?.maxImageGrid {
-            if CGFloat(itemForLine) >= maxImageGrid - 1 {
-                self.attributesZoomIn = []
-                self.attributesZoomOut = .disabled
-            } else if itemForLine <= 1 {
-                self.attributesZoomIn = .disabled
-                self.attributesZoomOut = []
-            } else {
-                self.attributesZoomIn = []
-                self.attributesZoomOut = []
-            }
+        if CGFloat(itemForLine) >= maxImageGrid - 1 {
+            self.attributesZoomIn = []
+            self.attributesZoomOut = .disabled
+        } else if itemForLine <= 1 {
+            self.attributesZoomIn = .disabled
+            self.attributesZoomOut = []
+        } else {
+            self.attributesZoomIn = []
+            self.attributesZoomOut = []
         }
 
         let topAction = UIMenu(title: "", options: .displayInline, children: [
@@ -158,29 +159,16 @@ class NCMediaCommandView: UIView {
                 UIAction(title: NSLocalizedString("_zoom_out_", comment: ""), image: UIImage(systemName: "minus.magnifyingglass"), attributes: self.attributesZoomOut) { _ in
                     guard let mediaView = self.mediaView else { return }
                     UIView.animate(withDuration: 0.0, animations: {
-                        let newItemForLine = itemForLine + 1
-                        if let layout = (mediaView.collectionView.collectionViewLayout as? NCMediaDynamicLayout) {
-                            layout.itemForLine = newItemForLine
-                        } else if let layout = (mediaView.collectionView.collectionViewLayout as? NCMediaGridLayout) {
-                            layout.itemForLine = newItemForLine
-                        }
+                        NCKeychain().mediaItemForLine = itemForLine + 1
                         self.createMenu()
-                        mediaView.collectionView.collectionViewLayout.invalidateLayout()
-                        NCKeychain().mediaItemForLine = newItemForLine
+                        mediaView.collectionView.reloadData()
                     })
                 },
                 UIAction(title: NSLocalizedString("_zoom_in_", comment: ""), image: UIImage(systemName: "plus.magnifyingglass"), attributes: self.attributesZoomIn) { _ in
                     UIView.animate(withDuration: 0.0, animations: {
-                        guard let mediaView = self.mediaView else { return }
-                        let newItemForLine = itemForLine - 1
-                        if let layout = (mediaView.collectionView.collectionViewLayout as? NCMediaDynamicLayout) {
-                            layout.itemForLine = newItemForLine
-                        } else if let layout = (mediaView.collectionView.collectionViewLayout as? NCMediaGridLayout) {
-                            layout.itemForLine = newItemForLine
-                        }
+                        NCKeychain().mediaItemForLine = itemForLine - 1
                         self.createMenu()
-                        self.mediaView.collectionView.collectionViewLayout.invalidateLayout()
-                        NCKeychain().mediaItemForLine = newItemForLine
+                        self.mediaView.collectionView.reloadData()
                     })
                 }
             ]),

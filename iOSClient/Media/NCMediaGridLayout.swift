@@ -25,7 +25,7 @@ import UIKit
 
 class NCMediaGridLayout: UICollectionViewFlowLayout {
     var marginLeftRight: CGFloat = 2
-    var itemForLine = 3
+    var itemForLine = NCKeychain().mediaItemForLine
 
     override init() {
         super.init()

@@ -181,7 +181,6 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
 
         if media == NCGlobal.shared.mediaLayoutDynamic {
             let layout = NCMediaDynamicLayout()
-            layout.itemForLine = NCKeychain().mediaItemForLine
             layout.sectionInset = UIEdgeInsets(top: 0, left: 2, bottom: 0, right: 2)
             layout.columSpacing = 2
             layout.rowSpacing = 2
@@ -189,7 +188,6 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
             collectionView.collectionViewLayout = layout
         } else if media == NCGlobal.shared.mediaLayoutGrid {
             let layout = NCMediaGridLayout()
-            layout.itemForLine = NCKeychain().mediaItemForLine
             layout.sectionHeadersPinToVisibleBounds = true
             collectionView.collectionViewLayout = layout
         }
