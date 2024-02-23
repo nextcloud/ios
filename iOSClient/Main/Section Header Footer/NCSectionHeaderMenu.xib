@@ -19,7 +19,7 @@
                     <rect key="frame" x="0.0" y="318" width="574" height="50"/>
                     <subviews>
                         <textView clipsSubviews="YES" multipleTouchEnabled="YES" userInteractionEnabled="NO" contentMode="scaleToFill" editable="NO" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="pYo-pF-MGv">
-                            <rect key="frame" x="5" y="0.0" width="564" height="50"/>
+                            <rect key="frame" x="10" y="0.0" width="554" height="50"/>
                             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             <color key="textColor" systemColor="labelColor"/>
                             <fontDescription key="fontDescription" type="system" pointSize="14"/>
@@ -29,8 +29,8 @@
                     <constraints>
                         <constraint firstItem="pYo-pF-MGv" firstAttribute="top" secondItem="NC1-5C-E5z" secondAttribute="top" id="PgU-fC-vEG"/>
                         <constraint firstAttribute="height" constant="50" id="eT3-4m-mJ6"/>
-                        <constraint firstAttribute="trailing" secondItem="pYo-pF-MGv" secondAttribute="trailing" constant="5" id="nSk-Jr-ufp"/>
-                        <constraint firstItem="pYo-pF-MGv" firstAttribute="leading" secondItem="NC1-5C-E5z" secondAttribute="leading" constant="5" id="qoB-Sw-ipc"/>
+                        <constraint firstAttribute="trailing" secondItem="pYo-pF-MGv" secondAttribute="trailing" constant="10" id="nSk-Jr-ufp"/>
+                        <constraint firstItem="pYo-pF-MGv" firstAttribute="leading" secondItem="NC1-5C-E5z" secondAttribute="leading" constant="10" id="qoB-Sw-ipc"/>
                         <constraint firstAttribute="bottom" secondItem="pYo-pF-MGv" secondAttribute="bottom" id="t4r-dA-VyW"/>
                     </constraints>
                 </view>
