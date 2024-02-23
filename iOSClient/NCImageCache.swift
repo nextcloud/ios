@@ -38,17 +38,12 @@ import RealmSwift
     private var account: String = ""
     private var brandElementColor: UIColor?
 
-    enum ImageType {
-        case placeholder
-        case actual(_ image: UIImage)
-    }
-
     struct metadataInfo {
         var etag: String
         var date: NSDate
     }
 
-    private typealias ThumbnailLRUCache = LRUCache<String, ImageType>
+    private typealias ThumbnailLRUCache = LRUCache<String, UIImage>
     private lazy var cache: ThumbnailLRUCache = {
         return ThumbnailLRUCache(countLimit: limit)
     }()
@@ -112,7 +107,7 @@ import RealmSwift
             if counter > (limit - 100) { break }
             autoreleasepool {
                 if let image = UIImage(contentsOfFile: file.path.path) {
-                    cache.setValue(.actual(image), forKey: file.ocIdEtag)
+                    cache.setValue(image, forKey: file.ocIdEtag)
                 }
             }
         }
@@ -129,11 +124,11 @@ import RealmSwift
         return self.metadatas
     }
 
-    func getMediaImage(ocId: String, etag: String) -> ImageType? {
+    func getMediaImage(ocId: String, etag: String) -> UIImage? {
         return cache.value(forKey: ocId + etag)
     }
 
-    func setMediaImage(ocId: String, etag: String, image: ImageType) {
+    func setMediaImage(ocId: String, etag: String, image: UIImage) {
         cache.setValue(image, forKey: ocId + etag)
     }
 

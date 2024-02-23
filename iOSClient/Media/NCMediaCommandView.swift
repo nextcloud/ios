@@ -72,46 +72,51 @@ class NCMediaCommandView: UIView {
     }
 
     @IBAction func selectOrCancelButtonPressed(_ sender: UIButton) {
-
         mediaView.isEditMode = !mediaView.isEditMode
         setSelectcancelButton()
     }
 
     func setSelectcancelButton() {
-
         mediaView.selectOcId.removeAll()
         mediaView.tabBarSelect?.selectCount = mediaView.selectOcId.count
 
         if mediaView.isEditMode {
             selectOrCancelButton.setTitle( NSLocalizedString("_cancel_", comment: ""), for: .normal)
-            selectOrCancelButtonTrailing.constant = 8
+            selectOrCancelButtonTrailing.constant = 15
             mediaView.tabBarSelect?.show()
         } else {
             selectOrCancelButton.setTitle( NSLocalizedString("_select_", comment: ""), for: .normal)
-            selectOrCancelButtonTrailing.constant = 46
+            selectOrCancelButtonTrailing.constant = 50
             mediaView.tabBarSelect?.hide()
         }
 
         mediaView.collectionView.reloadData()
     }
 
-    func setTitleDate() {
-
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-            self.title.text = ""
-            if let visibleCells = self.mediaView.collectionView?.indexPathsForVisibleItems.sorted(by: { $0.row < $1.row }).compactMap({ self.mediaView.collectionView?.cellForItem(at: $0) }) {
-                if let cell = visibleCells.first as? NCGridMediaCell {
-                    self.title.text = ""
-                    if let date = cell.date {
-                        self.title.text = self.mediaView.utility.getTitleFromDate(date)
-                    }
+    func setTitleDate(_ offset: CGFloat = 10) {
+        self.title.text = ""
+        if let collectionView = self.mediaView.collectionView, let metadata = mediaView.metadatas?.first {
+            let contentOffsetY = collectionView.contentOffset.y
+            let top = self.mediaView.insetsTop + self.mediaView.view.safeAreaInsets.top + offset
+            if self.mediaView.insetsTop + self.mediaView.view.safeAreaInsets.top + contentOffsetY < 10 {
+                self.title.text = self.mediaView.utility.getTitleFromDate(metadata.date as Date)
+                return
+            }
+            let point = CGPoint(x: offset, y: top + contentOffsetY)
+            if let indexPath = collectionView.indexPathForItem(at: point) {
+                let cell = self.mediaView.collectionView(collectionView, cellForItemAt: indexPath) as? NCGridMediaCell
+                if let date = cell?.fileDate {
+                    self.title.text = self.mediaView.utility.getTitleFromDate(date)
+                }
+            } else {
+                if offset < 20 {
+                    self.setTitleDate(20)
                 }
             }
         }
     }
 
     func setColor(isTop: Bool) {
-
         if isTop {
             title.textColor = .label
             activityIndicator.color = .label
@@ -128,18 +133,26 @@ class NCMediaCommandView: UIView {
     }
 
     func createMenu() {
+        var itemForLine = 0
+        guard var maxImageGrid = mediaView?.maxImageGrid else { return }
 
-        if let itemForLine = mediaView?.layout.itemForLine, let maxImageGrid = mediaView?.maxImageGrid {
-            if itemForLine >= maxImageGrid - 1 {
-                self.attributesZoomIn = []
-                self.attributesZoomOut = .disabled
-            } else if itemForLine <= 1 {
-                self.attributesZoomIn = .disabled
-                self.attributesZoomOut = []
-            } else {
-                self.attributesZoomIn = []
-                self.attributesZoomOut = []
-            }
+        if UIDevice.current.userInterfaceIdiom == .phone,
+           (UIDevice.current.orientation == .landscapeLeft || UIDevice.current.orientation == .landscapeRight) {
+            itemForLine = NCKeychain().mediaItemForLine + 2
+            maxImageGrid += 2
+        } else {
+            itemForLine = NCKeychain().mediaItemForLine
+        }
+
+        if CGFloat(itemForLine) >= maxImageGrid - 1 {
+            self.attributesZoomIn = []
+            self.attributesZoomOut = .disabled
+        } else if itemForLine <= 1 {
+            self.attributesZoomIn = .disabled
+            self.attributesZoomOut = []
+        } else {
+            self.attributesZoomIn = []
+            self.attributesZoomOut = []
         }
 
         let topAction = UIMenu(title: "", options: .displayInline, children: [
@@ -147,18 +160,16 @@ class NCMediaCommandView: UIView {
                 UIAction(title: NSLocalizedString("_zoom_out_", comment: ""), image: UIImage(systemName: "minus.magnifyingglass"), attributes: self.attributesZoomOut) { _ in
                     guard let mediaView = self.mediaView else { return }
                     UIView.animate(withDuration: 0.0, animations: {
-                        mediaView.layout.itemForLine += 1
+                        NCKeychain().mediaItemForLine = itemForLine + 1
                         self.createMenu()
-                        mediaView.collectionView.collectionViewLayout.invalidateLayout()
-                        NCKeychain().mediaItemForLine = Int(mediaView.layout.itemForLine)
+                        mediaView.collectionView.reloadData()
                     })
                 },
                 UIAction(title: NSLocalizedString("_zoom_in_", comment: ""), image: UIImage(systemName: "plus.magnifyingglass"), attributes: self.attributesZoomIn) { _ in
                     UIView.animate(withDuration: 0.0, animations: {
-                        self.mediaView.layout.itemForLine -= 1
+                        NCKeychain().mediaItemForLine = itemForLine - 1
                         self.createMenu()
-                        self.mediaView.collectionView.collectionViewLayout.invalidateLayout()
-                        NCKeychain().mediaItemForLine = Int(self.mediaView.layout.itemForLine)
+                        self.mediaView.collectionView.reloadData()
                     })
                 }
             ]),
@@ -217,9 +228,7 @@ class NCMediaCommandView: UIView {
 // MARK: - NCMediaTabBarSelectDelegate
 
 extension NCMediaCommandView: NCMediaSelectTabBarDelegate {
-
     func delete() {
-
         if !mediaView.selectOcId.isEmpty {
             let selectOcId = mediaView.selectOcId
             let alertController = UIAlertController(

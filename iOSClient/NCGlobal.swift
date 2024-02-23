@@ -501,4 +501,8 @@ class NCGlobal: NSObject {
     let diagnosticProblemsBadResponse       = "BAD_SERVER_RESPONSE"
     let diagnosticProblemsUploadServerError = "UploadError.SERVER_ERROR"
 
+    // MEDIA LAYOUT
+    //
+    let mediaLayoutDynamic                  = "mediaLayoutDynamic"
+    let mediaLayoutGrid                     = "mediaLayoutGrid"
 }
