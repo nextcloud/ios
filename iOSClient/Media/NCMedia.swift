@@ -117,9 +117,7 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-
-        mediaCommandView?.setTitleDate()
-        mediaCommandView?.createMenu()
+        self.mediaCommandView?.createMenu()
 
         if let metadatas = NCImageCache.shared.initialMetadatas() {
             self.metadatas = nil
@@ -318,6 +316,7 @@ extension NCMedia: UICollectionViewDataSource {
         }
 
         emptyDataSet?.numberOfItemsInSection(numberOfItemsInSection, section: section)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) { self.mediaCommandView?.setTitleDate() }
 
         return numberOfItemsInSection
     }

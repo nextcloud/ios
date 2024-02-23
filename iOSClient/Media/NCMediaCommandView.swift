@@ -94,22 +94,23 @@ class NCMediaCommandView: UIView {
     }
 
     func setTitleDate(_ offset: CGFloat = 10) {
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-            self.title.text = ""
+        self.title.text = ""
+        if let collectionView = self.mediaView.collectionView, let metadata = mediaView.metadatas?.first {
+            let contentOffsetY = collectionView.contentOffset.y
             let top = self.mediaView.insetsTop + self.mediaView.view.safeAreaInsets.top + offset
-            if let collectionView = self.mediaView.collectionView {
-                let point = CGPoint(x: offset, y: top + collectionView.contentOffset.y)
-                if let indexPath = collectionView.indexPathForItem(at: point) {
-                    let cell = self.mediaView.collectionView(collectionView, cellForItemAt: indexPath) as? NCGridMediaCell
-                    if let date = cell?.fileDate {
-                        self.title.text = self.mediaView.utility.getTitleFromDate(date)
-                    }
-                } else {
-                    if offset < 20 {
-                        self.setTitleDate(20)
-                    } else {
-                        print("no indexPath found")
-                    }
+            if self.mediaView.insetsTop + self.mediaView.view.safeAreaInsets.top + contentOffsetY < 10 {
+                self.title.text = self.mediaView.utility.getTitleFromDate(metadata.date as Date)
+                return
+            }
+            let point = CGPoint(x: offset, y: top + contentOffsetY)
+            if let indexPath = collectionView.indexPathForItem(at: point) {
+                let cell = self.mediaView.collectionView(collectionView, cellForItemAt: indexPath) as? NCGridMediaCell
+                if let date = cell?.fileDate {
+                    self.title.text = self.mediaView.utility.getTitleFromDate(date)
+                }
+            } else {
+                if offset < 20 {
+                    self.setTitleDate(20)
                 }
             }
         }
