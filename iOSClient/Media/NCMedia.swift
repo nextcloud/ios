@@ -338,9 +338,9 @@ extension NCMedia: UICollectionViewDataSource {
             }
             let configuration = UIImage.SymbolConfiguration(pointSize: pointSize)
             if metadata.isImage {
-                cell.imageItem.image = UIImage(systemName: "photo.fill", withConfiguration: configuration)?.withTintColor(.lightGray, renderingMode: .alwaysOriginal)
+                cell.imageItem.image = UIImage(systemName: "photo.fill", withConfiguration: configuration)?.withTintColor(.systemGray4, renderingMode: .alwaysOriginal)
             } else {
-                cell.imageItem.image = UIImage(systemName: "video.fill", withConfiguration: configuration)?.withTintColor(.lightGray, renderingMode: .alwaysOriginal)
+                cell.imageItem.image = UIImage(systemName: "video.fill", withConfiguration: configuration)?.withTintColor(.systemGray4, renderingMode: .alwaysOriginal)
             }
         } else if let image = getImage(metadata: metadata) {
             cell.imageItem.backgroundColor = nil
