@@ -330,7 +330,7 @@ extension NCMedia: UICollectionViewDataSource {
             if let layout = collectionView.collectionViewLayout as? NCMediaDynamicLayout {
                 switch layout.itemForLine {
                 case 0...1: pointSize = 60
-                case 2...3: pointSize = 35
+                case 2...3: pointSize = 30
                 case 4...5: pointSize = 20
                 case 6...Int(maxImageGrid): pointSize = 10
                 default: break
