@@ -151,7 +151,7 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
         }
         coordinator.animate(alongsideTransition: nil) { _ in
             if let indexPath {
-                self.collectionView.scrollToItem(at: indexPath, at: [], animated: false)
+                self.collectionView.scrollToItem(at: indexPath, at: [], animated: true)
             }
         }
     }
@@ -234,7 +234,6 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
                   (!utilityFileSystem.fileProviderStoragePreviewIconExists(metadata.ocId, etag: metadata.etag)),
                   NCNetworking.shared.downloadThumbnailQueue.operations.filter({ ($0 as? NCMediaDownloadThumbnaill)?.metadata.ocId == metadata.ocId }).isEmpty {
             NCNetworking.shared.downloadThumbnailQueue.addOperation(NCMediaDownloadThumbnaill(metadata: metadata, collectionView: collectionView))
-
         }
         return nil
     }
