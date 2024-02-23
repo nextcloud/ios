@@ -416,6 +416,8 @@ extension NCMedia: UIScrollViewDelegate {
     func scrollViewDidScrollToTop(_ scrollView: UIScrollView) {
         let y = view.safeAreaInsets.top
         scrollView.contentOffset.y = -(insetsTop + y)
+        // seems fix for recalculate the size of cell
+        collectionView.reloadData()
     }
 }
 
