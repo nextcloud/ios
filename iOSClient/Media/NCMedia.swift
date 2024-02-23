@@ -304,15 +304,15 @@ extension NCMedia: UICollectionViewDataSource {
         if numberOfItemsInSection == 0 {
             mediaCommandView?.selectOrCancelButton.isHidden = true
             mediaCommandView?.menuButton.isHidden = false
-            mediaCommandView?.activityIndicatorTrailing.constant = 46
+            mediaCommandView?.activityIndicatorTrailing.constant = 50
         } else if isEditMode {
             mediaCommandView?.selectOrCancelButton.isHidden = false
             mediaCommandView?.menuButton.isHidden = true
-            mediaCommandView?.activityIndicatorTrailing.constant = 144
+            mediaCommandView?.activityIndicatorTrailing.constant = 150
         } else {
             mediaCommandView?.selectOrCancelButton.isHidden = false
             mediaCommandView?.menuButton.isHidden = false
-            mediaCommandView?.activityIndicatorTrailing.constant = 144
+            mediaCommandView?.activityIndicatorTrailing.constant = 150
         }
 
         emptyDataSet?.numberOfItemsInSection(numberOfItemsInSection, section: section)
@@ -408,7 +408,7 @@ extension NCMedia: NCMediaDynamicLayoutDelegate {
 extension NCMedia: UIScrollViewDelegate {
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         if let metadatas, !metadatas.isEmpty {
-            let isTop = scrollView.contentOffset.y <= -(insetsTop + view.safeAreaInsets.top - 35)
+            let isTop = scrollView.contentOffset.y <= -(insetsTop + view.safeAreaInsets.top - 25)
             mediaCommandView?.setColor(isTop: isTop)
             setNeedsStatusBarAppearanceUpdate()
             if lastContentOffsetY == 0 || lastContentOffsetY / 2 <= scrollView.contentOffset.y || lastContentOffsetY / 2 >= scrollView.contentOffset.y {

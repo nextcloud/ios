@@ -82,11 +82,11 @@ class NCMediaCommandView: UIView {
 
         if mediaView.isEditMode {
             selectOrCancelButton.setTitle( NSLocalizedString("_cancel_", comment: ""), for: .normal)
-            selectOrCancelButtonTrailing.constant = 8
+            selectOrCancelButtonTrailing.constant = 15
             mediaView.tabBarSelect?.show()
         } else {
             selectOrCancelButton.setTitle( NSLocalizedString("_select_", comment: ""), for: .normal)
-            selectOrCancelButtonTrailing.constant = 46
+            selectOrCancelButtonTrailing.constant = 50
             mediaView.tabBarSelect?.hide()
         }
 
