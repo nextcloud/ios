@@ -33,6 +33,7 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
     var mediaCommandView: NCMediaCommandView?
     var documentPickerViewController: NCDocumentPickerViewController?
     var tabBarSelect: NCMediaSelectTabBar?
+    let refreshControl = UIRefreshControl()
 
     let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
     let utilityFileSystem = NCUtilityFileSystem()
@@ -73,6 +74,11 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
         collectionView.contentInset = UIEdgeInsets(top: insetsTop, left: 0, bottom: 50, right: 0)
         collectionView.backgroundColor = .systemBackground
         collectionView.prefetchDataSource = self
+        collectionView.refreshControl = refreshControl
+        refreshControl.action(for: .valueChanged) { _ in
+            self.refreshControl.endRefreshing()
+            self.collectionView.reloadData()
+        }
 
         NCKeychain().mediaLayout = NCGlobal.shared.mediaLayoutDynamic
         selectLayout()
@@ -129,8 +135,6 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
                 self.metadatas = metadatas
                 self.collectionView.reloadData()
             }
-        } else {
-            self.collectionView.reloadData()
         }
     }
 

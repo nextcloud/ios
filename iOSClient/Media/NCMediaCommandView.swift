@@ -88,9 +88,8 @@ class NCMediaCommandView: UIView {
             selectOrCancelButton.setTitle( NSLocalizedString("_select_", comment: ""), for: .normal)
             selectOrCancelButtonTrailing.constant = 50
             mediaView.tabBarSelect?.hide()
+            mediaView.collectionView.reloadData()
         }
-
-        mediaView.collectionView.reloadData()
     }
 
     func setTitleDate(_ offset: CGFloat = 10) {
