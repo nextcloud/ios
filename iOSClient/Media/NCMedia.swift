@@ -54,7 +54,6 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
     var timerSearchNewMedia: Timer?
     let insetsTop: CGFloat = 75
     let maxImageGrid: CGFloat = 7
-    var scroolToTop: Bool = false
 
     struct cacheImages {
         static var cellLivePhotoImage = UIImage()
@@ -95,6 +94,12 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
         cacheImages.cellPlayImage = utility.loadImage(named: "play.fill", color: .white)
 
         if let activeAccount = NCManageDatabase.shared.getActiveAccount() { self.mediaPath = activeAccount.mediaPath }
+
+        NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeUser), object: nil, queue: nil) { _ in
+            self.metadatas = nil
+            self.collectionView.reloadData()
+            DispatchQueue.main.async { self.reloadDataSource() }
+        }
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -108,11 +113,6 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
 
         timerSearchNewMedia?.invalidate()
         timerSearchNewMedia = Timer.scheduledTimer(timeInterval: timeIntervalSearchNewMedia, target: self, selector: #selector(searchMediaUI), userInfo: nil, repeats: false)
-
-        if let metadatas = NCImageCache.shared.initialMetadatas() {
-            self.metadatas = metadatas
-            scroolToTop = true
-        }
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -120,12 +120,16 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
 
         mediaCommandView?.setTitleDate()
         mediaCommandView?.createMenu()
-        if scroolToTop {
-            collectionView.setContentOffset(CGPoint(x: 0, y: -(insetsTop + view.safeAreaInsets.top)), animated: false)
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+
+        if let metadatas = NCImageCache.shared.initialMetadatas() {
+            self.metadatas = nil
+            self.collectionView.reloadData()
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                self.metadatas = metadatas
                 self.collectionView.reloadData()
-                self.scroolToTop = false
             }
+        } else {
+            self.collectionView.reloadData()
         }
     }
 
