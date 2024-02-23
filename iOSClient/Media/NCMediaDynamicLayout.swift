@@ -32,8 +32,8 @@ class NCMediaDynamicLayout: UICollectionViewLayout {
     var columSpacing: CGFloat = 0
     var rowSpacing: CGFloat = 0
     var sectionInset: UIEdgeInsets = UIEdgeInsets.zero
+    var itemForLine: Int = 0
 
-    private var itemForLine: Int = 0
     private var attributesArray: [UICollectionViewLayoutAttributes] = []
     private var maxYsArray: [NSNumber] = []
 
@@ -95,8 +95,7 @@ class NCMediaDynamicLayout: UICollectionViewLayout {
             }
         }
 
-        let multiplo = (itemForLine - minIndex) - 1
-        let itemX: CGFloat = sectionInset.left + (columSpacing + itemWidth) * CGFloat(multiplo)
+        let itemX: CGFloat = sectionInset.left + (columSpacing + itemWidth) * CGFloat((itemForLine - minIndex) - 1)
         let itemY: CGFloat = CGFloat(minValue) + rowSpacing
         attributes.frame = CGRect(x: itemX, y: itemY, width: itemWidth, height: itemHeight)
         maxYsArray[minIndex] = NSNumber(value: Float(attributes.frame.maxY))
@@ -109,7 +108,7 @@ class NCMediaDynamicLayout: UICollectionViewLayout {
     }
 
     override func layoutAttributesForSupplementaryView(ofKind elementKind: String, at indexPath: IndexPath) -> UICollectionViewLayoutAttributes? {
-        let supplementaryViewattributes = UICollectionViewLayoutAttributes(forSupplementaryViewOfKind: elementKind, with: indexPath)
-        return supplementaryViewattributes
+        let supplementaryViewAttributes = UICollectionViewLayoutAttributes(forSupplementaryViewOfKind: elementKind, with: indexPath)
+        return supplementaryViewAttributes
     }
 }

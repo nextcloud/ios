@@ -321,8 +321,28 @@ extension NCMedia: UICollectionViewDataSource {
         cell.indexPath = indexPath
         cell.fileUser = metadata.ownerId
         cell.imageStatus.image = nil
+        cell.imageItem.contentMode = .scaleAspectFill
 
-        if let image = getImage(metadata: metadata) {
+        if !metadata.hasPreview {
+            cell.imageItem.backgroundColor = nil
+            cell.imageItem.contentMode = .center
+            var pointSize: CGFloat = 35
+            if let layout = collectionView.collectionViewLayout as? NCMediaDynamicLayout {
+                switch layout.itemForLine {
+                case 0...1: pointSize = 60
+                case 2...3: pointSize = 35
+                case 4...5: pointSize = 20
+                case 6...Int(maxImageGrid): pointSize = 10
+                default: break
+                }
+            }
+            let configuration = UIImage.SymbolConfiguration(pointSize: pointSize)
+            if metadata.isImage {
+                cell.imageItem.image = UIImage(systemName: "photo.fill", withConfiguration: configuration)?.withTintColor(.lightGray, renderingMode: .alwaysOriginal)
+            } else {
+                cell.imageItem.image = UIImage(systemName: "video.fill", withConfiguration: configuration)?.withTintColor(.lightGray, renderingMode: .alwaysOriginal)
+            }
+        } else if let image = getImage(metadata: metadata) {
             cell.imageItem.backgroundColor = nil
             cell.imageItem.image = image
         }
