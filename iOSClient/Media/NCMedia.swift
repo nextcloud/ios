@@ -137,30 +137,6 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDeleteFile), object: nil)
     }
 
-    /*
-    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
-        var indexPath: IndexPath?
-        let offset: CGFloat = 10
-        let top = self.insetsTop + self.view.safeAreaInsets.top + offset
-        var ocId: String?
-        if let collectionView = self.collectionView {
-            indexPath = collectionView.indexPathForItem(at: CGPoint(x: offset, y: top + collectionView.contentOffset.y))
-            if indexPath == nil {
-                indexPath = collectionView.indexPathForItem(at: CGPoint(x: offset, y: top + offset + collectionView.contentOffset.y))
-            }
-            if let indexPath, let cell = self.collectionView(collectionView, cellForItemAt: indexPath) as? NCGridMediaCell {
-                ocId = cell.fileObjectId
-            }
-        }
-        coordinator.animate(alongsideTransition: nil) { _ in
-            if let indexPath {
-                let cell = self.collectionView(self.collectionView, cellForItemAt: indexPath) as? NCGridMediaCell
-                self.collectionView.scrollToItem(at: indexPath, at: [], animated: true)
-            }
-        }
-    }
-    */
-
     override var preferredStatusBarStyle: UIStatusBarStyle {
         if self.traitCollection.userInterfaceStyle == .dark {
             return .lightContent
