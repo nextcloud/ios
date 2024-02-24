@@ -117,6 +117,7 @@ import RealmSwift
         }
 
         cacheImage.removeAllValues()
+        cacheSize.removeAllValues()
         var counter: Int = 0
         for file in files {
             counter += 1
@@ -144,22 +145,30 @@ import RealmSwift
         return self.metadatas
     }
 
-    func getMediaImage(ocId: String, etag: String) -> imageInfo? {
+    func getMediaImage(ocId: String, etag: String) -> UIImage? {
         if let cache = cacheImage.value(forKey: ocId + etag) {
-            return cache
-        } else {
-            return cacheSize.value(forKey: ocId + etag)
+            return cache.image
         }
+        return nil
+    }
+
+    func getMediaSize(ocId: String, etag: String) -> CGSize? {
+        if let cache = cacheSize.value(forKey: ocId + etag) {
+            return cache.size
+        }
+        return nil
     }
 
     func setMediaImage(ocId: String, etag: String, image: UIImage) {
         cacheImage.setValue(imageInfo(image: image, size: image.size), forKey: ocId + etag)
+        cacheSize.setValue(imageInfo(image: nil, size: image.size), forKey: ocId + etag)
     }
 
     @objc func clearMediaCache() {
         self.metadatasInfo.removeAll()
         self.metadatas = nil
         cacheImage.removeAllValues()
+        cacheSize.removeAllValues()
     }
 
     func getMediaMetadatas(account: String, predicate: NSPredicate? = nil) -> ThreadSafeArray<tableMetadata>? {

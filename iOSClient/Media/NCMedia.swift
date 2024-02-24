@@ -211,8 +211,7 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
 
     func getImage(metadata: tableMetadata) -> UIImage? {
 
-        if let imageInfo = NCImageCache.shared.getMediaImage(ocId: metadata.ocId, etag: metadata.etag),
-           let image = imageInfo.image {
+        if let image = NCImageCache.shared.getMediaImage(ocId: metadata.ocId, etag: metadata.etag) {
             return image
         } else if FileManager().fileExists(atPath: utilityFileSystem.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)),
                   let image = UIImage(contentsOfFile: utilityFileSystem.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)) {
@@ -401,7 +400,7 @@ extension NCMedia: NCMediaDynamicLayoutDelegate {
 
         if metadata.imageSize != CGSize.zero {
              return metadata.imageSize
-        } else if let size = NCImageCache.shared.getMediaImage(ocId: metadata.ocId, etag: metadata.etag)?.size {
+        } else if let size = NCImageCache.shared.getMediaSize(ocId: metadata.ocId, etag: metadata.etag) {
             return size
         }
         return size
