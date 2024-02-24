@@ -157,6 +157,8 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
                 self.metadatas = metadatas
                 self.collectionView.reloadData()
             }
+        } else {
+            collectionView.reloadData()
         }
     }
 
