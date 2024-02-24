@@ -43,9 +43,14 @@ import RealmSwift
         var date: NSDate
     }
 
-    private typealias ThumbnailLRUCache = LRUCache<String, UIImage>
+    struct imageInfo {
+        var image: UIImage?
+        var size: CGSize?
+    }
+
+    private typealias ThumbnailLRUCache = LRUCache<String, imageInfo>
     private lazy var cache: ThumbnailLRUCache = {
-        return ThumbnailLRUCache(countLimit: limit)
+        return ThumbnailLRUCache(countLimit: limit * 100)
     }()
     private var metadatasInfo: [String: metadataInfo] = [:]
     private var metadatas: ThreadSafeArray<tableMetadata>?
@@ -107,7 +112,11 @@ import RealmSwift
             if counter > (limit - 100) { break }
             autoreleasepool {
                 if let image = UIImage(contentsOfFile: file.path.path) {
-                    cache.setValue(image, forKey: file.ocIdEtag)
+                    if counter < (limit - 100) {
+                        cache.setValue(imageInfo(image: image, size: image.size), forKey: file.ocIdEtag)
+                    } else {
+                        cache.setValue(imageInfo(image: nil, size: image.size), forKey: file.ocIdEtag)
+                    }
                 }
             }
         }
@@ -124,12 +133,12 @@ import RealmSwift
         return self.metadatas
     }
 
-    func getMediaImage(ocId: String, etag: String) -> UIImage? {
+    func getMediaImage(ocId: String, etag: String) -> imageInfo? {
         return cache.value(forKey: ocId + etag)
     }
 
     func setMediaImage(ocId: String, etag: String, image: UIImage) {
-        cache.setValue(image, forKey: ocId + etag)
+        cache.setValue(imageInfo(image: image, size: image.size), forKey: ocId + etag)
     }
 
     @objc func clearMediaCache() {
