@@ -10,7 +10,6 @@ import Foundation
 import NextcloudKit
 
 extension NCMedia {
-
     @IBAction func selectOrCancelButtonPressed(_ sender: UIButton) {
         isEditMode = !isEditMode
         setSelectcancelButton()
