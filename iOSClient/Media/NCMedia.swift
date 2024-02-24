@@ -393,7 +393,7 @@ extension NCMedia: UICollectionViewDelegateFlowLayout {
 
 extension NCMedia: NCMediaDynamicLayoutDelegate {
     func itemSize(_ collectionView: UICollectionView, indexPath: IndexPath, itemForLine: CGFloat) -> CGSize {
-        var size = CGSize(width: collectionView.frame.width / itemForLine, height: collectionView.frame.width / itemForLine)
+        let size = CGSize(width: collectionView.frame.width / itemForLine, height: collectionView.frame.width / itemForLine)
         guard let metadatas = self.metadatas,
               let metadata = metadatas[indexPath.row] else { return size }
 

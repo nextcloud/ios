@@ -63,13 +63,13 @@ import RealmSwift
 
     func createMediaCache(account: String) {
 
+        NCManageDatabase.shared.clearTable(tableMetadata.self, account: account)
+
         guard account != self.account, !account.isEmpty else { return }
         self.account = account
-
         self.metadatasInfo.removeAll()
         self.metadatas = nil
         self.metadatas = getMediaMetadatas(account: account)
-        guard let metadatas = self.metadatas, !metadatas.isEmpty else { return }
         let ext = ".preview.ico"
         let manager = FileManager.default
         let resourceKeys = Set<URLResourceKey>([.nameKey, .pathKey, .fileSizeKey, .creationDateKey])
@@ -81,8 +81,10 @@ import RealmSwift
         var files: [FileInfo] = []
         let startDate = Date()
 
-        metadatas.forEach { metadata in
-            metadatasInfo[metadata.ocId] = metadataInfo(etag: metadata.etag, date: metadata.date)
+        if let metadatas = metadatas {
+            metadatas.forEach { metadata in
+                metadatasInfo[metadata.ocId] = metadataInfo(etag: metadata.etag, date: metadata.date)
+            }
         }
 
         if let enumerator = manager.enumerator(at: URL(fileURLWithPath: NCUtilityFileSystem().directoryProviderStorage), includingPropertiesForKeys: [.isRegularFileKey], options: [.skipsHiddenFiles]) {
@@ -91,11 +93,15 @@ import RealmSwift
                 let ocId = fileURL.deletingLastPathComponent().lastPathComponent
                 guard let resourceValues = try? fileURL.resourceValues(forKeys: resourceKeys),
                       let size = resourceValues.fileSize,
-                      size > 0,
-                      let date = metadatasInfo[ocId]?.date,
-                      let etag = metadatasInfo[ocId]?.etag,
-                      fileName == etag + ext else { continue }
-                files.append(FileInfo(path: fileURL, ocIdEtag: ocId + etag, date: date as Date))
+                      size > 0 else { continue }
+                if let date = metadatasInfo[ocId]?.date,
+                   let etag = metadatasInfo[ocId]?.etag,
+                   fileName == etag + ext {
+                    files.append(FileInfo(path: fileURL, ocIdEtag: ocId + etag, date: date as Date))
+                } else {
+                    let etag = fileName.replacingOccurrences(of: ".preview.ico", with: "")
+                    files.append(FileInfo(path: fileURL, ocIdEtag: ocId + etag, date: Date.distantPast))
+                }
             }
         }
 
@@ -109,7 +115,6 @@ import RealmSwift
         var counter: Int = 0
         for file in files {
             counter += 1
-            if counter > (limit - 100) { break }
             autoreleasepool {
                 if let image = UIImage(contentsOfFile: file.path.path) {
                     if counter < (limit - 100) {
