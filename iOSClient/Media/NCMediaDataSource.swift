@@ -45,7 +45,7 @@ extension NCMedia {
         self.metadatas = imageCache.getMediaMetadatas(account: self.appDelegate.account, predicate: self.getPredicate())
         DispatchQueue.main.async {
             self.collectionView.reloadData()
-            self.mediaCommandView?.setTitleDate()
+            self.setTitleDate()
         }
     }
 
@@ -87,14 +87,14 @@ extension NCMedia {
             }
 
             if let lessDate, let greaterDate {
-                mediaCommandView?.activityIndicator.startAnimating()
+                activityIndicator.startAnimating()
                 loadingTask = Task.detached {
                     if countMetadatas == 0 {
                         await self.collectionView.reloadData()
                     }
                     let results = await self.searchMedia(account: self.appDelegate.account, lessDate: lessDate, greaterDate: greaterDate)
                     print("Media results changed items: \(results.isChanged)")
-                    await self.mediaCommandView?.activityIndicator.stopAnimating()
+                    await self.activityIndicator.stopAnimating()
                     Task { @MainActor in
                         self.loadingTask = nil
                     }
