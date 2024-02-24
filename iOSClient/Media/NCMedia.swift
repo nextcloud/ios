@@ -56,9 +56,8 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
     let maxImageGrid: CGFloat = 7
 
     struct cacheImages {
-        static var cellLivePhotoImage = UIImage()
-        static var cellPlayImage = UIImage()
-        static var cellImage = UIImage()
+        static var livePhotoImage = UIImage()
+        static var playImage = UIImage()
         static var mediaPhoto60 = UIImage()
         static var mediaPhoto30 = UIImage()
         static var mediaPhoto20 = UIImage()
@@ -98,8 +97,8 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
 
         tabBarSelect = NCMediaSelectTabBar(tabBarController: self.tabBarController, delegate: mediaCommandView)
 
-        cacheImages.cellLivePhotoImage = utility.loadImage(named: "livephoto", color: .white)
-        cacheImages.cellPlayImage = utility.loadImage(named: "play.fill", color: .white)
+        cacheImages.livePhotoImage = utility.loadImage(named: "livephoto", color: .white)
+        cacheImages.playImage = utility.loadImage(named: "play.fill", color: .white)
         if let image = UIImage(systemName: "photo.fill", withConfiguration: UIImage.SymbolConfiguration(pointSize: 10))?.withTintColor(.systemGray4, renderingMode: .alwaysOriginal) {
             cacheImages.mediaPhoto10 = image
         }
@@ -401,9 +400,9 @@ extension NCMedia: UICollectionViewDataSource {
         }
 
         if metadata.isAudioOrVideo {
-            cell.imageStatus.image = cacheImages.cellPlayImage
+            cell.imageStatus.image = cacheImages.playImage
         } else if metadata.isLivePhoto {
-            cell.imageStatus.image = cacheImages.cellLivePhotoImage
+            cell.imageStatus.image = cacheImages.livePhotoImage
         } else {
             cell.imageStatus.image = nil
         }
