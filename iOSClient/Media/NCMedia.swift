@@ -209,13 +209,15 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
 
     // MARK: - Image
 
-    func getImage(metadata: tableMetadata) -> NCImageCache.imageInfo? {
-        if let imageInfo = NCImageCache.shared.getMediaImage(ocId: metadata.ocId, etag: metadata.etag) {
-            return imageInfo
+    func getImage(metadata: tableMetadata) -> UIImage? {
+
+        if let imageInfo = NCImageCache.shared.getMediaImage(ocId: metadata.ocId, etag: metadata.etag),
+           let image = imageInfo.image {
+            return image
         } else if FileManager().fileExists(atPath: utilityFileSystem.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)),
                   let image = UIImage(contentsOfFile: utilityFileSystem.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)) {
             NCImageCache.shared.setMediaImage(ocId: metadata.ocId, etag: metadata.etag, image: image)
-            return NCImageCache.imageInfo(image: image, size: image.size)
+            return image
         } else if metadata.hasPreview && metadata.status == NCGlobal.shared.metadataStatusNormal,
                   (!utilityFileSystem.fileProviderStoragePreviewIconExists(metadata.ocId, etag: metadata.etag)),
                   NCNetworking.shared.downloadThumbnailQueue.operations.filter({ ($0 as? NCMediaDownloadThumbnaill)?.metadata.ocId == metadata.ocId }).isEmpty {
@@ -242,7 +244,7 @@ extension NCMedia: UICollectionViewDelegate {
                 // ACTIVE SERVERURL
                 appDelegate.activeServerUrl = metadata.serverUrl
                 if let metadatas = self.metadatas?.getArray() {
-                    NCViewer().view(viewController: self, metadata: metadata, metadatas: metadatas, imageIcon: getImage(metadata: metadata)?.image)
+                    NCViewer().view(viewController: self, metadata: metadata, metadatas: metadatas, imageIcon: getImage(metadata: metadata))
                 }
             }
         }
@@ -349,9 +351,9 @@ extension NCMedia: UICollectionViewDataSource {
             } else {
                 cell.imageItem.image = UIImage(systemName: "video.fill", withConfiguration: configuration)?.withTintColor(.systemGray4, renderingMode: .alwaysOriginal)
             }
-        } else if let imageInfo = getImage(metadata: metadata) {
+        } else if let image = getImage(metadata: metadata) {
             cell.imageItem.backgroundColor = nil
-            cell.imageItem.image = imageInfo.image
+            cell.imageItem.image = image
         }
 
         // Convert OLD Live Photo
@@ -399,7 +401,7 @@ extension NCMedia: NCMediaDynamicLayoutDelegate {
 
         if metadata.imageSize != CGSize.zero {
              return metadata.imageSize
-        } else if let size = getImage(metadata: metadata)?.size {
+        } else if let size = NCImageCache.shared.getMediaImage(ocId: metadata.ocId, etag: metadata.etag)?.size {
             return size
         }
         return size
