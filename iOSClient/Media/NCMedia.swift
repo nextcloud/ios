@@ -59,6 +59,14 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
         static var cellLivePhotoImage = UIImage()
         static var cellPlayImage = UIImage()
         static var cellImage = UIImage()
+        static var mediaPhoto60 = UIImage()
+        static var mediaPhoto30 = UIImage()
+        static var mediaPhoto20 = UIImage()
+        static var mediaPhoto10 = UIImage()
+        static var mediaVideo60 = UIImage()
+        static var mediaVideo30 = UIImage()
+        static var mediaVideo20 = UIImage()
+        static var mediaVideo10 = UIImage()
     }
 
     // MARK: - View Life Cycle
@@ -92,6 +100,30 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
 
         cacheImages.cellLivePhotoImage = utility.loadImage(named: "livephoto", color: .white)
         cacheImages.cellPlayImage = utility.loadImage(named: "play.fill", color: .white)
+        if let image = UIImage(systemName: "photo.fill", withConfiguration: UIImage.SymbolConfiguration(pointSize: 10))?.withTintColor(.systemGray4, renderingMode: .alwaysOriginal) {
+            cacheImages.mediaPhoto10 = image
+        }
+        if let image = UIImage(systemName: "photo.fill", withConfiguration: UIImage.SymbolConfiguration(pointSize: 20))?.withTintColor(.systemGray4, renderingMode: .alwaysOriginal) {
+            cacheImages.mediaPhoto20 = image
+        }
+        if let image = UIImage(systemName: "photo.fill", withConfiguration: UIImage.SymbolConfiguration(pointSize: 30))?.withTintColor(.systemGray4, renderingMode: .alwaysOriginal) {
+            cacheImages.mediaPhoto30 = image
+        }
+        if let image = UIImage(systemName: "photo.fill", withConfiguration: UIImage.SymbolConfiguration(pointSize: 60))?.withTintColor(.systemGray4, renderingMode: .alwaysOriginal) {
+            cacheImages.mediaPhoto60 = image
+        }
+        if let image = UIImage(systemName: "video.fill", withConfiguration: UIImage.SymbolConfiguration(pointSize: 10))?.withTintColor(.systemGray4, renderingMode: .alwaysOriginal) {
+            cacheImages.mediaVideo10 = image
+        }
+        if let image = UIImage(systemName: "video.fill", withConfiguration: UIImage.SymbolConfiguration(pointSize: 20))?.withTintColor(.systemGray4, renderingMode: .alwaysOriginal) {
+            cacheImages.mediaVideo20 = image
+        }
+        if let image = UIImage(systemName: "video.fill", withConfiguration: UIImage.SymbolConfiguration(pointSize: 30))?.withTintColor(.systemGray4, renderingMode: .alwaysOriginal) {
+            cacheImages.mediaVideo30 = image
+        }
+        if let image = UIImage(systemName: "video.fill", withConfiguration: UIImage.SymbolConfiguration(pointSize: 60))?.withTintColor(.systemGray4, renderingMode: .alwaysOriginal) {
+            cacheImages.mediaVideo60 = image
+        }
 
         if let activeAccount = NCManageDatabase.shared.getActiveAccount() { self.mediaPath = activeAccount.mediaPath }
 
@@ -334,21 +366,29 @@ extension NCMedia: UICollectionViewDataSource {
         if !metadata.hasPreview {
             cell.imageItem.backgroundColor = nil
             cell.imageItem.contentMode = .center
-            var pointSize: CGFloat = 35
+            var imegePhoto = UIImage()
+            var imegeVideo = UIImage()
             if let layout = collectionView.collectionViewLayout as? NCMediaDynamicLayout {
                 switch layout.itemForLine {
-                case 0...1: pointSize = 60
-                case 2...3: pointSize = 30
-                case 4...5: pointSize = 20
-                case 6...Int(maxImageGrid): pointSize = 10
+                case 0...1:
+                    imegePhoto = cacheImages.mediaPhoto60
+                    imegeVideo = cacheImages.mediaVideo60
+                case 2...3:
+                    imegePhoto = cacheImages.mediaPhoto30
+                    imegeVideo = cacheImages.mediaVideo30
+                case 4...5:
+                    imegePhoto = cacheImages.mediaPhoto20
+                    imegeVideo = cacheImages.mediaVideo20
+                case 6...Int(maxImageGrid):
+                    imegePhoto = cacheImages.mediaPhoto10
+                    imegeVideo = cacheImages.mediaVideo10
                 default: break
                 }
             }
-            let configuration = UIImage.SymbolConfiguration(pointSize: pointSize)
             if metadata.isImage {
-                cell.imageItem.image = UIImage(systemName: "photo.fill", withConfiguration: configuration)?.withTintColor(.systemGray4, renderingMode: .alwaysOriginal)
+                cell.imageItem.image = imegePhoto
             } else {
-                cell.imageItem.image = UIImage(systemName: "video.fill", withConfiguration: configuration)?.withTintColor(.systemGray4, renderingMode: .alwaysOriginal)
+                cell.imageItem.image = imegeVideo
             }
         } else if let image = getImage(metadata: metadata) {
             cell.imageItem.backgroundColor = nil
