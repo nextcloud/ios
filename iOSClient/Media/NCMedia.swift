@@ -56,9 +56,16 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
     let maxImageGrid: CGFloat = 7
 
     struct cacheImages {
-        static var cellLivePhotoImage = UIImage()
-        static var cellPlayImage = UIImage()
-        static var cellImage = UIImage()
+        static var livePhotoImage = UIImage()
+        static var playImage = UIImage()
+        static var mediaPhoto60 = UIImage()
+        static var mediaPhoto30 = UIImage()
+        static var mediaPhoto20 = UIImage()
+        static var mediaPhoto10 = UIImage()
+        static var mediaVideo60 = UIImage()
+        static var mediaVideo30 = UIImage()
+        static var mediaVideo20 = UIImage()
+        static var mediaVideo10 = UIImage()
     }
 
     // MARK: - View Life Cycle
@@ -90,8 +97,32 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
 
         tabBarSelect = NCMediaSelectTabBar(tabBarController: self.tabBarController, delegate: mediaCommandView)
 
-        cacheImages.cellLivePhotoImage = utility.loadImage(named: "livephoto", color: .white)
-        cacheImages.cellPlayImage = utility.loadImage(named: "play.fill", color: .white)
+        cacheImages.livePhotoImage = utility.loadImage(named: "livephoto", color: .white)
+        cacheImages.playImage = utility.loadImage(named: "play.fill", color: .white)
+        if let image = UIImage(systemName: "photo.fill", withConfiguration: UIImage.SymbolConfiguration(pointSize: 10))?.withTintColor(.systemGray4, renderingMode: .alwaysOriginal) {
+            cacheImages.mediaPhoto10 = image
+        }
+        if let image = UIImage(systemName: "photo.fill", withConfiguration: UIImage.SymbolConfiguration(pointSize: 20))?.withTintColor(.systemGray4, renderingMode: .alwaysOriginal) {
+            cacheImages.mediaPhoto20 = image
+        }
+        if let image = UIImage(systemName: "photo.fill", withConfiguration: UIImage.SymbolConfiguration(pointSize: 30))?.withTintColor(.systemGray4, renderingMode: .alwaysOriginal) {
+            cacheImages.mediaPhoto30 = image
+        }
+        if let image = UIImage(systemName: "photo.fill", withConfiguration: UIImage.SymbolConfiguration(pointSize: 60))?.withTintColor(.systemGray4, renderingMode: .alwaysOriginal) {
+            cacheImages.mediaPhoto60 = image
+        }
+        if let image = UIImage(systemName: "video.fill", withConfiguration: UIImage.SymbolConfiguration(pointSize: 10))?.withTintColor(.systemGray4, renderingMode: .alwaysOriginal) {
+            cacheImages.mediaVideo10 = image
+        }
+        if let image = UIImage(systemName: "video.fill", withConfiguration: UIImage.SymbolConfiguration(pointSize: 20))?.withTintColor(.systemGray4, renderingMode: .alwaysOriginal) {
+            cacheImages.mediaVideo20 = image
+        }
+        if let image = UIImage(systemName: "video.fill", withConfiguration: UIImage.SymbolConfiguration(pointSize: 30))?.withTintColor(.systemGray4, renderingMode: .alwaysOriginal) {
+            cacheImages.mediaVideo30 = image
+        }
+        if let image = UIImage(systemName: "video.fill", withConfiguration: UIImage.SymbolConfiguration(pointSize: 60))?.withTintColor(.systemGray4, renderingMode: .alwaysOriginal) {
+            cacheImages.mediaVideo60 = image
+        }
 
         if let activeAccount = NCManageDatabase.shared.getActiveAccount() { self.mediaPath = activeAccount.mediaPath }
 
@@ -110,9 +141,9 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
         navigationController?.setMediaAppreance()
 
         NotificationCenter.default.addObserver(self, selector: #selector(deleteFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDeleteFile), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(enterForeground(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationWillEnterForeground), object: nil)
 
-        timerSearchNewMedia?.invalidate()
-        timerSearchNewMedia = Timer.scheduledTimer(timeInterval: timeIntervalSearchNewMedia, target: self, selector: #selector(searchMediaUI), userInfo: nil, repeats: false)
+        startTimer()
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -126,8 +157,6 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
                 self.metadatas = metadatas
                 self.collectionView.reloadData()
             }
-        } else {
-            self.collectionView.reloadData()
         }
     }
 
@@ -135,6 +164,7 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
         super.viewWillDisappear(animated)
 
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDeleteFile), object: nil)
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationWillEnterForeground), object: nil)
     }
 
     override var preferredStatusBarStyle: UIStatusBarStyle {
@@ -153,6 +183,11 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
         if let frame = tabBarController?.tabBar.frame {
             tabBarSelect?.hostingController.view.frame = frame
         }
+    }
+
+    func startTimer() {
+        timerSearchNewMedia?.invalidate()
+        timerSearchNewMedia = Timer.scheduledTimer(timeInterval: timeIntervalSearchNewMedia, target: self, selector: #selector(searchMediaUI), userInfo: nil, repeats: false)
     }
 
     // MARK: -
@@ -188,6 +223,9 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
         }
     }
 
+    @objc func enterForeground(_ notification: NSNotification) {
+        startTimer()
+    }
     // MARK: - Empty
 
     func emptyDataSetView(_ view: NCEmptyView) {
@@ -203,6 +241,7 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
     // MARK: - Image
 
     func getImage(metadata: tableMetadata) -> UIImage? {
+
         if let image = NCImageCache.shared.getMediaImage(ocId: metadata.ocId, etag: metadata.etag) {
             return image
         } else if FileManager().fileExists(atPath: utilityFileSystem.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)),
@@ -326,21 +365,29 @@ extension NCMedia: UICollectionViewDataSource {
         if !metadata.hasPreview {
             cell.imageItem.backgroundColor = nil
             cell.imageItem.contentMode = .center
-            var pointSize: CGFloat = 35
+            var imegePhoto = UIImage()
+            var imegeVideo = UIImage()
             if let layout = collectionView.collectionViewLayout as? NCMediaDynamicLayout {
                 switch layout.itemForLine {
-                case 0...1: pointSize = 60
-                case 2...3: pointSize = 30
-                case 4...5: pointSize = 20
-                case 6...Int(maxImageGrid): pointSize = 10
+                case 0...1:
+                    imegePhoto = cacheImages.mediaPhoto60
+                    imegeVideo = cacheImages.mediaVideo60
+                case 2...3:
+                    imegePhoto = cacheImages.mediaPhoto30
+                    imegeVideo = cacheImages.mediaVideo30
+                case 4...5:
+                    imegePhoto = cacheImages.mediaPhoto20
+                    imegeVideo = cacheImages.mediaVideo20
+                case 6...Int(maxImageGrid):
+                    imegePhoto = cacheImages.mediaPhoto10
+                    imegeVideo = cacheImages.mediaVideo10
                 default: break
                 }
             }
-            let configuration = UIImage.SymbolConfiguration(pointSize: pointSize)
             if metadata.isImage {
-                cell.imageItem.image = UIImage(systemName: "photo.fill", withConfiguration: configuration)?.withTintColor(.systemGray4, renderingMode: .alwaysOriginal)
+                cell.imageItem.image = imegePhoto
             } else {
-                cell.imageItem.image = UIImage(systemName: "video.fill", withConfiguration: configuration)?.withTintColor(.systemGray4, renderingMode: .alwaysOriginal)
+                cell.imageItem.image = imegeVideo
             }
         } else if let image = getImage(metadata: metadata) {
             cell.imageItem.backgroundColor = nil
@@ -353,9 +400,9 @@ extension NCMedia: UICollectionViewDataSource {
         }
 
         if metadata.isAudioOrVideo {
-            cell.imageStatus.image = cacheImages.cellPlayImage
+            cell.imageStatus.image = cacheImages.playImage
         } else if metadata.isLivePhoto {
-            cell.imageStatus.image = cacheImages.cellLivePhotoImage
+            cell.imageStatus.image = cacheImages.livePhotoImage
         } else {
             cell.imageStatus.image = nil
         }
@@ -386,14 +433,14 @@ extension NCMedia: UICollectionViewDelegateFlowLayout {
 
 extension NCMedia: NCMediaDynamicLayoutDelegate {
     func itemSize(_ collectionView: UICollectionView, indexPath: IndexPath, itemForLine: CGFloat) -> CGSize {
-        var size = CGSize(width: collectionView.frame.width / itemForLine, height: collectionView.frame.width / itemForLine)
+        let size = CGSize(width: collectionView.frame.width / itemForLine, height: collectionView.frame.width / itemForLine)
         guard let metadatas = self.metadatas,
               let metadata = metadatas[indexPath.row] else { return size }
 
         if metadata.imageSize != CGSize.zero {
-            size = metadata.imageSize
-        } else if let image = NCImageCache.shared.getMediaImage(ocId: metadata.ocId, etag: metadata.etag) {
-            size = image.size
+             return metadata.imageSize
+        } else if let size = NCImageCache.shared.getMediaSize(ocId: metadata.ocId, etag: metadata.etag) {
+            return size
         }
         return size
     }
@@ -422,22 +469,18 @@ extension NCMedia: UIScrollViewDelegate {
     func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
         if !decelerate {
             if !decelerate {
-                timerSearchNewMedia?.invalidate()
-                timerSearchNewMedia = Timer.scheduledTimer(timeInterval: timeIntervalSearchNewMedia, target: self, selector: #selector(searchMediaUI), userInfo: nil, repeats: false)
+                startTimer()
             }
         }
     }
 
     func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
-        timerSearchNewMedia?.invalidate()
-        timerSearchNewMedia = Timer.scheduledTimer(timeInterval: timeIntervalSearchNewMedia, target: self, selector: #selector(searchMediaUI), userInfo: nil, repeats: false)
+        startTimer()
     }
 
     func scrollViewDidScrollToTop(_ scrollView: UIScrollView) {
         let y = view.safeAreaInsets.top
         scrollView.contentOffset.y = -(insetsTop + y)
-        // seems fix for recalculate the size of cell
-        collectionView.reloadData()
     }
 }
 
@@ -450,7 +493,6 @@ extension NCMedia: NCSelectDelegate {
         mediaPath = serverUrl.replacingOccurrences(of: home, with: "")
         NCManageDatabase.shared.setAccountMediaPath(mediaPath, account: appDelegate.account)
         reloadDataSource()
-        timerSearchNewMedia?.invalidate()
-        timerSearchNewMedia = Timer.scheduledTimer(timeInterval: timeIntervalSearchNewMedia, target: self, selector: #selector(self.searchMediaUI), userInfo: nil, repeats: false)
+        startTimer()
     }
 }

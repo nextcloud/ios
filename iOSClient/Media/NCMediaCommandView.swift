@@ -89,7 +89,6 @@ class NCMediaCommandView: UIView {
             selectOrCancelButtonTrailing.constant = 50
             mediaView.tabBarSelect?.hide()
         }
-
         mediaView.collectionView.reloadData()
     }
 

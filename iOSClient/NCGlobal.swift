@@ -198,10 +198,6 @@ class NCGlobal: NSObject {
     //
     let fileNameRichWorkspace = "Readme.md"
 
-    // Extension
-    //
-    @objc let extensionPreview = "ico"
-
     // ContentPresenter
     //
     @objc let dismissAfterSecond: TimeInterval      = 4
