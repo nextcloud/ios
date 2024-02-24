@@ -33,7 +33,6 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
     var mediaCommandView: NCMediaCommandView?
     var documentPickerViewController: NCDocumentPickerViewController?
     var tabBarSelect: NCMediaSelectTabBar?
-    let refreshControl = UIRefreshControl()
 
     let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
     let utilityFileSystem = NCUtilityFileSystem()
@@ -74,11 +73,6 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
         collectionView.contentInset = UIEdgeInsets(top: insetsTop, left: 0, bottom: 50, right: 0)
         collectionView.backgroundColor = .systemBackground
         collectionView.prefetchDataSource = self
-        collectionView.refreshControl = refreshControl
-        refreshControl.action(for: .valueChanged) { _ in
-            self.refreshControl.endRefreshing()
-            self.collectionView.reloadData()
-        }
 
         NCKeychain().mediaLayout = NCGlobal.shared.mediaLayoutDynamic
         selectLayout()
@@ -106,10 +100,6 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
             self.collectionView.reloadData()
             DispatchQueue.main.async { self.reloadDataSource() }
         }
-
-        NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationWillEnterForeground), object: nil, queue: nil) { _ in
-            self.startTimer()
-        }
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -120,6 +110,7 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
         navigationController?.setMediaAppreance()
 
         NotificationCenter.default.addObserver(self, selector: #selector(deleteFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDeleteFile), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(enterForeground(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationWillEnterForeground), object: nil)
 
         startTimer()
     }
@@ -142,6 +133,7 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
         super.viewWillDisappear(animated)
 
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDeleteFile), object: nil)
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationWillEnterForeground), object: nil)
     }
 
     override var preferredStatusBarStyle: UIStatusBarStyle {
@@ -200,6 +192,9 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
         }
     }
 
+    @objc func enterForeground(_ notification: NSNotification) {
+        startTimer()
+    }
     // MARK: - Empty
 
     func emptyDataSetView(_ view: NCEmptyView) {
@@ -404,7 +399,7 @@ extension NCMedia: NCMediaDynamicLayoutDelegate {
 
         if metadata.imageSize != CGSize.zero {
             size = metadata.imageSize
-        } else if let image = NCImageCache.shared.getMediaImage(ocId: metadata.ocId, etag: metadata.etag) {
+        } else if let image = getImage(metadata: metadata) {
             size = image.size
         }
         return size
@@ -446,8 +441,6 @@ extension NCMedia: UIScrollViewDelegate {
     func scrollViewDidScrollToTop(_ scrollView: UIScrollView) {
         let y = view.safeAreaInsets.top
         scrollView.contentOffset.y = -(insetsTop + y)
-        // seems fix for recalculate the size of cell
-        collectionView.reloadData()
     }
 }
 
