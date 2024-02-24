@@ -138,6 +138,8 @@ import RealmSwift
         NextcloudKit.shared.nkCommonInstance.writeLog("Total size images process: " + NCUtilityFileSystem().transformedSize(totalSize))
         NextcloudKit.shared.nkCommonInstance.writeLog("Time process: \(diffDate)")
         NextcloudKit.shared.nkCommonInstance.writeLog("--------- ThumbnailLRUCache image process ---------")
+
+        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterMediaReloadData)
     }
 
     func initialMetadatas() -> ThreadSafeArray<tableMetadata>? {

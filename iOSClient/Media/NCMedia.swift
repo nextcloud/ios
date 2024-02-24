@@ -131,6 +131,10 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
             self.collectionView.reloadData()
             DispatchQueue.main.async { self.reloadDataSource() }
         }
+
+        NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterMediaReloadData), object: nil, queue: nil) { _ in
+            self.collectionView.reloadData()
+        }
     }
 
     override func viewWillAppear(_ animated: Bool) {
