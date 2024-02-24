@@ -28,9 +28,14 @@ import RealmSwift
 class NCMedia: UIViewController, NCEmptyDataSetDelegate {
 
     @IBOutlet weak var collectionView: UICollectionView!
+    @IBOutlet weak var titleDate: UILabel!
+    @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
+    @IBOutlet weak var activityIndicatorTrailing: NSLayoutConstraint!
+    @IBOutlet weak var selectOrCancelButton: UIButton!
+    @IBOutlet weak var selectOrCancelButtonTrailing: NSLayoutConstraint!
+    @IBOutlet weak var menuButton: UIButton!
 
     var emptyDataSet: NCEmptyDataSet?
-    var mediaCommandView: NCMediaCommandView?
     var documentPickerViewController: NCDocumentPickerViewController?
     var tabBarSelect: NCMediaSelectTabBar?
 
@@ -43,7 +48,8 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
 
     var isEditMode = false
     var selectOcId: [String] = []
-
+    var attributesZoomIn: UIMenuElement.Attributes = []
+    var attributesZoomOut: UIMenuElement.Attributes = []
     var showOnlyImages = false
     var showOnlyVideos = false
 
@@ -85,17 +91,7 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
         selectLayout()
         emptyDataSet = NCEmptyDataSet(view: collectionView, offset: 0, delegate: self)
 
-        mediaCommandView = Bundle.main.loadNibNamed("NCMediaCommandView", owner: self, options: nil)?.first as? NCMediaCommandView
-        self.view.addSubview(mediaCommandView!)
-        mediaCommandView?.mediaView = self
-        mediaCommandView?.tabBarController = tabBarController
-        mediaCommandView?.translatesAutoresizingMaskIntoConstraints = false
-        mediaCommandView?.topAnchor.constraint(equalTo: view.topAnchor, constant: 0).isActive = true
-        mediaCommandView?.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 0).isActive = true
-        mediaCommandView?.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 0).isActive = true
-        mediaCommandView?.heightAnchor.constraint(equalToConstant: 150).isActive = true
-
-        tabBarSelect = NCMediaSelectTabBar(tabBarController: self.tabBarController, delegate: mediaCommandView)
+        tabBarSelect = NCMediaSelectTabBar(tabBarController: self.tabBarController, delegate: self)
 
         cacheImages.livePhotoImage = utility.loadImage(named: "livephoto", color: .white)
         cacheImages.playImage = utility.loadImage(named: "play.fill", color: .white)
@@ -124,6 +120,23 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
             cacheImages.mediaVideo60 = image
         }
 
+        titleDate.text = ""
+
+        selectOrCancelButton.backgroundColor = nil
+        selectOrCancelButton.layer.cornerRadius = 15
+        selectOrCancelButton.layer.masksToBounds = true
+        selectOrCancelButton.setTitle( NSLocalizedString("_select_", comment: ""), for: .normal)
+        selectOrCancelButton.addBlur(style: .systemThinMaterial)
+
+        menuButton.backgroundColor = nil
+        menuButton.layer.cornerRadius = 15
+        menuButton.layer.masksToBounds = true
+        menuButton.showsMenuAsPrimaryAction = true
+        menuButton.configuration = UIButton.Configuration.plain()
+        menuButton.setImage(UIImage(systemName: "ellipsis"), for: .normal)
+        menuButton.changesSelectionAsPrimaryAction = false
+        menuButton.addBlur(style: .systemThinMaterial)
+
         if let activeAccount = NCManageDatabase.shared.getActiveAccount() { self.mediaPath = activeAccount.mediaPath }
 
         NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeUser), object: nil, queue: nil) { _ in
@@ -148,7 +161,7 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        self.mediaCommandView?.createMenu()
+        createMenu()
 
         if let metadatas = NCImageCache.shared.initialMetadatas() {
             self.metadatas = nil
@@ -170,8 +183,8 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
     override var preferredStatusBarStyle: UIStatusBarStyle {
         if self.traitCollection.userInterfaceStyle == .dark {
             return .lightContent
-        } else if let gradient = mediaCommandView?.gradient, gradient.isHidden {
-            return .darkContent
+       // } else if let gradient = gradientView?.gradient, gradient.isHidden {
+       //     return .darkContent
         } else {
             return .lightContent
         }
@@ -317,21 +330,21 @@ extension NCMedia: UICollectionViewDataSource {
         }
 
         if numberOfItemsInSection == 0 {
-            mediaCommandView?.selectOrCancelButton.isHidden = true
-            mediaCommandView?.menuButton.isHidden = false
-            mediaCommandView?.activityIndicatorTrailing.constant = 50
+            selectOrCancelButton.isHidden = true
+            menuButton.isHidden = false
+            activityIndicatorTrailing.constant = 50
         } else if isEditMode {
-            mediaCommandView?.selectOrCancelButton.isHidden = false
-            mediaCommandView?.menuButton.isHidden = true
-            mediaCommandView?.activityIndicatorTrailing.constant = 150
+            selectOrCancelButton.isHidden = false
+            menuButton.isHidden = true
+            activityIndicatorTrailing.constant = 150
         } else {
-            mediaCommandView?.selectOrCancelButton.isHidden = false
-            mediaCommandView?.menuButton.isHidden = false
-            mediaCommandView?.activityIndicatorTrailing.constant = 150
+            selectOrCancelButton.isHidden = false
+            menuButton.isHidden = false
+            activityIndicatorTrailing.constant = 150
         }
 
         emptyDataSet?.numberOfItemsInSection(numberOfItemsInSection, section: section)
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) { self.mediaCommandView?.setTitleDate() }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) { self.setTitleDate() }
 
         return numberOfItemsInSection
     }
@@ -452,14 +465,14 @@ extension NCMedia: UIScrollViewDelegate {
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         if let metadatas, !metadatas.isEmpty {
             let isTop = scrollView.contentOffset.y <= -(insetsTop + view.safeAreaInsets.top - 25)
-            mediaCommandView?.setColor(isTop: isTop)
+            setColor(isTop: isTop)
             setNeedsStatusBarAppearanceUpdate()
             if lastContentOffsetY == 0 || lastContentOffsetY / 2 <= scrollView.contentOffset.y || lastContentOffsetY / 2 >= scrollView.contentOffset.y {
-                mediaCommandView?.setTitleDate()
+                setTitleDate()
                 lastContentOffsetY = scrollView.contentOffset.y
             }
         } else {
-            mediaCommandView?.setColor(isTop: true)
+            setColor(isTop: true)
         }
     }
 
