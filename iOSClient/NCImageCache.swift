@@ -49,12 +49,14 @@ import RealmSwift
         var size: CGSize?
     }
 
-    private typealias ThumbnailLRUCache = LRUCache<String, imageInfo>
-    private lazy var cacheImage: ThumbnailLRUCache = {
-        return ThumbnailLRUCache(countLimit: limit)
+    private typealias ThumbnailImageLRUCache = LRUCache<String, imageInfo>
+    private typealias ThumbnailSizeLRUCache = LRUCache<String, CGSize?>
+
+    private lazy var cacheImage: ThumbnailImageLRUCache = {
+        return ThumbnailImageLRUCache(countLimit: limit)
     }()
-    private lazy var cacheSize: ThumbnailLRUCache = {
-        return ThumbnailLRUCache()
+    private lazy var cacheSize: ThumbnailSizeLRUCache = {
+        return ThumbnailSizeLRUCache()
     }()
     private var metadatasInfo: [String: metadataInfo] = [:]
     private var metadatas: ThreadSafeArray<tableMetadata>?
@@ -66,8 +68,6 @@ import RealmSwift
     override private init() {}
 
     func createMediaCache(account: String) {
-
-        NCManageDatabase.shared.clearTable(tableMetadata.self, account: account)
 
         guard account != self.account, !account.isEmpty else { return }
         self.account = account
@@ -127,7 +127,7 @@ import RealmSwift
                         cacheImage.setValue(imageInfo(image: image, size: image.size), forKey: file.ocIdEtag)
                         totalSize = totalSize + Int64(file.fileSize)
                     }
-                    cacheSize.setValue(imageInfo(image: nil, size: image.size), forKey: file.ocIdEtag)
+                    cacheSize.setValue(image.size, forKey: file.ocIdEtag)
                 }
             }
         }
@@ -153,15 +153,12 @@ import RealmSwift
     }
 
     func getMediaSize(ocId: String, etag: String) -> CGSize? {
-        if let cache = cacheSize.value(forKey: ocId + etag) {
-            return cache.size
-        }
-        return nil
+        return cacheSize.value(forKey: ocId + etag) ?? nil
     }
 
     func setMediaImage(ocId: String, etag: String, image: UIImage) {
         cacheImage.setValue(imageInfo(image: image, size: image.size), forKey: ocId + etag)
-        cacheSize.setValue(imageInfo(image: nil, size: image.size), forKey: ocId + etag)
+        cacheSize.setValue(image.size, forKey: ocId + etag)
     }
 
     @objc func clearMediaCache() {
