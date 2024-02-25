@@ -5,6 +5,7 @@
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="22504"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
@@ -31,6 +32,13 @@
                                     <outlet property="delegate" destination="EFX-fO-Oip" id="s3n-CL-8X2"/>
                                 </connections>
                             </collectionView>
+                            <view userInteractionEnabled="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="7rV-YL-aM7">
+                                <rect key="frame" x="0.0" y="0.0" width="375" height="100"/>
+                                <color key="backgroundColor" systemColor="systemMintColor"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="100" id="uAz-q2-42a"/>
+                                </constraints>
+                            </view>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="rSH-l2-T1a">
                                 <rect key="frame" x="10" y="60" width="235" height="40"/>
                                 <constraints>
@@ -71,6 +79,8 @@
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
                             <constraint firstItem="Zaz-Cl-qpZ" firstAttribute="leading" secondItem="QEs-gO-Cmp" secondAttribute="leading" id="1bp-sm-u0X"/>
+                            <constraint firstAttribute="trailing" secondItem="7rV-YL-aM7" secondAttribute="trailing" id="28S-fu-Qxj"/>
+                            <constraint firstItem="7rV-YL-aM7" firstAttribute="top" secondItem="QEs-gO-Cmp" secondAttribute="top" id="4hj-bC-66m"/>
                             <constraint firstItem="9bK-ms-LxX" firstAttribute="leading" secondItem="rSH-l2-T1a" secondAttribute="trailing" constant="10" id="Tyh-tn-Ien"/>
                             <constraint firstAttribute="trailing" secondItem="0dF-cq-2wr" secondAttribute="trailing" constant="10" id="a0d-uf-kZw"/>
                             <constraint firstAttribute="trailing" secondItem="Zaz-Cl-qpZ" secondAttribute="trailing" id="aNd-UL-hmu"/>
@@ -78,6 +88,7 @@
                             <constraint firstItem="9bK-ms-LxX" firstAttribute="centerY" secondItem="rSH-l2-T1a" secondAttribute="centerY" id="bAR-d1-xDL"/>
                             <constraint firstItem="rSH-l2-T1a" firstAttribute="top" secondItem="Meh-VD-wWh" secondAttribute="top" constant="10" id="esh-9N-C49"/>
                             <constraint firstAttribute="trailing" secondItem="Enx-va-Bud" secondAttribute="trailing" constant="50" id="exV-eQ-FmL"/>
+                            <constraint firstItem="7rV-YL-aM7" firstAttribute="leading" secondItem="QEs-gO-Cmp" secondAttribute="leading" id="gXT-fZ-dAC"/>
                             <constraint firstItem="Enx-va-Bud" firstAttribute="centerY" secondItem="rSH-l2-T1a" secondAttribute="centerY" id="kAD-Y8-RFL"/>
                             <constraint firstItem="Zaz-Cl-qpZ" firstAttribute="top" secondItem="QEs-gO-Cmp" secondAttribute="top" id="nIB-3t-o2I"/>
                             <constraint firstItem="0dF-cq-2wr" firstAttribute="centerY" secondItem="rSH-l2-T1a" secondAttribute="centerY" id="tEU-Gq-Tb8"/>
@@ -100,4 +111,9 @@
             <point key="canvasLocation" x="256.80000000000001" y="228.32512315270938"/>
         </scene>
     </scenes>
+    <resources>
+        <systemColor name="systemMintColor">
+            <color red="0.0" green="0.7803921568627451" blue="0.74509803921568629" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </systemColor>
+    </resources>
 </document>
