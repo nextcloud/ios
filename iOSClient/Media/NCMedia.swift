@@ -158,7 +158,9 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
         super.viewDidAppear(animated)
         self.mediaCommandView?.createMenu()
 
-        if !imageCache.createMediaCacheInProgress, let metadatas = imageCache.initialMetadatas() {
+        if imageCache.createMediaCacheInProgress {
+            self.metadatas = nil
+        } else if let metadatas = imageCache.initialMetadatas() {
             self.metadatas = metadatas
         }
         collectionView.reloadData()
