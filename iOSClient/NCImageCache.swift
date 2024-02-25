@@ -101,13 +101,17 @@ import RealmSwift
                 guard let resourceValues = try? fileURL.resourceValues(forKeys: resourceKeys),
                       let fileSize = resourceValues.fileSize,
                       fileSize > 0 else { continue }
-                if let date = metadatasInfo[ocId]?.date,
-                   let etag = metadatasInfo[ocId]?.etag,
-                   fileName == etag + ext {
+                if withCacheSize {
+                    if let date = metadatasInfo[ocId]?.date,
+                       let etag = metadatasInfo[ocId]?.etag,
+                       fileName == etag + ext {
+                        files.append(FileInfo(path: fileURL, ocIdEtag: ocId + etag, date: date as Date, fileSize: fileSize))
+                    } else {
+                        let etag = fileName.replacingOccurrences(of: ".preview.ico", with: "")
+                        files.append(FileInfo(path: fileURL, ocIdEtag: ocId + etag, date: Date.distantPast, fileSize: fileSize))
+                    }
+                } else if let date = metadatasInfo[ocId]?.date, let etag = metadatasInfo[ocId]?.etag, fileName == etag + ext {
                     files.append(FileInfo(path: fileURL, ocIdEtag: ocId + etag, date: date as Date, fileSize: fileSize))
-                } else {
-                    let etag = fileName.replacingOccurrences(of: ".preview.ico", with: "")
-                    files.append(FileInfo(path: fileURL, ocIdEtag: ocId + etag, date: Date.distantPast, fileSize: fileSize))
                 }
             }
         }
