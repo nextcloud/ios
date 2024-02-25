@@ -348,6 +348,7 @@ extension NCMedia: UICollectionViewDataSource {
         if numberOfItemsInSection == 0 {
             selectOrCancelButton.isHidden = true
             menuButton.isHidden = false
+            gradientView.isHidden = true
             activityIndicatorTrailing.constant = 50
         } else if isEditMode {
             selectOrCancelButton.isHidden = false
