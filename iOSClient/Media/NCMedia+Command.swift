@@ -60,13 +60,13 @@ extension NCMedia {
             activityIndicator.color = .label
             selectOrCancelButton.setTitleColor(.label, for: .normal)
             menuButton.setImage(UIImage(systemName: "ellipsis")?.withTintColor(.label, renderingMode: .alwaysOriginal), for: .normal)
-            // gradientView?.gradient.isHidden = true
+            gradientView.isHidden = true
         } else {
             titleDate.textColor = .white
             activityIndicator.color = .white
             selectOrCancelButton.setTitleColor(.white, for: .normal)
             menuButton.setImage(UIImage(systemName: "ellipsis")?.withTintColor(.white, renderingMode: .alwaysOriginal), for: .normal)
-            // gradientView?.gradient.isHidden = false
+            gradientView.isHidden = false
         }
     }
 

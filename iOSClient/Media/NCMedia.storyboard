@@ -5,7 +5,6 @@
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="22504"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
-        <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
@@ -33,10 +32,10 @@
                                 </connections>
                             </collectionView>
                             <view userInteractionEnabled="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="7rV-YL-aM7">
-                                <rect key="frame" x="0.0" y="0.0" width="375" height="100"/>
-                                <color key="backgroundColor" systemColor="systemMintColor"/>
+                                <rect key="frame" x="0.0" y="0.0" width="375" height="150"/>
+                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <constraints>
-                                    <constraint firstAttribute="height" constant="100" id="uAz-q2-42a"/>
+                                    <constraint firstAttribute="height" constant="150" id="uAz-q2-42a"/>
                                 </constraints>
                             </view>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="rSH-l2-T1a">
@@ -100,6 +99,7 @@
                         <outlet property="activityIndicator" destination="9bK-ms-LxX" id="dpp-13-6UO"/>
                         <outlet property="activityIndicatorTrailing" destination="xM8-MC-pfg" id="htW-4Z-2Uz"/>
                         <outlet property="collectionView" destination="Zaz-Cl-qpZ" id="8oA-Gx-z7T"/>
+                        <outlet property="gradientView" destination="7rV-YL-aM7" id="2QI-sZ-TeA"/>
                         <outlet property="menuButton" destination="0dF-cq-2wr" id="AoT-Kf-eTR"/>
                         <outlet property="selectOrCancelButton" destination="Enx-va-Bud" id="18I-LW-ruL"/>
                         <outlet property="selectOrCancelButtonTrailing" destination="exV-eQ-FmL" id="zrA-Xq-fWL"/>
@@ -111,9 +111,4 @@
             <point key="canvasLocation" x="256.80000000000001" y="228.32512315270938"/>
         </scene>
     </scenes>
-    <resources>
-        <systemColor name="systemMintColor">
-            <color red="0.0" green="0.7803921568627451" blue="0.74509803921568629" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-        </systemColor>
-    </resources>
 </document>

@@ -34,16 +34,15 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
     @IBOutlet weak var selectOrCancelButton: UIButton!
     @IBOutlet weak var selectOrCancelButtonTrailing: NSLayoutConstraint!
     @IBOutlet weak var menuButton: UIButton!
+    @IBOutlet weak var gradientView: UIView!
 
     var emptyDataSet: NCEmptyDataSet?
     var documentPickerViewController: NCDocumentPickerViewController?
     var tabBarSelect: NCMediaSelectTabBar?
-
     let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
     let utilityFileSystem = NCUtilityFileSystem()
     let utility = NCUtility()
     let imageCache = NCImageCache.shared
-
     var metadatas: ThreadSafeArray<tableMetadata>?
     var loadingTask: Task<Void, any Error>?
     var isTop: Bool = true
@@ -51,12 +50,11 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
     var selectOcId: [String] = []
     var attributesZoomIn: UIMenuElement.Attributes = []
     var attributesZoomOut: UIMenuElement.Attributes = []
+    let gradient: CAGradientLayer = CAGradientLayer()
     var showOnlyImages = false
     var showOnlyVideos = false
-
     var lastContentOffsetY: CGFloat = 0
     var mediaPath = ""
-
     var timeIntervalSearchNewMedia: TimeInterval = 2.0
     var timerSearchNewMedia: Timer?
     let insetsTop: CGFloat = 75
@@ -138,6 +136,11 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
         menuButton.changesSelectionAsPrimaryAction = false
         menuButton.addBlur(style: .systemThinMaterial)
 
+        gradient.startPoint = CGPoint(x: 0, y: 0.5)
+        gradient.endPoint = CGPoint(x: 0, y: 1)
+        gradient.colors = [UIColor.black.withAlphaComponent(UIAccessibility.isReduceTransparencyEnabled ? 0.8 : 0.4).cgColor, UIColor.clear.cgColor]
+        gradientView.layer.insertSublayer(gradient, at: 0)
+
         if let activeAccount = NCManageDatabase.shared.getActiveAccount() { self.mediaPath = activeAccount.mediaPath }
 
         NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeUser), object: nil, queue: nil) { _ in
@@ -202,6 +205,7 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
         if let frame = tabBarController?.tabBar.frame {
             tabBarSelect?.hostingController.view.frame = frame
         }
+        gradient.frame = gradientView.bounds
     }
 
     func startTimer() {
