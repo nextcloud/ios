@@ -88,13 +88,13 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
 
         titleDate.text = ""
 
-        selectOrCancelButton.backgroundColor = nil
+        selectOrCancelButton.backgroundColor = .clear
         selectOrCancelButton.layer.cornerRadius = 15
         selectOrCancelButton.layer.masksToBounds = true
         selectOrCancelButton.setTitle( NSLocalizedString("_select_", comment: ""), for: .normal)
         selectOrCancelButton.addBlur(style: .systemThinMaterial)
 
-        menuButton.backgroundColor = nil
+        menuButton.backgroundColor = .clear
         menuButton.layer.cornerRadius = 15
         menuButton.layer.masksToBounds = true
         menuButton.showsMenuAsPrimaryAction = true
@@ -103,7 +103,7 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
         menuButton.changesSelectionAsPrimaryAction = false
         menuButton.addBlur(style: .systemThinMaterial)
 
-        gradient.startPoint = CGPoint(x: 0, y: 0.5)
+        gradient.startPoint = CGPoint(x: 0, y: 0.1)
         gradient.endPoint = CGPoint(x: 0, y: 1)
         gradient.colors = [UIColor.black.withAlphaComponent(UIAccessibility.isReduceTransparencyEnabled ? 0.8 : 0.4).cgColor, UIColor.clear.cgColor]
         gradientView.layer.insertSublayer(gradient, at: 0)
