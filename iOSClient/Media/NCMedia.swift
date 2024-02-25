@@ -175,6 +175,13 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
         gradient.frame = gradientView.bounds
     }
 
+    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        super.viewWillTransition(to: size, with: coordinator)
+        coordinator.animate(alongsideTransition: nil) { _ in
+            self.collectionView.reloadData()
+        }
+    }
+
     func startTimer() {
         // don't start if media chage is in progress
         if imageCache.createMediaCacheInProgress {
@@ -252,22 +259,21 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
         return nil
     }
 
-    func buildMediaPhotoVideo() {
+    func buildMediaPhotoVideo(itemForLine: Int) {
         var pointSize: CGFloat = 0
-        if let layout = collectionView.collectionViewLayout as? NCMediaDynamicLayout {
-            switch layout.itemForLine {
-            case 0...1: pointSize = 60
-            case 2...3: pointSize = 30
-            case 4...5: pointSize = 20
-            case 6...Int(maxImageGrid): pointSize = 10
-            default: pointSize = 30
-            }
-            if let image = UIImage(systemName: "photo.fill", withConfiguration: UIImage.SymbolConfiguration(pointSize: pointSize))?.withTintColor(.systemGray4, renderingMode: .alwaysOriginal) {
-                photoImage = image
-            }
-            if let image = UIImage(systemName: "video.fill", withConfiguration: UIImage.SymbolConfiguration(pointSize: pointSize))?.withTintColor(.systemGray4, renderingMode: .alwaysOriginal) {
-                videoImage = image
-            }
+
+        switch itemForLine {
+        case 0...1: pointSize = 60
+        case 2...3: pointSize = 30
+        case 4...5: pointSize = 20
+        case 6...Int(maxImageGrid): pointSize = 10
+        default: pointSize = 30
+        }
+        if let image = UIImage(systemName: "photo.fill", withConfiguration: UIImage.SymbolConfiguration(pointSize: pointSize))?.withTintColor(.systemGray4, renderingMode: .alwaysOriginal) {
+            photoImage = image
+        }
+        if let image = UIImage(systemName: "video.fill", withConfiguration: UIImage.SymbolConfiguration(pointSize: pointSize))?.withTintColor(.systemGray4, renderingMode: .alwaysOriginal) {
+            videoImage = image
         }
     }
 }

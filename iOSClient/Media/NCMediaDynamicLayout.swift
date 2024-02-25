@@ -53,6 +53,10 @@ class NCMediaDynamicLayout: UICollectionViewLayout {
             itemForLine = NCKeychain().mediaItemForLine
         }
 
+        if let media = delegate as? NCMedia {
+            media.buildMediaPhotoVideo(itemForLine: itemForLine)
+        }
+
         for _ in 0..<itemForLine {
             maxYsArray.append(NSNumber(value: Float(sectionInset.top + layoutMaxY)))
         }
