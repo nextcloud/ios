@@ -68,7 +68,7 @@ import RealmSwift
 
     override private init() {}
 
-    func createMediaCache(account: String) {
+    func createMediaCache(account: String, withCacheSize: Bool) {
         guard account != self.account, !account.isEmpty else { return }
 
         createMediaCacheInProgress = true
@@ -123,6 +123,9 @@ import RealmSwift
         var counter: Int = 0
         for file in files {
             counter += 1
+            if !withCacheSize, counter > limit {
+                break
+            }
             autoreleasepool {
                 if let image = UIImage(contentsOfFile: file.path.path) {
                     if counter < limit {

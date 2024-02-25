@@ -181,7 +181,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
         NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Application did become active")
 
-        DispatchQueue.global().async { NCImageCache.shared.createMediaCache(account: self.account) }
+        DispatchQueue.global().async { NCImageCache.shared.createMediaCache(account: self.account, withCacheSize: true) }
 
         NCSettingsBundleHelper.setVersionAndBuildNumber()
         NCSettingsBundleHelper.checkAndExecuteSettings(delay: 0.5)
@@ -621,7 +621,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         }
 
         DispatchQueue.global().async {
-            NCImageCache.shared.createMediaCache(account: self.account)
+            NCImageCache.shared.createMediaCache(account: self.account, withCacheSize: false)
             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterChangeUser)
         }
     }
