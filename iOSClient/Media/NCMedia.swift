@@ -255,7 +255,10 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
             return image
         } else if FileManager().fileExists(atPath: utilityFileSystem.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)),
                   let image = UIImage(contentsOfFile: utilityFileSystem.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)) {
-            imageCache.setMediaImage(ocId: metadata.ocId, etag: metadata.etag, image: image)
+            imageCache.setMediaSize(ocId: metadata.ocId, etag: metadata.etag, size: image.size)
+            if imageCache.hasMediaImageEnoughSpace() {
+                imageCache.setMediaImage(ocId: metadata.ocId, etag: metadata.etag, image: image)
+            }
             return image
         } else if metadata.hasPreview && metadata.status == NCGlobal.shared.metadataStatusNormal,
                   (!utilityFileSystem.fileProviderStoragePreviewIconExists(metadata.ocId, etag: metadata.etag)),

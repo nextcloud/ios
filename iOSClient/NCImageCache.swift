@@ -126,7 +126,6 @@ import RealmSwift
         cacheSize.removeAllValues()
         var counter: Int = 0
         for file in files {
-            counter += 1
             if !withCacheSize, counter > limit {
                 break
             }
@@ -139,6 +138,7 @@ import RealmSwift
                     cacheSize.setValue(image.size, forKey: file.ocIdEtag)
                 }
             }
+            counter += 1
         }
 
         let diffDate = Date().timeIntervalSinceReferenceDate - startDate.timeIntervalSinceReferenceDate
@@ -157,6 +157,10 @@ import RealmSwift
         return self.metadatas
     }
 
+    func setMediaImage(ocId: String, etag: String, image: UIImage) {
+        cacheImage.setValue(imageInfo(image: image, size: image.size), forKey: ocId + etag)
+    }
+
     func getMediaImage(ocId: String, etag: String) -> UIImage? {
         if let cache = cacheImage.value(forKey: ocId + etag) {
             return cache.image
@@ -164,13 +168,16 @@ import RealmSwift
         return nil
     }
 
-    func getMediaSize(ocId: String, etag: String) -> CGSize? {
-        return cacheSize.value(forKey: ocId + etag) ?? nil
+    func hasMediaImageEnoughSpace() -> Bool {
+        return limit > cacheImage.count
     }
 
-    func setMediaImage(ocId: String, etag: String, image: UIImage) {
-        cacheImage.setValue(imageInfo(image: image, size: image.size), forKey: ocId + etag)
-        cacheSize.setValue(image.size, forKey: ocId + etag)
+    func setMediaSize(ocId: String, etag: String, size: CGSize) {
+        cacheSize.setValue(size, forKey: ocId + etag)
+    }
+
+    func getMediaSize(ocId: String, etag: String) -> CGSize? {
+        return cacheSize.value(forKey: ocId + etag) ?? nil
     }
 
     @objc func clearMediaCache() {
