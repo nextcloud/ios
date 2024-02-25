@@ -54,7 +54,7 @@ extension NCMedia {
         }
     }
 
-    func setColor(isTop: Bool) {
+    func setColor() {
         if isTop {
             titleDate.textColor = .label
             activityIndicator.color = .label

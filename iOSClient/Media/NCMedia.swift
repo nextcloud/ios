@@ -46,7 +46,7 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
 
     var metadatas: ThreadSafeArray<tableMetadata>?
     var loadingTask: Task<Void, any Error>?
-
+    var isTop: Bool = true
     var isEditMode = false
     var selectOcId: [String] = []
     var attributesZoomIn: UIMenuElement.Attributes = []
@@ -189,8 +189,8 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
     override var preferredStatusBarStyle: UIStatusBarStyle {
         if self.traitCollection.userInterfaceStyle == .dark {
             return .lightContent
-       // } else if let gradient = gradientView?.gradient, gradient.isHidden {
-       //     return .darkContent
+       } else if isTop {
+            return .darkContent
         } else {
             return .lightContent
         }
@@ -476,15 +476,15 @@ extension NCMedia: NCMediaDynamicLayoutDelegate {
 extension NCMedia: UIScrollViewDelegate {
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         if let metadatas, !metadatas.isEmpty {
-            let isTop = scrollView.contentOffset.y <= -(insetsTop + view.safeAreaInsets.top - 25)
-            setColor(isTop: isTop)
+            isTop = scrollView.contentOffset.y <= -(insetsTop + view.safeAreaInsets.top - 25)
+            setColor()
             setNeedsStatusBarAppearanceUpdate()
             if lastContentOffsetY == 0 || lastContentOffsetY / 2 <= scrollView.contentOffset.y || lastContentOffsetY / 2 >= scrollView.contentOffset.y {
                 setTitleDate()
                 lastContentOffsetY = scrollView.contentOffset.y
             }
         } else {
-            setColor(isTop: true)
+            setColor()
         }
     }
 
