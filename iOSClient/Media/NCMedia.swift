@@ -37,6 +37,7 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
     let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
     let utilityFileSystem = NCUtilityFileSystem()
     let utility = NCUtility()
+    let imageCache = NCImageCache.shared
 
     var metadatas: ThreadSafeArray<tableMetadata>?
     var loadingTask: Task<Void, any Error>?
@@ -132,7 +133,10 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
             DispatchQueue.main.async { self.reloadDataSource() }
         }
 
-        NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterMediaReloadData), object: nil, queue: nil) { _ in
+        NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterCreateMediaCacheEnded), object: nil, queue: nil) { _ in
+            if let metadatas = self.imageCache.initialMetadatas() {
+                self.metadatas = metadatas
+            }
             self.collectionView.reloadData()
         }
     }
@@ -154,16 +158,10 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
         super.viewDidAppear(animated)
         self.mediaCommandView?.createMenu()
 
-        if let metadatas = NCImageCache.shared.initialMetadatas() {
-            self.metadatas = nil
-            self.collectionView.reloadData()
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                self.metadatas = metadatas
-                self.collectionView.reloadData()
-            }
-        } else {
-            collectionView.reloadData()
+        if !imageCache.createMediaCacheInProgress, let metadatas = imageCache.initialMetadatas() {
+            self.metadatas = metadatas
         }
+        collectionView.reloadData()
     }
 
     override func viewWillDisappear(_ animated: Bool) {
@@ -192,6 +190,10 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
     }
 
     func startTimer() {
+        // don't start if media chage is in progress
+        if imageCache.createMediaCacheInProgress {
+            return
+        }
         timerSearchNewMedia?.invalidate()
         timerSearchNewMedia = Timer.scheduledTimer(timeInterval: timeIntervalSearchNewMedia, target: self, selector: #selector(searchMediaUI), userInfo: nil, repeats: false)
     }
@@ -200,7 +202,6 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
 
     func selectLayout() {
         let media = NCKeychain().mediaLayout
-
         if media == NCGlobal.shared.mediaLayoutDynamic {
             let layout = NCMediaDynamicLayout()
             layout.sectionInset = UIEdgeInsets(top: 0, left: 2, bottom: 0, right: 2)
@@ -236,7 +237,7 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
 
     func emptyDataSetView(_ view: NCEmptyView) {
         view.emptyImage.image = UIImage(named: "media")?.image(color: .gray, size: UIScreen.main.bounds.width)
-        if loadingTask != nil {
+        if loadingTask != nil || imageCache.createMediaCacheInProgress {
             view.emptyTitle.text = NSLocalizedString("_search_in_progress_", comment: "")
         } else {
             view.emptyTitle.text = NSLocalizedString("_tutorial_photo_view_", comment: "")
@@ -248,11 +249,11 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
 
     func getImage(metadata: tableMetadata) -> UIImage? {
 
-        if let image = NCImageCache.shared.getMediaImage(ocId: metadata.ocId, etag: metadata.etag) {
+        if let image = imageCache.getMediaImage(ocId: metadata.ocId, etag: metadata.etag) {
             return image
         } else if FileManager().fileExists(atPath: utilityFileSystem.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)),
                   let image = UIImage(contentsOfFile: utilityFileSystem.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)) {
-            NCImageCache.shared.setMediaImage(ocId: metadata.ocId, etag: metadata.etag, image: image)
+            imageCache.setMediaImage(ocId: metadata.ocId, etag: metadata.etag, image: image)
             return image
         } else if metadata.hasPreview && metadata.status == NCGlobal.shared.metadataStatusNormal,
                   (!utilityFileSystem.fileProviderStoragePreviewIconExists(metadata.ocId, etag: metadata.etag)),
@@ -445,7 +446,7 @@ extension NCMedia: NCMediaDynamicLayoutDelegate {
 
         if metadata.imageSize != CGSize.zero {
              return metadata.imageSize
-        } else if let size = NCImageCache.shared.getMediaSize(ocId: metadata.ocId, etag: metadata.etag) {
+        } else if let size = imageCache.getMediaSize(ocId: metadata.ocId, etag: metadata.etag) {
             return size
         }
         return size

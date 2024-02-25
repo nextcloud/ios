@@ -29,20 +29,20 @@ extension NCMedia {
         let startServerUrl = NCUtilityFileSystem().getHomeServer(urlBase: appDelegate.urlBase, userId: appDelegate.userId) + mediaPath
 
         if showAll {
-            return NSPredicate(format: NCImageCache.shared.showAllPredicateMediaString, appDelegate.account, startServerUrl)
+            return NSPredicate(format: imageCache.showAllPredicateMediaString, appDelegate.account, startServerUrl)
         } else if showOnlyImages {
-            return NSPredicate(format: NCImageCache.shared.showOnlyPredicateMediaString, appDelegate.account, startServerUrl, NKCommon.TypeClassFile.image.rawValue)
+            return NSPredicate(format: imageCache.showOnlyPredicateMediaString, appDelegate.account, startServerUrl, NKCommon.TypeClassFile.image.rawValue)
         } else if showOnlyVideos {
-            return NSPredicate(format: NCImageCache.shared.showOnlyPredicateMediaString, appDelegate.account, startServerUrl, NKCommon.TypeClassFile.video.rawValue)
+            return NSPredicate(format: imageCache.showOnlyPredicateMediaString, appDelegate.account, startServerUrl, NKCommon.TypeClassFile.video.rawValue)
         } else {
-           return NSPredicate(format: NCImageCache.shared.showBothPredicateMediaString, appDelegate.account, startServerUrl)
+           return NSPredicate(format: imageCache.showBothPredicateMediaString, appDelegate.account, startServerUrl)
         }
     }
 
     @objc func reloadDataSource() {
         guard !appDelegate.account.isEmpty else { return }
 
-        self.metadatas = NCImageCache.shared.getMediaMetadatas(account: self.appDelegate.account, predicate: self.getPredicate())
+        self.metadatas = imageCache.getMediaMetadatas(account: self.appDelegate.account, predicate: self.getPredicate())
         DispatchQueue.main.async {
             self.collectionView.reloadData()
             self.mediaCommandView?.setTitleDate()

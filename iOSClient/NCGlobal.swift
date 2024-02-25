@@ -348,7 +348,7 @@ class NCGlobal: NSObject {
     let notificationCenterReloadDataNCShare                     = "reloadDataNCShare"
     let notificationCenterCloseRichWorkspaceWebView             = "closeRichWorkspaceWebView"
     let notificationCenterReloadAvatar                          = "reloadAvatar"
-    let notificationCenterMediaReloadData                       = "mediaReloadData"
+    let notificationCenterCreateMediaCacheEnded                 = "createMediaCacheEnded"
 
     @objc let notificationCenterReloadDataSource                = "reloadDataSource"
     let notificationCenterReloadDataSourceNetwork               = "reloadDataSourceNetwork"

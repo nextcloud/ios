@@ -61,6 +61,7 @@ import RealmSwift
     private var metadatasInfo: [String: metadataInfo] = [:]
     private var metadatas: ThreadSafeArray<tableMetadata>?
 
+    var createMediaCacheInProgress: Bool = false
     let showAllPredicateMediaString = "account == %@ AND serverUrl BEGINSWITH %@ AND (classFile == '\(NKCommon.TypeClassFile.image.rawValue)' OR classFile == '\(NKCommon.TypeClassFile.video.rawValue)') AND NOT (session CONTAINS[c] 'upload')"
     let showBothPredicateMediaString = "account == %@ AND serverUrl BEGINSWITH %@ AND (classFile == '\(NKCommon.TypeClassFile.image.rawValue)' OR classFile == '\(NKCommon.TypeClassFile.video.rawValue)') AND NOT (session CONTAINS[c] 'upload') AND NOT (livePhotoFile != '' AND classFile == '\(NKCommon.TypeClassFile.video.rawValue)')"
     let showOnlyPredicateMediaString = "account == %@ AND serverUrl BEGINSWITH %@ AND classFile == %@ AND NOT (session CONTAINS[c] 'upload') AND NOT (livePhotoFile != '' AND classFile == '\(NKCommon.TypeClassFile.video.rawValue)')"
@@ -68,8 +69,9 @@ import RealmSwift
     override private init() {}
 
     func createMediaCache(account: String) {
-
         guard account != self.account, !account.isEmpty else { return }
+
+        createMediaCacheInProgress = true
         self.account = account
         self.metadatasInfo.removeAll()
         self.metadatas = nil
@@ -139,7 +141,8 @@ import RealmSwift
         NextcloudKit.shared.nkCommonInstance.writeLog("Time process: \(diffDate)")
         NextcloudKit.shared.nkCommonInstance.writeLog("--------- ThumbnailLRUCache image process ---------")
 
-        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterMediaReloadData)
+        createMediaCacheInProgress = false
+        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterCreateMediaCacheEnded)
     }
 
     func initialMetadatas() -> ThreadSafeArray<tableMetadata>? {
