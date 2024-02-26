@@ -28,46 +28,41 @@ import RealmSwift
 class NCMedia: UIViewController, NCEmptyDataSetDelegate {
 
     @IBOutlet weak var collectionView: UICollectionView!
+    @IBOutlet weak var titleDate: UILabel!
+    @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
+    @IBOutlet weak var activityIndicatorTrailing: NSLayoutConstraint!
+    @IBOutlet weak var selectOrCancelButton: UIButton!
+    @IBOutlet weak var selectOrCancelButtonTrailing: NSLayoutConstraint!
+    @IBOutlet weak var menuButton: UIButton!
+    @IBOutlet weak var gradientView: UIView!
 
     var emptyDataSet: NCEmptyDataSet?
-    var mediaCommandView: NCMediaCommandView?
     var documentPickerViewController: NCDocumentPickerViewController?
     var tabBarSelect: NCMediaSelectTabBar?
-
     let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
     let utilityFileSystem = NCUtilityFileSystem()
     let utility = NCUtility()
     let imageCache = NCImageCache.shared
-
     var metadatas: ThreadSafeArray<tableMetadata>?
     var loadingTask: Task<Void, any Error>?
-
+    var isTop: Bool = true
     var isEditMode = false
     var selectOcId: [String] = []
-
+    var attributesZoomIn: UIMenuElement.Attributes = []
+    var attributesZoomOut: UIMenuElement.Attributes = []
+    let gradient: CAGradientLayer = CAGradientLayer()
     var showOnlyImages = false
     var showOnlyVideos = false
-
     var lastContentOffsetY: CGFloat = 0
     var mediaPath = ""
-
     var timeIntervalSearchNewMedia: TimeInterval = 2.0
     var timerSearchNewMedia: Timer?
     let insetsTop: CGFloat = 75
     let maxImageGrid: CGFloat = 7
-
-    struct cacheImages {
-        static var livePhotoImage = UIImage()
-        static var playImage = UIImage()
-        static var mediaPhoto60 = UIImage()
-        static var mediaPhoto30 = UIImage()
-        static var mediaPhoto20 = UIImage()
-        static var mediaPhoto10 = UIImage()
-        static var mediaVideo60 = UIImage()
-        static var mediaVideo30 = UIImage()
-        static var mediaVideo20 = UIImage()
-        static var mediaVideo10 = UIImage()
-    }
+    var livePhotoImage = UIImage()
+    var playImage = UIImage()
+    var photoImage = UIImage()
+    var videoImage = UIImage()
 
     // MARK: - View Life Cycle
 
@@ -86,52 +81,40 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
         selectLayout()
         emptyDataSet = NCEmptyDataSet(view: collectionView, offset: 0, delegate: self)
 
-        mediaCommandView = Bundle.main.loadNibNamed("NCMediaCommandView", owner: self, options: nil)?.first as? NCMediaCommandView
-        self.view.addSubview(mediaCommandView!)
-        mediaCommandView?.mediaView = self
-        mediaCommandView?.tabBarController = tabBarController
-        mediaCommandView?.translatesAutoresizingMaskIntoConstraints = false
-        mediaCommandView?.topAnchor.constraint(equalTo: view.topAnchor, constant: 0).isActive = true
-        mediaCommandView?.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 0).isActive = true
-        mediaCommandView?.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 0).isActive = true
-        mediaCommandView?.heightAnchor.constraint(equalToConstant: 150).isActive = true
+        tabBarSelect = NCMediaSelectTabBar(tabBarController: self.tabBarController, delegate: self)
 
-        tabBarSelect = NCMediaSelectTabBar(tabBarController: self.tabBarController, delegate: mediaCommandView)
+        livePhotoImage = utility.loadImage(named: "livephoto", color: .white)
+        playImage = utility.loadImage(named: "play.fill", color: .white)
 
-        cacheImages.livePhotoImage = utility.loadImage(named: "livephoto", color: .white)
-        cacheImages.playImage = utility.loadImage(named: "play.fill", color: .white)
-        if let image = UIImage(systemName: "photo.fill", withConfiguration: UIImage.SymbolConfiguration(pointSize: 10))?.withTintColor(.systemGray4, renderingMode: .alwaysOriginal) {
-            cacheImages.mediaPhoto10 = image
-        }
-        if let image = UIImage(systemName: "photo.fill", withConfiguration: UIImage.SymbolConfiguration(pointSize: 20))?.withTintColor(.systemGray4, renderingMode: .alwaysOriginal) {
-            cacheImages.mediaPhoto20 = image
-        }
-        if let image = UIImage(systemName: "photo.fill", withConfiguration: UIImage.SymbolConfiguration(pointSize: 30))?.withTintColor(.systemGray4, renderingMode: .alwaysOriginal) {
-            cacheImages.mediaPhoto30 = image
-        }
-        if let image = UIImage(systemName: "photo.fill", withConfiguration: UIImage.SymbolConfiguration(pointSize: 60))?.withTintColor(.systemGray4, renderingMode: .alwaysOriginal) {
-            cacheImages.mediaPhoto60 = image
-        }
-        if let image = UIImage(systemName: "video.fill", withConfiguration: UIImage.SymbolConfiguration(pointSize: 10))?.withTintColor(.systemGray4, renderingMode: .alwaysOriginal) {
-            cacheImages.mediaVideo10 = image
-        }
-        if let image = UIImage(systemName: "video.fill", withConfiguration: UIImage.SymbolConfiguration(pointSize: 20))?.withTintColor(.systemGray4, renderingMode: .alwaysOriginal) {
-            cacheImages.mediaVideo20 = image
-        }
-        if let image = UIImage(systemName: "video.fill", withConfiguration: UIImage.SymbolConfiguration(pointSize: 30))?.withTintColor(.systemGray4, renderingMode: .alwaysOriginal) {
-            cacheImages.mediaVideo30 = image
-        }
-        if let image = UIImage(systemName: "video.fill", withConfiguration: UIImage.SymbolConfiguration(pointSize: 60))?.withTintColor(.systemGray4, renderingMode: .alwaysOriginal) {
-            cacheImages.mediaVideo60 = image
-        }
+        titleDate.text = ""
+
+        selectOrCancelButton.backgroundColor = .clear
+        selectOrCancelButton.layer.cornerRadius = 15
+        selectOrCancelButton.layer.masksToBounds = true
+        selectOrCancelButton.setTitle( NSLocalizedString("_select_", comment: ""), for: .normal)
+        selectOrCancelButton.addBlur(style: .systemThinMaterial)
+
+        menuButton.backgroundColor = .clear
+        menuButton.layer.cornerRadius = 15
+        menuButton.layer.masksToBounds = true
+        menuButton.showsMenuAsPrimaryAction = true
+        menuButton.configuration = UIButton.Configuration.plain()
+        menuButton.setImage(UIImage(systemName: "ellipsis"), for: .normal)
+        menuButton.changesSelectionAsPrimaryAction = false
+        menuButton.addBlur(style: .systemThinMaterial)
+
+        gradient.startPoint = CGPoint(x: 0, y: 0.1)
+        gradient.endPoint = CGPoint(x: 0, y: 1)
+        gradient.colors = [UIColor.black.withAlphaComponent(UIAccessibility.isReduceTransparencyEnabled ? 0.8 : 0.4).cgColor, UIColor.clear.cgColor]
+        gradientView.layer.insertSublayer(gradient, at: 0)
 
         if let activeAccount = NCManageDatabase.shared.getActiveAccount() { self.mediaPath = activeAccount.mediaPath }
 
+        /*
         NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeUser), object: nil, queue: nil) { _ in
-            self.metadatas = nil
-            self.collectionView.reloadData()
-            DispatchQueue.main.async { self.reloadDataSource() }
+            self.reloadDataSource()
         }
+        */
 
         NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterCreateMediaCacheEnded), object: nil, queue: nil) { _ in
             if let metadatas = self.imageCache.initialMetadatas() {
@@ -156,14 +139,15 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        self.mediaCommandView?.createMenu()
+        createMenu()
 
         if imageCache.createMediaCacheInProgress {
             self.metadatas = nil
+            collectionView.reloadData()
         } else if let metadatas = imageCache.initialMetadatas() {
             self.metadatas = metadatas
+            collectionView.reloadData()
         }
-        collectionView.reloadData()
     }
 
     override func viewWillDisappear(_ animated: Bool) {
@@ -176,7 +160,7 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
     override var preferredStatusBarStyle: UIStatusBarStyle {
         if self.traitCollection.userInterfaceStyle == .dark {
             return .lightContent
-        } else if let gradient = mediaCommandView?.gradient, gradient.isHidden {
+       } else if isTop {
             return .darkContent
         } else {
             return .lightContent
@@ -188,6 +172,14 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
 
         if let frame = tabBarController?.tabBar.frame {
             tabBarSelect?.hostingController.view.frame = frame
+        }
+        gradient.frame = gradientView.bounds
+    }
+
+    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        super.viewWillTransition(to: size, with: coordinator)
+        coordinator.animate(alongsideTransition: nil) { _ in
+            self.collectionView.reloadData()
         }
     }
 
@@ -205,11 +197,8 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
     func selectLayout() {
         let media = NCKeychain().mediaLayout
         if media == NCGlobal.shared.mediaLayoutDynamic {
-            let layout = NCMediaDynamicLayout()
+            let layout = NCMediaWaterfallLayout()
             layout.sectionInset = UIEdgeInsets(top: 0, left: 2, bottom: 0, right: 2)
-            layout.columSpacing = 2
-            layout.rowSpacing = 2
-            layout.delegate = self
             collectionView.collectionViewLayout = layout
         } else if media == NCGlobal.shared.mediaLayoutGrid {
             let layout = NCMediaGridLayout()
@@ -224,11 +213,9 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
         guard let userInfo = notification.userInfo as NSDictionary?,
               let error = userInfo["error"] as? NKError else { return }
 
-        DispatchQueue.global().async {
-            self.reloadDataSource()
-            if error != .success {
-                NCContentPresenter().showError(error: error)
-            }
+        self.reloadDataSource()
+        if error != .success {
+            NCContentPresenter().showError(error: error)
         }
     }
 
@@ -267,20 +254,48 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
         }
         return nil
     }
+
+    func buildMediaPhotoVideo(itemForLine: Int) {
+        var pointSize: CGFloat = 0
+
+        switch itemForLine {
+        case 0...1: pointSize = 60
+        case 2...3: pointSize = 30
+        case 4...5: pointSize = 20
+        case 6...Int(maxImageGrid): pointSize = 10
+        default: pointSize = 30
+        }
+        if let image = UIImage(systemName: "photo.fill", withConfiguration: UIImage.SymbolConfiguration(pointSize: pointSize))?.withTintColor(.systemGray4, renderingMode: .alwaysOriginal) {
+            photoImage = image
+        }
+        if let image = UIImage(systemName: "video.fill", withConfiguration: UIImage.SymbolConfiguration(pointSize: pointSize))?.withTintColor(.systemGray4, renderingMode: .alwaysOriginal) {
+            videoImage = image
+        }
+    }
 }
 
 // MARK: - Collection View
 
 extension NCMedia: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        var mediaCell: NCGridMediaCell?
         if let metadata = self.metadatas?[indexPath.row] {
+            if let visibleCells = self.collectionView?.indexPathsForVisibleItems.compactMap({ self.collectionView?.cellForItem(at: $0) }) {
+                for case let cell as NCGridMediaCell in visibleCells {
+                    if cell.fileObjectId == metadata.ocId {
+                        mediaCell = cell
+                    }
+                }
+            }
             if isEditMode {
                 if let index = selectOcId.firstIndex(of: metadata.ocId) {
                     selectOcId.remove(at: index)
+                    mediaCell?.selected(false)
                 } else {
                     selectOcId.append(metadata.ocId)
+                    mediaCell?.selected(true)
+
                 }
-                collectionView.reloadData()
                 tabBarSelect?.selectCount = selectOcId.count
             } else {
                 // ACTIVE SERVERURL
@@ -329,21 +344,22 @@ extension NCMedia: UICollectionViewDataSource {
         }
 
         if numberOfItemsInSection == 0 {
-            mediaCommandView?.selectOrCancelButton.isHidden = true
-            mediaCommandView?.menuButton.isHidden = false
-            mediaCommandView?.activityIndicatorTrailing.constant = 50
+            selectOrCancelButton.isHidden = true
+            menuButton.isHidden = false
+            gradientView.isHidden = true
+            activityIndicatorTrailing.constant = 50
         } else if isEditMode {
-            mediaCommandView?.selectOrCancelButton.isHidden = false
-            mediaCommandView?.menuButton.isHidden = true
-            mediaCommandView?.activityIndicatorTrailing.constant = 150
+            selectOrCancelButton.isHidden = false
+            menuButton.isHidden = true
+            activityIndicatorTrailing.constant = 150
         } else {
-            mediaCommandView?.selectOrCancelButton.isHidden = false
-            mediaCommandView?.menuButton.isHidden = false
-            mediaCommandView?.activityIndicatorTrailing.constant = 150
+            selectOrCancelButton.isHidden = false
+            menuButton.isHidden = false
+            activityIndicatorTrailing.constant = 150
         }
 
         emptyDataSet?.numberOfItemsInSection(numberOfItemsInSection, section: section)
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) { self.mediaCommandView?.setTitleDate() }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) { self.setTitleDate() }
 
         return numberOfItemsInSection
     }
@@ -377,29 +393,10 @@ extension NCMedia: UICollectionViewDataSource {
         if !metadata.hasPreview {
             cell.imageItem.backgroundColor = nil
             cell.imageItem.contentMode = .center
-            var imegePhoto = UIImage()
-            var imegeVideo = UIImage()
-            if let layout = collectionView.collectionViewLayout as? NCMediaDynamicLayout {
-                switch layout.itemForLine {
-                case 0...1:
-                    imegePhoto = cacheImages.mediaPhoto60
-                    imegeVideo = cacheImages.mediaVideo60
-                case 2...3:
-                    imegePhoto = cacheImages.mediaPhoto30
-                    imegeVideo = cacheImages.mediaVideo30
-                case 4...5:
-                    imegePhoto = cacheImages.mediaPhoto20
-                    imegeVideo = cacheImages.mediaVideo20
-                case 6...Int(maxImageGrid):
-                    imegePhoto = cacheImages.mediaPhoto10
-                    imegeVideo = cacheImages.mediaVideo10
-                default: break
-                }
-            }
             if metadata.isImage {
-                cell.imageItem.image = imegePhoto
+                cell.imageItem.image = photoImage
             } else {
-                cell.imageItem.image = imegeVideo
+                cell.imageItem.image = videoImage
             }
         } else if let image = getImage(metadata: metadata) {
             cell.imageItem.backgroundColor = nil
@@ -412,9 +409,9 @@ extension NCMedia: UICollectionViewDataSource {
         }
 
         if metadata.isAudioOrVideo {
-            cell.imageStatus.image = cacheImages.playImage
+           cell.imageStatus.image = playImage
         } else if metadata.isLivePhoto {
-            cell.imageStatus.image = cacheImages.livePhotoImage
+            cell.imageStatus.image = livePhotoImage
         } else {
             cell.imageStatus.image = nil
         }
@@ -443,9 +440,9 @@ extension NCMedia: UICollectionViewDelegateFlowLayout {
 
 // MARK: -
 
-extension NCMedia: NCMediaDynamicLayoutDelegate {
-    func itemSize(_ collectionView: UICollectionView, indexPath: IndexPath, itemForLine: CGFloat) -> CGSize {
-        let size = CGSize(width: collectionView.frame.width / itemForLine, height: collectionView.frame.width / itemForLine)
+extension NCMedia: NCMediaWaterfallLayoutDelegate {
+    func collectionView(_ collectionView: UICollectionView, layout: UICollectionViewLayout, sizeForItemAtIndexPath indexPath: NSIndexPath, columnCount: Int) -> CGSize {
+        let size = CGSize(width: collectionView.frame.width / CGFloat(columnCount), height: collectionView.frame.width / CGFloat(columnCount))
         guard let metadatas = self.metadatas,
               let metadata = metadatas[indexPath.row] else { return size }
 
@@ -463,15 +460,15 @@ extension NCMedia: NCMediaDynamicLayoutDelegate {
 extension NCMedia: UIScrollViewDelegate {
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         if let metadatas, !metadatas.isEmpty {
-            let isTop = scrollView.contentOffset.y <= -(insetsTop + view.safeAreaInsets.top - 25)
-            mediaCommandView?.setColor(isTop: isTop)
+            isTop = scrollView.contentOffset.y <= -(insetsTop + view.safeAreaInsets.top - 25)
+            setColor()
             setNeedsStatusBarAppearanceUpdate()
             if lastContentOffsetY == 0 || lastContentOffsetY / 2 <= scrollView.contentOffset.y || lastContentOffsetY / 2 >= scrollView.contentOffset.y {
-                mediaCommandView?.setTitleDate()
+                setTitleDate()
                 lastContentOffsetY = scrollView.contentOffset.y
             }
         } else {
-            mediaCommandView?.setColor(isTop: true)
+            setColor()
         }
     }
 
