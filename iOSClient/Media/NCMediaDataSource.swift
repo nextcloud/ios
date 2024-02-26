@@ -43,10 +43,7 @@ extension NCMedia {
         guard !appDelegate.account.isEmpty else { return }
 
         self.metadatas = imageCache.getMediaMetadatas(account: self.appDelegate.account, predicate: self.getPredicate())
-        DispatchQueue.main.async {
-            self.collectionView.reloadData()
-            self.setTitleDate()
-        }
+        self.collectionView.reloadData()
     }
 
     // MARK: - Search media

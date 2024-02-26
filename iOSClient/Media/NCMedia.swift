@@ -110,11 +110,11 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
 
         if let activeAccount = NCManageDatabase.shared.getActiveAccount() { self.mediaPath = activeAccount.mediaPath }
 
+        /*
         NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeUser), object: nil, queue: nil) { _ in
-            self.metadatas = nil
-            self.collectionView.reloadData()
-            DispatchQueue.main.async { self.reloadDataSource() }
+            self.reloadDataSource()
         }
+        */
 
         NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterCreateMediaCacheEnded), object: nil, queue: nil) { _ in
             if let metadatas = self.imageCache.initialMetadatas() {
@@ -215,11 +215,9 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
         guard let userInfo = notification.userInfo as NSDictionary?,
               let error = userInfo["error"] as? NKError else { return }
 
-        DispatchQueue.global().async {
-            self.reloadDataSource()
-            if error != .success {
-                NCContentPresenter().showError(error: error)
-            }
+        self.reloadDataSource()
+        if error != .success {
+            NCContentPresenter().showError(error: error)
         }
     }
 
