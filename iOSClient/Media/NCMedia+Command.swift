@@ -80,13 +80,11 @@ extension NCMedia {
     }
 
     func createMenu() {
-        var itemForLine = 0
+        var itemForLine = NCKeychain().mediaItemForLine
 
         if UIDevice.current.userInterfaceIdiom == .phone,
            (UIDevice.current.orientation == .landscapeLeft || UIDevice.current.orientation == .landscapeRight) {
-            itemForLine = NCKeychain().mediaItemForLine + 2
-        } else {
-            itemForLine = NCKeychain().mediaItemForLine
+            itemForLine += 2
         }
 
         if CGFloat(itemForLine) >= maxImageGrid - 1 {
@@ -106,14 +104,14 @@ extension NCMedia {
                     UIView.animate(withDuration: 0.0, animations: {
                         NCKeychain().mediaItemForLine = itemForLine + 1
                         self.createMenu()
-                        self.collectionView.reloadData()
+                        self.collectionViewReloadData()
                     })
                 },
                 UIAction(title: NSLocalizedString("_zoom_in_", comment: ""), image: UIImage(systemName: "plus.magnifyingglass"), attributes: self.attributesZoomIn) { _ in
                     UIView.animate(withDuration: 0.0, animations: {
                         NCKeychain().mediaItemForLine = itemForLine - 1
                         self.createMenu()
-                        self.collectionView.reloadData()
+                        self.collectionViewReloadData()
                     })
                 }
             ]),

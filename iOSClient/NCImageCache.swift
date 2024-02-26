@@ -35,7 +35,6 @@ import RealmSwift
     // MARK: -
 
     private let limit: Int = 1000
-    private var account: String = ""
     private var brandElementColor: UIColor?
     private var totalSize: Int64 = 0
 
@@ -69,10 +68,8 @@ import RealmSwift
     override private init() {}
 
     func createMediaCache(account: String, withCacheSize: Bool) {
-        guard account != self.account, !account.isEmpty else { return }
 
         createMediaCacheInProgress = true
-        self.account = account
         self.metadatasInfo.removeAll()
         self.metadatas = nil
         self.metadatas = getMediaMetadatas(account: account)
@@ -188,9 +185,9 @@ import RealmSwift
     }
 
     func getMediaMetadatas(account: String, predicate: NSPredicate? = nil) -> ThreadSafeArray<tableMetadata>? {
-        guard let account = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", account)) else { return nil }
-        let startServerUrl = NCUtilityFileSystem().getHomeServer(urlBase: account.urlBase, userId: account.userId) + account.mediaPath
-        let predicateBoth = NSPredicate(format: showBothPredicateMediaString, account.account, startServerUrl)
+        guard let tableAccount = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", account)) else { return nil }
+        let startServerUrl = NCUtilityFileSystem().getHomeServer(urlBase: tableAccount.urlBase, userId: tableAccount.userId) + tableAccount.mediaPath
+        let predicateBoth = NSPredicate(format: showBothPredicateMediaString, account, startServerUrl)
         return NCManageDatabase.shared.getMediaMetadatas(predicate: predicate ?? predicateBoth)
     }
 

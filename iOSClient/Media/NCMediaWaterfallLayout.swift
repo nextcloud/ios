@@ -75,6 +75,7 @@ public class NCMediaWaterfallLayout: UICollectionViewLayout {
             invalidateIfNotEqual(oldValue, newValue: sectionInset)
         }
     }
+    var mediaViewController: NCMedia?
 
     public override var collectionViewContentSize: CGSize {
         let numberOfSections = collectionView?.numberOfSections
@@ -107,11 +108,11 @@ public class NCMediaWaterfallLayout: UICollectionViewLayout {
               let collectionView = collectionView,
               let delegate = delegate else { return }
 
+        columnCount = NCKeychain().mediaItemForLine
+        mediaViewController?.buildMediaPhotoVideo(itemForLine: columnCount)
         if UIDevice.current.userInterfaceIdiom == .phone,
            (UIDevice.current.orientation == .landscapeLeft || UIDevice.current.orientation == .landscapeRight) {
-            columnCount = NCKeychain().mediaItemForLine + 2
-        } else {
-            columnCount = NCKeychain().mediaItemForLine
+            columnCount += 2
         }
 
         // Initialize variables

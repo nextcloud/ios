@@ -108,7 +108,9 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
         gradient.colors = [UIColor.black.withAlphaComponent(UIAccessibility.isReduceTransparencyEnabled ? 0.8 : 0.4).cgColor, UIColor.clear.cgColor]
         gradientView.layer.insertSublayer(gradient, at: 0)
 
-        if let activeAccount = NCManageDatabase.shared.getActiveAccount() { self.mediaPath = activeAccount.mediaPath }
+        if let activeAccount = NCManageDatabase.shared.getActiveAccount() {
+            self.mediaPath = activeAccount.mediaPath
+        }
 
         /*
         NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeUser), object: nil, queue: nil) { _ in
@@ -120,7 +122,7 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
             if let metadatas = self.imageCache.initialMetadatas() {
                 self.metadatas = metadatas
             }
-            self.collectionView.reloadData()
+            self.collectionViewReloadData()
         }
     }
 
@@ -143,10 +145,10 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
 
         if imageCache.createMediaCacheInProgress {
             self.metadatas = nil
-            collectionView.reloadData()
+            self.collectionViewReloadData()
         } else if let metadatas = imageCache.initialMetadatas() {
             self.metadatas = metadatas
-            collectionView.reloadData()
+            self.collectionViewReloadData()
         }
     }
 
@@ -176,13 +178,6 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
         gradient.frame = gradientView.bounds
     }
 
-    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
-        super.viewWillTransition(to: size, with: coordinator)
-        coordinator.animate(alongsideTransition: nil) { _ in
-            self.collectionView.reloadData()
-        }
-    }
-
     func startTimer() {
         // don't start if media chage is in progress
         if imageCache.createMediaCacheInProgress {
@@ -199,6 +194,7 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
         if media == NCGlobal.shared.mediaLayoutDynamic {
             let layout = NCMediaWaterfallLayout()
             layout.sectionInset = UIEdgeInsets(top: 0, left: 2, bottom: 0, right: 2)
+            layout.mediaViewController = self
             collectionView.collectionViewLayout = layout
         } else if media == NCGlobal.shared.mediaLayoutGrid {
             let layout = NCMediaGridLayout()
@@ -261,9 +257,9 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
         switch itemForLine {
         case 0...1: pointSize = 60
         case 2...3: pointSize = 30
-        case 4...5: pointSize = 20
-        case 6...Int(maxImageGrid): pointSize = 10
-        default: pointSize = 30
+        case 4...5: pointSize = 25
+        case 6...Int(maxImageGrid): pointSize = 20
+        default: pointSize = 20
         }
         if let image = UIImage(systemName: "photo.fill", withConfiguration: UIImage.SymbolConfiguration(pointSize: pointSize))?.withTintColor(.systemGray4, renderingMode: .alwaysOriginal) {
             photoImage = image
