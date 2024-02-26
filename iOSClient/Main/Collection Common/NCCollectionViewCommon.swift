@@ -1625,22 +1625,53 @@ extension NCCollectionViewCommon: EasyTipViewDelegate {
 extension NCCollectionViewCommon: SwipeCollectionViewCellDelegate {
     func collectionView(_ collectionView: UICollectionView, editActionsForItemAt indexPath: IndexPath, for orientation: SwipeCellKit.SwipeActionsOrientation) -> [SwipeCellKit.SwipeAction]? {
         guard orientation == .right else { return nil }
+        guard let metadata = self.dataSource.cellForItemAt(indexPath: indexPath) else { return [] }
 
-        let favoriteAction = SwipeAction(style: .default, title: "Favorite") { action, indexPath in
-            // handle action by updating model with deletion
+        let favoriteAction = SwipeAction(style: .default, title: metadata.favorite ? "Favorite" : "Unfavorite") { action, indexPath in
+            NCNetworking.shared.favoriteMetadata(metadata) { error in
+                if error != .success {
+                    NCContentPresenter().showError(error: error)
+                }
+            }
         }
-        
+
         favoriteAction.backgroundColor = NCBrandColor.shared.yellowFavorite
-        favoriteAction.image = .init(systemName: "star")
+        favoriteAction.image = .init(systemName: "star.fill")
 
-        let deleteAction = SwipeAction(style: .destructive, title: "Delete") { action, indexPath in
-            // handle action by updating model with deletion
+//        let unfavoriteAction = SwipeAction(style: .default, title: "Unfavorite") { action, indexPath in
+//            // handle action by updating model with deletion
+//        }
+//
+//        unfavoriteAction.backgroundColor = NCBrandColor.shared.yellowFavorite
+//        unfavoriteAction.image = .init(systemName: "star.fill")
+
+        let shareAction = SwipeAction(style: .default, title: "Share") { action, indexPath in
+            NCActionCenter.shared.openActivityViewController(selectedMetadata: [metadata])
         }
 
-        // customize the action appearance
-        deleteAction.image = .init(systemName: "trash")
+        shareAction.backgroundColor = .blue
+        shareAction.hidesWhenSelected = true
+        shareAction.image = .init(systemName: "square.and.arrow.up")
+//
+//        let setAsOfflineAction = SwipeAction(style: .default, title: "Set as offline") { action, indexPath in
+//
+//        }
+//
+//        setAsOfflineAction.image = .init(systemName: "icloud.and.arrow.down")
 
-        return [deleteAction, favoriteAction]
+//        let deleteAction = SwipeAction(style: .destructive, title: "Delete") { action, indexPath in
+//            // handle action by updating model with deletion
+//            Task {
+//                var ocId: [String] = []
+//                let error = await NCNetworking.shared.deleteMetadata(metadata, onlyLocalCache: false)
+//                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDeleteFile, userInfo: ["ocId": ocId, "indexPath": self.selectIndexPath, "onlyLocalCache": false, "error": error])
+//            }
+//        }
+//
+//        // customize the action appearance
+//        deleteAction.image = .init(systemName: "trash.fill")
+
+        return [shareAction, favoriteAction]
     }
 
     func collectionView(_ collectionView: UICollectionView, editActionsOptionsForItemAt indexPath: IndexPath, for orientation: SwipeActionsOrientation) -> SwipeOptions {
