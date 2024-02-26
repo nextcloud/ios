@@ -106,7 +106,11 @@ extension NCMedia {
                         }
                     }
                     if results.isChanged {
-                        await self.reloadDataSource()
+                        Task { @MainActor in
+                            self.metadatas = self.imageCache.getMediaMetadatas(account: self.appDelegate.account, predicate: self.getPredicate())
+                            self.collectionView.reloadData()
+                            self.setTitleDate()
+                        }
                     } else {
                         if countMetadatas == 0 {
                             await self.collectionView.reloadData()
