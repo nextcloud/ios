@@ -27,6 +27,7 @@ import NextcloudKit
 import EasyTipView
 import JGProgressHUD
 import Queuer
+import SwipeCellKit
 
 class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UISearchResultsUpdating, UISearchControllerDelegate, UISearchBarDelegate, NCListCellDelegate, NCGridCellDelegate, NCSectionHeaderMenuDelegate, NCSectionFooterDelegate, UIAdaptivePresentationControllerDelegate, NCEmptyDataSetDelegate, UIContextMenuInteractionDelegate, NCAccountRequestDelegate {
 
@@ -1218,12 +1219,13 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         // LAYOUT LIST
         if layoutForView?.layout == NCGlobal.shared.layoutList {
             guard let listCell = collectionView.dequeueReusableCell(withReuseIdentifier: "listCell", for: indexPath) as? NCListCell else { return NCListCell() }
+            listCell.listCellDelegate = self
             listCell.delegate = self
             cell = listCell
         } else {
         // LAYOUT GRID
             guard let gridCell = collectionView.dequeueReusableCell(withReuseIdentifier: "gridCell", for: indexPath) as? NCGridCell else { return NCGridCell() }
-            gridCell.delegate = self
+            gridCell.gridCellDelegate = self
             cell = gridCell
         }
 
@@ -1617,6 +1619,35 @@ extension NCCollectionViewCommon: EasyTipViewDelegate {
     func dismissTip() {
         NCManageDatabase.shared.addTip(NCGlobal.shared.tipNCCollectionViewCommonAccountRequest)
         self.tipView?.dismiss()
+    }
+}
+
+extension NCCollectionViewCommon: SwipeCollectionViewCellDelegate {
+    func collectionView(_ collectionView: UICollectionView, editActionsForItemAt indexPath: IndexPath, for orientation: SwipeCellKit.SwipeActionsOrientation) -> [SwipeCellKit.SwipeAction]? {
+        guard orientation == .right else { return nil }
+
+        let favoriteAction = SwipeAction(style: .default, title: "Favorite") { action, indexPath in
+            // handle action by updating model with deletion
+        }
+        
+        favoriteAction.backgroundColor = NCBrandColor.shared.yellowFavorite
+        favoriteAction.image = .init(systemName: "star")
+
+        let deleteAction = SwipeAction(style: .destructive, title: "Delete") { action, indexPath in
+            // handle action by updating model with deletion
+        }
+
+        // customize the action appearance
+        deleteAction.image = .init(systemName: "trash")
+
+        return [deleteAction, favoriteAction]
+    }
+
+    func collectionView(_ collectionView: UICollectionView, editActionsOptionsForItemAt indexPath: IndexPath, for orientation: SwipeActionsOrientation) -> SwipeOptions {
+        var options = SwipeOptions()
+        options.expansionStyle = .fill
+        options.transitionStyle = .border
+        return options
     }
 }
 
