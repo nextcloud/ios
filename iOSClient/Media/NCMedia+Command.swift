@@ -18,6 +18,11 @@ extension NCMedia {
     func setSelectcancelButton() {
         selectOcId.removeAll()
         tabBarSelect?.selectCount = selectOcId.count
+        if let visibleCells = self.collectionView?.indexPathsForVisibleItems.compactMap({ self.collectionView?.cellForItem(at: $0) }) {
+            for case let cell as NCGridMediaCell in visibleCells {
+                cell.selected(false)
+            }
+        }
 
         if isEditMode {
             selectOrCancelButton.setTitle( NSLocalizedString("_cancel_", comment: ""), for: .normal)

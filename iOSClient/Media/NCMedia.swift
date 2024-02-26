@@ -277,15 +277,24 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
 
 extension NCMedia: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        var mediaCell: NCGridMediaCell?
         if let metadata = self.metadatas?[indexPath.row] {
+            if let visibleCells = self.collectionView?.indexPathsForVisibleItems.compactMap({ self.collectionView?.cellForItem(at: $0) }) {
+                for case let cell as NCGridMediaCell in visibleCells {
+                    if cell.fileObjectId == metadata.ocId {
+                        mediaCell = cell
+                    }
+                }
+            }
             if isEditMode {
                 if let index = selectOcId.firstIndex(of: metadata.ocId) {
                     selectOcId.remove(at: index)
+                    mediaCell?.selected(false)
                 } else {
                     selectOcId.append(metadata.ocId)
+                    mediaCell?.selected(true)
+
                 }
-                // collectionView.reloadItems(at: [indexPath])
-                // collectionView.reloadData()
                 tabBarSelect?.selectCount = selectOcId.count
             } else {
                 // ACTIVE SERVERURL
