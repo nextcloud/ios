@@ -23,14 +23,19 @@ extension NCMedia {
                 cell.selected(false)
             }
         }
-
         if isEditMode {
+            activityIndicatorTrailing.constant = 150
             selectOrCancelButton.setTitle( NSLocalizedString("_cancel_", comment: ""), for: .normal)
             selectOrCancelButtonTrailing.constant = 10
+            selectOrCancelButton.isHidden = false
+            menuButton.isHidden = true
             tabBarSelect?.show()
         } else {
+            activityIndicatorTrailing.constant = 150
             selectOrCancelButton.setTitle( NSLocalizedString("_select_", comment: ""), for: .normal)
             selectOrCancelButtonTrailing.constant = 50
+            selectOrCancelButton.isHidden = false
+            menuButton.isHidden = false
             tabBarSelect?.hide()
         }
     }

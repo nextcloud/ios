@@ -1,9 +1,7 @@
 //
-//  CollectionViewWaterfallLayout.swift
-//  CollectionViewWaterfallLayout
+//  NCMediaWaterfallLayout.swift
 //
 //  Created by Marino Faggiana on 26/02/24.
-//  Based by Eric Cerney
 //  Based on CHTCollectionViewWaterfallLayout by Nelson Tai
 //  Copyright © 2024 Marino Faggiana. All rights reserved.
 //
