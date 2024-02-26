@@ -25,25 +25,24 @@ import UIKit
 import NextcloudKit
 
 extension NCMedia {
-    func getPredicate(showAll: Bool = false, account: String) -> NSPredicate {
-        guard let tableAccount = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", account)) else { return NSPredicate() }
-        let startServerUrl = NCUtilityFileSystem().getHomeServer(urlBase: tableAccount.urlBase, userId: tableAccount.userId) + mediaPath
+    func getPredicate(showAll: Bool = false) -> NSPredicate {
+
+        let startServerUrl = NCUtilityFileSystem().getHomeServer(urlBase: activeAccount.urlBase, userId: activeAccount.userId) + activeAccount.mediaPath
 
         if showAll {
-            return NSPredicate(format: imageCache.showAllPredicateMediaString, account, startServerUrl)
+            return NSPredicate(format: imageCache.showAllPredicateMediaString, activeAccount.account, startServerUrl)
         } else if showOnlyImages {
-            return NSPredicate(format: imageCache.showOnlyPredicateMediaString, account, startServerUrl, NKCommon.TypeClassFile.image.rawValue)
+            return NSPredicate(format: imageCache.showOnlyPredicateMediaString, activeAccount.account, startServerUrl, NKCommon.TypeClassFile.image.rawValue)
         } else if showOnlyVideos {
-            return NSPredicate(format: imageCache.showOnlyPredicateMediaString, account, startServerUrl, NKCommon.TypeClassFile.video.rawValue)
+            return NSPredicate(format: imageCache.showOnlyPredicateMediaString, activeAccount.account, startServerUrl, NKCommon.TypeClassFile.video.rawValue)
         } else {
-           return NSPredicate(format: imageCache.showBothPredicateMediaString, account, startServerUrl)
+            return NSPredicate(format: imageCache.showBothPredicateMediaString, activeAccount.account, startServerUrl)
         }
     }
 
     @objc func reloadDataSource() {
-        guard !appDelegate.account.isEmpty else { return }
 
-        self.metadatas = imageCache.getMediaMetadatas(account: self.appDelegate.account, predicate: self.getPredicate(account: self.appDelegate.account))
+        self.metadatas = imageCache.getMediaMetadatas(account: activeAccount.account, predicate: self.getPredicate())
         self.collectionViewReloadData()
     }
 
@@ -61,7 +60,7 @@ extension NCMedia {
         let firstMetadataDate = metadatas?.first?.date as? Date
         let lastMetadataDate = metadatas?.last?.date as? Date
         let countMetadatas = self.metadatas?.count ?? 0
-        let account = appDelegate.account
+        let account = activeAccount.account
 
         guard loadingTask == nil, !isEditMode else {
             return
@@ -100,7 +99,7 @@ extension NCMedia {
                     let results = await self.searchMedia(account: account, lessDate: lessDate, greaterDate: greaterDate)
                     NextcloudKit.shared.nkCommonInstance.writeLog("Media results changed items: \(results.isChanged)")
                     await self.activityIndicator.stopAnimating()
-                    if results.account == account {
+                    if await results.account == self.activeAccount.account {
                         if results.error != .success {
                             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Media search new media error code \(results.error.errorCode) " + results.error.errorDescription)
                         } else if results.error == .success, results.lessDate == Date.distantFuture, results.greaterDate == Date.distantPast, !results.isChanged, results.metadatasCount == 0 {
@@ -110,7 +109,7 @@ extension NCMedia {
                         }
                         if results.isChanged {
                             Task { @MainActor in
-                                self.metadatas = self.imageCache.getMediaMetadatas(account: account, predicate: self.getPredicate(account: account))
+                                self.metadatas = self.imageCache.getMediaMetadatas(account: account, predicate: self.getPredicate())
                                 self.collectionViewReloadData()
                                 self.setTitleDate()
                             }
@@ -140,7 +139,7 @@ extension NCMedia {
         if results.account == account, results.error == .success {
             let metadatas = await NCManageDatabase.shared.convertFilesToMetadatas(results.files, useMetadataFolder: false).metadatas
             var predicate = NSPredicate(format: "date > %@ AND date < %@", greaterDate as NSDate, lessDate as NSDate)
-            predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [predicate, self.getPredicate(showAll: true, account: account)])
+            predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [predicate, self.getPredicate(showAll: true)])
             let resultsUpdate = NCManageDatabase.shared.updateMetadatas(metadatas, predicate: predicate)
             let isChaged: Bool = resultsUpdate.metadatasChanged || resultsUpdate.metadatasChangedCount != 0
             NextcloudKit.shared.nkCommonInstance.writeLog("End searchMedia UpdateMetadatas with metadatasChanged \(resultsUpdate.metadatasChanged), ChangedCount \(resultsUpdate.metadatasChangedCount)")
