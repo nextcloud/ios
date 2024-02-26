@@ -291,6 +291,18 @@ import KeychainAccess
         }
     }
 
+    var mediaLayout: String {
+        get {
+            if let value = try? keychain.get("mediaLayout") {
+                return value
+            }
+            return NCGlobal.shared.mediaLayoutDynamic
+        }
+        set {
+            keychain["mediaLayout"] = String(newValue)
+        }
+    }
+
     var textRecognitionStatus: Bool {
         get {
             migrate(key: "textRecognitionStatus")

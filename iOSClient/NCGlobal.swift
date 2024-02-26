@@ -198,10 +198,6 @@ class NCGlobal: NSObject {
     //
     let fileNameRichWorkspace = "Readme.md"
 
-    // Extension
-    //
-    @objc let extensionPreview = "ico"
-
     // ContentPresenter
     //
     @objc let dismissAfterSecond: TimeInterval      = 4
@@ -352,6 +348,7 @@ class NCGlobal: NSObject {
     let notificationCenterReloadDataNCShare                     = "reloadDataNCShare"
     let notificationCenterCloseRichWorkspaceWebView             = "closeRichWorkspaceWebView"
     let notificationCenterReloadAvatar                          = "reloadAvatar"
+    let notificationCenterCreateMediaCacheEnded                 = "createMediaCacheEnded"
 
     @objc let notificationCenterReloadDataSource                = "reloadDataSource"
     let notificationCenterReloadDataSourceNetwork               = "reloadDataSourceNetwork"
@@ -501,4 +498,8 @@ class NCGlobal: NSObject {
     let diagnosticProblemsBadResponse       = "BAD_SERVER_RESPONSE"
     let diagnosticProblemsUploadServerError = "UploadError.SERVER_ERROR"
 
+    // MEDIA LAYOUT
+    //
+    let mediaLayoutDynamic                  = "mediaLayoutDynamic"
+    let mediaLayoutGrid                     = "mediaLayoutGrid"
 }

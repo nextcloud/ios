@@ -25,28 +25,26 @@ import UIKit
 import NextcloudKit
 
 extension NCMedia {
-
     func getPredicate(showAll: Bool = false) -> NSPredicate {
-
         let startServerUrl = NCUtilityFileSystem().getHomeServer(urlBase: appDelegate.urlBase, userId: appDelegate.userId) + mediaPath
 
         if showAll {
-            return NSPredicate(format: NCImageCache.shared.showAllPredicateMediaString, appDelegate.account, startServerUrl)
+            return NSPredicate(format: imageCache.showAllPredicateMediaString, appDelegate.account, startServerUrl)
         } else if showOnlyImages {
-            return NSPredicate(format: NCImageCache.shared.showOnlyPredicateMediaString, appDelegate.account, startServerUrl, NKCommon.TypeClassFile.image.rawValue)
+            return NSPredicate(format: imageCache.showOnlyPredicateMediaString, appDelegate.account, startServerUrl, NKCommon.TypeClassFile.image.rawValue)
         } else if showOnlyVideos {
-            return NSPredicate(format: NCImageCache.shared.showOnlyPredicateMediaString, appDelegate.account, startServerUrl, NKCommon.TypeClassFile.video.rawValue)
+            return NSPredicate(format: imageCache.showOnlyPredicateMediaString, appDelegate.account, startServerUrl, NKCommon.TypeClassFile.video.rawValue)
         } else {
-           return NSPredicate(format: NCImageCache.shared.showBothPredicateMediaString, appDelegate.account, startServerUrl)
+           return NSPredicate(format: imageCache.showBothPredicateMediaString, appDelegate.account, startServerUrl)
         }
     }
 
     @objc func reloadDataSource() {
         guard !appDelegate.account.isEmpty else { return }
 
-        self.metadatas = NCImageCache.shared.getMediaMetadatas(account: self.appDelegate.account, predicate: self.getPredicate())
+        self.metadatas = imageCache.getMediaMetadatas(account: self.appDelegate.account, predicate: self.getPredicate())
         DispatchQueue.main.async {
-            self.collectionView?.reloadData()
+            self.collectionView.reloadData()
             self.mediaCommandView?.setTitleDate()
         }
     }
@@ -54,11 +52,11 @@ extension NCMedia {
     // MARK: - Search media
 
     @objc func searchMediaUI() {
-
         var lessDate: Date?
         var greaterDate: Date?
         let firstMetadataDate = metadatas?.first?.date as? Date
         let lastMetadataDate = metadatas?.last?.date as? Date
+        let countMetadatas = self.metadatas?.count ?? 0
 
         guard loadingTask == nil, !isEditMode else {
             return
@@ -66,7 +64,7 @@ extension NCMedia {
 
         if let visibleCells = self.collectionView?.indexPathsForVisibleItems.sorted(by: { $0.row < $1.row }).compactMap({ self.collectionView?.cellForItem(at: $0) }) {
             // first date
-            let firstCellDate = (visibleCells.first as? NCGridMediaCell)?.date
+            let firstCellDate = (visibleCells.first as? NCGridMediaCell)?.fileDate
             if firstCellDate == firstMetadataDate {
                 lessDate = Date.distantFuture
             } else {
@@ -77,7 +75,7 @@ extension NCMedia {
                 }
             }
             // last date
-            let lastCellDate = (visibleCells.last as? NCGridMediaCell)?.date
+            let lastCellDate = (visibleCells.last as? NCGridMediaCell)?.fileDate
             if lastCellDate == lastMetadataDate {
                 greaterDate = Date.distantPast
             } else {
@@ -91,7 +89,9 @@ extension NCMedia {
             if let lessDate, let greaterDate {
                 mediaCommandView?.activityIndicator.startAnimating()
                 loadingTask = Task.detached {
-                    await self.collectionView.reloadData()
+                    if countMetadatas == 0 {
+                        await self.collectionView.reloadData()
+                    }
                     let results = await self.searchMedia(account: self.appDelegate.account, lessDate: lessDate, greaterDate: greaterDate)
                     print("Media results changed items: \(results.isChanged)")
                     await self.mediaCommandView?.activityIndicator.stopAnimating()
@@ -108,14 +108,16 @@ extension NCMedia {
                     if results.isChanged {
                         await self.reloadDataSource()
                     } else {
-                        await self.collectionView.reloadData()
+                        if countMetadatas == 0 {
+                            await self.collectionView.reloadData()
+                        }
                     }
                 }
             }
         }
     }
 
-    func searchMedia(account: String, lessDate: Date, greaterDate: Date, limit: Int = 120, timeout: TimeInterval = 60) async -> (account: String, lessDate: Date?, greaterDate: Date?, metadatasCount: Int, isChanged: Bool, error: NKError) {
+    func searchMedia(account: String, lessDate: Date, greaterDate: Date, limit: Int = 300, timeout: TimeInterval = 120) async -> (account: String, lessDate: Date?, greaterDate: Date?, metadatasCount: Int, isChanged: Bool, error: NKError) {
 
         guard let mediaPath = NCManageDatabase.shared.getActiveAccount()?.mediaPath else {
             return(account, lessDate, greaterDate, 0, false, NKError())

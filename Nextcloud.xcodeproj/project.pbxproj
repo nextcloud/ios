@@ -158,6 +158,7 @@
 		F70D87CF25EE6E58008CBBBD /* NCRenameFile.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F70D87CD25EE6E58008CBBBD /* NCRenameFile.storyboard */; };
 		F70D87D025EE6E58008CBBBD /* NCRenameFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70D87CE25EE6E58008CBBBD /* NCRenameFile.swift */; };
 		F70D8D8124A4A9BF000A5756 /* NCNetworkingProcess.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70D8D8024A4A9BF000A5756 /* NCNetworkingProcess.swift */; };
+		F70DDF622B84FF8900AD42CC /* NCMediaDynamicLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70DDF612B84FF8900AD42CC /* NCMediaDynamicLayout.swift */; };
 		F710D1F52405770F00A6033D /* NCViewerPDF.swift in Sources */ = {isa = PBXBuildFile; fileRef = F710D1F42405770F00A6033D /* NCViewerPDF.swift */; };
 		F710D2022405826100A6033D /* NCViewer+Menu.swift in Sources */ = {isa = PBXBuildFile; fileRef = F710D2012405826100A6033D /* NCViewer+Menu.swift */; };
 		F710FC7A277B7D0000AA9FBF /* Realm in Frameworks */ = {isa = PBXBuildFile; productRef = F710FC79277B7D0000AA9FBF /* Realm */; };
@@ -1050,6 +1051,7 @@
 		F70D87CD25EE6E58008CBBBD /* NCRenameFile.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = NCRenameFile.storyboard; sourceTree = "<group>"; };
 		F70D87CE25EE6E58008CBBBD /* NCRenameFile.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCRenameFile.swift; sourceTree = "<group>"; };
 		F70D8D8024A4A9BF000A5756 /* NCNetworkingProcess.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCNetworkingProcess.swift; sourceTree = "<group>"; };
+		F70DDF612B84FF8900AD42CC /* NCMediaDynamicLayout.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCMediaDynamicLayout.swift; sourceTree = "<group>"; };
 		F70F2BA4225F2D8900EBB73E /* ZIPFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ZIPFoundation.framework; path = Carthage/Build/iOS/ZIPFoundation.framework; sourceTree = "<group>"; };
 		F70F96AF2874394B006C8379 /* Nextcloud-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Nextcloud-Bridging-Header.h"; sourceTree = "<group>"; };
 		F710C5EF2471A6D1009AD8B7 /* Sentry.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Sentry.framework; path = Carthage/Build/iOS/Sentry.framework; sourceTree = "<group>"; };
@@ -2542,6 +2544,7 @@
 				F7F1E54B2492369A00E42386 /* NCMediaCommandView.xib */,
 				F78B87E62B62527100C65ADC /* NCMediaDataSource.swift */,
 				F78B87E82B62550800C65ADC /* NCMediaDownloadThumbnaill.swift */,
+				F70DDF612B84FF8900AD42CC /* NCMediaDynamicLayout.swift */,
 				F7BD50302B65216300D5AEF9 /* NCMediaGridLayout.swift */,
 				F741C2232B6B9FD600E849BB /* NCMediaSelectTabBar.swift */,
 			);
@@ -3967,6 +3970,7 @@
 				F7682FE023C36B0500983A04 /* NCMainTabBar.swift in Sources */,
 				F7A0D1352591FBC5008F8A13 /* String+Extension.swift in Sources */,
 				F77B0E5F1D118A16002130FE /* NCSettings.m in Sources */,
+				F70DDF622B84FF8900AD42CC /* NCMediaDynamicLayout.swift in Sources */,
 				F7F9D1BB25397CE000D9BFF5 /* NCViewer.swift in Sources */,
 				AF730AF827834B1400B7520E /* NCShare+NCCellDelegate.swift in Sources */,
 				F70460522499061800BB98A7 /* NotificationCenter+MainThread.swift in Sources */,
@@ -4995,7 +4999,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 7;
+				CURRENT_PROJECT_VERSION = 3;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = NKUJUXUJ3B;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -5021,7 +5025,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 5.1.0;
+				MARKETING_VERSION = 5.2.0;
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = "";
 				SDKROOT = iphoneos;
@@ -5060,7 +5064,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 7;
+				CURRENT_PROJECT_VERSION = 3;
 				DEVELOPMENT_TEAM = NKUJUXUJ3B;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
@@ -5083,7 +5087,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 5.1.0;
+				MARKETING_VERSION = 5.2.0;
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = "";
 				SDKROOT = iphoneos;

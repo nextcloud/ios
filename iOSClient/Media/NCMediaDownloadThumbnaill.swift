@@ -43,7 +43,6 @@ class NCMediaDownloadThumbnaill: ConcurrentOperation {
     }
 
     override func start() {
-
         guard !isCancelled else { return self.finish() }
 
         var etagResource: String?
@@ -76,9 +75,20 @@ class NCMediaDownloadThumbnaill: ConcurrentOperation {
                         }
                     }
                 }
-                NCImageCache.shared.setMediaImage(ocId: self.metadata.ocId, etag: self.metadata.etag, image: .actual(image))
+                NCImageCache.shared.setMediaSize(ocId: self.metadata.ocId, etag: self.metadata.etag, size: image.size)
             }
             self.finish()
         }
+    }
+
+    override func finish(success: Bool = true) {
+        super.finish(success: success)
+
+        if NCNetworking.shared.downloadThumbnailQueue.operationCount == 0 {
+            DispatchQueue.main.async {
+                self.collectionView?.reloadData()
+            }
+        }
+        print("Download Thumbnail in queue \(NCNetworking.shared.downloadThumbnailQueue.operationCount)")
     }
 }

@@ -29,24 +29,36 @@ class NCGridMediaCell: UICollectionViewCell, NCCellProtocol {
     @IBOutlet weak var imageVisualEffect: UIVisualEffectView!
     @IBOutlet weak var imageSelect: UIImageView!
     @IBOutlet weak var imageStatus: UIImageView!
+    @IBOutlet weak var label: UILabel!
 
     private var objectId: String = ""
     private var user: String = ""
     var indexPath = IndexPath()
-
-    var date: Date?
+    private var date: Date?
 
     var filePreviewImageView: UIImageView? {
         get { return imageItem }
         set {}
     }
+
     var fileObjectId: String? {
         get { return objectId }
         set { objectId = newValue ?? "" }
     }
+
     var fileUser: String? {
         get { return user }
         set { user = newValue ?? "" }
+    }
+
+    var fileDate: Date? {
+        get { return date }
+        set {
+            date = newValue
+            if let date {
+                label.text = NCUtility().getTitleFromDate(date)
+            }
+        }
     }
 
     override func awakeFromNib() {
@@ -63,22 +75,16 @@ class NCGridMediaCell: UICollectionViewCell, NCCellProtocol {
         imageItem.backgroundColor = .secondarySystemBackground
         imageStatus.image = nil
         imageItem.image = nil
-    }
-
-    func selectMode(_ status: Bool) {
-        if status {
-            imageSelect.isHidden = false
-        } else {
-            imageSelect.isHidden = true
-            imageVisualEffect.isHidden = true
-        }
+        imageVisualEffect.alpha = 0.4
+        imageSelect.image = NCImageCache.images.checkedYes
+        imageVisualEffect.isHidden = true
+        imageSelect.isHidden = true
     }
 
     func selected(_ status: Bool) {
         if status {
-            imageSelect.image = NCImageCache.images.checkedYes
+            imageSelect.isHidden = false
             imageVisualEffect.isHidden = false
-            imageVisualEffect.alpha = 0.4
         } else {
             imageSelect.isHidden = true
             imageVisualEffect.isHidden = true

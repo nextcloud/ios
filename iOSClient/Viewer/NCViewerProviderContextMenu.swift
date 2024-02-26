@@ -179,7 +179,7 @@ class NCViewerProviderContextMenu: UIViewController {
         else { return }
 
         if ocId == self.metadata?.ocId || ocId == self.metadataLivePhoto?.ocId {
-            NCActivityIndicator.shared.start(backgroundView: self.view)
+            DispatchQueue.main.async { NCActivityIndicator.shared.start(backgroundView: self.view) }
         }
     }
 
