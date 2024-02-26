@@ -1877,12 +1877,19 @@ extension NCCollectionViewCommon: NCSelectableNavigationView, NCCollectionViewCo
             self.saveLayout(layoutForView)
         }
 
-        let foldersSubmenu = UIMenu(title: "", options: .displayInline, children: [foldersOnTop])
+        let showDescriptionBool = NCKeychain().showDescription
+
+        let showDescription = UIAction(title: NSLocalizedString("_show_description_", comment: ""), image: UIImage(systemName: "list.dash.header.rectangle"), state: showDescriptionBool ? .on : .off) { _ in
+            NCKeychain().showDescription = !showDescriptionBool
+            self.collectionView.reloadData()
+        }
+
+        let additionalSubmenu = UIMenu(title: "", options: .displayInline, children: [foldersOnTop, showDescription])
 
         if layoutKey == NCGlobal.shared.layoutViewRecent {
             return [select]
         } else {
-            return [select, viewStyleSubmenu, sortSubmenu, foldersSubmenu]
+            return [select, viewStyleSubmenu, sortSubmenu, additionalSubmenu]
         }
     }
 }
