@@ -28,7 +28,6 @@ extension NCMedia {
             selectOrCancelButtonTrailing.constant = 50
             tabBarSelect?.hide()
         }
-        collectionView.reloadData()
     }
 
     func setTitleDate(_ offset: CGFloat = 10) {

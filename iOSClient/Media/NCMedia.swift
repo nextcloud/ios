@@ -196,11 +196,8 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
     func selectLayout() {
         let media = NCKeychain().mediaLayout
         if media == NCGlobal.shared.mediaLayoutDynamic {
-            let layout = NCMediaDynamicLayout()
+            let layout = NCMediaWaterfallLayout()
             layout.sectionInset = UIEdgeInsets(top: 0, left: 2, bottom: 0, right: 2)
-            layout.columSpacing = 2
-            layout.rowSpacing = 2
-            layout.delegate = self
             collectionView.collectionViewLayout = layout
         } else if media == NCGlobal.shared.mediaLayoutGrid {
             let layout = NCMediaGridLayout()
@@ -287,7 +284,8 @@ extension NCMedia: UICollectionViewDelegate {
                 } else {
                     selectOcId.append(metadata.ocId)
                 }
-                collectionView.reloadData()
+                // collectionView.reloadItems(at: [indexPath])
+                // collectionView.reloadData()
                 tabBarSelect?.selectCount = selectOcId.count
             } else {
                 // ACTIVE SERVERURL
@@ -432,9 +430,9 @@ extension NCMedia: UICollectionViewDelegateFlowLayout {
 
 // MARK: -
 
-extension NCMedia: NCMediaDynamicLayoutDelegate {
-    func itemSize(_ collectionView: UICollectionView, indexPath: IndexPath, itemForLine: CGFloat) -> CGSize {
-        let size = CGSize(width: collectionView.frame.width / itemForLine, height: collectionView.frame.width / itemForLine)
+extension NCMedia: NCMediaWaterfallLayoutDelegate {
+    func collectionView(_ collectionView: UICollectionView, layout: UICollectionViewLayout, sizeForItemAtIndexPath indexPath: NSIndexPath, columnCount: Int) -> CGSize {
+        let size = CGSize(width: collectionView.frame.width / CGFloat(columnCount), height: collectionView.frame.width / CGFloat(columnCount))
         guard let metadatas = self.metadatas,
               let metadata = metadatas[indexPath.row] else { return size }
 
