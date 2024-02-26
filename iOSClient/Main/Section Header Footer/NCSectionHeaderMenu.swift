@@ -54,8 +54,6 @@ class NCSectionHeaderMenu: UICollectionReusableView, UIGestureRecognizerDelegate
 
         backgroundColor = .clear
 
-        insets
-
         // Gradient
         gradient.startPoint = CGPoint(x: 0, y: 0.50)
         gradient.endPoint = CGPoint(x: 0, y: 1)
