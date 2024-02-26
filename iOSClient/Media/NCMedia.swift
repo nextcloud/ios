@@ -132,7 +132,6 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
         super.viewWillAppear(animated)
 
         appDelegate.activeViewController = self
-
         navigationController?.setMediaAppreance()
 
         NotificationCenter.default.addObserver(self, selector: #selector(deleteFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDeleteFile), object: nil)
