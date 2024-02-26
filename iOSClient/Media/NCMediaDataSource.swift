@@ -90,7 +90,7 @@ extension NCMedia {
                         await self.collectionView.reloadData()
                     }
                     let results = await self.searchMedia(account: self.appDelegate.account, lessDate: lessDate, greaterDate: greaterDate)
-                    print("Media results changed items: \(results.isChanged)")
+                    NextcloudKit.shared.nkCommonInstance.writeLog("Media results changed items: \(results.isChanged)")
                     await self.activityIndicator.stopAnimating()
                     Task { @MainActor in
                         self.loadingTask = nil
@@ -123,6 +123,7 @@ extension NCMedia {
         guard let mediaPath = NCManageDatabase.shared.getActiveAccount()?.mediaPath else {
             return(account, lessDate, greaterDate, 0, false, NKError())
         }
+        NextcloudKit.shared.nkCommonInstance.writeLog("Start searchMedia with lessDate \(lessDate), greaterDate \(greaterDate)")
         let options = NKRequestOptions(timeout: timeout, queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
         let results = await NextcloudKit.shared.searchMedia(path: mediaPath, lessDate: lessDate, greaterDate: greaterDate, elementDate: "d:getlastmodified/", limit: limit, showHiddenFiles: NCKeychain().showHiddenFiles, includeHiddenFiles: [], options: options)
 
@@ -132,6 +133,7 @@ extension NCMedia {
             predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [predicate, self.getPredicate(showAll: true)])
             let resultsUpdate = NCManageDatabase.shared.updateMetadatas(metadatas, predicate: predicate)
             let isChaged: Bool = resultsUpdate.metadatasChanged || resultsUpdate.metadatasChangedCount != 0
+            NextcloudKit.shared.nkCommonInstance.writeLog("End searchMedia UpdateMetadatas with metadatasChanged \(resultsUpdate.metadatasChanged), ChangedCount \(resultsUpdate.metadatasChangedCount)")
             return(account, lessDate, greaterDate, metadatas.count, isChaged, results.error)
         } else {
             return(account, lessDate, greaterDate, 0, false, results.error)
