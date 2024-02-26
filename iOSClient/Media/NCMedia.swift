@@ -36,6 +36,7 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
     @IBOutlet weak var menuButton: UIButton!
     @IBOutlet weak var gradientView: UIView!
 
+    var activeAccount = tableAccount()
     var emptyDataSet: NCEmptyDataSet?
     var documentPickerViewController: NCDocumentPickerViewController?
     var tabBarSelect: NCMediaSelectTabBar?
@@ -54,7 +55,6 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
     var showOnlyImages = false
     var showOnlyVideos = false
     var lastContentOffsetY: CGFloat = 0
-    var mediaPath = ""
     var timeIntervalSearchNewMedia: TimeInterval = 2.0
     var timerSearchNewMedia: Timer?
     let insetsTop: CGFloat = 75
@@ -109,14 +109,16 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
         gradientView.layer.insertSublayer(gradient, at: 0)
 
         if let activeAccount = NCManageDatabase.shared.getActiveAccount() {
-            self.mediaPath = activeAccount.mediaPath
+            self.activeAccount = activeAccount
         }
 
-        /*
         NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeUser), object: nil, queue: nil) { _ in
-            self.reloadDataSource()
+            if let activeAccount = NCManageDatabase.shared.getActiveAccount() {
+                self.activeAccount = activeAccount
+            } else {
+                self.activeAccount = tableAccount()
+            }
         }
-        */
 
         NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterCreateMediaCacheEnded), object: nil, queue: nil) { _ in
             if let metadatas = self.imageCache.initialMetadatas() {
@@ -495,8 +497,11 @@ extension NCMedia: NCSelectDelegate {
     func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String, items: [Any], indexPath: [IndexPath], overwrite: Bool, copy: Bool, move: Bool) {
         guard let serverUrl = serverUrl else { return }
         let home = utilityFileSystem.getHomeServer(urlBase: appDelegate.urlBase, userId: appDelegate.userId)
-        mediaPath = serverUrl.replacingOccurrences(of: home, with: "")
-        NCManageDatabase.shared.setAccountMediaPath(mediaPath, account: appDelegate.account)
+        let mediaPath = serverUrl.replacingOccurrences(of: home, with: "")
+        NCManageDatabase.shared.setAccountMediaPath(mediaPath, account: activeAccount.account)
+        if let activeAccount = NCManageDatabase.shared.getActiveAccount() {
+            self.activeAccount = activeAccount
+        }
         reloadDataSource()
         startTimer()
     }
