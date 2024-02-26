@@ -143,10 +143,11 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
 
         if imageCache.createMediaCacheInProgress {
             self.metadatas = nil
+            collectionView.reloadData()
         } else if let metadatas = imageCache.initialMetadatas() {
             self.metadatas = metadatas
+            collectionView.reloadData()
         }
-        collectionView.reloadData()
     }
 
     override func viewWillDisappear(_ animated: Bool) {
