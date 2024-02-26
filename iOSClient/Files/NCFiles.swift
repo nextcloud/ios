@@ -30,12 +30,16 @@ class NCFiles: NCCollectionViewCommon {
     internal var fileNameBlink: String?
     internal var fileNameOpen: String?
 
-    override var headerRichWorkspaceDisable: Bool {
-        get {
-            return !NCKeychain().showDescription
-        }
-        set { }
-    }
+////    override var headerRichWorkspaceDisable: Bool {
+////        get {
+////            return !NCKeychain().showDescription
+////        }
+////        set { }
+////    }
+//
+//    var test: Bool {
+//        return !NCKeychain().showDescription
+//    }
 
     // MARK: - View Life Cycle
 
@@ -45,7 +49,7 @@ class NCFiles: NCCollectionViewCommon {
         titleCurrentFolder = NCBrandOptions.shared.brand
         layoutKey = NCGlobal.shared.layoutViewFiles
         enableSearchBar = true
-
+        headerRichWorkspaceDisable = false
         headerMenuTransferView = true
         emptyImage = UIImage(named: "folder")?.image(color: NCBrandColor.shared.brandElement, size: UIScreen.main.bounds.width)
         emptyTitle = "_files_no_files_"
