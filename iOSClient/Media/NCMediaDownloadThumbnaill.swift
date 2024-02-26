@@ -85,7 +85,7 @@ class NCMediaDownloadThumbnaill: ConcurrentOperation {
         super.finish(success: success)
 
         if NCNetworking.shared.downloadThumbnailQueue.operationCount == 0 {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
                 self.collectionView?.reloadData()
             }
         }
