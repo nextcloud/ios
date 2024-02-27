@@ -108,21 +108,15 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
         gradient.colors = [UIColor.black.withAlphaComponent(UIAccessibility.isReduceTransparencyEnabled ? 0.8 : 0.4).cgColor, UIColor.clear.cgColor]
         gradientView.layer.insertSublayer(gradient, at: 0)
 
-        if let activeAccount = NCManageDatabase.shared.getActiveAccount() {
-            self.activeAccount = activeAccount
-        }
+        activeAccount = NCManageDatabase.shared.getActiveAccount() ?? tableAccount()
 
         NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeUser), object: nil, queue: nil) { _ in
-            if let activeAccount = NCManageDatabase.shared.getActiveAccount() {
-                self.activeAccount = activeAccount
-            } else {
-                self.activeAccount = tableAccount()
-            }
+            self.activeAccount = NCManageDatabase.shared.getActiveAccount() ?? tableAccount()
             if let metadatas = self.metadatas,
                let metadata = metadatas.first {
                 if metadata.account != self.activeAccount.account {
                     self.metadatas = nil
-                    self.collectionView.reloadData()
+                    self.collectionViewReloadData()
                 }
             }
         }
@@ -505,9 +499,7 @@ extension NCMedia: NCSelectDelegate {
         let home = utilityFileSystem.getHomeServer(urlBase: appDelegate.urlBase, userId: appDelegate.userId)
         let mediaPath = serverUrl.replacingOccurrences(of: home, with: "")
         NCManageDatabase.shared.setAccountMediaPath(mediaPath, account: activeAccount.account)
-        if let activeAccount = NCManageDatabase.shared.getActiveAccount() {
-            self.activeAccount = activeAccount
-        }
+        activeAccount = NCManageDatabase.shared.getActiveAccount() ?? tableAccount()
         reloadDataSource()
         startTimer()
     }

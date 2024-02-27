@@ -25,7 +25,8 @@ import UIKit
 import NextcloudKit
 
 extension NCMedia {
-    @objc func reloadDataSource() {
+
+    func reloadDataSource() {
         self.metadatas = imageCache.getMediaMetadatas(account: activeAccount.account, predicate: self.getPredicate())
         self.collectionViewReloadData()
     }
@@ -87,11 +88,13 @@ extension NCMedia {
                             if results.lessDate == Date.distantFuture, results.greaterDate == Date.distantPast, !results.isChanged, results.metadatasCount == 0 {
                                 self.metadatas = nil
                                 self.collectionViewReloadData()
+                                print("searchMediaUI: metadatacount 0")
                             } else if results.isChanged {
                                 self.metadatas = self.imageCache.getMediaMetadatas(account: account, predicate: self.getPredicate())
                                 self.collectionViewReloadData()
+                                print("searchMediaUI: changed")
                             } else {
-                                print("Nothing")
+                                print("searchMediaUI: nothing")
                             }
                         }
                     } else {
