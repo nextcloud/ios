@@ -45,12 +45,12 @@ class NCNetworkingE2EE: NSObject {
     }
 
     func getMetadata(fileId: String, e2eToken: String?, completion: @escaping (_ account: String, _ e2eMetadata: String?, _ signature: String?, _ data: Data?, _ error: NKError) -> Void) {
-        NextcloudKit.shared.getE2EEMetadata(fileId: fileId, e2eToken: e2eToken, options: NCNetworkingE2EE().getOptions()) { account, e2eMetadata, signature, data, error in
+        var options = NKRequestOptions(version: "v2")
+        NextcloudKit.shared.getE2EEMetadata(fileId: fileId, e2eToken: e2eToken, options: options) { account, e2eMetadata, signature, data, error in
             if error == .success {
                 return completion(account, e2eMetadata, signature, data, error)
             } else {
-                let version = "v1"
-                let options = NKRequestOptions(version: version)
+                options = NKRequestOptions(version: "v1")
                 NextcloudKit.shared.getE2EEMetadata(fileId: fileId, e2eToken: e2eToken, options: options) { account, e2eMetadata, signature, data, error in
                     completion(account, e2eMetadata, signature, data, error)
                 }
