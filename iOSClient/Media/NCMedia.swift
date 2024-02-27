@@ -122,7 +122,7 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
                let metadata = metadatas.first {
                 if metadata.account != self.activeAccount.account {
                     self.metadatas = nil
-                    self.self.collectionView.reloadData()
+                    self.collectionView.reloadData()
                 }
             }
         }
@@ -254,7 +254,7 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
         } else if metadata.hasPreview && metadata.status == NCGlobal.shared.metadataStatusNormal,
                   (!utilityFileSystem.fileProviderStoragePreviewIconExists(metadata.ocId, etag: metadata.etag)),
                   NCNetworking.shared.downloadThumbnailQueue.operations.filter({ ($0 as? NCMediaDownloadThumbnaill)?.metadata.ocId == metadata.ocId }).isEmpty {
-            NCNetworking.shared.downloadThumbnailQueue.addOperation(NCMediaDownloadThumbnaill(metadata: metadata, collectionView: collectionView))
+            NCNetworking.shared.downloadThumbnailQueue.addOperation(NCMediaDownloadThumbnaill(metadata: metadata, media: self))
         }
         return nil
     }

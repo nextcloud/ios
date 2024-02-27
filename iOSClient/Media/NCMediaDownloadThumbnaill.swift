@@ -28,15 +28,15 @@ import Queuer
 class NCMediaDownloadThumbnaill: ConcurrentOperation {
 
     var metadata: tableMetadata
-    var collectionView: UICollectionView?
+    var media: NCMedia
     var fileNamePath: String
     var fileNamePreviewLocalPath: String
     var fileNameIconLocalPath: String
     let utilityFileSystem = NCUtilityFileSystem()
 
-    init(metadata: tableMetadata, collectionView: UICollectionView?) {
+    init(metadata: tableMetadata, media: NCMedia) {
         self.metadata = tableMetadata.init(value: metadata)
-        self.collectionView = collectionView
+        self.media = media
         self.fileNamePath = utilityFileSystem.getFileNamePath(metadata.fileName, serverUrl: metadata.serverUrl, urlBase: metadata.urlBase, userId: metadata.userId)
         self.fileNamePreviewLocalPath = utilityFileSystem.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)
         self.fileNameIconLocalPath = utilityFileSystem.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)
@@ -62,7 +62,7 @@ class NCMediaDownloadThumbnaill: ConcurrentOperation {
             if error == .success, let image = imagePreview {
                 NCManageDatabase.shared.setMetadataEtagResource(ocId: self.metadata.ocId, etagResource: etag)
                 DispatchQueue.main.async {
-                    if let visibleCells = self.collectionView?.indexPathsForVisibleItems.sorted(by: { $0.row < $1.row }).compactMap({ self.collectionView?.cellForItem(at: $0) }) {
+                    if let visibleCells = self.media.collectionView?.indexPathsForVisibleItems.sorted(by: { $0.row < $1.row }).compactMap({ self.media.collectionView?.cellForItem(at: $0) }) {
                         for case let cell as NCGridMediaCell in visibleCells {
                             if cell.fileObjectId == self.metadata.ocId, let filePreviewImageView = cell.filePreviewImageView {
                                 UIView.transition(with: filePreviewImageView,
@@ -85,9 +85,7 @@ class NCMediaDownloadThumbnaill: ConcurrentOperation {
         super.finish(success: success)
 
         if NCNetworking.shared.downloadThumbnailQueue.operationCount == 0 {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                self.collectionView?.reloadData()
-            }
+            self.media.collectionViewReloadData()
         }
         print("Download Thumbnail in queue \(NCNetworking.shared.downloadThumbnailQueue.operationCount)")
     }
