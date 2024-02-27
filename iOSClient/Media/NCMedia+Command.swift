@@ -80,20 +80,20 @@ extension NCMedia {
     }
 
     func createMenu() {
-        var itemForLine = NCKeychain().mediaItemForLine
-        let layout = NCKeychain().mediaLayout
-        let layoutTitle = (layout == "mediaLayoutDynamic") ? NSLocalizedString("_mediaLayoutGrid_", comment: "") : NSLocalizedString("_mediaLayoutDynamic_", comment: "")
-        let layoutImage = (layout == "mediaLayoutDynamic") ? UIImage(systemName: "square.grid.3x3") : UIImage(systemName: "rectangle.grid.3x2")
+        var columnCount = NCKeychain().mediaColumnCount
+        let layout = NCKeychain().mediaTypeLayout
+        let layoutTitle = (layout == NCGlobal.shared.mediaLayoutRatio) ? NSLocalizedString("_media_square_", comment: "") : NSLocalizedString("_media_ratio_", comment: "")
+        let layoutImage = (layout == NCGlobal.shared.mediaLayoutRatio) ? UIImage(systemName: "square.grid.3x3") : UIImage(systemName: "rectangle.grid.3x2")
 
         if UIDevice.current.userInterfaceIdiom == .phone,
            (UIDevice.current.orientation == .landscapeLeft || UIDevice.current.orientation == .landscapeRight) {
-            itemForLine += 2
+            columnCount += 2
         }
 
-        if CGFloat(itemForLine) >= maxImageGrid - 1 {
+        if CGFloat(columnCount) >= maxImageGrid - 1 {
             self.attributesZoomIn = []
             self.attributesZoomOut = .disabled
-        } else if itemForLine <= 1 {
+        } else if columnCount <= 1 {
             self.attributesZoomIn = .disabled
             self.attributesZoomOut = []
         } else {
@@ -119,27 +119,27 @@ extension NCMedia {
             }
         ])
         let viewLayoutMenu = UIAction(title: layoutTitle, image: layoutImage) { _ in
-            if layout == "mediaLayoutDynamic" {
-                NCKeychain().mediaLayout = "mediaLayoutGrid"
+            if layout == NCGlobal.shared.mediaLayoutRatio {
+                NCKeychain().mediaTypeLayout = NCGlobal.shared.mediaLayoutSquare
             } else {
-                NCKeychain().mediaLayout = "mediaLayoutDynamic"
+                NCKeychain().mediaTypeLayout = NCGlobal.shared.mediaLayoutRatio
             }
-            self.selectLayout()
             self.createMenu()
+            self.collectionViewReloadData()
         }
 
         let zoomViewMediaFolder = UIMenu(title: "", options: .displayInline, children: [
             UIMenu(title: NSLocalizedString("_zoom_", comment: ""), children: [
                 UIAction(title: NSLocalizedString("_zoom_out_", comment: ""), image: UIImage(systemName: "minus.magnifyingglass"), attributes: self.attributesZoomOut) { _ in
                     UIView.animate(withDuration: 0.0, animations: {
-                        NCKeychain().mediaItemForLine = itemForLine + 1
+                        NCKeychain().mediaColumnCount = columnCount + 1
                         self.createMenu()
                         self.collectionViewReloadData()
                     })
                 },
                 UIAction(title: NSLocalizedString("_zoom_in_", comment: ""), image: UIImage(systemName: "plus.magnifyingglass"), attributes: self.attributesZoomIn) { _ in
                     UIView.animate(withDuration: 0.0, animations: {
-                        NCKeychain().mediaItemForLine = itemForLine - 1
+                        NCKeychain().mediaColumnCount = columnCount - 1
                         self.createMenu()
                         self.collectionViewReloadData()
                     })

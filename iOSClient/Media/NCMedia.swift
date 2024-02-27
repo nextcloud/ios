@@ -77,7 +77,11 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
         collectionView.backgroundColor = .systemBackground
         collectionView.prefetchDataSource = self
 
-        selectLayout()
+        let layout = NCMediaWaterfallLayout()
+        layout.sectionInset = UIEdgeInsets(top: 0, left: 2, bottom: 0, right: 2)
+        layout.mediaViewController = self
+        collectionView.collectionViewLayout = layout
+
         emptyDataSet = NCEmptyDataSet(view: collectionView, offset: 0, delegate: self)
 
         tabBarSelect = NCMediaSelectTabBar(tabBarController: self.tabBarController, delegate: self)
@@ -193,23 +197,6 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
         timerSearchNewMedia = Timer.scheduledTimer(timeInterval: timeIntervalSearchNewMedia, target: self, selector: #selector(searchMediaUI), userInfo: nil, repeats: false)
     }
 
-    // MARK: -
-
-    func selectLayout() {
-        let media = NCKeychain().mediaLayout
-        if media == NCGlobal.shared.mediaLayoutDynamic {
-            let layout = NCMediaWaterfallLayout()
-            layout.sectionInset = UIEdgeInsets(top: 0, left: 2, bottom: 0, right: 2)
-            layout.mediaViewController = self
-            collectionView.collectionViewLayout = layout
-        } else if media == NCGlobal.shared.mediaLayoutGrid {
-            let layout = NCMediaGridLayout()
-            layout.sectionHeadersPinToVisibleBounds = true
-            layout.mediaViewController = self
-            collectionView.collectionViewLayout = layout
-        }
-    }
-
     // MARK: - NotificationCenter
 
     @objc func deleteFile(_ notification: NSNotification) {
@@ -258,10 +245,10 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
         return nil
     }
 
-    func buildMediaPhotoVideo(itemForLine: Int) {
+    func buildMediaPhotoVideo(columnCount: Int) {
         var pointSize: CGFloat = 0
 
-        switch itemForLine {
+        switch columnCount {
         case 0...1: pointSize = 60
         case 2...3: pointSize = 30
         case 4...5: pointSize = 25
@@ -444,15 +431,17 @@ extension NCMedia: UICollectionViewDelegateFlowLayout {
 // MARK: -
 
 extension NCMedia: NCMediaWaterfallLayoutDelegate {
-    func collectionView(_ collectionView: UICollectionView, layout: UICollectionViewLayout, sizeForItemAtIndexPath indexPath: NSIndexPath, columnCount: Int) -> CGSize {
+    func collectionView(_ collectionView: UICollectionView, layout: UICollectionViewLayout, sizeForItemAtIndexPath indexPath: NSIndexPath, columnCount: Int, mediaLayout: String) -> CGSize {
         let size = CGSize(width: collectionView.frame.width / CGFloat(columnCount), height: collectionView.frame.width / CGFloat(columnCount))
-        guard let metadatas = self.metadatas,
-              let metadata = metadatas[indexPath.row] else { return size }
+        if mediaLayout == NCGlobal.shared.mediaLayoutRatio {
+            guard let metadatas = self.metadatas,
+                  let metadata = metadatas[indexPath.row] else { return size }
 
-        if metadata.imageSize != CGSize.zero {
-             return metadata.imageSize
-        } else if let size = imageCache.getMediaSize(ocId: metadata.ocId, etag: metadata.etag) {
-            return size
+            if metadata.imageSize != CGSize.zero {
+                return metadata.imageSize
+            } else if let size = imageCache.getMediaSize(ocId: metadata.ocId, etag: metadata.etag) {
+                return size
+            }
         }
         return size
     }

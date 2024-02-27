@@ -969,8 +969,8 @@
 "_selected_photo_"          = "selected photo";
 "_selected_photos_"         = "selected photos";
 "_delete_selected_photos_"  = "Delete selected photos";
-"_mediaLayoutGrid_"         = "Grid layout";
-"_mediaLayoutDynamic_"      = "Dynamic layout";
+"_media_square_"            = "Square photo grid";
+"_media_ratio_"             = "Aspect ratio grid";
 
 // Video
 "_select_trace_"            = "Select the trace";

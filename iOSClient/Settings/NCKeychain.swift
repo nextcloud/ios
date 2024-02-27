@@ -279,27 +279,27 @@ import KeychainAccess
         }
     }
 
-    var mediaItemForLine: Int {
+    var mediaColumnCount: Int {
         get {
-            if let value = try? keychain.get("itemForLine"), let result = Int(value) {
+            if let value = try? keychain.get("mediaColumnCount"), let result = Int(value) {
                 return result
             }
             return 3
         }
         set {
-            keychain["itemForLine"] = String(newValue)
+            keychain["mediaColumnCount"] = String(newValue)
         }
     }
 
-    var mediaLayout: String {
+    var mediaTypeLayout: String {
         get {
-            if let value = try? keychain.get("mediaLayout") {
+            if let value = try? keychain.get("mediaTypeLayout") {
                 return value
             }
-            return NCGlobal.shared.mediaLayoutDynamic
+            return NCGlobal.shared.mediaLayoutRatio
         }
         set {
-            keychain["mediaLayout"] = String(newValue)
+            keychain["mediaTypeLayout"] = String(newValue)
         }
     }
 

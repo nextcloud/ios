@@ -25,7 +25,7 @@ public let collectionViewWaterfallElementKindSectionHeader = "CollectionViewWate
 public let collectionViewWaterfallElementKindSectionFooter = "CollectionViewWaterfallElementKindSectionFooter"
 
 protocol NCMediaWaterfallLayoutDelegate: UICollectionViewDelegate {
-    func collectionView(_ collectionView: UICollectionView, layout: UICollectionViewLayout, sizeForItemAtIndexPath indexPath: NSIndexPath, columnCount: Int) -> CGSize
+    func collectionView(_ collectionView: UICollectionView, layout: UICollectionViewLayout, sizeForItemAtIndexPath indexPath: NSIndexPath, columnCount: Int, mediaLayout: String) -> CGSize
 }
 
 public class NCMediaWaterfallLayout: UICollectionViewLayout {
@@ -76,6 +76,7 @@ public class NCMediaWaterfallLayout: UICollectionViewLayout {
         }
     }
     var mediaViewController: NCMedia?
+    var mediaLayout = ""
 
     public override var collectionViewContentSize: CGSize {
         let numberOfSections = collectionView?.numberOfSections
@@ -108,8 +109,9 @@ public class NCMediaWaterfallLayout: UICollectionViewLayout {
               let collectionView = collectionView,
               let delegate = delegate else { return }
 
-        columnCount = NCKeychain().mediaItemForLine
-        mediaViewController?.buildMediaPhotoVideo(itemForLine: columnCount)
+        mediaLayout = NCKeychain().mediaTypeLayout
+        columnCount = NCKeychain().mediaColumnCount
+        mediaViewController?.buildMediaPhotoVideo(columnCount: columnCount)
         if UIDevice.current.userInterfaceIdiom == .phone,
            (UIDevice.current.orientation == .landscapeLeft || UIDevice.current.orientation == .landscapeRight) {
             columnCount += 2
@@ -171,7 +173,7 @@ public class NCMediaWaterfallLayout: UICollectionViewLayout {
 
                 let xOffset = Float(sectionInset.left) + Float(itemWidth + minimumColumnSpacing) * Float(columnIndex)
                 let yOffset = columnHeights[columnIndex]
-                let itemSize = delegate.collectionView(collectionView, layout: self, sizeForItemAtIndexPath: indexPath, columnCount: self.columnCount)
+                let itemSize = delegate.collectionView(collectionView, layout: self, sizeForItemAtIndexPath: indexPath, columnCount: self.columnCount, mediaLayout: self.mediaLayout)
                 var itemHeight: Float = 0.0
                 if itemSize.height > 0 && itemSize.width > 0 {
                     itemHeight = Float(itemSize.height) * itemWidth / Float(itemSize.width)

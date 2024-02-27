@@ -713,7 +713,6 @@
 		F7BB7E4727A18C56009B9F29 /* Parchment in Frameworks */ = {isa = PBXBuildFile; productRef = F7BB7E4627A18C56009B9F29 /* Parchment */; };
 		F7BC287E26663F6C004D46C5 /* NCViewCertificateDetails.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7BC287D26663F6C004D46C5 /* NCViewCertificateDetails.storyboard */; };
 		F7BC288026663F85004D46C5 /* NCViewCertificateDetails.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7BC287F26663F85004D46C5 /* NCViewCertificateDetails.swift */; };
-		F7BD50312B65216300D5AEF9 /* NCMediaGridLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7BD50302B65216300D5AEF9 /* NCMediaGridLayout.swift */; };
 		F7BD71E62636EAFC00643C34 /* NCNetworkingE2EE.swift in Sources */ = {isa = PBXBuildFile; fileRef = F785EE9C246196DF00B3F945 /* NCNetworkingE2EE.swift */; };
 		F7BF9D822934CA21009EE9A6 /* NCManageDatabase+LayoutForView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7BF9D812934CA21009EE9A6 /* NCManageDatabase+LayoutForView.swift */; };
 		F7BF9D832934CA21009EE9A6 /* NCManageDatabase+LayoutForView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7BF9D812934CA21009EE9A6 /* NCManageDatabase+LayoutForView.swift */; };
@@ -1391,7 +1390,6 @@
 		F7BB04851FD58ACB00BBFD2A /* cs-CZ */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "cs-CZ"; path = "cs-CZ.lproj/Localizable.strings"; sourceTree = "<group>"; };
 		F7BC287D26663F6C004D46C5 /* NCViewCertificateDetails.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = NCViewCertificateDetails.storyboard; sourceTree = "<group>"; };
 		F7BC287F26663F85004D46C5 /* NCViewCertificateDetails.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCViewCertificateDetails.swift; sourceTree = "<group>"; };
-		F7BD50302B65216300D5AEF9 /* NCMediaGridLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCMediaGridLayout.swift; sourceTree = "<group>"; };
 		F7BE7C25290AC8C9002ABB61 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Intent.strings; sourceTree = "<group>"; };
 		F7BE7C27290ADEFD002ABB61 /* eu */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = eu; path = eu.lproj/Intent.strings; sourceTree = "<group>"; };
 		F7BE7C29290ADEFD002ABB61 /* ca */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ca; path = ca.lproj/Intent.strings; sourceTree = "<group>"; };
@@ -2542,7 +2540,6 @@
 				F78B87E62B62527100C65ADC /* NCMediaDataSource.swift */,
 				F78B87E82B62550800C65ADC /* NCMediaDownloadThumbnaill.swift */,
 				F755CB3F2B8CB13C00CE27E9 /* NCMediaWaterfallLayout.swift */,
-				F7BD50302B65216300D5AEF9 /* NCMediaGridLayout.swift */,
 				F741C2232B6B9FD600E849BB /* NCMediaSelectTabBar.swift */,
 			);
 			path = Media;
@@ -4001,7 +3998,6 @@
 				F72944F22A84246400246839 /* NCEndToEndMetadataV20.swift in Sources */,
 				F70BFC7420E0FA7D00C67599 /* NCUtility.swift in Sources */,
 				F79EDAA526B004980007D134 /* NCPlayer.swift in Sources */,
-				F7BD50312B65216300D5AEF9 /* NCMediaGridLayout.swift in Sources */,
 				F7C1EEA525053A9C00866ACC /* NCDataSource.swift in Sources */,
 				F713FF002472764100214AF6 /* UIImage+animatedGIF.m in Sources */,
 				AFCE353527E4ED5900FEA6C2 /* DateFormatter+Extension.swift in Sources */,
