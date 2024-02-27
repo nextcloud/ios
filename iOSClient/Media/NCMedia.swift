@@ -118,6 +118,13 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
             } else {
                 self.activeAccount = tableAccount()
             }
+            if let metadatas = self.metadatas,
+               let metadata = metadatas.first {
+                if metadata.account != self.activeAccount.account {
+                    self.metadatas = nil
+                    self.self.collectionView.reloadData()
+                }
+            }
         }
 
         NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterCreateMediaCacheEnded), object: nil, queue: nil) { _ in
