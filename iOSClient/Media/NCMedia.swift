@@ -77,7 +77,7 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
         collectionView.backgroundColor = .systemBackground
         collectionView.prefetchDataSource = self
 
-        let layout = NCMediaWaterfallLayout()
+        let layout = NCMediaLayout()
         layout.sectionInset = UIEdgeInsets(top: 0, left: 2, bottom: 0, right: 2)
         layout.mediaViewController = self
         collectionView.collectionViewLayout = layout
@@ -432,7 +432,7 @@ extension NCMedia: UICollectionViewDelegateFlowLayout {
 
 // MARK: -
 
-extension NCMedia: NCMediaWaterfallLayoutDelegate {
+extension NCMedia: NCMediaLayoutDelegate {
     func collectionView(_ collectionView: UICollectionView, layout: UICollectionViewLayout, sizeForItemAtIndexPath indexPath: NSIndexPath, columnCount: Int, mediaLayout: String) -> CGSize {
         let size = CGSize(width: collectionView.frame.width / CGFloat(columnCount), height: collectionView.frame.width / CGFloat(columnCount))
         if mediaLayout == NCGlobal.shared.mediaLayoutRatio {
