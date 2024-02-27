@@ -58,7 +58,7 @@ class NCNetworkingE2EE: NSObject {
         }
     }
 
-    public func getMetadata(fileId: String, e2eToken: String?) async -> (account: String, e2eMetadata: String?, signature: String?, data: Data?, error: NKError) {
+    func getMetadata(fileId: String, e2eToken: String?) async -> (account: String, e2eMetadata: String?, signature: String?, data: Data?, error: NKError) {
         await withUnsafeContinuation({ continuation in
             getMetadata(fileId: fileId, e2eToken: e2eToken) { account, e2eMetadata, signature, data, error in
                 continuation.resume(returning: (account: account, e2eMetadata: e2eMetadata, signature: signature, data: data, error: error))
