@@ -106,10 +106,10 @@ extension NCMedia {
         }
     }
 
-    private func searchMedia(lessDate: Date, greaterDate: Date, limit: Int = 300, timeout: TimeInterval = 120) async -> (account: String, lessDate: Date?, greaterDate: Date?, metadatasCount: Int, isChanged: Bool, error: NKError) {
+    private func searchMedia(lessDate: Date, greaterDate: Date, limit: Int = 300, timeout: TimeInterval = 120) async -> (lessDate: Date?, greaterDate: Date?, metadatasCount: Int, isChanged: Bool, error: NKError) {
 
         guard let mediaPath = NCManageDatabase.shared.getActiveAccount()?.mediaPath else {
-            return(self.activeAccount.account, lessDate, greaterDate, 0, false, NKError())
+            return(lessDate, greaterDate, 0, false, NKError())
         }
         NextcloudKit.shared.nkCommonInstance.writeLog("Start searchMedia with lessDate \(lessDate), greaterDate \(greaterDate)")
         let options = NKRequestOptions(timeout: timeout, queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
@@ -117,7 +117,7 @@ extension NCMedia {
 
         if results.account != self.activeAccount.account {
             let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "User changed")
-            return(results.account, lessDate, greaterDate, 0, false, error)
+            return(lessDate, greaterDate, 0, false, error)
         } else if results.error == .success {
             let metadatas = await NCManageDatabase.shared.convertFilesToMetadatas(results.files, useMetadataFolder: false).metadatas
             var predicate = NSPredicate(format: "date > %@ AND date < %@", greaterDate as NSDate, lessDate as NSDate)
@@ -125,9 +125,9 @@ extension NCMedia {
             let resultsUpdate = NCManageDatabase.shared.updateMetadatas(metadatas, predicate: predicate)
             let isChaged: Bool = resultsUpdate.metadatasChanged || resultsUpdate.metadatasChangedCount != 0
             NextcloudKit.shared.nkCommonInstance.writeLog("End searchMedia UpdateMetadatas with metadatasChanged \(resultsUpdate.metadatasChanged), ChangedCount \(resultsUpdate.metadatasChangedCount)")
-            return(results.account, lessDate, greaterDate, metadatas.count, isChaged, results.error)
+            return(lessDate, greaterDate, metadatas.count, isChaged, results.error)
         } else {
-            return(results.account, lessDate, greaterDate, 0, false, results.error)
+            return(lessDate, greaterDate, 0, false, results.error)
         }
     }
 
