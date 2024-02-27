@@ -96,7 +96,7 @@ extension NCViewer {
         //
         // SHARE
         //
-        if !webView, metadata.canOpenIn {
+        if !webView, metadata.canShare {
             actions.append(.share(selectedMetadatas: [metadata], viewController: viewController))
         }
 

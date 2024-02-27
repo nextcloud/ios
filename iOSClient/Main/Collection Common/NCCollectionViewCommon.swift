@@ -1651,7 +1651,11 @@ extension NCCollectionViewCommon: SwipeCollectionViewCellDelegate {
         shareAction.image = .init(systemName: "square.and.arrow.up")
         shareAction.transitionDelegate = scaleTransition
 
-        return [favoriteAction, shareAction]
+        if metadata.canShare {
+            return [favoriteAction, shareAction]
+        } else {
+            return [favoriteAction]
+        }
     }
 
     func collectionView(_ collectionView: UICollectionView, editActionsOptionsForItemAt indexPath: IndexPath, for orientation: SwipeActionsOrientation) -> SwipeOptions {

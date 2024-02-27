@@ -259,7 +259,7 @@ extension NCCollectionViewCommon {
         //
         // SHARE
         //
-        if metadata.canOpenIn {
+        if metadata.canShare {
             actions.append(.share(selectedMetadatas: [metadata], viewController: self, order: 80))
         }
 
