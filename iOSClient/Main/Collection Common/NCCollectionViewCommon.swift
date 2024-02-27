@@ -1624,10 +1624,9 @@ extension NCCollectionViewCommon: EasyTipViewDelegate {
 
 extension NCCollectionViewCommon: SwipeCollectionViewCellDelegate {
     func collectionView(_ collectionView: UICollectionView, editActionsForItemAt indexPath: IndexPath, for orientation: SwipeCellKit.SwipeActionsOrientation) -> [SwipeCellKit.SwipeAction]? {
-        let scaleTransition = ScaleTransition(duration: 0.3, initialScale: 0.8, threshold: 0.8)
+        guard orientation == .right, let metadata = self.dataSource.cellForItemAt(indexPath: indexPath) else { return nil }
 
-        guard orientation == .right else { return nil }
-        guard let metadata = self.dataSource.cellForItemAt(indexPath: indexPath) else { return [] }
+        let scaleTransition = ScaleTransition(duration: 0.3, initialScale: 0.8, threshold: 0.8)
 
         let favoriteAction = SwipeAction(style: .default, title: NSLocalizedString(metadata.favorite ? "_unfavorite_" : "_favorite_", comment: "") ) { _, _ in
             NCNetworking.shared.favoriteMetadata(metadata) { error in
