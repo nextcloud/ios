@@ -166,7 +166,9 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
 
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         super.viewWillTransition(to: size, with: coordinator)
-        collectionView?.reloadData()
+        coordinator.animate(alongsideTransition: nil) { _ in
+            self.setTitleDate()
+        }
     }
 
     override var preferredStatusBarStyle: UIStatusBarStyle {
