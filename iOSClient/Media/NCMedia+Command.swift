@@ -156,7 +156,6 @@ extension NCMedia {
             alert.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { _ in
                 guard let stringUrl = alert.textFields?.first?.text, !stringUrl.isEmpty, let url = URL(string: stringUrl) else { return }
                 let fileName = url.lastPathComponent
-                let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
                 let metadata = NCManageDatabase.shared.createMetadata(account: self.activeAccount.account, user: self.activeAccount.user, userId: self.activeAccount.userId, fileName: fileName, fileNameView: fileName, ocId: NSUUID().uuidString, serverUrl: "", urlBase: self.activeAccount.urlBase, url: stringUrl, contentType: "")
                 NCManageDatabase.shared.addMetadata(metadata)
                 NCViewer().view(viewController: self, metadata: metadata, metadatas: [metadata], imageIcon: nil)
