@@ -627,7 +627,9 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                 }
 
                 let action = UIAction(title: name, image: image, state: account.active ? .on : .off) { _ in
-                    self.appDelegate.changeAccount(account.account, userProfile: nil)
+                    if !account.active {
+                        self.appDelegate.changeAccount(account.account, userProfile: nil)
+                    }
                 }
 
                 action.subtitle = url
