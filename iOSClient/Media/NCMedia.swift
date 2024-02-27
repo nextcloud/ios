@@ -160,6 +160,11 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationWillEnterForeground), object: nil)
     }
 
+    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        super.viewWillTransition(to: size, with: coordinator)
+        collectionView?.reloadData()
+    }
+
     override var preferredStatusBarStyle: UIStatusBarStyle {
         if self.traitCollection.userInterfaceStyle == .dark {
             return .lightContent
@@ -200,6 +205,7 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
         } else if media == NCGlobal.shared.mediaLayoutGrid {
             let layout = NCMediaGridLayout()
             layout.sectionHeadersPinToVisibleBounds = true
+            layout.mediaViewController = self
             collectionView.collectionViewLayout = layout
         }
     }

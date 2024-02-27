@@ -41,19 +41,19 @@ extension NCMedia {
     }
 
     func setTitleDate(_ offset: CGFloat = 10) {
-        titleDate.text = ""
+        titleDate?.text = ""
         if let metadata = metadatas?.first {
             let contentOffsetY = collectionView.contentOffset.y
             let top = insetsTop + view.safeAreaInsets.top + offset
             if insetsTop + view.safeAreaInsets.top + contentOffsetY < 10 {
-                titleDate.text = utility.getTitleFromDate(metadata.date as Date)
+                titleDate?.text = utility.getTitleFromDate(metadata.date as Date)
                 return
             }
             let point = CGPoint(x: offset, y: top + contentOffsetY)
             if let indexPath = collectionView.indexPathForItem(at: point) {
                 let cell = self.collectionView(collectionView, cellForItemAt: indexPath) as? NCGridMediaCell
                 if let date = cell?.fileDate {
-                    self.titleDate.text = utility.getTitleFromDate(date)
+                    self.titleDate?.text = utility.getTitleFromDate(date)
                 }
             } else {
                 if offset < 20 {
@@ -65,13 +65,13 @@ extension NCMedia {
 
     func setColor() {
         if isTop {
-            titleDate.textColor = .label
+            titleDate?.textColor = .label
             activityIndicator.color = .label
             selectOrCancelButton.setTitleColor(.label, for: .normal)
             menuButton.setImage(UIImage(systemName: "ellipsis")?.withTintColor(.label, renderingMode: .alwaysOriginal), for: .normal)
             gradientView.isHidden = true
         } else {
-            titleDate.textColor = .white
+            titleDate?.textColor = .white
             activityIndicator.color = .white
             selectOrCancelButton.setTitleColor(.white, for: .normal)
             menuButton.setImage(UIImage(systemName: "ellipsis")?.withTintColor(.white, renderingMode: .alwaysOriginal), for: .normal)

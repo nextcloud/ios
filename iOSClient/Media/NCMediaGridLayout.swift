@@ -25,10 +25,10 @@ import UIKit
 
 class NCMediaGridLayout: UICollectionViewFlowLayout {
     var marginLeftRight: CGFloat = 2
-    var itemForLine = NCKeychain().mediaItemForLine
+    var columnCount: Int = 0
+    var mediaViewController: NCMedia?
 
-    override init() {
-        super.init()
+    override func prepare() {
 
         sectionHeadersPinToVisibleBounds = false
         minimumInteritemSpacing = 0
@@ -36,17 +36,24 @@ class NCMediaGridLayout: UICollectionViewFlowLayout {
 
         self.scrollDirection = .vertical
         self.sectionInset = UIEdgeInsets(top: 0, left: marginLeftRight, bottom: 0, right: marginLeftRight)
-    }
 
-    required init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+        columnCount = NCKeychain().mediaItemForLine
+        mediaViewController?.buildMediaPhotoVideo(itemForLine: columnCount)
+        if UIDevice.current.userInterfaceIdiom == .phone,
+           (UIDevice.current.orientation == .landscapeLeft || UIDevice.current.orientation == .landscapeRight) {
+            columnCount += 2
+        }
     }
 
     override var itemSize: CGSize {
         get {
-            if let collectionView = collectionView {
-                let itemForLine = CGFloat(self.itemForLine)
-                let itemWidth: CGFloat = (collectionView.frame.width - marginLeftRight * 2 - marginLeftRight * (itemForLine - 1)) / itemForLine
+            if let collectionView = mediaViewController?.collectionView {
+                let itemForLine = CGFloat(self.columnCount)
+                var frameWidth = collectionView.frame.width
+                if (UIDevice.current.orientation == .landscapeLeft || UIDevice.current.orientation == .landscapeRight) {
+                    frameWidth = collectionView.frame.height
+                }
+                let itemWidth: CGFloat = (frameWidth - marginLeftRight * 2 - marginLeftRight * (itemForLine - 1)) / itemForLine
                 let itemHeight: CGFloat = itemWidth
                 return CGSize(width: itemWidth, height: itemHeight)
             }
