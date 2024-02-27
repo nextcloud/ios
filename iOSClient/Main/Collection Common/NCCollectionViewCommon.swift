@@ -635,7 +635,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                 return action
             }
 
-            let addAccountAction = UIAction(title: NSLocalizedString("_add_account_", comment: ""), image: .init(systemName: "plus")) { _ in
+            let addAccountAction = UIAction(title: NSLocalizedString("_add_account_", comment: ""), image: .init(systemName: "person.crop.circle.badge.plus")) { _ in
                 self.appDelegate.openLogin(viewController: self, selector: NCGlobal.shared.introLogin, openLoginWeb: false)
             }
 
