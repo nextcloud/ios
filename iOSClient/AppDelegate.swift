@@ -621,7 +621,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         }
 
         DispatchQueue.global().async {
-            NCImageCache.shared.createMediaCache(account: self.account, withCacheSize: false)
+            if NCManageDatabase.shared.getAccounts()?.count == 1 {
+                NCImageCache.shared.createMediaCache(account: self.account, withCacheSize: true)
+            } else {
+                NCImageCache.shared.createMediaCache(account: self.account, withCacheSize: false)
+            }
             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterChangeUser)
         }
     }

@@ -46,7 +46,6 @@ extension NCMedia {
         let firstMetadataDate = metadatas?.first?.date as? Date
         let lastMetadataDate = metadatas?.last?.date as? Date
         let countMetadatas = self.metadatas?.count ?? 0
-        let account = activeAccount.account
 
         guard loadingTask == nil, !isEditMode else {
             return
@@ -90,8 +89,7 @@ extension NCMedia {
                                 self.collectionViewReloadData()
                                 print("searchMediaUI: metadatacount 0")
                             } else if results.isChanged {
-                                self.metadatas = self.imageCache.getMediaMetadatas(account: account, predicate: self.getPredicate())
-                                self.collectionViewReloadData()
+                                self.reloadDataSource()
                                 print("searchMediaUI: changed")
                             } else {
                                 print("searchMediaUI: nothing")
