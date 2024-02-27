@@ -77,7 +77,6 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
         collectionView.backgroundColor = .systemBackground
         collectionView.prefetchDataSource = self
 
-        NCKeychain().mediaLayout = NCGlobal.shared.mediaLayoutDynamic
         selectLayout()
         emptyDataSet = NCEmptyDataSet(view: collectionView, offset: 0, delegate: self)
 

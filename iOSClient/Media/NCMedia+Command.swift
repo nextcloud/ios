@@ -81,6 +81,9 @@ extension NCMedia {
 
     func createMenu() {
         var itemForLine = NCKeychain().mediaItemForLine
+        let layout = NCKeychain().mediaLayout
+        let layoutTitle = (layout == "mediaLayoutDynamic") ? NSLocalizedString("_mediaLayoutGrid_", comment: "") : NSLocalizedString("_mediaLayoutDynamic_", comment: "")
+        let layoutImage = (layout == "mediaLayoutDynamic") ? UIImage(systemName: "square.grid.3x3") : UIImage(systemName: "rectangle.grid.3x2")
 
         if UIDevice.current.userInterfaceIdiom == .phone,
            (UIDevice.current.orientation == .landscapeLeft || UIDevice.current.orientation == .landscapeRight) {
@@ -98,7 +101,34 @@ extension NCMedia {
             self.attributesZoomOut = []
         }
 
-        let topAction = UIMenu(title: "", options: .displayInline, children: [
+        let viewFilterMenu = UIMenu(title: "", options: .displayInline, children: [
+            UIAction(title: NSLocalizedString("_media_viewimage_show_", comment: ""), image: UIImage(systemName: "photo")) { _ in
+                self.showOnlyImages = true
+                self.showOnlyVideos = false
+                self.reloadDataSource()
+            },
+            UIAction(title: NSLocalizedString("_media_viewvideo_show_", comment: ""), image: UIImage(systemName: "video")) { _ in
+                self.showOnlyImages = false
+                self.showOnlyVideos = true
+                self.reloadDataSource()
+            },
+            UIAction(title: NSLocalizedString("_media_show_all_", comment: ""), image: UIImage(systemName: "photo.on.rectangle")) { _ in
+                self.showOnlyImages = false
+                self.showOnlyVideos = false
+                self.reloadDataSource()
+            }
+        ])
+        let viewLayoutMenu = UIAction(title: layoutTitle, image: layoutImage) { _ in
+            if layout == "mediaLayoutDynamic" {
+                NCKeychain().mediaLayout = "mediaLayoutGrid"
+            } else {
+                NCKeychain().mediaLayout = "mediaLayoutDynamic"
+            }
+            self.selectLayout()
+            self.createMenu()
+        }
+
+        let zoomViewMediaFolder = UIMenu(title: "", options: .displayInline, children: [
             UIMenu(title: NSLocalizedString("_zoom_", comment: ""), children: [
                 UIAction(title: NSLocalizedString("_zoom_out_", comment: ""), image: UIImage(systemName: "minus.magnifyingglass"), attributes: self.attributesZoomOut) { _ in
                     UIView.animate(withDuration: 0.0, animations: {
@@ -115,23 +145,7 @@ extension NCMedia {
                     })
                 }
             ]),
-            UIMenu(title: NSLocalizedString("_media_view_options_", comment: ""), children: [
-                UIAction(title: NSLocalizedString("_media_viewimage_show_", comment: ""), image: UIImage(systemName: "photo")) { _ in
-                    self.showOnlyImages = true
-                    self.showOnlyVideos = false
-                    self.reloadDataSource()
-                },
-                UIAction(title: NSLocalizedString("_media_viewvideo_show_", comment: ""), image: UIImage(systemName: "video")) { _ in
-                    self.showOnlyImages = false
-                    self.showOnlyVideos = true
-                    self.reloadDataSource()
-                },
-                UIAction(title: NSLocalizedString("_media_show_all_", comment: ""), image: UIImage(systemName: "photo.on.rectangle")) { _ in
-                    self.showOnlyImages = false
-                    self.showOnlyVideos = false
-                    self.reloadDataSource()
-                }
-            ]),
+            UIMenu(title: NSLocalizedString("_media_view_options_", comment: ""), children: [viewFilterMenu, viewLayoutMenu]),
             UIAction(title: NSLocalizedString("_select_media_folder_", comment: ""), image: UIImage(systemName: "folder"), handler: { _ in
                 guard let navigationController = UIStoryboard(name: "NCSelect", bundle: nil).instantiateInitialViewController() as? UINavigationController,
                       let viewController = navigationController.topViewController as? NCSelect else { return }
@@ -163,7 +177,7 @@ extension NCMedia {
             self.present(alert, animated: true)
         }
 
-        menuButton.menu = UIMenu(title: "", children: [topAction, playFile, playURL])
+        menuButton.menu = UIMenu(title: "", children: [zoomViewMediaFolder, playFile, playURL])
     }
 }
 
