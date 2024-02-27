@@ -44,9 +44,9 @@ class NCNetworkingE2EE: NSObject {
         return NKRequestOptions(version: version)
     }
 
-    //MARK: -
+    // MARK: -
 
-    func getMetadata(fileId: String, 
+    func getMetadata(fileId: String,
                      e2eToken: String?,
                      completion: @escaping (_ account: String, _ e2eMetadata: String?, _ signature: String?, _ data: Data?, _ error: NKError) -> Void) {
 
@@ -63,7 +63,7 @@ class NCNetworkingE2EE: NSObject {
         }
     }
 
-    func getMetadata(fileId: String, 
+    func getMetadata(fileId: String,
                      e2eToken: String?) async -> (account: String, e2eMetadata: String?, signature: String?, data: Data?, error: NKError) {
 
         await withUnsafeContinuation({ continuation in
@@ -73,9 +73,9 @@ class NCNetworkingE2EE: NSObject {
         })
     }
 
-    //MARK: -
+    // MARK: -
 
-    func uploadMetadata(account: String, 
+    func uploadMetadata(account: String,
                         serverUrl: String,
                         userId: String,
                         addUserId: String? = nil,
@@ -169,7 +169,7 @@ class NCNetworkingE2EE: NSObject {
         return NKError()
     }
 
-    //MARK: -
+    // MARK: -
 
     func downloadMetadata(account: String,
                           serverUrl: String,
@@ -193,9 +193,9 @@ class NCNetworkingE2EE: NSObject {
         return NKError()
     }
 
-    //MARK: -
+    // MARK: -
 
-    func lock(account: String, 
+    func lock(account: String,
               serverUrl: String) async -> (fileId: String?, e2eToken: String?, error: NKError) {
 
         var e2eToken: String?
