@@ -82,6 +82,10 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     var emptyTitle: String = ""
     var emptyDescription: String = ""
 
+    private var showDescription: Bool {
+        !headerRichWorkspaceDisable && NCKeychain().showDescription
+    }
+
     // MARK: - View Life Cycle
 
     required init?(coder aDecoder: NSCoder) {
@@ -1560,7 +1564,7 @@ extension NCCollectionViewCommon: UICollectionViewDelegateFlowLayout {
 
         var headerRichWorkspace: CGFloat = 0
 
-        if let richWorkspaceText = richWorkspaceText, !headerRichWorkspaceDisable {
+        if let richWorkspaceText = richWorkspaceText, showDescription {
             let trimmed = richWorkspaceText.trimmingCharacters(in: .whitespaces)
             if !trimmed.isEmpty && !isSearchingMode {
                 headerRichWorkspace = UIScreen.main.bounds.size.height / 6
@@ -1879,12 +1883,21 @@ extension NCCollectionViewCommon: NCSelectableNavigationView, NCCollectionViewCo
             self.saveLayout(layoutForView)
         }
 
-        let foldersSubmenu = UIMenu(title: "", options: .displayInline, children: [foldersOnTop])
+        let showDescriptionKeychain = NCKeychain().showDescription
+
+        let showDescription = UIAction(title: NSLocalizedString("_show_description_", comment: ""), image: UIImage(systemName: "list.dash.header.rectangle"), attributes: richWorkspaceText == nil ? .disabled : [], state: showDescriptionKeychain && richWorkspaceText != nil ? .on : .off) { _ in
+            NCKeychain().showDescription = !showDescriptionKeychain
+            self.collectionView.reloadData()
+        }
+
+        showDescription.subtitle = richWorkspaceText == nil ? NSLocalizedString("_no_description_available_", comment: "") : ""
+
+        let additionalSubmenu = UIMenu(title: "", options: .displayInline, children: [foldersOnTop, showDescription])
 
         if layoutKey == NCGlobal.shared.layoutViewRecent {
             return [select]
         } else {
-            return [select, viewStyleSubmenu, sortSubmenu, foldersSubmenu]
+            return [select, viewStyleSubmenu, sortSubmenu, additionalSubmenu]
         }
     }
 }

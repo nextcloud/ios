@@ -562,6 +562,8 @@
 "_file_saved_cameraroll_"       = "File saved in photo album";
 "_directory_on_top_yes_"        = "✓ Folders on top";
 "_directory_on_top_no_"         = "Folders on top";
+"_show_description_"            = "Show description";
+"_no_description_available_"    = "No description avilable for this folder";
 "_folder_automatic_upload_"     = "Folder for \"Auto upload\"";
 "_search_no_record_found_"      = "No result";
 "_search_in_progress_"          = "Search in progress …";

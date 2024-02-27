@@ -30,6 +30,17 @@ class NCFiles: NCCollectionViewCommon {
     internal var fileNameBlink: String?
     internal var fileNameOpen: String?
 
+////    override var headerRichWorkspaceDisable: Bool {
+////        get {
+////            return !NCKeychain().showDescription
+////        }
+////        set { }
+////    }
+//
+//    var test: Bool {
+//        return !NCKeychain().showDescription
+//    }
+
     // MARK: - View Life Cycle
 
     required init?(coder aDecoder: NSCoder) {

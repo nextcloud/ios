@@ -28,6 +28,18 @@ import KeychainAccess
 
     let keychain = Keychain(service: "com.nextcloud.keychain")
 
+    var showDescription: Bool {
+        get {
+            if let value = try? keychain.get("showDescription"), let result = Bool(value) {
+                return result
+            }
+            return true
+        }
+        set {
+            keychain["showDescription"] = String(newValue)
+        }
+    }
+
     var typeFilterScanDocument: NCGlobal.TypeFilterScanDocument {
         get {
             if let rawValue = try? keychain.get("ScanDocumentTypeFilter"), let value = NCGlobal.TypeFilterScanDocument(rawValue: rawValue) {
@@ -332,20 +344,6 @@ import KeychainAccess
 
     // MARK: -
 
-    private func migrate(key: String) {
-        let keychainOLD = Keychain(service: "Crypto Cloud")
-        if let value = keychainOLD[key], !value.isEmpty {
-            keychain[key] = value
-            keychainOLD[key] = nil
-        }
-    }
-
-    @objc func removeAll() {
-        try? keychain.removeAll()
-    }
-
-    // MARK: -
-
     @objc func getPassword(account: String) -> String {
         let key = "password" + account
         migrate(key: key)
@@ -526,5 +524,19 @@ import KeychainAccess
         setPushNotificationToken(account: account, token: nil)
         setPushNotificationDeviceIdentifier(account: account, deviceIdentifier: nil)
         setPushNotificationDeviceIdentifierSignature(account: account, deviceIdentifierSignature: nil)
+    }
+
+    // MARK: -
+
+    private func migrate(key: String) {
+        let keychainOLD = Keychain(service: "Crypto Cloud")
+        if let value = keychainOLD[key], !value.isEmpty {
+            keychain[key] = value
+            keychainOLD[key] = nil
+        }
+    }
+
+    @objc func removeAll() {
+        try? keychain.removeAll()
     }
 }
