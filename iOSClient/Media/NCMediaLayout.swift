@@ -1,5 +1,5 @@
 //
-//  NCMediaWaterfallLayout.swift
+//  NCMediaLayout.swift
 //
 //  Created by Marino Faggiana on 26/02/24.
 //  Based on CHTCollectionViewWaterfallLayout by Nelson Tai
@@ -21,14 +21,14 @@
 
 import UIKit
 
-public let collectionViewWaterfallElementKindSectionHeader = "CollectionViewWaterfallElementKindSectionHeader"
-public let collectionViewWaterfallElementKindSectionFooter = "CollectionViewWaterfallElementKindSectionFooter"
+public let collectionViewMediaElementKindSectionHeader = "collectionViewMediaElementKindSectionHeader"
+public let collectionViewMediaElementKindSectionFooter = "collectionViewMediaElementKindSectionFooter"
 
-protocol NCMediaWaterfallLayoutDelegate: UICollectionViewDelegate {
-    func collectionView(_ collectionView: UICollectionView, layout: UICollectionViewLayout, sizeForItemAtIndexPath indexPath: NSIndexPath, columnCount: Int) -> CGSize
+protocol NCMediaLayoutDelegate: UICollectionViewDelegate {
+    func collectionView(_ collectionView: UICollectionView, layout: UICollectionViewLayout, sizeForItemAtIndexPath indexPath: NSIndexPath, columnCount: Int, mediaLayout: String) -> CGSize
 }
 
-public class NCMediaWaterfallLayout: UICollectionViewLayout {
+public class NCMediaLayout: UICollectionViewLayout {
 
     // MARK: - Private constants
     /// How many items to be union into a single rectangle
@@ -76,6 +76,7 @@ public class NCMediaWaterfallLayout: UICollectionViewLayout {
         }
     }
     var mediaViewController: NCMedia?
+    var mediaLayout = ""
 
     public override var collectionViewContentSize: CGSize {
         let numberOfSections = collectionView?.numberOfSections
@@ -90,8 +91,8 @@ public class NCMediaWaterfallLayout: UICollectionViewLayout {
     }
 
     // MARK: - Private Properties
-    private weak var delegate: NCMediaWaterfallLayoutDelegate? {
-        return collectionView?.delegate as? NCMediaWaterfallLayoutDelegate
+    private weak var delegate: NCMediaLayoutDelegate? {
+        return collectionView?.delegate as? NCMediaLayoutDelegate
     }
     private var columnHeights = [Float]()
     private var sectionItemAttributes = [[UICollectionViewLayoutAttributes]]()
@@ -108,8 +109,9 @@ public class NCMediaWaterfallLayout: UICollectionViewLayout {
               let collectionView = collectionView,
               let delegate = delegate else { return }
 
-        columnCount = NCKeychain().mediaItemForLine
-        mediaViewController?.buildMediaPhotoVideo(itemForLine: columnCount)
+        mediaLayout = NCKeychain().mediaTypeLayout
+        columnCount = NCKeychain().mediaColumnCount
+        mediaViewController?.buildMediaPhotoVideo(columnCount: columnCount)
         if UIDevice.current.userInterfaceIdiom == .phone,
            (UIDevice.current.orientation == .landscapeLeft || UIDevice.current.orientation == .landscapeRight) {
             columnCount += 2
@@ -144,7 +146,7 @@ public class NCMediaWaterfallLayout: UICollectionViewLayout {
             top += Float(headerInset.top)
 
             if headerHeight > 0 {
-                attributes = UICollectionViewLayoutAttributes(forSupplementaryViewOfKind: collectionViewWaterfallElementKindSectionHeader, with: NSIndexPath(item: 0, section: section) as IndexPath)
+                attributes = UICollectionViewLayoutAttributes(forSupplementaryViewOfKind: collectionViewMediaElementKindSectionHeader, with: NSIndexPath(item: 0, section: section) as IndexPath)
                 attributes.frame = CGRect(x: headerInset.left, y: CGFloat(top), width: collectionView.frame.size.width - (headerInset.left + headerInset.right), height: CGFloat(headerHeight))
 
                 headersAttribute[section] = attributes
@@ -171,7 +173,7 @@ public class NCMediaWaterfallLayout: UICollectionViewLayout {
 
                 let xOffset = Float(sectionInset.left) + Float(itemWidth + minimumColumnSpacing) * Float(columnIndex)
                 let yOffset = columnHeights[columnIndex]
-                let itemSize = delegate.collectionView(collectionView, layout: self, sizeForItemAtIndexPath: indexPath, columnCount: self.columnCount)
+                let itemSize = delegate.collectionView(collectionView, layout: self, sizeForItemAtIndexPath: indexPath, columnCount: self.columnCount, mediaLayout: self.mediaLayout)
                 var itemHeight: Float = 0.0
                 if itemSize.height > 0 && itemSize.width > 0 {
                     itemHeight = Float(itemSize.height) * itemWidth / Float(itemSize.width)
@@ -194,7 +196,7 @@ public class NCMediaWaterfallLayout: UICollectionViewLayout {
             top += Float(footerInset.top)
 
             if footerHeight > 0 {
-                attributes = UICollectionViewLayoutAttributes(forSupplementaryViewOfKind: collectionViewWaterfallElementKindSectionFooter, with: NSIndexPath(item: 0, section: section) as IndexPath)
+                attributes = UICollectionViewLayoutAttributes(forSupplementaryViewOfKind: collectionViewMediaElementKindSectionFooter, with: NSIndexPath(item: 0, section: section) as IndexPath)
                 attributes.frame = CGRect(x: footerInset.left, y: CGFloat(top), width: collectionView.frame.size.width - (footerInset.left + footerInset.right), height: CGFloat(footerHeight))
 
                 footersAttribute[section] = attributes
@@ -236,9 +238,9 @@ public class NCMediaWaterfallLayout: UICollectionViewLayout {
     public override func layoutAttributesForSupplementaryView(ofKind elementKind: String, at indexPath: IndexPath) -> UICollectionViewLayoutAttributes? {
         var attribute: UICollectionViewLayoutAttributes?
 
-        if elementKind == collectionViewWaterfallElementKindSectionHeader {
+        if elementKind == collectionViewMediaElementKindSectionHeader {
             attribute = headersAttribute[indexPath.section]
-        } else if elementKind == collectionViewWaterfallElementKindSectionFooter {
+        } else if elementKind == collectionViewMediaElementKindSectionFooter {
             attribute = footersAttribute[indexPath.section]
         }
 
@@ -283,7 +285,7 @@ public class NCMediaWaterfallLayout: UICollectionViewLayout {
 }
 
 // MARK: - Private Methods
-private extension NCMediaWaterfallLayout {
+private extension NCMediaLayout {
     func shortestColumnIndex() -> Int {
         var index: Int = 0
         var shortestHeight = MAXFLOAT

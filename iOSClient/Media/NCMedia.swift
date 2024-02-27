@@ -77,8 +77,11 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
         collectionView.backgroundColor = .systemBackground
         collectionView.prefetchDataSource = self
 
-        NCKeychain().mediaLayout = NCGlobal.shared.mediaLayoutDynamic
-        selectLayout()
+        let layout = NCMediaLayout()
+        layout.sectionInset = UIEdgeInsets(top: 0, left: 2, bottom: 0, right: 2)
+        layout.mediaViewController = self
+        collectionView.collectionViewLayout = layout
+
         emptyDataSet = NCEmptyDataSet(view: collectionView, offset: 0, delegate: self)
 
         tabBarSelect = NCMediaSelectTabBar(tabBarController: self.tabBarController, delegate: self)
@@ -161,6 +164,13 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationWillEnterForeground), object: nil)
     }
 
+    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        super.viewWillTransition(to: size, with: coordinator)
+        coordinator.animate(alongsideTransition: nil) { _ in
+            self.setTitleDate()
+        }
+    }
+
     override var preferredStatusBarStyle: UIStatusBarStyle {
         if self.traitCollection.userInterfaceStyle == .dark {
             return .lightContent
@@ -187,22 +197,6 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
         }
         timerSearchNewMedia?.invalidate()
         timerSearchNewMedia = Timer.scheduledTimer(timeInterval: timeIntervalSearchNewMedia, target: self, selector: #selector(searchMediaUI), userInfo: nil, repeats: false)
-    }
-
-    // MARK: -
-
-    func selectLayout() {
-        let media = NCKeychain().mediaLayout
-        if media == NCGlobal.shared.mediaLayoutDynamic {
-            let layout = NCMediaWaterfallLayout()
-            layout.sectionInset = UIEdgeInsets(top: 0, left: 2, bottom: 0, right: 2)
-            layout.mediaViewController = self
-            collectionView.collectionViewLayout = layout
-        } else if media == NCGlobal.shared.mediaLayoutGrid {
-            let layout = NCMediaGridLayout()
-            layout.sectionHeadersPinToVisibleBounds = true
-            collectionView.collectionViewLayout = layout
-        }
     }
 
     // MARK: - NotificationCenter
@@ -253,10 +247,10 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
         return nil
     }
 
-    func buildMediaPhotoVideo(itemForLine: Int) {
+    func buildMediaPhotoVideo(columnCount: Int) {
         var pointSize: CGFloat = 0
 
-        switch itemForLine {
+        switch columnCount {
         case 0...1: pointSize = 60
         case 2...3: pointSize = 30
         case 4...5: pointSize = 25
@@ -438,16 +432,18 @@ extension NCMedia: UICollectionViewDelegateFlowLayout {
 
 // MARK: -
 
-extension NCMedia: NCMediaWaterfallLayoutDelegate {
-    func collectionView(_ collectionView: UICollectionView, layout: UICollectionViewLayout, sizeForItemAtIndexPath indexPath: NSIndexPath, columnCount: Int) -> CGSize {
+extension NCMedia: NCMediaLayoutDelegate {
+    func collectionView(_ collectionView: UICollectionView, layout: UICollectionViewLayout, sizeForItemAtIndexPath indexPath: NSIndexPath, columnCount: Int, mediaLayout: String) -> CGSize {
         let size = CGSize(width: collectionView.frame.width / CGFloat(columnCount), height: collectionView.frame.width / CGFloat(columnCount))
-        guard let metadatas = self.metadatas,
-              let metadata = metadatas[indexPath.row] else { return size }
+        if mediaLayout == NCGlobal.shared.mediaLayoutRatio {
+            guard let metadatas = self.metadatas,
+                  let metadata = metadatas[indexPath.row] else { return size }
 
-        if metadata.imageSize != CGSize.zero {
-             return metadata.imageSize
-        } else if let size = imageCache.getMediaSize(ocId: metadata.ocId, etag: metadata.etag) {
-            return size
+            if metadata.imageSize != CGSize.zero {
+                return metadata.imageSize
+            } else if let size = imageCache.getMediaSize(ocId: metadata.ocId, etag: metadata.etag) {
+                return size
+            }
         }
         return size
     }

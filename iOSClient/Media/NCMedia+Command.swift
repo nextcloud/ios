@@ -41,19 +41,19 @@ extension NCMedia {
     }
 
     func setTitleDate(_ offset: CGFloat = 10) {
-        titleDate.text = ""
+        titleDate?.text = ""
         if let metadata = metadatas?.first {
             let contentOffsetY = collectionView.contentOffset.y
             let top = insetsTop + view.safeAreaInsets.top + offset
             if insetsTop + view.safeAreaInsets.top + contentOffsetY < 10 {
-                titleDate.text = utility.getTitleFromDate(metadata.date as Date)
+                titleDate?.text = utility.getTitleFromDate(metadata.date as Date)
                 return
             }
             let point = CGPoint(x: offset, y: top + contentOffsetY)
             if let indexPath = collectionView.indexPathForItem(at: point) {
                 let cell = self.collectionView(collectionView, cellForItemAt: indexPath) as? NCGridMediaCell
                 if let date = cell?.fileDate {
-                    self.titleDate.text = utility.getTitleFromDate(date)
+                    self.titleDate?.text = utility.getTitleFromDate(date)
                 }
             } else {
                 if offset < 20 {
@@ -65,13 +65,13 @@ extension NCMedia {
 
     func setColor() {
         if isTop {
-            titleDate.textColor = .label
+            titleDate?.textColor = .label
             activityIndicator.color = .label
             selectOrCancelButton.setTitleColor(.label, for: .normal)
             menuButton.setImage(UIImage(systemName: "ellipsis")?.withTintColor(.label, renderingMode: .alwaysOriginal), for: .normal)
             gradientView.isHidden = true
         } else {
-            titleDate.textColor = .white
+            titleDate?.textColor = .white
             activityIndicator.color = .white
             selectOrCancelButton.setTitleColor(.white, for: .normal)
             menuButton.setImage(UIImage(systemName: "ellipsis")?.withTintColor(.white, renderingMode: .alwaysOriginal), for: .normal)
@@ -80,17 +80,20 @@ extension NCMedia {
     }
 
     func createMenu() {
-        var itemForLine = NCKeychain().mediaItemForLine
+        var columnCount = NCKeychain().mediaColumnCount
+        let layout = NCKeychain().mediaTypeLayout
+        let layoutTitle = (layout == NCGlobal.shared.mediaLayoutRatio) ? NSLocalizedString("_media_square_", comment: "") : NSLocalizedString("_media_ratio_", comment: "")
+        let layoutImage = (layout == NCGlobal.shared.mediaLayoutRatio) ? UIImage(systemName: "square.grid.3x3") : UIImage(systemName: "rectangle.grid.3x2")
 
         if UIDevice.current.userInterfaceIdiom == .phone,
            (UIDevice.current.orientation == .landscapeLeft || UIDevice.current.orientation == .landscapeRight) {
-            itemForLine += 2
+            columnCount += 2
         }
 
-        if CGFloat(itemForLine) >= maxImageGrid - 1 {
+        if CGFloat(columnCount) >= maxImageGrid - 1 {
             self.attributesZoomIn = []
             self.attributesZoomOut = .disabled
-        } else if itemForLine <= 1 {
+        } else if columnCount <= 1 {
             self.attributesZoomIn = .disabled
             self.attributesZoomOut = []
         } else {
@@ -98,40 +101,51 @@ extension NCMedia {
             self.attributesZoomOut = []
         }
 
-        let topAction = UIMenu(title: "", options: .displayInline, children: [
+        let viewFilterMenu = UIMenu(title: "", options: .displayInline, children: [
+            UIAction(title: NSLocalizedString("_media_viewimage_show_", comment: ""), image: UIImage(systemName: "photo")) { _ in
+                self.showOnlyImages = true
+                self.showOnlyVideos = false
+                self.reloadDataSource()
+            },
+            UIAction(title: NSLocalizedString("_media_viewvideo_show_", comment: ""), image: UIImage(systemName: "video")) { _ in
+                self.showOnlyImages = false
+                self.showOnlyVideos = true
+                self.reloadDataSource()
+            },
+            UIAction(title: NSLocalizedString("_media_show_all_", comment: ""), image: UIImage(systemName: "photo.on.rectangle")) { _ in
+                self.showOnlyImages = false
+                self.showOnlyVideos = false
+                self.reloadDataSource()
+            }
+        ])
+        let viewLayoutMenu = UIAction(title: layoutTitle, image: layoutImage) { _ in
+            if layout == NCGlobal.shared.mediaLayoutRatio {
+                NCKeychain().mediaTypeLayout = NCGlobal.shared.mediaLayoutSquare
+            } else {
+                NCKeychain().mediaTypeLayout = NCGlobal.shared.mediaLayoutRatio
+            }
+            self.createMenu()
+            self.collectionViewReloadData()
+        }
+
+        let zoomViewMediaFolder = UIMenu(title: "", options: .displayInline, children: [
             UIMenu(title: NSLocalizedString("_zoom_", comment: ""), children: [
                 UIAction(title: NSLocalizedString("_zoom_out_", comment: ""), image: UIImage(systemName: "minus.magnifyingglass"), attributes: self.attributesZoomOut) { _ in
                     UIView.animate(withDuration: 0.0, animations: {
-                        NCKeychain().mediaItemForLine = itemForLine + 1
+                        NCKeychain().mediaColumnCount = columnCount + 1
                         self.createMenu()
                         self.collectionViewReloadData()
                     })
                 },
                 UIAction(title: NSLocalizedString("_zoom_in_", comment: ""), image: UIImage(systemName: "plus.magnifyingglass"), attributes: self.attributesZoomIn) { _ in
                     UIView.animate(withDuration: 0.0, animations: {
-                        NCKeychain().mediaItemForLine = itemForLine - 1
+                        NCKeychain().mediaColumnCount = columnCount - 1
                         self.createMenu()
                         self.collectionViewReloadData()
                     })
                 }
             ]),
-            UIMenu(title: NSLocalizedString("_media_view_options_", comment: ""), children: [
-                UIAction(title: NSLocalizedString("_media_viewimage_show_", comment: ""), image: UIImage(systemName: "photo")) { _ in
-                    self.showOnlyImages = true
-                    self.showOnlyVideos = false
-                    self.reloadDataSource()
-                },
-                UIAction(title: NSLocalizedString("_media_viewvideo_show_", comment: ""), image: UIImage(systemName: "video")) { _ in
-                    self.showOnlyImages = false
-                    self.showOnlyVideos = true
-                    self.reloadDataSource()
-                },
-                UIAction(title: NSLocalizedString("_media_show_all_", comment: ""), image: UIImage(systemName: "photo.on.rectangle")) { _ in
-                    self.showOnlyImages = false
-                    self.showOnlyVideos = false
-                    self.reloadDataSource()
-                }
-            ]),
+            UIMenu(title: NSLocalizedString("_media_view_options_", comment: ""), children: [viewFilterMenu, viewLayoutMenu]),
             UIAction(title: NSLocalizedString("_select_media_folder_", comment: ""), image: UIImage(systemName: "folder"), handler: { _ in
                 guard let navigationController = UIStoryboard(name: "NCSelect", bundle: nil).instantiateInitialViewController() as? UINavigationController,
                       let viewController = navigationController.topViewController as? NCSelect else { return }
@@ -163,7 +177,7 @@ extension NCMedia {
             self.present(alert, animated: true)
         }
 
-        menuButton.menu = UIMenu(title: "", children: [topAction, playFile, playURL])
+        menuButton.menu = UIMenu(title: "", children: [zoomViewMediaFolder, playFile, playURL])
     }
 }
 
