@@ -69,8 +69,12 @@ import RealmSwift
     override private init() {}
 
     func createMediaCache(account: String, withCacheSize: Bool) {
-
+        if createMediaCacheInProgress {
+            NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] ThumbnailLRUCache image process already in progress")
+            return
+        }
         createMediaCacheInProgress = true
+
         self.metadatasInfo.removeAll()
         self.metadatas = nil
         self.metadatas = getMediaMetadatas(account: account)
@@ -156,29 +160,7 @@ import RealmSwift
     }
 
     func setMediaImage(ocId: String, etag: String, image: UIImage, date: Date) {
-        var isMostRecentDate: Bool = false
-        var olderDate: Date = Date()
-        var olderKey: String = ""
-
-        if limit > cacheImage.count {
-            cacheImage.setValue(imageInfo(image: image, size: image.size, date: date), forKey: ocId + etag)
-        } else {
-            for key in cacheSize.allKeys {
-                if let cacheImageDate = cacheImage.value(forKey: key) {
-                    if !isMostRecentDate, cacheImageDate.date < date {
-                        isMostRecentDate = true
-                    }
-                    if cacheImageDate.date < olderDate {
-                        olderDate = cacheImageDate.date
-                        olderKey = key
-                    }
-                }
-            }
-            if isMostRecentDate {
-                cacheImage.removeValue(forKey: olderKey)
-                cacheImage.setValue(imageInfo(image: image, size: image.size, date: date), forKey: ocId + etag)
-            }
-        }
+        cacheImage.setValue(imageInfo(image: image, size: image.size, date: date), forKey: ocId + etag)
     }
 
     func getMediaImage(ocId: String, etag: String) -> UIImage? {
@@ -186,6 +168,10 @@ import RealmSwift
             return cache.image
         }
         return nil
+    }
+
+    func hasMediaImageEnoughSpace() -> Bool {
+        return limit > cacheImage.count
     }
 
     func setMediaSize(ocId: String, etag: String, size: CGSize) {
