@@ -45,6 +45,7 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
     let utility = NCUtility()
     let imageCache = NCImageCache.shared
     var metadatas: ThreadSafeArray<tableMetadata>?
+    let refreshControl = UIRefreshControl()
     var loadingTask: Task<Void, any Error>?
     var isTop: Bool = true
     var isEditMode = false
@@ -112,6 +113,12 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
         gradientView.layer.insertSublayer(gradient, at: 0)
 
         activeAccount = NCManageDatabase.shared.getActiveAccount() ?? tableAccount()
+
+        collectionView.refreshControl = refreshControl
+        refreshControl.action(for: .valueChanged) { _ in
+            self.reloadDataSource()
+            self.refreshControl.endRefreshing()
+        }
 
         NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeUser), object: nil, queue: nil) { _ in
             self.activeAccount = NCManageDatabase.shared.getActiveAccount() ?? tableAccount()
