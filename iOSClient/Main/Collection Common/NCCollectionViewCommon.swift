@@ -2056,18 +2056,19 @@ class NCCollectionViewDownloadThumbnail: ConcurrentOperation {
     }
 
     override func start() {
-
         guard !isCancelled else { return self.finish() }
 
         var etagResource: String?
+        let sizePreview = NCUtility().getSizePreview(width: metadata.width, height: metadata.height)
+
         if FileManager.default.fileExists(atPath: fileNameIconLocalPath) && FileManager.default.fileExists(atPath: fileNamePreviewLocalPath) {
             etagResource = metadata.etagResource
         }
 
         NextcloudKit.shared.downloadPreview(fileNamePathOrFileId: fileNamePath,
                                             fileNamePreviewLocalPath: fileNamePreviewLocalPath,
-                                            widthPreview: NCGlobal.shared.sizePreview,
-                                            heightPreview: NCGlobal.shared.sizePreview,
+                                            widthPreview: Int(sizePreview.width),
+                                            heightPreview: Int(sizePreview.height),
                                             fileNameIconLocalPath: fileNameIconLocalPath,
                                             sizeIcon: NCGlobal.shared.sizeIcon,
                                             etag: etagResource,
