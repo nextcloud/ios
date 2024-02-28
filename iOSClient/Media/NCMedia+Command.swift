@@ -183,6 +183,7 @@ extension NCMedia {
 
 extension NCMedia: NCMediaSelectTabBarDelegate {
     func delete() {
+        let selectOcId = self.selectOcId.map { $0 }
         if !selectOcId.isEmpty {
             let alertController = UIAlertController(
                 title: NSLocalizedString("_delete_selected_photos_", comment: ""),
@@ -193,7 +194,7 @@ extension NCMedia: NCMediaSelectTabBarDelegate {
                 Task {
                     var error = NKError()
                     var ocIds: [String] = []
-                    for ocId in self.selectOcId where error == .success {
+                    for ocId in selectOcId where error == .success {
                         if let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
                             error = await NCNetworking.shared.deleteMetadata(metadata, onlyLocalCache: false)
                             if error == .success {

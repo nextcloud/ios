@@ -46,6 +46,7 @@ import RealmSwift
     struct imageInfo {
         var image: UIImage?
         var size: CGSize?
+        var date: Date
     }
 
     private typealias ThumbnailImageLRUCache = LRUCache<String, imageInfo>
@@ -129,7 +130,7 @@ import RealmSwift
             autoreleasepool {
                 if let image = UIImage(contentsOfFile: file.path.path) {
                     if counter < limit {
-                        cacheImage.setValue(imageInfo(image: image, size: image.size), forKey: file.ocIdEtag)
+                        cacheImage.setValue(imageInfo(image: image, size: image.size, date: file.date), forKey: file.ocIdEtag)
                         totalSize = totalSize + Int64(file.fileSize)
                     }
                     cacheSize.setValue(image.size, forKey: file.ocIdEtag)
@@ -154,8 +155,30 @@ import RealmSwift
         return self.metadatas
     }
 
-    func setMediaImage(ocId: String, etag: String, image: UIImage) {
-        cacheImage.setValue(imageInfo(image: image, size: image.size), forKey: ocId + etag)
+    func setMediaImage(ocId: String, etag: String, image: UIImage, date: Date) {
+        var isMostRecentDate: Bool = false
+        var olderDate: Date = Date()
+        var olderKey: String = ""
+
+        if limit > cacheImage.count {
+            cacheImage.setValue(imageInfo(image: image, size: image.size, date: date), forKey: ocId + etag)
+        } else {
+            for key in cacheSize.allKeys {
+                if let cacheImageDate = cacheImage.value(forKey: key) {
+                    if !isMostRecentDate, cacheImageDate.date < date {
+                        isMostRecentDate = true
+                    }
+                    if cacheImageDate.date < olderDate {
+                        olderDate = cacheImageDate.date
+                        olderKey = key
+                    }
+                }
+            }
+            if isMostRecentDate {
+                cacheImage.removeValue(forKey: olderKey)
+                cacheImage.setValue(imageInfo(image: image, size: image.size, date: date), forKey: ocId + etag)
+            }
+        }
     }
 
     func getMediaImage(ocId: String, etag: String) -> UIImage? {
@@ -163,10 +186,6 @@ import RealmSwift
             return cache.image
         }
         return nil
-    }
-
-    func hasMediaImageEnoughSpace() -> Bool {
-        return limit > cacheImage.count
     }
 
     func setMediaSize(ocId: String, etag: String, size: CGSize) {

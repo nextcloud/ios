@@ -235,9 +235,7 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
         } else if FileManager().fileExists(atPath: utilityFileSystem.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)),
                   let image = UIImage(contentsOfFile: utilityFileSystem.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)) {
             imageCache.setMediaSize(ocId: metadata.ocId, etag: metadata.etag, size: image.size)
-            if imageCache.hasMediaImageEnoughSpace() {
-                imageCache.setMediaImage(ocId: metadata.ocId, etag: metadata.etag, image: image)
-            }
+            imageCache.setMediaImage(ocId: metadata.ocId, etag: metadata.etag, image: image, date: metadata.date as Date)
             return image
         } else if metadata.hasPreview && metadata.status == NCGlobal.shared.metadataStatusNormal,
                   (!utilityFileSystem.fileProviderStoragePreviewIconExists(metadata.ocId, etag: metadata.etag)),
@@ -330,11 +328,7 @@ extension NCMedia: UICollectionViewDataSourcePrefetching {
 extension NCMedia: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         var numberOfItemsInSection = 0
-
-        if let metadatas {
-            numberOfItemsInSection = metadatas.count
-        }
-
+        if let metadatas { numberOfItemsInSection = metadatas.count }
         if numberOfItemsInSection == 0 {
             selectOrCancelButton.isHidden = true
             menuButton.isHidden = false
