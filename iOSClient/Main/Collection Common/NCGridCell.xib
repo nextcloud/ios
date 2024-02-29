@@ -134,7 +134,7 @@
                 <outlet property="imageStatus" destination="a0p-rj-jnV" id="6Dg-tf-evd"/>
                 <outlet property="imageVisualEffect" destination="W0L-HY-al1" id="WDW-2d-Npa"/>
                 <outlet property="labelInfo" destination="2po-8g-XeS" id="FJ4-wI-9cW"/>
-                <outlet property="labelSize" destination="12P-pO-DHO" id="K6d-7r-FGh"/>
+                <outlet property="labelSubinfo" destination="12P-pO-DHO" id="K6d-7r-FGh"/>
                 <outlet property="labelTitle" destination="eU3-lY-fKr" id="0P7-yM-Asb"/>
                 <outlet property="progressView" destination="JQo-Vc-Ejk" id="cdf-7W-tao"/>
             </connections>

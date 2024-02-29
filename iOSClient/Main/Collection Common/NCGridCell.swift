@@ -32,7 +32,7 @@ class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
     @IBOutlet weak var imageLocal: UIImageView!
     @IBOutlet weak var labelTitle: UILabel!
     @IBOutlet weak var labelInfo: UILabel!
-    @IBOutlet weak var labelSize: UILabel!
+    @IBOutlet weak var labelSubinfo: UILabel!
     @IBOutlet weak var buttonMore: UIButton!
     @IBOutlet weak var imageVisualEffect: UIVisualEffectView!
     @IBOutlet weak var progressView: UIProgressView!
@@ -63,6 +63,10 @@ class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
     var fileInfoLabel: UILabel? {
         get { return labelInfo }
         set { labelInfo = newValue }
+    }
+    var fileSubinfoLabel: UILabel? {
+        get { return labelSubinfo }
+        set { labelSubinfo = newValue }
     }
     var fileProgressView: UIProgressView? {
         get { return progressView }
