@@ -86,6 +86,11 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         !headerRichWorkspaceDisable && NCKeychain().showDescription
     }
 
+    private var infoLabelsSeparator: String {
+        layoutForView?.layout == NCGlobal.shared.layoutList ? " - " : ""
+    }
+
+
     // MARK: - View Life Cycle
 
     required init?(coder aDecoder: NSCoder) {
@@ -564,18 +569,22 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                         cell.writeInfoDateSize(date: metadata.date, size: metadata.size)
                     } else {
                         cell.fileInfoLabel?.text = ""
+                        cell.fileSubinfoLabel?.text = ""
                     }
                 } else {
                     cell.fileProgressView?.isHidden = false
                     cell.fileProgressView?.progress = progressNumber.floatValue
                     cell.setButtonMore(named: NCGlobal.shared.buttonMoreStop, image: NCImageCache.images.buttonStop)
                     if status == NCGlobal.shared.metadataStatusDownloading {
-                        cell.fileInfoLabel?.text = self.utilityFileSystem.transformedSize(totalBytesExpected) + " - ↓ " + self.utilityFileSystem.transformedSize(totalBytes)
+                        cell.fileInfoLabel?.text = self.utilityFileSystem.transformedSize(totalBytesExpected)
+                        cell.fileSubinfoLabel?.text = self.infoLabelsSeparator + "↓ " + self.utilityFileSystem.transformedSize(totalBytes)
                     } else if status == NCGlobal.shared.metadataStatusUploading {
                         if totalBytes > 0 {
-                            cell.fileInfoLabel?.text = self.utilityFileSystem.transformedSize(totalBytesExpected) + " - ↑ " + self.utilityFileSystem.transformedSize(totalBytes)
+                            cell.fileInfoLabel?.text = self.utilityFileSystem.transformedSize(totalBytesExpected)
+                            cell.fileSubinfoLabel?.text = self.infoLabelsSeparator + "↑ " + self.utilityFileSystem.transformedSize(totalBytes)
                         } else {
-                            cell.fileInfoLabel?.text = self.utilityFileSystem.transformedSize(totalBytesExpected) + " - ↑ …"
+                            cell.fileInfoLabel?.text = self.utilityFileSystem.transformedSize(totalBytesExpected)
+                            cell.fileSubinfoLabel?.text = self.infoLabelsSeparator + "↑ …"
                         }
                     }
                 }
@@ -1275,7 +1284,9 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             } else {
                 cell.fileInfoLabel?.text = metadata.subline
             }
+            cell.fileSubinfoLabel?.isHidden = true
         } else {
+            cell.fileSubinfoLabel?.isHidden = false
             cell.fileTitleLabel?.text = metadata.fileNameView
             cell.fileTitleLabel?.lineBreakMode = .byTruncatingMiddle
             cell.writeInfoDateSize(date: metadata.date, size: metadata.size)
@@ -1368,14 +1379,18 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         // Write status on Label Info
         switch metadata.status {
         case NCGlobal.shared.metadataStatusWaitDownload:
-            cell.fileInfoLabel?.text = utilityFileSystem.transformedSize(metadata.size) + " - " + NSLocalizedString("_status_wait_download_", comment: "")
+            cell.fileInfoLabel?.text = utilityFileSystem.transformedSize(metadata.size)
+            cell.fileSubinfoLabel?.text = infoLabelsSeparator + NSLocalizedString("_status_wait_download_", comment: "")
         case NCGlobal.shared.metadataStatusDownloading:
-            cell.fileInfoLabel?.text = utilityFileSystem.transformedSize(metadata.size) + " - ↓ …"
+            cell.fileInfoLabel?.text = utilityFileSystem.transformedSize(metadata.size)
+            cell.fileSubinfoLabel?.text = infoLabelsSeparator + "↓ …"
         case NCGlobal.shared.metadataStatusWaitUpload:
-            cell.fileInfoLabel?.text = utilityFileSystem.transformedSize(metadata.size) + " - " + NSLocalizedString("_status_wait_upload_", comment: "")
+            cell.fileInfoLabel?.text = utilityFileSystem.transformedSize(metadata.size)
+            cell.fileSubinfoLabel?.text = infoLabelsSeparator + NSLocalizedString("_status_wait_upload_", comment: "")
             cell.fileLocalImage?.image = nil
         case NCGlobal.shared.metadataStatusUploading:
-            cell.fileInfoLabel?.text = utilityFileSystem.transformedSize(metadata.size) + " - ↑ …"
+            cell.fileInfoLabel?.text = utilityFileSystem.transformedSize(metadata.size)
+            cell.fileSubinfoLabel?.text = infoLabelsSeparator + "↑ …"
             cell.fileLocalImage?.image = nil
         case NCGlobal.shared.metadataStatusUploadError:
             if metadata.sessionError.isEmpty {
@@ -1424,7 +1439,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         }
 
         // Accessibility
-        cell.setAccessibility(label: metadata.fileNameView + ", " + (cell.fileInfoLabel?.text ?? ""), value: a11yValues.joined(separator: ", "))
+        cell.setAccessibility(label: metadata.fileNameView + ", " + (cell.fileInfoLabel?.text ?? "") + (cell.fileSubinfoLabel?.text ?? ""), value: a11yValues.joined(separator: ", "))
 
         // Color string find in search
         if isSearchingMode, let literalSearch = self.literalSearch, let title = cell.fileTitleLabel?.text {

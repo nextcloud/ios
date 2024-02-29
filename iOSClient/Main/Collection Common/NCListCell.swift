@@ -275,11 +275,12 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
             separator.isHidden = false
         }
     }
-
+    
     func writeInfoDateSize(date: NSDate, size: Int64) {
-        labelInfo.text = NCUtility().dateDiff(date as Date) + " · " + NCUtilityFileSystem().transformedSize(size)
+        labelInfo.text = NCUtility().dateDiff(date as Date)
+        labelSubinfo.text = " · " + NCUtilityFileSystem().transformedSize(size)
     }
-
+    
     func setAccessibility(label: String, value: String) {
         accessibilityLabel = label
         accessibilityValue = value
