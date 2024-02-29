@@ -45,6 +45,7 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
     let utility = NCUtility()
     let imageCache = NCImageCache.shared
     var metadatas: ThreadSafeArray<tableMetadata>?
+    let refreshControl = UIRefreshControl()
     var loadingTask: Task<Void, any Error>?
     var isTop: Bool = true
     var isEditMode = false
@@ -112,6 +113,12 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
         gradientView.layer.insertSublayer(gradient, at: 0)
 
         activeAccount = NCManageDatabase.shared.getActiveAccount() ?? tableAccount()
+
+        collectionView.refreshControl = refreshControl
+        refreshControl.action(for: .valueChanged) { _ in
+            self.reloadDataSource()
+            self.refreshControl.endRefreshing()
+        }
 
         NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeUser), object: nil, queue: nil) { _ in
             self.activeAccount = NCManageDatabase.shared.getActiveAccount() ?? tableAccount()
@@ -235,7 +242,9 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
         } else if FileManager().fileExists(atPath: utilityFileSystem.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)),
                   let image = UIImage(contentsOfFile: utilityFileSystem.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)) {
             imageCache.setMediaSize(ocId: metadata.ocId, etag: metadata.etag, size: image.size)
-            imageCache.setMediaImage(ocId: metadata.ocId, etag: metadata.etag, image: image, date: metadata.date as Date)
+            if imageCache.hasMediaImageEnoughSpace() {
+                imageCache.setMediaImage(ocId: metadata.ocId, etag: metadata.etag, image: image, date: metadata.date as Date)
+            }
             return image
         } else if metadata.hasPreview && metadata.status == NCGlobal.shared.metadataStatusNormal,
                   (!utilityFileSystem.fileProviderStoragePreviewIconExists(metadata.ocId, etag: metadata.etag)),

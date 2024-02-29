@@ -246,10 +246,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
     // L' applicazione è entrata nello sfondo
     func applicationDidEnterBackground(_ application: UIApplication) {
-
         NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Application did enter in background")
-
         guard !account.isEmpty else { return }
+
         let activeAccount = NCManageDatabase.shared.getActiveAccount()
 
         if let autoUpload = activeAccount?.autoUpload, autoUpload {

@@ -41,6 +41,8 @@ import RealmSwift
     struct metadataInfo {
         var etag: String
         var date: NSDate
+        var width: Int
+        var height: Int
     }
 
     struct imageInfo {
@@ -69,8 +71,12 @@ import RealmSwift
     override private init() {}
 
     func createMediaCache(account: String, withCacheSize: Bool) {
-
+        if createMediaCacheInProgress {
+            NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] ThumbnailLRUCache image process already in progress")
+            return
+        }
         createMediaCacheInProgress = true
+
         self.metadatasInfo.removeAll()
         self.metadatas = nil
         self.metadatas = getMediaMetadatas(account: account)
@@ -82,13 +88,15 @@ import RealmSwift
             var ocIdEtag: String
             var date: Date
             var fileSize: Int
+            var width: Int
+            var height: Int
         }
         var files: [FileInfo] = []
         let startDate = Date()
 
         if let metadatas = metadatas {
             metadatas.forEach { metadata in
-                metadatasInfo[metadata.ocId] = metadataInfo(etag: metadata.etag, date: metadata.date)
+                metadatasInfo[metadata.ocId] = metadataInfo(etag: metadata.etag, date: metadata.date, width: metadata.width, height: metadata.height)
             }
         }
 
@@ -99,17 +107,21 @@ import RealmSwift
                 guard let resourceValues = try? fileURL.resourceValues(forKeys: resourceKeys),
                       let fileSize = resourceValues.fileSize,
                       fileSize > 0 else { continue }
+                let width = metadatasInfo[ocId]?.width ?? 0
+                let height = metadatasInfo[ocId]?.height ?? 0
                 if withCacheSize {
                     if let date = metadatasInfo[ocId]?.date,
                        let etag = metadatasInfo[ocId]?.etag,
                        fileName == etag + ext {
-                        files.append(FileInfo(path: fileURL, ocIdEtag: ocId + etag, date: date as Date, fileSize: fileSize))
+                        files.append(FileInfo(path: fileURL, ocIdEtag: ocId + etag, date: date as Date, fileSize: fileSize, width: width, height: height))
                     } else {
                         let etag = fileName.replacingOccurrences(of: ".preview.ico", with: "")
-                        files.append(FileInfo(path: fileURL, ocIdEtag: ocId + etag, date: Date.distantPast, fileSize: fileSize))
+                        files.append(FileInfo(path: fileURL, ocIdEtag: ocId + etag, date: Date.distantPast, fileSize: fileSize, width: width, height: height))
                     }
                 } else if let date = metadatasInfo[ocId]?.date, let etag = metadatasInfo[ocId]?.etag, fileName == etag + ext {
-                    files.append(FileInfo(path: fileURL, ocIdEtag: ocId + etag, date: date as Date, fileSize: fileSize))
+                    files.append(FileInfo(path: fileURL, ocIdEtag: ocId + etag, date: date as Date, fileSize: fileSize, width: width, height: height))
+                } else {
+                    print("Nothing")
                 }
             }
         }
@@ -133,7 +145,9 @@ import RealmSwift
                         cacheImage.setValue(imageInfo(image: image, size: image.size, date: file.date), forKey: file.ocIdEtag)
                         totalSize = totalSize + Int64(file.fileSize)
                     }
-                    cacheSize.setValue(image.size, forKey: file.ocIdEtag)
+                    if file.width == 0, file.height == 0 {
+                        cacheSize.setValue(image.size, forKey: file.ocIdEtag)
+                    }
                 }
             }
             counter += 1
@@ -141,7 +155,8 @@ import RealmSwift
 
         let diffDate = Date().timeIntervalSinceReferenceDate - startDate.timeIntervalSinceReferenceDate
         NextcloudKit.shared.nkCommonInstance.writeLog("--------- ThumbnailLRUCache image process ---------")
-        NextcloudKit.shared.nkCommonInstance.writeLog("Counter process: \(cacheImage.count)")
+        NextcloudKit.shared.nkCommonInstance.writeLog("Counter cache image: \(cacheImage.count)")
+        NextcloudKit.shared.nkCommonInstance.writeLog("Counter cache size: \(cacheSize.count)")
         NextcloudKit.shared.nkCommonInstance.writeLog("Total size images process: " + NCUtilityFileSystem().transformedSize(totalSize))
         NextcloudKit.shared.nkCommonInstance.writeLog("Time process: \(diffDate)")
         NextcloudKit.shared.nkCommonInstance.writeLog("--------- ThumbnailLRUCache image process ---------")
@@ -156,29 +171,7 @@ import RealmSwift
     }
 
     func setMediaImage(ocId: String, etag: String, image: UIImage, date: Date) {
-        var isMostRecentDate: Bool = false
-        var olderDate: Date = Date()
-        var olderKey: String = ""
-
-        if limit > cacheImage.count {
-            cacheImage.setValue(imageInfo(image: image, size: image.size, date: date), forKey: ocId + etag)
-        } else {
-            for key in cacheSize.allKeys {
-                if let cacheImageDate = cacheImage.value(forKey: key) {
-                    if !isMostRecentDate, cacheImageDate.date < date {
-                        isMostRecentDate = true
-                    }
-                    if cacheImageDate.date < olderDate {
-                        olderDate = cacheImageDate.date
-                        olderKey = key
-                    }
-                }
-            }
-            if isMostRecentDate {
-                cacheImage.removeValue(forKey: olderKey)
-                cacheImage.setValue(imageInfo(image: image, size: image.size, date: date), forKey: ocId + etag)
-            }
-        }
+        cacheImage.setValue(imageInfo(image: image, size: image.size, date: date), forKey: ocId + etag)
     }
 
     func getMediaImage(ocId: String, etag: String) -> UIImage? {
@@ -186,6 +179,10 @@ import RealmSwift
             return cache.image
         }
         return nil
+    }
+
+    func hasMediaImageEnoughSpace() -> Bool {
+        return limit > cacheImage.count
     }
 
     func setMediaSize(ocId: String, etag: String, size: CGSize) {
