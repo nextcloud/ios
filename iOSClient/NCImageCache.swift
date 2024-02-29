@@ -70,7 +70,7 @@ import RealmSwift
 
     override private init() {}
 
-    func createMediaCache(account: String, withCacheSize: Bool) {
+    @objc func createMediaCache(account: String, withCacheSize: Bool) {
         if createMediaCacheInProgress {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] ThumbnailLRUCache image process already in progress")
             return
@@ -191,13 +191,6 @@ import RealmSwift
 
     func getMediaSize(ocId: String, etag: String) -> CGSize? {
         return cacheSize.value(forKey: ocId + etag) ?? nil
-    }
-
-    @objc func clearMediaCache() {
-        self.metadatasInfo.removeAll()
-        self.metadatas = nil
-        cacheImage.removeAllValues()
-        cacheSize.removeAllValues()
     }
 
     func getMediaMetadatas(account: String, predicate: NSPredicate? = nil) -> ThreadSafeArray<tableMetadata>? {
