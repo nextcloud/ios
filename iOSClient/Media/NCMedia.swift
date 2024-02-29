@@ -385,7 +385,10 @@ extension NCMedia: UICollectionViewDataSource {
         cell.imageStatus.image = nil
         cell.imageItem.contentMode = .scaleAspectFill
 
-        if !metadata.hasPreview {
+        if let image = getImage(metadata: metadata) {
+            cell.imageItem.backgroundColor = nil
+            cell.imageItem.image = image
+        } else if !metadata.hasPreview {
             cell.imageItem.backgroundColor = nil
             cell.imageItem.contentMode = .center
             if metadata.isImage {
@@ -393,9 +396,6 @@ extension NCMedia: UICollectionViewDataSource {
             } else {
                 cell.imageItem.image = videoImage
             }
-        } else if let image = getImage(metadata: metadata) {
-            cell.imageItem.backgroundColor = nil
-            cell.imageItem.image = image
         }
 
         // Convert OLD Live Photo
