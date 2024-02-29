@@ -54,6 +54,8 @@ class NCNetworkingE2EE: NSObject {
         NextcloudKit.shared.getE2EEMetadata(fileId: fileId, e2eToken: e2eToken, options: options) { account, e2eMetadata, signature, data, error in
             if error == .success {
                 return completion(account, e2eMetadata, signature, data, error)
+            } else if error.errorCode == NCGlobal.shared.errorResourceNotFound {
+                return completion(account, e2eMetadata, signature, data, error)
             } else {
                 options = NKRequestOptions(version: "v1")
                 NextcloudKit.shared.getE2EEMetadata(fileId: fileId, e2eToken: e2eToken, options: options) { account, e2eMetadata, signature, data, error in
