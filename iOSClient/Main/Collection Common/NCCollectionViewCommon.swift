@@ -1161,7 +1161,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
 
                     if !metadata.isImage && !metadata.isAudioOrVideo && metadata.hasPreview {
                         cell.filePreviewImageView?.layer.borderWidth = 0.2
-                        cell.filePreviewImageView?.layer.borderColor = UIColor.separator.cgColor
+                        cell.filePreviewImageView?.layer.borderColor = UIColor.systemGray3.cgColor
                     }
 
                     cell.filePreviewImageView?.image = image

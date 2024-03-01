@@ -275,12 +275,12 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
             separator.isHidden = false
         }
     }
-    
+
     func writeInfoDateSize(date: NSDate, size: Int64) {
         labelInfo.text = NCUtility().dateDiff(date as Date)
         labelSubinfo.text = " · " + NCUtilityFileSystem().transformedSize(size)
     }
-    
+
     func setAccessibility(label: String, value: String) {
         accessibilityLabel = label
         accessibilityValue = value
@@ -291,10 +291,13 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
             tag0.isHidden = true
             tag1.isHidden = true
             labelInfo.isHidden = false
+            labelSubinfo.isHidden = false
         } else {
             tag0.isHidden = false
             tag1.isHidden = true
             labelInfo.isHidden = true
+            labelSubinfo.isHidden = true
+
             if let tag = tags.first {
                 tag0.text = tag
                 if tags.count > 1 {
