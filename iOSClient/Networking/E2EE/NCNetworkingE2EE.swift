@@ -81,7 +81,8 @@ class NCNetworkingE2EE: NSObject {
                         serverUrl: String,
                         userId: String,
                         addUserId: String? = nil,
-                        removeUserId: String? = nil) async -> NKError {
+                        removeUserId: String? = nil,
+                        updateVersionV1V2: Bool = false) async -> NKError {
 
         var addCertificate: String?
         var method = "POST"
@@ -107,11 +108,15 @@ class NCNetworkingE2EE: NSObject {
 
         // METHOD
         //
-        let resultsGetE2EEMetadata = await getMetadata(fileId: fileId, e2eToken: e2eToken)
-        if resultsGetE2EEMetadata.error == .success {
+        if updateVersionV1V2 {
             method = "PUT"
-        } else if resultsGetE2EEMetadata.error.errorCode != NCGlobal.shared.errorResourceNotFound {
-            return resultsGetE2EEMetadata.error
+        } else {
+            let resultsGetE2EEMetadata = await getMetadata(fileId: fileId, e2eToken: e2eToken)
+            if resultsGetE2EEMetadata.error == .success {
+                method = "PUT"
+            } else if resultsGetE2EEMetadata.error.errorCode != NCGlobal.shared.errorResourceNotFound {
+                return resultsGetE2EEMetadata.error
+            }
         }
 
         // UPLOAD METADATA
