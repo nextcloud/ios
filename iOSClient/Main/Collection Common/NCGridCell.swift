@@ -100,10 +100,6 @@ class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
         imageVisualEffect.clipsToBounds = true
         imageVisualEffect.alpha = 0.5
 
-//        progressView.tintColor = NCBrandColor.shared.brand
-//        progressView.transform = CGAffineTransform(scaleX: 1.0, y: 0.5)
-//        progressView.trackTintColor = .clear
-
         let longPressedGesture = UILongPressGestureRecognizer(target: self, action: #selector(longPress(gestureRecognizer:)))
         longPressedGesture.minimumPressDuration = 0.5
         longPressedGesture.delegate = self
@@ -118,8 +114,6 @@ class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
 
         labelTitle.text = ""
         labelInfo.text = ""
-        labelTitle.textColor = .label
-        labelInfo.textColor = .systemGray
     }
 
     override func prepareForReuse() {

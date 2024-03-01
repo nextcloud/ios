@@ -38,13 +38,13 @@
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="2po-8g-XeS">
                         <rect key="frame" x="25" y="536" width="366" height="12"/>
                         <fontDescription key="fontDescription" type="system" pointSize="10"/>
-                        <color key="textColor" systemColor="systemGray2Color"/>
+                        <color key="textColor" systemColor="systemGrayColor"/>
                         <nil key="highlightedColor"/>
                     </label>
-                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="asdasdasd" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="12P-pO-DHO" userLabel="Label Size">
-                        <rect key="frame" x="25" y="548" width="366" height="12"/>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="12P-pO-DHO" userLabel="Label Size">
+                        <rect key="frame" x="25" y="551" width="366" height="12"/>
                         <fontDescription key="fontDescription" type="system" pointSize="10"/>
-                        <color key="textColor" systemColor="systemGray2Color"/>
+                        <color key="textColor" systemColor="systemGrayColor"/>
                         <nil key="highlightedColor"/>
                     </label>
                     <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="AYs-f2-vve" userLabel="imageFavorite">
@@ -84,12 +84,14 @@
                         </constraints>
                     </imageView>
                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="EJs-Ro-nbe" userLabel="buttonMoreGrid">
-                        <rect key="frame" x="391" y="537" width="25" height="25"/>
+                        <rect key="frame" x="396" y="538" width="20" height="20"/>
                         <constraints>
-                            <constraint firstAttribute="height" constant="25" id="4Ba-Uy-pX2"/>
-                            <constraint firstAttribute="width" constant="25" id="aRK-GA-Nba"/>
+                            <constraint firstAttribute="height" constant="20" id="4Ba-Uy-pX2"/>
+                            <constraint firstAttribute="width" constant="20" id="aRK-GA-Nba"/>
                         </constraints>
-                        <state key="normal" image="more"/>
+                        <fontDescription key="fontDescription" type="system" pointSize="10"/>
+                        <color key="tintColor" systemColor="systemGray2Color"/>
+                        <state key="normal" image="ellipsis" catalog="system"/>
                         <connections>
                             <action selector="touchUpInsideMore:" destination="vf1-Kf-9uL" eventType="touchUpInside" id="GDx-NN-gE9"/>
                         </connections>
@@ -116,11 +118,11 @@
                 <constraint firstItem="VRH-IZ-lXO" firstAttribute="leading" secondItem="vf1-Kf-9uL" secondAttribute="leading" constant="5" id="dTF-dl-Awr"/>
                 <constraint firstItem="VXh-sQ-LeX" firstAttribute="bottom" secondItem="5Ci-V1-hf5" secondAttribute="bottom" constant="90" id="eEC-eB-alE"/>
                 <constraint firstItem="12P-pO-DHO" firstAttribute="leading" secondItem="vf1-Kf-9uL" secondAttribute="leading" constant="25" id="fTQ-Ye-Xj2"/>
-                <constraint firstItem="12P-pO-DHO" firstAttribute="top" secondItem="2po-8g-XeS" secondAttribute="bottom" id="hbc-KL-fRj"/>
+                <constraint firstItem="12P-pO-DHO" firstAttribute="top" secondItem="2po-8g-XeS" secondAttribute="bottom" constant="3" id="hbc-KL-fRj"/>
                 <constraint firstItem="VXh-sQ-LeX" firstAttribute="bottom" secondItem="W0L-HY-al1" secondAttribute="bottom" constant="90" id="jI9-M1-Nl8"/>
                 <constraint firstItem="EJs-Ro-nbe" firstAttribute="trailing" secondItem="5Ci-V1-hf5" secondAttribute="trailing" id="l6Z-DK-OZi"/>
                 <constraint firstItem="81G-wH-fjN" firstAttribute="leading" secondItem="5Ci-V1-hf5" secondAttribute="trailing" constant="-20" id="nFH-Pc-end"/>
-                <constraint firstItem="EJs-Ro-nbe" firstAttribute="top" secondItem="VRH-IZ-lXO" secondAttribute="bottom" constant="8" id="o5n-Oi-Uh7"/>
+                <constraint firstItem="EJs-Ro-nbe" firstAttribute="top" secondItem="VRH-IZ-lXO" secondAttribute="bottom" constant="9" id="o5n-Oi-Uh7"/>
                 <constraint firstItem="5Ci-V1-hf5" firstAttribute="leading" secondItem="VXh-sQ-LeX" secondAttribute="leading" id="qT3-WD-iTV"/>
                 <constraint firstItem="5Ci-V1-hf5" firstAttribute="top" secondItem="AYs-f2-vve" secondAttribute="bottom" constant="-20" id="rLL-6g-ypv"/>
                 <constraint firstItem="a0p-rj-jnV" firstAttribute="top" secondItem="5Ci-V1-hf5" secondAttribute="bottom" constant="-20" id="upV-Ov-WWd"/>
@@ -143,9 +145,12 @@
         </collectionViewCell>
     </objects>
     <resources>
-        <image name="more" width="425" height="425"/>
+        <image name="ellipsis" catalog="system" width="128" height="37"/>
         <systemColor name="systemGray2Color">
             <color red="0.68235294117647061" green="0.68235294117647061" blue="0.69803921568627447" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </systemColor>
+        <systemColor name="systemGrayColor">
+            <color red="0.55686274509803924" green="0.55686274509803924" blue="0.57647058823529407" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
     </resources>
 </document>
