@@ -48,29 +48,29 @@ class NCNetworkingE2EE: NSObject {
 
     func getMetadata(fileId: String,
                      e2eToken: String?,
-                     completion: @escaping (_ account: String, _ e2eMetadata: String?, _ signature: String?, _ data: Data?, _ error: NKError) -> Void) {
+                     completion: @escaping (_ account: String, _ version: String?, _ e2eMetadata: String?, _ signature: String?, _ data: Data?, _ error: NKError) -> Void) {
 
         var options = NKRequestOptions(version: "v2")
         NextcloudKit.shared.getE2EEMetadata(fileId: fileId, e2eToken: e2eToken, options: options) { account, e2eMetadata, signature, data, error in
             if error == .success {
-                return completion(account, e2eMetadata, signature, data, error)
+                return completion(account, "v2", e2eMetadata, signature, data, error)
             } else if error.errorCode == NCGlobal.shared.errorResourceNotFound {
-                return completion(account, e2eMetadata, signature, data, error)
+                return completion(account, "v2", e2eMetadata, signature, data, error)
             } else {
                 options = NKRequestOptions(version: "v1")
                 NextcloudKit.shared.getE2EEMetadata(fileId: fileId, e2eToken: e2eToken, options: options) { account, e2eMetadata, signature, data, error in
-                    completion(account, e2eMetadata, signature, data, error)
+                    completion(account, "v1", e2eMetadata, signature, data, error)
                 }
             }
         }
     }
 
     func getMetadata(fileId: String,
-                     e2eToken: String?) async -> (account: String, e2eMetadata: String?, signature: String?, data: Data?, error: NKError) {
+                     e2eToken: String?) async -> (account: String, version: String?, e2eMetadata: String?, signature: String?, data: Data?, error: NKError) {
 
         await withUnsafeContinuation({ continuation in
-            getMetadata(fileId: fileId, e2eToken: e2eToken) { account, e2eMetadata, signature, data, error in
-                continuation.resume(returning: (account: account, e2eMetadata: e2eMetadata, signature: signature, data: data, error: error))
+            getMetadata(fileId: fileId, e2eToken: e2eToken) { account, version, e2eMetadata, signature, data, error in
+                continuation.resume(returning: (account: account, version: version, e2eMetadata: e2eMetadata, signature: signature, data: data, error: error))
             }
         })
     }
