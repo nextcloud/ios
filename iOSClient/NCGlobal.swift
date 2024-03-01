@@ -500,6 +500,6 @@ class NCGlobal: NSObject {
 
     // MEDIA LAYOUT
     //
-    let mediaLayoutDynamic                  = "mediaLayoutDynamic"
-    let mediaLayoutGrid                     = "mediaLayoutGrid"
+    let mediaLayoutRatio                    = "mediaLayoutRatio"
+    let mediaLayoutSquare                   = "mediaLayoutSquare"
 }

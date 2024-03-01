@@ -185,11 +185,11 @@ extension NCEndToEndMetadata {
         let e2eEncryptions = NCManageDatabase.shared.getE2eEncryptions(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", account, serverUrl))
 
         for e2eEncryption in e2eEncryptions {
-            if e2eEncryption.blob == "files" {
+            if e2eEncryption.mimeType == "httpd/unix-directory" {
+                folders[e2eEncryption.fileNameIdentifier] = e2eEncryption.fileName
+            } else {
                 let file = E2eeV20.Metadata.ciphertext.Files(authenticationTag: e2eEncryption.authenticationTag, filename: e2eEncryption.fileName, key: e2eEncryption.key, mimetype: e2eEncryption.mimeType, nonce: e2eEncryption.initializationVector)
                 filesCodable.updateValue(file, forKey: e2eEncryption.fileNameIdentifier)
-            } else if e2eEncryption.blob == "folders" {
-                folders[e2eEncryption.fileNameIdentifier] = e2eEncryption.fileName
             }
         }
 
@@ -234,20 +234,20 @@ extension NCEndToEndMetadata {
 
         let isDirectoryTop = utilityFileSystem.isDirectoryE2EETop(account: account, serverUrl: serverUrl)
 
-        func addE2eEncryption(fileNameIdentifier: String, filename: String, authenticationTag: String, key: String, initializationVector: String, metadataKey: String, mimetype: String, blob: String) {
+        func addE2eEncryption(fileNameIdentifier: String, filename: String, authenticationTag: String, key: String, initializationVector: String, metadataKey: String, mimetype: String) {
 
             if let metadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND fileName == %@", account, fileNameIdentifier)) {
 
                 let object = tableE2eEncryption.init(account: account, ocIdServerUrl: ocIdServerUrl, fileNameIdentifier: fileNameIdentifier)
 
                 object.authenticationTag = authenticationTag
-                object.blob = blob
                 object.fileName = filename
                 object.key = key
                 object.initializationVector = initializationVector
                 object.metadataKey = metadataKey
                 object.mimeType = mimetype
                 object.serverUrl = serverUrl
+                object.version = NCGlobal.shared.e2eeVersionV20
 
                 // Write file parameter for decrypted on DB
                 NCManageDatabase.shared.addE2eEncryption(object)
@@ -327,7 +327,7 @@ extension NCEndToEndMetadata {
                             if let jsonText = String(data: data, encoding: .utf8) { print(jsonText) }
                             let file = try JSONDecoder().decode(E2eeV20.Metadata.ciphertext.Files.self, from: data)
                             print(file)
-                            addE2eEncryption(fileNameIdentifier: fileNameIdentifier, filename: file.filename, authenticationTag: file.authenticationTag, key: file.key, initializationVector: file.nonce, metadataKey: filedropKey, mimetype: file.mimetype, blob: "files")
+                            addE2eEncryption(fileNameIdentifier: fileNameIdentifier, filename: file.filename, authenticationTag: file.authenticationTag, key: file.key, initializationVector: file.nonce, metadataKey: filedropKey, mimetype: file.mimetype)
                         }
                     }
                 }
@@ -389,7 +389,7 @@ extension NCEndToEndMetadata {
             if let files = jsonCiphertextMetadata.files {
                 print("\nFILES ---------------------------------\n")
                 for file in files {
-                    addE2eEncryption(fileNameIdentifier: file.key, filename: file.value.filename, authenticationTag: file.value.authenticationTag, key: file.value.key, initializationVector: file.value.nonce, metadataKey: metadataKey, mimetype: file.value.mimetype, blob: "files")
+                    addE2eEncryption(fileNameIdentifier: file.key, filename: file.value.filename, authenticationTag: file.value.authenticationTag, key: file.value.key, initializationVector: file.value.nonce, metadataKey: metadataKey, mimetype: file.value.mimetype)
 
                     print("filename: \(file.value.filename)")
                     print("fileNameIdentifier: \(file.key)")
@@ -401,7 +401,7 @@ extension NCEndToEndMetadata {
             if let folders = jsonCiphertextMetadata.folders {
                 print("FOLDERS--------------------------------\n")
                 for folder in folders {
-                    addE2eEncryption(fileNameIdentifier: folder.key, filename: folder.value, authenticationTag: metadata.authenticationTag, key: metadataKey, initializationVector: metadata.nonce, metadataKey: metadataKey, mimetype: "httpd/unix-directory", blob: "folders")
+                    addE2eEncryption(fileNameIdentifier: folder.key, filename: folder.value, authenticationTag: metadata.authenticationTag, key: metadataKey, initializationVector: metadata.nonce, metadataKey: metadataKey, mimetype: "httpd/unix-directory")
 
                     print("filename: \(folder.value)")
                     print("fileNameIdentifier: \(folder.key)")

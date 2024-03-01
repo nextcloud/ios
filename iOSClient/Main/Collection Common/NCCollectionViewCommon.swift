@@ -83,6 +83,10 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     var emptyTitle: String = ""
     var emptyDescription: String = ""
 
+    private var showDescription: Bool {
+        !headerRichWorkspaceDisable && NCKeychain().showDescription
+    }
+
     // MARK: - View Life Cycle
 
     required init?(coder aDecoder: NSCoder) {
@@ -628,7 +632,9 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                 }
 
                 let action = UIAction(title: name, image: image, state: account.active ? .on : .off) { _ in
-                    self.appDelegate.changeAccount(account.account, userProfile: nil)
+                    if !account.active {
+                        self.appDelegate.changeAccount(account.account, userProfile: nil)
+                    }
                 }
 
                 action.subtitle = url
@@ -636,7 +642,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                 return action
             }
 
-            let addAccountAction = UIAction(title: NSLocalizedString("_add_account_", comment: ""), image: .init(systemName: "plus")) { _ in
+            let addAccountAction = UIAction(title: NSLocalizedString("_add_account_", comment: ""), image: .init(systemName: "person.crop.circle.badge.plus")) { _ in
                 self.appDelegate.openLogin(viewController: self, selector: NCGlobal.shared.introLogin, openLoginWeb: false)
             }
 
@@ -1560,7 +1566,7 @@ extension NCCollectionViewCommon: UICollectionViewDelegateFlowLayout {
 
         var headerRichWorkspace: CGFloat = 0
 
-        if let richWorkspaceText = richWorkspaceText, !headerRichWorkspaceDisable {
+        if let richWorkspaceText = richWorkspaceText, showDescription {
             let trimmed = richWorkspaceText.trimmingCharacters(in: .whitespaces)
             if !trimmed.isEmpty && !isSearchingMode {
                 headerRichWorkspace = UIScreen.main.bounds.size.height / 6
@@ -1918,12 +1924,21 @@ extension NCCollectionViewCommon: NCSelectableNavigationView, NCCollectionViewCo
             self.saveLayout(layoutForView)
         }
 
-        let foldersSubmenu = UIMenu(title: "", options: .displayInline, children: [foldersOnTop])
+        let showDescriptionKeychain = NCKeychain().showDescription
+
+        let showDescription = UIAction(title: NSLocalizedString("_show_description_", comment: ""), image: UIImage(systemName: "list.dash.header.rectangle"), attributes: richWorkspaceText == nil ? .disabled : [], state: showDescriptionKeychain && richWorkspaceText != nil ? .on : .off) { _ in
+            NCKeychain().showDescription = !showDescriptionKeychain
+            self.collectionView.reloadData()
+        }
+
+        showDescription.subtitle = richWorkspaceText == nil ? NSLocalizedString("_no_description_available_", comment: "") : ""
+
+        let additionalSubmenu = UIMenu(title: "", options: .displayInline, children: [foldersOnTop, showDescription])
 
         if layoutKey == NCGlobal.shared.layoutViewRecent {
             return [select]
         } else {
-            return [select, viewStyleSubmenu, sortSubmenu, foldersSubmenu]
+            return [select, viewStyleSubmenu, sortSubmenu, additionalSubmenu]
         }
     }
 }
@@ -2082,18 +2097,19 @@ class NCCollectionViewDownloadThumbnail: ConcurrentOperation {
     }
 
     override func start() {
-
         guard !isCancelled else { return self.finish() }
 
         var etagResource: String?
+        let sizePreview = NCUtility().getSizePreview(width: metadata.width, height: metadata.height)
+
         if FileManager.default.fileExists(atPath: fileNameIconLocalPath) && FileManager.default.fileExists(atPath: fileNamePreviewLocalPath) {
             etagResource = metadata.etagResource
         }
 
         NextcloudKit.shared.downloadPreview(fileNamePathOrFileId: fileNamePath,
                                             fileNamePreviewLocalPath: fileNamePreviewLocalPath,
-                                            widthPreview: NCGlobal.shared.sizePreview,
-                                            heightPreview: NCGlobal.shared.sizePreview,
+                                            widthPreview: Int(sizePreview.width),
+                                            heightPreview: Int(sizePreview.height),
                                             fileNameIconLocalPath: fileNameIconLocalPath,
                                             sizeIcon: NCGlobal.shared.sizeIcon,
                                             etag: etagResource,

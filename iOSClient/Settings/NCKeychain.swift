@@ -28,6 +28,18 @@ import KeychainAccess
 
     let keychain = Keychain(service: "com.nextcloud.keychain")
 
+    var showDescription: Bool {
+        get {
+            if let value = try? keychain.get("showDescription"), let result = Bool(value) {
+                return result
+            }
+            return true
+        }
+        set {
+            keychain["showDescription"] = String(newValue)
+        }
+    }
+
     var typeFilterScanDocument: NCGlobal.TypeFilterScanDocument {
         get {
             if let rawValue = try? keychain.get("ScanDocumentTypeFilter"), let value = NCGlobal.TypeFilterScanDocument(rawValue: rawValue) {
@@ -267,27 +279,27 @@ import KeychainAccess
         }
     }
 
-    var mediaItemForLine: Int {
+    var mediaColumnCount: Int {
         get {
-            if let value = try? keychain.get("itemForLine"), let result = Int(value) {
+            if let value = try? keychain.get("mediaColumnCount"), let result = Int(value) {
                 return result
             }
             return 3
         }
         set {
-            keychain["itemForLine"] = String(newValue)
+            keychain["mediaColumnCount"] = String(newValue)
         }
     }
 
-    var mediaLayout: String {
+    var mediaTypeLayout: String {
         get {
-            if let value = try? keychain.get("mediaLayout") {
+            if let value = try? keychain.get("mediaTypeLayout") {
                 return value
             }
-            return NCGlobal.shared.mediaLayoutDynamic
+            return NCGlobal.shared.mediaLayoutRatio
         }
         set {
-            keychain["mediaLayout"] = String(newValue)
+            keychain["mediaTypeLayout"] = String(newValue)
         }
     }
 
@@ -328,20 +340,6 @@ import KeychainAccess
         set {
             keychain["qualityScanDocument"] = String(newValue)
         }
-    }
-
-    // MARK: -
-
-    private func migrate(key: String) {
-        let keychainOLD = Keychain(service: "Crypto Cloud")
-        if let value = keychainOLD[key], !value.isEmpty {
-            keychain[key] = value
-            keychainOLD[key] = nil
-        }
-    }
-
-    @objc func removeAll() {
-        try? keychain.removeAll()
     }
 
     // MARK: -
@@ -526,5 +524,19 @@ import KeychainAccess
         setPushNotificationToken(account: account, token: nil)
         setPushNotificationDeviceIdentifier(account: account, deviceIdentifier: nil)
         setPushNotificationDeviceIdentifierSignature(account: account, deviceIdentifierSignature: nil)
+    }
+
+    // MARK: -
+
+    private func migrate(key: String) {
+        let keychainOLD = Keychain(service: "Crypto Cloud")
+        if let value = keychainOLD[key], !value.isEmpty {
+            keychain[key] = value
+            keychainOLD[key] = nil
+        }
+    }
+
+    @objc func removeAll() {
+        try? keychain.removeAll()
     }
 }

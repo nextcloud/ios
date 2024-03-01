@@ -259,7 +259,7 @@ extension NCEndToEndMetadata {
                                 object.key = encrypted.key
                                 object.initializationVector = initializationVector
                                 object.metadataKey = metadataKey
-                                object.metadataVersion = metadataVersion
+                                object.version = "\(metadataVersion)"
                                 object.mimeType = encrypted.mimetype
                                 object.serverUrl = serverUrl
 
@@ -317,7 +317,7 @@ extension NCEndToEndMetadata {
                                 object.key = encrypted.key
                                 object.initializationVector = filedrop.initializationVector
                                 object.metadataKey = metadataKey
-                                object.metadataVersion = metadataVersion
+                                object.version = "\(metadataVersion)"
                                 object.mimeType = encrypted.mimetype
                                 object.serverUrl = serverUrl
 
@@ -434,7 +434,7 @@ extension NCEndToEndMetadata {
                                 object.initializationVector = initializationVector
                                 object.metadataKey = metadataKey
                                 object.metadataKeyIndex = metadataKeyIndex
-                                object.metadataVersion = metadataVersion
+                                object.version = "\(metadataVersion)"
                                 object.mimeType = encrypted.mimetype
                                 object.serverUrl = serverUrl
 
