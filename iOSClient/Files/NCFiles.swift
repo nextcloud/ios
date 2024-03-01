@@ -210,6 +210,16 @@ class NCFiles: NCCollectionViewCommon {
                                 if error == .success {
                                     if version == "v1", NCGlobal.shared.capabilityE2EEApiVersion == NCGlobal.shared.e2eeVersionV20 {
                                         NextcloudKit.shared.nkCommonInstance.writeLog("[E2EE] Conversion v1 to v2")
+                                        NCActivityIndicator.shared.start()
+                                        Task {
+                                            let serverUrl = metadataFolder.serverUrl + "/" + metadataFolder.fileName
+                                            let error = await NCNetworkingE2EE().uploadMetadata(account: metadataFolder.account, serverUrl: serverUrl, userId: metadataFolder.userId, updateVersionV1V2: true)
+                                            if error != .success {
+                                                NCContentPresenter().showError(error: error)
+                                            }
+                                            NCActivityIndicator.shared.stop()
+                                            self.reloadDataSource()
+                                        }
                                     } else {
                                         self.reloadDataSource()
                                     }
