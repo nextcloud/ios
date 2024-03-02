@@ -31,6 +31,7 @@ protocol NCCellProtocol {
     var fileUser: String? { get set }
     var fileTitleLabel: UILabel? { get set }
     var fileInfoLabel: UILabel? { get set }
+    var fileSubinfoLabel: UILabel? { get set }
     var fileProgressView: UIProgressView? { get set }
     var fileSelectImage: UIImageView? { get set }
     var fileStatusImage: UIImageView? { get set }
@@ -71,6 +72,10 @@ extension NCCellProtocol {
         set {}
     }
     var fileInfoLabel: UILabel? {
+        get { return nil }
+        set { }
+    }
+    var fileSubinfoLabel: UILabel? {
         get { return nil }
         set { }
     }
