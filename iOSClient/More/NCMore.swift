@@ -24,6 +24,7 @@
 import UIKit
 import NextcloudKit
 import SafariServices
+import SwiftUI
 
 class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
 
@@ -403,9 +404,19 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
             tapImageLogoManageAccount()
             return
         }
+        
+        // Checking if the selected row is the Settings cell
+        if item.name == "_settings_" {
+            // Created an instance of the NCSettings view
+            let ncSettingsView = NCSettings()
 
-        // Action
-        if item.url.contains("segue") && !item.url.contains("//") {
+            // Created a hosting controller for the NCSettings view & performing the segue
+            let hostingController = UIHostingController(rootView: ncSettingsView)
+            self.navigationController?.pushViewController(hostingController, animated: true)
+        }
+
+        // Action conditions
+        if item.url.contains("segue") && item.name != "_settings_" && !item.url.contains("//") {
             self.navigationController?.performSegue(withIdentifier: item.url, sender: self)
         } else if item.url.contains("openStoryboard") && !item.url.contains("//") {
             let nameStoryboard = item.url.replacingOccurrences(of: "openStoryboard", with: "")
