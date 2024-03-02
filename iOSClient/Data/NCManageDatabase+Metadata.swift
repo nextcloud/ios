@@ -277,6 +277,10 @@ extension tableMetadata {
         CGSize(width: width, height: height)
     }
 
+    var hasPreviewBorder: Bool {
+        !isImage && !isAudioOrVideo && hasPreview && NCUtilityFileSystem().fileProviderStoragePreviewIconExists(ocId, etag: etag)
+    }
+
     /// Returns false if the user is lokced out of the file. I.e. The file is locked but by somone else
     func canUnlock(as user: String) -> Bool {
         return !lock || (lockOwner == user && lockOwnerType == 0)

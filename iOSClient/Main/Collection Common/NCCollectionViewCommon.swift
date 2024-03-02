@@ -1156,11 +1156,11 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
 
         // Thumbnail
         if !metadata.directory {
-            if !metadata.isImage && !metadata.isAudioOrVideo && metadata.hasPreview {
+            if metadata.hasPreviewBorder {
                 cell.filePreviewImageView?.layer.borderWidth = 0.2
                 cell.filePreviewImageView?.layer.borderColor = UIColor.systemGray3.cgColor
             }
-            
+
             if metadata.name == NCGlobal.shared.appName {
                 if let image = utility.createFilePreviewImage(ocId: metadata.ocId, etag: metadata.etag, fileNameView: metadata.fileNameView, classFile: metadata.classFile, status: metadata.status, createPreviewMedia: !metadata.hasPreview) {
 
@@ -2111,6 +2111,10 @@ class NCCollectionViewDownloadThumbnail: ConcurrentOperation {
                 NCManageDatabase.shared.setMetadataEtagResource(ocId: self.metadata.ocId, etagResource: etag)
                 DispatchQueue.main.async {
                     if self.metadata.ocId == self.cell?.fileObjectId, let filePreviewImageView = self.cell?.filePreviewImageView {
+                        if self.metadata.hasPreviewBorder {
+                            self.cell?.filePreviewImageView?.layer.borderWidth = 0.2
+                            self.cell?.filePreviewImageView?.layer.borderColor = UIColor.systemGray3.cgColor
+                        }
                         UIView.transition(with: filePreviewImageView,
                                           duration: 0.75,
                                           options: .transitionCrossDissolve,
