@@ -29,7 +29,6 @@ class NCGridMediaCell: UICollectionViewCell, NCCellProtocol {
     @IBOutlet weak var imageVisualEffect: UIVisualEffectView!
     @IBOutlet weak var imageSelect: UIImageView!
     @IBOutlet weak var imageStatus: UIImageView!
-    @IBOutlet weak var label: UILabel!
 
     private var objectId: String = ""
     private var user: String = ""
@@ -53,12 +52,7 @@ class NCGridMediaCell: UICollectionViewCell, NCCellProtocol {
 
     var fileDate: Date? {
         get { return date }
-        set {
-            date = newValue
-            if let date {
-                label.text = NCUtility().getTitleFromDate(date)
-            }
-        }
+        set { date = newValue }
     }
 
     override func awakeFromNib() {
