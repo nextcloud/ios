@@ -47,61 +47,69 @@ extension NCMedia {
         let lastMetadataDate = metadatas?.last?.date as? Date
         let countMetadatas = self.metadatas?.count ?? 0
 
-        guard loadingTask == nil, !isEditMode else {
+        guard loadingTask == nil,
+              !isEditMode,
+              let visibleCells = self.collectionView?.indexPathsForVisibleItems.sorted(by: { $0.row < $1.row }).compactMap({ self.collectionView?.cellForItem(at: $0) })
+        else {
             return
         }
 
-        if let visibleCells = self.collectionView?.indexPathsForVisibleItems.sorted(by: { $0.row < $1.row }).compactMap({ self.collectionView?.cellForItem(at: $0) }) {
-            // first date
-            let firstCellDate = (visibleCells.first as? NCGridMediaCell)?.fileDate
-            if firstCellDate == firstMetadataDate {
+        // first date
+        let firstCellDate = (visibleCells.first as? NCGridMediaCell)?.fileDate
+        if firstCellDate == firstMetadataDate {
+            lessDate = Date.distantFuture
+        } else {
+            if let date = firstCellDate {
+                lessDate = Calendar.current.date(byAdding: .second, value: 1, to: date)!
+            } else {
                 lessDate = Date.distantFuture
-            } else {
-                if let date = firstCellDate {
-                    lessDate = Calendar.current.date(byAdding: .second, value: 1, to: date)!
-                } else {
-                    lessDate = Date.distantFuture
-                }
             }
-            // last date
-            let lastCellDate = (visibleCells.last as? NCGridMediaCell)?.fileDate
-            if lastCellDate == lastMetadataDate {
+        }
+        // last date
+        let lastCellDate = (visibleCells.last as? NCGridMediaCell)?.fileDate
+        if lastCellDate == lastMetadataDate {
+            greaterDate = Date.distantPast
+        } else {
+            if let date = lastCellDate {
+                greaterDate = Calendar.current.date(byAdding: .second, value: -1, to: date)!
+            } else {
                 greaterDate = Date.distantPast
-            } else {
-                if let date = lastCellDate {
-                    greaterDate = Calendar.current.date(byAdding: .second, value: -1, to: date)!
-                } else {
-                    greaterDate = Date.distantPast
-                }
             }
+        }
 
-            if let lessDate, let greaterDate {
-                activityIndicator.startAnimating()
-                loadingTask = Task.detached {
-                    if countMetadatas == 0 {
-                        await self.collectionViewReloadData()
-                    }
-                    let results = await self.searchMedia(lessDate: lessDate, greaterDate: greaterDate)
-                    if results.error == .success {
-                        Task { @MainActor in
-                            if results.lessDate == Date.distantFuture, results.greaterDate == Date.distantPast, !results.isChanged, results.metadatasCount == 0 {
-                                self.metadatas = nil
-                                self.collectionViewReloadData()
-                                print("searchMediaUI: metadatacount 0")
-                            } else if results.isChanged {
-                                self.reloadDataSource()
-                                print("searchMediaUI: changed")
-                            } else {
-                                print("searchMediaUI: nothing")
-                            }
-                        }
-                    } else {
-                        NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Media search new media error code \(results.error.errorCode) " + results.error.errorDescription)
-                    }
+        if lessDate == Date.distantFuture,
+           greaterDate == Date.distantPast,
+           (self.metadatas?.count ?? 0) > visibleCells.count {
+            NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Media search new media oops. something is bad")
+            return
+        }
+
+        if let lessDate, let greaterDate {
+            activityIndicator.startAnimating()
+            loadingTask = Task.detached {
+                if countMetadatas == 0 {
+                    await self.collectionViewReloadData()
+                }
+                let results = await self.searchMedia(lessDate: lessDate, greaterDate: greaterDate)
+                if results.error == .success {
                     Task { @MainActor in
-                        self.loadingTask = nil
-                        self.activityIndicator.stopAnimating()
+                        if results.lessDate == Date.distantFuture, results.greaterDate == Date.distantPast, !results.isChanged, results.metadatasCount == 0 {
+                            self.metadatas = nil
+                            self.collectionViewReloadData()
+                            print("searchMediaUI: metadatacount 0")
+                        } else if results.isChanged {
+                            self.reloadDataSource()
+                            print("searchMediaUI: changed")
+                        } else {
+                            print("searchMediaUI: nothing")
+                        }
                     }
+                } else {
+                    NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Media search new media error code \(results.error.errorCode) " + results.error.errorDescription)
+                }
+                Task { @MainActor in
+                    self.loadingTask = nil
+                    self.activityIndicator.stopAnimating()
                 }
             }
         }
