@@ -37,8 +37,16 @@ extension NCCollectionViewCommon: SwipeCollectionViewCellDelegate {
         shareAction.image = .init(systemName: "square.and.arrow.up")
         shareAction.transitionDelegate = scaleTransition
 
-        let deleteAction = SwipeAction(style: .destructive, title: "Delete") { _, _ in
-            self.delete(selectedMetadatas: [metadata])
+        let deleteAction = SwipeAction(style: .destructive, title: NSLocalizedString("_delete_", comment: "")) { action, _ in
+            let selectedMetadatas = [metadata]
+            let alertController = UIAlertController.deleteFileOrFolder(titleString: NSLocalizedString("_confirm_delete_selected_", comment: ""), message: nil, canDeleteServer: selectedMetadatas.allSatisfy { !$0.lock }, selectedMetadatas: selectedMetadatas, indexPaths: self.selectIndexPaths) { cancelled in
+
+                if cancelled {
+                    action.fulfill(with: .reset)
+                }
+            }
+
+            self.viewController.present(alertController, animated: true, completion: nil)
         }
 
         var actions = [favoriteAction]

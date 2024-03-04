@@ -45,7 +45,7 @@ protocol NCSelectableNavigationView: AnyObject {
     var collectionView: UICollectionView! { get set }
     var isEditMode: Bool { get set }
     var selectOcId: [String] { get set }
-    var selectIndexPath: [IndexPath] { get set }
+    var selectIndexPaths: [IndexPath] { get set }
     var titleCurrentFolder: String { get }
     var navigationItem: UINavigationItem { get }
     var navigationController: UINavigationController? { get }
@@ -85,7 +85,7 @@ extension NCSelectableNavigationView {
         DispatchQueue.main.async {
             self.isEditMode = !self.isEditMode
             self.selectOcId.removeAll()
-            self.selectIndexPath.removeAll()
+            self.selectIndexPaths.removeAll()
             self.setNavigationItems()
             self.collectionView.reloadData()
         }

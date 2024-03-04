@@ -103,10 +103,10 @@ extension UIAlertController {
         }, completion: completion)
     }
 
-    static func deleteFileOrFolder(titleString: String, message: String, fileList: String, canDeleteServer: Bool, selectedMetadatas: [tableMetadata], indexPaths: [IndexPath], completion: @escaping (_ cancelled: Bool) -> Void) -> UIAlertController {
+    static func deleteFileOrFolder(titleString: String, message: String?, canDeleteServer: Bool, selectedMetadatas: [tableMetadata], indexPaths: [IndexPath], completion: @escaping (_ cancelled: Bool) -> Void) -> UIAlertController {
         let alertController = UIAlertController(
-            title: titleString + "?",
-            message: message + fileList,
+            title: titleString,
+            message: message,
             preferredStyle: .alert)
         if canDeleteServer {
             alertController.addAction(UIAlertAction(title: NSLocalizedString("_yes_", comment: ""), style: .destructive) { (_: UIAlertAction) in

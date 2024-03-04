@@ -144,56 +144,11 @@ extension NCMenuAction {
             icon: NCUtility().loadImage(named: icon),
             order: order,
             action: { _ in
-                let alertController = UIAlertController.deleteFileOrFolder(titleString: titleDelete, message: message, fileList: fileList, canDeleteServer: canDeleteServer, selectedMetadatas: selectedMetadatas, indexPaths: indexPaths) { _ in
+                let alertController = UIAlertController.deleteFileOrFolder(titleString: titleDelete + "?", message: message + fileList, canDeleteServer: canDeleteServer, selectedMetadatas: selectedMetadatas, indexPaths: indexPaths) { _ in
                     completion?()
                 }
 
                 viewController.present(alertController, animated: true, completion: nil)
-
-                //                let alertController = UIAlertController(
-                //                    title: titleDelete + "?",
-                //                    message: message + fileList,
-                //                    preferredStyle: .alert)
-                //                if canDeleteServer {
-                //                    alertController.addAction(UIAlertAction(title: NSLocalizedString("_yes_", comment: ""), style: .destructive) { (_: UIAlertAction) in
-                //                        Task {
-                //                            var error = NKError()
-                //                            var ocId: [String] = []
-                //                            for metadata in selectedMetadatas where error == .success {
-                //                                error = await NCNetworking.shared.deleteMetadata(metadata, onlyLocalCache: false)
-                //                                if error == .success {
-                //                                    ocId.append(metadata.ocId)
-                //                                }
-                //                            }
-                //                            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDeleteFile, userInfo: ["ocId": ocId, "indexPath": indexPath, "onlyLocalCache": false, "error": error])
-                //                        }
-                //                        completion?()
-                //                    })
-                //                }
-                //
-                //                // NCMedia removes image from collection view if removed from cache
-                //                if !(viewController is NCMedia) {
-                //                    alertController.addAction(UIAlertAction(title: NSLocalizedString("_remove_local_file_", comment: ""), style: .default) { (_: UIAlertAction) in
-                //                        Task {
-                //                            var error = NKError()
-                //                            var ocId: [String] = []
-                //                            for metadata in selectedMetadatas where error == .success {
-                //                                error = await NCNetworking.shared.deleteMetadata(metadata, onlyLocalCache: true)
-                //                                if error == .success {
-                //                                    ocId.append(metadata.ocId)
-                //                                }
-                //                            }
-                //                            if error != .success {
-                //                                NCContentPresenter().showError(error: error)
-                //                            }
-                //                            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDeleteFile, userInfo: ["ocId": ocId, "indexPath": indexPath, "onlyLocalCache": true, "error": error])
-                //                        }
-                //                        completion?()
-                //                    })
-                //                }
-                //                alertController.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel) { (_: UIAlertAction) in })
-                //                viewController.present(alertController, animated: true, completion: nil)
-                //            }
             })
     }
 

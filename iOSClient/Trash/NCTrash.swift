@@ -43,7 +43,7 @@ class NCTrash: UIViewController, NCTrashListCellDelegate, NCEmptyDataSetDelegate
 
     var isEditMode = false
     var selectOcId: [String] = []
-    var selectIndexPath: [IndexPath] = []
+    var selectIndexPaths: [IndexPath] = []
     var tabBarSelect: NCSelectableViewTabBar?
 
     var datasource: [tableTrash] = []

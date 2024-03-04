@@ -50,7 +50,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     var serverUrl: String = ""
     var isEditMode = false
     var selectOcId: [String] = []
-    var selectIndexPath: [IndexPath] = []
+    var selectIndexPaths: [IndexPath] = []
     var metadataFolder: tableMetadata?
     var dataSource = NCDataSource()
     var richWorkspaceText: String?
@@ -92,7 +92,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     private var infoLabelsSeparator: String {
         layoutForView?.layout == NCGlobal.shared.layoutList ? " - " : ""
     }
-
 
     // MARK: - View Life Cycle
 
@@ -364,10 +363,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         if error != .success {
             NCContentPresenter().showError(error: error)
             swipeDeleteAction?.fulfill(with: .reset)
-        } else {
-            swipeDeleteAction?.fulfill(with: .delete)
         }
-
     }
 
     @objc func moveFile(_ notification: NSNotification) {
@@ -1043,10 +1039,10 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
         if isEditMode {
             if let index = selectOcId.firstIndex(of: metadata.ocId) {
                 selectOcId.remove(at: index)
-                selectIndexPath.removeAll(where: { $0 == indexPath })
+                selectIndexPaths.removeAll(where: { $0 == indexPath })
             } else {
                 selectOcId.append(metadata.ocId)
-                selectIndexPath.append(indexPath)
+                selectIndexPaths.append(indexPath)
             }
             collectionView.reloadItems(at: [indexPath])
 

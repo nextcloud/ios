@@ -122,59 +122,17 @@ extension NCCollectionViewCommon: NCSelectableNavigationView, NCCollectionViewCo
     }
 
     func delete(selectedMetadatas: [tableMetadata]) {
-        let alertController = UIAlertController(
-            title: NSLocalizedString("_confirm_delete_selected_", comment: ""),
-            message: nil,
-            preferredStyle: .alert)
-
-        let canDeleteServer = selectedMetadatas.allSatisfy { !$0.lock }
-
-        if canDeleteServer {
-            let copyMetadatas = selectedMetadatas
-
-            alertController.addAction(UIAlertAction(title: NSLocalizedString("_yes_", comment: ""), style: .destructive) { _ in
-                Task {
-                    var error = NKError()
-                    var ocId: [String] = []
-                    for metadata in copyMetadatas where error == .success {
-                        error = await NCNetworking.shared.deleteMetadata(metadata, onlyLocalCache: false)
-                        if error == .success {
-                            ocId.append(metadata.ocId)
-                        }
-                    }
-                    NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDeleteFile, userInfo: ["ocId": ocId, "indexPath": self.selectIndexPath, "onlyLocalCache": false, "error": error])
-                }
-
-                self.disableSelect()
-            })
-        }
-
-        alertController.addAction(UIAlertAction(title: NSLocalizedString("_remove_local_file_", comment: ""), style: .default) { (_: UIAlertAction) in
-            let copyMetadatas = selectedMetadatas
-
-            Task {
-                var error = NKError()
-                var ocId: [String] = []
-                for metadata in copyMetadatas where error == .success {
-                    error = await NCNetworking.shared.deleteMetadata(metadata, onlyLocalCache: true)
-                    if error == .success {
-                        ocId.append(metadata.ocId)
-                    }
-                }
-                if error != .success {
-                    NCContentPresenter().showError(error: error)
-                }
-                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDeleteFile, userInfo: ["ocId": ocId, "indexPath": self.selectIndexPath, "onlyLocalCache": true, "error": error])
+        let alertController = UIAlertController.deleteFileOrFolder(titleString: NSLocalizedString("_confirm_delete_selected_", comment: ""), message: nil, canDeleteServer: selectedMetadatas.allSatisfy { !$0.lock }, selectedMetadatas: selectedMetadatas, indexPaths: self.selectIndexPaths) { cancelled in
+            if !cancelled {
                 self.disableSelect()
             }
-        })
+        }
 
-        alertController.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel) { (_: UIAlertAction) in })
         self.viewController.present(alertController, animated: true, completion: nil)
     }
 
     func move(selectedMetadatas: [tableMetadata]) {
-        NCActionCenter.shared.openSelectView(items: selectedMetadatas, indexPath: self.selectIndexPath)
+        NCActionCenter.shared.openSelectView(items: selectedMetadatas, indexPath: self.selectIndexPaths)
         self.disableSelect()
     }
 
