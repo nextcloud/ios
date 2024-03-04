@@ -38,8 +38,17 @@ extension NCCollectionViewCommon: SwipeCollectionViewCellDelegate {
         shareAction.transitionDelegate = scaleTransition
 
         let deleteAction = SwipeAction(style: .destructive, title: NSLocalizedString("_delete_", comment: "")) { action, _ in
-            let selectedMetadatas = [metadata]
-            let alertController = UIAlertController.deleteFileOrFolder(titleString: NSLocalizedString("_confirm_delete_selected_", comment: ""), message: nil, canDeleteServer: selectedMetadatas.allSatisfy { !$0.lock }, selectedMetadatas: selectedMetadatas, indexPaths: self.selectIndexPaths) { cancelled in
+            let titleDelete: String
+
+            if metadata.directory {
+               titleDelete = NSLocalizedString("_delete_folder_", comment: "")
+           } else {
+               titleDelete = NSLocalizedString("_delete_file_", comment: "")
+           }
+
+            let message = NSLocalizedString("_want_delete_", comment: "") + "\n - " + metadata.fileNameView
+
+            let alertController = UIAlertController.deleteFileOrFolder(titleString: titleDelete + "?", message: message, canDeleteServer: !metadata.lock, selectedMetadatas: [metadata], indexPaths: self.selectIndexPaths) { cancelled in
 
                 if cancelled {
                     action.fulfill(with: .reset)
