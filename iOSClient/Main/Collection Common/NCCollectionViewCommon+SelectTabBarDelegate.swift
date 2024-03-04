@@ -145,7 +145,7 @@ extension NCCollectionViewCommon: NCSelectableNavigationView, NCCollectionViewCo
                     NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDeleteFile, userInfo: ["ocId": ocId, "indexPath": self.selectIndexPath, "onlyLocalCache": false, "error": error])
                 }
 
-                self.toggleSelect()
+                self.disableSelect()
             })
         }
 
@@ -165,7 +165,7 @@ extension NCCollectionViewCommon: NCSelectableNavigationView, NCCollectionViewCo
                     NCContentPresenter().showError(error: error)
                 }
                 NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDeleteFile, userInfo: ["ocId": ocId, "indexPath": self.selectIndexPath, "onlyLocalCache": true, "error": error])
-                self.toggleSelect()
+                self.disableSelect()
             }
         })
 
@@ -175,12 +175,12 @@ extension NCCollectionViewCommon: NCSelectableNavigationView, NCCollectionViewCo
 
     func move(selectedMetadatas: [tableMetadata]) {
         NCActionCenter.shared.openSelectView(items: selectedMetadatas, indexPath: self.selectIndexPath)
-        self.toggleSelect()
+        self.disableSelect()
     }
 
     func share(selectedMetadatas: [tableMetadata]) {
         NCActionCenter.shared.openActivityViewController(selectedMetadata: selectedMetadatas)
-        self.toggleSelect()
+        self.disableSelect()
     }
 
     func saveAsAvailableOffline(selectedMetadatas: [tableMetadata], isAnyOffline: Bool) {
@@ -191,13 +191,13 @@ extension NCCollectionViewCommon: NCSelectableNavigationView, NCCollectionViewCo
                 preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: NSLocalizedString("_continue_", comment: ""), style: .default, handler: { _ in
                 selectedMetadatas.forEach { NCActionCenter.shared.setMetadataAvalableOffline($0, isOffline: isAnyOffline) }
-                self.toggleSelect()
+                self.disableSelect()
             }))
             alert.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel))
             self.viewController.present(alert, animated: true)
         } else {
             selectedMetadatas.forEach { NCActionCenter.shared.setMetadataAvalableOffline($0, isOffline: isAnyOffline) }
-            self.toggleSelect()
+            self.disableSelect()
         }
     }
 
@@ -206,7 +206,7 @@ extension NCCollectionViewCommon: NCSelectableNavigationView, NCCollectionViewCo
             NCNetworking.shared.lockUnlockFile(metadata, shoulLock: !isAnyLocked)
         }
 
-        self.toggleSelect()
+        self.disableSelect()
     }
 
     func createMenuActions() -> [UIMenuElement] {

@@ -37,19 +37,32 @@ extension NCCollectionViewCommon: SwipeCollectionViewCellDelegate {
         shareAction.image = .init(systemName: "square.and.arrow.up")
         shareAction.transitionDelegate = scaleTransition
 
-        let deleteAction = SwipeAction(style: .destructive, title: "Delete") { action, indexPath in
-             
+        let deleteAction = SwipeAction(style: .destructive, title: "Delete") { _, _ in
+            self.delete(selectedMetadatas: [metadata])
         }
+
+        var actions = [favoriteAction]
 
         deleteAction.image = .init(systemName: "trash")
         deleteAction.style = .destructive
+        deleteAction.transitionDelegate = scaleTransition
 
-        return metadata.canShare ? [favoriteAction, shareAction] : [favoriteAction]
+        swipeDeleteAction = deleteAction
+
+        if !NCManageDatabase.shared.isMetadataShareOrMounted(metadata: metadata, metadataFolder: metadataFolder) {
+            actions.insert(deleteAction, at: 0)
+        }
+
+        if metadata.canShare {
+            actions.append(shareAction)
+        }
+
+        return actions
     }
 
     func collectionView(_ collectionView: UICollectionView, editActionsOptionsForItemAt indexPath: IndexPath, for orientation: SwipeActionsOrientation) -> SwipeOptions {
         var options = SwipeOptions()
-        options.expansionStyle = .selection
+        options.expansionStyle = .fill
         options.transitionStyle = .reveal
         return options
     }

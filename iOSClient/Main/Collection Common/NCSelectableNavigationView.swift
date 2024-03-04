@@ -75,6 +75,12 @@ extension NCSelectableNavigationView {
         setNavigationRightItems()
     }
 
+    func disableSelect() {
+        if isEditMode {
+            toggleSelect()
+        }
+    }
+
     func toggleSelect() {
         DispatchQueue.main.async {
             self.isEditMode = !self.isEditMode

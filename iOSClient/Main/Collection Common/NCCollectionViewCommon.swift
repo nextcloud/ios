@@ -27,6 +27,7 @@ import NextcloudKit
 import EasyTipView
 import JGProgressHUD
 import Queuer
+import SwipeCellKit
 
 class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UISearchResultsUpdating, UISearchControllerDelegate, UISearchBarDelegate, NCListCellDelegate, NCGridCellDelegate, NCSectionHeaderMenuDelegate, NCSectionFooterDelegate, UIAdaptivePresentationControllerDelegate, NCEmptyDataSetDelegate, UIContextMenuInteractionDelegate, NCAccountRequestDelegate {
 
@@ -70,6 +71,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     var timerNotificationCenter: Timer?
     var notificationReloadDataSource: Int = 0
     var notificationReloadDataSourceNetwork: Int = 0
+
+    var swipeDeleteAction: SwipeAction?
 
     // DECLARE
     var layoutKey = ""
@@ -360,7 +363,11 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
         if error != .success {
             NCContentPresenter().showError(error: error)
+            swipeDeleteAction?.fulfill(with: .reset)
+        } else {
+            swipeDeleteAction?.fulfill(with: .delete)
         }
+
     }
 
     @objc func moveFile(_ notification: NSNotification) {
