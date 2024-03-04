@@ -44,11 +44,11 @@ struct NCSettings: View {
             }
             
             /// `Privacy` Section
-            Section(header: Text(NSLocalizedString("_privacy_", comment: "")), content: {
+            Section(content: {
                 
                 // Lock active YES/NO
                 HStack {
-                    Image("lock_closed")
+                    Image("lock")
                         .resizable()
                         .renderingMode(.template)
                         .frame(width: 20, height: 20)
@@ -80,6 +80,12 @@ struct NCSettings: View {
                     .onChange(of: resetWrongAttempts) { _ in
                         
                     }
+            }, header: {
+                Text(NSLocalizedString("_privacy_", comment: ""))
+            }, footer: {
+                Text(NSLocalizedString("_privacy_footer_", comment: ""))
+                    .font(.system(size: 12))
+                    .lineSpacing(1)
             })
             
             // Calender & Contacts
@@ -97,7 +103,9 @@ struct NCSettings: View {
                 }, header:{
                     Text(NSLocalizedString("_calendar_contacts_", comment: ""))
                 }, footer: {
-                    Text(NSLocalizedString("_mobile_config_", comment: ""))
+                    Text(NSLocalizedString("_calendar_contacts_footer_", comment: ""))
+                        .font(.system(size: 12))
+                        .lineSpacing(1)
                 })
             }
             
@@ -142,7 +150,7 @@ struct NCSettings: View {
                 }.onTapGesture {
                     showAcknowledgements = true
                 }.sheet(isPresented: $showAcknowledgements) {
-                    
+                    AcknowledgementsView(showText: $showAcknowledgements, browserTitle: "Acknowledgements")
                 }
                 
                 // Terms & Privacy Conditions
@@ -155,7 +163,7 @@ struct NCSettings: View {
                 }.onTapGesture {
                     showBrowser = true
                 }.sheet(isPresented: $showBrowser) {
-                    
+                    NCBrowserWebView(isPresented: $showBrowser, urlBase: URL(string: NCBrandOptions.shared.privacy)!, browserTitle: "Privacy Policies")
                 }
                 
                 // Source Code
@@ -168,7 +176,7 @@ struct NCSettings: View {
                 }.onTapGesture {
                     showSourceCode = true
                 }.sheet(isPresented: $showSourceCode) {
-                    
+                    NCBrowserWebView(isPresented: $showSourceCode, urlBase: URL(string: NCBrandOptions.shared.sourceCode)!, browserTitle: "Source Code")
                 }
             })
             
@@ -186,10 +194,9 @@ struct NCSettings: View {
     }
 }
 
-/*
+
  struct NCSettings_Previews: PreviewProvider {
      static var previews: some View {
-         NCSettings()
+         NCSettings(enableTouchID: false, lockScreen: false, privacyScreen: false, resetWrongAttempts: false)
      }
  }
- */

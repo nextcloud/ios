@@ -1,0 +1,81 @@
+//
+//  AcknowledgementsView.swift
+//  Nextcloud
+//
+//  Created by Aditya Tyagi on 04/03/24.
+//  Copyright © 2024 Marino Faggiana. All rights reserved.
+//
+
+import SwiftUI
+import Combine
+
+struct AcknowledgementsView: View {
+    @State private var text = ""
+    @Binding var showText: Bool
+    var browserTitle: String
+    @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
+    
+    var body: some View {
+        VStack(spacing: 0) {
+            HStack() {
+                
+                HStack(alignment: .center) {
+                    Text(browserTitle)
+                        .font(.title3)
+                        .foregroundColor(Color(UIColor.label))
+                        .padding(.leading, 8)
+                }
+                .padding()
+                
+                Spacer()
+                
+                Button(action: {
+                    self.showText = false
+                }) {
+                    ZStack {
+                        Circle()
+                            .fill(Color(UIColor.secondarySystemBackground))
+                            .frame(width: 25, height: 25)
+                        
+                        Image(systemName: "xmark")
+                            .resizable()
+                            .renderingMode(.template)
+                            .frame(width: 14, height: 14)
+                            .foregroundColor(.gray)
+                    }
+                }
+                .padding()
+            }
+            
+            Divider()
+            
+            if showText {
+                ScrollView {
+                    Text(text)
+                        .padding()
+                }
+            }
+        }
+        .navigationBarTitle("_acknowledgements_", displayMode: .inline)
+        .onAppear {
+            loadRTF()
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                self.showText = true
+            }
+        }
+    }
+    
+    func loadRTF() {
+        if let rtfPath = Bundle.main.url(forResource: "Acknowledgements", withExtension: "rtf"),
+           let attributedStringWithRtf = try? NSAttributedString(url: rtfPath, options: [.documentType: NSAttributedString.DocumentType.rtf], documentAttributes: nil) {
+            self.text = attributedStringWithRtf.string
+        }
+    }
+}
+
+
+/*
+ #Preview {
+     AcknowledgementsView(showText: false)
+ }
+*/

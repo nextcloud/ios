@@ -16,6 +16,8 @@
 		371B5A2E23D0B04500FAFAE9 /* NCMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 371B5A2D23D0B04500FAFAE9 /* NCMenu.swift */; };
 		3781B9B023DB2B7E006B4B1D /* AppDelegate+Menu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3781B9AF23DB2B7E006B4B1D /* AppDelegate+Menu.swift */; };
 		8491B1CD273BBA82001C8C5B /* UIViewController+Menu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8491B1CC273BBA82001C8C5B /* UIViewController+Menu.swift */; };
+		AC454FF72B9585FB00BED89C /* AcknowledgementsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC454FF62B9585FB00BED89C /* AcknowledgementsView.swift */; };
+		AC454FF92B958B6A00BED89C /* NCWebBrowserView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC454FF82B958B6A00BED89C /* NCWebBrowserView.swift */; };
 		ACFC775B2B9368AA008BF302 /* OpenSSL in Frameworks */ = {isa = PBXBuildFile; productRef = ACFC775A2B9368AA008BF302 /* OpenSSL */; };
 		ACFC775D2B9368D3008BF302 /* OpenSSL in Frameworks */ = {isa = PBXBuildFile; productRef = ACFC775C2B9368D3008BF302 /* OpenSSL */; };
 		ACFC775F2B944B17008BF302 /* NCSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACFC775E2B944B17008BF302 /* NCSettings.swift */; };
@@ -921,6 +923,8 @@
 		371B5A3223D0BD5500FAFAE9 /* FloatingPanel.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FloatingPanel.framework; path = Carthage/Build/iOS/FloatingPanel.framework; sourceTree = "<group>"; };
 		3781B9AF23DB2B7E006B4B1D /* AppDelegate+Menu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AppDelegate+Menu.swift"; sourceTree = "<group>"; };
 		8491B1CC273BBA82001C8C5B /* UIViewController+Menu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIViewController+Menu.swift"; sourceTree = "<group>"; };
+		AC454FF62B9585FB00BED89C /* AcknowledgementsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AcknowledgementsView.swift; sourceTree = "<group>"; };
+		AC454FF82B958B6A00BED89C /* NCWebBrowserView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCWebBrowserView.swift; sourceTree = "<group>"; };
 		ACFC775E2B944B17008BF302 /* NCSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCSettings.swift; sourceTree = "<group>"; };
 		AF1A9B6327D0CA1E00F17A9E /* UIAlertController+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIAlertController+Extension.swift"; sourceTree = "<group>"; };
 		AF22B20B277C6F4D00DAB0CC /* NCShareCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCShareCell.swift; sourceTree = "<group>"; };
@@ -2335,6 +2339,8 @@
 				F77910AA25DD53C700CEDB9E /* NCSettingsBundleHelper.swift */,
 				F77910A425DD517B00CEDB9E /* Settings.bundle */,
 				ACFC77602B944B1E008BF302 /* Settings */,
+				AC454FF62B9585FB00BED89C /* AcknowledgementsView.swift */,
+				AC454FF82B958B6A00BED89C /* NCWebBrowserView.swift */,
 			);
 			path = Settings;
 			sourceTree = "<group>";
@@ -3990,6 +3996,7 @@
 				F7651A8B23A2A3F2001403D2 /* NCCreateFormUploadDocuments.swift in Sources */,
 				F74AF3A4247FB6AE00AC767B /* NCUtilityFileSystem.swift in Sources */,
 				F7239871253D86B600257F49 /* NCEmptyDataSet.swift in Sources */,
+				AC454FF92B958B6A00BED89C /* NCWebBrowserView.swift in Sources */,
 				AFCE353327E4ED1900FEA6C2 /* UIToolbar+Extension.swift in Sources */,
 				8491B1CD273BBA82001C8C5B /* UIViewController+Menu.swift in Sources */,
 				F73EF7BF2B02250B0087E6E9 /* NCManageDatabase+GPS.swift in Sources */,
@@ -4079,6 +4086,7 @@
 				F760DE172AE66F350027D78A /* NCKeychain.swift in Sources */,
 				F7C9555521F0C5470024296E /* NCActivity.swift in Sources */,
 				F7725A60251F33BB00D125E0 /* NCFiles.swift in Sources */,
+				AC454FF72B9585FB00BED89C /* AcknowledgementsView.swift in Sources */,
 				F3BB46522A39EC4900461F6E /* NCMoreAppSuggestionsCell.swift in Sources */,
 				F704B5E52430AA8000632F5F /* NCCreateFormUploadConflict.swift in Sources */,
 				F765608F23BF813600765969 /* NCContentPresenter.swift in Sources */,
