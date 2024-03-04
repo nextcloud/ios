@@ -32,9 +32,9 @@ class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
     @IBOutlet weak var imageLocal: UIImageView!
     @IBOutlet weak var labelTitle: UILabel!
     @IBOutlet weak var labelInfo: UILabel!
+    @IBOutlet weak var labelSubinfo: UILabel!
     @IBOutlet weak var buttonMore: UIButton!
     @IBOutlet weak var imageVisualEffect: UIVisualEffectView!
-    @IBOutlet weak var progressView: UIProgressView!
 
     var objectId = ""
     var indexPath = IndexPath()
@@ -63,9 +63,9 @@ class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
         get { return labelInfo }
         set { labelInfo = newValue }
     }
-    var fileProgressView: UIProgressView? {
-        get { return progressView }
-        set { progressView = newValue }
+    var fileSubinfoLabel: UILabel? {
+        get { return labelSubinfo }
+        set { labelSubinfo = newValue }
     }
     var fileSelectImage: UIImageView? {
         get { return imageSelect }
@@ -100,10 +100,6 @@ class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
         imageVisualEffect.clipsToBounds = true
         imageVisualEffect.alpha = 0.5
 
-        progressView.tintColor = NCBrandColor.shared.brand
-        progressView.transform = CGAffineTransform(scaleX: 1.0, y: 0.5)
-        progressView.trackTintColor = .clear
-
         let longPressedGesture = UILongPressGestureRecognizer(target: self, action: #selector(longPress(gestureRecognizer:)))
         longPressedGesture.minimumPressDuration = 0.5
         longPressedGesture.delegate = self
@@ -118,8 +114,6 @@ class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
 
         labelTitle.text = ""
         labelInfo.text = ""
-        labelTitle.textColor = .label
-        labelInfo.textColor = .systemGray
     }
 
     override func prepareForReuse() {
@@ -209,7 +203,8 @@ class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
         dateFormatter.timeStyle = .none
         dateFormatter.locale = Locale.current
 
-        labelInfo.text = dateFormatter.string(from: date as Date) + " · " + NCUtilityFileSystem().transformedSize(size)
+        labelInfo.text = dateFormatter.string(from: date as Date)
+        labelSubinfo.text = NCUtilityFileSystem().transformedSize(size)
     }
 
     func setAccessibility(label: String, value: String) {

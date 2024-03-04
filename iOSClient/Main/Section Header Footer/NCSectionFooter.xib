@@ -33,7 +33,7 @@
                     <rect key="frame" x="177.66666666666666" y="5" width="20" height="20"/>
                 </activityIndicatorView>
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="s2m-yO-4x0" userLabel="separator">
-                    <rect key="frame" x="60" y="30" width="265" height="1"/>
+                    <rect key="frame" x="50" y="30" width="275" height="1"/>
                     <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     <color key="tintColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     <constraints>
@@ -52,7 +52,7 @@
                 <constraint firstItem="qWG-SR-Qly" firstAttribute="centerX" secondItem="EFn-SN-cxu" secondAttribute="centerX" id="18M-RP-YIn"/>
                 <constraint firstItem="EFn-SN-cxu" firstAttribute="trailing" secondItem="TK1-KX-Qe0" secondAttribute="trailing" constant="10" id="PoY-CD-99O"/>
                 <constraint firstAttribute="trailing" secondItem="gzy-cT-Gjn" secondAttribute="trailing" constant="10" id="QzY-ac-CRO"/>
-                <constraint firstItem="EFn-SN-cxu" firstAttribute="leading" secondItem="s2m-yO-4x0" secondAttribute="leading" constant="-10" id="ai4-Qy-YWi"/>
+                <constraint firstItem="EFn-SN-cxu" firstAttribute="leading" secondItem="s2m-yO-4x0" secondAttribute="leading" id="ai4-Qy-YWi"/>
                 <constraint firstItem="gzy-cT-Gjn" firstAttribute="centerY" secondItem="Vin-9E-7nW" secondAttribute="centerY" constant="-30" id="avP-sX-JB5">
                     <variation key="heightClass=compact-widthClass=regular" constant="-15"/>
                     <variation key="heightClass=regular-widthClass=compact" constant="-15"/>
@@ -77,7 +77,7 @@
     </objects>
     <resources>
         <systemColor name="linkColor">
-            <color red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.0" green="0.47843137254901963" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
     </resources>
 </document>

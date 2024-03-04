@@ -33,6 +33,7 @@ class NCListCell: SwipeCollectionViewCell, UIGestureRecognizerDelegate, NCCellPr
     @IBOutlet weak var imageLocal: UIImageView!
     @IBOutlet weak var labelTitle: UILabel!
     @IBOutlet weak var labelInfo: UILabel!
+    @IBOutlet weak var labelSubinfo: UILabel!
     @IBOutlet weak var imageShared: UIImageView!
     @IBOutlet weak var buttonShared: UIButton!
     @IBOutlet weak var imageMore: UIImageView!
@@ -45,7 +46,7 @@ class NCListCell: SwipeCollectionViewCell, UIGestureRecognizerDelegate, NCCellPr
     @IBOutlet weak var imageItemLeftConstraint: NSLayoutConstraint!
     @IBOutlet weak var separatorHeightConstraint: NSLayoutConstraint!
     @IBOutlet weak var titleTrailingConstraint: NSLayoutConstraint!
-    @IBOutlet weak var infoTrailingConstraint: NSLayoutConstraint!
+    @IBOutlet weak var subInfoTrailingConstraint: NSLayoutConstraint!
 
     private var objectId = ""
     private var user = ""
@@ -76,6 +77,10 @@ class NCListCell: SwipeCollectionViewCell, UIGestureRecognizerDelegate, NCCellPr
     var fileInfoLabel: UILabel? {
         get { return labelInfo }
         set { labelInfo = newValue }
+    }
+    var fileSubinfoLabel: UILabel? {
+        get { return labelSubinfo }
+        set { labelSubinfo = newValue }
     }
     var fileProgressView: UIProgressView? {
         get { return progressView }
@@ -145,6 +150,7 @@ class NCListCell: SwipeCollectionViewCell, UIGestureRecognizerDelegate, NCCellPr
         labelInfo.text = ""
         labelTitle.textColor = .label
         labelInfo.textColor = .systemGray
+        labelSubinfo.textColor = .systemGray
     }
 
     override func prepareForReuse() {
@@ -191,12 +197,12 @@ class NCListCell: SwipeCollectionViewCell, UIGestureRecognizerDelegate, NCCellPr
 
     func titleInfoTrailingFull() {
         titleTrailingConstraint.constant = 10
-        infoTrailingConstraint.constant = 10
+        subInfoTrailingConstraint.constant = 10
     }
 
     func titleInfoTrailingDefault() {
         titleTrailingConstraint.constant = 90
-        infoTrailingConstraint.constant = 90
+        subInfoTrailingConstraint.constant = 90
     }
 
     func setButtonMore(named: String, image: UIImage) {
@@ -272,7 +278,8 @@ class NCListCell: SwipeCollectionViewCell, UIGestureRecognizerDelegate, NCCellPr
     }
 
     func writeInfoDateSize(date: NSDate, size: Int64) {
-        labelInfo.text = NCUtility().dateDiff(date as Date) + " · " + NCUtilityFileSystem().transformedSize(size)
+        labelInfo.text = NCUtility().dateDiff(date as Date)
+        labelSubinfo.text = " · " + NCUtilityFileSystem().transformedSize(size)
     }
 
     func setAccessibility(label: String, value: String) {
@@ -285,10 +292,13 @@ class NCListCell: SwipeCollectionViewCell, UIGestureRecognizerDelegate, NCCellPr
             tag0.isHidden = true
             tag1.isHidden = true
             labelInfo.isHidden = false
+            labelSubinfo.isHidden = false
         } else {
             tag0.isHidden = false
             tag1.isHidden = true
             labelInfo.isHidden = true
+            labelSubinfo.isHidden = true
+
             if let tag = tags.first {
                 tag0.text = tag
                 if tags.count > 1 {

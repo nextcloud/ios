@@ -86,6 +86,11 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         !headerRichWorkspaceDisable && NCKeychain().showDescription
     }
 
+    private var infoLabelsSeparator: String {
+        layoutForView?.layout == NCGlobal.shared.layoutList ? " - " : ""
+    }
+
+
     // MARK: - View Life Cycle
 
     override func viewDidLoad() {
@@ -560,18 +565,22 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                         cell.writeInfoDateSize(date: metadata.date, size: metadata.size)
                     } else {
                         cell.fileInfoLabel?.text = ""
+                        cell.fileSubinfoLabel?.text = ""
                     }
                 } else {
                     cell.fileProgressView?.isHidden = false
                     cell.fileProgressView?.progress = progressNumber.floatValue
                     cell.setButtonMore(named: NCGlobal.shared.buttonMoreStop, image: NCImageCache.images.buttonStop)
                     if status == NCGlobal.shared.metadataStatusDownloading {
-                        cell.fileInfoLabel?.text = self.utilityFileSystem.transformedSize(totalBytesExpected) + " - ↓ " + self.utilityFileSystem.transformedSize(totalBytes)
+                        cell.fileInfoLabel?.text = self.utilityFileSystem.transformedSize(totalBytesExpected)
+                        cell.fileSubinfoLabel?.text = self.infoLabelsSeparator + "↓ " + self.utilityFileSystem.transformedSize(totalBytes)
                     } else if status == NCGlobal.shared.metadataStatusUploading {
                         if totalBytes > 0 {
-                            cell.fileInfoLabel?.text = self.utilityFileSystem.transformedSize(totalBytesExpected) + " - ↑ " + self.utilityFileSystem.transformedSize(totalBytes)
+                            cell.fileInfoLabel?.text = self.utilityFileSystem.transformedSize(totalBytesExpected)
+                            cell.fileSubinfoLabel?.text = self.infoLabelsSeparator + "↑ " + self.utilityFileSystem.transformedSize(totalBytes)
                         } else {
-                            cell.fileInfoLabel?.text = self.utilityFileSystem.transformedSize(totalBytesExpected) + " - ↑ …"
+                            cell.fileInfoLabel?.text = self.utilityFileSystem.transformedSize(totalBytesExpected)
+                            cell.fileSubinfoLabel?.text = self.infoLabelsSeparator + "↑ …"
                         }
                     }
                 }
@@ -1130,49 +1139,63 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
 extension NCCollectionViewCommon: UICollectionViewDataSource {
 
     func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
-        guard let metadata = dataSource.cellForItemAt(indexPath: indexPath) else { return }
+        guard let metadata = dataSource.cellForItemAt(indexPath: indexPath),
+              let cell = (cell as? NCCellProtocol) else { return }
+
+        cell.filePreviewImageView?.layer.borderWidth = 0
+
+        if metadata.isImage {
+            cell.filePreviewImageView?.contentMode = .scaleAspectFill
+        } else {
+            cell.filePreviewImageView?.contentMode = .scaleAspectFit
+        }
 
         // Thumbnail
         if !metadata.directory {
+            if metadata.hasPreviewBorder {
+                cell.filePreviewImageView?.layer.borderWidth = 0.2
+                cell.filePreviewImageView?.layer.borderColor = UIColor.systemGray3.cgColor
+            }
             if metadata.name == NCGlobal.shared.appName {
-                    if let image = utility.createFilePreviewImage(ocId: metadata.ocId, etag: metadata.etag, fileNameView: metadata.fileNameView, classFile: metadata.classFile, status: metadata.status, createPreviewMedia: !metadata.hasPreview) {
-                    (cell as? NCCellProtocol)?.filePreviewImageView?.image = image
+                if let image = utility.createFilePreviewImage(ocId: metadata.ocId, etag: metadata.etag, fileNameView: metadata.fileNameView, classFile: metadata.classFile, status: metadata.status, createPreviewMedia: !metadata.hasPreview) {
+
+                    cell.filePreviewImageView?.image = image
                 } else {
                     if metadata.iconName.isEmpty {
-                        (cell as? NCCellProtocol)?.filePreviewImageView?.image = NCImageCache.images.file
+                        cell.filePreviewImageView?.image = NCImageCache.images.file
                     } else {
-                        (cell as? NCCellProtocol)?.filePreviewImageView?.image = UIImage(named: metadata.iconName)
+                        cell.filePreviewImageView?.image = UIImage(named: metadata.iconName)
                     }
                     if metadata.hasPreview && metadata.status == NCGlobal.shared.metadataStatusNormal && (!utilityFileSystem.fileProviderStoragePreviewIconExists(metadata.ocId, etag: metadata.etag)) {
                         for case let operation as NCCollectionViewDownloadThumbnail in NCNetworking.shared.downloadThumbnailQueue.operations where operation.metadata.ocId == metadata.ocId { return }
-                        NCNetworking.shared.downloadThumbnailQueue.addOperation(NCCollectionViewDownloadThumbnail(metadata: metadata, cell: (cell as? NCCellProtocol), collectionView: collectionView))
+                        NCNetworking.shared.downloadThumbnailQueue.addOperation(NCCollectionViewDownloadThumbnail(metadata: metadata, cell: cell, collectionView: collectionView))
                     }
                 }
             } else {
                 // Unified search
                 switch metadata.iconName {
                 case let str where str.contains("contacts"):
-                    (cell as? NCCellProtocol)?.filePreviewImageView?.image = NCImageCache.images.iconContacts
+                    cell.filePreviewImageView?.image = NCImageCache.images.iconContacts
                 case let str where str.contains("conversation"):
-                    (cell as? NCCellProtocol)?.filePreviewImageView?.image = NCImageCache.images.iconTalk
+                    cell.filePreviewImageView?.image = NCImageCache.images.iconTalk
                 case let str where str.contains("calendar"):
-                    (cell as? NCCellProtocol)?.filePreviewImageView?.image = NCImageCache.images.iconCalendar
+                    cell.filePreviewImageView?.image = NCImageCache.images.iconCalendar
                 case let str where str.contains("deck"):
-                    (cell as? NCCellProtocol)?.filePreviewImageView?.image = NCImageCache.images.iconDeck
+                    cell.filePreviewImageView?.image = NCImageCache.images.iconDeck
                 case let str where str.contains("mail"):
-                    (cell as? NCCellProtocol)?.filePreviewImageView?.image = NCImageCache.images.iconMail
+                    cell.filePreviewImageView?.image = NCImageCache.images.iconMail
                 case let str where str.contains("talk"):
-                    (cell as? NCCellProtocol)?.filePreviewImageView?.image = NCImageCache.images.iconTalk
+                    cell.filePreviewImageView?.image = NCImageCache.images.iconTalk
                 case let str where str.contains("confirm"):
-                    (cell as? NCCellProtocol)?.filePreviewImageView?.image = NCImageCache.images.iconConfirm
+                    cell.filePreviewImageView?.image = NCImageCache.images.iconConfirm
                 case let str where str.contains("pages"):
-                    (cell as? NCCellProtocol)?.filePreviewImageView?.image = NCImageCache.images.iconPages
+                    cell.filePreviewImageView?.image = NCImageCache.images.iconPages
                 default:
-                    (cell as? NCCellProtocol)?.filePreviewImageView?.image = NCImageCache.images.file
+                    cell.filePreviewImageView?.image = NCImageCache.images.file
                 }
 
                 if !metadata.iconUrl.isEmpty {
-                    if let ownerId = getAvatarFromIconUrl(metadata: metadata), let cell = cell as? NCCellProtocol {
+                    if let ownerId = getAvatarFromIconUrl(metadata: metadata) {
                         let fileName = metadata.userBaseUrl + "-" + ownerId + ".png"
                         NCNetworking.shared.downloadAvatar(user: ownerId, dispalyName: nil, fileName: fileName, cell: cell, view: collectionView, cellImageView: cell.filePreviewImageView)
                     }
@@ -1183,8 +1206,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         // Avatar
         if !metadata.ownerId.isEmpty,
            metadata.ownerId != appDelegate.userId,
-           appDelegate.account == metadata.account,
-           let cell = cell as? NCCellProtocol {
+           appDelegate.account == metadata.account {
             let fileName = metadata.userBaseUrl + "-" + metadata.ownerId + ".png"
             NCNetworking.shared.downloadAvatar(user: metadata.ownerId, dispalyName: metadata.ownerDisplayName, fileName: fileName, cell: cell, view: collectionView, cellImageView: cell.fileAvatarImageView)
         }
@@ -1272,7 +1294,9 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             } else {
                 cell.fileInfoLabel?.text = metadata.subline
             }
+            cell.fileSubinfoLabel?.isHidden = true
         } else {
+            cell.fileSubinfoLabel?.isHidden = false
             cell.fileTitleLabel?.text = metadata.fileNameView
             cell.fileTitleLabel?.lineBreakMode = .byTruncatingMiddle
             cell.writeInfoDateSize(date: metadata.date, size: metadata.size)
@@ -1365,14 +1389,18 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         // Write status on Label Info
         switch metadata.status {
         case NCGlobal.shared.metadataStatusWaitDownload:
-            cell.fileInfoLabel?.text = utilityFileSystem.transformedSize(metadata.size) + " - " + NSLocalizedString("_status_wait_download_", comment: "")
+            cell.fileInfoLabel?.text = utilityFileSystem.transformedSize(metadata.size)
+            cell.fileSubinfoLabel?.text = infoLabelsSeparator + NSLocalizedString("_status_wait_download_", comment: "")
         case NCGlobal.shared.metadataStatusDownloading:
-            cell.fileInfoLabel?.text = utilityFileSystem.transformedSize(metadata.size) + " - ↓ …"
+            cell.fileInfoLabel?.text = utilityFileSystem.transformedSize(metadata.size)
+            cell.fileSubinfoLabel?.text = infoLabelsSeparator + "↓ …"
         case NCGlobal.shared.metadataStatusWaitUpload:
-            cell.fileInfoLabel?.text = utilityFileSystem.transformedSize(metadata.size) + " - " + NSLocalizedString("_status_wait_upload_", comment: "")
+            cell.fileInfoLabel?.text = utilityFileSystem.transformedSize(metadata.size)
+            cell.fileSubinfoLabel?.text = infoLabelsSeparator + NSLocalizedString("_status_wait_upload_", comment: "")
             cell.fileLocalImage?.image = nil
         case NCGlobal.shared.metadataStatusUploading:
-            cell.fileInfoLabel?.text = utilityFileSystem.transformedSize(metadata.size) + " - ↑ …"
+            cell.fileInfoLabel?.text = utilityFileSystem.transformedSize(metadata.size)
+            cell.fileSubinfoLabel?.text = infoLabelsSeparator + "↑ …"
             cell.fileLocalImage?.image = nil
         case NCGlobal.shared.metadataStatusUploadError:
             if metadata.sessionError.isEmpty {
@@ -1421,9 +1449,13 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         }
 
         // Accessibility
-        cell.setAccessibility(label: metadata.fileNameView + ", " + (cell.fileInfoLabel?.text ?? ""), value: a11yValues.joined(separator: ", "))
+        cell.setAccessibility(label: metadata.fileNameView + ", " + (cell.fileInfoLabel?.text ?? "") + (cell.fileSubinfoLabel?.text ?? ""), value: a11yValues.joined(separator: ", "))
 
         // Color string find in search
+
+        cell.fileTitleLabel?.textColor = .label
+        cell.fileTitleLabel?.font = .systemFont(ofSize: 15)
+
         if isSearchingMode, let literalSearch = self.literalSearch, let title = cell.fileTitleLabel?.text {
             let longestWordRange = (title.lowercased() as NSString).range(of: literalSearch)
             let attributedString = NSMutableAttributedString(string: title, attributes: [NSAttributedString.Key.font: UIFont.systemFont(ofSize: 15)])
@@ -1799,6 +1831,10 @@ class NCCollectionViewDownloadThumbnail: ConcurrentOperation {
                 NCManageDatabase.shared.setMetadataEtagResource(ocId: self.metadata.ocId, etagResource: etag)
                 DispatchQueue.main.async {
                     if self.metadata.ocId == self.cell?.fileObjectId, let filePreviewImageView = self.cell?.filePreviewImageView {
+                        if self.metadata.hasPreviewBorder {
+                            self.cell?.filePreviewImageView?.layer.borderWidth = 0.2
+                            self.cell?.filePreviewImageView?.layer.borderColor = UIColor.systemGray3.cgColor
+                        }
                         UIView.transition(with: filePreviewImageView,
                                           duration: 0.75,
                                           options: .transitionCrossDissolve,

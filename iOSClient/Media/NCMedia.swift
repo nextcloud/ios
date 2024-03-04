@@ -116,7 +116,9 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
 
         collectionView.refreshControl = refreshControl
         refreshControl.action(for: .valueChanged) { _ in
-            self.reloadDataSource()
+            DispatchQueue.global().async {
+                self.reloadDataSource()
+            }
             self.refreshControl.endRefreshing()
         }
 
@@ -161,6 +163,10 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
         } else if let metadatas = imageCache.initialMetadatas() {
             self.metadatas = metadatas
             self.collectionViewReloadData()
+        } else {
+            DispatchQueue.global().async {
+                self.reloadDataSource()
+            }
         }
     }
 
