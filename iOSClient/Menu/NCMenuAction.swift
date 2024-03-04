@@ -101,6 +101,7 @@ extension NCMenuAction {
     /// Delete files either from cache or from Nextcloud
     static func deleteAction(selectedMetadatas: [tableMetadata], indexPath: [IndexPath], metadataFolder: tableMetadata? = nil, viewController: UIViewController, order: Int = 0, completion: (() -> Void)? = nil) -> NCMenuAction {
         var titleDelete = NSLocalizedString("_delete_", comment: "")
+        var message = NSLocalizedString("_want_delete_", comment: "")
         var icon = "trash"
         var destructive = false
 
@@ -110,6 +111,7 @@ extension NCMenuAction {
         } else if let metadata = selectedMetadatas.first {
             if NCManageDatabase.shared.isMetadataShareOrMounted(metadata: metadata, metadataFolder: metadataFolder) {
                 titleDelete = NSLocalizedString("_leave_share_", comment: "")
+                message = NSLocalizedString("_want_leave_share_", comment: "")
                 icon = "person.2.slash"
             } else if metadata.directory {
                 titleDelete = NSLocalizedString("_delete_folder_", comment: "")
@@ -143,11 +145,11 @@ extension NCMenuAction {
             order: order,
             action: { _ in
                 let alertController = UIAlertController(
-                    title: titleDelete,
-                    message: NSLocalizedString("_want_delete_", comment: "") + fileList,
+                    title: titleDelete + "?",
+                    message: message + fileList,
                     preferredStyle: .alert)
                 if canDeleteServer {
-                    alertController.addAction(UIAlertAction(title: NSLocalizedString("_yes_delete_", comment: ""), style: .default) { (_: UIAlertAction) in
+                    alertController.addAction(UIAlertAction(title: NSLocalizedString("_yes_", comment: ""), style: .destructive) { (_: UIAlertAction) in
                         Task {
                             var error = NKError()
                             var ocId: [String] = []
@@ -183,7 +185,7 @@ extension NCMenuAction {
                         completion?()
                     })
                 }
-                alertController.addAction(UIAlertAction(title: NSLocalizedString("_no_delete_", comment: ""), style: .default) { (_: UIAlertAction) in })
+                alertController.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel) { (_: UIAlertAction) in })
                 viewController.present(alertController, animated: true, completion: nil)
             }
         )

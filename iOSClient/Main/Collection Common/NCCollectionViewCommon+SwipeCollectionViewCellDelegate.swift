@@ -37,6 +37,13 @@ extension NCCollectionViewCommon: SwipeCollectionViewCellDelegate {
         shareAction.image = .init(systemName: "square.and.arrow.up")
         shareAction.transitionDelegate = scaleTransition
 
+        let deleteAction = SwipeAction(style: .destructive, title: "Delete") { action, indexPath in
+             
+        }
+
+        deleteAction.image = .init(systemName: "trash")
+        deleteAction.style = .destructive
+
         return metadata.canShare ? [favoriteAction, shareAction] : [favoriteAction]
     }
 

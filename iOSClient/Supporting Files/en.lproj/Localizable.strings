@@ -333,7 +333,8 @@
 "_add_account_"                 = "Add account";
 "_delete_account_"              = "Remove account";
 "_delete_active_account_"       = "Remove active account";
-"_want_delete_"                 = "Do you really want to delete?";
+"_want_delete_"                 = "You will delete the following: ";
+"_want_leave_share_"            = "You will leave the following shares: ";
 "_no_delete_"                   = "No, do not delete";
 "_yes_delete_"                  = "Yes, delete";
 "_remove_cache_"                = "Deleting cache, please wait …";
