@@ -150,6 +150,20 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
         labelTitle.textColor = .label
         labelInfo.textColor = .systemGray
         labelSubinfo.textColor = .systemGray
+
+//        imageSelect.makeCircularBackground(withColor: .systemBackground)
+//
+//        imageSelect.makeCircularBackground(withColor: .systemBackground)
+        imageStatus.makeCircularBackground(withColor: .systemBackground)
+//        imageFavorite.makeCircularBackground(withColor: .systemBackground)
+        imageLocal.makeCircularBackground(withColor: .systemBackground)
+
+//        let imageFavoriteOutline = UIImageView()
+//        imageFavoriteOutline.image = imageFavorite.image
+//        imageFavoriteOutline.frame = .init(x: 0, y: 0, width: imageFavorite.frame.width + 2, height: imageFavorite.frame.height + 2)
+//        imageFavoriteOutline.tintColor = .white
+//
+//        imageF
     }
 
     override func prepareForReuse() {

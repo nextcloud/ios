@@ -54,4 +54,10 @@ extension UIView {
         blurredEffectView.isUserInteractionEnabled = false
         self.addSubview(blurredEffectView)
     }
+
+    func makeCircularBackground(withColor backgroundColor: UIColor) {
+        self.backgroundColor = backgroundColor
+        self.layer.cornerRadius = self.frame.size.width / 2
+        self.layer.masksToBounds = true
+    }
 }
