@@ -394,6 +394,7 @@ extension NCMedia: UICollectionViewDataSource {
         if let image = getImage(metadata: metadata) {
             cell.imageItem.image = image
         } else if !metadata.hasPreview {
+            cell.imageItem.backgroundColor = .clear
             cell.imageItem.contentMode = .center
             if metadata.isImage {
                 cell.imageItem.image = photoImage
