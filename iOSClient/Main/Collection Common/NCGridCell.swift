@@ -211,6 +211,20 @@ class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
         accessibilityLabel = label
         accessibilityValue = value
     }
+
+    func setIconOutlines() {
+        if imageStatus.image != nil {
+            imageStatus.makeCircularBackground(withColor: .systemBackground)
+        } else {
+            imageStatus.backgroundColor = .clear
+        }
+
+//        if imageLocal.image != nil {
+//            imageLocal.makeCircularBackground(withColor: .systemBackground)
+//        } else {
+//            imageLocal.backgroundColor = .clear
+//        }
+    }
 }
 
 protocol NCGridCellDelegate: AnyObject {

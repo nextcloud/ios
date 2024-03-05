@@ -111,6 +111,8 @@
 		F36E64FA2B96236C0085ABB5 /* UIView+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7E41315294A19B300839300 /* UIView+Extension.swift */; };
 		F36E64FB2B9733F10085ABB5 /* UIView+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7E41315294A19B300839300 /* UIView+Extension.swift */; };
 		F36E64FC2B9733F20085ABB5 /* UIView+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7E41315294A19B300839300 /* UIView+Extension.swift */; };
+		F36E64FD2B9735900085ABB5 /* NCCellProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 370D26AE248A3D7A00121797 /* NCCellProtocol.swift */; };
+		F36E64FE2B9735920085ABB5 /* NCCellProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 370D26AE248A3D7A00121797 /* NCCellProtocol.swift */; };
 		F38F71252B6BBDC300473CDC /* NCCollectionViewCommonSelectTabBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = F38F71242B6BBDC300473CDC /* NCCollectionViewCommonSelectTabBar.swift */; };
 		F39298972A3B12CB00509762 /* BaseNCMoreCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F39298962A3B12CB00509762 /* BaseNCMoreCell.swift */; };
 		F3953BD72A6E87E000EE03F9 /* BaseIntegrationXCTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3953BD62A6E87E000EE03F9 /* BaseIntegrationXCTestCase.swift */; };
@@ -3801,6 +3803,7 @@
 				F73EF7D82B0226080087E6E9 /* NCManageDatabase+Tip.swift in Sources */,
 				F7C9B91E2B582F550064EA91 /* NCManageDatabase+SecurityGuard.swift in Sources */,
 				F72FD3B6297ED49A00075D28 /* NCManageDatabase+E2EE.swift in Sources */,
+				F36E64FD2B9735900085ABB5 /* NCCellProtocol.swift in Sources */,
 				F783030128B4C49700B84583 /* UIImage+Extension.swift in Sources */,
 				F72EA95428B7BABA00C88F0C /* FilesWidgetProvider.swift in Sources */,
 			);
@@ -3846,6 +3849,7 @@
 				AF4BF61B27562A4B0081CEEF /* NCManageDatabase+Metadata.swift in Sources */,
 				F70460542499095400BB98A7 /* NotificationCenter+MainThread.swift in Sources */,
 				F78A10C329322E8A008499B8 /* NCManageDatabase+Directory.swift in Sources */,
+				F36E64FE2B9735920085ABB5 /* NCCellProtocol.swift in Sources */,
 				F7BF9D862934CA21009EE9A6 /* NCManageDatabase+LayoutForView.swift in Sources */,
 				F7E98C1827E0D0FC001F9F19 /* NCManageDatabase+Video.swift in Sources */,
 				F785EEA42461A4A600B3F945 /* NCUtility.swift in Sources */,

@@ -47,8 +47,16 @@
                         <color key="textColor" systemColor="systemGrayColor"/>
                         <nil key="highlightedColor"/>
                     </label>
-                    <imageView userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="AYs-f2-vve" userLabel="imageFavorite">
-                        <rect key="frame" x="391" y="25" width="20" height="20"/>
+                    <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="star.fill" catalog="system" translatesAutoresizingMaskIntoConstraints="NO" id="cgB-lu-t0g">
+                        <rect key="frame" x="388" y="21" width="26" height="26"/>
+                        <color key="tintColor" systemColor="systemBackgroundColor"/>
+                        <constraints>
+                            <constraint firstAttribute="width" constant="26" id="5aP-9X-SuS"/>
+                            <constraint firstAttribute="height" constant="26" id="dat-R5-5vy"/>
+                        </constraints>
+                    </imageView>
+                    <imageView userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="star.fill" catalog="system" translatesAutoresizingMaskIntoConstraints="NO" id="AYs-f2-vve" userLabel="imageFavorite">
+                        <rect key="frame" x="391" y="24.5" width="20" height="20"/>
                         <constraints>
                             <constraint firstAttribute="height" constant="20" id="ZjS-Hv-JNm"/>
                             <constraint firstAttribute="width" constant="20" id="kDr-15-VeJ"/>
@@ -100,6 +108,7 @@
             </view>
             <viewLayoutGuide key="safeArea" id="VXh-sQ-LeX"/>
             <constraints>
+                <constraint firstItem="cgB-lu-t0g" firstAttribute="top" secondItem="5Ci-V1-hf5" secondAttribute="top" constant="1.5" id="0mO-lw-JH1"/>
                 <constraint firstItem="DHy-Up-3Bh" firstAttribute="leading" secondItem="VXh-sQ-LeX" secondAttribute="leading" constant="5" id="1T3-8p-uIW"/>
                 <constraint firstItem="AYs-f2-vve" firstAttribute="leading" secondItem="5Ci-V1-hf5" secondAttribute="trailing" constant="-25" id="3e3-0A-NSl"/>
                 <constraint firstItem="W0L-HY-al1" firstAttribute="leading" secondItem="VXh-sQ-LeX" secondAttribute="leading" id="6tC-PK-fYX"/>
@@ -123,12 +132,18 @@
                 <constraint firstItem="EJs-Ro-nbe" firstAttribute="trailing" secondItem="5Ci-V1-hf5" secondAttribute="trailing" id="l6Z-DK-OZi"/>
                 <constraint firstItem="81G-wH-fjN" firstAttribute="leading" secondItem="5Ci-V1-hf5" secondAttribute="trailing" constant="-25" id="nFH-Pc-end"/>
                 <constraint firstItem="EJs-Ro-nbe" firstAttribute="top" secondItem="VRH-IZ-lXO" secondAttribute="bottom" constant="9" id="o5n-Oi-Uh7"/>
+                <constraint firstItem="5Ci-V1-hf5" firstAttribute="trailing" secondItem="cgB-lu-t0g" secondAttribute="trailing" constant="2" id="q5r-Pz-Tnq"/>
                 <constraint firstItem="5Ci-V1-hf5" firstAttribute="leading" secondItem="VXh-sQ-LeX" secondAttribute="leading" id="qT3-WD-iTV"/>
                 <constraint firstItem="5Ci-V1-hf5" firstAttribute="top" secondItem="AYs-f2-vve" secondAttribute="bottom" constant="-25" id="rLL-6g-ypv"/>
                 <constraint firstItem="a0p-rj-jnV" firstAttribute="top" secondItem="5Ci-V1-hf5" secondAttribute="bottom" constant="-25" id="upV-Ov-WWd"/>
                 <constraint firstItem="12P-pO-DHO" firstAttribute="centerX" secondItem="vf1-Kf-9uL" secondAttribute="centerX" id="xhm-Np-2Ua"/>
             </constraints>
             <size key="customSize" width="416" height="524"/>
+            <variation key="default">
+                <mask key="subviews">
+                    <exclude reference="cgB-lu-t0g"/>
+                </mask>
+            </variation>
             <connections>
                 <outlet property="buttonMore" destination="EJs-Ro-nbe" id="BdI-ay-LuX"/>
                 <outlet property="imageFavorite" destination="AYs-f2-vve" id="UeH-R7-bZr"/>
@@ -146,6 +161,10 @@
     </objects>
     <resources>
         <image name="ellipsis" catalog="system" width="128" height="37"/>
+        <image name="star.fill" catalog="system" width="128" height="116"/>
+        <systemColor name="systemBackgroundColor">
+            <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
         <systemColor name="systemGray2Color">
             <color red="0.68235294117647061" green="0.68235294117647061" blue="0.69803921568627447" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
