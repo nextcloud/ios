@@ -29,6 +29,7 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
     @IBOutlet weak var imageSelect: UIImageView!
     @IBOutlet weak var imageStatus: UIImageView!
     @IBOutlet weak var imageFavorite: UIImageView!
+    @IBOutlet weak var imageFavoriteBackground: UIImageView!
     @IBOutlet weak var imageLocal: UIImageView!
     @IBOutlet weak var labelTitle: UILabel!
     @IBOutlet weak var labelInfo: UILabel!
@@ -91,15 +92,24 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
     }
     var fileStatusImage: UIImageView? {
         get { return imageStatus }
-        set { imageStatus = newValue }
+        set {
+            imageStatus = newValue
+            imageStatus.makeCircularBackground(withColor: .systemBackground)
+        }
     }
     var fileLocalImage: UIImageView? {
         get { return imageLocal }
-        set { imageLocal = newValue }
+        set {
+            imageLocal = newValue
+            imageLocal.makeCircularBackground(withColor: .systemBackground)
+        }
     }
     var fileFavoriteImage: UIImageView? {
         get { return imageFavorite }
-        set { imageFavorite = newValue }
+        set { 
+            imageFavorite = newValue
+//            imageFavoriteBackground.isHidden = false
+        }
     }
     var fileSharedImage: UIImageView? {
         get { return imageShared }
@@ -151,24 +161,25 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
         labelInfo.textColor = .systemGray
         labelSubinfo.textColor = .systemGray
 
-//        imageSelect.makeCircularBackground(withColor: .systemBackground)
-//
-//        imageSelect.makeCircularBackground(withColor: .systemBackground)
-        imageStatus.makeCircularBackground(withColor: .systemBackground)
-//        imageFavorite.makeCircularBackground(withColor: .systemBackground)
-        imageLocal.makeCircularBackground(withColor: .systemBackground)
+//        imageFavoriteBackground.isHidden = true
 
-//        let imageFavoriteOutline = UIImageView()
-//        imageFavoriteOutline.image = imageFavorite.image
-//        imageFavoriteOutline.frame = .init(x: 0, y: 0, width: imageFavorite.frame.width + 2, height: imageFavorite.frame.height + 2)
-//        imageFavoriteOutline.tintColor = .white
-//
-//        imageF
+
+//        if fileFavoriteImage?.image != nil {
+//            imageFavoriteBackground.isHidden = false
+//        } else {
+            imageFavoriteBackground.isHidden = true
+//        }
     }
 
     override func prepareForReuse() {
         super.prepareForReuse()
         imageItem.backgroundColor = nil
+        if fileFavoriteImage?.image != nil {
+                    imageFavoriteBackground.isHidden = false
+                } else {
+                    imageFavoriteBackground.isHidden = true
+                }
+//        fileFavoriteImage?.image = nil
         accessibilityHint = nil
         accessibilityLabel = nil
         accessibilityValue = nil
@@ -319,6 +330,22 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
                     tag1.text = "+\(tags.count - 1)"
                 }
             }
+        }
+    }
+
+    func setIconOutlines() {
+        imageFavoriteBackground.isHidden = fileFavoriteImage?.image == nil
+
+        if imageStatus.image != nil {
+            imageStatus.makeCircularBackground(withColor: .systemBackground)
+        } else {
+            imageStatus.backgroundColor = .clear
+        }
+
+        if imageLocal.image != nil {
+            imageLocal.makeCircularBackground(withColor: .systemBackground)
+        } else {
+            imageLocal.backgroundColor = .clear
         }
     }
 }

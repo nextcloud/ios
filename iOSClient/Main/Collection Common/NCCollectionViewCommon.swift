@@ -1476,6 +1476,8 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             cell.hideButtonMore(true)
         }
 
+        cell.setIconOutlines()
+
         return cell
     }
 
