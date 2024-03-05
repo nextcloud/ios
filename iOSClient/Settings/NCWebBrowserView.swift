@@ -9,10 +9,19 @@
 import SwiftUI
 import WebKit
 
+
+/// Returns a WebView preferably for Sheets in SwiftUI, using a UIViewRepresentable struct with WebKit library
+///
+/// - Parameters:
+///   - isPresented: A Bool value which initiates the webView in the parentView
+///   - urlBase: A URL value to which our view will open initially
+///   - browserTitle: A String value to show as the title of the webView
 struct NCBrowserWebView: View {
+
     @Binding var isPresented: Bool
     var urlBase: URL
     var browserTitle: String
+    
     @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
     
     var body: some View {

@@ -17,16 +17,9 @@ struct NCSettings: View {
     @State private var showBrowser = false
     /// State to control the visibility of the Source Code  view
     @State private var showSourceCode = false
-
-    /// Other temperory states/ will go inside viewModel
-    @State var passcode: String?
-    @State var enableTouchID: Bool
-    @State var lockScreen: Bool
-    @State var privacyScreen: Bool
-    @State var resetWrongAttempts: Bool
     
-    @State var isE2EEEnable: Bool = NCGlobal.shared.capabilityE2EEEnabled
-    @State var versionE2EE: String = NCGlobal.shared.capabilityE2EEApiVersion
+    /// Object of ViewModel of this view
+    @ObservedObject var viewModel = NCSettingsViewModel()
     
     var body: some View {
         Form {
@@ -54,31 +47,29 @@ struct NCSettings: View {
                         .frame(width: 20, height: 20)
                     Text(NSLocalizedString("_lock_active_", comment: ""))
                 }.onTapGesture {
-                    
+                    // TODO: This requires hefty testing, will add this afterwards
                 }
                 
                 // Enable Touch ID
-                Toggle(NSLocalizedString("_enable_touch_face_id_", comment: ""), isOn: $enableTouchID)
-                    .onChange(of: enableTouchID) { _ in
-                        
+                Toggle(NSLocalizedString("_enable_touch_face_id_", comment: ""), isOn: $viewModel.enableTouchID)
+                    .onChange(of: viewModel.enableTouchID) { _ in
+                        viewModel.updateTouchIDSetting()
                     }
                 
                 // Lock no screen
-                Toggle(NSLocalizedString("_lock_protection_no_screen_", comment: ""), isOn: $lockScreen)
-                    .onChange(of: lockScreen) { _ in
-                        
-                    }
+                Toggle(NSLocalizedString("_lock_protection_no_screen_", comment: ""), isOn: $viewModel.lockScreen) // TODO: This will also require KeychainManager, so will do it at last
+
                 
                 // Privacy screen
-                Toggle(NSLocalizedString("_privacy_screen_", comment: ""), isOn: $privacyScreen)
-                    .onChange(of: privacyScreen) { _ in
-                        
+                Toggle(NSLocalizedString("_privacy_screen_", comment: ""), isOn: $viewModel.privacyScreen)
+                    .onChange(of: viewModel.privacyScreen) { _ in
+                        viewModel.updatePrivacyScreenSetting()
                     }
                 
                 // Reset app wrong attempts
-                Toggle(NSLocalizedString("_reset_wrong_passcode_", comment: ""), isOn: $resetWrongAttempts)
-                    .onChange(of: resetWrongAttempts) { _ in
-                        
+                Toggle(NSLocalizedString("_reset_wrong_passcode_", comment: ""), isOn: $viewModel.resetWrongAttempts)
+                    .onChange(of: viewModel.resetWrongAttempts) { _ in
+                        viewModel.updateResetWrongAttemptsSetting()
                     }
             }, header: {
                 Text(NSLocalizedString("_privacy_", comment: ""))
@@ -98,7 +89,7 @@ struct NCSettings: View {
                             .frame(width: 20, height: 20)
                         Text(NSLocalizedString("_mobile_config_", comment: ""))
                     }.onTapGesture {
-                        
+                        viewModel.getConfigFiles()
                     }
                 }, header:{
                     Text(NSLocalizedString("_calendar_contacts_", comment: ""))
@@ -110,7 +101,7 @@ struct NCSettings: View {
             }
             
             /// `E2EEncryption` Section
-            if isE2EEEnable && NCGlobal.shared.e2eeVersions.contains(versionE2EE) {
+            if viewModel.isE2EEEnable && NCGlobal.shared.e2eeVersions.contains(viewModel.versionE2EE) {
                 Section(header: Text(NSLocalizedString("_e2e_settings_title_", comment: "")), content: {
                     HStack {
                         Image("lock")
@@ -119,7 +110,7 @@ struct NCSettings: View {
                             .frame(width: 20, height: 20)
                         Text(NSLocalizedString("_e2e_settings_", comment: ""))
                     }.onTapGesture {
-                        // Handle tap gesture
+                        // TODO: Handle tap gesture
                     }
                 })
             }
@@ -197,6 +188,6 @@ struct NCSettings: View {
 
  struct NCSettings_Previews: PreviewProvider {
      static var previews: some View {
-         NCSettings(enableTouchID: false, lockScreen: false, privacyScreen: false, resetWrongAttempts: false)
+         NCSettings()
      }
  }
