@@ -39,7 +39,7 @@ extension AppDelegate {
 
         actions.append(
             NCMenuAction(
-                title: NSLocalizedString("_upload_photos_videos_", comment: ""), icon: UIImage(systemName: "photo")!.image(color: UIColor.systemGray, width: 25, height: 20), action: { _ in
+                title: NSLocalizedString("_upload_photos_videos_", comment: ""), icon: UIImage(named: "file_photo")!.image(color: UIColor.systemGray, size: 50), action: { _ in
                     NCAskAuthorization().askAuthorizationPhotoLibrary(viewController: viewController) { hasPermission in
                         if hasPermission {NCPhotosPickerViewController(viewController: viewController, maxSelectedAssets: 0, singleSelectedMode: false)
                         }
@@ -85,7 +85,7 @@ extension AppDelegate {
 
         actions.append(
             NCMenuAction(
-                title: NSLocalizedString("_create_voice_memo_", comment: ""), icon: UIImage(systemName: "waveform.and.mic")!.image(color: UIColor.systemGray, size: 50), action: { _ in
+                title: NSLocalizedString("_create_voice_memo_", comment: ""), icon: UIImage(named: "microphone")!.image(color: UIColor.systemGray, size: 50), action: { _ in
                     NCAskAuthorization().askAuthorizationAudioRecord(viewController: viewController) { hasPermission in
                         if hasPermission {
                             if let viewController = UIStoryboard(name: "NCAudioRecorderViewController", bundle: nil).instantiateInitialViewController() as? NCAudioRecorderViewController {
@@ -135,7 +135,7 @@ extension AppDelegate {
         if NCGlobal.shared.capabilityServerVersionMajor >= NCGlobal.shared.nextcloudVersion18 && directory?.richWorkspace == nil && !isDirectoryE2EE && NextcloudKit.shared.isNetworkReachable() {
             actions.append(
                 NCMenuAction(
-                    title: NSLocalizedString("_add_folder_info_", comment: ""), icon: UIImage(systemName: "list.dash.header.rectangle")!.image(color: UIColor.systemGray, size: 50), action: { _ in
+                    title: NSLocalizedString("_add_folder_info_", comment: ""), icon: UIImage(named: "addFolderInfo")!.image(color: UIColor.systemGray, size: 50), action: { _ in
                         let richWorkspaceCommon = NCRichWorkspaceCommon()
                         if let viewController = self.activeViewController {
                             if NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView LIKE[c] %@", appDelegate.account, appDelegate.activeServerUrl, NCGlobal.shared.fileNameRichWorkspace.lowercased())) == nil {

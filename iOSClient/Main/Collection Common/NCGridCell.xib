@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="22505" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
-    <device id="retina4_7" orientation="portrait" appearance="light"/>
+    <device id="retina4_7" orientation="portrait" appearance="dark"/>
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="22504"/>
@@ -49,7 +49,7 @@
                     </label>
                     <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="star.fill" catalog="system" translatesAutoresizingMaskIntoConstraints="NO" id="cgB-lu-t0g">
                         <rect key="frame" x="388" y="21" width="26" height="26"/>
-                        <color key="tintColor" systemColor="systemBackgroundColor"/>
+                        <color key="tintColor" systemColor="tertiarySystemFillColor"/>
                         <constraints>
                             <constraint firstAttribute="width" constant="26" id="5aP-9X-SuS"/>
                             <constraint firstAttribute="height" constant="26" id="dat-R5-5vy"/>
@@ -57,6 +57,7 @@
                     </imageView>
                     <imageView userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="star.fill" catalog="system" translatesAutoresizingMaskIntoConstraints="NO" id="AYs-f2-vve" userLabel="imageFavorite">
                         <rect key="frame" x="391" y="24.5" width="20" height="20"/>
+                        <color key="tintColor" systemColor="separatorColor"/>
                         <constraints>
                             <constraint firstAttribute="height" constant="20" id="ZjS-Hv-JNm"/>
                             <constraint firstAttribute="width" constant="20" id="kDr-15-VeJ"/>
@@ -142,6 +143,7 @@
             <variation key="default">
                 <mask key="subviews">
                     <exclude reference="cgB-lu-t0g"/>
+                    <exclude reference="W0L-HY-al1"/>
                 </mask>
             </variation>
             <connections>
@@ -162,14 +164,17 @@
     <resources>
         <image name="ellipsis" catalog="system" width="128" height="37"/>
         <image name="star.fill" catalog="system" width="128" height="116"/>
-        <systemColor name="systemBackgroundColor">
-            <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        <systemColor name="separatorColor">
+            <color red="0.23529411764705882" green="0.23529411764705882" blue="0.2627450980392157" alpha="0.28999999999999998" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
         <systemColor name="systemGray2Color">
             <color red="0.68235294117647061" green="0.68235294117647061" blue="0.69803921568627447" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
         <systemColor name="systemGrayColor">
             <color red="0.55686274509803924" green="0.55686274509803924" blue="0.57647058823529407" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </systemColor>
+        <systemColor name="tertiarySystemFillColor">
+            <color red="0.46274509803921571" green="0.46274509803921571" blue="0.50196078431372548" alpha="0.12" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
     </resources>
 </document>
