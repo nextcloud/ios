@@ -392,10 +392,8 @@ extension NCMedia: UICollectionViewDataSource {
         cell.imageItem.contentMode = .scaleAspectFill
 
         if let image = getImage(metadata: metadata) {
-            cell.imageItem.backgroundColor = nil
             cell.imageItem.image = image
         } else if !metadata.hasPreview {
-            cell.imageItem.backgroundColor = nil
             cell.imageItem.contentMode = .center
             if metadata.isImage {
                 cell.imageItem.image = photoImage
