@@ -908,7 +908,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             if withQueryDB { self.queryDB() }
             self.isReloadDataSourceNetworkInProgress = false
             DispatchQueue.main.async {
-                self.setNavigationRightItems()
                 self.refreshControl.endRefreshing()
                 self.collectionView.reloadData()
             }
@@ -1860,7 +1859,7 @@ extension NCCollectionViewCommon: NCSelectableNavigationView, NCCollectionViewCo
     func createMenuActions() -> [UIMenuElement] {
         guard let layoutForView = NCManageDatabase.shared.getLayoutForView(account: appDelegate.account, key: layoutKey, serverUrl: serverUrl) else { return [] }
 
-        let select = UIAction(title: NSLocalizedString("_select_", comment: ""), image: .init(systemName: "checkmark.circle"), attributes: selectableDataSource.isEmpty ? .disabled : []) { _ in self.toggleSelect() }
+        let select = UIAction(title: NSLocalizedString("_select_", comment: ""), image: .init(systemName: "checkmark.circle")) { _ in self.toggleSelect() }
 
         let list = UIAction(title: NSLocalizedString("_list_", comment: ""), image: .init(systemName: "list.bullet"), state: layoutForView.layout == NCGlobal.shared.layoutList ? .on : .off) { _ in
             self.onListSelected()
@@ -1919,6 +1918,7 @@ extension NCCollectionViewCommon: NCSelectableNavigationView, NCCollectionViewCo
         let showDescription = UIAction(title: NSLocalizedString("_show_description_", comment: ""), image: UIImage(systemName: "list.dash.header.rectangle"), attributes: richWorkspaceText == nil ? .disabled : [], state: showDescriptionKeychain && richWorkspaceText != nil ? .on : .off) { _ in
             NCKeychain().showDescription = !showDescriptionKeychain
             self.collectionView.reloadData()
+            self.setNavigationRightItems()
         }
 
         showDescription.subtitle = richWorkspaceText == nil ? NSLocalizedString("_no_description_available_", comment: "") : ""
