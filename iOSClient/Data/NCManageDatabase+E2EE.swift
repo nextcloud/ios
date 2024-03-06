@@ -40,7 +40,7 @@ class tableE2eEncryptionV4: Object {
     @Persisted(primaryKey: true) var primaryKey = ""
     @Persisted var account = ""
     @Persisted var authenticationTag: String = ""
-    @Persisted var blob = ""
+    @Persisted var blob = "files"
     @Persisted var fileName = ""
     @Persisted var fileNameIdentifier = ""
     @Persisted var key = ""

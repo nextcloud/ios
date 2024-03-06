@@ -50,18 +50,27 @@ class NCNetworkingE2EE: NSObject {
                      e2eToken: String?,
                      completion: @escaping (_ account: String, _ version: String?, _ e2eMetadata: String?, _ signature: String?, _ data: Data?, _ error: NKError) -> Void) {
 
-        var options = NKRequestOptions(version: "v2")
-        NextcloudKit.shared.getE2EEMetadata(fileId: fileId, e2eToken: e2eToken, options: options) { account, e2eMetadata, signature, data, error in
-            if error == .success {
-                return completion(account, "v2", e2eMetadata, signature, data, error)
-            } else if error.errorCode == NCGlobal.shared.errorResourceNotFound {
-                return completion(account, "v2", e2eMetadata, signature, data, error)
-            } else {
-                options = NKRequestOptions(version: "v1")
-                NextcloudKit.shared.getE2EEMetadata(fileId: fileId, e2eToken: e2eToken, options: options) { account, e2eMetadata, signature, data, error in
-                    completion(account, "v1", e2eMetadata, signature, data, error)
+        switch NCGlobal.shared.capabilityE2EEApiVersion {
+        case NCGlobal.shared.e2eeVersionV11, NCGlobal.shared.e2eeVersionV12:
+            NextcloudKit.shared.getE2EEMetadata(fileId: fileId, e2eToken: e2eToken, options: NKRequestOptions(version: "v1")) { account, e2eMetadata, signature, data, error in
+                return completion(account, "v1", e2eMetadata, signature, data, error)
+            }
+        case NCGlobal.shared.e2eeVersionV20:
+            var options = NKRequestOptions(version: "v2")
+            NextcloudKit.shared.getE2EEMetadata(fileId: fileId, e2eToken: e2eToken, options: options) { account, e2eMetadata, signature, data, error in
+                if error == .success {
+                    return completion(account, "v2", e2eMetadata, signature, data, error)
+                } else if error.errorCode == NCGlobal.shared.errorResourceNotFound {
+                    return completion(account, "v2", e2eMetadata, signature, data, error)
+                } else {
+                    options = NKRequestOptions(version: "v1")
+                    NextcloudKit.shared.getE2EEMetadata(fileId: fileId, e2eToken: e2eToken, options: options) { account, e2eMetadata, signature, data, error in
+                        completion(account, "v1", e2eMetadata, signature, data, error)
+                    }
                 }
             }
+        default:
+            completion("", "v1", nil, nil, nil, NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "version e2ee not available"))
         }
     }
 
