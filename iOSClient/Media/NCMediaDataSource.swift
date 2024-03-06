@@ -49,6 +49,7 @@ extension NCMedia {
 
         guard loadingTask == nil,
               !isEditMode,
+              self.viewIfLoaded?.window != nil,
               let visibleCells = self.collectionView?.indexPathsForVisibleItems.sorted(by: { $0.row < $1.row }).compactMap({ self.collectionView?.cellForItem(at: $0) })
         else {
             return
