@@ -17,6 +17,7 @@
 		3781B9B023DB2B7E006B4B1D /* AppDelegate+Menu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3781B9AF23DB2B7E006B4B1D /* AppDelegate+Menu.swift */; };
 		8491B1CD273BBA82001C8C5B /* UIViewController+Menu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8491B1CC273BBA82001C8C5B /* UIViewController+Menu.swift */; };
 		AC2880D42B96FC0300A80156 /* NCSettingsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC2880D32B96FC0300A80156 /* NCSettingsViewModel.swift */; };
+		AC3575352B9896FE00D28E9C /* AutoUploadView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC3575342B9896FE00D28E9C /* AutoUploadView.swift */; };
 		AC454FF72B9585FB00BED89C /* AcknowledgementsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC454FF62B9585FB00BED89C /* AcknowledgementsView.swift */; };
 		AC454FF92B958B6A00BED89C /* NCWebBrowserView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC454FF82B958B6A00BED89C /* NCWebBrowserView.swift */; };
 		ACFC775B2B9368AA008BF302 /* OpenSSL in Frameworks */ = {isa = PBXBuildFile; productRef = ACFC775A2B9368AA008BF302 /* OpenSSL */; };
@@ -925,6 +926,7 @@
 		3781B9AF23DB2B7E006B4B1D /* AppDelegate+Menu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AppDelegate+Menu.swift"; sourceTree = "<group>"; };
 		8491B1CC273BBA82001C8C5B /* UIViewController+Menu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIViewController+Menu.swift"; sourceTree = "<group>"; };
 		AC2880D32B96FC0300A80156 /* NCSettingsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCSettingsViewModel.swift; sourceTree = "<group>"; };
+		AC3575342B9896FE00D28E9C /* AutoUploadView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AutoUploadView.swift; sourceTree = "<group>"; };
 		AC454FF62B9585FB00BED89C /* AcknowledgementsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AcknowledgementsView.swift; sourceTree = "<group>"; };
 		AC454FF82B958B6A00BED89C /* NCWebBrowserView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCWebBrowserView.swift; sourceTree = "<group>"; };
 		ACFC775E2B944B17008BF302 /* NCSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCSettings.swift; sourceTree = "<group>"; };
@@ -1705,13 +1707,21 @@
 			path = Menu;
 			sourceTree = "<group>";
 		};
-		ACFC77602B944B1E008BF302 /* Settings */ = {
+		AC3575332B9896E300D28E9C /* AutoUpload */ = {
+			isa = PBXGroup;
+			children = (
+				AC3575342B9896FE00D28E9C /* AutoUploadView.swift */,
+			);
+			path = AutoUpload;
+			sourceTree = "<group>";
+		};
+		ACFC77602B944B1E008BF302 /* SettingsView */ = {
 			isa = PBXGroup;
 			children = (
 				ACFC775E2B944B17008BF302 /* NCSettings.swift */,
 				AC2880D32B96FC0300A80156 /* NCSettingsViewModel.swift */,
 			);
-			path = Settings;
+			path = SettingsView;
 			sourceTree = "<group>";
 		};
 		AF8ED1FA2757821000B8DBC4 /* NextcloudUnitTests */ = {
@@ -2323,6 +2333,7 @@
 		F7ACE4281BAC0268006C0017 /* Settings */ = {
 			isa = PBXGroup;
 			children = (
+				AC3575332B9896E300D28E9C /* AutoUpload */,
 				F7ACE4291BAC0268006C0017 /* Acknowledgements.h */,
 				F7ACE42A1BAC0268006C0017 /* Acknowledgements.m */,
 				F7ACE42B1BAC0268006C0017 /* Acknowledgements.rtf */,
@@ -2341,7 +2352,7 @@
 				F7CB689F254169530050EC94 /* NCSettings.storyboard */,
 				F77910AA25DD53C700CEDB9E /* NCSettingsBundleHelper.swift */,
 				F77910A425DD517B00CEDB9E /* Settings.bundle */,
-				ACFC77602B944B1E008BF302 /* Settings */,
+				ACFC77602B944B1E008BF302 /* SettingsView */,
 				AC454FF62B9585FB00BED89C /* AcknowledgementsView.swift */,
 				AC454FF82B958B6A00BED89C /* NCWebBrowserView.swift */,
 			);
@@ -3979,6 +3990,7 @@
 				F75C0C4823D1FAE300163CC8 /* NCRichWorkspaceCommon.swift in Sources */,
 				F78ACD4A21903F850088454D /* NCTrashListCell+NCTrashCellProtocol.swift in Sources */,
 				F757CC8D29E82D0500F31428 /* NCGroupfolders.swift in Sources */,
+				AC3575352B9896FE00D28E9C /* AutoUploadView.swift in Sources */,
 				F760329F252F0F8E0015A421 /* NCTransferCell.swift in Sources */,
 				F3BB46542A3A1E9D00461F6E /* CCCellMore.swift in Sources */,
 				AF68326A27BE65A90010BF0B /* NCMenuAction.swift in Sources */,
