@@ -25,7 +25,7 @@ struct NCSettings: View {
         Form {
             /// `Auto Upload` Section
             Section {
-                NavigationLink(destination: EmptyView()) {
+                NavigationLink(destination: AutoUploadView()) {
                     HStack {
                         Image("autoUpload")
                             .resizable()
