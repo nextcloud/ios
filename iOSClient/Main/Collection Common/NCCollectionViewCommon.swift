@@ -915,7 +915,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     }
 
     @objc func reloadDataSourceNetwork() {
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+        DispatchQueue.main.async {
             self.isReloadDataSourceNetworkInProgress = true
             self.collectionView?.reloadData()
         }
