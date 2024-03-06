@@ -70,7 +70,7 @@ class NCFiles: NCCollectionViewCommon {
                 }
 
                 self.titleCurrentFolder = self.getNavigationTitle()
-                self.setNavigationItems()
+                self.setNavigationLeftItems()
 
                 self.reloadDataSource()
                 self.reloadDataSourceNetwork()

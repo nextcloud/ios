@@ -104,7 +104,7 @@ class NCTrash: UIViewController, NCTrashListCellDelegate, NCEmptyDataSetDelegate
             collectionView.collectionViewLayout = gridLayout
         }
 
-        setNavigationItems()
+        setNavigationLeftItems()
         reloadDataSource()
     }
 
@@ -115,7 +115,7 @@ class NCTrash: UIViewController, NCTrashListCellDelegate, NCEmptyDataSetDelegate
 
     override func viewWillDisappear(_ animated: Bool) {
         isEditMode = false
-        setNavigationItems()
+        setNavigationLeftItems()
     }
 
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {

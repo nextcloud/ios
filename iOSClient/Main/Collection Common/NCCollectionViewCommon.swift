@@ -90,7 +90,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         layoutForView?.layout == NCGlobal.shared.layoutList ? " - " : ""
     }
 
-
     // MARK: - View Life Cycle
 
     required init?(coder aDecoder: NSCoder) {
@@ -224,12 +223,14 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         navigationController?.navigationBar.prefersLargeTitles = true
         navigationController?.setNavigationBarHidden(false, animated: true)
         navigationController?.setNavigationBarAppearance()
-        setNavigationItems()
+        setNavigationLeftItems()
 
         // FIXME: iPAD PDF landscape mode iOS 16
         DispatchQueue.main.async {
             self.collectionView?.collectionViewLayout.invalidateLayout()
         }
+
+        setNavigationRightItems()
     }
 
     override func viewWillDisappear(_ animated: Bool) {
@@ -271,7 +272,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         self.tipView?.dismiss()
 
         isEditMode = false
-        setNavigationItems()
+        setNavigationLeftItems()
+        setNavigationRightItems()
     }
 
     func presentationControllerDidDismiss( _ presentationController: UIPresentationController) {
@@ -330,7 +332,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
               let error = userInfo["error"] as? NKError,
               error.errorCode != NCGlobal.shared.errorNotModified else { return }
 
-        setNavigationItems()
+        setNavigationLeftItems()
     }
 
     @objc func changeTheming() {
@@ -604,9 +606,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
     // MARK: - Layout
 
-    func setNavigationItems() {
-
-        self.setNavigationRightItems()
+    func setNavigationLeftItems() {
         navigationItem.title = titleCurrentFolder
 
         guard layoutKey == NCGlobal.shared.layoutViewFiles else { return }
@@ -908,6 +908,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             if withQueryDB { self.queryDB() }
             self.isReloadDataSourceNetworkInProgress = false
             DispatchQueue.main.async {
+                self.setNavigationRightItems()
                 self.refreshControl.endRefreshing()
                 self.collectionView.reloadData()
             }
@@ -1233,8 +1234,6 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
 
         let numberItems = dataSource.numberOfItemsInSection(section)
         emptyDataSet?.numberOfItemsInSection(numberItems, section: section)
-
-        setNavigationRightItems()
 
         return numberItems
     }
