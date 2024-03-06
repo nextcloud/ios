@@ -80,7 +80,7 @@ extension NCMedia {
         if lessDate == Date.distantFuture,
            greaterDate == Date.distantPast,
            (self.metadatas?.count ?? 0) > visibleCells.count {
-            NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Media search new media oops. something is bad")
+            NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Media search new media oops. something is bad (distantFuture, distantPast): \(self.activeAccount.account), \(self.appDelegate.account), \(self.metadatas?.count ?? 0)")
             return
         }
 
