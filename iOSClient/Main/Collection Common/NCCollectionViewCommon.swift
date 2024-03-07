@@ -64,7 +64,13 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     var listLayout: NCListLayout!
     var gridLayout: NCGridLayout!
     var literalSearch: String?
-    var isReloadDataSourceNetworkInProgress: Bool = false
+    var isReloadDataSourceNetworkInProgress: Bool = false {
+        didSet {
+            DispatchQueue.main.async {
+                self.setNavigationRightItems(enableMoreMenu: !self.isReloadDataSourceNetworkInProgress)
+            }
+        }
+    }
     var tabBarSelect: NCSelectableViewTabBar?
 
     var timerNotificationCenter: Timer?
@@ -908,7 +914,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             DispatchQueue.main.async {
                 self.refreshControl.endRefreshing()
                 self.collectionView.reloadData()
-                self.setNavigationRightItems(enableMoreMenu: !self.isReloadDataSourceNetworkInProgress)
             }
         }
     }
