@@ -64,7 +64,13 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     var listLayout: NCListLayout!
     var gridLayout: NCGridLayout!
     var literalSearch: String?
-    var isReloadDataSourceNetworkInProgress: Bool = false
+    var isReloadDataSourceNetworkInProgress: Bool = false {
+        didSet {
+            DispatchQueue.main.async {
+                self.setNavigationRightItems(enableMoreMenu: !self.isReloadDataSourceNetworkInProgress)
+            }
+        }
+    }
     var tabBarSelect: NCSelectableViewTabBar?
 
     var timerNotificationCenter: Timer?
@@ -89,7 +95,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     private var infoLabelsSeparator: String {
         layoutForView?.layout == NCGlobal.shared.layoutList ? " - " : ""
     }
-
 
     // MARK: - View Life Cycle
 
@@ -224,12 +229,14 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         navigationController?.navigationBar.prefersLargeTitles = true
         navigationController?.setNavigationBarHidden(false, animated: true)
         navigationController?.setNavigationBarAppearance()
-        setNavigationItems()
+        setNavigationLeftItems()
 
         // FIXME: iPAD PDF landscape mode iOS 16
         DispatchQueue.main.async {
             self.collectionView?.collectionViewLayout.invalidateLayout()
         }
+
+        setNavigationRightItems(enableMoreMenu: false)
     }
 
     override func viewWillDisappear(_ animated: Bool) {
@@ -270,8 +277,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         // TIP
         self.tipView?.dismiss()
 
-        isEditMode = false
-        setNavigationItems()
+        toggleSelect(isOn: false)
     }
 
     func presentationControllerDidDismiss( _ presentationController: UIPresentationController) {
@@ -330,7 +336,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
               let error = userInfo["error"] as? NKError,
               error.errorCode != NCGlobal.shared.errorNotModified else { return }
 
-        setNavigationItems()
+        setNavigationLeftItems()
     }
 
     @objc func changeTheming() {
@@ -604,9 +610,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
     // MARK: - Layout
 
-    func setNavigationItems() {
-
-        self.setNavigationRightItems()
+    func setNavigationLeftItems() {
         navigationItem.title = titleCurrentFolder
 
         guard layoutKey == NCGlobal.shared.layoutViewFiles else { return }
@@ -1234,8 +1238,6 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         let numberItems = dataSource.numberOfItemsInSection(section)
         emptyDataSet?.numberOfItemsInSection(numberItems, section: section)
 
-        setNavigationRightItems()
-
         return numberItems
     }
 
@@ -1659,7 +1661,7 @@ extension NCCollectionViewCommon: EasyTipViewDelegate {
 }
 
 extension NCCollectionViewCommon: NCSelectableNavigationView, NCCollectionViewCommonSelectTabBarDelegate {
-    func setNavigationRightItems() {
+    func setNavigationRightItems(enableMoreMenu: Bool = true) {
         var selectedMetadatas: [tableMetadata] = []
         var isAnyOffline = false
         var isAnyDirectory = false
@@ -1690,6 +1692,7 @@ extension NCCollectionViewCommon: NCSelectableNavigationView, NCCollectionViewCo
             }
 
             guard !isAnyOffline else { continue }
+
             if metadata.directory,
                let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", appDelegate.account, metadata.serverUrl + "/" + metadata.fileName)) {
                 isAnyOffline = directory.offline
@@ -1723,6 +1726,8 @@ extension NCCollectionViewCommon: NCSelectableNavigationView, NCCollectionViewCo
 
             let menu = UIMenu(children: createMenuActions())
             let menuButton = UIBarButtonItem(image: .init(systemName: "ellipsis.circle"), menu: menu)
+
+            menuButton.isEnabled = enableMoreMenu
 
             if layoutKey == NCGlobal.shared.layoutViewFiles {
                 navigationItem.rightBarButtonItems = [menuButton, notification]
@@ -1920,6 +1925,7 @@ extension NCCollectionViewCommon: NCSelectableNavigationView, NCCollectionViewCo
         let showDescription = UIAction(title: NSLocalizedString("_show_description_", comment: ""), image: UIImage(systemName: "list.dash.header.rectangle"), attributes: richWorkspaceText == nil ? .disabled : [], state: showDescriptionKeychain && richWorkspaceText != nil ? .on : .off) { _ in
             NCKeychain().showDescription = !showDescriptionKeychain
             self.collectionView.reloadData()
+            self.setNavigationRightItems()
         }
 
         showDescription.subtitle = richWorkspaceText == nil ? NSLocalizedString("_no_description_available_", comment: "") : ""

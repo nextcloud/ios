@@ -54,33 +54,33 @@ protocol NCSelectableNavigationView: AnyObject {
     var tabBarSelect: NCSelectableViewTabBar? { get set }
 
     func reloadDataSource(withQueryDB: Bool)
-    func setNavigationItems()
-    func setNavigationRightItems()
+    func setNavigationLeftItems()
+    func setNavigationRightItems(enableMoreMenu: Bool)
     func createMenuActions() -> [UIMenuElement]
 
-    func toggleSelect()
+    func toggleSelect(isOn: Bool?)
     func onListSelected()
     func onGridSelected()
 }
 
 extension NCSelectableNavigationView {
-    func setNavigationItems() {
-        setNavigationRightItems()
-    }
+    func setNavigationLeftItems() {}
 
     func saveLayout(_ layoutForView: NCDBLayoutForView) {
         NCManageDatabase.shared.setLayoutForView(layoutForView: layoutForView)
         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSource)
 
-        setNavigationRightItems()
+        setNavigationRightItems(enableMoreMenu: true)
     }
 
-    func toggleSelect() {
+    /// If explicit `isOn` is not set, it will invert `isEditMode`
+    func toggleSelect(isOn: Bool? = nil) {
         DispatchQueue.main.async {
-            self.isEditMode = !self.isEditMode
+            self.isEditMode = isOn ?? !self.isEditMode
             self.selectOcId.removeAll()
             self.selectIndexPath.removeAll()
-            self.setNavigationItems()
+            self.setNavigationLeftItems()
+            self.setNavigationRightItems(enableMoreMenu: true)
             self.collectionView.reloadData()
         }
     }
@@ -88,7 +88,7 @@ extension NCSelectableNavigationView {
     func collectionViewSelectAll() {
         selectOcId = selectableDataSource.compactMap({ $0.primaryKeyValue })
         collectionView.reloadData()
-        self.setNavigationRightItems()
+        setNavigationRightItems(enableMoreMenu: true)
     }
 
     func tapNotification() {
