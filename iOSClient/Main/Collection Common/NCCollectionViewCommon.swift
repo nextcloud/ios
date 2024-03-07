@@ -64,7 +64,13 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     var listLayout: NCListLayout!
     var gridLayout: NCGridLayout!
     var literalSearch: String?
-    var isReloadDataSourceNetworkInProgress: Bool = false
+    var isReloadDataSourceNetworkInProgress: Bool = false {
+        didSet {
+            DispatchQueue.main.async {
+                self.setNavigationRightItems(enableMoreMenu: !self.isReloadDataSourceNetworkInProgress)
+            }
+        }
+    }
     var tabBarSelect: NCSelectableViewTabBar?
 
     var timerNotificationCenter: Timer?
@@ -230,7 +236,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             self.collectionView?.collectionViewLayout.invalidateLayout()
         }
 
-        setNavigationRightItems()
+        setNavigationRightItems(enableMoreMenu: false)
     }
 
     override func viewWillDisappear(_ animated: Bool) {
@@ -271,9 +277,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         // TIP
         self.tipView?.dismiss()
 
-        isEditMode = false
-        setNavigationLeftItems()
-        setNavigationRightItems()
+        toggleSelect(isOn: false)
     }
 
     func presentationControllerDidDismiss( _ presentationController: UIPresentationController) {
@@ -1657,7 +1661,7 @@ extension NCCollectionViewCommon: EasyTipViewDelegate {
 }
 
 extension NCCollectionViewCommon: NCSelectableNavigationView, NCCollectionViewCommonSelectTabBarDelegate {
-    func setNavigationRightItems() {
+    func setNavigationRightItems(enableMoreMenu: Bool = true) {
         var selectedMetadatas: [tableMetadata] = []
         var isAnyOffline = false
         var isAnyDirectory = false
@@ -1688,6 +1692,7 @@ extension NCCollectionViewCommon: NCSelectableNavigationView, NCCollectionViewCo
             }
 
             guard !isAnyOffline else { continue }
+
             if metadata.directory,
                let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", appDelegate.account, metadata.serverUrl + "/" + metadata.fileName)) {
                 isAnyOffline = directory.offline
@@ -1721,6 +1726,7 @@ extension NCCollectionViewCommon: NCSelectableNavigationView, NCCollectionViewCo
 
             let menu = UIMenu(children: createMenuActions())
             let menuButton = UIBarButtonItem(image: .init(systemName: "ellipsis.circle"), menu: menu)
+            menuButton.isEnabled = enableMoreMenu
 
             if layoutKey == NCGlobal.shared.layoutViewFiles {
                 navigationItem.rightBarButtonItems = [menuButton, notification]
@@ -1859,7 +1865,7 @@ extension NCCollectionViewCommon: NCSelectableNavigationView, NCCollectionViewCo
     func createMenuActions() -> [UIMenuElement] {
         guard let layoutForView = NCManageDatabase.shared.getLayoutForView(account: appDelegate.account, key: layoutKey, serverUrl: serverUrl) else { return [] }
 
-        let select = UIAction(title: NSLocalizedString("_select_", comment: ""), image: .init(systemName: "checkmark.circle")) { _ in self.toggleSelect() }
+        let select = UIAction(title: NSLocalizedString("_select_", comment: ""), image: .init(systemName: "checkmark.circle"), attributes: selectableDataSource.isEmpty ? .disabled : []) { _ in self.toggleSelect() }
 
         let list = UIAction(title: NSLocalizedString("_list_", comment: ""), image: .init(systemName: "list.bullet"), state: layoutForView.layout == NCGlobal.shared.layoutList ? .on : .off) { _ in
             self.onListSelected()
@@ -1915,6 +1921,7 @@ extension NCCollectionViewCommon: NCSelectableNavigationView, NCCollectionViewCo
 
         let showDescriptionKeychain = NCKeychain().showDescription
 
+        print(richWorkspaceText)
         let showDescription = UIAction(title: NSLocalizedString("_show_description_", comment: ""), image: UIImage(systemName: "list.dash.header.rectangle"), attributes: richWorkspaceText == nil ? .disabled : [], state: showDescriptionKeychain && richWorkspaceText != nil ? .on : .off) { _ in
             NCKeychain().showDescription = !showDescriptionKeychain
             self.collectionView.reloadData()
