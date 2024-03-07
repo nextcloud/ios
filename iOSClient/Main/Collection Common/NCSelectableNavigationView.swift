@@ -65,7 +65,6 @@ protocol NCSelectableNavigationView: AnyObject {
 
 extension NCSelectableNavigationView {
     func setNavigationLeftItems() {}
-//    func setNavigationRightItems(enableMoreMenu: Bool = true) {}
 
     func saveLayout(_ layoutForView: NCDBLayoutForView) {
         NCManageDatabase.shared.setLayoutForView(layoutForView: layoutForView)

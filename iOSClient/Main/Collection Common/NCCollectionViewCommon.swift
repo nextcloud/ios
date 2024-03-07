@@ -64,13 +64,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     var listLayout: NCListLayout!
     var gridLayout: NCGridLayout!
     var literalSearch: String?
-    var isReloadDataSourceNetworkInProgress: Bool = false {
-        didSet {
-            DispatchQueue.main.async {
-                self.setNavigationRightItems(enableMoreMenu: !self.isReloadDataSourceNetworkInProgress)
-            }
-        }
-    }
+    var isReloadDataSourceNetworkInProgress: Bool = false
     var tabBarSelect: NCSelectableViewTabBar?
 
     var timerNotificationCenter: Timer?
@@ -914,6 +908,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             DispatchQueue.main.async {
                 self.refreshControl.endRefreshing()
                 self.collectionView.reloadData()
+                self.setNavigationRightItems(enableMoreMenu: !self.isReloadDataSourceNetworkInProgress)
             }
         }
     }
@@ -1726,6 +1721,7 @@ extension NCCollectionViewCommon: NCSelectableNavigationView, NCCollectionViewCo
 
             let menu = UIMenu(children: createMenuActions())
             let menuButton = UIBarButtonItem(image: .init(systemName: "ellipsis.circle"), menu: menu)
+
             menuButton.isEnabled = enableMoreMenu
 
             if layoutKey == NCGlobal.shared.layoutViewFiles {
@@ -1921,7 +1917,6 @@ extension NCCollectionViewCommon: NCSelectableNavigationView, NCCollectionViewCo
 
         let showDescriptionKeychain = NCKeychain().showDescription
 
-        print(richWorkspaceText)
         let showDescription = UIAction(title: NSLocalizedString("_show_description_", comment: ""), image: UIImage(systemName: "list.dash.header.rectangle"), attributes: richWorkspaceText == nil ? .disabled : [], state: showDescriptionKeychain && richWorkspaceText != nil ? .on : .off) { _ in
             NCKeychain().showDescription = !showDescriptionKeychain
             self.collectionView.reloadData()
