@@ -1976,7 +1976,7 @@ extension NCCollectionViewCommon {
             return
         }
 
-        // DOWNLOAD
+        // DOWNLOAD FOREGROUND
         if metadata.session == NextcloudKit.shared.nkCommonInstance.sessionIdentifierDownload {
             if let request = NCNetworking.shared.downloadRequest[fileNameLocalPath] {
                 request.cancel()
@@ -1993,6 +1993,18 @@ extension NCCollectionViewCommon {
                                                            "account": metadata.account])
             }
             return
+        }
+
+        // DOWNLOAD BACKGROUND
+        if metadata.session == NCNetworking.shared.sessionDownloadBackground {
+            let session: URLSession? = NCNetworking.shared.sessionManagerDownloadBackground
+            if let tasks = await session?.tasks {
+                for task in tasks.2 { // ([URLSessionDataTask], [URLSessionUploadTask], [URLSessionDownloadTask])
+                    if task.taskIdentifier == metadata.sessionTaskIdentifier {
+                        task.cancel()
+                    }
+                }
+            }
         }
 
         // UPLOAD FOREGROUND
