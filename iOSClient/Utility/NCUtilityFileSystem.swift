@@ -102,11 +102,11 @@ class NCUtilityFileSystem: NSObject {
     }
 
     func getDirectoryProviderStorageIconOcId(_ ocId: String, etag: String) -> String {
-        return getDirectoryProviderStorageOcId(ocId) + "/" + etag + ".small." + NCGlobal.shared.extensionPreview
+        return getDirectoryProviderStorageOcId(ocId) + "/" + etag + ".small.ico"
     }
 
     func getDirectoryProviderStoragePreviewOcId(_ ocId: String, etag: String) -> String {
-        return getDirectoryProviderStorageOcId(ocId) + "/" + etag + ".preview." + NCGlobal.shared.extensionPreview
+        return getDirectoryProviderStorageOcId(ocId) + "/" + etag + ".preview.ico"
     }
 
     func fileProviderStorageExists(_ metadata: tableMetadata) -> Bool {
@@ -546,7 +546,7 @@ class NCUtilityFileSystem: NSObject {
                 if let attributes = try? manager.attributesOfItem(atPath: fileURL.path) {
                     if attributes[.size] as? Double == 0 { continue }
                     if attributes[.type] as? FileAttributeType == FileAttributeType.typeDirectory { continue }
-                    if fileURL.pathExtension == NCGlobal.shared.extensionPreview { continue }
+                    if fileURL.pathExtension == "ico" { continue }
                     // check directory offline
                     let filter = offlineDir.filter({ fileURL.path.hasPrefix($0)})
                     if !filter.isEmpty { continue }

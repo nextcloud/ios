@@ -58,7 +58,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
         reloadDataSource()
     }
 
-    override func setNavigationItems() {
+    override func setNavigationLeftItems() {
         self.navigationItem.rightBarButtonItem = nil
         self.navigationItem.leftBarButtonItem = nil
     }
@@ -98,6 +98,15 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
     override func uploadCancelFile(_ notification: NSNotification) {
 
         notificationReloadDataSource += 1
+    }
+
+    // MARK: - Empty
+
+    override func emptyDataSetView(_ view: NCEmptyView) {
+        self.emptyDataSet?.setOffset(getHeaderHeight())
+        view.emptyImage.image = emptyImage
+        view.emptyTitle.text = NSLocalizedString(emptyTitle, comment: "")
+        view.emptyDescription.text = NSLocalizedString(emptyDescription, comment: "")
     }
 
     // MARK: TAP EVENT

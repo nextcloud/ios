@@ -153,7 +153,7 @@ class NCNetworkingE2EECreateFolder: NSObject {
         }
         let metadata = NCManageDatabase.shared.convertFileToMetadata(file, isDirectoryE2EE: true)
         NCManageDatabase.shared.addMetadata(metadata)
-        NCManageDatabase.shared.addDirectory(encrypted: true, favorite: metadata.favorite, ocId: metadata.ocId, fileId: metadata.fileId, etag: nil, permissions: metadata.permissions, serverUrl: serverUrlFileName, account: metadata.account)
+        NCManageDatabase.shared.addDirectory(e2eEncrypted: true, favorite: metadata.favorite, ocId: metadata.ocId, fileId: metadata.fileId, permissions: metadata.permissions, serverUrl: serverUrlFileName, account: metadata.account)
 
         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterCreateFolder, userInfo: ["ocId": ocId, "serverUrl": serverUrl, "account": account, "withPush": withPush])
 

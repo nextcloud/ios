@@ -55,8 +55,8 @@ class NCSectionHeaderMenu: UICollectionReusableView, UIGestureRecognizerDelegate
         backgroundColor = .clear
 
         // Gradient
-        gradient.startPoint = CGPoint(x: 0, y: 0.50)
-        gradient.endPoint = CGPoint(x: 0, y: 1)
+        gradient.startPoint = CGPoint(x: 0, y: 0.8)
+        gradient.endPoint = CGPoint(x: 0, y: 0.9)
         viewRichWorkspace.layer.addSublayer(gradient)
 
         let tap = UITapGestureRecognizer(target: self, action: #selector(touchUpInsideViewRichWorkspace(_:)))

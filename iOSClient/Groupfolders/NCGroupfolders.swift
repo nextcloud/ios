@@ -93,7 +93,7 @@ class NCGroupfolders: NCCollectionViewCommon {
                                 let isDirectoryE2EE = self.utilityFileSystem.isDirectoryE2EE(file: file)
                                 let metadata = NCManageDatabase.shared.convertFileToMetadata(file, isDirectoryE2EE: isDirectoryE2EE)
                                 NCManageDatabase.shared.addMetadata(metadata)
-                                NCManageDatabase.shared.addDirectory(encrypted: isDirectoryE2EE, favorite: metadata.favorite, ocId: metadata.ocId, fileId: metadata.fileId, etag: nil, permissions: metadata.permissions, serverUrl: serverUrlFileName, account: metadata.account)
+                                NCManageDatabase.shared.addDirectory(e2eEncrypted: isDirectoryE2EE, favorite: metadata.favorite, ocId: metadata.ocId, fileId: metadata.fileId, permissions: metadata.permissions, serverUrl: serverUrlFileName, account: metadata.account)
                             }
                         }
                     }

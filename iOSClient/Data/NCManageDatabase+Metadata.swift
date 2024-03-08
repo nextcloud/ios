@@ -121,6 +121,7 @@ class tableMetadata: Object, NCUserBaseUrl {
     @objc dynamic var userId = ""
     @objc dynamic var latitude: Double = 0
     @objc dynamic var longitude: Double = 0
+    @objc dynamic var altitude: Double = 0
     @objc dynamic var height: Int = 0
     @objc dynamic var width: Int = 0
     @objc dynamic var errorCode: Int = 0
@@ -272,6 +273,14 @@ extension tableMetadata {
         !isFlaggedAsLivePhotoByServer
     }
 
+    var imageSize: CGSize {
+        CGSize(width: width, height: height)
+    }
+
+    var hasPreviewBorder: Bool {
+        !isImage && !isAudioOrVideo && hasPreview && NCUtilityFileSystem().fileProviderStoragePreviewIconExists(ocId, etag: etag)
+    }
+
     /// Returns false if the user is lokced out of the file. I.e. The file is locked but by somone else
     func canUnlock(as user: String) -> Bool {
         return !lock || (lockOwner == user && lockOwnerType == 0)
@@ -360,8 +369,9 @@ extension NCManageDatabase {
         metadata.userId = file.userId
         metadata.latitude = file.latitude
         metadata.longitude = file.longitude
-        metadata.height = file.height
-        metadata.width = file.width
+        metadata.altitude = file.altitude
+        metadata.height = Int(file.height)
+        metadata.width = Int(file.width)
         metadata.livePhotoFile = file.livePhotoFile
         metadata.isFlaggedAsLivePhotoByServer = file.isFlaggedAsLivePhotoByServer
 

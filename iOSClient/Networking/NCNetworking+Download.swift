@@ -113,19 +113,21 @@ extension NCNetworking {
         }) { _, etag, date, length, allHeaderFields, afError, error in
 
             var error = error
-            self.downloadRequest.removeValue(forKey: fileNameLocalPath)
-
             var dateLastModified: NSDate?
-            if let downloadTask = downloadTask {
-                if let header = allHeaderFields, let dateString = header["Last-Modified"] as? String {
-                    dateLastModified = NextcloudKit.shared.nkCommonInstance.convertDate(dateString, format: "EEE, dd MMM y HH:mm:ss zzz")
+            self.downloadRequest.removeValue(forKey: fileNameLocalPath)
+            // this delay was added because for small file the "taskHandler: { task" is not called, so this part of code is not executed
+            NextcloudKit.shared.nkCommonInstance.backgroundQueue.asyncAfter(deadline: .now() + 0.5) {
+                if let downloadTask = downloadTask {
+                    if let header = allHeaderFields, let dateString = header["Last-Modified"] as? String {
+                        dateLastModified = NextcloudKit.shared.nkCommonInstance.convertDate(dateString, format: "EEE, dd MMM y HH:mm:ss zzz")
+                    }
+                    if afError?.isExplicitlyCancelledError ?? false {
+                        error = NKError(errorCode: NCGlobal.shared.errorRequestExplicityCancelled, errorDescription: "error request explicity cancelled")
+                    }
+                    self.downloadComplete(fileName: metadata.fileName, serverUrl: metadata.serverUrl, etag: etag, date: date, dateLastModified: dateLastModified, length: length, fileNameLocalPath: fileNameLocalPath, task: downloadTask, error: error)
                 }
-                if afError?.isExplicitlyCancelledError ?? false {
-                    error = NKError(errorCode: NCGlobal.shared.errorRequestExplicityCancelled, errorDescription: "error request explicity cancelled")
-                }
-                self.downloadComplete(fileName: metadata.fileName, serverUrl: metadata.serverUrl, etag: etag, date: date, dateLastModified: dateLastModified, length: length, fileNameLocalPath: fileNameLocalPath, task: downloadTask, error: error)
+                completion(afError, error)
             }
-            completion(afError, error)
         }
     }
 

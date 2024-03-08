@@ -104,7 +104,7 @@ class NCTrash: UIViewController, NCTrashListCellDelegate, NCEmptyDataSetDelegate
             collectionView.collectionViewLayout = gridLayout
         }
 
-        setNavigationItems()
+        setNavigationLeftItems()
         reloadDataSource()
     }
 
@@ -115,7 +115,7 @@ class NCTrash: UIViewController, NCTrashListCellDelegate, NCEmptyDataSetDelegate
 
     override func viewWillDisappear(_ animated: Bool) {
         isEditMode = false
-        setNavigationItems()
+        setNavigationLeftItems()
     }
 
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
@@ -324,7 +324,7 @@ extension NCTrash: NCSelectableNavigationView, NCTrashSelectTabBarDelegate {
         ""
     }
 
-    func setNavigationRightItems() {
+    func setNavigationRightItems(enableMoreMenu: Bool = true) {
         guard let tabBarSelect = tabBarSelect as? NCTrashSelectTabBar else { return }
 
         tabBarSelect.isSelectedEmpty = selectOcId.isEmpty
@@ -340,6 +340,7 @@ extension NCTrash: NCSelectableNavigationView, NCTrashSelectTabBarDelegate {
 
             let menu = UIMenu(children: createMenuActions())
             let menuButton = UIBarButtonItem(image: .init(systemName: "ellipsis.circle"), menu: menu)
+            menuButton.isEnabled = enableMoreMenu
 
             navigationItem.rightBarButtonItems = [menuButton]
         }
