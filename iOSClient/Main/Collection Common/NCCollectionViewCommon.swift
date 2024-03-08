@@ -1717,13 +1717,16 @@ extension NCCollectionViewCommon: NCSelectableNavigationView, NCCollectionViewCo
             navigationItem.rightBarButtonItems = [select]
         } else {
             tabBarSelect.hide()
-            let notification = UIBarButtonItem(image: .init(systemName: "bell"), style: .plain, action: tapNotification)
-            let menu = UIMenu(children: createMenuActions())
-            let menuButton = UIBarButtonItem(image: .init(systemName: "ellipsis.circle"), menu: menu)
-            if layoutKey == NCGlobal.shared.layoutViewFiles {
-                navigationItem.rightBarButtonItems = [menuButton, notification]
+            if navigationItem.rightBarButtonItems?.first?.menu == nil {
+                let menuButton = UIBarButtonItem(image: .init(systemName: "ellipsis.circle"), menu: UIMenu(children: createMenuActions()))
+                if layoutKey == NCGlobal.shared.layoutViewFiles {
+                    let notification = UIBarButtonItem(image: .init(systemName: "bell"), style: .plain, action: tapNotification)
+                    navigationItem.rightBarButtonItems = [menuButton, notification]
+                } else {
+                    navigationItem.rightBarButtonItems = [menuButton]
+                }
             } else {
-                navigationItem.rightBarButtonItems = [menuButton]
+                navigationItem.rightBarButtonItems?.first?.menu = navigationItem.rightBarButtonItems?.first?.menu?.replacingChildren(createMenuActions())
             }
         }
     }
