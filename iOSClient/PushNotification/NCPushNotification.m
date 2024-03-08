@@ -107,12 +107,14 @@
     NSString *proxyServerPath = [NCBrandOptions shared].pushNotificationServerProxy;
     NKRequestOptions *options = [[NKRequestOptions alloc] initWithEndpoint:nil version:nil customHeader:nil customUserAgent:nil contentType:nil e2eToken:nil timeout:60 queue:dispatch_get_main_queue()];
 
-    [[NextcloudKit shared] subscribingPushNotificationWithServerUrl:urlBase account:account user:user password:[[[NCKeychain alloc] init] getPasswordWithAccount:account] pushTokenHash:pushTokenHash devicePublicKey:pushDevicePublicKey proxyServerUrl:proxyServerPath options:options completion:^(NSString *account, NSString *deviceIdentifier, NSString *signature, NSString *publicKey, NSData *data, NKError *error) {
+    [[NextcloudKit shared] subscribingPushNotificationWithServerUrl:urlBase account:account user:user password:[[[NCKeychain alloc] init] getPasswordWithAccount:account] pushTokenHash:pushTokenHash devicePublicKey:pushDevicePublicKey proxyServerUrl:proxyServerPath options:options taskHandler:^(NSURLSessionTask *task) {
+    } completion:^(NSString *account, NSString *deviceIdentifier, NSString *signature, NSString *publicKey, NSData *data, NKError *error) {
         if (error == NKError.success) {
             NSString *userAgent = [NSString stringWithFormat:@"%@  (Strict VoIP)", [[NCBrandOptions shared] getUserAgent]];
             NKRequestOptions *options = [[NKRequestOptions alloc] initWithEndpoint:nil version:nil customHeader:nil customUserAgent:userAgent contentType:nil e2eToken:nil timeout:60 queue:dispatch_get_main_queue()];
 
-            [[NextcloudKit shared] subscribingPushProxyWithProxyServerUrl:proxyServerPath pushToken:self.pushKitToken deviceIdentifier:deviceIdentifier signature:signature publicKey:publicKey options:options completion:^(NKError *error) {
+            [[NextcloudKit shared] subscribingPushProxyWithProxyServerUrl:proxyServerPath pushToken:self.pushKitToken deviceIdentifier:deviceIdentifier signature:signature publicKey:publicKey options:options taskHandler:^(NSURLSessionTask *task) {
+            } completion:^(NKError *error) {
                 if (error == NKError.success) {
 
                     [[[NextcloudKit shared] nkCommonInstance] writeLog:@"[INFO] Subscribed to Push Notification server & proxy successfully"];
@@ -136,13 +138,15 @@
     NSString *publicKey = [[[NCKeychain alloc] init] getPushNotificationSubscribingPublicKeyWithAccount:account];
     NKRequestOptions *options = [[NKRequestOptions alloc] initWithEndpoint:nil version:nil customHeader:nil customUserAgent:nil contentType:nil e2eToken:nil timeout:60 queue:dispatch_get_main_queue()];
 
-    [[NextcloudKit shared] unsubscribingPushNotificationWithServerUrl:urlBase account:account user:user password:[[[NCKeychain alloc] init] getPasswordWithAccount:account] options:options completion:^(NSString *account, NKError *error) {
+    [[NextcloudKit shared] unsubscribingPushNotificationWithServerUrl:urlBase account:account user:user password:[[[NCKeychain alloc] init] getPasswordWithAccount:account] options:options taskHandler:^(NSURLSessionTask *task) {
+    } completion:^(NSString *account, NKError *error) {
         if (error == NKError.success) {
             NSString *proxyServerPath = [NCBrandOptions shared].pushNotificationServerProxy;
             NSString *userAgent = [NSString stringWithFormat:@"%@  (Strict VoIP)", [[NCBrandOptions shared] getUserAgent]];
             NKRequestOptions *options = [[NKRequestOptions alloc] initWithEndpoint:nil version:nil customHeader:nil customUserAgent:userAgent contentType:nil e2eToken:nil timeout:60 queue:dispatch_get_main_queue()];
 
-            [[NextcloudKit shared] unsubscribingPushProxyWithProxyServerUrl:proxyServerPath deviceIdentifier:deviceIdentifier signature:signature publicKey:publicKey options:options completion:^(NKError *error) {
+            [[NextcloudKit shared] unsubscribingPushProxyWithProxyServerUrl:proxyServerPath deviceIdentifier:deviceIdentifier signature:signature publicKey:publicKey options:options taskHandler:^(NSURLSessionTask *task) {
+            } completion:^(NKError *error) {
                 if (error == NKError.success) {
                 
                     [[[NextcloudKit shared] nkCommonInstance] writeLog:@"[INFO] Unsubscribed to Push Notification server & proxy successfully."];
