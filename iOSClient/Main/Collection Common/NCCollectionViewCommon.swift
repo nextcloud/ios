@@ -1720,9 +1720,6 @@ extension NCCollectionViewCommon: NCSelectableNavigationView, NCCollectionViewCo
             let notification = UIBarButtonItem(image: .init(systemName: "bell"), style: .plain, action: tapNotification)
             let menu = UIMenu(children: createMenuActions())
             let menuButton = UIBarButtonItem(image: .init(systemName: "ellipsis.circle"), menu: menu)
-
-            menuButton.isEnabled = true // enableMoreMenu
-
             if layoutKey == NCGlobal.shared.layoutViewFiles {
                 navigationItem.rightBarButtonItems = [menuButton, notification]
             } else {
