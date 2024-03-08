@@ -731,13 +731,16 @@ extension NCNetworking {
     /// WebDAV search
     func searchFiles(urlBase: NCUserBaseUrl,
                      literal: String,
+                     taskHandler: @escaping (_ task: URLSessionTask) -> Void = { _ in },
                      completion: @escaping (_ metadatas: [tableMetadata]?, _ error: NKError) -> Void) {
 
         NextcloudKit.shared.searchLiteral(serverUrl: urlBase.urlBase,
                                           depth: "infinity",
                                           literal: literal,
                                           showHiddenFiles: NCKeychain().showHiddenFiles,
-                                          options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { account, files, _, error in
+                                          options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { task in
+            taskHandler(task)
+        } completion: { account, files, _, error in
 
             guard error == .success else {
                 return completion(nil, error)
@@ -762,6 +765,7 @@ extension NCNetworking {
     ///
     func unifiedSearchFiles(userBaseUrl: NCUserBaseUrl,
                             literal: String,
+                            taskHandler: @escaping (_ task: URLSessionTask) -> Void = { _ in },
                             providers: @escaping (_ accout: String, _ searchProviders: [NKSearchProvider]?) -> Void,
                             update: @escaping (_ account: String, _ id: String, NKSearchResult?, [tableMetadata]?) -> Void,
                             completion: @escaping (_ account: String, _ error: NKError) -> Void) {
@@ -780,6 +784,8 @@ extension NCNetworking {
             if let request = request {
                 self.requestsUnifiedSearch.append(request)
             }
+        } taskHandler: { task in
+            taskHandler(task)
         } providers: { account, searchProviders in
             providers(account, searchProviders)
         } update: { account, partialResult, provider, _ in
@@ -838,11 +844,14 @@ extension NCNetworking {
     func unifiedSearchFilesProvider(userBaseUrl: NCUserBaseUrl,
                                     id: String, term: String,
                                     limit: Int, cursor: Int,
+                                    taskHandler: @escaping (_ task: URLSessionTask) -> Void = { _ in },
                                     completion: @escaping (_ account: String, _ searchResult: NKSearchResult?, _ metadatas: [tableMetadata]?, _ error: NKError) -> Void) {
 
         var metadatas: [tableMetadata] = []
 
-        let request = NextcloudKit.shared.searchProvider(id, account: userBaseUrl.account, term: term, limit: limit, cursor: cursor, timeout: 60) { account, searchResult, _, error in
+        let request = NextcloudKit.shared.searchProvider(id, account: userBaseUrl.account, term: term, limit: limit, cursor: cursor, timeout: 60) { task in
+            taskHandler(task)
+        } completion: { account, searchResult, _, error in
             guard let searchResult = searchResult else {
                 completion(account, nil, metadatas, error)
                 return

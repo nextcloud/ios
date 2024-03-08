@@ -135,8 +135,10 @@ class NCRecent: NCCollectionViewCommon {
         NextcloudKit.shared.searchBodyRequest(serverUrl: appDelegate.urlBase,
                                               requestBody: requestBody,
                                               showHiddenFiles: NCKeychain().showHiddenFiles,
-                                              options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { account, files, _, error in
-
+                                              options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { task in
+            self.task = task
+            self.collectionView.reloadData()
+        } completion: { account, files, _, error in
             if error == .success {
                 NCManageDatabase.shared.convertFilesToMetadatas(files, useMetadataFolder: false) { _, metadatasFolder, metadatas in
                     // Update sub directories
