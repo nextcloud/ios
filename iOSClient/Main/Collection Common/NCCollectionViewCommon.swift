@@ -222,14 +222,14 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         navigationController?.navigationBar.prefersLargeTitles = true
         navigationController?.setNavigationBarHidden(false, animated: true)
         navigationController?.setNavigationBarAppearance()
+
         setNavigationLeftItems()
+        setNavigationRightItems()
 
         // FIXME: iPAD PDF landscape mode iOS 16
         DispatchQueue.main.async {
             self.collectionView?.collectionViewLayout.invalidateLayout()
         }
-
-        setNavigationRightItems()
     }
 
     override func viewWillDisappear(_ animated: Bool) {
@@ -906,6 +906,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             DispatchQueue.main.async {
                 self.refreshControl.endRefreshing()
                 self.collectionView.reloadData()
+                self.setNavigationRightItems()
             }
         }
     }
