@@ -1717,7 +1717,7 @@ extension NCCollectionViewCommon: NCSelectableNavigationView, NCCollectionViewCo
             navigationItem.rightBarButtonItems = [select]
         } else {
             tabBarSelect.hide()
-            if navigationItem.rightBarButtonItems?.first?.menu == nil {
+            if navigationItem.rightBarButtonItems == nil {
                 let menuButton = UIBarButtonItem(image: .init(systemName: "ellipsis.circle"), menu: UIMenu(children: createMenuActions()))
                 if layoutKey == NCGlobal.shared.layoutViewFiles {
                     let notification = UIBarButtonItem(image: .init(systemName: "bell"), style: .plain, action: tapNotification)
