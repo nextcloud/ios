@@ -331,17 +331,13 @@ extension NCTrash: NCSelectableNavigationView, NCTrashSelectTabBarDelegate {
 
         if isEditMode {
             tabBarSelect.show()
-
             let select = UIBarButtonItem(title: NSLocalizedString("_cancel_", comment: ""), style: .done) { self.toggleSelect() }
-
             navigationItem.rightBarButtonItems = [select]
         } else {
             tabBarSelect.hide()
-
             let menu = UIMenu(children: createMenuActions())
             let menuButton = UIBarButtonItem(image: .init(systemName: "ellipsis.circle"), menu: menu)
             menuButton.isEnabled = enableMoreMenu
-
             navigationItem.rightBarButtonItems = [menuButton]
         }
     }
