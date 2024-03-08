@@ -36,6 +36,7 @@ class NCTrash: UIViewController, NCTrashListCellDelegate, NCEmptyDataSetDelegate
     var blinkFileId: String?
     var emptyDataSet: NCEmptyDataSet?
     var selectableDataSource: [RealmSwiftObject] { datasource }
+    var task: URLSessionTask?
 
     let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
     let utilityFileSystem = NCUtilityFileSystem()
@@ -228,18 +229,17 @@ extension NCTrash {
 
     @objc func loadListingTrash() {
 
-        NextcloudKit.shared.listingTrash(showHiddenFiles: false) { account, items, _, error in
-
+        NextcloudKit.shared.listingTrash(showHiddenFiles: false) { task in
+            self.task = task
+            self.collectionView.reloadData()
+        } completion: { account, items, _, error in
             DispatchQueue.main.async { self.refreshControl.endRefreshing() }
-
             guard error == .success, account == self.appDelegate.account, let trashPath = self.getTrashPath() else {
                 NCContentPresenter().showError(error: error)
                 return
             }
-
             NCManageDatabase.shared.deleteTrash(filePath: trashPath, account: self.appDelegate.account)
             NCManageDatabase.shared.addTrash(account: account, items: items)
-
             self.reloadDataSource()
         }
     }
@@ -324,7 +324,7 @@ extension NCTrash: NCSelectableNavigationView, NCTrashSelectTabBarDelegate {
         ""
     }
 
-    func setNavigationRightItems(enableMoreMenu: Bool = true) {
+    func setNavigationRightItems() {
         guard let tabBarSelect = tabBarSelect as? NCTrashSelectTabBar else { return }
 
         tabBarSelect.isSelectedEmpty = selectOcId.isEmpty
@@ -337,7 +337,7 @@ extension NCTrash: NCSelectableNavigationView, NCTrashSelectTabBarDelegate {
             tabBarSelect.hide()
             let menu = UIMenu(children: createMenuActions())
             let menuButton = UIBarButtonItem(image: .init(systemName: "ellipsis.circle"), menu: menu)
-            menuButton.isEnabled = enableMoreMenu
+            menuButton.isEnabled = true
             navigationItem.rightBarButtonItems = [menuButton]
         }
     }
