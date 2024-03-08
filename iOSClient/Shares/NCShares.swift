@@ -80,7 +80,10 @@ class NCShares: NCCollectionViewCommon {
                 }
             } else {
                 let serverUrlFileName = share.serverUrl + "/" + share.fileName
-                NCNetworking.shared.readFile(serverUrlFileName: serverUrlFileName) { _, metadata, _ in
+                NCNetworking.shared.readFile(serverUrlFileName: serverUrlFileName) { task in
+                    self.task = task
+                    self.collectionView.reloadData()
+                } completion: { _, metadata, _ in
                     if let metadata {
                         NCManageDatabase.shared.addMetadata(metadata)
                         if !(metadatas.contains { $0.ocId == metadata.ocId }) {
