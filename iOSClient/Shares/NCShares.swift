@@ -98,8 +98,10 @@ class NCShares: NCCollectionViewCommon {
     override func reloadDataSourceNetwork() {
         super.reloadDataSourceNetwork()
 
-        NextcloudKit.shared.readShares(parameters: NKShareParameter()) { account, shares, _, error in
-
+        NextcloudKit.shared.readShares(parameters: NKShareParameter()) { task in
+            self.task = task
+            self.collectionView.reloadData()
+        } completion: { account, shares, _, error in
             if error == .success {
                 NCManageDatabase.shared.deleteTableShare(account: account)
                 if let shares = shares, !shares.isEmpty {
