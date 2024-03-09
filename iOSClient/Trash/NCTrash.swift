@@ -37,16 +37,13 @@ class NCTrash: UIViewController, NCTrashListCellDelegate, NCEmptyDataSetDelegate
     var emptyDataSet: NCEmptyDataSet?
     var selectableDataSource: [RealmSwiftObject] { datasource }
     var task: URLSessionTask?
-
     let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
     let utilityFileSystem = NCUtilityFileSystem()
     let utility = NCUtility()
-
     var isEditMode = false
     var selectOcId: [String] = []
     var selectIndexPath: [IndexPath] = []
     var tabBarSelect: NCSelectableViewTabBar?
-
     var datasource: [tableTrash] = []
     var layoutForView: NCDBLayoutForView?
     var listLayout: NCListLayout!
