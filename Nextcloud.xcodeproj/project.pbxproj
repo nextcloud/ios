@@ -22,6 +22,7 @@
 		AC454FF92B958B6A00BED89C /* NCWebBrowserView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC454FF82B958B6A00BED89C /* NCWebBrowserView.swift */; };
 		ACBA97E62B9ACF63006B8710 /* AutoUploadViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACBA97E52B9ACF63006B8710 /* AutoUploadViewModel.swift */; };
 		ACBA97E92B9AD90D006B8710 /* CCSettingsAdvanced.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACBA97E82B9AD90D006B8710 /* CCSettingsAdvanced.swift */; };
+		ACBA97EB2B9B03A3006B8710 /* CCSettingsAdvancedViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACBA97EA2B9B03A3006B8710 /* CCSettingsAdvancedViewModel.swift */; };
 		ACFC775B2B9368AA008BF302 /* OpenSSL in Frameworks */ = {isa = PBXBuildFile; productRef = ACFC775A2B9368AA008BF302 /* OpenSSL */; };
 		ACFC775D2B9368D3008BF302 /* OpenSSL in Frameworks */ = {isa = PBXBuildFile; productRef = ACFC775C2B9368D3008BF302 /* OpenSSL */; };
 		ACFC775F2B944B17008BF302 /* NCSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACFC775E2B944B17008BF302 /* NCSettings.swift */; };
@@ -933,6 +934,7 @@
 		AC454FF82B958B6A00BED89C /* NCWebBrowserView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCWebBrowserView.swift; sourceTree = "<group>"; };
 		ACBA97E52B9ACF63006B8710 /* AutoUploadViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AutoUploadViewModel.swift; sourceTree = "<group>"; };
 		ACBA97E82B9AD90D006B8710 /* CCSettingsAdvanced.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CCSettingsAdvanced.swift; sourceTree = "<group>"; };
+		ACBA97EA2B9B03A3006B8710 /* CCSettingsAdvancedViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CCSettingsAdvancedViewModel.swift; sourceTree = "<group>"; };
 		ACFC775E2B944B17008BF302 /* NCSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCSettings.swift; sourceTree = "<group>"; };
 		AF1A9B6327D0CA1E00F17A9E /* UIAlertController+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIAlertController+Extension.swift"; sourceTree = "<group>"; };
 		AF22B20B277C6F4D00DAB0CC /* NCShareCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCShareCell.swift; sourceTree = "<group>"; };
@@ -1724,6 +1726,7 @@
 			isa = PBXGroup;
 			children = (
 				ACBA97E82B9AD90D006B8710 /* CCSettingsAdvanced.swift */,
+				ACBA97EA2B9B03A3006B8710 /* CCSettingsAdvancedViewModel.swift */,
 			);
 			path = CCAdvanced;
 			sourceTree = "<group>";
@@ -3963,6 +3966,7 @@
 				F79EDAA326B004980007D134 /* NCPlayerToolBar.swift in Sources */,
 				F77444F8222816D5000D5EB0 /* NCPickerViewController.swift in Sources */,
 				F77BB74A2899857B0090FC19 /* UINavigationController+Extension.swift in Sources */,
+				ACBA97EB2B9B03A3006B8710 /* CCSettingsAdvancedViewModel.swift in Sources */,
 				F7327E282B73A53400A462C7 /* NCNetworking+Upload.swift in Sources */,
 				F769454622E9F1B0000A798A /* NCShareCommon.swift in Sources */,
 				F70753F12542A9A200972D44 /* NCViewerMedia.swift in Sources */,

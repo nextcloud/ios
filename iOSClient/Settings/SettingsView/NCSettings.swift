@@ -117,7 +117,7 @@ struct NCSettings: View {
             
             /// `Advanced` Section
             Section {
-                NavigationLink(destination: CCSettingsAdvanced(showHiddenFiles: false, mostCompatible: false, livePhoto: false, removeFromCameraRoll: false, appIntegration: false, crashReporter: false, showExitAlert: false, showCacheAlert: false, selectedLogLevel: .disabled, selectedInterval: .oneWeek, footerTitle: "Hello")) {
+                NavigationLink(destination: CCSettingsAdvanced(showExitAlert: false, showCacheAlert: false)) {
                     HStack {
                         Image("gear")
                             .resizable()

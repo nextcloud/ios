@@ -10,34 +10,12 @@ import SwiftUI
 import NextcloudKit
 
 struct CCSettingsAdvanced: View {
-    // Published properties for the toggles
+    @ObservedObject var viewModel = CCSettingsAdvancedViewModel()
     
-    /// State variable for indicating whether hidden files are shown.
-    @State var showHiddenFiles: Bool
-    /// State variable for indicating the most compatible format.
-    @State var mostCompatible: Bool
-    /// State variable for enabling live photo uploads.
-    @State var livePhoto: Bool
-    /// State variable for indicating whether to remove photos from the camera roll after upload.
-    @State var removeFromCameraRoll: Bool
-    /// State variable for app integration.
-    @State var appIntegration: Bool
-    /// State variable for enabling the crash reporter.
-    @State var crashReporter: Bool
     /// State variable for indicating whether the exit alert is shown.
     @State var showExitAlert: Bool = false
     /// State variable for indicating whether the cache alert is shown.
     @State var showCacheAlert: Bool = false
-    
-    // Properties for log level and cache deletion
-    
-    /// State variable for storing the selected log level.
-    @State var selectedLogLevel: LogLevel
-    /// State variable for storing the selected cache deletion interval.
-    @State var selectedInterval: CacheDeletionInterval
-    /// State variable for storing the footer title, usually used for cache deletion.
-    @State var footerTitle: String = NSLocalizedString("_clear_cache_footer_", comment: "")
-    
     
     var body: some View {
         
@@ -45,9 +23,9 @@ struct CCSettingsAdvanced: View {
             
             // Show Hidden Files
             Section(content: {
-                Toggle(NSLocalizedString("_show_hidden_files_", comment: ""), isOn: $showHiddenFiles)
-                    .onChange(of: showHiddenFiles) { _ in
-                        
+                Toggle(NSLocalizedString("_show_hidden_files_", comment: ""), isOn: $viewModel.showHiddenFiles)
+                    .onChange(of: viewModel.showHiddenFiles) { _ in
+                        viewModel.updateShowHiddenFiles()
                     }
             }, footer: {
                 Text("All Hidden files will be visible in every device")
@@ -58,14 +36,14 @@ struct CCSettingsAdvanced: View {
             
             // Most Compatible & Enable Live Photo
             Section(content: {
-                Toggle(NSLocalizedString("_format_compatibility_", comment: ""), isOn: $mostCompatible)
-                    .onChange(of: mostCompatible) { _ in
-                        
+                Toggle(NSLocalizedString("_format_compatibility_", comment: ""), isOn: $viewModel.mostCompatible)
+                    .onChange(of: viewModel.mostCompatible) { _ in
+                        viewModel.updateMostCompatible()
                     }
                 
-                Toggle(NSLocalizedString("_upload_mov_livephoto_", comment: ""), isOn: $livePhoto)
-                    .onChange(of: livePhoto) { _ in
-                        
+                Toggle(NSLocalizedString("_upload_mov_livephoto_", comment: ""), isOn: $viewModel.livePhoto)
+                    .onChange(of: viewModel.livePhoto) { _ in
+                        viewModel.updateLivePhoto()
                     }
                 
             }, footer: {
@@ -82,9 +60,9 @@ struct CCSettingsAdvanced: View {
             
             // Remove from Camera Roll
             Section(content: {
-                Toggle(NSLocalizedString("_remove_photo_CameraRoll_", comment: ""), isOn: $removeFromCameraRoll)
-                    .onChange(of: removeFromCameraRoll) { _ in
-                        
+                Toggle(NSLocalizedString("_remove_photo_CameraRoll_", comment: ""), isOn: $viewModel.removeFromCameraRoll)
+                    .onChange(of: viewModel.removeFromCameraRoll) { _ in
+                        viewModel.updateRemoveFromCameraRoll()
                     }
                 
             }, footer: {
@@ -97,9 +75,9 @@ struct CCSettingsAdvanced: View {
             // Section : Files App
             if !NCBrandOptions.shared.disable_openin_file {
                 Section(content: {
-                    Toggle(NSLocalizedString("_disable_files_app_", comment: ""), isOn: $appIntegration)
-                        .onChange(of: appIntegration) { _ in
-                            
+                    Toggle(NSLocalizedString("_disable_files_app_", comment: ""), isOn: $viewModel.appIntegration)
+                        .onChange(of: viewModel.appIntegration) { _ in
+                            viewModel.updateAppIntegration()
                         }
                 }, footer: {
                     Text(NSLocalizedString("_disable_files_app_footer_", comment: ""))
@@ -119,9 +97,9 @@ struct CCSettingsAdvanced: View {
                             .frame(width: 20, height: 20)
                             .foregroundColor(Color(UIColor.systemGray))
                         
-                        Toggle(NSLocalizedString("_crashservice_title_", comment: ""), isOn: $crashReporter)
-                            .onChange(of: crashReporter) { _ in
-                                
+                        Toggle(NSLocalizedString("_crashservice_title_", comment: ""), isOn: $viewModel.crashReporter)
+                            .onChange(of: viewModel.crashReporter) { _ in
+                                viewModel.updateCrashReporter()
                             }
                     }
                 }, header: {
@@ -149,7 +127,7 @@ struct CCSettingsAdvanced: View {
                         Text(NSLocalizedString("_view_log_", comment: ""))
                     }
                     .onTapGesture(perform: {
-                        
+                        viewModel.viewLogFile()
                     })
                     
                     // Clear Log File
@@ -162,8 +140,13 @@ struct CCSettingsAdvanced: View {
                         
                         Text(NSLocalizedString("_clear_log_", comment: ""))
                     }.onTapGesture(perform: {
-                        
+                        viewModel.clearLogFile()
                     })
+                    .alert("Log files cleared successfully!", isPresented: $viewModel.logFileCleared) {
+                        Button(NSLocalizedString("OK", comment: ""), role: .cancel) { }
+                    }
+                    
+                    
                 }, header: {
                     Text("_diagnostics_")
                 }, footer: {
@@ -174,15 +157,13 @@ struct CCSettingsAdvanced: View {
                 
                 
                 // Set Log Level() & Capabilities
-                
                 Section {
-                    
-                    Picker("Set Log Level", selection: $selectedLogLevel) {
-                        Text("Disabled").tag(LogLevel.disabled)
-                        Text("Standard").tag(LogLevel.standard)
-                        Text("Maximum").tag(LogLevel.maximum)
-                    }.onChange(of: selectedLogLevel) { newValue in
-                        
+                    Picker("Set Log Level", selection: $viewModel.selectedLogLevel) {
+                        ForEach(LogLevel.allCases){ level in
+                            Text(level.displayText).tag(level)
+                        }
+                    }.onChange(of: viewModel.selectedLogLevel) { newValue in
+                        viewModel.updateSelectedLogLevel()
                     }
                     
                     HStack {
@@ -195,7 +176,7 @@ struct CCSettingsAdvanced: View {
                         Text(NSLocalizedString("_capabilities_", comment: ""))
                     }
                     .onTapGesture {
-                        
+                        // TODO: Handle tap gesture
                     }
                 }
             }
@@ -203,16 +184,18 @@ struct CCSettingsAdvanced: View {
             
             // Delete in Cache & Clear Cache
             Section(content: {
-                // TODO: changing the section text to "Auto Delete"
-                Picker("Auto Delete files older than", selection: $selectedInterval) {
+                // TODO: changing the section text to "Auto Delete files after"
+                Picker("Auto Delete files after", selection: $viewModel.selectedInterval) {
                     ForEach(CacheDeletionInterval.allCases) { interval in
-                        Text(interval.rawValue).tag(interval)
+                        Text(interval.displayText).tag(interval)
                     }
                 }.pickerStyle(.automatic)
-                    .onChange(of: selectedInterval) { newValue in
-                        
+                    .onChange(of: viewModel.selectedInterval) { newValue in
+                        viewModel.updateSelectedInterval()
                     }
                 
+                
+                // ---> Working below🚧
                 HStack {
                     Image("trash")
                         .resizable()
@@ -224,7 +207,7 @@ struct CCSettingsAdvanced: View {
                 }
                 .alert(NSLocalizedString("_want_delete_cache_", comment: ""), isPresented: $showCacheAlert) {
                     Button(NSLocalizedString("_yes_", comment: ""), role: .destructive) {
-                        
+                        viewModel.clearCacheRequest(exit: showCacheAlert)
                     }
                     Button(NSLocalizedString("_cancel_", comment: ""), role: .cancel) { }
                 }
@@ -233,9 +216,9 @@ struct CCSettingsAdvanced: View {
                 })
                 
             },  header: {
-                Text("FREE UP SPACE")
+                Text(NSLocalizedString("_delete_files_desc_", comment: ""))
             }, footer: {
-                Text(footerTitle)
+                Text(viewModel.footerTitle)
                     .font(.system(size: 12))
                     .multilineTextAlignment(.leading)
             })
@@ -277,28 +260,5 @@ struct CCSettingsAdvanced: View {
 }
 
 #Preview {
-    CCSettingsAdvanced(showHiddenFiles: false, mostCompatible: false, livePhoto: false, removeFromCameraRoll: false, appIntegration: false, crashReporter: false, showExitAlert: false, showCacheAlert: false, selectedLogLevel: .disabled, selectedInterval: .oneWeek, footerTitle: "Hello")
-}
-
-/// An enum that represents the level of the log
-enum LogLevel: Int, Equatable {
-    /// Represents that logging is disabled
-    case disabled = 0
-    /// Represents standard logging level
-    case standard = 1
-    /// Represents maximum logging level
-    case maximum = 2
-}
-
-/// An enum that represents the intervals for cache deletion
-enum CacheDeletionInterval: String, CaseIterable, Identifiable {
-    case never = "Never"
-    case oneYear = "1 Year"
-    case sixMonths = "6 Months"
-    case threeMonths = "3 Months"
-    case oneMonth = "1 Month"
-    case oneWeek = "1 Week"
-    
-    /// Unique identifier for each case, using the raw value
-    var id: String { self.rawValue }
+    CCSettingsAdvanced(showExitAlert: false, showCacheAlert: false)
 }
