@@ -1659,7 +1659,7 @@ extension NCCollectionViewCommon: EasyTipViewDelegate {
 }
 
 extension NCCollectionViewCommon: NCSelectableNavigationView, NCCollectionViewCommonSelectTabBarDelegate {
-    func setNavigationRightItems() {
+    func setNavigationRightItems(toggleMenu: Bool = false) {
         var selectedMetadatas: [tableMetadata] = []
         var isAnyOffline = false
         var isAnyDirectory = false
@@ -1717,7 +1717,7 @@ extension NCCollectionViewCommon: NCSelectableNavigationView, NCCollectionViewCo
             navigationItem.rightBarButtonItems = [select]
         } else {
             tabBarSelect.hide()
-            if navigationItem.rightBarButtonItems == nil {
+            if navigationItem.rightBarButtonItems == nil || toggleMenu {
                 let menuButton = UIBarButtonItem(image: .init(systemName: "ellipsis.circle"), menu: UIMenu(children: createMenuActions()))
                 if layoutKey == NCGlobal.shared.layoutViewFiles {
                     let notification = UIBarButtonItem(image: .init(systemName: "bell"), style: .plain, action: tapNotification)
