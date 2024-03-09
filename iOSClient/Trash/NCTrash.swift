@@ -321,11 +321,10 @@ extension NCTrash: NCSelectableNavigationView, NCTrashSelectTabBarDelegate {
         ""
     }
 
-    func setNavigationRightItems() {
+    func setNavigationRightItems(toggleMenu: Bool = false) {
         guard let tabBarSelect = tabBarSelect as? NCTrashSelectTabBar else { return }
 
         tabBarSelect.isSelectedEmpty = selectOcId.isEmpty
-
         if isEditMode {
             tabBarSelect.show()
             let select = UIBarButtonItem(title: NSLocalizedString("_cancel_", comment: ""), style: .done) { self.toggleSelect() }
