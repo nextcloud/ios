@@ -142,7 +142,7 @@ struct CCSettingsAdvanced: View {
                     }.onTapGesture(perform: {
                         viewModel.clearLogFile()
                     })
-                    .alert("Log files cleared successfully!", isPresented: $viewModel.logFileCleared) {
+                    .alert("Log file cleared successfully!", isPresented: $viewModel.logFileCleared) {
                         Button(NSLocalizedString("OK", comment: ""), role: .cancel) { }
                     }
                     
@@ -195,7 +195,6 @@ struct CCSettingsAdvanced: View {
                     }
                 
                 
-                // ---> Working below🚧
                 HStack {
                     Image("trash")
                         .resizable()
@@ -207,7 +206,7 @@ struct CCSettingsAdvanced: View {
                 }
                 .alert(NSLocalizedString("_want_delete_cache_", comment: ""), isPresented: $showCacheAlert) {
                     Button(NSLocalizedString("_yes_", comment: ""), role: .destructive) {
-                        viewModel.clearCacheRequest(exit: showCacheAlert)
+                        viewModel.clearAllCacheRequest()
                     }
                     Button(NSLocalizedString("_cancel_", comment: ""), role: .cancel) { }
                 }
@@ -239,7 +238,7 @@ struct CCSettingsAdvanced: View {
                 }
                 .alert(NSLocalizedString("_want_exit_", comment: ""), isPresented: $showExitAlert) {
                     Button(NSLocalizedString("_ok_", comment: ""), role: .destructive) {
-                        
+                        viewModel.exitNextCloud(exit: showExitAlert)
                     }
                     Button(NSLocalizedString("_cancel_", comment: ""), role: .cancel) { }
                 }

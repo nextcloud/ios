@@ -108,10 +108,7 @@ class CCSettingsAdvancedViewModel: ObservableObject {
     /// acount: The account identifier.
     func clearCache(_ account: String) {
         // Cancel all networking tasks
-        NCNetworking.shared.cancelDataTask()
-        NCNetworking.shared.cancelDownloadTasks()
-        NCNetworking.shared.cancelUploadTasks()
-        NCNetworking.shared.cancelUploadBackgroundTask()
+        NCNetworking.shared.cancelAllTask()
         
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
             let ufs = NCUtilityFileSystem()
@@ -128,18 +125,14 @@ class CCSettingsAdvancedViewModel: ObservableObject {
             ufs.removeTemporaryDirectory()
             ufs.createDirectoryStandard()
             
+            
+            
+            NCImageCache.shared.createMediaCache(account: account, withCacheSize: true)
+            
             // Stop activity indicator and recalculate cache size
             NCActivityIndicator.shared.stop()
-            self.calculateSize(completionHandler: { _ in })
+            self.calculateSize()
         }
-    }
-
-    /// Initiates cache clearance.
-    ///
-    /// - Parameter 
-    /// exit: Boolean indicating whether to exit the application afterwards.
-    func clearCacheRequest(exit: Bool) {
-        clearAllCacheRequest()
     }
 
     /// Initiates cache clearance after starting the activity indicator.
@@ -150,22 +143,6 @@ class CCSettingsAdvancedViewModel: ObservableObject {
         }
     }
 
-    /// Asynchronously calculates the size of cache directory.
-    ///
-    /// - Parameter 
-    /// completionHandler: A closure to be called upon completion with the calculated size.
-    func calculateSize(completionHandler: @escaping (Int64) -> Void) {
-        DispatchQueue.global(qos: .default).async {
-            let ufs = NCUtilityFileSystem()
-            let directory = ufs.directoryProviderStorage
-            let totalSize = ufs.getDirectorySize(directory: directory)
-            
-            DispatchQueue.main.async {
-                completionHandler(totalSize)
-            }
-        }
-    }
-    
     /// Asynchronously calculates the size of cache directory and updates the footer title.
     func calculateSize() {
         DispatchQueue.global(qos: .default).async {
@@ -243,7 +220,7 @@ enum LogLevel: Int, CaseIterable, Identifiable, Equatable {
     var id: Int { self.rawValue }
 }
 
-// TODO: There is not localized strings for `Standard`, `Maximum` & `Set Log Level`
+// TODO: There are not any localized strings for `Standard`, `Maximum` & `Set Log Level`
 extension LogLevel {
     var displayText: String {
         switch self {
