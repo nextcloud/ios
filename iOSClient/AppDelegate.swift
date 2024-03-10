@@ -639,6 +639,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             NCPushNotification.shared().unsubscribingNextcloudServerPushNotification(account.account, urlBase: account.urlBase, user: account.user, withSubscribing: false)
         }
 
+        NextcloudKit.shared.deleteAppPassword(serverUrl: urlBase, username: userId, password: password) { _, error in
+            print(error)
+        }
+
         let results = NCManageDatabase.shared.getTableLocalFiles(predicate: NSPredicate(format: "account == %@", account), sorted: "ocId", ascending: false)
         let utilityFileSystem = NCUtilityFileSystem()
         for result in results {
