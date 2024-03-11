@@ -36,16 +36,14 @@ class NCTrash: UIViewController, NCTrashListCellDelegate, NCEmptyDataSetDelegate
     var blinkFileId: String?
     var emptyDataSet: NCEmptyDataSet?
     var selectableDataSource: [RealmSwiftObject] { datasource }
-
+    var dataSourceTask: URLSessionTask?
     let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
     let utilityFileSystem = NCUtilityFileSystem()
     let utility = NCUtility()
-
     var isEditMode = false
     var selectOcId: [String] = []
     var selectIndexPath: [IndexPath] = []
     var tabBarSelect: NCSelectableViewTabBar?
-
     var datasource: [tableTrash] = []
     var layoutForView: NCDBLayoutForView?
     var listLayout: NCListLayout!
@@ -228,18 +226,17 @@ extension NCTrash {
 
     @objc func loadListingTrash() {
 
-        NextcloudKit.shared.listingTrash(showHiddenFiles: false) { account, items, _, error in
-
+        NextcloudKit.shared.listingTrash(showHiddenFiles: false) { task in
+            self.dataSourceTask = task
+            self.collectionView.reloadData()
+        } completion: { account, items, _, error in
             DispatchQueue.main.async { self.refreshControl.endRefreshing() }
-
             guard error == .success, account == self.appDelegate.account, let trashPath = self.getTrashPath() else {
                 NCContentPresenter().showError(error: error)
                 return
             }
-
             NCManageDatabase.shared.deleteTrash(filePath: trashPath, account: self.appDelegate.account)
             NCManageDatabase.shared.addTrash(account: account, items: items)
-
             self.reloadDataSource()
         }
     }
@@ -324,24 +321,19 @@ extension NCTrash: NCSelectableNavigationView, NCTrashSelectTabBarDelegate {
         ""
     }
 
-    func setNavigationRightItems(enableMoreMenu: Bool = true) {
+    func setNavigationRightItems(enableMenu: Bool = false) {
         guard let tabBarSelect = tabBarSelect as? NCTrashSelectTabBar else { return }
 
         tabBarSelect.isSelectedEmpty = selectOcId.isEmpty
-
         if isEditMode {
             tabBarSelect.show()
-
             let select = UIBarButtonItem(title: NSLocalizedString("_cancel_", comment: ""), style: .done) { self.toggleSelect() }
-
             navigationItem.rightBarButtonItems = [select]
         } else {
             tabBarSelect.hide()
-
             let menu = UIMenu(children: createMenuActions())
             let menuButton = UIBarButtonItem(image: .init(systemName: "ellipsis.circle"), menu: menu)
-            menuButton.isEnabled = enableMoreMenu
-
+            menuButton.isEnabled = true
             navigationItem.rightBarButtonItems = [menuButton]
         }
     }

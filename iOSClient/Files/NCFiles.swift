@@ -180,8 +180,10 @@ class NCFiles: NCCollectionViewCommon {
 
         var tableDirectory: tableDirectory?
 
-        NCNetworking.shared.readFile(serverUrlFileName: serverUrl) { account, metadataFolder, error in
-
+        NCNetworking.shared.readFile(serverUrlFileName: serverUrl) { task in
+            self.dataSourceTask = task
+            self.collectionView.reloadData()
+        } completion: { account, metadataFolder, error in
             guard error == .success, let metadataFolder else {
                 return completion(nil, nil, 0, false, error)
             }
@@ -193,7 +195,10 @@ class NCFiles: NCCollectionViewCommon {
             if tableDirectory?.etag != metadataFolder.etag || metadataFolder.e2eEncrypted {
                 NCNetworking.shared.readFolder(serverUrl: self.serverUrl,
                                                account: self.appDelegate.account,
-                                               forceReplaceMetadatas: forceReplaceMetadatas) { _, metadataFolder, metadatas, metadatasChangedCount, metadatasChanged, error in
+                                               forceReplaceMetadatas: forceReplaceMetadatas) { task in
+                    self.dataSourceTask = task
+                    self.collectionView.reloadData()
+                } completion: { _, metadataFolder, metadatas, metadatasChangedCount, metadatasChanged, error in
                     guard error == .success else {
                         return completion(tableDirectory, nil, 0, false, error)
                     }

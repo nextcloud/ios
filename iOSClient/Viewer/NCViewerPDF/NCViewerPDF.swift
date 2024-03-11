@@ -334,12 +334,13 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
             return
         }
 
-        NCActivityIndicator.shared.stop()
-
-        if error == .success {
-            pdfDocument = PDFDocument(url: URL(fileURLWithPath: filePath))
-            pdfView.document = pdfDocument
-            pdfView.layoutDocumentView()
+        DispatchQueue.main.async {
+            NCActivityIndicator.shared.stop()
+            if error == .success {
+                self.pdfDocument = PDFDocument(url: URL(fileURLWithPath: self.filePath))
+                self.pdfView.document = self.pdfDocument
+                self.pdfView.layoutDocumentView()
+            }
         }
     }
 
