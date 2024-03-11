@@ -57,20 +57,13 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     var isSearchingMode: Bool = false
     var layoutForView: NCDBLayoutForView?
     var selectableDataSource: [RealmSwiftObject] { dataSource.getMetadataSourceForAllSections() }
-
+    var dataSourceTask: URLSessionTask?
     var groupByField = "name"
     var providers: [NKSearchProvider]?
     var searchResults: [NKSearchResult]?
     var listLayout: NCListLayout!
     var gridLayout: NCGridLayout!
     var literalSearch: String?
-    var isReloadDataSourceNetworkInProgress: Bool = false {
-        didSet {
-            DispatchQueue.main.async {
-                self.setNavigationRightItems(enableMoreMenu: !self.isReloadDataSourceNetworkInProgress)
-            }
-        }
-    }
     var tabBarSelect: NCSelectableViewTabBar?
 
     var timerNotificationCenter: Timer?
@@ -229,14 +222,14 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         navigationController?.navigationBar.prefersLargeTitles = true
         navigationController?.setNavigationBarHidden(false, animated: true)
         navigationController?.setNavigationBarAppearance()
+
         setNavigationLeftItems()
+        setNavigationRightItems()
 
         // FIXME: iPAD PDF landscape mode iOS 16
         DispatchQueue.main.async {
             self.collectionView?.collectionViewLayout.invalidateLayout()
         }
-
-        setNavigationRightItems(enableMoreMenu: false)
     }
 
     override func viewWillDisappear(_ animated: Bool) {
@@ -696,13 +689,13 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         self.emptyDataSet?.setOffset(getHeaderHeight())
         if isSearchingMode {
             view.emptyImage.image = UIImage(named: "search")?.image(color: .gray, size: UIScreen.main.bounds.width)
-            if isReloadDataSourceNetworkInProgress {
+            if self.dataSourceTask?.state == .running {
                 view.emptyTitle.text = NSLocalizedString("_search_in_progress_", comment: "")
             } else {
                 view.emptyTitle.text = NSLocalizedString("_search_no_record_found_", comment: "")
             }
             view.emptyDescription.text = NSLocalizedString("_search_instruction_", comment: "")
-        } else if isReloadDataSourceNetworkInProgress {
+        } else if self.dataSourceTask?.state == .running {
             view.emptyImage.image = UIImage(named: "networkInProgress")?.image(color: .gray, size: UIScreen.main.bounds.width)
             view.emptyTitle.text = NSLocalizedString("_request_in_progress_", comment: "")
             view.emptyDescription.text = ""
@@ -910,17 +903,16 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
         DispatchQueue.global().async {
             if withQueryDB { self.queryDB() }
-            self.isReloadDataSourceNetworkInProgress = false
             DispatchQueue.main.async {
                 self.refreshControl.endRefreshing()
                 self.collectionView.reloadData()
+                self.setNavigationRightItems()
             }
         }
     }
 
     @objc func reloadDataSourceNetwork() {
         DispatchQueue.main.async {
-            self.isReloadDataSourceNetworkInProgress = true
             self.collectionView?.reloadData()
         }
     }
@@ -929,13 +921,15 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         guard !appDelegate.account.isEmpty, let literalSearch = literalSearch, !literalSearch.isEmpty
         else { return self.refreshControl.endRefreshing() }
 
-        isReloadDataSourceNetworkInProgress = true
         self.dataSource.clearDataSource()
         self.refreshControl.beginRefreshing()
         self.collectionView.reloadData()
 
         if NCGlobal.shared.capabilityServerVersionMajor >= NCGlobal.shared.nextcloudVersion20 {
-            NCNetworking.shared.unifiedSearchFiles(userBaseUrl: appDelegate, literal: literalSearch) { _, searchProviders in
+            NCNetworking.shared.unifiedSearchFiles(userBaseUrl: appDelegate, literal: literalSearch) { task in
+                self.dataSourceTask = task
+                self.collectionView.reloadData()
+            } providers: { _, searchProviders in
                 self.providers = searchProviders
                 self.searchResults = []
                 self.dataSource = NCDataSource(
@@ -952,11 +946,13 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                 NCNetworking.shared.unifiedSearchQueue.addOperation(NCOperationUnifiedSearch(collectionViewCommon: self, metadatas: metadatas, searchResult: searchResult))
             } completion: { _, _ in
                 self.refreshControl.endRefreshing()
-                self.isReloadDataSourceNetworkInProgress = false
                 self.collectionView.reloadData()
             }
         } else {
-            NCNetworking.shared.searchFiles(urlBase: appDelegate, literal: literalSearch) { metadatas, error in
+            NCNetworking.shared.searchFiles(urlBase: appDelegate, literal: literalSearch) { task in
+                self.dataSourceTask = task
+                self.collectionView.reloadData()
+            } completion: { metadatas, error in
                 DispatchQueue.main.async {
                     self.refreshControl.endRefreshing()
                     self.collectionView.reloadData()
@@ -972,7 +968,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                     groupByField: self.groupByField,
                     providers: self.providers,
                     searchResults: self.searchResults)
-                self.isReloadDataSourceNetworkInProgress = false
             }
         }
     }
@@ -984,7 +979,10 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         metadataForSection.unifiedSearchInProgress = true
         self.collectionView?.reloadData()
 
-        NCNetworking.shared.unifiedSearchFilesProvider(userBaseUrl: appDelegate, id: lastSearchResult.id, term: term, limit: 5, cursor: cursor) { _, searchResult, metadatas, error in
+        NCNetworking.shared.unifiedSearchFilesProvider(userBaseUrl: appDelegate, id: lastSearchResult.id, term: term, limit: 5, cursor: cursor) { task in
+            self.dataSourceTask = task
+            self.collectionView.reloadData()
+        } completion: { _, searchResult, metadatas, error in
             if error != .success {
                 NCContentPresenter().showError(error: error)
             }
@@ -1661,7 +1659,7 @@ extension NCCollectionViewCommon: EasyTipViewDelegate {
 }
 
 extension NCCollectionViewCommon: NCSelectableNavigationView, NCCollectionViewCommonSelectTabBarDelegate {
-    func setNavigationRightItems(enableMoreMenu: Bool = true) {
+    func setNavigationRightItems(enableMenu: Bool = false) {
         var selectedMetadatas: [tableMetadata] = []
         var isAnyOffline = false
         var isAnyDirectory = false
@@ -1715,24 +1713,20 @@ extension NCCollectionViewCommon: NCSelectableNavigationView, NCCollectionViewCo
 
         if isEditMode {
             tabBarSelect.show()
-
             let select = UIBarButtonItem(title: NSLocalizedString("_cancel_", comment: ""), style: .done) { self.toggleSelect() }
-
             navigationItem.rightBarButtonItems = [select]
         } else {
             tabBarSelect.hide()
-
-            let notification = UIBarButtonItem(image: .init(systemName: "bell"), style: .plain, action: tapNotification)
-
-            let menu = UIMenu(children: createMenuActions())
-            let menuButton = UIBarButtonItem(image: .init(systemName: "ellipsis.circle"), menu: menu)
-
-            menuButton.isEnabled = enableMoreMenu
-
-            if layoutKey == NCGlobal.shared.layoutViewFiles {
-                navigationItem.rightBarButtonItems = [menuButton, notification]
+            if navigationItem.rightBarButtonItems == nil || enableMenu {
+                let menuButton = UIBarButtonItem(image: .init(systemName: "ellipsis.circle"), menu: UIMenu(children: createMenuActions()))
+                if layoutKey == NCGlobal.shared.layoutViewFiles {
+                    let notification = UIBarButtonItem(image: .init(systemName: "bell"), style: .plain, action: tapNotification)
+                    navigationItem.rightBarButtonItems = [menuButton, notification]
+                } else {
+                    navigationItem.rightBarButtonItems = [menuButton]
+                }
             } else {
-                navigationItem.rightBarButtonItems = [menuButton]
+                navigationItem.rightBarButtonItems?.first?.menu = navigationItem.rightBarButtonItems?.first?.menu?.replacingChildren(createMenuActions())
             }
         }
     }

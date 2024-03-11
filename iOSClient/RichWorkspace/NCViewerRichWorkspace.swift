@@ -62,7 +62,8 @@ import MarkdownKit
         super.viewWillAppear(animated)
 
         DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-            NCNetworking.shared.readFile(serverUrlFileName: self.serverUrl, queue: .main) { account, metadata, error in
+            NCNetworking.shared.readFile(serverUrlFileName: self.serverUrl, queue: .main) { _ in
+            } completion: { account, metadata, error in
                 if error == .success, account == self.appDelegate.account, let metadata {
                     NCManageDatabase.shared.setDirectory(serverUrl: self.serverUrl, richWorkspace: metadata.richWorkspace, account: account)
                     if self.richWorkspaceText != metadata.richWorkspace, metadata.richWorkspace != nil {
