@@ -62,7 +62,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
     var serverUrl = ""
     // -------------------------------------------------------------
 
-    private var datasourceTask: URLSessionTask?
+    private var dataSourceTask: URLSessionTask?
     private var emptyDataSet: NCEmptyDataSet?
     private var serverUrlPush = ""
     private var metadataFolder = tableMetadata()
@@ -195,7 +195,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
 
     func emptyDataSetView(_ view: NCEmptyView) {
 
-        if self.datasourceTask?.state == .running {
+        if self.dataSourceTask?.state == .running {
             view.emptyImage.image = UIImage(named: "networkInProgress")?.image(color: .gray, size: UIScreen.main.bounds.width)
             view.emptyTitle.text = NSLocalizedString("_request_in_progress_", comment: "")
             view.emptyDescription.text = ""
@@ -555,7 +555,7 @@ extension NCSelect {
     func loadFolder() {
 
         NCNetworking.shared.readFolder(serverUrl: serverUrl, account: activeAccount.account) { task in
-            self.datasourceTask = task
+            self.dataSourceTask = task
             self.collectionView.reloadData()
         } completion: { _, _, _, _, _, error in
             if error != .success {

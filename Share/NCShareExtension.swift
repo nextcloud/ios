@@ -57,7 +57,7 @@ class NCShareExtension: UIViewController {
     var emptyDataSet: NCEmptyDataSet?
     let keyLayout = NCGlobal.shared.layoutViewShareExtension
     var metadataFolder: tableMetadata?
-    var datasourceTask: URLSessionTask?
+    var dataSourceTask: URLSessionTask?
     var dataSource = NCDataSource()
     var layoutForView: NCDBLayoutForView?
     let heightRowTableView: CGFloat = 50

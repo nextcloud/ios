@@ -136,7 +136,7 @@ class NCRecent: NCCollectionViewCommon {
                                               requestBody: requestBody,
                                               showHiddenFiles: NCKeychain().showHiddenFiles,
                                               options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { task in
-            self.datasourceTask = task
+            self.dataSourceTask = task
             self.collectionView.reloadData()
         } completion: { account, files, _, error in
             if error == .success {

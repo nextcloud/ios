@@ -71,7 +71,7 @@ extension NCShareExtension {
     func loadFolder() {
 
         NCNetworking.shared.readFolder(serverUrl: serverUrl, account: activeAccount.account) { task in
-            self.datasourceTask = task
+            self.dataSourceTask = task
             self.collectionView.reloadData()
         } completion: { _, metadataFolder, _, _, _, error in
             DispatchQueue.main.async {

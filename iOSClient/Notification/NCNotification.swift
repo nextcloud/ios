@@ -34,7 +34,7 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmpty
     let utility = NCUtility()
     var notifications: [NKNotifications] = []
     var emptyDataSet: NCEmptyDataSet?
-    var datasourceTask: URLSessionTask?
+    var dataSourceTask: URLSessionTask?
 
     // MARK: - View Life Cycle
 
@@ -79,7 +79,7 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmpty
 
     func emptyDataSetView(_ view: NCEmptyView) {
 
-        if self.datasourceTask?.state == .running {
+        if self.dataSourceTask?.state == .running {
             view.emptyImage.image = UIImage(named: "networkInProgress")?.image(color: .gray, size: UIScreen.main.bounds.width)
             view.emptyTitle.text = NSLocalizedString("_request_in_progress_", comment: "")
             view.emptyDescription.text = ""
@@ -304,7 +304,7 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmpty
 
        self.tableView.reloadData()
        NextcloudKit.shared.getNotifications { task in
-           self.datasourceTask = task
+           self.dataSourceTask = task
            self.tableView.reloadData()
        } completion: { account, notifications, _, error in
            if error == .success && account == self.appDelegate.account {
