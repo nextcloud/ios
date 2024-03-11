@@ -33,27 +33,23 @@ extension NCCollectionViewCommon: SwipeCollectionViewCellDelegate {
         }
 
         shareAction.backgroundColor = .blue
-        shareAction.hidesWhenSelected = true
         shareAction.image = .init(systemName: "square.and.arrow.up")
         shareAction.transitionDelegate = scaleTransition
+        shareAction.hidesWhenSelected = true
 
         let deleteAction = SwipeAction(style: .destructive, title: NSLocalizedString("_delete_", comment: "")) { action, _ in
             let titleDelete: String
 
             if metadata.directory {
-               titleDelete = NSLocalizedString("_delete_folder_", comment: "")
-           } else {
-               titleDelete = NSLocalizedString("_delete_file_", comment: "")
-           }
+                titleDelete = NSLocalizedString("_delete_folder_", comment: "")
+            } else {
+                titleDelete = NSLocalizedString("_delete_file_", comment: "")
+            }
 
             let message = NSLocalizedString("_want_delete_", comment: "") + "\n - " + metadata.fileNameView
 
-            let alertController = UIAlertController.deleteFileOrFolder(titleString: titleDelete + "?", message: message, canDeleteServer: !metadata.lock, selectedMetadatas: [metadata], indexPaths: self.selectIndexPaths) { cancelled in
-
-                if cancelled {
-                    action.fulfill(with: .reset)
-                }
-            }
+            let alertController = UIAlertController.deleteFileOrFolder(titleString: titleDelete + "?", message: message, canDeleteServer: !metadata.lock, selectedMetadatas: [metadata], indexPaths: self.selectIndexPaths) { _ in
+                action.fulfill(with: .reset) }
 
             self.viewController.present(alertController, animated: true, completion: nil)
         }
@@ -63,8 +59,7 @@ extension NCCollectionViewCommon: SwipeCollectionViewCellDelegate {
         deleteAction.image = .init(systemName: "trash")
         deleteAction.style = .destructive
         deleteAction.transitionDelegate = scaleTransition
-
-        swipeDeleteAction = deleteAction
+        deleteAction.hidesWhenSelected = true
 
         if !NCManageDatabase.shared.isMetadataShareOrMounted(metadata: metadata, metadataFolder: metadataFolder) {
             actions.insert(deleteAction, at: 0)
@@ -79,8 +74,8 @@ extension NCCollectionViewCommon: SwipeCollectionViewCellDelegate {
 
     func collectionView(_ collectionView: UICollectionView, editActionsOptionsForItemAt indexPath: IndexPath, for orientation: SwipeActionsOrientation) -> SwipeOptions {
         var options = SwipeOptions()
-        options.expansionStyle = .fill
-        options.transitionStyle = .reveal
+        options.expansionStyle = .selection
+        options.transitionStyle = .border
         return options
     }
 }

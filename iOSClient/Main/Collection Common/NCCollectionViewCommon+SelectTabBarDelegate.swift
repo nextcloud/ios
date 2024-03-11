@@ -8,9 +8,8 @@
 
 import Foundation
 import NextcloudKit
-
 extension NCCollectionViewCommon: NCSelectableNavigationView, NCCollectionViewCommonSelectTabBarDelegate {
-    func setNavigationRightItems() {
+    func setNavigationRightItems(enableMenu: Bool = false) {
         var selectedMetadatas: [tableMetadata] = []
         var isAnyOffline = false
         var isAnyDirectory = false
@@ -41,6 +40,7 @@ extension NCCollectionViewCommon: NCSelectableNavigationView, NCCollectionViewCo
             }
 
             guard !isAnyOffline else { continue }
+
             if metadata.directory,
                let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", appDelegate.account, metadata.serverUrl + "/" + metadata.fileName)) {
                 isAnyOffline = directory.offline
@@ -63,22 +63,20 @@ extension NCCollectionViewCommon: NCSelectableNavigationView, NCCollectionViewCo
 
         if isEditMode {
             tabBarSelect.show()
-
             let select = UIBarButtonItem(title: NSLocalizedString("_cancel_", comment: ""), style: .done) { self.toggleSelect() }
-
             navigationItem.rightBarButtonItems = [select]
         } else {
             tabBarSelect.hide()
-
-            let notification = UIBarButtonItem(image: .init(systemName: "bell"), style: .plain, action: tapNotification)
-
-            let menu = UIMenu(children: createMenuActions())
-            let menuButton = UIBarButtonItem(image: .init(systemName: "ellipsis.circle"), menu: menu)
-
-            if layoutKey == NCGlobal.shared.layoutViewFiles {
-                navigationItem.rightBarButtonItems = [menuButton, notification]
+            if navigationItem.rightBarButtonItems == nil || enableMenu {
+                let menuButton = UIBarButtonItem(image: .init(systemName: "ellipsis.circle"), menu: UIMenu(children: createMenuActions()))
+                if layoutKey == NCGlobal.shared.layoutViewFiles {
+                    let notification = UIBarButtonItem(image: .init(systemName: "bell"), style: .plain, action: tapNotification)
+                    navigationItem.rightBarButtonItems = [menuButton, notification]
+                } else {
+                    navigationItem.rightBarButtonItems = [menuButton]
+                }
             } else {
-                navigationItem.rightBarButtonItems = [menuButton]
+                navigationItem.rightBarButtonItems?.first?.menu = navigationItem.rightBarButtonItems?.first?.menu?.replacingChildren(createMenuActions())
             }
         }
     }
@@ -122,23 +120,65 @@ extension NCCollectionViewCommon: NCSelectableNavigationView, NCCollectionViewCo
     }
 
     func delete(selectedMetadatas: [tableMetadata]) {
-        let alertController = UIAlertController.deleteFileOrFolder(titleString: NSLocalizedString("_confirm_delete_selected_", comment: ""), message: nil, canDeleteServer: selectedMetadatas.allSatisfy { !$0.lock }, selectedMetadatas: selectedMetadatas, indexPaths: self.selectIndexPaths) { cancelled in
-            if !cancelled {
-                self.disableSelect()
-            }
+        let alertController = UIAlertController(
+            title: NSLocalizedString("_confirm_delete_selected_", comment: ""),
+            message: nil,
+            preferredStyle: .alert)
+
+        let canDeleteServer = selectedMetadatas.allSatisfy { !$0.lock }
+
+        if canDeleteServer {
+            let copyMetadatas = selectedMetadatas
+
+            alertController.addAction(UIAlertAction(title: NSLocalizedString("_yes_", comment: ""), style: .destructive) { _ in
+                Task {
+                    var error = NKError()
+                    var ocId: [String] = []
+                    for metadata in copyMetadatas where error == .success {
+                        error = await NCNetworking.shared.deleteMetadata(metadata, onlyLocalCache: false)
+                        if error == .success {
+                            ocId.append(metadata.ocId)
+                        }
+                    }
+                    NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDeleteFile, userInfo: ["ocId": ocId, "indexPath": self.selectIndexPaths, "onlyLocalCache": false, "error": error])
+                }
+
+                self.toggleSelect()
+            })
         }
 
+        alertController.addAction(UIAlertAction(title: NSLocalizedString("_remove_local_file_", comment: ""), style: .default) { (_: UIAlertAction) in
+            let copyMetadatas = selectedMetadatas
+
+            Task {
+                var error = NKError()
+                var ocId: [String] = []
+                for metadata in copyMetadatas where error == .success {
+                    error = await NCNetworking.shared.deleteMetadata(metadata, onlyLocalCache: true)
+                    if error == .success {
+                        ocId.append(metadata.ocId)
+                    }
+                }
+                if error != .success {
+                    NCContentPresenter().showError(error: error)
+                }
+                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDeleteFile, userInfo: ["ocId": ocId, "indexPath": self.selectIndexPaths, "onlyLocalCache": true, "error": error])
+                self.toggleSelect()
+            }
+        })
+
+        alertController.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel) { (_: UIAlertAction) in })
         self.viewController.present(alertController, animated: true, completion: nil)
     }
 
     func move(selectedMetadatas: [tableMetadata]) {
         NCActionCenter.shared.openSelectView(items: selectedMetadatas, indexPath: self.selectIndexPaths)
-        self.disableSelect()
+        self.toggleSelect()
     }
 
     func share(selectedMetadatas: [tableMetadata]) {
         NCActionCenter.shared.openActivityViewController(selectedMetadata: selectedMetadatas)
-        self.disableSelect()
+        self.toggleSelect()
     }
 
     func saveAsAvailableOffline(selectedMetadatas: [tableMetadata], isAnyOffline: Bool) {
@@ -149,13 +189,13 @@ extension NCCollectionViewCommon: NCSelectableNavigationView, NCCollectionViewCo
                 preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: NSLocalizedString("_continue_", comment: ""), style: .default, handler: { _ in
                 selectedMetadatas.forEach { NCActionCenter.shared.setMetadataAvalableOffline($0, isOffline: isAnyOffline) }
-                self.disableSelect()
+                self.toggleSelect()
             }))
             alert.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel))
             self.viewController.present(alert, animated: true)
         } else {
             selectedMetadatas.forEach { NCActionCenter.shared.setMetadataAvalableOffline($0, isOffline: isAnyOffline) }
-            self.disableSelect()
+            self.toggleSelect()
         }
     }
 
@@ -164,7 +204,7 @@ extension NCCollectionViewCommon: NCSelectableNavigationView, NCCollectionViewCo
             NCNetworking.shared.lockUnlockFile(metadata, shoulLock: !isAnyLocked)
         }
 
-        self.disableSelect()
+        self.toggleSelect()
     }
 
     func createMenuActions() -> [UIMenuElement] {
@@ -229,6 +269,7 @@ extension NCCollectionViewCommon: NCSelectableNavigationView, NCCollectionViewCo
         let showDescription = UIAction(title: NSLocalizedString("_show_description_", comment: ""), image: UIImage(systemName: "list.dash.header.rectangle"), attributes: richWorkspaceText == nil ? .disabled : [], state: showDescriptionKeychain && richWorkspaceText != nil ? .on : .off) { _ in
             NCKeychain().showDescription = !showDescriptionKeychain
             self.collectionView.reloadData()
+            self.setNavigationRightItems()
         }
 
         showDescription.subtitle = richWorkspaceText == nil ? NSLocalizedString("_no_description_available_", comment: "") : ""
@@ -242,3 +283,5 @@ extension NCCollectionViewCommon: NCSelectableNavigationView, NCCollectionViewCo
         }
     }
 }
+
+
