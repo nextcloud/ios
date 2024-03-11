@@ -252,7 +252,7 @@ struct CCSettingsAdvanced: View {
             })
         }.navigationBarTitle("Advanced")
             .onAppear(perform: {
-                
+                viewModel.calculateSize()
             })
         
     }

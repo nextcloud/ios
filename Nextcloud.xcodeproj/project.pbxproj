@@ -17,6 +17,7 @@
 		3781B9B023DB2B7E006B4B1D /* AppDelegate+Menu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3781B9AF23DB2B7E006B4B1D /* AppDelegate+Menu.swift */; };
 		8491B1CD273BBA82001C8C5B /* UIViewController+Menu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8491B1CC273BBA82001C8C5B /* UIViewController+Menu.swift */; };
 		AC2880D42B96FC0300A80156 /* NCSettingsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC2880D32B96FC0300A80156 /* NCSettingsViewModel.swift */; };
+		AC3068BC2B9DBAFA0082E54A /* AutoUploadFileNamesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC3068BB2B9DBAFA0082E54A /* AutoUploadFileNamesView.swift */; };
 		AC3575352B9896FE00D28E9C /* AutoUploadView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC3575342B9896FE00D28E9C /* AutoUploadView.swift */; };
 		AC454FF72B9585FB00BED89C /* AcknowledgementsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC454FF62B9585FB00BED89C /* AcknowledgementsView.swift */; };
 		AC454FF92B958B6A00BED89C /* NCWebBrowserView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC454FF82B958B6A00BED89C /* NCWebBrowserView.swift */; };
@@ -929,6 +930,7 @@
 		3781B9AF23DB2B7E006B4B1D /* AppDelegate+Menu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AppDelegate+Menu.swift"; sourceTree = "<group>"; };
 		8491B1CC273BBA82001C8C5B /* UIViewController+Menu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIViewController+Menu.swift"; sourceTree = "<group>"; };
 		AC2880D32B96FC0300A80156 /* NCSettingsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCSettingsViewModel.swift; sourceTree = "<group>"; };
+		AC3068BB2B9DBAFA0082E54A /* AutoUploadFileNamesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AutoUploadFileNamesView.swift; sourceTree = "<group>"; };
 		AC3575342B9896FE00D28E9C /* AutoUploadView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AutoUploadView.swift; sourceTree = "<group>"; };
 		AC454FF62B9585FB00BED89C /* AcknowledgementsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AcknowledgementsView.swift; sourceTree = "<group>"; };
 		AC454FF82B958B6A00BED89C /* NCWebBrowserView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCWebBrowserView.swift; sourceTree = "<group>"; };
@@ -1713,11 +1715,20 @@
 			path = Menu;
 			sourceTree = "<group>";
 		};
+		AC3068BA2B9DBAC90082E54A /* ManageAutoUploadFiles */ = {
+			isa = PBXGroup;
+			children = (
+				AC3068BB2B9DBAFA0082E54A /* AutoUploadFileNamesView.swift */,
+			);
+			path = ManageAutoUploadFiles;
+			sourceTree = "<group>";
+		};
 		AC3575332B9896E300D28E9C /* AutoUpload */ = {
 			isa = PBXGroup;
 			children = (
 				AC3575342B9896FE00D28E9C /* AutoUploadView.swift */,
 				ACBA97E52B9ACF63006B8710 /* AutoUploadViewModel.swift */,
+				AC3068BA2B9DBAC90082E54A /* ManageAutoUploadFiles */,
 			);
 			path = AutoUpload;
 			sourceTree = "<group>";
@@ -4103,6 +4114,7 @@
 				F7FAFD3A28BFA948000777FE /* NCNotification+Menu.swift in Sources */,
 				F74C0436253F1CDC009762AB /* NCShares.swift in Sources */,
 				F7AC1CB028AB94490032D99F /* Array+Extension.swift in Sources */,
+				AC3068BC2B9DBAFA0082E54A /* AutoUploadFileNamesView.swift in Sources */,
 				F7AE00F5230D5F9E007ACF8A /* NCLoginWeb.swift in Sources */,
 				F707C26521A2DC5200F6181E /* NCStoreReview.swift in Sources */,
 				F7BAADCB1ED5A87C00B7EAD4 /* NCManageDatabase.swift in Sources */,

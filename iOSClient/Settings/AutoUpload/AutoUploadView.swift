@@ -122,7 +122,7 @@ struct AutoUploadView: View {
         
         // Auto Upload file name
         Section(content: {
-            NavigationLink(destination: EmptyView(), label: {
+            NavigationLink(destination: AutoUploadFileNamesView(maintainFilename: false, specifyFilename: false, changedName: "", oldName: ""), label: {
                 Text(NSLocalizedString("_autoupload_filenamemask_", comment: ""))
             })
         }, footer: {

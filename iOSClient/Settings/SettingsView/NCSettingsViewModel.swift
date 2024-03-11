@@ -9,7 +9,7 @@
 import Foundation
 
 class NCSettingsViewModel: ObservableObject {
-    let keychain = NCKeychain()
+    var keychain = NCKeychain()
     
     /// State to control the enable TouchID toggle
     @Published var enableTouchID: Bool
@@ -21,6 +21,7 @@ class NCSettingsViewModel: ObservableObject {
     @Published var resetWrongAttempts: Bool
     /// String url to download configuration files
     @Published var configLink: String? = "https://shared02.opsone-cloud.ch/\(String(describing: NCManageDatabase.shared.getActiveAccount()?.urlBase))\(NCBrandOptions.shared.mobileconfig)"
+    
     /// State to control the visibility of the acknowledgements view
     @Published var isE2EEEnable: Bool = NCGlobal.shared.capabilityE2EEEnabled
     /// String containing the current version of E2EE
@@ -33,6 +34,9 @@ class NCSettingsViewModel: ObservableObject {
         resetWrongAttempts = keychain.resetAppCounterFail
     }
     
+    func updateAccount() {
+        keychain = NCKeychain()
+    }
     // MARK: - Settings Update Methods
     
     /// Function to update Touch ID / Face ID setting
