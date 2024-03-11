@@ -83,7 +83,6 @@ class NCOffline: NCCollectionViewCommon {
 
     override func reloadDataSourceNetwork() {
         super.reloadDataSourceNetwork()
-
         reloadDataSource()
     }
 }

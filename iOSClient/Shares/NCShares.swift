@@ -80,7 +80,10 @@ class NCShares: NCCollectionViewCommon {
                 }
             } else {
                 let serverUrlFileName = share.serverUrl + "/" + share.fileName
-                NCNetworking.shared.readFile(serverUrlFileName: serverUrlFileName) { _, metadata, _ in
+                NCNetworking.shared.readFile(serverUrlFileName: serverUrlFileName) { task in
+                    self.dataSourceTask = task
+                    self.collectionView.reloadData()
+                } completion: { _, metadata, _ in
                     if let metadata {
                         NCManageDatabase.shared.addMetadata(metadata)
                         if !(metadatas.contains { $0.ocId == metadata.ocId }) {
@@ -98,8 +101,10 @@ class NCShares: NCCollectionViewCommon {
     override func reloadDataSourceNetwork() {
         super.reloadDataSourceNetwork()
 
-        NextcloudKit.shared.readShares(parameters: NKShareParameter()) { account, shares, _, error in
-
+        NextcloudKit.shared.readShares(parameters: NKShareParameter()) { task in
+            self.dataSourceTask = task
+            self.collectionView.reloadData()
+        } completion: { account, shares, _, error in
             if error == .success {
                 NCManageDatabase.shared.deleteTableShare(account: account)
                 if let shares = shares, !shares.isEmpty {

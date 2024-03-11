@@ -28,33 +28,34 @@ import Queuer
 class NCMediaDownloadThumbnaill: ConcurrentOperation {
 
     var metadata: tableMetadata
-    var collectionView: UICollectionView?
+    var media: NCMedia
     var fileNamePath: String
     var fileNamePreviewLocalPath: String
     var fileNameIconLocalPath: String
     let utilityFileSystem = NCUtilityFileSystem()
 
-    init(metadata: tableMetadata, collectionView: UICollectionView?) {
+    init(metadata: tableMetadata, media: NCMedia) {
         self.metadata = tableMetadata.init(value: metadata)
-        self.collectionView = collectionView
+        self.media = media
         self.fileNamePath = utilityFileSystem.getFileNamePath(metadata.fileName, serverUrl: metadata.serverUrl, urlBase: metadata.urlBase, userId: metadata.userId)
         self.fileNamePreviewLocalPath = utilityFileSystem.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)
         self.fileNameIconLocalPath = utilityFileSystem.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)
     }
 
     override func start() {
-
         guard !isCancelled else { return self.finish() }
 
         var etagResource: String?
+        let sizePreview = NCUtility().getSizePreview(width: metadata.width, height: metadata.height)
+
         if FileManager.default.fileExists(atPath: fileNameIconLocalPath) && FileManager.default.fileExists(atPath: fileNamePreviewLocalPath) {
             etagResource = metadata.etagResource
         }
 
         NextcloudKit.shared.downloadPreview(fileNamePathOrFileId: fileNamePath,
                                             fileNamePreviewLocalPath: fileNamePreviewLocalPath,
-                                            widthPreview: NCGlobal.shared.sizePreview,
-                                            heightPreview: NCGlobal.shared.sizePreview,
+                                            widthPreview: Int(sizePreview.width),
+                                            heightPreview: Int(sizePreview.height),
                                             fileNameIconLocalPath: fileNameIconLocalPath,
                                             sizeIcon: NCGlobal.shared.sizeIcon,
                                             etag: etagResource,
@@ -63,7 +64,7 @@ class NCMediaDownloadThumbnaill: ConcurrentOperation {
             if error == .success, let image = imagePreview {
                 NCManageDatabase.shared.setMetadataEtagResource(ocId: self.metadata.ocId, etagResource: etag)
                 DispatchQueue.main.async {
-                    if let visibleCells = self.collectionView?.indexPathsForVisibleItems.sorted(by: { $0.row < $1.row }).compactMap({ self.collectionView?.cellForItem(at: $0) }) {
+                    if let visibleCells = self.media.collectionView?.indexPathsForVisibleItems.sorted(by: { $0.row < $1.row }).compactMap({ self.media.collectionView?.cellForItem(at: $0) }) {
                         for case let cell as NCGridMediaCell in visibleCells {
                             if cell.fileObjectId == self.metadata.ocId, let filePreviewImageView = cell.filePreviewImageView {
                                 UIView.transition(with: filePreviewImageView,
@@ -76,9 +77,16 @@ class NCMediaDownloadThumbnaill: ConcurrentOperation {
                         }
                     }
                 }
-                NCImageCache.shared.setMediaImage(ocId: self.metadata.ocId, etag: self.metadata.etag, image: .actual(image))
+                NCImageCache.shared.setMediaSize(ocId: self.metadata.ocId, etag: self.metadata.etag, size: image.size)
             }
             self.finish()
+        }
+    }
+
+    override func finish(success: Bool = true) {
+        super.finish(success: success)
+        if (metadata.width == 0 && metadata.height == 0) || (NCNetworking.shared.downloadThumbnailQueue.operationCount == 0) {
+            self.media.collectionViewReloadData()
         }
     }
 }

@@ -35,41 +35,51 @@ import RealmSwift
     // MARK: -
 
     private let limit: Int = 1000
-    private var account: String = ""
     private var brandElementColor: UIColor?
-
-    enum ImageType {
-        case placeholder
-        case actual(_ image: UIImage)
-    }
+    private var totalSize: Int64 = 0
 
     struct metadataInfo {
         var etag: String
         var date: NSDate
+        var width: Int
+        var height: Int
     }
 
-    private typealias ThumbnailLRUCache = LRUCache<String, ImageType>
-    private lazy var cache: ThumbnailLRUCache = {
-        return ThumbnailLRUCache(countLimit: limit)
+    struct imageInfo {
+        var image: UIImage?
+        var size: CGSize?
+        var date: Date
+    }
+
+    private typealias ThumbnailImageLRUCache = LRUCache<String, imageInfo>
+    private typealias ThumbnailSizeLRUCache = LRUCache<String, CGSize?>
+
+    private lazy var cacheImage: ThumbnailImageLRUCache = {
+        return ThumbnailImageLRUCache(countLimit: limit)
+    }()
+    private lazy var cacheSize: ThumbnailSizeLRUCache = {
+        return ThumbnailSizeLRUCache()
     }()
     private var metadatasInfo: [String: metadataInfo] = [:]
     private var metadatas: ThreadSafeArray<tableMetadata>?
 
+    var createMediaCacheInProgress: Bool = false
     let showAllPredicateMediaString = "account == %@ AND serverUrl BEGINSWITH %@ AND (classFile == '\(NKCommon.TypeClassFile.image.rawValue)' OR classFile == '\(NKCommon.TypeClassFile.video.rawValue)') AND NOT (session CONTAINS[c] 'upload')"
     let showBothPredicateMediaString = "account == %@ AND serverUrl BEGINSWITH %@ AND (classFile == '\(NKCommon.TypeClassFile.image.rawValue)' OR classFile == '\(NKCommon.TypeClassFile.video.rawValue)') AND NOT (session CONTAINS[c] 'upload') AND NOT (livePhotoFile != '' AND classFile == '\(NKCommon.TypeClassFile.video.rawValue)')"
     let showOnlyPredicateMediaString = "account == %@ AND serverUrl BEGINSWITH %@ AND classFile == %@ AND NOT (session CONTAINS[c] 'upload') AND NOT (livePhotoFile != '' AND classFile == '\(NKCommon.TypeClassFile.video.rawValue)')"
 
     override private init() {}
 
-    func createMediaCache(account: String) {
-
-        guard account != self.account, !account.isEmpty else { return }
-        self.account = account
+    @objc func createMediaCache(account: String, withCacheSize: Bool) {
+        if createMediaCacheInProgress {
+            NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] ThumbnailLRUCache image process already in progress")
+            return
+        }
+        createMediaCacheInProgress = true
 
         self.metadatasInfo.removeAll()
         self.metadatas = nil
         self.metadatas = getMediaMetadatas(account: account)
-        guard let metadatas = self.metadatas, !metadatas.isEmpty else { return }
         let ext = ".preview.ico"
         let manager = FileManager.default
         let resourceKeys = Set<URLResourceKey>([.nameKey, .pathKey, .fileSizeKey, .creationDateKey])
@@ -77,12 +87,17 @@ import RealmSwift
             var path: URL
             var ocIdEtag: String
             var date: Date
+            var fileSize: Int
+            var width: Int
+            var height: Int
         }
         var files: [FileInfo] = []
         let startDate = Date()
 
-        metadatas.forEach { metadata in
-            metadatasInfo[metadata.ocId] = metadataInfo(etag: metadata.etag, date: metadata.date)
+        if let metadatas = metadatas {
+            metadatas.forEach { metadata in
+                metadatasInfo[metadata.ocId] = metadataInfo(etag: metadata.etag, date: metadata.date, width: metadata.width, height: metadata.height)
+            }
         }
 
         if let enumerator = manager.enumerator(at: URL(fileURLWithPath: NCUtilityFileSystem().directoryProviderStorage), includingPropertiesForKeys: [.isRegularFileKey], options: [.skipsHiddenFiles]) {
@@ -90,12 +105,24 @@ import RealmSwift
                 let fileName = fileURL.lastPathComponent
                 let ocId = fileURL.deletingLastPathComponent().lastPathComponent
                 guard let resourceValues = try? fileURL.resourceValues(forKeys: resourceKeys),
-                      let size = resourceValues.fileSize,
-                      size > 0,
-                      let date = metadatasInfo[ocId]?.date,
-                      let etag = metadatasInfo[ocId]?.etag,
-                      fileName == etag + ext else { continue }
-                files.append(FileInfo(path: fileURL, ocIdEtag: ocId + etag, date: date as Date))
+                      let fileSize = resourceValues.fileSize,
+                      fileSize > 0 else { continue }
+                let width = metadatasInfo[ocId]?.width ?? 0
+                let height = metadatasInfo[ocId]?.height ?? 0
+                if withCacheSize {
+                    if let date = metadatasInfo[ocId]?.date,
+                       let etag = metadatasInfo[ocId]?.etag,
+                       fileName == etag + ext {
+                        files.append(FileInfo(path: fileURL, ocIdEtag: ocId + etag, date: date as Date, fileSize: fileSize, width: width, height: height))
+                    } else {
+                        let etag = fileName.replacingOccurrences(of: ".preview.ico", with: "")
+                        files.append(FileInfo(path: fileURL, ocIdEtag: ocId + etag, date: Date.distantPast, fileSize: fileSize, width: width, height: height))
+                    }
+                } else if let date = metadatasInfo[ocId]?.date, let etag = metadatasInfo[ocId]?.etag, fileName == etag + ext {
+                    files.append(FileInfo(path: fileURL, ocIdEtag: ocId + etag, date: date as Date, fileSize: fileSize, width: width, height: height))
+                } else {
+                    print("Nothing")
+                }
             }
         }
 
@@ -105,23 +132,37 @@ import RealmSwift
             print("Last date: \(lastDate)")
         }
 
-        cache.removeAllValues()
+        cacheImage.removeAllValues()
+        cacheSize.removeAllValues()
         var counter: Int = 0
         for file in files {
-            counter += 1
-            if counter > (limit - 100) { break }
+            if !withCacheSize, counter > limit {
+                break
+            }
             autoreleasepool {
                 if let image = UIImage(contentsOfFile: file.path.path) {
-                    cache.setValue(.actual(image), forKey: file.ocIdEtag)
+                    if counter < limit {
+                        cacheImage.setValue(imageInfo(image: image, size: image.size, date: file.date), forKey: file.ocIdEtag)
+                        totalSize = totalSize + Int64(file.fileSize)
+                    }
+                    if file.width == 0, file.height == 0 {
+                        cacheSize.setValue(image.size, forKey: file.ocIdEtag)
+                    }
                 }
             }
+            counter += 1
         }
 
         let diffDate = Date().timeIntervalSinceReferenceDate - startDate.timeIntervalSinceReferenceDate
         NextcloudKit.shared.nkCommonInstance.writeLog("--------- ThumbnailLRUCache image process ---------")
-        NextcloudKit.shared.nkCommonInstance.writeLog("Counter process: \(cache.count)")
+        NextcloudKit.shared.nkCommonInstance.writeLog("Counter cache image: \(cacheImage.count)")
+        NextcloudKit.shared.nkCommonInstance.writeLog("Counter cache size: \(cacheSize.count)")
+        NextcloudKit.shared.nkCommonInstance.writeLog("Total size images process: " + NCUtilityFileSystem().transformedSize(totalSize))
         NextcloudKit.shared.nkCommonInstance.writeLog("Time process: \(diffDate)")
         NextcloudKit.shared.nkCommonInstance.writeLog("--------- ThumbnailLRUCache image process ---------")
+
+        createMediaCacheInProgress = false
+        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterCreateMediaCacheEnded)
     }
 
     func initialMetadatas() -> ThreadSafeArray<tableMetadata>? {
@@ -129,24 +170,33 @@ import RealmSwift
         return self.metadatas
     }
 
-    func getMediaImage(ocId: String, etag: String) -> ImageType? {
-        return cache.value(forKey: ocId + etag)
+    func setMediaImage(ocId: String, etag: String, image: UIImage, date: Date) {
+        cacheImage.setValue(imageInfo(image: image, size: image.size, date: date), forKey: ocId + etag)
     }
 
-    func setMediaImage(ocId: String, etag: String, image: ImageType) {
-        cache.setValue(image, forKey: ocId + etag)
+    func getMediaImage(ocId: String, etag: String) -> UIImage? {
+        if let cache = cacheImage.value(forKey: ocId + etag) {
+            return cache.image
+        }
+        return nil
     }
 
-    @objc func clearMediaCache() {
-        self.metadatasInfo.removeAll()
-        self.metadatas = nil
-        cache.removeAllValues()
+    func hasMediaImageEnoughSpace() -> Bool {
+        return limit > cacheImage.count
+    }
+
+    func setMediaSize(ocId: String, etag: String, size: CGSize) {
+        cacheSize.setValue(size, forKey: ocId + etag)
+    }
+
+    func getMediaSize(ocId: String, etag: String) -> CGSize? {
+        return cacheSize.value(forKey: ocId + etag) ?? nil
     }
 
     func getMediaMetadatas(account: String, predicate: NSPredicate? = nil) -> ThreadSafeArray<tableMetadata>? {
-        guard let account = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", account)) else { return nil }
-        let startServerUrl = NCUtilityFileSystem().getHomeServer(urlBase: account.urlBase, userId: account.userId) + account.mediaPath
-        let predicateBoth = NSPredicate(format: showBothPredicateMediaString, account.account, startServerUrl)
+        guard let tableAccount = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", account)) else { return nil }
+        let startServerUrl = NCUtilityFileSystem().getHomeServer(urlBase: tableAccount.urlBase, userId: tableAccount.userId) + tableAccount.mediaPath
+        let predicateBoth = NSPredicate(format: showBothPredicateMediaString, account, startServerUrl)
         return NCManageDatabase.shared.getMediaMetadatas(predicate: predicate ?? predicateBoth)
     }
 

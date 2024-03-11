@@ -34,8 +34,8 @@ class tableE2eEncryptionLock: Object {
     @Persisted var e2eToken = ""
 }
 
-typealias tableE2eEncryption = tableE2eEncryptionV3
-class tableE2eEncryptionV3: Object {
+typealias tableE2eEncryption = tableE2eEncryptionV4
+class tableE2eEncryptionV4: Object {
 
     @Persisted(primaryKey: true) var primaryKey = ""
     @Persisted var account = ""
@@ -47,7 +47,7 @@ class tableE2eEncryptionV3: Object {
     @Persisted var initializationVector = ""
     @Persisted var metadataKey = ""
     @Persisted var metadataKeyIndex: Int = 0
-    @Persisted var metadataVersion: Double = 0
+    @Persisted var version: String = ""
     @Persisted var mimeType = ""
     @Persisted var ocIdServerUrl: String = ""
     @Persisted var serverUrl = ""

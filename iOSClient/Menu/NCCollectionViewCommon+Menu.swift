@@ -180,7 +180,7 @@ extension NCCollectionViewCommon {
                         NextcloudKit.shared.markE2EEFolder(fileId: metadata.fileId, delete: true) { _, error in
                             if error == .success {
                                 NCManageDatabase.shared.deleteE2eEncryption(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", self.appDelegate.account, serverUrl))
-                                NCManageDatabase.shared.setDirectory(serverUrl: serverUrl, serverUrlTo: nil, etag: nil, ocId: nil, fileId: nil, encrypted: false, richWorkspace: nil, account: metadata.account)
+                                NCManageDatabase.shared.setDirectory(serverUrl: serverUrl, encrypted: false, account: metadata.account)
                                 NCManageDatabase.shared.setMetadataEncrypted(ocId: metadata.ocId, encrypted: false)
 
                                 NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterChangeStatusFolderE2EE, userInfo: ["serverUrl": metadata.serverUrl])

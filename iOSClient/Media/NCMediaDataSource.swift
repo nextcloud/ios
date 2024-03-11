@@ -26,112 +26,132 @@ import NextcloudKit
 
 extension NCMedia {
 
-    func getPredicate(showAll: Bool = false) -> NSPredicate {
-
-        let startServerUrl = NCUtilityFileSystem().getHomeServer(urlBase: appDelegate.urlBase, userId: appDelegate.userId) + mediaPath
-
-        if showAll {
-            return NSPredicate(format: NCImageCache.shared.showAllPredicateMediaString, appDelegate.account, startServerUrl)
-        } else if showOnlyImages {
-            return NSPredicate(format: NCImageCache.shared.showOnlyPredicateMediaString, appDelegate.account, startServerUrl, NKCommon.TypeClassFile.image.rawValue)
-        } else if showOnlyVideos {
-            return NSPredicate(format: NCImageCache.shared.showOnlyPredicateMediaString, appDelegate.account, startServerUrl, NKCommon.TypeClassFile.video.rawValue)
-        } else {
-           return NSPredicate(format: NCImageCache.shared.showBothPredicateMediaString, appDelegate.account, startServerUrl)
-        }
+    func reloadDataSource() {
+        self.metadatas = imageCache.getMediaMetadatas(account: activeAccount.account, predicate: self.getPredicate())
+        self.collectionViewReloadData()
     }
 
-    @objc func reloadDataSource() {
-        guard !appDelegate.account.isEmpty else { return }
-
-        self.metadatas = NCImageCache.shared.getMediaMetadatas(account: self.appDelegate.account, predicate: self.getPredicate())
-        DispatchQueue.main.async {
-            self.collectionView?.reloadData()
-            self.mediaCommandView?.setTitleDate()
+    func collectionViewReloadData() {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+            self.collectionView.reloadData()
+            self.setTitleDate()
         }
     }
 
     // MARK: - Search media
 
     @objc func searchMediaUI() {
-
         var lessDate: Date?
         var greaterDate: Date?
         let firstMetadataDate = metadatas?.first?.date as? Date
         let lastMetadataDate = metadatas?.last?.date as? Date
+        let countMetadatas = self.metadatas?.count ?? 0
 
-        guard loadingTask == nil, !isEditMode else {
+        guard loadingTask == nil,
+              !isEditMode,
+              self.viewIfLoaded?.window != nil,
+              let visibleCells = self.collectionView?.indexPathsForVisibleItems.sorted(by: { $0.row < $1.row }).compactMap({ self.collectionView?.cellForItem(at: $0) })
+        else {
             return
         }
 
-        if let visibleCells = self.collectionView?.indexPathsForVisibleItems.sorted(by: { $0.row < $1.row }).compactMap({ self.collectionView?.cellForItem(at: $0) }) {
-            // first date
-            let firstCellDate = (visibleCells.first as? NCGridMediaCell)?.date
-            if firstCellDate == firstMetadataDate {
+        // first date
+        let firstCellDate = (visibleCells.first as? NCGridMediaCell)?.fileDate
+        if firstCellDate == firstMetadataDate {
+            lessDate = Date.distantFuture
+        } else {
+            if let date = firstCellDate {
+                lessDate = Calendar.current.date(byAdding: .second, value: 1, to: date)!
+            } else {
                 lessDate = Date.distantFuture
-            } else {
-                if let date = firstCellDate {
-                    lessDate = Calendar.current.date(byAdding: .second, value: 1, to: date)!
-                } else {
-                    lessDate = Date.distantFuture
-                }
             }
-            // last date
-            let lastCellDate = (visibleCells.last as? NCGridMediaCell)?.date
-            if lastCellDate == lastMetadataDate {
+        }
+        // last date
+        let lastCellDate = (visibleCells.last as? NCGridMediaCell)?.fileDate
+        if lastCellDate == lastMetadataDate {
+            greaterDate = Date.distantPast
+        } else {
+            if let date = lastCellDate {
+                greaterDate = Calendar.current.date(byAdding: .second, value: -1, to: date)!
+            } else {
                 greaterDate = Date.distantPast
-            } else {
-                if let date = lastCellDate {
-                    greaterDate = Calendar.current.date(byAdding: .second, value: -1, to: date)!
-                } else {
-                    greaterDate = Date.distantPast
-                }
             }
+        }
 
-            if let lessDate, let greaterDate {
-                mediaCommandView?.activityIndicator.startAnimating()
-                loadingTask = Task.detached {
-                    await self.collectionView.reloadData()
-                    let results = await self.searchMedia(account: self.appDelegate.account, lessDate: lessDate, greaterDate: greaterDate)
-                    print("Media results changed items: \(results.isChanged)")
-                    await self.mediaCommandView?.activityIndicator.stopAnimating()
+        if lessDate == Date.distantFuture,
+           greaterDate == Date.distantPast,
+           (self.metadatas?.count ?? 0) > visibleCells.count {
+            NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Media search new media oops. something is bad (distantFuture, distantPast): \(self.activeAccount.account), \(self.appDelegate.account), \(self.metadatas?.count ?? 0)")
+            return
+        }
+
+        if let lessDate, let greaterDate {
+            activityIndicator.startAnimating()
+            loadingTask = Task.detached {
+                if countMetadatas == 0 {
+                    await self.collectionViewReloadData()
+                }
+                let results = await self.searchMedia(lessDate: lessDate, greaterDate: greaterDate)
+                if results.error == .success {
                     Task { @MainActor in
-                        self.loadingTask = nil
-                    }
-                    if results.error != .success {
-                        NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Media search new media error code \(results.error.errorCode) " + results.error.errorDescription)
-                    } else if results.error == .success, results.lessDate == Date.distantFuture, results.greaterDate == Date.distantPast, !results.isChanged, results.metadatasCount == 0 {
-                        Task { @MainActor in
+                        if results.lessDate == Date.distantFuture, results.greaterDate == Date.distantPast, !results.isChanged, results.metadatasCount == 0 {
                             self.metadatas = nil
+                            self.collectionViewReloadData()
+                            print("searchMediaUI: metadatacount 0")
+                        } else if results.isChanged {
+                            self.reloadDataSource()
+                            print("searchMediaUI: changed")
+                        } else {
+                            print("searchMediaUI: nothing")
                         }
                     }
-                    if results.isChanged {
-                        await self.reloadDataSource()
-                    } else {
-                        await self.collectionView.reloadData()
-                    }
+                } else {
+                    NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Media search new media error code \(results.error.errorCode) " + results.error.errorDescription)
+                }
+                Task { @MainActor in
+                    self.loadingTask = nil
+                    self.activityIndicator.stopAnimating()
                 }
             }
         }
     }
 
-    func searchMedia(account: String, lessDate: Date, greaterDate: Date, limit: Int = 120, timeout: TimeInterval = 60) async -> (account: String, lessDate: Date?, greaterDate: Date?, metadatasCount: Int, isChanged: Bool, error: NKError) {
+    private func searchMedia(lessDate: Date, greaterDate: Date, limit: Int = 300, timeout: TimeInterval = 120) async -> (lessDate: Date?, greaterDate: Date?, metadatasCount: Int, isChanged: Bool, error: NKError) {
 
         guard let mediaPath = NCManageDatabase.shared.getActiveAccount()?.mediaPath else {
-            return(account, lessDate, greaterDate, 0, false, NKError())
+            return(lessDate, greaterDate, 0, false, NKError())
         }
+        NextcloudKit.shared.nkCommonInstance.writeLog("Start searchMedia with lessDate \(lessDate), greaterDate \(greaterDate)")
         let options = NKRequestOptions(timeout: timeout, queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
         let results = await NextcloudKit.shared.searchMedia(path: mediaPath, lessDate: lessDate, greaterDate: greaterDate, elementDate: "d:getlastmodified/", limit: limit, showHiddenFiles: NCKeychain().showHiddenFiles, includeHiddenFiles: [], options: options)
 
-        if results.account == account, results.error == .success {
+        if results.account != self.activeAccount.account {
+            let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "User changed")
+            return(lessDate, greaterDate, 0, false, error)
+        } else if results.error == .success {
             let metadatas = await NCManageDatabase.shared.convertFilesToMetadatas(results.files, useMetadataFolder: false).metadatas
             var predicate = NSPredicate(format: "date > %@ AND date < %@", greaterDate as NSDate, lessDate as NSDate)
-            predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [predicate, self.getPredicate(showAll: true)])
+            predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [predicate, getPredicate(showAll: true)])
             let resultsUpdate = NCManageDatabase.shared.updateMetadatas(metadatas, predicate: predicate)
             let isChaged: Bool = resultsUpdate.metadatasChanged || resultsUpdate.metadatasChangedCount != 0
-            return(account, lessDate, greaterDate, metadatas.count, isChaged, results.error)
+            NextcloudKit.shared.nkCommonInstance.writeLog("End searchMedia UpdateMetadatas with metadatasChanged \(resultsUpdate.metadatasChanged), ChangedCount \(resultsUpdate.metadatasChangedCount)")
+            return(lessDate, greaterDate, metadatas.count, isChaged, results.error)
         } else {
-            return(account, lessDate, greaterDate, 0, false, results.error)
+            return(lessDate, greaterDate, 0, false, results.error)
+        }
+    }
+
+    private func getPredicate(showAll: Bool = false) -> NSPredicate {
+        let startServerUrl = NCUtilityFileSystem().getHomeServer(urlBase: activeAccount.urlBase, userId: activeAccount.userId) + activeAccount.mediaPath
+
+        if showAll {
+            return NSPredicate(format: imageCache.showAllPredicateMediaString, activeAccount.account, startServerUrl)
+        } else if showOnlyImages {
+            return NSPredicate(format: imageCache.showOnlyPredicateMediaString, activeAccount.account, startServerUrl, NKCommon.TypeClassFile.image.rawValue)
+        } else if showOnlyVideos {
+            return NSPredicate(format: imageCache.showOnlyPredicateMediaString, activeAccount.account, startServerUrl, NKCommon.TypeClassFile.video.rawValue)
+        } else {
+            return NSPredicate(format: imageCache.showBothPredicateMediaString, activeAccount.account, startServerUrl)
         }
     }
 }

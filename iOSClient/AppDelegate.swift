@@ -124,6 +124,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             NCManageDatabase.shared.setCapabilities(account: account)
 
             NCBrandColor.shared.settingThemingColor(account: activeAccount.account)
+            DispatchQueue.global().async {
+                NCImageCache.shared.createMediaCache(account: self.account, withCacheSize: true)
+            }
 
         } else {
 
@@ -180,8 +183,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     func applicationDidBecomeActive(_ application: UIApplication) {
 
         NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Application did become active")
-
-        DispatchQueue.global().async { NCImageCache.shared.createMediaCache(account: self.account) }
 
         NCSettingsBundleHelper.setVersionAndBuildNumber()
         NCSettingsBundleHelper.checkAndExecuteSettings(delay: 0.5)
@@ -245,10 +246,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
     // L' applicazione è entrata nello sfondo
     func applicationDidEnterBackground(_ application: UIApplication) {
-
         NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Application did enter in background")
-
         guard !account.isEmpty else { return }
+
         let activeAccount = NCManageDatabase.shared.getActiveAccount()
 
         if let autoUpload = activeAccount?.autoUpload, autoUpload {
@@ -599,6 +599,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
         guard let tableAccount = NCManageDatabase.shared.setAccountActive(account) else { return }
 
+        if account != self.account {
+            DispatchQueue.global().async {
+                if NCManageDatabase.shared.getAccounts()?.count == 1 {
+                    NCImageCache.shared.createMediaCache(account: account, withCacheSize: true)
+                } else {
+                    NCImageCache.shared.createMediaCache(account: account, withCacheSize: false)
+                }
+            }
+        }
+
         self.account = tableAccount.account
         self.urlBase = tableAccount.urlBase
         self.user = tableAccount.user
@@ -620,16 +630,17 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Initialize Auto upload with \(items) uploads")
         }
 
-        DispatchQueue.global().async {
-            NCImageCache.shared.createMediaCache(account: self.account)
-            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterChangeUser)
-        }
+        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterChangeUser)
     }
 
     @objc func deleteAccount(_ account: String, wipe: Bool) {
 
         if let account = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", account)) {
             NCPushNotification.shared().unsubscribingNextcloudServerPushNotification(account.account, urlBase: account.urlBase, user: account.user, withSubscribing: false)
+        }
+
+        NextcloudKit.shared.deleteAppPassword(serverUrl: urlBase, username: userId, password: password) { _, error in
+            print(error)
         }
 
         let results = NCManageDatabase.shared.getTableLocalFiles(predicate: NSPredicate(format: "account == %@", account), sorted: "ocId", ascending: false)

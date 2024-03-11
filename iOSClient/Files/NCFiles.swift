@@ -70,7 +70,7 @@ class NCFiles: NCCollectionViewCommon {
                 }
 
                 self.titleCurrentFolder = self.getNavigationTitle()
-                self.setNavigationItems()
+                self.setNavigationLeftItems()
 
                 self.reloadDataSource()
                 self.reloadDataSourceNetwork()
@@ -180,8 +180,10 @@ class NCFiles: NCCollectionViewCommon {
 
         var tableDirectory: tableDirectory?
 
-        NCNetworking.shared.readFile(serverUrlFileName: serverUrl) { account, metadataFolder, error in
-
+        NCNetworking.shared.readFile(serverUrlFileName: serverUrl) { task in
+            self.dataSourceTask = task
+            self.collectionView.reloadData()
+        } completion: { account, metadataFolder, error in
             guard error == .success, let metadataFolder else {
                 return completion(nil, nil, 0, false, error)
             }
@@ -193,7 +195,10 @@ class NCFiles: NCCollectionViewCommon {
             if tableDirectory?.etag != metadataFolder.etag || metadataFolder.e2eEncrypted {
                 NCNetworking.shared.readFolder(serverUrl: self.serverUrl,
                                                account: self.appDelegate.account,
-                                               forceReplaceMetadatas: forceReplaceMetadatas) { _, metadataFolder, metadatas, metadatasChangedCount, metadatasChanged, error in
+                                               forceReplaceMetadatas: forceReplaceMetadatas) { task in
+                    self.dataSourceTask = task
+                    self.collectionView.reloadData()
+                } completion: { _, metadataFolder, metadatas, metadatasChangedCount, metadatasChanged, error in
                     guard error == .success else {
                         return completion(tableDirectory, nil, 0, false, error)
                     }
@@ -204,11 +209,25 @@ class NCFiles: NCCollectionViewCommon {
                        NCKeychain().isEndToEndEnabled(account: self.appDelegate.account),
                        !NCNetworkingE2EE().isInUpload(account: self.appDelegate.account, serverUrl: self.serverUrl) {
                         let lock = NCManageDatabase.shared.getE2ETokenLock(account: self.appDelegate.account, serverUrl: self.serverUrl)
-                        NextcloudKit.shared.getE2EEMetadata(fileId: metadataFolder.ocId, e2eToken: lock?.e2eToken, options: NCNetworkingE2EE().getOptions()) { account, e2eMetadata, signature, _, error in
+                        NCNetworkingE2EE().getMetadata(fileId: metadataFolder.ocId, e2eToken: lock?.e2eToken) { account, version, e2eMetadata, signature, _, error in
                             if error == .success, let e2eMetadata = e2eMetadata {
                                 let error = NCEndToEndMetadata().decodeMetadata(e2eMetadata, signature: signature, serverUrl: self.serverUrl, account: account, urlBase: self.appDelegate.urlBase, userId: self.appDelegate.userId)
                                 if error == .success {
-                                    self.reloadDataSource()
+                                    if version == "v1", NCGlobal.shared.capabilityE2EEApiVersion == NCGlobal.shared.e2eeVersionV20 {
+                                        NextcloudKit.shared.nkCommonInstance.writeLog("[E2EE] Conversion v1 to v2")
+                                        NCActivityIndicator.shared.start()
+                                        Task {
+                                            let serverUrl = metadataFolder.serverUrl + "/" + metadataFolder.fileName
+                                            let error = await NCNetworkingE2EE().uploadMetadata(account: metadataFolder.account, serverUrl: serverUrl, userId: metadataFolder.userId, updateVersionV1V2: true)
+                                            if error != .success {
+                                                NCContentPresenter().showError(error: error)
+                                            }
+                                            NCActivityIndicator.shared.stop()
+                                            self.reloadDataSource()
+                                        }
+                                    } else {
+                                        self.reloadDataSource()
+                                    }
                                 } else {
                                     // Client Diagnostic
                                     NCManageDatabase.shared.addDiagnostic(account: account, issue: NCGlobal.shared.diagnosticIssueE2eeErrors)

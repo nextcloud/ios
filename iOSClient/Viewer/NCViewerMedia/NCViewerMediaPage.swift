@@ -325,11 +325,9 @@ class NCViewerMediaPage: UIViewController {
         DispatchQueue.main.async {
             self.progressView.progress = 0
             let metadata = self.currentViewController.metadata
+            guard metadata.ocId == ocId, self.utilityFileSystem.fileProviderStorageExists(metadata) else { return }
 
-            if metadata.ocId == ocId,
-               metadata.isAudioOrVideo,
-               self.utilityFileSystem.fileProviderStorageExists(metadata),
-               let ncplayer = self.currentViewController.ncplayer {
+            if metadata.isAudioOrVideo, let ncplayer = self.currentViewController.ncplayer {
                 let url = URL(fileURLWithPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView))
                 if ncplayer.isPlay() {
                     ncplayer.playerPause()
@@ -340,6 +338,8 @@ class NCViewerMediaPage: UIViewController {
                 } else {
                     ncplayer.openAVPlayer(url: url)
                 }
+            } else if metadata.isImage {
+                self.currentViewController.loadImage()
             }
         }
     }
@@ -374,11 +374,13 @@ class NCViewerMediaPage: UIViewController {
             return
         }
 
-        metadatas[index] = metadata
-        if currentViewController.metadata.ocId == ocId {
-            currentViewController.loadImage()
-        } else {
-            modifiedOcId.append(ocId)
+        DispatchQueue.main.async {
+            self.metadatas[index] = metadata
+            if self.currentViewController.metadata.ocId == ocId {
+                self.currentViewController.loadImage()
+            } else {
+                self.modifiedOcId.append(ocId)
+            }
         }
     }
 

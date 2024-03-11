@@ -366,4 +366,21 @@ extension NCUtility {
             return completion(imageNamePath, id)
         }
     }
+
+    func getSizePreview(width: Int, height: Int) -> CGSize {
+        var widthPreview: Double = Double(NCGlobal.shared.sizePreview)
+        var heightPreview: Double = Double(NCGlobal.shared.sizePreview)
+
+        if width > 0, height > 0 {
+            var ratio: Double = 0
+            if width >= height {
+                ratio = Double(width) / Double(height)
+                heightPreview = widthPreview / ratio
+            } else {
+                ratio = Double(height) / Double(width)
+                widthPreview = heightPreview / ratio
+            }
+        }
+        return CGSize(width: widthPreview, height: heightPreview)
+    }
 }
