@@ -66,7 +66,7 @@ final class FilesIntegrationTests: BaseIntegrationXCTestCase {
                     XCTAssertEqual(NKError.success.errorCode, error.errorCode)
                     XCTAssertEqual(NKError.success.errorDescription, error.errorDescription)
 
-                    try await Task.sleep(for: .milliseconds(200))
+//                    try await Task.sleep(for: .milliseconds(200))
 
                     // Test reading folder, should NOT exist
                     NCNetworking.shared.readFolder(serverUrl: serverUrlFileName, account: self.user) { account, metadataFolder, _, _, _, _ in
