@@ -81,7 +81,7 @@ class NCShares: NCCollectionViewCommon {
             } else {
                 let serverUrlFileName = share.serverUrl + "/" + share.fileName
                 NCNetworking.shared.readFile(serverUrlFileName: serverUrlFileName) { task in
-                    self.task = task
+                    self.datasourceTask = task
                     self.collectionView.reloadData()
                 } completion: { _, metadata, _ in
                     if let metadata {
@@ -102,7 +102,7 @@ class NCShares: NCCollectionViewCommon {
         super.reloadDataSourceNetwork()
 
         NextcloudKit.shared.readShares(parameters: NKShareParameter()) { task in
-            self.task = task
+            self.datasourceTask = task
             self.collectionView.reloadData()
         } completion: { account, shares, _, error in
             if error == .success {

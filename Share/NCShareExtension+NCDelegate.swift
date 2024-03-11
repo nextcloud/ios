@@ -29,7 +29,7 @@ extension NCShareExtension: NCEmptyDataSetDelegate, NCAccountRequestDelegate {
 
     func emptyDataSetView(_ view: NCEmptyView) {
 
-        if self.task?.state == .running {
+        if self.datasourceTask?.state == .running {
             view.emptyImage.image = UIImage(named: "networkInProgress")?.image(color: .gray, size: UIScreen.main.bounds.width)
             view.emptyTitle.text = NSLocalizedString("_request_in_progress_", comment: "")
             view.emptyDescription.text = ""

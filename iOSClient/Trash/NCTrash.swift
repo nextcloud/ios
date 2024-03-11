@@ -36,7 +36,7 @@ class NCTrash: UIViewController, NCTrashListCellDelegate, NCEmptyDataSetDelegate
     var blinkFileId: String?
     var emptyDataSet: NCEmptyDataSet?
     var selectableDataSource: [RealmSwiftObject] { datasource }
-    var task: URLSessionTask?
+    var datasourceTask: URLSessionTask?
     let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
     let utilityFileSystem = NCUtilityFileSystem()
     let utility = NCUtility()
@@ -227,7 +227,7 @@ extension NCTrash {
     @objc func loadListingTrash() {
 
         NextcloudKit.shared.listingTrash(showHiddenFiles: false) { task in
-            self.task = task
+            self.datasourceTask = task
             self.collectionView.reloadData()
         } completion: { account, items, _, error in
             DispatchQueue.main.async { self.refreshControl.endRefreshing() }
@@ -321,7 +321,7 @@ extension NCTrash: NCSelectableNavigationView, NCTrashSelectTabBarDelegate {
         ""
     }
 
-    func setNavigationRightItems(toggleMenu: Bool = false) {
+    func setNavigationRightItems(enableMenu: Bool = false) {
         guard let tabBarSelect = tabBarSelect as? NCTrashSelectTabBar else { return }
 
         tabBarSelect.isSelectedEmpty = selectOcId.isEmpty

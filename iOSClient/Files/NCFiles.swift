@@ -181,7 +181,7 @@ class NCFiles: NCCollectionViewCommon {
         var tableDirectory: tableDirectory?
 
         NCNetworking.shared.readFile(serverUrlFileName: serverUrl) { task in
-            self.task = task
+            self.datasourceTask = task
             self.collectionView.reloadData()
         } completion: { account, metadataFolder, error in
             guard error == .success, let metadataFolder else {
@@ -196,7 +196,7 @@ class NCFiles: NCCollectionViewCommon {
                 NCNetworking.shared.readFolder(serverUrl: self.serverUrl,
                                                account: self.appDelegate.account,
                                                forceReplaceMetadatas: forceReplaceMetadatas) { task in
-                    self.task = task
+                    self.datasourceTask = task
                     self.collectionView.reloadData()
                 } completion: { _, metadataFolder, metadatas, metadatasChangedCount, metadatasChanged, error in
                     guard error == .success else {

@@ -77,7 +77,7 @@ class NCFavorite: NCCollectionViewCommon {
         super.reloadDataSourceNetwork()
 
         NextcloudKit.shared.listingFavorites(showHiddenFiles: NCKeychain().showHiddenFiles, options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { task in
-            self.task = task
+            self.datasourceTask = task
             self.collectionView.reloadData()
         } completion: { account, files, _, error in
             if error == .success {

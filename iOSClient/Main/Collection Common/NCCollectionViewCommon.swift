@@ -57,7 +57,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     var isSearchingMode: Bool = false
     var layoutForView: NCDBLayoutForView?
     var selectableDataSource: [RealmSwiftObject] { dataSource.getMetadataSourceForAllSections() }
-    var task: URLSessionTask?
+    var datasourceTask: URLSessionTask?
     var groupByField = "name"
     var providers: [NKSearchProvider]?
     var searchResults: [NKSearchResult]?
@@ -689,13 +689,13 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         self.emptyDataSet?.setOffset(getHeaderHeight())
         if isSearchingMode {
             view.emptyImage.image = UIImage(named: "search")?.image(color: .gray, size: UIScreen.main.bounds.width)
-            if self.task?.state == .running {
+            if self.datasourceTask?.state == .running {
                 view.emptyTitle.text = NSLocalizedString("_search_in_progress_", comment: "")
             } else {
                 view.emptyTitle.text = NSLocalizedString("_search_no_record_found_", comment: "")
             }
             view.emptyDescription.text = NSLocalizedString("_search_instruction_", comment: "")
-        } else if self.task?.state == .running {
+        } else if self.datasourceTask?.state == .running {
             view.emptyImage.image = UIImage(named: "networkInProgress")?.image(color: .gray, size: UIScreen.main.bounds.width)
             view.emptyTitle.text = NSLocalizedString("_request_in_progress_", comment: "")
             view.emptyDescription.text = ""
@@ -927,7 +927,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
         if NCGlobal.shared.capabilityServerVersionMajor >= NCGlobal.shared.nextcloudVersion20 {
             NCNetworking.shared.unifiedSearchFiles(userBaseUrl: appDelegate, literal: literalSearch) { task in
-                self.task = task
+                self.datasourceTask = task
                 self.collectionView.reloadData()
             } providers: { _, searchProviders in
                 self.providers = searchProviders
@@ -950,7 +950,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             }
         } else {
             NCNetworking.shared.searchFiles(urlBase: appDelegate, literal: literalSearch) { task in
-                self.task = task
+                self.datasourceTask = task
                 self.collectionView.reloadData()
             } completion: { metadatas, error in
                 DispatchQueue.main.async {
@@ -980,7 +980,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         self.collectionView?.reloadData()
 
         NCNetworking.shared.unifiedSearchFilesProvider(userBaseUrl: appDelegate, id: lastSearchResult.id, term: term, limit: 5, cursor: cursor) { task in
-            self.task = task
+            self.datasourceTask = task
             self.collectionView.reloadData()
         } completion: { _, searchResult, metadatas, error in
             if error != .success {
@@ -1659,7 +1659,7 @@ extension NCCollectionViewCommon: EasyTipViewDelegate {
 }
 
 extension NCCollectionViewCommon: NCSelectableNavigationView, NCCollectionViewCommonSelectTabBarDelegate {
-    func setNavigationRightItems(toggleMenu: Bool = false) {
+    func setNavigationRightItems(enableMenu: Bool = false) {
         var selectedMetadatas: [tableMetadata] = []
         var isAnyOffline = false
         var isAnyDirectory = false
@@ -1717,7 +1717,7 @@ extension NCCollectionViewCommon: NCSelectableNavigationView, NCCollectionViewCo
             navigationItem.rightBarButtonItems = [select]
         } else {
             tabBarSelect.hide()
-            if navigationItem.rightBarButtonItems == nil || toggleMenu {
+            if navigationItem.rightBarButtonItems == nil || enableMenu {
                 let menuButton = UIBarButtonItem(image: .init(systemName: "ellipsis.circle"), menu: UIMenu(children: createMenuActions()))
                 if layoutKey == NCGlobal.shared.layoutViewFiles {
                     let notification = UIBarButtonItem(image: .init(systemName: "bell"), style: .plain, action: tapNotification)
