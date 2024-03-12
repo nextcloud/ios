@@ -79,6 +79,7 @@ class NCViewer: NSObject {
                     index += 1
                 }
                 viewerMediaPageContainer.metadatas = metadatas
+                viewerMediaPageContainer.delegateViewController = viewController
                 navigationController.pushViewController(viewerMediaPageContainer, animated: true)
             }
 
