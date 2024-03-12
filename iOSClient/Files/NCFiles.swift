@@ -104,7 +104,12 @@ class NCFiles: NCCollectionViewCommon {
     override func queryDB() {
         super.queryDB()
 
-        let metadatas = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", self.appDelegate.account, self.serverUrl))
+        var metadatas: [tableMetadata] = []
+        if NCKeychain().getPersonalFilesOnly(account: self.appDelegate.account) {
+            metadatas = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND ownerId == %@ AND mountType == ''", self.appDelegate.account, self.serverUrl, self.appDelegate.userId))
+        } else {
+            metadatas = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", self.appDelegate.account, self.serverUrl))
+        }
         let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", self.appDelegate.account, self.serverUrl))
         if self.metadataFolder == nil {
             self.metadataFolder = NCManageDatabase.shared.getMetadataFolder(account: self.appDelegate.account, urlBase: self.appDelegate.urlBase, userId: self.appDelegate.userId, serverUrl: self.serverUrl)
