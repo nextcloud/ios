@@ -93,24 +93,15 @@ class NCListCell: SwipeCollectionViewCell, UIGestureRecognizerDelegate, NCCellPr
     }
     var fileStatusImage: UIImageView? {
         get { return imageStatus }
-        set {
-            imageStatus = newValue
-            imageStatus.makeCircularBackground(withColor: .systemBackground)
-        }
+        set { imageStatus = newValue }
     }
     var fileLocalImage: UIImageView? {
         get { return imageLocal }
-        set {
-            imageLocal = newValue
-            imageLocal.makeCircularBackground(withColor: .systemBackground)
-        }
+        set { imageLocal = newValue }
     }
     var fileFavoriteImage: UIImageView? {
         get { return imageFavorite }
-        set { 
-            imageFavorite = newValue
-//            imageFavoriteBackground.isHidden = false
-        }
+        set { imageFavorite = newValue }
     }
     var fileSharedImage: UIImageView? {
         get { return imageShared }
@@ -162,14 +153,7 @@ class NCListCell: SwipeCollectionViewCell, UIGestureRecognizerDelegate, NCCellPr
         labelInfo.textColor = .systemGray
         labelSubinfo.textColor = .systemGray
 
-//        imageFavoriteBackground.isHidden = true
-
-
-//        if fileFavoriteImage?.image != nil {
-//            imageFavoriteBackground.isHidden = false
-//        } else {
-            imageFavoriteBackground.isHidden = true
-//        }
+        imageFavoriteBackground.isHidden = true
     }
 
     override func prepareForReuse() {
@@ -180,7 +164,7 @@ class NCListCell: SwipeCollectionViewCell, UIGestureRecognizerDelegate, NCCellPr
                 } else {
                     imageFavoriteBackground.isHidden = true
                 }
-//        fileFavoriteImage?.image = nil
+
         accessibilityHint = nil
         accessibilityLabel = nil
         accessibilityValue = nil
