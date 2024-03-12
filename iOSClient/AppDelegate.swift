@@ -363,7 +363,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
         NCAutoUpload.shared.initAutoUpload(viewController: nil) { items in
             NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] \(taskText) auto upload with \(items) uploads")
-
+            
+            /*
             NCNetworkingProcess.shared.start { counterDownload, counterUpload in
                 NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] \(taskText) networking process with download: \(counterDownload) upload: \(counterUpload)")
 
@@ -386,6 +387,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                 }
                 completion()
             }
+            */
         }
     }
 
