@@ -30,6 +30,7 @@ class NCListCell: SwipeCollectionViewCell, UIGestureRecognizerDelegate, NCCellPr
     @IBOutlet weak var imageSelect: UIImageView!
     @IBOutlet weak var imageStatus: UIImageView!
     @IBOutlet weak var imageFavorite: UIImageView!
+    @IBOutlet weak var imageFavoriteBackground: UIImageView!
     @IBOutlet weak var imageLocal: UIImageView!
     @IBOutlet weak var labelTitle: UILabel!
     @IBOutlet weak var labelInfo: UILabel!
@@ -151,11 +152,19 @@ class NCListCell: SwipeCollectionViewCell, UIGestureRecognizerDelegate, NCCellPr
         labelTitle.textColor = .label
         labelInfo.textColor = .systemGray
         labelSubinfo.textColor = .systemGray
+
+        imageFavoriteBackground.isHidden = true
     }
 
     override func prepareForReuse() {
         super.prepareForReuse()
         imageItem.backgroundColor = nil
+        if fileFavoriteImage?.image != nil {
+            imageFavoriteBackground.isHidden = false
+        } else {
+            imageFavoriteBackground.isHidden = true
+        }
+
         accessibilityHint = nil
         accessibilityLabel = nil
         accessibilityValue = nil
@@ -308,6 +317,22 @@ class NCListCell: SwipeCollectionViewCell, UIGestureRecognizerDelegate, NCCellPr
             }
         }
     }
+
+    func setIconOutlines() {
+        imageFavoriteBackground.isHidden = fileFavoriteImage?.image == nil
+
+        if imageStatus.image != nil {
+            imageStatus.makeCircularBackground(withColor: .systemBackground)
+        } else {
+            imageStatus.backgroundColor = .clear
+        }
+
+        if imageLocal.image != nil {
+            imageLocal.makeCircularBackground(withColor: .systemBackground)
+        } else {
+            imageLocal.backgroundColor = .clear
+        }
+    }
 }
 
 protocol NCListCellDelegate: AnyObject {
@@ -340,7 +365,7 @@ class NCListLayout: UICollectionViewFlowLayout {
 
         minimumInteritemSpacing = 0
         minimumLineSpacing = 1
-
+        
         self.scrollDirection = .vertical
         self.sectionInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
     }
