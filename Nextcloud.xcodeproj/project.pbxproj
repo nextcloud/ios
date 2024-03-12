@@ -21,6 +21,7 @@
 		AC3575352B9896FE00D28E9C /* AutoUploadView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC3575342B9896FE00D28E9C /* AutoUploadView.swift */; };
 		AC454FF72B9585FB00BED89C /* AcknowledgementsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC454FF62B9585FB00BED89C /* AcknowledgementsView.swift */; };
 		AC454FF92B958B6A00BED89C /* NCWebBrowserView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC454FF82B958B6A00BED89C /* NCWebBrowserView.swift */; };
+		AC5735792BA0120200DAB67E /* AutoUploadFileNamesViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC5735782BA0120200DAB67E /* AutoUploadFileNamesViewModel.swift */; };
 		ACBA97E62B9ACF63006B8710 /* AutoUploadViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACBA97E52B9ACF63006B8710 /* AutoUploadViewModel.swift */; };
 		ACBA97E92B9AD90D006B8710 /* CCSettingsAdvanced.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACBA97E82B9AD90D006B8710 /* CCSettingsAdvanced.swift */; };
 		ACBA97EB2B9B03A3006B8710 /* CCSettingsAdvancedViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACBA97EA2B9B03A3006B8710 /* CCSettingsAdvancedViewModel.swift */; };
@@ -934,6 +935,7 @@
 		AC3575342B9896FE00D28E9C /* AutoUploadView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AutoUploadView.swift; sourceTree = "<group>"; };
 		AC454FF62B9585FB00BED89C /* AcknowledgementsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AcknowledgementsView.swift; sourceTree = "<group>"; };
 		AC454FF82B958B6A00BED89C /* NCWebBrowserView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCWebBrowserView.swift; sourceTree = "<group>"; };
+		AC5735782BA0120200DAB67E /* AutoUploadFileNamesViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AutoUploadFileNamesViewModel.swift; sourceTree = "<group>"; };
 		ACBA97E52B9ACF63006B8710 /* AutoUploadViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AutoUploadViewModel.swift; sourceTree = "<group>"; };
 		ACBA97E82B9AD90D006B8710 /* CCSettingsAdvanced.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CCSettingsAdvanced.swift; sourceTree = "<group>"; };
 		ACBA97EA2B9B03A3006B8710 /* CCSettingsAdvancedViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CCSettingsAdvancedViewModel.swift; sourceTree = "<group>"; };
@@ -1719,6 +1721,7 @@
 			isa = PBXGroup;
 			children = (
 				AC3068BB2B9DBAFA0082E54A /* AutoUploadFileNamesView.swift */,
+				AC5735782BA0120200DAB67E /* AutoUploadFileNamesViewModel.swift */,
 			);
 			path = ManageAutoUploadFiles;
 			sourceTree = "<group>";
@@ -3979,6 +3982,7 @@
 				F77BB74A2899857B0090FC19 /* UINavigationController+Extension.swift in Sources */,
 				ACBA97EB2B9B03A3006B8710 /* CCSettingsAdvancedViewModel.swift in Sources */,
 				F7327E282B73A53400A462C7 /* NCNetworking+Upload.swift in Sources */,
+				AC5735792BA0120200DAB67E /* AutoUploadFileNamesViewModel.swift in Sources */,
 				F769454622E9F1B0000A798A /* NCShareCommon.swift in Sources */,
 				F70753F12542A9A200972D44 /* NCViewerMedia.swift in Sources */,
 				F76B649C2ADFFAED00014640 /* NCImageCache.swift in Sources */,

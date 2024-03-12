@@ -9,14 +9,7 @@
 import SwiftUI
 
 struct AutoUploadFileNamesView: View {
-    
-    private let globalKey = NCGlobal.shared
-    
-    @State var maintainFilename: Bool
-    @State var specifyFilename: Bool
-    
-    @State var changedName: String
-    @State var oldName: String
+    @ObservedObject var viewModel = AutoUploadFileNamesViewModel()
     
     var body: some View {
         Form {
@@ -33,18 +26,17 @@ struct AutoUploadFileNamesView: View {
             
             // Specify Filename
             Section(header: Text(NSLocalizedString("_filename_", comment: ""))) {
-                
-                Toggle(NSLocalizedString("_maintain_original_filename_", comment: ""), isOn: $maintainFilename)
-                    .onChange(of: maintainFilename, perform: { newValue in
-                        
+                Toggle(NSLocalizedString("_maintain_original_filename_", comment: ""), isOn: $viewModel.maintainFilename)
+                    .onChange(of: viewModel.maintainFilename, perform: { newValue in
+                        NCKeychain().setOriginalFileName(key: NCGlobal.shared.keyFileNameOriginalAutoUpload, value: newValue)
                     })
                 
                 
                 // Filename
-                if !maintainFilename {
-                    Toggle(NSLocalizedString("_add_filenametype_", comment: ""), isOn: $specifyFilename)
-                        .onChange(of: specifyFilename, perform: { newValue in
-                            
+                if !viewModel.maintainFilename {
+                    Toggle(NSLocalizedString("_add_filenametype_", comment: ""), isOn: $viewModel.specifyFilename)
+                        .onChange(of: viewModel.specifyFilename, perform: { newValue in
+                            NCKeychain().setFileNameType(key: NCGlobal.shared.keyFileNameAutoUploadType, prefix: newValue)
                         })
                 }
             }
@@ -53,7 +45,7 @@ struct AutoUploadFileNamesView: View {
             
             
             // Filename Preview
-            if !maintainFilename {
+            if !viewModel.maintainFilename {
                 Section(content: {
                     HStack {
                         Text(NSLocalizedString("_filename_", comment: ""))
@@ -62,9 +54,9 @@ struct AutoUploadFileNamesView: View {
                             .fontWeight(.medium)
                             .background(Color(UIColor.secondarySystemGroupedBackground))
                         Spacer()
-                        TextField("FILENAME", text: $changedName)
+                        TextField("FILENAME", text: $viewModel.changedName)
                             .onSubmit {
-                                
+                                viewModel.submitChangedName()
                             }
                             .font(.system(size: 15))
                             .foregroundColor(Color(UIColor.label))
@@ -72,7 +64,7 @@ struct AutoUploadFileNamesView: View {
                             .multilineTextAlignment(.trailing)
                     }
                     
-                    Text("")    // Function to be added
+                    Text("\(viewModel.previewFileName())")
                 }, header: {
                     Text("CUSTOM FILENAME")
                 }, footer: {
@@ -88,11 +80,13 @@ struct AutoUploadFileNamesView: View {
                 })
             }
         }.navigationBarTitle("Filename Mode")
-            .padding(.top, -0)
+            .padding(.top, 0)
             .transition(.slide)
+        
+        
     }
 }
 
 #Preview {
-    AutoUploadFileNamesView(maintainFilename: false, specifyFilename: false, changedName: "", oldName: "")
+    AutoUploadFileNamesView()
 }
