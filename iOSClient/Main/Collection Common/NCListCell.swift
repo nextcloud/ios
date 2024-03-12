@@ -22,13 +22,15 @@
 //
 
 import UIKit
+import SwipeCellKit
 
-class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProtocol {
+class NCListCell: SwipeCollectionViewCell, UIGestureRecognizerDelegate, NCCellProtocol {
 
     @IBOutlet weak var imageItem: UIImageView!
     @IBOutlet weak var imageSelect: UIImageView!
     @IBOutlet weak var imageStatus: UIImageView!
     @IBOutlet weak var imageFavorite: UIImageView!
+    @IBOutlet weak var imageFavoriteBackground: UIImageView!
     @IBOutlet weak var imageLocal: UIImageView!
     @IBOutlet weak var labelTitle: UILabel!
     @IBOutlet weak var labelInfo: UILabel!
@@ -51,7 +53,7 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
     private var user = ""
     var indexPath = IndexPath()
 
-    weak var delegate: NCListCellDelegate?
+    weak var listCellDelegate: NCListCellDelegate?
     var namedButtonMore = ""
 
     var fileAvatarImageView: UIImageView? {
@@ -150,11 +152,19 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
         labelTitle.textColor = .label
         labelInfo.textColor = .systemGray
         labelSubinfo.textColor = .systemGray
+
+        imageFavoriteBackground.isHidden = true
     }
 
     override func prepareForReuse() {
         super.prepareForReuse()
         imageItem.backgroundColor = nil
+        if fileFavoriteImage?.image != nil {
+            imageFavoriteBackground.isHidden = false
+        } else {
+            imageFavoriteBackground.isHidden = true
+        }
+
         accessibilityHint = nil
         accessibilityLabel = nil
         accessibilityValue = nil
@@ -165,19 +175,19 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
     }
 
     @IBAction func touchUpInsideShare(_ sender: Any) {
-        delegate?.tapShareListItem(with: objectId, indexPath: indexPath, sender: sender)
+        listCellDelegate?.tapShareListItem(with: objectId, indexPath: indexPath, sender: sender)
     }
 
     @IBAction func touchUpInsideMore(_ sender: Any) {
-        delegate?.tapMoreListItem(with: objectId, namedButtonMore: namedButtonMore, image: imageItem.image, indexPath: indexPath, sender: sender)
+        listCellDelegate?.tapMoreListItem(with: objectId, namedButtonMore: namedButtonMore, image: imageItem.image, indexPath: indexPath, sender: sender)
     }
 
     @objc func longPressInsideMore(gestureRecognizer: UILongPressGestureRecognizer) {
-        delegate?.longPressMoreListItem(with: objectId, namedButtonMore: namedButtonMore, indexPath: indexPath, gestureRecognizer: gestureRecognizer)
+        listCellDelegate?.longPressMoreListItem(with: objectId, namedButtonMore: namedButtonMore, indexPath: indexPath, gestureRecognizer: gestureRecognizer)
     }
 
     @objc func longPress(gestureRecognizer: UILongPressGestureRecognizer) {
-        delegate?.longPressListItem(with: objectId, indexPath: indexPath, gestureRecognizer: gestureRecognizer)
+        listCellDelegate?.longPressListItem(with: objectId, indexPath: indexPath, gestureRecognizer: gestureRecognizer)
     }
 
     fileprivate func setA11yActions() {
@@ -307,6 +317,22 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
             }
         }
     }
+
+    func setIconOutlines() {
+        imageFavoriteBackground.isHidden = fileFavoriteImage?.image == nil
+
+        if imageStatus.image != nil {
+            imageStatus.makeCircularBackground(withColor: .systemBackground)
+        } else {
+            imageStatus.backgroundColor = .clear
+        }
+
+        if imageLocal.image != nil {
+            imageLocal.makeCircularBackground(withColor: .systemBackground)
+        } else {
+            imageLocal.backgroundColor = .clear
+        }
+    }
 }
 
 protocol NCListCellDelegate: AnyObject {
@@ -339,7 +365,7 @@ class NCListLayout: UICollectionViewFlowLayout {
 
         minimumInteritemSpacing = 0
         minimumLineSpacing = 1
-
+        
         self.scrollDirection = .vertical
         self.sectionInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
     }

@@ -32,8 +32,16 @@
                             <constraint firstAttribute="height" constant="15" id="ndy-wW-xdL"/>
                         </constraints>
                     </imageView>
-                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="C4K-Nv-phA" userLabel="imageFavorite">
-                        <rect key="frame" x="87" y="49" width="15" height="15"/>
+                    <imageView hidden="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="star.fill" catalog="system" translatesAutoresizingMaskIntoConstraints="NO" id="PT1-5s-nuy" userLabel="imageFavoriteBackground">
+                        <rect key="frame" x="85" y="46.666666666666671" width="19" height="18.666666666666671"/>
+                        <color key="tintColor" systemColor="systemBackgroundColor"/>
+                        <constraints>
+                            <constraint firstAttribute="width" constant="19" id="INJ-Pq-tcg"/>
+                            <constraint firstAttribute="height" constant="19" id="a98-Ph-TLc"/>
+                        </constraints>
+                    </imageView>
+                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="star.fill" catalog="system" translatesAutoresizingMaskIntoConstraints="NO" id="C4K-Nv-phA" userLabel="imageFavorite">
+                        <rect key="frame" x="87" y="48.666666666666671" width="15" height="14.666666666666664"/>
                         <constraints>
                             <constraint firstAttribute="width" constant="15" id="hXC-b9-Q2V"/>
                             <constraint firstAttribute="height" constant="15" id="mPH-zc-eH5"/>
@@ -206,6 +214,7 @@
                 <constraint firstItem="jUe-8q-VJd" firstAttribute="leading" secondItem="qnc-hI-Z9r" secondAttribute="trailing" constant="5" id="jMG-V1-hgF"/>
                 <constraint firstAttribute="trailing" secondItem="Egg-cb-EhZ" secondAttribute="trailing" id="k8f-bU-D6I"/>
                 <constraint firstItem="qnc-hI-Z9r" firstAttribute="leading" secondItem="w2m-Vw-hpd" secondAttribute="trailing" constant="10" id="l6K-6H-QIr"/>
+                <constraint firstItem="PT1-5s-nuy" firstAttribute="top" secondItem="w2m-Vw-hpd" secondAttribute="top" constant="-7.0000000000000071" id="m2v-Ib-PPx"/>
                 <constraint firstItem="w2m-Vw-hpd" firstAttribute="leading" secondItem="jxV-Pk-fPt" secondAttribute="leading" constant="57" id="mBb-ff-7HD"/>
                 <constraint firstItem="w2m-Vw-hpd" firstAttribute="leading" secondItem="7Q9-Tv-9yo" secondAttribute="trailing" constant="-10" id="mon-aq-gcP"/>
                 <constraint firstItem="UtT-L6-mgW" firstAttribute="top" secondItem="jxV-Pk-fPt" secondAttribute="top" constant="13" id="nrY-2F-QZ2"/>
@@ -215,12 +224,14 @@
                 <constraint firstItem="AyA-hP-r6w" firstAttribute="centerY" secondItem="jxV-Pk-fPt" secondAttribute="centerY" id="sJp-0x-bdC"/>
                 <constraint firstAttribute="trailing" secondItem="o4u-0K-Qpt" secondAttribute="trailing" constant="45" id="tOD-Sd-Uhy"/>
                 <constraint firstItem="jc6-Vg-TaS" firstAttribute="centerY" secondItem="o4u-0K-Qpt" secondAttribute="centerY" id="xnq-6u-TXH"/>
+                <constraint firstItem="PT1-5s-nuy" firstAttribute="leading" secondItem="w2m-Vw-hpd" secondAttribute="leading" constant="28" id="zPZ-1K-761"/>
             </constraints>
             <size key="customSize" width="719" height="146"/>
             <connections>
                 <outlet property="buttonMore" destination="yhy-xd-w5C" id="agm-M9-xtq"/>
                 <outlet property="buttonShared" destination="o4u-0K-Qpt" id="5hT-Su-kWL"/>
                 <outlet property="imageFavorite" destination="C4K-Nv-phA" id="3nc-zz-N5c"/>
+                <outlet property="imageFavoriteBackground" destination="PT1-5s-nuy" id="10s-ap-l45"/>
                 <outlet property="imageItem" destination="w2m-Vw-hpd" id="iY5-ed-crD"/>
                 <outlet property="imageItemLeftConstraint" destination="mBb-ff-7HD" id="fsR-5N-1NC"/>
                 <outlet property="imageLocal" destination="H4E-G2-C1H" id="waX-r5-viX"/>
@@ -251,6 +262,10 @@
         </designable>
     </designables>
     <resources>
+        <image name="star.fill" catalog="system" width="128" height="116"/>
+        <systemColor name="systemBackgroundColor">
+            <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
         <systemColor name="systemGray5Color">
             <color red="0.89803921568627454" green="0.89803921568627454" blue="0.91764705882352937" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>

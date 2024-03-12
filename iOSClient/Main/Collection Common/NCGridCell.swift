@@ -40,7 +40,7 @@ class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
     var indexPath = IndexPath()
     private var user = ""
 
-    weak var delegate: NCGridCellDelegate?
+    weak var gridCellDelegate: NCGridCellDelegate?
     var namedButtonMore = ""
 
     var fileObjectId: String? {
@@ -129,15 +129,15 @@ class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
     }
 
     @IBAction func touchUpInsideMore(_ sender: Any) {
-        delegate?.tapMoreGridItem(with: objectId, namedButtonMore: namedButtonMore, image: imageItem.image, indexPath: indexPath, sender: sender)
+        gridCellDelegate?.tapMoreGridItem(with: objectId, namedButtonMore: namedButtonMore, image: imageItem.image, indexPath: indexPath, sender: sender)
     }
 
     @objc func longPressInsideMore(gestureRecognizer: UILongPressGestureRecognizer) {
-        delegate?.longPressMoreGridItem(with: objectId, namedButtonMore: namedButtonMore, indexPath: indexPath, gestureRecognizer: gestureRecognizer)
+        gridCellDelegate?.longPressMoreGridItem(with: objectId, namedButtonMore: namedButtonMore, indexPath: indexPath, gestureRecognizer: gestureRecognizer)
     }
 
     @objc func longPress(gestureRecognizer: UILongPressGestureRecognizer) {
-        delegate?.longPressGridItem(with: objectId, indexPath: indexPath, gestureRecognizer: gestureRecognizer)
+        gridCellDelegate?.longPressGridItem(with: objectId, indexPath: indexPath, gestureRecognizer: gestureRecognizer)
     }
 
     fileprivate func setA11yActions() {
@@ -210,6 +210,14 @@ class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
     func setAccessibility(label: String, value: String) {
         accessibilityLabel = label
         accessibilityValue = value
+    }
+
+    func setIconOutlines() {
+        if imageStatus.image != nil {
+            imageStatus.makeCircularBackground(withColor: .systemBackground)
+        } else {
+            imageStatus.backgroundColor = .clear
+        }
     }
 }
 

@@ -59,7 +59,7 @@ extension NCShareExtension: UICollectionViewDataSource {
             return UICollectionViewCell()
         }
 
-        cell.delegate = self
+        cell.listCellDelegate = self
 
         cell.fileObjectId = metadata.ocId
         cell.indexPath = indexPath
