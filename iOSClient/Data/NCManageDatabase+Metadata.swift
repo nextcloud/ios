@@ -215,7 +215,7 @@ extension tableMetadata {
         return session.isEmpty && !isDocumentViewableOnly && !isDirectoryE2EE && !e2eEncrypted
     }
 
-    var canOpenIn: Bool {
+    var canShare: Bool {
         return session.isEmpty && !isDocumentViewableOnly && !directory && !NCBrandOptions.shared.disable_openin_file
     }
 

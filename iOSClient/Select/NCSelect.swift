@@ -342,7 +342,7 @@ extension NCSelect: UICollectionViewDataSource {
         isShare = metadata.permissions.contains(NCGlobal.shared.permissionShared) && !metadataFolder.permissions.contains(NCGlobal.shared.permissionShared)
         isMounted = metadata.permissions.contains(NCGlobal.shared.permissionMounted) && !metadataFolder.permissions.contains(NCGlobal.shared.permissionMounted)
 
-        cell.delegate = self
+        cell.listCellDelegate = self
 
         cell.fileObjectId = metadata.ocId
         cell.fileUser = metadata.ownerId

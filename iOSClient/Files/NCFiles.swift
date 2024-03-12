@@ -59,7 +59,7 @@ class NCFiles: NCCollectionViewCommon {
                 self.isSearchingMode = false
                 self.isEditMode = false
                 self.selectOcId.removeAll()
-                self.selectIndexPath.removeAll()
+                self.selectIndexPaths.removeAll()
 
                 self.layoutForView = NCManageDatabase.shared.getLayoutForView(account: self.appDelegate.account, key: self.layoutKey, serverUrl: self.serverUrl)
                 self.gridLayout.itemForLine = CGFloat(self.layoutForView?.itemForLine ?? 3)

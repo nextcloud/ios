@@ -85,6 +85,8 @@
 		F31F69612A2F907800162F76 /* __Snapshots__ in Resources */ = {isa = PBXBuildFile; fileRef = F31F69602A2F907800162F76 /* __Snapshots__ */; };
 		F31F69642A2F929600162F76 /* PreviewSnapshots in Frameworks */ = {isa = PBXBuildFile; productRef = F31F69632A2F929600162F76 /* PreviewSnapshots */; };
 		F321DA8A2B71205A00DDA0E6 /* NCTrashSelectTabBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = F321DA892B71205A00DDA0E6 /* NCTrashSelectTabBar.swift */; };
+		F327FA432B8CC0B900E5B743 /* SwipeCellKit in Frameworks */ = {isa = PBXBuildFile; productRef = F327FA422B8CC0B900E5B743 /* SwipeCellKit */; };
+		F327FA452B8CC36900E5B743 /* SwipeCellKit in Frameworks */ = {isa = PBXBuildFile; productRef = F327FA442B8CC36900E5B743 /* SwipeCellKit */; };
 		F32ED5062A2F254400EABA81 /* EnvVars.generated.swift in Sources */ = {isa = PBXBuildFile; fileRef = F30A96302A27AEBF00D7BCFE /* EnvVars.generated.swift */; };
 		F33AAF9A2A60394C006ECCBD /* NCMoreUserCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F33AAF992A60394C006ECCBD /* NCMoreUserCell.xib */; };
 		F343A4B32A1E01FF00DDA874 /* PHAsset+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F343A4B22A1E01FF00DDA874 /* PHAsset+Extension.swift */; };
@@ -108,6 +110,8 @@
 		F359D86B2A7D03420023F405 /* NCUtility+Exif.swift in Sources */ = {isa = PBXBuildFile; fileRef = F359D8662A7D03420023F405 /* NCUtility+Exif.swift */; };
 		F359D86C2A7D03420023F405 /* NCUtility+Exif.swift in Sources */ = {isa = PBXBuildFile; fileRef = F359D8662A7D03420023F405 /* NCUtility+Exif.swift */; };
 		F359D86D2A7D03420023F405 /* NCUtility+Exif.swift in Sources */ = {isa = PBXBuildFile; fileRef = F359D8662A7D03420023F405 /* NCUtility+Exif.swift */; };
+		F36E64F72B9245210085ABB5 /* NCCollectionViewCommon+SelectTabBarDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F36E64F62B9245210085ABB5 /* NCCollectionViewCommon+SelectTabBarDelegate.swift */; };
+		F36E64F92B92459B0085ABB5 /* NCCollectionViewCommon+SwipeCollectionViewCellDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F36E64F82B92459B0085ABB5 /* NCCollectionViewCommon+SwipeCollectionViewCellDelegate.swift */; };
 		F38F71252B6BBDC300473CDC /* NCCollectionViewCommonSelectTabBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = F38F71242B6BBDC300473CDC /* NCCollectionViewCommonSelectTabBar.swift */; };
 		F39298972A3B12CB00509762 /* BaseNCMoreCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F39298962A3B12CB00509762 /* BaseNCMoreCell.swift */; };
 		F3953BD72A6E87E000EE03F9 /* BaseIntegrationXCTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3953BD62A6E87E000EE03F9 /* BaseIntegrationXCTestCase.swift */; };
@@ -973,6 +977,8 @@
 		F343A4B22A1E01FF00DDA874 /* PHAsset+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PHAsset+Extension.swift"; sourceTree = "<group>"; };
 		F343A4BA2A1E734600DDA874 /* Optional+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Optional+Extension.swift"; sourceTree = "<group>"; };
 		F359D8662A7D03420023F405 /* NCUtility+Exif.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NCUtility+Exif.swift"; sourceTree = "<group>"; };
+		F36E64F62B9245210085ABB5 /* NCCollectionViewCommon+SelectTabBarDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NCCollectionViewCommon+SelectTabBarDelegate.swift"; sourceTree = "<group>"; };
+		F36E64F82B92459B0085ABB5 /* NCCollectionViewCommon+SwipeCollectionViewCellDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NCCollectionViewCommon+SwipeCollectionViewCellDelegate.swift"; sourceTree = "<group>"; };
 		F38F71242B6BBDC300473CDC /* NCCollectionViewCommonSelectTabBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCCollectionViewCommonSelectTabBar.swift; sourceTree = "<group>"; };
 		F39298962A3B12CB00509762 /* BaseNCMoreCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseNCMoreCell.swift; sourceTree = "<group>"; };
 		F3953BD62A6E87E000EE03F9 /* BaseIntegrationXCTestCase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BaseIntegrationXCTestCase.swift; sourceTree = "<group>"; };
@@ -1578,6 +1584,7 @@
 				F72AD70F28C24BA1006CB92D /* NextcloudKit in Frameworks */,
 				F737DA992B7B864E0063BAFC /* TOPasscodeViewController.xcframework in Frameworks */,
 				F72CD01227A7E92400E59476 /* JGProgressHUD in Frameworks */,
+				F327FA452B8CC36900E5B743 /* SwipeCellKit in Frameworks */,
 				F77CB6A92AA08053000C3CA4 /* OpenSSL in Frameworks */,
 				F760DE092AE66ED00027D78A /* KeychainAccess in Frameworks */,
 				F73ADD2126554F8E0069EA0D /* SwiftEntryKit in Frameworks */,
@@ -1641,6 +1648,7 @@
 				F70B86752642CE3B00ED5349 /* FirebaseCrashlytics in Frameworks */,
 				F7A1050E29E587AF00FFD92B /* TagListView in Frameworks */,
 				F76DA969277B77EA0082465B /* DropDown in Frameworks */,
+				F327FA432B8CC0B900E5B743 /* SwipeCellKit in Frameworks */,
 				F7F623B52A5EF4D30022D3D4 /* Gzip in Frameworks */,
 				F75EAED826D2552E00F4320E /* MarqueeLabel in Frameworks */,
 				F710FC7A277B7D0000AA9FBF /* Realm in Frameworks */,
@@ -2059,6 +2067,8 @@
 			isa = PBXGroup;
 			children = (
 				F70D7C3525FFBF81002B9E34 /* NCCollectionViewCommon.swift */,
+				F36E64F82B92459B0085ABB5 /* NCCollectionViewCommon+SwipeCollectionViewCellDelegate.swift */,
+				F36E64F62B9245210085ABB5 /* NCCollectionViewCommon+SelectTabBarDelegate.swift */,
 				AF7E504F27A2D92300B5E4AF /* NCSelectableNavigationView.swift */,
 				F78ACD3F21903CC20088454D /* NCGridCell.swift */,
 				F78ACD4521903D010088454D /* NCGridCell.xib */,
@@ -2947,6 +2957,7 @@
 				F760DE082AE66ED00027D78A /* KeychainAccess */,
 				F74C863C2AEFBFD9009A1D4A /* LRUCache */,
 				F711A4EE2AF932B900095DD8 /* SVGKitSwift */,
+				F327FA442B8CC36900E5B743 /* SwipeCellKit */,
 			);
 			productName = "Share Ext";
 			productReference = F7CE8AFB1DC1F8D8009CAE48 /* Share.appex */;
@@ -3053,6 +3064,7 @@
 				F7F623B42A5EF4D30022D3D4 /* Gzip */,
 				F76B649D2ADFFDEC00014640 /* LRUCache */,
 				F760DE022AE66EA80027D78A /* KeychainAccess */,
+				F327FA422B8CC0B900E5B743 /* SwipeCellKit */,
 			);
 			productName = "Crypto Cloud";
 			productReference = F7CE8AFA1DC1F8D8009CAE48 /* Nextcloud.app */;
@@ -3229,6 +3241,7 @@
 				F7F623B32A5EF4D30022D3D4 /* XCRemoteSwiftPackageReference "GzipSwift" */,
 				F76B649A2ADFFAD200014640 /* XCRemoteSwiftPackageReference "LRUCache" */,
 				F760DE012AE66E860027D78A /* XCRemoteSwiftPackageReference "KeychainAccess" */,
+				F327FA412B8CC0B900E5B743 /* XCRemoteSwiftPackageReference "SwipeCellKit" */,
 			);
 			productRefGroup = F7F67B9F1A24D27800EE80DA;
 			projectDirPath = "";
@@ -4021,6 +4034,7 @@
 				F7C30DFD291BD0B80017149B /* NCNetworkingE2EEDelete.swift in Sources */,
 				F72FD3B5297ED49A00075D28 /* NCManageDatabase+E2EE.swift in Sources */,
 				F73EF7CF2B0225BA0087E6E9 /* NCManageDatabase+Tag.swift in Sources */,
+				F36E64F92B92459B0085ABB5 /* NCCollectionViewCommon+SwipeCollectionViewCellDelegate.swift in Sources */,
 				AF93471227E2341B002537EE /* NCShare+Menu.swift in Sources */,
 				F7EFA47825ADBA500083159A /* NCViewerProviderContextMenu.swift in Sources */,
 				F755BD9B20594AC7008C5FBB /* NCService.swift in Sources */,
@@ -4032,6 +4046,7 @@
 				F70D7C3725FFBF82002B9E34 /* NCCollectionViewCommon.swift in Sources */,
 				F76D364628A4F8BF00214537 /* NCActivityIndicator.swift in Sources */,
 				F7134186259747BA00768D21 /* NCPushNotification.m in Sources */,
+				F36E64F72B9245210085ABB5 /* NCCollectionViewCommon+SelectTabBarDelegate.swift in Sources */,
 				F3BB464F2A39EBE500461F6E /* NCMoreUserCell.swift in Sources */,
 				F726EEEC1FED1C820030B9C8 /* NCEndToEndInitialize.swift in Sources */,
 				F79A65C62191D95E00FF6DCC /* NCSelect.swift in Sources */,
@@ -5230,6 +5245,14 @@
 				version = 1.4.0;
 			};
 		};
+		F327FA412B8CC0B900E5B743 /* XCRemoteSwiftPackageReference "SwipeCellKit" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/SwipeCellKit/SwipeCellKit";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.7.1;
+			};
+		};
 		F70B86732642CE3B00ED5349 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
@@ -5454,6 +5477,16 @@
 			isa = XCSwiftPackageProductDependency;
 			package = F31F69622A2F929600162F76 /* XCRemoteSwiftPackageReference "swiftui-preview-snapshots" */;
 			productName = PreviewSnapshots;
+		};
+		F327FA422B8CC0B900E5B743 /* SwipeCellKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F327FA412B8CC0B900E5B743 /* XCRemoteSwiftPackageReference "SwipeCellKit" */;
+			productName = SwipeCellKit;
+		};
+		F327FA442B8CC36900E5B743 /* SwipeCellKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F327FA412B8CC0B900E5B743 /* XCRemoteSwiftPackageReference "SwipeCellKit" */;
+			productName = SwipeCellKit;
 		};
 		F3C6D0962B0F9BA40078DD25 /* XLForm */ = {
 			isa = XCSwiftPackageProductDependency;
