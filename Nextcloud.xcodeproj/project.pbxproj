@@ -5032,7 +5032,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 5.2.1;
+				MARKETING_VERSION = 5.2.2;
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = "";
 				SDKROOT = iphoneos;
@@ -5094,7 +5094,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 5.2.1;
+				MARKETING_VERSION = 5.2.2;
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = "";
 				SDKROOT = iphoneos;
