@@ -10,6 +10,8 @@ import Foundation
 import NextcloudKit
 extension NCCollectionViewCommon: NCSelectableNavigationView, NCCollectionViewCommonSelectTabBarDelegate {
     func setNavigationRightItems(enableMenu: Bool = false) {
+        if layoutKey == NCGlobal.shared.layoutViewTransfers { return }
+
         var selectedMetadatas: [tableMetadata] = []
         var isAnyOffline = false
         var isAnyDirectory = false
@@ -234,7 +236,6 @@ extension NCCollectionViewCommon: NCSelectableNavigationView, NCCollectionViewCo
             if isName { // repeated press
                 layoutForView.ascending = !layoutForView.ascending
             }
-
             layoutForView.sort = "fileName"
             self.saveLayout(layoutForView)
         }
@@ -243,7 +244,6 @@ extension NCCollectionViewCommon: NCSelectableNavigationView, NCCollectionViewCo
             if isDate { // repeated press
                 layoutForView.ascending = !layoutForView.ascending
             }
-
             layoutForView.sort = "date"
             self.saveLayout(layoutForView)
         }
@@ -252,7 +252,6 @@ extension NCCollectionViewCommon: NCSelectableNavigationView, NCCollectionViewCo
             if isSize { // repeated press
                 layoutForView.ascending = !layoutForView.ascending
             }
-
             layoutForView.sort = "size"
             self.saveLayout(layoutForView)
         }
@@ -264,21 +263,29 @@ extension NCCollectionViewCommon: NCSelectableNavigationView, NCCollectionViewCo
             self.saveLayout(layoutForView)
         }
 
-        let showDescriptionKeychain = NCKeychain().showDescription
+        let personalFilesOnly = NCKeychain().getPersonalFilesOnly(account: appDelegate.account)
+        let personalFilesOnlyAction = UIAction(title: NSLocalizedString("_personal_files_only_", comment: ""), image: UIImage(systemName: "folder.badge.person.crop"), state: personalFilesOnly ? .on : .off) { _ in
+            NCKeychain().setPersonalFilesOnly(account: self.appDelegate.account, value: !personalFilesOnly)
+            self.reloadDataSource()
+        }
 
+        let showDescriptionKeychain = NCKeychain().showDescription
         let showDescription = UIAction(title: NSLocalizedString("_show_description_", comment: ""), image: UIImage(systemName: "list.dash.header.rectangle"), attributes: richWorkspaceText == nil ? .disabled : [], state: showDescriptionKeychain && richWorkspaceText != nil ? .on : .off) { _ in
             NCKeychain().showDescription = !showDescriptionKeychain
             self.collectionView.reloadData()
             self.setNavigationRightItems()
         }
-
         showDescription.subtitle = richWorkspaceText == nil ? NSLocalizedString("_no_description_available_", comment: "") : ""
-
-        let additionalSubmenu = UIMenu(title: "", options: .displayInline, children: [foldersOnTop, showDescription])
 
         if layoutKey == NCGlobal.shared.layoutViewRecent {
             return [select]
         } else {
+            var additionalSubmenu = UIMenu()
+            if layoutKey == NCGlobal.shared.layoutViewFiles {
+                additionalSubmenu = UIMenu(title: "", options: .displayInline, children: [foldersOnTop, personalFilesOnlyAction, showDescription])
+            } else {
+                additionalSubmenu = UIMenu(title: "", options: .displayInline, children: [foldersOnTop, showDescription])
+            }
             return [select, viewStyleSubmenu, sortSubmenu, additionalSubmenu]
         }
     }

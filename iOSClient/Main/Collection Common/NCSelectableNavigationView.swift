@@ -69,7 +69,6 @@ extension NCSelectableNavigationView {
     func saveLayout(_ layoutForView: NCDBLayoutForView) {
         NCManageDatabase.shared.setLayoutForView(layoutForView: layoutForView)
         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSource)
-
         setNavigationRightItems(enableMenu: false)
     }
 
