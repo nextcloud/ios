@@ -160,10 +160,10 @@ class NCListCell: SwipeCollectionViewCell, UIGestureRecognizerDelegate, NCCellPr
         super.prepareForReuse()
         imageItem.backgroundColor = nil
         if fileFavoriteImage?.image != nil {
-                    imageFavoriteBackground.isHidden = false
-                } else {
-                    imageFavoriteBackground.isHidden = true
-                }
+            imageFavoriteBackground.isHidden = false
+        } else {
+            imageFavoriteBackground.isHidden = true
+        }
 
         accessibilityHint = nil
         accessibilityLabel = nil
@@ -365,7 +365,7 @@ class NCListLayout: UICollectionViewFlowLayout {
 
         minimumInteritemSpacing = 0
         minimumLineSpacing = 1
-
+        
         self.scrollDirection = .vertical
         self.sectionInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
     }
