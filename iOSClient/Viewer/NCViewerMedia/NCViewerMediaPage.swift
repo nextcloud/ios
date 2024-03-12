@@ -374,11 +374,13 @@ class NCViewerMediaPage: UIViewController {
             return
         }
 
-        metadatas[index] = metadata
-        if currentViewController.metadata.ocId == ocId {
-            currentViewController.loadImage()
-        } else {
-            modifiedOcId.append(ocId)
+        DispatchQueue.main.async {
+            self.metadatas[index] = metadata
+            if self.currentViewController.metadata.ocId == ocId {
+                self.currentViewController.loadImage()
+            } else {
+                self.modifiedOcId.append(ocId)
+            }
         }
     }
 

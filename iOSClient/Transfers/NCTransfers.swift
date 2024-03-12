@@ -58,7 +58,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
         reloadDataSource()
     }
 
-    override func setNavigationItems() {
+    override func setNavigationLeftItems() {
         self.navigationItem.rightBarButtonItem = nil
         self.navigationItem.leftBarButtonItem = nil
     }

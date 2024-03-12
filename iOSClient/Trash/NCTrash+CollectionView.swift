@@ -55,9 +55,7 @@ extension NCTrash: UICollectionViewDataSource {
 
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         emptyDataSet?.numberOfItemsInSection(datasource.count, section: section)
-        
         setNavigationRightItems()
-
         return datasource.count
     }
 
@@ -90,7 +88,7 @@ extension NCTrash: UICollectionViewDataSource {
             // GRID
             guard let gridCell = collectionView.dequeueReusableCell(withReuseIdentifier: "gridCell", for: indexPath) as? NCGridCell else { return UICollectionViewCell() }
             gridCell.setButtonMore(named: NCGlobal.shared.buttonMoreMore, image: NCImageCache.images.buttonMore)
-            gridCell.delegate = self
+            gridCell.gridCellDelegate = self
             cell = gridCell
         }
 

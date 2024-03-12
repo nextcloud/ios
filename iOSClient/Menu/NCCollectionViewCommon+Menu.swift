@@ -259,7 +259,7 @@ extension NCCollectionViewCommon {
         //
         // SHARE
         //
-        if metadata.canOpenIn {
+        if metadata.canShare {
             actions.append(.share(selectedMetadatas: [metadata], viewController: self, order: 80))
         }
 
@@ -395,7 +395,7 @@ extension NCCollectionViewCommon {
         // DELETE
         //
         if metadata.isDeletable {
-            actions.append(.deleteAction(selectedMetadatas: [metadata], indexPath: [indexPath], metadataFolder: metadataFolder, viewController: self, order: 170))
+            actions.append(.deleteAction(selectedMetadatas: [metadata], indexPaths: [indexPath], metadataFolder: metadataFolder, viewController: self, order: 170))
         }
 
         applicationHandle.addCollectionViewCommonMenu(metadata: metadata, imageIcon: imageIcon, actions: &actions)

@@ -4,7 +4,6 @@
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="22504"/>
-        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -17,7 +16,7 @@
                 <rect key="frame" x="0.0" y="0.0" width="220" height="220"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
-                    <imageView autoresizesSubviews="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="5Ci-V1-hf5" userLabel="imageItem">
+                    <imageView userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="5Ci-V1-hf5" userLabel="imageItem">
                         <rect key="frame" x="0.0" y="0.0" width="220" height="220"/>
                     </imageView>
                     <imageView userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="a0p-rj-jnV" userLabel="imageStatus">
@@ -27,7 +26,7 @@
                             <constraint firstAttribute="width" constant="10" id="uNx-Cr-iBO"/>
                         </constraints>
                     </imageView>
-                    <visualEffectView hidden="YES" opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="r1K-4X-gNd" userLabel="VisualEffect">
+                    <visualEffectView hidden="YES" contentMode="scaleAspectFill" translatesAutoresizingMaskIntoConstraints="NO" id="r1K-4X-gNd" userLabel="VisualEffect">
                         <rect key="frame" x="0.0" y="0.0" width="220" height="220"/>
                         <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" id="3h4-qt-b9E">
                             <rect key="frame" x="0.0" y="0.0" width="220" height="220"/>
@@ -52,7 +51,6 @@
                     </label>
                 </subviews>
             </view>
-            <viewLayoutGuide key="safeArea" id="VXh-sQ-LeX"/>
             <constraints>
                 <constraint firstAttribute="trailing" secondItem="r1K-4X-gNd" secondAttribute="trailing" id="1Hu-GT-dJv"/>
                 <constraint firstItem="DHy-Up-3Bh" firstAttribute="leading" secondItem="vf1-Kf-9uL" secondAttribute="leading" constant="5" id="1T3-8p-uIW"/>

@@ -62,24 +62,17 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
     var serverUrl = ""
     // -------------------------------------------------------------
 
+    private var dataSourceTask: URLSessionTask?
     private var emptyDataSet: NCEmptyDataSet?
-
     private var serverUrlPush = ""
     private var metadataFolder = tableMetadata()
-
-    private var networkInProgress = false
     private var overwrite = true
-
     private var dataSource = NCDataSource()
     internal var richWorkspaceText: String?
-
     internal var headerMenu: NCSectionHeaderMenu?
-
     private var autoUploadFileName = ""
     private var autoUploadDirectory = ""
-
     private var backgroundImageView = UIImageView()
-
     private var activeAccount: tableAccount!
     private let window = UIApplication.shared.connectedScenes.flatMap { ($0 as? UIWindowScene)?.windows ?? [] }.first { $0.isKeyWindow }
 
@@ -202,7 +195,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
 
     func emptyDataSetView(_ view: NCEmptyView) {
 
-        if networkInProgress {
+        if self.dataSourceTask?.state == .running {
             view.emptyImage.image = UIImage(named: "networkInProgress")?.image(color: .gray, size: UIScreen.main.bounds.width)
             view.emptyTitle.text = NSLocalizedString("_request_in_progress_", comment: "")
             view.emptyDescription.text = ""
@@ -349,7 +342,7 @@ extension NCSelect: UICollectionViewDataSource {
         isShare = metadata.permissions.contains(NCGlobal.shared.permissionShared) && !metadataFolder.permissions.contains(NCGlobal.shared.permissionShared)
         isMounted = metadata.permissions.contains(NCGlobal.shared.permissionMounted) && !metadataFolder.permissions.contains(NCGlobal.shared.permissionMounted)
 
-        cell.delegate = self
+        cell.listCellDelegate = self
 
         cell.fileObjectId = metadata.ocId
         cell.fileUser = metadata.ownerId
@@ -561,14 +554,13 @@ extension NCSelect {
 
     func loadFolder() {
 
-        networkInProgress = true
-        collectionView.reloadData()
-
-        NCNetworking.shared.readFolder(serverUrl: serverUrl, account: activeAccount.account) { _, _, _, _, _, error in
+        NCNetworking.shared.readFolder(serverUrl: serverUrl, account: activeAccount.account) { task in
+            self.dataSourceTask = task
+            self.collectionView.reloadData()
+        } completion: { _, _, _, _, _, error in
             if error != .success {
                 NCContentPresenter().showError(error: error)
             }
-            self.networkInProgress = false
             self.loadDatasource(withLoadFolder: false)
         }
     }

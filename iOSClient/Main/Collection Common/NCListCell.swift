@@ -22,8 +22,9 @@
 //
 
 import UIKit
+import SwipeCellKit
 
-class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProtocol {
+class NCListCell: SwipeCollectionViewCell, UIGestureRecognizerDelegate, NCCellProtocol {
 
     @IBOutlet weak var imageItem: UIImageView!
     @IBOutlet weak var imageSelect: UIImageView!
@@ -52,7 +53,7 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
     private var user = ""
     var indexPath = IndexPath()
 
-    weak var delegate: NCListCellDelegate?
+    weak var listCellDelegate: NCListCellDelegate?
     var namedButtonMore = ""
 
     var fileAvatarImageView: UIImageView? {
@@ -190,19 +191,19 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
     }
 
     @IBAction func touchUpInsideShare(_ sender: Any) {
-        delegate?.tapShareListItem(with: objectId, indexPath: indexPath, sender: sender)
+        listCellDelegate?.tapShareListItem(with: objectId, indexPath: indexPath, sender: sender)
     }
 
     @IBAction func touchUpInsideMore(_ sender: Any) {
-        delegate?.tapMoreListItem(with: objectId, namedButtonMore: namedButtonMore, image: imageItem.image, indexPath: indexPath, sender: sender)
+        listCellDelegate?.tapMoreListItem(with: objectId, namedButtonMore: namedButtonMore, image: imageItem.image, indexPath: indexPath, sender: sender)
     }
 
     @objc func longPressInsideMore(gestureRecognizer: UILongPressGestureRecognizer) {
-        delegate?.longPressMoreListItem(with: objectId, namedButtonMore: namedButtonMore, indexPath: indexPath, gestureRecognizer: gestureRecognizer)
+        listCellDelegate?.longPressMoreListItem(with: objectId, namedButtonMore: namedButtonMore, indexPath: indexPath, gestureRecognizer: gestureRecognizer)
     }
 
     @objc func longPress(gestureRecognizer: UILongPressGestureRecognizer) {
-        delegate?.longPressListItem(with: objectId, indexPath: indexPath, gestureRecognizer: gestureRecognizer)
+        listCellDelegate?.longPressListItem(with: objectId, indexPath: indexPath, gestureRecognizer: gestureRecognizer)
     }
 
     fileprivate func setA11yActions() {
