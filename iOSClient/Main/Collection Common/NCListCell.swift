@@ -308,8 +308,6 @@ class NCListCell: SwipeCollectionViewCell, UIGestureRecognizerDelegate, NCCellPr
             }
         }
     }
-
-    
 }
 
 protocol NCListCellDelegate: AnyObject {
