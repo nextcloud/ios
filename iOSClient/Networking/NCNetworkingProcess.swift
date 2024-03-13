@@ -71,18 +71,25 @@ class NCNetworkingProcess: NSObject {
     }
 
     func startTimer() {
-        DispatchQueue.main.async {
-            self.timerProcess?.invalidate()
-            self.timerProcess = Timer.scheduledTimer(timeInterval: 5, target: self, selector: #selector(self.process), userInfo: nil, repeats: true)
-        }
+        self.timerProcess?.invalidate()
+        self.timerProcess = Timer.scheduledTimer(withTimeInterval: 5, repeats: true, block: { _ in
+            if !self.pauseProcess, !self.appDelegate.account.isEmpty {
+                self.pauseProcess = true
+                Task {
+                    let results = await self.start(applicationState: UIApplication.shared.applicationState)
+                    self.pauseProcess = false
+                    print("[LOG] PROCESS (TIMER) Download: \(results.itemsDownload) Upload: \(results.itemsUpload)")
+                    NotificationCenter.default.post(name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterUpdateBadgeNumber), object: nil)
+                }
+            }
+        })
     }
 
     func stopTimer() {
-        DispatchQueue.main.async {
-            self.timerProcess?.invalidate()
-        }
+        self.timerProcess?.invalidate()
     }
 
+    /*
     @objc private func process() {
         if appDelegate.account.isEmpty || pauseProcess { return }
         pauseProcess = true
@@ -93,8 +100,8 @@ class NCNetworkingProcess: NSObject {
             NotificationCenter.default.post(name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterUpdateBadgeNumber), object: nil)
         }
     }
+    */
 
-    @discardableResult
     private func start(applicationState: UIApplication.State) async -> (itemsDownload: Int, itemsUpload: Int) {
         let maxConcurrentOperationDownload = NCBrandOptions.shared.maxConcurrentOperationDownload
         var maxConcurrentOperationUpload = NCBrandOptions.shared.maxConcurrentOperationUpload
