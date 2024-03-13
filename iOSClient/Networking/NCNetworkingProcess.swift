@@ -106,8 +106,7 @@ class NCNetworkingProcess: NSObject {
             self.hud = await JGProgressHUD()
         }
 
-        // DOWNLOAD
-        //
+        // ------------------------ DOWNLOAD
 
         let limitDownload = maxConcurrentOperationDownload - counterDownload
         let metadatasDownload = await NCManageDatabase.shared.getAdvancedMetadatas(predicate: NSPredicate(format: "account == %@ AND session == %@ AND status == %d", self.appDelegate.account, NCNetworking.shared.sessionDownloadBackground, NCGlobal.shared.metadataStatusWaitDownload), page: 1, limit: limitDownload, sorted: "sessionDate", ascending: true)
@@ -124,20 +123,17 @@ class NCNetworkingProcess: NSObject {
             }
         }
 
-        // UPLOAD
-        //
+        // ------------------------ UPLOAD
 
-        // ** TEST ONLY ONE **
-        // E2EE
-        let uniqueMetadatas = metadatasUploading.unique(map: { $0.serverUrl })
-        for metadata in uniqueMetadatas {
+        // E2EE - only one for time
+        for metadata in metadatasUploading.unique(map: { $0.serverUrl }) {
             if metadata.isDirectoryE2EE {
                 self.pauseProcess = false
                 return (counterDownload, counterUpload)
             }
         }
 
-        // CHUNK
+        // CHUNK - only one for time
         if !metadatasUploading.filter({ $0.chunk > 0 }).isEmpty {
             self.pauseProcess = false
             return (counterDownload, counterUpload)
@@ -178,12 +174,8 @@ class NCNetworkingProcess: NSObject {
                     // isE2EE
                     let isInDirectoryE2EE = metadata.isDirectoryE2EE
                     // NO WiFi
-                    if !isWiFi && metadata.session == NCNetworking.shared.sessionUploadBackgroundWWan {
-                        continue
-                    }
-                    if applicationState != .active && (isInDirectoryE2EE || metadata.chunk > 0) {
-                        continue
-                    }
+                    if !isWiFi && metadata.session == NCNetworking.shared.sessionUploadBackgroundWWan { continue }
+                    if applicationState != .active && (isInDirectoryE2EE || metadata.chunk > 0) { continue }
                     if let metadata = NCManageDatabase.shared.setMetadataStatus(ocId: metadata.ocId, status: NCGlobal.shared.metadataStatusUploading) {
                         NCNetworking.shared.upload(metadata: metadata, hudView: self.hudView, hud: self.hud)
                         if isInDirectoryE2EE || metadata.chunk > 0 {
@@ -217,15 +209,16 @@ class NCNetworkingProcess: NSObject {
             }
         }
 
+        // No upload available ? --> Delete Assets
         if applicationState == .active && counterUpload == 0 && metadatasUploadInError.isEmpty {
-            await self.deleteAssetLocalIdentifiers(account: self.appDelegate.account)
+            await self.deleteAssetsLocalIdentifiers(account: self.appDelegate.account)
         }
 
         self.pauseProcess = false
         return (counterDownload, counterUpload)
     }
 
-    @MainActor private func deleteAssetLocalIdentifiers(account: String) async {
+    @MainActor private func deleteAssetsLocalIdentifiers(account: String) async {
         guard !NCPasscode.shared.isPasscodePresented else { return }
         if NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND session CONTAINS[cd] %@", account, "upload")).isEmpty { return }
         let localIdentifiers = NCManageDatabase.shared.getAssetLocalIdentifiersUploaded(account: account)
