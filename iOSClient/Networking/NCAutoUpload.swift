@@ -58,7 +58,7 @@ class NCAutoUpload: NSObject {
         }
     }
 
-    func initAutoUpload(viewController: UIViewController?) async -> Int {
+    func initAutoUpload(viewController: UIViewController? = nil) async -> Int {
         await withUnsafeContinuation({ continuation in
             initAutoUpload(viewController: viewController) { items in
                 continuation.resume(returning: items)

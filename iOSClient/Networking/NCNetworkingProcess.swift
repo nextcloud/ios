@@ -78,7 +78,7 @@ class NCNetworkingProcess: NSObject {
             if !self.pauseProcess, !self.appDelegate.account.isEmpty {
                 Task {
                     let results = await self.start(applicationState: UIApplication.shared.applicationState)
-                    print("[LOG] PROCESS (TIMER) Download: \(results.itemsDownload) Upload: \(results.itemsUpload)")
+                    print("[LOG] PROCESS (TIMER) Download: \(results.counterDownload) Upload: \(results.counterUpload)")
                     NotificationCenter.default.post(name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterUpdateBadgeNumber), object: nil)
                 }
             }
@@ -90,7 +90,7 @@ class NCNetworkingProcess: NSObject {
     }
 
     @discardableResult
-    func start(applicationState: UIApplication.State) async -> (itemsDownload: Int, itemsUpload: Int) {
+    func start(applicationState: UIApplication.State) async -> (counterDownload: Int, counterUpload: Int) {
         self.pauseProcess = true
         let maxConcurrentOperationDownload = NCBrandOptions.shared.maxConcurrentOperationDownload
         var maxConcurrentOperationUpload = NCBrandOptions.shared.maxConcurrentOperationUpload

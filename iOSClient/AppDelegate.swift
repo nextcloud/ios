@@ -359,35 +359,26 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     }
 
     func handleAppRefreshProcessingTask(taskText: String, completion: @escaping () -> Void = {}) {
-        let semaphore = DispatchSemaphore(value: 0)
-
-        NCAutoUpload.shared.initAutoUpload(viewController: nil) { items in
+        Task {
+            let items = await NCAutoUpload.shared.initAutoUpload()
             NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] \(taskText) auto upload with \(items) uploads")
-            
-            /*
-            NCNetworkingProcess.shared.start { counterDownload, counterUpload in
-                NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] \(taskText) networking process with download: \(counterDownload) upload: \(counterUpload)")
+            let results = await NCNetworkingProcess.shared.start(applicationState: .background)
+            NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] \(taskText) networking process with download: \(results.counterDownload) upload: \(results.counterUpload)")
 
-                if taskText == "ProcessingTask",
-                   items == 0, counterDownload == 0, counterUpload == 0,
-                   let directories = NCManageDatabase.shared.getTablesDirectory(predicate: NSPredicate(format: "account == %@ AND offline == true", self.account), sorted: "offlineDate", ascending: true) {
-
-                    for directory: tableDirectory in directories {
-                        // only 3 time for day
-                        if let offlineDate = directory.offlineDate, offlineDate.addingTimeInterval(28800) > Date() {
-                            NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] \(taskText) skip synchronization for \(directory.serverUrl) in date \(offlineDate)")
-                            continue
-                        }
-                        NCNetworking.shared.synchronization(account: self.account, serverUrl: directory.serverUrl, add: false) { errorCode, items in
-                            NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] \(taskText) end synchronization for \(directory.serverUrl), errorCode: \(errorCode), item: \(items)")
-                            semaphore.signal()
-                        }
-                        semaphore.wait()
+            if taskText == "ProcessingTask",
+               items == 0, results.counterDownload == 0, results.counterUpload == 0,
+               let directories = NCManageDatabase.shared.getTablesDirectory(predicate: NSPredicate(format: "account == %@ AND offline == true", self.account), sorted: "offlineDate", ascending: true) {
+                for directory: tableDirectory in directories {
+                    // only 3 time for day
+                    if let offlineDate = directory.offlineDate, offlineDate.addingTimeInterval(28800) > Date() {
+                        NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] \(taskText) skip synchronization for \(directory.serverUrl) in date \(offlineDate)")
+                        continue
                     }
+                    let results = await NCNetworking.shared.synchronization(account: self.account, serverUrl: directory.serverUrl, add: false)
+                    NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] \(taskText) end synchronization for \(directory.serverUrl), errorCode: \(results.errorCode), item: \(results.items)")
                 }
-                completion()
             }
-            */
+            completion()
         }
     }
 
