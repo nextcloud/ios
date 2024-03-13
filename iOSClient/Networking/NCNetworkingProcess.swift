@@ -51,10 +51,12 @@ class NCNetworkingProcess: NSObject {
                 case .initial:
                     break
                 case .update(_, let deletions, let insertions, let modifications):
-                    if !deletions.isEmpty || !insertions.isEmpty || !modifications.isEmpty {
+                    if !NCNetworkingProcess.shared.pauseProcess && (!deletions.isEmpty || !insertions.isEmpty || !modifications.isEmpty) {
                         self?.invalidateObserveTableMetadata()
-                        self?.process()
-                        self?.observeTableMetadata()
+                        Task {
+                            await NCNetworkingProcess.shared.start(applicationState: UIApplication.shared.applicationState)
+                            NCNetworkingProcess.shared.observeTableMetadata()
+                        }
                     }
                 case .error(let error):
                     NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not write to TableMetadata: \(error)")
@@ -74,10 +76,8 @@ class NCNetworkingProcess: NSObject {
         self.timerProcess?.invalidate()
         self.timerProcess = Timer.scheduledTimer(withTimeInterval: 5, repeats: true, block: { _ in
             if !self.pauseProcess, !self.appDelegate.account.isEmpty {
-                self.pauseProcess = true
                 Task {
                     let results = await self.start(applicationState: UIApplication.shared.applicationState)
-                    self.pauseProcess = false
                     print("[LOG] PROCESS (TIMER) Download: \(results.itemsDownload) Upload: \(results.itemsUpload)")
                     NotificationCenter.default.post(name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterUpdateBadgeNumber), object: nil)
                 }
@@ -89,20 +89,9 @@ class NCNetworkingProcess: NSObject {
         self.timerProcess?.invalidate()
     }
 
-    /*
-    @objc private func process() {
-        if appDelegate.account.isEmpty || pauseProcess { return }
-        pauseProcess = true
-        Task {
-            let results = await start(applicationState: UIApplication.shared.applicationState)
-            pauseProcess = false
-            print("[LOG] PROCESS (TIMER) Download: \(results.itemsDownload) Upload: \(results.itemsUpload)")
-            NotificationCenter.default.post(name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterUpdateBadgeNumber), object: nil)
-        }
-    }
-    */
-
-    private func start(applicationState: UIApplication.State) async -> (itemsDownload: Int, itemsUpload: Int) {
+    @discardableResult
+    func start(applicationState: UIApplication.State) async -> (itemsDownload: Int, itemsUpload: Int) {
+        self.pauseProcess = true
         let maxConcurrentOperationDownload = NCBrandOptions.shared.maxConcurrentOperationDownload
         var maxConcurrentOperationUpload = NCBrandOptions.shared.maxConcurrentOperationUpload
         var filesNameLocalPath: [String] = []
@@ -143,12 +132,14 @@ class NCNetworkingProcess: NSObject {
         let uniqueMetadatas = metadatasUploading.unique(map: { $0.serverUrl })
         for metadata in uniqueMetadatas {
             if metadata.isDirectoryE2EE {
+                self.pauseProcess = false
                 return (counterDownload, counterUpload)
             }
         }
 
         // CHUNK
         if !metadatasUploading.filter({ $0.chunk > 0 }).isEmpty {
+            self.pauseProcess = false
             return (counterDownload, counterUpload)
         }
 
@@ -230,6 +221,7 @@ class NCNetworkingProcess: NSObject {
             await self.deleteAssetLocalIdentifiers(account: self.appDelegate.account)
         }
 
+        self.pauseProcess = false
         return (counterDownload, counterUpload)
     }
 
