@@ -42,36 +42,6 @@ class NCNetworkingProcess: NSObject {
     private var hud: JGProgressHUD?
     public var pauseProcess: Bool = false
 
-    func observeTableMetadata() {
-        do {
-            let realm = try Realm()
-            let results = realm.objects(tableMetadata.self).filter("session != '' || sessionError != ''")
-            notificationToken = results.observe { [weak self] (changes: RealmCollectionChange) in
-                switch changes {
-                case .initial:
-                    break
-                case .update(_, let deletions, let insertions, let modifications):
-                    if !NCNetworkingProcess.shared.pauseProcess && (!deletions.isEmpty || !insertions.isEmpty || !modifications.isEmpty) {
-                        self?.invalidateObserveTableMetadata()
-                        Task {
-                            await NCNetworkingProcess.shared.start(applicationState: UIApplication.shared.applicationState)
-                            NCNetworkingProcess.shared.observeTableMetadata()
-                        }
-                    }
-                case .error(let error):
-                    NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not write to TableMetadata: \(error)")
-                }
-            }
-        } catch let error as NSError {
-            NSLog("Could not access database: ", error)
-        }
-    }
-
-    func invalidateObserveTableMetadata() {
-        notificationToken?.invalidate()
-        notificationToken = nil
-    }
-
     func startTimer() {
         self.timerProcess?.invalidate()
         self.timerProcess = Timer.scheduledTimer(withTimeInterval: 5, repeats: true, block: { _ in

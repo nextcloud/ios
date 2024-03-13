@@ -187,8 +187,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         NCSettingsBundleHelper.setVersionAndBuildNumber()
         NCSettingsBundleHelper.checkAndExecuteSettings(delay: 0.5)
 
-        // START OBSERVE/TIMER UPLOAD PROCESS
-        NCNetworkingProcess.shared.observeTableMetadata()
+        // START TIMER UPLOAD PROCESS
         NCNetworkingProcess.shared.startTimer()
 
         if !NCAskAuthorization().isRequesting {
@@ -211,8 +210,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
         guard !account.isEmpty else { return }
 
-        // STOP OBSERVE/TIMER UPLOAD PROCESS
-        NCNetworkingProcess.shared.invalidateObserveTableMetadata()
+        // STOP TIMER UPLOAD PROCESS
         NCNetworkingProcess.shared.stopTimer()
 
         if NCKeychain().privacyScreenEnabled {

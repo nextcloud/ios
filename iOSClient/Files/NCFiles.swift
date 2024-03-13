@@ -106,7 +106,7 @@ class NCFiles: NCCollectionViewCommon {
 
         var metadatas: [tableMetadata] = []
         if NCKeychain().getPersonalFilesOnly(account: self.appDelegate.account) {
-            metadatas = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND ownerId == %@ AND mountType == ''", self.appDelegate.account, self.serverUrl, self.appDelegate.userId))
+            metadatas = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND (ownerId == %@ || ownerId == '') AND mountType == ''", self.appDelegate.account, self.serverUrl, self.appDelegate.userId))
         } else {
             metadatas = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", self.appDelegate.account, self.serverUrl))
         }
