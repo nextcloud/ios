@@ -33,14 +33,13 @@ class NCNetworkingProcess: NSObject {
         return instance
     }()
 
-    private let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
-    private let utilityFileSystem = NCUtilityFileSystem()
-    private lazy var rootViewController = appDelegate.window?.rootViewController
-    private lazy var hudView = rootViewController?.view
-    private var notificationToken: NotificationToken?
-    private var timerProcess: Timer?
-    private var hud: JGProgressHUD?
-    public var pauseProcess: Bool = false
+    let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
+    let utilityFileSystem = NCUtilityFileSystem()
+    lazy var hudView = appDelegate.window?.rootViewController?.view
+    var notificationToken: NotificationToken?
+    var timerProcess: Timer?
+    var hud: JGProgressHUD?
+    var pauseProcess: Bool = false
 
     func startTimer() {
         self.timerProcess?.invalidate()
