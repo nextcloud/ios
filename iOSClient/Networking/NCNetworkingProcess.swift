@@ -53,16 +53,8 @@ class NCNetworkingProcess: NSObject {
                 case .update(_, let deletions, let insertions, let modifications):
                     if !deletions.isEmpty || !insertions.isEmpty || !modifications.isEmpty {
                         self?.invalidateObserveTableMetadata()
-                        Task {
-                            let x = await  NCNetworkingProcess.shared.start(applicationState: UIApplication.shared.applicationState)
-                        }
-                        /*
-                        self?.start(completition: { _, _ in
-                            DispatchQueue.main.async {
-                                self?.observeTableMetadata()
-                            }
-                        })
-                        */
+                        self?.process()
+                        self?.observeTableMetadata()
                     }
                 case .error(let error):
                     NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not write to TableMetadata: \(error)")
@@ -81,7 +73,7 @@ class NCNetworkingProcess: NSObject {
     func startTimer() {
         DispatchQueue.main.async {
             self.timerProcess?.invalidate()
-            self.timerProcess = Timer.scheduledTimer(timeInterval: 5, target: self, selector: #selector(self.processTimer), userInfo: nil, repeats: true)
+            self.timerProcess = Timer.scheduledTimer(timeInterval: 5, target: self, selector: #selector(self.process), userInfo: nil, repeats: true)
         }
     }
 
@@ -91,10 +83,10 @@ class NCNetworkingProcess: NSObject {
         }
     }
 
-    @objc private func processTimer() {
+    @objc private func process() {
         if appDelegate.account.isEmpty || pauseProcess { return }
+        pauseProcess = true
         Task {
-            pauseProcess = true
             let results = await start(applicationState: UIApplication.shared.applicationState)
             pauseProcess = false
             print("[LOG] PROCESS (TIMER) Download: \(results.itemsDownload) Upload: \(results.itemsUpload)")
@@ -102,6 +94,7 @@ class NCNetworkingProcess: NSObject {
         }
     }
 
+    @discardableResult
     private func start(applicationState: UIApplication.State) async -> (itemsDownload: Int, itemsUpload: Int) {
         let maxConcurrentOperationDownload = NCBrandOptions.shared.maxConcurrentOperationDownload
         var maxConcurrentOperationUpload = NCBrandOptions.shared.maxConcurrentOperationUpload
@@ -109,6 +102,7 @@ class NCNetworkingProcess: NSObject {
         let sessionUploadSelectors = [NCGlobal.shared.selectorUploadFileNODelete, NCGlobal.shared.selectorUploadFile, NCGlobal.shared.selectorUploadAutoUpload, NCGlobal.shared.selectorUploadAutoUploadAll]
         let metadatasDownloading = await NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND status == %d", self.appDelegate.account, NCGlobal.shared.metadataStatusDownloading))
         let metadatasUploading = await NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND status == %d", self.appDelegate.account, NCGlobal.shared.metadataStatusUploading))
+        let metadatasUploadInError: [tableMetadata] = await NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND status == %d", self.appDelegate.account, NCGlobal.shared.metadataStatusUploadError), sorted: "sessionDate", ascending: true) ?? []
         let isWiFi = NCNetworking.shared.networkReachability == NKCommon.TypeReachability.reachableEthernetOrWiFi
         var counterDownload = metadatasDownloading.count
         var counterUpload = metadatasUploading.count
@@ -201,44 +195,44 @@ class NCNetworkingProcess: NSObject {
                     }
                 }
             }
-            // No upload available ? --> Retry Upload in Error
-            if counterUpload == 0 {
-                let metadatasUploadInError: [tableMetadata] = await NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND status == %d", self.appDelegate.account, NCGlobal.shared.metadataStatusUploadError), sorted: "sessionDate", ascending: true) ?? []
-                for metadata in metadatasUploadInError {
-                    // Verify QUOTA
-                    if metadata.sessionError.contains("\(NCGlobal.shared.errorQuota)") {
-                        NextcloudKit.shared.getUserProfile { _, userProfile, _, error in
-                            if error == .success, let userProfile, userProfile.quotaFree > 0, userProfile.quotaFree > metadata.size {
-                                NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId,
-                                                                           session: NCNetworking.shared.sessionUploadBackground,
-                                                                           sessionError: "",
-                                                                           status: NCGlobal.shared.metadataStatusWaitUpload)
-                            }
+        }
+
+        // No upload available ? --> Retry Upload in Error
+        if counterUpload == 0 {
+            for metadata in metadatasUploadInError {
+                // Verify QUOTA
+                if metadata.sessionError.contains("\(NCGlobal.shared.errorQuota)") {
+                    NextcloudKit.shared.getUserProfile { _, userProfile, _, error in
+                        if error == .success, let userProfile, userProfile.quotaFree > 0, userProfile.quotaFree > metadata.size {
+                            NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId,
+                                                                       session: NCNetworking.shared.sessionUploadBackground,
+                                                                       sessionError: "",
+                                                                       status: NCGlobal.shared.metadataStatusWaitUpload)
                         }
-                    } else {
-                        NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId,
-                                                                   session: NCNetworking.shared.sessionUploadBackground,
-                                                                   sessionError: "",
-                                                                   status: NCGlobal.shared.metadataStatusWaitUpload)
                     }
-                }
-                if applicationState == .active && metadatasUploadInError.isEmpty {
-                    await deleteAssetLocalIdentifiers(account: self.appDelegate.account)
+                } else {
+                    NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId,
+                                                               session: NCNetworking.shared.sessionUploadBackground,
+                                                               sessionError: "",
+                                                               status: NCGlobal.shared.metadataStatusWaitUpload)
                 }
             }
+        }
+
+        if applicationState == .active && counterUpload == 0 && metadatasUploadInError.isEmpty {
+            await self.deleteAssetLocalIdentifiers(account: self.appDelegate.account)
         }
 
         return (counterDownload, counterUpload)
     }
 
-    private func deleteAssetLocalIdentifiers(account: String) async {
+    @MainActor private func deleteAssetLocalIdentifiers(account: String) async {
         guard !NCPasscode.shared.isPasscodePresented else { return }
-        let metadatasSessionUpload = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND session CONTAINS[cd] %@", account, "upload"))
-        if !metadatasSessionUpload.isEmpty { return }
+        if NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND session CONTAINS[cd] %@", account, "upload")).isEmpty { return }
         let localIdentifiers = NCManageDatabase.shared.getAssetLocalIdentifiersUploaded(account: account)
         if localIdentifiers.isEmpty { return }
-
         let assets = PHAsset.fetchAssets(withLocalIdentifiers: localIdentifiers, options: nil)
+
         try? await PHPhotoLibrary.shared().performChanges {
             PHAssetChangeRequest.deleteAssets(assets as NSFastEnumeration)
             NCManageDatabase.shared.clearAssetLocalIdentifiers(localIdentifiers, account: account)

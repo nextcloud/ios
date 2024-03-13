@@ -58,6 +58,14 @@ class NCAutoUpload: NSObject {
         }
     }
 
+    func initAutoUpload(viewController: UIViewController?) async -> Int {
+        await withUnsafeContinuation({ continuation in
+            initAutoUpload(viewController: viewController) { items in
+                continuation.resume(returning: items)
+            }
+        })
+    }
+
     @objc func autoUploadFullPhotos(viewController: UIViewController?, log: String) {
 
         applicationState = UIApplication.shared.applicationState
