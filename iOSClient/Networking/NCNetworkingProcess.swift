@@ -235,7 +235,6 @@ class NCNetworkingProcess: NSObject {
     // MARK: -
 
     func createProcessUploads(metadatas: [tableMetadata], verifyAlreadyExists: Bool = false, completion: @escaping (_ items: Int) -> Void = {_ in}) {
-
         var metadatasForUpload: [tableMetadata] = []
         for metadata in metadatas {
             if verifyAlreadyExists {
@@ -251,8 +250,7 @@ class NCNetworkingProcess: NSObject {
 
     // MARK: -
 
-    func verifyUploadZombie() {
-
+    func verifyZombie() {
         Task {
             var notificationCenter: Bool = false
 
