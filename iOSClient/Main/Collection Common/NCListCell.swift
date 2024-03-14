@@ -365,7 +365,7 @@ class NCListLayout: UICollectionViewFlowLayout {
 
         minimumInteritemSpacing = 0
         minimumLineSpacing = 1
-        
+
         self.scrollDirection = .vertical
         self.sectionInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
     }
