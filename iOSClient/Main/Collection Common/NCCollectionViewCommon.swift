@@ -1358,7 +1358,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         // image Favorite
         if metadata.favorite {
             cell.fileFavoriteImage?.image = NCImageCache.images.favorite
-            a11yValues.append(NSLocalizedString("_favorite_", comment: ""))
+            a11yValues.append(NSLocalizedString("_favorite_short_", comment: ""))
         }
 
         // Share image
