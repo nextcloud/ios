@@ -376,6 +376,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                     NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] \(taskText) end synchronization for \(directory.serverUrl), errorCode: \(results.errorCode), item: \(results.items)")
                 }
             }
+            NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] completion handle")
             completion()
         }
     }
