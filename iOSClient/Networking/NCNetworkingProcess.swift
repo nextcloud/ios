@@ -188,8 +188,10 @@ class NCNetworkingProcess: NSObject {
     }
 
     @MainActor private func deleteAssetsLocalIdentifiers(account: String) async {
-        guard !NCPasscode.shared.isPasscodePresented else { return }
-        if NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND session CONTAINS[cd] %@", account, "upload")).isEmpty { return }
+        guard !NCPasscode.shared.isPasscodePresented,
+              NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND session CONTAINS[cd] %@", account, "upload")).isEmpty else {
+            return
+        }
         let localIdentifiers = NCManageDatabase.shared.getAssetLocalIdentifiersUploaded(account: account)
         if localIdentifiers.isEmpty { return }
         let assets = PHAsset.fetchAssets(withLocalIdentifiers: localIdentifiers, options: nil)
