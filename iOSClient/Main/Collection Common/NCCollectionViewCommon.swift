@@ -541,8 +541,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         let chunk: Int = userInfo["chunk"] as? Int ?? 0
         let e2eEncrypted: Bool = userInfo["e2eEncrypted"] as? Bool ?? false
 
-        if self.headerMenuTransferView && (chunk > 0 || e2eEncrypted) {
-            DispatchQueue.main.async {
+        DispatchQueue.main.async {
+            if self.headerMenuTransferView && (chunk > 0 || e2eEncrypted) {
                 if NCNetworking.shared.transferInForegorund?.ocId == ocId {
                     NCNetworking.shared.transferInForegorund?.progress = progressNumber.floatValue
                 } else {
@@ -550,12 +550,9 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                     self.collectionView.reloadData()
                 }
                 self.headerMenu?.progressTransfer.progress = progressNumber.floatValue
-            }
-        } else {
-            guard let indexPath = self.dataSource.getIndexPathMetadata(ocId: ocId).indexPath else { return }
-            let status = userInfo["status"] as? Int ?? NCGlobal.shared.metadataStatusNormal
-            DispatchQueue.main.async {
-                guard let cell = self.collectionView?.cellForItem(at: indexPath),
+            } else {
+                guard let indexPath = self.dataSource.getIndexPathMetadata(ocId: ocId).indexPath,
+                      let cell = self.collectionView?.cellForItem(at: indexPath),
                       let cell = cell as? NCCellProtocol else { return }
                 if progressNumber.floatValue == 1 && !(cell is NCTransferCell) {
                     cell.fileProgressView?.isHidden = true
@@ -571,6 +568,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                     cell.fileProgressView?.isHidden = false
                     cell.fileProgressView?.progress = progressNumber.floatValue
                     cell.setButtonMore(named: NCGlobal.shared.buttonMoreStop, image: NCImageCache.images.buttonStop)
+                    let status = userInfo["status"] as? Int ?? NCGlobal.shared.metadataStatusNormal
                     if status == NCGlobal.shared.metadataStatusDownloading {
                         cell.fileInfoLabel?.text = self.utilityFileSystem.transformedSize(totalBytesExpected)
                         cell.fileSubinfoLabel?.text = self.infoLabelsSeparator + "↓ " + self.utilityFileSystem.transformedSize(totalBytes)
