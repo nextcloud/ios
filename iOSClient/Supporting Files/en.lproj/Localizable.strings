@@ -439,6 +439,7 @@
 "_webflow_not_available_"       = "Web login not available, use the old login method";
 "_favorites_"                   = "Favorites";
 "_favorite_"                    = "Favorite";
+"_favorite_short_"              = "Favorite";
 "_unfavorite_"                  = "Unfavorite";
 "_no_files_uploaded_"           = "No files uploaded";
 "_tutorial_favorite_view_"      = "Files and folders you mark as favorites will show up here";
