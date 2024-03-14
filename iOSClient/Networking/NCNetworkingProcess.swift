@@ -180,7 +180,10 @@ class NCNetworkingProcess: NSObject {
         }
 
         // No upload available ? --> Delete Assets
-        if applicationState == .active && counterUpload == 0 && metadatasUploadInError.isEmpty {
+        if NCKeychain().removePhotoCameraRoll,
+           applicationState == .active,
+           counterUpload == 0,
+           metadatasUploadInError.isEmpty {
             await self.deleteAssetsLocalIdentifiers(account: self.appDelegate.account)
         }
 

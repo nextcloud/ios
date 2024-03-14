@@ -62,7 +62,6 @@ class tableMetadata: Object, NCUserBaseUrl {
     @objc dynamic var dataFingerprint = ""
     @objc dynamic var date = NSDate()
     @objc dynamic var directory: Bool = false
-    @objc dynamic var deleteAssetLocalIdentifier: Bool = false
     @objc dynamic var downloadURL = ""
     @objc dynamic var e2eEncrypted: Bool = false
     @objc dynamic var edited: Bool = false
@@ -979,7 +978,7 @@ extension NCManageDatabase {
 
         do {
             let realm = try Realm()
-            let results = realm.objects(tableMetadata.self).filter("account == %@ AND assetLocalIdentifier != '' AND deleteAssetLocalIdentifier == true", account)
+            let results = realm.objects(tableMetadata.self).filter("account == %@ AND assetLocalIdentifier != ''", account)
             for result in results {
                 assetLocalIdentifiers.append(result.assetLocalIdentifier)
             }
@@ -998,7 +997,6 @@ extension NCManageDatabase {
                 let results = realm.objects(tableMetadata.self).filter("account == %@ AND assetLocalIdentifier IN %@", account, assetLocalIdentifiers)
                 for result in results {
                     result.assetLocalIdentifier = ""
-                    result.deleteAssetLocalIdentifier = false
                 }
             }
         } catch let error {
