@@ -29,10 +29,36 @@ import SwiftUI
 import MobileVLCKit
 import JGProgressHUD
 import Alamofire
+import VisionKit
 
 public protocol NCViewerMediaViewDelegate: AnyObject {
     func didOpenDetail()
     func didCloseDetail()
+}
+
+@MainActor
+struct Analyzer {
+    private var _imageAnalyzer: Any?
+    private var _imageInteraction: Any?
+
+    @available(iOS 16, *)
+    var imageAnalyzer: ImageAnalyzer? {
+        get { return _imageAnalyzer as? ImageAnalyzer }
+        set { _imageAnalyzer = newValue }
+    }
+
+    @available(iOS 16, *)
+    var imageInteraction: ImageAnalysisInteraction? {
+        get { return _imageInteraction as? ImageAnalysisInteraction }
+        set { _imageInteraction = newValue }
+    }
+
+    init() {
+        if #available(iOS 16, *) {
+            imageAnalyzer = ImageAnalyzer()
+            imageInteraction = ImageAnalysisInteraction()
+        }
+    }
 }
 
 class NCViewerMedia: UIViewController {
@@ -53,7 +79,15 @@ class NCViewerMedia: UIViewController {
     weak var viewerMediaPage: NCViewerMediaPage?
     var playerToolBar: NCPlayerToolBar?
     var ncplayer: NCPlayer?
-    var image: UIImage?
+    var image: UIImage? {
+        didSet {
+            if #available(iOS 16, *) {
+                analyzer.imageInteraction?.preferredInteractionTypes = []
+                analyzer.imageInteraction?.analysis = nil
+                analyzeCurrentImage()
+            }
+        }
+    }
     var metadata: tableMetadata = tableMetadata()
     var index: Int = 0
     var doubleTapGestureRecognizer: UITapGestureRecognizer = UITapGestureRecognizer()
@@ -63,7 +97,28 @@ class NCViewerMedia: UIViewController {
 
     private var allowOpeningDetails = true
 
+    let analyzer = Analyzer()
+
     // MARK: - View Life Cycle
+
+    @available(iOS 16.0, *)
+    func analyzeCurrentImage() {
+            if let image = image {
+                Task {
+                   let configuration = ImageAnalyzer.Configuration([.text, .machineReadableCode])
+                    do {
+                        let analysis = try await analyzer.imageAnalyzer?.analyze(image, configuration: configuration)
+                        if image == self.image {
+                            analyzer.imageInteraction?.analysis = analysis
+                            analyzer.imageInteraction?.preferredInteractionTypes = .automatic
+                        }
+                    }
+                    catch {
+                        // Handle error…
+                    }
+                }
+            }
+        }
 
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
@@ -134,6 +189,12 @@ class NCViewerMedia: UIViewController {
         self.imageVideoContainer.image = nil
 
         loadImage()
+
+        if #available(iOS 16, *) {
+            if let interaction = analyzer.imageInteraction {
+                self.imageVideoContainer.addInteraction(interaction)
+            }
+        }
     }
 
     override func viewWillAppear(_ animated: Bool) {
