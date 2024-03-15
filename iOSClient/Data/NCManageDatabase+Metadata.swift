@@ -1121,24 +1121,24 @@ extension NCManageDatabase {
     }
 
     @discardableResult
-    func updateMetadatas(_ metadatas: [tableMetadata], predicate: NSPredicate) -> (metadatasChangedCount: Int, metadatasChanged: Bool) {
+    func updateMetadatas(_ metadatas: [tableMetadata], predicate: NSPredicate) -> (metadatasDifferentCount: Int, metadatasModified: Int) {
 
-        var metadatasChangedCount: Int = 0
-        var metadatasChanged: Bool = false
+        var metadatasDifferentCount: Int = 0
+        var metadatasModified: Int = 0
 
         do {
             let realm = try Realm()
             try realm.write {
                 let results = realm.objects(tableMetadata.self).filter(predicate)
-                metadatasChangedCount = metadatas.count - results.count
+                metadatasDifferentCount = metadatas.count - results.count
                 for metadata in metadatas {
-                    if let result = results.first(where: { $0.ocId == metadata.ocId }),
-                       metadata.isEqual(result) { } else {
-                        metadatasChanged = true
-                        break
+                    if let result = results.first(where: { $0.ocId == metadata.ocId }) {
+                        // before realm.add copy the value not available from server
+                        metadata.assetLocalIdentifier = result.assetLocalIdentifier
+                        if !metadata.isEqual(result) { metadatasModified += 1 }
                     }
                 }
-                if metadatasChangedCount != 0 || metadatasChanged {
+                if metadatasDifferentCount != 0 || metadatasModified > 0 {
                     realm.delete(results)
                     for metadata in metadatas {
                         realm.add(tableMetadata(value: metadata), update: .all)
@@ -1149,7 +1149,7 @@ extension NCManageDatabase {
             NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
         }
 
-        return (metadatasChangedCount, metadatasChanged)
+        return (metadatasDifferentCount, metadatasModified)
     }
 
     func replaceMetadata(_ metadatas: [tableMetadata], predicate: NSPredicate) {
