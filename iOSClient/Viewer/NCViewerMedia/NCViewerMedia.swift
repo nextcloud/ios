@@ -105,15 +105,14 @@ class NCViewerMedia: UIViewController {
     func analyzeCurrentImage() {
             if let image = image {
                 Task {
-                   let configuration = ImageAnalyzer.Configuration([.text, .machineReadableCode])
+                    let configuration = ImageAnalyzer.Configuration([.text, .machineReadableCode, .visualLookUp])
                     do {
                         let analysis = try await analyzer.imageAnalyzer?.analyze(image, configuration: configuration)
                         if image == self.image {
                             analyzer.imageInteraction?.analysis = analysis
                             analyzer.imageInteraction?.preferredInteractionTypes = .automatic
                         }
-                    }
-                    catch {
+                    } catch {
                         // Handle error…
                     }
                 }
