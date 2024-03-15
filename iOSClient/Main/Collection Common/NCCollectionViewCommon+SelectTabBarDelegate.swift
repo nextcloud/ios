@@ -23,6 +23,7 @@
 
 import Foundation
 import NextcloudKit
+
 extension NCCollectionViewCommon: NCSelectableNavigationView, NCCollectionViewCommonSelectTabBarDelegate {
     func setNavigationRightItems(enableMenu: Bool = false) {
         if layoutKey == NCGlobal.shared.layoutViewTransfers { return }
