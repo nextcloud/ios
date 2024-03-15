@@ -361,7 +361,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] \(taskText) start handle")
             let items = await NCAutoUpload.shared.initAutoUpload()
             NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] \(taskText) auto upload with \(items) uploads")
-            let results = await NCNetworkingProcess.shared.start(applicationState: .background)
+            let results = await NCNetworkingProcess.shared.start()
             NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] \(taskText) networking process with download: \(results.counterDownload) upload: \(results.counterUpload)")
 
             if taskText == "ProcessingTask",

@@ -1240,7 +1240,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         if layoutForView?.layout == NCGlobal.shared.layoutList {
             guard let listCell = collectionView.dequeueReusableCell(withReuseIdentifier: "listCell", for: indexPath) as? NCListCell else { return NCListCell() }
             listCell.listCellDelegate = self
-            listCell.delegate = self
+            // listCell.delegate = self
             cell = listCell
         } else {
         // LAYOUT GRID
