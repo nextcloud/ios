@@ -8,9 +8,9 @@
 
 import SwiftUI
 
-struct AutoUploadFileNamesView: View {
-    @ObservedObject var viewModel = AutoUploadFileNamesViewModel()
-    
+struct AutoUploadFileNamesView<ViewModel: AutoUploadFileNamesViewModel>: View {
+    @ObservedObject var viewModel: ViewModel
+
     var body: some View {
         Form {
             // Maintain Original Filename
@@ -28,7 +28,7 @@ struct AutoUploadFileNamesView: View {
             Section(header: Text(NSLocalizedString("_filename_", comment: ""))) {
                 Toggle(NSLocalizedString("_maintain_original_filename_", comment: ""), isOn: $viewModel.maintainFilename)
                     .onChange(of: viewModel.maintainFilename, perform: { newValue in
-                        NCKeychain().setOriginalFileName(key: NCGlobal.shared.keyFileNameOriginalAutoUpload, value: newValue)
+                        viewModel.toggleMaintainOriginalFilename(newValue: newValue)
                     })
                 
                 
@@ -36,7 +36,7 @@ struct AutoUploadFileNamesView: View {
                 if !viewModel.maintainFilename {
                     Toggle(NSLocalizedString("_add_filenametype_", comment: ""), isOn: $viewModel.specifyFilename)
                         .onChange(of: viewModel.specifyFilename, perform: { newValue in
-                            NCKeychain().setFileNameType(key: NCGlobal.shared.keyFileNameAutoUploadType, prefix: newValue)
+                            viewModel.toggleAddFilenameType(newValue: newValue)
                         })
                 }
             }
@@ -88,5 +88,5 @@ struct AutoUploadFileNamesView: View {
 }
 
 #Preview {
-    AutoUploadFileNamesView()
+    AutoUploadFileNamesView(viewModel: AutoUploadFileNamesViewModel())
 }
