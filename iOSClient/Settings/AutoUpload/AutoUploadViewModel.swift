@@ -29,6 +29,15 @@ protocol AutoUploadViewModelProtocol: ObservableObject {
     
     /// A state variable that indicates the granularity of the subfolders, either daily, monthly, or yearly
     var autoUploadSubfolderGranularity: Granularity { get set }
+    
+    func handleAutoUploadChange(newValue: Bool)
+    func handleAutoUploadImageChange(newValue: Bool)
+    func handleAutoUploadWWAnPhotoChange(newValue: Bool)
+    func handleAutoUploadVideoChange(newValue: Bool)
+    func handleAutoUploadWWAnVideoChange(newValue: Bool)
+    func handleAutoUploadFullChange(newValue: Bool)
+    func handleAutoUploadCreateSubfolderChange(newValue: Bool)
+    func handleAutoUploadSubfolderGranularityChange(newValue: Granularity)
 }
 
 /// A viewModel that allows the user to configure the `auto upload settings for Nextcloud`

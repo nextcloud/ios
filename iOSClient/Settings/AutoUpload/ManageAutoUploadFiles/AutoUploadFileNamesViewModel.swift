@@ -20,6 +20,13 @@ protocol AutoUploadFileNamesViewModelProtocol: ObservableObject {
     var changedName: String { get set }
     /// The original file name.
     var oldName: String { get set }
+    
+    func toggleMaintainOriginalFilename(newValue: Bool)
+    func toggleAddFilenameType(newValue: Bool)
+    func submitChangedName()
+    func presentForbiddenCharError()
+    func checkUploadFileName() -> String
+    func previewFileName() -> String
 }
 
 
@@ -70,7 +77,7 @@ class AutoUploadFileNamesViewModel: AutoUploadFileNamesViewModelProtocol {
     }
     
     /// Presents an error message if the changed file name contains forbidden characters.
-    func presentForbiddenCharError(){
+    func presentForbiddenCharError() {
         if changedName != oldName {
             let errorDescription = String(format: NSLocalizedString("_forbidden_characters_", comment: ""), NCGlobal.shared.forbiddenCharacters.joined(separator: " "))
             let error = NKError(errorCode: NCGlobal.shared.errorConflict, errorDescription: errorDescription)

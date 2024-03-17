@@ -9,8 +9,8 @@
 import SwiftUI
 import NextcloudKit
 
-struct CCSettingsAdvanced: View {
-    @ObservedObject var viewModel = CCSettingsAdvancedViewModel()
+struct CCSettingsAdvanced<ViewModel: CCSettingsAdvancedViewModel>: View {
+    @ObservedObject var viewModel: ViewModel
     
     /// State variable for indicating whether the exit alert is shown.
     @State var showExitAlert: Bool = false
@@ -259,5 +259,5 @@ struct CCSettingsAdvanced: View {
 }
 
 #Preview {
-    CCSettingsAdvanced(showExitAlert: false, showCacheAlert: false)
+    CCSettingsAdvanced(viewModel: CCSettingsAdvancedViewModel(), showExitAlert: false, showCacheAlert: false)
 }

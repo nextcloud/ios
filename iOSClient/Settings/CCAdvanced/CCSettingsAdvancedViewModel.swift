@@ -9,7 +9,50 @@
 import Foundation
 import NextcloudKit
 
-class CCSettingsAdvancedViewModel: ObservableObject {
+protocol CCSettingsAdvancedViewModelProtocol: ObservableObject {
+    // Published properties for the toggles
+    
+    /// State variable for indicating whether hidden files are shown.
+    var showHiddenFiles: Bool { get set }
+    /// State variable for indicating the most compatible format.
+    var mostCompatible: Bool { get set }
+    /// State variable for enabling live photo uploads.
+    var livePhoto: Bool { get set }
+    /// State variable for indicating whether to remove photos from the camera roll after upload.
+    var removeFromCameraRoll: Bool { get set }
+    /// State variable for app integration.
+    var appIntegration: Bool { get set }
+    /// State variable for enabling the crash reporter.
+    var crashReporter: Bool { get set }
+    /// State variable for indicating whether the log file has been cleared.
+    var logFileCleared: Bool { get set }
+    
+    // Properties for log level and cache deletion
+    
+    /// State variable for storing the selected log level.
+    var selectedLogLevel: LogLevel { get set }
+    /// State variable for storing the selected cache deletion interval.
+    var selectedInterval: CacheDeletionInterval { get set }
+    /// State variable for storing the footer title, usually used for cache deletion.
+    var footerTitle: String { get set }
+    
+    func updateShowHiddenFiles()
+    func updateMostCompatible()
+    func updateLivePhoto()
+    func updateRemoveFromCameraRoll()
+    func updateAppIntegration()
+    func updateCrashReporter()
+    func updateSelectedLogLevel()
+    func updateSelectedInterval()
+    func clearCache(_ account: String)
+    func clearAllCacheRequest()
+    func calculateSize()
+    func exitNextCloud(exit: Bool)
+    func viewLogFile()
+    func clearLogFile()
+}
+
+class CCSettingsAdvancedViewModel: CCSettingsAdvancedViewModelProtocol {
     
     /// Keychain access
     private let keychain = NCKeychain()
@@ -19,32 +62,26 @@ class CCSettingsAdvancedViewModel: ObservableObject {
     
     // Published properties for the toggles
     
-    /// State variable for indicating whether hidden files are shown.
-    @Published var showHiddenFiles: Bool
-    /// State variable for indicating the most compatible format.
-    @Published var mostCompatible: Bool
-    /// State variable for enabling live photo uploads.
-    @Published var livePhoto: Bool
-    /// State variable for indicating whether to remove photos from the camera roll after upload.
-    @Published var removeFromCameraRoll: Bool
-    /// State variable for app integration.
-    @Published var appIntegration: Bool
-    /// State variable for enabling the crash reporter.
-    @Published var crashReporter: Bool
-    /// State variable for indicating whether the log file has been cleared.
+    @Published var showHiddenFiles: Bool = false
+    @Published var mostCompatible: Bool = false
+    @Published var livePhoto: Bool = false
+    @Published var removeFromCameraRoll: Bool = false
+    @Published var appIntegration: Bool = false
+    @Published var crashReporter: Bool = false
     @Published var logFileCleared: Bool = false
     
     // Properties for log level and cache deletion
     
-    /// State variable for storing the selected log level.
-    @Published var selectedLogLevel: LogLevel
-    /// State variable for storing the selected cache deletion interval.
-    @Published var selectedInterval: CacheDeletionInterval
-    /// State variable for storing the footer title, usually used for cache deletion.
+    @Published var selectedLogLevel: LogLevel = .standard
+    @Published var selectedInterval: CacheDeletionInterval = .never
     @Published var footerTitle: String = NSLocalizedString("_clear_cache_footer_", comment: "")
     
     
     init() {
+        viewOnAppear()
+    }
+    
+    func viewOnAppear() {
         // Initialize all properties with values from the keychain or defaults
         showHiddenFiles = keychain.showHiddenFiles
         mostCompatible = keychain.formatCompatibility
