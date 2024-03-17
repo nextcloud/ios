@@ -25,6 +25,9 @@ protocol NCSettingsViewModelProtocol: ObservableObject, AccountUpdateHandling, V
     /// String containing the current version of E2EE
     var versionE2EE: String { get }
     
+    /// String representing the current year to be shown
+    var copyrightYear: String { get }
+    
     func updateAccount()
     func updateTouchIDSetting()
     func updatePrivacyScreenSetting()
@@ -45,7 +48,14 @@ class NCSettingsViewModel: NCSettingsViewModelProtocol {
     
     @Published var isE2EEEnable: Bool = NCGlobal.shared.capabilityE2EEEnabled
     @Published var versionE2EE: String = NCGlobal.shared.capabilityE2EEApiVersion
-        
+    
+    // MARK: - String Values for View
+    var appVersion: String = NCUtility().getVersionApp(withBuild: true)
+    @Published var copyrightYear: String = ""
+    var serverVersion: String = NCGlobal.shared.capabilityServerVersion
+    var themingName: String = NCGlobal.shared.capabilityThemingName
+    var themingSlogan: String = NCGlobal.shared.capabilityThemingSlogan
+    
     /// Initializes the view model with default values.
     init() {
         onViewAppear()
@@ -62,6 +72,7 @@ class NCSettingsViewModel: NCSettingsViewModelProtocol {
         lockScreen = keychain.requestPasscodeAtStart
         privacyScreen = keychain.privacyScreenEnabled
         resetWrongAttempts = keychain.resetAppCounterFail
+        copyrightYear = getCurrentYear()
     }
     
     // MARK: - Settings Update Methods
@@ -81,8 +92,18 @@ class NCSettingsViewModel: NCSettingsViewModelProtocol {
         keychain.resetAppCounterFail = resetWrongAttempts
     }
     
+    /// This function initiates a service call to download the configuration files
+    /// using the URL provided in the `configLink` property.
     func getConfigFiles() {
         let configServer = NCConfigServer()
         configServer.startService(url: URL(string: configLink)!)
     }
+
+    /// This function gets the current year as a string.
+    /// and returns it as a string value.
+    func getCurrentYear() -> String {
+        return String(Calendar.current.component(.year, from: Date()))
+    }
+
+
 }

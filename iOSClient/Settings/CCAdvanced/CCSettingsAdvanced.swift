@@ -184,8 +184,8 @@ struct CCSettingsAdvanced<ViewModel: CCSettingsAdvancedViewModel>: View {
             
             // Delete in Cache & Clear Cache
             Section(content: {
-                // TODO: changing the section text to "Auto Delete files after"
-                Picker("Auto Delete files after", selection: $viewModel.selectedInterval) {
+                // TODO: changing the section text to "Auto Delete Cache files after"
+                Picker("Auto Delete Cache files after", selection: $viewModel.selectedInterval) {
                     ForEach(CacheDeletionInterval.allCases) { interval in
                         Text(interval.displayText).tag(interval)
                     }

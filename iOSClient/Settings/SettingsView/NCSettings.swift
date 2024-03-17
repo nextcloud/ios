@@ -177,9 +177,8 @@ struct NCSettings<ViewModel: NCSettingsViewModel>: View {
             Section(content: {
                 
             }, footer: {
-                Text("Nextcloud Liquid for iOS \(NCUtility().getVersionApp(withBuild: true)) © 2024 \n\nNextcloud Server \(NCGlobal.shared.capabilityServerVersion)\n\(NCGlobal.shared.capabilityThemingName) - \(NCGlobal.shared.capabilityThemingSlogan)")
-                Text("Nextcloud Server \(NCGlobal.shared.capabilityServerVersion)")
-                Text("\(NCGlobal.shared.capabilityThemingName) - \(NCGlobal.shared.capabilityThemingSlogan)")
+                Text("Nextcloud Liquid for iOS \(viewModel.appVersion) © \(viewModel.copyrightYear) \n\nNextcloud Server \(viewModel.serverVersion)\n\(viewModel.themingName) - \(viewModel.themingSlogan)")
+
             })
         }
         .navigationBarTitle("Settings")
