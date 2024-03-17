@@ -149,6 +149,7 @@ class NCListCell: SwipeCollectionViewCell, UIGestureRecognizerDelegate, NCCellPr
 
         labelTitle.text = ""
         labelInfo.text = ""
+        labelSubinfo.text = ""
         labelTitle.textColor = .label
         labelInfo.textColor = .systemGray
         labelSubinfo.textColor = .systemGray
