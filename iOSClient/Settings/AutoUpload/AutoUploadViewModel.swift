@@ -8,59 +8,53 @@
 
 import Foundation
 
-/// A viewModel that allows the user to configure the `auto upload settings for Nextcloud`
-class AutoUploadViewModel: ObservableObject {
+protocol AutoUploadViewModelProtocol: ObservableObject {
     /// A state variable that indicates whether auto upload is enabled or not
-    @Published var autoUpload: Bool
+    var autoUpload: Bool { get set }
     
     /// A state variable that indicates whether auto upload for photos is enabled or not
-    @Published var autoUploadImage: Bool
+    var autoUploadImage: Bool { get set }
     /// A state variable that indicates whether auto upload for photos is restricted to Wi-Fi only or not
-    @Published var autoUploadWWAnPhoto: Bool
+    var autoUploadWWAnPhoto: Bool { get set }
     
     /// A state variable that indicates whether auto upload for videos is enabled or not
-    @Published var autoUploadVideo: Bool
+    var autoUploadVideo: Bool { get set }
     /// A state variable that indicates whether auto upload for videos is restricted to Wi-Fi only or not
-    @Published var autoUploadWWAnVideo: Bool
+    var autoUploadWWAnVideo: Bool { get set }
     
     /// A state variable that indicates whether auto upload for full resolution photos is enabled or not
-    @Published var autoUploadFull: Bool
+    var autoUploadFull: Bool { get set }
     /// A state variable that indicates whether auto upload creates subfolders based on date or not
-    @Published var autoUploadCreateSubfolder: Bool
+    var autoUploadCreateSubfolder: Bool { get set }
     
     /// A state variable that indicates the granularity of the subfolders, either daily, monthly, or yearly
-    @Published var autoUploadSubfolderGranularity: Granularity
+    var autoUploadSubfolderGranularity: Granularity { get set }
+}
+
+/// A viewModel that allows the user to configure the `auto upload settings for Nextcloud`
+class AutoUploadViewModel: AutoUploadViewModelProtocol {
+    @Published var autoUpload: Bool = false
+    @Published var autoUploadImage: Bool = false
+    @Published var autoUploadWWAnPhoto: Bool = false
+    
+    @Published var autoUploadVideo: Bool = false
+    @Published var autoUploadWWAnVideo: Bool = false
+    
+    @Published var autoUploadFull: Bool = false
+    @Published var autoUploadCreateSubfolder: Bool = false
+    
+    @Published var autoUploadSubfolderGranularity: Granularity = .monthly
     
     @Published var isAuthorized: Bool = false
     private let manageDatabase = NCManageDatabase()
     
     // Initialization code to set up the ViewModel with the active account
     init() {
-        var activeAccount: tableAccount? = NCManageDatabase().getActiveAccount()
-        if let account = activeAccount {
-            autoUpload = account.autoUpload
-            autoUploadImage = account.autoUploadImage
-            autoUploadWWAnPhoto = account.autoUploadWWAnPhoto
-            autoUploadVideo = account.autoUploadVideo
-            autoUploadWWAnVideo = account.autoUploadWWAnVideo
-            autoUploadFull = account.autoUploadFull
-            autoUploadCreateSubfolder = account.autoUploadCreateSubfolder
-            autoUploadSubfolderGranularity = Granularity(rawValue: account.autoUploadSubfolderGranularity) ?? .monthly
-        } else {
-            autoUpload = false
-            autoUploadImage = false
-            autoUploadWWAnPhoto = false
-            autoUploadVideo = false
-            autoUploadWWAnVideo = false
-            autoUploadFull = false
-            autoUploadCreateSubfolder = false
-            autoUploadSubfolderGranularity =  .monthly
-        }
+        onViewAppear()
     }
     
-    
     /// A function to update the published properties based on the active account
-    private func updatePropertiesFromAccount() {
+    func onViewAppear() {
         var activeAccount: tableAccount? = NCManageDatabase().getActiveAccount()
         if let account = activeAccount {
             autoUpload = account.autoUpload

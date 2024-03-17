@@ -24,7 +24,7 @@ protocol AutoUploadFileNamesViewModelProtocol: ObservableObject {
 
 
 /// A view model responsible for managing auto-upload file names.
-class AutoUploadFileNamesViewModel: ObservableObject, AutoUploadFileNamesViewModelProtocol {
+class AutoUploadFileNamesViewModel: AutoUploadFileNamesViewModelProtocol {
     // MARK: - Properties
     private let keychain = NCKeychain()
     private let globalKey = NCGlobal.shared

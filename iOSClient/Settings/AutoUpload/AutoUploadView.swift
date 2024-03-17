@@ -9,8 +9,8 @@
 import SwiftUI
 
 /// A view that allows the user to configure the `auto upload settings for Nextcloud`
-struct AutoUploadView: View {
-    @ObservedObject var viewModel = AutoUploadViewModel()
+struct AutoUploadView<ViewModel: AutoUploadViewModel>: View {
+    @ObservedObject var viewModel: ViewModel
     
     var body: some View {
         Form {
@@ -132,5 +132,5 @@ struct AutoUploadView: View {
 }
 
 #Preview {
-    AutoUploadView()
+    AutoUploadView(viewModel: AutoUploadViewModel())
 }
