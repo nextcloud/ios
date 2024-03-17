@@ -8,35 +8,62 @@
 
 import Foundation
 
-class NCSettingsViewModel: ObservableObject {
-    var keychain = NCKeychain()
-    
+protocol NCSettingsViewModelProtocol: ObservableObject, AccountUpdateHandling, ViewOnAppearHandling {
     /// State to control the enable TouchID toggle
-    @Published var enableTouchID: Bool
+    var enableTouchID: Bool { get set }
     /// State to control
-    @Published var lockScreen: Bool
+    var lockScreen: Bool { get set }
     /// State to control
-    @Published var privacyScreen: Bool
+    var privacyScreen: Bool { get set }
     /// State to control
-    @Published var resetWrongAttempts: Bool
+    var resetWrongAttempts: Bool { get set }
     /// String url to download configuration files
-    @Published var configLink: String? = "https://shared02.opsone-cloud.ch/\(String(describing: NCManageDatabase.shared.getActiveAccount()?.urlBase))\(NCBrandOptions.shared.mobileconfig)"
+    var configLink: String? { get }
     
     /// State to control the visibility of the acknowledgements view
-    @Published var isE2EEEnable: Bool = NCGlobal.shared.capabilityE2EEEnabled
+    var isE2EEEnable: Bool { get }
     /// String containing the current version of E2EE
+    var versionE2EE: String { get }
+    
+    func updateAccount()
+    func updateTouchIDSetting()
+    func updatePrivacyScreenSetting()
+    func updateResetWrongAttemptsSetting()
+    func getConfigFiles()
+}
+
+class NCSettingsViewModel: NCSettingsViewModelProtocol {
+    
+    /// Keychain access
+    var keychain = NCKeychain()
+    
+    @Published var enableTouchID: Bool = false
+    @Published var lockScreen: Bool = false
+    @Published var privacyScreen: Bool = false
+    @Published var resetWrongAttempts: Bool = false
+    @Published var configLink: String? = "https://shared02.opsone-cloud.ch/\(String(describing: NCManageDatabase.shared.getActiveAccount()?.urlBase))\(NCBrandOptions.shared.mobileconfig)"
+    
+    @Published var isE2EEEnable: Bool = NCGlobal.shared.capabilityE2EEEnabled
     @Published var versionE2EE: String = NCGlobal.shared.capabilityE2EEApiVersion
         
+    /// Initializes the view model with default values.
     init() {
+        onViewAppear()
+    }
+    
+    /// Updates the account information.
+    func updateAccount() {
+        self.keychain = NCKeychain()
+    }
+    
+    /// Triggered when the view appears.
+    func onViewAppear() {
         enableTouchID = keychain.touchFaceID
         lockScreen = keychain.requestPasscodeAtStart
         privacyScreen = keychain.privacyScreenEnabled
         resetWrongAttempts = keychain.resetAppCounterFail
     }
     
-    func updateAccount() {
-        keychain = NCKeychain()
-    }
     // MARK: - Settings Update Methods
     
     /// Function to update Touch ID / Face ID setting
@@ -54,7 +81,7 @@ class NCSettingsViewModel: ObservableObject {
         keychain.resetAppCounterFail = resetWrongAttempts
     }
     
-    func getConfigFiles(){
+    func getConfigFiles() {
         let configServer = NCConfigServer()
         configServer.startService(url: URL(string: configLink)!)
     }

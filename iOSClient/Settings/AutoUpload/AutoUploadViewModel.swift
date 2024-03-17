@@ -8,7 +8,7 @@
 
 import Foundation
 
-protocol AutoUploadViewModelProtocol: ObservableObject {
+protocol AutoUploadViewModelProtocol: ObservableObject, ViewOnAppearHandling {
     /// A state variable that indicates whether auto upload is enabled or not
     var autoUpload: Bool { get set }
     
@@ -57,14 +57,14 @@ class AutoUploadViewModel: AutoUploadViewModelProtocol {
     @Published var isAuthorized: Bool = false
     private let manageDatabase = NCManageDatabase()
     
-    // Initialization code to set up the ViewModel with the active account
+    /// Initialization code to set up the ViewModel with the active account
     init() {
         onViewAppear()
     }
     
     /// A function to update the published properties based on the active account
     func onViewAppear() {
-        var activeAccount: tableAccount? = NCManageDatabase().getActiveAccount()
+        let activeAccount: tableAccount? = NCManageDatabase().getActiveAccount()
         if let account = activeAccount {
             autoUpload = account.autoUpload
             autoUploadImage = account.autoUploadImage
@@ -127,7 +127,7 @@ class AutoUploadViewModel: AutoUploadViewModelProtocol {
     
     /// Updates a property of the active account in the database.
     private func updateAccountProperty<T>(_ keyPath: ReferenceWritableKeyPath<tableAccount, T>, value: T) {
-        guard var activeAccount = manageDatabase.getActiveAccount() else { return }
+        guard let activeAccount = manageDatabase.getActiveAccount() else { return }
         activeAccount[keyPath: keyPath] = value
         manageDatabase.updateAccount(activeAccount)
     }

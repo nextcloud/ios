@@ -9,7 +9,7 @@
 import Foundation
 import NextcloudKit
 
-protocol CCSettingsAdvancedViewModelProtocol: ObservableObject {
+protocol CCSettingsAdvancedViewModelProtocol: ObservableObject, ViewOnAppearHandling, AccountUpdateHandling {
     // Published properties for the toggles
     
     /// State variable for indicating whether hidden files are shown.
@@ -55,12 +55,10 @@ protocol CCSettingsAdvancedViewModelProtocol: ObservableObject {
 class CCSettingsAdvancedViewModel: CCSettingsAdvancedViewModelProtocol {
     
     /// Keychain access
-    private let keychain = NCKeychain()
+    private var keychain = NCKeychain()
     
     /// Callback to notify the view to present the UIViewController
     var goToCapabilitiesView: ((UIViewController) -> Void)?
-    
-    // Published properties for the toggles
     
     @Published var showHiddenFiles: Bool = false
     @Published var mostCompatible: Bool = false
@@ -70,18 +68,24 @@ class CCSettingsAdvancedViewModel: CCSettingsAdvancedViewModelProtocol {
     @Published var crashReporter: Bool = false
     @Published var logFileCleared: Bool = false
     
-    // Properties for log level and cache deletion
-    
     @Published var selectedLogLevel: LogLevel = .standard
     @Published var selectedInterval: CacheDeletionInterval = .never
     @Published var footerTitle: String = NSLocalizedString("_clear_cache_footer_", comment: "")
     
     
+    /// Initializes the view model with default values.
     init() {
-        viewOnAppear()
+        onViewAppear()
     }
     
-    func viewOnAppear() {
+    /// Updates the account information.
+    func updateAccount() {
+        self.keychain = NCKeychain()
+    }
+    
+    /// Triggered when the view appears.
+    func onViewAppear() {
+        updateAccount()
         // Initialize all properties with values from the keychain or defaults
         showHiddenFiles = keychain.showHiddenFiles
         mostCompatible = keychain.formatCompatibility

@@ -10,7 +10,8 @@ import SwiftUI
 import NextcloudKit
 
 /// Settings view for Nextcloud
-struct NCSettings: View {
+struct NCSettings<ViewModel: NCSettingsViewModel>: View {
+    
     /// State to control the visibility of the acknowledgements view
     @State private var showAcknowledgements = false
     /// State to control the visibility of the Policy view
@@ -19,7 +20,7 @@ struct NCSettings: View {
     @State private var showSourceCode = false
     
     /// Object of ViewModel of this view
-    @ObservedObject var viewModel = NCSettingsViewModel()
+    @ObservedObject var viewModel: ViewModel
     
     var body: some View {
         Form {
@@ -188,6 +189,6 @@ struct NCSettings: View {
 
  struct NCSettings_Previews: PreviewProvider {
      static var previews: some View {
-         NCSettings()
+         NCSettings(viewModel: NCSettingsViewModel())
      }
  }
