@@ -81,7 +81,7 @@ class NCViewerMedia: UIViewController {
     var ncplayer: NCPlayer?
     var image: UIImage? {
         didSet {
-            if #available(iOS 16, *) {
+            if #available(iOS 16, *), metadata.isImage {
                 analyzer.imageInteraction?.preferredInteractionTypes = []
                 analyzer.imageInteraction?.analysis = nil
                 analyzeCurrentImage()
