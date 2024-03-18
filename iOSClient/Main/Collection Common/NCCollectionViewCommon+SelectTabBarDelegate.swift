@@ -23,6 +23,7 @@
 
 import Foundation
 import NextcloudKit
+
 extension NCCollectionViewCommon: NCSelectableNavigationView, NCCollectionViewCommonSelectTabBarDelegate {
     func setNavigationRightItems(enableMenu: Bool = false) {
         if layoutKey == NCGlobal.shared.layoutViewTransfers { return }
@@ -34,6 +35,7 @@ extension NCCollectionViewCommon: NCSelectableNavigationView, NCCollectionViewCo
         var isAnyLocked = false
         var canUnlock = true
         var canSetAsOffline = true
+        let isTabBarHidden = self.tabBarController?.tabBar.isHidden
 
         for ocId in selectOcId {
             guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) else { continue }
@@ -95,6 +97,10 @@ extension NCCollectionViewCommon: NCSelectableNavigationView, NCCollectionViewCo
             } else {
                 navigationItem.rightBarButtonItems?.first?.menu = navigationItem.rightBarButtonItems?.first?.menu?.replacingChildren(createMenuActions())
             }
+        }
+        // fix, if the tabbar was hidden before the update, set hidden
+        if let isTabBarHidden, isTabBarHidden {
+            self.tabBarController?.tabBar.isHidden = true
         }
     }
 

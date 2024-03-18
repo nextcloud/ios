@@ -73,6 +73,12 @@
                         <color key="textColor" red="0.59999999999999998" green="0.59999999999999998" blue="0.59999999999999998" alpha="1" colorSpace="calibratedRGB"/>
                         <nil key="highlightedColor"/>
                     </label>
+                    <label opaque="NO" userInteractionEnabled="NO" tag="102" contentMode="left" verticalHuggingPriority="251" text="Label" lineBreakMode="middleTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Fu0-vg-6GU" userLabel="labelSubinfo">
+                        <rect key="frame" x="138" y="120" width="394" height="15"/>
+                        <fontDescription key="fontDescription" type="system" pointSize="12"/>
+                        <color key="textColor" red="0.59999999999999998" green="0.59999999999999998" blue="0.59999999999999998" alpha="1" colorSpace="calibratedRGB"/>
+                        <nil key="highlightedColor"/>
+                    </label>
                     <button opaque="NO" alpha="0.29999999999999999" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="o4u-0K-Qpt" userLabel="buttonShare">
                         <rect key="frame" x="584" y="45" width="40" height="58"/>
                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -120,7 +126,7 @@
                         </constraints>
                     </view>
                     <label hidden="YES" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="tag0" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="qnc-hI-Z9r" customClass="PaddedAndBorderedLabel" customModule="Nextcloud" customModuleProvider="target">
-                        <rect key="frame" x="107" y="124.66666666666667" width="26" height="14.333333333333329"/>
+                        <rect key="frame" x="107" y="122.66666666666667" width="36" height="16.333333333333329"/>
                         <fontDescription key="fontDescription" type="system" pointSize="12"/>
                         <color key="textColor" systemColor="systemGrayColor"/>
                         <nil key="highlightedColor"/>
@@ -149,7 +155,7 @@
                         </userDefinedRuntimeAttributes>
                     </label>
                     <label hidden="YES" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="tag1" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="jUe-8q-VJd" customClass="PaddedAndBorderedLabel" customModule="Nextcloud" customModuleProvider="target">
-                        <rect key="frame" x="138" y="124.66666666666667" width="24" height="14.333333333333329"/>
+                        <rect key="frame" x="148" y="122.66666666666667" width="34" height="16.333333333333329"/>
                         <fontDescription key="fontDescription" type="system" pointSize="12"/>
                         <color key="textColor" systemColor="systemGrayColor"/>
                         <nil key="highlightedColor"/>
@@ -176,12 +182,6 @@
                                 <real key="value" value="1"/>
                             </userDefinedRuntimeAttribute>
                         </userDefinedRuntimeAttributes>
-                    </label>
-                    <label opaque="NO" userInteractionEnabled="NO" tag="102" contentMode="left" verticalHuggingPriority="251" text="Label" lineBreakMode="middleTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Fu0-vg-6GU" userLabel="labelSubinfo">
-                        <rect key="frame" x="138" y="120" width="394" height="15"/>
-                        <fontDescription key="fontDescription" type="system" pointSize="12"/>
-                        <color key="textColor" red="0.59999999999999998" green="0.59999999999999998" blue="0.59999999999999998" alpha="1" colorSpace="calibratedRGB"/>
-                        <nil key="highlightedColor"/>
                     </label>
                 </subviews>
             </view>
@@ -255,10 +255,10 @@
     </objects>
     <designables>
         <designable name="jUe-8q-VJd">
-            <size key="intrinsicContentSize" width="24" height="14.333333333333334"/>
+            <size key="intrinsicContentSize" width="34" height="16.333333333333336"/>
         </designable>
         <designable name="qnc-hI-Z9r">
-            <size key="intrinsicContentSize" width="26" height="14.333333333333334"/>
+            <size key="intrinsicContentSize" width="36" height="16.333333333333336"/>
         </designable>
     </designables>
     <resources>

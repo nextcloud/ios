@@ -114,6 +114,7 @@ class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
 
         labelTitle.text = ""
         labelInfo.text = ""
+        labelSubinfo.text = ""
     }
 
     override func prepareForReuse() {

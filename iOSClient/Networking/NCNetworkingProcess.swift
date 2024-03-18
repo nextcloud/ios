@@ -46,7 +46,7 @@ class NCNetworkingProcess: NSObject {
         self.timerProcess = Timer.scheduledTimer(withTimeInterval: 5, repeats: true, block: { _ in
             if !self.pauseProcess, !self.appDelegate.account.isEmpty {
                 Task {
-                    let results = await self.start(applicationState: UIApplication.shared.applicationState)
+                    let results = await self.start()
                     print("[LOG] PROCESS (TIMER) Download: \(results.counterDownload) Upload: \(results.counterUpload)")
                     NotificationCenter.default.post(name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterUpdateBadgeNumber), object: nil)
                 }
@@ -59,8 +59,9 @@ class NCNetworkingProcess: NSObject {
     }
 
     @discardableResult
-    func start(applicationState: UIApplication.State) async -> (counterDownload: Int, counterUpload: Int) {
+    func start() async -> (counterDownload: Int, counterUpload: Int) {
         self.pauseProcess = true
+        let applicationState = await UIApplication.shared.applicationState
         let maxConcurrentOperationDownload = NCBrandOptions.shared.maxConcurrentOperationDownload
         var maxConcurrentOperationUpload = NCBrandOptions.shared.maxConcurrentOperationUpload
         var filesNameLocalPath: [String] = []
@@ -179,7 +180,10 @@ class NCNetworkingProcess: NSObject {
         }
 
         // No upload available ? --> Delete Assets
-        if applicationState == .active && counterUpload == 0 && metadatasUploadInError.isEmpty {
+        if NCKeychain().removePhotoCameraRoll,
+           applicationState == .active,
+           counterUpload == 0,
+           metadatasUploadInError.isEmpty {
             await self.deleteAssetsLocalIdentifiers(account: self.appDelegate.account)
         }
 
