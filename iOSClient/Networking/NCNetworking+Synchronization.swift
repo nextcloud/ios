@@ -71,7 +71,7 @@ extension NCNetworking {
     }
 
     @discardableResult
-    func synchronization(account: String, serverUrl: String, add: Bool) async -> (Int, Int) {
+    func synchronization(account: String, serverUrl: String, add: Bool) async -> (errorCode: Int, items: Int) {
         await withUnsafeContinuation({ continuation in
             synchronization(account: account, serverUrl: serverUrl, add: add) { errorCode, items in
                 continuation.resume(returning: (errorCode, items))

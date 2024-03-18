@@ -36,7 +36,7 @@ extension NCNetworking {
                     account: String,
                     forceReplaceMetadatas: Bool = false,
                     taskHandler: @escaping (_ task: URLSessionTask) -> Void = { _ in },
-                    completion: @escaping (_ account: String, _ metadataFolder: tableMetadata?, _ metadatas: [tableMetadata]?, _ metadatasChangedCount: Int, _ metadatasChanged: Bool, _ error: NKError) -> Void) {
+                    completion: @escaping (_ account: String, _ metadataFolder: tableMetadata?, _ metadatas: [tableMetadata]?, _ metadatasDifferentCount: Int, _ metadatasModified: Int, _ error: NKError) -> Void) {
 
         NextcloudKit.shared.readFileOrFolder(serverUrlFileName: serverUrl,
                                              depth: "1",
@@ -47,7 +47,7 @@ extension NCNetworking {
         } completion: { account, files, _, error in
 
             guard error == .success else {
-                return completion(account, nil, nil, 0, false, error)
+                return completion(account, nil, nil, 0, 0, error)
             }
 
             NCManageDatabase.shared.convertFilesToMetadatas(files, useMetadataFolder: true) { metadataFolder, metadatasFolder, metadatas in
@@ -77,10 +77,10 @@ extension NCNetworking {
 
                 if forceReplaceMetadatas {
                     NCManageDatabase.shared.replaceMetadata(metadatas, predicate: predicate)
-                    completion(account, metadataFolder, metadatas, 0, true, error)
+                    completion(account, metadataFolder, metadatas, 1, 1, error)
                 } else {
                     let results = NCManageDatabase.shared.updateMetadatas(metadatas, predicate: predicate)
-                    completion(account, metadataFolder, metadatas, results.metadatasChangedCount, results.metadatasChanged, error)
+                    completion(account, metadataFolder, metadatas, results.metadatasDifferentCount, results.metadatasModified, error)
                 }
             }
         }

@@ -106,7 +106,7 @@ class NCFiles: NCCollectionViewCommon {
 
         var metadatas: [tableMetadata] = []
         if NCKeychain().getPersonalFilesOnly(account: self.appDelegate.account) {
-            metadatas = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND ownerId == %@ AND mountType == ''", self.appDelegate.account, self.serverUrl, self.appDelegate.userId))
+            metadatas = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND (ownerId == %@ || ownerId == '') AND mountType == ''", self.appDelegate.account, self.serverUrl, self.appDelegate.userId))
         } else {
             metadatas = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", self.appDelegate.account, self.serverUrl))
         }
@@ -161,7 +161,7 @@ class NCFiles: NCCollectionViewCommon {
 
         super.reloadDataSourceNetwork()
 
-        networkReadFolder { tableDirectory, metadatas, metadatasChangedCount, metadatasChanged, error in
+        networkReadFolder { tableDirectory, metadatas, metadatasDifferentCount, metadatasModified, error in
             if error == .success {
                 for metadata in metadatas ?? [] where !metadata.directory && downloadMetadata(metadata) {
                     if NCNetworking.shared.downloadQueue.operations.filter({ ($0 as? NCOperationDownload)?.metadata.ocId == metadata.ocId }).isEmpty {
@@ -170,7 +170,7 @@ class NCFiles: NCCollectionViewCommon {
                 }
                 self.richWorkspaceText = tableDirectory?.richWorkspace
 
-                if metadatasChangedCount != 0 || metadatasChanged {
+                if metadatasDifferentCount != 0 || metadatasModified != 0 {
                     self.reloadDataSource()
                 } else {
                     self.reloadDataSource(withQueryDB: false)
@@ -181,7 +181,7 @@ class NCFiles: NCCollectionViewCommon {
         }
     }
 
-    private func networkReadFolder(completion: @escaping(_ tableDirectory: tableDirectory?, _ metadatas: [tableMetadata]?, _ metadatasChangedCount: Int, _ metadatasChanged: Bool, _ error: NKError) -> Void) {
+    private func networkReadFolder(completion: @escaping(_ tableDirectory: tableDirectory?, _ metadatas: [tableMetadata]?, _ metadatasDifferentCount: Int, _ metadatasModified: Int, _ error: NKError) -> Void) {
 
         var tableDirectory: tableDirectory?
 
@@ -190,7 +190,7 @@ class NCFiles: NCCollectionViewCommon {
             self.collectionView.reloadData()
         } completion: { account, metadataFolder, error in
             guard error == .success, let metadataFolder else {
-                return completion(nil, nil, 0, false, error)
+                return completion(nil, nil, 0, 0, error)
             }
             tableDirectory = NCManageDatabase.shared.setDirectory(serverUrl: self.serverUrl, richWorkspace: metadataFolder.richWorkspace, account: account)
             // swiftlint:disable empty_string
@@ -203,9 +203,9 @@ class NCFiles: NCCollectionViewCommon {
                                                forceReplaceMetadatas: forceReplaceMetadatas) { task in
                     self.dataSourceTask = task
                     self.collectionView.reloadData()
-                } completion: { _, metadataFolder, metadatas, metadatasChangedCount, metadatasChanged, error in
+                } completion: { _, metadataFolder, metadatas, metadatasDifferentCount, metadatasModified, error in
                     guard error == .success else {
-                        return completion(tableDirectory, nil, 0, false, error)
+                        return completion(tableDirectory, nil, 0, 0, error)
                     }
                     self.metadataFolder = metadataFolder
                     // E2EE
@@ -250,14 +250,14 @@ class NCFiles: NCCollectionViewCommon {
                             } else {
                                 NCContentPresenter().showError(error: NKError(errorCode: NCGlobal.shared.errorE2EEKeyDecodeMetadata, errorDescription: "_e2e_error_"))
                             }
-                            completion(tableDirectory, metadatas, metadatasChangedCount, metadatasChanged, error)
+                            completion(tableDirectory, metadatas, metadatasDifferentCount, metadatasModified, error)
                         }
                     } else {
-                        completion(tableDirectory, metadatas, metadatasChangedCount, metadatasChanged, error)
+                        completion(tableDirectory, metadatas, metadatasDifferentCount, metadatasModified, error)
                     }
                 }
             } else {
-                completion(tableDirectory, nil, 0, false, NKError())
+                completion(tableDirectory, nil, 0, 0, NKError())
             }
         }
     }
