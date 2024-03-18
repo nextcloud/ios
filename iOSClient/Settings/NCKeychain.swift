@@ -393,6 +393,20 @@ import KeychainAccess
         keychain[key] = String(prefix)
     }
 
+    func setPersonalFilesOnly(account: String, value: Bool) {
+        let key = "personalFilesOnly" + account
+        keychain[key] = String(value)
+    }
+
+    func getPersonalFilesOnly(account: String) -> Bool {
+        let key = "personalFilesOnly" + account
+        if let value = try? keychain.get(key), let result = Bool(value) {
+            return result
+        } else {
+            return false
+        }
+    }
+
     // MARK: - E2EE
 
     func getEndToEndCertificate(account: String) -> String? {

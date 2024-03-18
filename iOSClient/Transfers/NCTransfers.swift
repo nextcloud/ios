@@ -265,6 +265,12 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
         self.dataSource = NCDataSource(metadatas: metadatas, account: self.appDelegate.account)
     }
 
+    override func reloadDataSource(withQueryDB: Bool = true) {
+        super.reloadDataSource(withQueryDB: withQueryDB)
+
+        NCNetworkingProcess.shared.verifyZombie()
+    }
+
     override func reloadDataSourceNetwork() {
         super.reloadDataSourceNetwork()
 

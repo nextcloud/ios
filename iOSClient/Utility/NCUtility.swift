@@ -177,7 +177,7 @@ class NCUtility: NSObject {
             descriptionMessage = NSLocalizedString("_dnd_description_", comment: "")
         }
         if userStatus?.lowercased() == "offline" || userStatus?.lowercased() == "invisible" {
-            onlineStatus = UIImage(named: "userStatusOffline")!.image(color: .black, size: 50)
+            onlineStatus = UIImage(named: "userStatusOffline")!.withTintColor(.init(named: "SystemBackgroundInverted")!)
             messageUserDefined = NSLocalizedString("_invisible_", comment: "")
             descriptionMessage = NSLocalizedString("_invisible_description_", comment: "")
         }

@@ -91,6 +91,14 @@ class NCCameraRoll: NSObject {
         }
     }
 
+    func extractCameraRoll(from metadata: tableMetadata) async -> [tableMetadata] {
+        await withUnsafeContinuation({ continuation in
+            extractCameraRoll(from: metadata) { metadatas in
+                continuation.resume(returning: metadatas)
+            }
+        })
+    }
+
     func extractImageVideoFromAssetLocalIdentifier(metadata: tableMetadata,
                                                    modifyMetadataForUpload: Bool,
                                                    completion: @escaping (_ metadata: tableMetadata?, _ fileNamePath: String?, _ error: Bool) -> Void) {

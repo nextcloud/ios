@@ -133,8 +133,8 @@ extension NCMedia {
             var predicate = NSPredicate(format: "date > %@ AND date < %@", greaterDate as NSDate, lessDate as NSDate)
             predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [predicate, getPredicate(showAll: true)])
             let resultsUpdate = NCManageDatabase.shared.updateMetadatas(metadatas, predicate: predicate)
-            let isChaged: Bool = resultsUpdate.metadatasChanged || resultsUpdate.metadatasChangedCount != 0
-            NextcloudKit.shared.nkCommonInstance.writeLog("End searchMedia UpdateMetadatas with metadatasChanged \(resultsUpdate.metadatasChanged), ChangedCount \(resultsUpdate.metadatasChangedCount)")
+            let isChaged: Bool = (resultsUpdate.metadatasDifferentCount != 0 || resultsUpdate.metadatasModified != 0)
+            NextcloudKit.shared.nkCommonInstance.writeLog("End searchMedia UpdateMetadatas with differentCount \(resultsUpdate.metadatasDifferentCount), modified \(resultsUpdate.metadatasModified)")
             return(lessDate, greaterDate, metadatas.count, isChaged, results.error)
         } else {
             return(lessDate, greaterDate, 0, false, results.error)

@@ -346,11 +346,6 @@ extension NCNetworking {
                 metadata.sessionError = ""
                 metadata.status = NCGlobal.shared.metadataStatusNormal
 
-                // Delete Asset on Photos album
-                if NCKeychain().removePhotoCameraRoll, !metadata.assetLocalIdentifier.isEmpty {
-                    metadata.deleteAssetLocalIdentifier = true
-                }
-
                 NCManageDatabase.shared.addMetadata(metadata)
                 NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", ocIdTemp))
 

@@ -52,6 +52,7 @@ protocol NCCellProtocol {
     func selected(_ status: Bool)
     func setAccessibility(label: String, value: String)
     func setTags(tags: [String])
+    func setIconOutlines()
 }
 
 extension NCCellProtocol {
@@ -121,5 +122,6 @@ extension NCCellProtocol {
     func selectMode(_ status: Bool) {}
     func selected(_ status: Bool) {}
     func setAccessibility(label: String, value: String) {}
-    func setTags(tags: [String]) { }
+    func setTags(tags: [String]) {}
+    func setIconOutlines() {}
 }

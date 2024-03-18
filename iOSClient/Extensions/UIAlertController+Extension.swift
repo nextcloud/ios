@@ -101,6 +101,51 @@ extension UIAlertController {
             textField.isSecureTextEntry = true
             textField.placeholder = NSLocalizedString("_password_", comment: "")
         }, completion: completion)
+    }
 
+    static func deleteFileOrFolder(titleString: String, message: String?, canDeleteServer: Bool, selectedMetadatas: [tableMetadata], indexPaths: [IndexPath], completion: @escaping (_ cancelled: Bool) -> Void) -> UIAlertController {
+        let alertController = UIAlertController(
+            title: titleString,
+            message: message,
+            preferredStyle: .alert)
+        if canDeleteServer {
+            alertController.addAction(UIAlertAction(title: NSLocalizedString("_yes_", comment: ""), style: .destructive) { (_: UIAlertAction) in
+                Task {
+                    var error = NKError()
+                    var ocId: [String] = []
+                    for metadata in selectedMetadatas where error == .success {
+                        error = await NCNetworking.shared.deleteMetadata(metadata, onlyLocalCache: false)
+                        if error == .success {
+                            ocId.append(metadata.ocId)
+                        }
+                    }
+                    NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDeleteFile, userInfo: ["ocId": ocId, "indexPath": indexPaths, "onlyLocalCache": false, "error": error])
+                }
+                completion(false)
+            })
+        }
+
+        alertController.addAction(UIAlertAction(title: NSLocalizedString("_remove_local_file_", comment: ""), style: .default) { (_: UIAlertAction) in
+            Task {
+                var error = NKError()
+                var ocId: [String] = []
+                for metadata in selectedMetadatas where error == .success {
+                    error = await NCNetworking.shared.deleteMetadata(metadata, onlyLocalCache: true)
+                    if error == .success {
+                        ocId.append(metadata.ocId)
+                    }
+                }
+                if error != .success {
+                    NCContentPresenter().showError(error: error)
+                }
+                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDeleteFile, userInfo: ["ocId": ocId, "indexPath": indexPaths, "onlyLocalCache": true, "error": error])
+            }
+            completion(false)
+        })
+
+        alertController.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel) { (_: UIAlertAction) in
+            completion(true)
+        })
+        return alertController
     }
 }
