@@ -775,6 +775,7 @@
 		F7E4022E2BA85D1D007E5609 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = F7E402282BA85D1D007E5609 /* PrivacyInfo.xcprivacy */; };
 		F7E4022F2BA85D1D007E5609 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = F7E402282BA85D1D007E5609 /* PrivacyInfo.xcprivacy */; };
 		F7E402312BA891EB007E5609 /* NCTrash+SelectTabBarDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7E402302BA891EB007E5609 /* NCTrash+SelectTabBarDelegate.swift */; };
+		F7E402332BA89551007E5609 /* NCTrash+Networking.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7E402322BA89551007E5609 /* NCTrash+Networking.swift */; };
 		F7E41316294A19B300839300 /* UIView+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7E41315294A19B300839300 /* UIView+Extension.swift */; };
 		F7E4D9C422ED929B003675FD /* NCShareCommentsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7E4D9C322ED929B003675FD /* NCShareCommentsCell.swift */; };
 		F7E7AEA52BA32C6500512E52 /* NCCollectionViewDownloadThumbnail.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7E7AEA42BA32C6500512E52 /* NCCollectionViewDownloadThumbnail.swift */; };
@@ -1499,6 +1500,7 @@
 		F7E0CDCE265CE8610044854E /* NCUserStatus.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = NCUserStatus.storyboard; sourceTree = "<group>"; };
 		F7E402282BA85D1D007E5609 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		F7E402302BA891EB007E5609 /* NCTrash+SelectTabBarDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NCTrash+SelectTabBarDelegate.swift"; sourceTree = "<group>"; };
+		F7E402322BA89551007E5609 /* NCTrash+Networking.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NCTrash+Networking.swift"; sourceTree = "<group>"; };
 		F7E41315294A19B300839300 /* UIView+Extension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIView+Extension.swift"; sourceTree = "<group>"; };
 		F7E45E6D21E75BF200579249 /* ja-JP */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "ja-JP"; path = "ja-JP.lproj/Localizable.strings"; sourceTree = "<group>"; };
 		F7E4D9C322ED929B003675FD /* NCShareCommentsCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCShareCommentsCell.swift; sourceTree = "<group>"; };
@@ -2215,8 +2217,9 @@
 				F78ACD4721903F850088454D /* Cell */,
 				F78F74332163757000C2ADAD /* NCTrash.storyboard */,
 				F78F74352163781100C2ADAD /* NCTrash.swift */,
-				F7E402302BA891EB007E5609 /* NCTrash+SelectTabBarDelegate.swift */,
 				AF3FDCC12796ECC300710F60 /* NCTrash+CollectionView.swift */,
+				F7E402322BA89551007E5609 /* NCTrash+Networking.swift */,
+				F7E402302BA891EB007E5609 /* NCTrash+SelectTabBarDelegate.swift */,
 				F321DA892B71205A00DDA0E6 /* NCTrashSelectTabBar.swift */,
 			);
 			path = Trash;
@@ -3924,6 +3927,7 @@
 				F30A96312A27AEBF00D7BCFE /* EnvVars.generated.swift in Sources */,
 				F77444F522281649000D5EB0 /* NCGridMediaCell.swift in Sources */,
 				F78C6FDE296D677300C952C3 /* NCContextMenu.swift in Sources */,
+				F7E402332BA89551007E5609 /* NCTrash+Networking.swift in Sources */,
 				F7E7AEA72BA32D0000512E52 /* NCCollectionViewUnifiedSearch.swift in Sources */,
 				F769CA172965AB7C00039397 /* NCUploadAssets.swift in Sources */,
 				F73EF7A72B0223900087E6E9 /* NCManageDatabase+Comments.swift in Sources */,

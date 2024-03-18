@@ -118,7 +118,7 @@ extension NCManageDatabase {
         }
     }
 
-    func getTrash(filePath: String, sort: String?, ascending: Bool?, account: String) -> [tableTrash]? {
+    func getTrash(filePath: String, sort: String?, ascending: Bool?, account: String) -> [tableTrash] {
 
         let sort = sort ?? "date"
         let ascending = ascending ?? false
@@ -132,7 +132,7 @@ extension NCManageDatabase {
             NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
         }
 
-        return nil
+        return []
     }
 
     func getTrashItem(fileId: String, account: String) -> tableTrash? {

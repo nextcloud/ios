@@ -47,8 +47,7 @@ class NCTrash: UIViewController, NCTrashListCellDelegate, NCEmptyDataSetDelegate
     var listLayout: NCListLayout!
     var gridLayout: NCGridLayout!
     var layoutKey = NCGlobal.shared.layoutViewTrash
-
-    private let refreshControl = UIRefreshControl()
+    let refreshControl = UIRefreshControl()
 
     // MARK: - View Life Cycle
 
@@ -78,8 +77,8 @@ class NCTrash: UIViewController, NCTrashListCellDelegate, NCEmptyDataSetDelegate
         refreshControl.tintColor = .gray
         refreshControl.addTarget(self, action: #selector(loadListingTrash), for: .valueChanged)
 
-        // Empty
         emptyDataSet = NCEmptyDataSet(view: collectionView, offset: NCGlobal.shared.heightButtonsView, delegate: self)
+        setNavigationRightItems()
 
         NotificationCenter.default.addObserver(self, selector: #selector(reloadDataSource), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterReloadDataSource), object: nil)
     }
@@ -179,13 +178,7 @@ class NCTrash: UIViewController, NCTrashListCellDelegate, NCEmptyDataSetDelegate
     @objc func reloadDataSource(withQueryDB: Bool = true) {
 
         layoutForView = NCManageDatabase.shared.getLayoutForView(account: appDelegate.account, key: NCGlobal.shared.layoutViewTrash, serverUrl: "")
-        datasource.removeAll()
-        guard let trashPath = self.getTrashPath(),
-              let tashItems = NCManageDatabase.shared.getTrash(filePath: trashPath, sort: layoutForView?.sort, ascending: layoutForView?.ascending, account: appDelegate.account)
-        else {
-            return
-        }
-        datasource = tashItems
+        datasource = NCManageDatabase.shared.getTrash(filePath: self.getTrashPath(), sort: layoutForView?.sort, ascending: layoutForView?.ascending, account: appDelegate.account)
         collectionView.reloadData()
         setNavigationRightItems()
 
@@ -205,113 +198,15 @@ class NCTrash: UIViewController, NCTrashListCellDelegate, NCEmptyDataSetDelegate
                 }
             }
         }
-
     }
 
-    func getTrashPath() -> String? {
+    func getTrashPath() -> String {
         if self.trashPath.isEmpty {
-            guard let userId = (appDelegate.userId as NSString).addingPercentEncoding(withAllowedCharacters: NSCharacterSet.urlFragmentAllowed) else { return nil }
+            guard let userId = (appDelegate.userId as NSString).addingPercentEncoding(withAllowedCharacters: NSCharacterSet.urlFragmentAllowed) else { return "" }
             let trashPath = appDelegate.urlBase + "/" + NextcloudKit.shared.nkCommonInstance.dav + "/trashbin/" + userId + "/trash/"
             return trashPath
         } else {
             return self.trashPath
-        }
-    }
-}
-
-// MARK: - NC API & Algorithm
-
-extension NCTrash {
-
-    @objc func loadListingTrash() {
-
-        NextcloudKit.shared.listingTrash(showHiddenFiles: false) { task in
-            self.dataSourceTask = task
-            self.collectionView.reloadData()
-        } completion: { account, items, _, error in
-            self.refreshControl.endRefreshing()
-            if account == self.appDelegate.account, let trashPath = self.getTrashPath() {
-                NCManageDatabase.shared.deleteTrash(filePath: trashPath, account: account)
-                NCManageDatabase.shared.addTrash(account: account, items: items)
-            }
-            self.reloadDataSource()
-            if error != .success {
-                NCContentPresenter().showError(error: error)
-            }
-        }
-    }
-
-    func restoreItem(with fileId: String) {
-
-        guard let tableTrash = NCManageDatabase.shared.getTrashItem(fileId: fileId, account: appDelegate.account) else { return }
-        let fileNameFrom = tableTrash.filePath + tableTrash.fileName
-        let fileNameTo = appDelegate.urlBase + "/" + NextcloudKit.shared.nkCommonInstance.dav + "/trashbin/" + appDelegate.userId + "/restore/" + tableTrash.fileName
-
-        NextcloudKit.shared.moveFileOrFolder(serverUrlFileNameSource: fileNameFrom, serverUrlFileNameDestination: fileNameTo, overwrite: true) { account, error in
-
-            guard error == .success, account == self.appDelegate.account else {
-                NCContentPresenter().showError(error: error)
-                return
-            }
-
-            NCManageDatabase.shared.deleteTrash(fileId: fileId, account: account)
-            self.reloadDataSource()
-        }
-    }
-
-    func emptyTrash() {
-
-        let serverUrlFileName = appDelegate.urlBase + "/" + NextcloudKit.shared.nkCommonInstance.dav + "/trashbin/" + appDelegate.userId + "/trash"
-
-        NextcloudKit.shared.deleteFileOrFolder(serverUrlFileName: serverUrlFileName) { account, error in
-
-            guard error == .success, account == self.appDelegate.account else {
-                NCContentPresenter().showError(error: error)
-                return
-            }
-
-            NCManageDatabase.shared.deleteTrash(fileId: nil, account: self.appDelegate.account)
-            self.reloadDataSource()
-        }
-    }
-
-    func deleteItem(with fileId: String) {
-
-        guard let tableTrash = NCManageDatabase.shared.getTrashItem(fileId: fileId, account: appDelegate.account) else { return }
-        let serverUrlFileName = tableTrash.filePath + tableTrash.fileName
-
-        NextcloudKit.shared.deleteFileOrFolder(serverUrlFileName: serverUrlFileName) { account, error in
-
-            guard error == .success, account == self.appDelegate.account else {
-                NCContentPresenter().showError(error: error)
-                return
-            }
-
-            NCManageDatabase.shared.deleteTrash(fileId: fileId, account: account)
-            self.reloadDataSource()
-        }
-    }
-
-    func downloadThumbnail(with tableTrash: tableTrash, indexPath: IndexPath) {
-
-        let fileNamePreviewLocalPath = utilityFileSystem.getDirectoryProviderStoragePreviewOcId(tableTrash.fileId, etag: tableTrash.fileName)
-        let fileNameIconLocalPath = utilityFileSystem.getDirectoryProviderStorageIconOcId(tableTrash.fileId, etag: tableTrash.fileName)
-
-        NextcloudKit.shared.downloadPreview(fileNamePathOrFileId: tableTrash.fileId,
-                                            fileNamePreviewLocalPath: fileNamePreviewLocalPath,
-                                            widthPreview: NCGlobal.shared.sizePreview,
-                                            heightPreview: NCGlobal.shared.sizePreview,
-                                            fileNameIconLocalPath: fileNameIconLocalPath,
-                                            sizeIcon: NCGlobal.shared.sizeIcon,
-                                            etag: nil,
-                                            endpointTrashbin: true) { account, _, imageIcon, _, _, error in
-            guard error == .success, let imageIcon = imageIcon, account == self.appDelegate.account,
-                let cell = self.collectionView.cellForItem(at: indexPath) else { return }
-            if let cell = cell as? NCTrashListCell {
-                cell.imageItem.image = imageIcon
-            } else if let cell = cell as? NCGridCell {
-                cell.imageItem.image = imageIcon
-            } // else: undefined cell
         }
     }
 }
