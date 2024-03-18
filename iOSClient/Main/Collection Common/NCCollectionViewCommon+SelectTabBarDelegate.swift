@@ -26,7 +26,8 @@ import NextcloudKit
 
 extension NCCollectionViewCommon: NCSelectableNavigationView, NCCollectionViewCommonSelectTabBarDelegate {
     func setNavigationRightItems(enableMenu: Bool = false) {
-        if layoutKey == NCGlobal.shared.layoutViewTransfers { return }
+        guard let tabBarSelect = tabBarSelect as? NCCollectionViewCommonSelectTabBar,
+              layoutKey != NCGlobal.shared.layoutViewTransfers else { return }
 
         var selectedMetadatas: [tableMetadata] = []
         var isAnyOffline = false
@@ -35,7 +36,8 @@ extension NCCollectionViewCommon: NCSelectableNavigationView, NCCollectionViewCo
         var isAnyLocked = false
         var canUnlock = true
         var canSetAsOffline = true
-        let isTabBarHidden = self.tabBarController?.tabBar.isHidden
+        let isTabBarHidden = self.tabBarController?.tabBar.isHidden ?? true
+        let isTabBarSelectHidden = tabBarSelect.isHidden()
 
         for ocId in selectOcId {
             guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) else { continue }
@@ -68,8 +70,6 @@ extension NCCollectionViewCommon: NCSelectableNavigationView, NCCollectionViewCo
             } // else: file is not offline, continue
         }
 
-        guard let tabBarSelect = tabBarSelect as? NCCollectionViewCommonSelectTabBar else { return }
-
         tabBarSelect.isAnyOffline = isAnyOffline
         tabBarSelect.canSetAsOffline = canSetAsOffline
         tabBarSelect.isAnyDirectory = isAnyDirectory
@@ -99,7 +99,7 @@ extension NCCollectionViewCommon: NCSelectableNavigationView, NCCollectionViewCo
             }
         }
         // fix, if the tabbar was hidden before the update, set hidden
-        if let isTabBarHidden, isTabBarHidden {
+        if isTabBarHidden, isTabBarSelectHidden {
             self.tabBarController?.tabBar.isHidden = true
         }
     }

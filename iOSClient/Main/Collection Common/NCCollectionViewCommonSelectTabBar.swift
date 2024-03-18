@@ -88,6 +88,12 @@ class NCCollectionViewCommonSelectTabBar: NCSelectableViewTabBar, ObservableObje
         hostingController.view.isHidden = true
         tabBarController.tabBar.isHidden = false
     }
+
+    func isHidden() -> Bool {
+        guard let hostingController else { return false }
+
+        return hostingController.view.isHidden
+    }
 }
 
 struct NCCollectionViewCommonSelectTabBarView: View {
