@@ -21,13 +21,12 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-import Foundation
+import Realm
+import UIKit
 
 // MARK: UICollectionViewDelegate
 extension NCTrash: UICollectionViewDelegate {
-
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-
         let tableTrash = datasource[indexPath.item]
 
         guard !isEditMode else {
@@ -52,14 +51,12 @@ extension NCTrash: UICollectionViewDelegate {
 
 // MARK: UICollectionViewDataSource
 extension NCTrash: UICollectionViewDataSource {
-
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         emptyDataSet?.numberOfItemsInSection(datasource.count, section: section)
         return datasource.count
     }
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-
         let tableTrash = datasource[indexPath.item]
         var image: UIImage?
 
@@ -102,7 +99,6 @@ extension NCTrash: UICollectionViewDataSource {
     }
 
     func setTextFooter(datasource: [tableTrash]) -> String {
-
         var folders: Int = 0, foldersText = ""
         var files: Int = 0, filesText = ""
         var size: Int64 = 0
@@ -141,7 +137,6 @@ extension NCTrash: UICollectionViewDataSource {
     }
 
     func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
-
         guard let footer = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionFooter", for: indexPath) as? NCSectionFooter
         else { return UICollectionReusableView() }
 
