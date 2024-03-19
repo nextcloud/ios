@@ -25,6 +25,7 @@ jobs:
       DESTINATION: platform=iOS Simulator,name=iPhone 15
       SCHEME: Nextcloud
       SERVER_BRANCH: stable28
+      PHP_VERSION = "8.2"
     steps:
     - name: Set env var
       run: echo "DEVELOPER_DIR=$(xcode-select --print-path)" >> $GITHUB_ENV
@@ -47,6 +48,16 @@ jobs:
       run: carthage bootstrap --use-xcframeworks --platform iOS
     - name: Download GoogleService-Info.plist
       run: wget "https://raw.githubusercontent.com/firebase/quickstart-ios/master/mock-GoogleService-Info.plist" -O GoogleService-Info.plist
+    - name: Set up php ${{ matrix.configs.phpversion }}
+      uses: shivammathur/setup-php@a4e22b60bbb9c1021113f2860347b0759f66fe5d # v2.30.0
+      with:
+        php-version: ${{ env.PHP_VERSION }}
+        # https://docs.nextcloud.com/server/stable/admin_manual/installation/source_installation.html#prerequisites-for-manual-installation
+        extensions: apcu, bz2, ctype, curl, dom, fileinfo, gd, iconv, intl, json, libxml, mbstring, openssl, pcntl, posix, session, simplexml, xmlreader, xmlwriter, zip, zlib, pgsql, pdo_pgsql
+        coverage: none
+        ini-file: development
+        # Temporary workaround for missing pcntl_* in PHP 8.3: ini-values: apc.enable_cli=on
+        ini-values: apc.enable_cli=on, disable_functions=
     - name: Checkout server
       uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
       with:
