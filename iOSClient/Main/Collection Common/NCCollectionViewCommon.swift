@@ -1042,7 +1042,7 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
                 selectOcId.append(metadata.ocId)
             }
             collectionView.reloadItems(at: [indexPath])
-            tabBarSelect.isSelectedEmpty = selectOcId.isEmpty
+            tabBarSelect.update(selectOcId: selectOcId)
             return
         }
 
