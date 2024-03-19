@@ -23,8 +23,6 @@ import Foundation
 
 extension NCTrash: NCTrashSelectTabBarDelegate {
     func setNavigationRightItems(enableMenu: Bool = false) {
-        tabBarSelect.update(selectOcId: selectOcId)
-
         if isEditMode {
             tabBarSelect.show()
             let select = UIBarButtonItem(title: NSLocalizedString("_cancel_", comment: ""), style: .done) {
