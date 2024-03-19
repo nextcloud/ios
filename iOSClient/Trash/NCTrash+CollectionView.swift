@@ -36,7 +36,9 @@ extension NCTrash: UICollectionViewDelegate {
                 selectOcId.append(tableTrash.fileId)
             }
             collectionView.reloadItems(at: [indexPath])
-            setNavigationRightItems()
+            if let tabBarSelect = tabBarSelect as? NCTrashSelectTabBar {
+                tabBarSelect.isSelectedEmpty = selectOcId.isEmpty
+            }
             return
         }
 

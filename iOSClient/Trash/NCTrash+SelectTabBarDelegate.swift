@@ -22,24 +22,27 @@
 import Foundation
 
 extension NCTrash: NCTrashSelectTabBarDelegate {
-    func setNavigationRightItems() {
+    func setNavigationRightItems(enableMenu: Bool = false) {
         guard let tabBarSelect = tabBarSelect as? NCTrashSelectTabBar else { return }
-
         tabBarSelect.isSelectedEmpty = selectOcId.isEmpty
+
         if isEditMode {
             tabBarSelect.show()
             let select = UIBarButtonItem(title: NSLocalizedString("_cancel_", comment: ""), style: .done) {
-                self.isEditMode = true
-                self.setNavigationRightItems()
+                self.isEditMode = false
+                self.selectOcId.removeAll()
+                self.setNavigationRightItems(enableMenu: true)
                 self.collectionView.reloadData()
             }
             navigationItem.rightBarButtonItems = [select]
         } else {
             tabBarSelect.hide()
-            let menu = UIMenu(children: createMenuActions())
-            let menuButton = UIBarButtonItem(image: .init(systemName: "ellipsis.circle"), menu: menu)
-            menuButton.isEnabled = true
-            navigationItem.rightBarButtonItems = [menuButton]
+            if navigationItem.rightBarButtonItems == nil || enableMenu {
+                let menu = UIBarButtonItem(image: .init(systemName: "ellipsis.circle"), menu: UIMenu(children: createMenuActions()))
+                navigationItem.rightBarButtonItems = [menu]
+            } else {
+                navigationItem.rightBarButtonItems?.first?.menu = navigationItem.rightBarButtonItems?.first?.menu?.replacingChildren(createMenuActions())
+            }
         }
     }
 
@@ -84,19 +87,19 @@ extension NCTrash: NCTrashSelectTabBarDelegate {
         guard let layoutForView = NCManageDatabase.shared.getLayoutForView(account: appDelegate.account, key: layoutKey, serverUrl: "") else { return [] }
 
         let select = UIAction(title: NSLocalizedString("_select_", comment: ""), image: .init(systemName: "checkmark.circle"), attributes: self.datasource.isEmpty ? .disabled : []) { _ in
+            self.isEditMode = true
+            self.selectOcId.removeAll()
             self.setNavigationRightItems()
+            self.collectionView.reloadData()
         }
-
         let list = UIAction(title: NSLocalizedString("_list_", comment: ""), image: .init(systemName: "list.bullet"), state: layoutForView.layout == NCGlobal.shared.layoutList ? .on : .off) { _ in
             self.onListSelected()
             self.setNavigationRightItems()
         }
-
         let grid = UIAction(title: NSLocalizedString("_icons_", comment: ""), image: .init(systemName: "square.grid.2x2"), state: layoutForView.layout == NCGlobal.shared.layoutGrid ? .on : .off) { _ in
             self.onGridSelected()
             self.setNavigationRightItems()
         }
-
         let viewStyleSubmenu = UIMenu(title: "", options: .displayInline, children: [list, grid])
 
         return [select, viewStyleSubmenu]
