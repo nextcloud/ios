@@ -46,6 +46,7 @@ extension NCTrash: UICollectionViewDelegate {
            let ncTrash: NCTrash = UIStoryboard(name: "NCTrash", bundle: nil).instantiateInitialViewController() as? NCTrash {
             ncTrash.trashPath = tableTrash.filePath + tableTrash.fileName
             ncTrash.titleCurrentFolder = tableTrash.trashbinFileName
+            ncTrash.filename = tableTrash.fileName
             self.navigationController?.pushViewController(ncTrash, animated: true)
         }
     }
@@ -83,7 +84,6 @@ extension NCTrash: UICollectionViewDataSource {
             listCell.listCellDelegate = self
             cell = listCell
         } else {
-            // GRID
             guard let gridCell = collectionView.dequeueReusableCell(withReuseIdentifier: "gridCell", for: indexPath) as? NCTrashGridCell else { return NCTrashGridCell() }
             gridCell.setButtonMore(named: NCGlobal.shared.buttonMoreMore, image: NCImageCache.images.buttonMore)
             gridCell.gridCellDelegate = self
