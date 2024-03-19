@@ -24,72 +24,29 @@
 import Foundation
 import NextcloudKit
 
-extension NCCollectionViewCommon: NCSelectableNavigationView, NCCollectionViewCommonSelectTabBarDelegate {
+extension NCCollectionViewCommon: NCCollectionViewCommonSelectTabBarDelegate {
     func setNavigationRightItems(enableMenu: Bool = false) {
-        guard let tabBarSelect = tabBarSelect as? NCCollectionViewCommonSelectTabBar,
-              layoutKey != NCGlobal.shared.layoutViewTransfers else { return }
-
-        var selectedMetadatas: [tableMetadata] = []
-        var isAnyOffline = false
-        var isAnyDirectory = false
-        var isAllDirectory = true
-        var isAnyLocked = false
-        var canUnlock = true
-        var canSetAsOffline = true
+        guard layoutKey != NCGlobal.shared.layoutViewTransfers else { return }
         let isTabBarHidden = self.tabBarController?.tabBar.isHidden ?? true
         let isTabBarSelectHidden = tabBarSelect.isHidden()
 
-        for ocId in selectOcId {
-            guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) else { continue }
-            selectedMetadatas.append(metadata)
-
-            if metadata.directory {
-                isAnyDirectory = true
-            } else {
-                isAllDirectory = false
-            }
-
-            if !metadata.canSetAsAvailableOffline {
-                canSetAsOffline = false
-            }
-
-            if metadata.lock {
-                isAnyLocked = true
-                if metadata.lockOwner != appDelegate.userId {
-                    canUnlock = false
-                }
-            }
-
-            guard !isAnyOffline else { continue }
-
-            if metadata.directory,
-               let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", appDelegate.account, metadata.serverUrl + "/" + metadata.fileName)) {
-                isAnyOffline = directory.offline
-            } else if let localFile = NCManageDatabase.shared.getTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId)) {
-                isAnyOffline = localFile.offline
-            } // else: file is not offline, continue
-        }
-
-        tabBarSelect.isAnyOffline = isAnyOffline
-        tabBarSelect.canSetAsOffline = canSetAsOffline
-        tabBarSelect.isAnyDirectory = isAnyDirectory
-        tabBarSelect.isAllDirectory = isAllDirectory
-        tabBarSelect.isAnyLocked = isAnyLocked
-        tabBarSelect.canUnlock = canUnlock
-        tabBarSelect.enableLock = !isAnyDirectory && canUnlock && !NCGlobal.shared.capabilityFilesLockVersion.isEmpty
-        tabBarSelect.isSelectedEmpty = selectOcId.isEmpty
-        tabBarSelect.selectedMetadatas = selectedMetadatas
-
         if isEditMode {
+            tabBarSelect.update(selectOcId: selectOcId, metadatas: getSelectedMetadatas(), userId: appDelegate.userId)
             tabBarSelect.show()
-            let select = UIBarButtonItem(title: NSLocalizedString("_cancel_", comment: ""), style: .done) { self.toggleSelect() }
+            let select = UIBarButtonItem(title: NSLocalizedString("_cancel_", comment: ""), style: .done) {
+                self.setEditMode(false)
+            }
             navigationItem.rightBarButtonItems = [select]
         } else {
             tabBarSelect.hide()
             if navigationItem.rightBarButtonItems == nil || enableMenu {
                 let menuButton = UIBarButtonItem(image: .init(systemName: "ellipsis.circle"), menu: UIMenu(children: createMenuActions()))
                 if layoutKey == NCGlobal.shared.layoutViewFiles {
-                    let notification = UIBarButtonItem(image: .init(systemName: "bell"), style: .plain, action: tapNotification)
+                    let notification = UIBarButtonItem(image: .init(systemName: "bell"), style: .plain) {
+                        if let viewController = UIStoryboard(name: "NCNotification", bundle: nil).instantiateInitialViewController() as? NCNotification {
+                            self.navigationController?.pushViewController(viewController, animated: true)
+                        }
+                    }
                     navigationItem.rightBarButtonItems = [menuButton, notification]
                 } else {
                     navigationItem.rightBarButtonItems = [menuButton]
@@ -139,19 +96,25 @@ extension NCCollectionViewCommon: NCSelectableNavigationView, NCCollectionViewCo
     }
 
     func selectAll() {
-        collectionViewSelectAll()
+        if !selectOcId.isEmpty, dataSource.getMetadataSourceForAllSections().count == selectOcId.count {
+            selectOcId = []
+        } else {
+            selectOcId = dataSource.getMetadataSourceForAllSections().compactMap({ $0.ocId })
+        }
+        tabBarSelect.update(selectOcId: selectOcId, metadatas: getSelectedMetadatas(), userId: appDelegate.userId)
+        collectionView.reloadData()
     }
 
-    func delete(selectedMetadatas: [tableMetadata]) {
+    func delete() {
         let alertController = UIAlertController(
             title: NSLocalizedString("_confirm_delete_selected_", comment: ""),
             message: nil,
             preferredStyle: .alert)
-
-        let canDeleteServer = selectedMetadatas.allSatisfy { !$0.lock }
+        let metadatas = getSelectedMetadatas()
+        let canDeleteServer = metadatas.allSatisfy { !$0.lock }
 
         if canDeleteServer {
-            let copyMetadatas = selectedMetadatas
+            let copyMetadatas = metadatas
 
             alertController.addAction(UIAlertAction(title: NSLocalizedString("_yes_", comment: ""), style: .destructive) { _ in
                 Task {
@@ -165,13 +128,12 @@ extension NCCollectionViewCommon: NCSelectableNavigationView, NCCollectionViewCo
                     }
                     NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDeleteFile, userInfo: ["ocId": ocId, "onlyLocalCache": false, "error": error])
                 }
-
-                self.toggleSelect()
+                self.setEditMode(false)
             })
         }
 
         alertController.addAction(UIAlertAction(title: NSLocalizedString("_remove_local_file_", comment: ""), style: .default) { (_: UIAlertAction) in
-            let copyMetadatas = selectedMetadatas
+            let copyMetadatas = metadatas
 
             Task {
                 var error = NKError()
@@ -186,54 +148,59 @@ extension NCCollectionViewCommon: NCSelectableNavigationView, NCCollectionViewCo
                     NCContentPresenter().showError(error: error)
                 }
                 NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDeleteFile, userInfo: ["ocId": ocId, "onlyLocalCache": true, "error": error])
-                self.toggleSelect()
+                self.setEditMode(false)
             }
         })
 
         alertController.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel) { (_: UIAlertAction) in })
-        self.viewController.present(alertController, animated: true, completion: nil)
+        self.present(alertController, animated: true, completion: nil)
     }
 
-    func move(selectedMetadatas: [tableMetadata]) {
-        NCActionCenter.shared.openSelectView(items: selectedMetadatas)
-        self.toggleSelect()
+    func move() {
+        let metadatas = getSelectedMetadatas()
+        NCActionCenter.shared.openSelectView(items: metadatas)
+        setEditMode(false)
     }
 
-    func share(selectedMetadatas: [tableMetadata]) {
-        NCActionCenter.shared.openActivityViewController(selectedMetadata: selectedMetadatas)
-        self.toggleSelect()
+    func share() {
+        let metadatas = getSelectedMetadatas()
+        NCActionCenter.shared.openActivityViewController(selectedMetadata: metadatas)
+        setEditMode(false)
     }
 
-    func saveAsAvailableOffline(selectedMetadatas: [tableMetadata], isAnyOffline: Bool) {
-        if !isAnyOffline, selectedMetadatas.count > 3 {
+    func saveAsAvailableOffline(isAnyOffline: Bool) {
+        let metadatas = getSelectedMetadatas()
+        if !isAnyOffline, metadatas.count > 3 {
             let alert = UIAlertController(
                 title: NSLocalizedString("_set_available_offline_", comment: ""),
                 message: NSLocalizedString("_select_offline_warning_", comment: ""),
                 preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: NSLocalizedString("_continue_", comment: ""), style: .default, handler: { _ in
-                selectedMetadatas.forEach { NCActionCenter.shared.setMetadataAvalableOffline($0, isOffline: isAnyOffline) }
-                self.toggleSelect()
+                metadatas.forEach { NCActionCenter.shared.setMetadataAvalableOffline($0, isOffline: isAnyOffline) }
+                self.setEditMode(false)
             }))
             alert.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel))
-            self.viewController.present(alert, animated: true)
+            self.present(alert, animated: true)
         } else {
-            selectedMetadatas.forEach { NCActionCenter.shared.setMetadataAvalableOffline($0, isOffline: isAnyOffline) }
-            self.toggleSelect()
+            metadatas.forEach { NCActionCenter.shared.setMetadataAvalableOffline($0, isOffline: isAnyOffline) }
+            setEditMode(false)
         }
     }
 
-    func lock(selectedMetadatas: [tableMetadata], isAnyLocked: Bool) {
-        for metadata in selectedMetadatas where metadata.lock == isAnyLocked {
+    func lock(isAnyLocked: Bool) {
+        let metadatas = getSelectedMetadatas()
+        for metadata in metadatas where metadata.lock == isAnyLocked {
             NCNetworking.shared.lockUnlockFile(metadata, shoulLock: !isAnyLocked)
         }
-
-        self.toggleSelect()
+        setEditMode(false)
     }
 
     func createMenuActions() -> [UIMenuElement] {
         guard let layoutForView = NCManageDatabase.shared.getLayoutForView(account: appDelegate.account, key: layoutKey, serverUrl: serverUrl) else { return [] }
 
-        let select = UIAction(title: NSLocalizedString("_select_", comment: ""), image: .init(systemName: "checkmark.circle"), attributes: selectableDataSource.isEmpty ? .disabled : []) { _ in self.toggleSelect() }
+        let select = UIAction(title: NSLocalizedString("_select_", comment: ""), image: .init(systemName: "checkmark.circle"), attributes: self.dataSource.getMetadataSourceForAllSections().isEmpty ? .disabled : []) { _ in
+            self.setEditMode(true)
+        }
 
         let list = UIAction(title: NSLocalizedString("_list_", comment: ""), image: .init(systemName: "list.bullet"), state: layoutForView.layout == NCGlobal.shared.layoutList ? .on : .off) { _ in
             self.onListSelected()
@@ -309,5 +276,20 @@ extension NCCollectionViewCommon: NCSelectableNavigationView, NCCollectionViewCo
             }
             return [select, viewStyleSubmenu, sortSubmenu, additionalSubmenu]
         }
+    }
+
+    func saveLayout(_ layoutForView: NCDBLayoutForView) {
+        NCManageDatabase.shared.setLayoutForView(layoutForView: layoutForView)
+        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSource)
+        setNavigationRightItems(enableMenu: false)
+    }
+
+    func getSelectedMetadatas() -> [tableMetadata] {
+        var selectedMetadatas: [tableMetadata] = []
+        for ocId in selectOcId {
+            guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) else { continue }
+            selectedMetadatas.append(metadata)
+        }
+        return selectedMetadatas
     }
 }

@@ -88,6 +88,48 @@ class NCCollectionViewCommonSelectTabBar: ObservableObject {
         guard let hostingController else { return false }
         return hostingController.view.isHidden
     }
+
+    func update(selectOcId: [String], metadatas: [tableMetadata]? = nil, userId: String? = nil) {
+        if let metadatas {
+
+            isAnyOffline = false
+            canSetAsOffline = true
+            isAnyDirectory = false
+            isAllDirectory = true
+            isAnyLocked = false
+            canUnlock = true
+
+            for metadata in metadatas {
+                if metadata.directory {
+                    isAnyDirectory = true
+                } else {
+                    isAllDirectory = false
+                }
+
+                if !metadata.canSetAsAvailableOffline {
+                    canSetAsOffline = false
+                }
+
+                if metadata.lock {
+                    isAnyLocked = true
+                    if metadata.lockOwner != userId {
+                        canUnlock = false
+                    }
+                }
+
+                guard !isAnyOffline else { continue }
+
+                if metadata.directory,
+                   let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", metadata.account, metadata.serverUrl + "/" + metadata.fileName)) {
+                    isAnyOffline = directory.offline
+                } else if let localFile = NCManageDatabase.shared.getTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId)) {
+                    isAnyOffline = localFile.offline
+                } // else: file is not offline, continue
+            }
+            enableLock = !isAnyDirectory && canUnlock && !NCGlobal.shared.capabilityFilesLockVersion.isEmpty
+        }
+        isSelectedEmpty = selectOcId.isEmpty
+    }
 }
 
 struct NCCollectionViewCommonSelectTabBarView: View {
@@ -104,7 +146,6 @@ struct NCCollectionViewCommonSelectTabBarView: View {
                 } label: {
                     Image(systemName: "square.and.arrow.up")
                         .imageScale(sizeClass == .compact ? .medium : .large)
-
                 }
                 .frame(maxWidth: .infinity)
                 .disabled(tabBarSelect.isSelectedEmpty || tabBarSelect.isAllDirectory)
