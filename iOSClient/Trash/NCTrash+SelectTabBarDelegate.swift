@@ -76,11 +76,13 @@ extension NCTrash: NCTrashSelectTabBarDelegate {
     }
 
     func recover() {
-        self.selectOcId.forEach(restoreItem)
+        selectOcId.forEach(restoreItem)
+        setEditMode(false)
     }
 
     func delete() {
-        self.selectOcId.forEach(deleteItem)
+        selectOcId.forEach(deleteItem)
+        setEditMode(false)
     }
 
     func createMenuActions() -> [UIMenuElement] {

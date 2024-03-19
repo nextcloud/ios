@@ -25,7 +25,6 @@ import NextcloudKit
 
 extension NCTrash {
     @objc func loadListingTrash() {
-
         NextcloudKit.shared.listingTrash(filename: filename, showHiddenFiles: false) { task in
             self.dataSourceTask = task
             self.collectionView.reloadData()

@@ -28,7 +28,6 @@ import UIKit
 extension NCTrash: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let tableTrash = datasource[indexPath.item]
-
         guard !isEditMode else {
             if let index = selectOcId.firstIndex(of: tableTrash.fileId) {
                 selectOcId.remove(at: index)
