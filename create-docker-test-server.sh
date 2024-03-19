@@ -7,14 +7,14 @@ TEST_BRANCH=master
 SERVER_URL="http://localhost:${SERVER_PORT}"
 USER="admin"
 
-docker run --rm -d \
-    --name $CONTAINER_NAME \
-    -e SERVER_BRANCH=$TEST_BRANCH \
-    -p $SERVER_PORT:80 \
-    ghcr.io/juliushaertl/nextcloud-dev-php80:latest
-
-timeout=2000
-elapsed=0
+#docker run --rm -d \
+#    --name $CONTAINER_NAME \
+#    -e SERVER_BRANCH=$TEST_BRANCH \
+#    -p $SERVER_PORT:80 \
+#    ghcr.io/juliushaertl/nextcloud-dev-php80:latest
+#
+#timeout=2000
+#elapsed=0
 
 echo "Waiting for server..."
 

@@ -24,6 +24,7 @@ jobs:
       PROJECT: Nextcloud.xcodeproj
       DESTINATION: platform=iOS Simulator,name=iPhone 14
       SCHEME: Nextcloud
+      SERVER_BRANCH: stable28
     steps:
     - name: Set env var
       run: echo "DEVELOPER_DIR=$(xcode-select --print-path)" >> $GITHUB_ENV
@@ -46,15 +47,24 @@ jobs:
       run: carthage bootstrap --use-xcframeworks --platform iOS
     - name: Download GoogleService-Info.plist
       run: wget "https://raw.githubusercontent.com/firebase/quickstart-ios/master/mock-GoogleService-Info.plist" -O GoogleService-Info.plist
-    - name: Install docker
+    - name: Checkout server
+      uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+      with:
+        submodules: true
+        repository: nextcloud/server
+        path: server
+        ref: $SERVER_BRANCH
+    - name: Set up Nextcloud
       run: |
-        brew install colima
-        brew install docker
-        colima start --cpu 3 --memory 6 --disk 100 --vm-type=qemu --mount-type=sshfs --dns=1.1.1.1
+        mkdir server/data
+        ./server/occ maintenance:install --verbose --database=sqlite --database-name=nextcloud --database-host=127.0.0.1 --database-user=root --database-pass=rootpassword --admin-user admin --admin-pass admin
+        ./server/occ config:system:set hashing_default_password --value=true --type=boolean
+        ./server/occ config:system:set memcache.local --value="\\OC\\Memcache\\APCu"
+        ./server/occ config:system:set memcache.distributed --value="\\OC\\Memcache\\APCu"
+        PHP_CLI_SERVER_WORKERS=3 php -S localhost:8080 -t server/ &
     - name: Create docker test server and export enviroment variables
       run: |
         source ./create-docker-test-server.sh
-        docker logs nextcloud_test
     - name: Build & Test Nextcloud iOS
       run: |
         set -o pipefail && xcodebuild clean test -project $PROJECT \
