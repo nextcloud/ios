@@ -163,7 +163,7 @@ extension NCCollectionViewCommon: NCSelectableNavigationView, NCCollectionViewCo
                             ocId.append(metadata.ocId)
                         }
                     }
-                    NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDeleteFile, userInfo: ["ocId": ocId, "indexPath": self.selectIndexPaths, "onlyLocalCache": false, "error": error])
+                    NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDeleteFile, userInfo: ["ocId": ocId, "onlyLocalCache": false, "error": error])
                 }
 
                 self.toggleSelect()
@@ -185,7 +185,7 @@ extension NCCollectionViewCommon: NCSelectableNavigationView, NCCollectionViewCo
                 if error != .success {
                     NCContentPresenter().showError(error: error)
                 }
-                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDeleteFile, userInfo: ["ocId": ocId, "indexPath": self.selectIndexPaths, "onlyLocalCache": true, "error": error])
+                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDeleteFile, userInfo: ["ocId": ocId, "onlyLocalCache": true, "error": error])
                 self.toggleSelect()
             }
         })
@@ -195,7 +195,7 @@ extension NCCollectionViewCommon: NCSelectableNavigationView, NCCollectionViewCo
     }
 
     func move(selectedMetadatas: [tableMetadata]) {
-        NCActionCenter.shared.openSelectView(items: selectedMetadatas, indexPath: self.selectIndexPaths)
+        NCActionCenter.shared.openSelectView(items: selectedMetadatas)
         self.toggleSelect()
     }
 

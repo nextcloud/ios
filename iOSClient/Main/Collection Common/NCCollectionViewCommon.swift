@@ -48,7 +48,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     var serverUrl: String = ""
     var isEditMode = false
     var selectOcId: [String] = []
-    var selectIndexPaths: [IndexPath] = []
     var metadataFolder: tableMetadata?
     var dataSource = NCDataSource()
     var richWorkspaceText: String?
@@ -1035,10 +1034,8 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
         if isEditMode {
             if let index = selectOcId.firstIndex(of: metadata.ocId) {
                 selectOcId.remove(at: index)
-                selectIndexPaths.removeAll(where: { $0 == indexPath })
             } else {
                 selectOcId.append(metadata.ocId)
-                selectIndexPaths.append(indexPath)
             }
             collectionView.reloadItems(at: [indexPath])
 
@@ -1121,7 +1118,7 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
 
         }, actionProvider: { _ in
 
-            return NCContextMenu().viewMenu(ocId: metadata.ocId, indexPath: indexPath, viewController: self, image: image)
+            return NCContextMenu().viewMenu(ocId: metadata.ocId, viewController: self, image: image)
         })
     }
 
