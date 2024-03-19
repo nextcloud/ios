@@ -27,7 +27,7 @@ jobs:
     steps:
     - name: Set env var
       run: echo "DEVELOPER_DIR=$(xcode-select --print-path)" >> $GITHUB_ENV
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     - name: Setup Bundler and Install Gems
       run: |
         gem install bundler
@@ -46,10 +46,8 @@ jobs:
       run: carthage bootstrap --use-xcframeworks --platform iOS
     - name: Download GoogleService-Info.plist
       run: wget "https://raw.githubusercontent.com/firebase/quickstart-ios/master/mock-GoogleService-Info.plist" -O GoogleService-Info.plist
-    - name: Install docker
-      run: |
-        brew install docker
-        open -a Docker
+    - name: Setup Docker on macOS
+      uses: douglascamata/setup-docker-macos-action@v1-alpha
     - name: Create docker test server and export enviroment variables
       run: |
         source ./create-docker-test-server.sh
