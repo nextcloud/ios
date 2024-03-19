@@ -39,7 +39,7 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
     var activeAccount = tableAccount()
     var emptyDataSet: NCEmptyDataSet?
     var documentPickerViewController: NCDocumentPickerViewController?
-    var tabBarSelect: NCMediaSelectTabBar?
+    var tabBarSelect: NCMediaSelectTabBar!
     let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
     let utilityFileSystem = NCUtilityFileSystem()
     let utility = NCUtility()
@@ -198,7 +198,7 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
         super.viewWillLayoutSubviews()
 
         if let frame = tabBarController?.tabBar.frame {
-            tabBarSelect?.hostingController.view.frame = frame
+            tabBarSelect.hostingController.view.frame = frame
         }
         gradient.frame = gradientView.bounds
     }
@@ -301,7 +301,7 @@ extension NCMedia: UICollectionViewDelegate {
                     mediaCell?.selected(true)
 
                 }
-                tabBarSelect?.selectCount = selectOcId.count
+                tabBarSelect.selectCount = selectOcId.count
             } else {
                 // ACTIVE SERVERURL
                 appDelegate.activeServerUrl = metadata.serverUrl
