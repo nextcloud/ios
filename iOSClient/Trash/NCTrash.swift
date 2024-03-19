@@ -128,13 +128,46 @@ class NCTrash: UIViewController, NCTrashListCellDelegate, NCTrashGridCellDelegat
         }
     }
 
-    func setEditMode(_ editMode: Bool) {
-        isEditMode = editMode
-        selectOcId.removeAll()
-        setNavigationRightItems(enableMenu: !editMode)
-        collectionView.reloadData()
-    }
+    // MARK: - Layout
 
+    func setNavigationRightItems(enableMenu: Bool = false) {
+        func createMenuActions() -> [UIMenuElement] {
+            guard let layoutForView = NCManageDatabase.shared.getLayoutForView(account: appDelegate.account, key: layoutKey, serverUrl: "") else { return [] }
+
+            let select = UIAction(title: NSLocalizedString("_select_", comment: ""), image: .init(systemName: "checkmark.circle"), attributes: self.datasource.isEmpty ? .disabled : []) { _ in
+                self.setEditMode(true)
+            }
+            let list = UIAction(title: NSLocalizedString("_list_", comment: ""), image: .init(systemName: "list.bullet"), state: layoutForView.layout == NCGlobal.shared.layoutList ? .on : .off) { _ in
+                self.onListSelected()
+                self.setNavigationRightItems()
+            }
+            let grid = UIAction(title: NSLocalizedString("_icons_", comment: ""), image: .init(systemName: "square.grid.2x2"), state: layoutForView.layout == NCGlobal.shared.layoutGrid ? .on : .off) { _ in
+                self.onGridSelected()
+                self.setNavigationRightItems()
+            }
+            let viewStyleSubmenu = UIMenu(title: "", options: .displayInline, children: [list, grid])
+
+            return [select, viewStyleSubmenu]
+        }
+
+        if isEditMode {
+            tabBarSelect.update(selectOcId: selectOcId)
+            tabBarSelect.show()
+            let select = UIBarButtonItem(title: NSLocalizedString("_cancel_", comment: ""), style: .done) {
+                self.setEditMode(false)
+            }
+            navigationItem.rightBarButtonItems = [select]
+        } else {
+            tabBarSelect.hide()
+            if navigationItem.rightBarButtonItems == nil || enableMenu {
+                let menu = UIBarButtonItem(image: .init(systemName: "ellipsis.circle"), menu: UIMenu(children: createMenuActions()))
+                navigationItem.rightBarButtonItems = [menu]
+            } else {
+                navigationItem.rightBarButtonItems?.first?.menu = navigationItem.rightBarButtonItems?.first?.menu?.replacingChildren(createMenuActions())
+            }
+        }
+    }
+    
     // MARK: - Empty
 
     func emptyDataSetView(_ view: NCEmptyView) {

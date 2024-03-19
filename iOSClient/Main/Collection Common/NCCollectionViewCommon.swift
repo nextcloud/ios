@@ -297,13 +297,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         }
     }
 
-    func setEditMode(_ editMode: Bool) {
-        isEditMode = editMode
-        selectOcId.removeAll()
-        setNavigationRightItems(enableMenu: !editMode)
-        collectionView.reloadData()
-    }
-
     // MARK: - NotificationCenter
 
     @objc func notificationCenterEvents() {
@@ -668,6 +661,124 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         }
 
         navigationItem.title = titleCurrentFolder
+    }
+
+    func setNavigationRightItems(enableMenu: Bool = false) {
+        func createMenuActions() -> [UIMenuElement] {
+            guard let layoutForView = NCManageDatabase.shared.getLayoutForView(account: appDelegate.account, key: layoutKey, serverUrl: serverUrl) else { return [] }
+
+            let select = UIAction(title: NSLocalizedString("_select_", comment: ""), image: .init(systemName: "checkmark.circle"), attributes: self.dataSource.getMetadataSourceForAllSections().isEmpty ? .disabled : []) { _ in
+                self.setEditMode(true)
+            }
+
+            let list = UIAction(title: NSLocalizedString("_list_", comment: ""), image: .init(systemName: "list.bullet"), state: layoutForView.layout == NCGlobal.shared.layoutList ? .on : .off) { _ in
+                self.onListSelected()
+                self.setNavigationRightItems()
+            }
+
+            let grid = UIAction(title: NSLocalizedString("_icons_", comment: ""), image: .init(systemName: "square.grid.2x2"), state: layoutForView.layout == NCGlobal.shared.layoutGrid ? .on : .off) { _ in
+                self.onGridSelected()
+                self.setNavigationRightItems()
+            }
+
+            let viewStyleSubmenu = UIMenu(title: "", options: .displayInline, children: [list, grid])
+
+            let ascending = layoutForView.ascending
+            let ascendingChevronImage = UIImage(systemName: ascending ? "chevron.up" : "chevron.down")
+            let isName = layoutForView.sort == "fileName"
+            let isDate = layoutForView.sort == "date"
+            let isSize = layoutForView.sort == "size"
+
+            let byName = UIAction(title: NSLocalizedString("_name_", comment: ""), image: isName ? ascendingChevronImage : nil, state: isName ? .on : .off) { _ in
+                if isName { // repeated press
+                    layoutForView.ascending = !layoutForView.ascending
+                }
+                layoutForView.sort = "fileName"
+                self.saveLayout(layoutForView)
+            }
+
+            let byNewest = UIAction(title: NSLocalizedString("_date_", comment: ""), image: isDate ? ascendingChevronImage : nil, state: isDate ? .on : .off) { _ in
+                if isDate { // repeated press
+                    layoutForView.ascending = !layoutForView.ascending
+                }
+                layoutForView.sort = "date"
+                self.saveLayout(layoutForView)
+            }
+
+            let byLargest = UIAction(title: NSLocalizedString("_size_", comment: ""), image: isSize ? ascendingChevronImage : nil, state: isSize ? .on : .off) { _ in
+                if isSize { // repeated press
+                    layoutForView.ascending = !layoutForView.ascending
+                }
+                layoutForView.sort = "size"
+                self.saveLayout(layoutForView)
+            }
+
+            let sortSubmenu = UIMenu(title: NSLocalizedString("_order_by_", comment: ""), options: .displayInline, children: [byName, byNewest, byLargest])
+
+            let foldersOnTop = UIAction(title: NSLocalizedString("_directory_on_top_no_", comment: ""), image: UIImage(systemName: "folder"), state: layoutForView.directoryOnTop ? .on : .off) { _ in
+                layoutForView.directoryOnTop = !layoutForView.directoryOnTop
+                self.saveLayout(layoutForView)
+            }
+
+            let personalFilesOnly = NCKeychain().getPersonalFilesOnly(account: appDelegate.account)
+            let personalFilesOnlyAction = UIAction(title: NSLocalizedString("_personal_files_only_", comment: ""), image: UIImage(systemName: "folder.badge.person.crop"), state: personalFilesOnly ? .on : .off) { _ in
+                NCKeychain().setPersonalFilesOnly(account: self.appDelegate.account, value: !personalFilesOnly)
+                self.reloadDataSource()
+            }
+
+            let showDescriptionKeychain = NCKeychain().showDescription
+            let showDescription = UIAction(title: NSLocalizedString("_show_description_", comment: ""), image: UIImage(systemName: "list.dash.header.rectangle"), attributes: richWorkspaceText == nil ? .disabled : [], state: showDescriptionKeychain && richWorkspaceText != nil ? .on : .off) { _ in
+                NCKeychain().showDescription = !showDescriptionKeychain
+                self.collectionView.reloadData()
+                self.setNavigationRightItems()
+            }
+            showDescription.subtitle = richWorkspaceText == nil ? NSLocalizedString("_no_description_available_", comment: "") : ""
+
+            if layoutKey == NCGlobal.shared.layoutViewRecent {
+                return [select]
+            } else {
+                var additionalSubmenu = UIMenu()
+                if layoutKey == NCGlobal.shared.layoutViewFiles {
+                    additionalSubmenu = UIMenu(title: "", options: .displayInline, children: [foldersOnTop, personalFilesOnlyAction, showDescription])
+                } else {
+                    additionalSubmenu = UIMenu(title: "", options: .displayInline, children: [foldersOnTop, showDescription])
+                }
+                return [select, viewStyleSubmenu, sortSubmenu, additionalSubmenu]
+            }
+        }
+        guard layoutKey != NCGlobal.shared.layoutViewTransfers else { return }
+        let isTabBarHidden = self.tabBarController?.tabBar.isHidden ?? true
+        let isTabBarSelectHidden = tabBarSelect.isHidden()
+
+        if isEditMode {
+            tabBarSelect.update(selectOcId: selectOcId, metadatas: getSelectedMetadatas(), userId: appDelegate.userId)
+            tabBarSelect.show()
+            let select = UIBarButtonItem(title: NSLocalizedString("_cancel_", comment: ""), style: .done) {
+                self.setEditMode(false)
+            }
+            navigationItem.rightBarButtonItems = [select]
+        } else {
+            tabBarSelect.hide()
+            if navigationItem.rightBarButtonItems == nil || enableMenu {
+                let menuButton = UIBarButtonItem(image: .init(systemName: "ellipsis.circle"), menu: UIMenu(children: createMenuActions()))
+                if layoutKey == NCGlobal.shared.layoutViewFiles {
+                    let notification = UIBarButtonItem(image: .init(systemName: "bell"), style: .plain) {
+                        if let viewController = UIStoryboard(name: "NCNotification", bundle: nil).instantiateInitialViewController() as? NCNotification {
+                            self.navigationController?.pushViewController(viewController, animated: true)
+                        }
+                    }
+                    navigationItem.rightBarButtonItems = [menuButton, notification]
+                } else {
+                    navigationItem.rightBarButtonItems = [menuButton]
+                }
+            } else {
+                navigationItem.rightBarButtonItems?.first?.menu = navigationItem.rightBarButtonItems?.first?.menu?.replacingChildren(createMenuActions())
+            }
+        }
+        // fix, if the tabbar was hidden before the update, set hidden
+        if isTabBarHidden, isTabBarSelectHidden {
+            self.tabBarController?.tabBar.isHidden = true
+        }
     }
 
     func getNavigationTitle() -> String {
