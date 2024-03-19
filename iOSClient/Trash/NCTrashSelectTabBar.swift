@@ -33,8 +33,6 @@ class NCTrashSelectTabBar: ObservableObject {
     var hostingController: UIViewController?
     open weak var delegate: NCTrashSelectTabBarDelegate?
 
-    var selectedMetadatas: [tableMetadata] = []
-
     @Published var isSelectedEmpty = true
 
     init(tabBarController: UITabBarController? = nil, delegate: NCTrashSelectTabBarDelegate? = nil) {
