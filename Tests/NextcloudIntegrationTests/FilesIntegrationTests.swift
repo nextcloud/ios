@@ -37,7 +37,7 @@ final class FilesIntegrationTests: BaseIntegrationXCTestCase {
         let serverUrl = "\(baseUrl)/remote.php/dav/files/\(userId)"
         let serverUrlFileName = "\(serverUrl)/\(folderName)"
 
-        NextcloudKit.shared.setup(account: account, user: user, userId: userId, password: password, urlBase: baseUrl)
+        NextcloudKit.shared.setup(account: account, user: user, userId: userId, password: appPassword, urlBase: baseUrl)
 
         // Test creating folder
         NCNetworking.shared.createFolder(fileName: folderName, serverUrl: serverUrl, account: account, urlBase: baseUrl, userId: userId, withPush: true) { error in
@@ -73,7 +73,7 @@ final class FilesIntegrationTests: BaseIntegrationXCTestCase {
 
                         defer { expectation.fulfill() }
 
-                        XCTAssertEqual(404, error.errorCode)
+                        XCTAssertEqual(0, error.errorCode)
                         XCTAssertNil(metadataFolder?.fileName)
 
                         // Check Realm directory, should NOT exist

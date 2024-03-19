@@ -22,6 +22,12 @@
 import XCTest
 
 class BaseUIXCTestCase: XCTestCase {
+    let baseUrl = EnvVars.testServerUrl
+    let user = EnvVars.testUser
+    let userId = EnvVars.testUser
+    let appPassword = EnvVars.testAppPassword
+    lazy var account = "\(userId) \(baseUrl)"
+    
     let timeoutSeconds: Double = 100
 
     override final class var runsForEachTargetApplicationUIConfiguration: Bool {
