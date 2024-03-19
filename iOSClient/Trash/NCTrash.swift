@@ -31,7 +31,7 @@ class NCTrash: UIViewController, NCTrashListCellDelegate, NCTrashGridCellDelegat
 
     @IBOutlet weak var collectionView: UICollectionView!
 
-    var trashPath = ""
+    var filePath = ""
     var titleCurrentFolder = NSLocalizedString("_trash_view_", comment: "")
     var blinkFileId: String?
     var emptyDataSet: NCEmptyDataSet?
@@ -186,7 +186,7 @@ class NCTrash: UIViewController, NCTrashListCellDelegate, NCTrashGridCellDelegat
     @objc func reloadDataSource(withQueryDB: Bool = true) {
 
         layoutForView = NCManageDatabase.shared.getLayoutForView(account: appDelegate.account, key: NCGlobal.shared.layoutViewTrash, serverUrl: "")
-        datasource = NCManageDatabase.shared.getTrash(filePath: self.getTrashPath(), sort: layoutForView?.sort, ascending: layoutForView?.ascending, account: appDelegate.account)
+        datasource = NCManageDatabase.shared.getTrash(filePath: getFilePath(), sort: layoutForView?.sort, ascending: layoutForView?.ascending, account: appDelegate.account)
         collectionView.reloadData()
         setNavigationRightItems()
 
@@ -208,13 +208,13 @@ class NCTrash: UIViewController, NCTrashListCellDelegate, NCTrashGridCellDelegat
         }
     }
 
-    func getTrashPath() -> String {
-        if trashPath.isEmpty {
+    func getFilePath() -> String {
+        if filePath.isEmpty {
             guard let userId = (appDelegate.userId as NSString).addingPercentEncoding(withAllowedCharacters: NSCharacterSet.urlFragmentAllowed) else { return "" }
-            let trashPath = appDelegate.urlBase + "/" + NextcloudKit.shared.nkCommonInstance.dav + "/trashbin/" + userId + "/trash/"
-            return trashPath
+            let filePath = appDelegate.urlBase + "/" + NextcloudKit.shared.nkCommonInstance.dav + "/trashbin/" + userId + "/trash"
+            return filePath + "/"
         } else {
-            return trashPath
+            return filePath + "/"
         }
     }
 }

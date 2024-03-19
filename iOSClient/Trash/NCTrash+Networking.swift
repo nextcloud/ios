@@ -32,7 +32,7 @@ extension NCTrash {
         } completion: { account, items, _, error in
             self.refreshControl.endRefreshing()
             if account == self.appDelegate.account {
-                NCManageDatabase.shared.deleteTrash(filePath: self.getTrashPath(), account: account)
+                NCManageDatabase.shared.deleteTrash(filePath: self.getFilePath(), account: account)
                 NCManageDatabase.shared.addTrash(account: account, items: items)
             }
             self.reloadDataSource()

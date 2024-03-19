@@ -44,7 +44,7 @@ extension NCTrash: UICollectionViewDelegate {
 
         if tableTrash.directory,
            let ncTrash: NCTrash = UIStoryboard(name: "NCTrash", bundle: nil).instantiateInitialViewController() as? NCTrash {
-            ncTrash.trashPath = tableTrash.filePath + tableTrash.fileName
+            ncTrash.filePath = tableTrash.filePath + tableTrash.fileName
             ncTrash.titleCurrentFolder = tableTrash.trashbinFileName
             ncTrash.filename = tableTrash.fileName
             self.navigationController?.pushViewController(ncTrash, animated: true)
