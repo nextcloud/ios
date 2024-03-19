@@ -23,7 +23,7 @@ import Foundation
 
 extension NCTrash: NCTrashSelectTabBarDelegate {
     func setNavigationRightItems(enableMenu: Bool = false) {
-        tabBarSelect.isSelectedEmpty = selectOcId.isEmpty
+        tabBarSelect.update(selectOcId: selectOcId)
 
         if isEditMode {
             tabBarSelect.show()
@@ -72,7 +72,7 @@ extension NCTrash: NCTrashSelectTabBarDelegate {
         } else {
             selectOcId = self.datasource.compactMap({ $0.fileId })
         }
-        tabBarSelect.isSelectedEmpty = selectOcId.isEmpty
+        tabBarSelect.update(selectOcId: selectOcId)
         collectionView.reloadData()
     }
 

@@ -74,6 +74,10 @@ class NCTrashSelectTabBar: ObservableObject {
         hostingController.view.isHidden = true
         tabBarController.tabBar.isHidden = false
     }
+
+    func update(selectOcId: [String]) {
+        isSelectedEmpty = selectOcId.isEmpty
+    }
 }
 
 struct NCTrashSelectTabBarView: View {
@@ -109,7 +113,6 @@ struct NCTrashSelectTabBarView: View {
                 } label: {
                     Image(systemName: "checkmark")
                         .imageScale(sizeClass == .compact ? .medium : .large)
-
                 }
                 .frame(maxWidth: .infinity)
             }
