@@ -68,10 +68,12 @@ extension NCTrash: NCTrashSelectTabBarDelegate {
     }
 
     func selectAll() {
-        selectOcId = self.datasource.compactMap({ $0.primaryKeyValue })
-        if let tabBarSelect = tabBarSelect as? NCTrashSelectTabBar {
-            tabBarSelect.isSelectedEmpty = selectOcId.isEmpty
+        if !selectOcId.isEmpty, datasource.count == selectOcId.count {
+            selectOcId = []
+        } else {
+            selectOcId = self.datasource.compactMap({ $0.fileId })
         }
+        tabBarSelect?.isSelectedEmpty = selectOcId.isEmpty
         collectionView.reloadData()
     }
 

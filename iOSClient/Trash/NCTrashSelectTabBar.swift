@@ -28,7 +28,7 @@ protocol NCTrashSelectTabBarDelegate: AnyObject {
     func delete()
 }
 
-class NCTrashSelectTabBar: NCSelectableViewTabBar, ObservableObject {
+class NCTrashSelectTabBar: ObservableObject {
     var tabBarController: UITabBarController?
     var hostingController: UIViewController?
     open weak var delegate: NCTrashSelectTabBarDelegate?

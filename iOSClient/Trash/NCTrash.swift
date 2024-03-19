@@ -41,7 +41,7 @@ class NCTrash: UIViewController, NCTrashListCellDelegate, NCTrashGridCellDelegat
     let utility = NCUtility()
     var isEditMode = false
     var selectOcId: [String] = []
-    var tabBarSelect: NCSelectableViewTabBar?
+    var tabBarSelect: NCTrashSelectTabBar?
     var datasource: [tableTrash] = []
     var layoutForView: NCDBLayoutForView?
     var listLayout: NCListLayout!
