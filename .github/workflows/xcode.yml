@@ -22,12 +22,12 @@ jobs:
     if: github.event.pull_request.draft == false
     env:
       PROJECT: Nextcloud.xcodeproj
-      DESTINATION: platform=iOS Simulator,name=iPhone 15
+      DESTINATION: platform=iOS Simulator,name=iPhone 14
       SCHEME: Nextcloud
     steps:
     - name: Set env var
       run: echo "DEVELOPER_DIR=$(xcode-select --print-path)" >> $GITHUB_ENV
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v3
     - name: Setup Bundler and Install Gems
       run: |
         gem install bundler
@@ -46,8 +46,11 @@ jobs:
       run: carthage bootstrap --use-xcframeworks --platform iOS
     - name: Download GoogleService-Info.plist
       run: wget "https://raw.githubusercontent.com/firebase/quickstart-ios/master/mock-GoogleService-Info.plist" -O GoogleService-Info.plist
-    - name: Setup Docker on macOS
-      uses: douglascamata/setup-docker-macos-action@v1-alpha
+    - name: Install docker
+      run: |
+        brew install colima
+        brew install docker
+        colima start --cpu 3 --memory 6 --disk 100 --vm-type=qemu --mount-type=sshfs --dns=1.1.1.1
     - name: Create docker test server and export enviroment variables
       run: |
         source ./create-docker-test-server.sh
