@@ -53,7 +53,7 @@ jobs:
         submodules: true
         repository: nextcloud/server
         path: server
-        ref: $SERVER_BRANCH
+        ref: "$SERVER_BRANCH"
     - name: Set up Nextcloud
       run: |
         mkdir server/data
