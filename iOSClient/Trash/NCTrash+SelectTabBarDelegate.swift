@@ -29,10 +29,7 @@ extension NCTrash: NCTrashSelectTabBarDelegate {
         if isEditMode {
             tabBarSelect.show()
             let select = UIBarButtonItem(title: NSLocalizedString("_cancel_", comment: ""), style: .done) {
-                self.isEditMode = false
-                self.selectOcId.removeAll()
-                self.setNavigationRightItems(enableMenu: true)
-                self.collectionView.reloadData()
+                self.setEditMode(false)
             }
             navigationItem.rightBarButtonItems = [select]
         } else {
@@ -72,6 +69,9 @@ extension NCTrash: NCTrashSelectTabBarDelegate {
 
     func selectAll() {
         selectOcId = self.datasource.compactMap({ $0.primaryKeyValue })
+        if let tabBarSelect = tabBarSelect as? NCTrashSelectTabBar {
+            tabBarSelect.isSelectedEmpty = selectOcId.isEmpty
+        }
         collectionView.reloadData()
     }
 
@@ -87,10 +87,7 @@ extension NCTrash: NCTrashSelectTabBarDelegate {
         guard let layoutForView = NCManageDatabase.shared.getLayoutForView(account: appDelegate.account, key: layoutKey, serverUrl: "") else { return [] }
 
         let select = UIAction(title: NSLocalizedString("_select_", comment: ""), image: .init(systemName: "checkmark.circle"), attributes: self.datasource.isEmpty ? .disabled : []) { _ in
-            self.isEditMode = true
-            self.selectOcId.removeAll()
-            self.setNavigationRightItems()
-            self.collectionView.reloadData()
+            self.setEditMode(true)
         }
         let list = UIAction(title: NSLocalizedString("_list_", comment: ""), image: .init(systemName: "list.bullet"), state: layoutForView.layout == NCGlobal.shared.layoutList ? .on : .off) { _ in
             self.onListSelected()

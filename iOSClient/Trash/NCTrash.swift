@@ -108,7 +108,7 @@ class NCTrash: UIViewController, NCTrashListCellDelegate, NCEmptyDataSetDelegate
     }
 
     override func viewWillDisappear(_ animated: Bool) {
-        isEditMode = false
+        self.setEditMode(false)
     }
 
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
@@ -124,6 +124,13 @@ class NCTrash: UIViewController, NCTrashListCellDelegate, NCEmptyDataSetDelegate
         if let frame = tabBarController?.tabBar.frame {
             (tabBarSelect as? NCTrashSelectTabBar)?.hostingController?.view.frame = frame
         }
+    }
+
+    func setEditMode(_ editMode: Bool) {
+        isEditMode = editMode
+        selectOcId.removeAll()
+        setNavigationRightItems(enableMenu: !editMode)
+        collectionView.reloadData()
     }
 
     // MARK: - Empty
@@ -158,7 +165,7 @@ class NCTrash: UIViewController, NCTrashListCellDelegate, NCEmptyDataSetDelegate
         } // else: undefined sender
     }
 
-    func tapMoreGridItem(with objectId: String, namedButtonMore: String, image: UIImage?, sender: Any) {
+    func tapMoreGridItem(with objectId: String, namedButtonMore: String, image: UIImage?, indexPath: IndexPath, sender: Any) {
 
         if !isEditMode {
             toggleMenuMore(with: objectId, image: image, isGridCell: true)

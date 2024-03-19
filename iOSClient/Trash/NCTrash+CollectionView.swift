@@ -80,7 +80,7 @@ extension NCTrash: UICollectionViewDataSource {
 
         if layoutForView?.layout == NCGlobal.shared.layoutList {
             guard let listCell = collectionView.dequeueReusableCell(withReuseIdentifier: "listCell", for: indexPath) as? NCTrashListCell else { return UICollectionViewCell() }
-            listCell.delegate = self
+            listCell.listCellDelegate = self
             cell = listCell
         } else {
             // GRID
