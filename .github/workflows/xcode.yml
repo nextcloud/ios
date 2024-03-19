@@ -49,6 +49,7 @@ jobs:
     - name: Install docker
       run: |
         brew install docker
+        open -a Docker
     - name: Create docker test server and export enviroment variables
       run: |
         source ./create-docker-test-server.sh
