@@ -54,7 +54,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     var headerMenu: NCSectionHeaderMenu?
     var isSearchingMode: Bool = false
     var layoutForView: NCDBLayoutForView?
-    var selectableDataSource: [RealmSwiftObject] { dataSource.getMetadataSourceForAllSections() }
     var dataSourceTask: URLSessionTask?
     var groupByField = "name"
     var providers: [NKSearchProvider]?
@@ -62,7 +61,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     var listLayout: NCListLayout!
     var gridLayout: NCGridLayout!
     var literalSearch: String?
-    var tabBarSelect: NCSelectableViewTabBar?
+    var tabBarSelect: NCCollectionViewCommonSelectTabBar!
 
     var timerNotificationCenter: Timer?
     var notificationReloadDataSource: Int = 0
@@ -93,7 +92,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         super.viewDidLoad()
 
         tabBarSelect = NCCollectionViewCommonSelectTabBar(tabBarController: tabBarController, delegate: self)
-
         self.navigationController?.presentationController?.delegate = self
 
         // CollectionView & layout
@@ -264,7 +262,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         // TIP
         self.tipView?.dismiss()
 
-        toggleSelect(isOn: false)
+        setEditMode(false)
     }
 
     func presentationControllerDidDismiss( _ presentationController: UIPresentationController) {
@@ -295,8 +293,15 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         super.viewWillLayoutSubviews()
 
         if let frame = tabBarController?.tabBar.frame {
-            (tabBarSelect as? NCCollectionViewCommonSelectTabBar)?.hostingController?.view.frame = frame
+            tabBarSelect.hostingController?.view.frame = frame
         }
+    }
+
+    func setEditMode(_ editMode: Bool) {
+        isEditMode = editMode
+        selectOcId.removeAll()
+        setNavigationRightItems(enableMenu: !editMode)
+        collectionView.reloadData()
     }
 
     // MARK: - NotificationCenter
@@ -1029,7 +1034,6 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         guard let metadata = dataSource.cellForItemAt(indexPath: indexPath) else { return }
         appDelegate.activeMetadata = metadata
-        let metadataSourceForAllSections = dataSource.getMetadataSourceForAllSections()
 
         if isEditMode {
             if let index = selectOcId.firstIndex(of: metadata.ocId) {
@@ -1038,9 +1042,7 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
                 selectOcId.append(metadata.ocId)
             }
             collectionView.reloadItems(at: [indexPath])
-
-            self.setNavigationRightItems()
-
+            tabBarSelect.isSelectedEmpty = selectOcId.isEmpty
             return
         }
 
@@ -1068,7 +1070,7 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
 
             if !metadata.isDirectoryE2EE && (metadata.isImage || metadata.isAudioOrVideo) {
                 var metadatas: [tableMetadata] = []
-                for metadata in metadataSourceForAllSections {
+                for metadata in dataSource.getMetadataSourceForAllSections() {
                     if metadata.isImage || metadata.isAudioOrVideo {
                         metadatas.append(metadata)
                     }

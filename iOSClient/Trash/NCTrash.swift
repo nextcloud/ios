@@ -109,7 +109,7 @@ class NCTrash: UIViewController, NCTrashListCellDelegate, NCTrashGridCellDelegat
     }
 
     override func viewWillDisappear(_ animated: Bool) {
-        self.setEditMode(false)
+        setEditMode(false)
     }
 
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
