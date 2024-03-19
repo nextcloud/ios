@@ -41,7 +41,7 @@ class NCTrash: UIViewController, NCTrashListCellDelegate, NCTrashGridCellDelegat
     let utility = NCUtility()
     var isEditMode = false
     var selectOcId: [String] = []
-    var tabBarSelect: NCTrashSelectTabBar?
+    var tabBarSelect: NCTrashSelectTabBar!
     var datasource: [tableTrash] = []
     var layoutForView: NCDBLayoutForView?
     var listLayout: NCListLayout!
@@ -122,8 +122,9 @@ class NCTrash: UIViewController, NCTrashListCellDelegate, NCTrashGridCellDelegat
 
     override func viewWillLayoutSubviews() {
         super.viewWillLayoutSubviews()
+
         if let frame = tabBarController?.tabBar.frame {
-            (tabBarSelect as? NCTrashSelectTabBar)?.hostingController?.view.frame = frame
+            tabBarSelect.hostingController?.view.frame = frame
         }
     }
 
