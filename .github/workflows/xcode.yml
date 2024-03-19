@@ -22,7 +22,7 @@ jobs:
     if: github.event.pull_request.draft == false
     env:
       PROJECT: Nextcloud.xcodeproj
-      DESTINATION: platform=iOS Simulator,name=iPhone 14
+      DESTINATION: platform=iOS Simulator,name=iPhone 15
       SCHEME: Nextcloud
     steps:
     - name: Set env var
@@ -48,9 +48,7 @@ jobs:
       run: wget "https://raw.githubusercontent.com/firebase/quickstart-ios/master/mock-GoogleService-Info.plist" -O GoogleService-Info.plist
     - name: Install docker
       run: |
-        brew install colima
         brew install docker
-        colima start
     - name: Create docker test server and export enviroment variables
       run: |
         source ./create-docker-test-server.sh
