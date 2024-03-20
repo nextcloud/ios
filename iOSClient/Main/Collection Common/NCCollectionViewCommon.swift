@@ -170,11 +170,12 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         navigationController?.navigationBar.prefersLargeTitles = true
         navigationController?.setNavigationBarHidden(false, animated: true)
         navigationItem.title = titleCurrentFolder
-    }
 
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        appDelegate.activeViewController = self
+        if serverUrl.isEmpty {
+            appDelegate.activeServerUrl = utilityFileSystem.getHomeServer(urlBase: appDelegate.urlBase, userId: appDelegate.userId)
+        } else {
+            appDelegate.activeServerUrl = serverUrl
+        }
 
         layoutForView = NCManageDatabase.shared.getLayoutForView(account: appDelegate.account, key: layoutKey, serverUrl: serverUrl)
         gridLayout.itemForLine = CGFloat(layoutForView?.itemForLine ?? 3)
@@ -183,6 +184,16 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         } else {
             collectionView?.collectionViewLayout = gridLayout
         }
+
+        // FIXME: iPAD PDF landscape mode iOS 16
+        DispatchQueue.main.async {
+            self.collectionView?.collectionViewLayout.invalidateLayout()
+        }
+    }
+
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        appDelegate.activeViewController = self
 
         timerNotificationCenter = Timer.scheduledTimer(timeInterval: 1.5, target: self, selector: #selector(notificationCenterEvents), userInfo: nil, repeats: true)
 
@@ -212,19 +223,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
         NotificationCenter.default.addObserver(self, selector: #selector(triggerProgressTask(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterProgressTask), object: nil)
 
-        if serverUrl.isEmpty {
-            appDelegate.activeServerUrl = utilityFileSystem.getHomeServer(urlBase: appDelegate.urlBase, userId: appDelegate.userId)
-        } else {
-            appDelegate.activeServerUrl = serverUrl
-        }
-
         setNavigationLeftItems()
         setNavigationRightItems()
-
-        // FIXME: iPAD PDF landscape mode iOS 16
-        DispatchQueue.main.async {
-            self.collectionView?.collectionViewLayout.invalidateLayout()
-        }
     }
 
     override func viewDidDisappear(_ animated: Bool) {
@@ -1203,7 +1203,6 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
 
     func pushViewController(viewController: UIViewController) {
         if pushed { return }
-
         pushed = true
         navigationController?.pushViewController(viewController, animated: true)
     }
