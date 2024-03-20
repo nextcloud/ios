@@ -129,7 +129,7 @@ extension NCManageDatabase {
             let results = realm.objects(tableTrash.self).filter("account == %@ AND filePath == %@", account, filePath).sorted(byKeyPath: sort, ascending: ascending)
             return Array(results.map { tableTrash.init(value: $0) })
         } catch let error as NSError {
-            NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not write to database: \(error)")
+            NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not access to database: \(error)")
         }
 
         return []
@@ -143,7 +143,7 @@ extension NCManageDatabase {
             guard let result = realm.objects(tableTrash.self).filter("account == %@ AND fileId == %@", account, fileId).first else { return nil }
             return tableTrash.init(value: result)
         } catch let error as NSError {
-            NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not write to database: \(error)")
+            NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not access to database: \(error)")
         }
 
         return nil
