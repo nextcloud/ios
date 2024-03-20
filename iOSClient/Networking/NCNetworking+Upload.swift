@@ -356,7 +356,7 @@ extension NCNetworking {
                     self.utilityFileSystem.removeFile(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(ocIdTemp))
                 }
 
-                NextcloudKit.shared.nkCommonInstance.writeLog("[SUCCESS] Upload complete " + serverUrl + "/" + fileName + ", result: success(\(size) bytes)")
+                NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Upload complete " + serverUrl + "/" + fileName + ", result: success(\(size) bytes)")
 
                 let userInfo: [AnyHashable: Any] = ["ocId": metadata.ocId, "serverUrl": metadata.serverUrl, "account": metadata.account, "fileName": metadata.fileName, "ocIdTemp": ocIdTemp, "error": error]
                 if metadata.isLivePhoto, NCGlobal.shared.isLivePhotoServerAvailable {

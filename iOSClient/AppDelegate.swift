@@ -106,7 +106,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         }
 
         if let account = NCManageDatabase.shared.getActiveAccount() {
-            NextcloudKit.shared.nkCommonInstance.writeLog("Account active \(account.account)")
+            NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Account active \(account.account)")
             if NCKeychain().getPassword(account: account.account).isEmpty {
                 NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] PASSWORD NOT FOUND for \(account.account)")
             }
@@ -250,14 +250,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         let activeAccount = NCManageDatabase.shared.getActiveAccount()
 
         if let autoUpload = activeAccount?.autoUpload, autoUpload {
-            NextcloudKit.shared.nkCommonInstance.writeLog("- Auto upload: true")
+            NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Auto upload: true")
             if UIApplication.shared.backgroundRefreshStatus == .available {
-                NextcloudKit.shared.nkCommonInstance.writeLog("- Auto upload in background: true")
+                NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Auto upload in background: true")
             } else {
-                NextcloudKit.shared.nkCommonInstance.writeLog("- Auto upload in background: false")
+                NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Auto upload in background: false")
             }
         } else {
-            NextcloudKit.shared.nkCommonInstance.writeLog("- Auto upload: false")
+            NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Auto upload: false")
         }
 
         if let error = updateShareAccounts() {
@@ -287,7 +287,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             notificationCenter.add(req)
         }
 
-        NextcloudKit.shared.nkCommonInstance.writeLog("bye bye")
+        NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] bye bye")
     }
 
     // MARK: - Background Task
@@ -302,7 +302,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         request.earliestBeginDate = Date(timeIntervalSinceNow: 60) // Refresh after 60 seconds.
         do {
             try BGTaskScheduler.shared.submit(request)
-            NextcloudKit.shared.nkCommonInstance.writeLog("- Refresh task: ok")
+            NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Refresh task: ok")
         } catch {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Refresh task failed to submit request: \(error)")
         }
@@ -320,7 +320,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         request.requiresExternalPower = false
         do {
             try BGTaskScheduler.shared.submit(request)
-            NextcloudKit.shared.nkCommonInstance.writeLog("- Processing task: ok")
+            NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Processing task: ok")
         } catch {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Background Processing task failed to submit request: \(error)")
         }
