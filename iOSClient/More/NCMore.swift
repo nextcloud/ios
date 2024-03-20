@@ -77,12 +77,10 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         labelQuotaExternalSite.addGestureRecognizer(tapQuota)
     }
 
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-
-        navigationController?.setGroupAppearance()
-
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
         appDelegate.activeViewController = self
+        navigationController?.setGroupAppearance()
         loadItems()
         tableView.reloadData()
     }
