@@ -170,6 +170,9 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         navigationController?.setNavigationBarHidden(false, animated: true)
         navigationItem.title = titleCurrentFolder
 
+        setNavigationLeftItems()
+        setNavigationRightItems()
+        
         if serverUrl.isEmpty {
             appDelegate.activeServerUrl = utilityFileSystem.getHomeServer(urlBase: appDelegate.urlBase, userId: appDelegate.userId)
         } else {
@@ -221,9 +224,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         NotificationCenter.default.addObserver(self, selector: #selector(uploadCancelFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUploadCancelFile), object: nil)
 
         NotificationCenter.default.addObserver(self, selector: #selector(triggerProgressTask(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterProgressTask), object: nil)
-
-        setNavigationLeftItems()
-        setNavigationRightItems()
     }
 
     override func viewDidDisappear(_ animated: Bool) {
