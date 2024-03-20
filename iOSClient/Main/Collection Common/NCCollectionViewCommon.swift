@@ -164,9 +164,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeTheming), object: nil)
     }
 
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
         appDelegate.activeViewController = self
 
         layoutForView = NCManageDatabase.shared.getLayoutForView(account: appDelegate.account, key: layoutKey, serverUrl: serverUrl)
@@ -224,8 +223,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         }
     }
 
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
 
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationWillResignActive), object: nil)
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterCloseRichWorkspaceWebView), object: nil)
@@ -253,15 +252,11 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterProgressTask), object: nil)
 
-        timerNotificationCenter?.invalidate()
-        pushed = false
-
-        // REQUEST
         NCNetworking.shared.cancelUnifiedSearchFiles()
 
-        // TIP
-        self.tipView?.dismiss()
-
+        timerNotificationCenter?.invalidate()
+        pushed = false
+        tipView?.dismiss()
         setEditMode(false)
     }
 
@@ -664,6 +659,10 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     }
 
     func setNavigationRightItems(enableMenu: Bool = false) {
+        guard layoutKey != NCGlobal.shared.layoutViewTransfers else { return }
+        let isTabBarHidden = self.tabBarController?.tabBar.isHidden ?? true
+        let isTabBarSelectHidden = tabBarSelect.isHidden()
+
         func createMenuActions() -> [UIMenuElement] {
             guard let layoutForView = NCManageDatabase.shared.getLayoutForView(account: appDelegate.account, key: layoutKey, serverUrl: serverUrl) else { return [] }
 
@@ -746,9 +745,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                 return [select, viewStyleSubmenu, sortSubmenu, additionalSubmenu]
             }
         }
-        guard layoutKey != NCGlobal.shared.layoutViewTransfers else { return }
-        let isTabBarHidden = self.tabBarController?.tabBar.isHidden ?? true
-        let isTabBarSelectHidden = tabBarSelect.isHidden()
 
         if isEditMode {
             tabBarSelect.update(selectOcId: selectOcId, metadatas: getSelectedMetadatas(), userId: appDelegate.userId)

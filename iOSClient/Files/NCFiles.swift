@@ -77,13 +77,12 @@ class NCFiles: NCCollectionViewCommon {
         }
     }
 
-    override func viewWillAppear(_ animated: Bool) {
-
+    override func viewDidAppear(_ animated: Bool) {
         if isRoot {
             serverUrl = utilityFileSystem.getHomeServer(urlBase: appDelegate.urlBase, userId: appDelegate.userId)
             titleCurrentFolder = getNavigationTitle()
         }
-        super.viewWillAppear(animated)
+        super.viewDidAppear(animated)
 
         if dataSource.metadatas.isEmpty {
             reloadDataSource()
@@ -91,8 +90,8 @@ class NCFiles: NCCollectionViewCommon {
         reloadDataSourceNetwork()
     }
 
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
 
         fileNameBlink = nil
         fileNameOpen = nil
