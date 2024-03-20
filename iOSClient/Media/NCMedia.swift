@@ -141,9 +141,8 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
         }
     }
 
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
         appDelegate.activeViewController = self
         navigationController?.setMediaAppreance()
 
@@ -151,10 +150,6 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
         NotificationCenter.default.addObserver(self, selector: #selector(enterForeground(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationWillEnterForeground), object: nil)
 
         startTimer()
-    }
-
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
         createMenu()
 
         if imageCache.createMediaCacheInProgress {
@@ -170,8 +165,8 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
         }
     }
 
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
 
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDeleteFile), object: nil)
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationWillEnterForeground), object: nil)
