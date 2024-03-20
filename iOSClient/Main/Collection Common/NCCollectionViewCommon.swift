@@ -661,7 +661,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     func setNavigationRightItems(enableMenu: Bool = false) {
         guard layoutKey != NCGlobal.shared.layoutViewTransfers else { return }
         let isTabBarHidden = self.tabBarController?.tabBar.isHidden ?? true
-        let isTabBarSelectHidden = tabBarSelect.isHidden()
 
         func createMenuActions() -> [UIMenuElement] {
             guard let layoutForView = NCManageDatabase.shared.getLayoutForView(account: appDelegate.account, key: layoutKey, serverUrl: serverUrl) else { return [] }
@@ -771,8 +770,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                 navigationItem.rightBarButtonItems?.first?.menu = navigationItem.rightBarButtonItems?.first?.menu?.replacingChildren(createMenuActions())
             }
         }
-        // fix, if the tabbar was hidden before the update, set hidden
-        if isTabBarHidden, isTabBarSelectHidden {
+        // fix, if the tabbar was hidden before the update, set it in hidden
+        if isTabBarHidden {
             self.tabBarController?.tabBar.isHidden = true
         }
     }
