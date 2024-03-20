@@ -84,8 +84,8 @@ class NCTrash: UIViewController, NCTrashListCellDelegate, NCTrashGridCellDelegat
         NotificationCenter.default.addObserver(self, selector: #selector(reloadDataSource), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterReloadDataSource), object: nil)
     }
 
-    override func viewWillAppear(_ animated: Bool) {
-
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
         appDelegate.activeViewController = self
 
         navigationController?.setNavigationBarAppearance()
@@ -101,14 +101,11 @@ class NCTrash: UIViewController, NCTrashListCellDelegate, NCTrashGridCellDelegat
         }
 
         reloadDataSource()
-    }
-
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
         loadListingTrash()
     }
 
-    override func viewWillDisappear(_ animated: Bool) {
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
         setEditMode(false)
     }
 
@@ -167,7 +164,7 @@ class NCTrash: UIViewController, NCTrashListCellDelegate, NCTrashGridCellDelegat
             }
         }
     }
-    
+
     // MARK: - Empty
 
     func emptyDataSetView(_ view: NCEmptyView) {
