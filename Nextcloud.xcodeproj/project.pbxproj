@@ -137,9 +137,27 @@
 		F372087F2BAB4C10006B5430 /* TestConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = F37208742BAB4AB0006B5430 /* TestConstants.swift */; };
 		F37208812BAB5979006B5430 /* TestConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = F37208742BAB4AB0006B5430 /* TestConstants.swift */; };
 		F37208822BAB597B006B5430 /* BaseXCTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = F37208772BAB4B5D006B5430 /* BaseXCTestCase.swift */; };
-		F37208832BAB5F5C006B5430 /* TestConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = F37208742BAB4AB0006B5430 /* TestConstants.swift */; };
-		F372088A2BAB5F60006B5430 /* BaseXCTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = F37208772BAB4B5D006B5430 /* BaseXCTestCase.swift */; };
 		F37208932BAB61E7006B5430 /* EnvVars.stencil in Resources */ = {isa = PBXBuildFile; fileRef = F30A962E2A27ADF900D7BCFE /* EnvVars.stencil */; };
+		F37208A42BAB63EE006B5430 /* QRCodeReader in Frameworks */ = {isa = PBXBuildFile; productRef = F37208A32BAB63EE006B5430 /* QRCodeReader */; };
+		F37208A62BAB63EE006B5430 /* SwiftRichString in Frameworks */ = {isa = PBXBuildFile; productRef = F37208A52BAB63EE006B5430 /* SwiftRichString */; };
+		F37208A82BAB63EE006B5430 /* FloatingPanel in Frameworks */ = {isa = PBXBuildFile; productRef = F37208A72BAB63EE006B5430 /* FloatingPanel */; };
+		F37208AA2BAB63EE006B5430 /* MarkdownKit in Frameworks */ = {isa = PBXBuildFile; productRef = F37208A92BAB63EE006B5430 /* MarkdownKit */; };
+		F37208AC2BAB63EE006B5430 /* SwiftEntryKit in Frameworks */ = {isa = PBXBuildFile; productRef = F37208AB2BAB63EE006B5430 /* SwiftEntryKit */; };
+		F37208AE2BAB63EE006B5430 /* MarqueeLabel in Frameworks */ = {isa = PBXBuildFile; productRef = F37208AD2BAB63EE006B5430 /* MarqueeLabel */; };
+		F37208B02BAB63EF006B5430 /* Queuer in Frameworks */ = {isa = PBXBuildFile; productRef = F37208AF2BAB63EF006B5430 /* Queuer */; };
+		F37208B22BAB63EF006B5430 /* DropDown in Frameworks */ = {isa = PBXBuildFile; productRef = F37208B12BAB63EF006B5430 /* DropDown */; };
+		F37208B42BAB63EF006B5430 /* Parchment in Frameworks */ = {isa = PBXBuildFile; productRef = F37208B32BAB63EF006B5430 /* Parchment */; };
+		F37208B62BAB63EF006B5430 /* EasyTipView in Frameworks */ = {isa = PBXBuildFile; productRef = F37208B52BAB63EF006B5430 /* EasyTipView */; };
+		F37208B82BAB63EF006B5430 /* NextcloudKit in Frameworks */ = {isa = PBXBuildFile; productRef = F37208B72BAB63EF006B5430 /* NextcloudKit */; };
+		F37208BA2BAB63EF006B5430 /* TLPhotoPicker in Frameworks */ = {isa = PBXBuildFile; productRef = F37208B92BAB63EF006B5430 /* TLPhotoPicker */; };
+		F37208BC2BAB63EF006B5430 /* OpenSSL in Frameworks */ = {isa = PBXBuildFile; productRef = F37208BB2BAB63EF006B5430 /* OpenSSL */; };
+		F37208BE2BAB63F0006B5430 /* Swifter in Frameworks */ = {isa = PBXBuildFile; productRef = F37208BD2BAB63F0006B5430 /* Swifter */; };
+		F37208C02BAB63F0006B5430 /* Mantis in Frameworks */ = {isa = PBXBuildFile; productRef = F37208BF2BAB63F0006B5430 /* Mantis */; };
+		F37208C22BAB63F0006B5430 /* TagListView in Frameworks */ = {isa = PBXBuildFile; productRef = F37208C12BAB63F0006B5430 /* TagListView */; };
+		F37208C42BAB63F0006B5430 /* Gzip in Frameworks */ = {isa = PBXBuildFile; productRef = F37208C32BAB63F0006B5430 /* Gzip */; };
+		F37208C62BAB63F0006B5430 /* LRUCache in Frameworks */ = {isa = PBXBuildFile; productRef = F37208C52BAB63F0006B5430 /* LRUCache */; };
+		F37208C82BAB63F1006B5430 /* KeychainAccess in Frameworks */ = {isa = PBXBuildFile; productRef = F37208C72BAB63F1006B5430 /* KeychainAccess */; };
+		F37208CA2BAB63F1006B5430 /* SwipeCellKit in Frameworks */ = {isa = PBXBuildFile; productRef = F37208C92BAB63F1006B5430 /* SwipeCellKit */; };
 		F38F71252B6BBDC300473CDC /* NCCollectionViewCommonSelectTabBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = F38F71242B6BBDC300473CDC /* NCCollectionViewCommonSelectTabBar.swift */; };
 		F39298972A3B12CB00509762 /* BaseNCMoreCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F39298962A3B12CB00509762 /* BaseNCMoreCell.swift */; };
 		F3953BD72A6E87E000EE03F9 /* BaseIntegrationXCTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3953BD62A6E87E000EE03F9 /* BaseIntegrationXCTestCase.swift */; };
@@ -1602,12 +1620,32 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F37208C42BAB63F0006B5430 /* Gzip in Frameworks */,
+				F37208B02BAB63EF006B5430 /* Queuer in Frameworks */,
+				F37208A82BAB63EE006B5430 /* FloatingPanel in Frameworks */,
 				F3F0419F2B9F7E7900D5155F /* RealmSwift in Frameworks */,
+				F37208C82BAB63F1006B5430 /* KeychainAccess in Frameworks */,
+				F37208A62BAB63EE006B5430 /* SwiftRichString in Frameworks */,
+				F37208C22BAB63F0006B5430 /* TagListView in Frameworks */,
 				F3391B162B4C52F6001C0C4B /* FirebaseDatabase in Frameworks */,
+				F37208B62BAB63EF006B5430 /* EasyTipView in Frameworks */,
 				F3391B142B4C52EF001C0C4B /* JGProgressHUD in Frameworks */,
+				F37208BA2BAB63EF006B5430 /* TLPhotoPicker in Frameworks */,
 				F3391B122B4C52EB001C0C4B /* Realm in Frameworks */,
+				F37208CA2BAB63F1006B5430 /* SwipeCellKit in Frameworks */,
+				F37208AA2BAB63EE006B5430 /* MarkdownKit in Frameworks */,
 				F3391B102B4C52E6001C0C4B /* SVGKit in Frameworks */,
+				F37208AE2BAB63EE006B5430 /* MarqueeLabel in Frameworks */,
+				F37208C02BAB63F0006B5430 /* Mantis in Frameworks */,
+				F37208C62BAB63F0006B5430 /* LRUCache in Frameworks */,
+				F37208A42BAB63EE006B5430 /* QRCodeReader in Frameworks */,
+				F37208B22BAB63EF006B5430 /* DropDown in Frameworks */,
+				F37208BC2BAB63EF006B5430 /* OpenSSL in Frameworks */,
+				F37208B82BAB63EF006B5430 /* NextcloudKit in Frameworks */,
+				F37208B42BAB63EF006B5430 /* Parchment in Frameworks */,
 				F3391B062B4C4111001C0C4B /* XLForm in Frameworks */,
+				F37208AC2BAB63EE006B5430 /* SwiftEntryKit in Frameworks */,
+				F37208BE2BAB63F0006B5430 /* Swifter in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2967,6 +3005,26 @@
 				F3391B132B4C52EF001C0C4B /* JGProgressHUD */,
 				F3391B152B4C52F6001C0C4B /* FirebaseDatabase */,
 				F3F0419E2B9F7E7900D5155F /* RealmSwift */,
+				F37208A32BAB63EE006B5430 /* QRCodeReader */,
+				F37208A52BAB63EE006B5430 /* SwiftRichString */,
+				F37208A72BAB63EE006B5430 /* FloatingPanel */,
+				F37208A92BAB63EE006B5430 /* MarkdownKit */,
+				F37208AB2BAB63EE006B5430 /* SwiftEntryKit */,
+				F37208AD2BAB63EE006B5430 /* MarqueeLabel */,
+				F37208AF2BAB63EF006B5430 /* Queuer */,
+				F37208B12BAB63EF006B5430 /* DropDown */,
+				F37208B32BAB63EF006B5430 /* Parchment */,
+				F37208B52BAB63EF006B5430 /* EasyTipView */,
+				F37208B72BAB63EF006B5430 /* NextcloudKit */,
+				F37208B92BAB63EF006B5430 /* TLPhotoPicker */,
+				F37208BB2BAB63EF006B5430 /* OpenSSL */,
+				F37208BD2BAB63F0006B5430 /* Swifter */,
+				F37208BF2BAB63F0006B5430 /* Mantis */,
+				F37208C12BAB63F0006B5430 /* TagListView */,
+				F37208C32BAB63F0006B5430 /* Gzip */,
+				F37208C52BAB63F0006B5430 /* LRUCache */,
+				F37208C72BAB63F1006B5430 /* KeychainAccess */,
+				F37208C92BAB63F1006B5430 /* SwipeCellKit */,
 			);
 			productName = NextcloudUITests;
 			productReference = C0046CDA2A17B98400D87C9D /* NextcloudUITests.xctest */;
@@ -4016,7 +4074,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F37208832BAB5F5C006B5430 /* TestConstants.swift in Sources */,
 				F30A96312A27AEBF00D7BCFE /* EnvVars.generated.swift in Sources */,
 				F77444F522281649000D5EB0 /* NCGridMediaCell.swift in Sources */,
 				F78C6FDE296D677300C952C3 /* NCContextMenu.swift in Sources */,
@@ -4101,7 +4158,6 @@
 				AF68326A27BE65A90010BF0B /* NCMenuAction.swift in Sources */,
 				F7682FE023C36B0500983A04 /* NCMainTabBar.swift in Sources */,
 				F7A0D1352591FBC5008F8A13 /* String+Extension.swift in Sources */,
-				F372088A2BAB5F60006B5430 /* BaseXCTestCase.swift in Sources */,
 				F77B0E5F1D118A16002130FE /* NCSettings.m in Sources */,
 				F7F9D1BB25397CE000D9BFF5 /* NCViewer.swift in Sources */,
 				F7E7AEA52BA32C6500512E52 /* NCCollectionViewDownloadThumbnail.swift in Sources */,
@@ -5714,6 +5770,106 @@
 			isa = XCSwiftPackageProductDependency;
 			package = F710FC78277B7CFF00AA9FBF /* XCRemoteSwiftPackageReference "realm-swift" */;
 			productName = Realm;
+		};
+		F37208A32BAB63EE006B5430 /* QRCodeReader */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F7ED547A25EEA65400956C55 /* XCRemoteSwiftPackageReference "QRCodeReader" */;
+			productName = QRCodeReader;
+		};
+		F37208A52BAB63EE006B5430 /* SwiftRichString */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F72DA9B225F53E4E00B87DB1 /* XCRemoteSwiftPackageReference "SwiftRichString" */;
+			productName = SwiftRichString;
+		};
+		F37208A72BAB63EE006B5430 /* FloatingPanel */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F770768C263A8C3400A1BA94 /* XCRemoteSwiftPackageReference "FloatingPanel" */;
+			productName = FloatingPanel;
+		};
+		F37208A92BAB63EE006B5430 /* MarkdownKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F788ECC5263AAAF900ADC67F /* XCRemoteSwiftPackageReference "MarkdownKit" */;
+			productName = MarkdownKit;
+		};
+		F37208AB2BAB63EE006B5430 /* SwiftEntryKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F73ADD1A265546880069EA0D /* XCRemoteSwiftPackageReference "SwiftEntryKit" */;
+			productName = SwiftEntryKit;
+		};
+		F37208AD2BAB63EE006B5430 /* MarqueeLabel */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F75EAED626D2552E00F4320E /* XCRemoteSwiftPackageReference "MarqueeLabel" */;
+			productName = MarqueeLabel;
+		};
+		F37208AF2BAB63EF006B5430 /* Queuer */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F76DA961277B760E0082465B /* XCRemoteSwiftPackageReference "Queuer" */;
+			productName = Queuer;
+		};
+		F37208B12BAB63EF006B5430 /* DropDown */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F76DA967277B77E90082465B /* XCRemoteSwiftPackageReference "DropDown" */;
+			productName = DropDown;
+		};
+		F37208B32BAB63EF006B5430 /* Parchment */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F7BB7E4527A18C56009B9F29 /* XCRemoteSwiftPackageReference "Parchment" */;
+			productName = Parchment;
+		};
+		F37208B52BAB63EF006B5430 /* EasyTipView */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F753BA91281FD8010015BFB6 /* XCRemoteSwiftPackageReference "EasyTipView" */;
+			productName = EasyTipView;
+		};
+		F37208B72BAB63EF006B5430 /* NextcloudKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F783034028B511D200B84583 /* XCRemoteSwiftPackageReference "NextcloudKit" */;
+			productName = NextcloudKit;
+		};
+		F37208B92BAB63EF006B5430 /* TLPhotoPicker */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F734B06428E75C0100E180D5 /* XCRemoteSwiftPackageReference "TLPhotoPicker" */;
+			productName = TLPhotoPicker;
+		};
+		F37208BB2BAB63EF006B5430 /* OpenSSL */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F77333862927A72100466E35 /* XCRemoteSwiftPackageReference "OpenSSL" */;
+			productName = OpenSSL;
+		};
+		F37208BD2BAB63F0006B5430 /* Swifter */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F77BC3E9293E5268005F2B08 /* XCRemoteSwiftPackageReference "swifter" */;
+			productName = Swifter;
+		};
+		F37208BF2BAB63F0006B5430 /* Mantis */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F7D56B182972405400FA46C4 /* XCRemoteSwiftPackageReference "Mantis" */;
+			productName = Mantis;
+		};
+		F37208C12BAB63F0006B5430 /* TagListView */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F7A1050C29E587AF00FFD92B /* XCRemoteSwiftPackageReference "TagListView" */;
+			productName = TagListView;
+		};
+		F37208C32BAB63F0006B5430 /* Gzip */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F7F623B32A5EF4D30022D3D4 /* XCRemoteSwiftPackageReference "GzipSwift" */;
+			productName = Gzip;
+		};
+		F37208C52BAB63F0006B5430 /* LRUCache */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F76B649A2ADFFAD200014640 /* XCRemoteSwiftPackageReference "LRUCache" */;
+			productName = LRUCache;
+		};
+		F37208C72BAB63F1006B5430 /* KeychainAccess */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F760DE012AE66E860027D78A /* XCRemoteSwiftPackageReference "KeychainAccess" */;
+			productName = KeychainAccess;
+		};
+		F37208C92BAB63F1006B5430 /* SwipeCellKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F327FA412B8CC0B900E5B743 /* XCRemoteSwiftPackageReference "SwipeCellKit" */;
+			productName = SwipeCellKit;
 		};
 		F3998E1C2B487D53007CA5DE /* SnapshotTesting */ = {
 			isa = XCSwiftPackageProductDependency;
