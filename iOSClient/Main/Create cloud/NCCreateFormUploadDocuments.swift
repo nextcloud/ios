@@ -499,7 +499,7 @@ import XLForm
             } else if error != .success {
                 print("\(error.errorCode)")
             } else {
-                print("[LOG] It has been changed user during networking process, error.")
+                print("[ERROR] It has been changed user during networking process, error.")
             }
         }
     }

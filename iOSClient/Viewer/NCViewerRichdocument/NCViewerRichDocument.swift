@@ -314,7 +314,7 @@ class NCViewerRichDocument: UIViewController, WKNavigationDelegate, WKScriptMess
                 } else if error != .success {
                     NCContentPresenter().showError(error: error)
                 } else {
-                    print("[LOG] It has been changed user during networking process, error.")
+                    print("[ERROR] It has been changed user during networking process, error.")
                 }
             }
         }
@@ -331,7 +331,7 @@ class NCViewerRichDocument: UIViewController, WKNavigationDelegate, WKScriptMess
             } else if error != .success {
                 NCContentPresenter().showError(error: error)
             } else {
-                print("[LOG] It has been changed user during networking process, error.")
+                print("[ERROR] It has been changed user during networking process, error.")
             }
         }
     }

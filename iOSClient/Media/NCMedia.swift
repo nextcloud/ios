@@ -331,7 +331,7 @@ extension NCMedia: UICollectionViewDelegate {
 
 extension NCMedia: UICollectionViewDataSourcePrefetching {
     func collectionView(_ collectionView: UICollectionView, prefetchItemsAt indexPaths: [IndexPath]) {
-        // print("[LOG] n. " + String(indexPaths.count))
+        // print("[INFO] n. " + String(indexPaths.count))
     }
 }
 

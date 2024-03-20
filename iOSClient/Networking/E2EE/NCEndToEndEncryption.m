@@ -177,8 +177,8 @@
     
     BIO_read(csrBIO, keyBytes, len);
     _csrData = [NSData dataWithBytes:keyBytes length:len];
-    NSLog(@"[LOG] \n%@", [[NSString alloc] initWithData:_csrData encoding:NSUTF8StringEncoding]);
-    
+    NSLog(@"[INFO] \n%@", [[NSString alloc] initWithData:_csrData encoding:NSUTF8StringEncoding]);
+
     // PublicKey
     BIO *publicKeyBIO = BIO_new(BIO_s_mem());
     PEM_write_bio_PUBKEY(publicKeyBIO, pkey);
@@ -189,8 +189,8 @@
     BIO_read(publicKeyBIO, keyBytes, len);
     _publicKeyData = [NSData dataWithBytes:keyBytes length:len];
     self.generatedPublicKey = [[NSString alloc] initWithData:_publicKeyData encoding:NSUTF8StringEncoding];
-    NSLog(@"[LOG] \n%@", self.generatedPublicKey);
-    
+    NSLog(@"[INFO] \n%@", self.generatedPublicKey);
+
     // PrivateKey
     BIO *privateKeyBIO = BIO_new(BIO_s_mem());
     PEM_write_bio_PKCS8PrivateKey(privateKeyBIO, pkey, NULL, NULL, 0, NULL, NULL);
@@ -201,8 +201,8 @@
     BIO_read(privateKeyBIO, keyBytes, len);
     _privateKeyData = [NSData dataWithBytes:keyBytes length:len];
     self.generatedPrivateKey = [[NSString alloc] initWithData:_privateKeyData encoding:NSUTF8StringEncoding];
-    NSLog(@"[LOG] \n%@", self.generatedPrivateKey);
-    
+    NSLog(@"[INFO] \n%@", self.generatedPrivateKey);
+
     if(keyBytes)
         free(keyBytes);
     
@@ -235,7 +235,7 @@
     BIO_free(certBio);
     X509_free(certX509);
     
-    NSLog(@"[LOG] \n%@", publicKey);
+    NSLog(@"[INFO] \n%@", publicKey);
     return publicKey;
 }
 
@@ -251,7 +251,7 @@
         fclose(f);
         return NO;
     }
-    NSLog(@"[LOG] Saved cert to %@", certificatePath);
+    NSLog(@"[INFO] Saved cert to %@", certificatePath);
     fclose(f);
     
     // PublicKey
@@ -262,7 +262,7 @@
         fclose(f);
         return NO;
     }
-    NSLog(@"[LOG] Saved publicKey to %@", publicKeyPath);
+    NSLog(@"[INFO] Saved publicKey to %@", publicKeyPath);
     fclose(f);
     
     // Here you write the private key (pkey) to disk. OpenSSL will encrypt the
@@ -277,7 +277,7 @@
         fclose(f);
         return NO;
     }
-    NSLog(@"[LOG] Saved privatekey to %@", privatekeyPath);
+    NSLog(@"[INFO] Saved privatekey to %@", privatekeyPath);
     fclose(f);
     
     // CSR Request sha256
@@ -289,7 +289,7 @@
         fclose(f);
         return NO;
     }
-    NSLog(@"[LOG] Saved csr to %@", csrPath);
+    NSLog(@"[INFO] Saved csr to %@", csrPath);
     fclose(f);
     
     return YES;
@@ -308,7 +308,7 @@
         fclose(f);
         return NO;
     }
-    NSLog(@"[LOG] Saved p12 to %@", path);
+    NSLog(@"[INFO] Saved p12 to %@", path);
     fclose(f);
     
     return YES;
