@@ -34,7 +34,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     private var autoUploadFileName = ""
     private var autoUploadDirectory = ""
 
-    private var pushed: Bool = false
     private var tipView: EasyTipView?
     var isTransitioning: Bool = false
 
@@ -259,7 +258,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         NCNetworking.shared.cancelUnifiedSearchFiles()
 
         timerNotificationCenter?.invalidate()
-        pushed = false
         tipView?.dismiss()
         setEditMode(false)
     }
@@ -1110,7 +1108,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         appDelegate.activeMetadata = metadata
 
         if let viewController = appDelegate.listFilesVC[serverUrlPush], viewController.isViewLoaded {
-            pushViewController(viewController: viewController)
+            navigationController?.pushViewController(viewController, animated: true)
         } else {
             if let viewController: NCFiles = UIStoryboard(name: "NCFiles", bundle: nil).instantiateInitialViewController() as? NCFiles {
                 viewController.isRoot = false
@@ -1118,7 +1116,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                 viewController.titlePreviusFolder = navigationItem.title
                 viewController.titleCurrentFolder = metadata.fileNameView
                 appDelegate.listFilesVC[serverUrlPush] = viewController
-                pushViewController(viewController: viewController)
+                navigationController?.pushViewController(viewController, animated: true)
             }
         }
     }
@@ -1199,12 +1197,6 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
                 NCContentPresenter().showInfo(error: error)
             }
         }
-    }
-
-    func pushViewController(viewController: UIViewController) {
-        if pushed { return }
-        pushed = true
-        navigationController?.pushViewController(viewController, animated: true)
     }
 
     func collectionView(_ collectionView: UICollectionView, contextMenuConfigurationForItemAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
