@@ -40,9 +40,8 @@ class NCFavorite: NCCollectionViewCommon {
         emptyDescription = "_tutorial_favorite_view_"
     }
 
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
         if dataSource.metadatas.isEmpty {
             reloadDataSource()
         }
