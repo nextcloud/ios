@@ -40,8 +40,8 @@ class NCOffline: NCCollectionViewCommon {
         emptyDescription = "_tutorial_offline_view_"
     }
 
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
 
         reloadDataSource()
     }

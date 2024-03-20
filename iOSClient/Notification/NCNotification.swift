@@ -63,9 +63,8 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmpty
         emptyDataSet = NCEmptyDataSet(view: tableView, offset: -offset, delegate: self)
     }
 
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
         appDelegate.activeViewController = self
         navigationController?.setNavigationBarAppearance()
         getNetwokingNotification()
