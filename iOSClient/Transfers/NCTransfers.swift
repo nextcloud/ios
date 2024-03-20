@@ -52,9 +52,8 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
         self.navigationItem.title = titleCurrentFolder
     }
 
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
         reloadDataSource()
     }
 
