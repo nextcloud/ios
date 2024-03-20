@@ -21,7 +21,7 @@
 
 import XCTest
 
-class BaseUIXCTestCase: XCTestCase {
+class BaseUIXCTestCase: BaseXCTestCase {
     let baseUrl = EnvVars.testServerUrl
     let user = EnvVars.testUser
     let userId = EnvVars.testUser

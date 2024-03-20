@@ -20,15 +20,11 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-import XCTest
-@testable import NextcloudKit
-
-class BaseIntegrationXCTestCase: XCTestCase {
-    let baseUrl = EnvVars.testServerUrl
-    let user = EnvVars.testUser
-    let userId = EnvVars.testUser
-    let appPassword = EnvVars.testAppPassword
-    lazy var account = "\(userId) \(baseUrl)"
+class BaseIntegrationXCTestCase: BaseXCTestCase {
+//    let baseUrl = EnvVars.testServerUrl
+//    let user = EnvVars.testUser
+//    let userId = EnvVars.testUser
+//    let appPassword = EnvVars.testAppPassword
 
     var randomInt: Int {
         get {

@@ -34,21 +34,21 @@ final class FilesIntegrationTests: BaseIntegrationXCTestCase {
         let expectation = expectation(description: "Should finish last callback")
 
         let folderName = "TestFolder\(randomInt)"
-        let serverUrl = "\(baseUrl)/remote.php/dav/files/\(userId)"
+        let serverUrl = "\(TestConstants.server)/remote.php/dav/files/\(TestConstants.username)"
         let serverUrlFileName = "\(serverUrl)/\(folderName)"
 
-        NextcloudKit.shared.setup(account: account, user: user, userId: userId, password: appPassword, urlBase: baseUrl)
+        NextcloudKit.shared.setup(account: TestConstants.account, user: TestConstants.username, userId: TestConstants.username, password: appToken, urlBase: TestConstants.server)
 
         // Test creating folder
-        NCNetworking.shared.createFolder(fileName: folderName, serverUrl: serverUrl, account: account, urlBase: baseUrl, userId: userId, withPush: true) { error in
+        NCNetworking.shared.createFolder(fileName: folderName, serverUrl: serverUrl, account: TestConstants.account, urlBase: TestConstants.server, userId: TestConstants.username, withPush: true) { error in
             XCTAssertEqual(NKError.success.errorCode, error.errorCode)
             XCTAssertEqual(NKError.success.errorDescription, error.errorDescription)
 
             Thread.sleep(forTimeInterval: 0.2)
 
             // Test reading folder, should exist
-            NCNetworking.shared.readFolder(serverUrl: serverUrlFileName, account: self.user) { account, metadataFolder, _, _, _, _ in
-                XCTAssertEqual(self.account, account)
+            NCNetworking.shared.readFolder(serverUrl: serverUrlFileName, account: TestConstants.username) { account, metadataFolder, _, _, _, _ in
+                XCTAssertEqual(TestConstants.account, account)
                 XCTAssertEqual(NKError.success.errorCode, error.errorCode)
                 XCTAssertEqual(NKError.success.errorDescription, error.errorDescription)
                 XCTAssertEqual(metadataFolder?.fileName, folderName)
@@ -69,7 +69,7 @@ final class FilesIntegrationTests: BaseIntegrationXCTestCase {
                     try await Task.sleep(for: .milliseconds(200))
 
                     // Test reading folder, should NOT exist
-                    NCNetworking.shared.readFolder(serverUrl: serverUrlFileName, account: self.user) { account, metadataFolder, _, _, _, _ in
+                    NCNetworking.shared.readFolder(serverUrl: serverUrlFileName, account: TestConstants.username) { account, metadataFolder, _, _, _, _ in
 
                         defer { expectation.fulfill() }
 

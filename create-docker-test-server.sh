@@ -7,12 +7,11 @@ TEST_BRANCH=master
 SERVER_URL="http://localhost:${SERVER_PORT}"
 USER="admin"
 
-#docker run --rm -d \
-#    --name $CONTAINER_NAME \
-#    -e SERVER_BRANCH=$TEST_BRANCH \
-#    -p $SERVER_PORT:80 \
-#    ghcr.io/juliushaertl/nextcloud-dev-php80:latest
-#
+docker run --rm -d \
+    --name $CONTAINER_NAME \
+    -e SERVER_BRANCH=$TEST_BRANCH \
+    -p $SERVER_PORT:80 \
+    ghcr.io/juliushaertl/nextcloud-dev-php80:latest
+
 
 source ./wait-for-server.sh
-source ./export-env-vars.sh

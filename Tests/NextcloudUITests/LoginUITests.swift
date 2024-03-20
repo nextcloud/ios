@@ -20,6 +20,8 @@
 //
 
 import XCTest
+import NextcloudKit
+@testable import Nextcloud
 
 final class LoginUITests: BaseUIXCTestCase {
     let app = XCUIApplication()

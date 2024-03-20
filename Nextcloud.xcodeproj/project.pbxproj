@@ -129,6 +129,17 @@
 		F36E64FC2B9733F20085ABB5 /* UIView+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7E41315294A19B300839300 /* UIView+Extension.swift */; };
 		F36E64FD2B9735900085ABB5 /* NCCellProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 370D26AE248A3D7A00121797 /* NCCellProtocol.swift */; };
 		F36E64FE2B9735920085ABB5 /* NCCellProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 370D26AE248A3D7A00121797 /* NCCellProtocol.swift */; };
+		F37208792BAB4C09006B5430 /* BaseXCTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = F37208772BAB4B5D006B5430 /* BaseXCTestCase.swift */; };
+		F372087A2BAB4C09006B5430 /* BaseXCTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = F37208772BAB4B5D006B5430 /* BaseXCTestCase.swift */; };
+		F372087B2BAB4C0A006B5430 /* BaseXCTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = F37208772BAB4B5D006B5430 /* BaseXCTestCase.swift */; };
+		F372087D2BAB4C0F006B5430 /* TestConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = F37208742BAB4AB0006B5430 /* TestConstants.swift */; };
+		F372087E2BAB4C0F006B5430 /* TestConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = F37208742BAB4AB0006B5430 /* TestConstants.swift */; };
+		F372087F2BAB4C10006B5430 /* TestConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = F37208742BAB4AB0006B5430 /* TestConstants.swift */; };
+		F37208812BAB5979006B5430 /* TestConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = F37208742BAB4AB0006B5430 /* TestConstants.swift */; };
+		F37208822BAB597B006B5430 /* BaseXCTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = F37208772BAB4B5D006B5430 /* BaseXCTestCase.swift */; };
+		F37208832BAB5F5C006B5430 /* TestConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = F37208742BAB4AB0006B5430 /* TestConstants.swift */; };
+		F372088A2BAB5F60006B5430 /* BaseXCTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = F37208772BAB4B5D006B5430 /* BaseXCTestCase.swift */; };
+		F37208932BAB61E7006B5430 /* EnvVars.stencil in Resources */ = {isa = PBXBuildFile; fileRef = F30A962E2A27ADF900D7BCFE /* EnvVars.stencil */; };
 		F38F71252B6BBDC300473CDC /* NCCollectionViewCommonSelectTabBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = F38F71242B6BBDC300473CDC /* NCCollectionViewCommonSelectTabBar.swift */; };
 		F39298972A3B12CB00509762 /* BaseNCMoreCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F39298962A3B12CB00509762 /* BaseNCMoreCell.swift */; };
 		F3953BD72A6E87E000EE03F9 /* BaseIntegrationXCTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3953BD62A6E87E000EE03F9 /* BaseIntegrationXCTestCase.swift */; };
@@ -1017,6 +1028,8 @@
 		F359D8662A7D03420023F405 /* NCUtility+Exif.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NCUtility+Exif.swift"; sourceTree = "<group>"; };
 		F36E64F62B9245210085ABB5 /* NCCollectionViewCommon+SelectTabBarDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NCCollectionViewCommon+SelectTabBarDelegate.swift"; sourceTree = "<group>"; };
 		F36E64F82B92459B0085ABB5 /* NCCollectionViewCommon+SwipeCollectionViewCellDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NCCollectionViewCommon+SwipeCollectionViewCellDelegate.swift"; sourceTree = "<group>"; };
+		F37208742BAB4AB0006B5430 /* TestConstants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TestConstants.swift; sourceTree = "<group>"; };
+		F37208772BAB4B5D006B5430 /* BaseXCTestCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseXCTestCase.swift; sourceTree = "<group>"; };
 		F38F71242B6BBDC300473CDC /* NCCollectionViewCommonSelectTabBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCCollectionViewCommonSelectTabBar.swift; sourceTree = "<group>"; };
 		F39298962A3B12CB00509762 /* BaseNCMoreCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseNCMoreCell.swift; sourceTree = "<group>"; };
 		F3953BD62A6E87E000EE03F9 /* BaseIntegrationXCTestCase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BaseIntegrationXCTestCase.swift; sourceTree = "<group>"; };
@@ -1818,6 +1831,7 @@
 		F30A962A2A27A9C800D7BCFE /* Tests */ = {
 			isa = PBXGroup;
 			children = (
+				F37208762BAB4B4B006B5430 /* Common */,
 				AF8ED1FA2757821000B8DBC4 /* NextcloudUnitTests */,
 				F31F69432A2F6D4600162F76 /* NextcloudSnapshotTests */,
 				C04E2F212A17BB4D001BAD85 /* NextcloudIntegrationTests */,
@@ -1858,6 +1872,15 @@
 				F7CF16A22A4D7C7A000FF107 /* NCMoreUserCell.xib */,
 			);
 			name = "Recovered References";
+			sourceTree = "<group>";
+		};
+		F37208762BAB4B4B006B5430 /* Common */ = {
+			isa = PBXGroup;
+			children = (
+				F37208742BAB4AB0006B5430 /* TestConstants.swift */,
+				F37208772BAB4B5D006B5430 /* BaseXCTestCase.swift */,
+			);
+			path = Common;
 			sourceTree = "<group>";
 		};
 		F3BB46502A39EC2D00461F6E /* Cells */ = {
@@ -3119,7 +3142,6 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = F77B0F9A1D118A16002130FE /* Build configuration list for PBXNativeTarget "Nextcloud" */;
 			buildPhases = (
-				F30A961C2A2766D900D7BCFE /* Generate env vars */,
 				F77B0DEF1D118A16002130FE /* Sources */,
 				F77B0EDC1D118A16002130FE /* Frameworks */,
 				F77B0EE91D118A16002130FE /* Resources */,
@@ -3385,6 +3407,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F37208932BAB61E7006B5430 /* EnvVars.stencil in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3574,26 +3597,6 @@
 			shellPath = /bin/sh;
 			shellScript = "if test -d \"/opt/homebrew/bin/\"; then\n  PATH=\"/opt/homebrew/bin/:${PATH}\"\nfi\n\nexport PATH\n\nif which swiftlint >/dev/null; then\n  swiftlint\nelse\n  echo \"warning: SwiftLint not installed, download from https://github.com/realm/SwiftLint\"\nfi\n";
 		};
-		F30A961C2A2766D900D7BCFE /* Generate env vars */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-				"$(SRCROOT)/.env-vars",
-			);
-			name = "Generate env vars";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-				$PROJECT_DIR/Sourcery/EnvVars.generated.swift,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "#This generates an env-vars file that the project uses for various tasks, mostly testing. If you want to modify the env vars, open .env-vars in the root dir.\n#It also generates a .swift file in the project that contains the env vars as swift constants for easy use. Check EnvVars.generated.swift\n\nif [ ! -f \".env-vars\" ]; then\n    touch .env-vars\n    echo \"export TEST_SERVER_URL=\" >> .env-vars\n    echo \"export TEST_USER=\" >> .env-vars\n    echo \"export TEST_APP_PASSWORD=\" >> .env-vars\n    #add more env vars here\nfi\n\nsource .env-vars\n\nSourcery/bin/sourcery --templates Sourcery --output Sourcery --sources . --args TEST_USER=$TEST_USER,TEST_APP_PASSWORD=$TEST_APP_PASSWORD,TEST_SERVER_URL=$TEST_SERVER_URL\n";
-		};
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
@@ -3661,6 +3664,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				AF8ED1FC2757821000B8DBC4 /* NextcloudUnitTests.swift in Sources */,
+				F37208792BAB4C09006B5430 /* BaseXCTestCase.swift in Sources */,
+				F372087D2BAB4C0F006B5430 /* TestConstants.swift in Sources */,
 				F78E2D6C29AF02DB0024D4F3 /* Database.swift in Sources */,
 				F7817CFE29801A3500FFBC65 /* Data+Extension.swift in Sources */,
 			);
@@ -3672,7 +3677,9 @@
 			files = (
 				F3A7AFC62A41AA82001FC89C /* BaseUIXCTestCase.swift in Sources */,
 				F32ED5062A2F254400EABA81 /* EnvVars.generated.swift in Sources */,
+				F37208822BAB597B006B5430 /* BaseXCTestCase.swift in Sources */,
 				C0046CDD2A17B98400D87C9D /* LoginUITests.swift in Sources */,
+				F37208812BAB5979006B5430 /* TestConstants.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3681,6 +3688,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				F3953BD72A6E87E000EE03F9 /* BaseIntegrationXCTestCase.swift in Sources */,
+				F372087A2BAB4C09006B5430 /* BaseXCTestCase.swift in Sources */,
+				F372087E2BAB4C0F006B5430 /* TestConstants.swift in Sources */,
 				F30A96322A27AEDD00D7BCFE /* EnvVars.generated.swift in Sources */,
 				C04E2F232A17BB4D001BAD85 /* FilesIntegrationTests.swift in Sources */,
 			);
@@ -3691,6 +3700,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				F31F69452A2F6D4600162F76 /* NextcloudSnapshotTests.swift in Sources */,
+				F372087F2BAB4C10006B5430 /* TestConstants.swift in Sources */,
+				F372087B2BAB4C0A006B5430 /* BaseXCTestCase.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4005,6 +4016,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F37208832BAB5F5C006B5430 /* TestConstants.swift in Sources */,
 				F30A96312A27AEBF00D7BCFE /* EnvVars.generated.swift in Sources */,
 				F77444F522281649000D5EB0 /* NCGridMediaCell.swift in Sources */,
 				F78C6FDE296D677300C952C3 /* NCContextMenu.swift in Sources */,
@@ -4089,6 +4101,7 @@
 				AF68326A27BE65A90010BF0B /* NCMenuAction.swift in Sources */,
 				F7682FE023C36B0500983A04 /* NCMainTabBar.swift in Sources */,
 				F7A0D1352591FBC5008F8A13 /* String+Extension.swift in Sources */,
+				F372088A2BAB5F60006B5430 /* BaseXCTestCase.swift in Sources */,
 				F77B0E5F1D118A16002130FE /* NCSettings.m in Sources */,
 				F7F9D1BB25397CE000D9BFF5 /* NCViewer.swift in Sources */,
 				F7E7AEA52BA32C6500512E52 /* NCCollectionViewDownloadThumbnail.swift in Sources */,
@@ -4613,10 +4626,11 @@
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				MARKETING_VERSION = 1.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
+				OTHER_CFLAGS = "-v";
 				OTHER_LDFLAGS = "";
 				PRODUCT_BUNDLE_IDENTIFIER = it.twsweb.NextcloudUITests.NextcloudUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -4627,6 +4641,7 @@
 				SWIFT_PRECOMPILE_BRIDGING_HEADER = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(TEST_HOST)";
 				TEST_TARGET_NAME = Nextcloud;
 			};
 			name = Debug;
@@ -4653,10 +4668,11 @@
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				MARKETING_VERSION = 1.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
+				OTHER_CFLAGS = "-v";
 				OTHER_LDFLAGS = "";
 				PRODUCT_BUNDLE_IDENTIFIER = it.twsweb.NextcloudUITests.NextcloudUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -4666,6 +4682,7 @@
 				SWIFT_PRECOMPILE_BRIDGING_HEADER = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(TEST_HOST)";
 				TEST_TARGET_NAME = Nextcloud;
 				VALIDATE_PRODUCT = YES;
 			};
@@ -5029,6 +5046,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = "$(SRCROOT)/Brand/iOSClient.entitlements";
 				DEVELOPMENT_TEAM = NKUJUXUJ3B;
+				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
 				INFOPLIST_FILE = "$(SRCROOT)/Brand/iOSClient.plist";
 				OTHER_LDFLAGS = "";
 				PRODUCT_BUNDLE_IDENTIFIER = "it.twsweb.$(PRODUCT_NAME:rfc1034identifier)";
@@ -5045,6 +5063,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = "$(SRCROOT)/Brand/iOSClient.entitlements";
 				DEVELOPMENT_TEAM = NKUJUXUJ3B;
+				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
 				INFOPLIST_FILE = "$(SRCROOT)/Brand/iOSClient.plist";
 				OTHER_LDFLAGS = "";
 				PRODUCT_BUNDLE_IDENTIFIER = "it.twsweb.$(PRODUCT_NAME:rfc1034identifier)";
@@ -5180,6 +5199,7 @@
 				);
 				MARKETING_VERSION = 5.2.3;
 				ONLY_ACTIVE_ARCH = YES;
+				OTHER_CFLAGS = "-v";
 				OTHER_LDFLAGS = "";
 				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) NC DEBUG";
@@ -5242,6 +5262,7 @@
 				);
 				MARKETING_VERSION = 5.2.3;
 				ONLY_ACTIVE_ARCH = YES;
+				OTHER_CFLAGS = "-v";
 				OTHER_LDFLAGS = "";
 				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) NC";
@@ -5604,6 +5625,16 @@
 			package = F31F69622A2F929600162F76 /* XCRemoteSwiftPackageReference "swiftui-preview-snapshots" */;
 			productName = PreviewSnapshots;
 		};
+		F327FA422B8CC0B900E5B743 /* SwipeCellKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F327FA412B8CC0B900E5B743 /* XCRemoteSwiftPackageReference "SwipeCellKit" */;
+			productName = SwipeCellKit;
+		};
+		F327FA442B8CC36900E5B743 /* SwipeCellKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F327FA412B8CC0B900E5B743 /* XCRemoteSwiftPackageReference "SwipeCellKit" */;
+			productName = SwipeCellKit;
+		};
 		F3391B012B4C40FB001C0C4B /* XLForm */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = F74E771E277A2EF40013B958 /* XCRemoteSwiftPackageReference "XLForm" */;
@@ -5698,16 +5729,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = F31F69622A2F929600162F76 /* XCRemoteSwiftPackageReference "swiftui-preview-snapshots" */;
 			productName = PreviewSnapshotsTesting;
-		};
-		F327FA422B8CC0B900E5B743 /* SwipeCellKit */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = F327FA412B8CC0B900E5B743 /* XCRemoteSwiftPackageReference "SwipeCellKit" */;
-			productName = SwipeCellKit;
-		};
-		F327FA442B8CC36900E5B743 /* SwipeCellKit */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = F327FA412B8CC0B900E5B743 /* XCRemoteSwiftPackageReference "SwipeCellKit" */;
-			productName = SwipeCellKit;
 		};
 		F3998E222B487D53007CA5DE /* SnapshotTestingHEIC */ = {
 			isa = XCSwiftPackageProductDependency;
