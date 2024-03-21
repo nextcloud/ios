@@ -27,7 +27,7 @@ import NextcloudKit
 import EasyTipView
 import JGProgressHUD
 
-class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UISearchResultsUpdating, UISearchControllerDelegate, UISearchBarDelegate, NCListCellDelegate, NCGridCellDelegate, NCSectionHeaderMenuDelegate, NCSectionFooterDelegate, UIAdaptivePresentationControllerDelegate, NCEmptyDataSetDelegate, UIContextMenuInteractionDelegate, NCAccountRequestDelegate {
+class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UISearchResultsUpdating, UISearchControllerDelegate, UISearchBarDelegate, NCListCellDelegate, NCGridCellDelegate, NCSectionHeaderMenuDelegate, NCSectionFooterDelegate, UIAdaptivePresentationControllerDelegate, UIContextMenuInteractionDelegate, NCAccountRequestDelegate {
 
     @IBOutlet weak var collectionView: UICollectionView!
 
@@ -42,7 +42,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     let utility = NCUtility()
     let refreshControl = UIRefreshControl()
     var searchController: UISearchController?
-    var emptyDataSet: NCEmptyDataSet?
     var backgroundImageView = UIImageView()
     var serverUrl: String = ""
     var isEditMode = false
@@ -122,6 +121,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         // Header
         collectionView.register(UINib(nibName: "NCSectionHeaderMenu", bundle: nil), forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: "sectionHeaderMenu")
         collectionView.register(UINib(nibName: "NCSectionHeader", bundle: nil), forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: "sectionHeader")
+        collectionView.register(UINib(nibName: "NCSectionHeaderEmptyData", bundle: nil), forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: "sectionHeaderEmptyData")
 
         // Footer
         collectionView.register(UINib(nibName: "NCSectionFooter", bundle: nil), forSupplementaryViewOfKind: UICollectionView.elementKindSectionFooter, withReuseIdentifier: "sectionFooter")
@@ -133,9 +133,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             NCManageDatabase.shared.cleanEtagDirectory(account: self.appDelegate.account, serverUrl: self.serverUrl)
             self.reloadDataSourceNetwork()
         }
-
-        // Empty
-        emptyDataSet = NCEmptyDataSet(view: collectionView, offset: getHeaderHeight(), delegate: self)
 
         // Long Press on CollectionView
         let longPressedGesture = UILongPressGestureRecognizer(target: self, action: #selector(longPressCollecationView(_:)))
@@ -792,36 +789,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         return userAlias
     }
 
-    // MARK: - Empty
-
-    func emptyDataSetView(_ view: NCEmptyView) {
-
-        self.emptyDataSet?.setOffset(getHeaderHeight())
-        if isSearchingMode {
-            view.emptyImage.image = UIImage(named: "search")?.image(color: .gray, size: UIScreen.main.bounds.width)
-            if self.dataSourceTask?.state == .running {
-                view.emptyTitle.text = NSLocalizedString("_search_in_progress_", comment: "")
-            } else {
-                view.emptyTitle.text = NSLocalizedString("_search_no_record_found_", comment: "")
-            }
-            view.emptyDescription.text = NSLocalizedString("_search_instruction_", comment: "")
-        } else if self.dataSourceTask?.state == .running {
-            view.emptyImage.image = UIImage(named: "networkInProgress")?.image(color: .gray, size: UIScreen.main.bounds.width)
-            view.emptyTitle.text = NSLocalizedString("_request_in_progress_", comment: "")
-            view.emptyDescription.text = ""
-        } else {
-            if serverUrl.isEmpty {
-                view.emptyImage.image = emptyImage
-                view.emptyTitle.text = NSLocalizedString(emptyTitle, comment: "")
-                view.emptyDescription.text = NSLocalizedString(emptyDescription, comment: "")
-            } else {
-                view.emptyImage.image = UIImage(named: "folder")?.image(color: NCBrandColor.shared.brandElement, size: UIScreen.main.bounds.width)
-                view.emptyTitle.text = NSLocalizedString("_files_no_files_", comment: "")
-                view.emptyDescription.text = NSLocalizedString("_no_file_pull_down_", comment: "")
-            }
-        }
-    }
-
     // MARK: - SEARCH
 
     func updateSearchResults(for searchController: UISearchController) {
@@ -1330,11 +1297,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
     }
 
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-
-        let numberItems = dataSource.numberOfItemsInSection(section)
-        emptyDataSet?.numberOfItemsInSection(numberItems, section: section)
-
-        return numberItems
+        return dataSource.numberOfItemsInSection(section)
     }
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
@@ -1583,7 +1546,23 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
 
         if kind == UICollectionView.elementKindSectionHeader {
 
-            if indexPath.section == 0 {
+            if dataSource.getMetadataSourceForAllSections().isEmpty {
+
+                guard let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionHeaderEmptyData", for: indexPath) as? NCSectionHeaderEmptyData else { return UICollectionReusableView() }
+
+                if serverUrl.isEmpty {
+                    header.image.image = emptyImage
+                    header.title.text = NSLocalizedString(emptyTitle, comment: "")
+                    header.descriprion.text = NSLocalizedString(emptyDescription, comment: "")
+                } else {
+                    header.image.image = UIImage(named: "folder")?.image(color: NCBrandColor.shared.brandElement, size: UIScreen.main.bounds.width)
+                    header.title.text = NSLocalizedString("_files_no_files_", comment: "")
+                    header.descriprion.text = NSLocalizedString("_no_file_pull_down_", comment: "")
+                }
+
+                return header
+
+            } else if indexPath.section == 0 {
 
                 guard let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionHeaderMenu", for: indexPath) as? NCSectionHeaderMenu else { return UICollectionReusableView() }
                 let (_, heightHeaderRichWorkspace, heightHeaderSection) = getHeaderHeight(section: indexPath.section)
@@ -1687,6 +1666,10 @@ extension NCCollectionViewCommon: UICollectionViewDelegateFlowLayout {
             }
         } else {
             NCNetworking.shared.transferInForegorund = nil
+        }
+
+        if dataSource.getMetadataSourceForAllSections().isEmpty {
+            size = self.collectionView.frame.height / 2
         }
 
         return size
