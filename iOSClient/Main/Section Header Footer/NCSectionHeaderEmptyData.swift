@@ -26,13 +26,7 @@ import MarkdownKit
 
 class NCSectionHeaderEmptyData: UICollectionReusableView {
 
-    @IBOutlet weak var image: UIImageView!
-    @IBOutlet weak var title: UILabel!
-    @IBOutlet weak var descriprion: UILabel!
-
-    //@IBOutlet weak var viewTransferHeightConstraint: NSLayoutConstraint!
-
-    override func awakeFromNib() {
-        super.awakeFromNib()
-    }
+    @IBOutlet weak var emptyImage: UIImageView!
+    @IBOutlet weak var emptyTitle: UILabel!
+    @IBOutlet weak var emptyDescription: UILabel!
 }

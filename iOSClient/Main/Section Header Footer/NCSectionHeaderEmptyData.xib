@@ -48,9 +48,9 @@
                 <constraint firstItem="Iks-dv-Ur1" firstAttribute="top" secondItem="Mdn-Ii-iP0" secondAttribute="bottom" constant="8" id="mF2-cA-vXb"/>
             </constraints>
             <connections>
-                <outlet property="descriprion" destination="mgR-8K-A50" id="Fvf-Vm-I30"/>
-                <outlet property="image" destination="Mdn-Ii-iP0" id="WEY-zp-r2h"/>
-                <outlet property="title" destination="Iks-dv-Ur1" id="OA9-9f-ukU"/>
+                <outlet property="emptyDescription" destination="mgR-8K-A50" id="QkP-LV-O5N"/>
+                <outlet property="emptyImage" destination="Mdn-Ii-iP0" id="u8Q-jq-yIl"/>
+                <outlet property="emptyTitle" destination="Iks-dv-Ur1" id="M6q-pi-RJw"/>
             </connections>
             <point key="canvasLocation" x="411.19999999999999" y="2.6986506746626691"/>
         </collectionReusableView>

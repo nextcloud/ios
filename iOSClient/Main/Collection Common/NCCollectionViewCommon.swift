@@ -1550,14 +1550,28 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
 
                 guard let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionHeaderEmptyData", for: indexPath) as? NCSectionHeaderEmptyData else { return UICollectionReusableView() }
 
-                if serverUrl.isEmpty {
-                    header.image.image = emptyImage
-                    header.title.text = NSLocalizedString(emptyTitle, comment: "")
-                    header.descriprion.text = NSLocalizedString(emptyDescription, comment: "")
+                if isSearchingMode {
+                    header.emptyImage.image = UIImage(named: "search")?.image(color: .gray, size: UIScreen.main.bounds.width)
+                    if self.dataSourceTask?.state == .running {
+                        header.emptyTitle.text = NSLocalizedString("_search_in_progress_", comment: "")
+                    } else {
+                        header.emptyTitle.text = NSLocalizedString("_search_no_record_found_", comment: "")
+                    }
+                    header.emptyDescription.text = NSLocalizedString("_search_instruction_", comment: "")
+                } else if self.dataSourceTask?.state == .running {
+                    header.emptyImage.image = UIImage(named: "networkInProgress")?.image(color: .gray, size: UIScreen.main.bounds.width)
+                    header.emptyTitle.text = NSLocalizedString("_request_in_progress_", comment: "")
+                    header.emptyDescription.text = ""
                 } else {
-                    header.image.image = UIImage(named: "folder")?.image(color: NCBrandColor.shared.brandElement, size: UIScreen.main.bounds.width)
-                    header.title.text = NSLocalizedString("_files_no_files_", comment: "")
-                    header.descriprion.text = NSLocalizedString("_no_file_pull_down_", comment: "")
+                    if serverUrl.isEmpty {
+                        header.emptyImage.image = emptyImage
+                        header.emptyTitle.text = NSLocalizedString(emptyTitle, comment: "")
+                        header.emptyDescription.text = NSLocalizedString(emptyDescription, comment: "")
+                    } else {
+                        header.emptyImage.image = UIImage(named: "folder")?.image(color: NCBrandColor.shared.brandElement, size: UIScreen.main.bounds.width)
+                        header.emptyTitle.text = NSLocalizedString("_files_no_files_", comment: "")
+                        header.emptyDescription.text = NSLocalizedString("_no_file_pull_down_", comment: "")
+                    }
                 }
 
                 return header
