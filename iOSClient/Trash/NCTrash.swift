@@ -27,14 +27,13 @@ import Realm
 import UIKit
 import NextcloudKit
 
-class NCTrash: UIViewController, NCTrashListCellDelegate, NCTrashGridCellDelegate, NCEmptyDataSetDelegate {
+class NCTrash: UIViewController, NCTrashListCellDelegate, NCTrashGridCellDelegate {
 
     @IBOutlet weak var collectionView: UICollectionView!
 
     var filePath = ""
     var titleCurrentFolder = NSLocalizedString("_trash_view_", comment: "")
     var blinkFileId: String?
-    var emptyDataSet: NCEmptyDataSet?
     var dataSourceTask: URLSessionTask?
     let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
     let utilityFileSystem = NCUtilityFileSystem()
@@ -60,11 +59,10 @@ class NCTrash: UIViewController, NCTrashListCellDelegate, NCTrashGridCellDelegat
         view.backgroundColor = .systemBackground
         self.navigationController?.navigationBar.prefersLargeTitles = true
 
-        // Cell
         collectionView.register(UINib(nibName: "NCTrashListCell", bundle: nil), forCellWithReuseIdentifier: "listCell")
         collectionView.register(UINib(nibName: "NCTrashGridCell", bundle: nil), forCellWithReuseIdentifier: "gridCell")
 
-        // Footer
+        collectionView.register(UINib(nibName: "NCSectionHeaderEmptyData", bundle: nil), forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: "sectionHeaderEmptyData")
         collectionView.register(UINib(nibName: "NCSectionFooter", bundle: nil), forSupplementaryViewOfKind: UICollectionView.elementKindSectionFooter, withReuseIdentifier: "sectionFooter")
 
         collectionView.alwaysBounceVertical = true
@@ -78,7 +76,6 @@ class NCTrash: UIViewController, NCTrashListCellDelegate, NCTrashGridCellDelegat
         refreshControl.tintColor = .gray
         refreshControl.addTarget(self, action: #selector(loadListingTrash), for: .valueChanged)
 
-        emptyDataSet = NCEmptyDataSet(view: collectionView, offset: NCGlobal.shared.heightButtonsView, delegate: self)
         setNavigationRightItems()
 
         NotificationCenter.default.addObserver(self, selector: #selector(reloadDataSource), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterReloadDataSource), object: nil)
@@ -165,14 +162,6 @@ class NCTrash: UIViewController, NCTrashListCellDelegate, NCTrashGridCellDelegat
                 navigationItem.rightBarButtonItems?.first?.menu = navigationItem.rightBarButtonItems?.first?.menu?.replacingChildren(createMenuActions())
             }
         }
-    }
-
-    // MARK: - Empty
-
-    func emptyDataSetView(_ view: NCEmptyView) {
-        view.emptyImage.image = UIImage(named: "trash")?.image(color: .gray, size: UIScreen.main.bounds.width)
-        view.emptyTitle.text = NSLocalizedString("_trash_no_trash_", comment: "")
-        view.emptyDescription.text = NSLocalizedString("_trash_no_trash_description_", comment: "")
     }
 
     // MARK: TAP EVENT
