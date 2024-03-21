@@ -79,6 +79,7 @@ class NCAccountRequest: UIViewController {
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
+
         let visibleCells = tableView.visibleCells
         var numAccounts = accounts.count
         if enableAddAccount { numAccounts += 1 }
@@ -89,6 +90,7 @@ class NCAccountRequest: UIViewController {
 
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
+
         timer?.invalidate()
     }
 

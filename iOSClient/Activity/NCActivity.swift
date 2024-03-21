@@ -97,13 +97,14 @@ class NCActivity: UIViewController, NCSharePagingContent {
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+
         navigationController?.setNavigationBarAppearance()
+        fetchAll(isInitial: true)
     }
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         appDelegate.activeViewController = self
-        fetchAll(isInitial: true)
     }
 
     override func viewWillLayoutSubviews() {

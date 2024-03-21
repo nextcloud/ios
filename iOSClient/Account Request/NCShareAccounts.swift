@@ -60,6 +60,7 @@ class NCShareAccounts: UIViewController {
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
+
         let visibleCells = tableView.visibleCells
         if visibleCells.count == accounts.count {
             tableView.isScrollEnabled = false
