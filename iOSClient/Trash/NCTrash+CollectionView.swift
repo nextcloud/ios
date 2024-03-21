@@ -52,7 +52,6 @@ extension NCTrash: UICollectionViewDelegate {
 // MARK: UICollectionViewDataSource
 extension NCTrash: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        emptyDataSet?.numberOfItemsInSection(datasource.count, section: section)
         return datasource.count
     }
 
@@ -136,18 +135,32 @@ extension NCTrash: UICollectionViewDataSource {
     }
 
     func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
-        guard let footer = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionFooter", for: indexPath) as? NCSectionFooter
-        else { return UICollectionReusableView() }
-
-        footer.setTitleLabel(setTextFooter(datasource: datasource))
-        footer.separatorIsHidden(true)
-
-        return footer
+        if kind == UICollectionView.elementKindSectionHeader {
+            guard let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionHeaderEmptyData", for: indexPath) as? NCSectionHeaderEmptyData
+            else { return UICollectionReusableView() }
+            header.emptyImage.image = UIImage(named: "trash")?.image(color: .gray, size: UIScreen.main.bounds.width)
+            header.emptyTitle.text = NSLocalizedString("_trash_no_trash_", comment: "")
+            header.emptyDescription.text = NSLocalizedString("_trash_no_trash_description_", comment: "")
+            return header
+        } else {
+            guard let footer = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionFooter", for: indexPath) as? NCSectionFooter
+            else { return UICollectionReusableView() }
+            footer.setTitleLabel(setTextFooter(datasource: datasource))
+            footer.separatorIsHidden(true)
+            return footer
+        }
     }
 }
 
 // MARK: UICollectionViewDelegateFlowLayout
 extension NCTrash: UICollectionViewDelegateFlowLayout {
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
+        var height: Double = 0
+        if datasource.isEmpty {
+            height = collectionView.frame.height / 2
+        }
+        return CGSize(width: collectionView.frame.width, height: height)
+    }
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForFooterInSection section: Int) -> CGSize {
         return CGSize(width: collectionView.frame.width, height: NCGlobal.shared.endHeightFooter)
     }
