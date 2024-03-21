@@ -66,18 +66,6 @@ class NCAudioRecorderViewController: UIViewController, NCAudioRecorderDelegate {
         }
     }
 
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-    }
-
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-    }
-
-    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
-        super.traitCollectionDidChange(previousTraitCollection)
-    }
-
     // MARK: - Action
 
     @IBAction func touchViewController() {

@@ -26,19 +26,17 @@ import SwiftUI
 
 protocol NCCollectionViewCommonSelectTabBarDelegate: AnyObject {
     func selectAll()
-    func delete(selectedMetadatas: [tableMetadata])
-    func move(selectedMetadatas: [tableMetadata])
-    func share(selectedMetadatas: [tableMetadata])
-    func saveAsAvailableOffline(selectedMetadatas: [tableMetadata], isAnyOffline: Bool)
-    func lock(selectedMetadatas: [tableMetadata], isAnyLocked: Bool)
+    func delete()
+    func move()
+    func share()
+    func saveAsAvailableOffline(isAnyOffline: Bool)
+    func lock(isAnyLocked: Bool)
 }
 
-class NCCollectionViewCommonSelectTabBar: NCSelectableViewTabBar, ObservableObject {
+class NCCollectionViewCommonSelectTabBar: ObservableObject {
     var tabBarController: UITabBarController?
     var hostingController: UIViewController?
     open weak var delegate: NCCollectionViewCommonSelectTabBarDelegate?
-
-    var selectedMetadatas: [tableMetadata] = []
 
     @Published var isAnyOffline = false
     @Published var canSetAsOffline = false
@@ -70,12 +68,9 @@ class NCCollectionViewCommonSelectTabBar: NCSelectableViewTabBar, ObservableObje
         guard let tabBarController, let hostingController else { return }
 
         tabBarController.tabBar.isHidden = true
-
         if hostingController.view.isHidden {
             hostingController.view.isHidden = false
-
             hostingController.view.transform = .init(translationX: 0, y: hostingController.view.frame.height)
-
             UIView.animate(withDuration: 0.2) {
                 hostingController.view.transform = .init(translationX: 0, y: 0)
             }
@@ -87,6 +82,53 @@ class NCCollectionViewCommonSelectTabBar: NCSelectableViewTabBar, ObservableObje
 
         hostingController.view.isHidden = true
         tabBarController.tabBar.isHidden = false
+    }
+
+    func isHidden() -> Bool {
+        guard let hostingController else { return false }
+        return hostingController.view.isHidden
+    }
+
+    func update(selectOcId: [String], metadatas: [tableMetadata]? = nil, userId: String? = nil) {
+        if let metadatas {
+
+            isAnyOffline = false
+            canSetAsOffline = true
+            isAnyDirectory = false
+            isAllDirectory = true
+            isAnyLocked = false
+            canUnlock = true
+
+            for metadata in metadatas {
+                if metadata.directory {
+                    isAnyDirectory = true
+                } else {
+                    isAllDirectory = false
+                }
+
+                if !metadata.canSetAsAvailableOffline {
+                    canSetAsOffline = false
+                }
+
+                if metadata.lock {
+                    isAnyLocked = true
+                    if metadata.lockOwner != userId {
+                        canUnlock = false
+                    }
+                }
+
+                guard !isAnyOffline else { continue }
+
+                if metadata.directory,
+                   let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", metadata.account, metadata.serverUrl + "/" + metadata.fileName)) {
+                    isAnyOffline = directory.offline
+                } else if let localFile = NCManageDatabase.shared.getTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId)) {
+                    isAnyOffline = localFile.offline
+                } // else: file is not offline, continue
+            }
+            enableLock = !isAnyDirectory && canUnlock && !NCGlobal.shared.capabilityFilesLockVersion.isEmpty
+        }
+        isSelectedEmpty = selectOcId.isEmpty
     }
 }
 
@@ -100,17 +142,16 @@ struct NCCollectionViewCommonSelectTabBarView: View {
 
             HStack {
                 Button {
-                    tabBarSelect.delegate?.share(selectedMetadatas: tabBarSelect.selectedMetadatas)
+                    tabBarSelect.delegate?.share()
                 } label: {
                     Image(systemName: "square.and.arrow.up")
                         .imageScale(sizeClass == .compact ? .medium : .large)
-
                 }
                 .frame(maxWidth: .infinity)
                 .disabled(tabBarSelect.isSelectedEmpty || tabBarSelect.isAllDirectory)
 
                 Button {
-                    tabBarSelect.delegate?.move(selectedMetadatas: tabBarSelect.selectedMetadatas)
+                    tabBarSelect.delegate?.move()
                 } label: {
                     Image(systemName: "rectangle.portrait.and.arrow.right")
                         .imageScale(sizeClass == .compact ? .medium : .large)
@@ -119,7 +160,7 @@ struct NCCollectionViewCommonSelectTabBarView: View {
                 .disabled(tabBarSelect.isSelectedEmpty)
 
                 Button {
-                    tabBarSelect.delegate?.delete(selectedMetadatas: tabBarSelect.selectedMetadatas)
+                    tabBarSelect.delegate?.delete()
                 } label: {
                     Image(systemName: "trash")
                         .imageScale(sizeClass == .compact ? .medium : .large)
@@ -130,7 +171,7 @@ struct NCCollectionViewCommonSelectTabBarView: View {
 
                 Menu {
                     Button(action: {
-                        tabBarSelect.delegate?.saveAsAvailableOffline(selectedMetadatas: tabBarSelect.selectedMetadatas, isAnyOffline: tabBarSelect.isAnyOffline)
+                        tabBarSelect.delegate?.saveAsAvailableOffline(isAnyOffline: tabBarSelect.isAnyOffline)
                     }, label: {
                         Label(NSLocalizedString(tabBarSelect.isAnyOffline ? "_remove_available_offline_" : "_set_available_offline_", comment: ""), systemImage: tabBarSelect.isAnyOffline ? "icloud.slash" : "icloud.and.arrow.down")
 
@@ -141,7 +182,7 @@ struct NCCollectionViewCommonSelectTabBarView: View {
                     .disabled(!tabBarSelect.isAnyOffline && (!tabBarSelect.canSetAsOffline || tabBarSelect.isSelectedEmpty))
 
                     Button(action: {
-                        tabBarSelect.delegate?.lock(selectedMetadatas: tabBarSelect.selectedMetadatas, isAnyLocked: tabBarSelect.isAnyLocked)
+                        tabBarSelect.delegate?.lock(isAnyLocked: tabBarSelect.isAnyLocked)
                     }, label: {
                         Label(NSLocalizedString(tabBarSelect.isAnyLocked ? "_unlock_" : "_lock_", comment: ""), systemImage: tabBarSelect.isAnyLocked ? "lock.open" : "lock")
 

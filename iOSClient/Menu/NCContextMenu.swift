@@ -31,7 +31,7 @@ class NCContextMenu: NSObject {
     let utilityFileSystem = NCUtilityFileSystem()
     let utility = NCUtility()
 
-    func viewMenu(ocId: String, indexPath: IndexPath, viewController: UIViewController, image: UIImage?) -> UIMenu {
+    func viewMenu(ocId: String, viewController: UIViewController, image: UIImage?) -> UIMenu {
         guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) else { return UIMenu() }
 
         var downloadRequest: DownloadRequest?
@@ -166,7 +166,7 @@ class NCContextMenu: NSObject {
                     } else {
                         NCContentPresenter().showError(error: error)
                     }
-                    NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDeleteFile, userInfo: ["ocId": ocId, "indexPath": [indexPath], "onlyLocalCache": false, "error": error])
+                    NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDeleteFile, userInfo: ["ocId": ocId, "onlyLocalCache": false, "error": error])
                 }
             })
             alertController.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel) { _ in })
@@ -183,7 +183,7 @@ class NCContextMenu: NSObject {
                 } else {
                     NCContentPresenter().showError(error: error)
                 }
-                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDeleteFile, userInfo: ["ocId": ocId, "indexPath": [indexPath], "onlyLocalCache": true, "error": error])
+                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDeleteFile, userInfo: ["ocId": ocId, "onlyLocalCache": true, "error": error])
             }
         }
 

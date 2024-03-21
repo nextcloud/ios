@@ -47,7 +47,7 @@ class NCNetworkingProcess: NSObject {
             if !self.pauseProcess, !self.appDelegate.account.isEmpty {
                 Task {
                     let results = await self.start()
-                    print("[LOG] PROCESS (TIMER) Download: \(results.counterDownload) Upload: \(results.counterUpload)")
+                    print("[INFO] PROCESS (TIMER) Download: \(results.counterDownload) Upload: \(results.counterUpload)")
                     NotificationCenter.default.post(name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterUpdateBadgeNumber), object: nil)
                 }
             }

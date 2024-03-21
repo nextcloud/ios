@@ -56,7 +56,7 @@ extension NCManageDatabase {
                 realm.add(addObject)
             }
         } catch let error {
-            NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
+            NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not write to database: \(error)")
         }
     }
 
@@ -69,7 +69,7 @@ extension NCManageDatabase {
                 realm.delete(results)
             }
         } catch let error {
-            NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
+            NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not write to database: \(error)")
         }
     }
 
@@ -85,7 +85,7 @@ extension NCManageDatabase {
                 return Array(results.map { tableExternalSites.init(value: $0) })
             }
         } catch let error as NSError {
-            NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
+            NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not access to database: \(error)")
         }
 
         return nil

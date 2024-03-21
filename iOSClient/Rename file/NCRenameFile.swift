@@ -126,10 +126,6 @@ class NCRenameFile: UIViewController, UITextFieldDelegate {
         renameButton.setTitle(NSLocalizedString("_rename_", comment: ""), for: .normal)
     }
 
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-    }
-
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 

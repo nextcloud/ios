@@ -188,7 +188,7 @@ extension NCManageDatabase {
                 }
             }
         } catch let error {
-            NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
+            NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not write to database: \(error)")
         }
     }
 
@@ -206,7 +206,7 @@ extension NCManageDatabase {
             let filtered = allActivity.filter({ String($0.objectId) == filterFileId && $0.type != "comments" })
             return (all: allActivity, filter: filtered)
         } catch let error as NSError {
-            NextcloudKit.shared.nkCommonInstance.writeLog("Could not access database: \(error)")
+            NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not access database: \(error)")
         }
 
         return([], [])
@@ -220,7 +220,7 @@ extension NCManageDatabase {
             let results = realm.objects(tableActivitySubjectRich.self).filter("account == %@ && idActivity == %d && key == %@", account, idActivity, key).first
             return results.map { tableActivitySubjectRich.init(value: $0) }
         } catch let error as NSError {
-            NextcloudKit.shared.nkCommonInstance.writeLog("Could not access database: \(error)")
+            NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not access database: \(error)")
         }
 
         return nil
@@ -242,7 +242,7 @@ extension NCManageDatabase {
             }
             return activitySubjectRich.map { tableActivitySubjectRich.init(value: $0) }
         } catch let error as NSError {
-            NextcloudKit.shared.nkCommonInstance.writeLog("Could not access database: \(error)")
+            NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not access database: \(error)")
         }
 
         return nil
@@ -262,7 +262,7 @@ extension NCManageDatabase {
             }
             return results
         } catch let error as NSError {
-            NextcloudKit.shared.nkCommonInstance.writeLog("Could not access database: \(error)")
+            NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not access database: \(error)")
         }
 
         return []
@@ -280,7 +280,7 @@ extension NCManageDatabase {
                 realm.add(newRecentActivity, update: .all)
             }
         } catch {
-            NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
+            NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not write to database: \(error)")
         }
     }
 
@@ -291,7 +291,7 @@ extension NCManageDatabase {
             realm.refresh()
             return realm.objects(tableActivityLatestId.self).filter("account == %@", account).first
         } catch let error as NSError {
-            NextcloudKit.shared.nkCommonInstance.writeLog("Could not access database: \(error)")
+            NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not access database: \(error)")
         }
 
         return nil

@@ -26,7 +26,7 @@ import SwiftUI
 import NextcloudKit
 
 @objc protocol NCSelectDelegate {
-    @objc func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String, items: [Any], indexPath: [IndexPath], overwrite: Bool, copy: Bool, move: Bool)
+    @objc func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String, items: [Any], overwrite: Bool, copy: Bool, move: Bool)
 }
 
 class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresentationControllerDelegate, NCListCellDelegate, NCGridCellDelegate, NCSectionHeaderMenuDelegate, NCEmptyDataSetDelegate {
@@ -56,7 +56,6 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
     @objc var enableSelectFile = false
     @objc var type = ""
     @objc var items: [tableMetadata] = []
-    @objc var selectIndexPath: [IndexPath] = []
 
     var titleCurrentFolder = NCBrandOptions.shared.brand
     var serverUrl = ""
@@ -148,8 +147,8 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
         NotificationCenter.default.addObserver(self, selector: #selector(createFolder(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterCreateFolder), object: nil)
     }
 
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
 
         self.navigationItem.title = titleCurrentFolder
 
@@ -217,17 +216,17 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
     }
 
     func selectButtonPressed(_ sender: UIButton) {
-        delegate?.dismissSelect(serverUrl: serverUrl, metadata: metadataFolder, type: type, items: items, indexPath: selectIndexPath, overwrite: overwrite, copy: false, move: false)
+        delegate?.dismissSelect(serverUrl: serverUrl, metadata: metadataFolder, type: type, items: items, overwrite: overwrite, copy: false, move: false)
         self.dismiss(animated: true, completion: nil)
     }
 
     func copyButtonPressed(_ sender: UIButton) {
-        delegate?.dismissSelect(serverUrl: serverUrl, metadata: metadataFolder, type: type, items: items, indexPath: selectIndexPath, overwrite: overwrite, copy: true, move: false)
+        delegate?.dismissSelect(serverUrl: serverUrl, metadata: metadataFolder, type: type, items: items, overwrite: overwrite, copy: true, move: false)
         self.dismiss(animated: true, completion: nil)
     }
 
     func moveButtonPressed(_ sender: UIButton) {
-        delegate?.dismissSelect(serverUrl: serverUrl, metadata: metadataFolder, type: type, items: items, indexPath: selectIndexPath, overwrite: overwrite, copy: false, move: true)
+        delegate?.dismissSelect(serverUrl: serverUrl, metadata: metadataFolder, type: type, items: items, overwrite: overwrite, copy: false, move: true)
         self.dismiss(animated: true, completion: nil)
     }
 
@@ -257,8 +256,6 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
         viewController.type = type
         viewController.overwrite = overwrite
         viewController.items = items
-        viewController.selectIndexPath = selectIndexPath
-
         viewController.titleCurrentFolder = metadata.fileNameView
         viewController.serverUrl = serverUrlPush
 
@@ -280,7 +277,7 @@ extension NCSelect: UICollectionViewDelegate {
 
         } else {
 
-            delegate?.dismissSelect(serverUrl: serverUrl, metadata: metadata, type: type, items: items, indexPath: selectIndexPath, overwrite: overwrite, copy: false, move: false)
+            delegate?.dismissSelect(serverUrl: serverUrl, metadata: metadata, type: type, items: items, overwrite: overwrite, copy: false, move: false)
             self.dismiss(animated: true, completion: nil)
         }
     }
@@ -677,7 +674,7 @@ struct SelectView: UIViewControllerRepresentable {
             self.parent = parent
         }
 
-        func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String, items: [Any], indexPath: [IndexPath], overwrite: Bool, copy: Bool, move: Bool) {
+        func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String, items: [Any], overwrite: Bool, copy: Bool, move: Bool) {
             if let serverUrl = serverUrl {
                 self.parent.serverUrl = serverUrl
             }
