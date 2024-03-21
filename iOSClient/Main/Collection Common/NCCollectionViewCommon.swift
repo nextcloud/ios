@@ -227,6 +227,14 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         NotificationCenter.default.addObserver(self, selector: #selector(triggerProgressTask(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterProgressTask), object: nil)
     }
 
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+
+        NCNetworking.shared.cancelUnifiedSearchFiles()
+        tipView?.dismiss()
+        setEditMode(false)
+    }
+
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
 
@@ -257,11 +265,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUploadCancelFile), object: nil)
 
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterProgressTask), object: nil)
-
-        NCNetworking.shared.cancelUnifiedSearchFiles()
-
-        tipView?.dismiss()
-        setEditMode(false)
     }
 
     func presentationControllerDidDismiss( _ presentationController: UIPresentationController) {
@@ -626,6 +629,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                 let action = UIAction(title: name, image: image, state: account.active ? .on : .off) { _ in
                     if !account.active {
                         self.appDelegate.changeAccount(account.account, userProfile: nil)
+                        self.setEditMode(false)
                     }
                 }
 
