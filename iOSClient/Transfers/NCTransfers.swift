@@ -99,15 +99,6 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
         notificationReloadDataSource += 1
     }
 
-    // MARK: - Empty
-
-    override func emptyDataSetView(_ view: NCEmptyView) {
-        self.emptyDataSet?.setOffset(getHeaderHeight())
-        view.emptyImage.image = emptyImage
-        view.emptyTitle.text = NSLocalizedString(emptyTitle, comment: "")
-        view.emptyDescription.text = NSLocalizedString(emptyDescription, comment: "")
-    }
-
     // MARK: TAP EVENT
 
     override func longPressMoreListItem(with objectId: String, namedButtonMore: String, indexPath: IndexPath, gestureRecognizer: UILongPressGestureRecognizer) {
