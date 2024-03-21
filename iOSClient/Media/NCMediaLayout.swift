@@ -26,6 +26,12 @@ public let collectionViewMediaElementKindSectionFooter = "collectionViewMediaEle
 
 protocol NCMediaLayoutDelegate: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, layout: UICollectionViewLayout, sizeForItemAtIndexPath indexPath: NSIndexPath, columnCount: Int, mediaLayout: String) -> CGSize
+    func collectionView(_ collectionView: UICollectionView, layout: UICollectionViewLayout, heightForHeaderInSection section: Int) -> Float
+    func collectionView(_ collectionView: UICollectionView, layout: UICollectionViewLayout, heightForFooterInSection section: Int) -> Float
+    func collectionView(_ collectionView: UICollectionView, layout: UICollectionViewLayout, insetForSection section: Int) -> UIEdgeInsets
+    func collectionView(_ collectionView: UICollectionView, layout: UICollectionViewLayout, insetForHeaderInSection section: Int) -> UIEdgeInsets
+    func collectionView(_ collectionView: UICollectionView, layout: UICollectionViewLayout, insetForFooterInSection section: Int) -> UIEdgeInsets
+    func collectionView(_ collectionView: UICollectionView, layout: UICollectionViewLayout, minimumInteritemSpacingForSection section: Int) -> Float
 }
 
 public class NCMediaLayout: UICollectionViewLayout {
@@ -137,12 +143,17 @@ public class NCMediaLayout: UICollectionViewLayout {
             /*
             * 1. Get section-specific metrics (minimumInteritemSpacing, sectionInset)
             */
+            let minimumInteritemSpacing: Float = delegate.collectionView(collectionView, layout: self, minimumInteritemSpacingForSection: section)
+            let sectionInset: UIEdgeInsets = delegate.collectionView(collectionView, layout: self, insetForSection: section)
             let width = Float(collectionView.frame.size.width - sectionInset.left - sectionInset.right)
             let itemWidth = floorf((width - Float(columnCount - 1) * Float(minimumColumnSpacing)) / Float(columnCount))
 
             /*
             * 2. Section header
             */
+            let headerHeight: Float = delegate.collectionView(collectionView, layout: self, heightForHeaderInSection: section)
+            let headerInset: UIEdgeInsets = delegate.collectionView(collectionView, layout: self, insetForHeaderInSection: section)
+
             top += Float(headerInset.top)
 
             if headerHeight > 0 {
