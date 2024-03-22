@@ -21,11 +21,6 @@
 //
 
 class BaseIntegrationXCTestCase: BaseXCTestCase {
-//    let baseUrl = EnvVars.testServerUrl
-//    let user = EnvVars.testUser
-//    let userId = EnvVars.testUser
-//    let appPassword = EnvVars.testAppPassword
-
     var randomInt: Int {
         get {
             return Int.random(in: 1000...Int.max)

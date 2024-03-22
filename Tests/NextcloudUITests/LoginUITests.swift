@@ -33,7 +33,6 @@ final class LoginUITests: BaseUIXCTestCase {
     func test_logIn_withProperParams_shouldLogInAndGoToHomeScreen() throws {
         app.launch()
 
-
         let loginButton = app.buttons["Log in"]
         XCTAssert(loginButton.waitForExistence(timeout: timeoutSeconds))
         loginButton.tap()
@@ -50,11 +49,13 @@ final class LoginUITests: BaseUIXCTestCase {
         waitForEnabledAndHittable(object: loginButton2)
         loginButton2.tap()
 
-        let usernameTextField = webViewsQuery/*@START_MENU_TOKEN@*/.textFields["Login with username or email"]/*[[".otherElements[\"Login – Nextcloud\"]",".otherElements[\"main\"].textFields[\"Login with username or email\"]",".textFields[\"Login with username or email\"]"],[[[-1,2],[-1,1],[-1,0,1]],[[-1,2],[-1,1]]],[0]]@END_MENU_TOKEN@*/
+        let usernameTextField = webViewsQuery.textFields["Login with username or email"]
+        usernameTextField.isAccessibilityElement = true
         XCTAssert(usernameTextField.waitForExistence(timeout: timeoutSeconds))
         usernameTextField.tap()
         usernameTextField.typeText(TestConstants.username)
         let passwordTextField = webViewsQuery/*@START_MENU_TOKEN@*/.secureTextFields["Password"]/*[[".otherElements[\"Login – Nextcloud\"]",".otherElements[\"main\"].secureTextFields[\"Password\"]",".secureTextFields[\"Password\"]"],[[[-1,2],[-1,1],[-1,0,1]],[[-1,2],[-1,1]]],[0]]@END_MENU_TOKEN@*/
+        passwordTextField.isAccessibilityElement = true
         passwordTextField.tap()
         passwordTextField.typeText(TestConstants.password)
         let loginButton3 = webViewsQuery/*@START_MENU_TOKEN@*/.buttons["Log in"]/*[[".otherElements[\"Login – Nextcloud\"]",".otherElements[\"main\"].buttons[\"Log in\"]",".buttons[\"Log in\"]"],[[[-1,2],[-1,1],[-1,0,1]],[[-1,2],[-1,1]]],[0]]@END_MENU_TOKEN@*/
