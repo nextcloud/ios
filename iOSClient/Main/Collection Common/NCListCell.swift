@@ -22,8 +22,9 @@
 //
 
 import UIKit
+import SwipeCellKit
 
-class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProtocol {
+class NCListCell: SwipeCollectionViewCell, UIGestureRecognizerDelegate, NCCellProtocol {
 
     @IBOutlet weak var imageItem: UIImageView!
     @IBOutlet weak var imageSelect: UIImageView!
