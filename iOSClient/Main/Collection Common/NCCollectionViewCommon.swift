@@ -1708,7 +1708,7 @@ extension NCCollectionViewCommon: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
         var height: CGFloat = 0
         if dataSource.getMetadataSourceForAllSections().isEmpty {
-            height = NCGlobal.shared.getHeightHeaderEmptyData(view: view)
+            height = NCGlobal.shared.getHeightHeaderEmptyData(view: view, landscapeOffset: -20)
         } else {
             let (heightHeaderCommands, heightHeaderRichWorkspace, heightHeaderSection) = getHeaderHeight(section: section)
             height = heightHeaderCommands + heightHeaderRichWorkspace + heightHeaderSection
