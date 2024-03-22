@@ -77,24 +77,19 @@ class NCAccountRequest: UIViewController {
         NotificationCenter.default.addObserver(self, selector: #selector(applicationDidEnterBackground), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationDidEnterBackground), object: nil)
     }
 
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-    }
-
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
         let visibleCells = tableView.visibleCells
         var numAccounts = accounts.count
         if enableAddAccount { numAccounts += 1 }
-
         if visibleCells.count == numAccounts {
             tableView.isScrollEnabled = false
         }
     }
 
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
 
         timer?.invalidate()
     }
@@ -140,7 +135,6 @@ extension NCAccountRequest: UITableViewDelegate {
         timer?.invalidate()
         progressView.progress = 0
     }
-
 
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return heightCell

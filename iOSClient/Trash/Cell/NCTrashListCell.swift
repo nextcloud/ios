@@ -43,7 +43,7 @@ class NCTrashListCell: UICollectionViewCell, NCTrashCellProtocol {
     @IBOutlet weak var separator: UIView!
     @IBOutlet weak var separatorHeightConstraint: NSLayoutConstraint!
 
-    weak var delegate: NCTrashListCellDelegate?
+    weak var listCellDelegate: NCTrashListCellDelegate?
 
     var objectId = ""
     var indexPath = IndexPath()
@@ -79,11 +79,11 @@ class NCTrashListCell: UICollectionViewCell, NCTrashCellProtocol {
     }
 
     @IBAction func touchUpInsideMore(_ sender: Any) {
-        delegate?.tapMoreListItem(with: objectId, image: imageItem.image, sender: sender)
+        listCellDelegate?.tapMoreListItem(with: objectId, image: imageItem.image, sender: sender)
     }
 
     @IBAction func touchUpInsideRestore(_ sender: Any) {
-        delegate?.tapRestoreListItem(with: objectId, image: imageItem.image, sender: sender)
+        listCellDelegate?.tapRestoreListItem(with: objectId, image: imageItem.image, sender: sender)
     }
 
     func selectMode(_ status: Bool) {

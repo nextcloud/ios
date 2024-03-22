@@ -111,7 +111,7 @@ extension NCActivityTableViewCell: UICollectionViewDelegate {
                 if let viewController = UIStoryboard(name: "NCTrash", bundle: nil).instantiateInitialViewController() as? NCTrash {
                     if let result = NCManageDatabase.shared.getTrashItem(fileId: String(activityPreview.fileId), account: activityPreview.account) {
                         viewController.blinkFileId = result.fileId
-                        viewController.trashPath = result.filePath
+                        viewController.filePath = result.filePath
                         (responder as? UIViewController)!.navigationController?.pushViewController(viewController, animated: true)
                     } else {
                         let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_trash_file_not_found_")

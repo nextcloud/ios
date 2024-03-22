@@ -17,7 +17,7 @@ extension NCMedia {
 
     func setSelectcancelButton() {
         selectOcId.removeAll()
-        tabBarSelect?.selectCount = selectOcId.count
+        tabBarSelect.selectCount = selectOcId.count
         if let visibleCells = self.collectionView?.indexPathsForVisibleItems.compactMap({ self.collectionView?.cellForItem(at: $0) }) {
             for case let cell as NCGridMediaCell in visibleCells {
                 cell.selected(false)
@@ -29,14 +29,14 @@ extension NCMedia {
             selectOrCancelButtonTrailing.constant = 10
             selectOrCancelButton.isHidden = false
             menuButton.isHidden = true
-            tabBarSelect?.show()
+            tabBarSelect.show()
         } else {
             activityIndicatorTrailing.constant = 150
             selectOrCancelButton.setTitle( NSLocalizedString("_select_", comment: ""), for: .normal)
             selectOrCancelButtonTrailing.constant = 50
             selectOrCancelButton.isHidden = false
             menuButton.isHidden = false
-            tabBarSelect?.hide()
+            tabBarSelect.hide()
         }
     }
 

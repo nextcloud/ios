@@ -51,9 +51,9 @@ class NCManageDatabase: NSObject {
 
         if let databaseFilePath = databaseFileUrlPath?.path {
             if FileManager.default.fileExists(atPath: databaseFilePath) {
-                NextcloudKit.shared.nkCommonInstance.writeLog("DATABASE FOUND in " + databaseFilePath)
+                NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] DATABASE FOUND in " + databaseFilePath)
             } else {
-                NextcloudKit.shared.nkCommonInstance.writeLog("DATABASE NOT FOUND in " + databaseFilePath)
+                NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] DATABASE NOT FOUND in " + databaseFilePath)
             }
         }
 
@@ -148,7 +148,7 @@ class NCManageDatabase: NSObject {
                         let nkError = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: error.localizedDescription)
                         NCContentPresenter().showError(error: nkError, priority: .max)
 #endif
-                        NextcloudKit.shared.nkCommonInstance.writeLog("DATABASE ERROR: \(error.localizedDescription)")
+                        NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] DATABASE ERROR: \(error.localizedDescription)")
                         try FileManager.default.removeItem(at: databaseFileUrlPath)
                     } catch {}
                 }
@@ -170,7 +170,7 @@ class NCManageDatabase: NSObject {
                     let nkError = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: error.localizedDescription)
                     NCContentPresenter().showError(error: nkError, priority: .max)
 #endif
-                    NextcloudKit.shared.nkCommonInstance.writeLog("DATABASE ERROR: \(error.localizedDescription)")
+                    NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] DATABASE ERROR: \(error.localizedDescription)")
                     try FileManager.default.removeItem(at: databaseFileUrlPath)
                 } catch { }
             }
@@ -179,7 +179,7 @@ class NCManageDatabase: NSObject {
         do {
             _ = try Realm()
         } catch let error as NSError {
-            NextcloudKit.shared.nkCommonInstance.writeLog("Could not open database: \(error)")
+            NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not open database: \(error)")
         }
     }
 
@@ -202,7 +202,7 @@ class NCManageDatabase: NSObject {
                 realm.delete(results)
             }
         } catch let error {
-            NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
+            NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not write to database: \(error)")
         }
     }
 
@@ -266,7 +266,7 @@ class NCManageDatabase: NSObject {
             do {
                 try FileManager.default.removeItem(at: URL)
             } catch let error {
-                NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
+                NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not write to database: \(error)")
             }
         }
     }
@@ -282,7 +282,7 @@ class NCManageDatabase: NSObject {
             let realm = try Realm()
             return realm.resolve(tableRef)
         } catch let error as NSError {
-            NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
+            NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not write to database: \(error)")
         }
 
         return nil

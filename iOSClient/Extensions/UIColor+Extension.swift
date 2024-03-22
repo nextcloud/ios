@@ -30,7 +30,7 @@ extension UIColor {
         self.getRed(&r, green: &g, blue: &b, alpha: &a)
         return UIColor(red: (1 - r), green: (1 - g), blue: (1 - b), alpha: a) // Assuming you want the same alpha value.
     }
-    
+
     var hexString: String {
 
         let cgColorInRGB = cgColor.converted(to: CGColorSpace(name: CGColorSpace.sRGB)!, intent: .defaultIntent, options: nil)!

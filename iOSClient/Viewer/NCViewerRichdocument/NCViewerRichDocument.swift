@@ -301,7 +301,7 @@ class NCViewerRichDocument: UIViewController, WKNavigationDelegate, WKScriptMess
 
     // MARK: -
 
-    func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String, items: [Any], indexPath: [IndexPath], overwrite: Bool, copy: Bool, move: Bool) {
+    func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String, items: [Any], overwrite: Bool, copy: Bool, move: Bool) {
 
         if let serverUrl, let metadata {
 
@@ -314,7 +314,7 @@ class NCViewerRichDocument: UIViewController, WKNavigationDelegate, WKScriptMess
                 } else if error != .success {
                     NCContentPresenter().showError(error: error)
                 } else {
-                    print("[LOG] It has been changed user during networking process, error.")
+                    print("[ERROR] It has been changed user during networking process, error.")
                 }
             }
         }
@@ -331,7 +331,7 @@ class NCViewerRichDocument: UIViewController, WKNavigationDelegate, WKScriptMess
             } else if error != .success {
                 NCContentPresenter().showError(error: error)
             } else {
-                print("[LOG] It has been changed user during networking process, error.")
+                print("[ERROR] It has been changed user during networking process, error.")
             }
         }
     }

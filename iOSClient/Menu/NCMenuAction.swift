@@ -144,7 +144,7 @@ extension NCMenuAction {
             icon: NCUtility().loadImage(named: icon),
             order: order,
             action: { _ in
-                let alertController = UIAlertController.deleteFileOrFolder(titleString: titleDelete + "?", message: message + fileList, canDeleteServer: canDeleteServer, selectedMetadatas: selectedMetadatas, indexPaths: indexPaths) { _ in
+                let alertController = UIAlertController.deleteFileOrFolder(titleString: titleDelete + "?", message: message + fileList, canDeleteServer: canDeleteServer, selectedMetadatas: selectedMetadatas) { _ in
                     completion?()
                 }
 
@@ -229,7 +229,7 @@ extension NCMenuAction {
             icon: NCUtility().loadImage(named: "rectangle.portrait.and.arrow.right"),
             order: order,
             action: { _ in
-                NCActionCenter.shared.openSelectView(items: selectedMetadatas, indexPath: indexPath)
+                NCActionCenter.shared.openSelectView(items: selectedMetadatas)
                 completion?()
             }
         )

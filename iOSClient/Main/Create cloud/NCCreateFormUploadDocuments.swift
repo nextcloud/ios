@@ -210,7 +210,7 @@ import XLForm
 
     // MARK: - Action
 
-    func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String, items: [Any], indexPath: [IndexPath], overwrite: Bool, copy: Bool, move: Bool) {
+    func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String, items: [Any], overwrite: Bool, copy: Bool, move: Bool) {
 
         guard let serverUrl = serverUrl else { return }
 
@@ -499,7 +499,7 @@ import XLForm
             } else if error != .success {
                 print("\(error.errorCode)")
             } else {
-                print("[LOG] It has been changed user during networking process, error.")
+                print("[ERROR] It has been changed user during networking process, error.")
             }
         }
     }

@@ -58,19 +58,17 @@ import MarkdownKit
         textViewColor = .label
     }
 
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
 
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-            NCNetworking.shared.readFile(serverUrlFileName: self.serverUrl, queue: .main) { _ in
-            } completion: { account, metadata, error in
-                if error == .success, account == self.appDelegate.account, let metadata {
-                    NCManageDatabase.shared.setDirectory(serverUrl: self.serverUrl, richWorkspace: metadata.richWorkspace, account: account)
-                    if self.richWorkspaceText != metadata.richWorkspace, metadata.richWorkspace != nil {
-                        self.delegate?.richWorkspaceText = self.richWorkspaceText
-                        self.richWorkspaceText = metadata.richWorkspace!
-                        self.textView.attributedText = self.markdownParser.parse(metadata.richWorkspace!)
-                    }
+        NCNetworking.shared.readFile(serverUrlFileName: self.serverUrl, queue: .main) { _ in
+        } completion: { account, metadata, error in
+            if error == .success, account == self.appDelegate.account, let metadata {
+                NCManageDatabase.shared.setDirectory(serverUrl: self.serverUrl, richWorkspace: metadata.richWorkspace, account: account)
+                if self.richWorkspaceText != metadata.richWorkspace, metadata.richWorkspace != nil {
+                    self.delegate?.richWorkspaceText = self.richWorkspaceText
+                    self.richWorkspaceText = metadata.richWorkspace!
+                    self.textView.attributedText = self.markdownParser.parse(metadata.richWorkspace!)
                 }
             }
         }
