@@ -1546,7 +1546,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
 
         if kind == UICollectionView.elementKindSectionHeader {
 
-            if dataSource.getMetadataSourceForAllSections().isEmpty {
+            if dataSource.getMetadataSourceForAllSections().isEmpty, !isHeaderMenuTransferViewEnabled() {
 
                 guard let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionHeaderEmptyData", for: indexPath) as? NCSectionHeaderEmptyData else { return UICollectionReusableView() }
 
@@ -1667,13 +1667,17 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
 
 extension NCCollectionViewCommon: UICollectionViewDelegateFlowLayout {
 
+    func isHeaderMenuTransferViewEnabled() -> Bool {
+        if headerMenuTransferView, let metadata = NCManageDatabase.shared.getMetadataFromOcId(NCNetworking.shared.transferInForegorund?.ocId), metadata.isTransferInForeground {
+            return true
+        }
+        return false
+    }
+
     func getHeaderHeight() -> CGFloat {
         var size: CGFloat = 0
 
-        // transfer in progress
-        if headerMenuTransferView,
-           let metadata = NCManageDatabase.shared.getMetadataFromOcId(NCNetworking.shared.transferInForegorund?.ocId),
-           metadata.isTransferInForeground {
+        if isHeaderMenuTransferViewEnabled() {
             if !isSearchingMode {
                 size += NCGlobal.shared.heightHeaderTransfer
             }
@@ -1707,7 +1711,7 @@ extension NCCollectionViewCommon: UICollectionViewDelegateFlowLayout {
 
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
         var height: CGFloat = 0
-        if dataSource.getMetadataSourceForAllSections().isEmpty {
+        if dataSource.getMetadataSourceForAllSections().isEmpty, !isHeaderMenuTransferViewEnabled() {
             height = NCGlobal.shared.getHeightHeaderEmptyData(view: view, landscapeOffset: -20)
         } else {
             let (heightHeaderCommands, heightHeaderRichWorkspace, heightHeaderSection) = getHeaderHeight(section: section)
