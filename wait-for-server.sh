@@ -3,6 +3,7 @@
 
 # This scripts waits until a server transitions to the "installed" state
 
+SERVER_PORT=8080
 SERVER_URL="http://localhost:${SERVER_PORT}"
 
 timeout=2000
