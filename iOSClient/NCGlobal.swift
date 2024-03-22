@@ -116,7 +116,8 @@ class NCGlobal: NSObject {
 
     // Varie size GUI
     //
-    @objc let heightCellSettings: CGFloat = 50
+    @objc let heightCellSettings: CGFloat           = 50
+    let heightHeaderEmptyData: CGFloat              = 200
 
     // Avatar & Preview size
     //
