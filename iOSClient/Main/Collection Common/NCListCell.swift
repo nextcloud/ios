@@ -22,7 +22,6 @@
 //
 
 import UIKit
-import SwipeCellKit
 
 class NCListCell: SwipeCollectionViewCell, UIGestureRecognizerDelegate, NCCellProtocol {
 
