@@ -1682,10 +1682,6 @@ extension NCCollectionViewCommon: UICollectionViewDelegateFlowLayout {
             NCNetworking.shared.transferInForegorund = nil
         }
 
-        if dataSource.getMetadataSourceForAllSections().isEmpty {
-            size = self.collectionView.frame.height / 2
-        }
-
         return size
     }
 
@@ -1713,10 +1709,16 @@ extension NCCollectionViewCommon: UICollectionViewDelegateFlowLayout {
 
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
 
-        let (heightHeaderCommands, heightHeaderRichWorkspace, heightHeaderSection) = getHeaderHeight(section: section)
-        let heightHeader = heightHeaderCommands + heightHeaderRichWorkspace + heightHeaderSection
+        var height: CGFloat = 0
 
-        return CGSize(width: collectionView.frame.width, height: heightHeader)
+        if dataSource.getMetadataSourceForAllSections().isEmpty {
+            height = self.collectionView.frame.height / 2
+        } else {
+            let (heightHeaderCommands, heightHeaderRichWorkspace, heightHeaderSection) = getHeaderHeight(section: section)
+            height = heightHeaderCommands + heightHeaderRichWorkspace + heightHeaderSection
+        }
+
+        return CGSize(width: collectionView.frame.width, height: height)
     }
 
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForFooterInSection section: Int) -> CGSize {
