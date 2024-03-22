@@ -71,6 +71,15 @@
       shouldUseLaunchSchemeArgsEnv = "NO"
       enableThreadSanitizer = "YES"
       codeCoverageEnabled = "YES">
+      <PreActions>
+         <ExecutionAction
+            ActionType = "Xcode.IDEStandardExecutionActionsCore.ExecutionActionType.ShellScriptAction">
+            <ActionContent
+               title = "Run Script"
+               scriptText = "# Type a script or drag a script file from your workspace to insert its path.&#10;&#10;defaults write com.apple.iphonesimulator ConnectHardwareKeyboard 0&#10;">
+            </ActionContent>
+         </ExecutionAction>
+      </PreActions>
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
