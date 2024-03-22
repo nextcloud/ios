@@ -1668,13 +1668,12 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
 extension NCCollectionViewCommon: UICollectionViewDelegateFlowLayout {
 
     func getHeaderHeight() -> CGFloat {
-
         var size: CGFloat = 0
 
         // transfer in progress
         if headerMenuTransferView,
            let metadata = NCManageDatabase.shared.getMetadataFromOcId(NCNetworking.shared.transferInForegorund?.ocId),
-            metadata.isTransferInForeground {
+           metadata.isTransferInForeground {
             if !isSearchingMode {
                 size += NCGlobal.shared.heightHeaderTransfer
             }
@@ -1686,7 +1685,6 @@ extension NCCollectionViewCommon: UICollectionViewDelegateFlowLayout {
     }
 
     func getHeaderHeight(section: Int) -> (heightHeaderCommands: CGFloat, heightHeaderRichWorkspace: CGFloat, heightHeaderSection: CGFloat) {
-
         var headerRichWorkspace: CGFloat = 0
 
         if let richWorkspaceText = richWorkspaceText, showDescription {
@@ -1708,21 +1706,17 @@ extension NCCollectionViewCommon: UICollectionViewDelegateFlowLayout {
     }
 
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
-
         var height: CGFloat = 0
-
         if dataSource.getMetadataSourceForAllSections().isEmpty {
-            height = NCGlobal.shared.heightHeaderEmptyData
+            height = (view.frame.height / 2)
         } else {
             let (heightHeaderCommands, heightHeaderRichWorkspace, heightHeaderSection) = getHeaderHeight(section: section)
             height = heightHeaderCommands + heightHeaderRichWorkspace + heightHeaderSection
         }
-
         return CGSize(width: collectionView.frame.width, height: height)
     }
 
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForFooterInSection section: Int) -> CGSize {
-
         let sections = dataSource.numberOfSections()
         let metadataForSection = self.dataSource.getMetadataForSection(section)
         let isPaginated = metadataForSection?.lastSearchResult?.isPaginated ?? false
