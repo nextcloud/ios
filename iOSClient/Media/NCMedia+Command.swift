@@ -85,8 +85,7 @@ extension NCMedia {
         let layoutTitle = (layout == NCGlobal.shared.mediaLayoutRatio) ? NSLocalizedString("_media_square_", comment: "") : NSLocalizedString("_media_ratio_", comment: "")
         let layoutImage = (layout == NCGlobal.shared.mediaLayoutRatio) ? UIImage(systemName: "square.grid.3x3") : UIImage(systemName: "rectangle.grid.3x2")
 
-        if UIDevice.current.userInterfaceIdiom == .phone,
-           (UIDevice.current.orientation == .landscapeLeft || UIDevice.current.orientation == .landscapeRight) {
+        if UIDevice.current.userInterfaceIdiom == .phone, UIDevice.current.orientation.isLandscape {
             columnCount += 2
         }
 
