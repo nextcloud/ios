@@ -433,7 +433,7 @@ extension NCMedia: NCMediaLayoutDelegate {
     func collectionView(_ collectionView: UICollectionView, layout: UICollectionViewLayout, heightForHeaderInSection section: Int) -> Float {
         var height: Double = 0
         if metadatas == nil || metadatas?.isEmpty ?? true {
-            height = collectionView.frame.height / 2
+            height = NCGlobal.shared.heightHeaderEmptyData
         }
         return Float(height)
     }

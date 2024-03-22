@@ -1712,7 +1712,7 @@ extension NCCollectionViewCommon: UICollectionViewDelegateFlowLayout {
         var height: CGFloat = 0
 
         if dataSource.getMetadataSourceForAllSections().isEmpty {
-            height = self.collectionView.frame.height / 2
+            height = NCGlobal.shared.heightHeaderEmptyData
         } else {
             let (heightHeaderCommands, heightHeaderRichWorkspace, heightHeaderSection) = getHeaderHeight(section: section)
             height = heightHeaderCommands + heightHeaderRichWorkspace + heightHeaderSection
