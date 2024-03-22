@@ -2728,9 +2728,9 @@
 				F7346E1028B0EF5B006CE2D2 /* Widget.appex */,
 				F7C9739028F17131002C43E2 /* WidgetDashboardIntentHandler.appex */,
 				F70716E32987F81500E72C1D /* File Provider Extension UI.appex */,
-				C0046CDA2A17B98400D87C9D /* NextcloudUITests.xctest */,
 				C04E2F202A17BB4D001BAD85 /* NextcloudIntegrationTests.xctest */,
 				F31F69422A2F6D4500162F76 /* NextcloudSnapshotTests.xctest */,
+				C0046CDA2A17B98400D87C9D /* NextcloudUITests.xctest */,
 				F33AAF982A601465006ECCBD /* Recovered References */,
 			);
 			sourceTree = "<group>";
