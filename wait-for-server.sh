@@ -5,7 +5,7 @@
 
 SERVER_URL="http://localhost:${SERVER_PORT}"
 
-timeout=300
+timeout=2000
 elapsed=0
 
 echo "Waiting for server..."
