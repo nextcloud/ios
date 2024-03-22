@@ -433,7 +433,7 @@ extension NCMedia: NCMediaLayoutDelegate {
     func collectionView(_ collectionView: UICollectionView, layout: UICollectionViewLayout, heightForHeaderInSection section: Int) -> Float {
         var height: Double = 0
         if metadatas?.count ?? 0 == 0 {
-            height = NCGlobal.shared.heightHeaderEmptyData
+            height = NCGlobal.shared.getHeightHeaderEmptyData(view: view)
         }
         return Float(height)
     }
@@ -447,11 +447,7 @@ extension NCMedia: NCMediaLayoutDelegate {
     }
 
     func collectionView(_ collectionView: UICollectionView, layout: UICollectionViewLayout, insetForHeaderInSection section: Int) -> UIEdgeInsets {
-        var top: CGFloat = 0
-        if metadatas?.count ?? 0 == 0 {
-            top = (view.frame.height / 2) - NCGlobal.shared.heightHeaderEmptyData
-        }
-        return UIEdgeInsets(top: top, left: 0, bottom: 0, right: 0)
+        return .zero
     }
 
     func collectionView(_ collectionView: UICollectionView, layout: UICollectionViewLayout, insetForFooterInSection section: Int) -> UIEdgeInsets {

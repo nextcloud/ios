@@ -54,6 +54,14 @@ class NCGlobal: NSObject {
         return NCBrandColor.shared.userColors[userColorIx]
     }
 
+    func getHeightHeaderEmptyData(view: UIView) -> CGFloat {
+        var height = (view.frame.height / 2)
+        if UIDevice.current.orientation.isPortrait {
+            height = height + (view.safeAreaInsets.top / 2)
+        }
+        return height
+    }
+
     // Convert a string to an integer evenly
     // hash is hex string
     static func hashToInt(hash: String, maximum: Int) -> Int {
@@ -117,7 +125,6 @@ class NCGlobal: NSObject {
     // Varie size GUI
     //
     @objc let heightCellSettings: CGFloat           = 50
-    let heightHeaderEmptyData: CGFloat              = 200
 
     // Avatar & Preview size
     //

@@ -471,23 +471,18 @@ extension NCSelect: UICollectionViewDelegateFlowLayout {
     }
 
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
-
         var height: CGFloat = 0
-
         if dataSource.getMetadataSourceForAllSections().isEmpty {
-            height = NCGlobal.shared.heightHeaderEmptyData
+            height = NCGlobal.shared.getHeightHeaderEmptyData(view: view)
         } else {
             let (heightHeaderCommands, heightHeaderRichWorkspace, heightHeaderSection) = getHeaderHeight(section: section)
             height = heightHeaderCommands + heightHeaderRichWorkspace + heightHeaderSection
         }
-
         return CGSize(width: collectionView.frame.width, height: height)
     }
 
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForFooterInSection section: Int) -> CGSize {
-
         let sections = dataSource.numberOfSections()
-
         if section == sections - 1 {
             return CGSize(width: collectionView.frame.width, height: NCGlobal.shared.endHeightFooter)
         } else {

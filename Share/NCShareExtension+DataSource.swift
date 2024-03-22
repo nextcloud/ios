@@ -63,7 +63,7 @@ extension NCShareExtension: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
         var height: CGFloat = 0
         if dataSource.getMetadataSourceForAllSections().isEmpty {
-            height = NCGlobal.shared.heightHeaderEmptyData
+            height = NCGlobal.shared.getHeightHeaderEmptyData(view: view)
         }
         return CGSize(width: collectionView.frame.width, height: height)
     }
