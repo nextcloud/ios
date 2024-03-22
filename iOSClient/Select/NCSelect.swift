@@ -462,11 +462,9 @@ extension NCSelect: UICollectionViewDelegateFlowLayout {
 
         if let richWorkspaceText = richWorkspaceText {
             let trimmed = richWorkspaceText.trimmingCharacters(in: .whitespaces)
-            // swiftlint:disable empty_count
             if trimmed.count > 0 {
                 headerRichWorkspace = UIScreen.main.bounds.size.height / 6
             }
-            // swiftlint:enable empty_count
         }
 
         return (0, headerRichWorkspace, 0)
