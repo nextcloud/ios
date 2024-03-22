@@ -57,9 +57,9 @@ class NCGlobal: NSObject {
     func getHeightHeaderEmptyData(view: UIView) -> CGFloat {
         var height: CGFloat = 0
         if UIDevice.current.orientation.isPortrait {
-            height = (view.frame.height / 2) + (view.safeAreaInsets.top / 2)
+            height = (view.frame.height / 2) - (view.safeAreaInsets.top / 2)
         } else {
-            height = (view.frame.height / 2) + (view.safeAreaInsets.top / 2) + 20
+            height = (view.frame.height / 2) - 20
         }
         return height
     }
