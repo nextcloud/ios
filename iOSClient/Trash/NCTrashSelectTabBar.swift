@@ -5,6 +5,19 @@
 //  Created by Milen on 05.02.24.
 //  Copyright © 2024 Marino Faggiana. All rights reserved.
 //
+//  This program is free software: you can redistribute it and/or modify
+//  it under the terms of the GNU General Public License as published by
+//  the Free Software Foundation, either version 3 of the License, or
+//  (at your option) any later version.
+//
+//  This program is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//  GNU General Public License for more details.
+//
+//  You should have received a copy of the GNU General Public License
+//  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
 
 import Foundation
 import SwiftUI
@@ -15,12 +28,10 @@ protocol NCTrashSelectTabBarDelegate: AnyObject {
     func delete()
 }
 
-class NCTrashSelectTabBar: NCSelectableViewTabBar, ObservableObject {
+class NCTrashSelectTabBar: ObservableObject {
     var tabBarController: UITabBarController?
     var hostingController: UIViewController?
     open weak var delegate: NCTrashSelectTabBarDelegate?
-
-    var selectedMetadatas: [tableMetadata] = []
 
     @Published var isSelectedEmpty = true
 
@@ -63,6 +74,10 @@ class NCTrashSelectTabBar: NCSelectableViewTabBar, ObservableObject {
         hostingController.view.isHidden = true
         tabBarController.tabBar.isHidden = false
     }
+
+    func update(selectOcId: [String]) {
+        isSelectedEmpty = selectOcId.isEmpty
+    }
 }
 
 struct NCTrashSelectTabBarView: View {
@@ -98,7 +113,6 @@ struct NCTrashSelectTabBarView: View {
                 } label: {
                     Image(systemName: "checkmark")
                         .imageScale(sizeClass == .compact ? .medium : .large)
-
                 }
                 .frame(maxWidth: .infinity)
             }

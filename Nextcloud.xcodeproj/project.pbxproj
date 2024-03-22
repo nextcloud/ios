@@ -29,7 +29,7 @@
 		AF2D7C7E2742559100ADF566 /* NCShareUserCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF2D7C7D2742559100ADF566 /* NCShareUserCell.swift */; };
 		AF36077127BFA4E8001A243D /* ParallelWorker.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF36077027BFA4E8001A243D /* ParallelWorker.swift */; };
 		AF3FDCC22796ECC300710F60 /* NCTrash+CollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF3FDCC12796ECC300710F60 /* NCTrash+CollectionView.swift */; };
-		AF3FDCC32796F3FB00710F60 /* NCTrashListCell+NCTrashCellProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = F78ACD4821903F850088454D /* NCTrashListCell+NCTrashCellProtocol.swift */; };
+		AF3FDCC32796F3FB00710F60 /* NCTrashListCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F78ACD4821903F850088454D /* NCTrashListCell.swift */; };
 		AF4BF614275629E20081CEEF /* NCManageDatabase+Account.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF4BF613275629E20081CEEF /* NCManageDatabase+Account.swift */; };
 		AF4BF615275629E20081CEEF /* NCManageDatabase+Account.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF4BF613275629E20081CEEF /* NCManageDatabase+Account.swift */; };
 		AF4BF616275629E20081CEEF /* NCManageDatabase+Account.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF4BF613275629E20081CEEF /* NCManageDatabase+Account.swift */; };
@@ -47,7 +47,6 @@
 		AF730AF827834B1400B7520E /* NCShare+NCCellDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF730AF727834B1400B7520E /* NCShare+NCCellDelegate.swift */; };
 		AF730AFA27843E4C00B7520E /* NCShareExtension+NCDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF730AF927843E4C00B7520E /* NCShareExtension+NCDelegate.swift */; };
 		AF7E504E27A2D8FF00B5E4AF /* UIBarButton+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF7E504D27A2D8FF00B5E4AF /* UIBarButton+Extension.swift */; };
-		AF7E505027A2D92300B5E4AF /* NCSelectableNavigationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF7E504F27A2D92300B5E4AF /* NCSelectableNavigationView.swift */; };
 		AF817EF1274BC781009ED85B /* NCUserBaseUrl.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF817EF0274BC781009ED85B /* NCUserBaseUrl.swift */; };
 		AF817EF2274BC781009ED85B /* NCUserBaseUrl.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF817EF0274BC781009ED85B /* NCUserBaseUrl.swift */; };
 		AF817EF3274BC781009ED85B /* NCUserBaseUrl.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF817EF0274BC781009ED85B /* NCUserBaseUrl.swift */; };
@@ -81,8 +80,6 @@
 		F31F69612A2F907800162F76 /* __Snapshots__ in Resources */ = {isa = PBXBuildFile; fileRef = F31F69602A2F907800162F76 /* __Snapshots__ */; };
 		F31F69642A2F929600162F76 /* PreviewSnapshots in Frameworks */ = {isa = PBXBuildFile; productRef = F31F69632A2F929600162F76 /* PreviewSnapshots */; };
 		F321DA8A2B71205A00DDA0E6 /* NCTrashSelectTabBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = F321DA892B71205A00DDA0E6 /* NCTrashSelectTabBar.swift */; };
-		F327FA432B8CC0B900E5B743 /* SwipeCellKit in Frameworks */ = {isa = PBXBuildFile; productRef = F327FA422B8CC0B900E5B743 /* SwipeCellKit */; };
-		F327FA452B8CC36900E5B743 /* SwipeCellKit in Frameworks */ = {isa = PBXBuildFile; productRef = F327FA442B8CC36900E5B743 /* SwipeCellKit */; };
 		F32ED5062A2F254400EABA81 /* EnvVars.generated.swift in Sources */ = {isa = PBXBuildFile; fileRef = F30A96302A27AEBF00D7BCFE /* EnvVars.generated.swift */; };
 		F3391B022B4C40FB001C0C4B /* XLForm in Frameworks */ = {isa = PBXBuildFile; productRef = F3391B012B4C40FB001C0C4B /* XLForm */; };
 		F3391B042B4C4105001C0C4B /* XLForm in Frameworks */ = {isa = PBXBuildFile; productRef = F3391B032B4C4105001C0C4B /* XLForm */; };
@@ -123,7 +120,6 @@
 		F36677472B9F834400B23B81 /* Realm in Frameworks */ = {isa = PBXBuildFile; productRef = F36677462B9F834400B23B81 /* Realm */; };
 		F36677492B9F837500B23B81 /* Realm in Frameworks */ = {isa = PBXBuildFile; productRef = F36677482B9F837500B23B81 /* Realm */; };
 		F36E64F72B9245210085ABB5 /* NCCollectionViewCommon+SelectTabBarDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F36E64F62B9245210085ABB5 /* NCCollectionViewCommon+SelectTabBarDelegate.swift */; };
-		F36E64F92B92459B0085ABB5 /* NCCollectionViewCommon+SwipeCollectionViewCellDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F36E64F82B92459B0085ABB5 /* NCCollectionViewCommon+SwipeCollectionViewCellDelegate.swift */; };
 		F36E64FA2B96236C0085ABB5 /* UIView+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7E41315294A19B300839300 /* UIView+Extension.swift */; };
 		F36E64FB2B9733F10085ABB5 /* UIView+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7E41315294A19B300839300 /* UIView+Extension.swift */; };
 		F36E64FC2B9733F20085ABB5 /* UIView+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7E41315294A19B300839300 /* UIView+Extension.swift */; };
@@ -680,7 +676,7 @@
 		F78ACD4221903CE00088454D /* NCListCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F78ACD4121903CE00088454D /* NCListCell.swift */; };
 		F78ACD4421903CF20088454D /* NCListCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F78ACD4321903CF20088454D /* NCListCell.xib */; };
 		F78ACD4621903D010088454D /* NCGridCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F78ACD4521903D010088454D /* NCGridCell.xib */; };
-		F78ACD4A21903F850088454D /* NCTrashListCell+NCTrashCellProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = F78ACD4821903F850088454D /* NCTrashListCell+NCTrashCellProtocol.swift */; };
+		F78ACD4A21903F850088454D /* NCTrashListCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F78ACD4821903F850088454D /* NCTrashListCell.swift */; };
 		F78ACD4B21903F850088454D /* NCTrashListCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F78ACD4921903F850088454D /* NCTrashListCell.xib */; };
 		F78ACD52219046DC0088454D /* NCSectionHeaderMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = F78ACD51219046DC0088454D /* NCSectionHeaderMenu.swift */; };
 		F78ACD54219047D40088454D /* NCSectionFooter.xib in Resources */ = {isa = PBXBuildFile; fileRef = F78ACD53219047D40088454D /* NCSectionFooter.xib */; };
@@ -811,6 +807,8 @@
 		F7CB689A2541676B0050EC94 /* NCMore.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7CB68992541676B0050EC94 /* NCMore.storyboard */; };
 		F7CB68A0254169530050EC94 /* NCSettings.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7CB689F254169530050EC94 /* NCSettings.storyboard */; };
 		F7CBC31C24F78E79004D3812 /* NCSortMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7CBC31B24F78E79004D3812 /* NCSortMenu.swift */; };
+		F7CEE6002BA9A5C9003EFD89 /* NCTrashGridCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F7CEE5FE2BA9A5C9003EFD89 /* NCTrashGridCell.xib */; };
+		F7CEE6012BA9A5C9003EFD89 /* NCTrashGridCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7CEE5FF2BA9A5C9003EFD89 /* NCTrashGridCell.swift */; };
 		F7D1612023CF19E30039EBBF /* NCViewerRichWorkspace.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7D1611F23CF19E30039EBBF /* NCViewerRichWorkspace.storyboard */; };
 		F7D56B1A2972405500FA46C4 /* Mantis in Frameworks */ = {isa = PBXBuildFile; productRef = F7D56B192972405500FA46C4 /* Mantis */; };
 		F7D57C8626317BDA00DE301D /* NCAccountRequest.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7CA212C25F1333200826ABB /* NCAccountRequest.storyboard */; };
@@ -830,6 +828,8 @@
 		F7E4022D2BA85D1D007E5609 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = F7E402282BA85D1D007E5609 /* PrivacyInfo.xcprivacy */; };
 		F7E4022E2BA85D1D007E5609 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = F7E402282BA85D1D007E5609 /* PrivacyInfo.xcprivacy */; };
 		F7E4022F2BA85D1D007E5609 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = F7E402282BA85D1D007E5609 /* PrivacyInfo.xcprivacy */; };
+		F7E402312BA891EB007E5609 /* NCTrash+SelectTabBarDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7E402302BA891EB007E5609 /* NCTrash+SelectTabBarDelegate.swift */; };
+		F7E402332BA89551007E5609 /* NCTrash+Networking.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7E402322BA89551007E5609 /* NCTrash+Networking.swift */; };
 		F7E41316294A19B300839300 /* UIView+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7E41315294A19B300839300 /* UIView+Extension.swift */; };
 		F7E4D9C422ED929B003675FD /* NCShareCommentsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7E4D9C322ED929B003675FD /* NCShareCommentsCell.swift */; };
 		F7E7AEA52BA32C6500512E52 /* NCCollectionViewDownloadThumbnail.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7E7AEA42BA32C6500512E52 /* NCCollectionViewDownloadThumbnail.swift */; };
@@ -1007,7 +1007,6 @@
 		AF730AF727834B1400B7520E /* NCShare+NCCellDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NCShare+NCCellDelegate.swift"; sourceTree = "<group>"; };
 		AF730AF927843E4C00B7520E /* NCShareExtension+NCDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NCShareExtension+NCDelegate.swift"; sourceTree = "<group>"; };
 		AF7E504D27A2D8FF00B5E4AF /* UIBarButton+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIBarButton+Extension.swift"; sourceTree = "<group>"; };
-		AF7E504F27A2D92300B5E4AF /* NCSelectableNavigationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCSelectableNavigationView.swift; sourceTree = "<group>"; };
 		AF817EF0274BC781009ED85B /* NCUserBaseUrl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCUserBaseUrl.swift; sourceTree = "<group>"; };
 		AF8ED1F92757821000B8DBC4 /* NextcloudUnitTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = NextcloudUnitTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		AF8ED1FB2757821000B8DBC4 /* NextcloudUnitTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NextcloudUnitTests.swift; sourceTree = "<group>"; };
@@ -1045,7 +1044,6 @@
 		F343A4BA2A1E734600DDA874 /* Optional+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Optional+Extension.swift"; sourceTree = "<group>"; };
 		F359D8662A7D03420023F405 /* NCUtility+Exif.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NCUtility+Exif.swift"; sourceTree = "<group>"; };
 		F36E64F62B9245210085ABB5 /* NCCollectionViewCommon+SelectTabBarDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NCCollectionViewCommon+SelectTabBarDelegate.swift"; sourceTree = "<group>"; };
-		F36E64F82B92459B0085ABB5 /* NCCollectionViewCommon+SwipeCollectionViewCellDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NCCollectionViewCommon+SwipeCollectionViewCellDelegate.swift"; sourceTree = "<group>"; };
 		F37208742BAB4AB0006B5430 /* TestConstants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TestConstants.swift; sourceTree = "<group>"; };
 		F37208772BAB4B5D006B5430 /* BaseXCTestCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseXCTestCase.swift; sourceTree = "<group>"; };
 		F38F71242B6BBDC300473CDC /* NCCollectionViewCommonSelectTabBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCCollectionViewCommonSelectTabBar.swift; sourceTree = "<group>"; };
@@ -1363,7 +1361,7 @@
 		F78ACD4121903CE00088454D /* NCListCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCListCell.swift; sourceTree = "<group>"; };
 		F78ACD4321903CF20088454D /* NCListCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = NCListCell.xib; sourceTree = "<group>"; };
 		F78ACD4521903D010088454D /* NCGridCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = NCGridCell.xib; sourceTree = "<group>"; };
-		F78ACD4821903F850088454D /* NCTrashListCell+NCTrashCellProtocol.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NCTrashListCell+NCTrashCellProtocol.swift"; sourceTree = "<group>"; };
+		F78ACD4821903F850088454D /* NCTrashListCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCTrashListCell.swift; sourceTree = "<group>"; };
 		F78ACD4921903F850088454D /* NCTrashListCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = NCTrashListCell.xib; sourceTree = "<group>"; };
 		F78ACD51219046DC0088454D /* NCSectionHeaderMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCSectionHeaderMenu.swift; sourceTree = "<group>"; };
 		F78ACD53219047D40088454D /* NCSectionFooter.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = NCSectionFooter.xib; sourceTree = "<group>"; };
@@ -1544,6 +1542,8 @@
 		F7CC04E61F5AD50D00378CEF /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es; path = es.lproj/Localizable.strings; sourceTree = "<group>"; };
 		F7CE8AFA1DC1F8D8009CAE48 /* Nextcloud.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Nextcloud.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F7CE8AFB1DC1F8D8009CAE48 /* Share.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = Share.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		F7CEE5FE2BA9A5C9003EFD89 /* NCTrashGridCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = NCTrashGridCell.xib; sourceTree = "<group>"; };
+		F7CEE5FF2BA9A5C9003EFD89 /* NCTrashGridCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCTrashGridCell.swift; sourceTree = "<group>"; };
 		F7CF16A22A4D7C7A000FF107 /* NCMoreUserCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = NCMoreUserCell.xib; sourceTree = "<group>"; };
 		F7D1611F23CF19E30039EBBF /* NCViewerRichWorkspace.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = NCViewerRichWorkspace.storyboard; sourceTree = "<group>"; };
 		F7D2C772246470CA008513AE /* XLForm.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XLForm.framework; path = Carthage/Build/iOS/XLForm.framework; sourceTree = "<group>"; };
@@ -1559,6 +1559,8 @@
 		F7E0710028B13BB00001B882 /* DashboardData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardData.swift; sourceTree = "<group>"; };
 		F7E0CDCE265CE8610044854E /* NCUserStatus.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = NCUserStatus.storyboard; sourceTree = "<group>"; };
 		F7E402282BA85D1D007E5609 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		F7E402302BA891EB007E5609 /* NCTrash+SelectTabBarDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NCTrash+SelectTabBarDelegate.swift"; sourceTree = "<group>"; };
+		F7E402322BA89551007E5609 /* NCTrash+Networking.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NCTrash+Networking.swift"; sourceTree = "<group>"; };
 		F7E41315294A19B300839300 /* UIView+Extension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIView+Extension.swift"; sourceTree = "<group>"; };
 		F7E45E6D21E75BF200579249 /* ja-JP */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "ja-JP"; path = "ja-JP.lproj/Localizable.strings"; sourceTree = "<group>"; };
 		F7E4D9C322ED929B003675FD /* NCShareCommentsCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCShareCommentsCell.swift; sourceTree = "<group>"; };
@@ -1702,7 +1704,6 @@
 				F72AD70F28C24BA1006CB92D /* NextcloudKit in Frameworks */,
 				F737DA992B7B864E0063BAFC /* TOPasscodeViewController.xcframework in Frameworks */,
 				F72CD01227A7E92400E59476 /* JGProgressHUD in Frameworks */,
-				F327FA452B8CC36900E5B743 /* SwipeCellKit in Frameworks */,
 				F77CB6A92AA08053000C3CA4 /* OpenSSL in Frameworks */,
 				F760DE092AE66ED00027D78A /* KeychainAccess in Frameworks */,
 				F73ADD2126554F8E0069EA0D /* SwiftEntryKit in Frameworks */,
@@ -1768,7 +1769,6 @@
 				F70B86752642CE3B00ED5349 /* FirebaseCrashlytics in Frameworks */,
 				F7A1050E29E587AF00FFD92B /* TagListView in Frameworks */,
 				F76DA969277B77EA0082465B /* DropDown in Frameworks */,
-				F327FA432B8CC0B900E5B743 /* SwipeCellKit in Frameworks */,
 				F7F623B52A5EF4D30022D3D4 /* Gzip in Frameworks */,
 				F75EAED826D2552E00F4320E /* MarqueeLabel in Frameworks */,
 				F710FC7A277B7D0000AA9FBF /* Realm in Frameworks */,
@@ -2199,7 +2199,6 @@
 			children = (
 				F70D7C3525FFBF81002B9E34 /* NCCollectionViewCommon.swift */,
 				F36E64F62B9245210085ABB5 /* NCCollectionViewCommon+SelectTabBarDelegate.swift */,
-				F36E64F82B92459B0085ABB5 /* NCCollectionViewCommon+SwipeCollectionViewCellDelegate.swift */,
 				F38F71242B6BBDC300473CDC /* NCCollectionViewCommonSelectTabBar.swift */,
 				F7E7AEA42BA32C6500512E52 /* NCCollectionViewDownloadThumbnail.swift */,
 				F7E7AEA62BA32D0000512E52 /* NCCollectionViewUnifiedSearch.swift */,
@@ -2207,7 +2206,6 @@
 				F78ACD4521903D010088454D /* NCGridCell.xib */,
 				F78ACD4121903CE00088454D /* NCListCell.swift */,
 				F78ACD4321903CF20088454D /* NCListCell.xib */,
-				AF7E504F27A2D92300B5E4AF /* NCSelectableNavigationView.swift */,
 			);
 			path = "Collection Common";
 			sourceTree = "<group>";
@@ -2309,7 +2307,9 @@
 		F78ACD4721903F850088454D /* Cell */ = {
 			isa = PBXGroup;
 			children = (
-				F78ACD4821903F850088454D /* NCTrashListCell+NCTrashCellProtocol.swift */,
+				F7CEE5FF2BA9A5C9003EFD89 /* NCTrashGridCell.swift */,
+				F7CEE5FE2BA9A5C9003EFD89 /* NCTrashGridCell.xib */,
+				F78ACD4821903F850088454D /* NCTrashListCell.swift */,
 				F78ACD4921903F850088454D /* NCTrashListCell.xib */,
 			);
 			path = Cell;
@@ -2333,6 +2333,8 @@
 				F78F74332163757000C2ADAD /* NCTrash.storyboard */,
 				F78F74352163781100C2ADAD /* NCTrash.swift */,
 				AF3FDCC12796ECC300710F60 /* NCTrash+CollectionView.swift */,
+				F7E402322BA89551007E5609 /* NCTrash+Networking.swift */,
+				F7E402302BA891EB007E5609 /* NCTrash+SelectTabBarDelegate.swift */,
 				F321DA892B71205A00DDA0E6 /* NCTrashSelectTabBar.swift */,
 			);
 			path = Trash;
@@ -3136,7 +3138,6 @@
 				F760DE082AE66ED00027D78A /* KeychainAccess */,
 				F74C863C2AEFBFD9009A1D4A /* LRUCache */,
 				F711A4EE2AF932B900095DD8 /* SVGKitSwift */,
-				F327FA442B8CC36900E5B743 /* SwipeCellKit */,
 				F36677482B9F837500B23B81 /* Realm */,
 			);
 			productName = "Share Ext";
@@ -3245,7 +3246,6 @@
 				F7F623B42A5EF4D30022D3D4 /* Gzip */,
 				F76B649D2ADFFDEC00014640 /* LRUCache */,
 				F760DE022AE66EA80027D78A /* KeychainAccess */,
-				F327FA422B8CC0B900E5B743 /* SwipeCellKit */,
 			);
 			productName = "Crypto Cloud";
 			productReference = F7CE8AFA1DC1F8D8009CAE48 /* Nextcloud.app */;
@@ -3423,7 +3423,6 @@
 				F7F623B32A5EF4D30022D3D4 /* XCRemoteSwiftPackageReference "GzipSwift" */,
 				F76B649A2ADFFAD200014640 /* XCRemoteSwiftPackageReference "LRUCache" */,
 				F760DE012AE66E860027D78A /* XCRemoteSwiftPackageReference "KeychainAccess" */,
-				F327FA412B8CC0B900E5B743 /* XCRemoteSwiftPackageReference "SwipeCellKit" */,
 			);
 			productRefGroup = F7F67B9F1A24D27800EE80DA;
 			projectDirPath = "";
@@ -3568,6 +3567,7 @@
 				F31F69612A2F907800162F76 /* __Snapshots__ in Resources */,
 				AF56C1DC2784856200D8BAE2 /* NCActivityCommentView.xib in Resources */,
 				F7F4F10B27ECDBDB008676F9 /* Inconsolata-Light.ttf in Resources */,
+				F7CEE6002BA9A5C9003EFD89 /* NCTrashGridCell.xib in Resources */,
 				3704EB2A23D5A58400455C5B /* NCMenu.storyboard in Resources */,
 				AF93471C27E2361E002537EE /* NCShareAdvancePermissionHeader.xib in Resources */,
 				F76032A0252F0F8E0015A421 /* NCTransferCell.xib in Resources */,
@@ -3853,7 +3853,7 @@
 				AF4BF61A27562A4B0081CEEF /* NCManageDatabase+Metadata.swift in Sources */,
 				AF4BF615275629E20081CEEF /* NCManageDatabase+Account.swift in Sources */,
 				F798F0E225880608000DAFFD /* UIColor+Extension.swift in Sources */,
-				AF3FDCC32796F3FB00710F60 /* NCTrashListCell+NCTrashCellProtocol.swift in Sources */,
+				AF3FDCC32796F3FB00710F60 /* NCTrashListCell.swift in Sources */,
 				F7327E3F2B73B92800A462C7 /* NCNetworking+Synchronization.swift in Sources */,
 				F7C9B9202B582F550064EA91 /* NCManageDatabase+SecurityGuard.swift in Sources */,
 				AF817EF2274BC781009ED85B /* NCUserBaseUrl.swift in Sources */,
@@ -4077,6 +4077,7 @@
 				F30A96312A27AEBF00D7BCFE /* EnvVars.generated.swift in Sources */,
 				F77444F522281649000D5EB0 /* NCGridMediaCell.swift in Sources */,
 				F78C6FDE296D677300C952C3 /* NCContextMenu.swift in Sources */,
+				F7E402332BA89551007E5609 /* NCTrash+Networking.swift in Sources */,
 				F7E7AEA72BA32D0000512E52 /* NCCollectionViewUnifiedSearch.swift in Sources */,
 				F769CA172965AB7C00039397 /* NCUploadAssets.swift in Sources */,
 				F73EF7A72B0223900087E6E9 /* NCManageDatabase+Comments.swift in Sources */,
@@ -4151,13 +4152,14 @@
 				F7A321AD1E9E6AD50069AD1B /* CCAdvanced.m in Sources */,
 				F77B0E4F1D118A16002130FE /* CCManageAutoUpload.m in Sources */,
 				F75C0C4823D1FAE300163CC8 /* NCRichWorkspaceCommon.swift in Sources */,
-				F78ACD4A21903F850088454D /* NCTrashListCell+NCTrashCellProtocol.swift in Sources */,
+				F78ACD4A21903F850088454D /* NCTrashListCell.swift in Sources */,
 				F757CC8D29E82D0500F31428 /* NCGroupfolders.swift in Sources */,
 				F760329F252F0F8E0015A421 /* NCTransferCell.swift in Sources */,
 				F3BB46542A3A1E9D00461F6E /* CCCellMore.swift in Sources */,
 				AF68326A27BE65A90010BF0B /* NCMenuAction.swift in Sources */,
 				F7682FE023C36B0500983A04 /* NCMainTabBar.swift in Sources */,
 				F7A0D1352591FBC5008F8A13 /* String+Extension.swift in Sources */,
+				F7CEE6012BA9A5C9003EFD89 /* NCTrashGridCell.swift in Sources */,
 				F77B0E5F1D118A16002130FE /* NCSettings.m in Sources */,
 				F7F9D1BB25397CE000D9BFF5 /* NCViewer.swift in Sources */,
 				F7E7AEA52BA32C6500512E52 /* NCCollectionViewDownloadThumbnail.swift in Sources */,
@@ -4217,7 +4219,6 @@
 				F7C30DFD291BD0B80017149B /* NCNetworkingE2EEDelete.swift in Sources */,
 				F72FD3B5297ED49A00075D28 /* NCManageDatabase+E2EE.swift in Sources */,
 				F73EF7CF2B0225BA0087E6E9 /* NCManageDatabase+Tag.swift in Sources */,
-				F36E64F92B92459B0085ABB5 /* NCCollectionViewCommon+SwipeCollectionViewCellDelegate.swift in Sources */,
 				AF93471227E2341B002537EE /* NCShare+Menu.swift in Sources */,
 				F7EFA47825ADBA500083159A /* NCViewerProviderContextMenu.swift in Sources */,
 				F755BD9B20594AC7008C5FBB /* NCService.swift in Sources */,
@@ -4239,6 +4240,7 @@
 				AF93471B27E2361E002537EE /* NCShareAdvancePermission.swift in Sources */,
 				F77BC3ED293E528A005F2B08 /* NCConfigServer.swift in Sources */,
 				F7A560422AE1593700BE8FD6 /* NCOperationSaveLivePhoto.swift in Sources */,
+				F7E402312BA891EB007E5609 /* NCTrash+SelectTabBarDelegate.swift in Sources */,
 				F70753EB2542A99800972D44 /* NCViewerMediaPage.swift in Sources */,
 				F7817CF829801A3500FFBC65 /* Data+Extension.swift in Sources */,
 				F749B651297B0F2400087535 /* NCManageDatabase+Avatar.swift in Sources */,
@@ -4295,7 +4297,6 @@
 				F7327E202B73A42F00A462C7 /* NCNetworking+Download.swift in Sources */,
 				F717402E24F699A5000C87D5 /* NCFavorite.swift in Sources */,
 				AF2D7C7E2742559100ADF566 /* NCShareUserCell.swift in Sources */,
-				AF7E505027A2D92300B5E4AF /* NCSelectableNavigationView.swift in Sources */,
 				F74DE14325135B6800917068 /* NCTransfers.swift in Sources */,
 				AF4BF614275629E20081CEEF /* NCManageDatabase+Account.swift in Sources */,
 				F711A4DC2AF92CAE00095DD8 /* NCUtility+Date.swift in Sources */,
@@ -5227,7 +5228,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = NKUJUXUJ3B;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -5293,7 +5294,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_TEAM = NKUJUXUJ3B;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
@@ -5468,14 +5469,6 @@
 				version = 1.4.0;
 			};
 		};
-		F327FA412B8CC0B900E5B743 /* XCRemoteSwiftPackageReference "SwipeCellKit" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/SwipeCellKit/SwipeCellKit";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 2.7.1;
-			};
-		};
 		F70B86732642CE3B00ED5349 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
@@ -5617,7 +5610,7 @@
 			repositoryURL = "https://github.com/nextcloud/NextcloudKit";
 			requirement = {
 				kind = exactVersion;
-				version = 2.9.8;
+				version = 2.9.9;
 			};
 		};
 		F788ECC5263AAAF900ADC67F /* XCRemoteSwiftPackageReference "MarkdownKit" */ = {

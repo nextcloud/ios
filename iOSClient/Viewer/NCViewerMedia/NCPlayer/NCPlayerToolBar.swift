@@ -459,7 +459,7 @@ extension NCPlayerToolBar {
 
 extension NCPlayerToolBar: NCSelectDelegate {
 
-    func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String, items: [Any], indexPath: [IndexPath], overwrite: Bool, copy: Bool, move: Bool) {
+    func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String, items: [Any], overwrite: Bool, copy: Bool, move: Bool) {
 
         if let metadata = metadata, let viewerMediaPage = viewerMediaPage {
 

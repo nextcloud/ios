@@ -39,7 +39,7 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
     var activeAccount = tableAccount()
     var emptyDataSet: NCEmptyDataSet?
     var documentPickerViewController: NCDocumentPickerViewController?
-    var tabBarSelect: NCMediaSelectTabBar?
+    var tabBarSelect: NCMediaSelectTabBar!
     let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
     let utilityFileSystem = NCUtilityFileSystem()
     let utility = NCUtility()
@@ -144,17 +144,18 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
-        appDelegate.activeViewController = self
         navigationController?.setMediaAppreance()
+    }
+
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+
+        appDelegate.activeViewController = self
 
         NotificationCenter.default.addObserver(self, selector: #selector(deleteFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDeleteFile), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(enterForeground(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationWillEnterForeground), object: nil)
 
         startTimer()
-    }
-
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
         createMenu()
 
         if imageCache.createMediaCacheInProgress {
@@ -170,8 +171,8 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
         }
     }
 
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
 
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDeleteFile), object: nil)
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationWillEnterForeground), object: nil)
@@ -198,7 +199,7 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
         super.viewWillLayoutSubviews()
 
         if let frame = tabBarController?.tabBar.frame {
-            tabBarSelect?.hostingController.view.frame = frame
+            tabBarSelect.hostingController.view.frame = frame
         }
         gradient.frame = gradientView.bounds
     }
@@ -301,7 +302,7 @@ extension NCMedia: UICollectionViewDelegate {
                     mediaCell?.selected(true)
 
                 }
-                tabBarSelect?.selectCount = selectOcId.count
+                tabBarSelect.selectCount = selectOcId.count
             } else {
                 // ACTIVE SERVERURL
                 appDelegate.activeServerUrl = metadata.serverUrl
@@ -321,7 +322,7 @@ extension NCMedia: UICollectionViewDelegate {
         return UIContextMenuConfiguration(identifier: identifier, previewProvider: {
             return NCViewerProviderContextMenu(metadata: metadata, image: image)
         }, actionProvider: { _ in
-            return NCContextMenu().viewMenu(ocId: metadata.ocId, indexPath: indexPath, viewController: self, image: image)
+            return NCContextMenu().viewMenu(ocId: metadata.ocId, viewController: self, image: image)
         })
     }
 
@@ -336,7 +337,7 @@ extension NCMedia: UICollectionViewDelegate {
 
 extension NCMedia: UICollectionViewDataSourcePrefetching {
     func collectionView(_ collectionView: UICollectionView, prefetchItemsAt indexPaths: [IndexPath]) {
-        // print("[LOG] n. " + String(indexPaths.count))
+        // print("[INFO] n. " + String(indexPaths.count))
     }
 }
 
@@ -498,7 +499,7 @@ extension NCMedia: UIScrollViewDelegate {
 // MARK: -
 
 extension NCMedia: NCSelectDelegate {
-    func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String, items: [Any], indexPath: [IndexPath], overwrite: Bool, copy: Bool, move: Bool) {
+    func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String, items: [Any], overwrite: Bool, copy: Bool, move: Bool) {
         guard let serverUrl = serverUrl else { return }
         let home = utilityFileSystem.getHomeServer(urlBase: appDelegate.urlBase, userId: appDelegate.userId)
         let mediaPath = serverUrl.replacingOccurrences(of: home, with: "")

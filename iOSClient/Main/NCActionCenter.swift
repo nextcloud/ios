@@ -617,7 +617,7 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
 
     // MARK: - NCSelect + Delegate
 
-    func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String, items: [Any], indexPath: [IndexPath], overwrite: Bool, copy: Bool, move: Bool) {
+    func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String, items: [Any], overwrite: Bool, copy: Bool, move: Bool) {
         if let serverUrl, !items.isEmpty {
             if copy {
                 Task {
@@ -632,7 +632,7 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
                     if error != .success {
                         NCContentPresenter().showError(error: error)
                     }
-                    NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterCopyFile, userInfo: ["ocId": ocId, "indexPath": indexPath, "error": error])
+                    NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterCopyFile, userInfo: ["ocId": ocId, "error": error])
                 }
             } else {
                 Task {
@@ -647,13 +647,13 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
                     if error != .success {
                         NCContentPresenter().showError(error: error)
                     }
-                    NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterMoveFile, userInfo: ["ocId": ocId, "indexPath": indexPath, "error": error])
+                    NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterMoveFile, userInfo: ["ocId": ocId, "error": error])
                 }
             }
         }
     }
 
-    func openSelectView(items: [tableMetadata], indexPath: [IndexPath]) {
+    func openSelectView(items: [tableMetadata]) {
         guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else { return }
 
         let navigationController = UIStoryboard(name: "NCSelect", bundle: nil).instantiateInitialViewController() as? UINavigationController
@@ -688,7 +688,6 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
             vc.typeOfCommandView = .copyMove
             vc.items = copyItems
             vc.serverUrl = serverUrl
-            vc.selectIndexPath = indexPath
 
             vc.navigationItem.backButtonTitle = vc.titleCurrentFolder
             listViewController.insert(vc, at: 0)

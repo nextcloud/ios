@@ -104,7 +104,7 @@ class NCManageE2EE: NSObject, ObservableObject, NCEndToEndInitializeDelegate, TO
             endToEndInitialize.initEndToEndEncryption()
         case "readPassphrase":
             if let e2ePassphrase = NCKeychain().getEndToEndPassphrase(account: appDelegate.account) {
-                print("[LOG]Passphrase: " + e2ePassphrase)
+                print("[INFO]Passphrase: " + e2ePassphrase)
                 let message = "\n" + NSLocalizedString("_e2e_settings_the_passphrase_is_", comment: "") + "\n\n\n" + e2ePassphrase
                 let alertController = UIAlertController(title: NSLocalizedString("_info_", comment: ""), message: message, preferredStyle: .alert)
                 alertController.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { _ in }))
