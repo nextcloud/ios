@@ -23,7 +23,7 @@
 
 import UIKit
 
-class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProtocol, NCTrashCellProtocol {
+class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProtocol {
 
     @IBOutlet weak var imageItem: UIImageView!
     @IBOutlet weak var imageSelect: UIImageView!
