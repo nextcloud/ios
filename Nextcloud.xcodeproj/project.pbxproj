@@ -1927,13 +1927,6 @@
 			path = NCViewerQuickLook;
 			sourceTree = "<group>";
 		};
-		F723986F253D867900257F49 /* EmptyView */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = EmptyView;
-			sourceTree = "<group>";
-		};
 		F728CE741BF6322C00E69702 /* Share */ = {
 			isa = PBXGroup;
 			children = (
@@ -2657,7 +2650,6 @@
 				F70B866A2642A21300ED5349 /* Color */,
 				F7BAAD951ED5A63D00B7EAD4 /* Data */,
 				F73FAEE224D2CA830090692E /* Diagnostics */,
-				F723986F253D867900257F49 /* EmptyView */,
 				F7A0D14E259229FA008F8A13 /* Extensions */,
 				F7A3214D1E9E2A070069AD1B /* Favorites */,
 				F7725A5D251F33BB00D125E0 /* Files */,
