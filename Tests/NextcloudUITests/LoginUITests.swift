@@ -40,7 +40,7 @@ final class LoginUITests: BaseUIXCTestCase {
 
         let serverAddressHttpsTextField = app.textFields["Server address https:// …"]
         serverAddressHttpsTextField.tap()
-        serverAddressHttpsTextField.typeText(baseUrl)
+        serverAddressHttpsTextField.typeText(TestConstants.server)
         let button = app.windows.children(matching: .other).element.children(matching: .other).element.children(matching: .other).element.children(matching: .other).element.children(matching: .other).element.children(matching: .other).element.children(matching: .button).element(boundBy: 0)
         button.tap()
 
@@ -53,10 +53,10 @@ final class LoginUITests: BaseUIXCTestCase {
         let usernameTextField = webViewsQuery/*@START_MENU_TOKEN@*/.textFields["Login with username or email"]/*[[".otherElements[\"Login – Nextcloud\"]",".otherElements[\"main\"].textFields[\"Login with username or email\"]",".textFields[\"Login with username or email\"]"],[[[-1,2],[-1,1],[-1,0,1]],[[-1,2],[-1,1]]],[0]]@END_MENU_TOKEN@*/
         XCTAssert(usernameTextField.waitForExistence(timeout: timeoutSeconds))
         usernameTextField.tap()
-        usernameTextField.typeText(user)
+        usernameTextField.typeText(TestConstants.username)
         let passwordTextField = webViewsQuery/*@START_MENU_TOKEN@*/.secureTextFields["Password"]/*[[".otherElements[\"Login – Nextcloud\"]",".otherElements[\"main\"].secureTextFields[\"Password\"]",".secureTextFields[\"Password\"]"],[[[-1,2],[-1,1],[-1,0,1]],[[-1,2],[-1,1]]],[0]]@END_MENU_TOKEN@*/
         passwordTextField.tap()
-        passwordTextField.typeText(user)
+        passwordTextField.typeText(TestConstants.password)
         let loginButton3 = webViewsQuery/*@START_MENU_TOKEN@*/.buttons["Log in"]/*[[".otherElements[\"Login – Nextcloud\"]",".otherElements[\"main\"].buttons[\"Log in\"]",".buttons[\"Log in\"]"],[[[-1,2],[-1,1],[-1,0,1]],[[-1,2],[-1,1]]],[0]]@END_MENU_TOKEN@*/
         XCTAssert(loginButton3.waitForExistence(timeout: timeoutSeconds))
         loginButton3.tap()
