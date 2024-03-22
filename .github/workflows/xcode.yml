@@ -73,9 +73,9 @@ jobs:
         ./server/occ config:system:set memcache.local --value="\\OC\\Memcache\\APCu"
         ./server/occ config:system:set memcache.distributed --value="\\OC\\Memcache\\APCu"
         PHP_CLI_SERVER_WORKERS=3 php -S localhost:8080 -t server/ &
-    - name: Create docker test server and export enviroment variables
+    - name: Wait for server to install
       run: |
-        source ./create-docker-test-server.sh
+        source ./wait-for-server.sh
     - name: Build & Test Nextcloud iOS
       run: |
         set -o pipefail && xcodebuild clean test -project $PROJECT \
