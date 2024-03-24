@@ -77,12 +77,12 @@ extension NCTrash: UICollectionViewDataSource {
 
         if layoutForView?.layout == NCGlobal.shared.layoutList {
             guard let listCell = collectionView.dequeueReusableCell(withReuseIdentifier: "listCell", for: indexPath) as? NCTrashListCell else { return NCTrashListCell() }
-            listCell.listCellDelegate = self
+            listCell.delegate = self
             cell = listCell
         } else {
             guard let gridCell = collectionView.dequeueReusableCell(withReuseIdentifier: "gridCell", for: indexPath) as? NCTrashGridCell else { return NCTrashGridCell() }
             gridCell.setButtonMore(named: NCGlobal.shared.buttonMoreMore, image: NCImageCache.images.buttonMore)
-            gridCell.gridCellDelegate = self
+            gridCell.delegate = self
             cell = gridCell
         }
 
