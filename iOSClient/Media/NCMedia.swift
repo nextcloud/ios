@@ -383,7 +383,10 @@ extension NCMedia: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "gridCell", for: indexPath) as? NCGridMediaCell,
               let metadatas = self.metadatas,
-              let metadata = metadatas[indexPath.row] else { return UICollectionViewCell() }
+              let metadata = metadatas[indexPath.row]
+        else {
+            return UICollectionViewCell()
+        }
 
         cell.date = metadata.date as Date
         cell.ocId = metadata.ocId
