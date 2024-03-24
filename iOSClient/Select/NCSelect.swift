@@ -403,7 +403,7 @@ extension NCSelect: UICollectionViewDataSource {
 
             if dataSource.getMetadataSourceForAllSections().isEmpty {
 
-                guard let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionHeaderEmptyData", for: indexPath) as? NCSectionHeaderEmptyData else { return UICollectionReusableView() }
+                guard let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionHeaderEmptyData", for: indexPath) as? NCSectionHeaderEmptyData else { return NCSectionHeaderEmptyData() }
                 if self.dataSourceTask?.state == .running {
                     header.emptyImage.image = UIImage(named: "networkInProgress")?.image(color: .gray, size: UIScreen.main.bounds.width)
                     header.emptyTitle.text = NSLocalizedString("_request_in_progress_", comment: "")
@@ -421,7 +421,7 @@ extension NCSelect: UICollectionViewDataSource {
 
             } else {
 
-                guard let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionHeaderMenu", for: indexPath) as? NCSectionHeaderMenu else { return UICollectionReusableView() }
+                guard let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionHeaderMenu", for: indexPath) as? NCSectionHeaderMenu else { return NCSectionHeaderMenu() }
                 let (_, heightHeaderRichWorkspace, _) = getHeaderHeight(section: indexPath.section)
 
                 self.headerMenu = header
@@ -435,7 +435,7 @@ extension NCSelect: UICollectionViewDataSource {
 
         } else {
 
-            guard let footer = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionFooter", for: indexPath) as? NCSectionFooter else { return UICollectionReusableView() }
+            guard let footer = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionFooter", for: indexPath) as? NCSectionFooter else { return NCSectionFooter() }
             let sections = dataSource.numberOfSections()
             let section = indexPath.section
 

@@ -1548,7 +1548,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
 
             if dataSource.getMetadataSourceForAllSections().isEmpty, !isHeaderMenuTransferViewEnabled() {
 
-                guard let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionHeaderEmptyData", for: indexPath) as? NCSectionHeaderEmptyData else { return UICollectionReusableView() }
+                guard let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionHeaderEmptyData", for: indexPath) as? NCSectionHeaderEmptyData else { return NCSectionHeaderEmptyData() }
 
                 if isSearchingMode {
                     header.emptyImage.image = UIImage(named: "search")?.image(color: .gray, size: UIScreen.main.bounds.width)
@@ -1578,7 +1578,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
 
             } else if indexPath.section == 0 {
 
-                guard let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionHeaderMenu", for: indexPath) as? NCSectionHeaderMenu else { return UICollectionReusableView() }
+                guard let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionHeaderMenu", for: indexPath) as? NCSectionHeaderMenu else { return NCSectionHeaderMenu() }
                 let (_, heightHeaderRichWorkspace, heightHeaderSection) = getHeaderHeight(section: indexPath.section)
 
                 self.headerMenu = header
@@ -1607,7 +1607,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
 
             } else {
 
-                guard let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionHeader", for: indexPath) as? NCSectionHeader else { return UICollectionReusableView() }
+                guard let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionHeader", for: indexPath) as? NCSectionHeader else { return NCSectionHeader() }
 
                 header.labelSection.text = self.dataSource.getSectionValueLocalization(indexPath: indexPath)
                 header.labelSection.textColor = .label
@@ -1617,7 +1617,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
 
         } else {
 
-            guard let footer = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionFooter", for: indexPath) as? NCSectionFooter else { return UICollectionReusableView() }
+            guard let footer = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionFooter", for: indexPath) as? NCSectionFooter else { return NCSectionFooter() }
             let sections = dataSource.numberOfSections()
             let section = indexPath.section
             let metadataForSection = self.dataSource.getMetadataForSection(indexPath.section)

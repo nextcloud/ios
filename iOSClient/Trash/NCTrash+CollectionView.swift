@@ -137,14 +137,14 @@ extension NCTrash: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
         if kind == UICollectionView.elementKindSectionHeader {
             guard let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionHeaderEmptyData", for: indexPath) as? NCSectionHeaderEmptyData
-            else { return UICollectionReusableView() }
+            else { return NCSectionHeaderEmptyData() }
             header.emptyImage.image = UIImage(named: "trash")?.image(color: .gray, size: UIScreen.main.bounds.width)
             header.emptyTitle.text = NSLocalizedString("_trash_no_trash_", comment: "")
             header.emptyDescription.text = NSLocalizedString("_trash_no_trash_description_", comment: "")
             return header
         } else {
             guard let footer = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionFooter", for: indexPath) as? NCSectionFooter
-            else { return UICollectionReusableView() }
+            else { return NCSectionFooter() }
             footer.setTitleLabel(setTextFooter(datasource: datasource))
             footer.separatorIsHidden(true)
             return footer
