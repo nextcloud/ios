@@ -1823,7 +1823,6 @@
 			isa = PBXGroup;
 			children = (
 				F7DFB7E9219C5A0500680748 /* Create cloud */,
-				F78ACD50219046AC0088454D /* Section Header Footer */,
 				F7603298252F0E550015A421 /* Collection Common */,
 				F7226EDB1EE4089300EBECB1 /* Main.storyboard */,
 				F7682FDF23C36B0500983A04 /* NCMainTabBar.swift */,
@@ -2085,6 +2084,7 @@
 			isa = PBXGroup;
 			children = (
 				F75FE06B2BB01D0D00A0EFEF /* Cell */,
+				F78ACD50219046AC0088454D /* Section Header Footer */,
 				F70D7C3525FFBF81002B9E34 /* NCCollectionViewCommon.swift */,
 				F36E64F62B9245210085ABB5 /* NCCollectionViewCommon+SelectTabBarDelegate.swift */,
 				F38F71242B6BBDC300473CDC /* NCCollectionViewCommonSelectTabBar.swift */,

@@ -52,7 +52,7 @@ extension NCMedia {
             let point = CGPoint(x: offset, y: top + contentOffsetY)
             if let indexPath = collectionView.indexPathForItem(at: point) {
                 let cell = self.collectionView(collectionView, cellForItemAt: indexPath) as? NCGridMediaCell
-                if let date = cell?.fileDate {
+                if let date = cell?.date {
                     self.titleDate?.text = utility.getTitleFromDate(date)
                 }
             } else {

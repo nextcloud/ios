@@ -275,7 +275,7 @@ extension NCMedia: UICollectionViewDelegate {
         if let metadata = self.metadatas?[indexPath.row] {
             if let visibleCells = self.collectionView?.indexPathsForVisibleItems.compactMap({ self.collectionView?.cellForItem(at: $0) }) {
                 for case let cell as NCGridMediaCell in visibleCells {
-                    if cell.fileObjectId == metadata.ocId {
+                    if cell.ocId == metadata.ocId {
                         mediaCell = cell
                     }
                 }
@@ -385,10 +385,10 @@ extension NCMedia: UICollectionViewDataSource {
               let metadatas = self.metadatas,
               let metadata = metadatas[indexPath.row] else { return UICollectionViewCell() }
 
-        cell.fileDate = metadata.date as Date
-        cell.fileObjectId = metadata.ocId
+        cell.date = metadata.date as Date
+        cell.ocId = metadata.ocId
         cell.indexPath = indexPath
-        cell.fileUser = metadata.ownerId
+        cell.user = metadata.ownerId
         cell.imageStatus.image = nil
         cell.imageItem.contentMode = .scaleAspectFill
 

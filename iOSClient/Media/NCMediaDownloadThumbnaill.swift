@@ -66,7 +66,7 @@ class NCMediaDownloadThumbnaill: ConcurrentOperation {
                 DispatchQueue.main.async {
                     if let visibleCells = self.media.collectionView?.indexPathsForVisibleItems.sorted(by: { $0.row < $1.row }).compactMap({ self.media.collectionView?.cellForItem(at: $0) }) {
                         for case let cell as NCGridMediaCell in visibleCells {
-                            if cell.fileObjectId == self.metadata.ocId, let filePreviewImageView = cell.filePreviewImageView {
+                            if cell.ocId == self.metadata.ocId, let filePreviewImageView = cell.imageItem {
                                 UIView.transition(with: filePreviewImageView,
                                                   duration: 0.75,
                                                   options: .transitionCrossDissolve,

@@ -23,7 +23,7 @@
 
 import UIKit
 
-class NCGridMediaCell: UICollectionViewCell, NCCellProtocol {
+class NCGridMediaCell: UICollectionViewCell {
 
     @IBOutlet weak var imageItem: UIImageView!
     @IBOutlet weak var imageVisualEffect: UIVisualEffectView!
@@ -31,35 +31,10 @@ class NCGridMediaCell: UICollectionViewCell, NCCellProtocol {
     @IBOutlet weak var imageStatus: UIImageView!
     @IBOutlet weak var label: UILabel!
 
-    private var objectId: String = ""
-    private var user: String = ""
+    var ocId: String = ""
+    var user: String = ""
     var indexPath = IndexPath()
-    private var date: Date?
-
-    var filePreviewImageView: UIImageView? {
-        get { return imageItem }
-        set {}
-    }
-
-    var fileObjectId: String? {
-        get { return objectId }
-        set { objectId = newValue ?? "" }
-    }
-
-    var fileUser: String? {
-        get { return user }
-        set { user = newValue ?? "" }
-    }
-
-    var fileDate: Date? {
-        get { return date }
-        set {
-            date = newValue
-            if let date {
-                label.text = NCUtility().getTitleFromDate(date)
-            }
-        }
-    }
+    var date: Date?
 
     override func awakeFromNib() {
         super.awakeFromNib()
