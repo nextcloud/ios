@@ -24,9 +24,86 @@
 import UIKit
 import MarkdownKit
 
+protocol NCSectionHeaderEmptyDataDelegate: AnyObject {
+    func tapButtonTransfer(_ sender: Any)
+}
+
 class NCSectionHeaderEmptyData: UICollectionReusableView {
+
+    @IBOutlet weak var viewTransfer: UIView!
+    @IBOutlet weak var viewTransferHeightConstraint: NSLayoutConstraint!
+    @IBOutlet weak var buttonTransfer: UIButton!
+    @IBOutlet weak var imageButtonTransfer: UIImageView!
+    @IBOutlet weak var labelTransfer: UILabel!
+    @IBOutlet weak var progressTransfer: UIProgressView!
+    @IBOutlet weak var transferSeparatorBottom: UIView!
+    @IBOutlet weak var transferSeparatorBottomHeightConstraint: NSLayoutConstraint!
 
     @IBOutlet weak var emptyImage: UIImageView!
     @IBOutlet weak var emptyTitle: UILabel!
     @IBOutlet weak var emptyDescription: UILabel!
+
+    weak var delegate: NCSectionHeaderEmptyDataDelegate?
+
+    override func awakeFromNib() {
+        super.awakeFromNib()
+        initCell()
+    }
+
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        initCell()
+    }
+
+    func initCell() {
+        buttonTransfer.backgroundColor = .clear
+        buttonTransfer.setImage(nil, for: .normal)
+        buttonTransfer.layer.cornerRadius = 6
+        buttonTransfer.layer.masksToBounds = true
+        imageButtonTransfer.image = UIImage(systemName: "stop.circle")
+        imageButtonTransfer.tintColor = .white
+        labelTransfer.text = ""
+        progressTransfer.progress = 0
+        progressTransfer.tintColor = NCBrandColor.shared.brand
+        progressTransfer.trackTintColor = NCBrandColor.shared.brand.withAlphaComponent(0.2)
+        transferSeparatorBottom.backgroundColor = .separator
+        transferSeparatorBottomHeightConstraint.constant = 0.5
+        viewTransferHeightConstraint.constant = 0
+    }
+
+    // MARK: - Action
+
+    @IBAction func touchUpTransfer(_ sender: Any) {
+       delegate?.tapButtonTransfer(sender)
+    }
+
+    // MARK: - Transfer
+
+    func setViewTransfer(isHidden: Bool, ocId: String? = nil, text: String? = nil, progress: Float? = nil) {
+
+        labelTransfer.text = text
+        viewTransfer.isHidden = isHidden
+        progressTransfer.progress = 0
+
+        if isHidden {
+            viewTransferHeightConstraint.constant = 0
+        } else {
+            var image: UIImage?
+            if let ocId,
+               let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
+                image = NCUtility().createFilePreviewImage(ocId: metadata.ocId, etag: metadata.etag, fileNameView: metadata.fileNameView, classFile: metadata.classFile, status: metadata.status, createPreviewMedia: true)?.darken()
+                if image == nil {
+                    image = UIImage(named: metadata.iconName)
+                    buttonTransfer.backgroundColor = .lightGray
+                } else {
+                    buttonTransfer.backgroundColor = .clear
+                }
+                buttonTransfer.setImage(image, for: .normal)
+            }
+            viewTransferHeightConstraint.constant = NCGlobal.shared.heightHeaderTransfer
+            if let progress {
+                progressTransfer.progress = progress
+            }
+        }
+    }
 }

@@ -54,12 +54,12 @@ class NCGlobal: NSObject {
         return NCBrandColor.shared.userColors[userColorIx]
     }
 
-    func getHeightHeaderEmptyData(view: UIView, landscapeOffset: CGFloat) -> CGFloat {
+    func getHeightHeaderEmptyData(view: UIView, landscapeOffset: CGFloat, isHeaderMenuTransferViewEnabled: Bool = false) -> CGFloat {
         var height: CGFloat = 0
         if UIDevice.current.orientation.isPortrait {
             height = (view.frame.height / 2) - (view.safeAreaInsets.top / 2)
         } else {
-            height = (view.frame.height / 2) + landscapeOffset
+            height = (view.frame.height / 2) + landscapeOffset + CGFloat(isHeaderMenuTransferViewEnabled ? 35 : 0)
         }
         return height
     }
