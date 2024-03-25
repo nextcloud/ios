@@ -29,7 +29,6 @@ class NCGridMediaCell: UICollectionViewCell {
     @IBOutlet weak var imageVisualEffect: UIVisualEffectView!
     @IBOutlet weak var imageSelect: UIImageView!
     @IBOutlet weak var imageStatus: UIImageView!
-    @IBOutlet weak var label: UILabel!
 
     var ocId: String = ""
     var user: String = ""

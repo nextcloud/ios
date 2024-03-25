@@ -42,22 +42,13 @@
                             <constraint firstAttribute="width" constant="20" id="PqO-qT-gfs"/>
                         </constraints>
                     </imageView>
-                    <label hidden="YES" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="QAA-9f-xaN">
-                        <rect key="frame" x="0.0" y="203" width="220" height="17"/>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                        <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                        <nil key="textColor"/>
-                        <nil key="highlightedColor"/>
-                    </label>
                 </subviews>
             </view>
             <constraints>
                 <constraint firstAttribute="trailing" secondItem="r1K-4X-gNd" secondAttribute="trailing" id="1Hu-GT-dJv"/>
                 <constraint firstItem="DHy-Up-3Bh" firstAttribute="leading" secondItem="vf1-Kf-9uL" secondAttribute="leading" constant="5" id="1T3-8p-uIW"/>
-                <constraint firstItem="QAA-9f-xaN" firstAttribute="trailing" secondItem="vf1-Kf-9uL" secondAttribute="trailing" id="1dV-Sb-7U8"/>
                 <constraint firstAttribute="bottom" secondItem="a0p-rj-jnV" secondAttribute="bottom" constant="5" id="2IN-4o-XSp"/>
                 <constraint firstItem="r1K-4X-gNd" firstAttribute="leading" secondItem="vf1-Kf-9uL" secondAttribute="leading" id="3bv-Dh-iih"/>
-                <constraint firstItem="QAA-9f-xaN" firstAttribute="leading" secondItem="vf1-Kf-9uL" secondAttribute="leading" id="BlV-Di-gR1"/>
                 <constraint firstItem="a0p-rj-jnV" firstAttribute="leading" secondItem="vf1-Kf-9uL" secondAttribute="leading" constant="5" id="DYA-5M-RZ8"/>
                 <constraint firstItem="DHy-Up-3Bh" firstAttribute="top" secondItem="vf1-Kf-9uL" secondAttribute="top" constant="5" id="ESV-qE-tbO"/>
                 <constraint firstItem="5Ci-V1-hf5" firstAttribute="top" secondItem="vf1-Kf-9uL" secondAttribute="top" id="Ouj-ZD-UFm"/>
@@ -65,7 +56,6 @@
                 <constraint firstItem="r1K-4X-gNd" firstAttribute="top" secondItem="vf1-Kf-9uL" secondAttribute="top" id="Rou-vT-GPt"/>
                 <constraint firstAttribute="trailing" secondItem="5Ci-V1-hf5" secondAttribute="trailing" id="cHT-cP-NN6"/>
                 <constraint firstAttribute="bottom" secondItem="5Ci-V1-hf5" secondAttribute="bottom" id="eEC-eB-alE"/>
-                <constraint firstItem="QAA-9f-xaN" firstAttribute="bottom" secondItem="vf1-Kf-9uL" secondAttribute="bottom" id="mcM-m0-XST"/>
                 <constraint firstItem="5Ci-V1-hf5" firstAttribute="leading" secondItem="vf1-Kf-9uL" secondAttribute="leading" id="qT3-WD-iTV"/>
             </constraints>
             <size key="customSize" width="220" height="260"/>
@@ -74,7 +64,6 @@
                 <outlet property="imageSelect" destination="DHy-Up-3Bh" id="mo9-rP-P4I"/>
                 <outlet property="imageStatus" destination="a0p-rj-jnV" id="6Dg-tf-evd"/>
                 <outlet property="imageVisualEffect" destination="r1K-4X-gNd" id="uf3-P1-F4o"/>
-                <outlet property="label" destination="QAA-9f-xaN" id="PZV-b1-tgG"/>
             </connections>
             <point key="canvasLocation" x="86.956521739130437" y="141.03260869565219"/>
         </collectionViewCell>
