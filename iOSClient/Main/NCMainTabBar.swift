@@ -45,7 +45,7 @@ class NCMainTabBar: UITabBar {
         appDelegate.mainTabBar = self
 
         NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeTheming), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(updateBadgeNumber), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUpdateBadgeNumber), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(updateBadgeNumber(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUpdateBadgeNumber), object: nil)
 
         changeTheming()
     }
@@ -199,23 +199,13 @@ class NCMainTabBar: UITabBar {
         self.addSubview(centerButton)
     }
 
-    @objc func updateBadgeNumber() {
-
-        DispatchQueue.global().async {
-
-            var counterDownload = 0
-            var counterUpload = 0
-
-            if let results = NCManageDatabase.shared.getResultsMetadatas(predicate: NSPredicate(format: "status < 0")) {
-                counterDownload = results.count
-            }
-            if let results = NCManageDatabase.shared.getResultsMetadatas(predicate: NSPredicate(format: "status > 0")) {
-                counterUpload = results.count
-            }
-
-            DispatchQueue.main.async {
-                self.updateBadgeNumberUI(counterDownload: counterDownload, counterUpload: counterUpload)
-            }
+    @objc func updateBadgeNumber(_ notification: NSNotification) {
+        DispatchQueue.main.async {
+            guard let userInfo = notification.userInfo as NSDictionary?,
+                  let counterDownload = userInfo["counterDownload"] as? Int,
+                  let counterUpload = userInfo["counterUpload"] as? Int
+            else { return }
+            self.updateBadgeNumberUI(counterDownload: counterDownload, counterUpload: counterUpload)
         }
     }
 

@@ -43,12 +43,16 @@ class NCNetworkingProcess: NSObject {
 
     func startTimer() {
         self.timerProcess?.invalidate()
-        self.timerProcess = Timer.scheduledTimer(withTimeInterval: 5, repeats: true, block: { _ in
-            if !self.pauseProcess, !self.appDelegate.account.isEmpty {
+        self.timerProcess = Timer.scheduledTimer(withTimeInterval: 1, repeats: true, block: { _ in
+            guard !self.appDelegate.account.isEmpty, !self.pauseProcess else { return }
+            if NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND status != %d", self.appDelegate.account, NCGlobal.shared.metadataStatusNormal)).isEmpty {
+                NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] PROCESS all normal status")
+                NotificationCenter.default.post(name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterUpdateBadgeNumber), object: nil, userInfo: ["counterDownload": 0, "counterUpload": 0])
+            } else {
                 Task {
                     let results = await self.start()
                     print("[INFO] PROCESS (TIMER) Download: \(results.counterDownload) Upload: \(results.counterUpload)")
-                    NotificationCenter.default.post(name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterUpdateBadgeNumber), object: nil)
+                    NotificationCenter.default.post(name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterUpdateBadgeNumber), object: nil, userInfo: ["counterDownload": results.counterDownload, "counterUpload": results.counterUpload])
                 }
             }
         })
