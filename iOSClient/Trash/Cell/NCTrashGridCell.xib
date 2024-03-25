@@ -117,6 +117,14 @@
                     <exclude reference="cgB-lu-t0g"/>
                     <exclude reference="W0L-HY-al1"/>
                 </mask>
+                <mask key="constraints">
+                    <exclude reference="6tC-PK-fYX"/>
+                    <exclude reference="Py6-0z-K3t"/>
+                    <exclude reference="VMW-0Y-aOH"/>
+                    <exclude reference="jI9-M1-Nl8"/>
+                    <exclude reference="q5r-Pz-Tnq"/>
+                    <exclude reference="0mO-lw-JH1"/>
+                </mask>
             </variation>
             <connections>
                 <outlet property="buttonMore" destination="EJs-Ro-nbe" id="BdI-ay-LuX"/>
