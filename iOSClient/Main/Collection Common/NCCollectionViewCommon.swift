@@ -75,6 +75,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     var emptyImage: UIImage?
     var emptyTitle: String = ""
     var emptyDescription: String = ""
+    var emptyDataPortaitOffset: CGFloat = 0
+    var emptyDataLandscapeOffset: CGFloat = -20
 
     private var showDescription: Bool {
         !headerRichWorkspaceDisable && NCKeychain().showDescription
@@ -1720,7 +1722,7 @@ extension NCCollectionViewCommon: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
         var height: CGFloat = 0
         if dataSource.getMetadataSourceForAllSections().isEmpty {
-            height = NCGlobal.shared.getHeightHeaderEmptyData(view: view, landscapeOffset: -20, isHeaderMenuTransferViewEnabled: isHeaderMenuTransferViewEnabled())
+            height = NCGlobal.shared.getHeightHeaderEmptyData(view: view, portraitOffset: emptyDataPortaitOffset, landscapeOffset: emptyDataLandscapeOffset, isHeaderMenuTransferViewEnabled: isHeaderMenuTransferViewEnabled())
         } else {
             let (heightHeaderCommands, heightHeaderRichWorkspace, heightHeaderSection) = getHeaderHeight(section: section)
             height = heightHeaderCommands + heightHeaderRichWorkspace + heightHeaderSection

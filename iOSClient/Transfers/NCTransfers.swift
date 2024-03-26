@@ -29,8 +29,6 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
 
     var metadataTemp: tableMetadata?
 
-    // MARK: - View Life Cycle
-
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
 
@@ -43,6 +41,8 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
         emptyTitle = "_no_transfer_"
         emptyDescription = "_no_transfer_sub_"
     }
+
+    // MARK: - View Life Cycle
 
     override func viewDidLoad() {
         super.viewDidLoad()
