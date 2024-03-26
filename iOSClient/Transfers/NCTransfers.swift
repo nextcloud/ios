@@ -99,15 +99,6 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
         notificationReloadDataSource += 1
     }
 
-    // MARK: - Empty
-
-    override func emptyDataSetView(_ view: NCEmptyView) {
-        self.emptyDataSet?.setOffset(getHeaderHeight())
-        view.emptyImage.image = emptyImage
-        view.emptyTitle.text = NSLocalizedString(emptyTitle, comment: "")
-        view.emptyDescription.text = NSLocalizedString(emptyDescription, comment: "")
-    }
-
     // MARK: TAP EVENT
 
     override func longPressMoreListItem(with objectId: String, namedButtonMore: String, indexPath: IndexPath, gestureRecognizer: UILongPressGestureRecognizer) {
@@ -265,14 +256,16 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
     }
 
     override func reloadDataSource(withQueryDB: Bool = true) {
-        super.reloadDataSource(withQueryDB: withQueryDB)
-
-        NCNetworkingProcess.shared.verifyZombie()
+        Task {
+            await NCNetworkingProcess.shared.verifyZombie()
+            super.reloadDataSource(withQueryDB: withQueryDB)
+        }
     }
 
     override func reloadDataSourceNetwork() {
-        super.reloadDataSourceNetwork()
-
-        reloadDataSource()
+        Task {
+            await NCNetworkingProcess.shared.verifyZombie()
+            super.reloadDataSource(withQueryDB: true)
+        }
     }
 }

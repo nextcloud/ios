@@ -56,7 +56,7 @@ extension NCMedia {
         }
 
         // first date
-        let firstCellDate = (visibleCells.first as? NCGridMediaCell)?.fileDate
+        let firstCellDate = (visibleCells.first as? NCGridMediaCell)?.date
         if firstCellDate == firstMetadataDate {
             lessDate = Date.distantFuture
         } else {
@@ -67,7 +67,7 @@ extension NCMedia {
             }
         }
         // last date
-        let lastCellDate = (visibleCells.last as? NCGridMediaCell)?.fileDate
+        let lastCellDate = (visibleCells.last as? NCGridMediaCell)?.date
         if lastCellDate == lastMetadataDate {
             greaterDate = Date.distantPast
         } else {
