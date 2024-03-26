@@ -47,15 +47,17 @@ class NCSectionHeaderEmptyData: UICollectionReusableView {
 
     override func awakeFromNib() {
         super.awakeFromNib()
-        initCell()
+        initHeader()
     }
 
     override func prepareForReuse() {
         super.prepareForReuse()
-        initCell()
+        initHeader()
     }
 
-    func initCell() {
+    func initHeader() {
+        viewTransferHeightConstraint.constant = 0
+        viewTransfer.isHidden = true
         buttonTransfer.backgroundColor = .clear
         buttonTransfer.setImage(nil, for: .normal)
         buttonTransfer.layer.cornerRadius = 6
@@ -68,7 +70,9 @@ class NCSectionHeaderEmptyData: UICollectionReusableView {
         progressTransfer.trackTintColor = NCBrandColor.shared.brand.withAlphaComponent(0.2)
         transferSeparatorBottom.backgroundColor = .separator
         transferSeparatorBottomHeightConstraint.constant = 0.5
-        viewTransferHeightConstraint.constant = 0
+        emptyImage.image = nil
+        emptyTitle.text = ""
+        emptyDescription.text = ""
     }
 
     // MARK: - Action
