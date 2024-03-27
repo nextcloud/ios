@@ -535,7 +535,7 @@ struct UploadAssetsView: View {
             }
         }
         .onTapGesture {
-            UIApplication.shared.windows.filter { $0.isKeyWindow }.first?.endEditing(true)
+            UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
         }
         .onDisappear {
             uploadAssets.dismiss = true

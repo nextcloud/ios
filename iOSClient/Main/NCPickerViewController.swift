@@ -118,13 +118,15 @@ class NCDocumentPickerViewController: NSObject, UIDocumentPickerDelegate {
     let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
     let utilityFileSystem = NCUtilityFileSystem()
     var isViewerMedia: Bool
-    var viewController: UIViewController?
+    var mediaViewController: NCMedia?
+    var tabBarController: UITabBarController
 
     @discardableResult
-    init (tabBarController: UITabBarController, isViewerMedia: Bool, allowsMultipleSelection: Bool, viewController: UIViewController? = nil) {
+    init (tabBarController: UITabBarController, isViewerMedia: Bool, allowsMultipleSelection: Bool, mediaViewController: NCMedia?) {
 
         self.isViewerMedia = isViewerMedia
-        self.viewController = viewController
+        self.tabBarController = tabBarController
+        self.mediaViewController = mediaViewController
         super.init()
 
         let documentProviderMenu = UIDocumentPickerViewController(forOpeningContentTypes: [UTType.data])
@@ -135,14 +137,14 @@ class NCDocumentPickerViewController: NSObject, UIDocumentPickerDelegate {
         documentProviderMenu.popoverPresentationController?.sourceRect = tabBarController.tabBar.bounds
         documentProviderMenu.delegate = self
 
-        appDelegate.window?.rootViewController?.present(documentProviderMenu, animated: true, completion: nil)
+        tabBarController.tabBar.window?.rootViewController?.present(documentProviderMenu, animated: true, completion: nil)
     }
 
     func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
         if isViewerMedia,
             let urlIn = urls.first,
             let url = self.copySecurityScopedResource(url: urlIn, urlOut: FileManager.default.temporaryDirectory.appendingPathComponent(urlIn.lastPathComponent)),
-            let viewController = self.viewController {
+            let mediaViewController = self.mediaViewController {
             let ocId = NSUUID().uuidString
 
             let fileName = url.lastPathComponent
@@ -151,7 +153,7 @@ class NCDocumentPickerViewController: NSObject, UIDocumentPickerDelegate {
                 metadata.classFile = NKCommon.TypeClassFile.video.rawValue
             }
             NCManageDatabase.shared.addMetadata(metadata)
-            NCViewer().view(viewController: viewController, metadata: metadata, metadatas: [metadata], imageIcon: nil)
+            NCViewer().view(viewController: mediaViewController, metadata: metadata, metadatas: [metadata], imageIcon: nil)
 
         } else {
             let serverUrl = appDelegate.activeServerUrl
