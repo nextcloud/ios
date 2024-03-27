@@ -42,7 +42,7 @@ class NCMenuFloatingPanelLayout: FloatingPanelLayout {
         // sometimes UIScreen.main.bounds.size.height is not updated correctly
         // this ensures we use the correct height value
         // can't use `layoutFor size` since menu is dieplayed on top of the whole screen not just the VC
-        let screenHeight = UIDevice.current.orientation.isLandscapeHardCheck
+        let screenHeight = UIDevice.current.orientation.isLandscape
         ? min(UIScreen.main.bounds.size.width, UIScreen.main.bounds.size.height)
         : max(UIScreen.main.bounds.size.width, UIScreen.main.bounds.size.height)
         let window = UIApplication.shared.connectedScenes.flatMap { ($0 as? UIWindowScene)?.windows ?? [] }.first { $0.isKeyWindow }

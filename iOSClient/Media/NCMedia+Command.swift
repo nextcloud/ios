@@ -156,7 +156,7 @@ extension NCMedia {
         ])
 
         let playFile = UIAction(title: NSLocalizedString("_play_from_files_", comment: ""), image: UIImage(systemName: "play.circle")) { _ in
-            guard let tabBarController = self.appDelegate.window?.rootViewController as? UITabBarController else { return }
+            guard let tabBarController = self.tabBarController else { return }
             self.documentPickerViewController = NCDocumentPickerViewController(tabBarController: tabBarController, isViewerMedia: true, allowsMultipleSelection: false, mediaViewController: self)
         }
 

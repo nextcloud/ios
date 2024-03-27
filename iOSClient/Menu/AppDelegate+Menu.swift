@@ -51,7 +51,7 @@ extension AppDelegate {
         actions.append(
             NCMenuAction(
                 title: NSLocalizedString("_upload_file_", comment: ""), icon: UIImage(named: "file")!.image(color: UIColor.systemGray, size: 50), action: { _ in
-                    if let tabBarController = self.window?.rootViewController as? UITabBarController {
+                    if let tabBarController = viewController as? UITabBarController {
                         self.documentPickerViewController = NCDocumentPickerViewController(tabBarController: tabBarController, isViewerMedia: false, allowsMultipleSelection: true, mediaViewController: nil)
                     }
                 }
