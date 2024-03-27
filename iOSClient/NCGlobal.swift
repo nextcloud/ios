@@ -54,6 +54,16 @@ class NCGlobal: NSObject {
         return NCBrandColor.shared.userColors[userColorIx]
     }
 
+    func getHeightHeaderEmptyData(view: UIView, portraitOffset: CGFloat, landscapeOffset: CGFloat, isHeaderMenuTransferViewEnabled: Bool = false) -> CGFloat {
+        var height: CGFloat = 0
+        if UIDevice.current.orientation.isPortrait {
+            height = (view.frame.height / 2) - (view.safeAreaInsets.top / 2) + portraitOffset
+        } else {
+            height = (view.frame.height / 2) + landscapeOffset + CGFloat(isHeaderMenuTransferViewEnabled ? 35 : 0)
+        }
+        return height
+    }
+
     // Convert a string to an integer evenly
     // hash is hex string
     static func hashToInt(hash: String, maximum: Int) -> Int {
@@ -116,7 +126,7 @@ class NCGlobal: NSObject {
 
     // Varie size GUI
     //
-    @objc let heightCellSettings: CGFloat = 50
+    @objc let heightCellSettings: CGFloat           = 50
 
     // Avatar & Preview size
     //
@@ -367,7 +377,7 @@ class NCGlobal: NSObject {
 
     let notificationCenterProgressTask                          = "progressTask"                    // userInfo: account, ocId, serverUrl, status, chunk, e2eEncrypted, progress, totalBytes, totalBytesExpected
 
-    let notificationCenterUpdateBadgeNumber                     = "updateBadgeNumber"
+    let notificationCenterUpdateBadgeNumber                     = "updateBadgeNumber"               // userInfo: counterDownload, counterUpload
 
     let notificationCenterCreateFolder                          = "createFolder"                    // userInfo: ocId, serverUrl, account, withPush
     let notificationCenterDeleteFile                            = "deleteFile"                      // userInfo: [ocId], onlyLocalCache, error

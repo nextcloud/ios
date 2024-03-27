@@ -27,13 +27,12 @@ import NextcloudKit
 import SwiftyJSON
 import JGProgressHUD
 
-class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmptyDataSetDelegate {
+class NCNotification: UITableViewController, NCNotificationCellDelegate {
 
     let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
     let utilityFileSystem = NCUtilityFileSystem()
     let utility = NCUtility()
     var notifications: [NKNotifications] = []
-    var emptyDataSet: NCEmptyDataSet?
     var dataSourceTask: URLSessionTask?
 
     // MARK: - View Life Cycle
@@ -57,10 +56,6 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmpty
                 self?.dismiss(animated: true)
             })
         }
-
-        // Empty
-        let offset = (self.navigationController?.navigationBar.bounds.height ?? 0) - 20
-        emptyDataSet = NCEmptyDataSet(view: tableView, offset: -offset, delegate: self)
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -78,25 +73,9 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmpty
         self.dismiss(animated: true, completion: nil)
     }
 
-    // MARK: - Empty
-
-    func emptyDataSetView(_ view: NCEmptyView) {
-
-        if self.dataSourceTask?.state == .running {
-            view.emptyImage.image = UIImage(named: "networkInProgress")?.image(color: .gray, size: UIScreen.main.bounds.width)
-            view.emptyTitle.text = NSLocalizedString("_request_in_progress_", comment: "")
-            view.emptyDescription.text = ""
-        } else {
-            view.emptyImage.image = utility.loadImage(named: "bell", color: .gray, size: UIScreen.main.bounds.width)
-            view.emptyTitle.text = NSLocalizedString("_no_notification_", comment: "")
-            view.emptyDescription.text = ""
-        }
-    }
-
     // MARK: - Table
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        emptyDataSet?.numberOfItemsInSection(notifications.count, section: section)
         return notifications.count
     }
 

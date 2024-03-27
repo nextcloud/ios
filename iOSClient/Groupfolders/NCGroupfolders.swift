@@ -26,8 +26,6 @@ import NextcloudKit
 
 class NCGroupfolders: NCCollectionViewCommon {
 
-    // MARK: - View Life Cycle
-
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
 
@@ -39,6 +37,8 @@ class NCGroupfolders: NCCollectionViewCommon {
         emptyTitle = "_files_no_files_"
         emptyDescription = "_tutorial_groupfolders_view_"
     }
+
+    // MARK: - View Life Cycle
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)

@@ -25,7 +25,7 @@ import UIKit
 import NextcloudKit
 import RealmSwift
 
-class NCMedia: UIViewController, NCEmptyDataSetDelegate {
+class NCMedia: UIViewController {
 
     @IBOutlet weak var collectionView: UICollectionView!
     @IBOutlet weak var titleDate: UILabel!
@@ -36,8 +36,8 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
     @IBOutlet weak var menuButton: UIButton!
     @IBOutlet weak var gradientView: UIView!
 
+    let layout = NCMediaLayout()
     var activeAccount = tableAccount()
-    var emptyDataSet: NCEmptyDataSet?
     var documentPickerViewController: NCDocumentPickerViewController?
     var tabBarSelect: NCMediaSelectTabBar!
     let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
@@ -72,18 +72,16 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
 
         view.backgroundColor = .systemBackground
 
+        collectionView.register(UINib(nibName: "NCSectionHeaderEmptyData", bundle: nil), forSupplementaryViewOfKind: collectionViewMediaElementKindSectionHeader, withReuseIdentifier: "sectionHeaderEmptyData")
         collectionView.register(UINib(nibName: "NCGridMediaCell", bundle: nil), forCellWithReuseIdentifier: "gridCell")
         collectionView.alwaysBounceVertical = true
         collectionView.contentInset = UIEdgeInsets(top: insetsTop, left: 0, bottom: 50, right: 0)
         collectionView.backgroundColor = .systemBackground
         collectionView.prefetchDataSource = self
 
-        let layout = NCMediaLayout()
         layout.sectionInset = UIEdgeInsets(top: 0, left: 2, bottom: 0, right: 2)
         layout.mediaViewController = self
         collectionView.collectionViewLayout = layout
-
-        emptyDataSet = NCEmptyDataSet(view: collectionView, offset: 0, delegate: self)
 
         tabBarSelect = NCMediaSelectTabBar(tabBarController: self.tabBarController, delegate: self)
 
@@ -228,17 +226,6 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate {
     @objc func enterForeground(_ notification: NSNotification) {
         startTimer()
     }
-    // MARK: - Empty
-
-    func emptyDataSetView(_ view: NCEmptyView) {
-        view.emptyImage.image = UIImage(named: "media")?.image(color: .gray, size: UIScreen.main.bounds.width)
-        if loadingTask != nil || imageCache.createMediaCacheInProgress {
-            view.emptyTitle.text = NSLocalizedString("_search_in_progress_", comment: "")
-        } else {
-            view.emptyTitle.text = NSLocalizedString("_tutorial_photo_view_", comment: "")
-        }
-        view.emptyDescription.text = ""
-    }
 
     // MARK: - Image
 
@@ -288,7 +275,7 @@ extension NCMedia: UICollectionViewDelegate {
         if let metadata = self.metadatas?[indexPath.row] {
             if let visibleCells = self.collectionView?.indexPathsForVisibleItems.compactMap({ self.collectionView?.cellForItem(at: $0) }) {
                 for case let cell as NCGridMediaCell in visibleCells {
-                    if cell.fileObjectId == metadata.ocId {
+                    if cell.ocId == metadata.ocId {
                         mediaCell = cell
                     }
                 }
@@ -342,6 +329,21 @@ extension NCMedia: UICollectionViewDataSourcePrefetching {
 }
 
 extension NCMedia: UICollectionViewDataSource {
+    func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
+        if kind == "collectionViewMediaElementKindSectionHeader" {
+            guard let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionHeaderEmptyData", for: indexPath) as? NCSectionHeaderEmptyData else { return NCSectionHeaderEmptyData() }
+            header.emptyImage.image = UIImage(named: "media")?.image(color: .gray, size: UIScreen.main.bounds.width)
+            if loadingTask != nil || imageCache.createMediaCacheInProgress {
+                header.emptyTitle.text = NSLocalizedString("_search_in_progress_", comment: "")
+            } else {
+                header.emptyTitle.text = NSLocalizedString("_tutorial_photo_view_", comment: "")
+            }
+            header.emptyDescription.text = ""
+            return header
+        }
+        return UICollectionReusableView()
+    }
+
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         var numberOfItemsInSection = 0
         if let metadatas { numberOfItemsInSection = metadatas.count }
@@ -360,9 +362,7 @@ extension NCMedia: UICollectionViewDataSource {
             activityIndicatorTrailing.constant = 150
         }
 
-        emptyDataSet?.numberOfItemsInSection(numberOfItemsInSection, section: section)
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) { self.setTitleDate() }
-
         return numberOfItemsInSection
     }
 
@@ -383,12 +383,15 @@ extension NCMedia: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "gridCell", for: indexPath) as? NCGridMediaCell,
               let metadatas = self.metadatas,
-              let metadata = metadatas[indexPath.row] else { return UICollectionViewCell() }
+              let metadata = metadatas[indexPath.row]
+        else {
+            return NCGridMediaCell()
+        }
 
-        cell.fileDate = metadata.date as Date
-        cell.fileObjectId = metadata.ocId
+        cell.date = metadata.date as Date
+        cell.ocId = metadata.ocId
         cell.indexPath = indexPath
-        cell.fileUser = metadata.ownerId
+        cell.user = metadata.ownerId
         cell.imageStatus.image = nil
         cell.imageItem.contentMode = .scaleAspectFill
 
@@ -429,19 +432,35 @@ extension NCMedia: UICollectionViewDataSource {
 
 // MARK: -
 
-extension NCMedia: UICollectionViewDelegateFlowLayout {
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
-        return CGSize(width: collectionView.frame.width, height: 0)
-    }
-
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForFooterInSection section: Int) -> CGSize {
-        return CGSize(width: collectionView.frame.width, height: 0)
-    }
-}
-
-// MARK: -
-
 extension NCMedia: NCMediaLayoutDelegate {
+    func collectionView(_ collectionView: UICollectionView, layout: UICollectionViewLayout, heightForHeaderInSection section: Int) -> Float {
+        var height: Double = 0
+        if metadatas?.count ?? 0 == 0 {
+            height = NCGlobal.shared.getHeightHeaderEmptyData(view: view, portraitOffset: 0, landscapeOffset: -20)
+        }
+        return Float(height)
+    }
+
+    func collectionView(_ collectionView: UICollectionView, layout: UICollectionViewLayout, heightForFooterInSection section: Int) -> Float {
+        return .zero
+    }
+
+    func collectionView(_ collectionView: UICollectionView, layout: UICollectionViewLayout, insetForSection section: Int) -> UIEdgeInsets {
+        return .zero
+    }
+
+    func collectionView(_ collectionView: UICollectionView, layout: UICollectionViewLayout, insetForHeaderInSection section: Int) -> UIEdgeInsets {
+        return .zero
+    }
+
+    func collectionView(_ collectionView: UICollectionView, layout: UICollectionViewLayout, insetForFooterInSection section: Int) -> UIEdgeInsets {
+        return .zero
+    }
+
+    func collectionView(_ collectionView: UICollectionView, layout: UICollectionViewLayout, minimumInteritemSpacingForSection section: Int) -> Float {
+        return .zero
+    }
+
     func collectionView(_ collectionView: UICollectionView, layout: UICollectionViewLayout, sizeForItemAtIndexPath indexPath: NSIndexPath, columnCount: Int, mediaLayout: String) -> CGSize {
         let size = CGSize(width: collectionView.frame.width / CGFloat(columnCount), height: collectionView.frame.width / CGFloat(columnCount))
         if mediaLayout == NCGlobal.shared.mediaLayoutRatio {

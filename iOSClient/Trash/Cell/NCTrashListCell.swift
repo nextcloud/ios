@@ -25,26 +25,26 @@
 
 import UIKit
 
+protocol NCTrashListCellDelegate: AnyObject {
+    func tapRestoreListItem(with objectId: String, image: UIImage?, sender: Any)
+    func tapMoreListItem(with objectId: String, image: UIImage?, sender: Any)
+}
+
 class NCTrashListCell: UICollectionViewCell, NCTrashCellProtocol {
 
     @IBOutlet weak var imageItem: UIImageView!
     @IBOutlet weak var imageItemLeftConstraint: NSLayoutConstraint!
     @IBOutlet weak var imageSelect: UIImageView!
-
     @IBOutlet weak var labelTitle: UILabel!
     @IBOutlet weak var labelInfo: UILabel!
-
     @IBOutlet weak var imageRestore: UIImageView!
     @IBOutlet weak var imageMore: UIImageView!
-
     @IBOutlet weak var buttonMore: UIButton!
     @IBOutlet weak var buttonRestore: UIButton!
-
     @IBOutlet weak var separator: UIView!
     @IBOutlet weak var separatorHeightConstraint: NSLayoutConstraint!
 
-    weak var listCellDelegate: NCTrashListCellDelegate?
-
+    weak var delegate: NCTrashListCellDelegate?
     var objectId = ""
     var indexPath = IndexPath()
 
@@ -79,11 +79,11 @@ class NCTrashListCell: UICollectionViewCell, NCTrashCellProtocol {
     }
 
     @IBAction func touchUpInsideMore(_ sender: Any) {
-        listCellDelegate?.tapMoreListItem(with: objectId, image: imageItem.image, sender: sender)
+        delegate?.tapMoreListItem(with: objectId, image: imageItem.image, sender: sender)
     }
 
     @IBAction func touchUpInsideRestore(_ sender: Any) {
-        listCellDelegate?.tapRestoreListItem(with: objectId, image: imageItem.image, sender: sender)
+        delegate?.tapRestoreListItem(with: objectId, image: imageItem.image, sender: sender)
     }
 
     func selectMode(_ status: Bool) {
@@ -128,45 +128,5 @@ class NCTrashListCell: UICollectionViewCell, NCTrashCellProtocol {
             backgroundView = nil
             separator.isHidden = false
         }
-    }
-}
-
-protocol NCTrashListCellDelegate: AnyObject {
-    func tapRestoreListItem(with objectId: String, image: UIImage?, sender: Any)
-    func tapMoreListItem(with objectId: String, image: UIImage?, sender: Any)
-}
-
-protocol NCTrashCellProtocol {
-    var objectId: String { get set }
-    var labelTitle: UILabel! { get set }
-    var labelInfo: UILabel! { get set }
-    var imageItem: UIImageView! { get set }
-    var indexPath: IndexPath { get set }
-
-    func selectMode(_ status: Bool)
-    func selected(_ status: Bool)
-}
-
-extension NCTrashCellProtocol where Self: UICollectionViewCell {
-    mutating func setupCellUI(tableTrash: tableTrash, image: UIImage?) {
-        self.objectId = tableTrash.fileId
-        self.labelTitle.text = tableTrash.trashbinFileName
-        self.labelTitle.textColor = .label
-        if self is NCTrashListCell {
-            self.labelInfo?.text = NCUtility().dateDiff(tableTrash.date as Date)
-        } else {
-            let dateFormatter = DateFormatter()
-            dateFormatter.dateStyle = .short
-            dateFormatter.timeStyle = .none
-            dateFormatter.locale = Locale.current
-            self.labelInfo?.text = dateFormatter.string(from: tableTrash.date as Date)
-        }
-        if tableTrash.directory {
-            self.imageItem.image = NCImageCache.images.folder
-        } else {
-            self.imageItem.image = image
-            self.labelInfo?.text = (self.labelInfo?.text ?? "") + " · " + NCUtilityFileSystem().transformedSize(tableTrash.size)
-        }
-        self.accessibilityLabel = tableTrash.trashbinFileName + ", " + (self.labelInfo?.text ?? "")
     }
 }
