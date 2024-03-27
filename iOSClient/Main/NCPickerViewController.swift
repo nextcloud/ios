@@ -194,7 +194,7 @@ class NCDocumentPickerViewController: NSObject, UIDocumentPickerDelegate {
                     conflict.serverUrl = serverUrl
                     conflict.metadatasUploadInConflict = metadatasInConflict
 
-                    appDelegate.window?.rootViewController?.present(conflict, animated: true, completion: nil)
+                    tabBarController.tabBar.window?.rootViewController?.present(conflict, animated: true, completion: nil)
                 }
             }
         }
