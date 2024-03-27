@@ -121,7 +121,7 @@ extension AppDelegate {
                              action: { _ in
                                  guard !appDelegate.activeServerUrl.isEmpty else { return }
                                  let alertController = UIAlertController.createFolder(serverUrl: appDelegate.activeServerUrl, urlBase: appDelegate, markE2ee: true)
-                                 appDelegate.window?.rootViewController?.present(alertController, animated: true, completion: nil)
+                                 rootViewController.present(alertController, animated: true, completion: nil)
                              })
             )
         }

@@ -181,7 +181,7 @@ class NCViewerMedia: UIViewController {
                                     request.cancel()
                                 }
                             }
-                            if let view = self.appDelegate.window?.rootViewController?.view {
+                            if let view = self.tabBarController?.tabBar.window?.rootViewController?.view {
                                 hud.show(in: view)
                             }
                             NCNetworking.shared.download(metadata: metadata, withNotificationProgressTask: false) {

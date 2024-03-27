@@ -1131,7 +1131,7 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
         if metadata.e2eEncrypted {
             if NCGlobal.shared.capabilityE2EEEnabled {
                 if !NCKeychain().isEndToEndEnabled(account: appDelegate.account) {
-                    let e2ee = NCEndToEndInitialize()
+                    let e2ee = NCEndToEndInitialize(rootViewController: self.tabBarController?.tabBar.window?.rootViewController)
                     e2ee.delegate = self
                     e2ee.initEndToEndEncryption()
                     return
