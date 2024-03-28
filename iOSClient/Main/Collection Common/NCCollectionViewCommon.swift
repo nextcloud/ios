@@ -585,7 +585,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     // MARK: - Tip
 
     func showTip() {
-        if self is NCFiles, self.view.window != nil, !NCBrandOptions.shared.disable_multiaccount, !NCBrandOptions.shared.disable_manage_account, self.serverUrl == utilityFileSystem.getHomeServer(urlBase: appDelegate.urlBase, userId: appDelegate.userId), let view = self.navigationItem.leftBarButtonItem?.customView {
+        if self is NCFiles, view.window != nil, !NCBrandOptions.shared.disable_multiaccount, !NCBrandOptions.shared.disable_manage_account, self.serverUrl == utilityFileSystem.getHomeServer(urlBase: appDelegate.urlBase, userId: appDelegate.userId), let view = self.navigationItem.leftBarButtonItem?.customView {
             if !NCManageDatabase.shared.tipExists(NCGlobal.shared.tipNCCollectionViewCommonAccountRequest), !NCManageDatabase.shared.getAllAccountOrderAlias().isEmpty {
                 self.tipView?.show(forView: view)
             }
@@ -1131,7 +1131,7 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
         if metadata.e2eEncrypted {
             if NCGlobal.shared.capabilityE2EEEnabled {
                 if !NCKeychain().isEndToEndEnabled(account: appDelegate.account) {
-                    let e2ee = NCEndToEndInitialize(rootViewController: self.tabBarController?.tabBar.window?.rootViewController)
+                    let e2ee = NCEndToEndInitialize()
                     e2ee.delegate = self
                     e2ee.initEndToEndEncryption()
                     return
