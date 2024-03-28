@@ -7,8 +7,15 @@
 //
 
 import Foundation
+import UIKit
+import Combine
+import SwiftUI
+import TOPasscodeViewController
+import LocalAuthentication
 
-protocol NCSettingsViewModelProtocol: ObservableObject, AccountUpdateHandling, ViewOnAppearHandling {
+protocol NCSettingsVMRepresentable: ObservableObject, AccountUpdateHandling, ViewOnAppearHandling {
+    
+    var isLockActive: Bool { get set }
     /// State to control the enable TouchID toggle
     var enableTouchID: Bool { get set }
     /// State to control
@@ -35,11 +42,12 @@ protocol NCSettingsViewModelProtocol: ObservableObject, AccountUpdateHandling, V
     func getConfigFiles()
 }
 
-class NCSettingsViewModel: NCSettingsViewModelProtocol {
+class NCSettingsViewModel: NCSettingsVMRepresentable {
     
     /// Keychain access
     var keychain = NCKeychain()
-    
+        
+    @Published var isLockActive: Bool = true
     @Published var enableTouchID: Bool = false
     @Published var lockScreen: Bool = false
     @Published var privacyScreen: Bool = false
@@ -48,7 +56,8 @@ class NCSettingsViewModel: NCSettingsViewModelProtocol {
     
     @Published var isE2EEEnable: Bool = NCGlobal.shared.capabilityE2EEEnabled
     @Published var versionE2EE: String = NCGlobal.shared.capabilityE2EEApiVersion
-    
+    @Published var passcode: String = ""
+
     // MARK: - String Values for View
     var appVersion: String = NCUtility().getVersionApp(withBuild: true)
     @Published var copyrightYear: String = ""
@@ -68,11 +77,13 @@ class NCSettingsViewModel: NCSettingsViewModelProtocol {
     
     /// Triggered when the view appears.
     func onViewAppear() {
+        isLockActive = (keychain.passcode != nil)
         enableTouchID = keychain.touchFaceID
         lockScreen = keychain.requestPasscodeAtStart
         privacyScreen = keychain.privacyScreenEnabled
         resetWrongAttempts = keychain.resetAppCounterFail
         copyrightYear = getCurrentYear()
+        passcode = keychain.passcode ?? ""
     }
     
     // MARK: - Settings Update Methods
@@ -87,6 +98,11 @@ class NCSettingsViewModel: NCSettingsViewModelProtocol {
         keychain.privacyScreenEnabled = privacyScreen
     }
     
+    /// Function to update Lock Screen setting
+    func updateLockScreenSetting() {
+        
+    }
+    
     /// Function to update Reset Wrong Attempts setting
     func updateResetWrongAttemptsSetting() {
         keychain.resetAppCounterFail = resetWrongAttempts
@@ -98,12 +114,99 @@ class NCSettingsViewModel: NCSettingsViewModelProtocol {
         let configServer = NCConfigServer()
         configServer.startService(url: URL(string: configLink)!)
     }
-
+    
     /// This function gets the current year as a string.
     /// and returns it as a string value.
     func getCurrentYear() -> String {
         return String(Calendar.current.component(.year, from: Date()))
     }
+}
 
-
+struct PasscodeView: UIViewControllerRepresentable {
+    @Binding var isPresented: Bool
+    @Binding var passcode: String
+    
+    func makeUIViewController(context: Context) -> UIViewController {
+        let laContext = LAContext()
+        var error: NSError?
+        
+        if NCKeychain().passcode != nil {
+            let passcodeViewController = TOPasscodeViewController(passcodeType: .sixDigits, allowCancel: true)
+            passcodeViewController.keypadButtonShowLettering = false
+            
+            if NCKeychain().touchFaceID && laContext.canEvaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, error: &error) {
+                if error == nil {
+                    if laContext.biometryType == .faceID {
+                        passcodeViewController.biometryType = .faceID
+                        passcodeViewController.allowBiometricValidation = true
+                        passcodeViewController.automaticallyPromptForBiometricValidation = true
+                    } else if laContext.biometryType == .touchID {
+                        passcodeViewController.biometryType = .touchID
+                        passcodeViewController.allowBiometricValidation = true
+                        passcodeViewController.automaticallyPromptForBiometricValidation = true
+                    } else {
+                        print("No Biometric support")
+                    }
+                }
+            }
+            return passcodeViewController
+        } else {
+            let passcodeSettingsViewController = TOPasscodeSettingsViewController()
+            passcodeSettingsViewController.hideOptionsButton = true
+            passcodeSettingsViewController.requireCurrentPasscode = false
+            passcodeSettingsViewController.passcodeType = .sixDigits
+            return passcodeSettingsViewController
+        }
+    }
+    
+    func makeUIViewController(context: Context) -> TOPasscodeViewController {
+        let passcodeViewController = TOPasscodeViewController(passcodeType: .sixDigits, allowCancel: false)
+        passcodeViewController.delegate = context.coordinator
+        return passcodeViewController
+    }
+    
+    func updateUIViewController(_ uiViewController: TOPasscodeViewController, context: Context) {
+        // Update the view controller if needed
+    }
+    
+    func makeCoordinator() -> Coordinator {
+        Coordinator(self)
+    }
+    
+    class Coordinator: NSObject, TOPasscodeViewControllerDelegate {
+        var parent: PasscodeView
+        
+        init(_ parent: PasscodeView) {
+            self.parent = parent
+        }
+        
+        func passcodeViewController(_ passcodeViewController: TOPasscodeViewController, isCorrectCode code: String) -> Bool {
+            if code == NCKeychain().passcode {
+                NCKeychain().passcode = nil
+                parent.passcode = code
+                return true
+            }
+            return false
+        }
+        
+        func didPerformBiometricValidationRequest(in passcodeViewController: TOPasscodeViewController) {
+            let context = LAContext()
+            var error: NSError?
+            
+            if context.canEvaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, error: &error) {
+                context.evaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, localizedReason: NCBrandOptions.shared.brand) { success, error in
+                    DispatchQueue.main.async {
+                        if success {
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                                NCKeychain().passcode = nil
+                                passcodeViewController.dismiss(animated: true) {
+                                    self.parent.isPresented = false
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
 }

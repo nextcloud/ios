@@ -42,13 +42,18 @@ struct NCSettings<ViewModel: NCSettingsViewModel>: View {
                 
                 // Lock active YES/NO
                 HStack {
-                    Image("lock")
+                    Image(viewModel.isLockActive ? "lock_open" : "lock")
                         .resizable()
                         .renderingMode(.template)
                         .frame(width: 20, height: 20)
-                    Text(NSLocalizedString("_lock_active_", comment: ""))
-                }.onTapGesture {
-                    // TODO: This requires hefty testing, will add this afterwards
+                    
+                    Text(viewModel.isLockActive ? NSLocalizedString("_lock_not_active_", comment: "") :  NSLocalizedString("_lock_active_", comment: "") )
+                }
+                .onTapGesture {
+                    viewModel.isLockActive.toggle()
+                }
+                .sheet(isPresented: $viewModel.isLockActive) {
+                    PasscodeView(isPresented: $viewModel.isLockActive, passcode: $viewModel.passcode)
                 }
                 
                 // Enable Touch ID
@@ -59,6 +64,9 @@ struct NCSettings<ViewModel: NCSettingsViewModel>: View {
                 
                 // Lock no screen
                 Toggle(NSLocalizedString("_lock_protection_no_screen_", comment: ""), isOn: $viewModel.lockScreen) // TODO: This will also require KeychainManager, so will do it at last
+                    .onChange(of: viewModel.lockScreen) { _ in
+                        
+                    }
 
                 
                 // Privacy screen
