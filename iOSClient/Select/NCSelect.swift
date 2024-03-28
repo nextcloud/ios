@@ -72,7 +72,6 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
     private var autoUploadDirectory = ""
     private var backgroundImageView = UIImageView()
     private var activeAccount: tableAccount!
-    private let window = UIApplication.shared.connectedScenes.flatMap { ($0 as? UIWindowScene)?.windows ?? [] }.first { $0.isKeyWindow }
 
     // MARK: - View Life Cycle
 
