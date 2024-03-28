@@ -31,9 +31,9 @@ import LocalAuthentication
     @objc func makeShipDetailsUI(account: String) -> UIViewController {
 
         let details = NCViewE2EE(account: account)
-        let vc = UIHostingController(rootView: details)
-        vc.title = NSLocalizedString("_e2e_settings_", comment: "")
-        return vc
+        let viewController = UIHostingController(rootView: details)
+        viewController.title = NSLocalizedString("_e2e_settings_", comment: "")
+        return viewController
     }
 }
 
@@ -257,6 +257,9 @@ struct NCViewE2EE: View {
 #endif
                 }
             }
+        }
+        .onAppear {
+            // manageE2EE.appDelegate.activeViewController =
         }
         .background(Color(UIColor.systemGroupedBackground))
     }
