@@ -45,10 +45,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     var activeLogin: NCLogin?
     var activeLoginWeb: NCLoginWeb?
     var activeServerUrl: String = ""
-    @objc var activeViewController: UIViewController?
     var mainTabBar: NCMainTabBar?
     var activeMetadata: tableMetadata?
     let listFilesVC = ThreadSafeDictionary<String, NCFiles>()
+    var activeFileVC: NCFiles?
 
     var disableSharesView: Bool = false
     var documentPickerViewController: NCDocumentPickerViewController?
@@ -289,6 +289,18 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
         NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] bye bye")
     }
+
+    // MARK: - XXX
+
+    func getTopViewControllerFromTabBarController(_ tabBarController: UIViewController) -> UIViewController? {
+        if let tabBarController = (tabBarController as? UITabBarController),
+           let navigationController = (tabBarController.selectedViewController as? UINavigationController),
+           let viewController = navigationController.topViewController {
+            return viewController
+        }
+        return nil
+    }
+
 
     // MARK: - Background Task
 

@@ -95,7 +95,6 @@ class NCViewerRichDocument: UIViewController, WKNavigationDelegate, WKScriptMess
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        appDelegate.activeViewController = self
         NCActivityIndicator.shared.start(backgroundView: view)
     }
 
