@@ -292,7 +292,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
     // MARK: - (Move to scene)
 
-    func getTopViewControllerFromTabBarController(_ tabBarController: UIViewController) -> UIViewController? {
+    func getTopViewControllerFromTabBarController(_ tabBarController: UIViewController?) -> UIViewController? {
         if let tabBarController = (tabBarController as? UITabBarController),
            let navigationController = (tabBarController.selectedViewController as? UINavigationController),
            let viewController = navigationController.topViewController {
@@ -300,7 +300,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         }
         return nil
     }
-
 
     // MARK: - Background Task
 
