@@ -52,7 +52,8 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
               let selector = userInfo["selector"] as? String,
               let error = userInfo["error"] as? NKError,
               let account = userInfo["account"] as? String,
-              account == appDelegate?.account
+              account == appDelegate?.account,
+              let rootViewController = appDelegate?.activeFileVC
         else { return }
 
         guard error == .success else {
@@ -86,10 +87,10 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
                     }
                     let navigationController = UINavigationController(rootViewController: viewerQuickLook)
                     navigationController.modalPresentationStyle = .fullScreen
-                    self.appDelegate?.window?.rootViewController?.present(navigationController, animated: true)
+                    rootViewController.present(navigationController, animated: true)
                 } else {
                     self.utilityFileSystem.copyFile(atPath: fileNamePath, toPath: fileNameTemp)
-                    self.appDelegate?.window?.rootViewController?.present(viewerQuickLook, animated: true)
+                    rootViewController.present(viewerQuickLook, animated: true)
                 }
             }
 
