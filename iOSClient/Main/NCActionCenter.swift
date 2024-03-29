@@ -558,7 +558,7 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
         }
     }
 
-    func openSelectView(items: [tableMetadata]) {
+    func openSelectView(items: [tableMetadata], viewController: UIViewController) {
         guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else { return }
 
         let navigationController = UIStoryboard(name: "NCSelect", bundle: nil).instantiateInitialViewController() as? UINavigationController
@@ -610,7 +610,7 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
         navigationController?.modalPresentationStyle = .formSheet
 
         if let navigationController = navigationController {
-            appDelegate.window?.rootViewController?.present(navigationController, animated: true, completion: nil)
+            viewController.present(navigationController, animated: true, completion: nil)
         }
     }
 }
