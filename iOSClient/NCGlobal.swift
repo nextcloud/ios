@@ -313,7 +313,6 @@ class NCGlobal: NSObject {
     let selectorUploadFile                          = "uploadFile"
     let selectorUploadFileNODelete                  = "UploadFileNODelete"
     let selectorUploadFileShareExtension            = "uploadFileShareExtension"
-    let selectorSaveAlbum                           = "saveAlbum"
     let selectorSaveAsScan                          = "saveAsScan"
     let selectorOpenDetail                          = "openDetail"
     let selectorSynchronizationOffline              = "synchronizationOffline"

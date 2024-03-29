@@ -98,9 +98,9 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
             DispatchQueue.main.async {
                 guard UIApplication.shared.applicationState == .active else { return }
                 if metadata.contentType.contains("opendocument") && !self.utility.isRichDocument(metadata) {
-                    self.openDocumentController(metadata: metadata)
+                    self.openDocumentController(metadata: metadata, viewController: rootViewController)
                 } else if metadata.classFile == NKCommon.TypeClassFile.compress.rawValue || metadata.classFile == NKCommon.TypeClassFile.unknow.rawValue {
-                    self.openDocumentController(metadata: metadata)
+                    self.openDocumentController(metadata: metadata, viewController: rootViewController)
                 } else {
                     if let viewController = self.appDelegate?.activeFileVC {
                         let imageIcon = UIImage(contentsOfFile: self.utilityFileSystem.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag))
@@ -112,7 +112,7 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
         case NCGlobal.shared.selectorOpenIn:
             DispatchQueue.main.async {
                 if UIApplication.shared.applicationState == .active {
-                    self.openDocumentController(metadata: metadata)
+                    self.openDocumentController(metadata: metadata, viewController: rootViewController)
                 }
             }
 
@@ -121,11 +121,6 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
             // https://github.com/nextcloud/ios/issues/2278
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
                 self.printDocument(metadata: metadata)
-            }
-
-        case NCGlobal.shared.selectorSaveAlbum:
-            DispatchQueue.main.async {
-                self.saveAlbum(metadata: metadata)
             }
 
         case NCGlobal.shared.selectorSaveAsScan:
@@ -307,10 +302,9 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
 
     // MARK: - Open in ...
 
-    func openDocumentController(metadata: tableMetadata) {
-
+    func openDocumentController(metadata: tableMetadata, viewController: UIViewController) {
         guard let appDelegate = UIApplication.shared.delegate as? AppDelegate,
-              let mainTabBar = appDelegate.mainTabBar else { return }
+              let mainTabBar = viewController.tabBarController?.tabBar as? NCMainTabBar else { return }
         let fileURL = URL(fileURLWithPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView))
 
         documentController = UIDocumentInteractionController(url: fileURL)
@@ -320,7 +314,6 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
     func openActivityViewController(selectedMetadata: [tableMetadata], viewController: UIViewController) {
         guard let appDelegate = UIApplication.shared.delegate as? AppDelegate,
               let mainTabBar = viewController.tabBarController?.tabBar as? NCMainTabBar else { return }
-
         let metadatas = selectedMetadata.filter({ !$0.directory })
         var items: [URL] = []
         var downloadMetadata: [(tableMetadata, URL)] = []
@@ -417,97 +410,7 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
         printController.present(animated: true)
     }
 
-    // MARK: - Save photo
-
-    func saveAlbum(metadata: tableMetadata) {
-        guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else { return }
-
-        let fileNamePath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)
-
-        NCAskAuthorization().askAuthorizationPhotoLibrary(viewController: appDelegate.mainTabBar?.window?.rootViewController) { hasPermission in
-            guard hasPermission else {
-                let error = NKError(errorCode: NCGlobal.shared.errorFileNotSaved, errorDescription: "_access_photo_not_enabled_msg_")
-                return NCContentPresenter().messageNotification("_access_photo_not_enabled_", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error)
-            }
-
-            let errorSave = NKError(errorCode: NCGlobal.shared.errorFileNotSaved, errorDescription: "_file_not_saved_cameraroll_")
-
-            do {
-                if metadata.isImage {
-                    let data = try Data(contentsOf: URL(fileURLWithPath: fileNamePath))
-                    PHPhotoLibrary.shared().performChanges({
-                        let assetRequest = PHAssetCreationRequest.forAsset()
-                        assetRequest.addResource(with: .photo, data: data, options: nil)
-                    }) { success, _ in
-                        if !success {
-                            NCContentPresenter().messageNotification("_save_selected_files_", error: errorSave, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error)
-                        }
-                    }
-                } else if metadata.isVideo {
-                    PHPhotoLibrary.shared().performChanges({
-                        PHAssetChangeRequest.creationRequestForAssetFromVideo(atFileURL: URL(fileURLWithPath: fileNamePath))
-                    }) { success, _ in
-                        if !success {
-                            NCContentPresenter().messageNotification("_save_selected_files_", error: errorSave, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error)
-                        }
-                    }
-                } else {
-                    NCContentPresenter().messageNotification("_save_selected_files_", error: errorSave, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error)
-                    return
-                }
-            } catch {
-                NCContentPresenter().messageNotification("_save_selected_files_", error: errorSave, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error)
-            }
-        }
-    }
-
-    // MARK: - Copy & Paste
-
-    func copyPasteboard(pasteboardOcIds: [String]) {
-        var items = [[String: Any]]()
-        guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else { return }
-        let hudView = appDelegate.window?.rootViewController?.view
-        var fractionCompleted: Float = 0
-
-        // getting file data can take some time and block the main queue
-        DispatchQueue.global(qos: .userInitiated).async {
-            var downloadMetadatas: [tableMetadata] = []
-            for ocid in pasteboardOcIds {
-                guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocid) else { continue }
-                if let pasteboardItem = metadata.toPasteBoardItem() {
-                    items.append(pasteboardItem)
-                } else {
-                    downloadMetadatas.append(metadata)
-                }
-            }
-
-            // do 5 downloads in parallel to optimize efficiency
-            let processor = ParallelWorker(n: 5, titleKey: "_downloading_", totalTasks: downloadMetadatas.count, hudView: hudView)
-
-            for metadata in downloadMetadatas {
-                processor.execute { completion in
-                    guard let metadata = NCManageDatabase.shared.setMetadatasSessionInWaitDownload(metadatas: [metadata],
-                                                                                                   session: NextcloudKit.shared.nkCommonInstance.sessionIdentifierDownload,
-                                                                                                   selector: "") else { return completion() }
-                    NCNetworking.shared.download(metadata: metadata, withNotificationProgressTask: false) {
-                    } requestHandler: { _ in
-                    } progressHandler: { progress in
-                        if Float(progress.fractionCompleted) > fractionCompleted || fractionCompleted == 0 {
-                            processor.hud?.progress = Float(progress.fractionCompleted)
-                            fractionCompleted = Float(progress.fractionCompleted)
-                        }
-                    } completion: { _, _ in
-                        fractionCompleted = 0
-                        completion()
-                    }
-                }
-            }
-            processor.completeWork {
-                items.append(contentsOf: downloadMetadatas.compactMap({ $0.toPasteBoardItem() }))
-                UIPasteboard.general.setItems(items, options: [:])
-            }
-        }
-    }
+    // MARK: - Paste
 
     func pastePasteboard(serverUrl: String) {
         guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else { return }

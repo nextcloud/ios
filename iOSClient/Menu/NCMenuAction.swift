@@ -165,38 +165,6 @@ extension NCMenuAction {
         )
     }
 
-    /// Save selected files to user's photo library
-    static func saveMediaAction(selectedMediaMetadatas: [tableMetadata], order: Int = 0, completion: (() -> Void)? = nil) -> NCMenuAction {
-        var title: String = NSLocalizedString("_save_selected_files_", comment: "")
-        var icon = NCUtility().loadImage(named: "square.and.arrow.down")
-        if selectedMediaMetadatas.allSatisfy({ NCManageDatabase.shared.getMetadataLivePhoto(metadata: $0) != nil }) {
-            title = NSLocalizedString("_livephoto_save_", comment: "")
-            icon = NCUtility().loadImage(named: "livephoto")
-        }
-
-        return NCMenuAction(
-            title: title,
-            icon: icon,
-            order: order,
-            action: { _ in
-                for metadata in selectedMediaMetadatas {
-                    if let metadataMOV = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata) {
-                        NCNetworking.shared.saveLivePhotoQueue.addOperation(NCOperationSaveLivePhoto(metadata: metadata, metadataMOV: metadataMOV))
-                    } else {
-                        if NCUtilityFileSystem().fileProviderStorageExists(metadata) {
-                            NCActionCenter.shared.saveAlbum(metadata: metadata)
-                        } else {
-                            if NCNetworking.shared.downloadQueue.operations.filter({ ($0 as? NCOperationDownload)?.metadata.ocId == metadata.ocId }).isEmpty {
-                                NCNetworking.shared.downloadQueue.addOperation(NCOperationDownload(metadata: metadata, selector: NCGlobal.shared.selectorSaveAlbum))
-                            }
-                        }
-                    }
-                }
-                completion?()
-            }
-        )
-    }
-
     /// Set (or remove) a file as *available offline*. Downloads the file if not downloaded already
     static func setAvailableOfflineAction(selectedMetadatas: [tableMetadata], isAnyOffline: Bool, viewController: UIViewController, order: Int = 0, completion: (() -> Void)? = nil) -> NCMenuAction {
         NCMenuAction(

@@ -235,7 +235,7 @@ class NCViewer: NSObject {
             viewController.present(viewerQuickLook, animated: true)
         } else {
         // Document Interaction Controller
-            NCActionCenter.shared.openDocumentController(metadata: metadata)
+            NCActionCenter.shared.openDocumentController(metadata: metadata, viewController: viewController)
         }
     }
 }
