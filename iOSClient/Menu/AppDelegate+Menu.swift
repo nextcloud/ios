@@ -67,7 +67,7 @@ extension AppDelegate {
                         let fileName = await NCNetworking.shared.createFileName(fileNameBase: NSLocalizedString("_untitled_", comment: "") + ".md", account: appDelegate.account, serverUrl: self.activeServerUrl)
 
                         let fileNamePath = NCUtilityFileSystem().getFileNamePath(String(describing: fileName), serverUrl: appDelegate.activeServerUrl, urlBase: appDelegate.urlBase, userId: appDelegate.userId)
-                        self.createTextDocument(fileNamePath: fileNamePath, fileName: String(describing: fileName), creatorId: directEditingCreator.identifier)
+                        self.createTextDocument(fileNamePath: fileNamePath, fileName: String(describing: fileName), creatorId: directEditingCreator.identifier, rootViewController: rootViewController)
                     }
                 })
             )
@@ -135,12 +135,10 @@ extension AppDelegate {
                 NCMenuAction(
                     title: NSLocalizedString("_add_folder_info_", comment: ""), icon: UIImage(named: "addFolderInfo")!.image(color: UIColor.systemGray, size: 50), action: { _ in
                         let richWorkspaceCommon = NCRichWorkspaceCommon()
-                        if let viewController = self.activeViewController {
-                            if NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView LIKE[c] %@", appDelegate.account, appDelegate.activeServerUrl, NCGlobal.shared.fileNameRichWorkspace.lowercased())) == nil {
-                                richWorkspaceCommon.createViewerNextcloudText(serverUrl: appDelegate.activeServerUrl, viewController: viewController)
-                            } else {
-                                richWorkspaceCommon.openViewerNextcloudText(serverUrl: appDelegate.activeServerUrl, viewController: viewController)
-                            }
+                        if NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView LIKE[c] %@", appDelegate.account, appDelegate.activeServerUrl, NCGlobal.shared.fileNameRichWorkspace.lowercased())) == nil {
+                            richWorkspaceCommon.createViewerNextcloudText(serverUrl: appDelegate.activeServerUrl, viewController: rootViewController)
+                        } else {
+                            richWorkspaceCommon.openViewerNextcloudText(serverUrl: appDelegate.activeServerUrl, viewController: rootViewController)
                         }
                     }
                 )
@@ -286,7 +284,7 @@ extension AppDelegate {
         rootViewController.presentMenu(with: actions)
     }
 
-    func createTextDocument(fileNamePath: String, fileName: String, creatorId: String) {
+    func createTextDocument(fileNamePath: String, fileName: String, creatorId: String, rootViewController: UIViewController) {
         var UUID = NSUUID().uuidString
         UUID = "TEMP" + UUID.replacingOccurrences(of: "-", with: "")
 
@@ -305,7 +303,7 @@ extension AppDelegate {
             }
 
             let metadata = NCManageDatabase.shared.createMetadata(account: self.account, user: self.user, userId: self.userId, fileName: fileName, fileNameView: fileName, ocId: UUID, serverUrl: self.activeServerUrl, urlBase: self.urlBase, url: url, contentType: results.mimeType)
-            if let viewController = self.activeViewController {
+            if let viewController = self.getTopViewControllerFromTabBarController(rootViewController) {
                 NCViewer().view(viewController: viewController, metadata: metadata, metadatas: [metadata], imageIcon: nil)
             }
         }
