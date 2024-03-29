@@ -420,7 +420,7 @@ extension NCNetworking {
                         }))
 
                         let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
-                        appDelegate.window?.rootViewController?.present(alertController, animated: true)
+                        appDelegate.activeFileVC?.present(alertController, animated: true)
 
                         // Client Diagnostic
                         NCManageDatabase.shared.addDiagnostic(account: metadata.account, issue: NCGlobal.shared.diagnosticIssueProblems, error: NCGlobal.shared.diagnosticProblemsForbidden)
