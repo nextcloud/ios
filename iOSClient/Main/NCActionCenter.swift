@@ -317,8 +317,9 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
         documentController?.presentOptionsMenu(from: mainTabBar.menuRect, in: mainTabBar, animated: true)
     }
 
-    func openActivityViewController(selectedMetadata: [tableMetadata]) {
-        guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else { return }
+    func openActivityViewController(selectedMetadata: [tableMetadata], viewController: UIViewController) {
+        guard let appDelegate = UIApplication.shared.delegate as? AppDelegate,
+              let mainTabBar = viewController.tabBarController?.tabBar as? NCMainTabBar else { return }
 
         let metadatas = selectedMetadata.filter({ !$0.directory })
         var items: [URL] = []
@@ -333,7 +334,7 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
             }
         }
 
-        let processor = ParallelWorker(n: 5, titleKey: "_downloading_", totalTasks: downloadMetadata.count, hudView: appDelegate.window?.rootViewController?.view)
+        let processor = ParallelWorker(n: 5, titleKey: "_downloading_", totalTasks: downloadMetadata.count, hudView: viewController.view)
         for (metadata, url) in downloadMetadata {
             processor.execute { completion in
                 guard let metadata = NCManageDatabase.shared.setMetadatasSessionInWaitDownload(metadatas: [metadata],
@@ -350,7 +351,7 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
         }
 
         processor.completeWork {
-            guard !items.isEmpty, let mainTabBar = appDelegate.mainTabBar else { return }
+            guard !items.isEmpty else { return }
             let activityViewController = UIActivityViewController(activityItems: items, applicationActivities: nil)
             activityViewController.popoverPresentationController?.permittedArrowDirections = .any
             activityViewController.popoverPresentationController?.sourceView = mainTabBar
