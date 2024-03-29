@@ -65,7 +65,6 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate {
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        appDelegate.activeViewController = self
         getNetwokingNotification()
     }
 

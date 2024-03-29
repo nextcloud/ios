@@ -231,8 +231,6 @@
 {
     [super viewWillAppear:animated];
     
-    appDelegate.activeViewController = self;
-
     versionServer = [[NCGlobal shared] capabilityServerVersion];
     themingName = [[NCGlobal shared] capabilityThemingName];
     themingSlogan = [[NCGlobal shared] capabilityThemingSlogan];

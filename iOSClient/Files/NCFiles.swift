@@ -91,9 +91,15 @@ class NCFiles: NCCollectionViewCommon {
         reloadDataSourceNetwork()
     }
 
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        appDelegate.activeFileVC = self
+
+    }
+
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
-
+        appDelegate.activeFileVC = nil
         fileNameBlink = nil
         fileNameOpen = nil
     }

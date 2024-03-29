@@ -281,13 +281,6 @@
     [self initializeForm];
 }
 
-- (void)viewWillAppear:(BOOL)animated
-{
-    [super viewWillAppear:animated];
-    
-    appDelegate.activeViewController = self;
-}
-
 #pragma mark - NotificationCenter
 
 - (void)changeUser

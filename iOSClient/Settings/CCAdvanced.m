@@ -285,13 +285,6 @@
     [self calculateSize];
 }
 
-- (void)viewWillAppear:(BOOL)animated
-{
-    [super viewWillAppear:animated];
-    
-    appDelegate.activeViewController = self;
-}
-
 #pragma mark -
 
 - (void)formRowDescriptorValueHasChanged:(XLFormRowDescriptor *)rowDescriptor oldValue:(id)oldValue newValue:(id)newValue

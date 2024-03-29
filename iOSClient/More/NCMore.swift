@@ -86,7 +86,6 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        appDelegate.activeViewController = self
     }
 
     // MARK: -
