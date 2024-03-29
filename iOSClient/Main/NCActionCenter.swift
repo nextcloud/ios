@@ -172,7 +172,7 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
 
     func viewerFile(account: String, fileId: String, viewController: UIViewController) {
 
-        guard let appDelegate = UIApplication.shared.delegate as? AppDelegate, let hudView = appDelegate.window?.rootViewController?.view else { return }
+        guard let hudView = viewController.view else { return }
         var downloadRequest: DownloadRequest?
 
         if let metadata = NCManageDatabase.shared.getMetadataFromFileId(fileId) {
