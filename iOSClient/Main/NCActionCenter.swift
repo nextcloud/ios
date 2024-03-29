@@ -125,7 +125,7 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
 
         case NCGlobal.shared.selectorSaveAsScan:
             DispatchQueue.main.async {
-                self.saveAsScan(metadata: metadata)
+                self.saveAsScan(metadata: metadata, viewController: rootViewController)
             }
 
         case NCGlobal.shared.selectorOpenDetail:
@@ -349,13 +349,13 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
             activityViewController.popoverPresentationController?.permittedArrowDirections = .any
             activityViewController.popoverPresentationController?.sourceView = mainTabBar
             activityViewController.popoverPresentationController?.sourceRect = mainTabBar.menuRect
-            appDelegate.window?.rootViewController?.present(activityViewController, animated: true)
+            viewController.present(activityViewController, animated: true)
         }
     }
 
     // MARK: - Save as scan
 
-    func saveAsScan(metadata: tableMetadata) {
+    func saveAsScan(metadata: tableMetadata, viewController: UIViewController) {
         guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else { return }
 
         let fileNamePath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)
@@ -369,7 +369,7 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
 
         navigationController.modalPresentationStyle = UIModalPresentationStyle.pageSheet
 
-        appDelegate.window?.rootViewController?.present(navigationController, animated: true, completion: nil)
+        viewController.present(navigationController, animated: true, completion: nil)
     }
 
     // MARK: - Print
@@ -412,11 +412,11 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
 
     // MARK: - Paste
 
-    func pastePasteboard(serverUrl: String) {
+    func pastePasteboard(serverUrl: String, viewController: UIViewController) {
         guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else { return }
         var fractionCompleted: Float = 0
 
-        let processor = ParallelWorker(n: 5, titleKey: "_uploading_", totalTasks: nil, hudView: appDelegate.window?.rootViewController?.view)
+        let processor = ParallelWorker(n: 5, titleKey: "_uploading_", totalTasks: nil, hudView: viewController.view)
 
         func uploadPastePasteboard(fileName: String, serverUrlFileName: String, fileNameLocalPath: String, serverUrl: String, completion: @escaping () -> Void) {
             NextcloudKit.shared.upload(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath) { request in
