@@ -166,17 +166,16 @@ struct CCSettingsAdvanced<ViewModel: CCSettingsAdvancedViewModel>: View {
                         viewModel.updateSelectedLogLevel()
                     }
                     
-                    HStack {
-                        Image("capabilities")
-                            .resizable()
-                            .renderingMode(.template)
-                            .frame(width: 18, height: 18)
-                            .foregroundColor(Color(UIColor.systemGray))
-                        
-                        Text(NSLocalizedString("_capabilities_", comment: ""))
-                    }
-                    .onTapGesture {
-                        // TODO: Handle tap gesture
+                    NavigationLink(destination: NCCapabilitiesView(capabilitiesStatus: NCCapabilitiesViewOO())) {
+                        HStack {
+                            Image("capabilities")
+                                .resizable()
+                                .renderingMode(.template)
+                                .frame(width: 18, height: 18)
+                                .foregroundColor(Color(UIColor.systemGray))
+                            
+                            Text(NSLocalizedString("_capabilities_", comment: ""))
+                        }
                     }
                 }
             }
