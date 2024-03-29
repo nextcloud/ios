@@ -290,7 +290,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] bye bye")
     }
 
-    // MARK: - XXX
+    // MARK: - (Move to scene)
 
     func getTopViewControllerFromTabBarController(_ tabBarController: UIViewController) -> UIViewController? {
         if let tabBarController = (tabBarController as? UITabBarController),
