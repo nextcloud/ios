@@ -465,28 +465,21 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
     // MARK: -
 
     func openFileViewInFolder(serverUrl: String, fileNameBlink: String?, fileNameOpen: String?, viewController: UIViewController?) {
-        guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else { return }
+        guard let appDelegate = UIApplication.shared.delegate as? AppDelegate,
+              let tabBarController = viewController?.tabBarController as? UITabBarController
+        else { return }
 
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
             var topNavigationController: UINavigationController?
             var pushServerUrl = self.utilityFileSystem.getHomeServer(urlBase: appDelegate.urlBase, userId: appDelegate.userId)
-            guard var mostViewController = appDelegate.window?.rootViewController?.topMostViewController() else { return }
 
-            if mostViewController.isModal {
-                mostViewController.dismiss(animated: false)
-                if let viewController = appDelegate.window?.rootViewController?.topMostViewController() {
-                    mostViewController = viewController
-                }
+            viewController?.navigationController?.popToRootViewController(animated: false)
+            tabBarController.selectedIndex = 0
+            if let navigationController = tabBarController.viewControllers?.first as? UINavigationController {
+                navigationController.popToRootViewController(animated: false)
+                topNavigationController = navigationController
             }
-            mostViewController.navigationController?.popToRootViewController(animated: false)
 
-            if let tabBarController = appDelegate.window?.rootViewController as? UITabBarController {
-                tabBarController.selectedIndex = 0
-                if let navigationController = tabBarController.viewControllers?.first as? UINavigationController {
-                    navigationController.popToRootViewController(animated: false)
-                    topNavigationController = navigationController
-                }
-            }
             if pushServerUrl == serverUrl {
                 let viewController = topNavigationController?.topViewController as? NCFiles
                 viewController?.blinkCell(fileName: fileNameBlink)
