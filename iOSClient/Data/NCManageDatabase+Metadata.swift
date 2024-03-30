@@ -972,7 +972,7 @@ extension NCManageDatabase {
         }
     }
 
-    func getAssetLocalIdentifiersUploaded(account: String) -> [String] {
+    func getAssetLocalIdentifiersUploaded(account: String) -> [String]? {
 
         var assetLocalIdentifiers: [String] = []
 
@@ -982,11 +982,12 @@ extension NCManageDatabase {
             for result in results {
                 assetLocalIdentifiers.append(result.assetLocalIdentifier)
             }
+            return assetLocalIdentifiers
         } catch let error as NSError {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not access database: \(error)")
         }
 
-        return assetLocalIdentifiers
+        return nil
     }
 
     func clearAssetLocalIdentifiers(_ assetLocalIdentifiers: [String], account: String) {
