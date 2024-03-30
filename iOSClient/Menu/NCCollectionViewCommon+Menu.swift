@@ -133,7 +133,7 @@ extension NCCollectionViewCommon {
                     icon: utility.loadImage(named: "questionmark.folder"),
                     order: 21,
                     action: { _ in
-                        NCActionCenter.shared.openFileViewInFolder(serverUrl: metadata.serverUrl, fileNameBlink: metadata.fileName, fileNameOpen: nil)
+                        NCActionCenter.shared.openFileViewInFolder(serverUrl: metadata.serverUrl, fileNameBlink: metadata.fileName, fileNameOpen: nil, viewController: self)
                     }
                 )
             )

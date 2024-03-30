@@ -464,7 +464,7 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
 
     // MARK: -
 
-    func openFileViewInFolder(serverUrl: String, fileNameBlink: String?, fileNameOpen: String?) {
+    func openFileViewInFolder(serverUrl: String, fileNameBlink: String?, fileNameOpen: String?, viewController: UIViewController?) {
         guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else { return }
 
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {

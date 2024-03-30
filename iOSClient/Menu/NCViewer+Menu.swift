@@ -60,7 +60,7 @@ extension NCViewer {
                     title: NSLocalizedString("_view_in_folder_", comment: ""),
                     icon: utility.loadImage(named: "questionmark.folder"),
                     action: { _ in
-                        NCActionCenter.shared.openFileViewInFolder(serverUrl: metadata.serverUrl, fileNameBlink: metadata.fileName, fileNameOpen: nil)
+                        NCActionCenter.shared.openFileViewInFolder(serverUrl: metadata.serverUrl, fileNameBlink: metadata.fileName, fileNameOpen: nil, viewController: viewController)
                     }
                 )
             )

@@ -105,7 +105,7 @@ class NCContextMenu: NSObject {
 
         let viewInFolder = UIAction(title: NSLocalizedString("_view_in_folder_", comment: ""),
                                     image: UIImage(systemName: "questionmark.folder")) { _ in
-            NCActionCenter.shared.openFileViewInFolder(serverUrl: metadata.serverUrl, fileNameBlink: metadata.fileName, fileNameOpen: nil)
+            NCActionCenter.shared.openFileViewInFolder(serverUrl: metadata.serverUrl, fileNameBlink: metadata.fileName, fileNameOpen: nil, viewController: viewController)
         }
 
         let livePhotoSave = UIAction(title: NSLocalizedString("_livephoto_save_", comment: ""),
