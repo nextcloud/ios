@@ -93,13 +93,12 @@ class NCFiles: NCCollectionViewCommon {
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        appDelegate.activeFileVC = self
-
+        SceneManager.shared.active(files: self, withServerUrl: self.serverUrl, withTabBarController: self.tabBarController)
     }
 
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
-        appDelegate.activeFileVC = nil
+        SceneManager.shared.deactivate(serverUrl: self.serverUrl, withTabBarController: self.tabBarController)
         fileNameBlink = nil
         fileNameOpen = nil
     }

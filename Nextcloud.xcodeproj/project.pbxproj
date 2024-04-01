@@ -278,6 +278,8 @@
 		F7346E1C28B0EF5E006CE2D2 /* Widget.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = F7346E1028B0EF5B006CE2D2 /* Widget.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		F7346E2328B0FEBA006CE2D2 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F7346E2228B0FEBA006CE2D2 /* Assets.xcassets */; };
 		F7346E2928B0FFF2006CE2D2 /* RealmSwift in Frameworks */ = {isa = PBXBuildFile; productRef = F7346E2828B0FFF2006CE2D2 /* RealmSwift */; };
+		F7347A4E2BBAAF25004C5E57 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7347A4D2BBAAF25004C5E57 /* SceneDelegate.swift */; };
+		F7347A502BBAE31F004C5E57 /* UIApplication+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7347A4F2BBAE31F004C5E57 /* UIApplication+Extension.swift */; };
 		F734B06628E75C0100E180D5 /* TLPhotoPicker in Frameworks */ = {isa = PBXBuildFile; productRef = F734B06528E75C0100E180D5 /* TLPhotoPicker */; };
 		F7362A1F220C853A005101B5 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7362A1E220C853A005101B5 /* LaunchScreen.storyboard */; };
 		F737DA992B7B864E0063BAFC /* TOPasscodeViewController.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = F70B86822642CF5500ED5349 /* TOPasscodeViewController.xcframework */; };
@@ -1138,6 +1140,8 @@
 		F7346E1528B0EF5C006CE2D2 /* Widget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Widget.swift; sourceTree = "<group>"; };
 		F7346E2028B0FA3A006CE2D2 /* Widget-Brinding-header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Widget-Brinding-header.h"; sourceTree = "<group>"; };
 		F7346E2228B0FEBA006CE2D2 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		F7347A4D2BBAAF25004C5E57 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
+		F7347A4F2BBAE31F004C5E57 /* UIApplication+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIApplication+Extension.swift"; sourceTree = "<group>"; };
 		F7362A1E220C853A005101B5 /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
 		F736B551234DCF57008A5C9F /* Alamofire.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Alamofire.framework; path = Carthage/Build/iOS/Alamofire.framework; sourceTree = "<group>"; };
 		F737DA9C2B7B893C0063BAFC /* NCPasscode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCPasscode.swift; sourceTree = "<group>"; };
@@ -2285,6 +2289,7 @@
 			isa = PBXGroup;
 			children = (
 				F7AC1CAF28AB94490032D99F /* Array+Extension.swift */,
+				F7347A4F2BBAE31F004C5E57 /* UIApplication+Extension.swift */,
 				F7817CF729801A3500FFBC65 /* Data+Extension.swift */,
 				F70460512499061800BB98A7 /* NotificationCenter+MainThread.swift */,
 				F79B869A265E19D40085C0E0 /* NSMutableAttributedString+Extension.swift */,
@@ -2642,6 +2647,7 @@
 			isa = PBXGroup;
 			children = (
 				F702F2CC25EE5B4F008F8E80 /* AppDelegate.swift */,
+				F7347A4D2BBAAF25004C5E57 /* SceneDelegate.swift */,
 				F76B649B2ADFFAED00014640 /* NCImageCache.swift */,
 				F702F2CE25EE5B5C008F8E80 /* NCGlobal.swift */,
 				F7E402282BA85D1D007E5609 /* PrivacyInfo.xcprivacy */,
@@ -3954,6 +3960,7 @@
 				F73B422C2476764F00A30FD3 /* NCNotification.swift in Sources */,
 				371B5A2E23D0B04500FAFAE9 /* NCMenu.swift in Sources */,
 				F757CC8229E7F88B00F31428 /* NCManageDatabase+Groupfolders.swift in Sources */,
+				F7347A4E2BBAAF25004C5E57 /* SceneDelegate.swift in Sources */,
 				F7B769A82B7A0B2000C1AAEB /* NCManageDatabase+Metadata+Session.swift in Sources */,
 				F79EDAA326B004980007D134 /* NCPlayerToolBar.swift in Sources */,
 				F77444F8222816D5000D5EB0 /* NCPickerViewController.swift in Sources */,
@@ -3999,6 +4006,7 @@
 				F77B0E4F1D118A16002130FE /* CCManageAutoUpload.m in Sources */,
 				F7CBC1252BAC8B0000EC1D55 /* NCSectionHeaderEmptyData.swift in Sources */,
 				F75C0C4823D1FAE300163CC8 /* NCRichWorkspaceCommon.swift in Sources */,
+				F7347A502BBAE31F004C5E57 /* UIApplication+Extension.swift in Sources */,
 				F78ACD4A21903F850088454D /* NCTrashListCell.swift in Sources */,
 				F757CC8D29E82D0500F31428 /* NCGroupfolders.swift in Sources */,
 				F760329F252F0F8E0015A421 /* NCTransferCell.swift in Sources */,

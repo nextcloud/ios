@@ -52,8 +52,7 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
               let selector = userInfo["selector"] as? String,
               let error = userInfo["error"] as? NKError,
               let account = userInfo["account"] as? String,
-              account == appDelegate?.account,
-              let rootViewController = appDelegate?.activeFileVC
+              account == appDelegate?.account
         else { return }
 
         guard error == .success else {
@@ -87,10 +86,10 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
                     }
                     let navigationController = UINavigationController(rootViewController: viewerQuickLook)
                     navigationController.modalPresentationStyle = .fullScreen
-                    rootViewController.present(navigationController, animated: true)
+                    //rootViewController.present(navigationController, animated: true)
                 } else {
                     self.utilityFileSystem.copyFile(atPath: fileNamePath, toPath: fileNameTemp)
-                    rootViewController.present(viewerQuickLook, animated: true)
+                    //rootViewController.present(viewerQuickLook, animated: true)
                 }
             }
 
@@ -98,21 +97,23 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
             DispatchQueue.main.async {
                 guard UIApplication.shared.applicationState == .active else { return }
                 if metadata.contentType.contains("opendocument") && !self.utility.isRichDocument(metadata) {
-                    self.openDocumentController(metadata: metadata, viewController: rootViewController)
+                    //self.openDocumentController(metadata: metadata, viewController: rootViewController)
                 } else if metadata.classFile == NKCommon.TypeClassFile.compress.rawValue || metadata.classFile == NKCommon.TypeClassFile.unknow.rawValue {
-                    self.openDocumentController(metadata: metadata, viewController: rootViewController)
+                    //self.openDocumentController(metadata: metadata, viewController: rootViewController)
                 } else {
+                    /*
                     if let viewController = self.appDelegate?.activeFileVC {
                         let imageIcon = UIImage(contentsOfFile: self.utilityFileSystem.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag))
                         NCViewer().view(viewController: viewController, metadata: metadata, metadatas: [metadata], imageIcon: imageIcon)
                     }
+                    */
                 }
             }
 
         case NCGlobal.shared.selectorOpenIn:
             DispatchQueue.main.async {
                 if UIApplication.shared.applicationState == .active {
-                    self.openDocumentController(metadata: metadata, viewController: rootViewController)
+                    //self.openDocumentController(metadata: metadata, viewController: rootViewController)
                 }
             }
 
@@ -125,7 +126,7 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
 
         case NCGlobal.shared.selectorSaveAsScan:
             DispatchQueue.main.async {
-                self.saveAsScan(metadata: metadata, viewController: rootViewController)
+                //self.saveAsScan(metadata: metadata, viewController: rootViewController)
             }
 
         case NCGlobal.shared.selectorOpenDetail:
