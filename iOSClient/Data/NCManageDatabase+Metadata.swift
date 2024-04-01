@@ -488,7 +488,6 @@ extension NCManageDatabase {
 
     @discardableResult
     func addMetadata(_ metadata: tableMetadata) -> tableMetadata? {
-
         let result = tableMetadata.init(value: metadata)
 
         do {
@@ -522,7 +521,6 @@ extension NCManageDatabase {
     }
 
     func addMetadatas(_ metadatas: [tableMetadata]) {
-
         do {
             let realm = try Realm()
             try realm.write {
@@ -534,7 +532,6 @@ extension NCManageDatabase {
     }
 
     func deleteMetadata(predicate: NSPredicate) {
-
         do {
             let realm = try Realm()
             try realm.write {
@@ -547,7 +544,6 @@ extension NCManageDatabase {
     }
 
     func deleteMetadata(results: Results<tableMetadata>) {
-
         do {
             let realm = try Realm()
             try realm.write {
@@ -559,7 +555,6 @@ extension NCManageDatabase {
     }
 
     func moveMetadata(ocId: String, serverUrlTo: String) {
-
         do {
             let realm = try Realm()
             try realm.write {
@@ -573,7 +568,6 @@ extension NCManageDatabase {
     }
 
     func renameMetadata(fileNameTo: String, ocId: String) {
-
         do {
             let realm = try Realm()
             try realm.write {
@@ -592,7 +586,6 @@ extension NCManageDatabase {
     }
 
     func setMetadataEtagResource(ocId: String, etagResource: String?) {
-
         guard let etagResource = etagResource else { return }
 
         do {
@@ -607,7 +600,6 @@ extension NCManageDatabase {
     }
 
     func setMetadataFavorite(ocId: String, favorite: Bool) {
-
         do {
             let realm = try Realm()
             try realm.write {
@@ -620,7 +612,6 @@ extension NCManageDatabase {
     }
 
     func setMetadataLivePhotoByServer(account: String, ocId: String, livePhotoFile: String) {
-
         do {
             let realm = try Realm()
             try realm.write {
@@ -635,7 +626,6 @@ extension NCManageDatabase {
     }
 
     func updateMetadatasFavorite(account: String, metadatas: [tableMetadata]) {
-
         do {
             let realm = try Realm()
             try realm.write {
@@ -653,7 +643,6 @@ extension NCManageDatabase {
     }
 
     func setMetadataEncrypted(ocId: String, encrypted: Bool) {
-
         do {
             let realm = try Realm()
             try realm.write {
@@ -666,7 +655,6 @@ extension NCManageDatabase {
     }
 
     func setMetadataFileNameView(serverUrl: String, fileName: String, newFileNameView: String, account: String) {
-
         do {
             let realm = try Realm()
             try realm.write {
@@ -679,7 +667,6 @@ extension NCManageDatabase {
     }
 
     func getMetadata(predicate: NSPredicate) -> tableMetadata? {
-
         do {
             let realm = try Realm()
             realm.refresh()
@@ -693,7 +680,6 @@ extension NCManageDatabase {
     }
 
     func getMetadata(predicate: NSPredicate, sorted: String, ascending: Bool) -> tableMetadata? {
-
         do {
             let realm = try Realm()
             realm.refresh()
@@ -925,7 +911,6 @@ extension NCManageDatabase {
     }
 
     func getTableMetadatasDirectoryFavoriteIdentifierRank(account: String) -> [String: NSNumber] {
-
         var listIdentifierRank: [String: NSNumber] = [:]
         var counter = 10 as Int64
 
@@ -945,7 +930,6 @@ extension NCManageDatabase {
     }
 
     @objc func clearMetadatasUpload(account: String) {
-
         do {
             let realm = try Realm()
             try realm.write {
@@ -958,7 +942,6 @@ extension NCManageDatabase {
     }
 
     func readMarkerMetadata(account: String, fileId: String) {
-
         do {
             let realm = try Realm()
             try realm.write {
@@ -972,8 +955,7 @@ extension NCManageDatabase {
         }
     }
 
-    func getAssetLocalIdentifiersUploaded(account: String) -> [String] {
-
+    func getAssetLocalIdentifiersUploaded(account: String) -> [String]? {
         var assetLocalIdentifiers: [String] = []
 
         do {
@@ -982,15 +964,15 @@ extension NCManageDatabase {
             for result in results {
                 assetLocalIdentifiers.append(result.assetLocalIdentifier)
             }
+            return assetLocalIdentifiers
         } catch let error as NSError {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not access database: \(error)")
         }
 
-        return assetLocalIdentifiers
+        return nil
     }
 
     func clearAssetLocalIdentifiers(_ assetLocalIdentifiers: [String], account: String) {
-
         do {
             let realm = try Realm()
             try realm.write {
@@ -1005,7 +987,6 @@ extension NCManageDatabase {
     }
 
     func getMetadataLivePhoto(metadata: tableMetadata) -> tableMetadata? {
-
         guard metadata.isLivePhoto else { return nil }
 
         do {
@@ -1020,7 +1001,6 @@ extension NCManageDatabase {
     }
 
     func isMetadataShareOrMounted(metadata: tableMetadata, metadataFolder: tableMetadata?) -> Bool {
-
         var isShare = false
         var isMounted = false
 
@@ -1043,7 +1023,6 @@ extension NCManageDatabase {
     }
 
     func getMetadataConflict(account: String, serverUrl: String, fileNameView: String) -> tableMetadata? {
-
         // verify exists conflict
         let fileNameExtension = (fileNameView as NSString).pathExtension.lowercased()
         let fileNameNoExtension = (fileNameView as NSString).deletingPathExtension
@@ -1069,7 +1048,6 @@ extension NCManageDatabase {
     }
 
     func getMetadataFromDirectory(account: String, serverUrl: String) -> tableMetadata? {
-
         do {
             let realm = try Realm()
             realm.refresh()
@@ -1084,7 +1062,6 @@ extension NCManageDatabase {
     }
 
     func getMetadatasFromGroupfolders(account: String, urlBase: String, userId: String) -> [tableMetadata] {
-
         var metadatas: [tableMetadata] = []
         let homeServerUrl = utilityFileSystem.getHomeServer(urlBase: urlBase, userId: userId)
 
@@ -1108,7 +1085,6 @@ extension NCManageDatabase {
     }
 
     func getMetadatasInError(account: String) -> Results<tableMetadata>? {
-
         do {
             let realm = try Realm()
             let results = realm.objects(tableMetadata.self).filter("account == %@ AND errorCodeCounter > 1", account)
@@ -1122,7 +1098,6 @@ extension NCManageDatabase {
 
     @discardableResult
     func updateMetadatas(_ metadatas: [tableMetadata], predicate: NSPredicate) -> (metadatasDifferentCount: Int, metadatasModified: Int) {
-
         var metadatasDifferentCount: Int = 0
         var metadatasModified: Int = 0
 
@@ -1153,7 +1128,6 @@ extension NCManageDatabase {
     }
 
     func replaceMetadata(_ metadatas: [tableMetadata], predicate: NSPredicate) {
-
         do {
             let realm = try Realm()
             try realm.write {
@@ -1173,7 +1147,6 @@ extension NCManageDatabase {
     }
 
     func getMediaMetadatas(predicate: NSPredicate) -> ThreadSafeArray<tableMetadata>? {
-
         do {
             let realm = try Realm()
             let results = realm.objects(tableMetadata.self).filter(predicate).sorted(byKeyPath: "date", ascending: false)

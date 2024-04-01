@@ -44,8 +44,25 @@ class NCNetworkingProcess: NSObject {
     func startTimer() {
         self.timerProcess?.invalidate()
         self.timerProcess = Timer.scheduledTimer(withTimeInterval: 1, repeats: true, block: { _ in
-            guard !self.appDelegate.account.isEmpty, !self.pauseProcess else { return }
+            guard !self.appDelegate.account.isEmpty,
+                  !self.pauseProcess else { return }
+
             if NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND status != %d", self.appDelegate.account, NCGlobal.shared.metadataStatusNormal)).isEmpty {
+                //
+                // Remove Photo CameraRoll
+                //
+                if NCKeychain().removePhotoCameraRoll,
+                   UIApplication.shared.applicationState == .active,
+                   let localIdentifiers = NCManageDatabase.shared.getAssetLocalIdentifiersUploaded(account: self.appDelegate.account),
+                   !localIdentifiers.isEmpty {
+                    self.pauseProcess = true
+                    PHPhotoLibrary.shared().performChanges({
+                        PHAssetChangeRequest.deleteAssets(PHAsset.fetchAssets(withLocalIdentifiers: localIdentifiers, options: nil) as NSFastEnumeration)
+                    }, completionHandler: { _, _ in
+                        NCManageDatabase.shared.clearAssetLocalIdentifiers(localIdentifiers, account: self.appDelegate.account)
+                        self.pauseProcess = false
+                    })
+                }
                 NotificationCenter.default.post(name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterUpdateBadgeNumber), object: nil, userInfo: ["counterDownload": 0, "counterUpload": 0])
             } else {
                 Task {
@@ -182,32 +199,8 @@ class NCNetworkingProcess: NSObject {
             }
         }
 
-        // No upload available ? --> Delete Assets
-        if NCKeychain().removePhotoCameraRoll,
-           applicationState == .active,
-           counterUpload == 0,
-           metadatasUploadInError.isEmpty {
-            await self.deleteAssetsLocalIdentifiers(account: self.appDelegate.account)
-        }
-
         self.pauseProcess = false
         return (counterDownload, counterUpload)
-    }
-
-    @MainActor private func deleteAssetsLocalIdentifiers(account: String) async {
-        guard !NCPasscode.shared.isPasscodePresented,
-              NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND session CONTAINS[cd] %@", account, "upload")).isEmpty else {
-            return
-        }
-        let localIdentifiers = NCManageDatabase.shared.getAssetLocalIdentifiersUploaded(account: account)
-        if localIdentifiers.isEmpty { return }
-        let assets = PHAsset.fetchAssets(withLocalIdentifiers: localIdentifiers, options: nil)
-
-        try? await PHPhotoLibrary.shared().performChanges {
-            PHAssetChangeRequest.deleteAssets(assets as NSFastEnumeration)
-            NCManageDatabase.shared.clearAssetLocalIdentifiers(localIdentifiers, account: account)
-        }
-        return
     }
 
     // MARK: -
