@@ -25,7 +25,7 @@ import UIKit
 
 class NCMainTabBarController: UITabBarController {
 
-    var identifier: String = UUID().uuidString
+    var sceneIdentifier: String = UUID().uuidString
 
     // MARK: - Life Cycle
 
