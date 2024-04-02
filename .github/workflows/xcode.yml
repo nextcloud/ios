@@ -98,7 +98,7 @@ env:
   SCHEME: Nextcloud
   SERVER_BRANCH: stable28
   PHP_VERSION: 8.2
-  
+
 jobs:
   build:
     name: Build
@@ -155,7 +155,7 @@ jobs:
 #    - name: Wait for server to install
 #      run: |
 #        source ./wait-for-server.sh
-    - name: Build & Test Nextcloud iOS
+    - name: Build Nextcloud iOS
       run: |
         set -o pipefail && \
         xcodebuild build-for-testing \
@@ -243,6 +243,10 @@ jobs:
         PHP_CLI_SERVER_WORKERS=5 php -S localhost:8080 -t server/ &
     - name: Wait for server to install
       run: curl -s http://localhost:8080/status.php
+    - name: Download test-build
+      uses: actions/download-artifact@v4
+      with:
+        name: Products
     - name: Test Nextcloud iOS
       run: |
         set -o pipefail && \
