@@ -26,8 +26,6 @@ import NextcloudKit
 
 class NCRecent: NCCollectionViewCommon {
 
-    // MARK: - View Life Cycle
-
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
 
@@ -39,6 +37,8 @@ class NCRecent: NCCollectionViewCommon {
         emptyTitle = "_files_no_files_"
         emptyDescription = ""
     }
+
+    // MARK: - View Life Cycle
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)

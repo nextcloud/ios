@@ -39,6 +39,34 @@ extension NCShareExtension: UICollectionViewDelegate {
         reloadDatasource(withLoadFolder: true)
         setNavigationBar(navigationTitle: metadata.fileNameView)
     }
+
+    func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
+        if kind == UICollectionView.elementKindSectionHeader {
+            guard let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionHeaderEmptyData", for: indexPath) as? NCSectionHeaderEmptyData else { return NCSectionHeaderEmptyData() }
+            if self.dataSourceTask?.state == .running {
+                header.emptyImage.image = UIImage(named: "networkInProgress")?.image(color: .gray, size: UIScreen.main.bounds.width)
+                header.emptyTitle.text = NSLocalizedString("_request_in_progress_", comment: "")
+                header.emptyDescription.text = ""
+            } else {
+                header.emptyImage.image = UIImage(named: "folder")?.image(color: NCBrandColor.shared.brandElement, size: UIScreen.main.bounds.width)
+                header.emptyTitle.text = NSLocalizedString("_files_no_folders_", comment: "")
+                header.emptyDescription.text = ""
+            }
+            return header
+        } else {
+            return UICollectionReusableView()
+        }
+    }
+}
+
+extension NCShareExtension: UICollectionViewDelegateFlowLayout {
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
+        var height: CGFloat = 0
+        if dataSource.getMetadataSourceForAllSections().isEmpty {
+            height = NCGlobal.shared.getHeightHeaderEmptyData(view: view, portraitOffset: 0, landscapeOffset: -50)
+        }
+        return CGSize(width: collectionView.frame.width, height: height)
+    }
 }
 
 extension NCShareExtension: UICollectionViewDataSource {
@@ -48,9 +76,7 @@ extension NCShareExtension: UICollectionViewDataSource {
     }
 
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        let numberOfItems = dataSource.numberOfItemsInSection(section)
-        emptyDataSet?.numberOfItemsInSection(numberOfItems, section: section)
-        return numberOfItems
+        return dataSource.numberOfItemsInSection(section)
     }
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {

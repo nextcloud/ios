@@ -1,13 +1,9 @@
 opt_in_rules: # some rules are turned off by default, so you need to opt-in
  - empty_collection_literal
- - empty_count
  - empty_string
  - explicit_init
  - unneeded_parentheses_in_closure_argument
  - operator_usage_whitespace
-
-empty_count:
-  severity: warning
 
 line_length:
   warning: 1000

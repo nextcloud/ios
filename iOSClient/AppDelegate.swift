@@ -362,10 +362,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             let items = await NCAutoUpload.shared.initAutoUpload()
             NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] \(taskText) auto upload with \(items) uploads")
             let results = await NCNetworkingProcess.shared.start()
-            NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] \(taskText) networking process with download: \(results.counterDownload) upload: \(results.counterUpload)")
+            NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] \(taskText) networking process with download: \(results.counterDownloading) upload: \(results.counterUploading)")
 
             if taskText == "ProcessingTask",
-               items == 0, results.counterDownload == 0, results.counterUpload == 0,
+               items == 0, results.counterDownloading == 0, results.counterUploading == 0,
                let directories = NCManageDatabase.shared.getTablesDirectory(predicate: NSPredicate(format: "account == %@ AND offline == true", self.account), sorted: "offlineDate", ascending: true) {
                 for directory: tableDirectory in directories {
                     // only 3 time for day

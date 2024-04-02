@@ -29,8 +29,6 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
 
     var metadataTemp: tableMetadata?
 
-    // MARK: - View Life Cycle
-
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
 
@@ -44,6 +42,8 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
         emptyDescription = "_no_transfer_sub_"
     }
 
+    // MARK: - View Life Cycle
+
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -55,6 +55,9 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         reloadDataSource()
+        Task {
+            await NCNetworkingProcess.shared.verifyZombie()
+        }
     }
 
     override func setNavigationLeftItems() {
@@ -97,15 +100,6 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
     override func uploadCancelFile(_ notification: NSNotification) {
 
         notificationReloadDataSource += 1
-    }
-
-    // MARK: - Empty
-
-    override func emptyDataSetView(_ view: NCEmptyView) {
-        self.emptyDataSet?.setOffset(getHeaderHeight())
-        view.emptyImage.image = emptyImage
-        view.emptyTitle.text = NSLocalizedString(emptyTitle, comment: "")
-        view.emptyDescription.text = NSLocalizedString(emptyDescription, comment: "")
     }
 
     // MARK: TAP EVENT
@@ -266,13 +260,12 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
 
     override func reloadDataSource(withQueryDB: Bool = true) {
         super.reloadDataSource(withQueryDB: withQueryDB)
-
-        NCNetworkingProcess.shared.verifyZombie()
     }
 
     override func reloadDataSourceNetwork() {
-        super.reloadDataSourceNetwork()
-
-        reloadDataSource()
+        Task {
+            await NCNetworkingProcess.shared.verifyZombie()
+            super.reloadDataSource(withQueryDB: true)
+        }
     }
 }
