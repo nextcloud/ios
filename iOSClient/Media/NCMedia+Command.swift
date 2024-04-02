@@ -156,8 +156,8 @@ extension NCMedia {
         ])
 
         let playFile = UIAction(title: NSLocalizedString("_play_from_files_", comment: ""), image: UIImage(systemName: "play.circle")) { _ in
-            guard let tabBarController = self.tabBarController else { return }
-            self.documentPickerViewController = NCDocumentPickerViewController(tabBarController: tabBarController, isViewerMedia: true, allowsMultipleSelection: false, viewController: self)
+            guard let mainTabBarController = self.tabBarController as? NCMainTabBarController else { return }
+            self.documentPickerViewController = NCDocumentPickerViewController(mainTabBarController: mainTabBarController, isViewerMedia: true, allowsMultipleSelection: false, viewController: self)
         }
 
         let playURL = UIAction(title: NSLocalizedString("_play_from_url_", comment: ""), image: UIImage(systemName: "link")) { _ in
