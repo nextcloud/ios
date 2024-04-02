@@ -138,14 +138,15 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
 
     @objc func startTask(_ notification: Any) {
 
-        guard let metadata = metadataTemp else { return }
-        guard appDelegate.account == metadata.account else { return }
+        guard let metadata = metadataTemp,
+              let hudView = self.tabBarController?.view,
+              appDelegate.account == metadata.account else { return }
 
         let cameraRoll = NCCameraRoll()
         cameraRoll.extractCameraRoll(from: metadata) { metadatas in
             for metadata in metadatas {
                 if let metadata = NCManageDatabase.shared.setMetadataStatus(ocId: metadata.ocId, status: NCGlobal.shared.metadataStatusUploading) {
-                    NCNetworking.shared.upload(metadata: metadata, hudView: self.appDelegate.window?.rootViewController?.view, hud: JGProgressHUD())
+                    NCNetworking.shared.upload(metadata: metadata, hudView: hudView, hud: JGProgressHUD())
                 }
             }
         }
