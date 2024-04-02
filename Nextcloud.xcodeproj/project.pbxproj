@@ -5431,7 +5431,7 @@
 			repositoryURL = "https://github.com/pointfreeco/swift-snapshot-testing.git";
 			requirement = {
 				kind = exactVersion;
-				version = 1.11.0;
+				version = 1.15.4;
 			};
 		};
 		F31F69622A2F929600162F76 /* XCRemoteSwiftPackageReference "swiftui-preview-snapshots" */ = {
