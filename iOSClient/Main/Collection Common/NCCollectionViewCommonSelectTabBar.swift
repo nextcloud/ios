@@ -34,7 +34,7 @@ protocol NCCollectionViewCommonSelectTabBarDelegate: AnyObject {
 }
 
 class NCCollectionViewCommonSelectTabBar: ObservableObject {
-    var tabBarController: UITabBarController?
+    var tabBarController: NCMainTabBarController?
     var hostingController: UIViewController?
     open weak var delegate: NCCollectionViewCommonSelectTabBarDelegate?
 
@@ -47,7 +47,7 @@ class NCCollectionViewCommonSelectTabBar: ObservableObject {
     @Published var enableLock = false
     @Published var isSelectedEmpty = true
 
-    init(tabBarController: UITabBarController? = nil, delegate: NCCollectionViewCommonSelectTabBarDelegate? = nil) {
+    init(tabBarController: NCMainTabBarController? = nil, delegate: NCCollectionViewCommonSelectTabBarDelegate? = nil) {
         let rootView = NCCollectionViewCommonSelectTabBarView(tabBarSelect: self)
         hostingController = UIHostingController(rootView: rootView)
 
