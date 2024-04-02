@@ -169,10 +169,10 @@ jobs:
 #        -test-iterations 3 \
 #        -retry-tests-on-failure \
 #        | xcpretty
-    - name: Upload coverage to codecov
-      run: |
-        bundle exec slather
-        bash <(curl -s https://codecov.io/bash) -f ./cobertura.xml -X coveragepy -X gcov -X xcode -t ${{ secrets.CODECOV_TOKEN }}
+#    - name: Upload coverage to codecov
+#      run: |
+#        bundle exec slather
+#        bash <(curl -s https://codecov.io/bash) -f ./cobertura.xml -X coveragepy -X gcov -X xcode -t ${{ secrets.CODECOV_TOKEN }}
 
     - name: Upload test build
       uses: actions/upload-artifact@v4
