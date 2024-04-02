@@ -184,6 +184,8 @@ jobs:
   test:
     name: Test
     runs-on: macos-12
+    needs: [build]
+    
     if: github.event.pull_request.draft == false
     env:
       SERVER_BRANCH: stable28
