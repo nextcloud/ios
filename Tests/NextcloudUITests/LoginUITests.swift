@@ -50,14 +50,15 @@ final class LoginUITests: BaseUIXCTestCase {
         loginButton2.tap()
 
         let usernameTextField = webViewsQuery.textFields["Login with username or email"]
-        usernameTextField.isAccessibilityElement = true
-        XCTAssert(usernameTextField.waitForExistence(timeout: timeoutSeconds))
-        usernameTextField.tap()
-        usernameTextField.typeText(TestConstants.username)
+        usernameTextField.waitUntilExists().tap()
+        waitUntilElementHasFocus(element: usernameTextField).typeText(TestConstants.username)
+//        XCTAssert(usernameTextField.waitForExistence(timeout: timeoutSeconds))
+//        usernameTextField.tap()
+//        usernameTextField.typeText(TestConstants.username)
         let passwordTextField = webViewsQuery/*@START_MENU_TOKEN@*/.secureTextFields["Password"]/*[[".otherElements[\"Login – Nextcloud\"]",".otherElements[\"main\"].secureTextFields[\"Password\"]",".secureTextFields[\"Password\"]"],[[[-1,2],[-1,1],[-1,0,1]],[[-1,2],[-1,1]]],[0]]@END_MENU_TOKEN@*/
-        passwordTextField.isAccessibilityElement = true
-        passwordTextField.tap()
-        passwordTextField.typeText(TestConstants.password)
+        passwordTextField.waitUntilExists().tap()
+        waitUntilElementHasFocus(element: passwordTextField).typeText(TestConstants.username)
+
         let loginButton3 = webViewsQuery/*@START_MENU_TOKEN@*/.buttons["Log in"]/*[[".otherElements[\"Login – Nextcloud\"]",".otherElements[\"main\"].buttons[\"Log in\"]",".buttons[\"Log in\"]"],[[[-1,2],[-1,1],[-1,0,1]],[[-1,2],[-1,1]]],[0]]@END_MENU_TOKEN@*/
         XCTAssert(loginButton3.waitForExistence(timeout: timeoutSeconds))
         loginButton3.tap()
@@ -70,5 +71,39 @@ final class LoginUITests: BaseUIXCTestCase {
         // Check if we are in the home screen
         XCTAssert(app.navigationBars["Nextcloud"].waitForExistence(timeout: timeoutSeconds))
         XCTAssert(app.tabBars["Tab Bar"].waitForExistence(timeout: timeoutSeconds))
+    }
+}
+
+extension XCUIElement {
+    var hasFocus: Bool { value(forKey: "hasKeyboardFocus") as? Bool ?? false }
+
+    func waitUntilExists(timeout: TimeInterval = 600, file: StaticString = #file, line: UInt = #line) -> XCUIElement {
+            let elementExists = waitForExistence(timeout: timeout)
+            if elementExists {
+                return self
+            } else {
+                XCTFail("Could not find \(self) before timeout", file: file, line: line)
+            }
+
+            return self
+        }
+}
+
+extension XCTestCase {
+    func waitUntilElementHasFocus(element: XCUIElement, timeout: TimeInterval = 600, file: StaticString = #file, line: UInt = #line) -> XCUIElement {
+        let expectation = expectation(description: "waiting for element \(element) to have focus")
+
+        let timer = Timer(timeInterval: 1, repeats: true) { timer in
+            guard element.hasFocus else { return }
+
+            expectation.fulfill()
+            timer.invalidate()
+        }
+
+        RunLoop.current.add(timer, forMode: .common)
+
+        wait(for: [expectation], timeout: timeout)
+
+        return element
     }
 }
