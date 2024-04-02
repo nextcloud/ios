@@ -135,7 +135,7 @@ class NCDocumentPickerViewController: NSObject, UIDocumentPickerDelegate {
         documentProviderMenu.popoverPresentationController?.sourceRect = tabBarController.tabBar.bounds
         documentProviderMenu.delegate = self
 
-        appDelegate.window?.rootViewController?.present(documentProviderMenu, animated: true, completion: nil)
+        tabBarController.present(documentProviderMenu, animated: true, completion: nil)
     }
 
     func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
