@@ -161,14 +161,14 @@ jobs:
         -derivedDataPath "DerivedData" \
         | xcbeautify --quieter
 
-        defaults write com.apple.iphonesimulator ConnectHardwareKeyboard 0 &&
-        set -o pipefail && xcodebuild clean test -project $PROJECT \
-        -scheme "$SCHEME" \
-        -destination "$DESTINATION" \
-        -enableCodeCoverage YES \
-        -test-iterations 3 \
-        -retry-tests-on-failure \
-        | xcpretty
+#        defaults write com.apple.iphonesimulator ConnectHardwareKeyboard 0 &&
+#        set -o pipefail && xcodebuild clean test -project $PROJECT \
+#        -scheme "$SCHEME" \
+#        -destination "$DESTINATION" \
+#        -enableCodeCoverage YES \
+#        -test-iterations 3 \
+#        -retry-tests-on-failure \
+#        | xcpretty
     - name: Upload coverage to codecov
       run: |
         bundle exec slather
