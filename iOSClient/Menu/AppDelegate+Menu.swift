@@ -51,9 +51,7 @@ extension AppDelegate {
         actions.append(
             NCMenuAction(
                 title: NSLocalizedString("_upload_file_", comment: ""), icon: UIImage(named: "file")!.image(color: UIColor.systemGray, size: 50), action: { _ in
-                    if let tabBarController = self.window?.rootViewController as? UITabBarController {
-                        self.documentPickerViewController = NCDocumentPickerViewController(tabBarController: tabBarController, isViewerMedia: false, allowsMultipleSelection: true)
-                    }
+                    self.documentPickerViewController = NCDocumentPickerViewController(mainTabBarController: mainTabBarController, isViewerMedia: false, allowsMultipleSelection: true)
                 }
             )
         )
@@ -108,7 +106,7 @@ extension AppDelegate {
                          icon: imageCreateFolder.image(color: NCBrandColor.shared.brandElement, size: 50), action: { _ in
                              guard !appDelegate.activeServerUrl.isEmpty else { return }
                              let alertController = UIAlertController.createFolder(serverUrl: appDelegate.activeServerUrl, urlBase: appDelegate)
-                             appDelegate.window?.rootViewController?.present(alertController, animated: true, completion: nil)
+                             mainTabBarController.present(alertController, animated: true, completion: nil)
                          }
                         )
         )
@@ -164,7 +162,7 @@ extension AppDelegate {
                             viewController.serverUrl = appDelegate.activeServerUrl
                             viewController.titleForm = NSLocalizedString("_create_new_document_", comment: "")
 
-                            appDelegate.window?.rootViewController?.present(navigationController, animated: true, completion: nil)
+                            mainTabBarController.present(navigationController, animated: true, completion: nil)
                         }
                     }
                 )
@@ -212,7 +210,7 @@ extension AppDelegate {
                             viewController.serverUrl = appDelegate.activeServerUrl
                             viewController.titleForm = NSLocalizedString("_create_new_presentation_", comment: "")
 
-                            appDelegate.window?.rootViewController?.present(navigationController, animated: true, completion: nil)
+                            mainTabBarController.present(navigationController, animated: true, completion: nil)
                         }
                     }
                 )
