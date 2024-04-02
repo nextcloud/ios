@@ -81,7 +81,10 @@ extension NCManageDatabase {
 #if !EXTENSION
         DispatchQueue.main.async {
             if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
-                appDelegate.listFilesVC[serverUrl] = nil
+                for sceneIdentifer in SceneManager.shared.getSceneIdentifier() {
+                    let sceneIdentifierServerUrlPush = sceneIdentifer + "|" + serverUrl
+                    appDelegate.listFilesVC.removeValue(forKey: sceneIdentifierServerUrlPush)
+                }
             }
         }
 #endif
