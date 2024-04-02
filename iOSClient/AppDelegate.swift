@@ -610,7 +610,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     // MARK: - Scheme URL
 
     func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey: Any] = [:]) -> Bool {
-
+        guard let sceneIdentifier = (UIApplication.shared.firstWindow?.rootViewController as? NCMainTabBarController)?.sceneIdentifier else { return false }
         let scheme = url.scheme
         let action = url.host
         var fileName: String = ""
@@ -721,7 +721,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                 }
 
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                    NCActionCenter.shared.openFileViewInFolder(serverUrl: serverUrl, fileNameBlink: nil, fileNameOpen: fileName)
+                    NCActionCenter.shared.openFileViewInFolder(serverUrl: serverUrl, fileNameBlink: nil, fileNameOpen: fileName, sceneIdentifier: sceneIdentifier)
                 }
             }
             return true

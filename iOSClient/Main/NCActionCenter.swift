@@ -559,56 +559,43 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
 
     // MARK: -
 
-    func openFileViewInFolder(serverUrl: String, fileNameBlink: String?, fileNameOpen: String?) {
-        guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else { return }
+    func openFileViewInFolder(serverUrl: String, fileNameBlink: String?, fileNameOpen: String?, sceneIdentifier: String) {
+        guard let appDelegate = UIApplication.shared.delegate as? AppDelegate,
+              let mainTabBarController = SceneManager.shared.getMainTabBarController(sceneIdentifier: sceneIdentifier),
+              let navigationController = mainTabBarController.viewControllers?.first as? UINavigationController,
+              let viewController = navigationController.topViewController as? NCFiles
+        else { return }
+        var serverUrlPush = self.utilityFileSystem.getHomeServer(urlBase: appDelegate.urlBase, userId: appDelegate.userId)
 
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-            var topNavigationController: UINavigationController?
-            var pushServerUrl = self.utilityFileSystem.getHomeServer(urlBase: appDelegate.urlBase, userId: appDelegate.userId)
-            guard var mostViewController = appDelegate.window?.rootViewController?.topMostViewController() else { return }
-
-            if mostViewController.isModal {
-                mostViewController.dismiss(animated: false)
-                if let viewController = appDelegate.window?.rootViewController?.topMostViewController() {
-                    mostViewController = viewController
-                }
-            }
-            mostViewController.navigationController?.popToRootViewController(animated: false)
-
-            if let tabBarController = appDelegate.window?.rootViewController as? NCMainTabBarController {
-                tabBarController.selectedIndex = 0
-                if let navigationController = tabBarController.viewControllers?.first as? UINavigationController {
-                    navigationController.popToRootViewController(animated: false)
-                    topNavigationController = navigationController
-                }
-            }
-            if pushServerUrl == serverUrl {
-                let viewController = topNavigationController?.topViewController as? NCFiles
-                viewController?.blinkCell(fileName: fileNameBlink)
-                viewController?.openFile(fileName: fileNameOpen)
+            navigationController.popToRootViewController(animated: false)
+            mainTabBarController.selectedIndex = 0
+            if serverUrlPush == serverUrl {
+                viewController.blinkCell(fileName: fileNameBlink)
+                viewController.openFile(fileName: fileNameOpen)
                 return
             }
-            guard let topNavigationController = topNavigationController else { return }
 
-            let diffDirectory = serverUrl.replacingOccurrences(of: pushServerUrl, with: "")
+            let diffDirectory = serverUrl.replacingOccurrences(of: serverUrlPush, with: "")
             var subDirs = diffDirectory.split(separator: "/")
 
-            while pushServerUrl != serverUrl, !subDirs.isEmpty {
+            while serverUrlPush != serverUrl, !subDirs.isEmpty {
 
                 guard let dir = subDirs.first, let viewController = UIStoryboard(name: "NCFiles", bundle: nil).instantiateInitialViewController() as? NCFiles else { return }
-                pushServerUrl = pushServerUrl + "/" + dir
+                serverUrlPush = serverUrlPush + "/" + dir
+                let sceneIdentifierServerUrlPush = sceneIdentifier + "|" + serverUrl
 
-                viewController.serverUrl = pushServerUrl
+                viewController.serverUrl = serverUrlPush
                 viewController.isRoot = false
                 viewController.titleCurrentFolder = String(dir)
-                if pushServerUrl == serverUrl {
+                if serverUrlPush == serverUrl {
                     viewController.fileNameBlink = fileNameBlink
                     viewController.fileNameOpen = fileNameOpen
                 }
-                appDelegate.listFilesVC[serverUrl] = viewController
+                appDelegate.listFilesVC[sceneIdentifierServerUrlPush] = viewController
 
                 viewController.navigationItem.backButtonTitle = viewController.titleCurrentFolder
-                topNavigationController.pushViewController(viewController, animated: false)
+                navigationController.pushViewController(viewController, animated: false)
 
                 subDirs.remove(at: 0)
             }

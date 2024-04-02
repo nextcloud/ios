@@ -145,9 +145,18 @@ class SceneManager {
 
     func getSceneIdentifier() -> [String] {
         var results: [String] = []
-        for mainTabBarController  in sceneRootViewController.keys {
+        for mainTabBarController in sceneRootViewController.keys {
             results.append(mainTabBarController.sceneIdentifier)
         }
         return results
+    }
+
+    func getMainTabBarController(sceneIdentifier: String) -> NCMainTabBarController? {
+        for mainTabBarController in sceneRootViewController.keys {
+            if sceneIdentifier == mainTabBarController.sceneIdentifier {
+                return mainTabBarController
+            }
+        }
+        return nil
     }
 }

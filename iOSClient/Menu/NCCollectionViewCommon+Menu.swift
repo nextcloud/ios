@@ -31,12 +31,10 @@ import NextcloudKit
 import Queuer
 
 extension NCCollectionViewCommon {
-
     func toggleMenu(metadata: tableMetadata, indexPath: IndexPath, imageIcon: UIImage?) {
-
+        guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(metadata.ocId),
+              let sceneIdentifier = (tabBarController as? NCMainTabBarController)?.sceneIdentifier else { return }
         var actions = [NCMenuAction]()
-
-        guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(metadata.ocId) else { return }
         let serverUrl = metadata.serverUrl + "/" + metadata.fileName
         var isOffline: Bool = false
 
@@ -133,7 +131,7 @@ extension NCCollectionViewCommon {
                     icon: utility.loadImage(named: "questionmark.folder"),
                     order: 21,
                     action: { _ in
-                        NCActionCenter.shared.openFileViewInFolder(serverUrl: metadata.serverUrl, fileNameBlink: metadata.fileName, fileNameOpen: nil)
+                        NCActionCenter.shared.openFileViewInFolder(serverUrl: metadata.serverUrl, fileNameBlink: metadata.fileName, fileNameOpen: nil, sceneIdentifier: sceneIdentifier)
                     }
                 )
             )
