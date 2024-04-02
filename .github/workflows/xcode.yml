@@ -241,8 +241,7 @@ jobs:
         ./server/occ background:cron
         PHP_CLI_SERVER_WORKERS=5 php -S localhost:8080 -t server/ &
     - name: Wait for server to install
-      run: |
-        source ./wait-for-server.sh
+      run: curl -s http://localhost:8080/status.php
     - name: Test Nextcloud iOS
       run: |
         set -o pipefail && \
