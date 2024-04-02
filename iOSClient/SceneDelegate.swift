@@ -133,6 +133,171 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterApplicationDidEnterBackground)
     }
+
+    func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
+        guard let rootViewController = ((scene as? UIWindowScene)?.keyWindow?.rootViewController) as? NCMainTabBarController,
+              let url = URLContexts.first?.url,
+              let appDelegate else { return }
+        let sceneIdentifier = rootViewController.sceneIdentifier
+        let account = appDelegate.account
+        let scheme = url.scheme
+        let action = url.host
+        var fileName: String = ""
+        var serverUrl: String = ""
+
+        func getMatchedAccount(userId: String, url: String) -> tableAccount? {
+            if let activeAccount = NCManageDatabase.shared.getActiveAccount() {
+                let urlBase = URL(string: activeAccount.urlBase)
+                if url.contains(urlBase?.host ?? "") && userId == activeAccount.userId {
+                   return activeAccount
+                } else {
+                    let accounts = NCManageDatabase.shared.getAllAccount()
+                    for account in accounts {
+                        let urlBase = URL(string: account.urlBase)
+                        if url.contains(urlBase?.host ?? "") && userId == account.userId {
+                            appDelegate.changeAccount(account.account, userProfile: nil)
+                            return account
+                        }
+                    }
+                }
+            }
+            return nil
+        }
+
+        /*
+         Example: nextcloud://open-action?action=create-voice-memo&&user=marinofaggiana&url=https://cloud.nextcloud.com
+         */
+
+        if !account.isEmpty && scheme == NCGlobal.shared.appScheme && action == "open-action" {
+
+            if let urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false) {
+
+                let queryItems = urlComponents.queryItems
+                guard let actionScheme = queryItems?.filter({ $0.name == "action" }).first?.value,
+                      let userScheme = queryItems?.filter({ $0.name == "user" }).first?.value,
+                      let urlScheme = queryItems?.filter({ $0.name == "url" }).first?.value else { return }
+                if getMatchedAccount(userId: userScheme, url: urlScheme) == nil {
+                    let message = NSLocalizedString("_the_account_", comment: "") + " " + userScheme + NSLocalizedString("_of_", comment: "") + " " + urlScheme + " " + NSLocalizedString("_does_not_exist_", comment: "")
+                    let alertController = UIAlertController(title: NSLocalizedString("_info_", comment: ""), message: message, preferredStyle: .alert)
+                    alertController.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { _ in }))
+
+                    rootViewController.present(alertController, animated: true, completion: { })
+                    return
+                }
+
+                switch actionScheme {
+                case NCGlobal.shared.actionUploadAsset:
+
+                    NCAskAuthorization().askAuthorizationPhotoLibrary(viewController: rootViewController) { hasPermission in
+                        if hasPermission {
+                            NCPhotosPickerViewController(viewController: rootViewController, maxSelectedAssets: 0, singleSelectedMode: false)
+                        }
+                    }
+
+                case NCGlobal.shared.actionScanDocument:
+
+                    NCDocumentCamera.shared.openScannerDocument(viewController: rootViewController)
+
+                case NCGlobal.shared.actionTextDocument:
+
+                    guard let navigationController = UIStoryboard(name: "NCCreateFormUploadDocuments", bundle: nil).instantiateInitialViewController(),
+                          let directEditingCreators = NCManageDatabase.shared.getDirectEditingCreators(account: account),
+                          let directEditingCreator = directEditingCreators.first(where: { $0.editor == NCGlobal.shared.editorText}),
+                          let viewController = (navigationController as? UINavigationController)?.topViewController as? NCCreateFormUploadDocuments else { return }
+
+                    navigationController.modalPresentationStyle = UIModalPresentationStyle.formSheet
+
+                    viewController.editorId = NCGlobal.shared.editorText
+                    viewController.creatorId = directEditingCreator.identifier
+                    viewController.typeTemplate = NCGlobal.shared.templateDocument
+                    viewController.serverUrl = appDelegate.activeServerUrl
+                    viewController.titleForm = NSLocalizedString("_create_nextcloudtext_document_", comment: "")
+
+                    rootViewController.present(navigationController, animated: true, completion: nil)
+
+                case NCGlobal.shared.actionVoiceMemo:
+
+                    NCAskAuthorization().askAuthorizationAudioRecord(viewController: rootViewController) { hasPermission in
+                        if hasPermission {
+                            if let viewController = UIStoryboard(name: "NCAudioRecorderViewController", bundle: nil).instantiateInitialViewController() as? NCAudioRecorderViewController {
+                                viewController.modalTransitionStyle = .crossDissolve
+                                viewController.modalPresentationStyle = UIModalPresentationStyle.overCurrentContext
+                                rootViewController.present(viewController, animated: true, completion: nil)
+                            }
+                        }
+                    }
+
+                default:
+                    print("No action")
+                }
+            }
+            return
+        }
+
+        /*
+         Example: nextcloud://open-file?path=Talk/IMG_0000123.jpg&user=marinofaggiana&link=https://cloud.nextcloud.com/f/123
+         */
+
+        else if !account.isEmpty && scheme == NCGlobal.shared.appScheme && action == "open-file" {
+
+            if let urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false) {
+
+                let queryItems = urlComponents.queryItems
+                guard let userScheme = queryItems?.filter({ $0.name == "user" }).first?.value,
+                      let pathScheme = queryItems?.filter({ $0.name == "path" }).first?.value,
+                      let linkScheme = queryItems?.filter({ $0.name == "link" }).first?.value else { return}
+
+                guard let matchedAccount = getMatchedAccount(userId: userScheme, url: linkScheme) else {
+                    guard let domain = URL(string: linkScheme)?.host else { return }
+                    fileName = (pathScheme as NSString).lastPathComponent
+                    let message = String(format: NSLocalizedString("_account_not_available_", comment: ""), userScheme, domain, fileName)
+                    let alertController = UIAlertController(title: NSLocalizedString("_info_", comment: ""), message: message, preferredStyle: .alert)
+                    alertController.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { _ in }))
+
+                    rootViewController.present(alertController, animated: true, completion: { })
+                    return
+                }
+
+                let davFiles = NextcloudKit.shared.nkCommonInstance.dav + "/files/" + appDelegate.userId
+                if pathScheme.contains("/") {
+                    fileName = (pathScheme as NSString).lastPathComponent
+                    serverUrl = matchedAccount.urlBase + "/" + davFiles + "/" + (pathScheme as NSString).deletingLastPathComponent
+                } else {
+                    fileName = pathScheme
+                    serverUrl = matchedAccount.urlBase + "/" + davFiles
+                }
+
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                    NCActionCenter.shared.openFileViewInFolder(serverUrl: serverUrl, fileNameBlink: nil, fileNameOpen: fileName, sceneIdentifier: sceneIdentifier)
+                }
+            }
+            return
+
+        /*
+         Example: nextcloud://open-and-switch-account?user=marinofaggiana&url=https://cloud.nextcloud.com
+         */
+
+        } else if !account.isEmpty && scheme == NCGlobal.shared.appScheme && action == "open-and-switch-account" {
+            guard let urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false) else { return }
+            let queryItems = urlComponents.queryItems
+            guard let userScheme = queryItems?.filter({ $0.name == "user" }).first?.value,
+                  let urlScheme = queryItems?.filter({ $0.name == "url" }).first?.value else { return }
+            // If the account doesn't exist, return false which will open the app without switching
+            if getMatchedAccount(userId: userScheme, url: urlScheme) == nil {
+                return
+            }
+            // Otherwise open the app and switch accounts
+            return
+        } else {
+            let applicationHandle = NCApplicationHandle()
+            let isHandled = applicationHandle.applicationOpenURL(url)
+            if isHandled {
+                return
+            } else {
+                scene.open(url, options: nil)
+            }
+        }
+    }
 }
 
 class SceneManager {
