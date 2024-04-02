@@ -69,14 +69,7 @@
 		C04E2F232A17BB4D001BAD85 /* FilesIntegrationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C04E2F222A17BB4D001BAD85 /* FilesIntegrationTests.swift */; };
 		D575039F27146F93008DC9DC /* String+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7A0D1342591FBC5008F8A13 /* String+Extension.swift */; };
 		D5B6AA7827200C7200D49C24 /* NCActivityTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5B6AA7727200C7200D49C24 /* NCActivityTableViewCell.swift */; };
-		F30A962F2A27ADF900D7BCFE /* EnvVars.stencil in Resources */ = {isa = PBXBuildFile; fileRef = F30A962E2A27ADF900D7BCFE /* EnvVars.stencil */; };
-		F30A96312A27AEBF00D7BCFE /* EnvVars.generated.swift in Sources */ = {isa = PBXBuildFile; fileRef = F30A96302A27AEBF00D7BCFE /* EnvVars.generated.swift */; };
-		F30A96322A27AEDD00D7BCFE /* EnvVars.generated.swift in Sources */ = {isa = PBXBuildFile; fileRef = F30A96302A27AEBF00D7BCFE /* EnvVars.generated.swift */; };
 		F310B1EF2BA862F1001C42F5 /* NCViewerMedia+VisionKit.swift in Sources */ = {isa = PBXBuildFile; fileRef = F310B1EE2BA862F1001C42F5 /* NCViewerMedia+VisionKit.swift */; };
-		F3131EDD2B038E4A0018DB28 /* XLForm in Frameworks */ = {isa = PBXBuildFile; productRef = F3131EDC2B038E4A0018DB28 /* XLForm */; };
-		F3131EDF2B038F2A0018DB28 /* SnapshotTesting in Frameworks */ = {isa = PBXBuildFile; productRef = F3131EDE2B038F2A0018DB28 /* SnapshotTesting */; };
-		F3131EE12B038F560018DB28 /* SnapshotTestingHEIC in Frameworks */ = {isa = PBXBuildFile; productRef = F3131EE02B038F560018DB28 /* SnapshotTestingHEIC */; };
-		F3131EE32B038F9B0018DB28 /* PreviewSnapshotsTesting in Frameworks */ = {isa = PBXBuildFile; productRef = F3131EE22B038F9B0018DB28 /* PreviewSnapshotsTesting */; };
 		F314F1112A30C11200BC7FAB /* PreviewSnapshots in Frameworks */ = {isa = PBXBuildFile; productRef = F314F1102A30C11200BC7FAB /* PreviewSnapshots */; };
 		F314F1142A30E2DE00BC7FAB /* View+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7E8A390295DC5E0006CB2D0 /* View+Extension.swift */; };
 		F31F69452A2F6D4600162F76 /* NextcloudSnapshotTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F31F69442A2F6D4600162F76 /* NextcloudSnapshotTests.swift */; };
@@ -1032,8 +1025,6 @@
 		C04E2F222A17BB4D001BAD85 /* FilesIntegrationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilesIntegrationTests.swift; sourceTree = "<group>"; };
 		D5B6AA7727200C7200D49C24 /* NCActivityTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCActivityTableViewCell.swift; sourceTree = "<group>"; };
 		F30A96042A27299D00D7BCFE /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Platforms/iPhoneOS.platform/Developer/Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
-		F30A962E2A27ADF900D7BCFE /* EnvVars.stencil */ = {isa = PBXFileReference; lastKnownFileType = text; path = EnvVars.stencil; sourceTree = "<group>"; };
-		F30A96302A27AEBF00D7BCFE /* EnvVars.generated.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = EnvVars.generated.swift; path = Sourcery/EnvVars.generated.swift; sourceTree = "<group>"; };
 		F310B1EE2BA862F1001C42F5 /* NCViewerMedia+VisionKit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NCViewerMedia+VisionKit.swift"; sourceTree = "<group>"; };
 		F3131ED82B038DB20018DB28 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.0.sdk/System/iOSSupport/System/Library/Frameworks/SwiftUI.framework; sourceTree = DEVELOPER_DIR; };
 		F3131EDA2B038DB90018DB28 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.0.sdk/System/iOSSupport/System/Library/Frameworks/WidgetKit.framework; sourceTree = DEVELOPER_DIR; };
