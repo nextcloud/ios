@@ -31,6 +31,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             }
         } else {
             if let tabBarController = UIStoryboard(name: "Main", bundle: nil).instantiateInitialViewController() as? NCMainTabBarController {
+                SceneManager.shared.register(scene: scene, withRootViewController: tabBarController)
                 window?.rootViewController = tabBarController
                 window?.makeKeyAndVisible()
             }
@@ -131,5 +132,22 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         NCPasscode.shared.presentPasscode(delegate: appDelegate) { }
 
         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterApplicationDidEnterBackground)
+    }
+}
+
+class SceneManager {
+    static let shared = SceneManager()
+    private var sceneRootViewController: [NCMainTabBarController: UIScene] = [:]
+
+    func register(scene: UIScene, withRootViewController rootViewController: NCMainTabBarController) {
+        sceneRootViewController[rootViewController] = scene
+    }
+
+    func getSceneIdentifier() -> [String] {
+        var results: [String] = []
+        for mainTabBarController  in sceneRootViewController.keys {
+            results.append(mainTabBarController.sceneIdentifier)
+        }
+        return results
     }
 }
