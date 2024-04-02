@@ -105,7 +105,7 @@ jobs:
     steps:
 #    - name: Set env var
 #      run: echo "DEVELOPER_DIR=$(xcode-select --print-path)" >> $GITHUB_ENV
-#    - uses: actions/checkout@v4
+    - uses: actions/checkout@v4
     - name: Setup Bundler and Install Gems
       run: |
         gem install bundler
