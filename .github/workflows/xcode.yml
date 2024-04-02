@@ -78,6 +78,7 @@ jobs:
         source ./wait-for-server.sh
     - name: Build & Test Nextcloud iOS
       run: |
+        defaults write com.apple.iphonesimulator ConnectHardwareKeyboard 0 &&
         set -o pipefail && xcodebuild clean test -project $PROJECT \
         -scheme "$SCHEME" \
         -destination "$DESTINATION" \
