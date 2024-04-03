@@ -54,6 +54,7 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
               let account = userInfo["account"] as? String,
               account == appDelegate?.account
         else { return }
+        let rootViewController = UIApplication.shared.firstWindow?.rootViewController
 
         guard error == .success else {
             // File do not exists on server, remove in local
@@ -86,10 +87,10 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
                     }
                     let navigationController = UINavigationController(rootViewController: viewerQuickLook)
                     navigationController.modalPresentationStyle = .fullScreen
-                    self.appDelegate?.window?.rootViewController?.present(navigationController, animated: true)
+                    rootViewController?.present(navigationController, animated: true)
                 } else {
                     self.utilityFileSystem.copyFile(atPath: fileNamePath, toPath: fileNameTemp)
-                    self.appDelegate?.window?.rootViewController?.present(viewerQuickLook, animated: true)
+                    rootViewController?.present(viewerQuickLook, animated: true)
                 }
             }
 
@@ -171,8 +172,7 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
 
     func viewerFile(account: String, fileId: String, viewController: UIViewController) {
 
-        guard let appDelegate = UIApplication.shared.delegate as? AppDelegate,
-              let hudView = viewController.tabBarController?.view else { return }
+        guard let hudView = viewController.tabBarController?.view else { return }
         var downloadRequest: DownloadRequest?
 
         if let metadata = NCManageDatabase.shared.getMetadataFromFileId(fileId) {
@@ -319,7 +319,7 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
 
     func openActivityViewController(selectedMetadata: [tableMetadata]) {
         guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else { return }
-
+        let rootViewController = UIApplication.shared.firstWindow?.rootViewController
         let metadatas = selectedMetadata.filter({ !$0.directory })
         var items: [URL] = []
         var downloadMetadata: [(tableMetadata, URL)] = []
@@ -333,7 +333,7 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
             }
         }
 
-        let processor = ParallelWorker(n: 5, titleKey: "_downloading_", totalTasks: downloadMetadata.count, hudView: appDelegate.window?.rootViewController?.view)
+        let processor = ParallelWorker(n: 5, titleKey: "_downloading_", totalTasks: downloadMetadata.count, hudView: rootViewController?.view)
         for (metadata, url) in downloadMetadata {
             processor.execute { completion in
                 guard let metadata = NCManageDatabase.shared.setMetadatasSessionInWaitDownload(metadatas: [metadata],
@@ -355,7 +355,7 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
             activityViewController.popoverPresentationController?.permittedArrowDirections = .any
             activityViewController.popoverPresentationController?.sourceView = mainTabBar
             activityViewController.popoverPresentationController?.sourceRect = mainTabBar.menuRect
-            appDelegate.window?.rootViewController?.present(activityViewController, animated: true)
+            rootViewController?.present(activityViewController, animated: true)
         }
     }
 
@@ -375,7 +375,7 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
 
         navigationController.modalPresentationStyle = UIModalPresentationStyle.pageSheet
 
-        appDelegate.window?.rootViewController?.present(navigationController, animated: true, completion: nil)
+        UIApplication.shared.firstWindow?.rootViewController?.present(navigationController, animated: true, completion: nil)
     }
 
     // MARK: - Print
@@ -465,7 +465,7 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
     func copyPasteboard(pasteboardOcIds: [String]) {
         var items = [[String: Any]]()
         guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else { return }
-        let hudView = appDelegate.window?.rootViewController?.view
+        let hudView = UIApplication.shared.firstWindow?.rootViewController?.view
         var fractionCompleted: Float = 0
 
         // getting file data can take some time and block the main queue
@@ -512,7 +512,7 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
         guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else { return }
         var fractionCompleted: Float = 0
 
-        let processor = ParallelWorker(n: 5, titleKey: "_uploading_", totalTasks: nil, hudView: appDelegate.window?.rootViewController?.view)
+        let processor = ParallelWorker(n: 5, titleKey: "_uploading_", totalTasks: nil, hudView: UIApplication.shared.firstWindow?.rootViewController?.view)
 
         func uploadPastePasteboard(fileName: String, serverUrlFileName: String, fileNameLocalPath: String, serverUrl: String, completion: @escaping () -> Void) {
             NextcloudKit.shared.upload(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath) { request in
@@ -693,7 +693,7 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
         navigationController?.modalPresentationStyle = .formSheet
 
         if let navigationController = navigationController {
-            appDelegate.window?.rootViewController?.present(navigationController, animated: true, completion: nil)
+            UIApplication.shared.firstWindow?.rootViewController?.present(navigationController, animated: true, completion: nil)
         }
     }
 }

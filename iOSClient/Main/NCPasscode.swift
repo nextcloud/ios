@@ -69,7 +69,7 @@ class NCPasscode: NSObject, TOPasscodeViewControllerDelegate {
 
 #if !EXTENSION
         let appDelegate = UIApplication.shared.delegate as? AppDelegate
-        let presentedViewController = appDelegate?.window?.rootViewController?.presentedViewController
+        let presentedViewController = UIApplication.shared.firstWindow?.rootViewController
         guard !(presentedViewController is NCLoginNavigationController) else { return }
         // Make sure we have a privacy window (in case it's not enabled) only for App
         self.showPrivacyProtectionWindow()

@@ -54,7 +54,7 @@ class NCOperationSaveLivePhoto: ConcurrentOperation {
             }
             self.hud.textLabel.text = NSLocalizedString("_download_image_", comment: "")
             self.hud.detailTextLabel.text = self.metadata.fileName
-            self.hud.show(in: (self.appDelegate?.window?.rootViewController?.view)!)
+            self.hud.show(in: (UIApplication.shared.firstWindow?.rootViewController?.view)!)
         }
 
         NCNetworking.shared.download(metadata: metadata, withNotificationProgressTask: false) {
