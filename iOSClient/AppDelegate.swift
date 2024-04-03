@@ -382,8 +382,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                 navigationController.navigationBar.tintColor = NCBrandColor.shared.customerText
                 navigationController.navigationBar.barTintColor = NCBrandColor.shared.customer
                 navigationController.navigationBar.isTranslucent = false
-                UIWindow(windowScene: windowScene).rootViewController = navigationController
-                UIWindow(windowScene: windowScene).makeKeyAndVisible()
+                windowScene.keyWindow?.rootViewController = navigationController
+                windowScene.keyWindow?.makeKeyAndVisible()
             }
         } else if contextViewController is UINavigationController {
             if let contextViewController = contextViewController, let viewController = viewController {
