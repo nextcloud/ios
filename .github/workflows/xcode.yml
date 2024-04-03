@@ -162,7 +162,7 @@ jobs:
         -scheme "${{ env.SCHEME }}" \
         -destination "${{ env.DESTINATION }}" \
         -derivedDataPath "DerivedData" \
-        | xcbeautify --quieter
+        | xcpretty
 
 #        defaults write com.apple.iphonesimulator ConnectHardwareKeyboard 0 &&
 #        set -o pipefail && xcodebuild clean test -project $PROJECT \
@@ -195,11 +195,11 @@ jobs:
 #    - name: Set env var
 #      run: echo "DEVELOPER_DIR=$(xcode-select --print-path)" >> $GITHUB_ENV
     - uses: actions/checkout@v4
-#    - name: Setup Bundler and Install Gems
-#      run: |
-#        gem install bundler
-#        bundle install
-#        bundle update
+    - name: Setup Bundler and Install Gems
+      run: |
+        gem install bundler
+        bundle install
+        bundle update
 #    - name: Restore Carhage Cache
 #      uses: actions/cache@v3
 #      id: carthage-cache
@@ -256,7 +256,7 @@ jobs:
         -derivedDataPath "DerivedData" \
         -test-iterations 3 \
         -retry-tests-on-failure \
-        | xcbeautify --quieter
+        | xcpretty
     - name: Upload coverage to codecov
       run: |
         bundle exec slather
