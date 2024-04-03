@@ -105,37 +105,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Start session with level \(levelLog) " + versionNextcloudiOS)
         }
 
-        if let account = NCManageDatabase.shared.getActiveAccount() {
-            NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Account active \(account.account)")
-            if NCKeychain().getPassword(account: account.account).isEmpty {
-                NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] PASSWORD NOT FOUND for \(account.account)")
-            }
-        }
-
-        if let activeAccount = NCManageDatabase.shared.getActiveAccount() {
-
-            account = activeAccount.account
-            urlBase = activeAccount.urlBase
-            user = activeAccount.user
-            userId = activeAccount.userId
-            password = NCKeychain().getPassword(account: account)
-
-            NextcloudKit.shared.setup(account: account, user: user, userId: userId, password: password, urlBase: urlBase)
-            NCManageDatabase.shared.setCapabilities(account: account)
-
-            NCBrandColor.shared.settingThemingColor(account: activeAccount.account)
-            DispatchQueue.global().async {
-                NCImageCache.shared.createMediaCache(account: self.account, withCacheSize: true)
-            }
-
-        } else {
-
-            NCKeychain().removeAll()
-            if let bundleID = Bundle.main.bundleIdentifier {
-                UserDefaults.standard.removePersistentDomain(forName: bundleID)
-            }
-        }
-
         NCBrandColor.shared.createUserColors()
         NCImageCache.shared.createImagesCache()
 
@@ -346,7 +315,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
     // MARK: - Login & checkErrorNetworking
 
-    @objc func openLogin(viewController: UIViewController?, selector: Int, openLoginWeb: Bool) {
+    @objc func openLogin(viewController: UIViewController?, selector: Int, openLoginWeb: Bool, scene: UIScene?) {
 
         // [WEBPersonalized] [AppConfig]
         if NCBrandOptions.shared.use_login_web_personalized || NCBrandOptions.shared.use_AppConfig {
