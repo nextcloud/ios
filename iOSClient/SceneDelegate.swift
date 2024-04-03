@@ -94,10 +94,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             NCPasscode.shared.showPrivacyProtectionWindow()
         }
 
-        if let windowScene = (scene as? UIWindowScene), let viewController = windowScene.keyWindow?.rootViewController {
-            NCPasscode.shared.presentPasscode(viewController: viewController, delegate: appDelegate) { }
-        }
-
         // Reload Widget
         WidgetCenter.shared.reloadAllTimelines()
 
@@ -113,6 +109,10 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Scene did enter in background")
         guard let appDelegate,
               !appDelegate.account.isEmpty else { return }
+
+        if let windowScene = (scene as? UIWindowScene), let viewController = windowScene.keyWindow?.rootViewController {
+            NCPasscode.shared.presentPasscode(viewController: viewController, delegate: appDelegate) { }
+        }
 
         if let autoUpload = NCManageDatabase.shared.getActiveAccount()?.autoUpload, autoUpload {
             NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Auto upload: true")
