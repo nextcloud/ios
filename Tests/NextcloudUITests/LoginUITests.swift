@@ -50,34 +50,12 @@ final class LoginUITests: BaseUIXCTestCase {
         loginButton2.tap()
 
         let usernameTextField = webViewsQuery.textFields["Login with username or email"]
-//        usernameTextField.waitUntilExists().tap()
-//        UIPasteboard.general.string = TestConstants.username
-//        usernameTextField.press(forDuration: 1.3)
-//        app.menuItems["Paste"].tap()
-//        app.keys["a"].tap()
-//        app.keys["d"].tap()
-//        app.keys["m"].tap()
-//        app.keys["i"].tap()
-//        app.keys["n"].tap()
-//        waitUntilElementHasFocus(element: usernameTextField).typeText(TestConstants.username)
-//        XCTAssert(usernameTextField.waitForExistence(timeout: timeoutSeconds))
         usernameTextField.tap()
         usernameTextField.typeText(TestConstants.username)
 
         let passwordTextField = webViewsQuery/*@START_MENU_TOKEN@*/.secureTextFields["Password"]/*[[".otherElements[\"Login – Nextcloud\"]",".otherElements[\"main\"].secureTextFields[\"Password\"]",".secureTextFields[\"Password\"]"],[[[-1,2],[-1,1],[-1,0,1]],[[-1,2],[-1,1]]],[0]]@END_MENU_TOKEN@*/
         passwordTextField.tap()
         passwordTextField.typeText(TestConstants.username)
-//        passwordTextField.waitUntilExists().tap()
-//        UIPasteboard.general.string = TestConstants.username
-//        passwordTextField.press(forDuration: 1.3)
-//        app.menuItems["Paste"].tap()
-//        passwordTextField.waitUntilExists().tap()
-//        app.keys["a"].tap()
-//        app.keys["d"].tap()
-//        app.keys["m"].tap()
-//        app.keys["i"].tap()
-//        app.keys["n"].tap()
-//        waitUntilElementHasFocus(element: passwordTextField).typeText(TestConstants.username)
 
         let loginButton3 = webViewsQuery/*@START_MENU_TOKEN@*/.buttons["Log in"]/*[[".otherElements[\"Login – Nextcloud\"]",".otherElements[\"main\"].buttons[\"Log in\"]",".buttons[\"Log in\"]"],[[[-1,2],[-1,1],[-1,0,1]],[[-1,2],[-1,1]]],[0]]@END_MENU_TOKEN@*/
         XCTAssert(loginButton3.waitForExistence(timeout: timeoutSeconds))
@@ -91,40 +69,6 @@ final class LoginUITests: BaseUIXCTestCase {
         // Check if we are in the home screen
         XCTAssert(app.navigationBars["Nextcloud"].waitForExistence(timeout: timeoutSeconds))
         XCTAssert(app.tabBars["Tab Bar"].waitForExistence(timeout: timeoutSeconds))
-
-        
-//        let app = XCUIApplication()
-//        app.windows.children(matching: .other).element.children(matching: .other).element.children(matching: .other).element.children(matching: .other).element.children(matching: .other).element.children(matching: .other).element.tap()
-//        app.buttons["Log in"].tap()
-//        app.textFields["Server address https:// …"].tap()
-//        
-//        let webViewsQuery = app.webViews.webViews.webViews
-//        webViewsQuery/*@START_MENU_TOKEN@*/.buttons["Log in"]/*[[".otherElements.matching(identifier: \"Nextcloud\")",".otherElements[\"main\"].buttons[\"Log in\"]",".buttons[\"Log in\"]"],[[[-1,2],[-1,1],[-1,0,1]],[[-1,2],[-1,1]]],[0]]@END_MENU_TOKEN@*/.tap()
-//        
-//        let logInToNextcloudStaticText = webViewsQuery/*@START_MENU_TOKEN@*/.staticTexts["Log in to Nextcloud"]/*[[".otherElements[\"Login – Nextcloud\"]",".otherElements[\"main\"]",".otherElements[\"Log in to Nextcloud\"].staticTexts[\"Log in to Nextcloud\"]",".staticTexts[\"Log in to Nextcloud\"]"],[[[-1,3],[-1,2],[-1,1,2],[-1,0,1]],[[-1,3],[-1,2],[-1,1,2]],[[-1,3],[-1,2]]],[0]]@END_MENU_TOKEN@*/
-//        logInToNextcloudStaticText.tap()
-//        logInToNextcloudStaticText.tap()
-//        webViewsQuery/*@START_MENU_TOKEN@*/.textFields["Login with username or email"]/*[[".otherElements[\"Login – Nextcloud\"]",".otherElements[\"main\"].textFields[\"Login with username or email\"]",".textFields[\"Login with username or email\"]"],[[[-1,2],[-1,1],[-1,0,1]],[[-1,2],[-1,1]]],[0]]@END_MENU_TOKEN@*/.tap()
-//        
-//        let pasteStaticText = app.collectionViews/*@START_MENU_TOKEN@*/.staticTexts["Paste"]/*[[".menuItems[\"Paste\"].staticTexts[\"Paste\"]",".staticTexts[\"Paste\"]"],[[[-1,1],[-1,0]]],[0]]@END_MENU_TOKEN@*/
-//        pasteStaticText.tap()
-//        
-//        let passwordSecureTextField = webViewsQuery/*@START_MENU_TOKEN@*/.secureTextFields["Password"]/*[[".otherElements[\"Login – Nextcloud\"]",".otherElements[\"main\"].secureTextFields[\"Password\"]",".secureTextFields[\"Password\"]"],[[[-1,2],[-1,1],[-1,0,1]],[[-1,2],[-1,1]]],[0]]@END_MENU_TOKEN@*/
-//        passwordSecureTextField.tap()
-//        passwordSecureTextField.tap()
-//        pasteStaticText.tap()
-//        webViewsQuery/*@START_MENU_TOKEN@*/.buttons["Log in"]/*[[".otherElements[\"Login – Nextcloud\"]",".otherElements[\"main\"].buttons[\"Log in\"]",".buttons[\"Log in\"]"],[[[-1,2],[-1,1],[-1,0,1]],[[-1,2],[-1,1]]],[0]]@END_MENU_TOKEN@*/.tap()
-//        
-//        let element = app.children(matching: .window).element(boundBy: 0).children(matching: .other).element(boundBy: 1)
-//        element.tap()
-//        element.swipeUp()
-//        webViewsQuery/*@START_MENU_TOKEN@*/.staticTexts["Authenticate with a TOTP app"]/*[[".otherElements.matching(identifier: \"Nextcloud\")",".otherElements[\"main\"]",".links[\"TOTP (Authenticator app) Authenticate with a TOTP app\"]",".links.staticTexts[\"Authenticate with a TOTP app\"]",".staticTexts[\"Authenticate with a TOTP app\"]"],[[[-1,4],[-1,3],[-1,2,3],[-1,1,2],[-1,0,1]],[[-1,4],[-1,3],[-1,2,3],[-1,1,2]],[[-1,4],[-1,3],[-1,2,3]],[[-1,4],[-1,3]]],[0]]@END_MENU_TOKEN@*/.tap()
-//        webViewsQuery/*@START_MENU_TOKEN@*/.textFields["Authentication code"].press(forDuration: 1.1);/*[[".otherElements.matching(identifier: \"Nextcloud\")",".otherElements[\"main\"].textFields[\"Authentication code\"]",".tap()",".press(forDuration: 1.1);",".textFields[\"Authentication code\"]"],[[[-1,4,2],[-1,1,2],[-1,0,1]],[[-1,4,2],[-1,1,2]],[[-1,3],[-1,2]]],[0,0]]@END_MENU_TOKEN@*/
-//        pasteStaticText.tap()
-//        webViewsQuery/*@START_MENU_TOKEN@*/.buttons["Submit"]/*[[".otherElements.matching(identifier: \"Nextcloud\")",".otherElements[\"main\"].buttons[\"Submit\"]",".buttons[\"Submit\"]"],[[[-1,2],[-1,1],[-1,0,1]],[[-1,2],[-1,1]]],[0]]@END_MENU_TOKEN@*/.tap()
-//        webViewsQuery/*@START_MENU_TOKEN@*/.buttons["Grant access"]/*[[".otherElements.matching(identifier: \"Nextcloud\")",".otherElements[\"main\"].buttons[\"Grant access\"]",".buttons[\"Grant access\"]"],[[[-1,2],[-1,1],[-1,0,1]],[[-1,2],[-1,1]]],[0]]@END_MENU_TOKEN@*/.tap()
-//        app.navigationBars["Nextcloud"].children(matching: .button).element(boundBy: 0).tap()
-        
     }
 }
 

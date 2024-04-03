@@ -1,4 +1,4 @@
-name: Build main target
+name: Build and test main target
 
 on:
   push:
@@ -10,87 +10,6 @@ on:
     branches:
       - master
       - develop
-
-#concurrency:
-#  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
-#  cancel-in-progress: true
-
-#jobs:
-#  build-and-test:
-#    name: Build and Test
-#    runs-on: macos-12
-#    if: github.event.pull_request.draft == false
-#    env:
-#      PROJECT: Nextcloud.xcodeproj
-#      DESTINATION: platform=iOS Simulator,name=iPhone 15,OS=17.2
-#      SCHEME: Nextcloud
-#      SERVER_BRANCH: stable28
-#      PHP_VERSION: 8.2
-#    steps:
-#    - name: Set env var
-#      run: echo "DEVELOPER_DIR=$(xcode-select --print-path)" >> $GITHUB_ENV
-#    - uses: actions/checkout@v4
-#    - name: Setup Bundler and Install Gems
-#      run: |
-#        gem install bundler
-#        bundle install
-#        bundle update
-#    - name: Restore Carhage Cache
-#      uses: actions/cache@v3
-#      id: carthage-cache
-#      with:
-#        path: Carthage
-#        key: ${{ runner.os }}-carthage-${{ hashFiles('**/Cartfile.resolved') }}
-#        restore-keys: |
-#          ${{ runner.os }}-carthage-
-#    - name: Carthage
-#      if: steps.carthage-cache.outputs.cache-hit != 'true'
-#      run: carthage bootstrap --use-xcframeworks --platform iOS
-#    - name: Download GoogleService-Info.plist
-#      run: wget "https://raw.githubusercontent.com/firebase/quickstart-ios/master/mock-GoogleService-Info.plist" -O GoogleService-Info.plist
-#    - name: Set up php ${{ matrix.configs.phpversion }}
-#      uses: shivammathur/setup-php@a4e22b60bbb9c1021113f2860347b0759f66fe5d # v2.30.0
-#      with:
-#        php-version: ${{ env.PHP_VERSION }}
-#        # https://docs.nextcloud.com/server/stable/admin_manual/installation/source_installation.html#prerequisites-for-manual-installation
-#        extensions: apcu, bz2, ctype, curl, dom, fileinfo, gd, iconv, intl, json, libxml, mbstring, openssl, pcntl, posix, session, simplexml, xmlreader, xmlwriter, zip, zlib, pgsql, pdo_pgsql
-#        coverage: none
-#        ini-file: development
-#        # Temporary workaround for missing pcntl_* in PHP 8.3: ini-values: apc.enable_cli=on
-#        ini-values: apc.enable_cli=on, disable_functions=
-#    - name: Checkout server
-#      uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
-#      with:
-#        submodules: true
-#        repository: nextcloud/server
-#        path: server
-#        ref: ${{ env.SERVER_BRANCH }}
-#    - name: Set up Nextcloud
-#      run: |
-#        mkdir server/data
-#        ./server/occ maintenance:install --verbose --database=sqlite --database-name=nextcloud --database-host=127.0.0.1 --database-user=root --database-pass=rootpassword --admin-user admin --admin-pass admin
-#        ./server/occ config:system:set hashing_default_password --value=true --type=boolean
-#        ./server/occ config:system:set memcache.local --value="\\OC\\Memcache\\APCu"
-#        ./server/occ config:system:set memcache.distributed --value="\\OC\\Memcache\\APCu"
-#        PHP_CLI_SERVER_WORKERS=3 php -S localhost:8080 -t server/ &
-#    - name: Wait for server to install
-#      run: |
-#        source ./wait-for-server.sh
-#    - name: Build & Test Nextcloud iOS
-#      run: |
-#        defaults write com.apple.iphonesimulator ConnectHardwareKeyboard 0 &&
-#        set -o pipefail && xcodebuild clean test -project $PROJECT \
-#        -scheme "$SCHEME" \
-#        -destination "$DESTINATION" \
-#        -enableCodeCoverage YES \
-#        -test-iterations 3 \
-#        -retry-tests-on-failure \
-#        | xcpretty
-#    - name: Upload coverage to codecov
-#      run: |
-#        bundle exec slather
-#        bash <(curl -s https://codecov.io/bash) -f ./cobertura.xml -X coveragepy -X gcov -X xcode -t ${{ secrets.CODECOV_TOKEN }}
-
 
 env:
   PROJECT: Nextcloud.xcodeproj
@@ -106,14 +25,8 @@ jobs:
     if: github.event.pull_request.draft == false
 
     steps:
-#    - name: Set env var
-#      run: echo "DEVELOPER_DIR=$(xcode-select --print-path)" >> $GITHUB_ENV
     - uses: actions/checkout@v4
-    - name: Setup Bundler and Install Gems
-      run: |
-        gem install bundler
-        bundle install
-        bundle update
+
     - name: Restore Carhage Cache
       uses: actions/cache@v3
       id: carthage-cache
@@ -122,39 +35,14 @@ jobs:
         key: ${{ runner.os }}-carthage-${{ hashFiles('**/Cartfile.resolved') }}
         restore-keys: |
           ${{ runner.os }}-carthage-
+
     - name: Carthage
       if: steps.carthage-cache.outputs.cache-hit != 'true'
       run: carthage bootstrap --use-xcframeworks --platform iOS
+
     - name: Download GoogleService-Info.plist
       run: wget "https://raw.githubusercontent.com/firebase/quickstart-ios/master/mock-GoogleService-Info.plist" -O GoogleService-Info.plist
-#    - name: Set up php ${{ matrix.configs.phpversion }}
-#      uses: shivammathur/setup-php@a4e22b60bbb9c1021113f2860347b0759f66fe5d # v2.30.0
-#      with:
-#        php-version: ${{ env.PHP_VERSION }}
-#        # https://docs.nextcloud.com/server/stable/admin_manual/installation/source_installation.html#prerequisites-for-manual-installation
-#        extensions: apcu, bz2, ctype, curl, dom, fileinfo, gd, iconv, intl, json, libxml, mbstring, openssl, pcntl, posix, session, simplexml, xmlreader, xmlwriter, zip, zlib, pgsql, pdo_pgsql
-#        coverage: none
-#        ini-file: development
-#        # Temporary workaround for missing pcntl_* in PHP 8.3: ini-values: apc.enable_cli=on
-#        ini-values: apc.enable_cli=on, disable_functions=
-#    - name: Checkout server
-#      uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
-#      with:
-#        submodules: true
-#        repository: nextcloud/server
-#        path: server
-#        ref: ${{ env.SERVER_BRANCH }}
-#    - name: Set up Nextcloud
-#      run: |
-#        mkdir server/data
-#        ./server/occ maintenance:install --verbose --database=sqlite --database-name=nextcloud --database-host=127.0.0.1 --database-user=root --database-pass=rootpassword --admin-user admin --admin-pass admin
-#        ./server/occ config:system:set hashing_default_password --value=true --type=boolean
-#        ./server/occ config:system:set memcache.local --value="\\OC\\Memcache\\APCu"
-#        ./server/occ config:system:set memcache.distributed --value="\\OC\\Memcache\\APCu"
-#        PHP_CLI_SERVER_WORKERS=3 php -S localhost:8080 -t server/ &
-#    - name: Wait for server to install
-#      run: |
-#        source ./wait-for-server.sh
+
     - name: Build Nextcloud iOS
       run: |
         set -o pipefail && \
@@ -162,25 +50,12 @@ jobs:
         -scheme "${{ env.SCHEME }}" \
         -destination "${{ env.DESTINATION }}" \
         -derivedDataPath "DerivedData" \
-        | xcpretty
-
-#        defaults write com.apple.iphonesimulator ConnectHardwareKeyboard 0 &&
-#        set -o pipefail && xcodebuild clean test -project $PROJECT \
-#        -scheme "$SCHEME" \
-#        -destination "$DESTINATION" \
-#        -enableCodeCoverage YES \
-#        -test-iterations 3 \
-#        -retry-tests-on-failure \
-#        | xcpretty
-#    - name: Upload coverage to codecov
-#      run: |
-#        bundle exec slather
-#        bash <(curl -s https://codecov.io/bash) -f ./cobertura.xml -X coveragepy -X gcov -X xcode -t ${{ secrets.CODECOV_TOKEN }}
+        | xcbeautify --quieter
 
     - name: Upload test build
       uses: actions/upload-artifact@v4
       with:
-        name: Products
+        name: Nextcloud iOS
         path: DerivedData/Build/Products
         retention-days: 4
 
@@ -192,27 +67,8 @@ jobs:
     if: github.event.pull_request.draft == false
 
     steps:
-#    - name: Set env var
-#      run: echo "DEVELOPER_DIR=$(xcode-select --print-path)" >> $GITHUB_ENV
     - uses: actions/checkout@v4
-    - name: Setup Bundler and Install Gems
-      run: |
-        gem install bundler
-        bundle install
-        bundle update
-#    - name: Restore Carhage Cache
-#      uses: actions/cache@v3
-#      id: carthage-cache
-#      with:
-#        path: Carthage
-#        key: ${{ runner.os }}-carthage-${{ hashFiles('**/Cartfile.resolved') }}
-#        restore-keys: |
-#          ${{ runner.os }}-carthage-
-#    - name: Carthage
-#      if: steps.carthage-cache.outputs.cache-hit != 'true'
-#      run: carthage bootstrap --use-xcframeworks --platform iOS
-#    - name: Download GoogleService-Info.plist
-#      run: wget "https://raw.githubusercontent.com/firebase/quickstart-ios/master/mock-GoogleService-Info.plist" -O GoogleService-Info.plist
+
     - name: Set up php ${{ env.PHP_VERSION }}
       uses: shivammathur/setup-php@a4e22b60bbb9c1021113f2860347b0759f66fe5d # v2.30.0
       with:
@@ -223,6 +79,7 @@ jobs:
         ini-file: development
         # Temporary workaround for missing pcntl_* in PHP 8.3: ini-values: apc.enable_cli=on
         ini-values: apc.enable_cli=on, disable_functions=
+
     - name: Checkout server
       uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
       with:
@@ -230,6 +87,7 @@ jobs:
         repository: nextcloud/server
         path: server
         ref: ${{ env.SERVER_BRANCH }}
+
     - name: Set up Nextcloud
       run: |
         mkdir server/data
@@ -241,15 +99,17 @@ jobs:
         ./server/occ config:system:set memcache.distributed --value="\\OC\\Memcache\\APCu"
         ./server/occ background:cron
         PHP_CLI_SERVER_WORKERS=5 php -S localhost:8080 -t server/ &
+
     - name: Wait for server to install
       run: curl -s http://localhost:8080/status.php
-    - name: Download test-build
+
+    - name: Download test build
       uses: actions/download-artifact@v4
       with:
-        name: Products
+        name: Nextcloud iOS
+
     - name: Test Nextcloud iOS
       run: |
-        defaults write com.apple.iphonesimulator ConnectHardwareKeyboard 0 &&
         set -o pipefail && \
         xcodebuild test-without-building \
         -xctestrun $(find . -type f -name "*.xctestrun") \
@@ -257,9 +117,13 @@ jobs:
         -derivedDataPath "DerivedData" \
         -test-iterations 3 \
         -retry-tests-on-failure \
-        | xcpretty
-    - name: Upload coverage to codecov
-      run: |
-        bundle exec slather
-        bash <(curl -s https://codecov.io/bash) -f ./cobertura.xml -X coveragepy -X gcov -X xcode -t ${{ secrets.CODECOV_TOKEN }}
+        -resultBundlePath "testResult.xcresult" \
+        | xcbeautify --quieter
+
+    - name: Upload test results
+      uses: actions/upload-artifact@v4
+      if: ${{ !cancelled() }}
+      with:
+        name: testResult.xcresult
+        path: "testResult.xcresult"
 
