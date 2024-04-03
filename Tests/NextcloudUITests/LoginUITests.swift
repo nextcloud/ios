@@ -50,10 +50,10 @@ final class LoginUITests: BaseUIXCTestCase {
         loginButton2.tap()
 
         let usernameTextField = webViewsQuery.textFields["Login with username or email"]
-        usernameTextField.waitUntilExists().tap()
-        UIPasteboard.general.string = TestConstants.username
-        usernameTextField.press(forDuration: 1.3)
-        app.menuItems["Paste"].tap()
+//        usernameTextField.waitUntilExists().tap()
+//        UIPasteboard.general.string = TestConstants.username
+//        usernameTextField.press(forDuration: 1.3)
+//        app.menuItems["Paste"].tap()
 //        app.keys["a"].tap()
 //        app.keys["d"].tap()
 //        app.keys["m"].tap()
@@ -61,13 +61,16 @@ final class LoginUITests: BaseUIXCTestCase {
 //        app.keys["n"].tap()
 //        waitUntilElementHasFocus(element: usernameTextField).typeText(TestConstants.username)
 //        XCTAssert(usernameTextField.waitForExistence(timeout: timeoutSeconds))
-//        usernameTextField.tap()
-//        usernameTextField.typeText(TestConstants.username)
+        usernameTextField.tap()
+        usernameTextField.typeText(TestConstants.username)
+
         let passwordTextField = webViewsQuery/*@START_MENU_TOKEN@*/.secureTextFields["Password"]/*[[".otherElements[\"Login – Nextcloud\"]",".otherElements[\"main\"].secureTextFields[\"Password\"]",".secureTextFields[\"Password\"]"],[[[-1,2],[-1,1],[-1,0,1]],[[-1,2],[-1,1]]],[0]]@END_MENU_TOKEN@*/
-        passwordTextField.waitUntilExists().tap()
-        UIPasteboard.general.string = TestConstants.username
-        passwordTextField.press(forDuration: 1.3)
-        app.menuItems["Paste"].tap()
+        passwordTextField.tap()
+        passwordTextField.typeText(TestConstants.username)
+//        passwordTextField.waitUntilExists().tap()
+//        UIPasteboard.general.string = TestConstants.username
+//        passwordTextField.press(forDuration: 1.3)
+//        app.menuItems["Paste"].tap()
 //        passwordTextField.waitUntilExists().tap()
 //        app.keys["a"].tap()
 //        app.keys["d"].tap()

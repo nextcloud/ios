@@ -71,15 +71,6 @@
       shouldUseLaunchSchemeArgsEnv = "NO"
       enableThreadSanitizer = "YES"
       codeCoverageEnabled = "YES">
-      <PreActions>
-         <ExecutionAction
-            ActionType = "Xcode.IDEStandardExecutionActionsCore.ExecutionActionType.ShellScriptAction">
-            <ActionContent
-               title = "Run Script"
-               scriptText = "# Type a script or drag a script file from your workspace to insert its path.&#10;&#10;defaults write com.apple.iphonesimulator ConnectHardwareKeyboard 0&#10;">
-            </ActionContent>
-         </ExecutionAction>
-      </PreActions>
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
@@ -108,16 +99,6 @@
                BlueprintIdentifier = "C04E2F1F2A17BB4D001BAD85"
                BuildableName = "NextcloudIntegrationTests.xctest"
                BlueprintName = "NextcloudIntegrationTests"
-               ReferencedContainer = "container:Nextcloud.xcodeproj">
-            </BuildableReference>
-         </TestableReference>
-         <TestableReference
-            skipped = "NO">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "F31F69412A2F6D4500162F76"
-               BuildableName = "NextcloudSnapshotTests.xctest"
-               BlueprintName = "NextcloudSnapshotTests"
                ReferencedContainer = "container:Nextcloud.xcodeproj">
             </BuildableReference>
          </TestableReference>
