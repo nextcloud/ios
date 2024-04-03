@@ -25,8 +25,10 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                 window?.rootViewController = tabBarController
                 window?.makeKeyAndVisible()
             }
-            NCPasscode.shared.presentPasscode(delegate: appDelegate) {
-                NCPasscode.shared.enableTouchFaceID()
+            if let viewController = window?.rootViewController {
+                NCPasscode.shared.presentPasscode(viewController: viewController, delegate: appDelegate) {
+                    NCPasscode.shared.enableTouchFaceID()
+                }
             }
         } else {
             if NCBrandOptions.shared.disable_intro {
@@ -92,6 +94,10 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             NCPasscode.shared.showPrivacyProtectionWindow()
         }
 
+        if let windowScene = (scene as? UIWindowScene), let viewController = windowScene.keyWindow?.rootViewController {
+            NCPasscode.shared.presentPasscode(viewController: viewController, delegate: appDelegate) { }
+        }
+
         // Reload Widget
         WidgetCenter.shared.reloadAllTimelines()
 
@@ -108,9 +114,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         guard let appDelegate,
               !appDelegate.account.isEmpty else { return }
 
-        let activeAccount = NCManageDatabase.shared.getActiveAccount()
-
-        if let autoUpload = activeAccount?.autoUpload, autoUpload {
+        if let autoUpload = NCManageDatabase.shared.getActiveAccount()?.autoUpload, autoUpload {
             NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Auto upload: true")
             if UIApplication.shared.backgroundRefreshStatus == .available {
                 NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Auto upload in background: true")
@@ -130,7 +134,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         NCNetworking.shared.cancelAllQueue()
         NCNetworking.shared.cancelDownloadTasks()
         NCNetworking.shared.cancelUploadTasks()
-        NCPasscode.shared.presentPasscode(delegate: appDelegate) { }
 
         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterApplicationDidEnterBackground)
     }
