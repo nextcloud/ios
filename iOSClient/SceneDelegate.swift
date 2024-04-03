@@ -67,7 +67,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         NCSettingsBundleHelper.checkAndExecuteSettings(delay: 0.5)
 
         // START TIMER UPLOAD PROCESS
-        NCNetworkingProcess.shared.startTimer()
+        NCNetworkingProcess.shared.startTimer(scene: scene)
 
         if !NCAskAuthorization().isRequesting {
             NCPasscode.shared.hidePrivacyProtectionWindow()
