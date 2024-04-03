@@ -295,8 +295,8 @@ extension NCLoginWeb: WKNavigationDelegate {
                     if let tabBarController = UIStoryboard(name: "Main", bundle: nil).instantiateInitialViewController() as? NCMainTabBarController {
                         tabBarController.modalPresentationStyle = .fullScreen
                         tabBarController.view.alpha = 0
-                        UIWindow(windowScene: windowScene).rootViewController = tabBarController
-                        UIWindow(windowScene: windowScene).makeKeyAndVisible()
+                        windowScene.keyWindow?.rootViewController = tabBarController
+                        windowScene.keyWindow?.makeKeyAndVisible()
                         UIView.animate(withDuration: 0.5) {
                             tabBarController.view.alpha = 1
                         }
