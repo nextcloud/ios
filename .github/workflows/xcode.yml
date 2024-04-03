@@ -249,6 +249,7 @@ jobs:
         name: Products
     - name: Test Nextcloud iOS
       run: |
+        defaults write com.apple.iphonesimulator ConnectHardwareKeyboard 0 &&
         set -o pipefail && \
         xcodebuild test-without-building \
         -xctestrun $(find . -type f -name "*.xctestrun") \
