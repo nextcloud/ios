@@ -211,7 +211,7 @@ class NCEndToEndInitialize: NSObject {
                     passphraseTextField?.placeholder = NSLocalizedString("_enter_passphrase_", comment: "")
                 }
 
-                self.appDelegate.window?.rootViewController?.present(alertController, animated: true)
+                UIApplication.shared.firstWindow?.rootViewController?.present(alertController, animated: true)
 
             } else if error != .success {
 
@@ -239,7 +239,7 @@ class NCEndToEndInitialize: NSObject {
                     alertController.addAction(OKAction)
                     alertController.addAction(copyAction)
 
-                    self.appDelegate.window?.rootViewController?.present(alertController, animated: true)
+                    UIApplication.shared.firstWindow?.rootViewController?.present(alertController, animated: true)
 
                 case NCGlobal.shared.errorConflict:
                     let error = NKError(errorCode: error.errorCode, errorDescription: "forbidden: the user can't access the private key")

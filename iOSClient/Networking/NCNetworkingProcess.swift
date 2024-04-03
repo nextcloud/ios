@@ -35,7 +35,7 @@ class NCNetworkingProcess: NSObject {
 
     let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
     let utilityFileSystem = NCUtilityFileSystem()
-    lazy var hudView = appDelegate.window?.rootViewController?.view
+    lazy var hudView = UIApplication.shared.firstWindow?.rootViewController?.view
     var notificationToken: NotificationToken?
     var timerProcess: Timer?
     var hud: JGProgressHUD?
