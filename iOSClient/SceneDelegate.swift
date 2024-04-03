@@ -18,28 +18,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         guard let windowScene = (scene as? UIWindowScene),
               let appDelegate else { return }
         self.window = UIWindow(windowScene: windowScene)
-
+        
         if let activeAccount = NCManageDatabase.shared.getActiveAccount() {
-
-            NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Account active \(activeAccount.account)")
-            if NCKeychain().getPassword(account: activeAccount.account).isEmpty {
-                NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] PASSWORD NOT FOUND for \(activeAccount.account)")
-            }
-
-            appDelegate.account = activeAccount.account
-            appDelegate.urlBase = activeAccount.urlBase
-            appDelegate.user = activeAccount.user
-            appDelegate.userId = activeAccount.userId
-            appDelegate.password = NCKeychain().getPassword(account: activeAccount.account)
-
-            NextcloudKit.shared.setup(account: activeAccount.account, user: activeAccount.user, userId: activeAccount.userId, password: activeAccount.password, urlBase: activeAccount.urlBase)
-            NCManageDatabase.shared.setCapabilities(account: activeAccount.account)
-
-            NCBrandColor.shared.settingThemingColor(account: activeAccount.account)
-            DispatchQueue.global().async {
-                NCImageCache.shared.createMediaCache(account: activeAccount.account, withCacheSize: true)
-            }
-
             if let tabBarController = UIStoryboard(name: "Main", bundle: nil).instantiateInitialViewController() as? NCMainTabBarController {
                 SceneManager.shared.register(scene: scene, withRootViewController: tabBarController)
                 window?.rootViewController = tabBarController
@@ -48,14 +28,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             NCPasscode.shared.presentPasscode(delegate: appDelegate) {
                 NCPasscode.shared.enableTouchFaceID()
             }
-
         } else {
-
-            NCKeychain().removeAll()
-            if let bundleID = Bundle.main.bundleIdentifier {
-                UserDefaults.standard.removePersistentDomain(forName: bundleID)
-            }
-
             if NCBrandOptions.shared.disable_intro {
                 appDelegate.openLogin(viewController: nil, selector: NCGlobal.shared.introLogin, openLoginWeb: false)
             } else {
