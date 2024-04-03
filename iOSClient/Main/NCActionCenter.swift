@@ -462,57 +462,10 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
 
     // MARK: - Copy & Paste
 
-    func copyPasteboard(pasteboardOcIds: [String]) {
-        var items = [[String: Any]]()
-        guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else { return }
-        let hudView = UIApplication.shared.firstWindow?.rootViewController?.view
-        var fractionCompleted: Float = 0
-
-        // getting file data can take some time and block the main queue
-        DispatchQueue.global(qos: .userInitiated).async {
-            var downloadMetadatas: [tableMetadata] = []
-            for ocid in pasteboardOcIds {
-                guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocid) else { continue }
-                if let pasteboardItem = metadata.toPasteBoardItem() {
-                    items.append(pasteboardItem)
-                } else {
-                    downloadMetadatas.append(metadata)
-                }
-            }
-
-            // do 5 downloads in parallel to optimize efficiency
-            let processor = ParallelWorker(n: 5, titleKey: "_downloading_", totalTasks: downloadMetadatas.count, hudView: hudView)
-
-            for metadata in downloadMetadatas {
-                processor.execute { completion in
-                    guard let metadata = NCManageDatabase.shared.setMetadatasSessionInWaitDownload(metadatas: [metadata],
-                                                                                                   session: NextcloudKit.shared.nkCommonInstance.sessionIdentifierDownload,
-                                                                                                   selector: "") else { return completion() }
-                    NCNetworking.shared.download(metadata: metadata, withNotificationProgressTask: false) {
-                    } requestHandler: { _ in
-                    } progressHandler: { progress in
-                        if Float(progress.fractionCompleted) > fractionCompleted || fractionCompleted == 0 {
-                            processor.hud?.progress = Float(progress.fractionCompleted)
-                            fractionCompleted = Float(progress.fractionCompleted)
-                        }
-                    } completion: { _, _ in
-                        fractionCompleted = 0
-                        completion()
-                    }
-                }
-            }
-            processor.completeWork {
-                items.append(contentsOf: downloadMetadatas.compactMap({ $0.toPasteBoardItem() }))
-                UIPasteboard.general.setItems(items, options: [:])
-            }
-        }
-    }
-
-    func pastePasteboard(serverUrl: String) {
+    func pastePasteboard(serverUrl: String, hudView: UIView?) {
         guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else { return }
         var fractionCompleted: Float = 0
-
-        let processor = ParallelWorker(n: 5, titleKey: "_uploading_", totalTasks: nil, hudView: UIApplication.shared.firstWindow?.rootViewController?.view)
+        let processor = ParallelWorker(n: 5, titleKey: "_uploading_", totalTasks: nil, hudView: hudView)
 
         func uploadPastePasteboard(fileName: String, serverUrlFileName: String, fileNameLocalPath: String, serverUrl: String, completion: @escaping () -> Void) {
             NextcloudKit.shared.upload(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath) { request in
