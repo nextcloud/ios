@@ -34,7 +34,6 @@ import Queuer
 class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterDelegate, NCUserBaseUrl {
 
     var backgroundSessionCompletionHandler: (() -> Void)?
-    //var window: UIWindow?
 
     @objc var account: String = ""
     @objc var urlBase: String = ""
