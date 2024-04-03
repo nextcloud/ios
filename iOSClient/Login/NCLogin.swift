@@ -36,6 +36,8 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
     @IBOutlet weak var qrCode: UIButton!
     @IBOutlet weak var certificate: UIButton!
 
+    public var scene: UIScene?
+
     private let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
     private var textColor: UIColor = .white
     private var textColorOpponent: UIColor = .black

@@ -29,7 +29,7 @@ import FloatingPanel
 class NCLoginWeb: UIViewController {
 
     var webView: WKWebView?
-
+    var scene: UIScene?
     let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
     let utility = NCUtility()
 

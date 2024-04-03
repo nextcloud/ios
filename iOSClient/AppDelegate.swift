@@ -315,13 +315,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
     // MARK: - Login & checkErrorNetworking
 
-    @objc func openLogin(viewController: UIViewController?, selector: Int, openLoginWeb: Bool, scene: UIScene?) {
+    @objc func openLogin(viewController: UIViewController?, selector: Int, openLoginWeb: Bool, scene: UIScene? = nil) {
 
         // [WEBPersonalized] [AppConfig]
         if NCBrandOptions.shared.use_login_web_personalized || NCBrandOptions.shared.use_AppConfig {
 
             if activeLoginWeb?.view.window == nil {
                 activeLoginWeb = UIStoryboard(name: "NCLogin", bundle: nil).instantiateViewController(withIdentifier: "NCLoginWeb") as? NCLoginWeb
+                activeLoginWeb?.scene = scene
                 activeLoginWeb?.urlBase = NCBrandOptions.shared.loginBaseUrl
                 showLoginViewController(activeLoginWeb, contextViewController: viewController)
             }
@@ -333,6 +334,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
             if activeLoginWeb?.view.window == nil {
                 activeLoginWeb = UIStoryboard(name: "NCLogin", bundle: nil).instantiateViewController(withIdentifier: "NCLoginWeb") as? NCLoginWeb
+                activeLoginWeb?.scene = scene
                 if selector == NCGlobal.shared.introSignup {
                     activeLoginWeb?.urlBase = NCBrandOptions.shared.linkloginPreferredProviders
                 } else {
@@ -345,6 +347,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
             if activeLoginWeb?.view.window == nil {
                 activeLoginWeb = UIStoryboard(name: "NCLogin", bundle: nil).instantiateViewController(withIdentifier: "NCLoginWeb") as? NCLoginWeb
+                activeLoginWeb?.scene = scene
                 activeLoginWeb?.urlBase = NCBrandOptions.shared.loginBaseUrl
                 showLoginViewController(activeLoginWeb, contextViewController: viewController)
             }
@@ -354,6 +357,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             // Used also for reinsert the account (change passwd)
             if activeLoginWeb?.view.window == nil {
                 activeLoginWeb = UIStoryboard(name: "NCLogin", bundle: nil).instantiateViewController(withIdentifier: "NCLoginWeb") as? NCLoginWeb
+                activeLoginWeb?.scene = scene
                 activeLoginWeb?.urlBase = urlBase
                 activeLoginWeb?.user = user
                 showLoginViewController(activeLoginWeb, contextViewController: viewController)
@@ -363,6 +367,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
             if activeLogin?.view.window == nil {
                 activeLogin = UIStoryboard(name: "NCLogin", bundle: nil).instantiateViewController(withIdentifier: "NCLogin") as? NCLogin
+                activeLogin?.scene = scene
                 showLoginViewController(activeLogin, contextViewController: viewController)
             }
         }
