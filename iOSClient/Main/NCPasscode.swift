@@ -58,7 +58,7 @@ class NCPasscode: NSObject, TOPasscodeViewControllerDelegate {
     var passcodeViewController: TOPasscodeViewController!
     var delegate: NCPasscodeDelegate?
 
-    func presentPasscode(viewController: UIViewController? = nil, delegate: NCPasscodeDelegate?, completion: @escaping () -> Void) {
+    func presentPasscode(viewController: UIViewController, delegate: NCPasscodeDelegate?, completion: @escaping () -> Void) {
         var error: NSError?
         var viewController = viewController
         self.delegate = delegate
@@ -73,7 +73,7 @@ class NCPasscode: NSObject, TOPasscodeViewControllerDelegate {
         // Make sure we have a privacy window (in case it's not enabled) only for App
         self.showPrivacyProtectionWindow()
         // show passcode on top of privacy window only for App
-        viewController = self.privacyProtectionWindow?.rootViewController
+        //viewController = self.privacyProtectionWindow?.rootViewController
 #endif
 
         passcodeViewController = TOPasscodeViewController(passcodeType: .sixDigits, allowCancel: false)
@@ -90,7 +90,7 @@ class NCPasscode: NSObject, TOPasscodeViewControllerDelegate {
                 passcodeViewController.automaticallyPromptForBiometricValidation = false
             }
         }
-        viewController?.present(passcodeViewController, animated: true, completion: {
+        viewController.present(passcodeViewController, animated: true, completion: {
             self.openAlert(passcodeViewController: self.passcodeViewController)
             completion()
         })
