@@ -111,7 +111,7 @@ class NCContextMenu: NSObject {
         let livePhotoSave = UIAction(title: NSLocalizedString("_livephoto_save_", comment: ""),
                                      image: UIImage(systemName: "livephoto")) { _ in
             if let metadataMOV = metadataMOV {
-                NCNetworking.shared.saveLivePhotoQueue.addOperation(NCOperationSaveLivePhoto(metadata: metadata, metadataMOV: metadataMOV))
+                NCNetworking.shared.saveLivePhotoQueue.addOperation(NCOperationSaveLivePhoto(metadata: metadata, metadataMOV: metadataMOV, hudView: viewController.view))
             }
         }
 
