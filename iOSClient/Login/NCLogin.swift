@@ -37,6 +37,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
     @IBOutlet weak var certificate: UIButton!
 
     public var scene: UIScene?
+    public var sceneIdentifier: String?
 
     private let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
     private var textColor: UIColor = .white
@@ -280,6 +281,8 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
 
                         if let loginWeb = UIStoryboard(name: "NCLogin", bundle: nil).instantiateViewController(withIdentifier: "NCLoginWeb") as? NCLoginWeb {
 
+                            loginWeb.scene = self.scene
+                            loginWeb.sceneIdentifier = self.sceneIdentifier
                             loginWeb.urlBase = url
                             loginWeb.user = user
                             loginWeb.loginFlowV2Available = true
@@ -295,6 +298,8 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
 
                         if let loginWeb = UIStoryboard(name: "NCLogin", bundle: nil).instantiateViewController(withIdentifier: "NCLoginWeb") as? NCLoginWeb {
 
+                            loginWeb.scene = self.scene
+                            loginWeb.sceneIdentifier = self.sceneIdentifier
                             loginWeb.urlBase = url
                             loginWeb.user = user
 
@@ -402,14 +407,15 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
 
                     self.appDelegate.changeAccount(account, userProfile: userProfile)
 
-                    if self.presentingViewController == nil {
-                        if let viewController = UIStoryboard(name: "Main", bundle: nil).instantiateInitialViewController() {
-                            viewController.modalPresentationStyle = .fullScreen
-                            viewController.view.alpha = 0
-                            self.appDelegate.window?.rootViewController = viewController
+                    if self.presentingViewController == nil, let scene = self.scene, let sceneIdentifier = self.sceneIdentifier {
+                        if let tabBarController = UIStoryboard(name: "Main", bundle: nil).instantiateInitialViewController() as? NCMainTabBarController {
+                            tabBarController.sceneIdentifier = sceneIdentifier
+                            tabBarController.modalPresentationStyle = .fullScreen
+                            tabBarController.view.alpha = 0
+                            self.appDelegate.window?.rootViewController = tabBarController
                             self.appDelegate.window?.makeKeyAndVisible()
                             UIView.animate(withDuration: 0.5) {
-                                viewController.view.alpha = 1
+                                tabBarController.view.alpha = 1
                             }
                         }
                     } else {
