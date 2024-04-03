@@ -30,6 +30,7 @@ class NCLoginWeb: UIViewController {
 
     var webView: WKWebView?
     var scene: UIScene?
+    var sceneIdentifier: String?
     let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
     let utility = NCUtility()
 
@@ -291,14 +292,15 @@ extension NCLoginWeb: WKNavigationDelegate {
 
                 self.appDelegate.changeAccount(account, userProfile: userProfile)
 
-                if self.presentingViewController == nil {
-                    if let viewController = UIStoryboard(name: "Main", bundle: nil).instantiateInitialViewController() {
-                        viewController.modalPresentationStyle = .fullScreen
-                        viewController.view.alpha = 0
-                        self.appDelegate.window?.rootViewController = viewController
-                        self.appDelegate.window?.makeKeyAndVisible()
+                if self.presentingViewController == nil, let scene = self.scene, let sceneIdentifier = self.sceneIdentifier, let windowScene = (scene as? UIWindowScene) {
+                    if let tabBarController = UIStoryboard(name: "Main", bundle: nil).instantiateInitialViewController() as? NCMainTabBarController {
+                        tabBarController.sceneIdentifier = sceneIdentifier
+                        tabBarController.modalPresentationStyle = .fullScreen
+                        tabBarController.view.alpha = 0
+                        UIWindow(windowScene: windowScene).rootViewController = tabBarController
+                        UIWindow(windowScene: windowScene).makeKeyAndVisible()
                         UIView.animate(withDuration: 0.5) {
-                            viewController.view.alpha = 1
+                            tabBarController.view.alpha = 1
                         }
                     }
                 } else {
