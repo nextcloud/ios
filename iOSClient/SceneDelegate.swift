@@ -18,8 +18,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         guard let windowScene = (scene as? UIWindowScene),
               let appDelegate else { return }
         self.window = UIWindow(windowScene: windowScene)
-        
-        if let activeAccount = NCManageDatabase.shared.getActiveAccount() {
+
+        if NCManageDatabase.shared.getActiveAccount() != nil {
             if let tabBarController = UIStoryboard(name: "Main", bundle: nil).instantiateInitialViewController() as? NCMainTabBarController {
                 SceneManager.shared.register(scene: scene, withRootViewController: tabBarController)
                 window?.rootViewController = tabBarController
