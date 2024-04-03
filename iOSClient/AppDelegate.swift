@@ -315,7 +315,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
     // MARK: - Login & checkErrorNetworking
 
-    @objc func openLogin(viewController: UIViewController?, selector: Int, openLoginWeb: Bool, scene: UIScene? = nil, sceneIdentifier: String? = nil) {
+    @objc func openLogin(viewController: UIViewController?, selector: Int, openLoginWeb: Bool, scene: UIScene? = nil) {
 
         // [WEBPersonalized] [AppConfig]
         if NCBrandOptions.shared.use_login_web_personalized || NCBrandOptions.shared.use_AppConfig {
@@ -323,9 +323,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             if activeLoginWeb?.view.window == nil {
                 activeLoginWeb = UIStoryboard(name: "NCLogin", bundle: nil).instantiateViewController(withIdentifier: "NCLoginWeb") as? NCLoginWeb
                 activeLoginWeb?.scene = scene
-                activeLoginWeb?.sceneIdentifier = sceneIdentifier
                 activeLoginWeb?.urlBase = NCBrandOptions.shared.loginBaseUrl
-                showLoginViewController(activeLoginWeb, contextViewController: viewController)
+                showLoginViewController(activeLoginWeb, contextViewController: viewController, scene: scene)
             }
             return
         }
@@ -336,13 +335,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             if activeLoginWeb?.view.window == nil {
                 activeLoginWeb = UIStoryboard(name: "NCLogin", bundle: nil).instantiateViewController(withIdentifier: "NCLoginWeb") as? NCLoginWeb
                 activeLoginWeb?.scene = scene
-                activeLoginWeb?.sceneIdentifier = sceneIdentifier
                 if selector == NCGlobal.shared.introSignup {
                     activeLoginWeb?.urlBase = NCBrandOptions.shared.linkloginPreferredProviders
                 } else {
                     activeLoginWeb?.urlBase = self.urlBase
                 }
-                showLoginViewController(activeLoginWeb, contextViewController: viewController)
+                showLoginViewController(activeLoginWeb, contextViewController: viewController, scene: scene)
             }
 
         } else if NCBrandOptions.shared.disable_intro && NCBrandOptions.shared.disable_request_login_url {
@@ -350,9 +348,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             if activeLoginWeb?.view.window == nil {
                 activeLoginWeb = UIStoryboard(name: "NCLogin", bundle: nil).instantiateViewController(withIdentifier: "NCLoginWeb") as? NCLoginWeb
                 activeLoginWeb?.scene = scene
-                activeLoginWeb?.sceneIdentifier = sceneIdentifier
                 activeLoginWeb?.urlBase = NCBrandOptions.shared.loginBaseUrl
-                showLoginViewController(activeLoginWeb, contextViewController: viewController)
+                showLoginViewController(activeLoginWeb, contextViewController: viewController, scene: scene)
             }
 
         } else if openLoginWeb {
@@ -361,10 +358,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             if activeLoginWeb?.view.window == nil {
                 activeLoginWeb = UIStoryboard(name: "NCLogin", bundle: nil).instantiateViewController(withIdentifier: "NCLoginWeb") as? NCLoginWeb
                 activeLoginWeb?.scene = scene
-                activeLoginWeb?.sceneIdentifier = sceneIdentifier
                 activeLoginWeb?.urlBase = urlBase
                 activeLoginWeb?.user = user
-                showLoginViewController(activeLoginWeb, contextViewController: viewController)
+                showLoginViewController(activeLoginWeb, contextViewController: viewController, scene: scene)
             }
 
         } else {
@@ -372,23 +368,22 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             if activeLogin?.view.window == nil {
                 activeLogin = UIStoryboard(name: "NCLogin", bundle: nil).instantiateViewController(withIdentifier: "NCLogin") as? NCLogin
                 activeLogin?.scene = scene
-                activeLogin?.sceneIdentifier = sceneIdentifier
-                showLoginViewController(activeLogin, contextViewController: viewController)
+                showLoginViewController(activeLogin, contextViewController: viewController, scene: scene)
             }
         }
     }
 
-    func showLoginViewController(_ viewController: UIViewController?, contextViewController: UIViewController?) {
+    func showLoginViewController(_ viewController: UIViewController?, contextViewController: UIViewController?, scene: UIScene?) {
 
-        if contextViewController == nil {
+        if contextViewController == nil, let scene, let windowScene = (scene as? UIWindowScene) {
             if let viewController = viewController {
                 let navigationController = NCLoginNavigationController(rootViewController: viewController)
                 navigationController.navigationBar.barStyle = .black
                 navigationController.navigationBar.tintColor = NCBrandColor.shared.customerText
                 navigationController.navigationBar.barTintColor = NCBrandColor.shared.customer
                 navigationController.navigationBar.isTranslucent = false
-                window?.rootViewController = navigationController
-                window?.makeKeyAndVisible()
+                UIWindow(windowScene: windowScene).rootViewController = navigationController
+                UIWindow(windowScene: windowScene).makeKeyAndVisible()
             }
         } else if contextViewController is UINavigationController {
             if let contextViewController = contextViewController, let viewController = viewController {
