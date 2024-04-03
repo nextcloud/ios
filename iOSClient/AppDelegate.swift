@@ -105,6 +105,34 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Start session with level \(levelLog) " + versionNextcloudiOS)
         }
 
+        if let activeAccount = NCManageDatabase.shared.getActiveAccount() {
+            NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Account active \(activeAccount.account)")
+            if NCKeychain().getPassword(account: activeAccount.account).isEmpty {
+                NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] PASSWORD NOT FOUND for \(activeAccount.account)")
+            }
+
+            account = activeAccount.account
+            urlBase = activeAccount.urlBase
+            user = activeAccount.user
+            userId = activeAccount.userId
+            password = NCKeychain().getPassword(account: account)
+
+            NextcloudKit.shared.setup(account: account, user: user, userId: userId, password: password, urlBase: urlBase)
+            NCManageDatabase.shared.setCapabilities(account: account)
+
+            NCBrandColor.shared.settingThemingColor(account: activeAccount.account)
+            DispatchQueue.global().async {
+                NCImageCache.shared.createMediaCache(account: self.account, withCacheSize: true)
+            }
+
+        } else {
+
+            NCKeychain().removeAll()
+            if let bundleID = Bundle.main.bundleIdentifier {
+                UserDefaults.standard.removePersistentDomain(forName: bundleID)
+            }
+        }
+
         NCBrandColor.shared.createUserColors()
         NCImageCache.shared.createImagesCache()
 
@@ -374,7 +402,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     }
 
     func showLoginViewController(_ viewController: UIViewController?, contextViewController: UIViewController?, scene: UIScene?) {
-
         if contextViewController == nil, let scene, let windowScene = (scene as? UIWindowScene) {
             if let viewController = viewController {
                 let navigationController = NCLoginNavigationController(rootViewController: viewController)
