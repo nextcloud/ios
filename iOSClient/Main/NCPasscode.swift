@@ -58,23 +58,12 @@ class NCPasscode: NSObject, TOPasscodeViewControllerDelegate {
     var passcodeViewController: TOPasscodeViewController!
     var delegate: NCPasscodeDelegate?
 
-    func presentPasscode(viewController: UIViewController, delegate: NCPasscodeDelegate?, completion: @escaping () -> Void) {
+    func presentPasscode(rootViewController: UIViewController, delegate: NCPasscodeDelegate?, completion: @escaping () -> Void) {
         var error: NSError?
-        var viewController = viewController
         self.delegate = delegate
         defer {
             self.delegate?.requestedAccount()
         }
-        guard NCKeychain().passcode != nil, NCKeychain().requestPasscodeAtStart else { return }
-
-#if !EXTENSION
-        let presentedViewController = UIApplication.shared.firstWindow?.rootViewController
-        guard !(presentedViewController is NCLoginNavigationController) else { return }
-        // Make sure we have a privacy window (in case it's not enabled) only for App
-        self.showPrivacyProtectionWindow()
-        // show passcode on top of privacy window only for App
-        //viewController = self.privacyProtectionWindow?.rootViewController
-#endif
 
         passcodeViewController = TOPasscodeViewController(passcodeType: .sixDigits, allowCancel: false)
         passcodeViewController.delegate = self
@@ -90,7 +79,7 @@ class NCPasscode: NSObject, TOPasscodeViewControllerDelegate {
                 passcodeViewController.automaticallyPromptForBiometricValidation = false
             }
         }
-        viewController.present(passcodeViewController, animated: true, completion: {
+        rootViewController.present(passcodeViewController, animated: true, completion: {
             self.openAlert(passcodeViewController: self.passcodeViewController)
             completion()
         })
@@ -98,8 +87,7 @@ class NCPasscode: NSObject, TOPasscodeViewControllerDelegate {
 
     func enableTouchFaceID() {
         guard NCKeychain().touchFaceID,
-              NCKeychain().passcode != nil,
-              NCKeychain().requestPasscodeAtStart,
+              NCKeychain().presentPasscode,
               !isPasscodeCounterFail,
               let passcodeViewController
         else { return }
@@ -111,7 +99,6 @@ class NCPasscode: NSObject, TOPasscodeViewControllerDelegate {
                         passcodeViewController.dismiss(animated: true) {
                             NCKeychain().passcodeCounterFail = 0
                             NCKeychain().passcodeCounterFailReset = 0
-                            self.hidePrivacyProtectionWindow()
                             self.delegate?.evaluatePolicy(passcodeViewController, isCorrectCode: true)
                             self.delegate?.requestedAccount()
                         }
@@ -154,7 +141,6 @@ class NCPasscode: NSObject, TOPasscodeViewControllerDelegate {
             passcodeViewController.dismiss(animated: true) {
                 NCKeychain().passcodeCounterFail = 0
                 NCKeychain().passcodeCounterFailReset = 0
-                self.hidePrivacyProtectionWindow()
                 self.delegate?.requestedAccount()
             }
         }
@@ -214,30 +200,28 @@ class NCPasscode: NSObject, TOPasscodeViewControllerDelegate {
 
     // MARK: - Privacy Protection
 
-    func showPrivacyProtectionWindow() {
-        guard privacyProtectionWindow == nil else {
-            privacyProtectionWindow?.isHidden = false
+#if !EXTENSION
+    func showPrivacyProtectionWindow(scene: UIScene) {
+        let windows = SceneManager.shared.getWindow(scene: scene)
+        let currentRootViewController = windows?.rootViewController
+        let presentedViewController = currentRootViewController?.presentedViewController
+        if presentedViewController is TOPasscodeViewController {
+            return
+        }
+        let viewController = UIStoryboard(name: "LaunchScreen", bundle: nil).instantiateInitialViewController()
+
+        windows?.rootViewController = viewController
+    }
+
+    func hidePrivacyProtectionWindow(scene: UIScene) {
+        let rootViewController = SceneManager.shared.getRootViewController(scene: scene)
+        let windows = SceneManager.shared.getWindow(scene: scene)
+        let presentedViewController = rootViewController?.presentedViewController
+        guard windows?.rootViewController != rootViewController else {
             return
         }
 
-        privacyProtectionWindow = UIWindow(frame: UIScreen.main.bounds)
-
-        let storyboard = UIStoryboard(name: "LaunchScreen", bundle: nil)
-        let initialViewController = storyboard.instantiateInitialViewController()
-
-        self.privacyProtectionWindow?.rootViewController = initialViewController
-
-        privacyProtectionWindow?.windowLevel = .alert + 1
-        privacyProtectionWindow?.makeKeyAndVisible()
+        windows?.rootViewController = rootViewController
     }
-
-    func hidePrivacyProtectionWindow() {
-        guard !(privacyProtectionWindow?.rootViewController?.presentedViewController is TOPasscodeViewController) else { return }
-        UIWindow.animate(withDuration: 0.25) {
-            self.privacyProtectionWindow?.alpha = 0
-        } completion: { _ in
-            self.privacyProtectionWindow?.isHidden = true
-            self.privacyProtectionWindow = nil
-        }
-    }
+    #endif
 }

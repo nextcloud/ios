@@ -25,8 +25,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                 window?.rootViewController = tabBarController
                 window?.makeKeyAndVisible()
             }
-            if let viewController = window?.rootViewController {
-                NCPasscode.shared.presentPasscode(viewController: viewController, delegate: appDelegate) {
+            if NCKeychain().presentPasscode, let rootViewController = window?.rootViewController {
+                NCPasscode.shared.presentPasscode(rootViewController: rootViewController, delegate: appDelegate) {
                     NCPasscode.shared.enableTouchFaceID()
                 }
             }
@@ -71,8 +71,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         // START TIMER UPLOAD PROCESS
         NCNetworkingProcess.shared.startTimer(scene: scene)
 
-        if !NCAskAuthorization().isRequesting {
-            NCPasscode.shared.hidePrivacyProtectionWindow()
+        if NCKeychain().privacyScreenEnabled, !NCAskAuthorization().isRequesting {
+            NCPasscode.shared.hidePrivacyProtectionWindow(scene: scene)
         }
 
         NCService().startRequestServicesServer()
@@ -93,7 +93,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         NCNetworkingProcess.shared.stopTimer()
 
         if NCKeychain().privacyScreenEnabled {
-            NCPasscode.shared.showPrivacyProtectionWindow()
+            NCPasscode.shared.showPrivacyProtectionWindow(scene: scene)
         }
 
         // Reload Widget
@@ -112,8 +112,11 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         guard let appDelegate,
               !appDelegate.account.isEmpty else { return }
 
-        if let viewController = SceneManager.shared.getRootViewController(scene: scene) {
-            NCPasscode.shared.presentPasscode(viewController: viewController, delegate: appDelegate) { }
+        if NCKeychain().presentPasscode {
+            // NCPasscode.shared.hidePrivacyProtectionWindow(scene: scene)
+            if let rootViewController = SceneManager.shared.getRootViewController(scene: scene) {
+                NCPasscode.shared.presentPasscode(rootViewController: rootViewController, delegate: appDelegate) { }
+            }
         }
 
         if let autoUpload = NCManageDatabase.shared.getActiveAccount()?.autoUpload, autoUpload {
@@ -311,7 +314,12 @@ class SceneManager {
     private var sceneRootViewController: [NCMainTabBarController: UIScene] = [:]
 
     func getRootViewController(scene: UIScene?) -> UIViewController? {
-        return (scene as? UIWindowScene)?.keyWindow?.rootViewController
+        for rootViewController in sceneRootViewController.keys {
+            if sceneRootViewController[rootViewController] == scene {
+                return rootViewController
+            }
+        }
+        return nil // sceneRootViewController[scene]
     }
 
     func getWindow(scene: UIScene?) -> UIWindow? {
