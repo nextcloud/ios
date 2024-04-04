@@ -101,7 +101,8 @@ jobs:
         PHP_CLI_SERVER_WORKERS=5 php -S localhost:8080 -t server/ &
 
     - name: Wait for server to install
-      run: curl -s http://localhost:8080/status.php
+      run: |
+        source ./wait-for-server.sh
 
     - name: Download test build
       uses: actions/download-artifact@v4
