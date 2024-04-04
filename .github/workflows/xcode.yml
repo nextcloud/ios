@@ -21,7 +21,7 @@ env:
 jobs:
   build:
     name: Build
-    runs-on: macos-14
+    runs-on: macos-13
     if: github.event.pull_request.draft == false
 
     steps:
@@ -61,7 +61,7 @@ jobs:
 
   test:
     name: Test
-    runs-on: macos-14
+    runs-on: macos-13
     needs: [build]
 
     if: github.event.pull_request.draft == false
