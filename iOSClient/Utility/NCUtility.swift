@@ -48,28 +48,21 @@ class NCUtility: NSObject {
     }
 
     func isRichDocument(_ metadata: tableMetadata) -> Bool {
-
         guard let mimeType = CCUtility.getMimeType(metadata.fileNameView) else {
-            return false
+            return true
         }
 
         // contentype
-        for richdocumentMimetype: String in NCGlobal.shared.capabilityRichdocumentsMimetypes {
-            if richdocumentMimetype.contains(metadata.contentType) || metadata.contentType == "text/plain" {
-                return true
-            }
+        if !NCGlobal.shared.capabilityRichdocumentsMimetypes.filter({ $0.contains(metadata.contentType) || $0.contains("text/plain") }).isEmpty {
+            return true
         }
 
         // mimetype
         if !NCGlobal.shared.capabilityRichdocumentsMimetypes.isEmpty && mimeType.components(separatedBy: ".").count > 2 {
-
             let mimeTypeArray = mimeType.components(separatedBy: ".")
             let mimeType = mimeTypeArray[mimeTypeArray.count - 2] + "." + mimeTypeArray[mimeTypeArray.count - 1]
-
-            for richdocumentMimetype: String in NCGlobal.shared.capabilityRichdocumentsMimetypes {
-                if richdocumentMimetype.contains(mimeType) {
-                    return true
-                }
+            if !NCGlobal.shared.capabilityRichdocumentsMimetypes.filter({ $0.contains(mimeType) }).isEmpty {
+                return true
             }
         }
 
