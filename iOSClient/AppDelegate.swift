@@ -400,15 +400,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     }
 
     func showLoginViewController(_ viewController: UIViewController?, contextViewController: UIViewController?, scene: UIScene?) {
-        if contextViewController == nil, let scene, let windowScene = (scene as? UIWindowScene) {
+        if contextViewController == nil, let window = SceneManager.shared.getWindow(scene: scene) {
             if let viewController = viewController {
                 let navigationController = NCLoginNavigationController(rootViewController: viewController)
                 navigationController.navigationBar.barStyle = .black
                 navigationController.navigationBar.tintColor = NCBrandColor.shared.customerText
                 navigationController.navigationBar.barTintColor = NCBrandColor.shared.customer
                 navigationController.navigationBar.isTranslucent = false
-                windowScene.keyWindow?.rootViewController = navigationController
-                windowScene.keyWindow?.makeKeyAndVisible()
+                window.rootViewController = navigationController
+                window.makeKeyAndVisible()
             }
         } else if contextViewController is UINavigationController {
             if let contextViewController = contextViewController, let viewController = viewController {

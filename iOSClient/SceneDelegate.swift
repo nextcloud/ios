@@ -314,6 +314,10 @@ class SceneManager {
         return (scene as? UIWindowScene)?.keyWindow?.rootViewController
     }
 
+    func getWindow(scene: UIScene?) -> UIWindow? {
+        return (scene as? UIWindowScene)?.keyWindow
+    }
+
     func register(scene: UIScene, withRootViewController rootViewController: NCMainTabBarController) {
         sceneRootViewController[rootViewController] = scene
     }

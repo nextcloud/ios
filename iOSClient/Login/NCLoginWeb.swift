@@ -291,12 +291,12 @@ extension NCLoginWeb: WKNavigationDelegate {
 
                 self.appDelegate.changeAccount(account, userProfile: userProfile)
 
-                if self.presentingViewController == nil, let scene = self.scene, let windowScene = (scene as? UIWindowScene) {
+                if self.presentingViewController == nil, let window = SceneManager.shared.getWindow(scene: self.scene) {
                     if let tabBarController = UIStoryboard(name: "Main", bundle: nil).instantiateInitialViewController() as? NCMainTabBarController {
                         tabBarController.modalPresentationStyle = .fullScreen
                         tabBarController.view.alpha = 0
-                        windowScene.keyWindow?.rootViewController = tabBarController
-                        windowScene.keyWindow?.makeKeyAndVisible()
+                        window.rootViewController = tabBarController
+                        window.makeKeyAndVisible()
                         UIView.animate(withDuration: 0.5) {
                             tabBarController.view.alpha = 1
                         }
