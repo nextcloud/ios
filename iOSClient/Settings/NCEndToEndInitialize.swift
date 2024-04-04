@@ -35,6 +35,7 @@ class NCEndToEndInitialize: NSObject {
     let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
     let utilityFileSystem = NCUtilityFileSystem()
     var extractedPublicKey: String?
+    var viewController: UIViewController?
 
     override init() {
     }
@@ -43,16 +44,15 @@ class NCEndToEndInitialize: NSObject {
     // MARK: Initialize
     // --------------------------------------------------------------------------------------------
 
-    @objc func initEndToEndEncryption() {
+    @objc func initEndToEndEncryption(viewController: UIViewController?) {
+        self.viewController = viewController
 
         // Clear all keys
         NCKeychain().clearAllKeysEndToEnd(account: appDelegate.account)
-
         self.getPublicKey()
     }
 
     @objc func statusOfService(completion: @escaping (_ error: NKError?) -> Void) {
-
         NextcloudKit.shared.getE2EECertificate { _, _, _, _, error in
             completion(error)
         }
@@ -211,7 +211,7 @@ class NCEndToEndInitialize: NSObject {
                     passphraseTextField?.placeholder = NSLocalizedString("_enter_passphrase_", comment: "")
                 }
 
-                UIApplication.shared.firstWindow?.rootViewController?.present(alertController, animated: true)
+                self.viewController?.present(alertController, animated: true)
 
             } else if error != .success {
 
@@ -239,7 +239,7 @@ class NCEndToEndInitialize: NSObject {
                     alertController.addAction(OKAction)
                     alertController.addAction(copyAction)
 
-                    UIApplication.shared.firstWindow?.rootViewController?.present(alertController, animated: true)
+                    self.viewController?.present(alertController, animated: true)
 
                 case NCGlobal.shared.errorConflict:
                     let error = NKError(errorCode: error.errorCode, errorDescription: "forbidden: the user can't access the private key")

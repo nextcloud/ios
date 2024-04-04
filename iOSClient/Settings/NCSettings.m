@@ -339,7 +339,7 @@
 {
     [self deselectFormRow:sender];
 
-    UIViewController *vc = [[NCManageE2EEInterface alloc] makeShipDetailsUIWithAccount:appDelegate.account];
+    UIViewController *vc = [[NCManageE2EEInterface alloc] makeShipDetailsUIWithAccount:appDelegate.account rootViewController: self.tabBarController];
     [self.navigationController pushViewController:vc animated:YES];
 }
 
