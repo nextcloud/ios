@@ -208,20 +208,19 @@ class NCPasscode: NSObject, TOPasscodeViewControllerDelegate {
         if presentedViewController is TOPasscodeViewController {
             return
         }
-        let viewController = UIStoryboard(name: "LaunchScreen", bundle: nil).instantiateInitialViewController()
+        let viewController = UIStoryboard(name: "PrivacyProtectionScreen", bundle: nil).instantiateInitialViewController()
 
         windows?.rootViewController = viewController
     }
 
     func hidePrivacyProtectionWindow(scene: UIScene) {
-        let rootViewController = SceneManager.shared.getRootViewController(scene: scene)
         let windows = SceneManager.shared.getWindow(scene: scene)
-        let presentedViewController = rootViewController?.presentedViewController
-        guard windows?.rootViewController != rootViewController else {
-            return
-        }
+        let currentRootViewController = windows?.rootViewController
+        let rootViewController = SceneManager.shared.getMainTabBarController(scene: scene)
 
-        windows?.rootViewController = rootViewController
+        if currentRootViewController is PrivacyProtectionScreen {
+            windows?.rootViewController = rootViewController
+        }
     }
     #endif
 }

@@ -25,11 +25,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                 window?.rootViewController = tabBarController
                 window?.makeKeyAndVisible()
             }
-            if NCKeychain().presentPasscode, let rootViewController = window?.rootViewController {
-                NCPasscode.shared.presentPasscode(rootViewController: rootViewController, delegate: appDelegate) {
-                    NCPasscode.shared.enableTouchFaceID()
-                }
-            }
         } else {
             if NCBrandOptions.shared.disable_intro {
                 appDelegate.openLogin(viewController: nil, selector: NCGlobal.shared.introLogin, openLoginWeb: false)
@@ -55,7 +50,12 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         guard let appDelegate,
               !appDelegate.account.isEmpty else { return }
 
-        NCPasscode.shared.enableTouchFaceID()
+        if NCKeychain().presentPasscode, let window = SceneManager.shared.getWindow(scene: scene), let rootViewController = SceneManager.shared.getMainTabBarController(scene: scene) {
+            window.rootViewController = rootViewController
+            NCPasscode.shared.presentPasscode(rootViewController: rootViewController, delegate: appDelegate) {
+                NCPasscode.shared.enableTouchFaceID()
+            }
+        }
 
         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterApplicationWillEnterForeground)
         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterRichdocumentGrabFocus)
@@ -71,7 +71,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         // START TIMER UPLOAD PROCESS
         NCNetworkingProcess.shared.startTimer(scene: scene)
 
-        if NCKeychain().privacyScreenEnabled, !NCAskAuthorization().isRequesting {
+        if NCKeychain().privacyScreenEnabled {
             NCPasscode.shared.hidePrivacyProtectionWindow(scene: scene)
         }
 
@@ -112,13 +112,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         guard let appDelegate,
               !appDelegate.account.isEmpty else { return }
 
-        if NCKeychain().presentPasscode {
-            // NCPasscode.shared.hidePrivacyProtectionWindow(scene: scene)
-            if let rootViewController = SceneManager.shared.getRootViewController(scene: scene) {
-                NCPasscode.shared.presentPasscode(rootViewController: rootViewController, delegate: appDelegate) { }
-            }
-        }
-
         if let autoUpload = NCManageDatabase.shared.getActiveAccount()?.autoUpload, autoUpload {
             NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Auto upload: true")
             if UIApplication.shared.backgroundRefreshStatus == .available {
@@ -144,7 +137,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
 
     func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
-        guard let rootViewController = SceneManager.shared.getRootViewController(scene: scene) as? NCMainTabBarController,
+        guard let rootViewController = SceneManager.shared.getMainTabBarController(scene: scene) as? NCMainTabBarController,
               let url = URLContexts.first?.url,
               let appDelegate else { return }
         let sceneIdentifier = rootViewController.sceneIdentifier
@@ -313,29 +306,17 @@ class SceneManager {
     static let shared = SceneManager()
     private var sceneRootViewController: [NCMainTabBarController: UIScene] = [:]
 
-    func getRootViewController(scene: UIScene?) -> UIViewController? {
-        for rootViewController in sceneRootViewController.keys {
-            if sceneRootViewController[rootViewController] == scene {
-                return rootViewController
-            }
-        }
-        return nil // sceneRootViewController[scene]
-    }
-
-    func getWindow(scene: UIScene?) -> UIWindow? {
-        return (scene as? UIWindowScene)?.keyWindow
-    }
-
     func register(scene: UIScene, withRootViewController rootViewController: NCMainTabBarController) {
         sceneRootViewController[rootViewController] = scene
     }
 
-    func getSceneIdentifier() -> [String] {
-        var results: [String] = []
+    func getMainTabBarController(scene: UIScene?) -> UIViewController? {
         for mainTabBarController in sceneRootViewController.keys {
-            results.append(mainTabBarController.sceneIdentifier)
+            if sceneRootViewController[mainTabBarController] == scene {
+                return mainTabBarController
+            }
         }
-        return results
+        return nil
     }
 
     func getMainTabBarController(sceneIdentifier: String) -> NCMainTabBarController? {
@@ -346,4 +327,20 @@ class SceneManager {
         }
         return nil
     }
+
+    func getWindow(scene: UIScene?) -> UIWindow? {
+        return (scene as? UIWindowScene)?.keyWindow
+    }
+
+
+
+    func getSceneIdentifier() -> [String] {
+        var results: [String] = []
+        for mainTabBarController in sceneRootViewController.keys {
+            results.append(mainTabBarController.sceneIdentifier)
+        }
+        return results
+    }
+
+
 }

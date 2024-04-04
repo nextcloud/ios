@@ -435,7 +435,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     @objc private func checkErrorNetworking(_ notification: NSNotification) {
         guard let userInfo = notification.userInfo as NSDictionary?,
               let scene = userInfo["scene"] as? UIScene,
-              let rootViewController = SceneManager.shared.getRootViewController(scene: scene)
+              let rootViewController = SceneManager.shared.getMainTabBarController(scene: scene)
         else { return }
         guard !self.timerErrorNetworkingDisabled,
               !account.isEmpty,
