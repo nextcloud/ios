@@ -51,7 +51,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
     var disableSharesView: Bool = false
     var documentPickerViewController: NCDocumentPickerViewController?
-    var timerErrorNetworking: Timer?
+    private var timerErrorNetworking: Timer?
+    var timerErrorNetworkingDisabled: Bool = false
     var isAppRefresh: Bool = false
     var isProcessingTask: Bool = false
 
@@ -85,8 +86,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
         NextcloudKit.shared.setup(delegate: NCNetworking.shared)
         NextcloudKit.shared.setup(userAgent: userAgent)
-
-        startTimerErrorNetworking()
 
         var levelLog = 0
         NextcloudKit.shared.nkCommonInstance.pathLog = utilityFileSystem.directoryGroup
@@ -428,13 +427,20 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         }
     }
 
-    @objc func startTimerErrorNetworking() {
-        timerErrorNetworking = Timer.scheduledTimer(timeInterval: 3, target: self, selector: #selector(checkErrorNetworking), userInfo: nil, repeats: true)
+    @objc func startTimerErrorNetworking(scene: UIScene) {
+        timerErrorNetworkingDisabled = false
+        timerErrorNetworking = Timer.scheduledTimer(timeInterval: 3, target: self, selector: #selector(checkErrorNetworking(_:)), userInfo: ["scene": scene], repeats: true)
     }
 
-    @objc private func checkErrorNetworking() {
-        guard !account.isEmpty, NCKeychain().getPassword(account: account).isEmpty else { return }
-        openLogin(viewController: UIApplication.shared.firstWindow?.rootViewController, selector: NCGlobal.shared.introLogin, openLoginWeb: true)
+    @objc private func checkErrorNetworking(_ notification: NSNotification) {
+        guard let userInfo = notification.userInfo as NSDictionary?,
+              let scene = userInfo["scene"] as? UIScene,
+              let rootViewController = SceneManager.shared.getRootViewController(scene: scene)
+        else { return }
+        guard !self.timerErrorNetworkingDisabled,
+              !account.isEmpty,
+              NCKeychain().getPassword(account: account).isEmpty else { return }
+        openLogin(viewController: rootViewController, selector: NCGlobal.shared.introLogin, openLoginWeb: true)
     }
 
     func trustCertificateError(host: String) {

@@ -42,6 +42,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                 }
             }
         }
+
+        appDelegate.startTimerErrorNetworking(scene: scene)
     }
 
     func sceneDidDisconnect(_ scene: UIScene) {
@@ -110,7 +112,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         guard let appDelegate,
               !appDelegate.account.isEmpty else { return }
 
-        if let windowScene = (scene as? UIWindowScene), let viewController = windowScene.keyWindow?.rootViewController {
+        if let viewController = SceneManager.shared.getRootViewController(scene: scene) {
             NCPasscode.shared.presentPasscode(viewController: viewController, delegate: appDelegate) { }
         }
 
@@ -139,7 +141,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
 
     func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
-        guard let rootViewController = ((scene as? UIWindowScene)?.keyWindow?.rootViewController) as? NCMainTabBarController,
+        guard let rootViewController = SceneManager.shared.getRootViewController(scene: scene) as? NCMainTabBarController,
               let url = URLContexts.first?.url,
               let appDelegate else { return }
         let sceneIdentifier = rootViewController.sceneIdentifier
@@ -307,6 +309,10 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 class SceneManager {
     static let shared = SceneManager()
     private var sceneRootViewController: [NCMainTabBarController: UIScene] = [:]
+
+    func getRootViewController(scene: UIScene?) -> UIViewController? {
+        return (scene as? UIWindowScene)?.keyWindow?.rootViewController
+    }
 
     func register(scene: UIScene, withRootViewController rootViewController: NCMainTabBarController) {
         sceneRootViewController[rootViewController] = scene
