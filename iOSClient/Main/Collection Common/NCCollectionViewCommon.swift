@@ -91,7 +91,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        tabBarSelect = NCCollectionViewCommonSelectTabBar(tabBarController: tabBarController, delegate: self)
+        tabBarSelect = NCCollectionViewCommonSelectTabBar(tabBarController: tabBarController as? NCMainTabBarController, delegate: self)
         self.navigationController?.presentationController?.delegate = self
 
         // CollectionView & layout

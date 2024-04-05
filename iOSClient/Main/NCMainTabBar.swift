@@ -211,7 +211,7 @@ class NCMainTabBar: UITabBar {
 
     func updateBadgeNumberUI(counterDownload: Int, counterUpload: Int) {
 
-        UIApplication.shared.applicationIconBadgeNumber = counterUpload
+        UIApplication.shared.applicationIconBadgeNumber = counterDownload + counterUpload
 
         if let item = self.items?[0] {
             if counterDownload == 0, counterUpload == 0 {
