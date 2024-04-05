@@ -72,7 +72,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         NCNetworkingProcess.shared.startTimer(scene: scene)
 
         if NCKeychain().privacyScreenEnabled {
-            NCPasscode.shared.hidePrivacyProtectionWindow(scene: scene)
+            self.appDelegate?.hidePrivacyProtectionWindow(scene: scene)
         }
 
         NCService().startRequestServicesServer()
@@ -93,7 +93,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         NCNetworkingProcess.shared.stopTimer()
 
         if NCKeychain().privacyScreenEnabled {
-            NCPasscode.shared.showPrivacyProtectionWindow(scene: scene)
+            self.appDelegate?.showPrivacyProtectionWindow(scene: scene)
         }
 
         // Reload Widget

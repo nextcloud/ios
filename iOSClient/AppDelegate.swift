@@ -632,7 +632,7 @@ extension AppDelegate: NCCreateFormUploadConflictDelegate {
 
 extension AppDelegate: NCPasscodeDelegate {
     func requestedAccount() {
-        guard !NCPasscode.shared.isPasscodePresented, NCKeychain().accountRequest else {
+        guard NCKeychain().accountRequest else {
             return
         }
 
@@ -663,6 +663,28 @@ extension AppDelegate: NCPasscodeDelegate {
 
     func passcodeReset(_ passcodeViewController: TOPasscodeViewController) {
         resetApplication()
+    }
+
+    func showPrivacyProtectionWindow(scene: UIScene) {
+        let windows = SceneManager.shared.getWindow(scene: scene)
+        let currentRootViewController = windows?.rootViewController
+        let presentedViewController = currentRootViewController?.presentedViewController
+        if presentedViewController is TOPasscodeViewController {
+            return
+        }
+        let viewController = UIStoryboard(name: "PrivacyProtectionScreen", bundle: nil).instantiateInitialViewController()
+
+        windows?.rootViewController = viewController
+    }
+
+    func hidePrivacyProtectionWindow(scene: UIScene) {
+        let windows = SceneManager.shared.getWindow(scene: scene)
+        let currentRootViewController = windows?.rootViewController
+        let rootViewController = SceneManager.shared.getMainTabBarController(scene: scene)
+
+        if currentRootViewController is PrivacyProtectionScreen {
+            windows?.rootViewController = rootViewController
+        }
     }
 }
 

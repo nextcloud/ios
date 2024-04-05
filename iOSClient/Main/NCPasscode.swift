@@ -51,10 +51,6 @@ class NCPasscode: NSObject, TOPasscodeViewControllerDelegate {
         let passcodeCounterFail = NCKeychain().passcodeCounterFail
         return passcodeCounterFail > 0 && passcodeCounterFail.isMultiple(of: 3)
     }
-    var isPasscodePresented: Bool {
-        return privacyProtectionWindow?.rootViewController?.presentedViewController is TOPasscodeViewController
-    }
-    var privacyProtectionWindow: UIWindow?
     var passcodeViewController: TOPasscodeViewController!
     var delegate: NCPasscodeDelegate?
 
@@ -197,30 +193,4 @@ class NCPasscode: NSObject, TOPasscodeViewControllerDelegate {
             }
         }
     }
-
-    // MARK: - Privacy Protection
-
-#if !EXTENSION
-    func showPrivacyProtectionWindow(scene: UIScene) {
-        let windows = SceneManager.shared.getWindow(scene: scene)
-        let currentRootViewController = windows?.rootViewController
-        let presentedViewController = currentRootViewController?.presentedViewController
-        if presentedViewController is TOPasscodeViewController {
-            return
-        }
-        let viewController = UIStoryboard(name: "PrivacyProtectionScreen", bundle: nil).instantiateInitialViewController()
-
-        windows?.rootViewController = viewController
-    }
-
-    func hidePrivacyProtectionWindow(scene: UIScene) {
-        let windows = SceneManager.shared.getWindow(scene: scene)
-        let currentRootViewController = windows?.rootViewController
-        let rootViewController = SceneManager.shared.getMainTabBarController(scene: scene)
-
-        if currentRootViewController is PrivacyProtectionScreen {
-            windows?.rootViewController = rootViewController
-        }
-    }
-    #endif
 }
