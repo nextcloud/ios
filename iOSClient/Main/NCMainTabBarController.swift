@@ -24,12 +24,5 @@
 import UIKit
 
 class NCMainTabBarController: UITabBarController {
-
     var sceneIdentifier: String = UUID().uuidString
-
-    // MARK: - Life Cycle
-
-    required init?(coder: NSCoder) {
-        super.init(coder: coder)
-    }
 }
