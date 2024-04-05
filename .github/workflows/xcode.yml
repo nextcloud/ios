@@ -21,7 +21,7 @@ env:
 jobs:
   build:
     name: Build
-    runs-on: macos-13
+    runs-on: macos-14
     if: github.event.pull_request.draft == false
 
     steps:
@@ -61,7 +61,7 @@ jobs:
 
   test:
     name: Test
-    runs-on: macos-13
+    runs-on: macos-14
     needs: [build]
 
     if: github.event.pull_request.draft == false
@@ -70,7 +70,7 @@ jobs:
     - uses: actions/checkout@v4
 
     - name: Set up php ${{ env.PHP_VERSION }}
-      uses: shivammathur/setup-php@a4e22b60bbb9c1021113f2860347b0759f66fe5d # v2.30.0
+      uses: shivammathur/setup-php@8872c784b04a1420e81191df5d64fbd59d3d3033 # v2.30.0
       with:
         php-version: ${{ env.PHP_VERSION }}
         # https://docs.nextcloud.com/server/stable/admin_manual/installation/source_installation.html#prerequisites-for-manual-installation
