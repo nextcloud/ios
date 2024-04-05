@@ -9,4 +9,8 @@
 import UIKit
 
 class PrivacyProtectionScreen: UIViewController {
+
+    override func viewDidLoad() {
+        view.backgroundColor = NCBrandColor.shared.customer
+    }
 }
