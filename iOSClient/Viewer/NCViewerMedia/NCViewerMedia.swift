@@ -60,7 +60,7 @@ class NCViewerMedia: UIViewController {
             if #available(iOS 16, *), metadata.isImage {
                 analyzer.imageInteraction?.preferredInteractionTypes = []
                 analyzer.imageInteraction?.analysis = nil
-//                analyzeCurrentImage()
+                analyzeCurrentImage()
             }
         }
     }

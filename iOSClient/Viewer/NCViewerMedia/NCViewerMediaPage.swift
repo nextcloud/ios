@@ -68,6 +68,7 @@ class NCViewerMediaPage: UIViewController {
     var nextTrackCommand: Any?
     var previousTrackCommand: Any?
     let utilityFileSystem = NCUtilityFileSystem()
+    var preventScrollBug = true
 
     var timerAutoHide: Timer?
     private var timerAutoHideSeconds: Double = 4
@@ -136,6 +137,12 @@ class NCViewerMediaPage: UIViewController {
             navigationItem.rightBarButtonItems = [moreNavigationItem, imageDetailNavigationItem]
         } else {
             navigationItem.rightBarButtonItems = [moreNavigationItem]
+        }
+
+        for view in self.pageViewController.view.subviews {
+            if let scrollView = view as? UIScrollView {
+                scrollView.delegate = self
+            }
         }
     }
 
@@ -225,7 +232,6 @@ class NCViewerMediaPage: UIViewController {
     }
 
     func changeScreenMode(mode: ScreenMode) {
-
         let metadata = currentViewController.metadata
         let fullscreen = currentViewController.playerToolBar?.isFullscreen ?? false
 
@@ -625,7 +631,6 @@ extension NCViewerMediaPage: UIPageViewControllerDelegate, UIPageViewControllerD
 extension NCViewerMediaPage: UIGestureRecognizerDelegate {
 
     func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
-
         if let gestureRecognizer = gestureRecognizer as? UIPanGestureRecognizer {
             let velocity = gestureRecognizer.velocity(in: self.view)
 
@@ -714,5 +719,28 @@ extension NCViewerMediaPage: NCViewerMediaViewDelegate {
 
     func didCloseDetail() {
         imageDetailNavigationItem.image = UIImage(systemName: "info.circle")
+    }
+}
+
+extension NCViewerMediaPage: UIScrollViewDelegate {
+
+    func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
+        preventScrollBug = false
+    }
+
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        if preventScrollBug {
+            scrollView.setContentOffset(CGPoint(x: view.frame.width + 10, y: 0), animated: false)
+        }
+    }
+
+    func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
+        if !decelerate {
+            preventScrollBug = true
+        }
+    }
+
+    func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
+        preventScrollBug = true
     }
 }
