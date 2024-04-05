@@ -33,7 +33,7 @@ extension NCViewerMedia {
                     let analysis = try? await analyzer.imageAnalyzer?.analyze(image, configuration: configuration)
                     if image == self.image {
                         analyzer.imageInteraction?.analysis = analysis
-                        analyzer.imageInteraction?.preferredInteractionTypes = .automaticTextOnly
+                        analyzer.imageInteraction?.preferredInteractionTypes = .automatic
                     }
             }
         }
