@@ -28,14 +28,14 @@ import TOPasscodeViewController
 public protocol NCPasscodeDelegate: AnyObject {
     func evaluatePolicy(_ passcodeViewController: TOPasscodeViewController, isCorrectCode: Bool)
     func passcodeReset(_ passcodeViewController: TOPasscodeViewController)
-    func requestedAccount()
+    func requestedAccount(viewController: UIViewController?)
 }
 
 // optional func
 public extension NCPasscodeDelegate {
     func evaluatePolicy(_ passcodeViewController: TOPasscodeViewController, isCorrectCode: Bool) {}
     func passcodeReset() {}
-    func requestedAccount() {}
+    func requestedAccount(viewController: UIViewController?) {}
 }
 
 class NCPasscode: NSObject, TOPasscodeViewControllerDelegate {
@@ -58,7 +58,7 @@ class NCPasscode: NSObject, TOPasscodeViewControllerDelegate {
         var error: NSError?
         self.delegate = delegate
         defer {
-            self.delegate?.requestedAccount()
+            self.delegate?.requestedAccount(viewController: rootViewController)
         }
 
         passcodeViewController = TOPasscodeViewController(passcodeType: .sixDigits, allowCancel: false)
@@ -96,7 +96,7 @@ class NCPasscode: NSObject, TOPasscodeViewControllerDelegate {
                             NCKeychain().passcodeCounterFail = 0
                             NCKeychain().passcodeCounterFailReset = 0
                             self.delegate?.evaluatePolicy(passcodeViewController, isCorrectCode: true)
-                            self.delegate?.requestedAccount()
+                            self.delegate?.requestedAccount(viewController: passcodeViewController.presentedViewController)
                         }
                     }
                 } else {
@@ -137,7 +137,7 @@ class NCPasscode: NSObject, TOPasscodeViewControllerDelegate {
             passcodeViewController.dismiss(animated: true) {
                 NCKeychain().passcodeCounterFail = 0
                 NCKeychain().passcodeCounterFailReset = 0
-                self.delegate?.requestedAccount()
+                self.delegate?.requestedAccount(viewController: passcodeViewController.presentedViewController)
             }
         }
     }
