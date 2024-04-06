@@ -7,11 +7,15 @@
 //
 
 import Foundation
+import NextcloudKit
 
-protocol AutoUploadViewModelProtocol: ObservableObject, ViewOnAppearHandling {
+protocol AutoUploadVMRepresentable: ObservableObject, ViewOnAppearHandling, NCSelectDelegate {
     /// A state variable that indicates whether auto upload is enabled or not
     var autoUpload: Bool { get set }
     
+    /// A state variable that indicates whether to open NCSelect View or not
+    var autoUploadFolder: Bool { get set }
+
     /// A state variable that indicates whether auto upload for photos is enabled or not
     var autoUploadImage: Bool { get set }
     /// A state variable that indicates whether auto upload for photos is restricted to Wi-Fi only or not
@@ -30,6 +34,11 @@ protocol AutoUploadViewModelProtocol: ObservableObject, ViewOnAppearHandling {
     /// A state variable that indicates the granularity of the subfolders, either daily, monthly, or yearly
     var autoUploadSubfolderGranularity: Granularity { get set }
     
+    /// A state variable that shows error in view in case of an error
+    var showErrorAlert: Bool { get set }
+    /// A string variable that contains error text
+    var error: String { get set }
+    
     func handleAutoUploadChange(newValue: Bool)
     func handleAutoUploadImageChange(newValue: Bool)
     func handleAutoUploadWWAnPhotoChange(newValue: Bool)
@@ -38,11 +47,19 @@ protocol AutoUploadViewModelProtocol: ObservableObject, ViewOnAppearHandling {
     func handleAutoUploadFullChange(newValue: Bool)
     func handleAutoUploadCreateSubfolderChange(newValue: Bool)
     func handleAutoUploadSubfolderGranularityChange(newValue: Granularity)
+    
+    func returnPath() -> String
+    func setAutoUploadDirectory(serverUrl: String?)
+    
 }
 
 /// A viewModel that allows the user to configure the `auto upload settings for Nextcloud`
-class AutoUploadViewModel: AutoUploadViewModelProtocol {
+class AutoUploadViewModel: AutoUploadVMRepresentable {
+    
+    var appDelegate = AppDelegate()
     @Published var autoUpload: Bool = false
+    @Published var autoUploadFolder: Bool = false
+    
     @Published var autoUploadImage: Bool = false
     @Published var autoUploadWWAnPhoto: Bool = false
     
@@ -53,9 +70,16 @@ class AutoUploadViewModel: AutoUploadViewModelProtocol {
     @Published var autoUploadCreateSubfolder: Bool = false
     
     @Published var autoUploadSubfolderGranularity: Granularity = .monthly
-    
+    @Published var sectionName = ""
     @Published var isAuthorized: Bool = false
+    
+    @Published var showErrorAlert: Bool = false
+    @Published var error: String = ""
+
     private let manageDatabase = NCManageDatabase()
+
+    @Published var autoUploadPath = "\(NCManageDatabase.shared.getAccountAutoUploadFileName())"
+
     
     /// Initialization code to set up the ViewModel with the active account
     init() {
@@ -131,6 +155,45 @@ class AutoUploadViewModel: AutoUploadViewModelProtocol {
         activeAccount[keyPath: keyPath] = value
         manageDatabase.updateAccount(activeAccount)
     }
+    
+    /// Returns the path for auto-upload based on the active account's settings.
+    ///
+    /// - Returns: The path for auto-upload.
+    func returnPath() -> String {
+        let path = NCManageDatabase.shared.getAccountAutoUploadFileName()
+        return path.replacingOccurrences(of: NCUtilityFileSystem().deleteLastPath(serverUrlPath: path) ?? "", with: "")
+    }
+
+    /// Sets the auto-upload directory based on the provided server URL.
+    ///
+    /// - Parameter
+    /// serverUrl: The server URL to set as the auto-upload directory.
+    func setAutoUploadDirectory(serverUrl: String?) {
+        guard let serverUrl = serverUrl else { return }
+
+        // It checks if the provided server URL is the home server. If it is, an error is set, and the function returns early.
+        let home = NCUtilityFileSystem().getHomeServer(urlBase: appDelegate.urlBase, userId: appDelegate.userId)
+        if serverUrl == home {
+            
+            let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_autoupload_error_select_folder_", responseData: nil)
+            
+            self.error = error.errorDescription
+            self.showErrorAlert = true
+            
+            return
+        }
+
+        // Otherwise, it updates the auto-upload directory in the database
+        NCManageDatabase.shared.setAccountAutoUploadFileName(self.appDelegate.activeServerUrl)
+        if let path = NCUtilityFileSystem().deleteLastPath(serverUrlPath: serverUrl, home: home) {
+            NCManageDatabase.shared.setAccountAutoUploadDirectory(path, urlBase: appDelegate.urlBase, userId: appDelegate.userId, account: appDelegate.account)
+        }
+        
+        onViewAppear()
+    }
+    
+    // MARK: NCSelectDelegate
+    func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String, items: [Any], indexPath: [IndexPath], overwrite: Bool, copy: Bool, move: Bool) { }
 }
 
 /// An enum that represents the granularity of the subfolders for auto upload

@@ -7,6 +7,7 @@
 //
 
 import SwiftUI
+import UIKit
 
 /// A view that allows the user to configure the `auto upload settings for Nextcloud`
 struct AutoUploadView<ViewModel: AutoUploadViewModel>: View {
@@ -39,12 +40,14 @@ struct AutoUploadView<ViewModel: AutoUploadViewModel>: View {
                 viewModel.requestAuthorization()
             }
         }
+        .alert(viewModel.error, isPresented: $viewModel.showErrorAlert) {
+            Button(NSLocalizedString("_ok_", comment: ""), role: .cancel) { }
+        }
     }
     
     @ViewBuilder
     var autoUploadOnView: some View {
         
-        // TODO: Auto Upload Directory
         Section(content: {
             HStack {
                 Image("foldersOnTop")
@@ -56,10 +59,16 @@ struct AutoUploadView<ViewModel: AutoUploadViewModel>: View {
                 Text(NSLocalizedString("_autoupload_select_folder_", comment: ""))
             }
         }, footer: {
-            Text(NSLocalizedString("_autoupload_current_folder_", comment: ""))
-        })
-        
-        
+            Text("\(NSLocalizedString("_autoupload_current_folder_", comment: "")): \(viewModel.returnPath())")
+        }).onTapGesture {
+            viewModel.autoUploadFolder.toggle()
+        }
+        .sheet(isPresented: $viewModel.autoUploadFolder) {
+            SelectView(serverUrl: $viewModel.appDelegate.activeServerUrl)
+                .onDisappear {
+                    viewModel.setAutoUploadDirectory(serverUrl: viewModel.appDelegate.activeServerUrl)
+                }
+        }
         
         
         // Auto Upload Photo
@@ -134,3 +143,5 @@ struct AutoUploadView<ViewModel: AutoUploadViewModel>: View {
 #Preview {
     AutoUploadView(viewModel: AutoUploadViewModel())
 }
+
+

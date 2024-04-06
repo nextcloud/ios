@@ -112,14 +112,14 @@ struct NCSettings<ViewModel: NCSettingsViewModel>: View {
             /// `E2EEncryption` Section
             if viewModel.isE2EEEnable && NCGlobal.shared.e2eeVersions.contains(viewModel.versionE2EE) {
                 Section(header: Text(NSLocalizedString("_e2e_settings_title_", comment: "")), content: {
-                    HStack {
-                        Image("lock")
-                            .resizable()
-                            .renderingMode(.template)
-                            .frame(width: 20, height: 20)
-                        Text(NSLocalizedString("_e2e_settings_", comment: ""))
-                    }.onTapGesture {
-                        // TODO: Handle tap gesture
+                    NavigationLink(destination: NCViewE2EE(account: AppDelegate().account)){
+                        HStack {
+                            Image("lock")
+                                .resizable()
+                                .renderingMode(.template)
+                                .frame(width: 20, height: 20)
+                            Text(NSLocalizedString("_e2e_settings_", comment: ""))
+                        }
                     }
                 })
             }
