@@ -1750,7 +1750,6 @@ extension NCCollectionViewCommon: UICollectionViewDelegateFlowLayout {
 }
 
 extension NCCollectionViewCommon: EasyTipViewDelegate {
-
     func easyTipViewDidTap(_ tipView: EasyTipView) {
         NCManageDatabase.shared.addTip(NCGlobal.shared.tipNCCollectionViewCommonAccountRequest)
     }

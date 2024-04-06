@@ -611,7 +611,6 @@ extension NCViewerPDF: UIGestureRecognizerDelegate {
 }
 
 extension NCViewerPDF: EasyTipViewDelegate {
-
     func easyTipViewDidTap(_ tipView: EasyTipView) {
         NCManageDatabase.shared.addTip(NCGlobal.shared.tipNCViewerPDFThumbnail)
     }

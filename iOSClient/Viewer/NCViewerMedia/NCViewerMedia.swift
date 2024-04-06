@@ -311,33 +311,48 @@ class NCViewerMedia: UIViewController {
         }
 
         // Get image
-        let image = getImageMetadata(metadata)
-        if self.metadata.ocId == metadata.ocId {
-            self.image = image
-            self.imageVideoContainer.image = image
+        getImageMetadata(metadata) { image in
+            if self.metadata.ocId == metadata.ocId {
+                self.image = image
+                self.imageVideoContainer.image = image
+            }
         }
     }
 
-    func getImageMetadata(_ metadata: tableMetadata) -> UIImage? {
-
-        if let image = utility.getImage(metadata: metadata) {
-            return image
-        }
-
+    func getImageMetadata(_ metadata: tableMetadata, completion: @escaping (UIImage?) -> Void) {
         if metadata.isVideo && !metadata.hasPreview {
             utility.createImageFrom(fileNameView: metadata.fileNameView, ocId: metadata.ocId, etag: metadata.etag, classFile: metadata.classFile)
+        } else if metadata.isAudio {
+            return completion(UIImage(named: "noPreviewAudio")!.image(color: .gray, size: view.frame.width))
+        } else if let image = utility.getImage(metadata: metadata) {
+            return completion(image)
         }
 
         if utilityFileSystem.fileProviderStoragePreviewIconExists(metadata.ocId, etag: metadata.etag) {
-            return UIImage(contentsOfFile: utilityFileSystem.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag))
-        }
-
-        if metadata.isAudio {
-            return UIImage(named: "noPreviewAudio")!.image(color: .gray, size: view.frame.width)
-        } else if metadata.isImage {
-            return UIImage(named: "noPreview")!.image(color: .gray, size: view.frame.width)
+            return completion(UIImage(contentsOfFile: utilityFileSystem.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)))
         } else {
-            return nil
+            let fileNamePath = utilityFileSystem.getFileNamePath(metadata.fileName, serverUrl: metadata.serverUrl, urlBase: metadata.urlBase, userId: metadata.userId)
+            let fileNamePreviewLocalPath = utilityFileSystem.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)
+            let fileNameIconLocalPath = utilityFileSystem.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)
+            let sizePreview = NCUtility().getSizePreview(width: metadata.width, height: metadata.height)
+            var etagResource = metadata.etagResource
+
+            NextcloudKit.shared.downloadPreview(fileNamePathOrFileId: fileNamePath,
+                                                fileNamePreviewLocalPath: fileNamePreviewLocalPath,
+                                                widthPreview: Int(sizePreview.width),
+                                                heightPreview: Int(sizePreview.height),
+                                                fileNameIconLocalPath: fileNameIconLocalPath,
+                                                sizeIcon: NCGlobal.shared.sizeIcon,
+                                                etag: etagResource,
+                                                options: NKRequestOptions(queue: .main)) { _, imagePreview, _, _, etag, error in
+
+                if error == .success, let image = imagePreview {
+                    NCManageDatabase.shared.setMetadataEtagResource(ocId: self.metadata.ocId, etagResource: etag)
+                    return completion(image)
+                } else {
+                    return completion(UIImage(named: "noPreview")!.image(color: .gray, size: self.view.frame.width))
+                }
+            }
         }
     }
 
@@ -350,10 +365,13 @@ class NCViewerMedia: UIViewController {
             self.allowOpeningDetails = false
         } completion: { _, _ in
             DispatchQueue.main.async {
-                let image = self.getImageMetadata(self.metadata)
-                self.image = image
-                self.imageVideoContainer.image = image
-                self.allowOpeningDetails = true
+                self.getImageMetadata(self.metadata) { image in
+                    if self.metadata.ocId == metadata.ocId {
+                        self.image = image
+                        self.imageVideoContainer.image = image
+                        self.allowOpeningDetails = true
+                    }
+                }
             }
         }
     }
@@ -583,8 +601,6 @@ extension NCViewerMedia: NCViewerMediaDetailViewDelegate {
 }
 
 extension NCViewerMedia: EasyTipViewDelegate {
-
-    // TIP
     func easyTipViewDidTap(_ tipView: EasyTipView) {
         NCManageDatabase.shared.addTip(NCGlobal.shared.tipNCViewerMediaDetailView)
     }

@@ -423,8 +423,6 @@ class NCScan: UIViewController, NCScanCellCellDelegate {
 }
 
 extension NCScan: EasyTipViewDelegate {
-
-    // TIP
     func easyTipViewDidTap(_ tipView: EasyTipView) {
         NCManageDatabase.shared.addTip(NCGlobal.shared.tipNCScanAddImage)
     }
