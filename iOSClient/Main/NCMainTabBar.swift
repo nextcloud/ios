@@ -211,32 +211,20 @@ class NCMainTabBar: UITabBar {
 
     func updateBadgeNumberUI(counterDownload: Int, counterUpload: Int) {
 
-        UIApplication.shared.applicationIconBadgeNumber = counterUpload
+        UIApplication.shared.applicationIconBadgeNumber = counterDownload + counterUpload
 
         if let item = self.items?[0] {
             if counterDownload == 0, counterUpload == 0 {
                 item.badgeValue = nil
             } else if counterDownload > 0, counterUpload == 0 {
-                var badgeValue = String("↓ \(counterDownload)")
-                if counterDownload >= NCBrandOptions.shared.maxConcurrentOperationDownload {
-                    badgeValue = String("↓ \(NCBrandOptions.shared.maxConcurrentOperationDownload)+")
-                }
+                let badgeValue = String("↓ \(counterDownload)")
                 item.badgeValue = badgeValue
             } else if counterDownload == 0, counterUpload > 0 {
-                var badgeValue = String("↑ \(counterUpload)")
-                if counterUpload >= NCBrandOptions.shared.maxConcurrentOperationUpload {
-                    badgeValue = String("↑ \(NCBrandOptions.shared.maxConcurrentOperationUpload)+")
-                }
+                let badgeValue = String("↑ \(counterUpload)")
                 item.badgeValue = badgeValue
             } else {
-                var badgeValueDownload = String("↓ \(counterDownload)")
-                if counterDownload >= NCBrandOptions.shared.maxConcurrentOperationDownload {
-                    badgeValueDownload = String("↓ \(NCBrandOptions.shared.maxConcurrentOperationDownload)+")
-                }
-                var badgeValueUpload = String("↑ \(counterUpload)")
-                if counterUpload >= NCBrandOptions.shared.maxConcurrentOperationUpload {
-                    badgeValueUpload = String("↑ \(NCBrandOptions.shared.maxConcurrentOperationUpload)+")
-                }
+                let badgeValueDownload = String("↓ \(counterDownload)")
+                let badgeValueUpload = String("↑ \(counterUpload)")
                 item.badgeValue = badgeValueDownload + " " + badgeValueUpload
             }
         }

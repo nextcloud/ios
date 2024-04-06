@@ -575,7 +575,7 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
             }
             mostViewController.navigationController?.popToRootViewController(animated: false)
 
-            if let tabBarController = appDelegate.window?.rootViewController as? UITabBarController {
+            if let tabBarController = appDelegate.window?.rootViewController as? NCMainTabBarController {
                 tabBarController.selectedIndex = 0
                 if let navigationController = tabBarController.viewControllers?.first as? UINavigationController {
                     navigationController.popToRootViewController(animated: false)

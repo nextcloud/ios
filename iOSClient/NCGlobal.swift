@@ -464,9 +464,9 @@ class NCGlobal: NSObject {
     @objc var capabilityE2EEApiVersion: String                  = ""
 
     var capabilityRichdocumentsEnabled: Bool                    = false
-    var capabilityRichdocumentsMimetypes: [String]              = []
-    var capabilityActivity: [String]                            = []
-    var capabilityNotification: [String]                        = []
+    var capabilityRichdocumentsMimetypes = ThreadSafeArray<String>()
+    var capabilityActivity = ThreadSafeArray<String>()
+    var capabilityNotification = ThreadSafeArray<String>()
 
     var capabilityFilesUndelete: Bool                           = false
     var capabilityFilesLockVersion: String                      = ""    // NC 24

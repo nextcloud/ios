@@ -44,14 +44,33 @@ class NCNetworkingProcess: NSObject {
     func startTimer() {
         self.timerProcess?.invalidate()
         self.timerProcess = Timer.scheduledTimer(withTimeInterval: 1, repeats: true, block: { _ in
-            guard !self.appDelegate.account.isEmpty, !self.pauseProcess else { return }
+            guard !self.appDelegate.account.isEmpty,
+                  !self.pauseProcess else { return }
+
             if NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND status != %d", self.appDelegate.account, NCGlobal.shared.metadataStatusNormal)).isEmpty {
+                //
+                // Remove Photo CameraRoll
+                //
+                if NCKeychain().removePhotoCameraRoll,
+                   UIApplication.shared.applicationState == .active,
+                   let localIdentifiers = NCManageDatabase.shared.getAssetLocalIdentifiersUploaded(account: self.appDelegate.account),
+                   !localIdentifiers.isEmpty {
+                    self.pauseProcess = true
+                    PHPhotoLibrary.shared().performChanges({
+                        PHAssetChangeRequest.deleteAssets(PHAsset.fetchAssets(withLocalIdentifiers: localIdentifiers, options: nil) as NSFastEnumeration)
+                    }, completionHandler: { _, _ in
+                        NCManageDatabase.shared.clearAssetLocalIdentifiers(localIdentifiers, account: self.appDelegate.account)
+                        self.pauseProcess = false
+                    })
+                }
                 NotificationCenter.default.post(name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterUpdateBadgeNumber), object: nil, userInfo: ["counterDownload": 0, "counterUpload": 0])
             } else {
                 Task {
                     let results = await self.start()
-                    print("[INFO] PROCESS Download: \(results.counterDownload) Upload: \(results.counterUpload)")
-                    NotificationCenter.default.post(name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterUpdateBadgeNumber), object: nil, userInfo: ["counterDownload": results.counterDownload, "counterUpload": results.counterUpload])
+                    let counterDownload = await NCManageDatabase.shared.getResultsMetadatas(predicate: NSPredicate(format: "account == %@ AND session == %@ AND (status == %d || status == %d)", self.appDelegate.account, NCNetworking.shared.sessionDownloadBackground, NCGlobal.shared.metadataStatusWaitDownload, NCGlobal.shared.metadataStatusDownloading))?.count ?? 0
+                    let counterUpload = await NCManageDatabase.shared.getResultsMetadatas(predicate: NSPredicate(format: "account == %@ AND session == %@ AND (status == %d || status == %d)", self.appDelegate.account, NCNetworking.shared.sessionUploadBackground, NCGlobal.shared.metadataStatusWaitUpload, NCGlobal.shared.metadataStatusUploading))?.count ?? 0
+                    print("[INFO] PROCESS Download: \(results.counterDownloading)/\(counterDownload) Upload: \(results.counterUploading)/\(counterUpload)")
+                    NotificationCenter.default.post(name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterUpdateBadgeNumber), object: nil, userInfo: ["counterDownload": counterDownload, "counterUpload": counterUpload])
                 }
             }
         })
@@ -62,7 +81,7 @@ class NCNetworkingProcess: NSObject {
     }
 
     @discardableResult
-    func start() async -> (counterDownload: Int, counterUpload: Int) {
+    func start() async -> (counterDownloading: Int, counterUploading: Int) {
         self.pauseProcess = true
         let applicationState = await UIApplication.shared.applicationState
         let maxConcurrentOperationDownload = NCBrandOptions.shared.maxConcurrentOperationDownload
@@ -71,25 +90,25 @@ class NCNetworkingProcess: NSObject {
         let sessionUploadSelectors = [NCGlobal.shared.selectorUploadFileNODelete, NCGlobal.shared.selectorUploadFile, NCGlobal.shared.selectorUploadAutoUpload, NCGlobal.shared.selectorUploadAutoUploadAll]
         let metadatasDownloading = await NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND status == %d", self.appDelegate.account, NCGlobal.shared.metadataStatusDownloading))
         let metadatasUploading = await NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND status == %d", self.appDelegate.account, NCGlobal.shared.metadataStatusUploading))
-        let metadatasUploadInError: [tableMetadata] = await NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND status == %d", self.appDelegate.account, NCGlobal.shared.metadataStatusUploadError), sorted: "sessionDate", ascending: true) ?? []
+        let metadatasUploadError: [tableMetadata] = await NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND status == %d", self.appDelegate.account, NCGlobal.shared.metadataStatusUploadError), sorted: "sessionDate", ascending: true) ?? []
         let isWiFi = NCNetworking.shared.networkReachability == NKCommon.TypeReachability.reachableEthernetOrWiFi
-        var counterDownload = metadatasDownloading.count
-        var counterUpload = metadatasUploading.count
+        var counterDownloading = metadatasDownloading.count
+        var counterUploading = metadatasUploading.count
         if applicationState == .active {
             self.hud = await JGProgressHUD()
         }
 
         // ------------------------ DOWNLOAD
 
-        let limitDownload = maxConcurrentOperationDownload - counterDownload
-        let metadatasDownload = await NCManageDatabase.shared.getAdvancedMetadatas(predicate: NSPredicate(format: "account == %@ AND session == %@ AND status == %d", self.appDelegate.account, NCNetworking.shared.sessionDownloadBackground, NCGlobal.shared.metadataStatusWaitDownload), page: 1, limit: limitDownload, sorted: "sessionDate", ascending: true)
-        for metadata in metadatasDownload where counterDownload < maxConcurrentOperationDownload {
-            counterDownload += 1
+        let limitDownload = maxConcurrentOperationDownload - counterDownloading
+        let metadatasWaitDownload = await NCManageDatabase.shared.getAdvancedMetadatas(predicate: NSPredicate(format: "account == %@ AND session == %@ AND status == %d", self.appDelegate.account, NCNetworking.shared.sessionDownloadBackground, NCGlobal.shared.metadataStatusWaitDownload), page: 1, limit: limitDownload, sorted: "sessionDate", ascending: true)
+        for metadata in metadatasWaitDownload where counterDownloading < maxConcurrentOperationDownload {
+            counterDownloading += 1
             NCNetworking.shared.download(metadata: metadata, withNotificationProgressTask: true)
         }
-        if counterDownload == 0 {
-            let metadatasDownloadInError: [tableMetadata] = await NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND session == %@ AND status == %d", self.appDelegate.account, NCNetworking.shared.sessionDownloadBackground, NCGlobal.shared.metadataStatusDownloadError), sorted: "sessionDate", ascending: true) ?? []
-            for metadata in metadatasDownloadInError {
+        if counterDownloading == 0 {
+            let metadatasDownloadError: [tableMetadata] = await NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND session == %@ AND status == %d", self.appDelegate.account, NCNetworking.shared.sessionDownloadBackground, NCGlobal.shared.metadataStatusDownloadError), sorted: "sessionDate", ascending: true) ?? []
+            for metadata in metadatasDownloadError {
                 NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId,
                                                            sessionError: "",
                                                            status: NCGlobal.shared.metadataStatusWaitDownload)
@@ -102,14 +121,14 @@ class NCNetworkingProcess: NSObject {
         for metadata in metadatasUploading.unique(map: { $0.serverUrl }) {
             if metadata.isDirectoryE2EE {
                 self.pauseProcess = false
-                return (counterDownload, counterUpload)
+                return (counterDownloading, counterUploading)
             }
         }
 
         // CHUNK - only one for time
         if !metadatasUploading.filter({ $0.chunk > 0 }).isEmpty {
             self.pauseProcess = false
-            return (counterDownload, counterUpload)
+            return (counterDownloading, counterUploading)
         }
 
         // ([URLSessionDataTask], [URLSessionUploadTask], [URLSessionDownloadTask])
@@ -122,13 +141,13 @@ class NCNetworkingProcess: NSObject {
             filesNameLocalPath.append(task.description)
         }
 
-        for sessionSelector in sessionUploadSelectors where counterUpload < maxConcurrentOperationUpload {
-            let limitUpload = maxConcurrentOperationUpload - counterUpload
-            let metadatasUpload = await NCManageDatabase.shared.getAdvancedMetadatas(predicate: NSPredicate(format: "account == %@ AND sessionSelector == %@ AND status == %d", self.appDelegate.account, sessionSelector, NCGlobal.shared.metadataStatusWaitUpload), page: 1, limit: limitUpload, sorted: "sessionDate", ascending: true)
-            if !metadatasUpload.isEmpty {
-                NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] PROCESS (UPLOAD) find \(metadatasUpload.count) items")
+        for sessionSelector in sessionUploadSelectors where counterUploading < maxConcurrentOperationUpload {
+            let limitUpload = maxConcurrentOperationUpload - counterUploading
+            let metadatasWaitUpload = await NCManageDatabase.shared.getAdvancedMetadatas(predicate: NSPredicate(format: "account == %@ AND sessionSelector == %@ AND status == %d", self.appDelegate.account, sessionSelector, NCGlobal.shared.metadataStatusWaitUpload), page: 1, limit: limitUpload, sorted: "sessionDate", ascending: true)
+            if !metadatasWaitUpload.isEmpty {
+                NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] PROCESS (UPLOAD) find \(metadatasWaitUpload.count) items")
             }
-            for metadata in metadatasUpload where counterUpload < maxConcurrentOperationUpload {
+            for metadata in metadatasWaitUpload where counterUploading < maxConcurrentOperationUpload {
                 // Is already in upload background? skipped
                 let fileNameLocalPath = self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)
                 if filesNameLocalPath.contains(fileNameLocalPath) {
@@ -143,7 +162,7 @@ class NCNetworkingProcess: NSObject {
                 if metadatas.isEmpty {
                     NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
                 }
-                for metadata in metadatas where counterUpload < maxConcurrentOperationUpload {
+                for metadata in metadatas where counterUploading < maxConcurrentOperationUpload {
                     // isE2EE
                     let isInDirectoryE2EE = metadata.isDirectoryE2EE
                     // NO WiFi
@@ -154,15 +173,15 @@ class NCNetworkingProcess: NSObject {
                         if isInDirectoryE2EE || metadata.chunk > 0 {
                             maxConcurrentOperationUpload = 1
                         }
-                        counterUpload += 1
+                        counterUploading += 1
                     }
                 }
             }
         }
 
         // No upload available ? --> Retry Upload in Error
-        if counterUpload == 0 {
-            for metadata in metadatasUploadInError {
+        if counterUploading == 0 {
+            for metadata in metadatasUploadError {
                 // Verify QUOTA
                 if metadata.sessionError.contains("\(NCGlobal.shared.errorQuota)") {
                     NextcloudKit.shared.getUserProfile { _, userProfile, _, error in
@@ -182,32 +201,8 @@ class NCNetworkingProcess: NSObject {
             }
         }
 
-        // No upload available ? --> Delete Assets
-        if NCKeychain().removePhotoCameraRoll,
-           applicationState == .active,
-           counterUpload == 0,
-           metadatasUploadInError.isEmpty {
-            await self.deleteAssetsLocalIdentifiers(account: self.appDelegate.account)
-        }
-
         self.pauseProcess = false
-        return (counterDownload, counterUpload)
-    }
-
-    @MainActor private func deleteAssetsLocalIdentifiers(account: String) async {
-        guard !NCPasscode.shared.isPasscodePresented,
-              NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND session CONTAINS[cd] %@", account, "upload")).isEmpty else {
-            return
-        }
-        let localIdentifiers = NCManageDatabase.shared.getAssetLocalIdentifiersUploaded(account: account)
-        if localIdentifiers.isEmpty { return }
-        let assets = PHAsset.fetchAssets(withLocalIdentifiers: localIdentifiers, options: nil)
-
-        try? await PHPhotoLibrary.shared().performChanges {
-            PHAssetChangeRequest.deleteAssets(assets as NSFastEnumeration)
-            NCManageDatabase.shared.clearAssetLocalIdentifiers(localIdentifiers, account: account)
-        }
-        return
+        return (counterDownloading, counterUploading)
     }
 
     // MARK: -

@@ -29,6 +29,7 @@ import SwiftUI
 import MobileVLCKit
 import JGProgressHUD
 import Alamofire
+import VisionKit
 
 public protocol NCViewerMediaViewDelegate: AnyObject {
     func didOpenDetail()
@@ -48,12 +49,21 @@ class NCViewerMedia: UIViewController {
     private var tipView: EasyTipView?
     private let player = VLCMediaPlayer()
     private let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
+    let analyzer = Analyzer()
     let utilityFileSystem = NCUtilityFileSystem()
     let utility = NCUtility()
     weak var viewerMediaPage: NCViewerMediaPage?
     var playerToolBar: NCPlayerToolBar?
     var ncplayer: NCPlayer?
-    var image: UIImage?
+    var image: UIImage? {
+        didSet {
+            if #available(iOS 16, *), metadata.isImage {
+                analyzer.imageInteraction?.preferredInteractionTypes = []
+                analyzer.imageInteraction?.analysis = nil
+//                analyzeCurrentImage()
+            }
+        }
+    }
     var metadata: tableMetadata = tableMetadata()
     var index: Int = 0
     var doubleTapGestureRecognizer: UITapGestureRecognizer = UITapGestureRecognizer()
@@ -134,6 +144,12 @@ class NCViewerMedia: UIViewController {
         self.imageVideoContainer.image = nil
 
         loadImage()
+
+        if #available(iOS 16, *) {
+            if let interaction = analyzer.imageInteraction {
+                self.imageVideoContainer.addInteraction(interaction)
+            }
+        }
     }
 
     override func viewWillAppear(_ animated: Bool) {
