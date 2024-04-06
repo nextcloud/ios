@@ -207,8 +207,7 @@ class NCTrash: UIViewController, NCTrashListCellDelegate, NCTrashGridCellDelegat
 
     @objc func reloadDataSource(withQueryDB: Bool = true) {
 
-        layoutForView = NCManageDatabase.shared.getLayoutForView(account: appDelegate.account, key: NCGlobal.shared.layoutViewTrash, serverUrl: "")
-        datasource = NCManageDatabase.shared.getTrash(filePath: getFilePath(), sort: layoutForView?.sort, ascending: layoutForView?.ascending, account: appDelegate.account)
+        datasource = NCManageDatabase.shared.getTrash(filePath: getFilePath(), account: appDelegate.account)
         collectionView.reloadData()
         setNavigationRightItems()
 
