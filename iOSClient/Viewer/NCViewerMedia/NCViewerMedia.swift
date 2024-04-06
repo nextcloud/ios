@@ -335,7 +335,6 @@ class NCViewerMedia: UIViewController {
             let fileNamePreviewLocalPath = utilityFileSystem.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)
             let fileNameIconLocalPath = utilityFileSystem.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)
             let sizePreview = NCUtility().getSizePreview(width: metadata.width, height: metadata.height)
-            var etagResource = metadata.etagResource
 
             NextcloudKit.shared.downloadPreview(fileNamePathOrFileId: fileNamePath,
                                                 fileNamePreviewLocalPath: fileNamePreviewLocalPath,
@@ -343,7 +342,6 @@ class NCViewerMedia: UIViewController {
                                                 heightPreview: Int(sizePreview.height),
                                                 fileNameIconLocalPath: fileNameIconLocalPath,
                                                 sizeIcon: NCGlobal.shared.sizeIcon,
-                                                etag: etagResource,
                                                 options: NKRequestOptions(queue: .main)) { _, imagePreview, _, _, etag, error in
 
                 if error == .success, let image = imagePreview {
