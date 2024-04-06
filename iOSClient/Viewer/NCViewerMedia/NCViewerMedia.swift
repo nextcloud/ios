@@ -85,7 +85,6 @@ class NCViewerMedia: UIViewController {
     deinit {
         print("deinit NCViewerMedia")
 
-        self.tipView?.dismiss()
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterOpenMediaDetail), object: nil)
     }
 
@@ -242,8 +241,7 @@ class NCViewerMedia: UIViewController {
 
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-
-        self.tipView?.dismiss()
+        dismissTip()
     }
 
     override func viewDidDisappear(_ animated: Bool) {
@@ -262,7 +260,7 @@ class NCViewerMedia: UIViewController {
         if UIDevice.current.orientation.isValidInterfaceOrientation {
 
             if wasShown { closeDetail(animate: false) }
-            self.tipView?.dismiss()
+            dismissTip()
             if metadata.isVideo {
                 self.imageVideoContainer.isHidden = true
             }
@@ -594,7 +592,9 @@ extension NCViewerMedia: EasyTipViewDelegate {
     func easyTipViewDidDismiss(_ tipView: EasyTipView) { }
 
     func dismissTip() {
-        NCManageDatabase.shared.addTip(NCGlobal.shared.tipNCViewerMediaDetailView)
+        if !NCManageDatabase.shared.tipExists(NCGlobal.shared.tipNCViewerMediaDetailView) {
+            NCManageDatabase.shared.addTip(NCGlobal.shared.tipNCViewerMediaDetailView)
+        }
         self.tipView?.dismiss()
     }
 }

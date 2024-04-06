@@ -230,7 +230,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         super.viewWillDisappear(animated)
 
         NCNetworking.shared.cancelUnifiedSearchFiles()
-        tipView?.dismiss()
+        dismissTip()
         setEditMode(false)
     }
 
@@ -277,13 +277,9 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         super.viewWillTransition(to: size, with: coordinator)
 
-        self.collectionView?.collectionViewLayout.invalidateLayout()
-        self.collectionView?.reloadData()
-        self.tipView?.dismiss()
-
-        coordinator.animate(alongsideTransition: nil) { _ in
-            self.showTip()
-        }
+        collectionView?.collectionViewLayout.invalidateLayout()
+        collectionView?.reloadData()
+        dismissTip()
     }
 
     override var canBecomeFirstResponder: Bool {
@@ -805,7 +801,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         self.collectionView.reloadData()
 
         // TIP
-        self.tipView?.dismiss()
+        dismissTip()
     }
 
     func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {
@@ -1762,7 +1758,9 @@ extension NCCollectionViewCommon: EasyTipViewDelegate {
     func easyTipViewDidDismiss(_ tipView: EasyTipView) { }
 
     func dismissTip() {
-        NCManageDatabase.shared.addTip(NCGlobal.shared.tipNCCollectionViewCommonAccountRequest)
+        if !NCManageDatabase.shared.tipExists(NCGlobal.shared.tipNCCollectionViewCommonAccountRequest) {
+            NCManageDatabase.shared.addTip(NCGlobal.shared.tipNCCollectionViewCommonAccountRequest)
+        }
         self.tipView?.dismiss()
     }
 }

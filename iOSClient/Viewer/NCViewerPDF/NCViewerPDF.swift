@@ -271,15 +271,18 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-
         showTip()
+    }
+
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        dismissTip()
     }
 
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         super.viewWillTransition(to: size, with: coordinator)
 
-        tipView?.dismiss()
-
+        dismissTip()
         coordinator.animate(alongsideTransition: { _ in
             self.pdfThumbnailScrollViewTrailingAnchor?.constant = self.thumbnailViewWidth + (self.window?.safeAreaInsets.right ?? 0)
             self.pdfThumbnailScrollView.isHidden = true
@@ -289,7 +292,6 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
     }
 
     @objc func viewUnload() {
-
         navigationController?.popViewController(animated: true)
     }
 
@@ -300,7 +302,6 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
     // MARK: - Tip
 
     func showTip() {
-
         DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
             if !NCManageDatabase.shared.tipExists(NCGlobal.shared.tipNCViewerPDFThumbnail) {
                 self.tipView?.show(forView: self.pdfThumbnailScrollView, withinSuperview: self.pdfContainer)
@@ -616,4 +617,11 @@ extension NCViewerPDF: EasyTipViewDelegate {
     }
 
     func easyTipViewDidDismiss(_ tipView: EasyTipView) { }
+
+    func dismissTip() {
+        if !NCManageDatabase.shared.tipExists(NCGlobal.shared.tipNCViewerPDFThumbnail) {
+            NCManageDatabase.shared.addTip(NCGlobal.shared.tipNCViewerPDFThumbnail)
+        }
+        self.tipView?.dismiss()
+    }
 }

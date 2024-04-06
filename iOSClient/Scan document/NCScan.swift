@@ -116,23 +116,22 @@ class NCScan: UIViewController, NCScanCellCellDelegate {
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-
         showTip()
+    }
+
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        dismissTip()
     }
 
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         super.viewWillTransition(to: size, with: coordinator)
-
-        self.tipView?.dismiss()
-        coordinator.animate(alongsideTransition: nil) { _ in
-            self.showTip()
-        }
+        dismissTip()
     }
 
     // MARK: - Tip
 
     func showTip() {
-
         if !NCManageDatabase.shared.tipExists(NCGlobal.shared.tipNCScanAddImage) {
             self.tipView?.show(forView: add, withinSuperview: self.view)
         }
@@ -433,7 +432,9 @@ extension NCScan: EasyTipViewDelegate {
     func easyTipViewDidDismiss(_ tipView: EasyTipView) { }
 
     func dismissTip() {
-        NCManageDatabase.shared.addTip(NCGlobal.shared.tipNCScanAddImage)
+        if !NCManageDatabase.shared.tipExists(NCGlobal.shared.tipNCScanAddImage) {
+            NCManageDatabase.shared.addTip(NCGlobal.shared.tipNCScanAddImage)
+        }
         self.tipView?.dismiss()
     }
 }
