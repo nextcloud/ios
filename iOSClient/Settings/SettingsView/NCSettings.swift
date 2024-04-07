@@ -203,8 +203,8 @@ struct NCSettings<ViewModel: NCSettingsViewModel>: View {
                 Text("Nextcloud Liquid for iOS \(viewModel.appVersion) © \(viewModel.copyrightYear) \n\nNextcloud Server \(viewModel.serverVersion)\n\(viewModel.themingName) - \(viewModel.themingSlogan)")
 
             })
-        }
-        .navigationBarTitle("Settings")
+        }.navigationBarTitle("Settings")
+        .defaultViewModifier(viewModel)
     }
 }
 

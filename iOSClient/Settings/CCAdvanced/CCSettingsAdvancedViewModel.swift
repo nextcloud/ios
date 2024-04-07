@@ -112,6 +112,8 @@ class CCSettingsAdvancedViewModel: CCSettingsAdvancedViewModelProtocol {
         // Default log level and cache deletion interval
         selectedLogLevel = LogLevel(rawValue: keychain.logLevel) ?? .standard
         selectedInterval = CacheDeletionInterval(rawValue: keychain.cleanUpDay) ?? .never
+        
+        calculateSize()
     }
     
     

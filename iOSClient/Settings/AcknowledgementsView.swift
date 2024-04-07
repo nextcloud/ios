@@ -24,7 +24,14 @@
 import SwiftUI
 import Combine
 
+/// Returns a WebView preferably for Sheets in SwiftUI, using a UIViewRepresentable struct with WebKit library
+///
+/// - Parameters:
+///   - showText: A Bool value which initiates the RTF file view in the sheet
+///   - text: A String value which contains the text of RTF file
+///   - browserTitle: A String value to show as the title of the webView
 struct AcknowledgementsView: View {
+    
     @State private var text = ""
     @Binding var showText: Bool
     var browserTitle: String

@@ -264,10 +264,7 @@ struct CCSettingsAdvanced<ViewModel: CCSettingsAdvancedViewModel>: View {
                     .multilineTextAlignment(.leading)
             })
         }.navigationBarTitle("Advanced")
-            .onAppear(perform: {
-                viewModel.calculateSize()
-            })
-        
+            .defaultViewModifier(viewModel)
     }
 }
 

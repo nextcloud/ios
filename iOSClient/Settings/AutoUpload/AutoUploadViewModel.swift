@@ -113,6 +113,9 @@ class AutoUploadViewModel: AutoUploadVMRepresentable {
             autoUploadFull = account.autoUploadFull
             autoUploadCreateSubfolder = account.autoUploadCreateSubfolder
             autoUploadSubfolderGranularity = Granularity(rawValue: account.autoUploadSubfolderGranularity) ?? .monthly
+            if autoUpload {
+                requestAuthorization()
+            }
         }
     }
     
