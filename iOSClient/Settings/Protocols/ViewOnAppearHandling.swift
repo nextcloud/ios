@@ -24,10 +24,12 @@
 import Foundation
 
 /// A protocol defining methods to handle view appearance events.
-protocol ViewOnAppearHandling {
+protocol ViewOnAppearHandling: ObservableObject {
     /// Triggered when the view appears.
     func onViewAppear()
 }
+
+typealias DefaultViewModelRepresentable = AccountUpdateHandling & ViewOnAppearHandling
 
 /// A protocol defining methods to handle account updates.
 protocol AccountUpdateHandling {

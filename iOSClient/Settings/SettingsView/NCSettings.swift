@@ -204,7 +204,9 @@ struct NCSettings<ViewModel: NCSettingsViewModel>: View {
 
             })
         }.navigationBarTitle("Settings")
-        .defaultViewModifier(viewModel)
+            .onAppear {
+                viewModel.onViewAppear()
+            }
     }
 }
 

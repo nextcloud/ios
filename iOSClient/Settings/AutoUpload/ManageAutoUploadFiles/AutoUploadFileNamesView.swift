@@ -95,8 +95,9 @@ struct AutoUploadFileNamesView<ViewModel: AutoUploadFileNamesViewModel>: View {
                 })
             }
         }.navigationBarTitle("Filename Mode")
-            .defaultViewModifier(viewModel)
-            .padding(.top, 0)
+            .onAppear {
+                viewModel.onViewAppear()
+            }            .padding(.top, 0)
             .transition(.slide)
         
         

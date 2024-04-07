@@ -49,8 +49,9 @@ struct AutoUploadView<ViewModel: AutoUploadViewModel>: View {
             
         }
         .navigationBarTitle("Auto Upload")
-        .defaultViewModifier(viewModel)
-        .transition(.slide)
+        .onAppear {
+            viewModel.onViewAppear()
+        }
         .alert(viewModel.error, isPresented: $viewModel.showErrorAlert) {
             Button(NSLocalizedString("_ok_", comment: ""), role: .cancel) { }
         }

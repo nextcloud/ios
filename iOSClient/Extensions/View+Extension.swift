@@ -37,10 +37,4 @@ extension View {
     func hiddenConditionally(isHidden: Bool) -> some View {
         isHidden ? AnyView(self.hidden()) : AnyView(self)
     }
-    
-    /// A function when applie to a view, ensures the view model's onViewAppear method is called on appearance.
-    @discardableResult func defaultViewModifier(_ viewModel: some ViewOnAppearHandling) -> some View {
-      return modifier(DefaultViewModifier(viewModel: viewModel))
-    }
-
 }

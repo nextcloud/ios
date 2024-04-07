@@ -26,7 +26,7 @@ import SwiftUI
 
 /// A view modifier that automatically calls a view model's `onViewAppear` function when the view appears on screen.
 struct DefaultViewModifier<ViewModel: ViewOnAppearHandling>: ViewModifier {
-  var viewModel: ViewModel
+  @ObservedObject var viewModel: ViewModel
 
   func body(content: Content) -> some View {
     content
