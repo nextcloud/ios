@@ -64,7 +64,7 @@ class NCSettingsViewModel: NCSettingsVMRepresentable {
         
     @Published var serverUrl: String = ""
 
-    @Published var isLockActive: Bool = true
+    @Published var isLockActive: Bool = false
     @Published var enableTouchID: Bool = false
     @Published var lockScreen: Bool = false
     @Published var privacyScreen: Bool = false
@@ -96,7 +96,7 @@ class NCSettingsViewModel: NCSettingsVMRepresentable {
     func onViewAppear() {
         isLockActive = (keychain.passcode != nil)
         enableTouchID = keychain.touchFaceID
-        lockScreen = keychain.requestPasscodeAtStart
+        lockScreen = !keychain.requestPasscodeAtStart
         privacyScreen = keychain.privacyScreenEnabled
         resetWrongAttempts = keychain.resetAppCounterFail
         copyrightYear = getCurrentYear()
@@ -111,14 +111,14 @@ class NCSettingsViewModel: NCSettingsVMRepresentable {
         keychain.touchFaceID = enableTouchID
     }
     
+    /// Function to update Lock Screen setting
+    func updateLockScreenSetting() {
+        keychain.requestPasscodeAtStart = !lockScreen
+    }
+    
     /// Function to update Privacy Screen setting
     func updatePrivacyScreenSetting() {
         keychain.privacyScreenEnabled = privacyScreen
-    }
-    
-    /// Function to update Lock Screen setting
-    func updateLockScreenSetting() {
-        
     }
     
     /// Function to update Reset Wrong Attempts setting

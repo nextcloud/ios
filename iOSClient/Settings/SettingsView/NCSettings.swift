@@ -80,7 +80,7 @@ struct NCSettings<ViewModel: NCSettingsViewModel>: View {
                 // Lock no screen
                 Toggle(NSLocalizedString("_lock_protection_no_screen_", comment: ""), isOn: $viewModel.lockScreen) // TODO: This will also require KeychainManager, so will do it at last
                     .onChange(of: viewModel.lockScreen) { _ in
-                        
+                        viewModel.updateLockScreenSetting()
                     }
 
                 
