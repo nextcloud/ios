@@ -26,6 +26,7 @@
 		ACBA97E62B9ACF63006B8710 /* AutoUploadViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACBA97E52B9ACF63006B8710 /* AutoUploadViewModel.swift */; };
 		ACBA97E92B9AD90D006B8710 /* CCSettingsAdvanced.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACBA97E82B9AD90D006B8710 /* CCSettingsAdvanced.swift */; };
 		ACBA97EB2B9B03A3006B8710 /* CCSettingsAdvancedViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACBA97EA2B9B03A3006B8710 /* CCSettingsAdvancedViewModel.swift */; };
+		ACDC16982BC26AAC00EBF724 /* DefaultViewModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACDC16972BC26AAC00EBF724 /* DefaultViewModifier.swift */; };
 		ACFC775B2B9368AA008BF302 /* OpenSSL in Frameworks */ = {isa = PBXBuildFile; productRef = ACFC775A2B9368AA008BF302 /* OpenSSL */; };
 		ACFC775D2B9368D3008BF302 /* OpenSSL in Frameworks */ = {isa = PBXBuildFile; productRef = ACFC775C2B9368D3008BF302 /* OpenSSL */; };
 		ACFC775F2B944B17008BF302 /* NCSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACFC775E2B944B17008BF302 /* NCSettings.swift */; };
@@ -941,6 +942,7 @@
 		ACBA97E52B9ACF63006B8710 /* AutoUploadViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AutoUploadViewModel.swift; sourceTree = "<group>"; };
 		ACBA97E82B9AD90D006B8710 /* CCSettingsAdvanced.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CCSettingsAdvanced.swift; sourceTree = "<group>"; };
 		ACBA97EA2B9B03A3006B8710 /* CCSettingsAdvancedViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CCSettingsAdvancedViewModel.swift; sourceTree = "<group>"; };
+		ACDC16972BC26AAC00EBF724 /* DefaultViewModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultViewModifier.swift; sourceTree = "<group>"; };
 		ACFC775E2B944B17008BF302 /* NCSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCSettings.swift; sourceTree = "<group>"; };
 		AF1A9B6327D0CA1E00F17A9E /* UIAlertController+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIAlertController+Extension.swift"; sourceTree = "<group>"; };
 		AF22B20B277C6F4D00DAB0CC /* NCShareCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCShareCell.swift; sourceTree = "<group>"; };
@@ -1755,6 +1757,14 @@
 			path = CCAdvanced;
 			sourceTree = "<group>";
 		};
+		ACDC16962BC26A8500EBF724 /* ViewModifiers */ = {
+			isa = PBXGroup;
+			children = (
+				ACDC16972BC26AAC00EBF724 /* DefaultViewModifier.swift */,
+			);
+			path = ViewModifiers;
+			sourceTree = "<group>";
+		};
 		ACFC77602B944B1E008BF302 /* SettingsView */ = {
 			isa = PBXGroup;
 			children = (
@@ -2373,6 +2383,7 @@
 		F7ACE4281BAC0268006C0017 /* Settings */ = {
 			isa = PBXGroup;
 			children = (
+				ACDC16962BC26A8500EBF724 /* ViewModifiers */,
 				ACB1124D2BA72F0700BB5092 /* Protocols */,
 				ACBA97E72B9AD8D7006B8710 /* CCAdvanced */,
 				AC3575332B9896E300D28E9C /* AutoUpload */,
@@ -4011,6 +4022,7 @@
 				AF36077127BFA4E8001A243D /* ParallelWorker.swift in Sources */,
 				F75A9EE623796C6F0044CFCE /* NCNetworking.swift in Sources */,
 				F758B460212C56A400515F55 /* NCScan.swift in Sources */,
+				ACDC16982BC26AAC00EBF724 /* DefaultViewModifier.swift in Sources */,
 				ACBA97E92B9AD90D006B8710 /* CCSettingsAdvanced.swift in Sources */,
 				F78ACD52219046DC0088454D /* NCSectionHeaderMenu.swift in Sources */,
 				F72944F52A8424F800246839 /* NCEndToEndMetadataV1.swift in Sources */,
