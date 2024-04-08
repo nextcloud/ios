@@ -31,18 +31,20 @@ struct NCAssistant: View {
                     }
                 }
 
-                List {
-                    Text("test")
-                    Text("test")
-                    Text("test")
-                    Text("test")
-                    Text("test")
+//                List {
+//                    Text("test")
+//                    Text("test")
+//                    Text("test")
+//                    Text("test")
+//                    Text("test")
+//                }
+
+                List(model.tasks, id: \.id) { task in
+                    Text(task.output ?? "")
                 }
             }
 
-            //            List(model.tasks, id: \.id) { task in
-            //                Text(task.output ?? "")
-            //            }
+
         }
 
     }

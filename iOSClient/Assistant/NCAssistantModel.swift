@@ -22,13 +22,13 @@ class NCAssistantModel: ObservableObject {
 
     private func loadTypes() {
         NextcloudKit.shared.textProcessingGetTypes { _, types, _, _ in
-            guard let filteredTypes = types?.filter({ self.excludedTypeIds.contains($0.id ?? "")}) else { return }
+            guard let filteredTypes = types?.filter({ !self.excludedTypeIds.contains($0.id ?? "")}) else { return }
 
             self.types = filteredTypes
         }
     }
 
-    private func loadTasks(appId: String = "assistant") {
+    private func loadTasks(appId: String = "OCP\\TextProcessing\\FreePromptTaskType") {
         NextcloudKit.shared.textProcessingTaskList(appId: appId) { _, tasks, _, error in
 
             print(error)
