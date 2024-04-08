@@ -68,7 +68,10 @@ class NCViewerMediaPage: UIViewController {
     var nextTrackCommand: Any?
     var previousTrackCommand: Any?
     let utilityFileSystem = NCUtilityFileSystem()
-    var preventScrollBug = true
+
+    // This prevents the scroll views to scroll when you drag and drop files/images/subjects (from this or other apps)
+    // https://forums.developer.apple.com/forums/thread/89396 and https://forums.developer.apple.com/forums/thread/115736
+    var preventScrollOnDragAndDrop = true
 
     var timerAutoHide: Timer?
     private var timerAutoHideSeconds: Double = 4
@@ -725,22 +728,22 @@ extension NCViewerMediaPage: NCViewerMediaViewDelegate {
 extension NCViewerMediaPage: UIScrollViewDelegate {
 
     func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
-        preventScrollBug = false
+        preventScrollOnDragAndDrop = false
     }
 
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        if preventScrollBug {
+        if preventScrollOnDragAndDrop {
             scrollView.setContentOffset(CGPoint(x: view.frame.width + 10, y: 0), animated: false)
         }
     }
 
     func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
         if !decelerate {
-            preventScrollBug = true
+            preventScrollOnDragAndDrop = true
         }
     }
 
     func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
-        preventScrollBug = true
+        preventScrollOnDragAndDrop = true
     }
 }
