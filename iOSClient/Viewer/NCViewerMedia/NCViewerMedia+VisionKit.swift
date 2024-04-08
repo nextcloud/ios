@@ -30,11 +30,11 @@ extension NCViewerMedia {
         if let image = image {
             Task {
                 let configuration = ImageAnalyzer.Configuration([.text, .machineReadableCode, .visualLookUp])
-                    let analysis = try? await analyzer.imageAnalyzer?.analyze(image, configuration: configuration)
-                    if image == self.image {
-                        analyzer.imageInteraction?.analysis = analysis
-                        analyzer.imageInteraction?.preferredInteractionTypes = .automatic
-                    }
+                let analysis = try? await analyzer.imageAnalyzer?.analyze(image, configuration: configuration)
+                if image == self.image {
+                    analyzer.imageInteraction?.analysis = analysis
+                    analyzer.imageInteraction?.preferredInteractionTypes = .automatic
+                }
             }
         }
     }
