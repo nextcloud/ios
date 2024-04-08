@@ -9,27 +9,42 @@
 import SwiftUI
 
 struct NCAssistant: View {
+    @ObservedObject var model = NCAssistantModel()
+
     var body: some View {
-        ScrollView(.horizontal) {
-            HStack(alignment: .top) {
-                TypeButton()
-                TypeButton()
-                TypeButton()
-                TypeButton()
-                TypeButton()
-                TypeButton()
-                TypeButton()
-                TypeButton()
-                TypeButton()
-                TypeButton()
-                TypeButton()
+        NavigationView {
+            VStack {
+                ScrollView(.horizontal) {
+                    LazyHStack {
+                        TypeButton(text: "All")
+
+                        ForEach(model.types, id: \.id) { type in
+                            TypeButton(text: type.name ?? "")
+                        }
+                    }
+                    .frame(height: 50)
+                    .padding()
+                }.toolbar {
+                    Button {
+                    } label: {
+                        Image(systemName: "plus")
+                    }
+                }
+
+                List {
+                    Text("test")
+                    Text("test")
+                    Text("test")
+                    Text("test")
+                    Text("test")
+                }
             }
-            .padding()
+
+            //            List(model.tasks, id: \.id) { task in
+            //                Text(task.output ?? "")
+            //            }
         }
 
-        List {
-            Text("WOIW")
-        }
     }
 }
 
@@ -38,13 +53,15 @@ struct NCAssistant: View {
 }
 
 struct TypeButton: View {
+    let text: String
+
     var body: some View {
         Button {
 
         } label: {
-            Text("Test").font(.title2).foregroundStyle(.white)
+            Text(text).font(.title2).foregroundStyle(.white)
         }
-//        .frame(height: 20)
+        //        .frame(height: 20)
         .padding(.horizontal, 30)
         .padding(.vertical, 10)
         .background(.blue, ignoresSafeAreaEdges: [])
