@@ -56,8 +56,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                 NCPasscode.shared.presentPasscode(rootViewController: rootViewController, delegate: appDelegate) {
                     NCPasscode.shared.enableTouchFaceID()
                 }
-            } else if NCKeychain().requestPasscodeAtStart {
-                appDelegate.requestedAccount(viewController: rootViewController)
+            } else if NCKeychain().accountRequest {
+                appDelegate.requestedAccount(rootViewController: rootViewController)
             }
         }
 

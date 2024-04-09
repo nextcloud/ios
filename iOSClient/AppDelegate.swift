@@ -633,33 +633,25 @@ extension AppDelegate: NCCreateFormUploadConflictDelegate {
 }
 
 extension AppDelegate: NCPasscodeDelegate {
-    func requestedAccount(viewController: UIViewController?) {
-        guard NCKeychain().accountRequest else {
-            return
-        }
-
+    func requestedAccount(rootViewController: UIViewController?) {
         let accounts = NCManageDatabase.shared.getAllAccount()
-        if accounts.count > 1 {
+        if accounts.count > 1, let accountRequestVC = UIStoryboard(name: "NCAccountRequest", bundle: nil).instantiateInitialViewController() as? NCAccountRequest {
+            accountRequestVC.activeAccount = NCManageDatabase.shared.getActiveAccount()
+            accountRequestVC.accounts = accounts
+            accountRequestVC.enableTimerProgress = true
+            accountRequestVC.enableAddAccount = false
+            accountRequestVC.dismissDidEnterBackground = false
+            accountRequestVC.delegate = self
+            accountRequestVC.startTimer()
 
-            if let accountRequestVC = UIStoryboard(name: "NCAccountRequest", bundle: nil).instantiateInitialViewController() as? NCAccountRequest {
+            let screenHeighMax = UIScreen.main.bounds.height - (UIScreen.main.bounds.height / 5)
+            let numberCell = accounts.count
+            let height = min(CGFloat(numberCell * Int(accountRequestVC.heightCell) + 45), screenHeighMax)
 
-                accountRequestVC.activeAccount = NCManageDatabase.shared.getActiveAccount()
-                accountRequestVC.accounts = accounts
-                accountRequestVC.enableTimerProgress = true
-                accountRequestVC.enableAddAccount = false
-                accountRequestVC.dismissDidEnterBackground = false
-                accountRequestVC.delegate = self
-                accountRequestVC.startTimer()
+            let popup = NCPopupViewController(contentController: accountRequestVC, popupWidth: 300, popupHeight: height + 20)
+            popup.backgroundAlpha = 0.8
 
-                let screenHeighMax = UIScreen.main.bounds.height - (UIScreen.main.bounds.height / 5)
-                let numberCell = accounts.count
-                let height = min(CGFloat(numberCell * Int(accountRequestVC.heightCell) + 45), screenHeighMax)
-
-                let popup = NCPopupViewController(contentController: accountRequestVC, popupWidth: 300, popupHeight: height + 20)
-                popup.backgroundAlpha = 0.8
-
-                viewController?.present(popup, animated: true)
-            }
+            rootViewController?.present(popup, animated: true)
         }
     }
 
