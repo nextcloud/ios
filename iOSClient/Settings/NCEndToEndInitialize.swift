@@ -26,7 +26,7 @@ import NextcloudKit
 
 @objc protocol NCEndToEndInitializeDelegate {
 
-    func endToEndInitializeSuccess()
+    func endToEndInitializeSuccess(metadata: tableMetadata?)
 }
 
 class NCEndToEndInitialize: NSObject {
@@ -36,16 +36,15 @@ class NCEndToEndInitialize: NSObject {
     let utilityFileSystem = NCUtilityFileSystem()
     var extractedPublicKey: String?
     var viewController: UIViewController?
-
-    override init() {
-    }
+    var metadata: tableMetadata?
 
     // --------------------------------------------------------------------------------------------
     // MARK: Initialize
     // --------------------------------------------------------------------------------------------
 
-    @objc func initEndToEndEncryption(viewController: UIViewController?) {
+    @objc func initEndToEndEncryption(viewController: UIViewController?, metadata: tableMetadata?) {
         self.viewController = viewController
+        self.metadata = metadata
 
         // Clear all keys
         NCKeychain().clearAllKeysEndToEnd(account: appDelegate.account)
@@ -176,7 +175,7 @@ class NCEndToEndInitialize: NSObject {
                             NCKeychain().setEndToEndPublicKey(account: account, publicKey: publicKey)
                             NCManageDatabase.shared.clearTablesE2EE(account: account)
 
-                            self.delegate?.endToEndInitializeSuccess()
+                            self.delegate?.endToEndInitializeSuccess(metadata: self.metadata)
 
                         } else if error != .success {
 
@@ -284,7 +283,7 @@ class NCEndToEndInitialize: NSObject {
                             UIPasteboard.general.string = e2ePassphrase
                         }
 
-                        self.delegate?.endToEndInitializeSuccess()
+                        self.delegate?.endToEndInitializeSuccess(metadata: self.metadata)
 
                     } else if error != .success {
 

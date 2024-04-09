@@ -67,7 +67,7 @@ class NCManageE2EE: NSObject, ObservableObject, NCEndToEndInitializeDelegate, TO
 
     // MARK: - Delegate
 
-    func endToEndInitializeSuccess() {
+    func endToEndInitializeSuccess(metadata: tableMetadata?) {
         isEndToEndEnabled = true
     }
 
@@ -102,7 +102,7 @@ class NCManageE2EE: NSObject, ObservableObject, NCEndToEndInitializeDelegate, TO
 
         switch self.passcodeType {
         case "startE2E":
-            endToEndInitialize.initEndToEndEncryption(viewController: rootViewController)
+            endToEndInitialize.initEndToEndEncryption(viewController: rootViewController, metadata: nil)
         case "readPassphrase":
             if let e2ePassphrase = NCKeychain().getEndToEndPassphrase(account: appDelegate.account) {
                 print("[INFO]Passphrase: " + e2ePassphrase)

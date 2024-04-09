@@ -1080,7 +1080,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         guard let sceneIdentifier = (tabBarController as? NCMainTabBarController)?.sceneIdentifier else { return }
         let serverUrlPush = utilityFileSystem.stringAppendServerUrl(metadata.serverUrl, addFileName: metadata.fileName)
         let sceneIdentifierServerUrlPush = sceneIdentifier + "|" + serverUrlPush
-        appDelegate.activeMetadata = metadata
 
         if let viewController = appDelegate.listFilesVC[sceneIdentifierServerUrlPush], viewController.isViewLoaded {
             navigationController?.pushViewController(viewController, animated: true)
@@ -1101,8 +1100,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
 extension NCCollectionViewCommon: NCEndToEndInitializeDelegate {
 
-    func endToEndInitializeSuccess() {
-        if let metadata = appDelegate.activeMetadata {
+    func endToEndInitializeSuccess(metadata: tableMetadata?) {
+        if let metadata {
             pushMetadata(metadata)
         }
     }
@@ -1114,7 +1113,6 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
 
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         guard let metadata = dataSource.cellForItemAt(indexPath: indexPath) else { return }
-        appDelegate.activeMetadata = metadata
 
         if isEditMode {
             if let index = selectOcId.firstIndex(of: metadata.ocId) {
@@ -1132,7 +1130,7 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
                 if !NCKeychain().isEndToEndEnabled(account: appDelegate.account) {
                     let e2ee = NCEndToEndInitialize()
                     e2ee.delegate = self
-                    e2ee.initEndToEndEncryption(viewController: self.tabBarController)
+                    e2ee.initEndToEndEncryption(viewController: self.tabBarController, metadata: metadata)
                     return
                 }
             } else {
