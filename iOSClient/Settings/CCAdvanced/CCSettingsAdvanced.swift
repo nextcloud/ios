@@ -259,7 +259,11 @@ struct CCSettingsAdvanced<ViewModel: CCSettingsAdvancedViewModel>: View {
                     showExitAlert.toggle()
                 })
             }, footer: {
+               ( 
                 Text(NSLocalizedString("_exit_footer_", comment: ""))
+                +
+                Text("\n\n")
+               )
                     .font(.system(size: 12))
                     .multilineTextAlignment(.leading)
             })

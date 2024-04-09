@@ -146,7 +146,7 @@ struct NCCapabilitiesView: View {
                     CapabilityName(text: $capabilitiesViewOO.homeServer, image: Image(systemName: "house"), resize: false)
                 }
             }
-        }
+        }.navigationBarTitle(NSLocalizedString("_capabilities_", comment: ""))
         .frame(maxWidth: .infinity, alignment: .top)
     }
 

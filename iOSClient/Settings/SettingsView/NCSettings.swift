@@ -200,7 +200,7 @@ struct NCSettings<ViewModel: NCSettingsViewModel>: View {
             Section(content: {
                 
             }, footer: {
-                Text("Nextcloud Liquid for iOS \(viewModel.appVersion) © \(viewModel.copyrightYear) \n\nNextcloud Server \(viewModel.serverVersion)\n\(viewModel.themingName) - \(viewModel.themingSlogan)")
+                Text("Nextcloud Liquid for iOS \(viewModel.appVersion) © \(viewModel.copyrightYear) \n\nNextcloud Server \(viewModel.serverVersion)\n\(viewModel.themingName) - \(viewModel.themingSlogan)\n\n")
 
             })
         }.navigationBarTitle("Settings")
