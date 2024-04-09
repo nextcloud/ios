@@ -10,27 +10,27 @@ import SwiftUI
 
 struct NCAssistantCreateNewTask: View {
     @EnvironmentObject var model: NCAssistantModel
-    @State var text = "eweaesda"
+    @State var text = ""
 
     var body: some View {
-        NavigationView {
+//        NavigationView {
             VStack {
-                Text(model.selectedTaskType?.name ?? "Test")
+                Text(model.selectedTaskType?.description ?? "")
                 TextEditor(text: $text)
-                    .toolbar {
-                        Button(action: {
+//                    .foregroundStyle(.gray)
 
-                        }, label: {
-                            Text("Add")
-                        })
-                    }
             }
+            .toolbar {
+                Button(action: {
+                }, label: {
+                    Text("Add")
+                })
+            }
+            .navigationTitle("New " + (model.selectedTaskType?.name ?? "") + " task")
+            .navigationBarTitleDisplayMode(.inline)
             .padding()
 
-                .navigationTitle("New " + (model.selectedTaskType?.name ?? "") + " Task")
-
-                .navigationBarTitleDisplayMode(.inline)
-        }
+//        }
 
     }
 }

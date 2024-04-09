@@ -33,11 +33,12 @@ struct NCAssistant: View {
                     NavigationLink(destination: NCAssistantCreateNewTask()) {
                         Image(systemName: "plus")
                     }
+                    .disabled(model.selectedTaskType == nil)
+
                     //                        //                        presentNewTaskDialog = true
                     //                    } label: {
                     //                        Image(systemName: "plus")
                     //                    }
-                    //                    .disabled(model.selectedTaskType == nil)
                 }
                 .navigationBarTitleDisplayMode(.inline)
                 .navigationTitle("Assistant")
@@ -47,6 +48,7 @@ struct NCAssistant: View {
                 }
             }
         }
+        .environmentObject(model)
         //        .alert(model.selectedTaskType?.name ?? "", isPresented: $presentNewTaskDialog) {
         //            TextEditor(text: $taskText)
         //                .frame(height: 100)
