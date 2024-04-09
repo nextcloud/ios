@@ -159,7 +159,8 @@ extension NCMenuAction {
             icon: NCUtility().loadImage(named: "square.and.arrow.up"),
             order: order,
             action: { _ in
-                NCActionCenter.shared.openActivityViewController(selectedMetadata: selectedMetadatas)
+                let mainTabBarController = viewController.tabBarController as? NCMainTabBarController
+                NCActionCenter.shared.openActivityViewController(selectedMetadata: selectedMetadatas, mainTabBarController: mainTabBarController)
                 completion?()
             }
         )

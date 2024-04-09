@@ -54,7 +54,7 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
               let account = userInfo["account"] as? String,
               account == appDelegate?.account
         else { return }
-        let rootViewController = UIApplication.shared.firstWindow?.rootViewController
+        let rootViewController = UIApplication.shared.firstWindow?.rootViewController as? NCMainTabBarController
 
         guard error == .success else {
             // File do not exists on server, remove in local
@@ -98,9 +98,9 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
             DispatchQueue.main.async {
                 guard UIApplication.shared.applicationState == .active else { return }
                 if metadata.contentType.contains("opendocument") && !self.utility.isRichDocument(metadata) {
-                    self.openDocumentController(metadata: metadata)
+                    self.openDocumentController(metadata: metadata, mainTabBarController: rootViewController)
                 } else if metadata.classFile == NKCommon.TypeClassFile.compress.rawValue || metadata.classFile == NKCommon.TypeClassFile.unknow.rawValue {
-                    self.openDocumentController(metadata: metadata)
+                    self.openDocumentController(metadata: metadata, mainTabBarController: rootViewController)
                 } else {
                     if let viewController = (UIApplication.shared.firstWindow?.rootViewController as? NCMainTabBarController)?.viewController {
                         let imageIcon = UIImage(contentsOfFile: self.utilityFileSystem.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag))
@@ -112,7 +112,7 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
         case NCGlobal.shared.selectorOpenIn:
             DispatchQueue.main.async {
                 if UIApplication.shared.applicationState == .active {
-                    self.openDocumentController(metadata: metadata)
+                    self.openDocumentController(metadata: metadata, mainTabBarController: rootViewController)
                 }
             }
 
@@ -125,7 +125,7 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
 
         case NCGlobal.shared.selectorSaveAlbum:
             DispatchQueue.main.async {
-                self.saveAlbum(metadata: metadata)
+                self.saveAlbum(metadata: metadata, mainTabBarController: rootViewController)
             }
 
         case NCGlobal.shared.selectorSaveAsScan:
@@ -307,19 +307,19 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
 
     // MARK: - Open in ...
 
-    func openDocumentController(metadata: tableMetadata) {
+    func openDocumentController(metadata: tableMetadata, mainTabBarController: NCMainTabBarController?) {
 
-        guard let appDelegate = UIApplication.shared.delegate as? AppDelegate,
-              let mainTabBar = appDelegate.mainTabBar else { return }
+        guard let mainTabBarController,
+              let mainTabBar = mainTabBarController.tabBar as? NCMainTabBar else { return }
         let fileURL = URL(fileURLWithPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView))
 
         documentController = UIDocumentInteractionController(url: fileURL)
         documentController?.presentOptionsMenu(from: mainTabBar.menuRect, in: mainTabBar, animated: true)
     }
 
-    func openActivityViewController(selectedMetadata: [tableMetadata]) {
-        guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else { return }
-        let rootViewController = UIApplication.shared.firstWindow?.rootViewController
+    func openActivityViewController(selectedMetadata: [tableMetadata], mainTabBarController: NCMainTabBarController?) {
+        guard let mainTabBarController,
+              let mainTabBar = mainTabBarController.tabBar as? NCMainTabBar else { return }
         let metadatas = selectedMetadata.filter({ !$0.directory })
         var items: [URL] = []
         var downloadMetadata: [(tableMetadata, URL)] = []
@@ -333,7 +333,7 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
             }
         }
 
-        let processor = ParallelWorker(n: 5, titleKey: "_downloading_", totalTasks: downloadMetadata.count, hudView: rootViewController?.view)
+        let processor = ParallelWorker(n: 5, titleKey: "_downloading_", totalTasks: downloadMetadata.count, hudView: mainTabBarController.view)
         for (metadata, url) in downloadMetadata {
             processor.execute { completion in
                 guard let metadata = NCManageDatabase.shared.setMetadatasSessionInWaitDownload(metadatas: [metadata],
@@ -350,12 +350,12 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
         }
 
         processor.completeWork {
-            guard !items.isEmpty, let mainTabBar = appDelegate.mainTabBar else { return }
+            guard !items.isEmpty else { return }
             let activityViewController = UIActivityViewController(activityItems: items, applicationActivities: nil)
             activityViewController.popoverPresentationController?.permittedArrowDirections = .any
             activityViewController.popoverPresentationController?.sourceView = mainTabBar
             activityViewController.popoverPresentationController?.sourceRect = mainTabBar.menuRect
-            rootViewController?.present(activityViewController, animated: true)
+            mainTabBarController.present(activityViewController, animated: true)
         }
     }
 
@@ -416,12 +416,10 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
 
     // MARK: - Save photo
 
-    func saveAlbum(metadata: tableMetadata) {
-        guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else { return }
-
+    func saveAlbum(metadata: tableMetadata, mainTabBarController: NCMainTabBarController?) {
         let fileNamePath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)
 
-        NCAskAuthorization().askAuthorizationPhotoLibrary(viewController: appDelegate.mainTabBar?.window?.rootViewController) { hasPermission in
+        NCAskAuthorization().askAuthorizationPhotoLibrary(viewController: mainTabBarController) { hasPermission in
             guard hasPermission else {
                 let error = NKError(errorCode: NCGlobal.shared.errorFileNotSaved, errorDescription: "_access_photo_not_enabled_msg_")
                 return NCContentPresenter().messageNotification("_access_photo_not_enabled_", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error)

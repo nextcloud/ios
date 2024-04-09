@@ -44,7 +44,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     var activeLogin: NCLogin?
     var activeLoginWeb: NCLoginWeb?
     var activeServerUrl: String = ""
-    var mainTabBar: NCMainTabBar?
     let listFilesVC = ThreadSafeDictionary<String, NCFiles>()
 
     var disableSharesView: Bool = false
