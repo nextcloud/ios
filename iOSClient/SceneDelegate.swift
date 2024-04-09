@@ -336,8 +336,6 @@ class SceneManager {
         return (scene as? UIWindowScene)?.keyWindow
     }
 
-
-
     func getSceneIdentifier() -> [String] {
         var results: [String] = []
         for mainTabBarController in sceneRootViewController.keys {
@@ -345,6 +343,4 @@ class SceneManager {
         }
         return results
     }
-
-
 }

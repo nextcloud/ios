@@ -100,7 +100,8 @@ class NCTrash: UIViewController, NCTrashListCellDelegate, NCTrashGridCellDelegat
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        appDelegate.activeViewController = self
+
+        (tabBarController as? NCMainTabBarController)?.viewController = self
     }
 
     override func viewDidDisappear(_ animated: Bool) {

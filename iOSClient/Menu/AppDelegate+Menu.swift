@@ -65,7 +65,7 @@ extension AppDelegate {
                         let fileName = await NCNetworking.shared.createFileName(fileNameBase: NSLocalizedString("_untitled_", comment: "") + ".md", account: appDelegate.account, serverUrl: self.activeServerUrl)
 
                         let fileNamePath = NCUtilityFileSystem().getFileNamePath(String(describing: fileName), serverUrl: appDelegate.activeServerUrl, urlBase: appDelegate.urlBase, userId: appDelegate.userId)
-                        self.createTextDocument(fileNamePath: fileNamePath, fileName: String(describing: fileName), creatorId: directEditingCreator.identifier)
+                        self.createTextDocument(mainTabBarController: mainTabBarController, fileNamePath: fileNamePath, fileName: String(describing: fileName), creatorId: directEditingCreator.identifier)
                     }
                 })
             )
@@ -284,7 +284,7 @@ extension AppDelegate {
         mainTabBarController.presentMenu(with: actions)
     }
 
-    func createTextDocument(fileNamePath: String, fileName: String, creatorId: String) {
+    func createTextDocument(mainTabBarController: NCMainTabBarController, fileNamePath: String, fileName: String, creatorId: String) {
         var UUID = NSUUID().uuidString
         UUID = "TEMP" + UUID.replacingOccurrences(of: "-", with: "")
 
@@ -303,7 +303,7 @@ extension AppDelegate {
             }
 
             let metadata = NCManageDatabase.shared.createMetadata(account: self.account, user: self.user, userId: self.userId, fileName: fileName, fileNameView: fileName, ocId: UUID, serverUrl: self.activeServerUrl, urlBase: self.urlBase, url: url, contentType: results.mimeType)
-            if let viewController = self.activeViewController {
+            if let viewController = mainTabBarController.viewController {
                 NCViewer().view(viewController: viewController, metadata: metadata, metadatas: [metadata], imageIcon: nil)
             }
         }

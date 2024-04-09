@@ -25,4 +25,5 @@ import UIKit
 
 class NCMainTabBarController: UITabBarController {
     var sceneIdentifier: String = UUID().uuidString
+    var viewController: UIViewController?
 }
