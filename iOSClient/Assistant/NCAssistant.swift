@@ -7,66 +7,77 @@
 //
 
 import SwiftUI
+import NextcloudKit
 
 struct NCAssistant: View {
     @ObservedObject var model = NCAssistantModel()
+    @State var presentNewTaskDialog = false
+    @State var taskText = ""
 
     var body: some View {
         NavigationView {
             VStack {
                 ScrollView(.horizontal) {
                     LazyHStack {
-                        TypeButton(text: "All")
+                        TypeButton(model: model, taskType: nil)
 
                         ForEach(model.types, id: \.id) { type in
-                            TypeButton(text: type.name ?? "")
+                            TypeButton(model: model, taskType: type)
                         }
                     }
                     .frame(height: 50)
                     .padding()
                 }.toolbar {
-                    Button {
-                    } label: {
+
+                    //                    Button {
+                    NavigationLink(destination: NCAssistantCreateNewTask()) {
                         Image(systemName: "plus")
                     }
+                    //                        //                        presentNewTaskDialog = true
+                    //                    } label: {
+                    //                        Image(systemName: "plus")
+                    //                    }
+                    //                    .disabled(model.selectedTaskType == nil)
                 }
+                .navigationBarTitleDisplayMode(.inline)
+                .navigationTitle("Assistant")
 
-//                List {
-//                    Text("test")
-//                    Text("test")
-//                    Text("test")
-//                    Text("test")
-//                    Text("test")
-//                }
-
-                List(model.tasks, id: \.id) { task in
-                    Text(task.output ?? "")
+                List(model.filteredTasks, id: \.id) { task in
+                    Text(task.input ?? "")
                 }
             }
-
-
         }
-
+        //        .alert(model.selectedTaskType?.name ?? "", isPresented: $presentNewTaskDialog) {
+        //            TextEditor(text: $taskText)
+        //                .frame(height: 100)
+        //            Button("OK") {
+        //
+        //            }
+        //            Button("Cancel", role: .cancel) { }
+        //        } message: {
+        //            Text(model.selectedTaskType?.description ?? "")
+        //
+        //        }
     }
 }
 
-#Preview {
-    NCAssistant()
-}
-
 struct TypeButton: View {
-    let text: String
+    let model: NCAssistantModel
+    let taskType: NKTextProcessingTaskType?
 
     var body: some View {
         Button {
-
+            model.selectTaskType(taskType)
         } label: {
-            Text(text).font(.title2).foregroundStyle(.white)
+            Text(taskType?.name ?? "All").font(.title2).foregroundStyle(.white)
         }
-        //        .frame(height: 20)
         .padding(.horizontal, 30)
         .padding(.vertical, 10)
         .background(.blue, ignoresSafeAreaEdges: [])
         .cornerRadius(5)
     }
+}
+
+#Preview {
+    NCAssistant()
 }
