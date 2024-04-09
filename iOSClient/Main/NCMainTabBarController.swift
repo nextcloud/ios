@@ -26,4 +26,5 @@ import UIKit
 @objc class NCMainTabBarController: UITabBarController {
     @objc var sceneIdentifier: String = UUID().uuidString
     @objc var viewController: UIViewController?
+    @objc var serverUrl: String?
 }

@@ -174,8 +174,10 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         setNavigationRightItems()
 
         if serverUrl.isEmpty {
+            (tabBarController as? NCMainTabBarController)?.serverUrl = utilityFileSystem.getHomeServer(urlBase: appDelegate.urlBase, userId: appDelegate.userId)
             appDelegate.activeServerUrl = utilityFileSystem.getHomeServer(urlBase: appDelegate.urlBase, userId: appDelegate.userId)
         } else {
+            (tabBarController as? NCMainTabBarController)?.serverUrl = serverUrl
             appDelegate.activeServerUrl = serverUrl
         }
 

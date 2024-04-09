@@ -31,13 +31,13 @@ import NextcloudKit
 
 class NCPhotosPickerViewController: NSObject {
     let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
-    var sourceViewController: UIViewController
+    var mainTabBarController: NCMainTabBarController
     var maxSelectedAssets = 1
     var singleSelectedMode = false
 
     @discardableResult
-    init(viewController: UIViewController, maxSelectedAssets: Int, singleSelectedMode: Bool) {
-        sourceViewController = viewController
+    init(mainTabBarController: NCMainTabBarController, maxSelectedAssets: Int, singleSelectedMode: Bool) {
+        self.mainTabBarController = mainTabBarController
         super.init()
 
         self.maxSelectedAssets = maxSelectedAssets
@@ -45,9 +45,10 @@ class NCPhotosPickerViewController: NSObject {
 
         self.openPhotosPickerViewController { assets in
             if !assets.isEmpty {
+                let serverUrl = mainTabBarController.serverUrl ?? NCUtilityFileSystem().getHomeServer(urlBase: self.appDelegate.urlBase, userId: self.appDelegate.userId)
                 let vc = NCHostingUploadAssetsView().makeShipDetailsUI(assets: assets, serverUrl: self.appDelegate.activeServerUrl, userBaseUrl: self.appDelegate)
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
-                    viewController.present(vc, animated: true, completion: nil)
+                    mainTabBarController.present(vc, animated: true, completion: nil)
                 }
             }
         }
@@ -92,7 +93,7 @@ class NCPhotosPickerViewController: NSObject {
 
         viewController.configure = configure
 
-        sourceViewController.present(viewController, animated: true, completion: nil)
+        mainTabBarController.present(viewController, animated: true, completion: nil)
     }
 }
 

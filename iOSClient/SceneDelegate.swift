@@ -196,7 +196,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
                     NCAskAuthorization().askAuthorizationPhotoLibrary(viewController: rootViewController) { hasPermission in
                         if hasPermission {
-                            NCPhotosPickerViewController(viewController: rootViewController, maxSelectedAssets: 0, singleSelectedMode: false)
+                            NCPhotosPickerViewController(mainTabBarController: rootViewController, maxSelectedAssets: 0, singleSelectedMode: false)
                         }
                     }
 
@@ -217,7 +217,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                     viewController.editorId = NCGlobal.shared.editorText
                     viewController.creatorId = directEditingCreator.identifier
                     viewController.typeTemplate = NCGlobal.shared.templateDocument
-                    viewController.serverUrl = appDelegate.activeServerUrl
+                    viewController.serverUrl = rootViewController.serverUrl ?? NCUtilityFileSystem().getHomeServer(urlBase: appDelegate.urlBase, userId: appDelegate.userId)
                     viewController.titleForm = NSLocalizedString("_create_nextcloudtext_document_", comment: "")
 
                     rootViewController.present(navigationController, animated: true, completion: nil)

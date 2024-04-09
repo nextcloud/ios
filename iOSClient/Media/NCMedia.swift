@@ -293,6 +293,7 @@ extension NCMedia: UICollectionViewDelegate {
             } else {
                 // ACTIVE SERVERURL
                 appDelegate.activeServerUrl = metadata.serverUrl
+                (tabBarController as? NCMainTabBarController)?.serverUrl = metadata.serverUrl
                 if let metadatas = self.metadatas?.getArray() {
                     NCViewer().view(viewController: self, metadata: metadata, metadatas: metadatas, imageIcon: getImage(metadata: metadata))
                 }
