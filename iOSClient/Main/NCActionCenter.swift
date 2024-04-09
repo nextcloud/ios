@@ -102,7 +102,7 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
                 } else if metadata.classFile == NKCommon.TypeClassFile.compress.rawValue || metadata.classFile == NKCommon.TypeClassFile.unknow.rawValue {
                     self.openDocumentController(metadata: metadata)
                 } else {
-                    if let viewController = self.appDelegate?.activeViewController {
+                    if let viewController = (UIApplication.shared.firstWindow?.rootViewController as? NCMainTabBarController)?.viewController {
                         let imageIcon = UIImage(contentsOfFile: self.utilityFileSystem.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag))
                         NCViewer().view(viewController: viewController, metadata: metadata, metadatas: [metadata], imageIcon: imageIcon)
                     }

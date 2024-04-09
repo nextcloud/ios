@@ -44,7 +44,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     var activeLogin: NCLogin?
     var activeLoginWeb: NCLoginWeb?
     var activeServerUrl: String = ""
-    @objc var activeViewController: UIViewController?
     var mainTabBar: NCMainTabBar?
     var activeMetadata: tableMetadata?
     let listFilesVC = ThreadSafeDictionary<String, NCFiles>()

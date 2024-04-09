@@ -213,6 +213,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
                     navigationController.modalPresentationStyle = UIModalPresentationStyle.formSheet
 
+                    viewController.mainTabBarController = rootViewController
                     viewController.editorId = NCGlobal.shared.editorText
                     viewController.creatorId = directEditingCreator.identifier
                     viewController.typeTemplate = NCGlobal.shared.templateDocument

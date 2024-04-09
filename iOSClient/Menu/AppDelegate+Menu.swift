@@ -133,7 +133,7 @@ extension AppDelegate {
                 NCMenuAction(
                     title: NSLocalizedString("_add_folder_info_", comment: ""), icon: UIImage(named: "addFolderInfo")!.image(color: UIColor.systemGray, size: 50), action: { _ in
                         let richWorkspaceCommon = NCRichWorkspaceCommon()
-                        if let viewController = self.activeViewController {
+                        if let viewController = mainTabBarController.viewController {
                             if NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView LIKE[c] %@", appDelegate.account, appDelegate.activeServerUrl, NCGlobal.shared.fileNameRichWorkspace.lowercased())) == nil {
                                 richWorkspaceCommon.createViewerNextcloudText(serverUrl: appDelegate.activeServerUrl, viewController: viewController)
                             } else {
@@ -156,6 +156,7 @@ extension AppDelegate {
                         navigationController.modalPresentationStyle = UIModalPresentationStyle.formSheet
 
                         if let viewController = (navigationController as? UINavigationController)?.topViewController as? NCCreateFormUploadDocuments {
+                            viewController.mainTabBarController = mainTabBarController
                             viewController.editorId = NCGlobal.shared.editorOnlyoffice
                             viewController.creatorId = directEditingCreator.identifier
                             viewController.typeTemplate = NCGlobal.shared.templateDocument
@@ -180,6 +181,7 @@ extension AppDelegate {
                         navigationController.modalPresentationStyle = UIModalPresentationStyle.formSheet
 
                         if let viewController = (navigationController as? UINavigationController)?.topViewController as? NCCreateFormUploadDocuments {
+                            viewController.mainTabBarController = mainTabBarController
                             viewController.editorId = NCGlobal.shared.editorOnlyoffice
                             viewController.creatorId = directEditingCreator.identifier
                             viewController.typeTemplate = NCGlobal.shared.templateSpreadsheet
@@ -204,6 +206,7 @@ extension AppDelegate {
                         navigationController.modalPresentationStyle = UIModalPresentationStyle.formSheet
 
                         if let viewController = (navigationController as? UINavigationController)?.topViewController as? NCCreateFormUploadDocuments {
+                            viewController.mainTabBarController = mainTabBarController
                             viewController.editorId = NCGlobal.shared.editorOnlyoffice
                             viewController.creatorId = directEditingCreator.identifier
                             viewController.typeTemplate = NCGlobal.shared.templatePresentation
@@ -228,6 +231,7 @@ extension AppDelegate {
                             navigationController.modalPresentationStyle = UIModalPresentationStyle.formSheet
 
                             if let viewController = (navigationController as? UINavigationController)?.topViewController as? NCCreateFormUploadDocuments {
+                                viewController.mainTabBarController = mainTabBarController
                                 viewController.editorId = NCGlobal.shared.editorCollabora
                                 viewController.typeTemplate = NCGlobal.shared.templateDocument
                                 viewController.serverUrl = appDelegate.activeServerUrl
@@ -248,6 +252,7 @@ extension AppDelegate {
                             navigationController.modalPresentationStyle = UIModalPresentationStyle.formSheet
 
                             if let viewController = (navigationController as? UINavigationController)?.topViewController as? NCCreateFormUploadDocuments {
+                                viewController.mainTabBarController = mainTabBarController
                                 viewController.editorId = NCGlobal.shared.editorCollabora
                                 viewController.typeTemplate = NCGlobal.shared.templateSpreadsheet
                                 viewController.serverUrl = appDelegate.activeServerUrl
@@ -268,6 +273,7 @@ extension AppDelegate {
                             navigationController.modalPresentationStyle = UIModalPresentationStyle.formSheet
 
                             if let viewController = (navigationController as? UINavigationController)?.topViewController as? NCCreateFormUploadDocuments {
+                                viewController.mainTabBarController = mainTabBarController
                                 viewController.editorId = NCGlobal.shared.editorCollabora
                                 viewController.typeTemplate = NCGlobal.shared.templatePresentation
                                 viewController.serverUrl = appDelegate.activeServerUrl
