@@ -285,7 +285,8 @@
 {
     [super viewWillAppear:animated];
     
-    appDelegate.activeViewController = self;
+    NCMainTabBarController *mainTabBarController = (NCMainTabBarController *)self.tabBarController;
+    mainTabBarController.viewController = self;
 }
 
 #pragma mark - NotificationCenter
