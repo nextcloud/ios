@@ -175,10 +175,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
         if serverUrl.isEmpty {
             (tabBarController as? NCMainTabBarController)?.serverUrl = utilityFileSystem.getHomeServer(urlBase: appDelegate.urlBase, userId: appDelegate.userId)
-            appDelegate.activeServerUrl = utilityFileSystem.getHomeServer(urlBase: appDelegate.urlBase, userId: appDelegate.userId)
         } else {
             (tabBarController as? NCMainTabBarController)?.serverUrl = serverUrl
-            appDelegate.activeServerUrl = serverUrl
         }
 
         layoutForView = NCManageDatabase.shared.getLayoutForView(account: appDelegate.account, key: layoutKey, serverUrl: serverUrl)
