@@ -27,11 +27,6 @@ jobs:
     - name: Set env var
       run: echo "DEVELOPER_DIR=$(xcode-select --print-path)" >> $GITHUB_ENV
     - uses: actions/checkout@v4
-    - name: Setup Bundler and Install Gems
-      run: |
-        gem install bundler
-        bundle install
-        bundle update
     - name: Restore Carhage Cache
       uses: actions/cache@v3
       id: carthage-cache
@@ -47,26 +42,26 @@ jobs:
       run: wget "https://raw.githubusercontent.com/firebase/quickstart-ios/master/mock-GoogleService-Info.plist" -O GoogleService-Info.plist
     - name: Build iOS Share
       run: |
-        xcodebuild build -project $PROJECT -scheme "$SCHEME" -destination "$DESTINATION" | xcpretty
+        xcodebuild build -project $PROJECT -scheme "$SCHEME" -destination "$DESTINATION" | xcbeautify --quieter
       env:
           SCHEME: Share
     - name: Build iOS File Extension
       run: |
-        xcodebuild build -project $PROJECT -scheme "$SCHEME" -destination "$DESTINATION" | xcpretty
+        xcodebuild build -project $PROJECT -scheme "$SCHEME" -destination "$DESTINATION" | xcbeautify --quieter
       env:
           SCHEME: File Provider Extension
     - name: Build iOS Notification Extension
       run: |
-        xcodebuild build -project $PROJECT -scheme "$SCHEME" -destination "$DESTINATION" | xcpretty
+        xcodebuild build -project $PROJECT -scheme "$SCHEME" -destination "$DESTINATION" | xcbeautify --quieter
       env:
           SCHEME: Notification Service Extension
     - name: Build iOS Widget
       run: |
-        xcodebuild build -project $PROJECT -scheme "$SCHEME" -destination "$DESTINATION" | xcpretty
+        xcodebuild build -project $PROJECT -scheme "$SCHEME" -destination "$DESTINATION" | xcbeautify --quieter
       env:
           SCHEME: Widget
     - name: Build iOS Widget Dashboard IntentHandler
       run: |
-        xcodebuild build -project $PROJECT -scheme "$SCHEME" -destination "$DESTINATION" | xcpretty
+        xcodebuild build -project $PROJECT -scheme "$SCHEME" -destination "$DESTINATION" | xcbeautify --quieter
       env:
           SCHEME: WidgetDashboardIntentHandler
