@@ -339,7 +339,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         }
     }
 
-    // MARK: - Login & checkErrorNetworking
+    // MARK: - Login
 
     @objc func openLogin(viewController: UIViewController?, selector: Int, openLoginWeb: Bool, scene: UIScene? = nil) {
 
@@ -426,6 +426,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             }
         }
     }
+
+    // MARK: - Error Networking
 
     @objc func startTimerErrorNetworking(scene: UIScene) {
         timerErrorNetworkingDisabled = false

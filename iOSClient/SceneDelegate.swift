@@ -50,10 +50,14 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         guard let appDelegate,
               !appDelegate.account.isEmpty else { return }
 
-        if NCKeychain().presentPasscode, let window = SceneManager.shared.getWindow(scene: scene), let rootViewController = SceneManager.shared.getMainTabBarController(scene: scene) {
+        if let window = SceneManager.shared.getWindow(scene: scene), let rootViewController = SceneManager.shared.getMainTabBarController(scene: scene) {
             window.rootViewController = rootViewController
-            NCPasscode.shared.presentPasscode(rootViewController: rootViewController, delegate: appDelegate) {
-                NCPasscode.shared.enableTouchFaceID()
+            if NCKeychain().presentPasscode {
+                NCPasscode.shared.presentPasscode(rootViewController: rootViewController, delegate: appDelegate) {
+                    NCPasscode.shared.enableTouchFaceID()
+                }
+            } else if NCKeychain().requestPasscodeAtStart {
+                appDelegate.requestedAccount(viewController: rootViewController)
             }
         }
 
