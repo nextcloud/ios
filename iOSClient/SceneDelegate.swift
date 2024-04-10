@@ -20,9 +20,9 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         self.window = UIWindow(windowScene: windowScene)
 
         if NCManageDatabase.shared.getActiveAccount() != nil {
-            if let tabBarController = UIStoryboard(name: "Main", bundle: nil).instantiateInitialViewController() as? NCMainTabBarController {
-                SceneManager.shared.register(scene: scene, withRootViewController: tabBarController)
-                window?.rootViewController = tabBarController
+            if let mainTabBarController = UIStoryboard(name: "Main", bundle: nil).instantiateInitialViewController() as? NCMainTabBarController {
+                SceneManager.shared.register(scene: scene, withRootViewController: mainTabBarController)
+                window?.rootViewController = mainTabBarController
                 window?.makeKeyAndVisible()
             }
         } else {

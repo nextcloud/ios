@@ -403,13 +403,13 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
                     self.appDelegate.changeAccount(account, userProfile: userProfile)
 
                     if self.presentingViewController == nil, let window = SceneManager.shared.getWindow(scene: self.scene) {
-                        if let tabBarController = UIStoryboard(name: "Main", bundle: nil).instantiateInitialViewController() as? NCMainTabBarController {
-                            tabBarController.modalPresentationStyle = .fullScreen
-                            tabBarController.view.alpha = 0
-                            window.rootViewController = tabBarController
+                        if let mainTabBarController = UIStoryboard(name: "Main", bundle: nil).instantiateInitialViewController() as? NCMainTabBarController {
+                            mainTabBarController.modalPresentationStyle = .fullScreen
+                            mainTabBarController.view.alpha = 0
+                            window.rootViewController = mainTabBarController
                             window.makeKeyAndVisible()
                             UIView.animate(withDuration: 0.5) {
-                                tabBarController.view.alpha = 1
+                                mainTabBarController.view.alpha = 1
                             }
                         }
                     } else {
