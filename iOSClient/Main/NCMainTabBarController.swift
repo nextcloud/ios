@@ -28,5 +28,5 @@ import UIKit
     @objc var viewController: UIViewController?
     @objc var serverUrl: String?
     var documentPickerViewController: NCDocumentPickerViewController?
-    let listFilesVC = ThreadSafeDictionary<String, NCFiles>()
+    let filesServerUrl = ThreadSafeDictionary<String, NCFiles>()
 }

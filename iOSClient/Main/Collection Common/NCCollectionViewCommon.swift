@@ -1077,10 +1077,10 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
     func pushMetadata(_ metadata: tableMetadata) {
 
-        guard let listFilesVC = (tabBarController as? NCMainTabBarController)?.listFilesVC else { return }
+        guard let filesServerUrl = (tabBarController as? NCMainTabBarController)?.filesServerUrl else { return }
         let serverUrlPush = utilityFileSystem.stringAppendServerUrl(metadata.serverUrl, addFileName: metadata.fileName)
 
-        if let viewController = listFilesVC[serverUrlPush], viewController.isViewLoaded {
+        if let viewController = filesServerUrl[serverUrlPush], viewController.isViewLoaded {
             navigationController?.pushViewController(viewController, animated: true)
         } else {
             if let viewController: NCFiles = UIStoryboard(name: "NCFiles", bundle: nil).instantiateInitialViewController() as? NCFiles {
@@ -1088,7 +1088,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                 viewController.serverUrl = serverUrlPush
                 viewController.titlePreviusFolder = navigationItem.title
                 viewController.titleCurrentFolder = metadata.fileNameView
-                listFilesVC[serverUrlPush] = viewController
+                filesServerUrl[serverUrlPush] = viewController
                 navigationController?.pushViewController(viewController, animated: true)
             }
         }
