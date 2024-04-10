@@ -532,7 +532,6 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
 
                 guard let dir = subDirs.first, let viewController = UIStoryboard(name: "NCFiles", bundle: nil).instantiateInitialViewController() as? NCFiles else { return }
                 serverUrlPush = serverUrlPush + "/" + dir
-                let sceneIdentifierServerUrlPush = sceneIdentifier + "|" + serverUrl
 
                 viewController.serverUrl = serverUrlPush
                 viewController.isRoot = false
