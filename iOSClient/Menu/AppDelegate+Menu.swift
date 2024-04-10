@@ -30,7 +30,6 @@ import NextcloudKit
 extension AppDelegate {
 
     func toggleMenu(mainTabBarController: NCMainTabBarController) {
-
         var actions: [NCMenuAction] = []
         let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
         let directEditingCreators = NCManageDatabase.shared.getDirectEditingCreators(account: appDelegate.account)

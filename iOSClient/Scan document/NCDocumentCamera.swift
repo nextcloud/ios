@@ -32,17 +32,15 @@ class NCDocumentCamera: NSObject, VNDocumentCameraViewControllerDelegate {
 
     var viewController: UIViewController?
     let utilityFileSystem = NCUtilityFileSystem()
+    let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
 
-    func openScannerDocument(viewController: UIViewController) {
-
-        self.viewController = viewController
-
+    func openScannerDocument(viewController: UIViewController?) {
         guard VNDocumentCameraViewController.isSupported else { return }
-
+        self.viewController = viewController
         let controller = VNDocumentCameraViewController()
-        controller.delegate = self
 
-        self.viewController?.present(controller, animated: true)
+        controller.delegate = self
+        viewController?.present(controller, animated: true)
     }
 
     func documentCameraViewController(_ controller: VNDocumentCameraViewController, didFinishWith scan: VNDocumentCameraScan) {
@@ -65,12 +63,13 @@ class NCDocumentCamera: NSObject, VNDocumentCameraViewControllerDelegate {
         controller.dismiss(animated: true) {
             if let viewController = self.viewController as? NCScan {
                 viewController.loadImage()
-            } else {
-                let storyboard = UIStoryboard(name: "NCScan", bundle: nil)
-                let controller = storyboard.instantiateInitialViewController()!
-
-                controller.modalPresentationStyle = UIModalPresentationStyle.pageSheet
-                self.viewController?.present(controller, animated: true, completion: nil)
+            } else if let mainTabBarController = self.viewController as? NCMainTabBarController {
+                if let navigationController = UIStoryboard(name: "NCScan", bundle: nil).instantiateInitialViewController() {
+                    navigationController.modalPresentationStyle = UIModalPresentationStyle.pageSheet
+                    let viewController = navigationController.presentedViewController as? NCScan
+                    viewController?.serverUrl = mainTabBarController.serverUrl
+                    self.viewController?.present(navigationController, animated: true, completion: nil)
+                }
             }
         }
     }

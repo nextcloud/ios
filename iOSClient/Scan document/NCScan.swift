@@ -36,6 +36,8 @@ class NCScan: UIViewController, NCScanCellCellDelegate {
     @IBOutlet weak var labelTitlePDFzone: UILabel!
     @IBOutlet weak var segmentControlFilter: UISegmentedControl!
 
+    public var serverUrl: String?
+
     // Data Source for collectionViewSource
     internal var itemsSource: [String] = []
 
@@ -164,19 +166,15 @@ class NCScan: UIViewController, NCScanCellCellDelegate {
     }
 
     @IBAction func saveAction(sender: UIBarButtonItem) {
-
-        if !imagesDestination.isEmpty {
-
-            var images: [UIImage] = []
-            let serverUrl = appDelegate.activeServerUrl
-
-            for image in imagesDestination {
-                images.append(filter(image: image)!)
-            }
-
-            let  vc = NCHostingUploadScanDocumentView().makeShipDetailsUI(images: images, userBaseUrl: appDelegate, serverUrl: serverUrl)
-            self.navigationController?.pushViewController(vc, animated: true)
+        guard !imagesDestination.isEmpty else { return }
+        var images: [UIImage] = []
+        for image in imagesDestination {
+            images.append(filter(image: image)!)
         }
+        let serverUrl = self.serverUrl ?? utilityFileSystem.getHomeServer(urlBase: appDelegate.urlBase, userId: appDelegate.userId)
+        let  vc = NCHostingUploadScanDocumentView().makeShipDetailsUI(images: images, userBaseUrl: appDelegate, serverUrl: serverUrl)
+
+        self.navigationController?.pushViewController(vc, animated: true)
     }
 
     @IBAction func add(sender: UIButton) {

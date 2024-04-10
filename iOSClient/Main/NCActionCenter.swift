@@ -130,7 +130,7 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
 
         case NCGlobal.shared.selectorSaveAsScan:
             DispatchQueue.main.async {
-                self.saveAsScan(metadata: metadata)
+                self.saveAsScan(metadata: metadata, mainTabBarController: rootViewController)
             }
 
         case NCGlobal.shared.selectorOpenDetail:
@@ -361,19 +361,19 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
 
     // MARK: - Save as scan
 
-    func saveAsScan(metadata: tableMetadata) {
+    func saveAsScan(metadata: tableMetadata, mainTabBarController: NCMainTabBarController?) {
         let fileNamePath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)
         let fileNameDestination = CCUtility.createFileName("scan.png", fileDate: Date(), fileType: PHAssetMediaType.image, keyFileName: NCGlobal.shared.keyFileNameMask, keyFileNameType: NCGlobal.shared.keyFileNameType, keyFileNameOriginal: NCGlobal.shared.keyFileNameOriginal, forcedNewFileName: true)!
         let fileNamePathDestination = utilityFileSystem.directoryScan + "/" + fileNameDestination
 
         utilityFileSystem.copyFile(atPath: fileNamePath, toPath: fileNamePathDestination)
 
-        let storyboard = UIStoryboard(name: "NCScan", bundle: nil)
-        let navigationController = storyboard.instantiateInitialViewController()!
-
-        navigationController.modalPresentationStyle = UIModalPresentationStyle.pageSheet
-
-        UIApplication.shared.firstWindow?.rootViewController?.present(navigationController, animated: true, completion: nil)
+        if let navigationController = UIStoryboard(name: "NCScan", bundle: nil).instantiateInitialViewController() {
+            navigationController.modalPresentationStyle = UIModalPresentationStyle.pageSheet
+            let viewController = navigationController.presentedViewController as? NCScan
+            viewController?.serverUrl = mainTabBarController?.serverUrl
+            mainTabBarController?.present(navigationController, animated: true, completion: nil)
+        }
     }
 
     // MARK: - Print
@@ -459,7 +459,6 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
     // MARK: - Copy & Paste
 
     func pastePasteboard(serverUrl: String, hudView: UIView?) {
-        guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else { return }
         var fractionCompleted: Float = 0
         let processor = ParallelWorker(n: 5, titleKey: "_uploading_", totalTasks: nil, hudView: hudView)
 
