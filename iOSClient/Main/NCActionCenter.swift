@@ -604,7 +604,7 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
         navigationController?.modalPresentationStyle = .formSheet
 
         if let navigationController = navigationController {
-            UIApplication.shared.firstWindow?.rootViewController?.present(navigationController, animated: true, completion: nil)
+            mainTabBarController?.present(navigationController, animated: true, completion: nil)
         }
     }
 }
