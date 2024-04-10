@@ -141,10 +141,10 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
 
     func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
-        guard let rootViewController = SceneManager.shared.getMainTabBarController(scene: scene) as? NCMainTabBarController,
+        guard let mainTabBarController = SceneManager.shared.getMainTabBarController(scene: scene) as? NCMainTabBarController,
               let url = URLContexts.first?.url,
               let appDelegate else { return }
-        let sceneIdentifier = rootViewController.sceneIdentifier
+        let sceneIdentifier = mainTabBarController.sceneIdentifier
         let account = appDelegate.account
         let scheme = url.scheme
         let action = url.host
@@ -187,22 +187,22 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                     let alertController = UIAlertController(title: NSLocalizedString("_info_", comment: ""), message: message, preferredStyle: .alert)
                     alertController.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { _ in }))
 
-                    rootViewController.present(alertController, animated: true, completion: { })
+                    mainTabBarController.present(alertController, animated: true, completion: { })
                     return
                 }
 
                 switch actionScheme {
                 case NCGlobal.shared.actionUploadAsset:
 
-                    NCAskAuthorization().askAuthorizationPhotoLibrary(viewController: rootViewController) { hasPermission in
+                    NCAskAuthorization().askAuthorizationPhotoLibrary(viewController: mainTabBarController) { hasPermission in
                         if hasPermission {
-                            NCPhotosPickerViewController(mainTabBarController: rootViewController, maxSelectedAssets: 0, singleSelectedMode: false)
+                            NCPhotosPickerViewController(mainTabBarController: mainTabBarController, maxSelectedAssets: 0, singleSelectedMode: false)
                         }
                     }
 
                 case NCGlobal.shared.actionScanDocument:
 
-                    NCDocumentCamera.shared.openScannerDocument(viewController: rootViewController)
+                    NCDocumentCamera.shared.openScannerDocument(viewController: mainTabBarController)
 
                 case NCGlobal.shared.actionTextDocument:
 
@@ -213,24 +213,24 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
                     navigationController.modalPresentationStyle = UIModalPresentationStyle.formSheet
 
-                    viewController.mainTabBarController = rootViewController
+                    viewController.mainTabBarController = mainTabBarController
                     viewController.editorId = NCGlobal.shared.editorText
                     viewController.creatorId = directEditingCreator.identifier
                     viewController.typeTemplate = NCGlobal.shared.templateDocument
-                    viewController.serverUrl = rootViewController.serverUrl ?? NCUtilityFileSystem().getHomeServer(urlBase: appDelegate.urlBase, userId: appDelegate.userId)
+                    viewController.serverUrl = mainTabBarController.serverUrl ?? NCUtilityFileSystem().getHomeServer(urlBase: appDelegate.urlBase, userId: appDelegate.userId)
                     viewController.titleForm = NSLocalizedString("_create_nextcloudtext_document_", comment: "")
 
-                    rootViewController.present(navigationController, animated: true, completion: nil)
+                    mainTabBarController.present(navigationController, animated: true, completion: nil)
 
                 case NCGlobal.shared.actionVoiceMemo:
 
-                    NCAskAuthorization().askAuthorizationAudioRecord(viewController: rootViewController) { hasPermission in
+                    NCAskAuthorization().askAuthorizationAudioRecord(viewController: mainTabBarController) { hasPermission in
                         if hasPermission {
                             if let viewController = UIStoryboard(name: "NCAudioRecorderViewController", bundle: nil).instantiateInitialViewController() as? NCAudioRecorderViewController {
-                                viewController.serverUrl = rootViewController.serverUrl ?? NCUtilityFileSystem().getHomeServer(urlBase: appDelegate.urlBase, userId: appDelegate.userId)
+                                viewController.serverUrl = mainTabBarController.serverUrl ?? NCUtilityFileSystem().getHomeServer(urlBase: appDelegate.urlBase, userId: appDelegate.userId)
                                 viewController.modalTransitionStyle = .crossDissolve
                                 viewController.modalPresentationStyle = UIModalPresentationStyle.overCurrentContext
-                                rootViewController.present(viewController, animated: true, completion: nil)
+                                mainTabBarController.present(viewController, animated: true, completion: nil)
                             }
                         }
                     }
@@ -262,7 +262,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                     let alertController = UIAlertController(title: NSLocalizedString("_info_", comment: ""), message: message, preferredStyle: .alert)
                     alertController.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { _ in }))
 
-                    rootViewController.present(alertController, animated: true, completion: { })
+                    mainTabBarController.present(alertController, animated: true, completion: { })
                     return
                 }
 
@@ -310,15 +310,15 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
 class SceneManager {
     static let shared = SceneManager()
-    private var sceneRootViewController: [NCMainTabBarController: UIScene] = [:]
+    private var sceneMainTabBarController: [NCMainTabBarController: UIScene] = [:]
 
     func register(scene: UIScene, withRootViewController rootViewController: NCMainTabBarController) {
-        sceneRootViewController[rootViewController] = scene
+        sceneMainTabBarController[rootViewController] = scene
     }
 
     func getMainTabBarController(scene: UIScene?) -> UIViewController? {
-        for mainTabBarController in sceneRootViewController.keys {
-            if sceneRootViewController[mainTabBarController] == scene {
+        for mainTabBarController in sceneMainTabBarController.keys {
+            if sceneMainTabBarController[mainTabBarController] == scene {
                 return mainTabBarController
             }
         }
@@ -326,7 +326,7 @@ class SceneManager {
     }
 
     func getMainTabBarController(sceneIdentifier: String) -> NCMainTabBarController? {
-        for mainTabBarController in sceneRootViewController.keys {
+        for mainTabBarController in sceneMainTabBarController.keys {
             if sceneIdentifier == mainTabBarController.sceneIdentifier {
                 return mainTabBarController
             }
@@ -340,7 +340,7 @@ class SceneManager {
 
     func getSceneIdentifier() -> [String] {
         var results: [String] = []
-        for mainTabBarController in sceneRootViewController.keys {
+        for mainTabBarController in sceneMainTabBarController.keys {
             results.append(mainTabBarController.sceneIdentifier)
         }
         return results

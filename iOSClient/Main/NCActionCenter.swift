@@ -54,7 +54,7 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
               let account = userInfo["account"] as? String,
               account == appDelegate?.account
         else { return }
-        let rootViewController = UIApplication.shared.firstWindow?.rootViewController as? NCMainTabBarController
+        let mainTabBarController = UIApplication.shared.firstWindow?.rootViewController as? NCMainTabBarController
 
         guard error == .success else {
             // File do not exists on server, remove in local
@@ -87,10 +87,10 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
                     }
                     let navigationController = UINavigationController(rootViewController: viewerQuickLook)
                     navigationController.modalPresentationStyle = .fullScreen
-                    rootViewController?.present(navigationController, animated: true)
+                    mainTabBarController?.present(navigationController, animated: true)
                 } else {
                     self.utilityFileSystem.copyFile(atPath: fileNamePath, toPath: fileNameTemp)
-                    rootViewController?.present(viewerQuickLook, animated: true)
+                    mainTabBarController?.present(viewerQuickLook, animated: true)
                 }
             }
 
@@ -98,9 +98,9 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
             DispatchQueue.main.async {
                 guard UIApplication.shared.applicationState == .active else { return }
                 if metadata.contentType.contains("opendocument") && !self.utility.isRichDocument(metadata) {
-                    self.openDocumentController(metadata: metadata, mainTabBarController: rootViewController)
+                    self.openDocumentController(metadata: metadata, mainTabBarController: mainTabBarController)
                 } else if metadata.classFile == NKCommon.TypeClassFile.compress.rawValue || metadata.classFile == NKCommon.TypeClassFile.unknow.rawValue {
-                    self.openDocumentController(metadata: metadata, mainTabBarController: rootViewController)
+                    self.openDocumentController(metadata: metadata, mainTabBarController: mainTabBarController)
                 } else {
                     if let viewController = (UIApplication.shared.firstWindow?.rootViewController as? NCMainTabBarController)?.viewController {
                         let imageIcon = UIImage(contentsOfFile: self.utilityFileSystem.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag))
@@ -112,7 +112,7 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
         case NCGlobal.shared.selectorOpenIn:
             DispatchQueue.main.async {
                 if UIApplication.shared.applicationState == .active {
-                    self.openDocumentController(metadata: metadata, mainTabBarController: rootViewController)
+                    self.openDocumentController(metadata: metadata, mainTabBarController: mainTabBarController)
                 }
             }
 
@@ -125,12 +125,12 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
 
         case NCGlobal.shared.selectorSaveAlbum:
             DispatchQueue.main.async {
-                self.saveAlbum(metadata: metadata, mainTabBarController: rootViewController)
+                self.saveAlbum(metadata: metadata, mainTabBarController: mainTabBarController)
             }
 
         case NCGlobal.shared.selectorSaveAsScan:
             DispatchQueue.main.async {
-                self.saveAsScan(metadata: metadata, mainTabBarController: rootViewController)
+                self.saveAsScan(metadata: metadata, mainTabBarController: mainTabBarController)
             }
 
         case NCGlobal.shared.selectorOpenDetail:
