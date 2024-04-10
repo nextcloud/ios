@@ -33,21 +33,19 @@ import Queuer
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterDelegate, NCUserBaseUrl {
 
-    var backgroundSessionCompletionHandler: (() -> Void)?
-
     @objc var account: String = ""
     @objc var urlBase: String = ""
     @objc var user: String = ""
     @objc var userId: String = ""
     @objc var password: String = ""
 
+    var backgroundSessionCompletionHandler: (() -> Void)?
     var activeLogin: NCLogin?
     var activeLoginWeb: NCLoginWeb?
     var timerErrorNetworking: Timer?
     var timerErrorNetworkingDisabled: Bool = false
     var isAppRefresh: Bool = false
     var isProcessingTask: Bool = false
-
     var isUiTestingEnabled: Bool {
         return ProcessInfo.processInfo.arguments.contains("UI_TESTING")
     }
