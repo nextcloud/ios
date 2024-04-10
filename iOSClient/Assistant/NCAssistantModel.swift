@@ -37,7 +37,7 @@ class NCAssistantModel: ObservableObject {
         } else {
             self.filteredTasks = tasks
         }
-//        return tasks.filter { $0.type == type.id }
+        //        return tasks.filter { $0.type == type.id }
     }
 
     private func loadTasks(appId: String = "assistant") {
@@ -55,7 +55,7 @@ class NCAssistantModel: ObservableObject {
     }
 
     private func schedule() {
-        
+
     }
 }
 

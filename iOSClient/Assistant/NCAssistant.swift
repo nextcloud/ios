@@ -43,7 +43,6 @@ struct NCAssistant: View {
             .navigationBarTitleDisplayMode(.inline)
             .navigationTitle("Assistant")
         }
-        .listStyle(.insetGrouped)
         .environmentObject(model)
     }
 }
@@ -84,19 +83,9 @@ struct TaskItem: View {
     let task: NKTextProcessingTask
 
     var body: some View {
-        let loremIpsum = """
-        Lorem ipsum dolor sit amet, consectetur adipiscing
-        elit, sed do eiusmod tempor incididunt ut labore et
-        dolore magna aliqua. Ut enim ad minim veniam, quis
-        nostrud exercitation ullamco laboris nisi ut aliquip
-        ex ea commodo consequat. Duis aute irure dolor in
-        reprehenderit in voluptate velit esse cillum dolore
-        eu fugiat nulla pariatur.
-        """
-
-        NavigationLink(destination: NCAssistantTaskDetail()) {
+        NavigationLink(destination: NCAssistantTaskDetail(task: task)) {
             VStack(alignment: .leading) {
-                Text(loremIpsum)
+                Text(task.input ?? "")
                     .lineLimit(4)
 
                 HStack {
@@ -106,7 +95,6 @@ struct TaskItem: View {
                     )
                     .padding(.top, 1)
                     .labelStyle(CustomLabelStyle())
-
 
                     Text(NCUtility().dateDiff(.init(timeIntervalSince1970: TimeInterval(task.completionExpectedAt ?? 0))))
                         .frame(maxWidth: .infinity, alignment: .trailing)

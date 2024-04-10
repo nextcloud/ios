@@ -7,13 +7,54 @@
 //
 
 import SwiftUI
+import NextcloudKit
 
 struct NCAssistantTaskDetail: View {
+    let task: NKTextProcessingTask
+    @State private var tab = 0
+
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        NavigationView {
+            VStack {
+                Picker("", selection: $tab) {
+                    Text("Input").tag(0)
+                    Text("Output").tag(1)
+                }
+                .padding(.bottom, 10)
+                .pickerStyle(.segmented)
+                .toolbar {
+                    ToolbarItem(placement: .bottomBar) {
+                        Button("Press Me") {
+                            print("Pressed")
+                        }
+                    }
+                }
+
+                ScrollView {
+                    Text(tab == 0 ? (task.input ?? "") : (task.output ?? ""))
+                        .padding()
+                }
+                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+                .background(.gray.opacity(0.1))
+                .clipShape(.rect(cornerRadius: 8))
+
+            }
+            .navigationBarTitleDisplayMode(.inline)
+            .navigationTitle("Assistant")
+            .padding()
+        }
     }
 }
 
 #Preview {
-    NCAssistantTaskDetail()
+    let loremIpsum = """
+    Lorem ipsum dolor sit amet, consectetur adipiscing
+    elit, sed do eiusmod tempor incididunt ut labore et
+    dolore magna aliqua. Ut enim ad minim veniam, quis
+    nostrud exercitation ullamco laboris nisi ut aliquip
+    ex ea commodo consequat. lit esse cillum dolore
+    eu fugiat nulla pariatur. 
+    """
+
+    return NCAssistantTaskDetail(task: NKTextProcessingTask(id: 1, type: "OCP\\TextProcessing\\FreePromptTaskType", status: 3, userId: "christine", appId: "assistant", input: loremIpsum, output: loremIpsum, identifier: "", completionExpectedAt: 1712666412))
 }
