@@ -46,7 +46,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     let listFilesVC = ThreadSafeDictionary<String, NCFiles>()
 
     var disableSharesView: Bool = false
-    var documentPickerViewController: NCDocumentPickerViewController?
     private var timerErrorNetworking: Timer?
     var timerErrorNetworkingDisabled: Bool = false
     var isAppRefresh: Bool = false

@@ -27,4 +27,5 @@ import UIKit
     @objc var sceneIdentifier: String = UUID().uuidString
     @objc var viewController: UIViewController?
     @objc var serverUrl: String?
+    var documentPickerViewController: NCDocumentPickerViewController?
 }
