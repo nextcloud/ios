@@ -125,6 +125,9 @@
 		F3BB46542A3A1E9D00461F6E /* CCCellMore.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3BB46532A3A1E9D00461F6E /* CCCellMore.swift */; };
 		F3C6D0972B0F9BA40078DD25 /* XLForm in Frameworks */ = {isa = PBXBuildFile; productRef = F3C6D0962B0F9BA40078DD25 /* XLForm */; };
 		F3CFF65F2BC55ECE002380BE /* NCAssistantCreateNewTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3CFF65E2BC55ECE002380BE /* NCAssistantCreateNewTask.swift */; };
+		F3CFF6622BC69303002380BE /* ExpandableText in Frameworks */ = {isa = PBXBuildFile; productRef = F3CFF6612BC69303002380BE /* ExpandableText */; };
+		F3CFF6642BC6955C002380BE /* ExpandableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3CFF6632BC6955C002380BE /* ExpandableView.swift */; };
+		F3CFF6662BC69ACE002380BE /* NCAssistantTaskDetail.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3CFF6652BC69ACE002380BE /* NCAssistantTaskDetail.swift */; };
 		F700222C1EC479840080073F /* Custom.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F700222B1EC479840080073F /* Custom.xcassets */; };
 		F700222D1EC479840080073F /* Custom.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F700222B1EC479840080073F /* Custom.xcassets */; };
 		F700510122DF63AC003A3356 /* NCShare.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F700510022DF63AC003A3356 /* NCShare.storyboard */; };
@@ -1006,6 +1009,8 @@
 		F3BB46512A39EC4900461F6E /* NCMoreAppSuggestionsCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCMoreAppSuggestionsCell.swift; sourceTree = "<group>"; };
 		F3BB46532A3A1E9D00461F6E /* CCCellMore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CCCellMore.swift; sourceTree = "<group>"; };
 		F3CFF65E2BC55ECE002380BE /* NCAssistantCreateNewTask.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCAssistantCreateNewTask.swift; sourceTree = "<group>"; };
+		F3CFF6632BC6955C002380BE /* ExpandableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpandableView.swift; sourceTree = "<group>"; };
+		F3CFF6652BC69ACE002380BE /* NCAssistantTaskDetail.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCAssistantTaskDetail.swift; sourceTree = "<group>"; };
 		F700222B1EC479840080073F /* Custom.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Custom.xcassets; sourceTree = "<group>"; };
 		F700510022DF63AC003A3356 /* NCShare.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = NCShare.storyboard; sourceTree = "<group>"; };
 		F700510222DF6897003A3356 /* Parchment.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Parchment.framework; path = Carthage/Build/iOS/Parchment.framework; sourceTree = "<group>"; };
@@ -1666,6 +1671,7 @@
 				F770768E263A8C3400A1BA94 /* FloatingPanel in Frameworks */,
 				F710FC7C277B7D0000AA9FBF /* RealmSwift in Frameworks */,
 				F758A01227A7F03E0069468B /* JGProgressHUD in Frameworks */,
+				F3CFF6622BC69303002380BE /* ExpandableText in Frameworks */,
 				F77333882927A72100466E35 /* OpenSSL in Frameworks */,
 				F7792DE529EEE02D005930CE /* MobileVLCKit.xcframework in Frameworks */,
 				F753BA93281FD8020015BFB6 /* EasyTipView in Frameworks */,
@@ -1820,8 +1826,10 @@
 			isa = PBXGroup;
 			children = (
 				F36C38B42BBDA15C009CF1E0 /* NCAssistant.swift */,
+				F3CFF6652BC69ACE002380BE /* NCAssistantTaskDetail.swift */,
 				F308659A2BC4144700D04EAC /* NCAssistantModel.swift */,
 				F3CFF65E2BC55ECE002380BE /* NCAssistantCreateNewTask.swift */,
+				F3CFF6632BC6955C002380BE /* ExpandableView.swift */,
 			);
 			path = Assistant;
 			sourceTree = "<group>";
@@ -3108,6 +3116,7 @@
 				F7F623B42A5EF4D30022D3D4 /* Gzip */,
 				F76B649D2ADFFDEC00014640 /* LRUCache */,
 				F760DE022AE66EA80027D78A /* KeychainAccess */,
+				F3CFF6612BC69303002380BE /* ExpandableText */,
 			);
 			productName = "Crypto Cloud";
 			productReference = F7CE8AFA1DC1F8D8009CAE48 /* Nextcloud.app */;
@@ -3284,6 +3293,7 @@
 				F7F623B32A5EF4D30022D3D4 /* XCRemoteSwiftPackageReference "GzipSwift" */,
 				F76B649A2ADFFAD200014640 /* XCRemoteSwiftPackageReference "LRUCache" */,
 				F760DE012AE66E860027D78A /* XCRemoteSwiftPackageReference "KeychainAccess" */,
+				F3CFF6602BC69303002380BE /* XCRemoteSwiftPackageReference "ExpandableText" */,
 			);
 			productRefGroup = F7F67B9F1A24D27800EE80DA;
 			projectDirPath = "";
@@ -4093,9 +4103,11 @@
 				F702F30125EE5D2C008F8E80 /* NYMnemonic.m in Sources */,
 				AF93474E27E3F212002537EE /* NCShareNewUserAddComment.swift in Sources */,
 				F7C30DFD291BD0B80017149B /* NCNetworkingE2EEDelete.swift in Sources */,
+				F3CFF6642BC6955C002380BE /* ExpandableView.swift in Sources */,
 				F72FD3B5297ED49A00075D28 /* NCManageDatabase+E2EE.swift in Sources */,
 				F73EF7CF2B0225BA0087E6E9 /* NCManageDatabase+Tag.swift in Sources */,
 				AF93471227E2341B002537EE /* NCShare+Menu.swift in Sources */,
+				F3CFF6662BC69ACE002380BE /* NCAssistantTaskDetail.swift in Sources */,
 				F7EFA47825ADBA500083159A /* NCViewerProviderContextMenu.swift in Sources */,
 				F755BD9B20594AC7008C5FBB /* NCService.swift in Sources */,
 				F7E8A391295DC5E0006CB2D0 /* View+Extension.swift in Sources */,
@@ -5306,6 +5318,14 @@
 				version = 1.4.0;
 			};
 		};
+		F3CFF6602BC69303002380BE /* XCRemoteSwiftPackageReference "ExpandableText" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/n3d1117/ExpandableText.git";
+			requirement = {
+				kind = exactVersion;
+				version = 1.0.0;
+			};
+		};
 		F70B86732642CE3B00ED5349 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
@@ -5535,6 +5555,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = F74E771E277A2EF40013B958 /* XCRemoteSwiftPackageReference "XLForm" */;
 			productName = XLForm;
+		};
+		F3CFF6612BC69303002380BE /* ExpandableText */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F3CFF6602BC69303002380BE /* XCRemoteSwiftPackageReference "ExpandableText" */;
+			productName = ExpandableText;
 		};
 		F70821D729E59E6D001CA2D7 /* TagListView */ = {
 			isa = XCSwiftPackageProductDependency;

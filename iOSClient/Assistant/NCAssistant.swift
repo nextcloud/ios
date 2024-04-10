@@ -8,9 +8,10 @@
 
 import SwiftUI
 import NextcloudKit
+import ExpandableText
 
 struct NCAssistant: View {
-    @ObservedObject var model = NCAssistantModel()
+    @EnvironmentObject var model: NCAssistantModel
     @State var presentNewTaskDialog = false
     @State var taskText = ""
 
@@ -28,39 +29,31 @@ struct NCAssistant: View {
                     .frame(height: 50)
                     .padding()
                 }.toolbar {
-
-                    //                    Button {
                     NavigationLink(destination: NCAssistantCreateNewTask()) {
                         Image(systemName: "plus")
                     }
                     .disabled(model.selectedTaskType == nil)
-
-                    //                        //                        presentNewTaskDialog = true
-                    //                    } label: {
-                    //                        Image(systemName: "plus")
-                    //                    }
                 }
                 .navigationBarTitleDisplayMode(.inline)
                 .navigationTitle("Assistant")
 
                 List(model.filteredTasks, id: \.id) { task in
-                    Text(task.input ?? "")
+                    TaskItem(task: task)
                 }
             }
         }
         .environmentObject(model)
-        //        .alert(model.selectedTaskType?.name ?? "", isPresented: $presentNewTaskDialog) {
-        //            TextEditor(text: $taskText)
-        //                .frame(height: 100)
-        //            Button("OK") {
-        //
-        //            }
-        //            Button("Cancel", role: .cancel) { }
-        //        } message: {
-        //            Text(model.selectedTaskType?.description ?? "")
-        //
-        //        }
     }
+}
+
+#Preview {
+    let model = NCAssistantModel()
+
+    return NCAssistant()
+        .environmentObject(model)
+        .onAppear {
+            model.loadDummyTasks()
+        }
 }
 
 struct TypeButton: View {
@@ -75,11 +68,55 @@ struct TypeButton: View {
         }
         .padding(.horizontal, 30)
         .padding(.vertical, 10)
-        .background(.blue, ignoresSafeAreaEdges: [])
-        .cornerRadius(5)
+        .background(.gray, ignoresSafeAreaEdges: [])
+        .clipShape(.capsule)
     }
 }
 
-#Preview {
-    NCAssistant()
+struct TaskItem: View {
+    let task: NKTextProcessingTask
+
+    var body: some View {
+        let loremIpsum = """
+        Lorem ipsum dolor sit amet, consectetur adipiscing
+        elit, sed do eiusmod tempor incididunt ut labore et
+        dolore magna aliqua. Ut enim ad minim veniam, quis
+        nostrud exercitation ullamco laboris nisi ut aliquip
+        ex ea commodo consequat. Duis aute irure dolor in
+        reprehenderit in voluptate velit esse cillum dolore
+        eu fugiat nulla pariatur.
+        """
+
+        NavigationLink(destination: NCAssistantTaskDetail()) {
+            VStack(alignment: .leading) {
+                Text(loremIpsum)
+                    .lineLimit(4)
+
+                HStack {
+                    Label(
+                            title: { Text(NSLocalizedString(task.statusInfo.stringKey, comment: "")) },
+                            icon: { Image(systemName: task.statusInfo.imageSystemName).renderingMode(.original) }
+                        )
+                        .padding(.top, 1)
+                    .labelStyle(CustomLabelStyle())
+
+
+                    Text(NCUtility().dateDiff(.init(timeIntervalSince1970: TimeInterval(task.completionExpectedAt ?? 0))))
+                        .frame(maxWidth: .infinity, alignment: .trailing)
+                        .foregroundStyle(.tertiary)
+                }
+            }
+        }
+    }
+}
+
+struct CustomLabelStyle: LabelStyle {
+    var spacing: Double = 5
+
+    func makeBody(configuration: Configuration) -> some View {
+        HStack(spacing: spacing) {
+            configuration.icon
+            configuration.title
+        }
+    }
 }

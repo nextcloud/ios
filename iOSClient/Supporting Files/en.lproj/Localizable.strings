@@ -1043,3 +1043,10 @@
 "Mantis.Reset"                  = "Reset";
 "Mantis.Original"               = "Original";
 "Mantis.Square"                 = "Square";
+
+// MARK: Assistant
+"_assistant_task_unknown_"       = "Unknown";
+"_assistant_task_scheduled_"     = "Scheduled";
+"_assistant_task_in_progress_"   = "In Progress";
+"_assistant_task_completed_"     = "Completed";
+"_assistant_task_failed_"        = "Failed";
