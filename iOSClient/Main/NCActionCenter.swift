@@ -541,7 +541,7 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
                     viewController.fileNameBlink = fileNameBlink
                     viewController.fileNameOpen = fileNameOpen
                 }
-                appDelegate.listFilesVC[sceneIdentifierServerUrlPush] = viewController
+                mainTabBarController.listFilesVC[serverUrl] = viewController
 
                 viewController.navigationItem.backButtonTitle = viewController.titleCurrentFolder
                 navigationController.pushViewController(viewController, animated: false)

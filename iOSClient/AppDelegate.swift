@@ -43,9 +43,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
     var activeLogin: NCLogin?
     var activeLoginWeb: NCLoginWeb?
-    let listFilesVC = ThreadSafeDictionary<String, NCFiles>()
-
-    private var timerErrorNetworking: Timer?
+    var timerErrorNetworking: Timer?
     var timerErrorNetworkingDisabled: Bool = false
     var isAppRefresh: Bool = false
     var isProcessingTask: Bool = false
