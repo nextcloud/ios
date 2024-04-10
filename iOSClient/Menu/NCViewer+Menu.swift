@@ -37,7 +37,7 @@ extension NCViewer {
         //
         // DETAIL
         //
-        if !appDelegate.disableSharesView {
+        if !NCGlobal.shared.disableSharesView {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_details_", comment: ""),

@@ -106,7 +106,7 @@ class NCSharePaging: UIViewController {
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        if appDelegate?.disableSharesView == true {
+        if NCGlobal.shared.disableSharesView {
             self.dismiss(animated: false, completion: nil)
         }
 

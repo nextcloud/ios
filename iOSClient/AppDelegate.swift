@@ -45,7 +45,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     var activeLoginWeb: NCLoginWeb?
     let listFilesVC = ThreadSafeDictionary<String, NCFiles>()
 
-    var disableSharesView: Bool = false
     private var timerErrorNetworking: Timer?
     var timerErrorNetworkingDisabled: Bool = false
     var isAppRefresh: Bool = false
