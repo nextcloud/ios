@@ -54,7 +54,6 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
               let account = userInfo["account"] as? String,
               account == appDelegate?.account
         else { return }
-        let mainTabBarController = UIApplication.shared.firstWindow?.rootViewController as? NCMainTabBarController
 
         guard error == .success else {
             // File do not exists on server, remove in local
@@ -71,9 +70,23 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
         }
         guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) else { return }
 
-        switch selector {
-        case NCGlobal.shared.selectorLoadFileQuickLook:
-            DispatchQueue.main.async {
+        DispatchQueue.main.async {
+
+            // Select UIWindowScene active in serverUrl
+            var mainTabBarController: NCMainTabBarController?
+            let windowScenes = UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }
+            for windowScene in windowScenes {
+                if let rootViewController = windowScene.keyWindow?.rootViewController as? NCMainTabBarController,
+                   rootViewController.serverUrl == metadata.serverUrl {
+                    mainTabBarController = rootViewController
+                    break
+                }
+            }
+            guard let mainTabBarController else { return }
+
+            switch selector {
+            case NCGlobal.shared.selectorLoadFileQuickLook:
+
                 let fileNamePath = self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)
                 let fileNameTemp = NSTemporaryDirectory() + metadata.fileNameView
                 let viewerQuickLook = NCViewerQuickLook(with: URL(fileURLWithPath: fileNameTemp), isEditingEnabled: true, metadata: metadata)
@@ -87,58 +100,47 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
                     }
                     let navigationController = UINavigationController(rootViewController: viewerQuickLook)
                     navigationController.modalPresentationStyle = .fullScreen
-                    mainTabBarController?.present(navigationController, animated: true)
+                    mainTabBarController.present(navigationController, animated: true)
                 } else {
                     self.utilityFileSystem.copyFile(atPath: fileNamePath, toPath: fileNameTemp)
-                    mainTabBarController?.present(viewerQuickLook, animated: true)
+                    mainTabBarController.present(viewerQuickLook, animated: true)
                 }
-            }
 
-        case NCGlobal.shared.selectorLoadFileView:
-            DispatchQueue.main.async {
+            case NCGlobal.shared.selectorLoadFileView:
+
                 guard UIApplication.shared.applicationState == .active else { return }
                 if metadata.contentType.contains("opendocument") && !self.utility.isRichDocument(metadata) {
                     self.openDocumentController(metadata: metadata, mainTabBarController: mainTabBarController)
                 } else if metadata.classFile == NKCommon.TypeClassFile.compress.rawValue || metadata.classFile == NKCommon.TypeClassFile.unknow.rawValue {
                     self.openDocumentController(metadata: metadata, mainTabBarController: mainTabBarController)
                 } else {
-                    if let viewController = (UIApplication.shared.firstWindow?.rootViewController as? NCMainTabBarController)?.viewController {
+                    if let viewController = mainTabBarController.viewController {
                         let imageIcon = UIImage(contentsOfFile: self.utilityFileSystem.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag))
                         NCViewer().view(viewController: viewController, metadata: metadata, metadatas: [metadata], imageIcon: imageIcon)
                     }
                 }
-            }
 
-        case NCGlobal.shared.selectorOpenIn:
-            DispatchQueue.main.async {
+            case NCGlobal.shared.selectorOpenIn:
+
                 if UIApplication.shared.applicationState == .active {
                     self.openDocumentController(metadata: metadata, mainTabBarController: mainTabBarController)
                 }
-            }
 
-        case NCGlobal.shared.selectorPrint:
-            // waiting close menu
-            // https://github.com/nextcloud/ios/issues/2278
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                self.printDocument(metadata: metadata)
-            }
+            case NCGlobal.shared.selectorSaveAlbum:
 
-        case NCGlobal.shared.selectorSaveAlbum:
-            DispatchQueue.main.async {
                 self.saveAlbum(metadata: metadata, mainTabBarController: mainTabBarController)
-            }
 
-        case NCGlobal.shared.selectorSaveAsScan:
-            DispatchQueue.main.async {
+            case NCGlobal.shared.selectorSaveAsScan:
+
                 self.saveAsScan(metadata: metadata, mainTabBarController: mainTabBarController)
+
+            case NCGlobal.shared.selectorOpenDetail:
+                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterOpenMediaDetail, userInfo: ["ocId": metadata.ocId])
+
+            default:
+                let applicationHandle = NCApplicationHandle()
+                applicationHandle.downloadedFile(selector: selector, metadata: metadata)
             }
-
-        case NCGlobal.shared.selectorOpenDetail:
-            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterOpenMediaDetail, userInfo: ["ocId": metadata.ocId])
-
-        default:
-            let applicationHandle = NCApplicationHandle()
-            applicationHandle.downloadedFile(selector: selector, metadata: metadata)
         }
     }
 
@@ -374,44 +376,6 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
             viewController?.serverUrl = mainTabBarController?.serverUrl
             mainTabBarController?.present(navigationController, animated: true, completion: nil)
         }
-    }
-
-    // MARK: - Print
-
-    func printDocument(metadata: tableMetadata) {
-
-        let fileNameURL = URL(fileURLWithPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView))
-        let printController = UIPrintInteractionController.shared
-        let printInfo = UIPrintInfo(dictionary: nil)
-
-        printInfo.jobName = fileNameURL.lastPathComponent
-        printInfo.outputType = metadata.isImage ? .photo : .general
-        printController.printInfo = printInfo
-        printController.showsNumberOfCopies = true
-
-        guard !UIPrintInteractionController.canPrint(fileNameURL) else {
-            printController.printingItem = fileNameURL
-            printController.present(animated: true)
-            return
-        }
-
-        // can't print without data
-        guard let data = try? Data(contentsOf: fileNameURL) else { return }
-
-        if let svg = SVGKImage(data: data) {
-            printController.printingItem = svg.uiImage
-            printController.present(animated: true)
-            return
-        }
-
-        guard let text = String(data: data, encoding: .utf8) else { return }
-        let formatter = UISimpleTextPrintFormatter(text: text)
-        formatter.perPageContentInsets.top = 72
-        formatter.perPageContentInsets.bottom = 72
-        formatter.perPageContentInsets.left = 72
-        formatter.perPageContentInsets.right = 72
-        printController.printFormatter = formatter
-        printController.present(animated: true)
     }
 
     // MARK: - Save photo

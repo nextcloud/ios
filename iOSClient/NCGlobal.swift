@@ -317,7 +317,6 @@ class NCGlobal: NSObject {
     let selectorLoadFileView                        = "loadFileView"
     let selectorLoadFileQuickLook                   = "loadFileQuickLook"
     let selectorOpenIn                              = "openIn"
-    let selectorPrint                               = "print"
     let selectorUploadAutoUpload                    = "uploadAutoUpload"
     let selectorUploadAutoUploadAll                 = "uploadAutoUploadAll"
     let selectorUploadFile                          = "uploadFile"
