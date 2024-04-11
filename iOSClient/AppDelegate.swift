@@ -519,6 +519,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
     @objc func deleteAccount(_ account: String, wipe: Bool) {
 
+        UIApplication.shared.allSceneSessionDestructionExceptFirst()
+
         if let account = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", account)) {
             NCPushNotification.shared().unsubscribingNextcloudServerPushNotification(account.account, urlBase: account.urlBase, user: account.user, withSubscribing: false)
         }

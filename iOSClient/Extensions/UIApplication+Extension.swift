@@ -15,4 +15,14 @@ extension UIApplication {
         let keyWindow = firstActiveScene?.keyWindow
         return keyWindow
     }
+    func allSceneSessionDestructionExceptFirst() {
+        let windowScenes = UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }
+        let firstActiveScene = windowScenes.first
+        let options = UIWindowSceneDestructionRequestOptions()
+        options.windowDismissalAnimation = .standard
+        for windowScene in windowScenes {
+            if windowScene == firstActiveScene { continue }
+            requestSceneSessionDestruction(windowScene.session, options: options, errorHandler: nil)
+        }
+    }
 }
