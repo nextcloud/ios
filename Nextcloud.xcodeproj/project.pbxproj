@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 60;
+	objectVersion = 54;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -22,6 +22,7 @@
 		AC454FF72B9585FB00BED89C /* AcknowledgementsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC454FF62B9585FB00BED89C /* AcknowledgementsView.swift */; };
 		AC454FF92B958B6A00BED89C /* NCWebBrowserView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC454FF82B958B6A00BED89C /* NCWebBrowserView.swift */; };
 		AC5735792BA0120200DAB67E /* AutoUploadFileNamesViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC5735782BA0120200DAB67E /* AutoUploadFileNamesViewModel.swift */; };
+		AC5FB7A02BC7FDAD00A3B55B /* OpenSSL in Frameworks */ = {isa = PBXBuildFile; productRef = AC5FB79F2BC7FDAD00A3B55B /* OpenSSL */; };
 		ACB1124F2BA72F1600BB5092 /* ViewOnAppearHandling.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACB1124E2BA72F1600BB5092 /* ViewOnAppearHandling.swift */; };
 		ACBA97E62B9ACF63006B8710 /* AutoUploadViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACBA97E52B9ACF63006B8710 /* AutoUploadViewModel.swift */; };
 		ACBA97E92B9AD90D006B8710 /* CCSettingsAdvanced.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACBA97E82B9AD90D006B8710 /* CCSettingsAdvanced.swift */; };
@@ -1666,6 +1667,7 @@
 				F7A1050E29E587AF00FFD92B /* TagListView in Frameworks */,
 				F76DA969277B77EA0082465B /* DropDown in Frameworks */,
 				F7F623B52A5EF4D30022D3D4 /* Gzip in Frameworks */,
+				AC5FB7A02BC7FDAD00A3B55B /* OpenSSL in Frameworks */,
 				F75EAED826D2552E00F4320E /* MarqueeLabel in Frameworks */,
 				F710FC7A277B7D0000AA9FBF /* Realm in Frameworks */,
 				F72DA9B425F53E4E00B87DB1 /* SwiftRichString in Frameworks */,
@@ -3137,6 +3139,7 @@
 				F76B649D2ADFFDEC00014640 /* LRUCache */,
 				F760DE022AE66EA80027D78A /* KeychainAccess */,
 				ACFC775A2B9368AA008BF302 /* OpenSSL */,
+				AC5FB79F2BC7FDAD00A3B55B /* OpenSSL */,
 			);
 			productName = "Crypto Cloud";
 			productReference = F7CE8AFA1DC1F8D8009CAE48 /* Nextcloud.app */;
@@ -3313,7 +3316,7 @@
 				F7F623B32A5EF4D30022D3D4 /* XCRemoteSwiftPackageReference "GzipSwift" */,
 				F76B649A2ADFFAD200014640 /* XCRemoteSwiftPackageReference "LRUCache" */,
 				F760DE012AE66E860027D78A /* XCRemoteSwiftPackageReference "KeychainAccess" */,
-				ACFC77592B9368AA008BF302 /* XCLocalSwiftPackageReference "../../../Downloads/OpenSSL-main" */,
+				AC5FB79E2BC7FDAD00A3B55B /* XCRemoteSwiftPackageReference "OpenSSL" */,
 			);
 			productRefGroup = F7F67B9F1A24D27800EE80DA;
 			projectDirPath = "";
@@ -5304,14 +5307,15 @@
 		};
 /* End XCConfigurationList section */
 
-/* Begin XCLocalSwiftPackageReference section */
-		ACFC77592B9368AA008BF302 /* XCLocalSwiftPackageReference "../../../Downloads/OpenSSL-main" */ = {
-			isa = XCLocalSwiftPackageReference;
-			relativePath = "../../../Downloads/OpenSSL-main";
-		};
-/* End XCLocalSwiftPackageReference section */
-
 /* Begin XCRemoteSwiftPackageReference section */
+		AC5FB79E2BC7FDAD00A3B55B /* XCRemoteSwiftPackageReference "OpenSSL" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/krzyzanowskim/OpenSSL";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 3.1.5000;
+			};
+		};
 		F31F694B2A2F6EFA00162F76 /* XCRemoteSwiftPackageReference "swift-snapshot-testing" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/pointfreeco/swift-snapshot-testing.git";
@@ -5523,6 +5527,11 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		AC5FB79F2BC7FDAD00A3B55B /* OpenSSL */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = AC5FB79E2BC7FDAD00A3B55B /* XCRemoteSwiftPackageReference "OpenSSL" */;
+			productName = OpenSSL;
+		};
 		ACFC775A2B9368AA008BF302 /* OpenSSL */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = OpenSSL;
