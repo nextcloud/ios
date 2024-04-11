@@ -17,7 +17,7 @@ extension NCMedia {
 
     func setSelectcancelButton() {
         selectOcId.removeAll()
-        tabBarSelect?.selectCount = selectOcId.count
+        tabBarSelect.selectCount = selectOcId.count
         if let visibleCells = self.collectionView?.indexPathsForVisibleItems.compactMap({ self.collectionView?.cellForItem(at: $0) }) {
             for case let cell as NCGridMediaCell in visibleCells {
                 cell.selected(false)
@@ -29,14 +29,14 @@ extension NCMedia {
             selectOrCancelButtonTrailing.constant = 10
             selectOrCancelButton.isHidden = false
             menuButton.isHidden = true
-            tabBarSelect?.show()
+            tabBarSelect.show()
         } else {
             activityIndicatorTrailing.constant = 150
             selectOrCancelButton.setTitle( NSLocalizedString("_select_", comment: ""), for: .normal)
             selectOrCancelButtonTrailing.constant = 50
             selectOrCancelButton.isHidden = false
             menuButton.isHidden = false
-            tabBarSelect?.hide()
+            tabBarSelect.hide()
         }
     }
 
@@ -52,7 +52,7 @@ extension NCMedia {
             let point = CGPoint(x: offset, y: top + contentOffsetY)
             if let indexPath = collectionView.indexPathForItem(at: point) {
                 let cell = self.collectionView(collectionView, cellForItemAt: indexPath) as? NCGridMediaCell
-                if let date = cell?.fileDate {
+                if let date = cell?.date {
                     self.titleDate?.text = utility.getTitleFromDate(date)
                 }
             } else {
@@ -85,8 +85,7 @@ extension NCMedia {
         let layoutTitle = (layout == NCGlobal.shared.mediaLayoutRatio) ? NSLocalizedString("_media_square_", comment: "") : NSLocalizedString("_media_ratio_", comment: "")
         let layoutImage = (layout == NCGlobal.shared.mediaLayoutRatio) ? UIImage(systemName: "square.grid.3x3") : UIImage(systemName: "rectangle.grid.3x2")
 
-        if UIDevice.current.userInterfaceIdiom == .phone,
-           (UIDevice.current.orientation == .landscapeLeft || UIDevice.current.orientation == .landscapeRight) {
+        if UIDevice.current.userInterfaceIdiom == .phone, UIDevice.current.orientation.isLandscape {
             columnCount += 2
         }
 
@@ -157,8 +156,8 @@ extension NCMedia {
         ])
 
         let playFile = UIAction(title: NSLocalizedString("_play_from_files_", comment: ""), image: UIImage(systemName: "play.circle")) { _ in
-            guard let tabBarController = self.appDelegate.window?.rootViewController as? UITabBarController else { return }
-            self.documentPickerViewController = NCDocumentPickerViewController(tabBarController: tabBarController, isViewerMedia: true, allowsMultipleSelection: false, viewController: self)
+            guard let mainTabBarController = self.tabBarController as? NCMainTabBarController else { return }
+            self.documentPickerViewController = NCDocumentPickerViewController(mainTabBarController: mainTabBarController, isViewerMedia: true, allowsMultipleSelection: false, viewController: self)
         }
 
         let playURL = UIAction(title: NSLocalizedString("_play_from_url_", comment: ""), image: UIImage(systemName: "link")) { _ in

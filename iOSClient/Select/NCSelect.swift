@@ -26,10 +26,10 @@ import SwiftUI
 import NextcloudKit
 
 @objc protocol NCSelectDelegate {
-    @objc func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String, items: [Any], indexPath: [IndexPath], overwrite: Bool, copy: Bool, move: Bool)
+    @objc func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String, items: [Any], overwrite: Bool, copy: Bool, move: Bool)
 }
 
-class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresentationControllerDelegate, NCListCellDelegate, NCGridCellDelegate, NCSectionHeaderMenuDelegate, NCEmptyDataSetDelegate {
+class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresentationControllerDelegate, NCListCellDelegate, NCGridCellDelegate, NCSectionHeaderMenuDelegate {
 
     @IBOutlet private var collectionView: UICollectionView!
     @IBOutlet private var buttonCancel: UIBarButtonItem!
@@ -56,30 +56,21 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
     @objc var enableSelectFile = false
     @objc var type = ""
     @objc var items: [tableMetadata] = []
-    @objc var selectIndexPath: [IndexPath] = []
 
     var titleCurrentFolder = NCBrandOptions.shared.brand
     var serverUrl = ""
     // -------------------------------------------------------------
 
-    private var emptyDataSet: NCEmptyDataSet?
-
+    private var dataSourceTask: URLSessionTask?
     private var serverUrlPush = ""
     private var metadataFolder = tableMetadata()
-
-    private var networkInProgress = false
     private var overwrite = true
-
     private var dataSource = NCDataSource()
     internal var richWorkspaceText: String?
-
     internal var headerMenu: NCSectionHeaderMenu?
-
     private var autoUploadFileName = ""
     private var autoUploadDirectory = ""
-
     private var backgroundImageView = UIImageView()
-
     private var activeAccount: tableAccount!
     private let window = UIApplication.shared.connectedScenes.flatMap { ($0 as? UIWindowScene)?.windows ?? [] }.first { $0.isKeyWindow }
 
@@ -101,6 +92,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
         collectionView.collectionViewLayout = NCListLayout()
 
         // Header
+        collectionView.register(UINib(nibName: "NCSectionHeaderEmptyData", bundle: nil), forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: "sectionHeaderEmptyData")
         collectionView.register(UINib(nibName: "NCSectionHeaderMenu", bundle: nil), forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: "sectionHeaderMenu")
 
         // Footer
@@ -109,11 +101,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
         collectionView.backgroundColor = .systemBackground
 
         buttonCancel.title = NSLocalizedString("_cancel_", comment: "")
-
         bottomContraint?.constant = window?.rootViewController?.view.safeAreaInsets.bottom ?? 0
-
-        // Empty
-        emptyDataSet = NCEmptyDataSet(view: collectionView, offset: NCGlobal.shared.heightButtonsView, delegate: self)
 
         // Type of command view
         if typeOfCommandView == .select || typeOfCommandView == .selectCreateFolder {
@@ -155,8 +143,8 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
         NotificationCenter.default.addObserver(self, selector: #selector(createFolder(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterCreateFolder), object: nil)
     }
 
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
 
         self.navigationItem.title = titleCurrentFolder
 
@@ -198,25 +186,6 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
         pushMetadata(metadata)
     }
 
-    // MARK: - Empty
-
-    func emptyDataSetView(_ view: NCEmptyView) {
-
-        if networkInProgress {
-            view.emptyImage.image = UIImage(named: "networkInProgress")?.image(color: .gray, size: UIScreen.main.bounds.width)
-            view.emptyTitle.text = NSLocalizedString("_request_in_progress_", comment: "")
-            view.emptyDescription.text = ""
-        } else {
-            view.emptyImage.image = UIImage(named: "folder")?.image(color: NCBrandColor.shared.brandElement, size: UIScreen.main.bounds.width)
-            if includeImages {
-                view.emptyTitle.text = NSLocalizedString("_files_no_files_", comment: "")
-            } else {
-                view.emptyTitle.text = NSLocalizedString("_files_no_folders_", comment: "")
-            }
-            view.emptyDescription.text = ""
-        }
-    }
-
     // MARK: ACTION
 
     @IBAction func actionCancel(_ sender: UIBarButtonItem) {
@@ -224,17 +193,17 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
     }
 
     func selectButtonPressed(_ sender: UIButton) {
-        delegate?.dismissSelect(serverUrl: serverUrl, metadata: metadataFolder, type: type, items: items, indexPath: selectIndexPath, overwrite: overwrite, copy: false, move: false)
+        delegate?.dismissSelect(serverUrl: serverUrl, metadata: metadataFolder, type: type, items: items, overwrite: overwrite, copy: false, move: false)
         self.dismiss(animated: true, completion: nil)
     }
 
     func copyButtonPressed(_ sender: UIButton) {
-        delegate?.dismissSelect(serverUrl: serverUrl, metadata: metadataFolder, type: type, items: items, indexPath: selectIndexPath, overwrite: overwrite, copy: true, move: false)
+        delegate?.dismissSelect(serverUrl: serverUrl, metadata: metadataFolder, type: type, items: items, overwrite: overwrite, copy: true, move: false)
         self.dismiss(animated: true, completion: nil)
     }
 
     func moveButtonPressed(_ sender: UIButton) {
-        delegate?.dismissSelect(serverUrl: serverUrl, metadata: metadataFolder, type: type, items: items, indexPath: selectIndexPath, overwrite: overwrite, copy: false, move: true)
+        delegate?.dismissSelect(serverUrl: serverUrl, metadata: metadataFolder, type: type, items: items, overwrite: overwrite, copy: false, move: true)
         self.dismiss(animated: true, completion: nil)
     }
 
@@ -264,8 +233,6 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
         viewController.type = type
         viewController.overwrite = overwrite
         viewController.items = items
-        viewController.selectIndexPath = selectIndexPath
-
         viewController.titleCurrentFolder = metadata.fileNameView
         viewController.serverUrl = serverUrlPush
 
@@ -287,7 +254,7 @@ extension NCSelect: UICollectionViewDelegate {
 
         } else {
 
-            delegate?.dismissSelect(serverUrl: serverUrl, metadata: metadata, type: type, items: items, indexPath: selectIndexPath, overwrite: overwrite, copy: false, move: false)
+            delegate?.dismissSelect(serverUrl: serverUrl, metadata: metadata, type: type, items: items, overwrite: overwrite, copy: false, move: false)
             self.dismiss(animated: true, completion: nil)
         }
     }
@@ -334,9 +301,7 @@ extension NCSelect: UICollectionViewDataSource {
     }
 
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        let numberOfItems = dataSource.numberOfItemsInSection(section)
-        emptyDataSet?.numberOfItemsInSection(numberOfItems, section: section)
-        return numberOfItems
+        return dataSource.numberOfItemsInSection(section)
     }
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
@@ -349,7 +314,7 @@ extension NCSelect: UICollectionViewDataSource {
         isShare = metadata.permissions.contains(NCGlobal.shared.permissionShared) && !metadataFolder.permissions.contains(NCGlobal.shared.permissionShared)
         isMounted = metadata.permissions.contains(NCGlobal.shared.permissionMounted) && !metadataFolder.permissions.contains(NCGlobal.shared.permissionMounted)
 
-        cell.delegate = self
+        cell.listCellDelegate = self
 
         cell.fileObjectId = metadata.ocId
         cell.fileUser = metadata.ownerId
@@ -436,21 +401,41 @@ extension NCSelect: UICollectionViewDataSource {
 
         if kind == UICollectionView.elementKindSectionHeader {
 
-            guard let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionHeaderMenu", for: indexPath) as? NCSectionHeaderMenu else { return UICollectionReusableView() }
-            let (_, heightHeaderRichWorkspace, _) = getHeaderHeight(section: indexPath.section)
+            if dataSource.getMetadataSourceForAllSections().isEmpty {
 
-            self.headerMenu = header
+                guard let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionHeaderEmptyData", for: indexPath) as? NCSectionHeaderEmptyData else { return NCSectionHeaderEmptyData() }
+                if self.dataSourceTask?.state == .running {
+                    header.emptyImage.image = UIImage(named: "networkInProgress")?.image(color: .gray, size: UIScreen.main.bounds.width)
+                    header.emptyTitle.text = NSLocalizedString("_request_in_progress_", comment: "")
+                    header.emptyDescription.text = ""
+                } else {
+                    header.emptyImage.image = UIImage(named: "folder")?.image(color: NCBrandColor.shared.brandElement, size: UIScreen.main.bounds.width)
+                    if includeImages {
+                        header.emptyTitle.text = NSLocalizedString("_files_no_files_", comment: "")
+                    } else {
+                        header.emptyTitle.text = NSLocalizedString("_files_no_folders_", comment: "")
+                    }
+                    header.emptyDescription.text = ""
+                }
+                return header
 
-            header.delegate = self
-//            header.setButtonsView(height: 0)
-            header.setRichWorkspaceHeight(heightHeaderRichWorkspace)
-            header.setRichWorkspaceText(richWorkspaceText)
-            header.setViewTransfer(isHidden: true)
-            return header
+            } else {
+
+                guard let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionHeaderMenu", for: indexPath) as? NCSectionHeaderMenu else { return NCSectionHeaderMenu() }
+                let (_, heightHeaderRichWorkspace, _) = getHeaderHeight(section: indexPath.section)
+
+                self.headerMenu = header
+
+                header.delegate = self
+                header.setRichWorkspaceHeight(heightHeaderRichWorkspace)
+                header.setRichWorkspaceText(richWorkspaceText)
+                header.setViewTransfer(isHidden: true)
+                return header
+            }
 
         } else {
 
-            guard let footer = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionFooter", for: indexPath) as? NCSectionFooter else { return UICollectionReusableView() }
+            guard let footer = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionFooter", for: indexPath) as? NCSectionFooter else { return NCSectionFooter() }
             let sections = dataSource.numberOfSections()
             let section = indexPath.section
 
@@ -477,28 +462,27 @@ extension NCSelect: UICollectionViewDelegateFlowLayout {
 
         if let richWorkspaceText = richWorkspaceText {
             let trimmed = richWorkspaceText.trimmingCharacters(in: .whitespaces)
-            // swiftlint:disable empty_count
             if trimmed.count > 0 {
                 headerRichWorkspace = UIScreen.main.bounds.size.height / 6
             }
-            // swiftlint:enable empty_count
         }
 
         return (0, headerRichWorkspace, 0)
     }
 
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
-
-        let (heightHeaderCommands, heightHeaderRichWorkspace, heightHeaderSection) = getHeaderHeight(section: section)
-        let heightHeader = heightHeaderCommands + heightHeaderRichWorkspace + heightHeaderSection
-
-        return CGSize(width: collectionView.frame.width, height: heightHeader)
+        var height: CGFloat = 0
+        if dataSource.getMetadataSourceForAllSections().isEmpty {
+            height = NCGlobal.shared.getHeightHeaderEmptyData(view: view, portraitOffset: 0, landscapeOffset: -20)
+        } else {
+            let (heightHeaderCommands, heightHeaderRichWorkspace, heightHeaderSection) = getHeaderHeight(section: section)
+            height = heightHeaderCommands + heightHeaderRichWorkspace + heightHeaderSection
+        }
+        return CGSize(width: collectionView.frame.width, height: height)
     }
 
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForFooterInSection section: Int) -> CGSize {
-
         let sections = dataSource.numberOfSections()
-
         if section == sections - 1 {
             return CGSize(width: collectionView.frame.width, height: NCGlobal.shared.endHeightFooter)
         } else {
@@ -561,14 +545,13 @@ extension NCSelect {
 
     func loadFolder() {
 
-        networkInProgress = true
-        collectionView.reloadData()
-
-        NCNetworking.shared.readFolder(serverUrl: serverUrl, account: activeAccount.account) { _, _, _, _, _, error in
+        NCNetworking.shared.readFolder(serverUrl: serverUrl, account: activeAccount.account) { task in
+            self.dataSourceTask = task
+            self.collectionView.reloadData()
+        } completion: { _, _, _, _, _, error in
             if error != .success {
                 NCContentPresenter().showError(error: error)
             }
-            self.networkInProgress = false
             self.loadDatasource(withLoadFolder: false)
         }
     }
@@ -685,7 +668,7 @@ struct SelectView: UIViewControllerRepresentable {
             self.parent = parent
         }
 
-        func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String, items: [Any], indexPath: [IndexPath], overwrite: Bool, copy: Bool, move: Bool) {
+        func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String, items: [Any], overwrite: Bool, copy: Bool, move: Bool) {
             if let serverUrl = serverUrl {
                 self.parent.serverUrl = serverUrl
             }

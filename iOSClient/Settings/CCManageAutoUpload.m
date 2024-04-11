@@ -204,7 +204,8 @@
 {
     [super viewWillAppear:animated];
     
-    appDelegate.activeViewController = self;
+    NCMainTabBarController *mainTabBarController = (NCMainTabBarController *)self.tabBarController;
+    mainTabBarController.viewController = self;
     [[[NCAskAuthorization alloc] init] askAuthorizationPhotoLibraryWithViewController:self completion:^(BOOL status) { }];
 }
 
@@ -418,7 +419,7 @@
     return sectionName;
 }
 
-- (void)dismissSelectWithServerUrl:(NSString * _Nullable)serverUrl metadata:(tableMetadata * _Nullable)metadata type:(NSString * _Nonnull)type items:(NSArray * _Nonnull)items indexPath:(NSArray<NSIndexPath *> * _Nonnull)indexPath overwrite:(BOOL)overwrite copy:(BOOL)copy move:(BOOL)move 
+- (void)dismissSelectWithServerUrl:(NSString * _Nullable)serverUrl metadata:(tableMetadata * _Nullable)metadata type:(NSString * _Nonnull)type items:(NSArray * _Nonnull)items overwrite:(BOOL)overwrite copy:(BOOL)copy move:(BOOL)move 
 {
     if (serverUrl != nil) {
 

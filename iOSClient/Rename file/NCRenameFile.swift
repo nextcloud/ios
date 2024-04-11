@@ -126,10 +126,6 @@ class NCRenameFile: UIViewController, UITextFieldDelegate {
         renameButton.setTitle(NSLocalizedString("_rename_", comment: ""), for: .normal)
     }
 
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-    }
-
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
@@ -155,8 +151,6 @@ class NCRenameFile: UIViewController, UITextFieldDelegate {
     }
 
     @IBAction func renameFile(_ sender: Any) {
-
-        // swiftlint:disable empty_count
 
         var fileNameNoExtensionNew = ""
         var extNew = ""
@@ -224,8 +218,6 @@ class NCRenameFile: UIViewController, UITextFieldDelegate {
                 self.delegate?.rename(fileName: fileName, fileNameNew: fileNameNew)
             }
         }
-
-        // swiftlint:enable empty_count
     }
 
     // MARK: - Networking

@@ -138,6 +138,10 @@ import KeychainAccess
         }
     }
 
+    @objc var presentPasscode: Bool {
+        return passcode != nil && requestPasscodeAtStart
+    }
+
     @objc var incrementalNumber: String {
         migrate(key: "incrementalnumber")
         var incrementalString = String(format: "%04ld", 0)
@@ -391,6 +395,20 @@ import KeychainAccess
 
     @objc func setFileNameType(key: String, prefix: Bool) {
         keychain[key] = String(prefix)
+    }
+
+    func setPersonalFilesOnly(account: String, value: Bool) {
+        let key = "personalFilesOnly" + account
+        keychain[key] = String(value)
+    }
+
+    func getPersonalFilesOnly(account: String) -> Bool {
+        let key = "personalFilesOnly" + account
+        if let value = try? keychain.get(key), let result = Bool(value) {
+            return result
+        } else {
+            return false
+        }
     }
 
     // MARK: - E2EE

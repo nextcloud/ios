@@ -33,6 +33,7 @@ class NCAudioRecorderViewController: UIViewController, NCAudioRecorderDelegate {
     var recording: NCAudioRecorder!
     var startDate: Date = Date()
     var fileName: String = ""
+    var serverUrl = ""
     let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
 
     @IBOutlet weak var contentContainerView: UIView!
@@ -54,7 +55,7 @@ class NCAudioRecorderViewController: UIViewController, NCAudioRecorderDelegate {
         voiceRecordHUD.fillColor = UIColor.green
 
         Task {
-            self.fileName = await NCNetworking.shared.createFileName(fileNameBase: NSLocalizedString("_untitled_", comment: "") + ".m4a", account: self.appDelegate.account, serverUrl: self.appDelegate.activeServerUrl)
+            self.fileName = await NCNetworking.shared.createFileName(fileNameBase: NSLocalizedString("_untitled_", comment: "") + ".m4a", account: self.appDelegate.account, serverUrl: self.serverUrl)
             recording = NCAudioRecorder(to: self.fileName)
             recording.delegate = self
             do {
@@ -64,18 +65,6 @@ class NCAudioRecorderViewController: UIViewController, NCAudioRecorderDelegate {
                 print(error)
             }
         }
-    }
-
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-    }
-
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-    }
-
-    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
-        super.traitCollectionDidChange(previousTraitCollection)
     }
 
     // MARK: - Action
@@ -108,7 +97,7 @@ class NCAudioRecorderViewController: UIViewController, NCAudioRecorderDelegate {
 
     func uploadMetadata() {
         let fileNamePath = NSTemporaryDirectory() + self.fileName
-        let metadata = NCManageDatabase.shared.createMetadata(account: appDelegate.account, user: appDelegate.user, userId: appDelegate.userId, fileName: fileName, fileNameView: fileName, ocId: UUID().uuidString, serverUrl: appDelegate.activeServerUrl, urlBase: appDelegate.urlBase, url: "", contentType: "")
+        let metadata = NCManageDatabase.shared.createMetadata(account: appDelegate.account, user: appDelegate.user, userId: appDelegate.userId, fileName: fileName, fileNameView: fileName, ocId: UUID().uuidString, serverUrl: self.serverUrl, urlBase: appDelegate.urlBase, url: "", contentType: "")
         metadata.session = NCNetworking.shared.sessionUploadBackground
         metadata.sessionSelector = NCGlobal.shared.selectorUploadFile
         metadata.status = NCGlobal.shared.metadataStatusWaitUpload

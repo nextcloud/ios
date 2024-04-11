@@ -24,21 +24,7 @@
 import NextcloudKit
 import UIKit
 
-extension NCShareExtension: NCEmptyDataSetDelegate, NCAccountRequestDelegate {
-    // MARK: - Empty
-
-    func emptyDataSetView(_ view: NCEmptyView) {
-
-        if networkInProgress {
-            view.emptyImage.image = UIImage(named: "networkInProgress")?.image(color: .gray, size: UIScreen.main.bounds.width)
-            view.emptyTitle.text = NSLocalizedString("_request_in_progress_", comment: "")
-            view.emptyDescription.text = ""
-        } else {
-            view.emptyImage.image = UIImage(named: "folder")?.image(color: NCBrandColor.shared.brandElement, size: UIScreen.main.bounds.width)
-            view.emptyTitle.text = NSLocalizedString("_files_no_folders_", comment: "")
-            view.emptyDescription.text = ""
-        }
-    }
+extension NCShareExtension: NCAccountRequestDelegate {
 
     // MARK: - Account
 

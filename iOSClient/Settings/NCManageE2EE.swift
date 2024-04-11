@@ -28,9 +28,9 @@ import LocalAuthentication
 
 @objc class NCManageE2EEInterface: NSObject {
 
-    @objc func makeShipDetailsUI(account: String) -> UIViewController {
+    @objc func makeShipDetailsUI(account: String, rootViewController: UIViewController?) -> UIViewController {
 
-        let details = NCViewE2EE(account: account)
+        let details = NCViewE2EE(account: account, rootViewController: rootViewController)
         let vc = UIHostingController(rootView: details)
         vc.title = NSLocalizedString("_e2e_settings_", comment: "")
         return vc
@@ -43,12 +43,13 @@ class NCManageE2EE: NSObject, ObservableObject, NCEndToEndInitializeDelegate, TO
     let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
     var passcodeType = ""
 
+    @Published var rootViewController: UIViewController?
     @Published var isEndToEndEnabled: Bool = false
     @Published var statusOfService: String = NSLocalizedString("_status_in_progress_", comment: "")
 
-    override init() {
+    init(rootViewController: UIViewController?) {
         super.init()
-
+        self.rootViewController = rootViewController
         endToEndInitialize.delegate = self
         isEndToEndEnabled = NCKeychain().isEndToEndEnabled(account: appDelegate.account)
         if isEndToEndEnabled {
@@ -66,7 +67,7 @@ class NCManageE2EE: NSObject, ObservableObject, NCEndToEndInitializeDelegate, TO
 
     // MARK: - Delegate
 
-    func endToEndInitializeSuccess() {
+    func endToEndInitializeSuccess(metadata: tableMetadata?) {
         isEndToEndEnabled = true
     }
 
@@ -94,24 +95,24 @@ class NCManageE2EE: NSObject, ObservableObject, NCEndToEndInitializeDelegate, TO
         }
 
         self.passcodeType = passcodeType
-        appDelegate.window?.rootViewController?.present(passcodeViewController, animated: true)
+        rootViewController?.present(passcodeViewController, animated: true)
     }
 
     @objc func correctPasscode() {
 
         switch self.passcodeType {
         case "startE2E":
-            endToEndInitialize.initEndToEndEncryption()
+            endToEndInitialize.initEndToEndEncryption(viewController: rootViewController, metadata: nil)
         case "readPassphrase":
             if let e2ePassphrase = NCKeychain().getEndToEndPassphrase(account: appDelegate.account) {
-                print("[LOG]Passphrase: " + e2ePassphrase)
+                print("[INFO]Passphrase: " + e2ePassphrase)
                 let message = "\n" + NSLocalizedString("_e2e_settings_the_passphrase_is_", comment: "") + "\n\n\n" + e2ePassphrase
                 let alertController = UIAlertController(title: NSLocalizedString("_info_", comment: ""), message: message, preferredStyle: .alert)
                 alertController.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { _ in }))
                 alertController.addAction(UIAlertAction(title: NSLocalizedString("_copy_passphrase_", comment: ""), style: .default, handler: { _ in
                     UIPasteboard.general.string = e2ePassphrase
                 }))
-                appDelegate.window?.rootViewController?.present(alertController, animated: true)
+                rootViewController?.present(alertController, animated: true)
             }
         case "removeLocallyEncryption":
             let alertController = UIAlertController(title: NSLocalizedString("_e2e_settings_remove_", comment: ""), message: NSLocalizedString("_e2e_settings_remove_message_", comment: ""), preferredStyle: .alert)
@@ -120,7 +121,7 @@ class NCManageE2EE: NSObject, ObservableObject, NCEndToEndInitializeDelegate, TO
                 self.isEndToEndEnabled = NCKeychain().isEndToEndEnabled(account: self.appDelegate.account)
             }))
             alertController.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .default, handler: { _ in }))
-            appDelegate.window?.rootViewController?.present(alertController, animated: true)
+            rootViewController?.present(alertController, animated: true)
         default:
             break
         }
@@ -159,8 +160,15 @@ class NCManageE2EE: NSObject, ObservableObject, NCEndToEndInitializeDelegate, TO
 
 struct NCViewE2EE: View {
 
-    @ObservedObject var manageE2EE = NCManageE2EE()
-    @State var account: String = ""
+    @ObservedObject var manageE2EE: NCManageE2EE
+    @State var account: String
+    @State var rootViewController: UIViewController?
+
+    init(account: String, rootViewController: UIViewController?) {
+        self.manageE2EE = NCManageE2EE(rootViewController: rootViewController)
+        self.account = account
+        self.rootViewController = rootViewController
+    }
 
     var body: some View {
 
@@ -369,7 +377,7 @@ struct NCViewE2EE_Previews: PreviewProvider {
 
         // swiftlint:disable force_cast
         let account = (UIApplication.shared.delegate as! AppDelegate).account
-        NCViewE2EE(account: account)
+        NCViewE2EE(account: account, rootViewController: nil)
         // swiftlint:enable force_cast
     }
 }

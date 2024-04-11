@@ -54,6 +54,16 @@ class NCGlobal: NSObject {
         return NCBrandColor.shared.userColors[userColorIx]
     }
 
+    func getHeightHeaderEmptyData(view: UIView, portraitOffset: CGFloat, landscapeOffset: CGFloat, isHeaderMenuTransferViewEnabled: Bool = false) -> CGFloat {
+        var height: CGFloat = 0
+        if UIDevice.current.orientation.isPortrait {
+            height = (view.frame.height / 2) - (view.safeAreaInsets.top / 2) + portraitOffset
+        } else {
+            height = (view.frame.height / 2) + landscapeOffset + CGFloat(isHeaderMenuTransferViewEnabled ? 35 : 0)
+        }
+        return height
+    }
+
     // Convert a string to an integer evenly
     // hash is hex string
     static func hashToInt(hash: String, maximum: Int) -> Int {
@@ -66,6 +76,16 @@ class NCGlobal: NSObject {
     public enum TypeFilterScanDocument: String {
         case document = "document"
         case original = "original"
+    }
+
+    // Sharing & Comments
+    //
+    var disableSharesView: Bool {
+        if !capabilityFileSharingApiEnabled && !capabilityFilesComments && capabilityActivity.isEmpty {
+            return true
+        } else {
+            return false
+        }
     }
 
     // Directory on Group
@@ -116,7 +136,7 @@ class NCGlobal: NSObject {
 
     // Varie size GUI
     //
-    @objc let heightCellSettings: CGFloat = 50
+    @objc let heightCellSettings: CGFloat           = 50
 
     // Avatar & Preview size
     //
@@ -297,7 +317,6 @@ class NCGlobal: NSObject {
     let selectorLoadFileView                        = "loadFileView"
     let selectorLoadFileQuickLook                   = "loadFileQuickLook"
     let selectorOpenIn                              = "openIn"
-    let selectorPrint                               = "print"
     let selectorUploadAutoUpload                    = "uploadAutoUpload"
     let selectorUploadAutoUploadAll                 = "uploadAutoUploadAll"
     let selectorUploadFile                          = "uploadFile"
@@ -367,12 +386,12 @@ class NCGlobal: NSObject {
 
     let notificationCenterProgressTask                          = "progressTask"                    // userInfo: account, ocId, serverUrl, status, chunk, e2eEncrypted, progress, totalBytes, totalBytesExpected
 
-    let notificationCenterUpdateBadgeNumber                     = "updateBadgeNumber"
+    let notificationCenterUpdateBadgeNumber                     = "updateBadgeNumber"               // userInfo: counterDownload, counterUpload
 
     let notificationCenterCreateFolder                          = "createFolder"                    // userInfo: ocId, serverUrl, account, withPush
-    let notificationCenterDeleteFile                            = "deleteFile"                      // userInfo: [ocId], [indexPath], onlyLocalCache, error
-    let notificationCenterMoveFile                              = "moveFile"                        // userInfo: [ocId], [indexPath], error
-    let notificationCenterCopyFile                              = "copyFile"                        // userInfo: [ocId], [indexPath], error
+    let notificationCenterDeleteFile                            = "deleteFile"                      // userInfo: [ocId], onlyLocalCache, error
+    let notificationCenterMoveFile                              = "moveFile"                        // userInfo: [ocId], error
+    let notificationCenterCopyFile                              = "copyFile"                        // userInfo: [ocId], error
     let notificationCenterRenameFile                            = "renameFile"                      // userInfo: ocId, account, indexPath
     let notificationCenterFavoriteFile                          = "favoriteFile"                    // userInfo: ocId, serverUrl
 
@@ -454,9 +473,9 @@ class NCGlobal: NSObject {
     @objc var capabilityE2EEApiVersion: String                  = ""
 
     var capabilityRichdocumentsEnabled: Bool                    = false
-    var capabilityRichdocumentsMimetypes: [String]              = []
-    var capabilityActivity: [String]                            = []
-    var capabilityNotification: [String]                        = []
+    var capabilityRichdocumentsMimetypes = ThreadSafeArray<String>()
+    var capabilityActivity = ThreadSafeArray<String>()
+    var capabilityNotification = ThreadSafeArray<String>()
 
     var capabilityFilesUndelete: Bool                           = false
     var capabilityFilesLockVersion: String                      = ""    // NC 24

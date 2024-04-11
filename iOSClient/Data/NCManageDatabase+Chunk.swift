@@ -45,7 +45,7 @@ extension NCManageDatabase {
             guard let result = realm.objects(tableChunk.self).filter("account == %@ AND ocId == %@", account, ocId).first else { return NSUUID().uuidString }
             return result.chunkFolder
         } catch let error as NSError {
-            NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
+            NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not access to database: \(error)")
         }
 
         return NSUUID().uuidString
@@ -63,7 +63,7 @@ extension NCManageDatabase {
                 filesChunk.append((fileName: "\(result.fileName)", size: result.size))
             }
         } catch let error as NSError {
-            NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
+            NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not access to database: \(error)")
         }
 
         return filesChunk
@@ -88,7 +88,7 @@ extension NCManageDatabase {
                 }
             }
         } catch let error {
-            NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
+            NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not write to database: \(error)")
         }
     }
 
@@ -103,7 +103,7 @@ extension NCManageDatabase {
                 utilityFileSystem.removeFile(atPath: filePath)
             }
         } catch let error {
-            NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
+            NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not write to database: \(error)")
         }
     }
 
@@ -120,7 +120,7 @@ extension NCManageDatabase {
                 realm.delete(results)
             }
         } catch let error {
-            NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
+            NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not write to database: \(error)")
         }
     }
 

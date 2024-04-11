@@ -35,4 +35,10 @@ class NCMoreUserCell: BaseNCMoreCell {
     static func fromNib() -> UINib {
         return UINib(nibName: "NCMoreUserCell", bundle: nil)
     }
+
+    override func awakeFromNib() {
+        super.awakeFromNib()
+
+        icon.makeCircularBackground(withColor: .systemBackground)
+    }
 }

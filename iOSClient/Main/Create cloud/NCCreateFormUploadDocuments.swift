@@ -43,6 +43,7 @@ import XLForm
     var fileName = ""
     var fileNameExtension = ""
     var titleForm = ""
+    var mainTabBarController: NCMainTabBarController?
     var listOfTemplate: [NKEditorTemplates] = []
     var selectTemplate: NKEditorTemplates?
     let utilityFileSystem = NCUtilityFileSystem()
@@ -210,7 +211,7 @@ import XLForm
 
     // MARK: - Action
 
-    func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String, items: [Any], indexPath: [IndexPath], overwrite: Bool, copy: Bool, move: Bool) {
+    func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String, items: [Any], overwrite: Bool, copy: Bool, move: Bool) {
 
         guard let serverUrl = serverUrl else { return }
 
@@ -322,7 +323,7 @@ import XLForm
 
                 self.dismiss(animated: true, completion: {
                     let metadata = NCManageDatabase.shared.createMetadata(account: self.appDelegate.account, user: self.appDelegate.user, userId: self.appDelegate.userId, fileName: fileName, fileNameView: fileName, ocId: UUID, serverUrl: self.serverUrl, urlBase: self.appDelegate.urlBase, url: url, contentType: results.mimeType)
-                    if let viewController = self.appDelegate.activeViewController {
+                    if let viewController = self.mainTabBarController?.viewController {
                         NCViewer().view(viewController: viewController, metadata: metadata, metadatas: [metadata], imageIcon: nil)
                     }
                 })
@@ -341,7 +342,7 @@ import XLForm
                 self.dismiss(animated: true, completion: {
                     let createFileName = (fileName as NSString).deletingPathExtension + "." + self.fileNameExtension
                     let metadata = NCManageDatabase.shared.createMetadata(account: self.appDelegate.account, user: self.appDelegate.user, userId: self.appDelegate.userId, fileName: createFileName, fileNameView: createFileName, ocId: UUID, serverUrl: self.serverUrl, urlBase: self.appDelegate.urlBase, url: url, contentType: "")
-                    if let viewController = self.appDelegate.activeViewController {
+                    if let viewController = self.mainTabBarController?.viewController {
                         NCViewer().view(viewController: viewController, metadata: metadata, metadatas: [metadata], imageIcon: nil)
                     }
                })
@@ -499,7 +500,7 @@ import XLForm
             } else if error != .success {
                 print("\(error.errorCode)")
             } else {
-                print("[LOG] It has been changed user during networking process, error.")
+                print("[ERROR] It has been changed user during networking process, error.")
             }
         }
     }

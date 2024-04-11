@@ -30,8 +30,6 @@ class NCFiles: NCCollectionViewCommon {
     internal var fileNameBlink: String?
     internal var fileNameOpen: String?
 
-    // MARK: - View Life Cycle
-
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
 
@@ -45,6 +43,8 @@ class NCFiles: NCCollectionViewCommon {
         emptyDescription = "_no_file_pull_down_"
     }
 
+    // MARK: - View Life Cycle
+
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -54,12 +54,10 @@ class NCFiles: NCCollectionViewCommon {
                 self.navigationController?.popToRootViewController(animated: false)
 
                 self.serverUrl = self.utilityFileSystem.getHomeServer(urlBase: self.appDelegate.urlBase, userId: self.appDelegate.userId)
-                self.appDelegate.activeServerUrl = self.serverUrl
-
+                (self.tabBarController as? NCMainTabBarController)?.serverUrl = self.serverUrl
                 self.isSearchingMode = false
                 self.isEditMode = false
                 self.selectOcId.removeAll()
-                self.selectIndexPath.removeAll()
 
                 self.layoutForView = NCManageDatabase.shared.getLayoutForView(account: self.appDelegate.account, key: self.layoutKey, serverUrl: self.serverUrl)
                 self.gridLayout.itemForLine = CGFloat(self.layoutForView?.itemForLine ?? 3)
@@ -70,7 +68,7 @@ class NCFiles: NCCollectionViewCommon {
                 }
 
                 self.titleCurrentFolder = self.getNavigationTitle()
-                self.setNavigationItems()
+                self.setNavigationLeftItems()
 
                 self.reloadDataSource()
                 self.reloadDataSourceNetwork()
@@ -92,8 +90,8 @@ class NCFiles: NCCollectionViewCommon {
         reloadDataSourceNetwork()
     }
 
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
 
         fileNameBlink = nil
         fileNameOpen = nil
@@ -104,7 +102,12 @@ class NCFiles: NCCollectionViewCommon {
     override func queryDB() {
         super.queryDB()
 
-        let metadatas = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", self.appDelegate.account, self.serverUrl))
+        var metadatas: [tableMetadata] = []
+        if NCKeychain().getPersonalFilesOnly(account: self.appDelegate.account) {
+            metadatas = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND (ownerId == %@ || ownerId == '') AND mountType == ''", self.appDelegate.account, self.serverUrl, self.appDelegate.userId))
+        } else {
+            metadatas = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", self.appDelegate.account, self.serverUrl))
+        }
         let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", self.appDelegate.account, self.serverUrl))
         if self.metadataFolder == nil {
             self.metadataFolder = NCManageDatabase.shared.getMetadataFolder(account: self.appDelegate.account, urlBase: self.appDelegate.urlBase, userId: self.appDelegate.userId, serverUrl: self.serverUrl)
@@ -156,7 +159,7 @@ class NCFiles: NCCollectionViewCommon {
 
         super.reloadDataSourceNetwork()
 
-        networkReadFolder { tableDirectory, metadatas, metadatasChangedCount, metadatasChanged, error in
+        networkReadFolder { tableDirectory, metadatas, metadatasDifferentCount, metadatasModified, error in
             if error == .success {
                 for metadata in metadatas ?? [] where !metadata.directory && downloadMetadata(metadata) {
                     if NCNetworking.shared.downloadQueue.operations.filter({ ($0 as? NCOperationDownload)?.metadata.ocId == metadata.ocId }).isEmpty {
@@ -165,7 +168,7 @@ class NCFiles: NCCollectionViewCommon {
                 }
                 self.richWorkspaceText = tableDirectory?.richWorkspace
 
-                if metadatasChangedCount != 0 || metadatasChanged {
+                if metadatasDifferentCount != 0 || metadatasModified != 0 {
                     self.reloadDataSource()
                 } else {
                     self.reloadDataSource(withQueryDB: false)
@@ -176,14 +179,16 @@ class NCFiles: NCCollectionViewCommon {
         }
     }
 
-    private func networkReadFolder(completion: @escaping(_ tableDirectory: tableDirectory?, _ metadatas: [tableMetadata]?, _ metadatasChangedCount: Int, _ metadatasChanged: Bool, _ error: NKError) -> Void) {
+    private func networkReadFolder(completion: @escaping(_ tableDirectory: tableDirectory?, _ metadatas: [tableMetadata]?, _ metadatasDifferentCount: Int, _ metadatasModified: Int, _ error: NKError) -> Void) {
 
         var tableDirectory: tableDirectory?
 
-        NCNetworking.shared.readFile(serverUrlFileName: serverUrl) { account, metadataFolder, error in
-
+        NCNetworking.shared.readFile(serverUrlFileName: serverUrl) { task in
+            self.dataSourceTask = task
+            self.collectionView.reloadData()
+        } completion: { account, metadataFolder, error in
             guard error == .success, let metadataFolder else {
-                return completion(nil, nil, 0, false, error)
+                return completion(nil, nil, 0, 0, error)
             }
             tableDirectory = NCManageDatabase.shared.setDirectory(serverUrl: self.serverUrl, richWorkspace: metadataFolder.richWorkspace, account: account)
             // swiftlint:disable empty_string
@@ -193,9 +198,12 @@ class NCFiles: NCCollectionViewCommon {
             if tableDirectory?.etag != metadataFolder.etag || metadataFolder.e2eEncrypted {
                 NCNetworking.shared.readFolder(serverUrl: self.serverUrl,
                                                account: self.appDelegate.account,
-                                               forceReplaceMetadatas: forceReplaceMetadatas) { _, metadataFolder, metadatas, metadatasChangedCount, metadatasChanged, error in
+                                               forceReplaceMetadatas: forceReplaceMetadatas) { task in
+                    self.dataSourceTask = task
+                    self.collectionView.reloadData()
+                } completion: { _, metadataFolder, metadatas, metadatasDifferentCount, metadatasModified, error in
                     guard error == .success else {
-                        return completion(tableDirectory, nil, 0, false, error)
+                        return completion(tableDirectory, nil, 0, 0, error)
                     }
                     self.metadataFolder = metadataFolder
                     // E2EE
@@ -240,14 +248,14 @@ class NCFiles: NCCollectionViewCommon {
                             } else {
                                 NCContentPresenter().showError(error: NKError(errorCode: NCGlobal.shared.errorE2EEKeyDecodeMetadata, errorDescription: "_e2e_error_"))
                             }
-                            completion(tableDirectory, metadatas, metadatasChangedCount, metadatasChanged, error)
+                            completion(tableDirectory, metadatas, metadatasDifferentCount, metadatasModified, error)
                         }
                     } else {
-                        completion(tableDirectory, metadatas, metadatasChangedCount, metadatasChanged, error)
+                        completion(tableDirectory, metadatas, metadatasDifferentCount, metadatasModified, error)
                     }
                 }
             } else {
-                completion(tableDirectory, nil, 0, false, NKError())
+                completion(tableDirectory, nil, 0, 0, NKError())
             }
         }
     }

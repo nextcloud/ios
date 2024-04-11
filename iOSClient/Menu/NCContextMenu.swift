@@ -31,9 +31,9 @@ class NCContextMenu: NSObject {
     let utilityFileSystem = NCUtilityFileSystem()
     let utility = NCUtility()
 
-    func viewMenu(ocId: String, indexPath: IndexPath, viewController: UIViewController, image: UIImage?) -> UIMenu {
-        guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) else { return UIMenu() }
-
+    func viewMenu(ocId: String, viewController: UIViewController, image: UIImage?) -> UIMenu {
+        guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId),
+              let sceneIdentifier = (viewController.tabBarController as? NCMainTabBarController)?.sceneIdentifier else { return UIMenu() }
         var downloadRequest: DownloadRequest?
         var titleDeleteConfirmFile = NSLocalizedString("_delete_file_", comment: "")
         let metadataMOV = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata)
@@ -105,13 +105,13 @@ class NCContextMenu: NSObject {
 
         let viewInFolder = UIAction(title: NSLocalizedString("_view_in_folder_", comment: ""),
                                     image: UIImage(systemName: "questionmark.folder")) { _ in
-            NCActionCenter.shared.openFileViewInFolder(serverUrl: metadata.serverUrl, fileNameBlink: metadata.fileName, fileNameOpen: nil)
+            NCActionCenter.shared.openFileViewInFolder(serverUrl: metadata.serverUrl, fileNameBlink: metadata.fileName, fileNameOpen: nil, sceneIdentifier: sceneIdentifier)
         }
 
         let livePhotoSave = UIAction(title: NSLocalizedString("_livephoto_save_", comment: ""),
                                      image: UIImage(systemName: "livephoto")) { _ in
             if let metadataMOV = metadataMOV {
-                NCNetworking.shared.saveLivePhotoQueue.addOperation(NCOperationSaveLivePhoto(metadata: metadata, metadataMOV: metadataMOV))
+                NCNetworking.shared.saveLivePhotoQueue.addOperation(NCOperationSaveLivePhoto(metadata: metadata, metadataMOV: metadataMOV, hudView: viewController.view))
             }
         }
 
@@ -166,7 +166,7 @@ class NCContextMenu: NSObject {
                     } else {
                         NCContentPresenter().showError(error: error)
                     }
-                    NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDeleteFile, userInfo: ["ocId": ocId, "indexPath": [indexPath], "onlyLocalCache": false, "error": error])
+                    NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDeleteFile, userInfo: ["ocId": ocId, "onlyLocalCache": false, "error": error])
                 }
             })
             alertController.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel) { _ in })
@@ -183,7 +183,7 @@ class NCContextMenu: NSObject {
                 } else {
                     NCContentPresenter().showError(error: error)
                 }
-                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDeleteFile, userInfo: ["ocId": ocId, "indexPath": [indexPath], "onlyLocalCache": true, "error": error])
+                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDeleteFile, userInfo: ["ocId": ocId, "onlyLocalCache": true, "error": error])
             }
         }
 

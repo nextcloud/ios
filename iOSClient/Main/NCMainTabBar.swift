@@ -42,10 +42,10 @@ class NCMainTabBar: UITabBar {
     required init?(coder: NSCoder) {
         super.init(coder: coder)
 
-        appDelegate.mainTabBar = self
+        //appDelegate.mainTabBar = self
 
         NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeTheming), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(updateBadgeNumber), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUpdateBadgeNumber), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(updateBadgeNumber(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUpdateBadgeNumber), object: nil)
 
         changeTheming()
     }
@@ -182,71 +182,48 @@ class NCMainTabBar: UITabBar {
         centerButton.layer.shadowOpacity = 0.5
         centerButton.action(for: .touchUpInside) { _ in
 
-            if let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", self.appDelegate.account, self.appDelegate.activeServerUrl)) {
-
-                if !directory.permissions.contains("CK") {
-                    let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_no_permission_add_file_")
-                    NCContentPresenter().showWarning(error: error)
-                    return
+            if let mainTabBarController = self.window?.rootViewController as? NCMainTabBarController {
+                let serverUrl = mainTabBarController.serverUrl ?? NCUtilityFileSystem().getHomeServer(urlBase: self.appDelegate.urlBase, userId: self.appDelegate.userId)
+                if let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", self.appDelegate.account, serverUrl)) {
+                    if !directory.permissions.contains("CK") {
+                        let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_no_permission_add_file_")
+                        NCContentPresenter().showWarning(error: error)
+                        return
+                    }
                 }
-            }
-
-            if let viewController = self.window?.rootViewController {
-                self.appDelegate.toggleMenu(viewController: viewController)
+                self.appDelegate.toggleMenu(mainTabBarController: mainTabBarController)
             }
         }
 
         self.addSubview(centerButton)
     }
 
-    @objc func updateBadgeNumber() {
-
-        DispatchQueue.global().async {
-
-            var counterDownload = 0
-            var counterUpload = 0
-
-            if let results = NCManageDatabase.shared.getResultsMetadatas(predicate: NSPredicate(format: "status < 0")) {
-                counterDownload = results.count
-            }
-            if let results = NCManageDatabase.shared.getResultsMetadatas(predicate: NSPredicate(format: "status > 0")) {
-                counterUpload = results.count
-            }
-
-            DispatchQueue.main.async {
-                self.updateBadgeNumberUI(counterDownload: counterDownload, counterUpload: counterUpload)
-            }
+    @objc func updateBadgeNumber(_ notification: NSNotification) {
+        DispatchQueue.main.async {
+            guard let userInfo = notification.userInfo as NSDictionary?,
+                  let counterDownload = userInfo["counterDownload"] as? Int,
+                  let counterUpload = userInfo["counterUpload"] as? Int
+            else { return }
+            self.updateBadgeNumberUI(counterDownload: counterDownload, counterUpload: counterUpload)
         }
     }
 
     func updateBadgeNumberUI(counterDownload: Int, counterUpload: Int) {
 
-        UIApplication.shared.applicationIconBadgeNumber = counterUpload
+        UIApplication.shared.applicationIconBadgeNumber = counterDownload + counterUpload
 
         if let item = self.items?[0] {
             if counterDownload == 0, counterUpload == 0 {
                 item.badgeValue = nil
             } else if counterDownload > 0, counterUpload == 0 {
-                var badgeValue = String("↓ \(counterDownload)")
-                if counterDownload >= NCBrandOptions.shared.maxConcurrentOperationDownload {
-                    badgeValue = String("↓ \(NCBrandOptions.shared.maxConcurrentOperationDownload)+")
-                }
+                let badgeValue = String("↓ \(counterDownload)")
                 item.badgeValue = badgeValue
             } else if counterDownload == 0, counterUpload > 0 {
-                var badgeValue = String("↑ \(counterUpload)")
-                if counterUpload >= NCBrandOptions.shared.maxConcurrentOperationUpload {
-                    badgeValue = String("↑ \(NCBrandOptions.shared.maxConcurrentOperationUpload)+")
-                }
+                let badgeValue = String("↑ \(counterUpload)")
                 item.badgeValue = badgeValue
             } else {
-                var badgeValueDownload = String("↓ \(counterDownload)")
-                if counterDownload >= NCBrandOptions.shared.maxConcurrentOperationDownload {
-                    badgeValueDownload = String("↓ \(NCBrandOptions.shared.maxConcurrentOperationDownload)+")
-                }
-                var badgeValueUpload = String("↑ \(counterUpload)")
-                if counterUpload >= NCBrandOptions.shared.maxConcurrentOperationUpload {
-                    badgeValueUpload = String("↑ \(NCBrandOptions.shared.maxConcurrentOperationUpload)+")
-                }
+                let badgeValueDownload = String("↓ \(counterDownload)")
+                let badgeValueUpload = String("↑ \(counterUpload)")
                 item.badgeValue = badgeValueDownload + " " + badgeValueUpload
             }
         }

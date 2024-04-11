@@ -54,10 +54,9 @@ class NCShareExtension: UIViewController {
     var filesName: [String] = []
     // -------------------------------------------------------------
 
-    var emptyDataSet: NCEmptyDataSet?
     let keyLayout = NCGlobal.shared.layoutViewShareExtension
     var metadataFolder: tableMetadata?
-    var networkInProgress = false
+    var dataSourceTask: URLSessionTask?
     var dataSource = NCDataSource()
     var layoutForView: NCDBLayoutForView?
     let heightRowTableView: CGFloat = 50
@@ -82,6 +81,7 @@ class NCShareExtension: UIViewController {
 
         self.navigationController?.navigationBar.prefersLargeTitles = false
 
+        collectionView.register(UINib(nibName: "NCSectionHeaderEmptyData", bundle: nil), forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: "sectionHeaderEmptyData")
         collectionView.register(UINib(nibName: "NCListCell", bundle: nil), forCellWithReuseIdentifier: "listCell")
         collectionView.collectionViewLayout = NCListLayout()
 
@@ -160,8 +160,10 @@ class NCShareExtension: UIViewController {
             self.filesName = fileNames
             DispatchQueue.main.async { self.setCommandView() }
         }
-        NCPasscode.shared.presentPasscode(viewController: self, delegate: self) {
-            NCPasscode.shared.enableTouchFaceID()
+        if NCKeychain().presentPasscode {
+            NCPasscode.shared.presentPasscode(rootViewController: self, delegate: self) {
+                NCPasscode.shared.enableTouchFaceID()
+            }
         }
     }
 
@@ -265,10 +267,7 @@ class NCShareExtension: UIViewController {
         if filesName.count <= 3 {
             self.tableView.isScrollEnabled = false
         }
-        // Label upload button
         uploadLabel.text = NSLocalizedString("_upload_", comment: "") + " \(filesName.count) " + NSLocalizedString("_files_", comment: "")
-        // Empty
-        emptyDataSet = NCEmptyDataSet(view: collectionView, offset: -50 * counter, delegate: self)
         self.tableView.reloadData()
     }
 

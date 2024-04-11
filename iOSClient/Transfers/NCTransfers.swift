@@ -29,8 +29,6 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
 
     var metadataTemp: tableMetadata?
 
-    // MARK: - View Life Cycle
-
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
 
@@ -44,6 +42,8 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
         emptyDescription = "_no_transfer_sub_"
     }
 
+    // MARK: - View Life Cycle
+
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -54,11 +54,13 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-
         reloadDataSource()
+        Task {
+            await NCNetworkingProcess.shared.verifyZombie()
+        }
     }
 
-    override func setNavigationItems() {
+    override func setNavigationLeftItems() {
         self.navigationItem.rightBarButtonItem = nil
         self.navigationItem.leftBarButtonItem = nil
     }
@@ -100,15 +102,6 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
         notificationReloadDataSource += 1
     }
 
-    // MARK: - Empty
-
-    override func emptyDataSetView(_ view: NCEmptyView) {
-        self.emptyDataSet?.setOffset(getHeaderHeight())
-        view.emptyImage.image = emptyImage
-        view.emptyTitle.text = NSLocalizedString(emptyTitle, comment: "")
-        view.emptyDescription.text = NSLocalizedString(emptyDescription, comment: "")
-    }
-
     // MARK: TAP EVENT
 
     override func longPressMoreListItem(with objectId: String, namedButtonMore: String, indexPath: IndexPath, gestureRecognizer: UILongPressGestureRecognizer) {
@@ -145,14 +138,15 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
 
     @objc func startTask(_ notification: Any) {
 
-        guard let metadata = metadataTemp else { return }
-        guard appDelegate.account == metadata.account else { return }
+        guard let metadata = metadataTemp,
+              let hudView = self.tabBarController?.view,
+              appDelegate.account == metadata.account else { return }
 
         let cameraRoll = NCCameraRoll()
         cameraRoll.extractCameraRoll(from: metadata) { metadatas in
             for metadata in metadatas {
                 if let metadata = NCManageDatabase.shared.setMetadataStatus(ocId: metadata.ocId, status: NCGlobal.shared.metadataStatusUploading) {
-                    NCNetworking.shared.upload(metadata: metadata, hudView: self.appDelegate.window?.rootViewController?.view, hud: JGProgressHUD())
+                    NCNetworking.shared.upload(metadata: metadata, hudView: hudView, hud: JGProgressHUD())
                 }
             }
         }
@@ -265,9 +259,14 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
         self.dataSource = NCDataSource(metadatas: metadatas, account: self.appDelegate.account)
     }
 
-    override func reloadDataSourceNetwork() {
-        super.reloadDataSourceNetwork()
+    override func reloadDataSource(withQueryDB: Bool = true) {
+        super.reloadDataSource(withQueryDB: withQueryDB)
+    }
 
-        reloadDataSource()
+    override func reloadDataSourceNetwork() {
+        Task {
+            await NCNetworkingProcess.shared.verifyZombie()
+            super.reloadDataSource(withQueryDB: true)
+        }
     }
 }

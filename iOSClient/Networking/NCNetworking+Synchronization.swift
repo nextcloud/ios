@@ -61,7 +61,7 @@ extension NCNetworking {
                                                                           selector: NCGlobal.shared.selectorSynchronizationOffline)
                 NCManageDatabase.shared.setDirectorySynchronizationDate(serverUrl: serverUrl, account: account)
                 let diffDate = Date().timeIntervalSinceReferenceDate - startDate.timeIntervalSinceReferenceDate
-                NextcloudKit.shared.nkCommonInstance.writeLog("[LOG] Synchronization \(serverUrl) in \(diffDate)")
+                NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Synchronization \(serverUrl) in \(diffDate)")
                 completion(0, metadatasSynchronizationOffline.count)
             } else {
                 NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Synchronization \(serverUrl), \(error.errorCode), \(error.description)")
@@ -71,7 +71,7 @@ extension NCNetworking {
     }
 
     @discardableResult
-    func synchronization(account: String, serverUrl: String, add: Bool) async -> (Int, Int) {
+    func synchronization(account: String, serverUrl: String, add: Bool) async -> (errorCode: Int, items: Int) {
         await withUnsafeContinuation({ continuation in
             synchronization(account: account, serverUrl: serverUrl, add: add) { errorCode, items in
                 continuation.resume(returning: (errorCode, items))

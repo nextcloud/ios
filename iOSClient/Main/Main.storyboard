@@ -17,10 +17,10 @@
             </objects>
             <point key="canvasLocation" x="7770" y="899"/>
         </scene>
-        <!--Tab Bar Controller-->
+        <!--Main Tab Bar Controller-->
         <scene sceneID="gY3-Ur-rTC">
             <objects>
-                <tabBarController extendedLayoutIncludesOpaqueBars="YES" automaticallyAdjustsScrollViewInsets="NO" id="FkP-Lh-8zt" sceneMemberID="viewController">
+                <tabBarController extendedLayoutIncludesOpaqueBars="YES" automaticallyAdjustsScrollViewInsets="NO" id="FkP-Lh-8zt" customClass="NCMainTabBarController" customModule="Nextcloud" customModuleProvider="target" sceneMemberID="viewController">
                     <toolbarItems/>
                     <navigationItem key="navigationItem" id="ozb-fg-0GE">
                         <barButtonItem key="backBarButtonItem" title="Back" id="oUu-2v-gUF"/>

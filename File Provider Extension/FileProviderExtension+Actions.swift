@@ -48,7 +48,7 @@ extension FileProviderExtension {
                         let isDirectoryEncrypted = self.utilityFileSystem.isDirectoryE2EE(file: file)
                         let metadata = NCManageDatabase.shared.convertFileToMetadata(file, isDirectoryE2EE: isDirectoryEncrypted)
 
-                        NCManageDatabase.shared.addDirectory(encrypted: false, favorite: false, ocId: ocId!, fileId: metadata.fileId, etag: metadata.etag, permissions: metadata.permissions, serverUrl: serverUrlFileName, account: metadata.account)
+                        NCManageDatabase.shared.addDirectory(e2eEncrypted: false, favorite: false, ocId: ocId!, fileId: metadata.fileId, etag: metadata.etag, permissions: metadata.permissions, serverUrl: serverUrlFileName, account: metadata.account)
                         NCManageDatabase.shared.addMetadata(metadata)
 
                         guard let metadataInsert = NCManageDatabase.shared.getMetadataFromOcId(ocId!) else {
@@ -194,7 +194,7 @@ extension FileProviderExtension {
 
                 if metadata.directory {
 
-                    NCManageDatabase.shared.setDirectory(serverUrl: fileNamePathFrom, serverUrlTo: fileNamePathTo, etag: nil, ocId: nil, fileId: nil, encrypted: directoryTable.e2eEncrypted, richWorkspace: nil, account: account)
+                    NCManageDatabase.shared.setDirectory(serverUrl: fileNamePathFrom, serverUrlTo: fileNamePathTo, encrypted: directoryTable.e2eEncrypted, account: account)
 
                 } else {
 

@@ -73,7 +73,6 @@ class NCCameraRoll: NSObject {
                 let toPath = self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)
                 self.utilityFileSystem.moveFile(atPath: fileNamePath, toPath: toPath)
                 let fetchAssets = PHAsset.fetchAssets(withLocalIdentifiers: [metadataSource.assetLocalIdentifier], options: nil)
-                // swiftlint:disable empty_count
                 if metadata.isLivePhoto, fetchAssets.count > 0 {
                     self.createMetadataLivePhoto(metadata: metadata, asset: fetchAssets.firstObject) { metadata in
                         if let metadata = metadata, let metadata = NCManageDatabase.shared.addMetadata(metadata) {
@@ -84,11 +83,18 @@ class NCCameraRoll: NSObject {
                 } else {
                     completition(metadatas)
                 }
-                // swiftlint:enable empty_count
             } else {
                 completition(metadatas)
             }
         }
+    }
+
+    func extractCameraRoll(from metadata: tableMetadata) async -> [tableMetadata] {
+        await withUnsafeContinuation({ continuation in
+            extractCameraRoll(from: metadata) { metadatas in
+                continuation.resume(returning: metadatas)
+            }
+        })
     }
 
     func extractImageVideoFromAssetLocalIdentifier(metadata: tableMetadata,
@@ -128,11 +134,9 @@ class NCCameraRoll: NSObject {
         }
 
         let fetchAssets = PHAsset.fetchAssets(withLocalIdentifiers: [metadata.assetLocalIdentifier], options: nil)
-        // swiftlint:disable empty_count
         guard fetchAssets.count > 0, let asset = fetchAssets.firstObject else {
             return callCompletionWithError()
         }
-        // swiftlint:enable empty_count
 
         let extensionAsset = asset.originalFilename.pathExtension.uppercased()
         let creationDate = asset.creationDate ?? Date()

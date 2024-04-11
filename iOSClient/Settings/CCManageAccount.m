@@ -260,7 +260,7 @@
     
     // Open Login
     if (accounts.count == 0) {
-        [appDelegate openLoginWithViewController:self selector:NCGlobal.shared.introLogin openLoginWeb:false];
+        [appDelegate openLoginWithViewController:self selector:NCGlobal.shared.introLogin openLoginWeb:false scene:nil];
     }
 }
 
@@ -285,7 +285,8 @@
 {
     [super viewWillAppear:animated];
     
-    appDelegate.activeViewController = self;
+    NCMainTabBarController *mainTabBarController = (NCMainTabBarController *)self.tabBarController;
+    mainTabBarController.viewController = self;
 }
 
 #pragma mark - NotificationCenter
@@ -397,7 +398,7 @@
 {
     [self deselectFormRow:sender];
     
-    [appDelegate openLoginWithViewController:self selector:NCGlobal.shared.introLogin openLoginWeb:false];
+    [appDelegate openLoginWithViewController:self selector:NCGlobal.shared.introLogin openLoginWeb:false scene:nil];
 }
 
 #pragma mark -

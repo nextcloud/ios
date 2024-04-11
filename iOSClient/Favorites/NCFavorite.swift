@@ -26,8 +26,6 @@ import NextcloudKit
 
 class NCFavorite: NCCollectionViewCommon {
 
-    // MARK: - View Life Cycle
-
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
 
@@ -39,6 +37,8 @@ class NCFavorite: NCCollectionViewCommon {
         emptyTitle = "_favorite_no_files_"
         emptyDescription = "_tutorial_favorite_view_"
     }
+
+    // MARK: - View Life Cycle
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
@@ -76,9 +76,10 @@ class NCFavorite: NCCollectionViewCommon {
     override func reloadDataSourceNetwork() {
         super.reloadDataSourceNetwork()
 
-        NextcloudKit.shared.listingFavorites(showHiddenFiles: NCKeychain().showHiddenFiles,
-                                             options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { account, files, _, error in
-
+        NextcloudKit.shared.listingFavorites(showHiddenFiles: NCKeychain().showHiddenFiles, options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { task in
+            self.dataSourceTask = task
+            self.collectionView.reloadData()
+        } completion: { account, files, _, error in
             if error == .success {
                 NCManageDatabase.shared.convertFilesToMetadatas(files, useMetadataFolder: false) { _, _, metadatas in
                     NCManageDatabase.shared.updateMetadatasFavorite(account: account, metadatas: metadatas)

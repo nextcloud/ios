@@ -79,6 +79,7 @@ class NCViewer: NSObject {
                     index += 1
                 }
                 viewerMediaPageContainer.metadatas = metadatas
+                viewerMediaPageContainer.delegateViewController = viewController
                 navigationController.pushViewController(viewerMediaPageContainer, animated: true)
             }
 
@@ -234,7 +235,9 @@ class NCViewer: NSObject {
             viewController.present(viewerQuickLook, animated: true)
         } else {
         // Document Interaction Controller
-            NCActionCenter.shared.openDocumentController(metadata: metadata)
+            if let mainTabBarController = viewController.tabBarController as? NCMainTabBarController {
+                NCActionCenter.shared.openDocumentController(metadata: metadata, mainTabBarController: mainTabBarController)
+            }
         }
     }
 }
@@ -242,7 +245,7 @@ class NCViewer: NSObject {
 // MARK: - SELECT
 
 extension NCViewer: NCSelectDelegate {
-    func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String, items: [Any], indexPath: [IndexPath], overwrite: Bool, copy: Bool, move: Bool) {
+    func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String, items: [Any], overwrite: Bool, copy: Bool, move: Bool) {
         if let serverUrl = serverUrl,
            let metadata = items[0] as? tableMetadata {
             if move {

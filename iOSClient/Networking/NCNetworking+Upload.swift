@@ -346,11 +346,6 @@ extension NCNetworking {
                 metadata.sessionError = ""
                 metadata.status = NCGlobal.shared.metadataStatusNormal
 
-                // Delete Asset on Photos album
-                if NCKeychain().removePhotoCameraRoll, !metadata.assetLocalIdentifier.isEmpty {
-                    metadata.deleteAssetLocalIdentifier = true
-                }
-
                 NCManageDatabase.shared.addMetadata(metadata)
                 NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", ocIdTemp))
 
@@ -361,7 +356,7 @@ extension NCNetworking {
                     self.utilityFileSystem.removeFile(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(ocIdTemp))
                 }
 
-                NextcloudKit.shared.nkCommonInstance.writeLog("[SUCCESS] Upload complete " + serverUrl + "/" + fileName + ", result: success(\(size) bytes)")
+                NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Upload complete " + serverUrl + "/" + fileName + ", result: success(\(size) bytes)")
 
                 let userInfo: [AnyHashable: Any] = ["ocId": metadata.ocId, "serverUrl": metadata.serverUrl, "account": metadata.account, "fileName": metadata.fileName, "ocIdTemp": ocIdTemp, "error": error]
                 if metadata.isLivePhoto, NCGlobal.shared.isLivePhotoServerAvailable {
@@ -424,8 +419,18 @@ extension NCNetworking {
                                                                        "account": metadata.account])
                         }))
 
-                        let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
-                        appDelegate.window?.rootViewController?.present(alertController, animated: true)
+                        // Select UIWindowScene active in serverUrl
+                        var mainTabBarController = UIApplication.shared.firstWindow?.rootViewController
+                        let windowScenes = UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }
+                        for windowScene in windowScenes {
+                            if let rootViewController = windowScene.keyWindow?.rootViewController as? NCMainTabBarController,
+                               rootViewController.serverUrl == serverUrl {
+                                mainTabBarController = rootViewController
+                                break
+                            }
+                        }
+
+                        mainTabBarController?.present(alertController, animated: true)
 
                         // Client Diagnostic
                         NCManageDatabase.shared.addDiagnostic(account: metadata.account, issue: NCGlobal.shared.diagnosticIssueProblems, error: NCGlobal.shared.diagnosticProblemsForbidden)

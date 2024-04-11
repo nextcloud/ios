@@ -333,7 +333,8 @@
 "_add_account_"                 = "Add account";
 "_delete_account_"              = "Remove account";
 "_delete_active_account_"       = "Remove active account";
-"_want_delete_"                 = "Do you really want to delete?";
+"_want_delete_"                 = "You will delete the following: ";
+"_want_leave_share_"            = "You will leave the following shares: ";
 "_no_delete_"                   = "No, do not delete";
 "_yes_delete_"                  = "Yes, delete";
 "_remove_cache_"                = "Deleting cache, please wait …";
@@ -437,7 +438,7 @@
 "_login_url_error_"             = "URL error, please verify your server URL";
 "_webflow_not_available_"       = "Web login not available, use the old login method";
 "_favorites_"                   = "Favorites";
-"_favorite_"                    = "Favorite";
+"_favorite_short_"              = "Favorite";
 "_unfavorite_"                  = "Unfavorite";
 "_no_files_uploaded_"           = "No files uploaded";
 "_tutorial_favorite_view_"      = "Files and folders you mark as favorites will show up here";
@@ -571,6 +572,7 @@
 "_files_no_files_"              = "No files in here";
 "_files_no_folders_"            = "No folders in here";
 "_request_in_progress_"         = "Request to server in progress …";
+"_personal_files_only_"         = "Personal files only";
 
 "audio"                         = "AUDIO";
 "compress"                      = "COMPRESS";

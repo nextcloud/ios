@@ -74,7 +74,7 @@ extension NCManageDatabase {
                 }
             }
         } catch let error {
-            NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
+            NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not write to database: \(error)")
         }
     }
 
@@ -94,7 +94,7 @@ extension NCManageDatabase {
                 realm.delete(result)
             }
         } catch let error {
-            NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
+            NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not write to database: \(error)")
         }
     }
 
@@ -114,25 +114,21 @@ extension NCManageDatabase {
                 realm.delete(result)
             }
         } catch let error {
-            NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
+            NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not write to database: \(error)")
         }
     }
 
-    func getTrash(filePath: String, sort: String?, ascending: Bool?, account: String) -> [tableTrash]? {
-
-        let sort = sort ?? "date"
-        let ascending = ascending ?? false
-
+    func getTrash(filePath: String, account: String) -> [tableTrash] {
         do {
             let realm = try Realm()
             realm.refresh()
-            let results = realm.objects(tableTrash.self).filter("account == %@ AND filePath == %@", account, filePath).sorted(byKeyPath: sort, ascending: ascending)
+            let results = realm.objects(tableTrash.self).filter("account == %@ AND filePath == %@", account, filePath).sorted(byKeyPath: "date", ascending: false)
             return Array(results.map { tableTrash.init(value: $0) })
         } catch let error as NSError {
-            NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
+            NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not access to database: \(error)")
         }
 
-        return nil
+        return []
     }
 
     func getTrashItem(fileId: String, account: String) -> tableTrash? {
@@ -143,7 +139,7 @@ extension NCManageDatabase {
             guard let result = realm.objects(tableTrash.self).filter("account == %@ AND fileId == %@", account, fileId).first else { return nil }
             return tableTrash.init(value: result)
         } catch let error as NSError {
-            NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
+            NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not access to database: \(error)")
         }
 
         return nil

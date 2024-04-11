@@ -31,12 +31,10 @@ import NextcloudKit
 import Queuer
 
 extension NCCollectionViewCommon {
-
     func toggleMenu(metadata: tableMetadata, indexPath: IndexPath, imageIcon: UIImage?) {
-
+        guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(metadata.ocId),
+              let sceneIdentifier = (tabBarController as? NCMainTabBarController)?.sceneIdentifier else { return }
         var actions = [NCMenuAction]()
-
-        guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(metadata.ocId) else { return }
         let serverUrl = metadata.serverUrl + "/" + metadata.fileName
         var isOffline: Bool = false
 
@@ -77,7 +75,7 @@ extension NCCollectionViewCommon {
         //
         // DETAILS
         //
-        if !appDelegate.disableSharesView {
+        if !NCGlobal.shared.disableSharesView {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_details_", comment: ""),
@@ -133,7 +131,7 @@ extension NCCollectionViewCommon {
                     icon: utility.loadImage(named: "questionmark.folder"),
                     order: 21,
                     action: { _ in
-                        NCActionCenter.shared.openFileViewInFolder(serverUrl: metadata.serverUrl, fileNameBlink: metadata.fileName, fileNameOpen: nil)
+                        NCActionCenter.shared.openFileViewInFolder(serverUrl: metadata.serverUrl, fileNameBlink: metadata.fileName, fileNameOpen: nil, sceneIdentifier: sceneIdentifier)
                     }
                 )
             )
@@ -180,7 +178,7 @@ extension NCCollectionViewCommon {
                         NextcloudKit.shared.markE2EEFolder(fileId: metadata.fileId, delete: true) { _, error in
                             if error == .success {
                                 NCManageDatabase.shared.deleteE2eEncryption(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", self.appDelegate.account, serverUrl))
-                                NCManageDatabase.shared.setDirectory(serverUrl: serverUrl, serverUrlTo: nil, etag: nil, ocId: nil, fileId: nil, encrypted: false, richWorkspace: nil, account: metadata.account)
+                                NCManageDatabase.shared.setDirectory(serverUrl: serverUrl, encrypted: false, account: metadata.account)
                                 NCManageDatabase.shared.setMetadataEncrypted(ocId: metadata.ocId, encrypted: false)
 
                                 NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterChangeStatusFolderE2EE, userInfo: ["serverUrl": metadata.serverUrl])
@@ -259,21 +257,22 @@ extension NCCollectionViewCommon {
         //
         // SHARE
         //
-        if metadata.canOpenIn {
+        if metadata.canShare {
             actions.append(.share(selectedMetadatas: [metadata], viewController: self, order: 80))
         }
 
         //
         // SAVE LIVE PHOTO
         //
-        if let metadataMOV = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata) {
+        if let metadataMOV = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata),
+           let hudView = self.tabBarController?.view {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_livephoto_save_", comment: ""),
                     icon: NCUtility().loadImage(named: "livephoto"),
                     order: 100,
                     action: { _ in
-                        NCNetworking.shared.saveLivePhotoQueue.addOperation(NCOperationSaveLivePhoto(metadata: metadata, metadataMOV: metadataMOV))
+                        NCNetworking.shared.saveLivePhotoQueue.addOperation(NCOperationSaveLivePhoto(metadata: metadata, metadataMOV: metadataMOV, hudView: hudView))
                     }
                 )
             )
@@ -338,7 +337,7 @@ extension NCCollectionViewCommon {
         // COPY - MOVE
         //
         if metadata.isCopyableMovable {
-            actions.append(.moveOrCopyAction(selectedMetadatas: [metadata], indexPath: [indexPath], order: 130))
+            actions.append(.moveOrCopyAction(selectedMetadatas: [metadata], viewController: self, indexPath: [indexPath], order: 130))
         }
 
         //
@@ -395,7 +394,7 @@ extension NCCollectionViewCommon {
         // DELETE
         //
         if metadata.isDeletable {
-            actions.append(.deleteAction(selectedMetadatas: [metadata], indexPath: [indexPath], metadataFolder: metadataFolder, viewController: self, order: 170))
+            actions.append(.deleteAction(selectedMetadatas: [metadata], indexPaths: [indexPath], metadataFolder: metadataFolder, viewController: self, order: 170))
         }
 
         applicationHandle.addCollectionViewCommonMenu(metadata: metadata, imageIcon: imageIcon, actions: &actions)

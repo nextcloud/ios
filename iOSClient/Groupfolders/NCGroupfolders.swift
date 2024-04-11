@@ -26,8 +26,6 @@ import NextcloudKit
 
 class NCGroupfolders: NCCollectionViewCommon {
 
-    // MARK: - View Life Cycle
-
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
 
@@ -39,6 +37,8 @@ class NCGroupfolders: NCCollectionViewCommon {
         emptyTitle = "_files_no_files_"
         emptyDescription = "_tutorial_groupfolders_view_"
     }
+
+    // MARK: - View Life Cycle
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
@@ -79,8 +79,10 @@ class NCGroupfolders: NCCollectionViewCommon {
 
         let homeServerUrl = utilityFileSystem.getHomeServer(urlBase: self.appDelegate.urlBase, userId: self.appDelegate.userId)
 
-        NextcloudKit.shared.getGroupfolders(options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { account, results, _, error in
-
+        NextcloudKit.shared.getGroupfolders(options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { task in
+            self.dataSourceTask = task
+            self.collectionView.reloadData()
+        } completion: { account, results, _, error in
             if error == .success, let groupfolders = results {
                 NCManageDatabase.shared.addGroupfolders(account: account, groupfolders: groupfolders)
                 Task {
@@ -93,7 +95,7 @@ class NCGroupfolders: NCCollectionViewCommon {
                                 let isDirectoryE2EE = self.utilityFileSystem.isDirectoryE2EE(file: file)
                                 let metadata = NCManageDatabase.shared.convertFileToMetadata(file, isDirectoryE2EE: isDirectoryE2EE)
                                 NCManageDatabase.shared.addMetadata(metadata)
-                                NCManageDatabase.shared.addDirectory(encrypted: isDirectoryE2EE, favorite: metadata.favorite, ocId: metadata.ocId, fileId: metadata.fileId, etag: nil, permissions: metadata.permissions, serverUrl: serverUrlFileName, account: metadata.account)
+                                NCManageDatabase.shared.addDirectory(e2eEncrypted: isDirectoryE2EE, favorite: metadata.favorite, ocId: metadata.ocId, fileId: metadata.fileId, permissions: metadata.permissions, serverUrl: serverUrlFileName, account: metadata.account)
                             }
                         }
                     }
