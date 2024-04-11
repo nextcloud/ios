@@ -29,6 +29,7 @@ import LocalAuthentication
 import Firebase
 import WidgetKit
 import Queuer
+import EasyTipView
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterDelegate, NCUserBaseUrl {
@@ -39,6 +40,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     @objc var userId: String = ""
     @objc var password: String = ""
 
+    var tipView: EasyTipView?
     var backgroundSessionCompletionHandler: (() -> Void)?
     var activeLogin: NCLogin?
     var activeLoginWeb: NCLoginWeb?

@@ -34,9 +34,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     private var autoUploadFileName = ""
     private var autoUploadDirectory = ""
 
-    private var tipView: EasyTipView?
     var isTransitioning: Bool = false
-
     let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
     let utilityFileSystem = NCUtilityFileSystem()
     let utility = NCUtility()
@@ -142,22 +140,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         longPressedGesture.delegate = self
         longPressedGesture.delaysTouchesBegan = true
         collectionView.addGestureRecognizer(longPressedGesture)
-
-        // TIP
-        var preferences = EasyTipView.Preferences()
-        preferences.drawing.foregroundColor = .white
-        preferences.drawing.backgroundColor = NCBrandColor.shared.nextcloud
-        preferences.drawing.textAlignment = .left
-        preferences.drawing.arrowPosition = .top
-        preferences.drawing.cornerRadius = 10
-
-        preferences.animating.dismissTransform = CGAffineTransform(translationX: 0, y: 100)
-        preferences.animating.showInitialTransform = CGAffineTransform(translationX: 0, y: -100)
-        preferences.animating.showInitialAlpha = 0
-        preferences.animating.showDuration = 1.5
-        preferences.animating.dismissDuration = 1.5
-
-        tipView = EasyTipView(text: NSLocalizedString("_tip_accountrequest_", comment: ""), preferences: preferences, delegate: self)
 
         NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeTheming), object: nil)
     }
@@ -575,16 +557,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                         }
                     }
                 }
-            }
-        }
-    }
-
-    // MARK: - Tip
-
-    func showTip() {
-        if self is NCFiles, self.view.window != nil, !NCBrandOptions.shared.disable_multiaccount, !NCBrandOptions.shared.disable_manage_account, self.serverUrl == utilityFileSystem.getHomeServer(urlBase: appDelegate.urlBase, userId: appDelegate.userId), let view = self.navigationItem.leftBarButtonItem?.customView {
-            if !NCManageDatabase.shared.tipExists(NCGlobal.shared.tipNCCollectionViewCommonAccountRequest), !NCManageDatabase.shared.getAllAccountOrderAlias().isEmpty {
-                self.tipView?.show(forView: view)
             }
         }
     }
@@ -1747,6 +1719,35 @@ extension NCCollectionViewCommon: UICollectionViewDelegateFlowLayout {
 }
 
 extension NCCollectionViewCommon: EasyTipViewDelegate {
+    func showTip() {
+        if self is NCFiles,
+           self.view.window != nil,
+           !NCBrandOptions.shared.disable_multiaccount,
+           !NCBrandOptions.shared.disable_manage_account,
+           self.serverUrl == utilityFileSystem.getHomeServer(urlBase: appDelegate.urlBase, userId: appDelegate.userId),
+           let view = self.navigationItem.leftBarButtonItem?.customView {
+            if !NCManageDatabase.shared.tipExists(NCGlobal.shared.tipNCCollectionViewCommonAccountRequest), !NCManageDatabase.shared.getAllAccountOrderAlias().isEmpty {
+                var preferences = EasyTipView.Preferences()
+                preferences.drawing.foregroundColor = .white
+                preferences.drawing.backgroundColor = NCBrandColor.shared.nextcloud
+                preferences.drawing.textAlignment = .left
+                preferences.drawing.arrowPosition = .top
+                preferences.drawing.cornerRadius = 10
+
+                preferences.animating.dismissTransform = CGAffineTransform(translationX: 0, y: 100)
+                preferences.animating.showInitialTransform = CGAffineTransform(translationX: 0, y: -100)
+                preferences.animating.showInitialAlpha = 0
+                preferences.animating.showDuration = 1.5
+                preferences.animating.dismissDuration = 1.5
+
+                if appDelegate.tipView == nil {
+                    appDelegate.tipView = EasyTipView(text: NSLocalizedString("_tip_accountrequest_", comment: ""), preferences: preferences, delegate: self)
+                    appDelegate.tipView?.show(forView: view)
+                }
+            }
+        }
+    }
+
     func easyTipViewDidTap(_ tipView: EasyTipView) {
         NCManageDatabase.shared.addTip(NCGlobal.shared.tipNCCollectionViewCommonAccountRequest)
     }
@@ -1757,7 +1758,8 @@ extension NCCollectionViewCommon: EasyTipViewDelegate {
         if !NCManageDatabase.shared.tipExists(NCGlobal.shared.tipNCCollectionViewCommonAccountRequest) {
             NCManageDatabase.shared.addTip(NCGlobal.shared.tipNCCollectionViewCommonAccountRequest)
         }
-        self.tipView?.dismiss()
+        appDelegate.tipView?.dismiss()
+        appDelegate.tipView = nil
     }
 }
 

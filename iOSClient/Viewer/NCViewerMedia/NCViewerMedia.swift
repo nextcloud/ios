@@ -46,7 +46,6 @@ class NCViewerMedia: UIViewController {
     @IBOutlet weak var statusLabel: UILabel!
     @IBOutlet weak var detailView: NCViewerMediaDetailView!
 
-    private var tipView: EasyTipView?
     private let player = VLCMediaPlayer()
     private let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
     let analyzer = Analyzer()
@@ -119,22 +118,6 @@ class NCViewerMedia: UIViewController {
 
             self.ncplayer = NCPlayer(imageVideoContainer: self.imageVideoContainer, playerToolBar: self.playerToolBar, metadata: self.metadata, viewerMediaPage: self.viewerMediaPage)
         }
-
-        // TIP
-        var preferences = EasyTipView.Preferences()
-        preferences.drawing.foregroundColor = .white
-        preferences.drawing.backgroundColor = NCBrandColor.shared.nextcloud
-        preferences.drawing.textAlignment = .left
-        preferences.drawing.arrowPosition = .bottom
-        preferences.drawing.cornerRadius = 10
-
-        preferences.animating.dismissTransform = CGAffineTransform(translationX: 0, y: -15)
-        preferences.animating.showInitialTransform = CGAffineTransform(translationX: 0, y: -15)
-        preferences.animating.showInitialAlpha = 0
-        preferences.animating.showDuration = 0.5
-        preferences.animating.dismissDuration = 0
-
-        tipView = EasyTipView(text: NSLocalizedString("_tip_open_mediadetail_", comment: ""), preferences: preferences, delegate: self)
 
         detailViewTopConstraint.constant = 0
         detailView.hide()
@@ -279,14 +262,6 @@ class NCViewerMedia: UIViewController {
                     self.openDetail(animate: true)
                 }
             })
-        }
-    }
-
-    // MARK: - Tip
-
-    func showTip() {
-        if !NCManageDatabase.shared.tipExists(NCGlobal.shared.tipNCViewerMediaDetailView) {
-            self.tipView?.show(forView: detailView)
         }
     }
 
@@ -599,6 +574,28 @@ extension NCViewerMedia: NCViewerMediaDetailViewDelegate {
 }
 
 extension NCViewerMedia: EasyTipViewDelegate {
+    func showTip() {
+        if !NCManageDatabase.shared.tipExists(NCGlobal.shared.tipNCViewerMediaDetailView) {
+            var preferences = EasyTipView.Preferences()
+            preferences.drawing.foregroundColor = .white
+            preferences.drawing.backgroundColor = NCBrandColor.shared.nextcloud
+            preferences.drawing.textAlignment = .left
+            preferences.drawing.arrowPosition = .bottom
+            preferences.drawing.cornerRadius = 10
+
+            preferences.animating.dismissTransform = CGAffineTransform(translationX: 0, y: -15)
+            preferences.animating.showInitialTransform = CGAffineTransform(translationX: 0, y: -15)
+            preferences.animating.showInitialAlpha = 0
+            preferences.animating.showDuration = 0.5
+            preferences.animating.dismissDuration = 0
+
+            if appDelegate.tipView == nil {
+                appDelegate.tipView = EasyTipView(text: NSLocalizedString("_tip_open_mediadetail_", comment: ""), preferences: preferences, delegate: self)
+                appDelegate.tipView?.show(forView: detailView)
+            }
+        }
+    }
+    
     func easyTipViewDidTap(_ tipView: EasyTipView) {
         NCManageDatabase.shared.addTip(NCGlobal.shared.tipNCViewerMediaDetailView)
     }
@@ -609,6 +606,7 @@ extension NCViewerMedia: EasyTipViewDelegate {
         if !NCManageDatabase.shared.tipExists(NCGlobal.shared.tipNCViewerMediaDetailView) {
             NCManageDatabase.shared.addTip(NCGlobal.shared.tipNCViewerMediaDetailView)
         }
-        self.tipView?.dismiss()
+        appDelegate.tipView?.dismiss()
+        appDelegate.tipView = nil
     }
 }
