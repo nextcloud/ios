@@ -428,7 +428,7 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
                 let manageAccount = CCManageAccount()
                 manageAccount.delete(self.appDelegate.account)
 
-                self.appDelegate.openLogin(viewController: self, selector: NCGlobal.shared.introLogin, openLoginWeb: false)
+                self.appDelegate.openLogin(selector: NCGlobal.shared.introLogin, openLoginWeb: false)
             }
 
             let actionNo = UIAlertAction(title: NSLocalizedString("_no_delete_", comment: ""), style: .default) { (_: UIAlertAction) in

@@ -27,7 +27,7 @@ import NextcloudKit
 import EasyTipView
 import JGProgressHUD
 
-class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UISearchResultsUpdating, UISearchControllerDelegate, UISearchBarDelegate, NCListCellDelegate, NCGridCellDelegate, NCSectionHeaderMenuDelegate, NCSectionFooterDelegate, NCSectionHeaderEmptyDataDelegate, UIAdaptivePresentationControllerDelegate, UIContextMenuInteractionDelegate, NCAccountRequestDelegate {
+class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UISearchResultsUpdating, UISearchControllerDelegate, UISearchBarDelegate, NCListCellDelegate, NCGridCellDelegate, NCSectionHeaderMenuDelegate, NCSectionFooterDelegate, NCSectionHeaderEmptyDataDelegate, UIAdaptivePresentationControllerDelegate, UIContextMenuInteractionDelegate {
 
     @IBOutlet weak var collectionView: UICollectionView!
 
@@ -607,7 +607,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             }
 
             let addAccountAction = UIAction(title: NSLocalizedString("_add_account_", comment: ""), image: .init(systemName: "person.crop.circle.badge.plus")) { _ in
-                self.appDelegate.openLogin(viewController: self, selector: NCGlobal.shared.introLogin, openLoginWeb: false)
+                self.appDelegate.openLogin(selector: NCGlobal.shared.introLogin, openLoginWeb: false)
             }
 
             let addAccountSubmenu = UIMenu(title: "", options: .displayInline, children: [addAccountAction])
@@ -798,17 +798,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
     // MARK: - TAP EVENT
 
-    func accountRequestChangeAccount(account: String) {
-
-        appDelegate.changeAccount(account, userProfile: nil)
-    }
-
-    func accountRequestAddAccount() {
-        appDelegate.openLogin(viewController: self, selector: NCGlobal.shared.introLogin, openLoginWeb: false)
-    }
-
     func tapButtonOrder(_ sender: Any) {
-
         let sortMenu = NCSortMenu()
         sortMenu.toggleMenu(viewController: self, account: appDelegate.account, key: layoutKey, sortButton: sender as? UIButton, serverUrl: serverUrl)
     }
@@ -818,7 +808,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     }
 
     func tapShareListItem(with objectId: String, indexPath: IndexPath, sender: Any) {
-
         if isEditMode { return }
         guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(objectId) else { return }
 
@@ -826,9 +815,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     }
 
     func tapMoreGridItem(with objectId: String, namedButtonMore: String, image: UIImage?, indexPath: IndexPath, sender: Any) {
-
         if isEditMode { return }
-
         guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(objectId) else { return }
 
         if namedButtonMore == NCGlobal.shared.buttonMoreMore || namedButtonMore == NCGlobal.shared.buttonMoreLock {
@@ -841,7 +828,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     }
 
     func tapRichWorkspace(_ sender: Any) {
-
         if let navigationController = UIStoryboard(name: "NCViewerRichWorkspace", bundle: nil).instantiateInitialViewController() as? UINavigationController {
             if let viewerRichWorkspace = navigationController.topViewController as? NCViewerRichWorkspace {
                 viewerRichWorkspace.richWorkspaceText = richWorkspaceText ?? ""

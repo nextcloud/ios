@@ -29,14 +29,7 @@ public protocol NCAccountRequestDelegate: AnyObject {
     func accountRequestChangeAccount(account: String)
 }
 
-// optional func
-public extension NCAccountRequestDelegate {
-    func accountRequestAddAccount() {}
-    func accountRequestChangeAccount(account: String) {}
-}
-
 class NCAccountRequest: UIViewController {
-
     @IBOutlet weak var titleLabel: UILabel!
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var progressView: UIProgressView!
@@ -97,7 +90,6 @@ class NCAccountRequest: UIViewController {
     // MARK: - NotificationCenter
 
     @objc func applicationDidEnterBackground() {
-
         if dismissDidEnterBackground {
             dismiss(animated: false)
         }
@@ -106,7 +98,6 @@ class NCAccountRequest: UIViewController {
     // MARK: - Progress
 
     @objc func startTimer() {
-
         if enableTimerProgress {
             time = 0
             timer?.invalidate()
@@ -118,7 +109,6 @@ class NCAccountRequest: UIViewController {
     }
 
     @objc func updateProgress() {
-
         time += 0.1
         if time >= secondsAutoDismiss {
             dismiss(animated: true)
@@ -129,9 +119,7 @@ class NCAccountRequest: UIViewController {
 }
 
 extension NCAccountRequest: UITableViewDelegate {
-
     func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
-
         timer?.invalidate()
         progressView.progress = 0
     }
@@ -141,14 +129,10 @@ extension NCAccountRequest: UITableViewDelegate {
     }
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-
         if indexPath.row == accounts.count {
-
             dismiss(animated: true)
             delegate?.accountRequestAddAccount()
-
         } else {
-
             let account = accounts[indexPath.row]
             if account.account != activeAccount?.account {
                 dismiss(animated: true) {
@@ -162,7 +146,6 @@ extension NCAccountRequest: UITableViewDelegate {
 }
 
 extension NCAccountRequest: UITableViewDataSource {
-
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         if enableAddAccount {
             return accounts.count + 1
@@ -172,10 +155,8 @@ extension NCAccountRequest: UITableViewDataSource {
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-
         let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath)
         cell.backgroundColor = tableView.backgroundColor
-
         let avatarImage = cell.viewWithTag(10) as? UIImageView
         let userLabel = cell.viewWithTag(20) as? UILabel
         let urlLabel = cell.viewWithTag(30) as? UILabel

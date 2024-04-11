@@ -29,7 +29,6 @@ import FloatingPanel
 class NCLoginWeb: UIViewController {
 
     var webView: WKWebView?
-    var scene: UIScene?
     let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
     let utility = NCUtility()
 
@@ -291,18 +290,19 @@ extension NCLoginWeb: WKNavigationDelegate {
 
                 self.appDelegate.changeAccount(account, userProfile: userProfile)
 
-                if self.presentingViewController == nil, let window = SceneManager.shared.getWindow(scene: self.scene) {
+                let window = UIApplication.shared.firstWindow
+                if window?.rootViewController is NCMainTabBarController {
+                    self.dismiss(animated: true)
+                } else {
                     if let mainTabBarController = UIStoryboard(name: "Main", bundle: nil).instantiateInitialViewController() as? NCMainTabBarController {
                         mainTabBarController.modalPresentationStyle = .fullScreen
                         mainTabBarController.view.alpha = 0
-                        window.rootViewController = mainTabBarController
-                        window.makeKeyAndVisible()
+                        window?.rootViewController = mainTabBarController
+                        window?.makeKeyAndVisible()
                         UIView.animate(withDuration: 0.5) {
                             mainTabBarController.view.alpha = 1
                         }
                     }
-                } else {
-                    self.dismiss(animated: true)
                 }
 
             } else {

@@ -27,10 +27,9 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             }
         } else {
             if NCBrandOptions.shared.disable_intro {
-                appDelegate.openLogin(viewController: nil, selector: NCGlobal.shared.introLogin, openLoginWeb: false)
+                appDelegate.openLogin(selector: NCGlobal.shared.introLogin, openLoginWeb: false)
             } else {
                 if let viewController = UIStoryboard(name: "NCIntro", bundle: nil).instantiateInitialViewController() as? NCIntroViewController {
-                    viewController.scene = scene
                     let navigationController = NCLoginNavigationController(rootViewController: viewController)
                     window?.rootViewController = navigationController
                     window?.makeKeyAndVisible()
@@ -47,8 +46,14 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     func sceneWillEnterForeground(_ scene: UIScene) {
         NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Scene will enter in foreground")
-        guard let appDelegate,
-              !appDelegate.account.isEmpty else { return }
+        guard let appDelegate else { return }
+
+        if (UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }).count > 1,
+           (appDelegate.activeLogin?.view.window != nil || appDelegate.activeLoginWeb?.view.window != nil) || (UIApplication.shared.firstWindow?.rootViewController is NCLoginNavigationController) {
+            UIApplication.shared.allSceneSessionDestructionExceptFirst()
+            return
+        }
+        guard !appDelegate.account.isEmpty else { return }
 
         if let window = SceneManager.shared.getWindow(scene: scene), let rootViewController = SceneManager.shared.getMainTabBarController(scene: scene) {
             window.rootViewController = rootViewController
