@@ -22,13 +22,6 @@ struct NCAssistantTaskDetail: View {
                 }
                 .padding(.bottom, 10)
                 .pickerStyle(.segmented)
-                .toolbar {
-                    ToolbarItem(placement: .bottomBar) {
-                        Button("Press Me") {
-                            print("Pressed")
-                        }
-                    }
-                }
 
                 ScrollView {
                     Text(tab == 0 ? (task.input ?? "") : (task.output ?? ""))
@@ -38,9 +31,18 @@ struct NCAssistantTaskDetail: View {
                 .background(.gray.opacity(0.1))
                 .clipShape(.rect(cornerRadius: 8))
 
+                HStack {
+                    Label(
+                        title: { Text(NSLocalizedString(task.statusInfo.stringKey, comment: "")) },
+                        icon: { Image(systemName: task.statusInfo.imageSystemName).renderingMode(.original) }
+                    )
+//                    .foregroundStyle(.primary)
+                }
+                .padding()
+
             }
             .navigationBarTitleDisplayMode(.inline)
-            .navigationTitle("Assistant")
+            .navigationTitle("Task details")
             .padding()
         }
     }
