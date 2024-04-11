@@ -31,12 +31,10 @@ import NextcloudKit
 import Queuer
 
 extension NCCollectionViewCommon {
-
     func toggleMenu(metadata: tableMetadata, indexPath: IndexPath, imageIcon: UIImage?) {
-
+        guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(metadata.ocId),
+              let sceneIdentifier = (tabBarController as? NCMainTabBarController)?.sceneIdentifier else { return }
         var actions = [NCMenuAction]()
-
-        guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(metadata.ocId) else { return }
         let serverUrl = metadata.serverUrl + "/" + metadata.fileName
         var isOffline: Bool = false
 
@@ -77,7 +75,7 @@ extension NCCollectionViewCommon {
         //
         // DETAILS
         //
-        if !appDelegate.disableSharesView {
+        if !NCGlobal.shared.disableSharesView {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_details_", comment: ""),
@@ -133,7 +131,7 @@ extension NCCollectionViewCommon {
                     icon: utility.loadImage(named: "questionmark.folder"),
                     order: 21,
                     action: { _ in
-                        NCActionCenter.shared.openFileViewInFolder(serverUrl: metadata.serverUrl, fileNameBlink: metadata.fileName, fileNameOpen: nil)
+                        NCActionCenter.shared.openFileViewInFolder(serverUrl: metadata.serverUrl, fileNameBlink: metadata.fileName, fileNameOpen: nil, sceneIdentifier: sceneIdentifier)
                     }
                 )
             )
@@ -266,14 +264,15 @@ extension NCCollectionViewCommon {
         //
         // SAVE LIVE PHOTO
         //
-        if let metadataMOV = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata) {
+        if let metadataMOV = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata),
+           let hudView = self.tabBarController?.view {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_livephoto_save_", comment: ""),
                     icon: NCUtility().loadImage(named: "livephoto"),
                     order: 100,
                     action: { _ in
-                        NCNetworking.shared.saveLivePhotoQueue.addOperation(NCOperationSaveLivePhoto(metadata: metadata, metadataMOV: metadataMOV))
+                        NCNetworking.shared.saveLivePhotoQueue.addOperation(NCOperationSaveLivePhoto(metadata: metadata, metadataMOV: metadataMOV, hudView: hudView))
                     }
                 )
             )
@@ -338,7 +337,7 @@ extension NCCollectionViewCommon {
         // COPY - MOVE
         //
         if metadata.isCopyableMovable {
-            actions.append(.moveOrCopyAction(selectedMetadatas: [metadata], indexPath: [indexPath], order: 130))
+            actions.append(.moveOrCopyAction(selectedMetadatas: [metadata], viewController: self, indexPath: [indexPath], order: 130))
         }
 
         //

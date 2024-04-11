@@ -23,13 +23,10 @@
 
 import UIKit
 
-class NCMainTabBarController: UITabBarController {
-
-    var identifier: String = UUID().uuidString
-
-    // MARK: - Life Cycle
-
-    required init?(coder: NSCoder) {
-        super.init(coder: coder)
-    }
+@objc class NCMainTabBarController: UITabBarController {
+    @objc var sceneIdentifier: String = UUID().uuidString
+    @objc var viewController: UIViewController?
+    @objc var serverUrl: String?
+    var documentPickerViewController: NCDocumentPickerViewController?
+    let filesServerUrl = ThreadSafeDictionary<String, NCFiles>()
 }

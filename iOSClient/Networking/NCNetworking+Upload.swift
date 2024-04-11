@@ -419,8 +419,18 @@ extension NCNetworking {
                                                                        "account": metadata.account])
                         }))
 
-                        let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
-                        appDelegate.window?.rootViewController?.present(alertController, animated: true)
+                        // Select UIWindowScene active in serverUrl
+                        var mainTabBarController = UIApplication.shared.firstWindow?.rootViewController
+                        let windowScenes = UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }
+                        for windowScene in windowScenes {
+                            if let rootViewController = windowScene.keyWindow?.rootViewController as? NCMainTabBarController,
+                               rootViewController.serverUrl == serverUrl {
+                                mainTabBarController = rootViewController
+                                break
+                            }
+                        }
+
+                        mainTabBarController?.present(alertController, animated: true)
 
                         // Client Diagnostic
                         NCManageDatabase.shared.addDiagnostic(account: metadata.account, issue: NCGlobal.shared.diagnosticIssueProblems, error: NCGlobal.shared.diagnosticProblemsForbidden)

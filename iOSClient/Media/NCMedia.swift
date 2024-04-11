@@ -148,7 +148,7 @@ class NCMedia: UIViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
-        appDelegate.activeViewController = self
+        (tabBarController as? NCMainTabBarController)?.viewController = self
 
         NotificationCenter.default.addObserver(self, selector: #selector(deleteFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDeleteFile), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(enterForeground(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationWillEnterForeground), object: nil)
@@ -292,7 +292,7 @@ extension NCMedia: UICollectionViewDelegate {
                 tabBarSelect.selectCount = selectOcId.count
             } else {
                 // ACTIVE SERVERURL
-                appDelegate.activeServerUrl = metadata.serverUrl
+                (tabBarController as? NCMainTabBarController)?.serverUrl = metadata.serverUrl
                 if let metadatas = self.metadatas?.getArray() {
                     NCViewer().view(viewController: self, metadata: metadata, metadatas: metadatas, imageIcon: getImage(metadata: metadata))
                 }

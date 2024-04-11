@@ -79,7 +79,8 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        appDelegate.activeViewController = self
+
+        (tabBarController as? NCMainTabBarController)?.viewController = self
         navigationController?.setGroupAppearance()
         loadItems()
         tableView.reloadData()

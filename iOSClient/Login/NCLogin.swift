@@ -36,6 +36,8 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
     @IBOutlet weak var qrCode: UIButton!
     @IBOutlet weak var certificate: UIButton!
 
+    public var scene: UIScene?
+
     private let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
     private var textColor: UIColor = .white
     private var textColorOpponent: UIColor = .black
@@ -147,8 +149,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-
-        appDelegate.timerErrorNetworking?.invalidate()
+        appDelegate.timerErrorNetworkingDisabled = true
 
         if self.shareAccounts != nil, let image = UIImage(systemName: "person.badge.plus")?.withTintColor(.white, renderingMode: .alwaysOriginal), let backgroundColor = NCBrandColor.shared.brandElement.lighter(by: 10) {
             let title = String(format: NSLocalizedString("_apps_nextcloud_detect_", comment: ""), NCBrandOptions.shared.brand)
@@ -163,8 +164,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
 
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
-
-        appDelegate.startTimerErrorNetworking()
+        appDelegate.timerErrorNetworkingDisabled = false
     }
 
     // MARK: - TextField
@@ -278,6 +278,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
 
                         if let loginWeb = UIStoryboard(name: "NCLogin", bundle: nil).instantiateViewController(withIdentifier: "NCLoginWeb") as? NCLoginWeb {
 
+                            loginWeb.scene = self.scene
                             loginWeb.urlBase = url
                             loginWeb.user = user
                             loginWeb.loginFlowV2Available = true
@@ -293,6 +294,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
 
                         if let loginWeb = UIStoryboard(name: "NCLogin", bundle: nil).instantiateViewController(withIdentifier: "NCLoginWeb") as? NCLoginWeb {
 
+                            loginWeb.scene = self.scene
                             loginWeb.urlBase = url
                             loginWeb.user = user
 
@@ -400,14 +402,14 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
 
                     self.appDelegate.changeAccount(account, userProfile: userProfile)
 
-                    if self.presentingViewController == nil {
-                        if let viewController = UIStoryboard(name: "Main", bundle: nil).instantiateInitialViewController() {
-                            viewController.modalPresentationStyle = .fullScreen
-                            viewController.view.alpha = 0
-                            self.appDelegate.window?.rootViewController = viewController
-                            self.appDelegate.window?.makeKeyAndVisible()
+                    if self.presentingViewController == nil, let window = SceneManager.shared.getWindow(scene: self.scene) {
+                        if let mainTabBarController = UIStoryboard(name: "Main", bundle: nil).instantiateInitialViewController() as? NCMainTabBarController {
+                            mainTabBarController.modalPresentationStyle = .fullScreen
+                            mainTabBarController.view.alpha = 0
+                            window.rootViewController = mainTabBarController
+                            window.makeKeyAndVisible()
                             UIView.animate(withDuration: 0.5) {
-                                viewController.view.alpha = 1
+                                mainTabBarController.view.alpha = 1
                             }
                         }
                     } else {

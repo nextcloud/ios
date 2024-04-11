@@ -28,14 +28,14 @@ import TOPasscodeViewController
 public protocol NCPasscodeDelegate: AnyObject {
     func evaluatePolicy(_ passcodeViewController: TOPasscodeViewController, isCorrectCode: Bool)
     func passcodeReset(_ passcodeViewController: TOPasscodeViewController)
-    func requestedAccount()
+    func requestedAccount(rootViewController: UIViewController?)
 }
 
 // optional func
 public extension NCPasscodeDelegate {
     func evaluatePolicy(_ passcodeViewController: TOPasscodeViewController, isCorrectCode: Bool) {}
     func passcodeReset() {}
-    func requestedAccount() {}
+    func requestedAccount(rootViewController: UIViewController?) {}
 }
 
 class NCPasscode: NSObject, TOPasscodeViewControllerDelegate {
@@ -51,31 +51,14 @@ class NCPasscode: NSObject, TOPasscodeViewControllerDelegate {
         let passcodeCounterFail = NCKeychain().passcodeCounterFail
         return passcodeCounterFail > 0 && passcodeCounterFail.isMultiple(of: 3)
     }
-    var isPasscodePresented: Bool {
-        return privacyProtectionWindow?.rootViewController?.presentedViewController is TOPasscodeViewController
-    }
-    var privacyProtectionWindow: UIWindow?
     var passcodeViewController: TOPasscodeViewController!
     var delegate: NCPasscodeDelegate?
+    var rootViewController: UIViewController?
 
-    func presentPasscode(viewController: UIViewController? = nil, delegate: NCPasscodeDelegate?, completion: @escaping () -> Void) {
+    func presentPasscode(rootViewController: UIViewController, delegate: NCPasscodeDelegate?, completion: @escaping () -> Void) {
         var error: NSError?
-        var viewController = viewController
         self.delegate = delegate
-        defer {
-            self.delegate?.requestedAccount()
-        }
-        guard NCKeychain().passcode != nil, NCKeychain().requestPasscodeAtStart else { return }
-
-#if !EXTENSION
-        let appDelegate = UIApplication.shared.delegate as? AppDelegate
-        let presentedViewController = appDelegate?.window?.rootViewController?.presentedViewController
-        guard !(presentedViewController is NCLoginNavigationController) else { return }
-        // Make sure we have a privacy window (in case it's not enabled) only for App
-        self.showPrivacyProtectionWindow()
-        // show passcode on top of privacy window only for App
-        viewController = self.privacyProtectionWindow?.rootViewController
-#endif
+        self.rootViewController = rootViewController
 
         passcodeViewController = TOPasscodeViewController(passcodeType: .sixDigits, allowCancel: false)
         passcodeViewController.delegate = self
@@ -91,7 +74,7 @@ class NCPasscode: NSObject, TOPasscodeViewControllerDelegate {
                 passcodeViewController.automaticallyPromptForBiometricValidation = false
             }
         }
-        viewController?.present(passcodeViewController, animated: true, completion: {
+        rootViewController.present(passcodeViewController, animated: true, completion: {
             self.openAlert(passcodeViewController: self.passcodeViewController)
             completion()
         })
@@ -99,8 +82,7 @@ class NCPasscode: NSObject, TOPasscodeViewControllerDelegate {
 
     func enableTouchFaceID() {
         guard NCKeychain().touchFaceID,
-              NCKeychain().passcode != nil,
-              NCKeychain().requestPasscodeAtStart,
+              NCKeychain().presentPasscode,
               !isPasscodeCounterFail,
               let passcodeViewController
         else { return }
@@ -112,9 +94,10 @@ class NCPasscode: NSObject, TOPasscodeViewControllerDelegate {
                         passcodeViewController.dismiss(animated: true) {
                             NCKeychain().passcodeCounterFail = 0
                             NCKeychain().passcodeCounterFailReset = 0
-                            self.hidePrivacyProtectionWindow()
                             self.delegate?.evaluatePolicy(passcodeViewController, isCorrectCode: true)
-                            self.delegate?.requestedAccount()
+                            if NCKeychain().accountRequest {
+                                self.delegate?.requestedAccount(rootViewController: self.rootViewController)
+                            }
                         }
                     }
                 } else {
@@ -155,8 +138,9 @@ class NCPasscode: NSObject, TOPasscodeViewControllerDelegate {
             passcodeViewController.dismiss(animated: true) {
                 NCKeychain().passcodeCounterFail = 0
                 NCKeychain().passcodeCounterFailReset = 0
-                self.hidePrivacyProtectionWindow()
-                self.delegate?.requestedAccount()
+                if NCKeychain().accountRequest {
+                    self.delegate?.requestedAccount(rootViewController: self.rootViewController)
+                }
             }
         }
     }
@@ -210,35 +194,6 @@ class NCPasscode: NSObject, TOPasscodeViewControllerDelegate {
                     }
                 }
             }
-        }
-    }
-
-    // MARK: - Privacy Protection
-
-    func showPrivacyProtectionWindow() {
-        guard privacyProtectionWindow == nil else {
-            privacyProtectionWindow?.isHidden = false
-            return
-        }
-
-        privacyProtectionWindow = UIWindow(frame: UIScreen.main.bounds)
-
-        let storyboard = UIStoryboard(name: "LaunchScreen", bundle: nil)
-        let initialViewController = storyboard.instantiateInitialViewController()
-
-        self.privacyProtectionWindow?.rootViewController = initialViewController
-
-        privacyProtectionWindow?.windowLevel = .alert + 1
-        privacyProtectionWindow?.makeKeyAndVisible()
-    }
-
-    func hidePrivacyProtectionWindow() {
-        guard !(privacyProtectionWindow?.rootViewController?.presentedViewController is TOPasscodeViewController) else { return }
-        UIWindow.animate(withDuration: 0.25) {
-            self.privacyProtectionWindow?.alpha = 0
-        } completion: { _ in
-            self.privacyProtectionWindow?.isHidden = true
-            self.privacyProtectionWindow = nil
         }
     }
 }

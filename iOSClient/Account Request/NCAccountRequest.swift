@@ -111,9 +111,9 @@ class NCAccountRequest: UIViewController {
             time = 0
             timer?.invalidate()
             timer = Timer.scheduledTimer(timeInterval: 0.1, target: self, selector: #selector(updateProgress), userInfo: nil, repeats: true)
-            progressView.isHidden = false
+            progressView?.isHidden = false
         } else {
-            progressView.isHidden = true
+            progressView?.isHidden = true
         }
     }
 

@@ -80,8 +80,11 @@ extension NCManageDatabase {
 
 #if !EXTENSION
         DispatchQueue.main.async {
-            if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
-                appDelegate.listFilesVC[serverUrl] = nil
+            let windowScenes = UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }
+            for windowScene in windowScenes {
+                if let mainTabBarController = windowScene.keyWindow?.rootViewController as? NCMainTabBarController {
+                    mainTabBarController.filesServerUrl.removeValue(forKey: serverUrl)
+                }
             }
         }
 #endif

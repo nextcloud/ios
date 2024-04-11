@@ -159,39 +159,8 @@ extension NCMenuAction {
             icon: NCUtility().loadImage(named: "square.and.arrow.up"),
             order: order,
             action: { _ in
-                NCActionCenter.shared.openActivityViewController(selectedMetadata: selectedMetadatas)
-                completion?()
-            }
-        )
-    }
-
-    /// Save selected files to user's photo library
-    static func saveMediaAction(selectedMediaMetadatas: [tableMetadata], order: Int = 0, completion: (() -> Void)? = nil) -> NCMenuAction {
-        var title: String = NSLocalizedString("_save_selected_files_", comment: "")
-        var icon = NCUtility().loadImage(named: "square.and.arrow.down")
-        if selectedMediaMetadatas.allSatisfy({ NCManageDatabase.shared.getMetadataLivePhoto(metadata: $0) != nil }) {
-            title = NSLocalizedString("_livephoto_save_", comment: "")
-            icon = NCUtility().loadImage(named: "livephoto")
-        }
-
-        return NCMenuAction(
-            title: title,
-            icon: icon,
-            order: order,
-            action: { _ in
-                for metadata in selectedMediaMetadatas {
-                    if let metadataMOV = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata) {
-                        NCNetworking.shared.saveLivePhotoQueue.addOperation(NCOperationSaveLivePhoto(metadata: metadata, metadataMOV: metadataMOV))
-                    } else {
-                        if NCUtilityFileSystem().fileProviderStorageExists(metadata) {
-                            NCActionCenter.shared.saveAlbum(metadata: metadata)
-                        } else {
-                            if NCNetworking.shared.downloadQueue.operations.filter({ ($0 as? NCOperationDownload)?.metadata.ocId == metadata.ocId }).isEmpty {
-                                NCNetworking.shared.downloadQueue.addOperation(NCOperationDownload(metadata: metadata, selector: NCGlobal.shared.selectorSaveAlbum))
-                            }
-                        }
-                    }
-                }
+                let mainTabBarController = viewController.tabBarController as? NCMainTabBarController
+                NCActionCenter.shared.openActivityViewController(selectedMetadata: selectedMetadatas, mainTabBarController: mainTabBarController)
                 completion?()
             }
         )
@@ -223,13 +192,14 @@ extension NCMenuAction {
         )
     }
     /// Open view that lets the user move or copy the files within Nextcloud
-    static func moveOrCopyAction(selectedMetadatas: [tableMetadata], indexPath: [IndexPath], order: Int = 0, completion: (() -> Void)? = nil) -> NCMenuAction {
+    static func moveOrCopyAction(selectedMetadatas: [tableMetadata], viewController: UIViewController, indexPath: [IndexPath], order: Int = 0, completion: (() -> Void)? = nil) -> NCMenuAction {
         NCMenuAction(
             title: NSLocalizedString("_move_or_copy_", comment: ""),
             icon: NCUtility().loadImage(named: "rectangle.portrait.and.arrow.right"),
             order: order,
             action: { _ in
-                NCActionCenter.shared.openSelectView(items: selectedMetadatas)
+                let mainTabBarController = viewController.tabBarController as? NCMainTabBarController
+                NCActionCenter.shared.openSelectView(items: selectedMetadatas, mainTabBarController: mainTabBarController)
                 completion?()
             }
         )

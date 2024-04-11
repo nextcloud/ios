@@ -35,13 +35,12 @@ class NCNetworkingProcess: NSObject {
 
     let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
     let utilityFileSystem = NCUtilityFileSystem()
-    lazy var hudView = appDelegate.window?.rootViewController?.view
     var notificationToken: NotificationToken?
     var timerProcess: Timer?
     var hud: JGProgressHUD?
     var pauseProcess: Bool = false
 
-    func startTimer() {
+    func startTimer(scene: UIScene) {
         self.timerProcess?.invalidate()
         self.timerProcess = Timer.scheduledTimer(withTimeInterval: 1, repeats: true, block: { _ in
             guard !self.appDelegate.account.isEmpty,
@@ -66,7 +65,7 @@ class NCNetworkingProcess: NSObject {
                 NotificationCenter.default.post(name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterUpdateBadgeNumber), object: nil, userInfo: ["counterDownload": 0, "counterUpload": 0])
             } else {
                 Task {
-                    let results = await self.start()
+                    let results = await self.start(scene: scene)
                     let counterDownload = await NCManageDatabase.shared.getResultsMetadatas(predicate: NSPredicate(format: "account == %@ AND session == %@ AND (status == %d || status == %d)", self.appDelegate.account, NCNetworking.shared.sessionDownloadBackground, NCGlobal.shared.metadataStatusWaitDownload, NCGlobal.shared.metadataStatusDownloading))?.count ?? 0
                     let counterUpload = await NCManageDatabase.shared.getResultsMetadatas(predicate: NSPredicate(format: "account == %@ AND session == %@ AND (status == %d || status == %d)", self.appDelegate.account, NCNetworking.shared.sessionUploadBackground, NCGlobal.shared.metadataStatusWaitUpload, NCGlobal.shared.metadataStatusUploading))?.count ?? 0
                     print("[INFO] PROCESS Download: \(results.counterDownloading)/\(counterDownload) Upload: \(results.counterUploading)/\(counterUpload)")
@@ -81,8 +80,9 @@ class NCNetworkingProcess: NSObject {
     }
 
     @discardableResult
-    func start() async -> (counterDownloading: Int, counterUploading: Int) {
+    func start(scene: UIScene?) async -> (counterDownloading: Int, counterUploading: Int) {
         self.pauseProcess = true
+        let hudView = await SceneManager.shared.getMainTabBarController(scene: scene)?.view
         let applicationState = await UIApplication.shared.applicationState
         let maxConcurrentOperationDownload = NCBrandOptions.shared.maxConcurrentOperationDownload
         var maxConcurrentOperationUpload = NCBrandOptions.shared.maxConcurrentOperationUpload
@@ -169,7 +169,7 @@ class NCNetworkingProcess: NSObject {
                     if !isWiFi && metadata.session == NCNetworking.shared.sessionUploadBackgroundWWan { continue }
                     if applicationState != .active && (isInDirectoryE2EE || metadata.chunk > 0) { continue }
                     if let metadata = NCManageDatabase.shared.setMetadataStatus(ocId: metadata.ocId, status: NCGlobal.shared.metadataStatusUploading) {
-                        NCNetworking.shared.upload(metadata: metadata, hudView: self.hudView, hud: self.hud)
+                        NCNetworking.shared.upload(metadata: metadata, hudView: hudView, hud: self.hud)
                         if isInDirectoryE2EE || metadata.chunk > 0 {
                             maxConcurrentOperationUpload = 1
                         }

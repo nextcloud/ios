@@ -29,7 +29,7 @@ import FloatingPanel
 class NCLoginWeb: UIViewController {
 
     var webView: WKWebView?
-
+    var scene: UIScene?
     let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
     let utility = NCUtility()
 
@@ -141,7 +141,7 @@ class NCLoginWeb: UIViewController {
         super.viewDidAppear(animated)
 
         // Stop timer error network
-        appDelegate.timerErrorNetworking?.invalidate()
+        appDelegate.timerErrorNetworkingDisabled = true
 
         if let account = NCManageDatabase.shared.getActiveAccount(), NCKeychain().getPassword(account: account.account).isEmpty {
 
@@ -155,7 +155,7 @@ class NCLoginWeb: UIViewController {
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
         NCActivityIndicator.shared.stop()
-        appDelegate.startTimerErrorNetworking()
+        appDelegate.timerErrorNetworkingDisabled = false
     }
 
     func loadWebPage(webView: WKWebView, url: URL) {
@@ -291,14 +291,14 @@ extension NCLoginWeb: WKNavigationDelegate {
 
                 self.appDelegate.changeAccount(account, userProfile: userProfile)
 
-                if self.presentingViewController == nil {
-                    if let viewController = UIStoryboard(name: "Main", bundle: nil).instantiateInitialViewController() {
-                        viewController.modalPresentationStyle = .fullScreen
-                        viewController.view.alpha = 0
-                        self.appDelegate.window?.rootViewController = viewController
-                        self.appDelegate.window?.makeKeyAndVisible()
+                if self.presentingViewController == nil, let window = SceneManager.shared.getWindow(scene: self.scene) {
+                    if let mainTabBarController = UIStoryboard(name: "Main", bundle: nil).instantiateInitialViewController() as? NCMainTabBarController {
+                        mainTabBarController.modalPresentationStyle = .fullScreen
+                        mainTabBarController.view.alpha = 0
+                        window.rootViewController = mainTabBarController
+                        window.makeKeyAndVisible()
                         UIView.animate(withDuration: 0.5) {
-                            viewController.view.alpha = 1
+                            mainTabBarController.view.alpha = 1
                         }
                     }
                 } else {

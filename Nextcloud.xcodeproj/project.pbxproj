@@ -641,6 +641,7 @@
 		F793E59F28B764F6005E4B02 /* NCContentPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = F765608E23BF813500765969 /* NCContentPresenter.swift */; };
 		F793E5A128B76541005E4B02 /* NotificationCenter+MainThread.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70460512499061800BB98A7 /* NotificationCenter+MainThread.swift */; };
 		F794E13D2BBBFF2E003693D7 /* NCMainTabBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F794E13C2BBBFF2E003693D7 /* NCMainTabBarController.swift */; };
+		F794E13F2BBC0F70003693D7 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F794E13E2BBC0F70003693D7 /* SceneDelegate.swift */; };
 		F798F0E225880608000DAFFD /* UIColor+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70CEF5523E9C7E50007035B /* UIColor+Extension.swift */; };
 		F798F0E725880609000DAFFD /* UIColor+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70CEF5523E9C7E50007035B /* UIColor+Extension.swift */; };
 		F798F0EC2588060A000DAFFD /* UIColor+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70CEF5523E9C7E50007035B /* UIColor+Extension.swift */; };
@@ -658,6 +659,8 @@
 		F79EDAA526B004980007D134 /* NCPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = F79EDAA126B004980007D134 /* NCPlayer.swift */; };
 		F79FFB262A97C24A0055EEA4 /* NCNetworkingE2EEMarkFolder.swift in Sources */ = {isa = PBXBuildFile; fileRef = F79FFB252A97C24A0055EEA4 /* NCNetworkingE2EEMarkFolder.swift */; };
 		F79FFB272A97C24A0055EEA4 /* NCNetworkingE2EEMarkFolder.swift in Sources */ = {isa = PBXBuildFile; fileRef = F79FFB252A97C24A0055EEA4 /* NCNetworkingE2EEMarkFolder.swift */; };
+		F7A07BB42BBF0F0000CB6772 /* PrivacyProtectionScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7A07BB32BBF0F0000CB6772 /* PrivacyProtectionScreen.storyboard */; };
+		F7A07BB62BBF110500CB6772 /* PrivacyProtectionScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7A07BB52BBF110500CB6772 /* PrivacyProtectionScreen.swift */; };
 		F7A0D1352591FBC5008F8A13 /* String+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7A0D1342591FBC5008F8A13 /* String+Extension.swift */; };
 		F7A0D1362591FBC5008F8A13 /* String+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7A0D1342591FBC5008F8A13 /* String+Extension.swift */; };
 		F7A0D1372591FBC5008F8A13 /* String+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7A0D1342591FBC5008F8A13 /* String+Extension.swift */; };
@@ -787,6 +790,7 @@
 		F7E98C1727E0D0FC001F9F19 /* NCManageDatabase+Video.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7E98C1527E0D0FC001F9F19 /* NCManageDatabase+Video.swift */; };
 		F7E98C1827E0D0FC001F9F19 /* NCManageDatabase+Video.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7E98C1527E0D0FC001F9F19 /* NCManageDatabase+Video.swift */; };
 		F7E98C1927E0D0FC001F9F19 /* NCManageDatabase+Video.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7E98C1527E0D0FC001F9F19 /* NCManageDatabase+Video.swift */; };
+		F7EB9B132BBC12F300EDF036 /* UIApplication+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7EB9B122BBC12F300EDF036 /* UIApplication+Extension.swift */; };
 		F7ED547C25EEA65400956C55 /* QRCodeReader in Frameworks */ = {isa = PBXBuildFile; productRef = F7ED547B25EEA65400956C55 /* QRCodeReader */; };
 		F7EDE4D1262D7B8400414FE6 /* NCDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7C1EEA425053A9C00866ACC /* NCDataSource.swift */; };
 		F7EDE4D6262D7B9600414FE6 /* NCListCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F78ACD4121903CE00088454D /* NCListCell.swift */; };
@@ -1320,6 +1324,7 @@
 		F79131C628AFB86E00577277 /* eu */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = eu; path = eu.lproj/Localizable.strings; sourceTree = "<group>"; };
 		F79131C728AFB86E00577277 /* eu */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = eu; path = eu.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		F794E13C2BBBFF2E003693D7 /* NCMainTabBarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCMainTabBarController.swift; sourceTree = "<group>"; };
+		F794E13E2BBC0F70003693D7 /* SceneDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
 		F79918A021997F9000C2E308 /* UICKeyChainStore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UICKeyChainStore.framework; path = Carthage/Build/iOS/UICKeyChainStore.framework; sourceTree = "<group>"; };
 		F79918A72199840500C2E308 /* Sheeeeeeeeet.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Sheeeeeeeeet.framework; path = Carthage/Build/iOS/Sheeeeeeeeet.framework; sourceTree = "<group>"; };
 		F79A65C22191D90F00FF6DCC /* NCSelect.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = NCSelect.storyboard; sourceTree = "<group>"; };
@@ -1330,6 +1335,8 @@
 		F79EDA9F26B004980007D134 /* NCPlayerToolBar.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCPlayerToolBar.swift; sourceTree = "<group>"; };
 		F79EDAA126B004980007D134 /* NCPlayer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCPlayer.swift; sourceTree = "<group>"; };
 		F79FFB252A97C24A0055EEA4 /* NCNetworkingE2EEMarkFolder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCNetworkingE2EEMarkFolder.swift; sourceTree = "<group>"; };
+		F7A07BB32BBF0F0000CB6772 /* PrivacyProtectionScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = PrivacyProtectionScreen.storyboard; sourceTree = "<group>"; };
+		F7A07BB52BBF110500CB6772 /* PrivacyProtectionScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrivacyProtectionScreen.swift; sourceTree = "<group>"; };
 		F7A0D1342591FBC5008F8A13 /* String+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+Extension.swift"; sourceTree = "<group>"; };
 		F7A321AB1E9E6AD50069AD1B /* CCAdvanced.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCAdvanced.h; sourceTree = "<group>"; };
 		F7A321AC1E9E6AD50069AD1B /* CCAdvanced.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCAdvanced.m; sourceTree = "<group>"; };
@@ -1514,6 +1521,7 @@
 		F7E856182351D7BE009A3330 /* SwiftyXMLParser.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftyXMLParser.framework; path = Carthage/Build/iOS/SwiftyXMLParser.framework; sourceTree = "<group>"; };
 		F7E8A390295DC5E0006CB2D0 /* View+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "View+Extension.swift"; sourceTree = "<group>"; };
 		F7E98C1527E0D0FC001F9F19 /* NCManageDatabase+Video.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NCManageDatabase+Video.swift"; sourceTree = "<group>"; };
+		F7EB9B122BBC12F300EDF036 /* UIApplication+Extension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIApplication+Extension.swift"; sourceTree = "<group>"; };
 		F7EDE508262DA9D600414FE6 /* NCSelectCommandViewSelect.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = NCSelectCommandViewSelect.xib; sourceTree = "<group>"; };
 		F7EDE513262DC2CD00414FE6 /* NCSelectCommandViewSelect+CreateFolder.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = "NCSelectCommandViewSelect+CreateFolder.xib"; sourceTree = "<group>"; };
 		F7EDE51A262DD0C400414FE6 /* NCSelectCommandViewCopyMove.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = NCSelectCommandViewCopyMove.xib; sourceTree = "<group>"; };
@@ -2301,6 +2309,7 @@
 				F343A4B22A1E01FF00DDA874 /* PHAsset+Extension.swift */,
 				F7A0D1342591FBC5008F8A13 /* String+Extension.swift */,
 				AF1A9B6327D0CA1E00F17A9E /* UIAlertController+Extension.swift */,
+				F7EB9B122BBC12F300EDF036 /* UIApplication+Extension.swift */,
 				AF7E504D27A2D8FF00B5E4AF /* UIBarButton+Extension.swift */,
 				F70CEF5523E9C7E50007035B /* UIColor+Extension.swift */,
 				F79B645F26CA661600838ACA /* UIControl+Extension.swift */,
@@ -2469,6 +2478,8 @@
 				F761856529E98543006EB3B0 /* Intro */,
 				F700222B1EC479840080073F /* Custom.xcassets */,
 				F7362A1E220C853A005101B5 /* LaunchScreen.storyboard */,
+				F7A07BB52BBF110500CB6772 /* PrivacyProtectionScreen.swift */,
+				F7A07BB32BBF0F0000CB6772 /* PrivacyProtectionScreen.storyboard */,
 				F78E2D6429AF02DB0024D4F3 /* Database.swift */,
 				F76B3CCD1EAE01BD00921AC9 /* NCBrand.swift */,
 			);
@@ -2651,6 +2662,7 @@
 			isa = PBXGroup;
 			children = (
 				F702F2CC25EE5B4F008F8E80 /* AppDelegate.swift */,
+				F794E13E2BBC0F70003693D7 /* SceneDelegate.swift */,
 				F76B649B2ADFFAED00014640 /* NCImageCache.swift */,
 				F702F2CE25EE5B5C008F8E80 /* NCGlobal.swift */,
 				F7E402282BA85D1D007E5609 /* PrivacyInfo.xcprivacy */,
@@ -3449,6 +3461,7 @@
 				F7EDE509262DA9D600414FE6 /* NCSelectCommandViewSelect.xib in Resources */,
 				F732D23327CF8AED000B0F1B /* NCPlayerToolBar.xib in Resources */,
 				F73D11FA253C5F4800DF9BEC /* NCViewerNextcloudText.storyboard in Resources */,
+				F7A07BB42BBF0F0000CB6772 /* PrivacyProtectionScreen.storyboard in Resources */,
 				F7EDE51B262DD0C400414FE6 /* NCSelectCommandViewCopyMove.xib in Resources */,
 				F73B422B2476764F00A30FD3 /* NCNotification.storyboard in Resources */,
 				F7FF2CB12842159500EBB7A1 /* NCSectionHeader.xib in Resources */,
@@ -3957,6 +3970,7 @@
 				F7245924289BB50C00474787 /* ThreadSafeDictionary.swift in Sources */,
 				F73F537F1E929C8500F8678D /* NCMore.swift in Sources */,
 				F702F2CF25EE5B5C008F8E80 /* NCGlobal.swift in Sources */,
+				F794E13F2BBC0F70003693D7 /* SceneDelegate.swift in Sources */,
 				F72CD63A25C19EBF00F46F9A /* NCAutoUpload.swift in Sources */,
 				AF93471D27E2361E002537EE /* NCShareAdvancePermissionFooter.swift in Sources */,
 				AF1A9B6427D0CA1E00F17A9E /* UIAlertController+Extension.swift in Sources */,
@@ -4041,6 +4055,7 @@
 				F74B6D952A7E239A00F03C5F /* NCManageDatabase+Chunk.swift in Sources */,
 				F310B1EF2BA862F1001C42F5 /* NCViewerMedia+VisionKit.swift in Sources */,
 				F702F2F725EE5CED008F8E80 /* NCLogin.swift in Sources */,
+				F7EB9B132BBC12F300EDF036 /* UIApplication+Extension.swift in Sources */,
 				F7E98C1627E0D0FC001F9F19 /* NCManageDatabase+Video.swift in Sources */,
 				F7F4F11227ECDC52008676F9 /* UIFont+Extension.swift in Sources */,
 				AF93471A27E2361E002537EE /* NCShareAdvancePermissionHeader.swift in Sources */,
@@ -4086,6 +4101,7 @@
 				AF3FDCC22796ECC300710F60 /* NCTrash+CollectionView.swift in Sources */,
 				F70D7C3725FFBF82002B9E34 /* NCCollectionViewCommon.swift in Sources */,
 				F76D364628A4F8BF00214537 /* NCActivityIndicator.swift in Sources */,
+				F7A07BB62BBF110500CB6772 /* PrivacyProtectionScreen.swift in Sources */,
 				F7134186259747BA00768D21 /* NCPushNotification.m in Sources */,
 				F36E64F72B9245210085ABB5 /* NCCollectionViewCommon+SelectTabBarDelegate.swift in Sources */,
 				F3BB464F2A39EBE500461F6E /* NCMoreUserCell.swift in Sources */,
@@ -5047,7 +5063,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 0;
+				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = NKUJUXUJ3B;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -5073,7 +5089,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 5.2.6;
+				MARKETING_VERSION = 5.3.0;
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = "";
 				SDKROOT = iphoneos;
@@ -5112,7 +5128,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 0;
+				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = NKUJUXUJ3B;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
@@ -5135,7 +5151,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 5.2.6;
+				MARKETING_VERSION = 5.3.0;
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = "";
 				SDKROOT = iphoneos;

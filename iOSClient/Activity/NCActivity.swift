@@ -104,7 +104,8 @@ class NCActivity: UIViewController, NCSharePagingContent {
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        appDelegate.activeViewController = self
+
+        (tabBarController as? NCMainTabBarController)?.viewController = self
     }
 
     override func viewWillLayoutSubviews() {

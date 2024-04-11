@@ -84,7 +84,7 @@ class NCViewerRichDocument: UIViewController, WKNavigationDelegate, WKScriptMess
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
-        appDelegate.activeViewController = self
+        (tabBarController as? NCMainTabBarController)?.viewController = self
 
         NotificationCenter.default.addObserver(self, selector: #selector(favoriteFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterFavoriteFile), object: nil)
 
