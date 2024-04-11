@@ -183,13 +183,11 @@ extension NCMedia {
 extension NCMedia: NCMediaSelectTabBarDelegate {
     func delete() {
         let selectOcId = self.selectOcId.map { $0 }
+        var alertStyle = UIAlertController.Style.actionSheet
+        if UIDevice.current.userInterfaceIdiom == .pad { alertStyle = .alert }
         if !selectOcId.isEmpty {
-            let alertController = UIAlertController(
-                title: NSLocalizedString("_delete_selected_photos_", comment: ""),
-                message: "",
-                preferredStyle: .alert)
-            alertController.addAction(UIAlertAction(title: NSLocalizedString("_yes_", comment: ""), style: .default) { (_: UIAlertAction) in
-
+            let alertController = UIAlertController(title: nil, message: nil, preferredStyle: alertStyle)
+            alertController.addAction(UIAlertAction(title: NSLocalizedString("_delete_selected_photos_", comment: ""), style: .destructive) { (_: UIAlertAction) in
                 Task {
                     var error = NKError()
                     var ocIds: [String] = []
@@ -203,12 +201,10 @@ extension NCMedia: NCMediaSelectTabBarDelegate {
                     }
                     NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDeleteFile, userInfo: ["ocId": ocIds, "onlyLocalCache": false, "error": error])
                 }
-
                 self.isEditMode = false
                 self.setSelectcancelButton()
             })
-            alertController.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .default) { (_: UIAlertAction) in })
-
+            alertController.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel) { (_: UIAlertAction) in })
             present(alertController, animated: true, completion: { })
         }
     }
