@@ -66,8 +66,9 @@ class NCDocumentCamera: NSObject, VNDocumentCameraViewControllerDelegate {
             } else if let mainTabBarController = self.viewController as? NCMainTabBarController {
                 if let navigationController = UIStoryboard(name: "NCScan", bundle: nil).instantiateInitialViewController() {
                     navigationController.modalPresentationStyle = UIModalPresentationStyle.pageSheet
-                    let viewController = navigationController.presentedViewController as? NCScan
-                    viewController?.serverUrl = mainTabBarController.serverUrl
+                    if let viewController = navigationController.topMostViewController() as? NCScan {
+                        viewController.serverUrl = mainTabBarController.serverUrl
+                    }
                     self.viewController?.present(navigationController, animated: true, completion: nil)
                 }
             }

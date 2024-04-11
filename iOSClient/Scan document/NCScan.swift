@@ -172,7 +172,7 @@ class NCScan: UIViewController, NCScanCellCellDelegate {
             images.append(filter(image: image)!)
         }
         let serverUrl = self.serverUrl ?? utilityFileSystem.getHomeServer(urlBase: appDelegate.urlBase, userId: appDelegate.userId)
-        let  vc = NCHostingUploadScanDocumentView().makeShipDetailsUI(images: images, userBaseUrl: appDelegate, serverUrl: serverUrl)
+        let vc = NCHostingUploadScanDocumentView().makeShipDetailsUI(images: images, userBaseUrl: appDelegate, serverUrl: serverUrl)
 
         self.navigationController?.pushViewController(vc, animated: true)
     }
