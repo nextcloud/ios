@@ -23,7 +23,6 @@
 
 import SwiftUI
 import NextcloudKit
-import PreviewSnapshots
 
 @objc class NCHostingCapabilitiesView: NSObject {
 
@@ -194,21 +193,21 @@ struct NCCapabilitiesView: View {
     }
 }
 
-struct NCCapabilitiesView_Previews: PreviewProvider {
-    static var previews: some View {
-        snapshots.previews.previewLayout(.device)
-    }
-
-    static var snapshots: PreviewSnapshots<String> {
-        PreviewSnapshots(
-            configurations: [
-                .init(name: NCGlobal.shared.defaultSnapshotConfiguration, state: "")
-            ],
-            configure: { _ in
-                NCCapabilitiesView(capabilitiesStatus: getCapabilitiesViewOOForPreview()).padding(.top, 20).frameForPreview()
-            })
-    }
-}
+//struct NCCapabilitiesView_Previews: PreviewProvider {
+//    static var previews: some View {
+//        snapshots.previews.previewLayout(.device)
+//    }
+//
+//    static var snapshots: PreviewSnapshots<String> {
+//        PreviewSnapshots(
+//            configurations: [
+//                .init(name: NCGlobal.shared.defaultSnapshotConfiguration, state: "")
+//            ],
+//            configure: { _ in
+//                NCCapabilitiesView(capabilitiesStatus: getCapabilitiesViewOOForPreview()).padding(.top, 20).frameForPreview()
+//            })
+//    }
+//}
 
 func getCapabilitiesViewOOForPreview() -> NCCapabilitiesViewOO {
     let capabilitiesViewOO = NCCapabilitiesViewOO()

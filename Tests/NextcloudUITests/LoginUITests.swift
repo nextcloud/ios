@@ -20,14 +20,10 @@
 //
 
 import XCTest
+import NextcloudKit
+@testable import Nextcloud
 
 final class LoginUITests: BaseUIXCTestCase {
-    private let baseUrl = EnvVars.testServerUrl
-    private let user = EnvVars.testUser
-    private let userId = EnvVars.testUser
-    private let password = EnvVars.testAppPassword
-    private lazy var account = "\(userId) \(baseUrl)"
-
     let app = XCUIApplication()
 
     override func setUp() {
@@ -43,7 +39,7 @@ final class LoginUITests: BaseUIXCTestCase {
 
         let serverAddressHttpsTextField = app.textFields["Server address https:// …"]
         serverAddressHttpsTextField.tap()
-        serverAddressHttpsTextField.typeText(baseUrl)
+        serverAddressHttpsTextField.typeText(TestConstants.server)
         let button = app.windows.children(matching: .other).element.children(matching: .other).element.children(matching: .other).element.children(matching: .other).element.children(matching: .other).element.children(matching: .other).element.children(matching: .button).element(boundBy: 0)
         button.tap()
 
@@ -53,14 +49,16 @@ final class LoginUITests: BaseUIXCTestCase {
         waitForEnabledAndHittable(object: loginButton2)
         loginButton2.tap()
 
-        let element = webViewsQuery/*@START_MENU_TOKEN@*/.otherElements["main"]/*[[".otherElements[\"Login – Nextcloud\"].otherElements[\"main\"]",".otherElements[\"main\"]"],[[[-1,1],[-1,0]]],[0]]@END_MENU_TOKEN@*/.children(matching: .other).element(boundBy: 1)
-        let usernameTextField = element.children(matching: .other).element(boundBy: 2).children(matching: .textField).element
+        let usernameTextField = webViewsQuery.textFields["Login with username or email"]
         XCTAssert(usernameTextField.waitForExistence(timeout: timeoutSeconds))
         usernameTextField.tap()
-        usernameTextField.typeText(user)
-        let passwordTextField = element.children(matching: .other).element(boundBy: 4).children(matching: .secureTextField).element
+        usernameTextField.typeText(TestConstants.username)
+
+        let passwordTextField = webViewsQuery/*@START_MENU_TOKEN@*/.secureTextFields["Password"]/*[[".otherElements[\"Login – Nextcloud\"]",".otherElements[\"main\"].secureTextFields[\"Password\"]",".secureTextFields[\"Password\"]"],[[[-1,2],[-1,1],[-1,0,1]],[[-1,2],[-1,1]]],[0]]@END_MENU_TOKEN@*/
+        XCTAssert(passwordTextField.waitForExistence(timeout: timeoutSeconds))
         passwordTextField.tap()
-        passwordTextField.typeText(password)
+        passwordTextField.typeText(TestConstants.username)
+
         let loginButton3 = webViewsQuery/*@START_MENU_TOKEN@*/.buttons["Log in"]/*[[".otherElements[\"Login – Nextcloud\"]",".otherElements[\"main\"].buttons[\"Log in\"]",".buttons[\"Log in\"]"],[[[-1,2],[-1,1],[-1,0,1]],[[-1,2],[-1,1]]],[0]]@END_MENU_TOKEN@*/
         XCTAssert(loginButton3.waitForExistence(timeout: timeoutSeconds))
         loginButton3.tap()
