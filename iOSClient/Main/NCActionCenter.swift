@@ -479,6 +479,7 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
               let viewController = navigationController.topViewController as? NCFiles
         else { return }
         var serverUrlPush = self.utilityFileSystem.getHomeServer(urlBase: appDelegate.urlBase, userId: appDelegate.userId)
+        let filesServerUrl = mainTabBarController.filesServerUrl
 
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
             navigationController.popToRootViewController(animated: false)
@@ -494,21 +495,25 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
 
             while serverUrlPush != serverUrl, !subDirs.isEmpty {
 
-                guard let dir = subDirs.first, let viewController = UIStoryboard(name: "NCFiles", bundle: nil).instantiateInitialViewController() as? NCFiles else { return }
+                guard let dir = subDirs.first else { return }
                 serverUrlPush = serverUrlPush + "/" + dir
 
-                viewController.serverUrl = serverUrlPush
-                viewController.isRoot = false
-                viewController.titleCurrentFolder = String(dir)
-                if serverUrlPush == serverUrl {
-                    viewController.fileNameBlink = fileNameBlink
-                    viewController.fileNameOpen = fileNameOpen
+                if let viewController = filesServerUrl[serverUrlPush], viewController.isViewLoaded {
+                    navigationController.pushViewController(viewController, animated: false)
+                } else {
+                    if let viewController: NCFiles = UIStoryboard(name: "NCFiles", bundle: nil).instantiateInitialViewController() as? NCFiles {
+                        viewController.isRoot = false
+                        viewController.serverUrl = serverUrlPush
+                        viewController.titleCurrentFolder = String(dir)
+                        viewController.navigationItem.backButtonTitle = viewController.titleCurrentFolder
+                        filesServerUrl[serverUrlPush] = viewController
+                        if serverUrlPush == serverUrl {
+                            viewController.fileNameBlink = fileNameBlink
+                            viewController.fileNameOpen = fileNameOpen
+                        }
+                        navigationController.pushViewController(viewController, animated: false)
+                    }
                 }
-                mainTabBarController.filesServerUrl[serverUrl] = viewController
-
-                viewController.navigationItem.backButtonTitle = viewController.titleCurrentFolder
-                navigationController.pushViewController(viewController, animated: false)
-
                 subDirs.remove(at: 0)
             }
         }
