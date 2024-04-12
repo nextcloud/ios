@@ -204,8 +204,6 @@
 {
     [super viewWillAppear:animated];
     
-    NCMainTabBarController *mainTabBarController = (NCMainTabBarController *)self.tabBarController;
-    mainTabBarController.viewController = self;
     [[[NCAskAuthorization alloc] init] askAuthorizationPhotoLibraryWithViewController:self completion:^(BOOL status) { }];
 }
 

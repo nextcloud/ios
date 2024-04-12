@@ -80,7 +80,6 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
-        (tabBarController as? NCMainTabBarController)?.viewController = self
         navigationController?.setGroupAppearance()
         loadItems()
         tableView.reloadData()

@@ -45,7 +45,7 @@ class NCPhotosPickerViewController: NSObject {
 
         self.openPhotosPickerViewController { assets in
             if !assets.isEmpty {
-                let serverUrl = mainTabBarController.serverUrl ?? NCUtilityFileSystem().getHomeServer(urlBase: self.appDelegate.urlBase, userId: self.appDelegate.userId)
+                let serverUrl = mainTabBarController.currentServerUrl()
                 let vc = NCHostingUploadAssetsView().makeShipDetailsUI(assets: assets, serverUrl: serverUrl, userBaseUrl: self.appDelegate)
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
                     mainTabBarController.present(vc, animated: true, completion: nil)
@@ -155,8 +155,7 @@ class NCDocumentPickerViewController: NSObject, UIDocumentPickerDelegate {
             NCViewer().view(viewController: viewController, metadata: metadata, metadatas: [metadata], imageIcon: nil)
 
         } else {
-            let serverUrl = mainTabBarController.serverUrl ?? NCUtilityFileSystem().getHomeServer(urlBase: appDelegate.urlBase, userId: appDelegate.userId)
-
+            let serverUrl = mainTabBarController.currentServerUrl()
             var metadatas = [tableMetadata]()
             var metadatasInConflict = [tableMetadata]()
 

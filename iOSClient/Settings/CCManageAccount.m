@@ -281,14 +281,6 @@
     [self initializeForm];
 }
 
-- (void)viewWillAppear:(BOOL)animated
-{
-    [super viewWillAppear:animated];
-    
-    NCMainTabBarController *mainTabBarController = (NCMainTabBarController *)self.tabBarController;
-    mainTabBarController.viewController = self;
-}
-
 #pragma mark - NotificationCenter
 
 - (void)changeUser

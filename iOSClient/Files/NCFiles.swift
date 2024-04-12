@@ -54,7 +54,6 @@ class NCFiles: NCCollectionViewCommon {
                 self.navigationController?.popToRootViewController(animated: false)
 
                 self.serverUrl = self.utilityFileSystem.getHomeServer(urlBase: self.appDelegate.urlBase, userId: self.appDelegate.userId)
-                (self.tabBarController as? NCMainTabBarController)?.serverUrl = self.serverUrl
                 self.isSearchingMode = false
                 self.isEditMode = false
                 self.selectOcId.removeAll()

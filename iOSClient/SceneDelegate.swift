@@ -222,7 +222,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                     viewController.editorId = NCGlobal.shared.editorText
                     viewController.creatorId = directEditingCreator.identifier
                     viewController.typeTemplate = NCGlobal.shared.templateDocument
-                    viewController.serverUrl = mainTabBarController.serverUrl ?? NCUtilityFileSystem().getHomeServer(urlBase: appDelegate.urlBase, userId: appDelegate.userId)
+                    viewController.serverUrl = mainTabBarController.currentServerUrl()
                     viewController.titleForm = NSLocalizedString("_create_nextcloudtext_document_", comment: "")
 
                     mainTabBarController.present(navigationController, animated: true, completion: nil)
@@ -232,7 +232,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                     NCAskAuthorization().askAuthorizationAudioRecord(viewController: mainTabBarController) { hasPermission in
                         if hasPermission {
                             if let viewController = UIStoryboard(name: "NCAudioRecorderViewController", bundle: nil).instantiateInitialViewController() as? NCAudioRecorderViewController {
-                                viewController.serverUrl = mainTabBarController.serverUrl ?? NCUtilityFileSystem().getHomeServer(urlBase: appDelegate.urlBase, userId: appDelegate.userId)
+                                viewController.serverUrl = mainTabBarController.currentServerUrl()
                                 viewController.modalTransitionStyle = .crossDissolve
                                 viewController.modalPresentationStyle = UIModalPresentationStyle.overCurrentContext
                                 mainTabBarController.present(viewController, animated: true, completion: nil)
