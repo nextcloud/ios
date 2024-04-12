@@ -76,9 +76,9 @@ struct AutoUploadView<ViewModel: AutoUploadViewModel>: View {
             viewModel.autoUploadFolder.toggle()
         }
         .sheet(isPresented: $viewModel.autoUploadFolder) {
-            SelectView(serverUrl: $viewModel.appDelegate.activeServerUrl)
+            SelectView(serverUrl: $viewModel.serverUrl)
                 .onDisappear {
-                    viewModel.setAutoUploadDirectory(serverUrl: viewModel.appDelegate.activeServerUrl)
+                    viewModel.setAutoUploadDirectory(serverUrl: viewModel.serverUrl)
                 }
         }
         

@@ -127,7 +127,7 @@ struct NCSettings<ViewModel: NCSettingsViewModel>: View {
             /// `E2EEncryption` Section
             if viewModel.isE2EEEnable && NCGlobal.shared.e2eeVersions.contains(viewModel.versionE2EE) {
                 Section(header: Text(NSLocalizedString("_e2e_settings_title_", comment: "")), content: {
-                    NavigationLink(destination: NCViewE2EE(account: AppDelegate().account)){
+                    NavigationLink(destination: NCViewE2EE(account: AppDelegate().account, rootViewController: nil)){
                         HStack {
                             Image("lock")
                                 .resizable()

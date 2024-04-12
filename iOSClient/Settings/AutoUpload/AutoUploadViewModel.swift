@@ -94,7 +94,7 @@ class AutoUploadViewModel: AutoUploadVMRepresentable {
     private let manageDatabase = NCManageDatabase()
 
     @Published var autoUploadPath = "\(NCManageDatabase.shared.getAccountAutoUploadFileName())"
-
+    var serverUrl: String = NCUtilityFileSystem().getHomeServer(urlBase: AppDelegate().urlBase, userId: AppDelegate().userId)
     
     /// Initialization code to set up the ViewModel with the active account
     init() {
@@ -202,7 +202,7 @@ class AutoUploadViewModel: AutoUploadVMRepresentable {
         }
 
         // Otherwise, it updates the auto-upload directory in the database
-        NCManageDatabase.shared.setAccountAutoUploadFileName(self.appDelegate.activeServerUrl)
+        NCManageDatabase.shared.setAccountAutoUploadFileName(serverUrl)
         if let path = NCUtilityFileSystem().deleteLastPath(serverUrlPath: serverUrl, home: home) {
             NCManageDatabase.shared.setAccountAutoUploadDirectory(path, urlBase: appDelegate.urlBase, userId: appDelegate.userId, account: appDelegate.account)
         }
@@ -211,7 +211,7 @@ class AutoUploadViewModel: AutoUploadVMRepresentable {
     }
     
     // MARK: NCSelectDelegate
-    func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String, items: [Any], indexPath: [IndexPath], overwrite: Bool, copy: Bool, move: Bool) { }
+    func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String, items: [Any], overwrite: Bool, copy: Bool, move: Bool) {}
 }
 
 /// An enum that represents the granularity of the subfolders for auto upload

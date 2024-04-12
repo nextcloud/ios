@@ -28,7 +28,7 @@ import SwiftUI
 import TOPasscodeViewController
 import LocalAuthentication
 
-protocol NCSettingsVMRepresentable: ObservableObject, AccountUpdateHandling, ViewOnAppearHandling, NCSelectDelegate {
+protocol NCSettingsVMRepresentable: ObservableObject, AccountUpdateHandling, ViewOnAppearHandling {
     
     var isLockActive: Bool { get set }
     /// State to control the enable TouchID toggle
@@ -62,8 +62,6 @@ class NCSettingsViewModel: NCSettingsVMRepresentable {
     /// Keychain access
     var keychain = NCKeychain()
         
-    @Published var serverUrl: String = ""
-
     @Published var isLockActive: Bool = false
     @Published var enableTouchID: Bool = false
     @Published var lockScreen: Bool = false
@@ -101,7 +99,6 @@ class NCSettingsViewModel: NCSettingsVMRepresentable {
         resetWrongAttempts = keychain.resetAppCounterFail
         copyrightYear = getCurrentYear()
         passcode = keychain.passcode ?? ""
-        serverUrl = AppDelegate().activeServerUrl
     }
     
     // MARK: - Settings Update Methods
@@ -137,15 +134,6 @@ class NCSettingsViewModel: NCSettingsVMRepresentable {
     /// and returns it as a string value.
     func getCurrentYear() -> String {
         return String(Calendar.current.component(.year, from: Date()))
-    }
-    
-    // MARK: NCSelectDelegate
-    
-    func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String, items: [Any], indexPath: [IndexPath], overwrite: Bool, copy: Bool, move: Bool) {
-
-        if let serverUrl = serverUrl {
-            self.serverUrl = serverUrl
-        }
     }
 }
 
