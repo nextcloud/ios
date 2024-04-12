@@ -63,7 +63,6 @@ extension AppDelegate {
 
                     Task {
                         let fileName = await NCNetworking.shared.createFileName(fileNameBase: NSLocalizedString("_untitled_", comment: "") + ".md", account: appDelegate.account, serverUrl: serverUrl)
-
                         let fileNamePath = NCUtilityFileSystem().getFileNamePath(String(describing: fileName), serverUrl: serverUrl, urlBase: appDelegate.urlBase, userId: appDelegate.userId)
                         self.createTextDocument(mainTabBarController: mainTabBarController, fileNamePath: fileNamePath, fileName: String(describing: fileName), creatorId: directEditingCreator.identifier)
                     }
@@ -290,9 +289,9 @@ extension AppDelegate {
     }
 
     func createTextDocument(mainTabBarController: NCMainTabBarController, fileNamePath: String, fileName: String, creatorId: String) {
+        guard let viewController = mainTabBarController.currentViewController() else { return }
         var UUID = NSUUID().uuidString
         UUID = "TEMP" + UUID.replacingOccurrences(of: "-", with: "")
-        let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
         let serverUrl = mainTabBarController.currentServerUrl()
         let options = NKRequestOptions(customUserAgent: NCUtility().getCustomUserAgentNCText())
 
@@ -309,9 +308,8 @@ extension AppDelegate {
             }
 
             let metadata = NCManageDatabase.shared.createMetadata(account: self.account, user: self.user, userId: self.userId, fileName: fileName, fileNameView: fileName, ocId: UUID, serverUrl: serverUrl, urlBase: self.urlBase, url: url, contentType: results.mimeType)
-            if let viewController = mainTabBarController.currentViewController() {
-                NCViewer().view(viewController: viewController, metadata: metadata, metadatas: [metadata], imageIcon: nil)
-            }
+
+            NCViewer().view(viewController: viewController, metadata: metadata, metadatas: [metadata], imageIcon: nil)
         }
     }
 }
