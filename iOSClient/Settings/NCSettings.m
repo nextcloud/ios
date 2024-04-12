@@ -231,9 +231,6 @@
 {
     [super viewWillAppear:animated];
 
-    NCMainTabBarController *mainTabBarController = (NCMainTabBarController *)self.tabBarController;
-    mainTabBarController.viewController = self;
-
     versionServer = [[NCGlobal shared] capabilityServerVersion];
     themingName = [[NCGlobal shared] capabilityThemingName];
     themingSlogan = [[NCGlobal shared] capabilityThemingSlogan];

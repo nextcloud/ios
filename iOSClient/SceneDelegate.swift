@@ -27,10 +27,9 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             }
         } else {
             if NCBrandOptions.shared.disable_intro {
-                appDelegate.openLogin(viewController: nil, selector: NCGlobal.shared.introLogin, openLoginWeb: false)
+                appDelegate.openLogin(selector: NCGlobal.shared.introLogin, openLoginWeb: false)
             } else {
                 if let viewController = UIStoryboard(name: "NCIntro", bundle: nil).instantiateInitialViewController() as? NCIntroViewController {
-                    viewController.scene = scene
                     let navigationController = NCLoginNavigationController(rootViewController: viewController)
                     window?.rootViewController = navigationController
                     window?.makeKeyAndVisible()
@@ -47,8 +46,14 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     func sceneWillEnterForeground(_ scene: UIScene) {
         NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Scene will enter in foreground")
-        guard let appDelegate,
-              !appDelegate.account.isEmpty else { return }
+        guard let appDelegate else { return }
+
+        if (UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }).count > 1,
+           (appDelegate.activeLogin?.view.window != nil || appDelegate.activeLoginWeb?.view.window != nil) || (UIApplication.shared.firstWindow?.rootViewController is NCLoginNavigationController) {
+            UIApplication.shared.allSceneSessionDestructionExceptFirst()
+            return
+        }
+        guard !appDelegate.account.isEmpty else { return }
 
         if let window = SceneManager.shared.getWindow(scene: scene), let rootViewController = SceneManager.shared.getMainTabBarController(scene: scene) {
             window.rootViewController = rootViewController
@@ -148,8 +153,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         let account = appDelegate.account
         let scheme = url.scheme
         let action = url.host
-        var fileName: String = ""
-        var serverUrl: String = ""
 
         func getMatchedAccount(userId: String, url: String) -> tableAccount? {
             if let activeAccount = NCManageDatabase.shared.getActiveAccount() {
@@ -206,28 +209,22 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
                 case NCGlobal.shared.actionTextDocument:
 
-                    guard let navigationController = UIStoryboard(name: "NCCreateFormUploadDocuments", bundle: nil).instantiateInitialViewController(),
-                          let directEditingCreators = NCManageDatabase.shared.getDirectEditingCreators(account: account),
-                          let directEditingCreator = directEditingCreators.first(where: { $0.editor == NCGlobal.shared.editorText}),
-                          let viewController = (navigationController as? UINavigationController)?.topViewController as? NCCreateFormUploadDocuments else { return }
+                    let directEditingCreators = NCManageDatabase.shared.getDirectEditingCreators(account: appDelegate.account)
+                    let directEditingCreator = directEditingCreators!.first(where: { $0.editor == NCGlobal.shared.editorText})!
+                    let serverUrl = mainTabBarController.currentServerUrl()
 
-                    navigationController.modalPresentationStyle = UIModalPresentationStyle.formSheet
-
-                    viewController.mainTabBarController = mainTabBarController
-                    viewController.editorId = NCGlobal.shared.editorText
-                    viewController.creatorId = directEditingCreator.identifier
-                    viewController.typeTemplate = NCGlobal.shared.templateDocument
-                    viewController.serverUrl = mainTabBarController.serverUrl ?? NCUtilityFileSystem().getHomeServer(urlBase: appDelegate.urlBase, userId: appDelegate.userId)
-                    viewController.titleForm = NSLocalizedString("_create_nextcloudtext_document_", comment: "")
-
-                    mainTabBarController.present(navigationController, animated: true, completion: nil)
+                    Task {
+                        let fileName = await NCNetworking.shared.createFileName(fileNameBase: NSLocalizedString("_untitled_", comment: "") + ".md", account: appDelegate.account, serverUrl: serverUrl)
+                        let fileNamePath = NCUtilityFileSystem().getFileNamePath(String(describing: fileName), serverUrl: serverUrl, urlBase: appDelegate.urlBase, userId: appDelegate.userId)
+                        self.appDelegate?.createTextDocument(mainTabBarController: mainTabBarController, fileNamePath: fileNamePath, fileName: String(describing: fileName), creatorId: directEditingCreator.identifier)
+                    }
 
                 case NCGlobal.shared.actionVoiceMemo:
 
                     NCAskAuthorization().askAuthorizationAudioRecord(viewController: mainTabBarController) { hasPermission in
                         if hasPermission {
                             if let viewController = UIStoryboard(name: "NCAudioRecorderViewController", bundle: nil).instantiateInitialViewController() as? NCAudioRecorderViewController {
-                                viewController.serverUrl = mainTabBarController.serverUrl ?? NCUtilityFileSystem().getHomeServer(urlBase: appDelegate.urlBase, userId: appDelegate.userId)
+                                viewController.serverUrl = mainTabBarController.currentServerUrl()
                                 viewController.modalTransitionStyle = .crossDissolve
                                 viewController.modalPresentationStyle = UIModalPresentationStyle.overCurrentContext
                                 mainTabBarController.present(viewController, animated: true, completion: nil)
@@ -250,6 +247,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
             if let urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false) {
 
+                var serverUrl: String = ""
+                var fileName: String = ""
                 let queryItems = urlComponents.queryItems
                 guard let userScheme = queryItems?.filter({ $0.name == "user" }).first?.value,
                       let pathScheme = queryItems?.filter({ $0.name == "path" }).first?.value,
@@ -267,6 +266,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                 }
 
                 let davFiles = NextcloudKit.shared.nkCommonInstance.dav + "/files/" + appDelegate.userId
+
                 if pathScheme.contains("/") {
                     fileName = (pathScheme as NSString).lastPathComponent
                     serverUrl = matchedAccount.urlBase + "/" + davFiles + "/" + (pathScheme as NSString).deletingLastPathComponent

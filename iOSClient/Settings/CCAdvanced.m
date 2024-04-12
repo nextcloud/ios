@@ -285,14 +285,6 @@
     [self calculateSize];
 }
 
-- (void)viewWillAppear:(BOOL)animated
-{
-    [super viewWillAppear:animated];
-    
-    NCMainTabBarController *mainTabBarController = (NCMainTabBarController *)self.tabBarController;
-    mainTabBarController.viewController = self;
-}
-
 #pragma mark -
 
 - (void)formRowDescriptorValueHasChanged:(XLFormRowDescriptor *)rowDescriptor oldValue:(id)oldValue newValue:(id)newValue

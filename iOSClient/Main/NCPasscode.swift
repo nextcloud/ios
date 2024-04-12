@@ -74,6 +74,7 @@ class NCPasscode: NSObject, TOPasscodeViewControllerDelegate {
                 passcodeViewController.automaticallyPromptForBiometricValidation = false
             }
         }
+        rootViewController.presentedViewController?.dismiss(animated: false)
         rootViewController.present(passcodeViewController, animated: true, completion: {
             self.openAlert(passcodeViewController: self.passcodeViewController)
             completion()
@@ -163,9 +164,7 @@ class NCPasscode: NSObject, TOPasscodeViewControllerDelegate {
     }
 
     func openAlert(passcodeViewController: TOPasscodeViewController) {
-
         DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-
             if self.isPasscodeReset {
 
                 passcodeViewController.setContentHidden(true, animated: true)

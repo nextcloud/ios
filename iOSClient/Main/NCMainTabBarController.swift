@@ -25,8 +25,26 @@ import UIKit
 
 @objc class NCMainTabBarController: UITabBarController {
     @objc var sceneIdentifier: String = UUID().uuidString
-    @objc var viewController: UIViewController?
-    @objc var serverUrl: String?
     var documentPickerViewController: NCDocumentPickerViewController?
     let filesServerUrl = ThreadSafeDictionary<String, NCFiles>()
+    let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
+
+    func currentViewController() -> UIViewController? {
+        return (selectedViewController as? UINavigationController)?.topViewController
+    }
+
+    func currentServerUrl() -> String {
+        var serverUrl = NCUtilityFileSystem().getHomeServer(urlBase: self.appDelegate.urlBase, userId: self.appDelegate.userId)
+        let viewController = currentViewController()
+        if let collectionViewCommon = viewController as? NCCollectionViewCommon {
+            if !collectionViewCommon.serverUrl.isEmpty {
+                serverUrl = collectionViewCommon.serverUrl
+            }
+        } else if let media = viewController as? NCMedia {
+            serverUrl = media.serverUrl
+        } else if let viewerMediaPage = viewController as? NCViewerMediaPage {
+            serverUrl = viewerMediaPage.metadatas[viewerMediaPage.currentIndex].serverUrl
+        }
+        return serverUrl
+    }
 }

@@ -36,8 +36,6 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
     @IBOutlet weak var qrCode: UIButton!
     @IBOutlet weak var certificate: UIButton!
 
-    public var scene: UIScene?
-
     private let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
     private var textColor: UIColor = .white
     private var textColorOpponent: UIColor = .black
@@ -278,7 +276,6 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
 
                         if let loginWeb = UIStoryboard(name: "NCLogin", bundle: nil).instantiateViewController(withIdentifier: "NCLoginWeb") as? NCLoginWeb {
 
-                            loginWeb.scene = self.scene
                             loginWeb.urlBase = url
                             loginWeb.user = user
                             loginWeb.loginFlowV2Available = true
@@ -294,7 +291,6 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
 
                         if let loginWeb = UIStoryboard(name: "NCLogin", bundle: nil).instantiateViewController(withIdentifier: "NCLoginWeb") as? NCLoginWeb {
 
-                            loginWeb.scene = self.scene
                             loginWeb.urlBase = url
                             loginWeb.user = user
 
@@ -402,18 +398,19 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
 
                     self.appDelegate.changeAccount(account, userProfile: userProfile)
 
-                    if self.presentingViewController == nil, let window = SceneManager.shared.getWindow(scene: self.scene) {
+                    let window = UIApplication.shared.firstWindow
+                    if window?.rootViewController is NCMainTabBarController {
+                        self.dismiss(animated: true)
+                    } else {
                         if let mainTabBarController = UIStoryboard(name: "Main", bundle: nil).instantiateInitialViewController() as? NCMainTabBarController {
                             mainTabBarController.modalPresentationStyle = .fullScreen
                             mainTabBarController.view.alpha = 0
-                            window.rootViewController = mainTabBarController
-                            window.makeKeyAndVisible()
+                            window?.rootViewController = mainTabBarController
+                            window?.makeKeyAndVisible()
                             UIView.animate(withDuration: 0.5) {
                                 mainTabBarController.view.alpha = 1
                             }
                         }
-                    } else {
-                        self.dismiss(animated: true)
                     }
 
                 } else {

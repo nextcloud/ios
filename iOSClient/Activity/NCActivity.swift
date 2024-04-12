@@ -102,12 +102,6 @@ class NCActivity: UIViewController, NCSharePagingContent {
         fetchAll(isInitial: true)
     }
 
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-
-        (tabBarController as? NCMainTabBarController)?.viewController = self
-    }
-
     override func viewWillLayoutSubviews() {
         super.viewWillLayoutSubviews()
         tableView.tableFooterView = makeTableFooterView()
