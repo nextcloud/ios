@@ -75,11 +75,15 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
             // Select UIWindowScene active in serverUrl
             var mainTabBarController: NCMainTabBarController?
             let windowScenes = UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }
-            for windowScene in windowScenes {
-                if let rootViewController = windowScene.keyWindow?.rootViewController as? NCMainTabBarController,
-                   rootViewController.currentServerUrl() == metadata.serverUrl {
-                    mainTabBarController = rootViewController
-                    break
+            if windowScenes.count == 1 {
+                mainTabBarController = UIApplication.shared.firstWindow?.rootViewController as? NCMainTabBarController
+            } else {
+                for windowScene in windowScenes {
+                    if let rootViewController = windowScene.keyWindow?.rootViewController as? NCMainTabBarController,
+                       rootViewController.currentServerUrl() == metadata.serverUrl {
+                        mainTabBarController = rootViewController
+                        break
+                    }
                 }
             }
             guard let mainTabBarController else { return }
