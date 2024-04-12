@@ -119,12 +119,6 @@ class NCManageAutoUploadFileName: XLFormViewController {
         reloadForm()
     }
 
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-
-        (tabBarController as? NCMainTabBarController)?.viewController = self
-    }
-
     // MARK: XLForm
 
     func reloadForm() {

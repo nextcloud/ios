@@ -45,6 +45,7 @@ class NCMedia: UIViewController {
     let utility = NCUtility()
     let imageCache = NCImageCache.shared
     var metadatas: ThreadSafeArray<tableMetadata>?
+    var serverUrl = ""
     let refreshControl = UIRefreshControl()
     var loadingTask: Task<Void, any Error>?
     var isTop: Bool = true
@@ -147,8 +148,6 @@ class NCMedia: UIViewController {
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-
-        (tabBarController as? NCMainTabBarController)?.viewController = self
 
         NotificationCenter.default.addObserver(self, selector: #selector(deleteFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDeleteFile), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(enterForeground(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationWillEnterForeground), object: nil)
@@ -292,7 +291,7 @@ extension NCMedia: UICollectionViewDelegate {
                 tabBarSelect.selectCount = selectOcId.count
             } else {
                 // ACTIVE SERVERURL
-                (tabBarController as? NCMainTabBarController)?.serverUrl = metadata.serverUrl
+                serverUrl = metadata.serverUrl
                 if let metadatas = self.metadatas?.getArray() {
                     NCViewer().view(viewController: self, metadata: metadata, metadatas: metadatas, imageIcon: getImage(metadata: metadata))
                 }
@@ -305,6 +304,7 @@ extension NCMedia: UICollectionViewDelegate {
               let metadata = self.metadatas?[indexPath.row] else { return nil }
         let identifier = indexPath as NSCopying
         let image = cell.imageItem.image
+        self.serverUrl = metadata.serverUrl
 
         return UIContextMenuConfiguration(identifier: identifier, previewProvider: {
             return NCViewerProviderContextMenu(metadata: metadata, image: image)

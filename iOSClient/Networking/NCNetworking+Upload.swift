@@ -424,7 +424,7 @@ extension NCNetworking {
                         let windowScenes = UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }
                         for windowScene in windowScenes {
                             if let rootViewController = windowScene.keyWindow?.rootViewController as? NCMainTabBarController,
-                               rootViewController.serverUrl == serverUrl {
+                               rootViewController.currentServerUrl() == serverUrl {
                                 mainTabBarController = rootViewController
                                 break
                             }

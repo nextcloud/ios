@@ -34,7 +34,6 @@ class NCIntroViewController: UIViewController, UICollectionViewDataSource, UICol
     @IBOutlet weak var pageControl: UIPageControl!
 
     @objc weak var delegate: NCIntroViewController?
-    @objc var scene: UIScene?
 
     private let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
     private let titles = [NSLocalizedString("_intro_1_title_", comment: ""), NSLocalizedString("_intro_2_title_", comment: ""), NSLocalizedString("_intro_3_title_", comment: ""), NSLocalizedString("_intro_4_title_", comment: "")]
@@ -115,8 +114,11 @@ class NCIntroViewController: UIViewController, UICollectionViewDataSource, UICol
     }
 
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
-        pageControl.currentPage = 0
-        introCollectionView.collectionViewLayout.invalidateLayout()
+        super.viewWillTransition(to: size, with: coordinator)
+        coordinator.animate(alongsideTransition: nil) { _ in
+            self.pageControl?.currentPage = 0
+            self.introCollectionView?.collectionViewLayout.invalidateLayout()
+        }
     }
 
     @objc func autoScroll() {
@@ -160,11 +162,11 @@ class NCIntroViewController: UIViewController, UICollectionViewDataSource, UICol
     }
 
     @IBAction func login(_ sender: Any) {
-        appDelegate.openLogin(viewController: navigationController, selector: NCGlobal.shared.introLogin, openLoginWeb: false, scene: scene)
+        appDelegate.openLogin(selector: NCGlobal.shared.introLogin, openLoginWeb: false)
     }
 
     @IBAction func signup(_ sender: Any) {
-        appDelegate.openLogin(viewController: navigationController, selector: NCGlobal.shared.introSignup, openLoginWeb: false, scene: scene)
+        appDelegate.openLogin(selector: NCGlobal.shared.introSignup, openLoginWeb: false)
     }
 
     @IBAction func host(_ sender: Any) {

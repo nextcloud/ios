@@ -75,11 +75,15 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
             // Select UIWindowScene active in serverUrl
             var mainTabBarController: NCMainTabBarController?
             let windowScenes = UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }
-            for windowScene in windowScenes {
-                if let rootViewController = windowScene.keyWindow?.rootViewController as? NCMainTabBarController,
-                   rootViewController.serverUrl == metadata.serverUrl {
-                    mainTabBarController = rootViewController
-                    break
+            if windowScenes.count == 1 {
+                mainTabBarController = UIApplication.shared.firstWindow?.rootViewController as? NCMainTabBarController
+            } else {
+                for windowScene in windowScenes {
+                    if let rootViewController = windowScene.keyWindow?.rootViewController as? NCMainTabBarController,
+                       rootViewController.currentServerUrl() == metadata.serverUrl {
+                        mainTabBarController = rootViewController
+                        break
+                    }
                 }
             }
             guard let mainTabBarController else { return }
@@ -114,7 +118,7 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
                 } else if metadata.classFile == NKCommon.TypeClassFile.compress.rawValue || metadata.classFile == NKCommon.TypeClassFile.unknow.rawValue {
                     self.openDocumentController(metadata: metadata, mainTabBarController: mainTabBarController)
                 } else {
-                    if let viewController = mainTabBarController.viewController {
+                    if let viewController = mainTabBarController.currentViewController() {
                         let imageIcon = UIImage(contentsOfFile: self.utilityFileSystem.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag))
                         NCViewer().view(viewController: viewController, metadata: metadata, metadatas: [metadata], imageIcon: imageIcon)
                     }
@@ -373,7 +377,7 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
         if let navigationController = UIStoryboard(name: "NCScan", bundle: nil).instantiateInitialViewController() {
             navigationController.modalPresentationStyle = UIModalPresentationStyle.pageSheet
             let viewController = navigationController.presentedViewController as? NCScan
-            viewController?.serverUrl = mainTabBarController?.serverUrl
+            viewController?.serverUrl = mainTabBarController?.currentServerUrl()
             mainTabBarController?.present(navigationController, animated: true, completion: nil)
         }
     }

@@ -55,6 +55,8 @@ extension NCShareExtension: NCAccountRequestDelegate {
         self.present(popup, animated: true)
     }
 
+    func accountRequestAddAccount() { }
+    
     func accountRequestChangeAccount(account: String) {
         guard let activeAccount = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", account)) else {
             cancel(with: NCShareExtensionError.noAccount)
