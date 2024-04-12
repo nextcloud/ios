@@ -206,4 +206,3 @@ struct NCCapabilitiesView: View {
 
     return NCCapabilitiesView(capabilitiesStatus: getCapabilitiesViewOOForPreview())
 }
-

@@ -42,8 +42,6 @@ class NCMainTabBar: UITabBar {
     required init?(coder: NSCoder) {
         super.init(coder: coder)
 
-        //appDelegate.mainTabBar = self
-
         NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeTheming), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(updateBadgeNumber(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUpdateBadgeNumber), object: nil)
 
