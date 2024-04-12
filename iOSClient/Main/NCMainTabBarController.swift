@@ -23,13 +23,28 @@
 
 import UIKit
 
-class NCMainTabBarController: UITabBarController {
+@objc class NCMainTabBarController: UITabBarController {
+    @objc var sceneIdentifier: String = UUID().uuidString
+    var documentPickerViewController: NCDocumentPickerViewController?
+    let filesServerUrl = ThreadSafeDictionary<String, NCFiles>()
+    let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
 
-    var identifier: String = UUID().uuidString
+    func currentViewController() -> UIViewController? {
+        return (selectedViewController as? UINavigationController)?.topViewController
+    }
 
-    // MARK: - Life Cycle
-
-    required init?(coder: NSCoder) {
-        super.init(coder: coder)
+    func currentServerUrl() -> String {
+        var serverUrl = NCUtilityFileSystem().getHomeServer(urlBase: self.appDelegate.urlBase, userId: self.appDelegate.userId)
+        let viewController = currentViewController()
+        if let collectionViewCommon = viewController as? NCCollectionViewCommon {
+            if !collectionViewCommon.serverUrl.isEmpty {
+                serverUrl = collectionViewCommon.serverUrl
+            }
+        } else if let media = viewController as? NCMedia {
+            serverUrl = media.serverUrl
+        } else if let viewerMediaPage = viewController as? NCViewerMediaPage {
+            serverUrl = viewerMediaPage.metadatas[viewerMediaPage.currentIndex].serverUrl
+        }
+        return serverUrl
     }
 }

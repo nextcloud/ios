@@ -23,7 +23,6 @@
 
 import SwiftUI
 import NextcloudKit
-import PreviewSnapshots
 
 @objc class NCHostingCapabilitiesView: NSObject {
 
@@ -194,28 +193,17 @@ struct NCCapabilitiesView: View {
     }
 }
 
-struct NCCapabilitiesView_Previews: PreviewProvider {
-    static var previews: some View {
-        snapshots.previews.previewLayout(.device)
+#Preview {
+    func getCapabilitiesViewOOForPreview() -> NCCapabilitiesViewOO {
+        let capabilitiesViewOO = NCCapabilitiesViewOO()
+        capabilitiesViewOO.capabililies = [
+            NCCapabilitiesViewOO.Capability(text: "Collabora", image: UIImage(named: "collabora")!, resize: true, available: true),
+            NCCapabilitiesViewOO.Capability(text: "XXX site", image: UIImage(systemName: "lock.shield")!, resize: false, available: false)
+        ]
+        capabilitiesViewOO.homeServer = "https://cloud.nextcloud.com/remote.php.dav/files/marino/"
+        return capabilitiesViewOO
     }
 
-    static var snapshots: PreviewSnapshots<String> {
-        PreviewSnapshots(
-            configurations: [
-                .init(name: NCGlobal.shared.defaultSnapshotConfiguration, state: "")
-            ],
-            configure: { _ in
-                NCCapabilitiesView(capabilitiesStatus: getCapabilitiesViewOOForPreview()).padding(.top, 20).frameForPreview()
-            })
-    }
+    return NCCapabilitiesView(capabilitiesStatus: getCapabilitiesViewOOForPreview())
 }
 
-func getCapabilitiesViewOOForPreview() -> NCCapabilitiesViewOO {
-    let capabilitiesViewOO = NCCapabilitiesViewOO()
-    capabilitiesViewOO.capabililies = [
-        NCCapabilitiesViewOO.Capability(text: "Collabora", image: UIImage(named: "collabora")!, resize: true, available: true),
-        NCCapabilitiesViewOO.Capability(text: "XXX site", image: UIImage(systemName: "lock.shield")!, resize: false, available: false)
-    ]
-    capabilitiesViewOO.homeServer = "https://cloud.nextcloud.com/remote.php.dav/files/marino/"
-    return capabilitiesViewOO
-}

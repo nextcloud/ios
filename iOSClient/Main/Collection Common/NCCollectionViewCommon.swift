@@ -27,16 +27,14 @@ import NextcloudKit
 import EasyTipView
 import JGProgressHUD
 
-class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UISearchResultsUpdating, UISearchControllerDelegate, UISearchBarDelegate, NCListCellDelegate, NCGridCellDelegate, NCSectionHeaderMenuDelegate, NCSectionFooterDelegate, NCSectionHeaderEmptyDataDelegate, UIAdaptivePresentationControllerDelegate, UIContextMenuInteractionDelegate, NCAccountRequestDelegate {
+class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UISearchResultsUpdating, UISearchControllerDelegate, UISearchBarDelegate, NCListCellDelegate, NCGridCellDelegate, NCSectionHeaderMenuDelegate, NCSectionFooterDelegate, NCSectionHeaderEmptyDataDelegate, UIAdaptivePresentationControllerDelegate, UIContextMenuInteractionDelegate {
 
     @IBOutlet weak var collectionView: UICollectionView!
 
     private var autoUploadFileName = ""
     private var autoUploadDirectory = ""
 
-    private var tipView: EasyTipView?
     var isTransitioning: Bool = false
-
     let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
     let utilityFileSystem = NCUtilityFileSystem()
     let utility = NCUtility()
@@ -143,22 +141,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         longPressedGesture.delaysTouchesBegan = true
         collectionView.addGestureRecognizer(longPressedGesture)
 
-        // TIP
-        var preferences = EasyTipView.Preferences()
-        preferences.drawing.foregroundColor = .white
-        preferences.drawing.backgroundColor = NCBrandColor.shared.nextcloud
-        preferences.drawing.textAlignment = .left
-        preferences.drawing.arrowPosition = .top
-        preferences.drawing.cornerRadius = 10
-
-        preferences.animating.dismissTransform = CGAffineTransform(translationX: 0, y: 100)
-        preferences.animating.showInitialTransform = CGAffineTransform(translationX: 0, y: -100)
-        preferences.animating.showInitialAlpha = 0
-        preferences.animating.showDuration = 1.5
-        preferences.animating.dismissDuration = 1.5
-
-        tipView = EasyTipView(text: NSLocalizedString("_tip_accountrequest_", comment: ""), preferences: preferences, delegate: self)
-
         NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeTheming), object: nil)
     }
 
@@ -172,12 +154,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
         setNavigationLeftItems()
         setNavigationRightItems()
-
-        if serverUrl.isEmpty {
-            appDelegate.activeServerUrl = utilityFileSystem.getHomeServer(urlBase: appDelegate.urlBase, userId: appDelegate.userId)
-        } else {
-            appDelegate.activeServerUrl = serverUrl
-        }
 
         layoutForView = NCManageDatabase.shared.getLayoutForView(account: appDelegate.account, key: layoutKey, serverUrl: serverUrl)
         gridLayout.itemForLine = CGFloat(layoutForView?.itemForLine ?? 3)
@@ -195,7 +171,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        appDelegate.activeViewController = self
 
         timerNotificationCenter = Timer.scheduledTimer(timeInterval: 1.5, target: self, selector: #selector(notificationCenterEvents), userInfo: nil, repeats: true)
 
@@ -230,7 +205,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         super.viewWillDisappear(animated)
 
         NCNetworking.shared.cancelUnifiedSearchFiles()
-        tipView?.dismiss()
+        dismissTip()
         setEditMode(false)
     }
 
@@ -277,13 +252,9 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         super.viewWillTransition(to: size, with: coordinator)
 
-        self.collectionView?.collectionViewLayout.invalidateLayout()
-        self.collectionView?.reloadData()
-        self.tipView?.dismiss()
-
-        coordinator.animate(alongsideTransition: nil) { _ in
-            self.showTip()
-        }
+        collectionView?.collectionViewLayout.invalidateLayout()
+        collectionView?.reloadData()
+        dismissTip()
     }
 
     override var canBecomeFirstResponder: Bool {
@@ -582,16 +553,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         }
     }
 
-    // MARK: - Tip
-
-    func showTip() {
-        if self is NCFiles, self.view.window != nil, !NCBrandOptions.shared.disable_multiaccount, !NCBrandOptions.shared.disable_manage_account, self.serverUrl == utilityFileSystem.getHomeServer(urlBase: appDelegate.urlBase, userId: appDelegate.userId), let view = self.navigationItem.leftBarButtonItem?.customView {
-            if !NCManageDatabase.shared.tipExists(NCGlobal.shared.tipNCCollectionViewCommonAccountRequest), !NCManageDatabase.shared.getAllAccountOrderAlias().isEmpty {
-                self.tipView?.show(forView: view)
-            }
-        }
-    }
-
     // MARK: - Layout
 
     func setNavigationLeftItems() {
@@ -638,7 +599,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             }
 
             let addAccountAction = UIAction(title: NSLocalizedString("_add_account_", comment: ""), image: .init(systemName: "person.crop.circle.badge.plus")) { _ in
-                self.appDelegate.openLogin(viewController: self, selector: NCGlobal.shared.introLogin, openLoginWeb: false)
+                self.appDelegate.openLogin(selector: NCGlobal.shared.introLogin, openLoginWeb: false)
             }
 
             let addAccountSubmenu = UIMenu(title: "", options: .displayInline, children: [addAccountAction])
@@ -805,7 +766,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         self.collectionView.reloadData()
 
         // TIP
-        self.tipView?.dismiss()
+        dismissTip()
     }
 
     func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {
@@ -829,17 +790,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
     // MARK: - TAP EVENT
 
-    func accountRequestChangeAccount(account: String) {
-
-        appDelegate.changeAccount(account, userProfile: nil)
-    }
-
-    func accountRequestAddAccount() {
-        appDelegate.openLogin(viewController: self, selector: NCGlobal.shared.introLogin, openLoginWeb: false)
-    }
-
     func tapButtonOrder(_ sender: Any) {
-
         let sortMenu = NCSortMenu()
         sortMenu.toggleMenu(viewController: self, account: appDelegate.account, key: layoutKey, sortButton: sender as? UIButton, serverUrl: serverUrl)
     }
@@ -849,7 +800,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     }
 
     func tapShareListItem(with objectId: String, indexPath: IndexPath, sender: Any) {
-
         if isEditMode { return }
         guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(objectId) else { return }
 
@@ -857,9 +807,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     }
 
     func tapMoreGridItem(with objectId: String, namedButtonMore: String, image: UIImage?, indexPath: IndexPath, sender: Any) {
-
         if isEditMode { return }
-
         guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(objectId) else { return }
 
         if namedButtonMore == NCGlobal.shared.buttonMoreMore || namedButtonMore == NCGlobal.shared.buttonMoreLock {
@@ -872,7 +820,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     }
 
     func tapRichWorkspace(_ sender: Any) {
-
         if let navigationController = UIStoryboard(name: "NCViewerRichWorkspace", bundle: nil).instantiateInitialViewController() as? UINavigationController {
             if let viewerRichWorkspace = navigationController.topViewController as? NCViewerRichWorkspace {
                 viewerRichWorkspace.richWorkspaceText = richWorkspaceText ?? ""
@@ -956,7 +903,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     }
 
     @objc func pasteFilesMenu() {
-        NCActionCenter.shared.pastePasteboard(serverUrl: serverUrl)
+        NCActionCenter.shared.pastePasteboard(serverUrl: serverUrl, hudView: tabBarController?.view)
     }
 
     // MARK: - DataSource + NC Endpoint
@@ -1079,11 +1026,10 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     // MARK: - Push metadata
 
     func pushMetadata(_ metadata: tableMetadata) {
-
+        guard let filesServerUrl = (tabBarController as? NCMainTabBarController)?.filesServerUrl else { return }
         let serverUrlPush = utilityFileSystem.stringAppendServerUrl(metadata.serverUrl, addFileName: metadata.fileName)
-        appDelegate.activeMetadata = metadata
 
-        if let viewController = appDelegate.listFilesVC[serverUrlPush], viewController.isViewLoaded {
+        if let viewController = filesServerUrl[serverUrlPush], viewController.isViewLoaded {
             navigationController?.pushViewController(viewController, animated: true)
         } else {
             if let viewController: NCFiles = UIStoryboard(name: "NCFiles", bundle: nil).instantiateInitialViewController() as? NCFiles {
@@ -1091,7 +1037,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                 viewController.serverUrl = serverUrlPush
                 viewController.titlePreviusFolder = navigationItem.title
                 viewController.titleCurrentFolder = metadata.fileNameView
-                appDelegate.listFilesVC[serverUrlPush] = viewController
+                filesServerUrl[serverUrlPush] = viewController
                 navigationController?.pushViewController(viewController, animated: true)
             }
         }
@@ -1102,8 +1048,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
 extension NCCollectionViewCommon: NCEndToEndInitializeDelegate {
 
-    func endToEndInitializeSuccess() {
-        if let metadata = appDelegate.activeMetadata {
+    func endToEndInitializeSuccess(metadata: tableMetadata?) {
+        if let metadata {
             pushMetadata(metadata)
         }
     }
@@ -1115,7 +1061,6 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
 
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         guard let metadata = dataSource.cellForItemAt(indexPath: indexPath) else { return }
-        appDelegate.activeMetadata = metadata
 
         if isEditMode {
             if let index = selectOcId.firstIndex(of: metadata.ocId) {
@@ -1133,7 +1078,7 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
                 if !NCKeychain().isEndToEndEnabled(account: appDelegate.account) {
                     let e2ee = NCEndToEndInitialize()
                     e2ee.delegate = self
-                    e2ee.initEndToEndEncryption()
+                    e2ee.initEndToEndEncryption(viewController: self.tabBarController, metadata: metadata)
                     return
                 }
             } else {
@@ -1321,7 +1266,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         guard let metadata = dataSource.cellForItemAt(indexPath: indexPath) else { return cell }
 
         defer {
-            if appDelegate.disableSharesView || !metadata.isSharable() {
+            if NCGlobal.shared.disableSharesView || !metadata.isSharable() {
                 cell.hideButtonShare(true)
             }
         }
@@ -1752,6 +1697,34 @@ extension NCCollectionViewCommon: UICollectionViewDelegateFlowLayout {
 }
 
 extension NCCollectionViewCommon: EasyTipViewDelegate {
+    func showTip() {
+        if self is NCFiles,
+           self.view.window != nil,
+           !NCBrandOptions.shared.disable_multiaccount,
+           !NCBrandOptions.shared.disable_manage_account,
+           self.serverUrl == utilityFileSystem.getHomeServer(urlBase: appDelegate.urlBase, userId: appDelegate.userId),
+           let view = self.navigationItem.leftBarButtonItem?.customView {
+            if !NCManageDatabase.shared.tipExists(NCGlobal.shared.tipNCCollectionViewCommonAccountRequest), !NCManageDatabase.shared.getAllAccountOrderAlias().isEmpty {
+                var preferences = EasyTipView.Preferences()
+                preferences.drawing.foregroundColor = .white
+                preferences.drawing.backgroundColor = NCBrandColor.shared.nextcloud
+                preferences.drawing.textAlignment = .left
+                preferences.drawing.arrowPosition = .top
+                preferences.drawing.cornerRadius = 10
+
+                preferences.animating.dismissTransform = CGAffineTransform(translationX: 0, y: 100)
+                preferences.animating.showInitialTransform = CGAffineTransform(translationX: 0, y: -100)
+                preferences.animating.showInitialAlpha = 0
+                preferences.animating.showDuration = 1.5
+                preferences.animating.dismissDuration = 1.5
+
+                if appDelegate.tipView == nil {
+                    appDelegate.tipView = EasyTipView(text: NSLocalizedString("_tip_accountrequest_", comment: ""), preferences: preferences, delegate: self)
+                    appDelegate.tipView?.show(forView: view)
+                }
+            }
+        }
+    }
 
     func easyTipViewDidTap(_ tipView: EasyTipView) {
         NCManageDatabase.shared.addTip(NCGlobal.shared.tipNCCollectionViewCommonAccountRequest)
@@ -1760,8 +1733,11 @@ extension NCCollectionViewCommon: EasyTipViewDelegate {
     func easyTipViewDidDismiss(_ tipView: EasyTipView) { }
 
     func dismissTip() {
-        NCManageDatabase.shared.addTip(NCGlobal.shared.tipNCCollectionViewCommonAccountRequest)
-        self.tipView?.dismiss()
+        if !NCManageDatabase.shared.tipExists(NCGlobal.shared.tipNCCollectionViewCommonAccountRequest) {
+            NCManageDatabase.shared.addTip(NCGlobal.shared.tipNCCollectionViewCommonAccountRequest)
+        }
+        appDelegate.tipView?.dismiss()
+        appDelegate.tipView = nil
     }
 }
 

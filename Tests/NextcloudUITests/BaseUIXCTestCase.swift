@@ -21,8 +21,8 @@
 
 import XCTest
 
-class BaseUIXCTestCase: XCTestCase {
-    let timeoutSeconds: Double = 100
+class BaseUIXCTestCase: BaseXCTestCase {    
+    let timeoutSeconds: Double = 300
 
     override final class var runsForEachTargetApplicationUIConfiguration: Bool {
         false

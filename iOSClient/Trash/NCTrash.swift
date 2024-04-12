@@ -98,11 +98,6 @@ class NCTrash: UIViewController, NCTrashListCellDelegate, NCTrashGridCellDelegat
         loadListingTrash()
     }
 
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        appDelegate.activeViewController = self
-    }
-
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
         setEditMode(false)
@@ -207,8 +202,7 @@ class NCTrash: UIViewController, NCTrashListCellDelegate, NCTrashGridCellDelegat
 
     @objc func reloadDataSource(withQueryDB: Bool = true) {
 
-        layoutForView = NCManageDatabase.shared.getLayoutForView(account: appDelegate.account, key: NCGlobal.shared.layoutViewTrash, serverUrl: "")
-        datasource = NCManageDatabase.shared.getTrash(filePath: getFilePath(), sort: layoutForView?.sort, ascending: layoutForView?.ascending, account: appDelegate.account)
+        datasource = NCManageDatabase.shared.getTrash(filePath: getFilePath(), account: appDelegate.account)
         collectionView.reloadData()
         setNavigationRightItems()
 

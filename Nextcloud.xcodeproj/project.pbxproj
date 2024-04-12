@@ -74,18 +74,19 @@
 		F30A96312A27AEBF00D7BCFE /* EnvVars.generated.swift in Sources */ = {isa = PBXBuildFile; fileRef = F30A96302A27AEBF00D7BCFE /* EnvVars.generated.swift */; };
 		F30A96322A27AEDD00D7BCFE /* EnvVars.generated.swift in Sources */ = {isa = PBXBuildFile; fileRef = F30A96302A27AEBF00D7BCFE /* EnvVars.generated.swift */; };
 		F310B1EF2BA862F1001C42F5 /* NCViewerMedia+VisionKit.swift in Sources */ = {isa = PBXBuildFile; fileRef = F310B1EE2BA862F1001C42F5 /* NCViewerMedia+VisionKit.swift */; };
-		F3131EDD2B038E4A0018DB28 /* XLForm in Frameworks */ = {isa = PBXBuildFile; productRef = F3131EDC2B038E4A0018DB28 /* XLForm */; };
-		F3131EDF2B038F2A0018DB28 /* SnapshotTesting in Frameworks */ = {isa = PBXBuildFile; productRef = F3131EDE2B038F2A0018DB28 /* SnapshotTesting */; };
-		F3131EE12B038F560018DB28 /* SnapshotTestingHEIC in Frameworks */ = {isa = PBXBuildFile; productRef = F3131EE02B038F560018DB28 /* SnapshotTestingHEIC */; };
-		F3131EE32B038F9B0018DB28 /* PreviewSnapshotsTesting in Frameworks */ = {isa = PBXBuildFile; productRef = F3131EE22B038F9B0018DB28 /* PreviewSnapshotsTesting */; };
-		F314F1112A30C11200BC7FAB /* PreviewSnapshots in Frameworks */ = {isa = PBXBuildFile; productRef = F314F1102A30C11200BC7FAB /* PreviewSnapshots */; };
 		F314F1142A30E2DE00BC7FAB /* View+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7E8A390295DC5E0006CB2D0 /* View+Extension.swift */; };
-		F31F69452A2F6D4600162F76 /* NextcloudSnapshotTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F31F69442A2F6D4600162F76 /* NextcloudSnapshotTests.swift */; };
-		F31F69502A2F707E00162F76 /* SwiftUIView+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = F31F694F2A2F707E00162F76 /* SwiftUIView+Extensions.swift */; };
-		F31F69612A2F907800162F76 /* __Snapshots__ in Resources */ = {isa = PBXBuildFile; fileRef = F31F69602A2F907800162F76 /* __Snapshots__ */; };
-		F31F69642A2F929600162F76 /* PreviewSnapshots in Frameworks */ = {isa = PBXBuildFile; productRef = F31F69632A2F929600162F76 /* PreviewSnapshots */; };
 		F321DA8A2B71205A00DDA0E6 /* NCTrashSelectTabBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = F321DA892B71205A00DDA0E6 /* NCTrashSelectTabBar.swift */; };
-		F32ED5062A2F254400EABA81 /* EnvVars.generated.swift in Sources */ = {isa = PBXBuildFile; fileRef = F30A96302A27AEBF00D7BCFE /* EnvVars.generated.swift */; };
+		F3391B022B4C40FB001C0C4B /* XLForm in Frameworks */ = {isa = PBXBuildFile; productRef = F3391B012B4C40FB001C0C4B /* XLForm */; };
+		F3391B042B4C4105001C0C4B /* XLForm in Frameworks */ = {isa = PBXBuildFile; productRef = F3391B032B4C4105001C0C4B /* XLForm */; };
+		F3391B062B4C4111001C0C4B /* XLForm in Frameworks */ = {isa = PBXBuildFile; productRef = F3391B052B4C4111001C0C4B /* XLForm */; };
+		F3391B082B4C52C5001C0C4B /* FirebaseDatabase in Frameworks */ = {isa = PBXBuildFile; productRef = F3391B072B4C52C5001C0C4B /* FirebaseDatabase */; };
+		F3391B0A2B4C52CB001C0C4B /* JGProgressHUD in Frameworks */ = {isa = PBXBuildFile; productRef = F3391B092B4C52CB001C0C4B /* JGProgressHUD */; };
+		F3391B0C2B4C52D5001C0C4B /* SVGKit in Frameworks */ = {isa = PBXBuildFile; productRef = F3391B0B2B4C52D5001C0C4B /* SVGKit */; };
+		F3391B0E2B4C52DC001C0C4B /* Realm in Frameworks */ = {isa = PBXBuildFile; productRef = F3391B0D2B4C52DC001C0C4B /* Realm */; };
+		F3391B102B4C52E6001C0C4B /* SVGKit in Frameworks */ = {isa = PBXBuildFile; productRef = F3391B0F2B4C52E6001C0C4B /* SVGKit */; };
+		F3391B122B4C52EB001C0C4B /* Realm in Frameworks */ = {isa = PBXBuildFile; productRef = F3391B112B4C52EB001C0C4B /* Realm */; };
+		F3391B142B4C52EF001C0C4B /* JGProgressHUD in Frameworks */ = {isa = PBXBuildFile; productRef = F3391B132B4C52EF001C0C4B /* JGProgressHUD */; };
+		F3391B162B4C52F6001C0C4B /* FirebaseDatabase in Frameworks */ = {isa = PBXBuildFile; productRef = F3391B152B4C52F6001C0C4B /* FirebaseDatabase */; };
 		F33AAF9A2A60394C006ECCBD /* NCMoreUserCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F33AAF992A60394C006ECCBD /* NCMoreUserCell.xib */; };
 		F343A4B32A1E01FF00DDA874 /* PHAsset+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F343A4B22A1E01FF00DDA874 /* PHAsset+Extension.swift */; };
 		F343A4B42A1E084100DDA874 /* PHAsset+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F343A4B22A1E01FF00DDA874 /* PHAsset+Extension.swift */; };
@@ -109,12 +110,42 @@
 		F359D86C2A7D03420023F405 /* NCUtility+Exif.swift in Sources */ = {isa = PBXBuildFile; fileRef = F359D8662A7D03420023F405 /* NCUtility+Exif.swift */; };
 		F359D86D2A7D03420023F405 /* NCUtility+Exif.swift in Sources */ = {isa = PBXBuildFile; fileRef = F359D8662A7D03420023F405 /* NCUtility+Exif.swift */; };
 		F36C38B52BBDA15C009CF1E0 /* NCAssistant.swift in Sources */ = {isa = PBXBuildFile; fileRef = F36C38B42BBDA15C009CF1E0 /* NCAssistant.swift */; };
+		F36677412B9F833300B23B81 /* Realm in Frameworks */ = {isa = PBXBuildFile; productRef = F36677402B9F833300B23B81 /* Realm */; };
+		F36677432B9F833800B23B81 /* Realm in Frameworks */ = {isa = PBXBuildFile; productRef = F36677422B9F833800B23B81 /* Realm */; };
+		F36677452B9F833D00B23B81 /* Realm in Frameworks */ = {isa = PBXBuildFile; productRef = F36677442B9F833D00B23B81 /* Realm */; };
+		F36677472B9F834400B23B81 /* Realm in Frameworks */ = {isa = PBXBuildFile; productRef = F36677462B9F834400B23B81 /* Realm */; };
+		F36677492B9F837500B23B81 /* Realm in Frameworks */ = {isa = PBXBuildFile; productRef = F36677482B9F837500B23B81 /* Realm */; };
 		F36E64F72B9245210085ABB5 /* NCCollectionViewCommon+SelectTabBarDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F36E64F62B9245210085ABB5 /* NCCollectionViewCommon+SelectTabBarDelegate.swift */; };
 		F36E64FA2B96236C0085ABB5 /* UIView+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7E41315294A19B300839300 /* UIView+Extension.swift */; };
 		F36E64FB2B9733F10085ABB5 /* UIView+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7E41315294A19B300839300 /* UIView+Extension.swift */; };
 		F36E64FC2B9733F20085ABB5 /* UIView+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7E41315294A19B300839300 /* UIView+Extension.swift */; };
 		F36E64FD2B9735900085ABB5 /* NCCellProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 370D26AE248A3D7A00121797 /* NCCellProtocol.swift */; };
 		F36E64FE2B9735920085ABB5 /* NCCellProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 370D26AE248A3D7A00121797 /* NCCellProtocol.swift */; };
+		F37208792BAB4C09006B5430 /* BaseXCTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = F37208772BAB4B5D006B5430 /* BaseXCTestCase.swift */; };
+		F372087A2BAB4C09006B5430 /* BaseXCTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = F37208772BAB4B5D006B5430 /* BaseXCTestCase.swift */; };
+		F372087D2BAB4C0F006B5430 /* TestConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = F37208742BAB4AB0006B5430 /* TestConstants.swift */; };
+		F372087E2BAB4C0F006B5430 /* TestConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = F37208742BAB4AB0006B5430 /* TestConstants.swift */; };
+		F37208812BAB5979006B5430 /* TestConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = F37208742BAB4AB0006B5430 /* TestConstants.swift */; };
+		F37208822BAB597B006B5430 /* BaseXCTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = F37208772BAB4B5D006B5430 /* BaseXCTestCase.swift */; };
+		F37208A42BAB63EE006B5430 /* QRCodeReader in Frameworks */ = {isa = PBXBuildFile; productRef = F37208A32BAB63EE006B5430 /* QRCodeReader */; };
+		F37208A62BAB63EE006B5430 /* SwiftRichString in Frameworks */ = {isa = PBXBuildFile; productRef = F37208A52BAB63EE006B5430 /* SwiftRichString */; };
+		F37208A82BAB63EE006B5430 /* FloatingPanel in Frameworks */ = {isa = PBXBuildFile; productRef = F37208A72BAB63EE006B5430 /* FloatingPanel */; };
+		F37208AA2BAB63EE006B5430 /* MarkdownKit in Frameworks */ = {isa = PBXBuildFile; productRef = F37208A92BAB63EE006B5430 /* MarkdownKit */; };
+		F37208AC2BAB63EE006B5430 /* SwiftEntryKit in Frameworks */ = {isa = PBXBuildFile; productRef = F37208AB2BAB63EE006B5430 /* SwiftEntryKit */; };
+		F37208AE2BAB63EE006B5430 /* MarqueeLabel in Frameworks */ = {isa = PBXBuildFile; productRef = F37208AD2BAB63EE006B5430 /* MarqueeLabel */; };
+		F37208B02BAB63EF006B5430 /* Queuer in Frameworks */ = {isa = PBXBuildFile; productRef = F37208AF2BAB63EF006B5430 /* Queuer */; };
+		F37208B22BAB63EF006B5430 /* DropDown in Frameworks */ = {isa = PBXBuildFile; productRef = F37208B12BAB63EF006B5430 /* DropDown */; };
+		F37208B42BAB63EF006B5430 /* Parchment in Frameworks */ = {isa = PBXBuildFile; productRef = F37208B32BAB63EF006B5430 /* Parchment */; };
+		F37208B62BAB63EF006B5430 /* EasyTipView in Frameworks */ = {isa = PBXBuildFile; productRef = F37208B52BAB63EF006B5430 /* EasyTipView */; };
+		F37208B82BAB63EF006B5430 /* NextcloudKit in Frameworks */ = {isa = PBXBuildFile; productRef = F37208B72BAB63EF006B5430 /* NextcloudKit */; };
+		F37208BA2BAB63EF006B5430 /* TLPhotoPicker in Frameworks */ = {isa = PBXBuildFile; productRef = F37208B92BAB63EF006B5430 /* TLPhotoPicker */; };
+		F37208BC2BAB63EF006B5430 /* OpenSSL in Frameworks */ = {isa = PBXBuildFile; productRef = F37208BB2BAB63EF006B5430 /* OpenSSL */; };
+		F37208BE2BAB63F0006B5430 /* Swifter in Frameworks */ = {isa = PBXBuildFile; productRef = F37208BD2BAB63F0006B5430 /* Swifter */; };
+		F37208C02BAB63F0006B5430 /* Mantis in Frameworks */ = {isa = PBXBuildFile; productRef = F37208BF2BAB63F0006B5430 /* Mantis */; };
+		F37208C22BAB63F0006B5430 /* TagListView in Frameworks */ = {isa = PBXBuildFile; productRef = F37208C12BAB63F0006B5430 /* TagListView */; };
+		F37208C42BAB63F0006B5430 /* Gzip in Frameworks */ = {isa = PBXBuildFile; productRef = F37208C32BAB63F0006B5430 /* Gzip */; };
+		F37208C62BAB63F0006B5430 /* LRUCache in Frameworks */ = {isa = PBXBuildFile; productRef = F37208C52BAB63F0006B5430 /* LRUCache */; };
+		F37208C82BAB63F1006B5430 /* KeychainAccess in Frameworks */ = {isa = PBXBuildFile; productRef = F37208C72BAB63F1006B5430 /* KeychainAccess */; };
 		F38F71252B6BBDC300473CDC /* NCCollectionViewCommonSelectTabBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = F38F71242B6BBDC300473CDC /* NCCollectionViewCommonSelectTabBar.swift */; };
 		F39298972A3B12CB00509762 /* BaseNCMoreCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F39298962A3B12CB00509762 /* BaseNCMoreCell.swift */; };
 		F3953BD72A6E87E000EE03F9 /* BaseIntegrationXCTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3953BD62A6E87E000EE03F9 /* BaseIntegrationXCTestCase.swift */; };
@@ -123,7 +154,11 @@
 		F3BB464F2A39EBE500461F6E /* NCMoreUserCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3BB464E2A39EBE500461F6E /* NCMoreUserCell.swift */; };
 		F3BB46522A39EC4900461F6E /* NCMoreAppSuggestionsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3BB46512A39EC4900461F6E /* NCMoreAppSuggestionsCell.swift */; };
 		F3BB46542A3A1E9D00461F6E /* CCCellMore.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3BB46532A3A1E9D00461F6E /* CCCellMore.swift */; };
-		F3C6D0972B0F9BA40078DD25 /* XLForm in Frameworks */ = {isa = PBXBuildFile; productRef = F3C6D0962B0F9BA40078DD25 /* XLForm */; };
+		F3F041992B9F7E6700D5155F /* Realm in Frameworks */ = {isa = PBXBuildFile; productRef = F3F041982B9F7E6700D5155F /* Realm */; };
+		F3F0419B2B9F7E6700D5155F /* RealmSwift in Frameworks */ = {isa = PBXBuildFile; productRef = F3F0419A2B9F7E6700D5155F /* RealmSwift */; };
+		F3F0419D2B9F7E6E00D5155F /* RealmSwift in Frameworks */ = {isa = PBXBuildFile; productRef = F3F0419C2B9F7E6E00D5155F /* RealmSwift */; };
+		F3F0419F2B9F7E7900D5155F /* RealmSwift in Frameworks */ = {isa = PBXBuildFile; productRef = F3F0419E2B9F7E7900D5155F /* RealmSwift */; };
+		F3F041A32B9F828B00D5155F /* Realm in Frameworks */ = {isa = PBXBuildFile; productRef = F3F041A22B9F828B00D5155F /* Realm */; };
 		F3CFF65F2BC55ECE002380BE /* NCAssistantCreateNewTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3CFF65E2BC55ECE002380BE /* NCAssistantCreateNewTask.swift */; };
 		F3CFF6622BC69303002380BE /* ExpandableText in Frameworks */ = {isa = PBXBuildFile; productRef = F3CFF6612BC69303002380BE /* ExpandableText */; };
 		F3CFF6642BC6955C002380BE /* ExpandableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3CFF6632BC6955C002380BE /* ExpandableView.swift */; };
@@ -647,6 +682,7 @@
 		F793E59F28B764F6005E4B02 /* NCContentPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = F765608E23BF813500765969 /* NCContentPresenter.swift */; };
 		F793E5A128B76541005E4B02 /* NotificationCenter+MainThread.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70460512499061800BB98A7 /* NotificationCenter+MainThread.swift */; };
 		F794E13D2BBBFF2E003693D7 /* NCMainTabBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F794E13C2BBBFF2E003693D7 /* NCMainTabBarController.swift */; };
+		F794E13F2BBC0F70003693D7 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F794E13E2BBC0F70003693D7 /* SceneDelegate.swift */; };
 		F798F0E225880608000DAFFD /* UIColor+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70CEF5523E9C7E50007035B /* UIColor+Extension.swift */; };
 		F798F0E725880609000DAFFD /* UIColor+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70CEF5523E9C7E50007035B /* UIColor+Extension.swift */; };
 		F798F0EC2588060A000DAFFD /* UIColor+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70CEF5523E9C7E50007035B /* UIColor+Extension.swift */; };
@@ -664,6 +700,8 @@
 		F79EDAA526B004980007D134 /* NCPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = F79EDAA126B004980007D134 /* NCPlayer.swift */; };
 		F79FFB262A97C24A0055EEA4 /* NCNetworkingE2EEMarkFolder.swift in Sources */ = {isa = PBXBuildFile; fileRef = F79FFB252A97C24A0055EEA4 /* NCNetworkingE2EEMarkFolder.swift */; };
 		F79FFB272A97C24A0055EEA4 /* NCNetworkingE2EEMarkFolder.swift in Sources */ = {isa = PBXBuildFile; fileRef = F79FFB252A97C24A0055EEA4 /* NCNetworkingE2EEMarkFolder.swift */; };
+		F7A07BB42BBF0F0000CB6772 /* PrivacyProtectionScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7A07BB32BBF0F0000CB6772 /* PrivacyProtectionScreen.storyboard */; };
+		F7A07BB62BBF110500CB6772 /* PrivacyProtectionScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7A07BB52BBF110500CB6772 /* PrivacyProtectionScreen.swift */; };
 		F7A0D1352591FBC5008F8A13 /* String+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7A0D1342591FBC5008F8A13 /* String+Extension.swift */; };
 		F7A0D1362591FBC5008F8A13 /* String+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7A0D1342591FBC5008F8A13 /* String+Extension.swift */; };
 		F7A0D1372591FBC5008F8A13 /* String+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7A0D1342591FBC5008F8A13 /* String+Extension.swift */; };
@@ -793,6 +831,7 @@
 		F7E98C1727E0D0FC001F9F19 /* NCManageDatabase+Video.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7E98C1527E0D0FC001F9F19 /* NCManageDatabase+Video.swift */; };
 		F7E98C1827E0D0FC001F9F19 /* NCManageDatabase+Video.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7E98C1527E0D0FC001F9F19 /* NCManageDatabase+Video.swift */; };
 		F7E98C1927E0D0FC001F9F19 /* NCManageDatabase+Video.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7E98C1527E0D0FC001F9F19 /* NCManageDatabase+Video.swift */; };
+		F7EB9B132BBC12F300EDF036 /* UIApplication+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7EB9B122BBC12F300EDF036 /* UIApplication+Extension.swift */; };
 		F7ED547C25EEA65400956C55 /* QRCodeReader in Frameworks */ = {isa = PBXBuildFile; productRef = F7ED547B25EEA65400956C55 /* QRCodeReader */; };
 		F7EDE4D1262D7B8400414FE6 /* NCDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7C1EEA425053A9C00866ACC /* NCDataSource.swift */; };
 		F7EDE4D6262D7B9600414FE6 /* NCListCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F78ACD4121903CE00088454D /* NCListCell.swift */; };
@@ -848,13 +887,6 @@
 			remoteInfo = Nextcloud;
 		};
 		C04E2F242A17BB4D001BAD85 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = F7F67BA01A24D27800EE80DA /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = F77B0DEB1D118A16002130FE;
-			remoteInfo = Nextcloud;
-		};
-		F31F69462A2F6D4600162F76 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = F7F67BA01A24D27800EE80DA /* Project object */;
 			proxyType = 1;
@@ -984,15 +1016,9 @@
 		D5B6AA7727200C7200D49C24 /* NCActivityTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCActivityTableViewCell.swift; sourceTree = "<group>"; };
 		F308659A2BC4144700D04EAC /* NCAssistantModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCAssistantModel.swift; sourceTree = "<group>"; };
 		F30A96042A27299D00D7BCFE /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Platforms/iPhoneOS.platform/Developer/Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
-		F30A962E2A27ADF900D7BCFE /* EnvVars.stencil */ = {isa = PBXFileReference; lastKnownFileType = text; path = EnvVars.stencil; sourceTree = "<group>"; };
-		F30A96302A27AEBF00D7BCFE /* EnvVars.generated.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = EnvVars.generated.swift; path = Sourcery/EnvVars.generated.swift; sourceTree = "<group>"; };
 		F310B1EE2BA862F1001C42F5 /* NCViewerMedia+VisionKit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NCViewerMedia+VisionKit.swift"; sourceTree = "<group>"; };
 		F3131ED82B038DB20018DB28 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.0.sdk/System/iOSSupport/System/Library/Frameworks/SwiftUI.framework; sourceTree = DEVELOPER_DIR; };
 		F3131EDA2B038DB90018DB28 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.0.sdk/System/iOSSupport/System/Library/Frameworks/WidgetKit.framework; sourceTree = DEVELOPER_DIR; };
-		F31F69422A2F6D4500162F76 /* NextcloudSnapshotTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = NextcloudSnapshotTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		F31F69442A2F6D4600162F76 /* NextcloudSnapshotTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NextcloudSnapshotTests.swift; sourceTree = "<group>"; };
-		F31F694F2A2F707E00162F76 /* SwiftUIView+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SwiftUIView+Extensions.swift"; sourceTree = "<group>"; };
-		F31F69602A2F907800162F76 /* __Snapshots__ */ = {isa = PBXFileReference; lastKnownFileType = folder; path = __Snapshots__; sourceTree = "<group>"; };
 		F321DA892B71205A00DDA0E6 /* NCTrashSelectTabBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCTrashSelectTabBar.swift; sourceTree = "<group>"; };
 		F33AAF992A60394C006ECCBD /* NCMoreUserCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = NCMoreUserCell.xib; sourceTree = "<group>"; };
 		F343A4B22A1E01FF00DDA874 /* PHAsset+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PHAsset+Extension.swift"; sourceTree = "<group>"; };
@@ -1000,9 +1026,14 @@
 		F359D8662A7D03420023F405 /* NCUtility+Exif.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NCUtility+Exif.swift"; sourceTree = "<group>"; };
 		F36C38B42BBDA15C009CF1E0 /* NCAssistant.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCAssistant.swift; sourceTree = "<group>"; };
 		F36E64F62B9245210085ABB5 /* NCCollectionViewCommon+SelectTabBarDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NCCollectionViewCommon+SelectTabBarDelegate.swift"; sourceTree = "<group>"; };
+		F37208742BAB4AB0006B5430 /* TestConstants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TestConstants.swift; sourceTree = "<group>"; };
+		F37208772BAB4B5D006B5430 /* BaseXCTestCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseXCTestCase.swift; sourceTree = "<group>"; };
 		F38F71242B6BBDC300473CDC /* NCCollectionViewCommonSelectTabBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCCollectionViewCommonSelectTabBar.swift; sourceTree = "<group>"; };
 		F39298962A3B12CB00509762 /* BaseNCMoreCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseNCMoreCell.swift; sourceTree = "<group>"; };
 		F3953BD62A6E87E000EE03F9 /* BaseIntegrationXCTestCase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BaseIntegrationXCTestCase.swift; sourceTree = "<group>"; };
+		F3998E192B4879B2007CA5DE /* CoreAudioTypes.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreAudioTypes.framework; path = System/Library/Frameworks/CoreAudioTypes.framework; sourceTree = SDKROOT; };
+		F3998E2F2B487E80007CA5DE /* CoreAudioKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreAudioKit.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.0.sdk/System/iOSSupport/System/Library/Frameworks/CoreAudioKit.framework; sourceTree = DEVELOPER_DIR; };
+		F3998E302B487E80007CA5DE /* CoreAudio.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreAudio.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.0.sdk/System/Library/Frameworks/CoreAudio.framework; sourceTree = DEVELOPER_DIR; };
 		F3A7AFC52A41AA82001FC89C /* BaseUIXCTestCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseUIXCTestCase.swift; sourceTree = "<group>"; };
 		F3BB464C2A39ADCC00461F6E /* NCMoreAppSuggestionsCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = NCMoreAppSuggestionsCell.xib; sourceTree = "<group>"; };
 		F3BB464E2A39EBE500461F6E /* NCMoreUserCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCMoreUserCell.swift; sourceTree = "<group>"; };
@@ -1331,6 +1362,7 @@
 		F79131C628AFB86E00577277 /* eu */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = eu; path = eu.lproj/Localizable.strings; sourceTree = "<group>"; };
 		F79131C728AFB86E00577277 /* eu */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = eu; path = eu.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		F794E13C2BBBFF2E003693D7 /* NCMainTabBarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCMainTabBarController.swift; sourceTree = "<group>"; };
+		F794E13E2BBC0F70003693D7 /* SceneDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
 		F79918A021997F9000C2E308 /* UICKeyChainStore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UICKeyChainStore.framework; path = Carthage/Build/iOS/UICKeyChainStore.framework; sourceTree = "<group>"; };
 		F79918A72199840500C2E308 /* Sheeeeeeeeet.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Sheeeeeeeeet.framework; path = Carthage/Build/iOS/Sheeeeeeeeet.framework; sourceTree = "<group>"; };
 		F79A65C22191D90F00FF6DCC /* NCSelect.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = NCSelect.storyboard; sourceTree = "<group>"; };
@@ -1341,6 +1373,8 @@
 		F79EDA9F26B004980007D134 /* NCPlayerToolBar.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCPlayerToolBar.swift; sourceTree = "<group>"; };
 		F79EDAA126B004980007D134 /* NCPlayer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCPlayer.swift; sourceTree = "<group>"; };
 		F79FFB252A97C24A0055EEA4 /* NCNetworkingE2EEMarkFolder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCNetworkingE2EEMarkFolder.swift; sourceTree = "<group>"; };
+		F7A07BB32BBF0F0000CB6772 /* PrivacyProtectionScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = PrivacyProtectionScreen.storyboard; sourceTree = "<group>"; };
+		F7A07BB52BBF110500CB6772 /* PrivacyProtectionScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrivacyProtectionScreen.swift; sourceTree = "<group>"; };
 		F7A0D1342591FBC5008F8A13 /* String+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+Extension.swift"; sourceTree = "<group>"; };
 		F7A321AB1E9E6AD50069AD1B /* CCAdvanced.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCAdvanced.h; sourceTree = "<group>"; };
 		F7A321AC1E9E6AD50069AD1B /* CCAdvanced.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCAdvanced.m; sourceTree = "<group>"; };
@@ -1525,6 +1559,7 @@
 		F7E856182351D7BE009A3330 /* SwiftyXMLParser.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftyXMLParser.framework; path = Carthage/Build/iOS/SwiftyXMLParser.framework; sourceTree = "<group>"; };
 		F7E8A390295DC5E0006CB2D0 /* View+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "View+Extension.swift"; sourceTree = "<group>"; };
 		F7E98C1527E0D0FC001F9F19 /* NCManageDatabase+Video.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NCManageDatabase+Video.swift"; sourceTree = "<group>"; };
+		F7EB9B122BBC12F300EDF036 /* UIApplication+Extension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIApplication+Extension.swift"; sourceTree = "<group>"; };
 		F7EDE508262DA9D600414FE6 /* NCSelectCommandViewSelect.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = NCSelectCommandViewSelect.xib; sourceTree = "<group>"; };
 		F7EDE513262DC2CD00414FE6 /* NCSelectCommandViewSelect+CreateFolder.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = "NCSelectCommandViewSelect+CreateFolder.xib"; sourceTree = "<group>"; };
 		F7EDE51A262DD0C400414FE6 /* NCSelectCommandViewCopyMove.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = NCSelectCommandViewCopyMove.xib; sourceTree = "<group>"; };
@@ -1557,9 +1592,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				F72AD71128C24BBB006CB92D /* NextcloudKit in Frameworks */,
-				F314F1112A30C11200BC7FAB /* PreviewSnapshots in Frameworks */,
 				F710FC88277B7D3F00AA9FBF /* RealmSwift in Frameworks */,
 				F760DE0F2AE66EE60027D78A /* KeychainAccess in Frameworks */,
+				F36677452B9F833D00B23B81 /* Realm in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1567,7 +1602,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F3C6D0972B0F9BA40078DD25 /* XLForm in Frameworks */,
+				F3F0419B2B9F7E6700D5155F /* RealmSwift in Frameworks */,
+				F3F041992B9F7E6700D5155F /* Realm in Frameworks */,
+				F3391B022B4C40FB001C0C4B /* XLForm in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1575,7 +1612,31 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F3131EDD2B038E4A0018DB28 /* XLForm in Frameworks */,
+				F37208C42BAB63F0006B5430 /* Gzip in Frameworks */,
+				F37208B02BAB63EF006B5430 /* Queuer in Frameworks */,
+				F37208A82BAB63EE006B5430 /* FloatingPanel in Frameworks */,
+				F3F0419F2B9F7E7900D5155F /* RealmSwift in Frameworks */,
+				F37208C82BAB63F1006B5430 /* KeychainAccess in Frameworks */,
+				F37208A62BAB63EE006B5430 /* SwiftRichString in Frameworks */,
+				F37208C22BAB63F0006B5430 /* TagListView in Frameworks */,
+				F3391B162B4C52F6001C0C4B /* FirebaseDatabase in Frameworks */,
+				F37208B62BAB63EF006B5430 /* EasyTipView in Frameworks */,
+				F3391B142B4C52EF001C0C4B /* JGProgressHUD in Frameworks */,
+				F37208BA2BAB63EF006B5430 /* TLPhotoPicker in Frameworks */,
+				F3391B122B4C52EB001C0C4B /* Realm in Frameworks */,
+				F37208AA2BAB63EE006B5430 /* MarkdownKit in Frameworks */,
+				F3391B102B4C52E6001C0C4B /* SVGKit in Frameworks */,
+				F37208AE2BAB63EE006B5430 /* MarqueeLabel in Frameworks */,
+				F37208C02BAB63F0006B5430 /* Mantis in Frameworks */,
+				F37208C62BAB63F0006B5430 /* LRUCache in Frameworks */,
+				F37208A42BAB63EE006B5430 /* QRCodeReader in Frameworks */,
+				F37208B22BAB63EF006B5430 /* DropDown in Frameworks */,
+				F37208BC2BAB63EF006B5430 /* OpenSSL in Frameworks */,
+				F37208B82BAB63EF006B5430 /* NextcloudKit in Frameworks */,
+				F37208B42BAB63EF006B5430 /* Parchment in Frameworks */,
+				F3391B062B4C4111001C0C4B /* XLForm in Frameworks */,
+				F37208AC2BAB63EE006B5430 /* SwiftEntryKit in Frameworks */,
+				F37208BE2BAB63F0006B5430 /* Swifter in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1583,16 +1644,12 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		F31F693F2A2F6D4500162F76 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				F3131EE12B038F560018DB28 /* SnapshotTestingHEIC in Frameworks */,
-				F3131EE32B038F9B0018DB28 /* PreviewSnapshotsTesting in Frameworks */,
-				F3131EDF2B038F2A0018DB28 /* SnapshotTesting in Frameworks */,
+				F3F0419D2B9F7E6E00D5155F /* RealmSwift in Frameworks */,
+				F3391B082B4C52C5001C0C4B /* FirebaseDatabase in Frameworks */,
+				F3391B0A2B4C52CB001C0C4B /* JGProgressHUD in Frameworks */,
+				F3391B0C2B4C52D5001C0C4B /* SVGKit in Frameworks */,
+				F3391B042B4C4105001C0C4B /* XLForm in Frameworks */,
+				F3391B0E2B4C52DC001C0C4B /* Realm in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1604,6 +1661,7 @@
 				F7490E8929882CC8009DCE94 /* SwiftEntryKit in Frameworks */,
 				F7490E7229882BB4009DCE94 /* RealmSwift in Frameworks */,
 				F760DE0D2AE66EDF0027D78A /* KeychainAccess in Frameworks */,
+				F36677432B9F833800B23B81 /* Realm in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1611,6 +1669,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F36677492B9F837500B23B81 /* Realm in Frameworks */,
 				F711A4EF2AF932B900095DD8 /* SVGKitSwift in Frameworks */,
 				F710FC80277B7D2700AA9FBF /* RealmSwift in Frameworks */,
 				F74C863D2AEFBFD9009A1D4A /* LRUCache in Frameworks */,
@@ -1635,6 +1694,7 @@
 				F783034428B5142B00B84583 /* NextcloudKit in Frameworks */,
 				F7346E1328B0EF5B006CE2D2 /* SwiftUI.framework in Frameworks */,
 				F760DE052AE66EBE0027D78A /* KeychainAccess in Frameworks */,
+				F36677472B9F834400B23B81 /* Realm in Frameworks */,
 				F7346E2928B0FFF2006CE2D2 /* RealmSwift in Frameworks */,
 				F7A560462AE15D3D00BE8FD6 /* Queuer in Frameworks */,
 				F783030D28B4C59A00B84583 /* SwiftEntryKit in Frameworks */,
@@ -1647,6 +1707,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F36677412B9F833300B23B81 /* Realm in Frameworks */,
 				F7A560442AE15D2900BE8FD6 /* Queuer in Frameworks */,
 				F760DE0B2AE66ED80027D78A /* KeychainAccess in Frameworks */,
 				F73ADD2426554FE20069EA0D /* SwiftEntryKit in Frameworks */,
@@ -1687,7 +1748,6 @@
 				F72DA9B425F53E4E00B87DB1 /* SwiftRichString in Frameworks */,
 				F74E7720277A2EF40013B958 /* XLForm in Frameworks */,
 				F73ADD1C265546890069EA0D /* SwiftEntryKit in Frameworks */,
-				F31F69642A2F929600162F76 /* PreviewSnapshots in Frameworks */,
 				F76B649E2ADFFDEC00014640 /* LRUCache in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1700,6 +1760,7 @@
 				F7A8D72428F1771B008BBE1C /* NextcloudKit in Frameworks */,
 				F7C9739228F17131002C43E2 /* Intents.framework in Frameworks */,
 				F760DE072AE66EC70027D78A /* KeychainAccess in Frameworks */,
+				F3F041A32B9F828B00D5155F /* Realm in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1780,23 +1841,23 @@
 		F30A962A2A27A9C800D7BCFE /* Tests */ = {
 			isa = PBXGroup;
 			children = (
+				F37208762BAB4B4B006B5430 /* Common */,
 				AF8ED1FA2757821000B8DBC4 /* NextcloudUnitTests */,
-				F31F69432A2F6D4600162F76 /* NextcloudSnapshotTests */,
 				C04E2F212A17BB4D001BAD85 /* NextcloudIntegrationTests */,
 				C0046CDB2A17B98400D87C9D /* NextcloudUITests */,
 			);
 			path = Tests;
 			sourceTree = "<group>";
 		};
-		F30A962B2A27AC4000D7BCFE /* Sourcery */ = {
+		F33AAF982A601465006ECCBD /* Recovered References */ = {
 			isa = PBXGroup;
 			children = (
-				F30A962E2A27ADF900D7BCFE /* EnvVars.stencil */,
+				F7CF16A22A4D7C7A000FF107 /* NCMoreUserCell.xib */,
 			);
-			path = Sourcery;
+			name = "Recovered References";
 			sourceTree = "<group>";
 		};
-		F31F69432A2F6D4600162F76 /* NextcloudSnapshotTests */ = {
+		F37208762BAB4B4B006B5430 /* Common */ = {
 			isa = PBXGroup;
 			children = (
 				F31F69602A2F907800162F76 /* __Snapshots__ */,
@@ -2325,6 +2386,7 @@
 				F343A4B22A1E01FF00DDA874 /* PHAsset+Extension.swift */,
 				F7A0D1342591FBC5008F8A13 /* String+Extension.swift */,
 				AF1A9B6327D0CA1E00F17A9E /* UIAlertController+Extension.swift */,
+				F7EB9B122BBC12F300EDF036 /* UIApplication+Extension.swift */,
 				AF7E504D27A2D8FF00B5E4AF /* UIBarButton+Extension.swift */,
 				F70CEF5523E9C7E50007035B /* UIColor+Extension.swift */,
 				F79B645F26CA661600838ACA /* UIControl+Extension.swift */,
@@ -2493,6 +2555,8 @@
 				F761856529E98543006EB3B0 /* Intro */,
 				F700222B1EC479840080073F /* Custom.xcassets */,
 				F7362A1E220C853A005101B5 /* LaunchScreen.storyboard */,
+				F7A07BB52BBF110500CB6772 /* PrivacyProtectionScreen.swift */,
+				F7A07BB32BBF0F0000CB6772 /* PrivacyProtectionScreen.storyboard */,
 				F78E2D6429AF02DB0024D4F3 /* Database.swift */,
 				F76B3CCD1EAE01BD00921AC9 /* NCBrand.swift */,
 			);
@@ -2642,7 +2706,6 @@
 		F7F67B9F1A24D27800EE80DA = {
 			isa = PBXGroup;
 			children = (
-				F30A96302A27AEBF00D7BCFE /* EnvVars.generated.swift */,
 				F7B8B82F25681C3400967775 /* GoogleService-Info.plist */,
 				F7C1CDD91E6DFC6F005D92BE /* Brand */,
 				F7F67BAA1A24D27800EE80DA /* iOSClient */,
@@ -2656,7 +2719,6 @@
 				F7903A4A2948CAC300203DA5 /* ExternalResources */,
 				F7FC7D651DC1F98700BB2C6A /* Products */,
 				F7FC7D541DC1F93700BB2C6A /* Frameworks */,
-				F30A962B2A27AC4000D7BCFE /* Sourcery */,
 				F30A962A2A27A9C800D7BCFE /* Tests */,
 				F771E3D020E2392D00AFB62D /* File Provider Extension.appex */,
 				2C33C47F23E2C475005F963B /* Notification Service Extension.appex */,
@@ -2664,9 +2726,8 @@
 				F7346E1028B0EF5B006CE2D2 /* Widget.appex */,
 				F7C9739028F17131002C43E2 /* WidgetDashboardIntentHandler.appex */,
 				F70716E32987F81500E72C1D /* File Provider Extension UI.appex */,
-				C0046CDA2A17B98400D87C9D /* NextcloudUITests.xctest */,
 				C04E2F202A17BB4D001BAD85 /* NextcloudIntegrationTests.xctest */,
-				F31F69422A2F6D4500162F76 /* NextcloudSnapshotTests.xctest */,
+				C0046CDA2A17B98400D87C9D /* NextcloudUITests.xctest */,
 				F33AAF982A601465006ECCBD /* Recovered References */,
 			);
 			sourceTree = "<group>";
@@ -2675,6 +2736,7 @@
 			isa = PBXGroup;
 			children = (
 				F702F2CC25EE5B4F008F8E80 /* AppDelegate.swift */,
+				F794E13E2BBC0F70003693D7 /* SceneDelegate.swift */,
 				F76B649B2ADFFAED00014640 /* NCImageCache.swift */,
 				F702F2CE25EE5B5C008F8E80 /* NCGlobal.swift */,
 				F7E402282BA85D1D007E5609 /* PrivacyInfo.xcprivacy */,
@@ -2735,6 +2797,9 @@
 		F7FC7D541DC1F93700BB2C6A /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				F3998E302B487E80007CA5DE /* CoreAudio.framework */,
+				F3998E2F2B487E80007CA5DE /* CoreAudioKit.framework */,
+				F3998E192B4879B2007CA5DE /* CoreAudioTypes.framework */,
 				F3131EDA2B038DB90018DB28 /* WidgetKit.framework */,
 				F3131ED82B038DB20018DB28 /* SwiftUI.framework */,
 				F30A96042A27299D00D7BCFE /* XCTest.framework */,
@@ -2869,8 +2934,8 @@
 			packageProductDependencies = (
 				F710FC87277B7D3F00AA9FBF /* RealmSwift */,
 				F72AD71028C24BBB006CB92D /* NextcloudKit */,
-				F314F1102A30C11200BC7FAB /* PreviewSnapshots */,
 				F760DE0E2AE66EE60027D78A /* KeychainAccess */,
+				F36677442B9F833D00B23B81 /* Realm */,
 			);
 			productName = "Notification Service Extension";
 			productReference = 2C33C47F23E2C475005F963B /* Notification Service Extension.appex */;
@@ -2891,7 +2956,9 @@
 			);
 			name = NextcloudUnitTests;
 			packageProductDependencies = (
-				F3C6D0962B0F9BA40078DD25 /* XLForm */,
+				F3391B012B4C40FB001C0C4B /* XLForm */,
+				F3F041982B9F7E6700D5155F /* Realm */,
+				F3F0419A2B9F7E6700D5155F /* RealmSwift */,
 			);
 			productName = NextcloudTests;
 			productReference = AF8ED1F92757821000B8DBC4 /* NextcloudUnitTests.xctest */;
@@ -2912,7 +2979,31 @@
 			);
 			name = NextcloudUITests;
 			packageProductDependencies = (
-				F3131EDC2B038E4A0018DB28 /* XLForm */,
+				F3391B052B4C4111001C0C4B /* XLForm */,
+				F3391B0F2B4C52E6001C0C4B /* SVGKit */,
+				F3391B112B4C52EB001C0C4B /* Realm */,
+				F3391B132B4C52EF001C0C4B /* JGProgressHUD */,
+				F3391B152B4C52F6001C0C4B /* FirebaseDatabase */,
+				F3F0419E2B9F7E7900D5155F /* RealmSwift */,
+				F37208A32BAB63EE006B5430 /* QRCodeReader */,
+				F37208A52BAB63EE006B5430 /* SwiftRichString */,
+				F37208A72BAB63EE006B5430 /* FloatingPanel */,
+				F37208A92BAB63EE006B5430 /* MarkdownKit */,
+				F37208AB2BAB63EE006B5430 /* SwiftEntryKit */,
+				F37208AD2BAB63EE006B5430 /* MarqueeLabel */,
+				F37208AF2BAB63EF006B5430 /* Queuer */,
+				F37208B12BAB63EF006B5430 /* DropDown */,
+				F37208B32BAB63EF006B5430 /* Parchment */,
+				F37208B52BAB63EF006B5430 /* EasyTipView */,
+				F37208B72BAB63EF006B5430 /* NextcloudKit */,
+				F37208B92BAB63EF006B5430 /* TLPhotoPicker */,
+				F37208BB2BAB63EF006B5430 /* OpenSSL */,
+				F37208BD2BAB63F0006B5430 /* Swifter */,
+				F37208BF2BAB63F0006B5430 /* Mantis */,
+				F37208C12BAB63F0006B5430 /* TagListView */,
+				F37208C32BAB63F0006B5430 /* Gzip */,
+				F37208C52BAB63F0006B5430 /* LRUCache */,
+				F37208C72BAB63F1006B5430 /* KeychainAccess */,
 			);
 			productName = NextcloudUITests;
 			productReference = C0046CDA2A17B98400D87C9D /* NextcloudUITests.xctest */;
@@ -2933,32 +3024,15 @@
 			);
 			name = NextcloudIntegrationTests;
 			packageProductDependencies = (
+				F3391B032B4C4105001C0C4B /* XLForm */,
+				F3391B072B4C52C5001C0C4B /* FirebaseDatabase */,
+				F3391B092B4C52CB001C0C4B /* JGProgressHUD */,
+				F3391B0B2B4C52D5001C0C4B /* SVGKit */,
+				F3391B0D2B4C52DC001C0C4B /* Realm */,
+				F3F0419C2B9F7E6E00D5155F /* RealmSwift */,
 			);
 			productName = NextcloudIntegrationTests;
 			productReference = C04E2F202A17BB4D001BAD85 /* NextcloudIntegrationTests.xctest */;
-			productType = "com.apple.product-type.bundle.unit-test";
-		};
-		F31F69412A2F6D4500162F76 /* NextcloudSnapshotTests */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = F31F694A2A2F6D4600162F76 /* Build configuration list for PBXNativeTarget "NextcloudSnapshotTests" */;
-			buildPhases = (
-				F31F693E2A2F6D4500162F76 /* Sources */,
-				F31F693F2A2F6D4500162F76 /* Frameworks */,
-				F31F69402A2F6D4500162F76 /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				F31F69472A2F6D4600162F76 /* PBXTargetDependency */,
-			);
-			name = NextcloudSnapshotTests;
-			packageProductDependencies = (
-				F3131EDE2B038F2A0018DB28 /* SnapshotTesting */,
-				F3131EE02B038F560018DB28 /* SnapshotTestingHEIC */,
-				F3131EE22B038F9B0018DB28 /* PreviewSnapshotsTesting */,
-			);
-			productName = NextcloudSnapshotTests;
-			productReference = F31F69422A2F6D4500162F76 /* NextcloudSnapshotTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
 		F70716E22987F81400E72C1D /* File Provider Extension UI */ = {
@@ -2979,6 +3053,7 @@
 				F7490E8829882CC8009DCE94 /* SwiftEntryKit */,
 				F7490E8A29882CE4009DCE94 /* NextcloudKit */,
 				F760DE0C2AE66EDF0027D78A /* KeychainAccess */,
+				F36677422B9F833800B23B81 /* Realm */,
 			);
 			productName = "File Provider Extension UI";
 			productReference = F70716E32987F81500E72C1D /* File Provider Extension UI.appex */;
@@ -3010,6 +3085,7 @@
 				F760DE082AE66ED00027D78A /* KeychainAccess */,
 				F74C863C2AEFBFD9009A1D4A /* LRUCache */,
 				F711A4EE2AF932B900095DD8 /* SVGKitSwift */,
+				F36677482B9F837500B23B81 /* Realm */,
 			);
 			productName = "Share Ext";
 			productReference = F7CE8AFB1DC1F8D8009CAE48 /* Share.appex */;
@@ -3036,6 +3112,7 @@
 				F7A560452AE15D3D00BE8FD6 /* Queuer */,
 				F75379212AE2ADA100C0250E /* JGProgressHUD */,
 				F760DE042AE66EBE0027D78A /* KeychainAccess */,
+				F36677462B9F834400B23B81 /* Realm */,
 			);
 			productName = DashboardWidgetExtension;
 			productReference = F7346E1028B0EF5B006CE2D2 /* Widget.appex */;
@@ -3061,6 +3138,7 @@
 				F7A560432AE15D2900BE8FD6 /* Queuer */,
 				F753791F2AE2AD9400C0250E /* JGProgressHUD */,
 				F760DE0A2AE66ED80027D78A /* KeychainAccess */,
+				F36677402B9F833300B23B81 /* Realm */,
 			);
 			productName = "File Provider Extension";
 			productReference = F771E3D020E2392D00AFB62D /* File Provider Extension.appex */;
@@ -3070,7 +3148,6 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = F77B0F9A1D118A16002130FE /* Build configuration list for PBXNativeTarget "Nextcloud" */;
 			buildPhases = (
-				F30A961C2A2766D900D7BCFE /* Generate env vars */,
 				F77B0DEF1D118A16002130FE /* Sources */,
 				F77B0EDC1D118A16002130FE /* Frameworks */,
 				F77B0EE91D118A16002130FE /* Resources */,
@@ -3112,7 +3189,6 @@
 				F7D56B192972405500FA46C4 /* Mantis */,
 				F787AC08298BCB4A0001BB00 /* SVGKitSwift */,
 				F7A1050D29E587AF00FFD92B /* TagListView */,
-				F31F69632A2F929600162F76 /* PreviewSnapshots */,
 				F7F623B42A5EF4D30022D3D4 /* Gzip */,
 				F76B649D2ADFFDEC00014640 /* LRUCache */,
 				F760DE022AE66EA80027D78A /* KeychainAccess */,
@@ -3139,6 +3215,7 @@
 				F7A8D72328F1771B008BBE1C /* NextcloudKit */,
 				F7A8D72728F17728008BBE1C /* RealmSwift */,
 				F760DE062AE66EC70027D78A /* KeychainAccess */,
+				F3F041A22B9F828B00D5155F /* Realm */,
 			);
 			productName = WidgetDashboardIntentHandler;
 			productReference = F7C9739028F17131002C43E2 /* WidgetDashboardIntentHandler.appex */;
@@ -3168,10 +3245,6 @@
 					};
 					C04E2F1F2A17BB4D001BAD85 = {
 						CreatedOnToolsVersion = 14.2;
-						TestTargetID = F77B0DEB1D118A16002130FE;
-					};
-					F31F69412A2F6D4500162F76 = {
-						CreatedOnToolsVersion = 14.3;
 						TestTargetID = F77B0DEB1D118A16002130FE;
 					};
 					F70716E22987F81400E72C1D = {
@@ -3287,9 +3360,6 @@
 				F77BC3E9293E5268005F2B08 /* XCRemoteSwiftPackageReference "swifter" */,
 				F7D56B182972405400FA46C4 /* XCRemoteSwiftPackageReference "Mantis" */,
 				F7A1050C29E587AF00FFD92B /* XCRemoteSwiftPackageReference "TagListView" */,
-				F31F694B2A2F6EFA00162F76 /* XCRemoteSwiftPackageReference "swift-snapshot-testing" */,
-				F31F69622A2F929600162F76 /* XCRemoteSwiftPackageReference "swiftui-preview-snapshots" */,
-				F31F69672A2F92F000162F76 /* XCRemoteSwiftPackageReference "SnapshotTestingHEIC" */,
 				F7F623B32A5EF4D30022D3D4 /* XCRemoteSwiftPackageReference "GzipSwift" */,
 				F76B649A2ADFFAD200014640 /* XCRemoteSwiftPackageReference "LRUCache" */,
 				F760DE012AE66E860027D78A /* XCRemoteSwiftPackageReference "KeychainAccess" */,
@@ -3308,7 +3378,6 @@
 				2C33C47E23E2C475005F963B /* Notification Service Extension */,
 				AF8ED1F82757821000B8DBC4 /* NextcloudUnitTests */,
 				C04E2F1F2A17BB4D001BAD85 /* NextcloudIntegrationTests */,
-				F31F69412A2F6D4500162F76 /* NextcloudSnapshotTests */,
 				C0046CD92A17B98400D87C9D /* NextcloudUITests */,
 			);
 		};
@@ -3339,14 +3408,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		C04E2F1E2A17BB4D001BAD85 /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				F30A962F2A27ADF900D7BCFE /* EnvVars.stencil in Resources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		F31F69402A2F6D4500162F76 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -3434,7 +3495,6 @@
 				F757CC8C29E82D0500F31428 /* NCGroupfolders.storyboard in Resources */,
 				F79A65C32191D90F00FF6DCC /* NCSelect.storyboard in Resources */,
 				F7226EDC1EE4089300EBECB1 /* Main.storyboard in Resources */,
-				F31F69612A2F907800162F76 /* __Snapshots__ in Resources */,
 				AF56C1DC2784856200D8BAE2 /* NCActivityCommentView.xib in Resources */,
 				F7F4F10B27ECDBDB008676F9 /* Inconsolata-Light.ttf in Resources */,
 				F7CEE6002BA9A5C9003EFD89 /* NCTrashGridCell.xib in Resources */,
@@ -3476,6 +3536,7 @@
 				F7EDE509262DA9D600414FE6 /* NCSelectCommandViewSelect.xib in Resources */,
 				F732D23327CF8AED000B0F1B /* NCPlayerToolBar.xib in Resources */,
 				F73D11FA253C5F4800DF9BEC /* NCViewerNextcloudText.storyboard in Resources */,
+				F7A07BB42BBF0F0000CB6772 /* PrivacyProtectionScreen.storyboard in Resources */,
 				F7EDE51B262DD0C400414FE6 /* NCSelectCommandViewCopyMove.xib in Resources */,
 				F73B422B2476764F00A30FD3 /* NCNotification.storyboard in Resources */,
 				F7FF2CB12842159500EBB7A1 /* NCSectionHeader.xib in Resources */,
@@ -3524,26 +3585,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "if test -d \"/opt/homebrew/bin/\"; then\n  PATH=\"/opt/homebrew/bin/:${PATH}\"\nfi\n\nexport PATH\n\nif which swiftlint >/dev/null; then\n  swiftlint\nelse\n  echo \"warning: SwiftLint not installed, download from https://github.com/realm/SwiftLint\"\nfi\n";
-		};
-		F30A961C2A2766D900D7BCFE /* Generate env vars */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-				"$(SRCROOT)/.env-vars",
-			);
-			name = "Generate env vars";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-				$PROJECT_DIR/Sourcery/EnvVars.generated.swift,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "#This generates an env-vars file that the project uses for various tasks, mostly testing. If you want to modify the env vars, open .env-vars in the root dir.\n#It also generates a .swift file in the project that contains the env vars as swift constants for easy use. Check EnvVars.generated.swift\n\nif [ ! -f \".env-vars\" ]; then\n    touch .env-vars\n    echo \"export TEST_SERVER_URL=\" >> .env-vars\n    echo \"export TEST_USER=\" >> .env-vars\n    echo \"export TEST_APP_PASSWORD=\" >> .env-vars\n    #add more env vars here\nfi\n\nsource .env-vars\n\nSourcery/bin/sourcery --templates Sourcery --output Sourcery --sources . --args TEST_USER=$TEST_USER,TEST_APP_PASSWORD=$TEST_APP_PASSWORD,TEST_SERVER_URL=$TEST_SERVER_URL\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -3612,6 +3653,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				AF8ED1FC2757821000B8DBC4 /* NextcloudUnitTests.swift in Sources */,
+				F37208792BAB4C09006B5430 /* BaseXCTestCase.swift in Sources */,
+				F372087D2BAB4C0F006B5430 /* TestConstants.swift in Sources */,
 				F78E2D6C29AF02DB0024D4F3 /* Database.swift in Sources */,
 				F7817CFE29801A3500FFBC65 /* Data+Extension.swift in Sources */,
 			);
@@ -3622,8 +3665,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				F3A7AFC62A41AA82001FC89C /* BaseUIXCTestCase.swift in Sources */,
-				F32ED5062A2F254400EABA81 /* EnvVars.generated.swift in Sources */,
+				F37208822BAB597B006B5430 /* BaseXCTestCase.swift in Sources */,
 				C0046CDD2A17B98400D87C9D /* LoginUITests.swift in Sources */,
+				F37208812BAB5979006B5430 /* TestConstants.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3632,16 +3676,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				F3953BD72A6E87E000EE03F9 /* BaseIntegrationXCTestCase.swift in Sources */,
-				F30A96322A27AEDD00D7BCFE /* EnvVars.generated.swift in Sources */,
+				F372087A2BAB4C09006B5430 /* BaseXCTestCase.swift in Sources */,
+				F372087E2BAB4C0F006B5430 /* TestConstants.swift in Sources */,
 				C04E2F232A17BB4D001BAD85 /* FilesIntegrationTests.swift in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		F31F693E2A2F6D4500162F76 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				F31F69452A2F6D4600162F76 /* NextcloudSnapshotTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3955,7 +3992,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F30A96312A27AEBF00D7BCFE /* EnvVars.generated.swift in Sources */,
 				F77444F522281649000D5EB0 /* NCGridMediaCell.swift in Sources */,
 				F78C6FDE296D677300C952C3 /* NCContextMenu.swift in Sources */,
 				F7E402332BA89551007E5609 /* NCTrash+Networking.swift in Sources */,
@@ -3985,6 +4021,7 @@
 				F7245924289BB50C00474787 /* ThreadSafeDictionary.swift in Sources */,
 				F73F537F1E929C8500F8678D /* NCMore.swift in Sources */,
 				F702F2CF25EE5B5C008F8E80 /* NCGlobal.swift in Sources */,
+				F794E13F2BBC0F70003693D7 /* SceneDelegate.swift in Sources */,
 				F72CD63A25C19EBF00F46F9A /* NCAutoUpload.swift in Sources */,
 				AF93471D27E2361E002537EE /* NCShareAdvancePermissionFooter.swift in Sources */,
 				AF1A9B6427D0CA1E00F17A9E /* UIAlertController+Extension.swift in Sources */,
@@ -4057,7 +4094,6 @@
 				AF2D7C7C2742556F00ADF566 /* NCShareLinkCell.swift in Sources */,
 				F73EF7C72B0225610087E6E9 /* NCManageDatabase+PhotoLibrary.swift in Sources */,
 				F7E41316294A19B300839300 /* UIView+Extension.swift in Sources */,
-				F31F69502A2F707E00162F76 /* SwiftUIView+Extensions.swift in Sources */,
 				F7C30E00291BD2610017149B /* NCNetworkingE2EERename.swift in Sources */,
 				F7651A8B23A2A3F2001403D2 /* NCCreateFormUploadDocuments.swift in Sources */,
 				F74AF3A4247FB6AE00AC767B /* NCUtilityFileSystem.swift in Sources */,
@@ -4070,6 +4106,7 @@
 				F74B6D952A7E239A00F03C5F /* NCManageDatabase+Chunk.swift in Sources */,
 				F310B1EF2BA862F1001C42F5 /* NCViewerMedia+VisionKit.swift in Sources */,
 				F702F2F725EE5CED008F8E80 /* NCLogin.swift in Sources */,
+				F7EB9B132BBC12F300EDF036 /* UIApplication+Extension.swift in Sources */,
 				F7E98C1627E0D0FC001F9F19 /* NCManageDatabase+Video.swift in Sources */,
 				F7F4F11227ECDC52008676F9 /* UIFont+Extension.swift in Sources */,
 				AF93471A27E2361E002537EE /* NCShareAdvancePermissionHeader.swift in Sources */,
@@ -4118,6 +4155,7 @@
 				F308659B2BC4144700D04EAC /* NCAssistantModel.swift in Sources */,
 				F70D7C3725FFBF82002B9E34 /* NCCollectionViewCommon.swift in Sources */,
 				F76D364628A4F8BF00214537 /* NCActivityIndicator.swift in Sources */,
+				F7A07BB62BBF110500CB6772 /* PrivacyProtectionScreen.swift in Sources */,
 				F7134186259747BA00768D21 /* NCPushNotification.m in Sources */,
 				F36E64F72B9245210085ABB5 /* NCCollectionViewCommon+SelectTabBarDelegate.swift in Sources */,
 				F3BB464F2A39EBE500461F6E /* NCMoreUserCell.swift in Sources */,
@@ -4269,11 +4307,6 @@
 			isa = PBXTargetDependency;
 			target = F77B0DEB1D118A16002130FE /* Nextcloud */;
 			targetProxy = C04E2F242A17BB4D001BAD85 /* PBXContainerItemProxy */;
-		};
-		F31F69472A2F6D4600162F76 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = F77B0DEB1D118A16002130FE /* Nextcloud */;
-			targetProxy = F31F69462A2F6D4600162F76 /* PBXContainerItemProxy */;
 		};
 		F70716EC2987F81500E72C1D /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -4473,6 +4506,7 @@
 		2C33C48723E2C475005F963B /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = YES;
 				CODE_SIGN_ENTITLEMENTS = "$(SRCROOT)/Brand/Notification_Service_Extension.entitlements";
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"$(inherited)",
@@ -4491,6 +4525,7 @@
 		2C33C48823E2C475005F963B /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = YES;
 				CODE_SIGN_ENTITLEMENTS = "$(SRCROOT)/Brand/Notification_Service_Extension.entitlements";
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"$(inherited)",
@@ -4518,7 +4553,9 @@
 				OTHER_LDFLAGS = "";
 				PRODUCT_BUNDLE_IDENTIFIER = it.twsweb.NextcloudTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_OBJC_BRIDGING_HEADER = "$(SRCROOT)/iOSClient/Nextcloud-Bridging-Header.h";
+				SWIFT_INSTALL_OBJC_HEADER = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = "";
+				SWIFT_PRECOMPILE_BRIDGING_HEADER = YES;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Nextcloud.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Nextcloud";
 			};
 			name = Debug;
@@ -4535,7 +4572,9 @@
 				OTHER_LDFLAGS = "";
 				PRODUCT_BUNDLE_IDENTIFIER = it.twsweb.NextcloudTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_OBJC_BRIDGING_HEADER = "$(SRCROOT)/iOSClient/Nextcloud-Bridging-Header.h";
+				SWIFT_INSTALL_OBJC_HEADER = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = "";
+				SWIFT_PRECOMPILE_BRIDGING_HEADER = YES;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Nextcloud.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Nextcloud";
 			};
 			name = Release;
@@ -4566,18 +4605,22 @@
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				MARKETING_VERSION = 1.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
+				OTHER_CFLAGS = "-v";
 				OTHER_LDFLAGS = "";
 				PRODUCT_BUNDLE_IDENTIFIER = it.twsweb.NextcloudUITests.NextcloudUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_EMIT_LOC_STRINGS = NO;
-				SWIFT_OBJC_BRIDGING_HEADER = "$(SRCROOT)/iOSClient/Nextcloud-Bridging-Header.h";
+				SWIFT_INSTALL_OBJC_HEADER = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = "";
+				SWIFT_PRECOMPILE_BRIDGING_HEADER = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(TEST_HOST)";
 				TEST_TARGET_NAME = Nextcloud;
 			};
 			name = Debug;
@@ -4604,17 +4647,21 @@
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				MARKETING_VERSION = 1.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
+				OTHER_CFLAGS = "-v";
 				OTHER_LDFLAGS = "";
 				PRODUCT_BUNDLE_IDENTIFIER = it.twsweb.NextcloudUITests.NextcloudUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = NO;
-				SWIFT_OBJC_BRIDGING_HEADER = "$(SRCROOT)/iOSClient/Nextcloud-Bridging-Header.h";
+				SWIFT_INSTALL_OBJC_HEADER = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = "";
+				SWIFT_PRECOMPILE_BRIDGING_HEADER = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(TEST_HOST)";
 				TEST_TARGET_NAME = Nextcloud;
 				VALIDATE_PRODUCT = YES;
 			};
@@ -4647,7 +4694,7 @@
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				MARKETING_VERSION = 1.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
@@ -4656,7 +4703,9 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_EMIT_LOC_STRINGS = NO;
-				SWIFT_OBJC_BRIDGING_HEADER = "$(SRCROOT)/iOSClient/Nextcloud-Bridging-Header.h";
+				SWIFT_INSTALL_OBJC_HEADER = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = "";
+				SWIFT_PRECOMPILE_BRIDGING_HEADER = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Nextcloud.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Nextcloud";
@@ -4686,7 +4735,7 @@
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				MARKETING_VERSION = 1.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
@@ -4694,88 +4743,9 @@
 				PRODUCT_BUNDLE_IDENTIFIER = it.twsweb.NextcloudIntegrationTests.NextcloudIntegrationTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = NO;
-				SWIFT_OBJC_BRIDGING_HEADER = "$(SRCROOT)/iOSClient/Nextcloud-Bridging-Header.h";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Nextcloud.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Nextcloud";
-				VALIDATE_PRODUCT = YES;
-			};
-			name = Release;
-		};
-		F31F69482A2F6D4600162F76 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
-				BUNDLE_LOADER = "$(TEST_HOST)";
-				CLANG_ANALYZER_NONNULL = YES;
-				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
-				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
-				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
-				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
-				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
-				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
-				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = NKUJUXUJ3B;
-				GCC_C_LANGUAGE_STANDARD = gnu11;
-				GCC_DYNAMIC_NO_PIC = NO;
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					"DEBUG=1",
-					"$(inherited)",
-				);
-				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
-				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
-				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
-				MARKETING_VERSION = 1.0;
-				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
-				MTL_FAST_MATH = YES;
-				OTHER_LDFLAGS = "";
-				PRODUCT_BUNDLE_IDENTIFIER = it.twsweb.NextcloudSnapshotTests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
-				SWIFT_EMIT_LOC_STRINGS = NO;
-				SWIFT_OBJC_BRIDGING_HEADER = "$(SRCROOT)/iOSClient/Nextcloud-Bridging-Header.h";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Nextcloud.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Nextcloud";
-			};
-			name = Debug;
-		};
-		F31F69492A2F6D4600162F76 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
-				BUNDLE_LOADER = "$(TEST_HOST)";
-				CLANG_ANALYZER_NONNULL = YES;
-				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
-				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
-				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
-				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
-				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
-				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
-				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				DEVELOPMENT_TEAM = NKUJUXUJ3B;
-				ENABLE_NS_ASSERTIONS = NO;
-				GCC_C_LANGUAGE_STANDARD = gnu11;
-				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
-				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
-				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
-				MARKETING_VERSION = 1.0;
-				MTL_ENABLE_DEBUG_INFO = NO;
-				MTL_FAST_MATH = YES;
-				OTHER_LDFLAGS = "";
-				PRODUCT_BUNDLE_IDENTIFIER = it.twsweb.NextcloudSnapshotTests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_EMIT_LOC_STRINGS = NO;
-				SWIFT_OBJC_BRIDGING_HEADER = "$(SRCROOT)/iOSClient/Nextcloud-Bridging-Header.h";
+				SWIFT_INSTALL_OBJC_HEADER = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = "";
+				SWIFT_PRECOMPILE_BRIDGING_HEADER = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Nextcloud.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Nextcloud";
@@ -4786,6 +4756,7 @@
 		F70716EE2987F81600E72C1D /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = YES;
 				CODE_SIGN_ENTITLEMENTS = "$(SRCROOT)/Brand/File_Provider_Extension_UI.entitlements";
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"$(inherited)",
@@ -4807,6 +4778,7 @@
 		F70716EF2987F81600E72C1D /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = YES;
 				CODE_SIGN_ENTITLEMENTS = "$(SRCROOT)/Brand/File_Provider_Extension_UI.entitlements";
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"$(inherited)",
@@ -4828,6 +4800,7 @@
 		F7145A261D12E3B700CAFEEC /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = YES;
 				CODE_SIGN_ENTITLEMENTS = "$(SRCROOT)/Brand/Share.entitlements";
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"$(inherited)",
@@ -4846,6 +4819,7 @@
 		F7145A271D12E3B700CAFEEC /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = YES;
 				CODE_SIGN_ENTITLEMENTS = "$(SRCROOT)/Brand/Share.entitlements";
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"$(inherited)",
@@ -4864,6 +4838,7 @@
 		F7346E1D28B0EF5E006CE2D2 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = YES;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
 				CLANG_ANALYZER_NONNULL = YES;
@@ -4892,6 +4867,7 @@
 		F7346E1E28B0EF5E006CE2D2 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = YES;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
 				CLANG_ANALYZER_NONNULL = YES;
@@ -4921,6 +4897,7 @@
 		F771E3F020E2392E00AFB62D /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = YES;
 				CODE_SIGN_ENTITLEMENTS = "$(SRCROOT)/Brand/File_Provider_Extension.entitlements";
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"$(inherited)",
@@ -4939,6 +4916,7 @@
 		F771E3F120E2392E00AFB62D /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = YES;
 				CODE_SIGN_ENTITLEMENTS = "$(SRCROOT)/Brand/File_Provider_Extension.entitlements";
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"$(inherited)",
@@ -4958,8 +4936,11 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				ALWAYS_SEARCH_USER_PATHS = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = "$(SRCROOT)/Brand/iOSClient.entitlements";
+				DEVELOPMENT_TEAM = NKUJUXUJ3B;
+				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
 				INFOPLIST_FILE = "$(SRCROOT)/Brand/iOSClient.plist";
 				OTHER_LDFLAGS = "";
 				PRODUCT_BUNDLE_IDENTIFIER = "it.twsweb.$(PRODUCT_NAME:rfc1034identifier)";
@@ -4972,8 +4953,11 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				ALWAYS_SEARCH_USER_PATHS = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = "$(SRCROOT)/Brand/iOSClient.entitlements";
+				DEVELOPMENT_TEAM = NKUJUXUJ3B;
+				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
 				INFOPLIST_FILE = "$(SRCROOT)/Brand/iOSClient.plist";
 				OTHER_LDFLAGS = "";
 				PRODUCT_BUNDLE_IDENTIFIER = "it.twsweb.$(PRODUCT_NAME:rfc1034identifier)";
@@ -4985,6 +4969,7 @@
 		F7C9739B28F17132002C43E2 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
@@ -5019,6 +5004,7 @@
 		F7C9739C28F17132002C43E2 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
@@ -5079,7 +5065,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 0;
+				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = NKUJUXUJ3B;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -5105,8 +5091,9 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 5.2.6;
+				MARKETING_VERSION = 5.3.0;
 				ONLY_ACTIVE_ARCH = YES;
+				OTHER_CFLAGS = "-v";
 				OTHER_LDFLAGS = "";
 				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) NC DEBUG";
@@ -5144,7 +5131,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 0;
+				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = NKUJUXUJ3B;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
@@ -5167,8 +5154,9 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 5.2.6;
+				MARKETING_VERSION = 5.3.0;
 				ONLY_ACTIVE_ARCH = YES;
+				OTHER_CFLAGS = "-v";
 				OTHER_LDFLAGS = "";
 				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) NC";
@@ -5215,15 +5203,6 @@
 			buildConfigurations = (
 				C04E2F272A17BB4E001BAD85 /* Debug */,
 				C04E2F282A17BB4E001BAD85 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		F31F694A2A2F6D4600162F76 /* Build configuration list for PBXNativeTarget "NextcloudSnapshotTests" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				F31F69482A2F6D4600162F76 /* Debug */,
-				F31F69492A2F6D4600162F76 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -5379,7 +5358,7 @@
 			repositoryURL = "https://github.com/xmartlabs/XLForm";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 4.0.0;
+				minimumVersion = 4.3.0;
 			};
 		};
 		F753BA91281FD8010015BFB6 /* XCRemoteSwiftPackageReference "EasyTipView" */ = {
@@ -5521,37 +5500,37 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		F3131EDC2B038E4A0018DB28 /* XLForm */ = {
+		F3391B012B4C40FB001C0C4B /* XLForm */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = F74E771E277A2EF40013B958 /* XCRemoteSwiftPackageReference "XLForm" */;
 			productName = XLForm;
 		};
-		F3131EDE2B038F2A0018DB28 /* SnapshotTesting */ = {
+		F3391B032B4C4105001C0C4B /* XLForm */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = F31F694B2A2F6EFA00162F76 /* XCRemoteSwiftPackageReference "swift-snapshot-testing" */;
-			productName = SnapshotTesting;
+			package = F74E771E277A2EF40013B958 /* XCRemoteSwiftPackageReference "XLForm" */;
+			productName = XLForm;
 		};
-		F3131EE02B038F560018DB28 /* SnapshotTestingHEIC */ = {
+		F3391B052B4C4111001C0C4B /* XLForm */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = F31F69672A2F92F000162F76 /* XCRemoteSwiftPackageReference "SnapshotTestingHEIC" */;
-			productName = SnapshotTestingHEIC;
+			package = F74E771E277A2EF40013B958 /* XCRemoteSwiftPackageReference "XLForm" */;
+			productName = XLForm;
 		};
-		F3131EE22B038F9B0018DB28 /* PreviewSnapshotsTesting */ = {
+		F3391B072B4C52C5001C0C4B /* FirebaseDatabase */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = F31F69622A2F929600162F76 /* XCRemoteSwiftPackageReference "swiftui-preview-snapshots" */;
-			productName = PreviewSnapshotsTesting;
+			package = F70B86732642CE3B00ED5349 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseDatabase;
 		};
-		F314F1102A30C11200BC7FAB /* PreviewSnapshots */ = {
+		F3391B092B4C52CB001C0C4B /* JGProgressHUD */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = F31F69622A2F929600162F76 /* XCRemoteSwiftPackageReference "swiftui-preview-snapshots" */;
-			productName = PreviewSnapshots;
+			package = F72CD01027A7E92400E59476 /* XCRemoteSwiftPackageReference "JGProgressHUD" */;
+			productName = JGProgressHUD;
 		};
-		F31F69632A2F929600162F76 /* PreviewSnapshots */ = {
+		F3391B0B2B4C52D5001C0C4B /* SVGKit */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = F31F69622A2F929600162F76 /* XCRemoteSwiftPackageReference "swiftui-preview-snapshots" */;
-			productName = PreviewSnapshots;
+			package = F75E57A725BF0D61002B72C2 /* XCRemoteSwiftPackageReference "SVGKit" */;
+			productName = SVGKit;
 		};
-		F3C6D0962B0F9BA40078DD25 /* XLForm */ = {
+		F3391B0D2B4C52DC001C0C4B /* Realm */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = F74E771E277A2EF40013B958 /* XCRemoteSwiftPackageReference "XLForm" */;
 			productName = XLForm;

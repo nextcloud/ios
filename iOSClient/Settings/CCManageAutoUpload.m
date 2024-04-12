@@ -204,7 +204,6 @@
 {
     [super viewWillAppear:animated];
     
-    appDelegate.activeViewController = self;
     [[[NCAskAuthorization alloc] init] askAuthorizationPhotoLibraryWithViewController:self completion:^(BOOL status) { }];
 }
 

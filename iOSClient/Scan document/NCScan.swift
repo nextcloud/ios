@@ -36,6 +36,8 @@ class NCScan: UIViewController, NCScanCellCellDelegate {
     @IBOutlet weak var labelTitlePDFzone: UILabel!
     @IBOutlet weak var segmentControlFilter: UISegmentedControl!
 
+    public var serverUrl: String?
+
     // Data Source for collectionViewSource
     internal var itemsSource: [String] = []
 
@@ -45,7 +47,6 @@ class NCScan: UIViewController, NCScanCellCellDelegate {
 
     internal let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
     let utilityFileSystem = NCUtilityFileSystem()
-    private var tipView: EasyTipView?
     internal var filter: NCGlobal.TypeFilterScanDocument = NCKeychain().typeFilterScanDocument
 
     // MARK: - View Life Cycle
@@ -90,22 +91,6 @@ class NCScan: UIViewController, NCScanCellCellDelegate {
         let longPressRecognizerPlus = UILongPressGestureRecognizer(target: self, action: #selector(handleLongPressGesture(recognizer:)))
         add.addGestureRecognizer(longPressRecognizerPlus)
 
-        // TIP
-        var preferences = EasyTipView.Preferences()
-        preferences.drawing.foregroundColor = .white
-        preferences.drawing.backgroundColor = NCBrandColor.shared.nextcloud
-        preferences.drawing.textAlignment = .left
-        preferences.drawing.arrowPosition = .left
-        preferences.drawing.cornerRadius = 10
-
-        preferences.animating.dismissTransform = CGAffineTransform(translationX: 0, y: 100)
-        preferences.animating.showInitialTransform = CGAffineTransform(translationX: 0, y: -100)
-        preferences.animating.showInitialAlpha = 0
-        preferences.animating.showDuration = 1.5
-        preferences.animating.dismissDuration = 1.5
-
-        tipView = EasyTipView(text: NSLocalizedString("_tip_addcopyimage_", comment: ""), preferences: preferences, delegate: self)
-
         collectionViewSource.reloadData()
         collectionViewDestination.reloadData()
 
@@ -116,26 +101,17 @@ class NCScan: UIViewController, NCScanCellCellDelegate {
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-
         showTip()
+    }
+
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        dismissTip()
     }
 
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         super.viewWillTransition(to: size, with: coordinator)
-
-        self.tipView?.dismiss()
-        coordinator.animate(alongsideTransition: nil) { _ in
-            self.showTip()
-        }
-    }
-
-    // MARK: - Tip
-
-    func showTip() {
-
-        if !NCManageDatabase.shared.tipExists(NCGlobal.shared.tipNCScanAddImage) {
-            self.tipView?.show(forView: add, withinSuperview: self.view)
-        }
+        dismissTip()
     }
 
     // MARK: -
@@ -165,19 +141,15 @@ class NCScan: UIViewController, NCScanCellCellDelegate {
     }
 
     @IBAction func saveAction(sender: UIBarButtonItem) {
-
-        if !imagesDestination.isEmpty {
-
-            var images: [UIImage] = []
-            let serverUrl = appDelegate.activeServerUrl
-
-            for image in imagesDestination {
-                images.append(filter(image: image)!)
-            }
-
-            let  vc = NCHostingUploadScanDocumentView().makeShipDetailsUI(images: images, userBaseUrl: appDelegate, serverUrl: serverUrl)
-            self.navigationController?.pushViewController(vc, animated: true)
+        guard !imagesDestination.isEmpty else { return }
+        var images: [UIImage] = []
+        for image in imagesDestination {
+            images.append(filter(image: image)!)
         }
+        let serverUrl = self.serverUrl ?? utilityFileSystem.getHomeServer(urlBase: appDelegate.urlBase, userId: appDelegate.userId)
+        let vc = NCHostingUploadScanDocumentView().makeShipDetailsUI(images: images, userBaseUrl: appDelegate, serverUrl: serverUrl)
+
+        self.navigationController?.pushViewController(vc, animated: true)
     }
 
     @IBAction func add(sender: UIButton) {
@@ -424,8 +396,28 @@ class NCScan: UIViewController, NCScanCellCellDelegate {
 }
 
 extension NCScan: EasyTipViewDelegate {
+    func showTip() {
+        if !NCManageDatabase.shared.tipExists(NCGlobal.shared.tipNCScanAddImage) {
+            var preferences = EasyTipView.Preferences()
+            preferences.drawing.foregroundColor = .white
+            preferences.drawing.backgroundColor = NCBrandColor.shared.nextcloud
+            preferences.drawing.textAlignment = .left
+            preferences.drawing.arrowPosition = .left
+            preferences.drawing.cornerRadius = 10
 
-    // TIP
+            preferences.animating.dismissTransform = CGAffineTransform(translationX: 0, y: 100)
+            preferences.animating.showInitialTransform = CGAffineTransform(translationX: 0, y: -100)
+            preferences.animating.showInitialAlpha = 0
+            preferences.animating.showDuration = 1.5
+            preferences.animating.dismissDuration = 1.5
+
+            if appDelegate.tipView == nil {
+                appDelegate.tipView = EasyTipView(text: NSLocalizedString("_tip_addcopyimage_", comment: ""), preferences: preferences, delegate: self)
+                appDelegate.tipView?.show(forView: add, withinSuperview: self.view)
+            }
+        }
+    }
+
     func easyTipViewDidTap(_ tipView: EasyTipView) {
         NCManageDatabase.shared.addTip(NCGlobal.shared.tipNCScanAddImage)
     }
@@ -433,7 +425,10 @@ extension NCScan: EasyTipViewDelegate {
     func easyTipViewDidDismiss(_ tipView: EasyTipView) { }
 
     func dismissTip() {
-        NCManageDatabase.shared.addTip(NCGlobal.shared.tipNCScanAddImage)
-        self.tipView?.dismiss()
+        if !NCManageDatabase.shared.tipExists(NCGlobal.shared.tipNCScanAddImage) {
+            NCManageDatabase.shared.addTip(NCGlobal.shared.tipNCScanAddImage)
+        }
+        appDelegate.tipView?.dismiss()
+        appDelegate.tipView = nil
     }
 }

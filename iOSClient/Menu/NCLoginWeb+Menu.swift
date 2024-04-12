@@ -74,7 +74,7 @@ extension NCLoginWeb {
                     self.dismiss(animated: true) {
                         let accounts = NCManageDatabase.shared.getAllAccount()
                         if accounts.isEmpty {
-                            self.appDelegate.openLogin(viewController: nil, selector: NCGlobal.shared.introLogin, openLoginWeb: false)
+                            self.appDelegate.openLogin(selector: NCGlobal.shared.introLogin, openLoginWeb: false)
                         } else {
                             self.appDelegate.changeAccount(accounts.first!.account, userProfile: nil)
                         }

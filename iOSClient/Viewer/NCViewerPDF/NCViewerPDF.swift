@@ -36,6 +36,7 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
     var titleView: String?
     var imageIcon: UIImage?
 
+    private let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
     private var filePath = ""
 
     private var pdfView = PDFView()
@@ -44,7 +45,6 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
     private var pdfDocument: PDFDocument?
     private let pageView = UIView()
     private let pageViewLabel = UILabel()
-    private var tipView: EasyTipView?
 
     private let thumbnailViewHeight: CGFloat = 70
     private let thumbnailViewWidth: CGFloat = 80
@@ -80,25 +80,6 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
 
         navigationController?.navigationBar.prefersLargeTitles = false
         navigationItem.title = titleView
-
-        // TIP
-
-        var preferences = EasyTipView.Preferences()
-        preferences.drawing.foregroundColor = .white
-        preferences.drawing.backgroundColor = NCBrandColor.shared.nextcloud
-        preferences.drawing.textAlignment = .left
-        preferences.drawing.arrowPosition = .right
-        preferences.drawing.cornerRadius = 10
-
-        preferences.positioning.bubbleInsets.right = window?.safeAreaInsets.right ?? 0
-
-        preferences.animating.dismissTransform = CGAffineTransform(translationX: 0, y: 100)
-        preferences.animating.showInitialTransform = CGAffineTransform(translationX: 0, y: -100)
-        preferences.animating.showInitialAlpha = 0
-        preferences.animating.showDuration = 1.5
-        preferences.animating.dismissDuration = 1.5
-
-        tipView = EasyTipView(text: NSLocalizedString("_tip_pdf_thumbnails_", comment: ""), preferences: preferences, delegate: self)
 
         // PDF CONTAINER
 
@@ -271,15 +252,18 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-
         showTip()
+    }
+
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        dismissTip()
     }
 
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         super.viewWillTransition(to: size, with: coordinator)
 
-        tipView?.dismiss()
-
+        dismissTip()
         coordinator.animate(alongsideTransition: { _ in
             self.pdfThumbnailScrollViewTrailingAnchor?.constant = self.thumbnailViewWidth + (self.window?.safeAreaInsets.right ?? 0)
             self.pdfThumbnailScrollView.isHidden = true
@@ -289,23 +273,11 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
     }
 
     @objc func viewUnload() {
-
         navigationController?.popViewController(animated: true)
     }
 
     @objc func viewDismiss() {
         self.dismiss(animated: true)
-    }
-
-    // MARK: - Tip
-
-    func showTip() {
-
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-            if !NCManageDatabase.shared.tipExists(NCGlobal.shared.tipNCViewerPDFThumbnail) {
-                self.tipView?.show(forView: self.pdfThumbnailScrollView, withinSuperview: self.pdfContainer)
-            }
-        }
     }
 
     // MARK: - NotificationCenter
@@ -477,12 +449,7 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
 
     func openPdfThumbnail() {
 
-        if let tipView = self.tipView {
-            tipView.dismiss()
-            NCManageDatabase.shared.addTip(NCGlobal.shared.tipNCViewerPDFThumbnail)
-            self.tipView = nil
-        }
-
+        self.dismissTip()
         self.pdfThumbnailScrollView.isHidden = false
         self.pdfThumbnailScrollViewWidthAnchor?.constant = thumbnailViewWidth + (window?.safeAreaInsets.right ?? 0)
 
@@ -610,10 +577,43 @@ extension NCViewerPDF: UIGestureRecognizerDelegate {
 }
 
 extension NCViewerPDF: EasyTipViewDelegate {
+    func showTip() {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+            if !NCManageDatabase.shared.tipExists(NCGlobal.shared.tipNCViewerPDFThumbnail) {
+                var preferences = EasyTipView.Preferences()
+                preferences.drawing.foregroundColor = .white
+                preferences.drawing.backgroundColor = NCBrandColor.shared.nextcloud
+                preferences.drawing.textAlignment = .left
+                preferences.drawing.arrowPosition = .right
+                preferences.drawing.cornerRadius = 10
+
+                preferences.positioning.bubbleInsets.right = self.window?.safeAreaInsets.right ?? 0
+
+                preferences.animating.dismissTransform = CGAffineTransform(translationX: 0, y: 100)
+                preferences.animating.showInitialTransform = CGAffineTransform(translationX: 0, y: -100)
+                preferences.animating.showInitialAlpha = 0
+                preferences.animating.showDuration = 1.5
+                preferences.animating.dismissDuration = 1.5
+
+                if self.appDelegate.tipView == nil {
+                    self.appDelegate.tipView = EasyTipView(text: NSLocalizedString("_tip_pdf_thumbnails_", comment: ""), preferences: preferences, delegate: self)
+                    self.appDelegate.tipView?.show(forView: self.pdfThumbnailScrollView, withinSuperview: self.pdfContainer)
+                }
+            }
+        }
+    }
 
     func easyTipViewDidTap(_ tipView: EasyTipView) {
         NCManageDatabase.shared.addTip(NCGlobal.shared.tipNCViewerPDFThumbnail)
     }
 
     func easyTipViewDidDismiss(_ tipView: EasyTipView) { }
+
+    func dismissTip() {
+        if !NCManageDatabase.shared.tipExists(NCGlobal.shared.tipNCViewerPDFThumbnail) {
+            NCManageDatabase.shared.addTip(NCGlobal.shared.tipNCViewerPDFThumbnail)
+        }
+        appDelegate.tipView?.dismiss()
+        appDelegate.tipView = nil
+    }
 }

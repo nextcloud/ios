@@ -78,6 +78,16 @@ class NCGlobal: NSObject {
         case original = "original"
     }
 
+    // Sharing & Comments
+    //
+    var disableSharesView: Bool {
+        if !capabilityFileSharingApiEnabled && !capabilityFilesComments && capabilityActivity.isEmpty {
+            return true
+        } else {
+            return false
+        }
+    }
+
     // Directory on Group
     //
     @objc let directoryProviderStorage              = "File Provider Storage"
@@ -307,7 +317,6 @@ class NCGlobal: NSObject {
     let selectorLoadFileView                        = "loadFileView"
     let selectorLoadFileQuickLook                   = "loadFileQuickLook"
     let selectorOpenIn                              = "openIn"
-    let selectorPrint                               = "print"
     let selectorUploadAutoUpload                    = "uploadAutoUpload"
     let selectorUploadAutoUploadAll                 = "uploadAutoUploadAll"
     let selectorUploadFile                          = "uploadFile"
