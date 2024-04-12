@@ -75,6 +75,7 @@
 "_overwrite_"               = "Overwrite";
 "_transfers_in_queue_"      = "Transfers in progress, please wait …";
 "_too_errors_upload_"       = "Too many errors, please verify the problem";
+"_create_"                  = "Create";
 "_create_folder_"           = "Create folder";
 "_create_folder_e2ee_"      = "Create encrypted folder";
 "_create_folder_on_"        = "Create folder on";
@@ -1050,3 +1051,4 @@
 "_assistant_task_in_progress_"   = "In Progress";
 "_assistant_task_completed_"     = "Completed";
 "_assistant_task_failed_"        = "Failed";
+"_all_"                          = "All";

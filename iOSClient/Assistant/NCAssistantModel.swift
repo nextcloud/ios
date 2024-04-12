@@ -60,7 +60,7 @@ class NCAssistantModel: ObservableObject {
 }
 
 extension NCAssistantModel {
-    public func loadDummyTasks() {
+    public func loadDummyData() {
         let loremIpsum = """
         Lorem ipsum dolor sit amet, consectetur adipiscing
         elit, sed do eiusmod tempor incididunt ut labore et
@@ -79,6 +79,13 @@ extension NCAssistantModel {
 
         self.tasks = tasks
         self.filteredTasks = tasks
+        self.selectedTaskType = NKTextProcessingTaskType(id: "OCP\\TextProcessing\\FreePromptTaskType", name: "Free Prompt", description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua")
+        self.types = [
+            NKTextProcessingTaskType(id: "1", name: "Free Prompt", description: ""),
+            NKTextProcessingTaskType(id: "2", name: "Summarize", description: ""),
+            NKTextProcessingTaskType(id: "3", name: "Generate headline", description: ""),
+            NKTextProcessingTaskType(id: "4", name: "Reformulate", description: ""),
+        ]
     }
 }
 

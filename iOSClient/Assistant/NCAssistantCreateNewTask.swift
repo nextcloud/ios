@@ -11,31 +11,62 @@ import SwiftUI
 struct NCAssistantCreateNewTask: View {
     @EnvironmentObject var model: NCAssistantModel
     @State var text = ""
+    @FocusState private var inFocus: Bool
 
     var body: some View {
-//        NavigationView {
-            VStack {
-                Text(model.selectedTaskType?.description ?? "")
+        VStack {
+            Text(model.selectedTaskType?.description ?? "")
+                .frame(alignment: .top)
+
+            ZStack(alignment: .topLeading) {
+                if text.isEmpty {
+                    Text("Input")
+                        .padding(24)
+                        .foregroundStyle(.secondary)
+                }
+
                 TextEditor(text: $text)
-//                    .foregroundStyle(.gray)
+                    .padding()
+                    .transparentScrolling()
+                    .background(.gray.opacity(0.1))
 
+                .focused($inFocus)
             }
-            .toolbar {
-                Button(action: {
-                }, label: {
-                    Text("Add")
-                })
-            }
-            .navigationTitle("New " + (model.selectedTaskType?.name ?? "") + " task")
-            .navigationBarTitleDisplayMode(.inline)
-            .padding()
-
-//        }
-
+            .background(.gray.opacity(0.1))
+            .clipShape(.rect(cornerRadius: 8))
+        }
+        .toolbar {
+            Button(action: {
+            }, label: {
+                Text(NSLocalizedString("_create_", comment: ""))
+            })
+        }
+        .navigationTitle("New " + (model.selectedTaskType?.name ?? "") + " task")
+        .navigationBarTitleDisplayMode(.inline)
+        .padding()
+        .onAppear {
+            inFocus = true
+        }
     }
 }
 
 #Preview {
-    NCAssistantCreateNewTask()
-        .environmentObject(NCAssistantModel())
+    let model = NCAssistantModel()
+
+    return NCAssistantCreateNewTask()
+        .environmentObject(model)
+        .onAppear {
+            model.loadDummyData()
+        }}
+
+private extension View {
+    func transparentScrolling() -> some View {
+        if #available(iOS 16.0, *) {
+            return scrollContentBackground(.hidden)
+        } else {
+            return onAppear {
+                UITextView.appearance().backgroundColor = .clear
+            }
+        }
+    }
 }

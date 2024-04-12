@@ -14,7 +14,7 @@ struct NCAssistantTaskDetail: View {
     @State private var tab = 0
 
     var body: some View {
-        NavigationView {
+//        NavigationView {
             VStack {
                 Picker("", selection: $tab) {
                     Text("Input").tag(0)
@@ -31,12 +31,15 @@ struct NCAssistantTaskDetail: View {
                 .background(.gray.opacity(0.1))
                 .clipShape(.rect(cornerRadius: 8))
 
-                HStack {
+                HStack(alignment: .center) {
                     Label(
                         title: { Text(NSLocalizedString(task.statusInfo.stringKey, comment: "")) },
                         icon: { Image(systemName: task.statusInfo.imageSystemName).renderingMode(.original) }
                     )
-//                    .foregroundStyle(.primary)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+
+                    Text(NCUtility().dateDiff(.init(timeIntervalSince1970: TimeInterval(task.completionExpectedAt ?? 0))))
+                        .frame(maxWidth: .infinity, alignment: .trailing)
                 }
                 .padding()
 
@@ -44,7 +47,7 @@ struct NCAssistantTaskDetail: View {
             .navigationBarTitleDisplayMode(.inline)
             .navigationTitle("Task details")
             .padding()
-        }
+//        }
     }
 }
 

@@ -22,7 +22,7 @@ struct NCAssistant: View {
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .safeAreaInset(edge: .top, spacing: -25) {
-                ScrollView(.horizontal) {
+                ScrollView(.horizontal, showsIndicators: false) {
                     LazyHStack {
                         TypeButton(model: model, taskType: nil)
 
@@ -53,7 +53,7 @@ struct NCAssistant: View {
     return NCAssistant()
         .environmentObject(model)
         .onAppear {
-            model.loadDummyTasks()
+            model.loadDummyData()
         }
 }
 
@@ -62,15 +62,16 @@ struct TypeButton: View {
     let taskType: NKTextProcessingTaskType?
 
     var body: some View {
+        let color: Any = model.selectedTaskType?.id == taskType?.id ? NCBrandColor.shared.brandElement : Material.ultraThinMaterial
         Button {
             model.selectTaskType(taskType)
         } label: {
-            Text(taskType?.name ?? "All").font(.title2)
+            Text(taskType?.name ?? NSLocalizedString("_all_", comment: "")).font(.body)
         }
-        .padding(.horizontal, 20)
+        .padding(.horizontal)
         .padding(.vertical, 7)
         .foregroundStyle(.primary)
-        .background(.ultraThinMaterial, ignoresSafeAreaEdges: [])
+        .background(Color(NCBrandColor.shared.brandElement), ignoresSafeAreaEdges: [])
         .clipShape(.capsule)
         .overlay(
             RoundedRectangle(cornerRadius: 20, style: RoundedCornerStyle.continuous)
