@@ -503,6 +503,8 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
                 serverUrlPush = serverUrlPush + "/" + dir
 
                 if let viewController = filesServerUrl[serverUrlPush], viewController.isViewLoaded {
+                    viewController.fileNameBlink = fileNameBlink
+                    viewController.fileNameOpen = fileNameOpen
                     navigationController.pushViewController(viewController, animated: false)
                 } else {
                     if let viewController: NCFiles = UIStoryboard(name: "NCFiles", bundle: nil).instantiateInitialViewController() as? NCFiles {
