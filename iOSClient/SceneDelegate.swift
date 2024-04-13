@@ -9,6 +9,7 @@
 import Foundation
 import NextcloudKit
 import WidgetKit
+import SwiftEntryKit
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     var window: UIWindow?
@@ -80,9 +81,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         // START TIMER UPLOAD PROCESS
         NCNetworkingProcess.shared.startTimer(scene: scene)
 
-        if NCKeychain().privacyScreenEnabled {
-            self.appDelegate?.hidePrivacyProtectionWindow(scene: scene)
-        }
+        self.appDelegate?.hidePrivacyProtectionWindow(scene: scene)
 
         NCService().startRequestServicesServer()
 
@@ -101,7 +100,11 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         // STOP TIMER UPLOAD PROCESS
         NCNetworkingProcess.shared.stopTimer()
 
-        if NCKeychain().privacyScreenEnabled {
+        if SwiftEntryKit.isCurrentlyDisplaying {
+            SwiftEntryKit.dismiss {
+                self.appDelegate?.showPrivacyProtectionWindow(scene: scene)
+            }
+        } else {
             self.appDelegate?.showPrivacyProtectionWindow(scene: scene)
         }
 

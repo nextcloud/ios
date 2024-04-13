@@ -627,6 +627,7 @@ extension AppDelegate: NCPasscodeDelegate {
     }
 
     func showPrivacyProtectionWindow(scene: UIScene) {
+        guard NCKeychain().privacyScreenEnabled else { return }
         let windows = SceneManager.shared.getWindow(scene: scene)
         let currentRootViewController = windows?.rootViewController
         let presentedViewController = currentRootViewController?.presentedViewController
@@ -639,6 +640,7 @@ extension AppDelegate: NCPasscodeDelegate {
     }
 
     func hidePrivacyProtectionWindow(scene: UIScene) {
+        guard NCKeychain().privacyScreenEnabled else { return }
         let windows = SceneManager.shared.getWindow(scene: scene)
         let rootViewController = SceneManager.shared.getMainTabBarController(scene: scene)
 
