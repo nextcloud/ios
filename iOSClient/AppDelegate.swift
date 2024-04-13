@@ -633,19 +633,16 @@ extension AppDelegate: NCPasscodeDelegate {
         if presentedViewController is TOPasscodeViewController {
             return
         }
-        let viewController = UIStoryboard(name: "PrivacyProtectionScreen", bundle: nil).instantiateInitialViewController()
+        let viewController = UIStoryboard(name: "LaunchScreen", bundle: nil).instantiateInitialViewController()
 
         windows?.rootViewController = viewController
     }
 
     func hidePrivacyProtectionWindow(scene: UIScene) {
         let windows = SceneManager.shared.getWindow(scene: scene)
-        let currentRootViewController = windows?.rootViewController
         let rootViewController = SceneManager.shared.getMainTabBarController(scene: scene)
 
-        if currentRootViewController is PrivacyProtectionScreen {
-            windows?.rootViewController = rootViewController
-        }
+        windows?.rootViewController = rootViewController
     }
 }
 
