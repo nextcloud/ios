@@ -5,10 +5,26 @@
 //  Created by Marino Faggiana on 25/03/24.
 //  Copyright © 2024 Marino Faggiana. All rights reserved.
 //
+//  Author Marino Faggiana <marino.faggiana@nextcloud.com>
+//
+//  This program is free software: you can redistribute it and/or modify
+//  it under the terms of the GNU General Public License as published by
+//  the Free Software Foundation, either version 3 of the License, or
+//  (at your option) any later version.
+//
+//  This program is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//  GNU General Public License for more details.
+//
+//  You should have received a copy of the GNU General Public License
+//  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
 
 import Foundation
 import NextcloudKit
 import WidgetKit
+import SwiftEntryKit
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     var window: UIWindow?
@@ -48,6 +64,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Scene will enter in foreground")
         guard let appDelegate else { return }
 
+        // In Login mode is possible ONLY 1 window
         if (UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }).count > 1,
            (appDelegate.activeLogin?.view.window != nil || appDelegate.activeLoginWeb?.view.window != nil) || (UIApplication.shared.firstWindow?.rootViewController is NCLoginNavigationController) {
             UIApplication.shared.allSceneSessionDestructionExceptFirst()
@@ -80,9 +97,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         // START TIMER UPLOAD PROCESS
         NCNetworkingProcess.shared.startTimer(scene: scene)
 
-        if NCKeychain().privacyScreenEnabled {
-            self.appDelegate?.hidePrivacyProtectionWindow(scene: scene)
-        }
+        self.appDelegate?.hidePrivacyProtectionWindow(scene: scene)
 
         NCService().startRequestServicesServer()
 
@@ -101,7 +116,11 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         // STOP TIMER UPLOAD PROCESS
         NCNetworkingProcess.shared.stopTimer()
 
-        if NCKeychain().privacyScreenEnabled {
+        if SwiftEntryKit.isCurrentlyDisplaying {
+            SwiftEntryKit.dismiss {
+                self.appDelegate?.showPrivacyProtectionWindow(scene: scene)
+            }
+        } else {
             self.appDelegate?.showPrivacyProtectionWindow(scene: scene)
         }
 
