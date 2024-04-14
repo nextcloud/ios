@@ -479,8 +479,7 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
     func openFileViewInFolder(serverUrl: String, fileNameBlink: String?, fileNameOpen: String?, sceneIdentifier: String) {
         guard let appDelegate = UIApplication.shared.delegate as? AppDelegate,
               let mainTabBarController = SceneManager.shared.getMainTabBarController(sceneIdentifier: sceneIdentifier),
-              let navigationController = mainTabBarController.viewControllers?.first as? UINavigationController,
-              let viewController = navigationController.topViewController as? NCFiles
+              let navigationController = mainTabBarController.viewControllers?.first as? UINavigationController
         else { return }
         var serverUrlPush = self.utilityFileSystem.getHomeServer(urlBase: appDelegate.urlBase, userId: appDelegate.userId)
         let filesServerUrl = mainTabBarController.filesServerUrl
@@ -488,7 +487,8 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
             navigationController.popToRootViewController(animated: false)
             mainTabBarController.selectedIndex = 0
-            if serverUrlPush == serverUrl {
+            if serverUrlPush == serverUrl,
+               let viewController = navigationController.topViewController as? NCFiles {
                 viewController.blinkCell(fileName: fileNameBlink)
                 viewController.openFile(fileName: fileNameOpen)
                 return
