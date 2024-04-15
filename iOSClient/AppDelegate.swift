@@ -398,13 +398,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
     @objc func startTimerErrorNetworking(scene: UIScene) {
         timerErrorNetworkingDisabled = false
-        timerErrorNetworking = Timer.scheduledTimer(timeInterval: 3, target: self, selector: #selector(checkErrorNetworking(_:)), userInfo: ["scene": scene], repeats: true)
+        timerErrorNetworking = Timer.scheduledTimer(timeInterval: 3, target: self, selector: #selector(checkErrorNetworking(_:)), userInfo: nil, repeats: true)
     }
 
     @objc private func checkErrorNetworking(_ notification: NSNotification) {
-        guard let userInfo = notification.userInfo as NSDictionary?,
-              let scene = userInfo["scene"] as? UIScene
-        else { return }
         guard !self.timerErrorNetworkingDisabled,
               !account.isEmpty,
               NCKeychain().getPassword(account: account).isEmpty else { return }
