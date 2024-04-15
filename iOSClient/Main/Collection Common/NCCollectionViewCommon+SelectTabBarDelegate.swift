@@ -70,10 +70,9 @@ extension NCCollectionViewCommon: NCCollectionViewCommonSelectTabBarDelegate {
     }
 
     func delete() {
-        let alertController = UIAlertController(
-            title: NSLocalizedString("_confirm_delete_selected_", comment: ""),
-            message: nil,
-            preferredStyle: .alert)
+        var alertStyle = UIAlertController.Style.actionSheet
+        if UIDevice.current.userInterfaceIdiom == .pad { alertStyle = .alert }
+        let alertController = UIAlertController(title: NSLocalizedString("_confirm_delete_selected_", comment: ""), message: nil, preferredStyle: alertStyle)
         let metadatas = getSelectedMetadatas()
         let canDeleteServer = metadatas.allSatisfy { !$0.lock }
 
