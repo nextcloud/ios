@@ -595,7 +595,7 @@ extension NCViewerMedia: EasyTipViewDelegate {
             }
         }
     }
-    
+
     func easyTipViewDidTap(_ tipView: EasyTipView) {
         NCManageDatabase.shared.addTip(NCGlobal.shared.tipNCViewerMediaDetailView)
     }

@@ -40,7 +40,7 @@ final class LoginUITests: BaseUIXCTestCase {
         let serverAddressHttpsTextField = app.textFields["Server address https:// …"]
         serverAddressHttpsTextField.tap()
         serverAddressHttpsTextField.typeText(TestConstants.server)
-        let button = app.windows.children(matching: .other).element.children(matching: .other).element.children(matching: .other).element.children(matching: .other).element.children(matching: .other).element.children(matching: .other).element.children(matching: .button).element(boundBy: 0)
+        let button = app.children(matching: .window).element(boundBy: 0).children(matching: .other).element.children(matching: .other).element.children(matching: .other).element.children(matching: .other).element.children(matching: .other).element.children(matching: .button).element(boundBy: 0)
         button.tap()
 
         let webViewsQuery = app.webViews.webViews.webViews
@@ -71,5 +71,32 @@ final class LoginUITests: BaseUIXCTestCase {
         // Check if we are in the home screen
         XCTAssert(app.navigationBars["Nextcloud"].waitForExistence(timeout: timeoutSeconds))
         XCTAssert(app.tabBars["Tab Bar"].waitForExistence(timeout: timeoutSeconds))
+
+        
+//        let app = XCUIApplication()
+//        app.buttons["Log in"]/*@START_MENU_TOKEN@*/.press(forDuration: 22.5);/*[[".tap()",".press(forDuration: 22.5);"],[[[-1,1],[-1,0]]],[0]]@END_MENU_TOKEN@*/
+//        
+//        let serverAddressHttpsTextField = app.textFields["Server address https:// …"]
+//        serverAddressHttpsTextField.tap()
+//        
+//        let lKey = app/*@START_MENU_TOKEN@*/.keys["l"]/*[[".keyboards.keys[\"l\"]",".keys[\"l\"]"],[[[-1,1],[-1,0]]],[0]]@END_MENU_TOKEN@*/
+//        lKey.tap()
+//        lKey.tap()
+//        
+//        let oKey = app/*@START_MENU_TOKEN@*/.keys["o"]/*[[".keyboards.keys[\"o\"]",".keys[\"o\"]"],[[[-1,1],[-1,0]]],[0]]@END_MENU_TOKEN@*/
+//        oKey.tap()
+//        oKey.tap()
+//        
+//        let cKey = app/*@START_MENU_TOKEN@*/.keys["c"]/*[[".keyboards.keys[\"c\"]",".keys[\"c\"]"],[[[-1,1],[-1,0]]],[0]]@END_MENU_TOKEN@*/
+//        cKey.tap()
+//        cKey.tap()
+//        
+//        let aKey = app/*@START_MENU_TOKEN@*/.keys["a"]/*[[".keyboards.keys[\"a\"]",".keys[\"a\"]"],[[[-1,1],[-1,0]]],[0]]@END_MENU_TOKEN@*/
+//        aKey.tap()
+//        aKey.tap()
+//        app.alerts["Connection error"].scrollViews.otherElements.buttons["OK"].tap()
+//        serverAddressHttpsTextField.tap()
+//        app.children(matching: .window).element(boundBy: 0).children(matching: .other).element.children(matching: .other).element.children(matching: .other).element.children(matching: .other).element.children(matching: .other).element.children(matching: .button).element(boundBy: 0).tap()
+        
     }
 }

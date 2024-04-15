@@ -23,8 +23,8 @@
 
 import UIKit
 
-@objc class NCMainTabBarController: UITabBarController {
-    @objc var sceneIdentifier: String = UUID().uuidString
+class NCMainTabBarController: UITabBarController {
+    var sceneIdentifier: String = UUID().uuidString
     var documentPickerViewController: NCDocumentPickerViewController?
     let filesServerUrl = ThreadSafeDictionary<String, NCFiles>()
     let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
