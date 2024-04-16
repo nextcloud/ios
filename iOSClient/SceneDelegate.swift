@@ -429,4 +429,8 @@ class SceneManager {
         }
         return results
     }
+
+    func getAllMainTabBarController() -> [NCMainTabBarController] {
+        return Array(sceneMainTabBarController.keys)
+    }
 }
