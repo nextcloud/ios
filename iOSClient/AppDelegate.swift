@@ -611,7 +611,7 @@ extension AppDelegate: NCCreateFormUploadConflictDelegate {
 }
 
 extension AppDelegate: NCPasscodeDelegate {
-    func requestedAccount(rootViewController: UIViewController?) {
+    func requestedAccount(viewController: UIViewController?) {
         let accounts = NCManageDatabase.shared.getAllAccount()
         if accounts.count > 1, let accountRequestVC = UIStoryboard(name: "NCAccountRequest", bundle: nil).instantiateInitialViewController() as? NCAccountRequest {
             accountRequestVC.activeAccount = NCManageDatabase.shared.getActiveAccount()
@@ -629,7 +629,7 @@ extension AppDelegate: NCPasscodeDelegate {
             let popup = NCPopupViewController(contentController: accountRequestVC, popupWidth: 300, popupHeight: height + 20)
             popup.backgroundAlpha = 0.8
 
-            rootViewController?.present(popup, animated: true)
+            viewController?.present(popup, animated: true)
         }
     }
 
