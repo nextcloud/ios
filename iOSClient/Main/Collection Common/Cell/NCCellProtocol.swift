@@ -53,6 +53,7 @@ protocol NCCellProtocol {
     func setAccessibility(label: String, value: String)
     func setTags(tags: [String])
     func setIconOutlines()
+    func setHighlighted(_ status: Bool)
 }
 
 extension NCCellProtocol {
@@ -124,4 +125,5 @@ extension NCCellProtocol {
     func setAccessibility(label: String, value: String) {}
     func setTags(tags: [String]) {}
     func setIconOutlines() {}
+    func setHighlighted(_ status: Bool) {}
 }
