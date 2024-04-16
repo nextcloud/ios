@@ -72,6 +72,10 @@ class NCFiles: NCCollectionViewCommon {
                 self.reloadDataSourceNetwork()
             }
         }
+
+        collectionView.dragInteractionEnabled = true
+        collectionView.dragDelegate = self // UIApplication.shared.supportsMultipleScenes ? self : nil
+        collectionView.dropDelegate = self
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -282,6 +286,29 @@ class NCFiles: NCCollectionViewCommon {
             if let indexPath = indexPath {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                     self.collectionView(self.collectionView, didSelectItemAt: indexPath)
+                }
+            }
+        }
+    }
+}
+
+// MARK: - Drag & Drop
+
+extension NCFiles: UICollectionViewDragDelegate {
+    func collectionView(_ collectionView: UICollectionView, itemsForBeginning session: UIDragSession, at indexPath: IndexPath) -> [UIDragItem] {
+        guard let metadata = dataSource.cellForItemAt(indexPath: indexPath) else { return [] }
+        let itemProvider = NSItemProvider(object: metadata.ocId as NSString)
+        return [UIDragItem(itemProvider: itemProvider)]
+    }
+}
+
+extension NCFiles: UICollectionViewDropDelegate {
+    func collectionView(_ collectionView: UICollectionView, performDropWith coordinator: UICollectionViewDropCoordinator) {
+        if let item = coordinator.items.first,
+           let provider = item.dragItem.itemProvider.copy() as? NSItemProvider {
+            provider.loadObject(ofClass: NSString.self) { data, error in
+                if error == nil, let ocId = data as? NSString {
+                    print(ocId)
                 }
             }
         }
