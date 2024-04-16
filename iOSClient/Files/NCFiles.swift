@@ -74,9 +74,11 @@ class NCFiles: NCCollectionViewCommon {
             }
         }
 
-        collectionView.dragInteractionEnabled = true
-        collectionView.dragDelegate = self // UIApplication.shared.supportsMultipleScenes ? self : nil
-        collectionView.dropDelegate = self
+        if UIApplication.shared.supportsMultipleScenes {
+            collectionView.dragInteractionEnabled = true
+            collectionView.dragDelegate = self
+            collectionView.dropDelegate = self
+        }
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -310,8 +312,7 @@ extension NCFiles: UICollectionViewDragDelegate {
         if let cell = collectionView.cellForItem(at: indexPath) as? NCCellProtocol,
            let frame = cell.filePreviewImageView?.frame {
             let previewParameters = UIDragPreviewParameters()
-            previewParameters.shadowPath = .init()
-            previewParameters.visiblePath = UIBezierPath(rect: frame)
+            previewParameters.visiblePath = UIBezierPath(roundedRect: CGRect(x: frame.minX, y: frame.minY, width: frame.width, height: frame.height), cornerRadius: 10)
             return previewParameters
         }
         return nil
@@ -325,10 +326,36 @@ extension NCFiles: UICollectionViewDropDelegate {
         if let item = coordinator.items.first,
            let provider = item.dragItem.itemProvider.copy() as? NSItemProvider {
             provider.loadObject(ofClass: NSString.self) { data, error in
-                if error == nil, let ocId = data as? NSString {
-                    print(ocId)
+                if error == nil,
+                   let ocId = data as? NSString,
+                   let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId as String) {
+                    let indexPath = coordinator.destinationIndexPath
+                    print("")
                 }
             }
         }
+    }
+
+    // Get the position of the dragged data over the collection view changed
+    func collectionView(_ collectionView: UICollectionView, dropSessionDidUpdate session: UIDropSession, withDestinationIndexPath destinationIndexPath: IndexPath?) -> UICollectionViewDropProposal {
+        if let indexPath = destinationIndexPath {
+            for indexPathVisible in collectionView.indexPathsForVisibleItems {
+                let cell = collectionView.cellForItem(at: indexPathVisible) as? NCListCell
+                if indexPathVisible == indexPath {
+                    //cell?.selectMode(true)
+                } else {
+                    //cell?.selectMode(false)
+                }
+            }
+        }
+        return UICollectionViewDropProposal(operation: .copy)
+    }
+
+    // Update collectionView after ending the drop operation
+    func collectionView(_ collectionView: UICollectionView, dropSessionDidEnd session: UIDropSession) {
+        /*
+        users.indices.forEach { users[$0].isHighlighted = false }
+        */
+        collectionView.reloadData()
     }
 }
