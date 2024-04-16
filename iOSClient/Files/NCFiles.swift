@@ -335,11 +335,11 @@ extension NCFiles: UICollectionViewDropDelegate {
     func collectionView(_ collectionView: UICollectionView, dropSessionDidUpdate session: UIDropSession, withDestinationIndexPath destinationIndexPath: IndexPath?) -> UICollectionViewDropProposal {
         if let indexPath = destinationIndexPath {
             for indexPathVisible in collectionView.indexPathsForVisibleItems {
-                let cell = collectionView.cellForItem(at: indexPathVisible) as? NCListCell
+                let cell = collectionView.cellForItem(at: indexPathVisible) as? NCCellProtocol
                 if indexPathVisible == indexPath {
-                    //cell?.selectMode(true)
+                    cell?.setHighlighted(true)
                 } else {
-                    //cell?.selectMode(false)
+                    cell?.setHighlighted(false)
                 }
             }
         }
@@ -348,9 +348,6 @@ extension NCFiles: UICollectionViewDropDelegate {
 
     // Update collectionView after ending the drop operation
     func collectionView(_ collectionView: UICollectionView, dropSessionDidEnd session: UIDropSession) {
-        /*
-        users.indices.forEach { users[$0].isHighlighted = false }
-        */
         collectionView.reloadData()
     }
 }

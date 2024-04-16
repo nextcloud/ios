@@ -333,6 +333,14 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
             imageLocal.backgroundColor = .clear
         }
     }
+
+    func setHighlighted(_ status: Bool) {
+        if status {
+            self.backgroundColor = .red
+        } else {
+            self.backgroundColor = .clear
+        }
+    }
 }
 
 protocol NCListCellDelegate: AnyObject {
