@@ -28,7 +28,8 @@ import SwiftEntryKit
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     var window: UIWindow?
-    let appDelegate = UIApplication.shared.delegate as? AppDelegate
+    private let appDelegate = UIApplication.shared.delegate as? AppDelegate
+    private var privacyProtectionWindow: UIWindow?
 
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         guard let windowScene = (scene as? UIWindowScene),
@@ -72,6 +73,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         }
         guard !appDelegate.account.isEmpty else { return }
 
+        hidePrivacyProtectionWindow()
         if let window = SceneManager.shared.getWindow(scene: scene), let rootViewController = SceneManager.shared.getMainTabBarController(scene: scene) {
             window.rootViewController = rootViewController
             if NCKeychain().presentPasscode {
@@ -97,7 +99,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         // START TIMER UPLOAD PROCESS
         NCNetworkingProcess.shared.startTimer(scene: scene)
 
-        self.appDelegate?.hidePrivacyProtectionWindow(scene: scene)
+        hidePrivacyProtectionWindow()
 
         NCService().startRequestServicesServer()
 
@@ -116,12 +118,14 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         // STOP TIMER UPLOAD PROCESS
         NCNetworkingProcess.shared.stopTimer()
 
-        if SwiftEntryKit.isCurrentlyDisplaying {
-            SwiftEntryKit.dismiss {
-                self.appDelegate?.showPrivacyProtectionWindow(scene: scene)
+        if NCKeychain().privacyScreenEnabled {
+            if SwiftEntryKit.isCurrentlyDisplaying {
+                SwiftEntryKit.dismiss {
+                    self.showPrivacyProtectionWindow()
+                }
+            } else {
+                showPrivacyProtectionWindow()
             }
-        } else {
-            self.appDelegate?.showPrivacyProtectionWindow(scene: scene)
         }
 
         // Reload Widget
@@ -162,6 +166,10 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         NCNetworking.shared.cancelUploadTasks()
 
         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterApplicationDidEnterBackground)
+
+        if NCKeychain().presentPasscode {
+            showPrivacyProtectionWindow()
+        }
     }
 
     func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
@@ -324,6 +332,22 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                 scene.open(url, options: nil)
             }
         }
+    }
+
+    private func showPrivacyProtectionWindow() {
+        guard let windowScene = self.window?.windowScene else {
+            return
+        }
+
+        privacyProtectionWindow = UIWindow(windowScene: windowScene)
+        privacyProtectionWindow?.rootViewController = UIStoryboard(name: "LaunchScreen", bundle: nil).instantiateInitialViewController()
+        privacyProtectionWindow?.windowLevel = .alert + 1
+        privacyProtectionWindow?.makeKeyAndVisible()
+    }
+
+    private func hidePrivacyProtectionWindow() {
+        privacyProtectionWindow?.isHidden = true
+        privacyProtectionWindow = nil
     }
 }
 
