@@ -325,14 +325,17 @@ extension NCFiles: UICollectionViewDragDelegate {
 
 extension NCFiles: UICollectionViewDropDelegate {
     func collectionView(_ collectionView: UICollectionView, performDropWith coordinator: UICollectionViewDropCoordinator) {
+        let location = coordinator.session.location(in: collectionView)
+
         if let item = coordinator.items.first,
            let provider = item.dragItem.itemProvider.copy() as? NSItemProvider {
             provider.loadObject(ofClass: NSString.self) { data, error in
                 if error == nil,
                    let ocId = data as? NSString,
                    let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId as String) {
-                    let indexPath = coordinator.destinationIndexPath
-                    print("")
+                    DispatchQueue.main.async {
+                        self.openMenu(collectionView: collectionView, location: location, metadata: metadata)
+                    }
                 }
             }
         }
@@ -341,6 +344,7 @@ extension NCFiles: UICollectionViewDropDelegate {
     // Get the position of the dragged data over the collection view changed
     func collectionView(_ collectionView: UICollectionView, dropSessionDidUpdate session: UIDropSession, withDestinationIndexPath destinationIndexPath: IndexPath?) -> UICollectionViewDropProposal {
         disabeHighlightedCells()
+
         if let destinationIndexPath {
             let cell = collectionView.cellForItem(at: destinationIndexPath) as? NCCellProtocol
             cell?.setHighlighted(true)
@@ -351,8 +355,6 @@ extension NCFiles: UICollectionViewDropDelegate {
     // Update collectionView after ending the drop operation
     func collectionView(_ collectionView: UICollectionView, dropSessionDidEnd session: UIDropSession) {
         disabeHighlightedCells()
-        let location = session.location(in: collectionView)
-        openMenu(collectionView: collectionView, location: location)
     }
 
     private func disabeHighlightedCells() {
@@ -366,7 +368,7 @@ extension NCFiles: UICollectionViewDropDelegate {
         }
     }
 
-    private func openMenu(collectionView: UICollectionView, location: CGPoint) {
+    private func openMenu(collectionView: UICollectionView, location: CGPoint, metadata: tableMetadata) {
         var listMenuItems: [UIMenuItem] = []
         listMenuItems.append(UIMenuItem(title: NSLocalizedString("_paste_file_", comment: ""), action: #selector(pasteFilesMenu)))
         UIMenuController.shared.menuItems = listMenuItems
