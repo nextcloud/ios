@@ -8,42 +8,53 @@
 
 import SwiftUI
 import NextcloudKit
-import ExpandableText
 
 struct NCAssistant: View {
     @EnvironmentObject var model: NCAssistantModel
     @State var presentNewTaskDialog = false
     @State var taskText = ""
+    @State var showHud = true
 
     var body: some View {
         NavigationView {
-            List(model.filteredTasks, id: \.id) { task in
-                TaskItem(task: task)
-            }
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .safeAreaInset(edge: .top, spacing: -25) {
-                ScrollView(.horizontal, showsIndicators: false) {
-                    LazyHStack {
-                        TypeButton(model: model, taskType: nil)
+            ZStack(alignment: .top) {
 
-                        ForEach(model.types, id: \.id) { type in
-                            TypeButton(model: model, taskType: type)
+                List(model.filteredTasks, id: \.id) { task in
+                    TaskItem(task: task)
+                }
+                .refreshable {
+                    model.load()
+                }
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .safeAreaInset(edge: .top, spacing: -10) {
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        LazyHStack {
+                            TypeButton(taskType: nil)
+
+                            ForEach(model.types, id: \.id) { type in
+                                TypeButton(taskType: type)
+                            }
                         }
+                        .padding(20)
+                        .frame(height: 50)
                     }
-                    .padding(20)
-                    .frame(height: 50)
                 }
-            }
-            .toolbar {
-                NavigationLink(destination: NCAssistantCreateNewTask()) {
-                    Image(systemName: "plus")
+                .toolbar {
+                    NavigationLink(destination: NCAssistantCreateNewTask()) {
+                        Image(systemName: "plus")
+                    }
+                    .disabled(model.selectedTaskType == nil)
                 }
-                .disabled(model.selectedTaskType == nil)
+                .navigationBarTitleDisplayMode(.inline)
+                .navigationTitle("Assistant")
+
+
+                HUDView(showHUD: .constant(false), textLabel: NSLocalizedString("_wait_", comment: ""), image: "doc.badge.arrow.up")
+                    .frame(alignment: .top)
+
             }
-            .navigationBarTitleDisplayMode(.inline)
-            .navigationTitle("Assistant")
+            .environmentObject(model)
         }
-        .environmentObject(model)
     }
 }
 
@@ -58,11 +69,10 @@ struct NCAssistant: View {
 }
 
 struct TypeButton: View {
-    let model: NCAssistantModel
+    @EnvironmentObject var model: NCAssistantModel
     let taskType: NKTextProcessingTaskType?
 
     var body: some View {
-        let color: Any = model.selectedTaskType?.id == taskType?.id ? NCBrandColor.shared.brandElement : Material.ultraThinMaterial
         Button {
             model.selectTaskType(taskType)
         } label: {
@@ -70,8 +80,13 @@ struct TypeButton: View {
         }
         .padding(.horizontal)
         .padding(.vertical, 7)
-        .foregroundStyle(.primary)
-        .background(Color(NCBrandColor.shared.brandElement), ignoresSafeAreaEdges: [])
+        .foregroundStyle(model.selectedTaskType?.id == taskType?.id ? .white : .primary)
+        .if(model.selectedTaskType?.id == taskType?.id) { view in
+            view.background(Color(NCBrandColor.shared.brandElement))
+        }
+        .if(model.selectedTaskType?.id != taskType?.id) { view in
+            view.background(.ultraThinMaterial)
+        }
         .clipShape(.capsule)
         .overlay(
             RoundedRectangle(cornerRadius: 20, style: RoundedCornerStyle.continuous)

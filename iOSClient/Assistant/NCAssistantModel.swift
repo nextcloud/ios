@@ -19,8 +19,31 @@ class NCAssistantModel: ObservableObject {
     private let excludedTypeIds = ["OCA\\ContextChat\\TextProcessing\\ContextChatTaskType"]
 
     init() {
+        load()
+    }
+
+    func load() {
         loadTypes()
         loadTasks()
+    }
+
+    func filterTasks(ofType type: NKTextProcessingTaskType?) {
+        if let type {
+            self.filteredTasks = tasks.filter({ $0.type == type.id })
+        } else {
+            self.filteredTasks = tasks
+        }
+    }
+
+    func selectTaskType(_ type: NKTextProcessingTaskType?) {
+        selectedTaskType = type
+        filterTasks(ofType: self.selectedTaskType)
+    }
+
+    func schedule(input: String) {
+        NextcloudKit.shared.textProcessingSchedule(input: input, typeId: selectedTaskType?.id ?? "", identifier: "assistant") { account, task, data, error in
+            self.loadTasks()
+        }
     }
 
     private func loadTypes() {
@@ -31,31 +54,12 @@ class NCAssistantModel: ObservableObject {
         }
     }
 
-    func filterTasks(ofType type: NKTextProcessingTaskType?) {
-        if let type {
-            self.filteredTasks = tasks.filter({ $0.type == type.id })
-        } else {
-            self.filteredTasks = tasks
-        }
-        //        return tasks.filter { $0.type == type.id }
-    }
-
     private func loadTasks(appId: String = "assistant") {
         NextcloudKit.shared.textProcessingTaskList(appId: appId) { _, tasks, _, error in
-
             guard let tasks = tasks else { return }
             self.tasks = tasks
             self.filterTasks(ofType: self.selectedTaskType)
         }
-    }
-
-    func selectTaskType(_ type: NKTextProcessingTaskType?) {
-        selectedTaskType = type
-        filterTasks(ofType: self.selectedTaskType)
-    }
-
-    private func schedule() {
-
     }
 }
 

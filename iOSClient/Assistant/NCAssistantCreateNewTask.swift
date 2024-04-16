@@ -12,6 +12,7 @@ struct NCAssistantCreateNewTask: View {
     @EnvironmentObject var model: NCAssistantModel
     @State var text = ""
     @FocusState private var inFocus: Bool
+    @Environment(\.presentationMode) var presentationMode
 
     var body: some View {
         VStack {
@@ -30,16 +31,19 @@ struct NCAssistantCreateNewTask: View {
                     .transparentScrolling()
                     .background(.gray.opacity(0.1))
 
-                .focused($inFocus)
+                    .focused($inFocus)
             }
             .background(.gray.opacity(0.1))
             .clipShape(.rect(cornerRadius: 8))
         }
         .toolbar {
             Button(action: {
+                model.schedule(input: text)
+                presentationMode.wrappedValue.dismiss()
             }, label: {
                 Text(NSLocalizedString("_create_", comment: ""))
             })
+            .disabled(text.isEmpty)
         }
         .navigationTitle("New " + (model.selectedTaskType?.name ?? "") + " task")
         .navigationBarTitleDisplayMode(.inline)
