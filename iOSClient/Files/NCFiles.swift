@@ -335,16 +335,8 @@ extension NCFiles: UICollectionViewDropDelegate {
 
     // Get the position of the dragged data over the collection view changed
     func collectionView(_ collectionView: UICollectionView, dropSessionDidUpdate session: UIDropSession, withDestinationIndexPath destinationIndexPath: IndexPath?) -> UICollectionViewDropProposal {
-
         if let destinationIndexPath {
-            for mainTabBarController in SceneManager.shared.getAllMainTabBarController() {
-                if let viewController = mainTabBarController.currentViewController() as? NCFiles {
-                    for indexPathVisible in viewController.collectionView.indexPathsForVisibleItems {
-                        let cell = viewController.collectionView.cellForItem(at: indexPathVisible) as? NCCellProtocol
-                        cell?.setHighlighted(false)
-                    }
-                }
-            }
+            disabeHighlightedCells()
             let cell = collectionView.cellForItem(at: destinationIndexPath) as? NCCellProtocol
             cell?.setHighlighted(true)
         }
@@ -353,6 +345,17 @@ extension NCFiles: UICollectionViewDropDelegate {
 
     // Update collectionView after ending the drop operation
     func collectionView(_ collectionView: UICollectionView, dropSessionDidEnd session: UIDropSession) {
-        // collectionView.reloadData()
+        disabeHighlightedCells()
+    }
+
+    private func disabeHighlightedCells() {
+        for mainTabBarController in SceneManager.shared.getAllMainTabBarController() {
+            if let viewController = mainTabBarController.currentViewController() as? NCFiles {
+                for indexPathVisible in viewController.collectionView.indexPathsForVisibleItems {
+                    let cell = viewController.collectionView.cellForItem(at: indexPathVisible) as? NCCellProtocol
+                    cell?.setHighlighted(false)
+                }
+            }
+        }
     }
 }
