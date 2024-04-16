@@ -25,6 +25,7 @@ import Foundation
 import NextcloudKit
 import WidgetKit
 import SwiftEntryKit
+import TOPasscodeViewController
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     var window: UIWindow?
@@ -77,11 +78,11 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         if let window = SceneManager.shared.getWindow(scene: scene), let mainTabBarController = SceneManager.shared.getMainTabBarController(scene: scene) {
             window.rootViewController = mainTabBarController
             if NCKeychain().presentPasscode {
-                NCPasscode.shared.presentPasscode(viewController: mainTabBarController, delegate: appDelegate) {
+                NCPasscode.shared.presentPasscode(viewController: mainTabBarController, delegate: self) {
                     NCPasscode.shared.enableTouchFaceID()
                 }
             } else if NCKeychain().accountRequest {
-                appDelegate.requestedAccount(viewController: mainTabBarController)
+                requestedAccount(viewController: mainTabBarController)
             }
         }
 
@@ -350,6 +351,46 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         privacyProtectionWindow = nil
     }
 }
+
+// MARK: - Extension
+
+extension SceneDelegate: NCPasscodeDelegate {
+    func requestedAccount(viewController: UIViewController?) {
+        let accounts = NCManageDatabase.shared.getAllAccount()
+        if accounts.count > 1, let accountRequestVC = UIStoryboard(name: "NCAccountRequest", bundle: nil).instantiateInitialViewController() as? NCAccountRequest {
+            accountRequestVC.activeAccount = NCManageDatabase.shared.getActiveAccount()
+            accountRequestVC.accounts = accounts
+            accountRequestVC.enableTimerProgress = true
+            accountRequestVC.enableAddAccount = false
+            accountRequestVC.dismissDidEnterBackground = false
+            accountRequestVC.delegate = self
+            accountRequestVC.startTimer()
+
+            let screenHeighMax = UIScreen.main.bounds.height - (UIScreen.main.bounds.height / 5)
+            let numberCell = accounts.count
+            let height = min(CGFloat(numberCell * Int(accountRequestVC.heightCell) + 45), screenHeighMax)
+
+            let popup = NCPopupViewController(contentController: accountRequestVC, popupWidth: 300, popupHeight: height + 20)
+            popup.backgroundAlpha = 0.8
+
+            viewController?.present(popup, animated: true)
+        }
+    }
+
+    func passcodeReset(_ passcodeViewController: TOPasscodeViewController) {
+        appDelegate?.resetApplication()
+    }
+}
+
+extension SceneDelegate: NCAccountRequestDelegate {
+    func accountRequestAddAccount() { }
+
+    func accountRequestChangeAccount(account: String) {
+        appDelegate?.changeAccount(account, userProfile: nil)
+    }
+}
+
+// MARK: - Scene Manager
 
 class SceneManager {
     static let shared = SceneManager()

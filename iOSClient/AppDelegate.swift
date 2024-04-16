@@ -24,7 +24,6 @@
 import UIKit
 import BackgroundTasks
 import NextcloudKit
-import TOPasscodeViewController
 import LocalAuthentication
 import Firebase
 import WidgetKit
@@ -595,7 +594,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     }
 }
 
-// MARK: -
+// MARK: - Extension
 
 extension AppDelegate: NCViewCertificateDetailsDelegate {
     func viewCertificateDetailsDismiss(host: String) {
@@ -607,41 +606,5 @@ extension AppDelegate: NCCreateFormUploadConflictDelegate {
     func dismissCreateFormUploadConflict(metadatas: [tableMetadata]?) {
         guard let metadatas = metadatas, !metadatas.isEmpty else { return }
         NCNetworkingProcess.shared.createProcessUploads(metadatas: metadatas)
-    }
-}
-
-extension AppDelegate: NCPasscodeDelegate {
-    func requestedAccount(viewController: UIViewController?) {
-        let accounts = NCManageDatabase.shared.getAllAccount()
-        if accounts.count > 1, let accountRequestVC = UIStoryboard(name: "NCAccountRequest", bundle: nil).instantiateInitialViewController() as? NCAccountRequest {
-            accountRequestVC.activeAccount = NCManageDatabase.shared.getActiveAccount()
-            accountRequestVC.accounts = accounts
-            accountRequestVC.enableTimerProgress = true
-            accountRequestVC.enableAddAccount = false
-            accountRequestVC.dismissDidEnterBackground = false
-            accountRequestVC.delegate = self
-            accountRequestVC.startTimer()
-
-            let screenHeighMax = UIScreen.main.bounds.height - (UIScreen.main.bounds.height / 5)
-            let numberCell = accounts.count
-            let height = min(CGFloat(numberCell * Int(accountRequestVC.heightCell) + 45), screenHeighMax)
-
-            let popup = NCPopupViewController(contentController: accountRequestVC, popupWidth: 300, popupHeight: height + 20)
-            popup.backgroundAlpha = 0.8
-
-            viewController?.present(popup, animated: true)
-        }
-    }
-
-    func passcodeReset(_ passcodeViewController: TOPasscodeViewController) {
-        resetApplication()
-    }
-}
-
-extension AppDelegate: NCAccountRequestDelegate {
-    func accountRequestAddAccount() { }
-
-    func accountRequestChangeAccount(account: String) {
-        changeAccount(account, userProfile: nil)
     }
 }
