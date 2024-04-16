@@ -297,7 +297,7 @@ class NCFiles: NCCollectionViewCommon {
     }
 }
 
-// MARK: - Drag & Drop
+// MARK: - Drag
 
 extension NCFiles: UICollectionViewDragDelegate {
     func collectionView(_ collectionView: UICollectionView, itemsForBeginning session: UIDragSession, at indexPath: IndexPath) -> [UIDragItem] {
@@ -305,7 +305,20 @@ extension NCFiles: UICollectionViewDragDelegate {
         let itemProvider = NSItemProvider(object: metadata.ocId as NSString)
         return [UIDragItem(itemProvider: itemProvider)]
     }
+
+    func collectionView(_ collectionView: UICollectionView, dragPreviewParametersForItemAt indexPath: IndexPath) -> UIDragPreviewParameters? {
+        if let cell = collectionView.cellForItem(at: indexPath) as? NCCellProtocol,
+           let frame = cell.filePreviewImageView?.frame {
+            let previewParameters = UIDragPreviewParameters()
+            previewParameters.shadowPath = .init()
+            previewParameters.visiblePath = UIBezierPath(rect: frame)
+            return previewParameters
+        }
+        return nil
+    }
 }
+
+// MARK: - Drop
 
 extension NCFiles: UICollectionViewDropDelegate {
     func collectionView(_ collectionView: UICollectionView, performDropWith coordinator: UICollectionViewDropCoordinator) {
