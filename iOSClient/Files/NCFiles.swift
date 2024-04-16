@@ -335,8 +335,8 @@ extension NCFiles: UICollectionViewDropDelegate {
 
     // Get the position of the dragged data over the collection view changed
     func collectionView(_ collectionView: UICollectionView, dropSessionDidUpdate session: UIDropSession, withDestinationIndexPath destinationIndexPath: IndexPath?) -> UICollectionViewDropProposal {
+        disabeHighlightedCells()
         if let destinationIndexPath {
-            disabeHighlightedCells()
             let cell = collectionView.cellForItem(at: destinationIndexPath) as? NCCellProtocol
             cell?.setHighlighted(true)
         }
@@ -346,6 +346,8 @@ extension NCFiles: UICollectionViewDropDelegate {
     // Update collectionView after ending the drop operation
     func collectionView(_ collectionView: UICollectionView, dropSessionDidEnd session: UIDropSession) {
         disabeHighlightedCells()
+        let location = session.location(in: collectionView)
+        openMenu(collectionView: collectionView, location: location)
     }
 
     private func disabeHighlightedCells() {
@@ -357,5 +359,12 @@ extension NCFiles: UICollectionViewDropDelegate {
                 }
             }
         }
+    }
+
+    private func openMenu(collectionView: UICollectionView, location: CGPoint) {
+        var listMenuItems: [UIMenuItem] = []
+        listMenuItems.append(UIMenuItem(title: NSLocalizedString("_paste_file_", comment: ""), action: #selector(pasteFilesMenu)))
+        UIMenuController.shared.menuItems = listMenuItems
+        UIMenuController.shared.showMenu(from: collectionView, rect: CGRect(x: location.x, y: location.y, width: 0, height: 0))
     }
 }
