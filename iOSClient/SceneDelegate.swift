@@ -74,14 +74,14 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         guard !appDelegate.account.isEmpty else { return }
 
         hidePrivacyProtectionWindow()
-        if let window = SceneManager.shared.getWindow(scene: scene), let rootViewController = SceneManager.shared.getMainTabBarController(scene: scene) {
-            window.rootViewController = rootViewController
+        if let window = SceneManager.shared.getWindow(scene: scene), let mainTabBarController = SceneManager.shared.getMainTabBarController(scene: scene) {
+            window.rootViewController = mainTabBarController
             if NCKeychain().presentPasscode {
-                NCPasscode.shared.presentPasscode(rootViewController: rootViewController, delegate: appDelegate) {
+                NCPasscode.shared.presentPasscode(viewController: mainTabBarController, delegate: appDelegate) {
                     NCPasscode.shared.enableTouchFaceID()
                 }
             } else if NCKeychain().accountRequest {
-                appDelegate.requestedAccount(rootViewController: rootViewController)
+                appDelegate.requestedAccount(viewController: mainTabBarController)
             }
         }
 
