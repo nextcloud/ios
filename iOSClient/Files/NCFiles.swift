@@ -28,6 +28,7 @@ class NCFiles: NCCollectionViewCommon {
     internal var isRoot: Bool = true
     internal var fileNameBlink: String?
     internal var fileNameOpen: String?
+    internal var collectionViewDrag: UICollectionView?
 
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
@@ -299,6 +300,7 @@ class NCFiles: NCCollectionViewCommon {
 extension NCFiles: UICollectionViewDragDelegate {
     func collectionView(_ collectionView: UICollectionView, itemsForBeginning session: UIDragSession, at indexPath: IndexPath) -> [UIDragItem] {
         guard let metadata = dataSource.cellForItemAt(indexPath: indexPath) else { return [] }
+        collectionViewDrag = collectionView
         let itemProvider = NSItemProvider(object: metadata.ocId as NSString)
         return [UIDragItem(itemProvider: itemProvider)]
     }
@@ -333,13 +335,18 @@ extension NCFiles: UICollectionViewDropDelegate {
 
     // Get the position of the dragged data over the collection view changed
     func collectionView(_ collectionView: UICollectionView, dropSessionDidUpdate session: UIDropSession, withDestinationIndexPath destinationIndexPath: IndexPath?) -> UICollectionViewDropProposal {
+
         if let indexPath = destinationIndexPath {
-            for indexPathVisible in collectionView.indexPathsForVisibleItems {
-                let cell = collectionView.cellForItem(at: indexPathVisible) as? NCCellProtocol
-                if indexPathVisible == indexPath {
-                    cell?.setHighlighted(true)
-                } else {
-                    cell?.setHighlighted(false)
+            for mainTabBarController in SceneManager.shared.getAllMainTabBarController() {
+                if let viewController = mainTabBarController.currentViewController() as? NCFiles {
+                    for indexPathVisible in viewController.collectionView.indexPathsForVisibleItems {
+                        let cell = collectionView.cellForItem(at: indexPathVisible) as? NCCellProtocol
+                        if viewController.collectionView == collectionView, indexPathVisible == indexPath {
+                            cell?.setHighlighted(true)
+                        } else {
+                            cell?.setHighlighted(false)
+                        }
+                    }
                 }
             }
         }
