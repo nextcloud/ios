@@ -29,7 +29,6 @@ class NCFiles: NCCollectionViewCommon {
     internal var isRoot: Bool = true
     internal var fileNameBlink: String?
     internal var fileNameOpen: String?
-    internal var dragStartedOcId: String?
 
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
@@ -342,7 +341,7 @@ extension NCFiles: UICollectionViewDragDelegate {
         guard let metadata = dataSource.cellForItemAt(indexPath: indexPath),
               !isEditMode,
               !isDirectoryE2EE(metadata: metadata) else { return [] }
-        dragStartedOcId = metadata.ocId
+        DragDropHover.shared.metadata = metadata
         let itemProvider = NSItemProvider(object: metadata.ocId as NSString)
         return [UIDragItem(itemProvider: itemProvider)]
     }
@@ -391,9 +390,14 @@ extension NCFiles: UICollectionViewDropDelegate {
             return UICollectionViewDropProposal(operation: .copy)
         }
 
-        if isDirectoryE2EE(metadata: destinationMetadata) || destinationMetadata.ocId == dragStartedOcId {
+        if isDirectoryE2EE(metadata: destinationMetadata) || destinationMetadata.ocId == DragDropHover.shared.metadata?.ocId {
             return UICollectionViewDropProposal(operation: .forbidden)
         }
+        /*
+        if !destinationMetadata.directory && destinationMetadata.serverUrl == dragStartedMetadata?.serverUrl {
+            return UICollectionViewDropProposal(operation: .forbidden)
+        }
+        */
 
         if destinationMetadata.directory {
             let cell = collectionView.cellForItem(at: destinationIndexPath) as? NCCellProtocol
@@ -401,13 +405,13 @@ extension NCFiles: UICollectionViewDropDelegate {
         }
 
         // Push Metadata
-        if appDelegate.ddCurrentHoverIndexPath != destinationIndexPath || appDelegate.ddCurrentHoverCollectionView != collectionView {
-            appDelegate.ddCurrentHoverIndexPath = destinationIndexPath
-            appDelegate.ddCurrentHoverCollectionView = collectionView
-            appDelegate.ddHoverTimerIndexPath?.invalidate()
-            appDelegate.ddHoverTimerIndexPath = Timer.scheduledTimer(withTimeInterval: 2, repeats: false) { [weak self] _ in
+        if DragDropHover.shared.destinationIndexPath != destinationIndexPath || DragDropHover.shared.collectionView != collectionView {
+            DragDropHover.shared.destinationIndexPath = destinationIndexPath
+            DragDropHover.shared.collectionView = collectionView
+            DragDropHover.shared.timerIndexPath?.invalidate()
+            DragDropHover.shared.timerIndexPath = Timer.scheduledTimer(withTimeInterval: 2, repeats: false) { [weak self] _ in
                 guard let self else { return }
-                if self.appDelegate.ddCurrentHoverIndexPath == destinationIndexPath,
+                if DragDropHover.shared.destinationIndexPath == destinationIndexPath,
                    let metadata = self.dataSource.cellForItemAt(indexPath: destinationIndexPath),
                    metadata.directory {
                     self.cleanDDVariable()
@@ -460,10 +464,10 @@ extension NCFiles: UICollectionViewDropDelegate {
     }
 
     private func cleanDDVariable() {
-        appDelegate.ddHoverTimerIndexPath?.invalidate()
-        appDelegate.ddHoverTimerIndexPath = nil
-        appDelegate.ddCurrentHoverCollectionView = nil
-        appDelegate.ddCurrentHoverIndexPath = nil
+        DragDropHover.shared.timerIndexPath?.invalidate()
+        DragDropHover.shared.timerIndexPath = nil
+        DragDropHover.shared.collectionView = nil
+        DragDropHover.shared.destinationIndexPath = nil
     }
 
     private func isDirectoryE2EE(metadata: tableMetadata) -> Bool {
@@ -485,7 +489,7 @@ extension NCFiles: UIDropInteractionDelegate {
     }
 
     func dropInteraction(_ interaction: UIDropInteraction, sessionDidUpdate session: UIDropSession) -> UIDropProposal {
-        appDelegate.ddHoverTimerIndexPath = Timer.scheduledTimer(withTimeInterval: 2, repeats: false) { [weak self] _ in
+        DragDropHover.shared.timerIndexPath = Timer.scheduledTimer(withTimeInterval: 2, repeats: false) { [weak self] _ in
             guard let self else { return }
             self.navigationController?.popViewController(animated: true)
         }
@@ -498,4 +502,14 @@ extension NCFiles: UIDropInteractionDelegate {
 
     func dropInteraction(_ interaction: UIDropInteraction, performDrop session: UIDropSession) {
     }
+}
+
+class DragDropHover {
+    static let shared = DragDropHover()
+
+    var metadata: tableMetadata?
+    var timerDropInteraction: Timer?
+    var timerIndexPath: Timer?
+    var collectionView: UICollectionView?
+    var destinationIndexPath: IndexPath?
 }
