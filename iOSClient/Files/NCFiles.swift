@@ -339,9 +339,10 @@ class NCFiles: NCCollectionViewCommon {
 extension NCFiles: UICollectionViewDragDelegate {
     func collectionView(_ collectionView: UICollectionView, itemsForBeginning session: UIDragSession, at indexPath: IndexPath) -> [UIDragItem] {
         guard let metadata = dataSource.cellForItemAt(indexPath: indexPath),
+              metadata.status == 0,
               !isEditMode,
               !isDirectoryE2EE(metadata: metadata) else { return [] }
-        DragDropHover.shared.metadata = metadata
+        DragDropHover.shared.sourceMetadata = metadata
         let itemProvider = NSItemProvider(object: metadata.ocId as NSString)
         return [UIDragItem(itemProvider: itemProvider)]
     }
@@ -366,8 +367,10 @@ extension NCFiles: UICollectionViewDragDelegate {
 
 extension NCFiles: UICollectionViewDropDelegate {
     func collectionView(_ collectionView: UICollectionView, performDropWith coordinator: UICollectionViewDropCoordinator) {
-        cleanDDVariable()
+        cleanPushDragDropHover()
         let location = coordinator.session.location(in: collectionView)
+        DragDropHover.shared.destinationServerUrl = serverUrl
+        DragDropHover.shared.destinationIndexPath = coordinator.destinationIndexPath
 
         if let item = coordinator.items.first,
            let provider = item.dragItem.itemProvider.copy() as? NSItemProvider {
@@ -376,7 +379,7 @@ extension NCFiles: UICollectionViewDropDelegate {
                    let ocId = data as? NSString,
                    let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId as String) {
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                        self.openMenu(collectionView: collectionView, location: location, metadata: metadata)
+                        self.openMenu(collectionView: collectionView, location: location)
                     }
                 }
             }
@@ -385,22 +388,22 @@ extension NCFiles: UICollectionViewDropDelegate {
 
     func collectionView(_ collectionView: UICollectionView, dropSessionDidUpdate session: UIDropSession, withDestinationIndexPath destinationIndexPath: IndexPath?) -> UICollectionViewDropProposal {
         disabeHighlightedCells()
-        if destinationIndexPath == nil && DragDropHover.shared.metadata?.serverUrl == self.serverUrl {
-            cleanDDVariable()
+        if destinationIndexPath == nil && DragDropHover.shared.sourceMetadata?.serverUrl == self.serverUrl {
+            cleanPushDragDropHover()
             return UICollectionViewDropProposal(operation: .forbidden)
         }
         guard let destinationIndexPath,
               let destinationMetadata = dataSource.cellForItemAt(indexPath: destinationIndexPath) else {
-            cleanDDVariable()
+            cleanPushDragDropHover()
             return UICollectionViewDropProposal(operation: .copy)
         }
 
-        if isDirectoryE2EE(metadata: destinationMetadata) || destinationMetadata.ocId == DragDropHover.shared.metadata?.ocId {
-            cleanDDVariable()
+        if isDirectoryE2EE(metadata: destinationMetadata) || destinationMetadata.ocId == DragDropHover.shared.sourceMetadata?.ocId {
+            cleanPushDragDropHover()
             return UICollectionViewDropProposal(operation: .forbidden)
         }
-        if !destinationMetadata.directory && DragDropHover.shared.metadata?.serverUrl == self.serverUrl {
-            cleanDDVariable()
+        if !destinationMetadata.directory && DragDropHover.shared.sourceMetadata?.serverUrl == self.serverUrl {
+            cleanPushDragDropHover()
             return UICollectionViewDropProposal(operation: .forbidden)
         }
 
@@ -410,16 +413,17 @@ extension NCFiles: UICollectionViewDropDelegate {
         }
 
         // Push Metadata
-        if DragDropHover.shared.destinationIndexPath != destinationIndexPath || DragDropHover.shared.collectionView != collectionView {
-            DragDropHover.shared.destinationIndexPath = destinationIndexPath
-            DragDropHover.shared.collectionView = collectionView
-            DragDropHover.shared.timerIndexPath?.invalidate()
-            DragDropHover.shared.timerIndexPath = Timer.scheduledTimer(withTimeInterval: 2, repeats: false) { [weak self] _ in
+        if DragDropHover.shared.pushIndexPath != destinationIndexPath || DragDropHover.shared.pushCollectionView != collectionView {
+            DragDropHover.shared.pushIndexPath = destinationIndexPath
+            DragDropHover.shared.pushCollectionView = collectionView
+            DragDropHover.shared.pushTimerIndexPath?.invalidate()
+            DragDropHover.shared.pushTimerIndexPath = Timer.scheduledTimer(withTimeInterval: 2, repeats: false) { [weak self] _ in
                 guard let self else { return }
-                if DragDropHover.shared.destinationIndexPath == destinationIndexPath,
+                if DragDropHover.shared.pushIndexPath == destinationIndexPath,
+                   DragDropHover.shared.pushCollectionView == collectionView,
                    let metadata = self.dataSource.cellForItemAt(indexPath: destinationIndexPath),
                    metadata.directory {
-                    self.cleanDDVariable()
+                    self.cleanPushDragDropHover()
                     self.disabeHighlightedCells()
                     self.pushMetadata(metadata)
                 }
@@ -430,13 +434,13 @@ extension NCFiles: UICollectionViewDropDelegate {
     }
 
     func collectionView(_ collectionView: UICollectionView, dropSessionDidExit session: UIDropSession) {
-        cleanDDVariable()
+        cleanPushDragDropHover()
         disabeHighlightedCells()
     }
 
     // Update collectionView after ending the drop operation
     func collectionView(_ collectionView: UICollectionView, dropSessionDidEnd session: UIDropSession) {
-        cleanDDVariable()
+        cleanPushDragDropHover()
         disabeHighlightedCells()
     }
 
@@ -452,7 +456,7 @@ extension NCFiles: UICollectionViewDropDelegate {
         }
     }
 
-    private func openMenu(collectionView: UICollectionView, location: CGPoint, metadata: tableMetadata) {
+    private func openMenu(collectionView: UICollectionView, location: CGPoint) {
         var listMenuItems: [UIMenuItem] = []
         listMenuItems.append(UIMenuItem(title: NSLocalizedString("_copy_", comment: ""), action: #selector(copyMenuFile)))
         listMenuItems.append(UIMenuItem(title: NSLocalizedString("_move_", comment: ""), action: #selector(moveMenuFile)))
@@ -461,18 +465,23 @@ extension NCFiles: UICollectionViewDropDelegate {
     }
 
     @objc private func copyMenuFile() {
-
+        if let destinationIndexPath = DragDropHover.shared.destinationIndexPath,
+           let metadata = dataSource.cellForItemAt(indexPath: destinationIndexPath) {
+            print("")
+        } else if let serverUrl = DragDropHover.shared.destinationServerUrl {
+            print("")
+        }
     }
 
     @objc private func moveMenuFile() {
 
     }
 
-    private func cleanDDVariable() {
-        DragDropHover.shared.timerIndexPath?.invalidate()
-        DragDropHover.shared.timerIndexPath = nil
-        DragDropHover.shared.collectionView = nil
-        DragDropHover.shared.destinationIndexPath = nil
+    private func cleanPushDragDropHover() {
+        DragDropHover.shared.pushTimerIndexPath?.invalidate()
+        DragDropHover.shared.pushTimerIndexPath = nil
+        DragDropHover.shared.pushCollectionView = nil
+        DragDropHover.shared.pushIndexPath = nil
     }
 
     private func isDirectoryE2EE(metadata: tableMetadata) -> Bool {
@@ -489,12 +498,12 @@ extension NCFiles: UIDropInteractionDelegate {
     }
 
     func dropInteraction(_ interaction: UIDropInteraction, sessionDidEnter session: UIDropSession) {
-        cleanDDVariable()
+        cleanPushDragDropHover()
         disabeHighlightedCells()
     }
 
     func dropInteraction(_ interaction: UIDropInteraction, sessionDidUpdate session: UIDropSession) -> UIDropProposal {
-        DragDropHover.shared.timerIndexPath = Timer.scheduledTimer(withTimeInterval: 2, repeats: false) { [weak self] _ in
+        DragDropHover.shared.pushTimerIndexPath = Timer.scheduledTimer(withTimeInterval: 2, repeats: false) { [weak self] _ in
             guard let self else { return }
             self.navigationController?.popViewController(animated: true)
         }
@@ -502,7 +511,7 @@ extension NCFiles: UIDropInteractionDelegate {
     }
 
     func dropInteraction(_ interaction: UIDropInteraction, sessionDidExit session: UIDropSession) {
-        cleanDDVariable()
+        cleanPushDragDropHover()
     }
 
     func dropInteraction(_ interaction: UIDropInteraction, performDrop session: UIDropSession) {
@@ -512,9 +521,11 @@ extension NCFiles: UIDropInteractionDelegate {
 class DragDropHover {
     static let shared = DragDropHover()
 
-    var metadata: tableMetadata?
-    var timerDropInteraction: Timer?
-    var timerIndexPath: Timer?
-    var collectionView: UICollectionView?
+    var pushTimerDropInteraction: Timer?
+    var pushTimerIndexPath: Timer?
+    var pushCollectionView: UICollectionView?
+    var pushIndexPath: IndexPath?
+    var sourceMetadata: tableMetadata?
+    var destinationServerUrl: String?
     var destinationIndexPath: IndexPath?
 }
