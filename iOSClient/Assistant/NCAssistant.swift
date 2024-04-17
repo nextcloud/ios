@@ -57,6 +57,7 @@ struct NCAssistant: View {
                 }
             }
         }
+        .navigationViewStyle(.stack)
         .popup(isPresented: $model.hasError) {
             Text(NSLocalizedString("_error_occurred_", comment: ""))
                 .padding()

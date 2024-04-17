@@ -57,7 +57,7 @@ struct NCAssistantTaskDetail: View {
 #Preview {
     let model = NCAssistantTask()
 
-    return NCAssistantTaskDetail(task: model.selectedTask!)
+    return NCAssistantTaskDetail(task: NKTextProcessingTask(id: 1, type: "OCP\\TextProcessing\\FreePromptTaskType", status: 1, userId: "christine", appId: "assistant", input: "", output: "", identifier: "", completionExpectedAt: 1712666412))
         .environmentObject(model)
         .onAppear {
             model.loadDummyData()
