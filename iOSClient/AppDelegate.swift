@@ -47,6 +47,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     var timerErrorNetworkingDisabled: Bool = false
     var isAppRefresh: Bool = false
     var isProcessingTask: Bool = false
+    // Drag & Drop (multi windows)
+    var ddHoverTimer: Timer?
+    var ddCurrentHoverCollectionView: UICollectionView?
+    var ddCurrentHoverIndexPath: IndexPath?
+
     var isUiTestingEnabled: Bool {
         return ProcessInfo.processInfo.arguments.contains("UI_TESTING")
     }
