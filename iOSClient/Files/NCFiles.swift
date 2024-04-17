@@ -100,6 +100,23 @@ class NCFiles: NCCollectionViewCommon {
         fileNameOpen = nil
     }
 
+    // MARK: - Layout
+
+    override func setNavigationLeftItems() {
+        super.setNavigationLeftItems()
+
+        // DD
+        if let navigationBar = self.navigationController?.navigationBar {
+            let dropZoneView = UIView(frame: CGRect(x: 0, y: 0, width: navigationBar.bounds.width, height: navigationBar.bounds.height))
+            dropZoneView.backgroundColor = .clear
+            navigationBar.addSubview(dropZoneView)
+            dropZoneView.isUserInteractionEnabled = true
+
+            let dropInteraction = UIDropInteraction(delegate: self)
+            dropZoneView.addInteraction(dropInteraction)
+        }
+    }
+    
     // MARK: - DataSource + NC Endpoint
 
     override func queryDB() {
@@ -298,7 +315,8 @@ class NCFiles: NCCollectionViewCommon {
 
 extension NCFiles: UICollectionViewDragDelegate {
     func collectionView(_ collectionView: UICollectionView, itemsForBeginning session: UIDragSession, at indexPath: IndexPath) -> [UIDragItem] {
-        guard let metadata = dataSource.cellForItemAt(indexPath: indexPath) else { return [] }
+        guard let metadata = dataSource.cellForItemAt(indexPath: indexPath),
+              !isEditMode else { return [] }
         let itemProvider = NSItemProvider(object: metadata.ocId as NSString)
         return [UIDragItem(itemProvider: itemProvider)]
     }
@@ -339,7 +357,6 @@ extension NCFiles: UICollectionViewDropDelegate {
         }
     }
 
-    // Get the position of the dragged data over the collection view changed
     func collectionView(_ collectionView: UICollectionView, dropSessionDidUpdate session: UIDropSession, withDestinationIndexPath destinationIndexPath: IndexPath?) -> UICollectionViewDropProposal {
         disabeHighlightedCells()
 
@@ -361,12 +378,12 @@ extension NCFiles: UICollectionViewDropDelegate {
             appDelegate.ddCurrentHoverCollectionView = collectionView
             appDelegate.ddHoverTimer?.invalidate()
             appDelegate.ddHoverTimer = Timer.scheduledTimer(withTimeInterval: 2, repeats: false) { [weak self] _ in
-                guard let strongSelf = self else { return }
-                if strongSelf.appDelegate.ddCurrentHoverIndexPath == destinationIndexPath,
-                   let metadata = strongSelf.dataSource.cellForItemAt(indexPath: destinationIndexPath),
+                guard let self else { return }
+                if self.appDelegate.ddCurrentHoverIndexPath == destinationIndexPath,
+                   let metadata = self.dataSource.cellForItemAt(indexPath: destinationIndexPath),
                    metadata.directory {
-                    print("XXXXXX")
-                    // strongSelf.navigateToFolderAt(indexPath: indexPath)
+                    self.disabeHighlightedCells()
+                    self.pushMetadata(metadata)
                 }
             }
         }
@@ -397,3 +414,24 @@ extension NCFiles: UICollectionViewDropDelegate {
         UIMenuController.shared.showMenu(from: collectionView, rect: CGRect(x: location.x, y: location.y, width: 0, height: 0))
     }
 }
+
+extension NCFiles: UIDropInteractionDelegate {
+    func dropInteraction(_ interaction: UIDropInteraction, canHandle session: UIDropSession) -> Bool {
+        return session.canLoadObjects(ofClass: NSString.self)
+    }
+
+    func dropInteraction(_ interaction: UIDropInteraction, sessionDidEnter session: UIDropSession) {
+        // Opzionale: fornisci un feedback visivo
+    }
+
+    func dropInteraction(_ interaction: UIDropInteraction, sessionDidUpdate session: UIDropSession) -> UIDropProposal {
+        // Decidi cosa fare quando un elemento viene trascinato sopra la view
+        return UIDropProposal(operation: .copy)
+    }
+
+    func dropInteraction(_ interaction: UIDropInteraction, performDrop session: UIDropSession) {
+        // Esegui il pop al ViewController precedente
+        navigationController?.popViewController(animated: true)
+    }
+}
+
