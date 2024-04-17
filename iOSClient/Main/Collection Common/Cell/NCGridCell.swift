@@ -220,6 +220,28 @@ class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
             imageStatus.backgroundColor = .clear
         }
     }
+
+    func setHighlighted(_ status: Bool) {
+        if status {
+            var blurEffect: UIVisualEffect?
+            var blurEffectView: UIView?
+            imageSelect.image = NCImageCache.images.checkedYes
+            if traitCollection.userInterfaceStyle == .dark {
+                blurEffect = UIBlurEffect(style: .dark)
+                blurEffectView = UIVisualEffectView(effect: blurEffect)
+                blurEffectView?.backgroundColor = .black
+            } else {
+                blurEffect = UIBlurEffect(style: .extraLight)
+                blurEffectView = UIVisualEffectView(effect: blurEffect)
+                blurEffectView?.backgroundColor = .lightGray
+            }
+            blurEffectView?.frame = self.bounds
+            blurEffectView?.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+            backgroundView = blurEffectView
+        } else {
+            backgroundView = nil
+        }
+    }
 }
 
 protocol NCGridCellDelegate: AnyObject {
