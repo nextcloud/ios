@@ -120,6 +120,22 @@ class NCFiles: NCCollectionViewCommon {
         */
     }
 
+    // MARK: - Menu Item
+
+    override func canPerformAction(_ action: Selector, withSender sender: Any?) -> Bool {
+        if #selector(pasteFilesMenu) == action {
+            if !UIPasteboard.general.items.isEmpty, !(metadataFolder?.e2eEncrypted ?? false) {
+                return true
+            }
+        } else if #selector(copyMenuFile) == action {
+            return true
+        } else if #selector(moveMenuFile) == action {
+            return true
+        }
+
+        return false
+    }
+
     // MARK: - DataSource + NC Endpoint
 
     override func queryDB() {
@@ -340,9 +356,13 @@ extension NCFiles: UICollectionViewDragDelegate {
 
 extension NCFiles: UICollectionViewDropDelegate {
     func collectionView(_ collectionView: UICollectionView, performDropWith coordinator: UICollectionViewDropCoordinator) {
-        let location = coordinator.session.location(in: collectionView)
-
         cleanDDVariable()
+        let location = coordinator.session.location(in: collectionView)
+        guard let destinationIndexPath = coordinator.destinationIndexPath,
+              let destinationMetadata = dataSource.cellForItemAt(indexPath: destinationIndexPath),
+              !destinationMetadata.directory else {
+            return
+        }
 
         if let item = coordinator.items.first,
            let provider = item.dragItem.itemProvider.copy() as? NSItemProvider {
@@ -350,8 +370,8 @@ extension NCFiles: UICollectionViewDropDelegate {
                 if error == nil,
                    let ocId = data as? NSString,
                    let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId as String) {
-                    DispatchQueue.main.async {
-                        // self.openMenu(collectionView: collectionView, location: location, metadata: metadata)
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                        self.openMenu(collectionView: collectionView, location: location, metadata: metadata)
                     }
                 }
             }
@@ -415,9 +435,18 @@ extension NCFiles: UICollectionViewDropDelegate {
 
     private func openMenu(collectionView: UICollectionView, location: CGPoint, metadata: tableMetadata) {
         var listMenuItems: [UIMenuItem] = []
-        listMenuItems.append(UIMenuItem(title: NSLocalizedString("_paste_file_", comment: ""), action: #selector(pasteFilesMenu)))
+        listMenuItems.append(UIMenuItem(title: NSLocalizedString("_copy_", comment: ""), action: #selector(copyMenuFile)))
+        listMenuItems.append(UIMenuItem(title: NSLocalizedString("_move_", comment: ""), action: #selector(moveMenuFile)))
         UIMenuController.shared.menuItems = listMenuItems
         UIMenuController.shared.showMenu(from: collectionView, rect: CGRect(x: location.x, y: location.y, width: 0, height: 0))
+    }
+
+    @objc private func copyMenuFile() {
+
+    }
+
+    @objc private func moveMenuFile() {
+
     }
 
     private func cleanDDVariable() {
