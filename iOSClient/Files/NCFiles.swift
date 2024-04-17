@@ -348,12 +348,16 @@ extension NCFiles: UICollectionViewDragDelegate {
     }
 
     func collectionView(_ collectionView: UICollectionView, dragPreviewParametersForItemAt indexPath: IndexPath) -> UIDragPreviewParameters? {
-        if let cell = collectionView.cellForItem(at: indexPath) as? NCCellProtocol,
-           let frame = cell.filePreviewImageView?.frame {
-            let previewParameters = UIDragPreviewParameters()
-            previewParameters.visiblePath = UIBezierPath(roundedRect: CGRect(x: frame.minX, y: frame.minY, width: frame.width, height: frame.height), cornerRadius: 10)
+        let previewParameters = UIDragPreviewParameters()
+
+        if layoutForView?.layout == NCGlobal.shared.layoutList, let cell = collectionView.cellForItem(at: indexPath) as? NCListCell {
+            previewParameters.visiblePath = UIBezierPath(roundedRect: CGRect(x: 0, y: 0, width: cell.frame.width - 100, height: cell.frame.height), cornerRadius: 10)
+            return previewParameters
+        } else if let cell = collectionView.cellForItem(at: indexPath) as? NCGridCell {
+            previewParameters.visiblePath = UIBezierPath(roundedRect: CGRect(x: 0, y: 0, width: cell.frame.width, height: cell.frame.height - 40), cornerRadius: 10)
             return previewParameters
         }
+
         return nil
     }
 }
@@ -396,6 +400,7 @@ extension NCFiles: UICollectionViewDropDelegate {
             cell?.setHighlighted(true)
         }
 
+        // Push Metadata
         if appDelegate.ddCurrentHoverIndexPath != destinationIndexPath || appDelegate.ddCurrentHoverCollectionView != collectionView {
             appDelegate.ddCurrentHoverIndexPath = destinationIndexPath
             appDelegate.ddCurrentHoverCollectionView = collectionView
@@ -428,8 +433,9 @@ extension NCFiles: UICollectionViewDropDelegate {
 
     private func disabeHighlightedCells() {
         for mainTabBarController in SceneManager.shared.getAllMainTabBarController() {
-            if let viewController = mainTabBarController.currentViewController() as? NCFiles {
-                for indexPathVisible in viewController.collectionView.indexPathsForVisibleItems {
+            if let viewController = mainTabBarController.currentViewController() as? NCFiles,
+               let indexPathsForVisibleItems = viewController.collectionView?.indexPathsForVisibleItems {
+                for indexPathVisible in indexPathsForVisibleItems {
                     let cell = viewController.collectionView.cellForItem(at: indexPathVisible) as? NCCellProtocol
                     cell?.setHighlighted(false)
                 }
