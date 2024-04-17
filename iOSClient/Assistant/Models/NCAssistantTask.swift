@@ -16,6 +16,7 @@ class NCAssistantTask: ObservableObject {
     @Published var selectedTaskType: NKTextProcessingTaskType?
     @Published var selectedTask: NKTextProcessingTask?
     @Published var hasError: Bool = false
+    @Published var isLoading: Bool = false
 
     private var tasks: [NKTextProcessingTask] = []
     private let excludedTypeIds = ["OCA\\ContextChat\\TextProcessing\\ContextChatTaskType"]
@@ -42,7 +43,26 @@ class NCAssistantTask: ObservableObject {
         filterTasks(ofType: self.selectedTaskType)
     }
 
+    func selectTask(_ task: NKTextProcessingTask) {
+        selectedTask = task
+        guard let id = task.id else { return }
+        isLoading = true
+
+        NextcloudKit.shared.textProcessingGetTask(taskId: id) { _, task, _, error in
+            if error != .success {
+                self.hasError = true
+                return
+            }
+
+            self.selectedTask = task
+
+            self.isLoading = false
+        }
+    }
+
     func scheduleTask(input: String) {
+        isLoading = true
+
         NextcloudKit.shared.textProcessingSchedule(input: input, typeId: selectedTaskType?.id ?? "", identifier: "assistant") { _, task, _, error in
             if error != .success {
                 self.hasError = true
@@ -55,13 +75,16 @@ class NCAssistantTask: ObservableObject {
                 self.tasks.insert(task, at: 0)
                 self.filteredTasks.insert(task, at: 0)
             }
+
+            self.isLoading = false
         }
     }
 
     func deleteTask(_ task: NKTextProcessingTask) {
         guard let id = task.id else { return }
+        isLoading = true
 
-        NextcloudKit.shared.textProcessingDeleteTask(task: String(id)) { _, task, _, error in
+        NextcloudKit.shared.textProcessingDeleteTask(taskId: id) { _, task, _, error in
             if error != .success {
                 self.hasError = true
                 return
@@ -71,10 +94,14 @@ class NCAssistantTask: ObservableObject {
                 self.tasks.removeAll(where: { $0.id == task?.id })
                 self.filteredTasks.removeAll(where: { $0.id == task?.id })
             }
+
+            self.isLoading = false
         }
     }
 
     private func loadAllTypes() {
+        isLoading = true
+
         NextcloudKit.shared.textProcessingGetTypes { _, types, _, error in
             if error != .success {
                 self.hasError = true
@@ -86,10 +113,14 @@ class NCAssistantTask: ObservableObject {
             withAnimation {
                 self.types = filteredTypes
             }
+
+            self.isLoading = false
         }
     }
 
     private func loadAllTasks(appId: String = "assistant") {
+        isLoading = true
+
         NextcloudKit.shared.textProcessingTaskList(appId: appId) { _, tasks, _, error in
             if error != .success {
                 self.hasError = true
@@ -99,6 +130,8 @@ class NCAssistantTask: ObservableObject {
             guard let tasks = tasks else { return }
             self.tasks = tasks
             self.filterTasks(ofType: self.selectedTaskType)
+
+            self.isLoading = false
         }
     }
 }
@@ -137,21 +170,20 @@ extension NCAssistantTask {
 extension NKTextProcessingTask {
     struct StatusInfo {
         let stringKey, imageSystemName: String
-        let imageColor: Color
     }
 
     var statusInfo: StatusInfo {
         return switch status {
         case 1:
-            StatusInfo(stringKey: "_assistant_task_scheduled_", imageSystemName: "clock", imageColor: .blue)
+            StatusInfo(stringKey: "_assistant_task_scheduled_", imageSystemName: "clock")
         case 2:
-            StatusInfo(stringKey: "_assistant_task_in_progress_", imageSystemName: "clock.badge", imageColor: .gray)
+            StatusInfo(stringKey: "_assistant_task_in_progress_", imageSystemName: "clock.badge")
         case 3:
-            StatusInfo(stringKey: "_assistant_task_completed_", imageSystemName: "checkmark.circle", imageColor: .green)
+            StatusInfo(stringKey: "_assistant_task_completed_", imageSystemName: "checkmark.circle")
         case 4:
-            StatusInfo(stringKey: "_assistant_task_failed_", imageSystemName: "exclamationmark.circle", imageColor: .red)
+            StatusInfo(stringKey: "_assistant_task_failed_", imageSystemName: "exclamationmark.circle")
         default:
-            StatusInfo(stringKey: "_assistant_task_unknown_", imageSystemName: "questionmark.circle", imageColor: .black)
+            StatusInfo(stringKey: "_assistant_task_unknown_", imageSystemName: "questionmark.circle")
         }
     }
 }

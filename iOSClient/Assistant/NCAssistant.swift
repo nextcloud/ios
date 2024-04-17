@@ -17,12 +17,12 @@ struct NCAssistant: View {
 
     var body: some View {
         NavigationView {
-            Group {
-                if model.filteredTasks.isEmpty {
+            ZStack {
+                if model.filteredTasks.isEmpty, !model.isLoading {
                     EmptyTasksView()
-                } else {
-                    TaskList()
                 }
+
+                TaskList()
             }
             .toolbar {
                 NavigationLink(destination: NCAssistantCreateNewTask()) {
@@ -76,7 +76,6 @@ struct NCAssistant: View {
 struct TaskList: View {
     @EnvironmentObject var model: NCAssistantTask
 
-
     var body: some View {
         List(model.filteredTasks, id: \.id) { task in
             TaskItem(task: task)
@@ -120,7 +119,7 @@ struct TaskItem: View {
     let task: NKTextProcessingTask
 
     var body: some View {
-        NavigationLink(destination: NCAssistantTaskDetail()) {
+        NavigationLink(destination: NCAssistantTaskDetail(task: task)) {
             VStack(alignment: .leading) {
                 Text(task.input ?? "")
                     .lineLimit(4)

@@ -13,6 +13,8 @@ struct NCAssistantTaskDetail: View {
     @EnvironmentObject var model: NCAssistantTask
     @State private var tab = 0
 
+    let task: NKTextProcessingTask
+
     var body: some View {
         VStack {
             Picker("", selection: $tab) {
@@ -46,13 +48,16 @@ struct NCAssistantTaskDetail: View {
         .navigationBarTitleDisplayMode(.inline)
         .navigationTitle(NSLocalizedString("_task_details_", comment: ""))
         .padding()
+        .onAppear {
+            model.selectTask(task)
+        }
     }
 }
 
 #Preview {
     let model = NCAssistantTask()
 
-    return NCAssistantTaskDetail()
+    return NCAssistantTaskDetail(task: model.selectedTask!)
         .environmentObject(model)
         .onAppear {
             model.loadDummyData()
