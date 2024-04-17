@@ -363,9 +363,10 @@ extension NCFiles: UICollectionViewDropDelegate {
     func collectionView(_ collectionView: UICollectionView, performDropWith coordinator: UICollectionViewDropCoordinator) {
         cleanDDVariable()
         let location = coordinator.session.location(in: collectionView)
-        guard let destinationIndexPath = coordinator.destinationIndexPath,
-              let destinationMetadata = dataSource.cellForItemAt(indexPath: destinationIndexPath),
-              !destinationMetadata.directory else {
+        // No valid for directory ??
+        if let destinationIndexPath = coordinator.destinationIndexPath,
+           let destinationMetadata = dataSource.cellForItemAt(indexPath: destinationIndexPath),
+           destinationMetadata.directory {
             return
         }
 
