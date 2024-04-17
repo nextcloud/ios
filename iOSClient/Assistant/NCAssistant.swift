@@ -25,10 +25,15 @@ struct NCAssistant: View {
                 TaskList()
             }
             .toolbar {
-                NavigationLink(destination: NCAssistantCreateNewTask()) {
-                    Image(systemName: "plus")
+                ToolbarItem(placement: .topBarLeading) {
+                    Text(NSLocalizedString("_close_", comment: ""))
+                        .foregroundStyle(.blue)
                 }
-                .disabled(model.selectedTaskType == nil)
+                ToolbarItem(placement: .topBarTrailing) {
+                    NavigationLink(destination: NCAssistantCreateNewTask()) {
+                        Image(systemName: "plus")
+                    }
+                    .disabled(model.selectedTaskType == nil)                }
             }
             .navigationBarTitleDisplayMode(.inline)
             .navigationTitle(NSLocalizedString("_assistant_", comment: ""))
