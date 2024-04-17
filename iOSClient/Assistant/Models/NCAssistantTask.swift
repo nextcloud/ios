@@ -55,7 +55,7 @@ class NCAssistantTask: ObservableObject {
             }
 
             self.selectedTask = task
-
+            
             self.isLoading = false
         }
     }

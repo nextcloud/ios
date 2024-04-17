@@ -14,6 +14,7 @@ struct NCAssistant: View {
     @EnvironmentObject var model: NCAssistantTask
     @State var presentNewTaskDialog = false
     @State var input = ""
+    @Environment(\.presentationMode) var presentationMode
 
     var body: some View {
         NavigationView {
@@ -26,14 +27,16 @@ struct NCAssistant: View {
             }
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
-                    Text(NSLocalizedString("_close_", comment: ""))
-                        .foregroundStyle(.blue)
+                    Button(NSLocalizedString("_close_", comment: "")) {
+                        presentationMode.wrappedValue.dismiss()
+                    }
                 }
                 ToolbarItem(placement: .topBarTrailing) {
                     NavigationLink(destination: NCAssistantCreateNewTask()) {
                         Image(systemName: "plus")
                     }
-                    .disabled(model.selectedTaskType == nil)                }
+                    .disabled(model.selectedTaskType == nil)
+                }
             }
             .navigationBarTitleDisplayMode(.inline)
             .navigationTitle(NSLocalizedString("_assistant_", comment: ""))
