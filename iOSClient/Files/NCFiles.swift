@@ -345,7 +345,8 @@ extension NCFiles: UICollectionViewDragDelegate {
         let previewParameters = UIDragPreviewParameters()
 
         if layoutForView?.layout == NCGlobal.shared.layoutList, let cell = collectionView.cellForItem(at: indexPath) as? NCListCell {
-            previewParameters.visiblePath = UIBezierPath(roundedRect: CGRect(x: 0, y: 0, width: cell.frame.width - 100, height: cell.frame.height), cornerRadius: 10)
+            let width = (collectionView.frame.width / 3) * 2
+            previewParameters.visiblePath = UIBezierPath(roundedRect: CGRect(x: 0, y: 0, width: width, height: cell.frame.height), cornerRadius: 10)
             return previewParameters
         } else if let cell = collectionView.cellForItem(at: indexPath) as? NCGridCell {
             previewParameters.visiblePath = UIBezierPath(roundedRect: CGRect(x: 0, y: 0, width: cell.frame.width, height: cell.frame.height - 40), cornerRadius: 10)
@@ -379,6 +380,10 @@ extension NCFiles: UICollectionViewDropDelegate {
 
     func collectionView(_ collectionView: UICollectionView, dropSessionDidUpdate session: UIDropSession, withDestinationIndexPath destinationIndexPath: IndexPath?) -> UICollectionViewDropProposal {
         disabeHighlightedCells()
+        if destinationIndexPath == nil && DragDropHover.shared.metadata?.serverUrl == self.serverUrl {
+            cleanDDVariable()
+            return UICollectionViewDropProposal(operation: .forbidden)
+        }
         guard let destinationIndexPath,
               let destinationMetadata = dataSource.cellForItemAt(indexPath: destinationIndexPath) else {
             cleanDDVariable()
@@ -386,13 +391,13 @@ extension NCFiles: UICollectionViewDropDelegate {
         }
 
         if isDirectoryE2EE(metadata: destinationMetadata) || destinationMetadata.ocId == DragDropHover.shared.metadata?.ocId {
+            cleanDDVariable()
             return UICollectionViewDropProposal(operation: .forbidden)
         }
-        /*
-        if !destinationMetadata.directory && destinationMetadata.serverUrl == dragStartedMetadata?.serverUrl {
+        if !destinationMetadata.directory && DragDropHover.shared.metadata?.serverUrl == self.serverUrl {
+            cleanDDVariable()
             return UICollectionViewDropProposal(operation: .forbidden)
         }
-        */
 
         if destinationMetadata.directory {
             let cell = collectionView.cellForItem(at: destinationIndexPath) as? NCCellProtocol
