@@ -28,14 +28,14 @@ import TOPasscodeViewController
 public protocol NCPasscodeDelegate: AnyObject {
     func evaluatePolicy(_ passcodeViewController: TOPasscodeViewController, isCorrectCode: Bool)
     func passcodeReset(_ passcodeViewController: TOPasscodeViewController)
-    func requestedAccount(rootViewController: UIViewController?)
+    func requestedAccount(viewController: UIViewController?)
 }
 
 // optional func
 public extension NCPasscodeDelegate {
     func evaluatePolicy(_ passcodeViewController: TOPasscodeViewController, isCorrectCode: Bool) {}
     func passcodeReset() {}
-    func requestedAccount(rootViewController: UIViewController?) {}
+    func requestedAccount(viewController: UIViewController?) {}
 }
 
 class NCPasscode: NSObject, TOPasscodeViewControllerDelegate {
@@ -53,12 +53,12 @@ class NCPasscode: NSObject, TOPasscodeViewControllerDelegate {
     }
     var passcodeViewController: TOPasscodeViewController!
     var delegate: NCPasscodeDelegate?
-    var rootViewController: UIViewController?
+    var viewController: UIViewController?
 
-    func presentPasscode(rootViewController: UIViewController, delegate: NCPasscodeDelegate?, completion: @escaping () -> Void) {
+    func presentPasscode(viewController: UIViewController, delegate: NCPasscodeDelegate?, completion: @escaping () -> Void) {
         var error: NSError?
         self.delegate = delegate
-        self.rootViewController = rootViewController
+        self.viewController = viewController
 
         passcodeViewController = TOPasscodeViewController(passcodeType: .sixDigits, allowCancel: false)
         passcodeViewController.delegate = self
@@ -74,8 +74,8 @@ class NCPasscode: NSObject, TOPasscodeViewControllerDelegate {
                 passcodeViewController.automaticallyPromptForBiometricValidation = false
             }
         }
-        rootViewController.presentedViewController?.dismiss(animated: false)
-        rootViewController.present(passcodeViewController, animated: true, completion: {
+        viewController.presentedViewController?.dismiss(animated: false)
+        viewController.present(passcodeViewController, animated: true, completion: {
             self.openAlert(passcodeViewController: self.passcodeViewController)
             completion()
         })
@@ -97,7 +97,7 @@ class NCPasscode: NSObject, TOPasscodeViewControllerDelegate {
                             NCKeychain().passcodeCounterFailReset = 0
                             self.delegate?.evaluatePolicy(passcodeViewController, isCorrectCode: true)
                             if NCKeychain().accountRequest {
-                                self.delegate?.requestedAccount(rootViewController: self.rootViewController)
+                                self.delegate?.requestedAccount(viewController: self.viewController)
                             }
                         }
                     }
@@ -140,7 +140,7 @@ class NCPasscode: NSObject, TOPasscodeViewControllerDelegate {
                 NCKeychain().passcodeCounterFail = 0
                 NCKeychain().passcodeCounterFailReset = 0
                 if NCKeychain().accountRequest {
-                    self.delegate?.requestedAccount(rootViewController: self.rootViewController)
+                    self.delegate?.requestedAccount(viewController: self.viewController)
                 }
             }
         }
