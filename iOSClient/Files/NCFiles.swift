@@ -28,7 +28,6 @@ class NCFiles: NCCollectionViewCommon {
     internal var isRoot: Bool = true
     internal var fileNameBlink: String?
     internal var fileNameOpen: String?
-    internal var collectionViewDrag: UICollectionView?
 
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
@@ -300,7 +299,6 @@ class NCFiles: NCCollectionViewCommon {
 extension NCFiles: UICollectionViewDragDelegate {
     func collectionView(_ collectionView: UICollectionView, itemsForBeginning session: UIDragSession, at indexPath: IndexPath) -> [UIDragItem] {
         guard let metadata = dataSource.cellForItemAt(indexPath: indexPath) else { return [] }
-        collectionViewDrag = collectionView
         let itemProvider = NSItemProvider(object: metadata.ocId as NSString)
         return [UIDragItem(itemProvider: itemProvider)]
     }
@@ -322,6 +320,11 @@ extension NCFiles: UICollectionViewDropDelegate {
     func collectionView(_ collectionView: UICollectionView, performDropWith coordinator: UICollectionViewDropCoordinator) {
         let location = coordinator.session.location(in: collectionView)
 
+        appDelegate.ddHoverTimer?.invalidate()
+        appDelegate.ddHoverTimer = nil
+        appDelegate.ddCurrentHoverCollectionView = nil
+        appDelegate.ddCurrentHoverIndexPath = nil
+
         if let item = coordinator.items.first,
            let provider = item.dragItem.itemProvider.copy() as? NSItemProvider {
             provider.loadObject(ofClass: NSString.self) { data, error in
@@ -340,10 +343,34 @@ extension NCFiles: UICollectionViewDropDelegate {
     func collectionView(_ collectionView: UICollectionView, dropSessionDidUpdate session: UIDropSession, withDestinationIndexPath destinationIndexPath: IndexPath?) -> UICollectionViewDropProposal {
         disabeHighlightedCells()
 
-        if let destinationIndexPath {
+        guard let destinationIndexPath,
+              let metadata = dataSource.cellForItemAt(indexPath: destinationIndexPath) else {
+            appDelegate.ddHoverTimer?.invalidate()
+            appDelegate.ddCurrentHoverIndexPath = nil
+            appDelegate.ddCurrentHoverCollectionView = nil
+            return UICollectionViewDropProposal(operation: .copy)
+        }
+
+        if metadata.directory {
             let cell = collectionView.cellForItem(at: destinationIndexPath) as? NCCellProtocol
             cell?.setHighlighted(true)
         }
+
+        if appDelegate.ddCurrentHoverIndexPath != destinationIndexPath || appDelegate.ddCurrentHoverCollectionView != collectionView {
+            appDelegate.ddCurrentHoverIndexPath = destinationIndexPath
+            appDelegate.ddCurrentHoverCollectionView = collectionView
+            appDelegate.ddHoverTimer?.invalidate()
+            appDelegate.ddHoverTimer = Timer.scheduledTimer(withTimeInterval: 2, repeats: false) { [weak self] _ in
+                guard let strongSelf = self else { return }
+                if strongSelf.appDelegate.ddCurrentHoverIndexPath == destinationIndexPath,
+                   let metadata = strongSelf.dataSource.cellForItemAt(indexPath: destinationIndexPath),
+                   metadata.directory {
+                    print("XXXXXX")
+                    // strongSelf.navigateToFolderAt(indexPath: indexPath)
+                }
+            }
+        }
+
         return UICollectionViewDropProposal(operation: .copy)
     }
 
