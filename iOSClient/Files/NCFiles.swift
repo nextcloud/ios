@@ -28,6 +28,7 @@ class NCFiles: NCCollectionViewCommon {
     internal var isRoot: Bool = true
     internal var fileNameBlink: String?
     internal var fileNameOpen: String?
+    internal var dragStartedOcId: String?
 
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
@@ -106,6 +107,7 @@ class NCFiles: NCCollectionViewCommon {
         super.setNavigationLeftItems()
 
         // DD
+        /*
         if let navigationBar = self.navigationController?.navigationBar {
             let dropZoneView = UIView(frame: CGRect(x: 0, y: 0, width: navigationBar.bounds.width, height: navigationBar.bounds.height))
             dropZoneView.backgroundColor = .clear
@@ -115,8 +117,9 @@ class NCFiles: NCCollectionViewCommon {
             let dropInteraction = UIDropInteraction(delegate: self)
             dropZoneView.addInteraction(dropInteraction)
         }
+        */
     }
-    
+
     // MARK: - DataSource + NC Endpoint
 
     override func queryDB() {
@@ -317,6 +320,7 @@ extension NCFiles: UICollectionViewDragDelegate {
     func collectionView(_ collectionView: UICollectionView, itemsForBeginning session: UIDragSession, at indexPath: IndexPath) -> [UIDragItem] {
         guard let metadata = dataSource.cellForItemAt(indexPath: indexPath),
               !isEditMode else { return [] }
+        dragStartedOcId = metadata.ocId
         let itemProvider = NSItemProvider(object: metadata.ocId as NSString)
         return [UIDragItem(itemProvider: itemProvider)]
     }
@@ -338,10 +342,7 @@ extension NCFiles: UICollectionViewDropDelegate {
     func collectionView(_ collectionView: UICollectionView, performDropWith coordinator: UICollectionViewDropCoordinator) {
         let location = coordinator.session.location(in: collectionView)
 
-        appDelegate.ddHoverTimerIndexPath?.invalidate()
-        appDelegate.ddHoverTimerIndexPath = nil
-        appDelegate.ddCurrentHoverCollectionView = nil
-        appDelegate.ddCurrentHoverIndexPath = nil
+        cleanDDVariable()
 
         if let item = coordinator.items.first,
            let provider = item.dragItem.itemProvider.copy() as? NSItemProvider {
@@ -350,7 +351,7 @@ extension NCFiles: UICollectionViewDropDelegate {
                    let ocId = data as? NSString,
                    let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId as String) {
                     DispatchQueue.main.async {
-                        self.openMenu(collectionView: collectionView, location: location, metadata: metadata)
+                        // self.openMenu(collectionView: collectionView, location: location, metadata: metadata)
                     }
                 }
             }
@@ -362,13 +363,11 @@ extension NCFiles: UICollectionViewDropDelegate {
 
         guard let destinationIndexPath,
               let metadata = dataSource.cellForItemAt(indexPath: destinationIndexPath) else {
-            appDelegate.ddHoverTimerIndexPath?.invalidate()
-            appDelegate.ddCurrentHoverIndexPath = nil
-            appDelegate.ddCurrentHoverCollectionView = nil
+            cleanDDVariable()
             return UICollectionViewDropProposal(operation: .copy)
         }
 
-        if metadata.directory {
+        if metadata.directory, metadata.ocId != dragStartedOcId {
             let cell = collectionView.cellForItem(at: destinationIndexPath) as? NCCellProtocol
             cell?.setHighlighted(true)
         }
@@ -382,6 +381,7 @@ extension NCFiles: UICollectionViewDropDelegate {
                 if self.appDelegate.ddCurrentHoverIndexPath == destinationIndexPath,
                    let metadata = self.dataSource.cellForItemAt(indexPath: destinationIndexPath),
                    metadata.directory {
+                    self.cleanDDVariable()
                     self.disabeHighlightedCells()
                     self.pushMetadata(metadata)
                 }
@@ -391,8 +391,14 @@ extension NCFiles: UICollectionViewDropDelegate {
         return UICollectionViewDropProposal(operation: .copy)
     }
 
+    func collectionView(_ collectionView: UICollectionView, dropSessionDidExit session: UIDropSession) {
+        cleanDDVariable()
+        disabeHighlightedCells()
+    }
+
     // Update collectionView after ending the drop operation
     func collectionView(_ collectionView: UICollectionView, dropSessionDidEnd session: UIDropSession) {
+        cleanDDVariable()
         disabeHighlightedCells()
     }
 
@@ -413,6 +419,13 @@ extension NCFiles: UICollectionViewDropDelegate {
         UIMenuController.shared.menuItems = listMenuItems
         UIMenuController.shared.showMenu(from: collectionView, rect: CGRect(x: location.x, y: location.y, width: 0, height: 0))
     }
+
+    private func cleanDDVariable() {
+        appDelegate.ddHoverTimerIndexPath?.invalidate()
+        appDelegate.ddHoverTimerIndexPath = nil
+        appDelegate.ddCurrentHoverCollectionView = nil
+        appDelegate.ddCurrentHoverIndexPath = nil
+    }
 }
 
 // MARK: - Drop Interaction
@@ -423,6 +436,7 @@ extension NCFiles: UIDropInteractionDelegate {
     }
 
     func dropInteraction(_ interaction: UIDropInteraction, sessionDidEnter session: UIDropSession) {
+        cleanDDVariable()
         disabeHighlightedCells()
     }
 
@@ -435,8 +449,7 @@ extension NCFiles: UIDropInteractionDelegate {
     }
 
     func dropInteraction(_ interaction: UIDropInteraction, sessionDidExit session: UIDropSession) {
-        appDelegate.ddHoverTimerDropInteraction?.invalidate()
-        appDelegate.ddHoverTimerDropInteraction = nil
+        cleanDDVariable()
     }
 
     func dropInteraction(_ interaction: UIDropInteraction, performDrop session: UIDropSession) {
