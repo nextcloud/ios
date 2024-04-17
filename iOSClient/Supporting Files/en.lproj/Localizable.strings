@@ -156,6 +156,7 @@
 "_current_"                 = "Current";
 "_buy_"                     = "Buy";
 "_disabled_"                = "Disabled";
+"_error_occurred_"           = "An error occurred, please try again";
 
 /* MARK: Files lock */
 
@@ -1052,3 +1053,8 @@
 "_assistant_task_completed_"     = "Completed";
 "_assistant_task_failed_"        = "Failed";
 "_all_"                          = "All";
+"_input_"                        = "Input";
+"_output_"                       = "Output";
+"_task_details_"                 = "Task details";
+"_assistant_"                    = "Assistant";
+"_new_task_"                     = "New %@ task";

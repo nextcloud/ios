@@ -69,7 +69,7 @@
 		C04E2F232A17BB4D001BAD85 /* FilesIntegrationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C04E2F222A17BB4D001BAD85 /* FilesIntegrationTests.swift */; };
 		D575039F27146F93008DC9DC /* String+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7A0D1342591FBC5008F8A13 /* String+Extension.swift */; };
 		D5B6AA7827200C7200D49C24 /* NCActivityTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5B6AA7727200C7200D49C24 /* NCActivityTableViewCell.swift */; };
-		F308659B2BC4144700D04EAC /* NCAssistantModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F308659A2BC4144700D04EAC /* NCAssistantModel.swift */; };
+		F308659B2BC4144700D04EAC /* NCAssistantTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = F308659A2BC4144700D04EAC /* NCAssistantTask.swift */; };
 		F310B1EF2BA862F1001C42F5 /* NCViewerMedia+VisionKit.swift in Sources */ = {isa = PBXBuildFile; fileRef = F310B1EE2BA862F1001C42F5 /* NCViewerMedia+VisionKit.swift */; };
 		F314F1142A30E2DE00BC7FAB /* View+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7E8A390295DC5E0006CB2D0 /* View+Extension.swift */; };
 		F321DA8A2B71205A00DDA0E6 /* NCTrashSelectTabBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = F321DA892B71205A00DDA0E6 /* NCTrashSelectTabBar.swift */; };
@@ -152,13 +152,14 @@
 		F3BB46522A39EC4900461F6E /* NCMoreAppSuggestionsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3BB46512A39EC4900461F6E /* NCMoreAppSuggestionsCell.swift */; };
 		F3BB46542A3A1E9D00461F6E /* CCCellMore.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3BB46532A3A1E9D00461F6E /* CCCellMore.swift */; };
 		F3CFF65F2BC55ECE002380BE /* NCAssistantCreateNewTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3CFF65E2BC55ECE002380BE /* NCAssistantCreateNewTask.swift */; };
-		F3CFF6642BC6955C002380BE /* ExpandableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3CFF6632BC6955C002380BE /* ExpandableView.swift */; };
 		F3CFF6662BC69ACE002380BE /* NCAssistantTaskDetail.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3CFF6652BC69ACE002380BE /* NCAssistantTaskDetail.swift */; };
 		F3F041992B9F7E6700D5155F /* (null) in Frameworks */ = {isa = PBXBuildFile; };
 		F3F0419B2B9F7E6700D5155F /* (null) in Frameworks */ = {isa = PBXBuildFile; };
 		F3F0419D2B9F7E6E00D5155F /* (null) in Frameworks */ = {isa = PBXBuildFile; };
 		F3F0419F2B9F7E7900D5155F /* (null) in Frameworks */ = {isa = PBXBuildFile; };
 		F3F041A32B9F828B00D5155F /* (null) in Frameworks */ = {isa = PBXBuildFile; };
+		F3F24BA72BCEBC2E00048EF6 /* PopupView in Frameworks */ = {isa = PBXBuildFile; productRef = F3F24BA62BCEBC2E00048EF6 /* PopupView */; };
+		F3F24BA92BCECFF800048EF6 /* EmptyTasksView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3F24BA82BCECFF800048EF6 /* EmptyTasksView.swift */; };
 		F700222C1EC479840080073F /* Custom.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F700222B1EC479840080073F /* Custom.xcassets */; };
 		F700222D1EC479840080073F /* Custom.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F700222B1EC479840080073F /* Custom.xcassets */; };
 		F700510122DF63AC003A3356 /* NCShare.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F700510022DF63AC003A3356 /* NCShare.storyboard */; };
@@ -1008,7 +1009,7 @@
 		C04E2F202A17BB4D001BAD85 /* NextcloudIntegrationTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = NextcloudIntegrationTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		C04E2F222A17BB4D001BAD85 /* FilesIntegrationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilesIntegrationTests.swift; sourceTree = "<group>"; };
 		D5B6AA7727200C7200D49C24 /* NCActivityTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCActivityTableViewCell.swift; sourceTree = "<group>"; };
-		F308659A2BC4144700D04EAC /* NCAssistantModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCAssistantModel.swift; sourceTree = "<group>"; };
+		F308659A2BC4144700D04EAC /* NCAssistantTask.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCAssistantTask.swift; sourceTree = "<group>"; };
 		F30A96042A27299D00D7BCFE /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Platforms/iPhoneOS.platform/Developer/Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
 		F310B1EE2BA862F1001C42F5 /* NCViewerMedia+VisionKit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NCViewerMedia+VisionKit.swift"; sourceTree = "<group>"; };
 		F3131ED82B038DB20018DB28 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.0.sdk/System/iOSSupport/System/Library/Frameworks/SwiftUI.framework; sourceTree = DEVELOPER_DIR; };
@@ -1034,8 +1035,8 @@
 		F3BB46512A39EC4900461F6E /* NCMoreAppSuggestionsCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCMoreAppSuggestionsCell.swift; sourceTree = "<group>"; };
 		F3BB46532A3A1E9D00461F6E /* CCCellMore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CCCellMore.swift; sourceTree = "<group>"; };
 		F3CFF65E2BC55ECE002380BE /* NCAssistantCreateNewTask.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCAssistantCreateNewTask.swift; sourceTree = "<group>"; };
-		F3CFF6632BC6955C002380BE /* ExpandableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpandableView.swift; sourceTree = "<group>"; };
 		F3CFF6652BC69ACE002380BE /* NCAssistantTaskDetail.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCAssistantTaskDetail.swift; sourceTree = "<group>"; };
+		F3F24BA82BCECFF800048EF6 /* EmptyTasksView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmptyTasksView.swift; sourceTree = "<group>"; };
 		F700222B1EC479840080073F /* Custom.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Custom.xcassets; sourceTree = "<group>"; };
 		F700510022DF63AC003A3356 /* NCShare.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = NCShare.storyboard; sourceTree = "<group>"; };
 		F700510222DF6897003A3356 /* Parchment.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Parchment.framework; path = Carthage/Build/iOS/Parchment.framework; sourceTree = "<group>"; };
@@ -1721,6 +1722,7 @@
 				F734B06628E75C0100E180D5 /* TLPhotoPicker in Frameworks */,
 				F787AC09298BCB4A0001BB00 /* SVGKitSwift in Frameworks */,
 				F760DE032AE66EA80027D78A /* KeychainAccess in Frameworks */,
+				F3F24BA72BCEBC2E00048EF6 /* PopupView in Frameworks */,
 				F770768E263A8C3400A1BA94 /* FloatingPanel in Frameworks */,
 				F710FC7C277B7D0000AA9FBF /* RealmSwift in Frameworks */,
 				F758A01227A7F03E0069468B /* JGProgressHUD in Frameworks */,
@@ -1860,11 +1862,11 @@
 		F36C38B32BBDA14A009CF1E0 /* Assistant */ = {
 			isa = PBXGroup;
 			children = (
+				F3F24BAC2BCFAF1C00048EF6 /* Models */,
+				F3F24BAB2BCFAE1A00048EF6 /* Task Detail */,
+				F3F24BAA2BCFAE0700048EF6 /* Create Task */,
 				F36C38B42BBDA15C009CF1E0 /* NCAssistant.swift */,
-				F3CFF6652BC69ACE002380BE /* NCAssistantTaskDetail.swift */,
-				F308659A2BC4144700D04EAC /* NCAssistantModel.swift */,
-				F3CFF65E2BC55ECE002380BE /* NCAssistantCreateNewTask.swift */,
-				F3CFF6632BC6955C002380BE /* ExpandableView.swift */,
+				F3F24BA82BCECFF800048EF6 /* EmptyTasksView.swift */,
 			);
 			path = Assistant;
 			sourceTree = "<group>";
@@ -1888,6 +1890,30 @@
 				F39298962A3B12CB00509762 /* BaseNCMoreCell.swift */,
 			);
 			path = Cells;
+			sourceTree = "<group>";
+		};
+		F3F24BAA2BCFAE0700048EF6 /* Create Task */ = {
+			isa = PBXGroup;
+			children = (
+				F3CFF65E2BC55ECE002380BE /* NCAssistantCreateNewTask.swift */,
+			);
+			path = "Create Task";
+			sourceTree = "<group>";
+		};
+		F3F24BAB2BCFAE1A00048EF6 /* Task Detail */ = {
+			isa = PBXGroup;
+			children = (
+				F3CFF6652BC69ACE002380BE /* NCAssistantTaskDetail.swift */,
+			);
+			path = "Task Detail";
+			sourceTree = "<group>";
+		};
+		F3F24BAC2BCFAF1C00048EF6 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				F308659A2BC4144700D04EAC /* NCAssistantTask.swift */,
+			);
+			path = Models;
 			sourceTree = "<group>";
 		};
 		F70211F31BAC56E9003FC03E /* Main */ = {
@@ -3140,6 +3166,7 @@
 				F7F623B42A5EF4D30022D3D4 /* Gzip */,
 				F76B649D2ADFFDEC00014640 /* LRUCache */,
 				F760DE022AE66EA80027D78A /* KeychainAccess */,
+				F3F24BA62BCEBC2E00048EF6 /* PopupView */,
 			);
 			productName = "Crypto Cloud";
 			productReference = F7CE8AFA1DC1F8D8009CAE48 /* Nextcloud.app */;
@@ -3309,6 +3336,7 @@
 				F7F623B32A5EF4D30022D3D4 /* XCRemoteSwiftPackageReference "GzipSwift" */,
 				F76B649A2ADFFAD200014640 /* XCRemoteSwiftPackageReference "LRUCache" */,
 				F760DE012AE66E860027D78A /* XCRemoteSwiftPackageReference "KeychainAccess" */,
+				F3F24BA52BCEBC2E00048EF6 /* XCRemoteSwiftPackageReference "PopupView" */,
 			);
 			productRefGroup = F7F67B9F1A24D27800EE80DA;
 			projectDirPath = "";
@@ -4084,7 +4112,6 @@
 				F702F30125EE5D2C008F8E80 /* NYMnemonic.m in Sources */,
 				AF93474E27E3F212002537EE /* NCShareNewUserAddComment.swift in Sources */,
 				F7C30DFD291BD0B80017149B /* NCNetworkingE2EEDelete.swift in Sources */,
-				F3CFF6642BC6955C002380BE /* ExpandableView.swift in Sources */,
 				F72FD3B5297ED49A00075D28 /* NCManageDatabase+E2EE.swift in Sources */,
 				F73EF7CF2B0225BA0087E6E9 /* NCManageDatabase+Tag.swift in Sources */,
 				AF93471227E2341B002537EE /* NCShare+Menu.swift in Sources */,
@@ -4096,7 +4123,7 @@
 				F7B7504B2397D38F004E13EC /* UIImage+Extension.swift in Sources */,
 				F7EFC0CD256BF8DD00461AAD /* NCUserStatus.swift in Sources */,
 				AF3FDCC22796ECC300710F60 /* NCTrash+CollectionView.swift in Sources */,
-				F308659B2BC4144700D04EAC /* NCAssistantModel.swift in Sources */,
+				F308659B2BC4144700D04EAC /* NCAssistantTask.swift in Sources */,
 				F70D7C3725FFBF82002B9E34 /* NCCollectionViewCommon.swift in Sources */,
 				F76D364628A4F8BF00214537 /* NCActivityIndicator.swift in Sources */,
 				F7134186259747BA00768D21 /* NCPushNotification.m in Sources */,
@@ -4139,6 +4166,7 @@
 				F3BB46522A39EC4900461F6E /* NCMoreAppSuggestionsCell.swift in Sources */,
 				F704B5E52430AA8000632F5F /* NCCreateFormUploadConflict.swift in Sources */,
 				F765608F23BF813600765969 /* NCContentPresenter.swift in Sources */,
+				F3F24BA92BCECFF800048EF6 /* EmptyTasksView.swift in Sources */,
 				F7327E352B73AEDE00A462C7 /* NCNetworking+LivePhoto.swift in Sources */,
 				F76687072B7D067400779E3F /* NCAudioRecorderViewController.swift in Sources */,
 				F343A4BB2A1E734600DDA874 /* Optional+Extension.swift in Sources */,
@@ -5216,6 +5244,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		F3F24BA52BCEBC2E00048EF6 /* XCRemoteSwiftPackageReference "PopupView" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/exyte/PopupView.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.9.1;
+			};
+		};
 		F70B86732642CE3B00ED5349 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
@@ -5445,6 +5481,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = F74E771E277A2EF40013B958 /* XCRemoteSwiftPackageReference "XLForm" */;
 			productName = XLForm;
+		};
+		F3F24BA62BCEBC2E00048EF6 /* PopupView */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F3F24BA52BCEBC2E00048EF6 /* XCRemoteSwiftPackageReference "PopupView" */;
+			productName = PopupView;
 		};
 		F70821D729E59E6D001CA2D7 /* TagListView */ = {
 			isa = XCSwiftPackageProductDependency;

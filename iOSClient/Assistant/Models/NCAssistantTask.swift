@@ -10,12 +10,14 @@ import Foundation
 import NextcloudKit
 import SwiftUI
 
-class NCAssistantModel: ObservableObject {
+class NCAssistantTask: ObservableObject {
     @Published var types: [NKTextProcessingTaskType] = []
-    private var tasks: [NKTextProcessingTask] = []
     @Published var filteredTasks: [NKTextProcessingTask] = []
     @Published var selectedTaskType: NKTextProcessingTaskType?
+    @Published var selectedTask: NKTextProcessingTask?
+    @Published var hasError: Bool = false
 
+    private var tasks: [NKTextProcessingTask] = []
     private let excludedTypeIds = ["OCA\\ContextChat\\TextProcessing\\ContextChatTaskType"]
 
     init() {
@@ -23,8 +25,8 @@ class NCAssistantModel: ObservableObject {
     }
 
     func load() {
-        loadTypes()
-        loadTasks()
+        loadAllTypes()
+        loadAllTasks()
     }
 
     func filterTasks(ofType type: NKTextProcessingTaskType?) {
@@ -40,22 +42,60 @@ class NCAssistantModel: ObservableObject {
         filterTasks(ofType: self.selectedTaskType)
     }
 
-    func schedule(input: String) {
-        NextcloudKit.shared.textProcessingSchedule(input: input, typeId: selectedTaskType?.id ?? "", identifier: "assistant") { account, task, data, error in
-            self.loadTasks()
+    func scheduleTask(input: String) {
+        NextcloudKit.shared.textProcessingSchedule(input: input, typeId: selectedTaskType?.id ?? "", identifier: "assistant") { _, task, _, error in
+            if error != .success {
+                self.hasError = true
+                return
+            }
+
+            guard let task else { return }
+
+            withAnimation {
+                self.tasks.insert(task, at: 0)
+                self.filteredTasks.insert(task, at: 0)
+            }
         }
     }
 
-    private func loadTypes() {
-        NextcloudKit.shared.textProcessingGetTypes { _, types, _, _ in
+    func deleteTask(_ task: NKTextProcessingTask) {
+        guard let id = task.id else { return }
+
+        NextcloudKit.shared.textProcessingDeleteTask(task: String(id)) { _, task, _, error in
+            if error != .success {
+                self.hasError = true
+                return
+            }
+
+            withAnimation {
+                self.tasks.removeAll(where: { $0.id == task?.id })
+                self.filteredTasks.removeAll(where: { $0.id == task?.id })
+            }
+        }
+    }
+
+    private func loadAllTypes() {
+        NextcloudKit.shared.textProcessingGetTypes { _, types, _, error in
+            if error != .success {
+                self.hasError = true
+                return
+            }
+
             guard let filteredTypes = types?.filter({ !self.excludedTypeIds.contains($0.id ?? "")}) else { return }
 
-            self.types = filteredTypes
+            withAnimation {
+                self.types = filteredTypes
+            }
         }
     }
 
-    private func loadTasks(appId: String = "assistant") {
+    private func loadAllTasks(appId: String = "assistant") {
         NextcloudKit.shared.textProcessingTaskList(appId: appId) { _, tasks, _, error in
+            if error != .success {
+                self.hasError = true
+                return
+            }
+
             guard let tasks = tasks else { return }
             self.tasks = tasks
             self.filterTasks(ofType: self.selectedTaskType)
@@ -63,7 +103,7 @@ class NCAssistantModel: ObservableObject {
     }
 }
 
-extension NCAssistantModel {
+extension NCAssistantTask {
     public func loadDummyData() {
         let loremIpsum = """
         Lorem ipsum dolor sit amet, consectetur adipiscing
@@ -84,11 +124,12 @@ extension NCAssistantModel {
         self.tasks = tasks
         self.filteredTasks = tasks
         self.selectedTaskType = NKTextProcessingTaskType(id: "OCP\\TextProcessing\\FreePromptTaskType", name: "Free Prompt", description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua")
+        self.selectedTask = tasks[0]
         self.types = [
             NKTextProcessingTaskType(id: "1", name: "Free Prompt", description: ""),
             NKTextProcessingTaskType(id: "2", name: "Summarize", description: ""),
             NKTextProcessingTaskType(id: "3", name: "Generate headline", description: ""),
-            NKTextProcessingTaskType(id: "4", name: "Reformulate", description: ""),
+            NKTextProcessingTaskType(id: "4", name: "Reformulate", description: "")
         ]
     }
 }

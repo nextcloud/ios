@@ -8,58 +8,63 @@
 
 import SwiftUI
 import NextcloudKit
+import PopupView
 
 struct NCAssistant: View {
-    @EnvironmentObject var model: NCAssistantModel
+    @EnvironmentObject var model: NCAssistantTask
     @State var presentNewTaskDialog = false
-    @State var taskText = ""
-    @State var showHud = true
+    @State var input = ""
 
     var body: some View {
         NavigationView {
-            ZStack(alignment: .top) {
-
-                List(model.filteredTasks, id: \.id) { task in
-                    TaskItem(task: task)
+            Group {
+                if model.filteredTasks.isEmpty {
+                    EmptyTasksView()
+                } else {
+                    TaskList()
                 }
-                .refreshable {
-                    model.load()
-                }
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .safeAreaInset(edge: .top, spacing: -10) {
-                    ScrollView(.horizontal, showsIndicators: false) {
-                        LazyHStack {
-                            TypeButton(taskType: nil)
-
-                            ForEach(model.types, id: \.id) { type in
-                                TypeButton(taskType: type)
-                            }
-                        }
-                        .padding(20)
-                        .frame(height: 50)
-                    }
-                }
-                .toolbar {
-                    NavigationLink(destination: NCAssistantCreateNewTask()) {
-                        Image(systemName: "plus")
-                    }
-                    .disabled(model.selectedTaskType == nil)
-                }
-                .navigationBarTitleDisplayMode(.inline)
-                .navigationTitle("Assistant")
-
-
-                HUDView(showHUD: .constant(false), textLabel: NSLocalizedString("_wait_", comment: ""), image: "doc.badge.arrow.up")
-                    .frame(alignment: .top)
-
             }
-            .environmentObject(model)
+            .toolbar {
+                NavigationLink(destination: NCAssistantCreateNewTask()) {
+                    Image(systemName: "plus")
+                }
+                .disabled(model.selectedTaskType == nil)
+            }
+            .navigationBarTitleDisplayMode(.inline)
+            .navigationTitle(NSLocalizedString("_assistant_", comment: ""))
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .safeAreaInset(edge: .top, spacing: -10) {
+                ScrollView(.horizontal, showsIndicators: false) {
+                    LazyHStack {
+                        TypeButton(taskType: nil)
+
+                        ForEach(model.types, id: \.id) { type in
+                            TypeButton(taskType: type)
+                        }
+                    }
+                    .padding(20)
+                    .frame(height: 50)
+                }
+            }
         }
+
+        .popup(isPresented: $model.hasError) {
+            Text(NSLocalizedString("_error_occurred_", comment: ""))
+                .padding()
+                .background(.red)
+                .cornerRadius(30.0)
+        } customize: {
+            $0
+                .type(.floater())
+                .autohideIn(2)
+                .position(.bottom)
+        }
+        .environmentObject(model)
     }
 }
 
 #Preview {
-    let model = NCAssistantModel()
+    let model = NCAssistantTask()
 
     return NCAssistant()
         .environmentObject(model)
@@ -68,8 +73,22 @@ struct NCAssistant: View {
         }
 }
 
+struct TaskList: View {
+    @EnvironmentObject var model: NCAssistantTask
+
+
+    var body: some View {
+        List(model.filteredTasks, id: \.id) { task in
+            TaskItem(task: task)
+        }
+        .refreshable {
+            model.load()
+        }
+    }
+}
+
 struct TypeButton: View {
-    @EnvironmentObject var model: NCAssistantModel
+    @EnvironmentObject var model: NCAssistantTask
     let taskType: NKTextProcessingTaskType?
 
     var body: some View {
@@ -96,10 +115,12 @@ struct TypeButton: View {
 }
 
 struct TaskItem: View {
+    @EnvironmentObject var model: NCAssistantTask
+    @State var showDeleteConfirmation = false
     let task: NKTextProcessingTask
 
     var body: some View {
-        NavigationLink(destination: NCAssistantTaskDetail(task: task)) {
+        NavigationLink(destination: NCAssistantTaskDetail()) {
             VStack(alignment: .leading) {
                 Text(task.input ?? "")
                     .lineLimit(4)
@@ -117,11 +138,24 @@ struct TaskItem: View {
                         .foregroundStyle(.tertiary)
                 }
             }
+            .swipeActions {
+                Button(NSLocalizedString("_delete_", comment: "")) {
+                    showDeleteConfirmation = true
+                }
+                .tint(.red)
+            }
+            .confirmationDialog("", isPresented: $showDeleteConfirmation) {
+                Button(NSLocalizedString("_delete_", comment: ""), role: .destructive) {
+                    withAnimation {
+                        model.deleteTask(task)
+                    }
+                }
+            }
         }
     }
 }
 
-struct CustomLabelStyle: LabelStyle {
+private struct CustomLabelStyle: LabelStyle {
     var spacing: Double = 5
 
     func makeBody(configuration: Configuration) -> some View {

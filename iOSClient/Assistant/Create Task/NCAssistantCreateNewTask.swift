@@ -9,7 +9,7 @@
 import SwiftUI
 
 struct NCAssistantCreateNewTask: View {
-    @EnvironmentObject var model: NCAssistantModel
+    @EnvironmentObject var model: NCAssistantTask
     @State var text = ""
     @FocusState private var inFocus: Bool
     @Environment(\.presentationMode) var presentationMode
@@ -21,7 +21,7 @@ struct NCAssistantCreateNewTask: View {
 
             ZStack(alignment: .topLeading) {
                 if text.isEmpty {
-                    Text("Input")
+                    Text(NSLocalizedString("_input_", comment: ""))
                         .padding(24)
                         .foregroundStyle(.secondary)
                 }
@@ -38,14 +38,14 @@ struct NCAssistantCreateNewTask: View {
         }
         .toolbar {
             Button(action: {
-                model.schedule(input: text)
+                model.scheduleTask(input: text)
                 presentationMode.wrappedValue.dismiss()
             }, label: {
                 Text(NSLocalizedString("_create_", comment: ""))
             })
             .disabled(text.isEmpty)
         }
-        .navigationTitle("New " + (model.selectedTaskType?.name ?? "") + " task")
+        .navigationTitle(String(format: NSLocalizedString("_new_task_", comment: ""), model.selectedTaskType?.name ?? ""))
         .navigationBarTitleDisplayMode(.inline)
         .padding()
         .onAppear {
@@ -55,7 +55,7 @@ struct NCAssistantCreateNewTask: View {
 }
 
 #Preview {
-    let model = NCAssistantModel()
+    let model = NCAssistantTask()
 
     return NCAssistantCreateNewTask()
         .environmentObject(model)
