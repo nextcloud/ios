@@ -335,7 +335,8 @@ class NCFiles: NCCollectionViewCommon {
 extension NCFiles: UICollectionViewDragDelegate {
     func collectionView(_ collectionView: UICollectionView, itemsForBeginning session: UIDragSession, at indexPath: IndexPath) -> [UIDragItem] {
         guard let metadata = dataSource.cellForItemAt(indexPath: indexPath),
-              !isEditMode else { return [] }
+              !isEditMode,
+              !isDirectoryE2EE(metadata: metadata) else { return [] }
         dragStartedOcId = metadata.ocId
         let itemProvider = NSItemProvider(object: metadata.ocId as NSString)
         return [UIDragItem(itemProvider: itemProvider)]
@@ -358,12 +359,6 @@ extension NCFiles: UICollectionViewDropDelegate {
     func collectionView(_ collectionView: UICollectionView, performDropWith coordinator: UICollectionViewDropCoordinator) {
         cleanDDVariable()
         let location = coordinator.session.location(in: collectionView)
-        // No valid for directory ??
-        if let destinationIndexPath = coordinator.destinationIndexPath,
-           let destinationMetadata = dataSource.cellForItemAt(indexPath: destinationIndexPath),
-           destinationMetadata.directory {
-            return
-        }
 
         if let item = coordinator.items.first,
            let provider = item.dragItem.itemProvider.copy() as? NSItemProvider {
@@ -381,14 +376,17 @@ extension NCFiles: UICollectionViewDropDelegate {
 
     func collectionView(_ collectionView: UICollectionView, dropSessionDidUpdate session: UIDropSession, withDestinationIndexPath destinationIndexPath: IndexPath?) -> UICollectionViewDropProposal {
         disabeHighlightedCells()
-
         guard let destinationIndexPath,
-              let metadata = dataSource.cellForItemAt(indexPath: destinationIndexPath) else {
+              let destinationMetadata = dataSource.cellForItemAt(indexPath: destinationIndexPath) else {
             cleanDDVariable()
             return UICollectionViewDropProposal(operation: .copy)
         }
 
-        if metadata.directory, metadata.ocId != dragStartedOcId {
+        if isDirectoryE2EE(metadata: destinationMetadata) || destinationMetadata.ocId == dragStartedOcId {
+            return UICollectionViewDropProposal(operation: .forbidden)
+        }
+
+        if destinationMetadata.directory {
             let cell = collectionView.cellForItem(at: destinationIndexPath) as? NCCellProtocol
             cell?.setHighlighted(true)
         }
@@ -455,6 +453,11 @@ extension NCFiles: UICollectionViewDropDelegate {
         appDelegate.ddHoverTimerIndexPath = nil
         appDelegate.ddCurrentHoverCollectionView = nil
         appDelegate.ddCurrentHoverIndexPath = nil
+    }
+
+    private func isDirectoryE2EE(metadata: tableMetadata) -> Bool {
+        if !metadata.directory { return false }
+        return NCUtilityFileSystem().isDirectoryE2EE(account: metadata.account, urlBase: metadata.urlBase, userId: metadata.userId, serverUrl: metadata.serverUrl + "/" + metadata.fileName)
     }
 }
 
