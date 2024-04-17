@@ -336,9 +336,23 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
 
     func setHighlighted(_ status: Bool) {
         if status {
-            self.backgroundColor = .red
+            var blurEffect: UIVisualEffect?
+            var blurEffectView: UIView?
+            imageSelect.image = NCImageCache.images.checkedYes
+            if traitCollection.userInterfaceStyle == .dark {
+                blurEffect = UIBlurEffect(style: .dark)
+                blurEffectView = UIVisualEffectView(effect: blurEffect)
+                blurEffectView?.backgroundColor = .black
+            } else {
+                blurEffect = UIBlurEffect(style: .extraLight)
+                blurEffectView = UIVisualEffectView(effect: blurEffect)
+                blurEffectView?.backgroundColor = .lightGray
+            }
+            blurEffectView?.frame = self.bounds
+            blurEffectView?.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+            backgroundView = blurEffectView
         } else {
-            self.backgroundColor = .clear
+            backgroundView = nil
         }
     }
 }
