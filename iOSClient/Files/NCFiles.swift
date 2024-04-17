@@ -343,8 +343,8 @@ extension NCFiles: UICollectionViewDropDelegate {
     func collectionView(_ collectionView: UICollectionView, performDropWith coordinator: UICollectionViewDropCoordinator) {
         let location = coordinator.session.location(in: collectionView)
 
-        appDelegate.ddHoverTimer?.invalidate()
-        appDelegate.ddHoverTimer = nil
+        appDelegate.ddHoverTimerIndexPath?.invalidate()
+        appDelegate.ddHoverTimerIndexPath = nil
         appDelegate.ddCurrentHoverCollectionView = nil
         appDelegate.ddCurrentHoverIndexPath = nil
 
@@ -367,7 +367,7 @@ extension NCFiles: UICollectionViewDropDelegate {
 
         guard let destinationIndexPath,
               let metadata = dataSource.cellForItemAt(indexPath: destinationIndexPath) else {
-            appDelegate.ddHoverTimer?.invalidate()
+            appDelegate.ddHoverTimerIndexPath?.invalidate()
             appDelegate.ddCurrentHoverIndexPath = nil
             appDelegate.ddCurrentHoverCollectionView = nil
             return UICollectionViewDropProposal(operation: .copy)
@@ -381,8 +381,8 @@ extension NCFiles: UICollectionViewDropDelegate {
         if appDelegate.ddCurrentHoverIndexPath != destinationIndexPath || appDelegate.ddCurrentHoverCollectionView != collectionView {
             appDelegate.ddCurrentHoverIndexPath = destinationIndexPath
             appDelegate.ddCurrentHoverCollectionView = collectionView
-            appDelegate.ddHoverTimer?.invalidate()
-            appDelegate.ddHoverTimer = Timer.scheduledTimer(withTimeInterval: 2, repeats: false) { [weak self] _ in
+            appDelegate.ddHoverTimerIndexPath?.invalidate()
+            appDelegate.ddHoverTimerIndexPath = Timer.scheduledTimer(withTimeInterval: 2, repeats: false) { [weak self] _ in
                 guard let self else { return }
                 if self.appDelegate.ddCurrentHoverIndexPath == destinationIndexPath,
                    let metadata = self.dataSource.cellForItemAt(indexPath: destinationIndexPath),
@@ -420,23 +420,30 @@ extension NCFiles: UICollectionViewDropDelegate {
     }
 }
 
+// MARK: - Drop Interaction
+
 extension NCFiles: UIDropInteractionDelegate {
     func dropInteraction(_ interaction: UIDropInteraction, canHandle session: UIDropSession) -> Bool {
         return session.canLoadObjects(ofClass: NSString.self)
     }
 
     func dropInteraction(_ interaction: UIDropInteraction, sessionDidEnter session: UIDropSession) {
-        // Opzionale: fornisci un feedback visivo
+        disabeHighlightedCells()
     }
 
     func dropInteraction(_ interaction: UIDropInteraction, sessionDidUpdate session: UIDropSession) -> UIDropProposal {
-        // Decidi cosa fare quando un elemento viene trascinato sopra la view
+        appDelegate.ddHoverTimerIndexPath = Timer.scheduledTimer(withTimeInterval: 2, repeats: false) { [weak self] _ in
+            guard let self else { return }
+            self.navigationController?.popViewController(animated: true)
+        }
         return UIDropProposal(operation: .copy)
     }
 
+    func dropInteraction(_ interaction: UIDropInteraction, sessionDidExit session: UIDropSession) {
+        appDelegate.ddHoverTimerDropInteraction?.invalidate()
+        appDelegate.ddHoverTimerDropInteraction = nil
+    }
+
     func dropInteraction(_ interaction: UIDropInteraction, performDrop session: UIDropSession) {
-        // Esegui il pop al ViewController precedente
-        navigationController?.popViewController(animated: true)
     }
 }
-
