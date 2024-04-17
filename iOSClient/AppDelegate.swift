@@ -48,7 +48,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     var isAppRefresh: Bool = false
     var isProcessingTask: Bool = false
     // Drag & Drop (multi windows)
-    var ddHoverTimer: Timer?
+    var ddHoverTimerDropInteraction: Timer?
+    var ddHoverTimerIndexPath: Timer?
     var ddCurrentHoverCollectionView: UICollectionView?
     var ddCurrentHoverIndexPath: IndexPath?
 
