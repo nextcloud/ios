@@ -39,20 +39,21 @@ struct NCAssistant: View {
             .navigationTitle(NSLocalizedString("_assistant_", comment: ""))
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .safeAreaInset(edge: .top, spacing: -10) {
-                ScrollView(.horizontal, showsIndicators: false) {
-                    LazyHStack {
-                        TypeButton(taskType: nil)
+                ScrollViewReader { scrollProxy in
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        LazyHStack {
+                            TypeButton(taskType: nil, scrollProxy: scrollProxy)
 
-                        ForEach(model.types, id: \.id) { type in
-                            TypeButton(taskType: type)
+                            ForEach(model.types, id: \.id) { type in
+                                TypeButton(taskType: type, scrollProxy: scrollProxy)
+                            }
                         }
+                        .padding(20)
+                        .frame(height: 50)
                     }
-                    .padding(20)
-                    .frame(height: 50)
                 }
             }
         }
-
         .popup(isPresented: $model.hasError) {
             Text(NSLocalizedString("_error_occurred_", comment: ""))
                 .padding()
@@ -93,11 +94,17 @@ struct TaskList: View {
 
 struct TypeButton: View {
     @EnvironmentObject var model: NCAssistantTask
+
     let taskType: NKTextProcessingTaskType?
+    var scrollProxy: ScrollViewProxy
 
     var body: some View {
         Button {
             model.selectTaskType(taskType)
+
+            withAnimation {
+                scrollProxy.scrollTo(taskType?.id, anchor: .center)
+            }
         } label: {
             Text(taskType?.name ?? NSLocalizedString("_all_", comment: "")).font(.body)
         }
@@ -115,6 +122,7 @@ struct TypeButton: View {
             RoundedRectangle(cornerRadius: 20, style: RoundedCornerStyle.continuous)
                 .stroke(.tertiary.opacity(0.2), lineWidth: 1)
         )
+        .id(taskType?.id)
     }
 }
 
