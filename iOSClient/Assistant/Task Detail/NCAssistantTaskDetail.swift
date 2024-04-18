@@ -39,8 +39,10 @@ struct NCAssistantTaskDetail: View {
                 )
                 .frame(maxWidth: .infinity, alignment: .leading)
 
-                Text(NCUtility().dateDiff(.init(timeIntervalSince1970: TimeInterval(model.selectedTask?.completionExpectedAt ?? 0))))
-                    .frame(maxWidth: .infinity, alignment: .trailing)
+                if let completionExpectedAt = task.completionExpectedAt {
+                    Text(NCUtility().dateDiff(.init(timeIntervalSince1970: TimeInterval(completionExpectedAt))))
+                        .frame(maxWidth: .infinity, alignment: .trailing)
+                }
             }
             .padding()
 

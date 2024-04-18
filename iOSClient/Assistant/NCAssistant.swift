@@ -19,11 +19,11 @@ struct NCAssistant: View {
     var body: some View {
         NavigationView {
             ZStack {
+                TaskList()
+
                 if model.filteredTasks.isEmpty, !model.isLoading {
                     EmptyTasksView()
                 }
-
-                TaskList()
             }
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
@@ -45,8 +45,6 @@ struct NCAssistant: View {
                 ScrollViewReader { scrollProxy in
                     ScrollView(.horizontal, showsIndicators: false) {
                         LazyHStack {
-                            TypeButton(taskType: nil, scrollProxy: scrollProxy)
-
                             ForEach(model.types, id: \.id) { type in
                                 TypeButton(taskType: type, scrollProxy: scrollProxy)
                             }
@@ -110,7 +108,7 @@ struct TypeButton: View {
                 scrollProxy.scrollTo(taskType?.id, anchor: .center)
             }
         } label: {
-            Text(taskType?.name ?? NSLocalizedString("_all_", comment: "")).font(.body)
+            Text(taskType?.name ?? "").font(.body)
         }
         .padding(.horizontal)
         .padding(.vertical, 7)
@@ -149,9 +147,11 @@ struct TaskItem: View {
                     .padding(.top, 1)
                     .labelStyle(CustomLabelStyle())
 
-                    Text(NCUtility().dateDiff(.init(timeIntervalSince1970: TimeInterval(task.completionExpectedAt ?? 0))))
-                        .frame(maxWidth: .infinity, alignment: .trailing)
-                        .foregroundStyle(.tertiary)
+                    if let completionExpectedAt = task.completionExpectedAt {
+                        Text(NCUtility().dateDiff(.init(timeIntervalSince1970: TimeInterval(completionExpectedAt))))
+                            .frame(maxWidth: .infinity, alignment: .trailing)
+                            .foregroundStyle(.tertiary)
+                    }
                 }
             }
             .swipeActions {

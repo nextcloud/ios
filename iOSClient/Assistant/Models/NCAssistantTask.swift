@@ -27,7 +27,6 @@ class NCAssistantTask: ObservableObject {
 
     func load() {
         loadAllTypes()
-        loadAllTasks()
     }
 
     func filterTasks(ofType type: NKTextProcessingTaskType?) {
@@ -36,6 +35,8 @@ class NCAssistantTask: ObservableObject {
         } else {
             self.filteredTasks = tasks
         }
+
+        self.filteredTasks = filteredTasks.sorted(by: { $0.completionExpectedAt ?? 0 > $1.completionExpectedAt ?? 0 })
     }
 
     func selectTaskType(_ type: NKTextProcessingTaskType?) {
@@ -55,7 +56,6 @@ class NCAssistantTask: ObservableObject {
             }
 
             self.selectedTask = task
-            
             self.isLoading = false
         }
     }
@@ -115,6 +115,8 @@ class NCAssistantTask: ObservableObject {
             }
 
             self.isLoading = false
+            self.selectTaskType(filteredTypes[0])
+            self.loadAllTasks()
         }
     }
 
