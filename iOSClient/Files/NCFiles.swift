@@ -342,7 +342,10 @@ extension NCFiles: UICollectionViewDragDelegate {
               metadata.status == 0,
               !isEditMode,
               !isDirectoryE2EE(metadata: metadata) else { return [] }
+
         DragDropHover.shared.sourceMetadata = metadata
+        DragDropHover.shared.destinationMetadata = nil
+
         let itemProvider = NSItemProvider(object: metadata.ocId as NSString)
         return [UIDragItem(itemProvider: itemProvider)]
     }
@@ -369,8 +372,9 @@ extension NCFiles: UICollectionViewDropDelegate {
     func collectionView(_ collectionView: UICollectionView, performDropWith coordinator: UICollectionViewDropCoordinator) {
         cleanPushDragDropHover()
         let location = coordinator.session.location(in: collectionView)
-        DragDropHover.shared.destinationServerUrl = serverUrl
-        DragDropHover.shared.destinationIndexPath = coordinator.destinationIndexPath
+        if let destinationIndexPath = coordinator.destinationIndexPath {
+            DragDropHover.shared.destinationMetadata = dataSource.cellForItemAt(indexPath: destinationIndexPath)
+        }
 
         if let item = coordinator.items.first,
            let provider = item.dragItem.itemProvider.copy() as? NSItemProvider {
@@ -465,16 +469,39 @@ extension NCFiles: UICollectionViewDropDelegate {
     }
 
     @objc private func copyMenuFile() {
-        if let destinationIndexPath = DragDropHover.shared.destinationIndexPath,
-           let metadata = dataSource.cellForItemAt(indexPath: destinationIndexPath) {
-            print("")
-        } else if let serverUrl = DragDropHover.shared.destinationServerUrl {
-            print("")
+        let serverUrl: String?
+        if let destinationMetadata = DragDropHover.shared.destinationMetadata, destinationMetadata.directory {
+            serverUrl = destinationMetadata.serverUrl + "/" + destinationMetadata.fileName
+        } else {
+            serverUrl = self.serverUrl
+        }
+        guard let serverUrl, let metadata = DragDropHover.shared.sourceMetadata else { return }
+        Task {
+            let error = await NCNetworking.shared.copyMetadata(metadata, serverUrlTo: serverUrl, overwrite: false)
+            if error != .success {
+                NCContentPresenter().showError(error: error)
+            } else {
+                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSourceNetwork)
+            }
         }
     }
 
     @objc private func moveMenuFile() {
-
+        let serverUrl: String?
+        if let destinationMetadata = DragDropHover.shared.destinationMetadata, destinationMetadata.directory {
+            serverUrl = destinationMetadata.serverUrl + "/" + destinationMetadata.fileName
+        } else {
+            serverUrl = self.serverUrl
+        }
+        guard let serverUrl, let metadata = DragDropHover.shared.sourceMetadata else { return }
+        Task {
+            let error = await NCNetworking.shared.moveMetadata(metadata, serverUrlTo: serverUrl, overwrite: false)
+            if error != .success {
+                NCContentPresenter().showError(error: error)
+            } else {
+                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSourceNetwork)
+            }
+        }
     }
 
     private func cleanPushDragDropHover() {
@@ -490,7 +517,7 @@ extension NCFiles: UICollectionViewDropDelegate {
     }
 }
 
-// MARK: - Drop Interaction
+// MARK: - Drop Interaction Delegate
 
 extension NCFiles: UIDropInteractionDelegate {
     func dropInteraction(_ interaction: UIDropInteraction, canHandle session: UIDropSession) -> Bool {
@@ -525,7 +552,7 @@ class DragDropHover {
     var pushTimerIndexPath: Timer?
     var pushCollectionView: UICollectionView?
     var pushIndexPath: IndexPath?
+
     var sourceMetadata: tableMetadata?
-    var destinationServerUrl: String?
-    var destinationIndexPath: IndexPath?
+    var destinationMetadata: tableMetadata?
 }
