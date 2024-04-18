@@ -80,10 +80,6 @@
 		F3391B0A2B4C52CB001C0C4B /* JGProgressHUD in Frameworks */ = {isa = PBXBuildFile; productRef = F3391B092B4C52CB001C0C4B /* JGProgressHUD */; };
 		F3391B0C2B4C52D5001C0C4B /* SVGKit in Frameworks */ = {isa = PBXBuildFile; productRef = F3391B0B2B4C52D5001C0C4B /* SVGKit */; };
 		F3391B0E2B4C52DC001C0C4B /* XLForm in Frameworks */ = {isa = PBXBuildFile; productRef = F3391B0D2B4C52DC001C0C4B /* XLForm */; };
-		F3391B102B4C52E6001C0C4B /* (null) in Frameworks */ = {isa = PBXBuildFile; };
-		F3391B122B4C52EB001C0C4B /* (null) in Frameworks */ = {isa = PBXBuildFile; };
-		F3391B142B4C52EF001C0C4B /* (null) in Frameworks */ = {isa = PBXBuildFile; };
-		F3391B162B4C52F6001C0C4B /* (null) in Frameworks */ = {isa = PBXBuildFile; };
 		F33AAF9A2A60394C006ECCBD /* NCMoreUserCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F33AAF992A60394C006ECCBD /* NCMoreUserCell.xib */; };
 		F343A4B32A1E01FF00DDA874 /* PHAsset+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F343A4B22A1E01FF00DDA874 /* PHAsset+Extension.swift */; };
 		F343A4B42A1E084100DDA874 /* PHAsset+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F343A4B22A1E01FF00DDA874 /* PHAsset+Extension.swift */; };
@@ -106,11 +102,6 @@
 		F359D86B2A7D03420023F405 /* NCUtility+Exif.swift in Sources */ = {isa = PBXBuildFile; fileRef = F359D8662A7D03420023F405 /* NCUtility+Exif.swift */; };
 		F359D86C2A7D03420023F405 /* NCUtility+Exif.swift in Sources */ = {isa = PBXBuildFile; fileRef = F359D8662A7D03420023F405 /* NCUtility+Exif.swift */; };
 		F359D86D2A7D03420023F405 /* NCUtility+Exif.swift in Sources */ = {isa = PBXBuildFile; fileRef = F359D8662A7D03420023F405 /* NCUtility+Exif.swift */; };
-		F36677412B9F833300B23B81 /* (null) in Frameworks */ = {isa = PBXBuildFile; };
-		F36677432B9F833800B23B81 /* (null) in Frameworks */ = {isa = PBXBuildFile; };
-		F36677452B9F833D00B23B81 /* (null) in Frameworks */ = {isa = PBXBuildFile; };
-		F36677472B9F834400B23B81 /* (null) in Frameworks */ = {isa = PBXBuildFile; };
-		F36677492B9F837500B23B81 /* (null) in Frameworks */ = {isa = PBXBuildFile; };
 		F36C38B52BBDA15C009CF1E0 /* NCAssistant.swift in Sources */ = {isa = PBXBuildFile; fileRef = F36C38B42BBDA15C009CF1E0 /* NCAssistant.swift */; };
 		F36E64F72B9245210085ABB5 /* NCCollectionViewCommon+SelectTabBarDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F36E64F62B9245210085ABB5 /* NCCollectionViewCommon+SelectTabBarDelegate.swift */; };
 		F36E64FA2B96236C0085ABB5 /* UIView+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7E41315294A19B300839300 /* UIView+Extension.swift */; };
@@ -124,25 +115,6 @@
 		F372087E2BAB4C0F006B5430 /* TestConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = F37208742BAB4AB0006B5430 /* TestConstants.swift */; };
 		F37208812BAB5979006B5430 /* TestConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = F37208742BAB4AB0006B5430 /* TestConstants.swift */; };
 		F37208822BAB597B006B5430 /* BaseXCTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = F37208772BAB4B5D006B5430 /* BaseXCTestCase.swift */; };
-		F37208A42BAB63EE006B5430 /* (null) in Frameworks */ = {isa = PBXBuildFile; };
-		F37208A62BAB63EE006B5430 /* (null) in Frameworks */ = {isa = PBXBuildFile; };
-		F37208A82BAB63EE006B5430 /* (null) in Frameworks */ = {isa = PBXBuildFile; };
-		F37208AA2BAB63EE006B5430 /* (null) in Frameworks */ = {isa = PBXBuildFile; };
-		F37208AC2BAB63EE006B5430 /* (null) in Frameworks */ = {isa = PBXBuildFile; };
-		F37208AE2BAB63EE006B5430 /* (null) in Frameworks */ = {isa = PBXBuildFile; };
-		F37208B02BAB63EF006B5430 /* (null) in Frameworks */ = {isa = PBXBuildFile; };
-		F37208B22BAB63EF006B5430 /* (null) in Frameworks */ = {isa = PBXBuildFile; };
-		F37208B42BAB63EF006B5430 /* (null) in Frameworks */ = {isa = PBXBuildFile; };
-		F37208B62BAB63EF006B5430 /* (null) in Frameworks */ = {isa = PBXBuildFile; };
-		F37208B82BAB63EF006B5430 /* (null) in Frameworks */ = {isa = PBXBuildFile; };
-		F37208BA2BAB63EF006B5430 /* (null) in Frameworks */ = {isa = PBXBuildFile; };
-		F37208BC2BAB63EF006B5430 /* (null) in Frameworks */ = {isa = PBXBuildFile; };
-		F37208BE2BAB63F0006B5430 /* (null) in Frameworks */ = {isa = PBXBuildFile; };
-		F37208C02BAB63F0006B5430 /* (null) in Frameworks */ = {isa = PBXBuildFile; };
-		F37208C22BAB63F0006B5430 /* (null) in Frameworks */ = {isa = PBXBuildFile; };
-		F37208C42BAB63F0006B5430 /* (null) in Frameworks */ = {isa = PBXBuildFile; };
-		F37208C62BAB63F0006B5430 /* (null) in Frameworks */ = {isa = PBXBuildFile; };
-		F37208C82BAB63F1006B5430 /* (null) in Frameworks */ = {isa = PBXBuildFile; };
 		F38F71252B6BBDC300473CDC /* NCCollectionViewCommonSelectTabBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = F38F71242B6BBDC300473CDC /* NCCollectionViewCommonSelectTabBar.swift */; };
 		F39298972A3B12CB00509762 /* BaseNCMoreCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F39298962A3B12CB00509762 /* BaseNCMoreCell.swift */; };
 		F3953BD72A6E87E000EE03F9 /* BaseIntegrationXCTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3953BD62A6E87E000EE03F9 /* BaseIntegrationXCTestCase.swift */; };
@@ -153,11 +125,6 @@
 		F3BB46542A3A1E9D00461F6E /* CCCellMore.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3BB46532A3A1E9D00461F6E /* CCCellMore.swift */; };
 		F3CFF65F2BC55ECE002380BE /* NCAssistantCreateNewTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3CFF65E2BC55ECE002380BE /* NCAssistantCreateNewTask.swift */; };
 		F3CFF6662BC69ACE002380BE /* NCAssistantTaskDetail.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3CFF6652BC69ACE002380BE /* NCAssistantTaskDetail.swift */; };
-		F3F041992B9F7E6700D5155F /* (null) in Frameworks */ = {isa = PBXBuildFile; };
-		F3F0419B2B9F7E6700D5155F /* (null) in Frameworks */ = {isa = PBXBuildFile; };
-		F3F0419D2B9F7E6E00D5155F /* (null) in Frameworks */ = {isa = PBXBuildFile; };
-		F3F0419F2B9F7E7900D5155F /* (null) in Frameworks */ = {isa = PBXBuildFile; };
-		F3F041A32B9F828B00D5155F /* (null) in Frameworks */ = {isa = PBXBuildFile; };
 		F3F24BA72BCEBC2E00048EF6 /* PopupView in Frameworks */ = {isa = PBXBuildFile; productRef = F3F24BA62BCEBC2E00048EF6 /* PopupView */; };
 		F3F24BA92BCECFF800048EF6 /* EmptyTasksView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3F24BA82BCECFF800048EF6 /* EmptyTasksView.swift */; };
 		F700222C1EC479840080073F /* Custom.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F700222B1EC479840080073F /* Custom.xcassets */; };
@@ -1587,7 +1554,6 @@
 				F72AD71128C24BBB006CB92D /* NextcloudKit in Frameworks */,
 				F710FC88277B7D3F00AA9FBF /* RealmSwift in Frameworks */,
 				F760DE0F2AE66EE60027D78A /* KeychainAccess in Frameworks */,
-				F36677452B9F833D00B23B81 /* (null) in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1595,8 +1561,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F3F0419B2B9F7E6700D5155F /* (null) in Frameworks */,
-				F3F041992B9F7E6700D5155F /* (null) in Frameworks */,
 				F3391B022B4C40FB001C0C4B /* XLForm in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1605,31 +1569,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F37208C42BAB63F0006B5430 /* (null) in Frameworks */,
-				F37208B02BAB63EF006B5430 /* (null) in Frameworks */,
-				F37208A82BAB63EE006B5430 /* (null) in Frameworks */,
-				F3F0419F2B9F7E7900D5155F /* (null) in Frameworks */,
-				F37208C82BAB63F1006B5430 /* (null) in Frameworks */,
-				F37208A62BAB63EE006B5430 /* (null) in Frameworks */,
-				F37208C22BAB63F0006B5430 /* (null) in Frameworks */,
-				F3391B162B4C52F6001C0C4B /* (null) in Frameworks */,
-				F37208B62BAB63EF006B5430 /* (null) in Frameworks */,
-				F3391B142B4C52EF001C0C4B /* (null) in Frameworks */,
-				F37208BA2BAB63EF006B5430 /* (null) in Frameworks */,
-				F3391B122B4C52EB001C0C4B /* (null) in Frameworks */,
-				F37208AA2BAB63EE006B5430 /* (null) in Frameworks */,
-				F3391B102B4C52E6001C0C4B /* (null) in Frameworks */,
-				F37208AE2BAB63EE006B5430 /* (null) in Frameworks */,
-				F37208C02BAB63F0006B5430 /* (null) in Frameworks */,
-				F37208C62BAB63F0006B5430 /* (null) in Frameworks */,
-				F37208A42BAB63EE006B5430 /* (null) in Frameworks */,
-				F37208B22BAB63EF006B5430 /* (null) in Frameworks */,
-				F37208BC2BAB63EF006B5430 /* (null) in Frameworks */,
-				F37208B82BAB63EF006B5430 /* (null) in Frameworks */,
-				F37208B42BAB63EF006B5430 /* (null) in Frameworks */,
 				F3391B062B4C4111001C0C4B /* XLForm in Frameworks */,
-				F37208AC2BAB63EE006B5430 /* (null) in Frameworks */,
-				F37208BE2BAB63F0006B5430 /* (null) in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1637,7 +1577,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F3F0419D2B9F7E6E00D5155F /* (null) in Frameworks */,
 				F3391B082B4C52C5001C0C4B /* FirebaseDatabase in Frameworks */,
 				F3391B0A2B4C52CB001C0C4B /* JGProgressHUD in Frameworks */,
 				F3391B0C2B4C52D5001C0C4B /* SVGKit in Frameworks */,
@@ -1654,7 +1593,6 @@
 				F7490E8929882CC8009DCE94 /* SwiftEntryKit in Frameworks */,
 				F7490E7229882BB4009DCE94 /* RealmSwift in Frameworks */,
 				F760DE0D2AE66EDF0027D78A /* KeychainAccess in Frameworks */,
-				F36677432B9F833800B23B81 /* (null) in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1662,7 +1600,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F36677492B9F837500B23B81 /* (null) in Frameworks */,
 				F711A4EF2AF932B900095DD8 /* SVGKitSwift in Frameworks */,
 				F710FC80277B7D2700AA9FBF /* RealmSwift in Frameworks */,
 				F74C863D2AEFBFD9009A1D4A /* LRUCache in Frameworks */,
@@ -1687,7 +1624,6 @@
 				F783034428B5142B00B84583 /* NextcloudKit in Frameworks */,
 				F7346E1328B0EF5B006CE2D2 /* SwiftUI.framework in Frameworks */,
 				F760DE052AE66EBE0027D78A /* KeychainAccess in Frameworks */,
-				F36677472B9F834400B23B81 /* (null) in Frameworks */,
 				F7346E2928B0FFF2006CE2D2 /* RealmSwift in Frameworks */,
 				F7A560462AE15D3D00BE8FD6 /* Queuer in Frameworks */,
 				F783030D28B4C59A00B84583 /* SwiftEntryKit in Frameworks */,
@@ -1700,7 +1636,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F36677412B9F833300B23B81 /* (null) in Frameworks */,
 				F7A560442AE15D2900BE8FD6 /* Queuer in Frameworks */,
 				F760DE0B2AE66ED80027D78A /* KeychainAccess in Frameworks */,
 				F73ADD2426554FE20069EA0D /* SwiftEntryKit in Frameworks */,
@@ -1753,7 +1688,6 @@
 				F7A8D72428F1771B008BBE1C /* NextcloudKit in Frameworks */,
 				F7C9739228F17131002C43E2 /* Intents.framework in Frameworks */,
 				F760DE072AE66EC70027D78A /* KeychainAccess in Frameworks */,
-				F3F041A32B9F828B00D5155F /* (null) in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
