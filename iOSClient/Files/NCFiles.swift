@@ -73,11 +73,9 @@ class NCFiles: NCCollectionViewCommon {
             }
         }
 
-        if UIApplication.shared.supportsMultipleScenes {
-            collectionView.dragInteractionEnabled = true
-            collectionView.dragDelegate = self
-            collectionView.dropDelegate = self
-        }
+        collectionView.dragInteractionEnabled = true
+        collectionView.dragDelegate = self
+        collectionView.dropDelegate = self
     }
 
     override func viewWillAppear(_ animated: Bool) {
