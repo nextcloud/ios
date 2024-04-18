@@ -304,8 +304,14 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     }
 
     @objc func reloadDataSourceNetwork(_ notification: NSNotification) {
+        var withQueryDB = false
+        if let userInfo = notification.userInfo as NSDictionary?,
+           let reload = userInfo["withQueryDB"] as? Bool {
+            withQueryDB = reload
+        }
+
         if !isSearchingMode {
-            reloadDataSourceNetwork()
+            reloadDataSourceNetwork(withQueryDB: withQueryDB)
         }
     }
 
@@ -932,7 +938,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         }
     }
 
-    @objc func reloadDataSourceNetwork() {
+    @objc func reloadDataSourceNetwork(withQueryDB: Bool = false) {
         DispatchQueue.main.async {
             self.collectionView?.reloadData()
         }

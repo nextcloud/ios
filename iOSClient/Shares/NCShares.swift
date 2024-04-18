@@ -97,7 +97,7 @@ class NCShares: NCCollectionViewCommon {
         reload()
     }
 
-    override func reloadDataSourceNetwork() {
+    override func reloadDataSourceNetwork(withQueryDB: Bool = false) {
         super.reloadDataSourceNetwork()
 
         NextcloudKit.shared.readShares(parameters: NKShareParameter()) { task in
@@ -112,7 +112,7 @@ class NCShares: NCCollectionViewCommon {
                 }
                 self.reloadDataSource()
             } else {
-                self.reloadDataSource(withQueryDB: false)
+                self.reloadDataSource(withQueryDB: withQueryDB)
             }
         }
     }

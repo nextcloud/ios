@@ -73,7 +73,7 @@ class NCFavorite: NCCollectionViewCommon {
                                        searchResults: self.searchResults)
     }
 
-    override func reloadDataSourceNetwork() {
+    override func reloadDataSourceNetwork(withQueryDB: Bool = false) {
         super.reloadDataSourceNetwork()
 
         NextcloudKit.shared.listingFavorites(showHiddenFiles: NCKeychain().showHiddenFiles, options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { task in
@@ -86,7 +86,7 @@ class NCFavorite: NCCollectionViewCommon {
                     self.reloadDataSource()
                 }
             } else {
-                self.reloadDataSource(withQueryDB: false)
+                self.reloadDataSource(withQueryDB: withQueryDB)
             }
         }
     }
