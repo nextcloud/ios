@@ -354,28 +354,52 @@ extension NCFiles: UICollectionViewDragDelegate {
 extension NCFiles: UICollectionViewDropDelegate {
     func collectionView(_ collectionView: UICollectionView, performDropWith coordinator: UICollectionViewDropCoordinator) {
         cleanPushDragDropHover()
+        var serverUrl: String = self.serverUrl
         let location = coordinator.session.location(in: collectionView)
         if let destinationIndexPath = coordinator.destinationIndexPath {
             DragDropHover.shared.destinationMetadata = dataSource.cellForItemAt(indexPath: destinationIndexPath)
         }
-        if DragDropHover.shared.sourceMetadata != nil {
-            self.openMenu(collectionView: collectionView, location: location)
+
+        func uploadFile(fileNamePath: String) {
+            Task {
+                if let destinationMetadata = DragDropHover.shared.destinationMetadata, destinationMetadata.directory {
+                    serverUrl = destinationMetadata.serverUrl + "/" + destinationMetadata.fileName
+                }
+                let ocId = NSUUID().uuidString
+                let ext = (fileNamePath as NSString).pathExtension
+                let fileName = await NCNetworking.shared.createFileName(fileNameBase: NSLocalizedString("_untitled_", comment: "") + "." + ext, account: self.appDelegate.account, serverUrl: serverUrl)
+                let toPath = utilityFileSystem.getDirectoryProviderStorageOcId(ocId, fileNameView: fileName)
+                utilityFileSystem.copyFile(atPath: fileNamePath, toPath: toPath)
+
+                let metadataForUpload = NCManageDatabase.shared.createMetadata(account: appDelegate.account, user: appDelegate.user, userId: appDelegate.userId, fileName: fileName, fileNameView: fileName, ocId: ocId, serverUrl: serverUrl, urlBase: appDelegate.urlBase, url: "", contentType: "")
+
+                metadataForUpload.session = NCNetworking.shared.sessionUploadBackground
+                metadataForUpload.sessionSelector = NCGlobal.shared.selectorUploadFile
+                metadataForUpload.size = utilityFileSystem.getFileSize(filePath: toPath)
+                metadataForUpload.status = NCGlobal.shared.metadataStatusWaitUpload
+                metadataForUpload.sessionDate = Date()
+
+                NCManageDatabase.shared.addMetadata(metadataForUpload)
+            }
         }
 
-        /* Exsternal ?
-        if let item = coordinator.items.first,
-           let provider = item.dragItem.itemProvider.copy() as? NSItemProvider {
-            provider.loadObject(ofClass: NSString.self) { data, error in
-                if error == nil,
-                   let ocId = data as? NSString,
-                   let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId as String) {
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                        self.openMenu(collectionView: collectionView, location: location)
+        if DragDropHover.shared.sourceMetadata != nil {
+            self.openMenu(collectionView: collectionView, location: location)
+        } else {
+            // External
+            if let item = coordinator.items.first,
+               let provider = item.dragItem.itemProvider.copy() as? NSItemProvider {
+                provider.loadObject(ofClass: UIImage.self) { data, error in
+                    if error == nil, let image = data as? UIImage, let data = image.jpegData(compressionQuality: 1) {
+                        do {
+                            let fileNamePath = NSTemporaryDirectory() + NSUUID().uuidString + ".jpg"
+                            try data.write(to: URL(fileURLWithPath: fileNamePath))
+                            uploadFile(fileNamePath: fileNamePath)
+                        } catch {  }
                     }
                 }
             }
         }
-        */
     }
 
     func collectionView(_ collectionView: UICollectionView, dropSessionDidUpdate session: UIDropSession, withDestinationIndexPath destinationIndexPath: IndexPath?) -> UICollectionViewDropProposal {
