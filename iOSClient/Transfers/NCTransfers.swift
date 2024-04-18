@@ -263,7 +263,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
         super.reloadDataSource(withQueryDB: withQueryDB)
     }
 
-    override func reloadDataSourceNetwork() {
+    override func reloadDataSourceNetwork(withQueryDB: Bool = false) {
         Task {
             await NCNetworkingProcess.shared.verifyZombie()
             super.reloadDataSource(withQueryDB: true)
