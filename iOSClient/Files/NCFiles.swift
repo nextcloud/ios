@@ -178,7 +178,7 @@ class NCFiles: NCCollectionViewCommon {
         }
     }
 
-    override func reloadDataSourceNetwork() {
+    override func reloadDataSourceNetwork(withQueryDB: Bool = false) {
         guard !isSearchingMode else {
             return networkSearch()
         }
@@ -211,10 +211,10 @@ class NCFiles: NCCollectionViewCommon {
                 if metadatasDifferentCount != 0 || metadatasModified != 0 {
                     self.reloadDataSource()
                 } else {
-                    self.reloadDataSource(withQueryDB: false)
+                    self.reloadDataSource(withQueryDB: withQueryDB)
                 }
             } else {
-                self.reloadDataSource(withQueryDB: false)
+                self.reloadDataSource(withQueryDB: withQueryDB)
             }
         }
     }
@@ -486,7 +486,7 @@ extension NCFiles: UICollectionViewDropDelegate {
             if error != .success {
                 NCContentPresenter().showError(error: error)
             } else {
-                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSourceNetwork)
+                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSourceNetwork, userInfo: ["withQueryDB": true])
             }
         }
     }
@@ -504,7 +504,7 @@ extension NCFiles: UICollectionViewDropDelegate {
             if error != .success {
                 NCContentPresenter().showError(error: error)
             } else {
-                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSourceNetwork)
+                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSourceNetwork, userInfo: ["withQueryDB": true])
             }
         }
     }

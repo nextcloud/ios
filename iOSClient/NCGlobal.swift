@@ -370,7 +370,7 @@ class NCGlobal: NSObject {
     let notificationCenterCreateMediaCacheEnded                 = "createMediaCacheEnded"
 
     @objc let notificationCenterReloadDataSource                = "reloadDataSource"
-    let notificationCenterReloadDataSourceNetwork               = "reloadDataSourceNetwork"
+    let notificationCenterReloadDataSourceNetwork               = "reloadDataSourceNetwork"         // userInfo: withQueryDB
 
     let notificationCenterChangeStatusFolderE2EE                = "changeStatusFolderE2EE"          // userInfo: serverUrl
 

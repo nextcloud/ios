@@ -60,7 +60,7 @@ class NCRecent: NCCollectionViewCommon {
                                        searchResults: self.searchResults)
     }
 
-    override func reloadDataSourceNetwork() {
+    override func reloadDataSourceNetwork(withQueryDB: Bool = false) {
         super.reloadDataSourceNetwork()
 
         let requestBodyRecent =
@@ -150,7 +150,7 @@ class NCRecent: NCCollectionViewCommon {
                     self.reloadDataSource()
                 }
             } else {
-                self.reloadDataSource(withQueryDB: false)
+                self.reloadDataSource(withQueryDB: withQueryDB)
             }
         }
     }
