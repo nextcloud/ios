@@ -408,12 +408,12 @@ extension NCFiles: UICollectionViewDropDelegate {
                     }
                 }
             }
-            if coordinator.session.canLoadObjects(ofClass: NSURL.self) {
-                coordinator.session.loadObjects(ofClass: NSURL.self) { items in
-                    Task {
-                        for case let url as URL in items {
-                            print(url)
-                        }
+            
+
+            for item in coordinator.items {
+                item.dragItem.itemProvider.loadFileRepresentation(forTypeIdentifier: "public.movie") { (url, error) in
+                    if let url = url {
+                        
                     }
                 }
             }
