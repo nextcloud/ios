@@ -107,18 +107,8 @@ class NCFiles: NCCollectionViewCommon {
     override func setNavigationLeftItems() {
         super.setNavigationLeftItems()
 
-        // DD
-        /*
-        if let navigationBar = self.navigationController?.navigationBar {
-            let dropZoneView = UIView(frame: CGRect(x: 0, y: 0, width: navigationBar.bounds.width, height: navigationBar.bounds.height))
-            dropZoneView.backgroundColor = .clear
-            navigationBar.addSubview(dropZoneView)
-            dropZoneView.isUserInteractionEnabled = true
-
-            let dropInteraction = UIDropInteraction(delegate: self)
-            dropZoneView.addInteraction(dropInteraction)
-        }
-        */
+        let dropInteraction = UIDropInteraction(delegate: self)
+        backButton.addInteraction(dropInteraction)
     }
 
     // MARK: - Menu Item
@@ -537,7 +527,7 @@ extension NCFiles: UIDropInteractionDelegate {
     func dropInteraction(_ interaction: UIDropInteraction, sessionDidUpdate session: UIDropSession) -> UIDropProposal {
         DragDropHover.shared.pushTimerIndexPath = Timer.scheduledTimer(withTimeInterval: 2, repeats: false) { [weak self] _ in
             guard let self else { return }
-            self.navigationController?.popViewController(animated: true)
+            backButtonPressed()
         }
         return UIDropProposal(operation: .copy)
     }
