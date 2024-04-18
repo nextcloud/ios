@@ -375,7 +375,11 @@ extension NCFiles: UICollectionViewDropDelegate {
         if let destinationIndexPath = coordinator.destinationIndexPath {
             DragDropHover.shared.destinationMetadata = dataSource.cellForItemAt(indexPath: destinationIndexPath)
         }
+        if DragDropHover.shared.sourceMetadata != nil {
+            self.openMenu(collectionView: collectionView, location: location)
+        }
 
+        /* Exsternal ?
         if let item = coordinator.items.first,
            let provider = item.dragItem.itemProvider.copy() as? NSItemProvider {
             provider.loadObject(ofClass: NSString.self) { data, error in
@@ -388,6 +392,7 @@ extension NCFiles: UICollectionViewDropDelegate {
                 }
             }
         }
+        */
     }
 
     func collectionView(_ collectionView: UICollectionView, dropSessionDidUpdate session: UIDropSession, withDestinationIndexPath destinationIndexPath: IndexPath?) -> UICollectionViewDropProposal {
@@ -481,7 +486,7 @@ extension NCFiles: UICollectionViewDropDelegate {
             if error != .success {
                 NCContentPresenter().showError(error: error)
             } else {
-                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSourceNetwork)
+                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSource)
             }
         }
     }
@@ -499,7 +504,7 @@ extension NCFiles: UICollectionViewDropDelegate {
             if error != .success {
                 NCContentPresenter().showError(error: error)
             } else {
-                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSourceNetwork)
+                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSource)
             }
         }
     }
