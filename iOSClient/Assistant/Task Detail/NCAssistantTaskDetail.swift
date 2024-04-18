@@ -11,7 +11,7 @@ import NextcloudKit
 
 struct NCAssistantTaskDetail: View {
     @EnvironmentObject var model: NCAssistantTask
-    @State private var tab = 0
+    @State private var tab = 1
 
     let task: NKTextProcessingTask
 
