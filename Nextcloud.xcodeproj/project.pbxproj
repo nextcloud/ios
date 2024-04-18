@@ -109,12 +109,6 @@
 		F36E64FC2B9733F20085ABB5 /* UIView+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7E41315294A19B300839300 /* UIView+Extension.swift */; };
 		F36E64FD2B9735900085ABB5 /* NCCellProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 370D26AE248A3D7A00121797 /* NCCellProtocol.swift */; };
 		F36E64FE2B9735920085ABB5 /* NCCellProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 370D26AE248A3D7A00121797 /* NCCellProtocol.swift */; };
-		F37208792BAB4C09006B5430 /* BaseXCTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = F37208772BAB4B5D006B5430 /* BaseXCTestCase.swift */; };
-		F372087A2BAB4C09006B5430 /* BaseXCTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = F37208772BAB4B5D006B5430 /* BaseXCTestCase.swift */; };
-		F372087D2BAB4C0F006B5430 /* TestConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = F37208742BAB4AB0006B5430 /* TestConstants.swift */; };
-		F372087E2BAB4C0F006B5430 /* TestConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = F37208742BAB4AB0006B5430 /* TestConstants.swift */; };
-		F37208812BAB5979006B5430 /* TestConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = F37208742BAB4AB0006B5430 /* TestConstants.swift */; };
-		F37208822BAB597B006B5430 /* BaseXCTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = F37208772BAB4B5D006B5430 /* BaseXCTestCase.swift */; };
 		F38F71252B6BBDC300473CDC /* NCCollectionViewCommonSelectTabBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = F38F71242B6BBDC300473CDC /* NCCollectionViewCommonSelectTabBar.swift */; };
 		F39298972A3B12CB00509762 /* BaseNCMoreCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F39298962A3B12CB00509762 /* BaseNCMoreCell.swift */; };
 		F3953BD72A6E87E000EE03F9 /* BaseIntegrationXCTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3953BD62A6E87E000EE03F9 /* BaseIntegrationXCTestCase.swift */; };
@@ -123,8 +117,12 @@
 		F3BB464F2A39EBE500461F6E /* NCMoreUserCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3BB464E2A39EBE500461F6E /* NCMoreUserCell.swift */; };
 		F3BB46522A39EC4900461F6E /* NCMoreAppSuggestionsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3BB46512A39EC4900461F6E /* NCMoreAppSuggestionsCell.swift */; };
 		F3BB46542A3A1E9D00461F6E /* CCCellMore.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3BB46532A3A1E9D00461F6E /* CCCellMore.swift */; };
-		F3BDF4E82BD183A700011209 /* TestConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3BDF4E62BD183A700011209 /* TestConstants.swift */; };
-		F3BDF4E92BD183A700011209 /* BaseXCTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3BDF4E72BD183A700011209 /* BaseXCTestCase.swift */; };
+		F3BDF4EA2BD183E100011209 /* TestConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3BDF4E62BD183A700011209 /* TestConstants.swift */; };
+		F3BDF4EB2BD183E100011209 /* BaseXCTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3BDF4E72BD183A700011209 /* BaseXCTestCase.swift */; };
+		F3BDF4EC2BD183E200011209 /* TestConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3BDF4E62BD183A700011209 /* TestConstants.swift */; };
+		F3BDF4ED2BD183E200011209 /* BaseXCTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3BDF4E72BD183A700011209 /* BaseXCTestCase.swift */; };
+		F3BDF4EE2BD183E200011209 /* TestConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3BDF4E62BD183A700011209 /* TestConstants.swift */; };
+		F3BDF4EF2BD183E200011209 /* BaseXCTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3BDF4E72BD183A700011209 /* BaseXCTestCase.swift */; };
 		F3CFF65F2BC55ECE002380BE /* NCAssistantCreateNewTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3CFF65E2BC55ECE002380BE /* NCAssistantCreateNewTask.swift */; };
 		F3CFF6662BC69ACE002380BE /* NCAssistantTaskDetail.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3CFF6652BC69ACE002380BE /* NCAssistantTaskDetail.swift */; };
 		F3F24BA72BCEBC2E00048EF6 /* PopupView in Frameworks */ = {isa = PBXBuildFile; productRef = F3F24BA62BCEBC2E00048EF6 /* PopupView */; };
@@ -3557,9 +3555,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				AF8ED1FC2757821000B8DBC4 /* NextcloudUnitTests.swift in Sources */,
-				F37208792BAB4C09006B5430 /* BaseXCTestCase.swift in Sources */,
-				F372087D2BAB4C0F006B5430 /* TestConstants.swift in Sources */,
+				F3BDF4EA2BD183E100011209 /* TestConstants.swift in Sources */,
 				F78E2D6C29AF02DB0024D4F3 /* Database.swift in Sources */,
+				F3BDF4EB2BD183E100011209 /* BaseXCTestCase.swift in Sources */,
 				F7817CFE29801A3500FFBC65 /* Data+Extension.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -3569,9 +3567,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				F3A7AFC62A41AA82001FC89C /* BaseUIXCTestCase.swift in Sources */,
-				F37208822BAB597B006B5430 /* BaseXCTestCase.swift in Sources */,
+				F3BDF4EF2BD183E200011209 /* BaseXCTestCase.swift in Sources */,
+				F3BDF4EE2BD183E200011209 /* TestConstants.swift in Sources */,
 				C0046CDD2A17B98400D87C9D /* LoginUITests.swift in Sources */,
-				F37208812BAB5979006B5430 /* TestConstants.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3580,8 +3578,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				F3953BD72A6E87E000EE03F9 /* BaseIntegrationXCTestCase.swift in Sources */,
-				F372087A2BAB4C09006B5430 /* BaseXCTestCase.swift in Sources */,
-				F372087E2BAB4C0F006B5430 /* TestConstants.swift in Sources */,
+				F3BDF4ED2BD183E200011209 /* BaseXCTestCase.swift in Sources */,
+				F3BDF4EC2BD183E200011209 /* TestConstants.swift in Sources */,
 				C04E2F232A17BB4D001BAD85 /* FilesIntegrationTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -3963,7 +3961,6 @@
 				F7BF9D822934CA21009EE9A6 /* NCManageDatabase+LayoutForView.swift in Sources */,
 				AF7E504E27A2D8FF00B5E4AF /* UIBarButton+Extension.swift in Sources */,
 				F7A846DE2BB01ACB0024816F /* NCTrashCellProtocol.swift in Sources */,
-				F3BDF4E92BD183A700011209 /* BaseXCTestCase.swift in Sources */,
 				F78A10BF29322E8A008499B8 /* NCManageDatabase+Directory.swift in Sources */,
 				F704B5E92430C0B800632F5F /* NCCreateFormUploadConflictCell.swift in Sources */,
 				F7327E3D2B73B92800A462C7 /* NCNetworking+Synchronization.swift in Sources */,
@@ -4092,7 +4089,6 @@
 				F745B253222D88AE00346520 /* NCLoginQRCode.swift in Sources */,
 				F7CBC31C24F78E79004D3812 /* NCSortMenu.swift in Sources */,
 				F769454822E9F20D000A798A /* NCShareNetworking.swift in Sources */,
-				F3BDF4E82BD183A700011209 /* TestConstants.swift in Sources */,
 				F749B64A297B0CBB00087535 /* NCManageDatabase+Share.swift in Sources */,
 				F760DE172AE66F350027D78A /* NCKeychain.swift in Sources */,
 				F7C9555521F0C5470024296E /* NCActivity.swift in Sources */,
