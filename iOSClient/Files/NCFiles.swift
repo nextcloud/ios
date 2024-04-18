@@ -481,7 +481,7 @@ extension NCFiles: UICollectionViewDropDelegate {
             if error != .success {
                 NCContentPresenter().showError(error: error)
             } else {
-                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSourceNetwork)
+                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSourceNetwork, userInfo: ["withQueryDB": true])
             }
         }
     }
@@ -499,7 +499,7 @@ extension NCFiles: UICollectionViewDropDelegate {
             if error != .success {
                 NCContentPresenter().showError(error: error)
             } else {
-                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSourceNetwork)
+                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSourceNetwork, userInfo: ["withQueryDB": true])
             }
         }
     }
