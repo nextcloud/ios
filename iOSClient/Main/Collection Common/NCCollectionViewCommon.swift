@@ -58,6 +58,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     var gridLayout: NCGridLayout!
     var literalSearch: String?
     var tabBarSelect: NCCollectionViewCommonSelectTabBar!
+    let backButton = UIButton()
     var timerNotificationCenter: Timer?
     var notificationReloadDataSource: Int = 0
     var notificationReloadDataSourceNetwork: Int = 0
@@ -139,14 +140,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         longPressedGesture.delegate = self
         longPressedGesture.delaysTouchesBegan = true
         collectionView.addGestureRecognizer(longPressedGesture)
-
-        // Drag & Drop
-        collectionView.dragInteractionEnabled = true
-        collectionView.dragDelegate = self
-        collectionView.dropDelegate = self
-
-        let dropInteraction = UIDropInteraction(delegate: self)
-        self.navigationController?.navigationItem.leftBarButtonItems?.first?.customView?.addInteraction(dropInteraction)
 
         NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeTheming), object: nil)
     }
@@ -565,10 +558,10 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
     func setNavigationLeftItems() {
         guard layoutKey == NCGlobal.shared.layoutViewFiles else { return }
+        // PROFILE BUTTON
         let activeAccount = NCManageDatabase.shared.getActiveAccount()
         let image = utility.loadUserImage(for: appDelegate.user, displayName: activeAccount?.displayName, userBaseUrl: appDelegate)
         let accountButton = AccountSwitcherButton(type: .custom)
-
         accountButton.setImage(image, for: .normal)
         accountButton.setImage(image, for: .highlighted)
         accountButton.semanticContentAttribute = .forceLeftToRight
@@ -618,8 +611,26 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             }
         }
 
-        navigationItem.leftItemsSupplementBackButton = true
-        navigationItem.setLeftBarButtonItems([UIBarButtonItem(customView: accountButton)], animated: true)
+        var configBackButton = UIButton.Configuration.plain()
+        configBackButton.image = UIImage(systemName: "chevron.left")?.withRenderingMode(.alwaysTemplate)
+        if let title = titlePreviusFolder {
+            let maxlen = 15
+            configBackButton.title = title.count <= maxlen ? title : String(title.prefix(maxlen)) + "…"
+        }
+        configBackButton.imagePlacement = .leading
+        configBackButton.imagePadding = 10
+        configBackButton.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: -20, bottom: 0, trailing: 0)
+        backButton.configuration = configBackButton
+        backButton.addTarget(self, action: #selector(backButtonPressed), for: .touchUpInside)
+        backButton.sizeToFit()
+        backButton.tintColor = .systemBlue
+
+        navigationItem.leftItemsSupplementBackButton = false
+        if let navigationController = self.navigationController, navigationController.viewControllers.first === self {
+            navigationItem.setLeftBarButtonItems([UIBarButtonItem(customView: accountButton)], animated: true)
+        } else {
+            navigationItem.setLeftBarButtonItems([UIBarButtonItem(customView: backButton), UIBarButtonItem(customView: accountButton)], animated: true)
+        }
 
         if titlePreviusFolder != nil {
             navigationController?.navigationBar.topItem?.title = titlePreviusFolder
@@ -906,12 +917,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             if !UIPasteboard.general.items.isEmpty, !(metadataFolder?.e2eEncrypted ?? false) {
                 return true
             }
-        } else if #selector(copyMenuFile) == action {
-            return true
-        } else if #selector(moveMenuFile) == action {
-            return true
         }
-
         return false
     }
 
