@@ -123,6 +123,8 @@
 		F3BB464F2A39EBE500461F6E /* NCMoreUserCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3BB464E2A39EBE500461F6E /* NCMoreUserCell.swift */; };
 		F3BB46522A39EC4900461F6E /* NCMoreAppSuggestionsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3BB46512A39EC4900461F6E /* NCMoreAppSuggestionsCell.swift */; };
 		F3BB46542A3A1E9D00461F6E /* CCCellMore.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3BB46532A3A1E9D00461F6E /* CCCellMore.swift */; };
+		F3BDF4E82BD183A700011209 /* TestConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3BDF4E62BD183A700011209 /* TestConstants.swift */; };
+		F3BDF4E92BD183A700011209 /* BaseXCTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3BDF4E72BD183A700011209 /* BaseXCTestCase.swift */; };
 		F3CFF65F2BC55ECE002380BE /* NCAssistantCreateNewTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3CFF65E2BC55ECE002380BE /* NCAssistantCreateNewTask.swift */; };
 		F3CFF6662BC69ACE002380BE /* NCAssistantTaskDetail.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3CFF6652BC69ACE002380BE /* NCAssistantTaskDetail.swift */; };
 		F3F24BA72BCEBC2E00048EF6 /* PopupView in Frameworks */ = {isa = PBXBuildFile; productRef = F3F24BA62BCEBC2E00048EF6 /* PopupView */; };
@@ -1001,6 +1003,8 @@
 		F3BB464E2A39EBE500461F6E /* NCMoreUserCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCMoreUserCell.swift; sourceTree = "<group>"; };
 		F3BB46512A39EC4900461F6E /* NCMoreAppSuggestionsCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCMoreAppSuggestionsCell.swift; sourceTree = "<group>"; };
 		F3BB46532A3A1E9D00461F6E /* CCCellMore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CCCellMore.swift; sourceTree = "<group>"; };
+		F3BDF4E62BD183A700011209 /* TestConstants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TestConstants.swift; sourceTree = "<group>"; };
+		F3BDF4E72BD183A700011209 /* BaseXCTestCase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BaseXCTestCase.swift; sourceTree = "<group>"; };
 		F3CFF65E2BC55ECE002380BE /* NCAssistantCreateNewTask.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCAssistantCreateNewTask.swift; sourceTree = "<group>"; };
 		F3CFF6652BC69ACE002380BE /* NCAssistantTaskDetail.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCAssistantTaskDetail.swift; sourceTree = "<group>"; };
 		F3F24BA82BCECFF800048EF6 /* EmptyTasksView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmptyTasksView.swift; sourceTree = "<group>"; };
@@ -1768,19 +1772,12 @@
 		F30A962A2A27A9C800D7BCFE /* Tests */ = {
 			isa = PBXGroup;
 			children = (
-				F37208762BAB4B4B006B5430 /* NextcloudSnapshotTests */,
+				F3BDF4E52BD183A700011209 /* Common */,
 				AF8ED1FA2757821000B8DBC4 /* NextcloudUnitTests */,
 				C04E2F212A17BB4D001BAD85 /* NextcloudIntegrationTests */,
 				C0046CDB2A17B98400D87C9D /* NextcloudUITests */,
 			);
 			path = Tests;
-			sourceTree = "<group>";
-		};
-		F31F694E2A2F703300162F76 /* Extensions */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = Extensions;
 			sourceTree = "<group>";
 		};
 		F33AAF982A601465006ECCBD /* Recovered References */ = {
@@ -1805,14 +1802,6 @@
 			path = Assistant;
 			sourceTree = "<group>";
 		};
-		F37208762BAB4B4B006B5430 /* NextcloudSnapshotTests */ = {
-			isa = PBXGroup;
-			children = (
-				F31F694E2A2F703300162F76 /* Extensions */,
-			);
-			path = NextcloudSnapshotTests;
-			sourceTree = "<group>";
-		};
 		F3BB46502A39EC2D00461F6E /* Cells */ = {
 			isa = PBXGroup;
 			children = (
@@ -1824,6 +1813,15 @@
 				F39298962A3B12CB00509762 /* BaseNCMoreCell.swift */,
 			);
 			path = Cells;
+			sourceTree = "<group>";
+		};
+		F3BDF4E52BD183A700011209 /* Common */ = {
+			isa = PBXGroup;
+			children = (
+				F3BDF4E62BD183A700011209 /* TestConstants.swift */,
+				F3BDF4E72BD183A700011209 /* BaseXCTestCase.swift */,
+			);
+			path = Common;
 			sourceTree = "<group>";
 		};
 		F3F24BAA2BCFAE0700048EF6 /* Create Task */ = {
@@ -3965,6 +3963,7 @@
 				F7BF9D822934CA21009EE9A6 /* NCManageDatabase+LayoutForView.swift in Sources */,
 				AF7E504E27A2D8FF00B5E4AF /* UIBarButton+Extension.swift in Sources */,
 				F7A846DE2BB01ACB0024816F /* NCTrashCellProtocol.swift in Sources */,
+				F3BDF4E92BD183A700011209 /* BaseXCTestCase.swift in Sources */,
 				F78A10BF29322E8A008499B8 /* NCManageDatabase+Directory.swift in Sources */,
 				F704B5E92430C0B800632F5F /* NCCreateFormUploadConflictCell.swift in Sources */,
 				F7327E3D2B73B92800A462C7 /* NCNetworking+Synchronization.swift in Sources */,
@@ -4093,6 +4092,7 @@
 				F745B253222D88AE00346520 /* NCLoginQRCode.swift in Sources */,
 				F7CBC31C24F78E79004D3812 /* NCSortMenu.swift in Sources */,
 				F769454822E9F20D000A798A /* NCShareNetworking.swift in Sources */,
+				F3BDF4E82BD183A700011209 /* TestConstants.swift in Sources */,
 				F749B64A297B0CBB00087535 /* NCManageDatabase+Share.swift in Sources */,
 				F760DE172AE66F350027D78A /* NCKeychain.swift in Sources */,
 				F7C9555521F0C5470024296E /* NCActivity.swift in Sources */,
