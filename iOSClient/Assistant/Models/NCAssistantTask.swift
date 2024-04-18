@@ -115,7 +115,11 @@ class NCAssistantTask: ObservableObject {
             }
 
             self.isLoading = false
-            self.selectTaskType(filteredTypes[0])
+
+            if self.selectedTaskType == nil {
+                self.selectTaskType(filteredTypes[0])
+            }
+
             self.loadAllTasks()
         }
     }
