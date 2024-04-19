@@ -794,10 +794,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
     // MARK: - TAP EVENT
 
-    @objc func backButtonPressed() {
-        navigationController?.popViewController(animated: true)
-    }
-
     func tapButtonOrder(_ sender: Any) {
         let sortMenu = NCSortMenu()
         sortMenu.toggleMenu(viewController: self, account: appDelegate.account, key: layoutKey, sortButton: sender as? UIButton, serverUrl: serverUrl)
