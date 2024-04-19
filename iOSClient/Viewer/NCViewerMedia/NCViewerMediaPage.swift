@@ -30,6 +30,7 @@ import JGProgressHUD
 enum ScreenMode {
     case full, normal
 }
+
 var viewerMediaScreenMode: ScreenMode = .normal
 
 class NCViewerMediaPage: UIViewController {

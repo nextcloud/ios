@@ -75,6 +75,7 @@
 "_overwrite_"               = "Overwrite";
 "_transfers_in_queue_"      = "Transfers in progress, please wait …";
 "_too_errors_upload_"       = "Too many errors, please verify the problem";
+"_create_"                  = "Create";
 "_create_folder_"           = "Create folder";
 "_create_folder_e2ee_"      = "Create encrypted folder";
 "_create_folder_on_"        = "Create folder on";
@@ -155,6 +156,7 @@
 "_current_"                 = "Current";
 "_buy_"                     = "Buy";
 "_disabled_"                = "Disabled";
+"_error_occurred_"           = "An error occurred, please try again";
 
 /* MARK: Files lock */
 
@@ -1043,3 +1045,21 @@
 "Mantis.Reset"                  = "Reset";
 "Mantis.Original"               = "Original";
 "Mantis.Square"                 = "Square";
+
+// MARK: Assistant
+"_assistant_task_unknown_"       = "Unknown";
+"_assistant_task_scheduled_"     = "Scheduled";
+"_assistant_task_in_progress_"   = "In Progress";
+"_assistant_task_completed_"     = "Completed";
+"_assistant_task_failed_"        = "Failed";
+"_all_"                          = "All";
+"_input_"                        = "Input";
+"_output_"                       = "Output";
+"_task_details_"                 = "Task details";
+"_assistant_"                    = "Assistant";
+"_new_task_"                     = "New %@ task";
+"_no_tasks_"                     = "No tasks in here";
+"_create_task_subtitle_"         = "Use the + button to create one";
+"_no_types_"                     = "No provider found";
+"_no_types_subtitle_"            = "AI Providers need to be installed to use the Assistant";
+
