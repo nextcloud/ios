@@ -1060,3 +1060,6 @@
 "_new_task_"                     = "New %@ task";
 "_no_tasks_"                     = "No tasks in here";
 "_create_task_subtitle_"         = "Use the + button to create one";
+"_no_types_"                     = "No provider found";
+"_no_types_subtitle_"            = "AI Providers need to be installed to use the Assistant";
+

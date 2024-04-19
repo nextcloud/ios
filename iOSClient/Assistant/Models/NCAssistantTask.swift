@@ -50,13 +50,14 @@ class NCAssistantTask: ObservableObject {
         isLoading = true
 
         NextcloudKit.shared.textProcessingGetTask(taskId: id) { _, task, _, error in
+            self.isLoading = false
+
             if error != .success {
                 self.hasError = true
                 return
             }
 
             self.selectedTask = task
-            self.isLoading = false
         }
     }
 
@@ -64,6 +65,8 @@ class NCAssistantTask: ObservableObject {
         isLoading = true
 
         NextcloudKit.shared.textProcessingSchedule(input: input, typeId: selectedType?.id ?? "", identifier: "assistant") { _, task, _, error in
+            self.isLoading = false
+
             if error != .success {
                 self.hasError = true
                 return
@@ -76,7 +79,6 @@ class NCAssistantTask: ObservableObject {
                 self.filteredTasks.insert(task, at: 0)
             }
 
-            self.isLoading = false
         }
     }
 
@@ -85,6 +87,8 @@ class NCAssistantTask: ObservableObject {
         isLoading = true
 
         NextcloudKit.shared.textProcessingDeleteTask(taskId: id) { _, task, _, error in
+            self.isLoading = false
+
             if error != .success {
                 self.hasError = true
                 return
@@ -95,7 +99,6 @@ class NCAssistantTask: ObservableObject {
                 self.filteredTasks.removeAll(where: { $0.id == task?.id })
             }
 
-            self.isLoading = false
         }
     }
 
@@ -103,18 +106,19 @@ class NCAssistantTask: ObservableObject {
         isLoading = true
 
         NextcloudKit.shared.textProcessingGetTypes { _, types, _, error in
+            self.isLoading = false
+
             if error != .success {
                 self.hasError = true
                 return
             }
+
 
             guard let filteredTypes = types?.filter({ !self.excludedTypeIds.contains($0.id ?? "")}), !filteredTypes.isEmpty else { return }
 
             withAnimation {
                 self.types = filteredTypes
             }
-
-            self.isLoading = false
 
             if self.selectedType == nil {
                 self.selectTaskType(filteredTypes.first)
@@ -128,6 +132,8 @@ class NCAssistantTask: ObservableObject {
         isLoading = true
 
         NextcloudKit.shared.textProcessingTaskList(appId: appId) { _, tasks, _, error in
+            self.isLoading = false
+
             if error != .success {
                 self.hasError = true
                 return
@@ -136,8 +142,6 @@ class NCAssistantTask: ObservableObject {
             guard let tasks = tasks else { return }
             self.tasks = tasks
             self.filterTasks(ofType: self.selectedType)
-
-            self.isLoading = false
         }
     }
 }

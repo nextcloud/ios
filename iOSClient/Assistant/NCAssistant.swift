@@ -21,8 +21,10 @@ struct NCAssistant: View {
             ZStack {
                 TaskList()
 
-                if model.filteredTasks.isEmpty, !model.isLoading {
-                    EmptyTasksView()
+                if model.types.isEmpty {
+                    NCAssistantEmptyView(titleKey: "_no_types_", subtitleKey: "_no_types_subtitle_")
+                } else if model.filteredTasks.isEmpty, !model.isLoading {
+                    NCAssistantEmptyView(titleKey: "_no_tasks_", subtitleKey: "_create_task_subtitle_")
                 }
             }
             .toolbar {

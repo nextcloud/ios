@@ -8,7 +8,9 @@
 
 import SwiftUI
 
-struct EmptyTasksView: View {
+struct NCAssistantEmptyView: View {
+    let titleKey, subtitleKey: String
+
     var body: some View {
         VStack {
             Image(systemName: "sparkles")
@@ -18,11 +20,11 @@ struct EmptyTasksView: View {
                 .foregroundStyle(Color(NCBrandColor.shared.brandElement))
                 .frame(height: 100)
 
-            Text(NSLocalizedString("_no_tasks_", comment: ""))
+            Text(NSLocalizedString(titleKey, comment: ""))
                 .font(.system(size: 22, weight: .bold))
                 .padding(.bottom, 5)
 
-            Text(NSLocalizedString("_create_task_subtitle_", comment: ""))
+            Text(NSLocalizedString(subtitleKey, comment: ""))
                 .font(.system(size: 14))
                 .foregroundStyle(.secondary)
         }
@@ -30,5 +32,5 @@ struct EmptyTasksView: View {
 }
 
 #Preview {
-    EmptyTasksView()
+    NCAssistantEmptyView(titleKey: "_no_tasks_", subtitleKey: "_create_task_subtitle_")
 }
