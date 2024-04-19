@@ -58,7 +58,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     var gridLayout: NCGridLayout!
     var literalSearch: String?
     var tabBarSelect: NCCollectionViewCommonSelectTabBar!
-    let backButton = UIButton()
     var timerNotificationCenter: Timer?
     var notificationReloadDataSource: Int = 0
     var notificationReloadDataSourceNetwork: Int = 0
@@ -140,6 +139,10 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         longPressedGesture.delegate = self
         longPressedGesture.delaysTouchesBegan = true
         collectionView.addGestureRecognizer(longPressedGesture)
+
+        collectionView.dragInteractionEnabled = true
+        collectionView.dragDelegate = self
+        collectionView.dropDelegate = self
 
         NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeTheming), object: nil)
     }
@@ -899,7 +902,12 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             if !UIPasteboard.general.items.isEmpty, !(metadataFolder?.e2eEncrypted ?? false) {
                 return true
             }
+        } else if #selector(copyMenuFile) == action {
+            return true
+        } else if #selector(moveMenuFile) == action {
+            return true
         }
+
         return false
     }
 
