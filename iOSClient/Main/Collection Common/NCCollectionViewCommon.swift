@@ -558,10 +558,10 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
     func setNavigationLeftItems() {
         guard layoutKey == NCGlobal.shared.layoutViewFiles else { return }
-        // PROFILE BUTTON
         let activeAccount = NCManageDatabase.shared.getActiveAccount()
         let image = utility.loadUserImage(for: appDelegate.user, displayName: activeAccount?.displayName, userBaseUrl: appDelegate)
         let accountButton = AccountSwitcherButton(type: .custom)
+        
         accountButton.setImage(image, for: .normal)
         accountButton.setImage(image, for: .highlighted)
         accountButton.semanticContentAttribute = .forceLeftToRight
@@ -611,26 +611,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             }
         }
 
-        var configBackButton = UIButton.Configuration.plain()
-        configBackButton.image = UIImage(systemName: "chevron.left")?.withRenderingMode(.alwaysTemplate)
-        if let title = titlePreviusFolder {
-            let maxlen = 15
-            configBackButton.title = title.count <= maxlen ? title : String(title.prefix(maxlen)) + "…"
-        }
-        configBackButton.imagePlacement = .leading
-        configBackButton.imagePadding = 10
-        configBackButton.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: -20, bottom: 0, trailing: 0)
-        backButton.configuration = configBackButton
-        backButton.addTarget(self, action: #selector(backButtonPressed), for: .touchUpInside)
-        backButton.sizeToFit()
-        backButton.tintColor = .systemBlue
-
-        navigationItem.leftItemsSupplementBackButton = false
-        if let navigationController = self.navigationController, navigationController.viewControllers.first === self {
-            navigationItem.setLeftBarButtonItems([UIBarButtonItem(customView: accountButton)], animated: true)
-        } else {
-            navigationItem.setLeftBarButtonItems([UIBarButtonItem(customView: backButton), UIBarButtonItem(customView: accountButton)], animated: true)
-        }
+        navigationItem.leftItemsSupplementBackButton = true
+        navigationItem.setLeftBarButtonItems([UIBarButtonItem(customView: accountButton)], animated: true)
 
         if titlePreviusFolder != nil {
             navigationController?.navigationBar.topItem?.title = titlePreviusFolder
