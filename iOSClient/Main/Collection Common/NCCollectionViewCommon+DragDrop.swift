@@ -125,7 +125,6 @@ extension NCCollectionViewCommon: UICollectionViewDropDelegate {
     }
 
     func collectionView(_ collectionView: UICollectionView, dropSessionDidUpdate session: UIDropSession, withDestinationIndexPath destinationIndexPath: IndexPath?) -> UICollectionViewDropProposal {
-        disabeHighlightedCells()
         var destinationMetadata: tableMetadata?
         if let destinationIndexPath {
             destinationMetadata = dataSource.cellForItemAt(indexPath: destinationIndexPath)
@@ -147,10 +146,6 @@ extension NCCollectionViewCommon: UICollectionViewDropDelegate {
             }
         }
 
-        if let destinationIndexPath, let destinationMetadata, destinationMetadata.directory, let cell = collectionView.cellForItem(at: destinationIndexPath) as? NCCellProtocol {
-            cell.setHighlighted(true)
-        }
-
         // DIRECTORY - Push Metadata
         if DragDropHover.shared.pushIndexPath != destinationIndexPath || DragDropHover.shared.pushCollectionView != collectionView {
             DragDropHover.shared.pushIndexPath = destinationIndexPath
@@ -164,7 +159,6 @@ extension NCCollectionViewCommon: UICollectionViewDropDelegate {
                    let metadata = self.dataSource.cellForItemAt(indexPath: destinationIndexPath),
                    metadata.directory {
                     self.cleanPushDragDropHover()
-                    self.disabeHighlightedCells()
                     self.pushMetadata(metadata)
                 }
             }
@@ -175,25 +169,10 @@ extension NCCollectionViewCommon: UICollectionViewDropDelegate {
 
     func collectionView(_ collectionView: UICollectionView, dropSessionDidExit session: UIDropSession) {
         cleanPushDragDropHover()
-        disabeHighlightedCells()
     }
 
-    // Update collectionView after ending the drop operation
     func collectionView(_ collectionView: UICollectionView, dropSessionDidEnd session: UIDropSession) {
         cleanPushDragDropHover()
-        disabeHighlightedCells()
-    }
-
-    private func disabeHighlightedCells() {
-        for mainTabBarController in SceneManager.shared.getAllMainTabBarController() {
-            if let viewController = mainTabBarController.currentViewController() as? NCCollectionViewCommon,
-               let indexPathsForVisibleItems = viewController.collectionView?.indexPathsForVisibleItems {
-                for indexPathVisible in indexPathsForVisibleItems {
-                    let cell = viewController.collectionView.cellForItem(at: indexPathVisible) as? NCCellProtocol
-                    cell?.setHighlighted(false)
-                }
-            }
-        }
     }
 
     private func openMenu(collectionView: UICollectionView, location: CGPoint) {
@@ -255,36 +234,11 @@ extension NCCollectionViewCommon: UICollectionViewDropDelegate {
 
 // MARK: - Drop Interaction Delegate
 
-extension NCCollectionViewCommon: UIDropInteractionDelegate {
-    func dropInteraction(_ interaction: UIDropInteraction, canHandle session: UIDropSession) -> Bool {
-        return session.canLoadObjects(ofClass: NSString.self)
-    }
-
-    func dropInteraction(_ interaction: UIDropInteraction, sessionDidEnter session: UIDropSession) {
-        cleanPushDragDropHover()
-        disabeHighlightedCells()
-    }
-
-    func dropInteraction(_ interaction: UIDropInteraction, sessionDidUpdate session: UIDropSession) -> UIDropProposal {
-        DragDropHover.shared.pushTimerIndexPath = Timer.scheduledTimer(withTimeInterval: 2, repeats: false) { [weak self] _ in
-            guard let self else { return }
-            backButtonPressed()
-        }
-        return UIDropProposal(operation: .copy)
-    }
-
-    func dropInteraction(_ interaction: UIDropInteraction, sessionDidExit session: UIDropSession) {
-        cleanPushDragDropHover()
-    }
-
-    func dropInteraction(_ interaction: UIDropInteraction, performDrop session: UIDropSession) {
-    }
-}
+extension NCCollectionViewCommon: UIDropInteractionDelegate { }
 
 class DragDropHover {
     static let shared = DragDropHover()
 
-    var pushTimerDropInteraction: Timer?
     var pushTimerIndexPath: Timer?
     var pushCollectionView: UICollectionView?
     var pushIndexPath: IndexPath?
