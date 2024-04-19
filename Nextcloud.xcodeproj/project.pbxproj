@@ -128,6 +128,10 @@
 		F3BDF4F92BD25E9A00011209 /* RealmSwift in Frameworks */ = {isa = PBXBuildFile; productRef = F3BDF4F82BD25E9A00011209 /* RealmSwift */; };
 		F3BDF4FB2BD25EA200011209 /* Realm in Frameworks */ = {isa = PBXBuildFile; productRef = F3BDF4FA2BD25EA200011209 /* Realm */; };
 		F3BDF4FD2BD25EA200011209 /* RealmSwift in Frameworks */ = {isa = PBXBuildFile; productRef = F3BDF4FC2BD25EA200011209 /* RealmSwift */; };
+		F3BDF4FF2BD2655800011209 /* Realm in Frameworks */ = {isa = PBXBuildFile; productRef = F3BDF4FE2BD2655800011209 /* Realm */; };
+		F3BDF5012BD2655F00011209 /* Realm in Frameworks */ = {isa = PBXBuildFile; productRef = F3BDF5002BD2655F00011209 /* Realm */; };
+		F3BDF5032BD2656700011209 /* Realm in Frameworks */ = {isa = PBXBuildFile; productRef = F3BDF5022BD2656700011209 /* Realm */; };
+		F3BDF5052BD2657B00011209 /* Realm in Frameworks */ = {isa = PBXBuildFile; productRef = F3BDF5042BD2657B00011209 /* Realm */; };
 		F3CFF65F2BC55ECE002380BE /* NCAssistantCreateNewTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3CFF65E2BC55ECE002380BE /* NCAssistantCreateNewTask.swift */; };
 		F3CFF6662BC69ACE002380BE /* NCAssistantTaskDetail.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3CFF6652BC69ACE002380BE /* NCAssistantTaskDetail.swift */; };
 		F3F24BA72BCEBC2E00048EF6 /* PopupView in Frameworks */ = {isa = PBXBuildFile; productRef = F3F24BA62BCEBC2E00048EF6 /* PopupView */; };
@@ -1560,6 +1564,7 @@
 			files = (
 				F72AD71128C24BBB006CB92D /* NextcloudKit in Frameworks */,
 				F710FC88277B7D3F00AA9FBF /* RealmSwift in Frameworks */,
+				F3BDF5052BD2657B00011209 /* Realm in Frameworks */,
 				F760DE0F2AE66EE60027D78A /* KeychainAccess in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1612,6 +1617,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F3BDF4FF2BD2655800011209 /* Realm in Frameworks */,
 				F711A4EF2AF932B900095DD8 /* SVGKitSwift in Frameworks */,
 				F710FC80277B7D2700AA9FBF /* RealmSwift in Frameworks */,
 				F74C863D2AEFBFD9009A1D4A /* LRUCache in Frameworks */,
@@ -1636,6 +1642,7 @@
 				F783034428B5142B00B84583 /* NextcloudKit in Frameworks */,
 				F7346E1328B0EF5B006CE2D2 /* SwiftUI.framework in Frameworks */,
 				F760DE052AE66EBE0027D78A /* KeychainAccess in Frameworks */,
+				F3BDF5032BD2656700011209 /* Realm in Frameworks */,
 				F7346E2928B0FFF2006CE2D2 /* RealmSwift in Frameworks */,
 				F7A560462AE15D3D00BE8FD6 /* Queuer in Frameworks */,
 				F783030D28B4C59A00B84583 /* SwiftEntryKit in Frameworks */,
@@ -1700,6 +1707,7 @@
 				F7A8D72428F1771B008BBE1C /* NextcloudKit in Frameworks */,
 				F7C9739228F17131002C43E2 /* Intents.framework in Frameworks */,
 				F760DE072AE66EC70027D78A /* KeychainAccess in Frameworks */,
+				F3BDF5012BD2655F00011209 /* Realm in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2881,6 +2889,7 @@
 				F710FC87277B7D3F00AA9FBF /* RealmSwift */,
 				F72AD71028C24BBB006CB92D /* NextcloudKit */,
 				F760DE0E2AE66EE60027D78A /* KeychainAccess */,
+				F3BDF5042BD2657B00011209 /* Realm */,
 			);
 			productName = "Notification Service Extension";
 			productReference = 2C33C47F23E2C475005F963B /* Notification Service Extension.appex */;
@@ -3007,6 +3016,7 @@
 				F760DE082AE66ED00027D78A /* KeychainAccess */,
 				F74C863C2AEFBFD9009A1D4A /* LRUCache */,
 				F711A4EE2AF932B900095DD8 /* SVGKitSwift */,
+				F3BDF4FE2BD2655800011209 /* Realm */,
 			);
 			productName = "Share Ext";
 			productReference = F7CE8AFB1DC1F8D8009CAE48 /* Share.appex */;
@@ -3033,6 +3043,7 @@
 				F7A560452AE15D3D00BE8FD6 /* Queuer */,
 				F75379212AE2ADA100C0250E /* JGProgressHUD */,
 				F760DE042AE66EBE0027D78A /* KeychainAccess */,
+				F3BDF5022BD2656700011209 /* Realm */,
 			);
 			productName = DashboardWidgetExtension;
 			productReference = F7346E1028B0EF5B006CE2D2 /* Widget.appex */;
@@ -3134,6 +3145,7 @@
 				F7A8D72328F1771B008BBE1C /* NextcloudKit */,
 				F7A8D72728F17728008BBE1C /* RealmSwift */,
 				F760DE062AE66EC70027D78A /* KeychainAccess */,
+				F3BDF5002BD2655F00011209 /* Realm */,
 			);
 			productName = WidgetDashboardIntentHandler;
 			productReference = F7C9739028F17131002C43E2 /* WidgetDashboardIntentHandler.appex */;
@@ -5451,6 +5463,26 @@
 			isa = XCSwiftPackageProductDependency;
 			package = F710FC78277B7CFF00AA9FBF /* XCRemoteSwiftPackageReference "realm-swift" */;
 			productName = RealmSwift;
+		};
+		F3BDF4FE2BD2655800011209 /* Realm */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F710FC78277B7CFF00AA9FBF /* XCRemoteSwiftPackageReference "realm-swift" */;
+			productName = Realm;
+		};
+		F3BDF5002BD2655F00011209 /* Realm */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F710FC78277B7CFF00AA9FBF /* XCRemoteSwiftPackageReference "realm-swift" */;
+			productName = Realm;
+		};
+		F3BDF5022BD2656700011209 /* Realm */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F710FC78277B7CFF00AA9FBF /* XCRemoteSwiftPackageReference "realm-swift" */;
+			productName = Realm;
+		};
+		F3BDF5042BD2657B00011209 /* Realm */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F710FC78277B7CFF00AA9FBF /* XCRemoteSwiftPackageReference "realm-swift" */;
+			productName = Realm;
 		};
 		F3F24BA62BCEBC2E00048EF6 /* PopupView */ = {
 			isa = XCSwiftPackageProductDependency;
