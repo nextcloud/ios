@@ -5,6 +5,21 @@
 //  Created by Marino Faggiana on 19/04/24.
 //  Copyright © 2024 Marino Faggiana. All rights reserved.
 //
+//  Author Marino Faggiana <marino.faggiana@nextcloud.com>
+//
+//  This program is free software: you can redistribute it and/or modify
+//  it under the terms of the GNU General Public License as published by
+//  the Free Software Foundation, either version 3 of the License, or
+//  (at your option) any later version.
+//
+//  This program is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//  GNU General Public License for more details.
+//
+//  You should have received a copy of the GNU General Public License
+//  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
 
 import Foundation
 
@@ -12,9 +27,8 @@ import Foundation
 
 extension NCCollectionViewCommon: UICollectionViewDragDelegate {
     func collectionView(_ collectionView: UICollectionView, itemsForBeginning session: UIDragSession, at indexPath: IndexPath) -> [UIDragItem] {
-        guard let metadata = dataSource.cellForItemAt(indexPath: indexPath),
-              metadata.status == 0,
-              !isEditMode,
+        guard !isEditMode,
+              let metadata = dataSource.cellForItemAt(indexPath: indexPath), metadata.status == 0,
               !isDirectoryE2EE(metadata: metadata) else { return [] }
 
         DragDropHover.shared.sourceMetadata = metadata
@@ -112,38 +126,40 @@ extension NCCollectionViewCommon: UICollectionViewDropDelegate {
 
     func collectionView(_ collectionView: UICollectionView, dropSessionDidUpdate session: UIDropSession, withDestinationIndexPath destinationIndexPath: IndexPath?) -> UICollectionViewDropProposal {
         disabeHighlightedCells()
-        if destinationIndexPath == nil && DragDropHover.shared.sourceMetadata?.serverUrl == self.serverUrl {
-            cleanPushDragDropHover()
-            return UICollectionViewDropProposal(operation: .forbidden)
-        }
-        guard let destinationIndexPath,
-              let destinationMetadata = dataSource.cellForItemAt(indexPath: destinationIndexPath) else {
-            cleanPushDragDropHover()
-            return UICollectionViewDropProposal(operation: .copy)
+        var destinationMetadata: tableMetadata?
+        if let destinationIndexPath {
+            destinationMetadata = dataSource.cellForItemAt(indexPath: destinationIndexPath)
         }
 
-        if isDirectoryE2EE(metadata: destinationMetadata) || destinationMetadata.ocId == DragDropHover.shared.sourceMetadata?.ocId {
-            cleanPushDragDropHover()
-            return UICollectionViewDropProposal(operation: .forbidden)
-        }
-        if !destinationMetadata.directory && DragDropHover.shared.sourceMetadata?.serverUrl == self.serverUrl {
-            cleanPushDragDropHover()
-            return UICollectionViewDropProposal(operation: .forbidden)
+        if let destinationMetadata {
+            if isDirectoryE2EE(metadata: destinationMetadata) || destinationMetadata.ocId == DragDropHover.shared.sourceMetadata?.ocId {
+                cleanPushDragDropHover()
+                return UICollectionViewDropProposal(operation: .forbidden)
+            }
+            if !destinationMetadata.directory && (DragDropHover.shared.sourceMetadata?.serverUrl == self.serverUrl || serverUrl.isEmpty) {
+                cleanPushDragDropHover()
+                return UICollectionViewDropProposal(operation: .forbidden)
+            }
+        } else {
+            if DragDropHover.shared.sourceMetadata?.serverUrl == serverUrl || serverUrl.isEmpty {
+                cleanPushDragDropHover()
+                return UICollectionViewDropProposal(operation: .forbidden)
+            }
         }
 
-        if destinationMetadata.directory {
-            let cell = collectionView.cellForItem(at: destinationIndexPath) as? NCCellProtocol
-            cell?.setHighlighted(true)
+        if let destinationIndexPath, let destinationMetadata, destinationMetadata.directory, let cell = collectionView.cellForItem(at: destinationIndexPath) as? NCCellProtocol {
+            cell.setHighlighted(true)
         }
 
-        // Push Metadata
+        // DIRECTORY - Push Metadata
         if DragDropHover.shared.pushIndexPath != destinationIndexPath || DragDropHover.shared.pushCollectionView != collectionView {
             DragDropHover.shared.pushIndexPath = destinationIndexPath
             DragDropHover.shared.pushCollectionView = collectionView
             DragDropHover.shared.pushTimerIndexPath?.invalidate()
             DragDropHover.shared.pushTimerIndexPath = Timer.scheduledTimer(withTimeInterval: 2, repeats: false) { [weak self] _ in
                 guard let self else { return }
-                if DragDropHover.shared.pushIndexPath == destinationIndexPath,
+                if let destinationIndexPath,
+                   DragDropHover.shared.pushIndexPath == destinationIndexPath,
                    DragDropHover.shared.pushCollectionView == collectionView,
                    let metadata = self.dataSource.cellForItemAt(indexPath: destinationIndexPath),
                    metadata.directory {
@@ -170,7 +186,7 @@ extension NCCollectionViewCommon: UICollectionViewDropDelegate {
 
     private func disabeHighlightedCells() {
         for mainTabBarController in SceneManager.shared.getAllMainTabBarController() {
-            if let viewController = mainTabBarController.currentViewController() as? NCFiles,
+            if let viewController = mainTabBarController.currentViewController() as? NCCollectionViewCommon,
                let indexPathsForVisibleItems = viewController.collectionView?.indexPathsForVisibleItems {
                 for indexPathVisible in indexPathsForVisibleItems {
                     let cell = viewController.collectionView.cellForItem(at: indexPathVisible) as? NCCellProtocol
