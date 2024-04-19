@@ -5,21 +5,6 @@
 //  Created by Marino Faggiana on 19/04/24.
 //  Copyright © 2024 Marino Faggiana. All rights reserved.
 //
-//  Author Marino Faggiana <marino.faggiana@nextcloud.com>
-//
-//  This program is free software: you can redistribute it and/or modify
-//  it under the terms of the GNU General Public License as published by
-//  the Free Software Foundation, either version 3 of the License, or
-//  (at your option) any later version.
-//
-//  This program is distributed in the hope that it will be useful,
-//  but WITHOUT ANY WARRANTY; without even the implied warranty of
-//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//  GNU General Public License for more details.
-//
-//  You should have received a copy of the GNU General Public License
-//  along with this program.  If not, see <http://www.gnu.org/licenses/>.
-//
 
 import Foundation
 
@@ -27,8 +12,9 @@ import Foundation
 
 extension NCCollectionViewCommon: UICollectionViewDragDelegate {
     func collectionView(_ collectionView: UICollectionView, itemsForBeginning session: UIDragSession, at indexPath: IndexPath) -> [UIDragItem] {
-        guard !isEditMode,
-              let metadata = dataSource.cellForItemAt(indexPath: indexPath), metadata.status == 0,
+        guard let metadata = dataSource.cellForItemAt(indexPath: indexPath),
+              metadata.status == 0,
+              !isEditMode,
               !isDirectoryE2EE(metadata: metadata) else { return [] }
 
         DragDropHover.shared.sourceMetadata = metadata
@@ -68,53 +54,101 @@ extension NCCollectionViewCommon: UICollectionViewDropDelegate {
 
     func collectionView(_ collectionView: UICollectionView, performDropWith coordinator: UICollectionViewDropCoordinator) {
         cleanPushDragDropHover()
-
+        var serverUrl: String = self.serverUrl
+        let location = coordinator.session.location(in: collectionView)
         if let destinationIndexPath = coordinator.destinationIndexPath {
             DragDropHover.shared.destinationMetadata = dataSource.cellForItemAt(indexPath: destinationIndexPath)
         }
 
+        func uploadFile(fileNamePath: String) async {
+            if let destinationMetadata = DragDropHover.shared.destinationMetadata, destinationMetadata.directory {
+                serverUrl = destinationMetadata.serverUrl + "/" + destinationMetadata.fileName
+            }
+            let ocId = NSUUID().uuidString
+            let ext = (fileNamePath as NSString).pathExtension
+            let fileName = await NCNetworking.shared.createFileName(fileNameBase: NSLocalizedString("_untitled_", comment: "") + "." + ext, account: self.appDelegate.account, serverUrl: serverUrl)
+            let toPath = utilityFileSystem.getDirectoryProviderStorageOcId(ocId, fileNameView: fileName)
+            utilityFileSystem.copyFile(atPath: fileNamePath, toPath: toPath)
+
+            let metadataForUpload = NCManageDatabase.shared.createMetadata(account: appDelegate.account, user: appDelegate.user, userId: appDelegate.userId, fileName: fileName, fileNameView: fileName, ocId: ocId, serverUrl: serverUrl, urlBase: appDelegate.urlBase, url: "", contentType: "")
+
+            metadataForUpload.session = NCNetworking.shared.sessionUploadBackground
+            metadataForUpload.sessionSelector = NCGlobal.shared.selectorUploadFile
+            metadataForUpload.size = utilityFileSystem.getFileSize(filePath: toPath)
+            metadataForUpload.status = NCGlobal.shared.metadataStatusWaitUpload
+            metadataForUpload.sessionDate = Date()
+
+            NCManageDatabase.shared.addMetadata(metadataForUpload)
+        }
+
         if DragDropHover.shared.sourceMetadata != nil {
-            self.openMenu(collectionView: collectionView, location: coordinator.session.location(in: collectionView))
+            self.openMenu(collectionView: collectionView, location: location)
         } else {
-            self.handleDrop(coordinator: coordinator)
+            if coordinator.session.canLoadObjects(ofClass: UIImage.self) {
+                coordinator.session.loadObjects(ofClass: UIImage.self) { items in
+                    Task {
+                        for case let image as UIImage in items {
+                            if let data = image.jpegData(compressionQuality: 1) {
+                                do {
+                                    let fileNamePath = NSTemporaryDirectory() + NSUUID().uuidString + ".jpg"
+                                    try data.write(to: URL(fileURLWithPath: fileNamePath))
+                                    await uploadFile(fileNamePath: fileNamePath)
+                                } catch {  }
+                            }
+                        }
+                    }
+                }
+            }
+
+            for item in coordinator.items {
+                item.dragItem.itemProvider.loadFileRepresentation(forTypeIdentifier: "public.movie") { (url, error) in
+                    if let url = url {
+
+                    }
+                }
+            }
         }
     }
 
     func collectionView(_ collectionView: UICollectionView, dropSessionDidUpdate session: UIDropSession, withDestinationIndexPath destinationIndexPath: IndexPath?) -> UICollectionViewDropProposal {
-        var destinationMetadata: tableMetadata?
-        if let destinationIndexPath {
-            destinationMetadata = dataSource.cellForItemAt(indexPath: destinationIndexPath)
+        disabeHighlightedCells()
+        if destinationIndexPath == nil && DragDropHover.shared.sourceMetadata?.serverUrl == self.serverUrl {
+            cleanPushDragDropHover()
+            return UICollectionViewDropProposal(operation: .forbidden)
+        }
+        guard let destinationIndexPath,
+              let destinationMetadata = dataSource.cellForItemAt(indexPath: destinationIndexPath) else {
+            cleanPushDragDropHover()
+            return UICollectionViewDropProposal(operation: .copy)
         }
 
-        if let destinationMetadata {
-            if isDirectoryE2EE(metadata: destinationMetadata) || destinationMetadata.ocId == DragDropHover.shared.sourceMetadata?.ocId {
-                cleanPushDragDropHover()
-                return UICollectionViewDropProposal(operation: .forbidden)
-            }
-            if !destinationMetadata.directory && (DragDropHover.shared.sourceMetadata?.serverUrl == self.serverUrl || serverUrl.isEmpty) {
-                cleanPushDragDropHover()
-                return UICollectionViewDropProposal(operation: .forbidden)
-            }
-        } else {
-            if DragDropHover.shared.sourceMetadata?.serverUrl == serverUrl || serverUrl.isEmpty {
-                cleanPushDragDropHover()
-                return UICollectionViewDropProposal(operation: .forbidden)
-            }
+        if isDirectoryE2EE(metadata: destinationMetadata) || destinationMetadata.ocId == DragDropHover.shared.sourceMetadata?.ocId {
+            cleanPushDragDropHover()
+            return UICollectionViewDropProposal(operation: .forbidden)
+        }
+        if !destinationMetadata.directory && DragDropHover.shared.sourceMetadata?.serverUrl == self.serverUrl {
+            cleanPushDragDropHover()
+            return UICollectionViewDropProposal(operation: .forbidden)
         }
 
-        // DIRECTORY - Push Metadata
+        if destinationMetadata.directory {
+            let cell = collectionView.cellForItem(at: destinationIndexPath) as? NCCellProtocol
+            cell?.setHighlighted(true)
+        }
+
+        // Push Metadata
         if DragDropHover.shared.pushIndexPath != destinationIndexPath || DragDropHover.shared.pushCollectionView != collectionView {
             DragDropHover.shared.pushIndexPath = destinationIndexPath
             DragDropHover.shared.pushCollectionView = collectionView
             DragDropHover.shared.pushTimerIndexPath?.invalidate()
             DragDropHover.shared.pushTimerIndexPath = Timer.scheduledTimer(withTimeInterval: 2, repeats: false) { [weak self] _ in
                 guard let self else { return }
-                if let destinationIndexPath,
-                   DragDropHover.shared.pushIndexPath == destinationIndexPath,
+                if DragDropHover.shared.pushIndexPath == destinationIndexPath,
                    DragDropHover.shared.pushCollectionView == collectionView,
                    let metadata = self.dataSource.cellForItemAt(indexPath: destinationIndexPath),
                    metadata.directory {
                     self.cleanPushDragDropHover()
+                    self.disabeHighlightedCells()
                     self.pushMetadata(metadata)
                 }
             }
@@ -125,70 +159,22 @@ extension NCCollectionViewCommon: UICollectionViewDropDelegate {
 
     func collectionView(_ collectionView: UICollectionView, dropSessionDidExit session: UIDropSession) {
         cleanPushDragDropHover()
+        disabeHighlightedCells()
     }
 
+    // Update collectionView after ending the drop operation
     func collectionView(_ collectionView: UICollectionView, dropSessionDidEnd session: UIDropSession) {
         cleanPushDragDropHover()
+        disabeHighlightedCells()
     }
 
-    // MARK: -
-
-    private func handleDrop(coordinator: UICollectionViewDropCoordinator) {
-        var serverUrl: String = self.serverUrl
-
-        // IMAGE
-        if coordinator.session.canLoadObjects(ofClass: UIImage.self) {
-            coordinator.session.loadObjects(ofClass: UIImage.self) { items in
-                Task {
-                    for case let image as UIImage in items {
-                        if let data = image.jpegData(compressionQuality: 1) {
-                            do {
-                                if let destinationMetadata = DragDropHover.shared.destinationMetadata, destinationMetadata.directory {
-                                    serverUrl = destinationMetadata.serverUrl + "/" + destinationMetadata.fileName
-                                }
-                                let ocId = NSUUID().uuidString
-                                let fileName = await NCNetworking.shared.createFileName(fileNameBase: NSLocalizedString("_untitled_", comment: "") + ".jpg", account: self.appDelegate.account, serverUrl: serverUrl)
-                                let fileNamePath = self.utilityFileSystem.getDirectoryProviderStorageOcId(ocId, fileNameView: fileName)
-                                try data.write(to: URL(fileURLWithPath: fileNamePath))
-                                let metadataForUpload = NCManageDatabase.shared.createMetadata(account: self.appDelegate.account, user: self.appDelegate.user, userId: self.appDelegate.userId, fileName: fileName, fileNameView: fileName, ocId: ocId, serverUrl: serverUrl, urlBase: self.appDelegate.urlBase, url: "", contentType: "")
-
-                                metadataForUpload.session = NCNetworking.shared.sessionUploadBackground
-                                metadataForUpload.sessionSelector = NCGlobal.shared.selectorUploadFile
-                                metadataForUpload.size = self.utilityFileSystem.getFileSize(filePath: fileNamePath)
-                                metadataForUpload.status = NCGlobal.shared.metadataStatusWaitUpload
-                                metadataForUpload.sessionDate = Date()
-
-                                NCManageDatabase.shared.addMetadata(metadataForUpload)
-                            } catch {  }
-                        }
-                    }
-                }
-            }
-        }
-
-        // VIDEO
-        for item in coordinator.items {
-            item.dragItem.itemProvider.loadFileRepresentation(forTypeIdentifier: "public.movie") { url, _ in
-                if let url = url {
-                    do {
-                        let data = try Data(contentsOf: url)
-                        if let destinationMetadata = DragDropHover.shared.destinationMetadata, destinationMetadata.directory {
-                            serverUrl = destinationMetadata.serverUrl + "/" + destinationMetadata.fileName
-                        }
-                        let ocId = NSUUID().uuidString
-                        let fileName = url.lastPathComponent
-                        let fileNamePath = self.utilityFileSystem.getDirectoryProviderStorageOcId(ocId, fileNameView: fileName)
-                        try data.write(to: URL(fileURLWithPath: fileNamePath))
-                        let metadataForUpload = NCManageDatabase.shared.createMetadata(account: self.appDelegate.account, user: self.appDelegate.user, userId: self.appDelegate.userId, fileName: fileName, fileNameView: fileName, ocId: ocId, serverUrl: serverUrl, urlBase: self.appDelegate.urlBase, url: "", contentType: "")
-
-                        metadataForUpload.session = NCNetworking.shared.sessionUploadBackground
-                        metadataForUpload.sessionSelector = NCGlobal.shared.selectorUploadFile
-                        metadataForUpload.size = self.utilityFileSystem.getFileSize(filePath: fileNamePath)
-                        metadataForUpload.status = NCGlobal.shared.metadataStatusWaitUpload
-                        metadataForUpload.sessionDate = Date()
-
-                        NCManageDatabase.shared.addMetadata(metadataForUpload)
-                    } catch {  }
+    private func disabeHighlightedCells() {
+        for mainTabBarController in SceneManager.shared.getAllMainTabBarController() {
+            if let viewController = mainTabBarController.currentViewController() as? NCFiles,
+               let indexPathsForVisibleItems = viewController.collectionView?.indexPathsForVisibleItems {
+                for indexPathVisible in indexPathsForVisibleItems {
+                    let cell = viewController.collectionView.cellForItem(at: indexPathVisible) as? NCCellProtocol
+                    cell?.setHighlighted(false)
                 }
             }
         }
@@ -253,11 +239,36 @@ extension NCCollectionViewCommon: UICollectionViewDropDelegate {
 
 // MARK: - Drop Interaction Delegate
 
-extension NCCollectionViewCommon: UIDropInteractionDelegate { }
+extension NCCollectionViewCommon: UIDropInteractionDelegate {
+    func dropInteraction(_ interaction: UIDropInteraction, canHandle session: UIDropSession) -> Bool {
+        return session.canLoadObjects(ofClass: NSString.self)
+    }
+
+    func dropInteraction(_ interaction: UIDropInteraction, sessionDidEnter session: UIDropSession) {
+        cleanPushDragDropHover()
+        disabeHighlightedCells()
+    }
+
+    func dropInteraction(_ interaction: UIDropInteraction, sessionDidUpdate session: UIDropSession) -> UIDropProposal {
+        DragDropHover.shared.pushTimerIndexPath = Timer.scheduledTimer(withTimeInterval: 2, repeats: false) { [weak self] _ in
+            guard let self else { return }
+            backButtonPressed()
+        }
+        return UIDropProposal(operation: .copy)
+    }
+
+    func dropInteraction(_ interaction: UIDropInteraction, sessionDidExit session: UIDropSession) {
+        cleanPushDragDropHover()
+    }
+
+    func dropInteraction(_ interaction: UIDropInteraction, performDrop session: UIDropSession) {
+    }
+}
 
 class DragDropHover {
     static let shared = DragDropHover()
 
+    var pushTimerDropInteraction: Timer?
     var pushTimerIndexPath: Timer?
     var pushCollectionView: UICollectionView?
     var pushIndexPath: IndexPath?
