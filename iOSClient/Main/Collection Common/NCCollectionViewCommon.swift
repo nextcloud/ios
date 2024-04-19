@@ -140,9 +140,13 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         longPressedGesture.delaysTouchesBegan = true
         collectionView.addGestureRecognizer(longPressedGesture)
 
+        // Drag & Drop
         collectionView.dragInteractionEnabled = true
         collectionView.dragDelegate = self
         collectionView.dropDelegate = self
+
+        let dropInteraction = UIDropInteraction(delegate: self)
+        self.navigationController?.navigationItem.leftBarButtonItems?.first?.customView?.addInteraction(dropInteraction)
 
         NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeTheming), object: nil)
     }
@@ -564,7 +568,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         let activeAccount = NCManageDatabase.shared.getActiveAccount()
         let image = utility.loadUserImage(for: appDelegate.user, displayName: activeAccount?.displayName, userBaseUrl: appDelegate)
         let accountButton = AccountSwitcherButton(type: .custom)
-        
+
         accountButton.setImage(image, for: .normal)
         accountButton.setImage(image, for: .highlighted)
         accountButton.semanticContentAttribute = .forceLeftToRight
