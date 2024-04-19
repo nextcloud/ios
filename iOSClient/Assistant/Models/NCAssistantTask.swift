@@ -13,7 +13,7 @@ import SwiftUI
 class NCAssistantTask: ObservableObject {
     @Published var types: [NKTextProcessingTaskType] = []
     @Published var filteredTasks: [NKTextProcessingTask] = []
-    @Published var selectedTaskType: NKTextProcessingTaskType?
+    @Published var selectedType: NKTextProcessingTaskType?
     @Published var selectedTask: NKTextProcessingTask?
     @Published var hasError: Bool = false
     @Published var isLoading: Bool = false
@@ -40,8 +40,8 @@ class NCAssistantTask: ObservableObject {
     }
 
     func selectTaskType(_ type: NKTextProcessingTaskType?) {
-        selectedTaskType = type
-        filterTasks(ofType: self.selectedTaskType)
+        selectedType = type
+        filterTasks(ofType: self.selectedType)
     }
 
     func selectTask(_ task: NKTextProcessingTask) {
@@ -63,7 +63,7 @@ class NCAssistantTask: ObservableObject {
     func scheduleTask(input: String) {
         isLoading = true
 
-        NextcloudKit.shared.textProcessingSchedule(input: input, typeId: selectedTaskType?.id ?? "", identifier: "assistant") { _, task, _, error in
+        NextcloudKit.shared.textProcessingSchedule(input: input, typeId: selectedType?.id ?? "", identifier: "assistant") { _, task, _, error in
             if error != .success {
                 self.hasError = true
                 return
@@ -116,7 +116,7 @@ class NCAssistantTask: ObservableObject {
 
             self.isLoading = false
 
-            if self.selectedTaskType == nil {
+            if self.selectedType == nil {
                 self.selectTaskType(filteredTypes[0])
             }
 
@@ -135,7 +135,7 @@ class NCAssistantTask: ObservableObject {
 
             guard let tasks = tasks else { return }
             self.tasks = tasks
-            self.filterTasks(ofType: self.selectedTaskType)
+            self.filterTasks(ofType: self.selectedType)
 
             self.isLoading = false
         }
@@ -144,7 +144,7 @@ class NCAssistantTask: ObservableObject {
 
 extension NCAssistantTask {
     public func loadDummyData() {
-        let loremIpsum = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
+        let loremIpsum = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
 
         var tasks: [NKTextProcessingTask] = []
 
@@ -152,16 +152,17 @@ extension NCAssistantTask {
             tasks.append(NKTextProcessingTask(id: index, type: "OCP\\TextProcessing\\FreePromptTaskType", status: index, userId: "christine", appId: "assistant", input: loremIpsum, output: loremIpsum, identifier: "", completionExpectedAt: 1712666412))
         }
 
-        self.tasks = tasks
-        self.filteredTasks = tasks
-        self.selectedTaskType = NKTextProcessingTaskType(id: "OCP\\TextProcessing\\FreePromptTaskType", name: "Free Prompt", description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua")
-        self.selectedTask = tasks[0]
         self.types = [
             NKTextProcessingTaskType(id: "1", name: "Free Prompt", description: ""),
             NKTextProcessingTaskType(id: "2", name: "Summarize", description: ""),
             NKTextProcessingTaskType(id: "3", name: "Generate headline", description: ""),
             NKTextProcessingTaskType(id: "4", name: "Reformulate", description: "")
         ]
+        self.tasks = tasks
+        self.filteredTasks = tasks
+        self.selectedType = types[0]
+        self.selectedTask = filteredTasks[0]
+
     }
 }
 

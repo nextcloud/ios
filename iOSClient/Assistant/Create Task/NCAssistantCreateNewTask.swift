@@ -16,7 +16,7 @@ struct NCAssistantCreateNewTask: View {
 
     var body: some View {
         VStack {
-            Text(model.selectedTaskType?.description ?? "")
+            Text(model.selectedType?.description ?? "")
                 .frame(alignment: .top)
 
             ZStack(alignment: .topLeading) {
@@ -45,7 +45,7 @@ struct NCAssistantCreateNewTask: View {
             })
             .disabled(text.isEmpty)
         }
-        .navigationTitle(String(format: NSLocalizedString("_new_task_", comment: ""), model.selectedTaskType?.name ?? ""))
+        .navigationTitle(String(format: NSLocalizedString("_new_task_", comment: ""), model.selectedType?.name ?? ""))
         .navigationBarTitleDisplayMode(.inline)
         .padding()
         .onAppear {

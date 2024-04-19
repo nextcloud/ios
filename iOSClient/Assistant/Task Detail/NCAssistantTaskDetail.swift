@@ -11,45 +11,16 @@ import NextcloudKit
 
 struct NCAssistantTaskDetail: View {
     @EnvironmentObject var model: NCAssistantTask
-    @State private var tab = 1
-
     let task: NKTextProcessingTask
 
     var body: some View {
-        VStack {
-            Picker("", selection: $tab) {
-                Text(NSLocalizedString("_input_", comment: "")).tag(0)
-                Text(NSLocalizedString("_output_", comment: "")).tag(1)
-            }
-            .padding(.bottom, 10)
-            .pickerStyle(.segmented)
+        ZStack(alignment: .bottom) {
+            InputOutputScrollView(task: task)
 
-            ScrollView {
-                Text(tab == 0 ? (model.selectedTask?.input ?? "") : (model.selectedTask?.output ?? ""))
-                    .padding()
-            }
-            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
-            .background(.gray.opacity(0.1))
-            .clipShape(.rect(cornerRadius: 8))
-
-            HStack(alignment: .center) {
-                Label(
-                    title: { Text(NSLocalizedString(model.selectedTask?.statusInfo.stringKey ?? "", comment: "")) },
-                    icon: { Image(systemName: model.selectedTask?.statusInfo.imageSystemName ?? "").renderingMode(.original) }
-                )
-                .frame(maxWidth: .infinity, alignment: .leading)
-
-                if let completionExpectedAt = task.completionExpectedAt {
-                    Text(NCUtility().dateDiff(.init(timeIntervalSince1970: TimeInterval(completionExpectedAt))))
-                        .frame(maxWidth: .infinity, alignment: .trailing)
-                }
-            }
-            .padding()
-
+            BottomDetailsBar(task: task)
         }
         .navigationBarTitleDisplayMode(.inline)
         .navigationTitle(NSLocalizedString("_task_details_", comment: ""))
-        .padding()
         .onAppear {
             model.selectTask(task)
         }
@@ -64,4 +35,59 @@ struct NCAssistantTaskDetail: View {
         .onAppear {
             model.loadDummyData()
         }
+}
+
+struct InputOutputScrollView: View {
+    @EnvironmentObject var model: NCAssistantTask
+    let task: NKTextProcessingTask
+
+    var body: some View {
+        ScrollView {
+            VStack(alignment: .leading) {
+                Text(NSLocalizedString("_input_", comment: "")).font(.headline)
+                    .padding(.top, 10)
+
+                Text(model.selectedTask?.input ?? "")
+                    .padding()
+                    .background(.gray.opacity(0.1))
+                    .clipShape(.rect(cornerRadius: 8))
+
+                Text(NSLocalizedString("_output_", comment: "")).font(.headline)
+                    .padding(.top, 10)
+
+                Text(model.selectedTask?.output ?? "")
+                    .padding()
+                    .background(.gray.opacity(0.1))
+                    .clipShape(.rect(cornerRadius: 8))
+            }
+            .padding(.bottom, 80)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+    }
+}
+
+struct BottomDetailsBar: View {
+    @EnvironmentObject var model: NCAssistantTask
+    let task: NKTextProcessingTask
+
+    var body: some View {
+        VStack(spacing: 0) {
+            Divider()
+            HStack(alignment: .bottom) {
+                Label(
+                    title: { Text(NSLocalizedString(model.selectedTask?.statusInfo.stringKey ?? "", comment: "")) },
+                    icon: { Image(systemName: model.selectedTask?.statusInfo.imageSystemName ?? "").renderingMode(.original) }
+                )
+                .frame(maxWidth: .infinity, alignment: .leading)
+
+                if let completionExpectedAt = task.completionExpectedAt {
+                    Text(NCUtility().dateDiff(.init(timeIntervalSince1970: TimeInterval(completionExpectedAt))))
+                        .frame(maxWidth: .infinity, alignment: .trailing)
+                }
+            }
+            .padding()
+            .background(.bar)
+            .frame(alignment: .bottom)
+        }
+    }
 }

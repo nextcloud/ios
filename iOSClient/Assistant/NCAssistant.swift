@@ -35,7 +35,7 @@ struct NCAssistant: View {
                     NavigationLink(destination: NCAssistantCreateNewTask()) {
                         Image(systemName: "plus")
                     }
-                    .disabled(model.selectedTaskType == nil)
+                    .disabled(model.selectedType == nil)
                 }
             }
             .navigationBarTitleDisplayMode(.inline)
@@ -112,11 +112,11 @@ struct TypeButton: View {
         }
         .padding(.horizontal)
         .padding(.vertical, 7)
-        .foregroundStyle(model.selectedTaskType?.id == taskType?.id ? .white : .primary)
-        .if(model.selectedTaskType?.id == taskType?.id) { view in
+        .foregroundStyle(model.selectedType?.id == taskType?.id ? .white : .primary)
+        .if(model.selectedType?.id == taskType?.id) { view in
             view.background(Color(NCBrandColor.shared.brandElement))
         }
-        .if(model.selectedTaskType?.id != taskType?.id) { view in
+        .if(model.selectedType?.id != taskType?.id) { view in
             view.background(.ultraThinMaterial)
         }
         .clipShape(.capsule)
