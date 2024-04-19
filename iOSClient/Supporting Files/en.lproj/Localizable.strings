@@ -1058,3 +1058,5 @@
 "_task_details_"                 = "Task details";
 "_assistant_"                    = "Assistant";
 "_new_task_"                     = "New %@ task";
+"_no_tasks_"                     = "No tasks in here";
+"_create_task_subtitle_"         = "Use the + button to create one";

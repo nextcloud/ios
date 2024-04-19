@@ -16,13 +16,13 @@ struct EmptyTasksView: View {
                 .resizable()
                 .aspectRatio(contentMode: .fit)
                 .foregroundStyle(Color(NCBrandColor.shared.brandElement))
-                .frame(height: /*@START_MENU_TOKEN@*/100/*@END_MENU_TOKEN@*/)
+                .frame(height: 100)
 
-            Text("No tasks in here")
+            Text(NSLocalizedString("_no_tasks_", comment: ""))
                 .font(.system(size: 22, weight: .bold))
                 .padding(.bottom, 5)
 
-            Text("Use the + button to create one")
+            Text(NSLocalizedString("_create_task_subtitle_", comment: ""))
                 .font(.system(size: 14))
                 .foregroundStyle(.secondary)
         }

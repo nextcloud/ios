@@ -108,7 +108,7 @@ class NCAssistantTask: ObservableObject {
                 return
             }
 
-            guard let filteredTypes = types?.filter({ !self.excludedTypeIds.contains($0.id ?? "")}) else { return }
+            guard let filteredTypes = types?.filter({ !self.excludedTypeIds.contains($0.id ?? "")}), !filteredTypes.isEmpty else { return }
 
             withAnimation {
                 self.types = filteredTypes
@@ -117,7 +117,7 @@ class NCAssistantTask: ObservableObject {
             self.isLoading = false
 
             if self.selectedType == nil {
-                self.selectTaskType(filteredTypes[0])
+                self.selectTaskType(filteredTypes.first)
             }
 
             self.loadAllTasks()
