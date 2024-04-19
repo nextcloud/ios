@@ -3,7 +3,7 @@
 
 CONTAINER_NAME=nextcloud_test
 SERVER_PORT=8080
-TEST_BRANCH=master
+TEST_BRANCH=stable28
 SERVER_URL="http://localhost:${SERVER_PORT}"
 USER="admin"
 

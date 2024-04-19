@@ -60,6 +60,7 @@ struct InputOutputScrollView: View {
                     .background(.gray.opacity(0.1))
                     .clipShape(.rect(cornerRadius: 8))
             }
+            .padding(.horizontal, 8)
             .padding(.bottom, 80)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
