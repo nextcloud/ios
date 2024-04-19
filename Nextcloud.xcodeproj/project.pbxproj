@@ -149,6 +149,7 @@
 		F3A047992BD2668800658E7B /* NCAssistantTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3A047932BD2668800658E7B /* NCAssistantTask.swift */; };
 		F3A0479A2BD2668800658E7B /* NCAssistantTaskDetail.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3A047952BD2668800658E7B /* NCAssistantTaskDetail.swift */; };
 		F3A0479B2BD2668800658E7B /* NCAssistant.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3A047962BD2668800658E7B /* NCAssistant.swift */; };
+		F3A0479E2BD268B500658E7B /* PopupView in Frameworks */ = {isa = PBXBuildFile; productRef = F3A0479D2BD268B500658E7B /* PopupView */; };
 		F3A7AFC62A41AA82001FC89C /* BaseUIXCTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3A7AFC52A41AA82001FC89C /* BaseUIXCTestCase.swift */; };
 		F3BB464D2A39ADCC00461F6E /* NCMoreAppSuggestionsCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F3BB464C2A39ADCC00461F6E /* NCMoreAppSuggestionsCell.xib */; };
 		F3BB464F2A39EBE500461F6E /* NCMoreUserCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3BB464E2A39EBE500461F6E /* NCMoreUserCell.swift */; };
@@ -1721,6 +1722,7 @@
 				F734B06628E75C0100E180D5 /* TLPhotoPicker in Frameworks */,
 				F787AC09298BCB4A0001BB00 /* SVGKitSwift in Frameworks */,
 				F760DE032AE66EA80027D78A /* KeychainAccess in Frameworks */,
+				F3A0479E2BD268B500658E7B /* PopupView in Frameworks */,
 				F770768E263A8C3400A1BA94 /* FloatingPanel in Frameworks */,
 				F710FC7C277B7D0000AA9FBF /* RealmSwift in Frameworks */,
 				F758A01227A7F03E0069468B /* JGProgressHUD in Frameworks */,
@@ -3188,6 +3190,7 @@
 				F7F623B42A5EF4D30022D3D4 /* Gzip */,
 				F76B649D2ADFFDEC00014640 /* LRUCache */,
 				F760DE022AE66EA80027D78A /* KeychainAccess */,
+				F3A0479D2BD268B500658E7B /* PopupView */,
 			);
 			productName = "Crypto Cloud";
 			productReference = F7CE8AFA1DC1F8D8009CAE48 /* Nextcloud.app */;
@@ -3358,6 +3361,7 @@
 				F7F623B32A5EF4D30022D3D4 /* XCRemoteSwiftPackageReference "GzipSwift" */,
 				F76B649A2ADFFAD200014640 /* XCRemoteSwiftPackageReference "LRUCache" */,
 				F760DE012AE66E860027D78A /* XCRemoteSwiftPackageReference "KeychainAccess" */,
+				F3A0479C2BD268B500658E7B /* XCRemoteSwiftPackageReference "PopupView" */,
 			);
 			productRefGroup = F7F67B9F1A24D27800EE80DA;
 			projectDirPath = "";
@@ -5265,6 +5269,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		F3A0479C2BD268B500658E7B /* XCRemoteSwiftPackageReference "PopupView" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/exyte/PopupView.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.9.1;
+			};
+		};
 		F70B86732642CE3B00ED5349 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
@@ -5634,6 +5646,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = F760DE012AE66E860027D78A /* XCRemoteSwiftPackageReference "KeychainAccess" */;
 			productName = KeychainAccess;
+		};
+		F3A0479D2BD268B500658E7B /* PopupView */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F3A0479C2BD268B500658E7B /* XCRemoteSwiftPackageReference "PopupView" */;
+			productName = PopupView;
 		};
 		F3F041982B9F7E6700D5155F /* Realm */ = {
 			isa = XCSwiftPackageProductDependency;
