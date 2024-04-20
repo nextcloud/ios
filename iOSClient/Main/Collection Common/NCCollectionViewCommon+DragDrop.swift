@@ -129,16 +129,16 @@ extension NCCollectionViewCommon: UICollectionViewDropDelegate {
             dragItem.itemProvider.loadObject(ofClass: NSString.self) { data, error in
                 if error == nil, let ocId = data as? String, let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
                     metadatas.append(metadata)
-                    semaphore.signal()
                 }
+                semaphore.signal()
             }
             semaphore.wait()
         }
 
         if metadatas.isEmpty {
-            DragDropHover.shared.sourceMetadatas = metadatas
             self.handleDrop(coordinator: coordinator, destinationMetadata: destinationMetadata)
         } else {
+            DragDropHover.shared.sourceMetadatas = metadatas
             self.openMenu(collectionView: collectionView, location: coordinator.session.location(in: collectionView))
         }
     }
