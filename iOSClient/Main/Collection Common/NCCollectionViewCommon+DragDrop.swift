@@ -146,22 +146,24 @@ extension NCCollectionViewCommon: UICollectionViewDropDelegate {
                 if let url = url {
                     do {
                         let data = try Data(contentsOf: url)
-                        if let destinationMetadata = DragDropHover.shared.destinationMetadata, destinationMetadata.directory {
-                            serverUrl = destinationMetadata.serverUrl + "/" + destinationMetadata.fileName
+                        Task {
+                            if let destinationMetadata = DragDropHover.shared.destinationMetadata, destinationMetadata.directory {
+                                serverUrl = destinationMetadata.serverUrl + "/" + destinationMetadata.fileName
+                            }
+                            let ocId = NSUUID().uuidString
+                            let fileName = await NCNetworking.shared.createFileName(fileNameBase: url.lastPathComponent, account: self.appDelegate.account, serverUrl: serverUrl)
+                            let fileNamePath = self.utilityFileSystem.getDirectoryProviderStorageOcId(ocId, fileNameView: fileName)
+
+                            try data.write(to: URL(fileURLWithPath: fileNamePath))
+                            let metadataForUpload = NCManageDatabase.shared.createMetadata(account: self.appDelegate.account, user: self.appDelegate.user, userId: self.appDelegate.userId, fileName: fileName, fileNameView: fileName, ocId: ocId, serverUrl: serverUrl, urlBase: self.appDelegate.urlBase, url: "", contentType: "")
+                            metadataForUpload.session = NCNetworking.shared.sessionUploadBackground
+                            metadataForUpload.sessionSelector = NCGlobal.shared.selectorUploadFile
+                            metadataForUpload.size = self.utilityFileSystem.getFileSize(filePath: fileNamePath)
+                            metadataForUpload.status = NCGlobal.shared.metadataStatusWaitUpload
+                            metadataForUpload.sessionDate = Date()
+
+                            NCManageDatabase.shared.addMetadata(metadataForUpload)
                         }
-                        let ocId = NSUUID().uuidString
-                        let fileName = url.lastPathComponent
-                        let fileNamePath = self.utilityFileSystem.getDirectoryProviderStorageOcId(ocId, fileNameView: fileName)
-                        try data.write(to: URL(fileURLWithPath: fileNamePath))
-                        let metadataForUpload = NCManageDatabase.shared.createMetadata(account: self.appDelegate.account, user: self.appDelegate.user, userId: self.appDelegate.userId, fileName: fileName, fileNameView: fileName, ocId: ocId, serverUrl: serverUrl, urlBase: self.appDelegate.urlBase, url: "", contentType: "")
-
-                        metadataForUpload.session = NCNetworking.shared.sessionUploadBackground
-                        metadataForUpload.sessionSelector = NCGlobal.shared.selectorUploadFile
-                        metadataForUpload.size = self.utilityFileSystem.getFileSize(filePath: fileNamePath)
-                        metadataForUpload.status = NCGlobal.shared.metadataStatusWaitUpload
-                        metadataForUpload.sessionDate = Date()
-
-                        NCManageDatabase.shared.addMetadata(metadataForUpload)
                     } catch {
                         NCContentPresenter().showError(error: NKError(error: error))
                         return
