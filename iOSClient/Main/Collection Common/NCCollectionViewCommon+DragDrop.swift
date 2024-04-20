@@ -45,8 +45,6 @@ extension NCCollectionViewCommon: UICollectionViewDragDelegate {
             dragItems.append(UIDragItem(itemProvider: NSItemProvider(object: metadata.ocId as NSString)))
         }
 
-        DragDropHover.shared.sourceServerUrl = self.serverUrl
-        DragDropHover.shared.sourceMetadatas = metadatas
         return dragItems
     }
 
@@ -70,10 +68,7 @@ extension NCCollectionViewCommon: UICollectionViewDragDelegate {
 
 extension NCCollectionViewCommon: UICollectionViewDropDelegate {
     func collectionView(_ collectionView: UICollectionView, canHandle session: UIDropSession) -> Bool {
-        if session.canLoadObjects(ofClass: NSString.self) {
-            return true
-        }
-        return false
+        return true
     }
 
     func collectionView(_ collectionView: UICollectionView, dropSessionDidUpdate session: UIDropSession, withDestinationIndexPath destinationIndexPath: IndexPath?) -> UICollectionViewDropProposal {
@@ -83,16 +78,16 @@ extension NCCollectionViewCommon: UICollectionViewDropDelegate {
         }
 
         if let destinationMetadata {
-            if isDirectoryE2EE(metadata: destinationMetadata) { //|| destinationMetadata.ocId == DragDropHover.shared.sourceMetadata?.ocId {
+            if isDirectoryE2EE(metadata: destinationMetadata) {
                 cleanPushDragDropHover()
                 return UICollectionViewDropProposal(operation: .forbidden)
             }
-            if !destinationMetadata.directory && (DragDropHover.shared.sourceServerUrl == self.serverUrl || serverUrl.isEmpty) {
+            if !destinationMetadata.directory && serverUrl.isEmpty {
                 cleanPushDragDropHover()
                 return UICollectionViewDropProposal(operation: .forbidden)
             }
         } else {
-            if DragDropHover.shared.sourceServerUrl == serverUrl || serverUrl.isEmpty {
+            if serverUrl.isEmpty {
                 cleanPushDragDropHover()
                 return UICollectionViewDropProposal(operation: .forbidden)
             }
@@ -122,14 +117,29 @@ extension NCCollectionViewCommon: UICollectionViewDropDelegate {
     func collectionView(_ collectionView: UICollectionView, performDropWith coordinator: UICollectionViewDropCoordinator) {
         cleanPushDragDropHover()
         var destinationMetadata: tableMetadata?
+        var metadatas: [tableMetadata] = []
         if let destinationIndexPath = coordinator.destinationIndexPath {
             DragDropHover.shared.destinationMetadata = dataSource.cellForItemAt(indexPath: destinationIndexPath)
         }
+        DragDropHover.shared.sourceMetadatas = nil
 
-        if let sourceMetadatas = DragDropHover.shared.sourceMetadatas {
-            self.openMenu(collectionView: collectionView, location: coordinator.session.location(in: collectionView))
-        } else {
+        for item in coordinator.items {
+            let semaphore = DispatchSemaphore(value: 0)
+            let dragItem = item.dragItem
+            dragItem.itemProvider.loadObject(ofClass: NSString.self) { data, error in
+                if error == nil, let ocId = data as? String, let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
+                    metadatas.append(metadata)
+                    semaphore.signal()
+                }
+            }
+            semaphore.wait()
+        }
+
+        if metadatas.isEmpty {
+            DragDropHover.shared.sourceMetadatas = metadatas
             self.handleDrop(coordinator: coordinator, destinationMetadata: destinationMetadata)
+        } else {
+            self.openMenu(collectionView: collectionView, location: coordinator.session.location(in: collectionView))
         }
     }
 
@@ -139,15 +149,7 @@ extension NCCollectionViewCommon: UICollectionViewDropDelegate {
 
     func collectionView(_ collectionView: UICollectionView, dropSessionDidEnd session: UIDropSession) {
         cleanPushDragDropHover()
-
-        /*
-        DragDropHover.shared.sourceServerUrl = nil
-        DragDropHover.shared.sourceMetadatas = nil
-        DragDropHover.shared.destinationMetadata = nil
-        */
     }
-
-    // MARK: -
 
     private func handleDrop(coordinator: UICollectionViewDropCoordinator, destinationMetadata: tableMetadata?) {
         var serverUrl: String = self.serverUrl
@@ -262,7 +264,6 @@ class DragDropHover {
     var pushCollectionView: UICollectionView?
     var pushIndexPath: IndexPath?
 
-    var sourceServerUrl: String?
     var sourceMetadatas: [tableMetadata]?
     var destinationMetadata: tableMetadata?
 }
