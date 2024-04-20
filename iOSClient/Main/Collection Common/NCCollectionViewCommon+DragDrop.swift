@@ -28,14 +28,26 @@ import NextcloudKit
 
 extension NCCollectionViewCommon: UICollectionViewDragDelegate {
     func collectionView(_ collectionView: UICollectionView, itemsForBeginning session: UIDragSession, at indexPath: IndexPath) -> [UIDragItem] {
-        guard !isEditMode,
-              let metadata = dataSource.cellForItemAt(indexPath: indexPath), metadata.status == 0,
-              !isDirectoryE2EE(metadata: metadata) else { return [] }
+        var dragItems: [UIDragItem] = []
+        var metadatas: [tableMetadata] = []
 
-        DragDropHover.shared.sourceMetadata = metadata
+        if isEditMode {
+            for ocId in self.selectOcId {
+                if let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
+                    metadatas.append(metadata)
+                    dragItems.append(UIDragItem(itemProvider: NSItemProvider(object: metadata.ocId as NSString)))
+                }
+            }
+        } else {
+            guard let metadata = dataSource.cellForItemAt(indexPath: indexPath), metadata.status == 0,
+                  !isDirectoryE2EE(metadata: metadata) else { return [] }
+            metadatas.append(metadata)
+            dragItems.append(UIDragItem(itemProvider: NSItemProvider(object: metadata.ocId as NSString)))
+        }
 
-        let itemProvider = NSItemProvider(object: metadata.ocId as NSString)
-        return [UIDragItem(itemProvider: itemProvider)]
+        DragDropHover.shared.sourceServerUrl = self.serverUrl
+        DragDropHover.shared.sourceMetadatas = metadatas
+        return dragItems
     }
 
     func collectionView(_ collectionView: UICollectionView, dragPreviewParametersForItemAt indexPath: IndexPath) -> UIDragPreviewParameters? {
@@ -71,16 +83,16 @@ extension NCCollectionViewCommon: UICollectionViewDropDelegate {
         }
 
         if let destinationMetadata {
-            if isDirectoryE2EE(metadata: destinationMetadata) || destinationMetadata.ocId == DragDropHover.shared.sourceMetadata?.ocId {
+            if isDirectoryE2EE(metadata: destinationMetadata) { //|| destinationMetadata.ocId == DragDropHover.shared.sourceMetadata?.ocId {
                 cleanPushDragDropHover()
                 return UICollectionViewDropProposal(operation: .forbidden)
             }
-            if !destinationMetadata.directory && (DragDropHover.shared.sourceMetadata?.serverUrl == self.serverUrl || serverUrl.isEmpty) {
+            if !destinationMetadata.directory && (DragDropHover.shared.sourceServerUrl == self.serverUrl || serverUrl.isEmpty) {
                 cleanPushDragDropHover()
                 return UICollectionViewDropProposal(operation: .forbidden)
             }
         } else {
-            if DragDropHover.shared.sourceMetadata?.serverUrl == serverUrl || serverUrl.isEmpty {
+            if DragDropHover.shared.sourceServerUrl == serverUrl || serverUrl.isEmpty {
                 cleanPushDragDropHover()
                 return UICollectionViewDropProposal(operation: .forbidden)
             }
@@ -114,8 +126,8 @@ extension NCCollectionViewCommon: UICollectionViewDropDelegate {
             destinationMetadata = dataSource.cellForItemAt(indexPath: destinationIndexPath)
         }
 
-        if let sourceMetadata = DragDropHover.shared.sourceMetadata {
-            self.openMenu(collectionView: collectionView, location: coordinator.session.location(in: collectionView), sourceMetadata: sourceMetadata, destinationMetadata: destinationMetadata)
+        if let sourceMetadatas = DragDropHover.shared.sourceMetadatas {
+            self.openMenu(collectionView: collectionView, location: coordinator.session.location(in: collectionView), sourceMetadatas: sourceMetadatas, destinationMetadata: destinationMetadata)
         } else {
             self.handleDrop(coordinator: coordinator, destinationMetadata: destinationMetadata)
         }
@@ -127,7 +139,9 @@ extension NCCollectionViewCommon: UICollectionViewDropDelegate {
 
     func collectionView(_ collectionView: UICollectionView, dropSessionDidEnd session: UIDropSession) {
         cleanPushDragDropHover()
-        DragDropHover.shared.sourceMetadata = nil
+
+        DragDropHover.shared.sourceServerUrl = nil
+        DragDropHover.shared.sourceMetadatas = nil
     }
 
     // MARK: -
@@ -171,15 +185,15 @@ extension NCCollectionViewCommon: UICollectionViewDropDelegate {
         }
     }
 
-    private func openMenu(collectionView: UICollectionView, location: CGPoint, sourceMetadata: tableMetadata, destinationMetadata: tableMetadata?) {
+    private func openMenu(collectionView: UICollectionView, location: CGPoint, sourceMetadatas: [tableMetadata], destinationMetadata: tableMetadata?) {
         var listMenuItems: [UIMenuItem] = []
-        listMenuItems.append(DragDropHoverMenuItem(title: NSLocalizedString("_copy_", comment: ""), action: #selector(copyMenuFile), sourceMetadata: sourceMetadata, destinationMetadata: destinationMetadata))
-        listMenuItems.append(DragDropHoverMenuItem(title: NSLocalizedString("_move_", comment: ""), action: #selector(moveMenuFile), sourceMetadata: sourceMetadata, destinationMetadata: destinationMetadata))
+        listMenuItems.append(DragDropHoverMenuItem(title: NSLocalizedString("_copy_", comment: ""), action: #selector(copyMenuFile), sourceMetadatas: sourceMetadatas, destinationMetadata: destinationMetadata))
+        listMenuItems.append(DragDropHoverMenuItem(title: NSLocalizedString("_move_", comment: ""), action: #selector(moveMenuFile), sourceMetadatas: sourceMetadatas, destinationMetadata: destinationMetadata))
         UIMenuController.shared.menuItems = listMenuItems
         UIMenuController.shared.showMenu(from: collectionView, rect: CGRect(x: location.x, y: location.y, width: 0, height: 0))
     }
 
-    @objc func copyMenuFile(sourceMetadata: tableMetadata, destinationMetadata: tableMetadata?) {
+    @objc func copyMenuFile(sourceMetadatas: [tableMetadata], destinationMetadata: tableMetadata?) {
         let serverUrl: String?
         if let destinationMetadata, destinationMetadata.directory {
             serverUrl = destinationMetadata.serverUrl + "/" + destinationMetadata.fileName
@@ -188,16 +202,18 @@ extension NCCollectionViewCommon: UICollectionViewDropDelegate {
         }
         guard let serverUrl else { return }
         Task {
-            let error = await NCNetworking.shared.copyMetadata(sourceMetadata, serverUrlTo: serverUrl, overwrite: false)
-            if error != .success {
-                NCContentPresenter().showError(error: error)
-            } else {
-                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSourceNetwork, userInfo: ["withQueryDB": true])
+            for metadata in sourceMetadatas {
+                let error = await NCNetworking.shared.copyMetadata(metadata, serverUrlTo: serverUrl, overwrite: false)
+                if error != .success {
+                    NCContentPresenter().showError(error: error)
+                } else {
+                    NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSourceNetwork, userInfo: ["withQueryDB": true])
+                }
             }
         }
     }
 
-    @objc func moveMenuFile(sourceMetadata: tableMetadata, destinationMetadata: tableMetadata?) {
+    @objc func moveMenuFile(sourceMetadatas: [tableMetadata], destinationMetadata: tableMetadata?) {
         let serverUrl: String?
         if let destinationMetadata, destinationMetadata.directory {
             serverUrl = destinationMetadata.serverUrl + "/" + destinationMetadata.fileName
@@ -206,11 +222,13 @@ extension NCCollectionViewCommon: UICollectionViewDropDelegate {
         }
         guard let serverUrl else { return }
         Task {
-            let error = await NCNetworking.shared.moveMetadata(sourceMetadata, serverUrlTo: serverUrl, overwrite: false)
-            if error != .success {
-                NCContentPresenter().showError(error: error)
-            } else {
-                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSourceNetwork, userInfo: ["withQueryDB": true])
+            for metadata in sourceMetadatas {
+                let error = await NCNetworking.shared.moveMetadata(metadata, serverUrlTo: serverUrl, overwrite: false)
+                if error != .success {
+                    NCContentPresenter().showError(error: error)
+                } else {
+                    NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSourceNetwork, userInfo: ["withQueryDB": true])
+                }
             }
         }
     }
@@ -241,19 +259,20 @@ class DragDropHover {
     var pushCollectionView: UICollectionView?
     var pushIndexPath: IndexPath?
 
-    var sourceMetadata: tableMetadata?
+    var sourceServerUrl: String?
+    var sourceMetadatas: [tableMetadata]?
 }
 
 // MARK: -
 
 class DragDropHoverMenuItem: UIMenuItem {
-    var sourceMetadata: tableMetadata?
+    var sourceMetadatas: [tableMetadata]?
     var destinationMetadata: tableMetadata?
 
-    convenience init(title: String, action: Selector, sourceMetadata: tableMetadata, destinationMetadata: tableMetadata?) {
+    convenience init(title: String, action: Selector, sourceMetadatas: [tableMetadata], destinationMetadata: tableMetadata?) {
         self.init(title: title, action: action)
 
-        self.sourceMetadata = sourceMetadata
+        self.sourceMetadatas = sourceMetadatas
         self.destinationMetadata = destinationMetadata
     }
 }
