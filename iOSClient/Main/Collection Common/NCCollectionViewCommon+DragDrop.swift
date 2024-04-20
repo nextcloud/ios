@@ -232,6 +232,8 @@ extension NCCollectionViewCommon: UICollectionViewDropDelegate {
 
 extension NCCollectionViewCommon: UIDropInteractionDelegate { }
 
+// MARK: -
+
 class DragDropHover {
     static let shared = DragDropHover()
 
@@ -241,6 +243,8 @@ class DragDropHover {
 
     var sourceMetadata: tableMetadata?
 }
+
+// MARK: -
 
 class DragDropHoverMenuItem: UIMenuItem {
     var sourceMetadata: tableMetadata?
