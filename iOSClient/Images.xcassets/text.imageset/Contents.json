@@ -1,7 +1,7 @@
 {
   "images" : [
     {
-      "filename" : "article_black_48dp.svg",
+      "filename" : "text.pdf",
       "idiom" : "universal"
     }
   ],
@@ -10,7 +10,6 @@
     "version" : 1
   },
   "properties" : {
-    "preserves-vector-representation" : true,
-    "template-rendering-intent" : "template"
+    "preserves-vector-representation" : true
   }
 }
