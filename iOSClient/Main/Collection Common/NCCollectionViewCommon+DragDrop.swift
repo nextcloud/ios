@@ -23,6 +23,7 @@
 
 import Foundation
 import NextcloudKit
+import JGProgressHUD
 
 // MARK: - Drag
 
@@ -157,7 +158,7 @@ extension NCCollectionViewCommon: UICollectionViewDropDelegate {
         var serverUrl: String = self.serverUrl
 
         for dragItem in coordinator.session.items {
-            dragItem.itemProvider.loadFileRepresentation(forTypeIdentifier: kUTTypeData as String) { url, error in
+            dragItem.itemProvider.loadFileRepresentation(forTypeIdentifier: UTType.data.identifier) { url, error in
                 if let error {
                     NCContentPresenter().showError(error: NKError(error: error))
                     return
