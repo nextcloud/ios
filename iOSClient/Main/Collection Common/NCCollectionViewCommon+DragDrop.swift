@@ -77,6 +77,7 @@ extension NCCollectionViewCommon: UICollectionViewDropDelegate {
         if let destinationIndexPath {
             destinationMetadata = dataSource.cellForItemAt(indexPath: destinationIndexPath)
         }
+        DragDropHover.shared.destinationMetadata = destinationMetadata
 
         if let destinationMetadata {
             if isDirectoryE2EE(metadata: destinationMetadata) {
@@ -120,11 +121,6 @@ extension NCCollectionViewCommon: UICollectionViewDropDelegate {
         var metadatas: [tableMetadata] = []
 
         DragDropHover.shared.sourceMetadatas = nil
-        DragDropHover.shared.destinationMetadata = nil
-
-        if let destinationIndexPath = coordinator.destinationIndexPath {
-            DragDropHover.shared.destinationMetadata = dataSource.cellForItemAt(indexPath: destinationIndexPath)
-        }
 
         for item in coordinator.items {
             let semaphore = DispatchSemaphore(value: 0)
@@ -206,13 +202,10 @@ extension NCCollectionViewCommon: UICollectionViewDropDelegate {
 
     @objc func copyMenuFile() {
         guard let sourceMetadatas = DragDropHover.shared.sourceMetadatas else { return }
-        let serverUrl: String?
+        var serverUrl: String = self.serverUrl
         if let destinationMetadata = DragDropHover.shared.destinationMetadata, destinationMetadata.directory {
             serverUrl = destinationMetadata.serverUrl + "/" + destinationMetadata.fileName
-        } else {
-            serverUrl = self.serverUrl
         }
-        guard let serverUrl else { return }
 
         Task {
             for metadata in sourceMetadatas {
@@ -227,13 +220,10 @@ extension NCCollectionViewCommon: UICollectionViewDropDelegate {
 
     @objc func moveMenuFile() {
         guard let sourceMetadatas = DragDropHover.shared.sourceMetadatas else { return }
-        let serverUrl: String?
+        var serverUrl: String = self.serverUrl
         if let destinationMetadata = DragDropHover.shared.destinationMetadata, destinationMetadata.directory {
             serverUrl = destinationMetadata.serverUrl + "/" + destinationMetadata.fileName
-        } else {
-            serverUrl = self.serverUrl
         }
-        guard let serverUrl else { return }
 
         Task {
             for metadata in sourceMetadatas {
