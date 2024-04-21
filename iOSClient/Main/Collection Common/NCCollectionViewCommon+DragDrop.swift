@@ -116,12 +116,14 @@ extension NCCollectionViewCommon: UICollectionViewDropDelegate {
 
     func collectionView(_ collectionView: UICollectionView, performDropWith coordinator: UICollectionViewDropCoordinator) {
         cleanPushDragDropHover()
-        var destinationMetadata: tableMetadata?
         var metadatas: [tableMetadata] = []
+
+        DragDropHover.shared.sourceMetadatas = nil
+        DragDropHover.shared.destinationMetadata = nil
+
         if let destinationIndexPath = coordinator.destinationIndexPath {
             DragDropHover.shared.destinationMetadata = dataSource.cellForItemAt(indexPath: destinationIndexPath)
         }
-        DragDropHover.shared.sourceMetadatas = nil
 
         for item in coordinator.items {
             let semaphore = DispatchSemaphore(value: 0)
@@ -136,7 +138,7 @@ extension NCCollectionViewCommon: UICollectionViewDropDelegate {
         }
 
         if metadatas.isEmpty {
-            self.handleDrop(coordinator: coordinator, destinationMetadata: destinationMetadata)
+            self.handleDrop(coordinator: coordinator)
         } else {
             DragDropHover.shared.sourceMetadatas = metadatas
             self.openMenu(collectionView: collectionView, location: coordinator.session.location(in: collectionView))
@@ -151,7 +153,7 @@ extension NCCollectionViewCommon: UICollectionViewDropDelegate {
         cleanPushDragDropHover()
     }
 
-    private func handleDrop(coordinator: UICollectionViewDropCoordinator, destinationMetadata: tableMetadata?) {
+    private func handleDrop(coordinator: UICollectionViewDropCoordinator) {
         var serverUrl: String = self.serverUrl
 
         for dragItem in coordinator.session.items {
@@ -164,7 +166,7 @@ extension NCCollectionViewCommon: UICollectionViewDropDelegate {
                     do {
                         let data = try Data(contentsOf: url)
                         Task {
-                            if let destinationMetadata, destinationMetadata.directory {
+                            if let destinationMetadata = DragDropHover.shared.destinationMetadata, destinationMetadata.directory {
                                 serverUrl = destinationMetadata.serverUrl + "/" + destinationMetadata.fileName
                             }
                             let ocId = NSUUID().uuidString
