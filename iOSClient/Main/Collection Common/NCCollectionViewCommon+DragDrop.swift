@@ -154,6 +154,8 @@ extension NCCollectionViewCommon: UICollectionViewDropDelegate {
         cleanPushDragDropHover()
     }
 
+    // MARK: -
+
     private func handleDrop(coordinator: UICollectionViewDropCoordinator) {
         var serverUrl: String = self.serverUrl
 
@@ -195,6 +197,7 @@ extension NCCollectionViewCommon: UICollectionViewDropDelegate {
 
     private func openMenu(collectionView: UICollectionView, location: CGPoint) {
         var listMenuItems: [UIMenuItem] = []
+
         listMenuItems.append(UIMenuItem(title: NSLocalizedString("_copy_", comment: ""), action: #selector(copyMenuFile)))
         listMenuItems.append(UIMenuItem(title: NSLocalizedString("_move_", comment: ""), action: #selector(moveMenuFile)))
         UIMenuController.shared.menuItems = listMenuItems
@@ -210,6 +213,7 @@ extension NCCollectionViewCommon: UICollectionViewDropDelegate {
             serverUrl = self.serverUrl
         }
         guard let serverUrl else { return }
+
         Task {
             for metadata in sourceMetadatas {
                 let error = await NCNetworking.shared.copyMetadata(metadata, serverUrlTo: serverUrl, overwrite: false)
@@ -230,6 +234,7 @@ extension NCCollectionViewCommon: UICollectionViewDropDelegate {
             serverUrl = self.serverUrl
         }
         guard let serverUrl else { return }
+
         Task {
             for metadata in sourceMetadatas {
                 let error = await NCNetworking.shared.moveMetadata(metadata, serverUrlTo: serverUrl, overwrite: false)
