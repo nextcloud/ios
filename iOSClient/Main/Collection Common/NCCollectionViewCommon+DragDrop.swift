@@ -33,15 +33,12 @@ extension NCCollectionViewCommon: UICollectionViewDragDelegate {
 
         if isEditMode {
             for ocId in self.selectOcId {
-                if let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId),
-                   metadata.status == 0,
-                   !isDirectoryE2EE(metadata: metadata) {
+                if let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId), metadata.status == 0, !isDirectoryE2EE(metadata: metadata) {
                     ocIds.append(metadata.ocId)
                 }
             }
         } else {
-            guard let metadata = dataSource.cellForItemAt(indexPath: indexPath), metadata.status == 0,
-                  !isDirectoryE2EE(metadata: metadata) else { return [] }
+            guard let metadata = dataSource.cellForItemAt(indexPath: indexPath), metadata.status == 0, !isDirectoryE2EE(metadata: metadata) else { return [] }
             ocIds.append(metadata.ocId)
         }
 
