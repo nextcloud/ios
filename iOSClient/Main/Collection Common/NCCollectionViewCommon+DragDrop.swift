@@ -29,24 +29,31 @@ import JGProgressHUD
 
 extension NCCollectionViewCommon: UICollectionViewDragDelegate {
     func collectionView(_ collectionView: UICollectionView, itemsForBeginning session: UIDragSession, at indexPath: IndexPath) -> [UIDragItem] {
-        var dragItems: [UIDragItem] = []
-        var metadatas: [tableMetadata] = []
+        var ocIds: [String] = []
 
         if isEditMode {
             for ocId in self.selectOcId {
-                if let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
-                    metadatas.append(metadata)
-                    dragItems.append(UIDragItem(itemProvider: NSItemProvider(object: metadata.ocId as NSString)))
+                if let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId),
+                   metadata.status == 0,
+                   !isDirectoryE2EE(metadata: metadata) {
+                    ocIds.append(metadata.ocId)
                 }
             }
         } else {
             guard let metadata = dataSource.cellForItemAt(indexPath: indexPath), metadata.status == 0,
                   !isDirectoryE2EE(metadata: metadata) else { return [] }
-            metadatas.append(metadata)
-            dragItems.append(UIDragItem(itemProvider: NSItemProvider(object: metadata.ocId as NSString)))
+            ocIds.append(metadata.ocId)
         }
 
-        return dragItems
+        return ocIds.map { ocId in
+            let itemProvider = NSItemProvider()
+            itemProvider.registerDataRepresentation(forTypeIdentifier: NCGlobal.shared.metadataOcIdDataRepresentation, visibility: .all) { completion in
+                let data = ocId.data(using: .utf8)
+                completion(data, nil)
+                return nil
+            }
+            return UIDragItem(itemProvider: itemProvider)
+        }
     }
 
     func collectionView(_ collectionView: UICollectionView, dragPreviewParametersForItemAt indexPath: IndexPath) -> UIDragPreviewParameters? {
@@ -124,22 +131,25 @@ extension NCCollectionViewCommon: UICollectionViewDropDelegate {
 
         for item in coordinator.items {
             let semaphore = DispatchSemaphore(value: 0)
-            let dragItem = item.dragItem
-            dragItem.itemProvider.loadObject(ofClass: NSString.self) { data, error in
-                if error == nil, let ocId = data as? String, let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
-                    metadatas.append(metadata)
+            let itemProvider = item.dragItem.itemProvider
+            if itemProvider.hasItemConformingToTypeIdentifier(NCGlobal.shared.metadataOcIdDataRepresentation) {
+                itemProvider.loadDataRepresentation(forTypeIdentifier: NCGlobal.shared.metadataOcIdDataRepresentation) { data, error in
+                    if error == nil, let data, let ocId = String(data: data, encoding: .utf8), let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
+                        metadatas.append(metadata)
+                    }
+                    semaphore.signal()
                 }
-                semaphore.signal()
+                semaphore.wait()
             }
-            semaphore.wait()
         }
 
-        if metadatas.isEmpty {
-            self.handleDrop(coordinator: coordinator)
-        } else {
+        // drop for metadataOcIdDataRepresentation
+        if !metadatas.isEmpty {
             DragDropHover.shared.sourceMetadatas = metadatas
             self.openMenu(collectionView: collectionView, location: coordinator.session.location(in: collectionView))
         }
+        // drop for url
+        self.handleDrop(coordinator: coordinator)
     }
 
     func collectionView(_ collectionView: UICollectionView, dropSessionDidExit session: UIDropSession) {
@@ -157,11 +167,7 @@ extension NCCollectionViewCommon: UICollectionViewDropDelegate {
 
         for dragItem in coordinator.session.items {
             dragItem.itemProvider.loadFileRepresentation(forTypeIdentifier: UTType.data.identifier) { url, error in
-                if let error {
-                    NCContentPresenter().showError(error: NKError(error: error))
-                    return
-                }
-                if let url = url {
+                if error == nil, let url {
                     do {
                         let data = try Data(contentsOf: url)
                         Task {
