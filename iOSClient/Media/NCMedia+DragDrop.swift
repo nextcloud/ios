@@ -29,6 +29,12 @@ extension NCMedia: UICollectionViewDropDelegate {
         return session.canLoadObjects(ofClass: UIImage.self) || session.hasItemsConforming(toTypeIdentifiers: [UTType.movie.identifier])
     }
 
+    /*
+     if !NCNetworking.shared.createFolder(assets: nil, useSubFolder: account.autoUploadCreateSubfolder, account: account.account, urlBase: account.urlBase, userId: account.userId, withPush: false) {
+         return
+     }
+     */
+
     func collectionView(_ collectionView: UICollectionView, performDropWith coordinator: UICollectionViewDropCoordinator) {
         guard let account = NCManageDatabase.shared.getActiveAccount() else { return }
         let autoUploadPath = NCManageDatabase.shared.getAccountAutoUploadPath(urlBase: account.urlBase, userId: account.userId, account: account.account)
@@ -62,6 +68,10 @@ extension NCMedia: UICollectionViewDropDelegate {
                     return
                 }
                 if let url = url {
+                    if dragItem == coordinator.session.items.first,
+                       !NCNetworking.shared.createFolder(assets: nil, useSubFolder: account.autoUploadCreateSubfolder, account: account.account, urlBase: account.urlBase, userId: account.userId, withPush: false) {
+                        return
+                    }
                     do {
                         let data = try Data(contentsOf: url)
                         Task {
