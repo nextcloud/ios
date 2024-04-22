@@ -24,6 +24,8 @@
 import UIKit
 import NextcloudKit
 
+// MARK: - Drop
+
 extension NCMedia: UICollectionViewDropDelegate {
     func collectionView(_ collectionView: UICollectionView, canHandle session: UIDropSession) -> Bool {
         return session.canLoadObjects(ofClass: UIImage.self) || session.hasItemsConforming(toTypeIdentifiers: [UTType.movie.identifier])
@@ -32,29 +34,7 @@ extension NCMedia: UICollectionViewDropDelegate {
     func collectionView(_ collectionView: UICollectionView, performDropWith coordinator: UICollectionViewDropCoordinator) {
         guard let account = NCManageDatabase.shared.getActiveAccount() else { return }
         let autoUploadPath = NCManageDatabase.shared.getAccountAutoUploadPath(urlBase: account.urlBase, userId: account.userId, account: account.account)
-        let autoUploadSubfolderGranularity = NCManageDatabase.shared.getAccountAutoUploadSubfolderGranularity()
-        var serverUrl = ""
-        let dateFormatter = DateFormatter()
-        let assetDate = Date()
-        dateFormatter.dateFormat = "yyyy"
-        let year = dateFormatter.string(from: assetDate)
-        dateFormatter.dateFormat = "MM"
-        let month = dateFormatter.string(from: assetDate)
-        dateFormatter.dateFormat = "dd"
-        let day = dateFormatter.string(from: assetDate)
-
-        if account.autoUploadCreateSubfolder {
-            if autoUploadSubfolderGranularity == NCGlobal.shared.subfolderGranularityYearly {
-                serverUrl = autoUploadPath + "/" + year
-            } else if autoUploadSubfolderGranularity == NCGlobal.shared.subfolderGranularityDaily {
-                serverUrl = autoUploadPath + "/" + year + "/" + month + "/" + day
-            } else {  // Month Granularity is default
-                serverUrl = autoUploadPath + "/" + year + "/" + month
-            }
-        } else {
-            serverUrl = autoUploadPath
-        }
-
+        let serverUrl = utilityFileSystem.createGranularityPath(serverUrl: autoUploadPath)
         var counter: Int = 0
         for dragItem in coordinator.session.items {
             dragItem.itemProvider.loadFileRepresentation(forTypeIdentifier: UTType.data.identifier) { url, error in

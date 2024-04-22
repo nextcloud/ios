@@ -295,42 +295,13 @@ extension NCNetworking {
         }
 
         func createNameSubFolder() -> [String] {
-
             var datesSubFolder: [String] = []
-            let dateFormatter = DateFormatter()
-
             if let assets {
                 for asset in assets {
-                    let date = asset.creationDate ?? Date()
-                    dateFormatter.dateFormat = "yyyy"
-                    let year = dateFormatter.string(from: date)
-                    dateFormatter.dateFormat = "MM"
-                    let month = dateFormatter.string(from: date)
-                    dateFormatter.dateFormat = "dd"
-                    let day = dateFormatter.string(from: date)
-                    if autoUploadSubfolderGranularity == NCGlobal.shared.subfolderGranularityYearly {
-                        datesSubFolder.append("\(year)")
-                    } else if autoUploadSubfolderGranularity == NCGlobal.shared.subfolderGranularityDaily {
-                        datesSubFolder.append("\(year)/\(month)/\(day)")
-                    } else {  // Month Granularity is default
-                        datesSubFolder.append("\(year)/\(month)")
-                    }
+                    datesSubFolder.append(utilityFileSystem.createGranularityPath(asset: asset))
                 }
             } else {
-                let date = Date()
-                dateFormatter.dateFormat = "yyyy"
-                let year = dateFormatter.string(from: date)
-                dateFormatter.dateFormat = "MM"
-                let month = dateFormatter.string(from: date)
-                dateFormatter.dateFormat = "dd"
-                let day = dateFormatter.string(from: date)
-                if autoUploadSubfolderGranularity == NCGlobal.shared.subfolderGranularityYearly {
-                    datesSubFolder.append("\(year)")
-                } else if autoUploadSubfolderGranularity == NCGlobal.shared.subfolderGranularityDaily {
-                    datesSubFolder.append("\(year)/\(month)/\(day)")
-                } else {  // Month Granularity is default
-                    datesSubFolder.append("\(year)/\(month)")
-                }
+                datesSubFolder.append(utilityFileSystem.createGranularityPath())
             }
 
             return Array(Set(datesSubFolder))

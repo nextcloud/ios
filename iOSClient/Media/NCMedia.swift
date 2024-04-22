@@ -80,6 +80,7 @@ class NCMedia: UIViewController {
         collectionView.backgroundColor = .systemBackground
         collectionView.prefetchDataSource = self
         // Drag & Drop
+        collectionView.dragInteractionEnabled = true
         collectionView.dropDelegate = self
 
         layout.sectionInset = UIEdgeInsets(top: 0, left: 2, bottom: 0, right: 2)
