@@ -29,28 +29,30 @@ import JGProgressHUD
 
 extension NCCollectionViewCommon: UICollectionViewDragDelegate {
     func collectionView(_ collectionView: UICollectionView, itemsForBeginning session: UIDragSession, at indexPath: IndexPath) -> [UIDragItem] {
-        var ocIds: [String] = []
+        var metadatas: [tableMetadata] = []
 
         if isEditMode {
             for ocId in self.selectOcId {
                 if let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId), metadata.status == 0, !isDirectoryE2EE(metadata: metadata) {
-                    ocIds.append(metadata.ocId)
+                    metadatas.append(metadata)
                 }
             }
         } else {
             guard let metadata = dataSource.cellForItemAt(indexPath: indexPath), metadata.status == 0, !isDirectoryE2EE(metadata: metadata) else { return [] }
-            ocIds.append(metadata.ocId)
+            metadatas.append(metadata)
         }
 
-        return ocIds.map { ocId in
+        var dragItems = metadatas.map { metadata in
             let itemProvider = NSItemProvider()
             itemProvider.registerDataRepresentation(forTypeIdentifier: NCGlobal.shared.metadataOcIdDataRepresentation, visibility: .all) { completion in
-                let data = ocId.data(using: .utf8)
+                let data = metadata.ocId.data(using: .utf8)
                 completion(data, nil)
                 return nil
             }
             return UIDragItem(itemProvider: itemProvider)
         }
+
+        return dragItems
     }
 
     func collectionView(_ collectionView: UICollectionView, dragPreviewParametersForItemAt indexPath: IndexPath) -> UIDragPreviewParameters? {
@@ -144,9 +146,10 @@ extension NCCollectionViewCommon: UICollectionViewDropDelegate {
         if !metadatas.isEmpty {
             DragDropHover.shared.sourceMetadatas = metadatas
             self.openMenu(collectionView: collectionView, location: coordinator.session.location(in: collectionView))
+        } else {
+            // drop for url
+            self.handleDrop(coordinator: coordinator)
         }
-        // drop for url
-        self.handleDrop(coordinator: coordinator)
     }
 
     func collectionView(_ collectionView: UICollectionView, dropSessionDidExit session: UIDropSession) {
