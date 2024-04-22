@@ -271,8 +271,7 @@ extension NCNetworking {
         }
     }
 
-    func createFolder(assets: [PHAsset],
-                      selector: String,
+    func createFolder(assets: [PHAsset]?,
                       useSubFolder: Bool,
                       account: String,
                       urlBase: String,
@@ -296,25 +295,13 @@ extension NCNetworking {
         }
 
         func createNameSubFolder() -> [String] {
-
             var datesSubFolder: [String] = []
-            let dateFormatter = DateFormatter()
-
-            for asset in assets {
-                let date = asset.creationDate ?? Date()
-                dateFormatter.dateFormat = "yyyy"
-                let year = dateFormatter.string(from: date)
-                dateFormatter.dateFormat = "MM"
-                let month = dateFormatter.string(from: date)
-                dateFormatter.dateFormat = "dd"
-                let day = dateFormatter.string(from: date)
-                if autoUploadSubfolderGranularity == NCGlobal.shared.subfolderGranularityYearly {
-                    datesSubFolder.append("\(year)")
-                } else if autoUploadSubfolderGranularity == NCGlobal.shared.subfolderGranularityDaily {
-                    datesSubFolder.append("\(year)/\(month)/\(day)")
-                } else {  // Month Granularity is default
-                    datesSubFolder.append("\(year)/\(month)")
+            if let assets {
+                for asset in assets {
+                    datesSubFolder.append(utilityFileSystem.createGranularityPath(asset: asset))
                 }
+            } else {
+                datesSubFolder.append(utilityFileSystem.createGranularityPath())
             }
 
             return Array(Set(datesSubFolder))

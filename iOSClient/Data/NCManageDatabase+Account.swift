@@ -351,17 +351,13 @@ extension NCManageDatabase {
         }
     }
 
-    @objc func setAccountAutoUploadFileName(_ fileName: String?) {
+    @objc func setAccountAutoUploadFileName(_ fileName: String) {
 
         do {
             let realm = try Realm()
             try realm.write {
                 if let result = realm.objects(tableAccount.self).filter("active == true").first {
-                    if let fileName = fileName {
-                        result.autoUploadFileName = fileName
-                    } else {
-                        result.autoUploadFileName = self.getAccountAutoUploadFileName()
-                    }
+                    result.autoUploadFileName = fileName
                 }
             }
         } catch let error {
