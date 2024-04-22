@@ -29,12 +29,6 @@ extension NCMedia: UICollectionViewDropDelegate {
         return session.canLoadObjects(ofClass: UIImage.self) || session.hasItemsConforming(toTypeIdentifiers: [UTType.movie.identifier])
     }
 
-    /*
-     if !NCNetworking.shared.createFolder(assets: nil, useSubFolder: account.autoUploadCreateSubfolder, account: account.account, urlBase: account.urlBase, userId: account.userId, withPush: false) {
-         return
-     }
-     */
-
     func collectionView(_ collectionView: UICollectionView, performDropWith coordinator: UICollectionViewDropCoordinator) {
         guard let account = NCManageDatabase.shared.getActiveAccount() else { return }
         let autoUploadPath = NCManageDatabase.shared.getAccountAutoUploadPath(urlBase: account.urlBase, userId: account.userId, account: account.account)
@@ -61,6 +55,7 @@ extension NCMedia: UICollectionViewDropDelegate {
             serverUrl = autoUploadPath
         }
 
+        var counter: Int = 0
         for dragItem in coordinator.session.items {
             dragItem.itemProvider.loadFileRepresentation(forTypeIdentifier: UTType.data.identifier) { url, error in
                 if let error {
@@ -68,7 +63,7 @@ extension NCMedia: UICollectionViewDropDelegate {
                     return
                 }
                 if let url = url {
-                    if dragItem == coordinator.session.items.first,
+                    if counter == 0,
                        !NCNetworking.shared.createFolder(assets: nil, useSubFolder: account.autoUploadCreateSubfolder, account: account.account, urlBase: account.urlBase, userId: account.userId, withPush: false) {
                         return
                     }
@@ -92,6 +87,7 @@ extension NCMedia: UICollectionViewDropDelegate {
                         NCContentPresenter().showError(error: NKError(error: error))
                         return
                     }
+                    counter += 1
                 }
             }
         }
