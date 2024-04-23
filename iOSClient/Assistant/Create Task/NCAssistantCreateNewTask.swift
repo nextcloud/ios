@@ -27,10 +27,10 @@ struct NCAssistantCreateNewTask: View {
                 }
 
                 TextEditor(text: $text)
+                    .frame(maxWidth: .infinity, alignment: .topLeading)
                     .padding()
                     .transparentScrolling()
                     .background(.gray.opacity(0.1))
-
                     .focused($inFocus)
             }
             .background(.gray.opacity(0.1))
