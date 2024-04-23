@@ -90,8 +90,10 @@ struct TaskList: View {
         List(model.filteredTasks, id: \.id) { task in
             TaskItem(task: task)
         }
-        .refreshable {
-            model.load()
+        .ifRefreshable(!model.types.isEmpty) {
+            $0.refreshable {
+                model.load()
+            }
         }
     }
 }
@@ -180,6 +182,17 @@ private struct CustomLabelStyle: LabelStyle {
         HStack(spacing: spacing) {
             configuration.icon
             configuration.title
+        }
+    }
+}
+
+extension View {
+    @ViewBuilder
+    func ifRefreshable<Content: View>(_ condition: Bool, transform: (Self) -> Content) -> some View {
+        if condition {
+            transform(self)
+        } else {
+            self
         }
     }
 }
