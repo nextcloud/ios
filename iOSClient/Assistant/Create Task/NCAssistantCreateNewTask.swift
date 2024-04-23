@@ -17,7 +17,7 @@ struct NCAssistantCreateNewTask: View {
     var body: some View {
         VStack {
             Text(model.selectedType?.description ?? "")
-                .frame(alignment: .top)
+                .frame(maxWidth: .infinity, alignment: .topLeading)
 
             ZStack(alignment: .topLeading) {
                 if text.isEmpty {
