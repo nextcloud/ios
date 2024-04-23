@@ -53,15 +53,15 @@ class NCUtility: NSObject {
         }
 
         // contentype
-        if !NCGlobal.shared.capabilityRichdocumentsMimetypes.filter({ $0.contains(metadata.contentType) || $0.contains("text/plain") }).isEmpty {
+        if !NCGlobal.shared.capabilityRichDocumentsMimetypes.filter({ $0.contains(metadata.contentType) || $0.contains("text/plain") }).isEmpty {
             return true
         }
 
         // mimetype
-        if !NCGlobal.shared.capabilityRichdocumentsMimetypes.isEmpty && mimeType.components(separatedBy: ".").count > 2 {
+        if !NCGlobal.shared.capabilityRichDocumentsMimetypes.isEmpty && mimeType.components(separatedBy: ".").count > 2 {
             let mimeTypeArray = mimeType.components(separatedBy: ".")
             let mimeType = mimeTypeArray[mimeTypeArray.count - 2] + "." + mimeTypeArray[mimeTypeArray.count - 1]
-            if !NCGlobal.shared.capabilityRichdocumentsMimetypes.filter({ $0.contains(mimeType) }).isEmpty {
+            if !NCGlobal.shared.capabilityRichDocumentsMimetypes.filter({ $0.contains(mimeType) }).isEmpty {
                 return true
             }
         }

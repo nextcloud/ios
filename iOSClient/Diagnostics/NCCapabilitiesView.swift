@@ -100,7 +100,7 @@ class NCCapabilitiesViewOO: ObservableObject {
             capabililies.append(Capability(text: "ONLYOFFICE", image: image, resize: true, available: onlyofficeEditors))
         }
         if let image = UIImage(named: "collabora") {
-            capabililies.append(Capability(text: "Collabora", image: image, resize: true, available: NCGlobal.shared.capabilityRichdocumentsEnabled))
+            capabililies.append(Capability(text: "Collabora", image: image, resize: true, available: NCGlobal.shared.capabilityRichDocumentsEnabled))
         }
         if let image = UIImage(systemName: "moon") {
             capabililies.append(Capability(text: "User Status", image: image, resize: false, available: NCGlobal.shared.capabilityUserStatusEnabled))

@@ -45,6 +45,10 @@ class NCMoreAppSuggestionsCell: BaseNCMoreCell {
         talkView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(talkTapped)))
         notesView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(notesTapped)))
         moreAppsView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(moreAppsTapped)))
+
+        if !NCGlobal.shared.capabilityAssistantEnabled {
+            assistantView.isHidden = true
+        }
     }
 
     @objc func assistantTapped() {
