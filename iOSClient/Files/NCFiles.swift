@@ -82,9 +82,9 @@ class NCFiles: NCCollectionViewCommon {
         super.viewWillAppear(animated)
 
         if dataSource.metadatas.isEmpty {
-            reloadDataSource()
+            reloadDataSource(withQueryDB: true)
         }
-        reloadDataSourceNetwork()
+        reloadDataSourceNetwork(withQueryDB: true)
     }
 
     override func viewDidDisappear(_ animated: Bool) {
