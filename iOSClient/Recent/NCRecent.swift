@@ -50,7 +50,7 @@ class NCRecent: NCCollectionViewCommon {
     override func queryDB() {
         super.queryDB()
 
-        let metadatas = NCManageDatabase.shared.getAdvancedMetadatas(predicate: NSPredicate(format: "account == %@", self.appDelegate.account), page: 1, limit: 100, sorted: "date", ascending: false)
+        let metadatas = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@", self.appDelegate.account), numItems: 200, sorted: "date", ascending: false)
         self.dataSource = NCDataSource(metadatas: metadatas,
                                        account: self.appDelegate.account,
                                        directoryOnTop: false,
