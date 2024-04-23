@@ -522,4 +522,8 @@ class NCGlobal: NSObject {
     //
     let mediaLayoutRatio                    = "mediaLayoutRatio"
     let mediaLayoutSquare                   = "mediaLayoutSquare"
+
+    // DRAG & DROP
+    //
+    let metadataOcIdDataRepresentation      = "text/com.nextcloud.ocId"
 }

@@ -48,7 +48,7 @@ struct InputOutputScrollView: View {
                     .padding(.top, 10)
 
                 Text(model.selectedTask?.input ?? "")
-                    .frame(maxWidth: .infinity, alignment: .top)
+                    .frame(maxWidth: .infinity, alignment: .topLeading)
                     .padding()
                     .background(.gray.opacity(0.1))
                     .clipShape(.rect(cornerRadius: 8))
@@ -57,7 +57,7 @@ struct InputOutputScrollView: View {
                     .padding(.top, 10)
 
                 Text(model.selectedTask?.output ?? "")
-                    .frame(maxWidth: .infinity, alignment: .top)
+                    .frame(maxWidth: .infinity, alignment: .topLeading)
                     .padding()
                     .background(.gray.opacity(0.1))
                     .clipShape(.rect(cornerRadius: 8))

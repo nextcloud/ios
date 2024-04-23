@@ -17,7 +17,7 @@ struct NCAssistantCreateNewTask: View {
     var body: some View {
         VStack {
             Text(model.selectedType?.description ?? "")
-                .frame(alignment: .top)
+                .frame(maxWidth: .infinity, alignment: .topLeading)
 
             ZStack(alignment: .topLeading) {
                 if text.isEmpty {
@@ -27,10 +27,10 @@ struct NCAssistantCreateNewTask: View {
                 }
 
                 TextEditor(text: $text)
+                    .frame(maxWidth: .infinity, alignment: .topLeading)
                     .padding()
                     .transparentScrolling()
                     .background(.gray.opacity(0.1))
-
                     .focused($inFocus)
             }
             .background(.gray.opacity(0.1))
