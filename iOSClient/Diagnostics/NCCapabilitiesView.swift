@@ -117,6 +117,9 @@ class NCCapabilitiesViewOO: ObservableObject {
         if let image = UIImage(systemName: "shield") {
             capabililies.append(Capability(text: "Security Guard Diagnostics", image: image, resize: false, available: NCGlobal.shared.capabilitySecurityGuardDiagnostics))
         }
+        if let image = UIImage(systemName: "sparkles") {
+            capabililies.append(Capability(text: "Assistant", image: image, resize: false, available: NCGlobal.shared.capabilityAssistantEnabled))
+        }
 
         homeServer = utilityFileSystem.getHomeServer(urlBase: activeAccount.urlBase, userId: activeAccount.userId) + "/"
     }
