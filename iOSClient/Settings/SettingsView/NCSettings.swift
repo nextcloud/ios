@@ -26,17 +26,14 @@ import NextcloudKit
 
 /// Settings view for Nextcloud
 struct NCSettings<ViewModel: NCSettingsViewModel>: View {
-    
     /// State to control the visibility of the acknowledgements view
     @State private var showAcknowledgements = false
     /// State to control the visibility of the Policy view
     @State private var showBrowser = false
     /// State to control the visibility of the Source Code  view
     @State private var showSourceCode = false
-    
     /// Object of ViewModel of this view
     @ObservedObject var viewModel: ViewModel
-    
     var body: some View {
         Form {
             /// `Auto Upload` Section
@@ -51,18 +48,15 @@ struct NCSettings<ViewModel: NCSettingsViewModel>: View {
                     }
                 }
             }
-            
             /// `Privacy` Section
             Section(content: {
-                
                 // Lock active YES/NO
                 HStack {
                     Image(viewModel.isLockActive ? "lock_open" : "lock")
                         .resizable()
                         .renderingMode(.template)
                         .frame(width: 20, height: 20)
-                    
-                    Text(viewModel.isLockActive ? NSLocalizedString("_lock_not_active_", comment: "") :  NSLocalizedString("_lock_active_", comment: "") )
+                    Text(viewModel.isLockActive ? NSLocalizedString("_lock_not_active_", comment: "") : NSLocalizedString("_lock_active_", comment: ""))
                 }
                 .onTapGesture {
                     viewModel.isLockActive.toggle()
@@ -70,26 +64,21 @@ struct NCSettings<ViewModel: NCSettingsViewModel>: View {
                 .sheet(isPresented: $viewModel.isLockActive) {
                     PasscodeView(isPresented: $viewModel.isLockActive, passcode: $viewModel.passcode)
                 }
-                
                 // Enable Touch ID
                 Toggle(NSLocalizedString("_enable_touch_face_id_", comment: ""), isOn: $viewModel.enableTouchID)
                     .onChange(of: viewModel.enableTouchID) { _ in
                         viewModel.updateTouchIDSetting()
                     }
-                
                 // Lock no screen
-                Toggle(NSLocalizedString("_lock_protection_no_screen_", comment: ""), isOn: $viewModel.lockScreen) // TODO: This will also require KeychainManager, so will do it at last
+                Toggle(NSLocalizedString("_lock_protection_no_screen_", comment: ""), isOn: $viewModel.lockScreen)
                     .onChange(of: viewModel.lockScreen) { _ in
                         viewModel.updateLockScreenSetting()
                     }
-
-                
                 // Privacy screen
                 Toggle(NSLocalizedString("_privacy_screen_", comment: ""), isOn: $viewModel.privacyScreen)
                     .onChange(of: viewModel.privacyScreen) { _ in
                         viewModel.updatePrivacyScreenSetting()
                     }
-                
                 // Reset app wrong attempts
                 Toggle(NSLocalizedString("_reset_wrong_passcode_", comment: ""), isOn: $viewModel.resetWrongAttempts)
                     .onChange(of: viewModel.resetWrongAttempts) { _ in
@@ -102,7 +91,6 @@ struct NCSettings<ViewModel: NCSettingsViewModel>: View {
                     .font(.system(size: 12))
                     .lineSpacing(1)
             })
-            
             // Calender & Contacts
             if !NCBrandOptions.shared.disable_mobileconfig {
                 Section(content: {
@@ -115,7 +103,7 @@ struct NCSettings<ViewModel: NCSettingsViewModel>: View {
                     }.onTapGesture {
                         viewModel.getConfigFiles()
                     }
-                }, header:{
+                }, header: {
                     Text(NSLocalizedString("_calendar_contacts_", comment: ""))
                 }, footer: {
                     Text(NSLocalizedString("_calendar_contacts_footer_", comment: ""))
@@ -123,22 +111,10 @@ struct NCSettings<ViewModel: NCSettingsViewModel>: View {
                         .lineSpacing(1)
                 })
             }
-            
             /// `E2EEncryption` Section
             if viewModel.isE2EEEnable && NCGlobal.shared.e2eeVersions.contains(viewModel.versionE2EE) {
-                Section(header: Text(NSLocalizedString("_e2e_settings_title_", comment: "")), content: {
-                    NavigationLink(destination: NCViewE2EE(account: AppDelegate().account, rootViewController: nil)){
-                        HStack {
-                            Image("lock")
-                                .resizable()
-                                .renderingMode(.template)
-                                .frame(width: 20, height: 20)
-                            Text(NSLocalizedString("_e2e_settings_", comment: ""))
-                        }
-                    }
-                })
+                E2EESection()
             }
-            
             /// `Advanced` Section
             Section {
                 NavigationLink(destination: CCSettingsAdvanced(viewModel: CCSettingsAdvancedViewModel(), showExitAlert: false, showCacheAlert: false)) {
@@ -151,10 +127,8 @@ struct NCSettings<ViewModel: NCSettingsViewModel>: View {
                     }
                 }
             }
-            
             /// `Information` Section
             Section(header: Text(NSLocalizedString("_information_", comment: "")), content: {
-                
                 // Acknowledgements
                 HStack {
                     Image("acknowledgements")
@@ -167,7 +141,6 @@ struct NCSettings<ViewModel: NCSettingsViewModel>: View {
                 }.sheet(isPresented: $showAcknowledgements) {
                     AcknowledgementsView(showText: $showAcknowledgements, browserTitle: "Acknowledgements")
                 }
-                
                 // Terms & Privacy Conditions
                 HStack {
                     Image("shield.checkerboard")
@@ -180,7 +153,6 @@ struct NCSettings<ViewModel: NCSettingsViewModel>: View {
                 }.sheet(isPresented: $showBrowser) {
                     NCBrowserWebView(isPresented: $showBrowser, urlBase: URL(string: NCBrandOptions.shared.privacy)!, browserTitle: "Privacy Policies")
                 }
-                
                 // Source Code
                 HStack {
                     Image("gitHub")
@@ -194,11 +166,8 @@ struct NCSettings<ViewModel: NCSettingsViewModel>: View {
                     NCBrowserWebView(isPresented: $showSourceCode, urlBase: URL(string: NCBrandOptions.shared.sourceCode)!, browserTitle: "Source Code")
                 }
             })
-            
-            
             /// `Watermark` Section
             Section(content: {
-                
             }, footer: {
                 Text("Nextcloud Liquid for iOS \(viewModel.appVersion) © \(viewModel.copyrightYear) \n\nNextcloud Server \(viewModel.serverVersion)\n\(viewModel.themingName) - \(viewModel.themingSlogan)\n\n")
 
@@ -209,10 +178,24 @@ struct NCSettings<ViewModel: NCSettingsViewModel>: View {
             }
     }
 }
-
-
  struct NCSettings_Previews: PreviewProvider {
      static var previews: some View {
          NCSettings(viewModel: NCSettingsViewModel())
      }
  }
+
+struct E2EESection: View {
+    var body: some View {
+        Section(header: Text(NSLocalizedString("_e2e_settings_title_", comment: "")), content: {
+            NavigationLink(destination: NCViewE2EE(account: AppDelegate().account, rootViewController: nil)) {
+                HStack {
+                    Image("lock")
+                        .resizable()
+                        .renderingMode(.template)
+                        .frame(width: 20, height: 20)
+                    Text(NSLocalizedString("_e2e_settings_", comment: ""))
+                }
+            }
+        })
+    }
+}
