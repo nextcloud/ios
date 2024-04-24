@@ -472,8 +472,8 @@ class NCGlobal: NSObject {
     @objc var capabilityE2EEEnabled: Bool                       = false
     @objc var capabilityE2EEApiVersion: String                  = ""
 
-    var capabilityRichdocumentsEnabled: Bool                    = false
-    var capabilityRichdocumentsMimetypes = ThreadSafeArray<String>()
+    var capabilityRichDocumentsEnabled: Bool                    = false
+    var capabilityRichDocumentsMimetypes = ThreadSafeArray<String>()
     var capabilityActivity = ThreadSafeArray<String>()
     var capabilityNotification = ThreadSafeArray<String>()
 
@@ -485,6 +485,7 @@ class NCGlobal: NSObject {
     @objc var capabilityUserStatusEnabled: Bool                 = false
     var capabilityExternalSites: Bool                           = false
     var capabilityGroupfoldersEnabled: Bool                     = false // NC27
+    var capabilityAssistantEnabled: Bool                        = false // NC28
     var isLivePhotoServerAvailable: Bool {                              // NC28
         return capabilityServerVersionMajor >= nextcloudVersion28
     }
