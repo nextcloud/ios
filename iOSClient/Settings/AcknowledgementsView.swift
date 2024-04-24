@@ -31,16 +31,14 @@ import Combine
 ///   - text: A String value which contains the text of RTF file
 ///   - browserTitle: A String value to show as the title of the webView
 struct AcknowledgementsView: View {
-    
     @State private var text = ""
     @Binding var showText: Bool
     var browserTitle: String
     @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
-    
+
     var body: some View {
         VStack(spacing: 0) {
-            HStack() {
-                
+            HStack {
                 HStack(alignment: .center) {
                     Text(browserTitle)
                         .font(.title3)
@@ -48,9 +46,7 @@ struct AcknowledgementsView: View {
                         .padding(.leading, 8)
                 }
                 .padding()
-                
                 Spacer()
-                
                 Button(action: {
                     self.showText = false
                 }) {
@@ -58,7 +54,6 @@ struct AcknowledgementsView: View {
                         Circle()
                             .fill(Color(UIColor.secondarySystemBackground))
                             .frame(width: 25, height: 25)
-                        
                         Image(systemName: "xmark")
                             .resizable()
                             .renderingMode(.template)
@@ -68,9 +63,7 @@ struct AcknowledgementsView: View {
                 }
                 .padding()
             }
-            
             Divider()
-            
             if showText {
                 ScrollView {
                     Text(text)
@@ -86,7 +79,6 @@ struct AcknowledgementsView: View {
             }
         }
     }
-    
     func loadRTF() {
         if let rtfPath = Bundle.main.url(forResource: "Acknowledgements", withExtension: "rtf"),
            let attributedStringWithRtf = try? NSAttributedString(url: rtfPath, options: [.documentType: NSAttributedString.DocumentType.rtf], documentAttributes: nil) {
@@ -94,10 +86,3 @@ struct AcknowledgementsView: View {
         }
     }
 }
-
-
-/*
- #Preview {
-     AcknowledgementsView(showText: false)
- }
-*/

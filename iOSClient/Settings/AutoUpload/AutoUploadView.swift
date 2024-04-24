@@ -27,10 +27,8 @@ import UIKit
 /// A view that allows the user to configure the `auto upload settings for Nextcloud`
 struct AutoUploadView<ViewModel: AutoUploadViewModel>: View {
     @ObservedObject var viewModel: ViewModel
-    
     var body: some View {
         Form {
-            
             // Auto Upload
             Section(content: {
                 Toggle(NSLocalizedString("_autoupload_", comment: ""), isOn: $viewModel.autoUpload)
@@ -40,13 +38,11 @@ struct AutoUploadView<ViewModel: AutoUploadViewModel>: View {
             }, footer: {
                 Text(NSLocalizedString("_autoupload_description_", comment: ""))
             })
-            
             /// If `autoUpload` state will be true, we will animate out the whole `autoUploadOnView` section
             if viewModel.autoUpload {
                 autoUploadOnView
                     .animation(.easeInOut)
             }
-            
         }
         .navigationBarTitle("Auto Upload")
         .onAppear {
@@ -56,10 +52,8 @@ struct AutoUploadView<ViewModel: AutoUploadViewModel>: View {
             Button(NSLocalizedString("_ok_", comment: ""), role: .cancel) { }
         }
     }
-    
     @ViewBuilder
     var autoUploadOnView: some View {
-        
         Section(content: {
             HStack {
                 Image("foldersOnTop")
@@ -67,7 +61,6 @@ struct AutoUploadView<ViewModel: AutoUploadViewModel>: View {
                     .renderingMode(.template)
                     .frame(width: 20, height: 20)
                     .foregroundColor(Color(UIColor.systemGray))
-                
                 Text(NSLocalizedString("_autoupload_select_folder_", comment: ""))
             }
         }, footer: {
@@ -81,8 +74,6 @@ struct AutoUploadView<ViewModel: AutoUploadViewModel>: View {
                     viewModel.setAutoUploadDirectory(serverUrl: viewModel.serverUrl)
                 }
         }
-        
-        
         // Auto Upload Photo
         Section(content: {
             Toggle(NSLocalizedString("_autoupload_photos_", comment: ""), isOn: $viewModel.autoUploadImage)
@@ -94,8 +85,6 @@ struct AutoUploadView<ViewModel: AutoUploadViewModel>: View {
                     viewModel.handleAutoUploadWWAnPhotoChange(newValue: newValue)
                 }
         })
-        
-        
         // Auto Upload Video
         Section(content: {
             Toggle(NSLocalizedString("_autoupload_videos_", comment: ""), isOn: $viewModel.autoUploadVideo)
@@ -107,8 +96,6 @@ struct AutoUploadView<ViewModel: AutoUploadViewModel>: View {
                     viewModel.handleAutoUploadWWAnVideoChange(newValue: newValue)
                 }
         })
-        
-        
         // Auto Upload Full
         Section(content: {
             HStack {
@@ -120,8 +107,6 @@ struct AutoUploadView<ViewModel: AutoUploadViewModel>: View {
         }, footer: {
             Text(NSLocalizedString("_autoupload_fullphotos_footer_", comment: ""))
         })
-        
-        
         // Auto Upload create subfolder
         Section(content: {
             Toggle(NSLocalizedString("_autoupload_create_subfolder_", comment: ""), isOn: $viewModel.autoUploadCreateSubfolder)
@@ -139,8 +124,6 @@ struct AutoUploadView<ViewModel: AutoUploadViewModel>: View {
         }, footer: {
             Text(NSLocalizedString("_autoupload_create_subfolder_footer_", comment: ""))
         })
-        
-        
         // Auto Upload file name
         Section(content: {
             NavigationLink(destination: AutoUploadFileNamesView(viewModel: AutoUploadFileNamesViewModel()), label: {
@@ -155,5 +138,3 @@ struct AutoUploadView<ViewModel: AutoUploadViewModel>: View {
 #Preview {
     AutoUploadView(viewModel: AutoUploadViewModel())
 }
-
-

@@ -30,23 +30,18 @@ struct AutoUploadFileNamesView<ViewModel: AutoUploadFileNamesViewModel>: View {
         Form {
             // Maintain Original Filename
             Section(content: {
-                
             }, header: {
-                
             }, footer: {
                 Text("You can choose to keep the original name of your files, add a type to the filename, or specify a custom filename. This can help you stay organized and quickly identify your files.")
                     .font(.system(size: 12))
                     .multilineTextAlignment(.leading)
             })
-            
             // Specify Filename
             Section(header: Text(NSLocalizedString("_filename_", comment: ""))) {
                 Toggle(NSLocalizedString("_maintain_original_filename_", comment: ""), isOn: $viewModel.maintainFilename)
                     .onChange(of: viewModel.maintainFilename, perform: { newValue in
                         viewModel.toggleMaintainOriginalFilename(newValue: newValue)
                     })
-                
-                
                 // Filename
                 if !viewModel.maintainFilename {
                     Toggle(NSLocalizedString("_add_filenametype_", comment: ""), isOn: $viewModel.specifyFilename)
@@ -57,8 +52,6 @@ struct AutoUploadFileNamesView<ViewModel: AutoUploadFileNamesViewModel>: View {
             }
             .transition(.slide)
             .animation(.easeInOut)
-            
-            
             // Filename Preview
             if !viewModel.maintainFilename {
                 Section(content: {
@@ -78,7 +71,6 @@ struct AutoUploadFileNamesView<ViewModel: AutoUploadFileNamesViewModel>: View {
                             .background(Color(UIColor.secondarySystemGroupedBackground))
                             .multilineTextAlignment(.trailing)
                     }
-                    
                     Text("\(viewModel.previewFileName())")
                 }, header: {
                     Text("CUSTOM FILENAME")
@@ -99,8 +91,6 @@ struct AutoUploadFileNamesView<ViewModel: AutoUploadFileNamesViewModel>: View {
                 viewModel.onViewAppear()
             }            .padding(.top, 0)
             .transition(.slide)
-        
-        
     }
 }
 
