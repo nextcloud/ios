@@ -91,7 +91,7 @@ class AutoUploadViewModel: AutoUploadVMRepresentable {
     @Published var showErrorAlert: Bool = false
     @Published var error: String = ""
 
-    private let manageDatabase = NCManageDatabase()
+    private let manageDatabase = NCManageDatabase.shared
 
     @Published var autoUploadPath = "\(NCManageDatabase.shared.getAccountAutoUploadFileName())"
     var serverUrl: String = NCUtilityFileSystem().getHomeServer(urlBase: AppDelegate().urlBase, userId: AppDelegate().userId)
@@ -103,7 +103,7 @@ class AutoUploadViewModel: AutoUploadVMRepresentable {
     
     /// A function to update the published properties based on the active account
     func onViewAppear() {
-        let activeAccount: tableAccount? = NCManageDatabase().getActiveAccount()
+        let activeAccount: tableAccount? = NCManageDatabase.shared.getActiveAccount()
         if let account = activeAccount {
             autoUpload = account.autoUpload
             autoUploadImage = account.autoUploadImage
