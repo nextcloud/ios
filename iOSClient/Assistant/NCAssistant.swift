@@ -90,8 +90,10 @@ struct TaskList: View {
         List(model.filteredTasks, id: \.id) { task in
             TaskItem(task: task)
         }
-        .refreshable {
-            model.load()
+        .if(!model.types.isEmpty) { view in
+            view.refreshable {
+                model.load()
+            }
         }
     }
 }

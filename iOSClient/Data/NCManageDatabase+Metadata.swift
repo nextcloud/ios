@@ -759,33 +759,17 @@ extension NCManageDatabase {
         return nil
     }
 
-    func getAdvancedMetadatas(predicate: NSPredicate, page: Int = 0, limit: Int = 0, sorted: String, ascending: Bool) -> [tableMetadata] {
-
-        var metadatas: [tableMetadata] = []
-
+    func getMetadatas(predicate: NSPredicate, numItems: Int, sorted: String, ascending: Bool) -> [tableMetadata] {
         do {
             let realm = try Realm()
             realm.refresh()
             let results = realm.objects(tableMetadata.self).filter(predicate).sorted(byKeyPath: sorted, ascending: ascending)
-            if !results.isEmpty {
-                if page == 0 || limit == 0 {
-                    return Array(results.map { tableMetadata.init(value: $0) })
-                } else {
-                    let nFrom = (page - 1) * limit
-                    let nTo = nFrom + (limit - 1)
-                    for n in nFrom...nTo {
-                        if n == results.count {
-                            break
-                        }
-                        metadatas.append(tableMetadata.init(value: results[n]))
-                    }
-                }
-            }
+            return Array(results.prefix(numItems))
         } catch let error as NSError {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not access database: \(error)")
         }
 
-        return metadatas
+        return []
     }
 
     func getMetadataAtIndex(predicate: NSPredicate, sorted: String, ascending: Bool, index: Int) -> tableMetadata? {

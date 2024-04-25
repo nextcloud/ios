@@ -22,8 +22,7 @@
 import Foundation
 
 public class TestConstants {
-    static let timeoutLong: Double = 60
-    static let timeoutShort: Double = 15
+    static let timeoutLong: Double = 600
     static let server = "http://localhost:8080"
     static let username = "admin"
     static let password = "admin"

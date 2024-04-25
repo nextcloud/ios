@@ -101,7 +101,7 @@ class NCNetworkingProcess: NSObject {
         // ------------------------ DOWNLOAD
 
         let limitDownload = maxConcurrentOperationDownload - counterDownloading
-        let metadatasWaitDownload = await NCManageDatabase.shared.getAdvancedMetadatas(predicate: NSPredicate(format: "account == %@ AND session == %@ AND status == %d", self.appDelegate.account, NCNetworking.shared.sessionDownloadBackground, NCGlobal.shared.metadataStatusWaitDownload), page: 1, limit: limitDownload, sorted: "sessionDate", ascending: true)
+        let metadatasWaitDownload = await NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND session == %@ AND status == %d", self.appDelegate.account, NCNetworking.shared.sessionDownloadBackground, NCGlobal.shared.metadataStatusWaitDownload), numItems: limitDownload, sorted: "sessionDate", ascending: true)
         for metadata in metadatasWaitDownload where counterDownloading < maxConcurrentOperationDownload {
             counterDownloading += 1
             NCNetworking.shared.download(metadata: metadata, withNotificationProgressTask: true)
@@ -143,7 +143,7 @@ class NCNetworkingProcess: NSObject {
 
         for sessionSelector in sessionUploadSelectors where counterUploading < maxConcurrentOperationUpload {
             let limitUpload = maxConcurrentOperationUpload - counterUploading
-            let metadatasWaitUpload = await NCManageDatabase.shared.getAdvancedMetadatas(predicate: NSPredicate(format: "account == %@ AND sessionSelector == %@ AND status == %d", self.appDelegate.account, sessionSelector, NCGlobal.shared.metadataStatusWaitUpload), page: 1, limit: limitUpload, sorted: "sessionDate", ascending: true)
+            let metadatasWaitUpload = await NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND sessionSelector == %@ AND status == %d", self.appDelegate.account, sessionSelector, NCGlobal.shared.metadataStatusWaitUpload), numItems: limitUpload, sorted: "sessionDate", ascending: true)
             if !metadatasWaitUpload.isEmpty {
                 NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] PROCESS (UPLOAD) find \(metadatasWaitUpload.count) items")
             }
