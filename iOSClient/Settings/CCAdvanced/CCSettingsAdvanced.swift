@@ -38,7 +38,7 @@ struct CCSettingsAdvanced<ViewModel: CCSettingsAdvancedViewModel>: View {
                         viewModel.updateShowHiddenFiles()
                     }
             }, footer: {
-                Text("All Hidden files will be visible in every device")
+                Text(NSLocalizedString("_show_hidden_files_footer", comment: ""))
                     .font(.system(size: 12))
                     .multilineTextAlignment(.leading)
             })
@@ -132,19 +132,19 @@ struct CCSettingsAdvanced<ViewModel: CCSettingsAdvancedViewModel>: View {
                     }.onTapGesture(perform: {
                         viewModel.clearLogFile()
                     })
-                    .alert("Log file cleared successfully!", isPresented: $viewModel.logFileCleared) {
+                    .alert(NSLocalizedString("_log_file_clear_alert_", comment: ""), isPresented: $viewModel.logFileCleared) {
                         Button(NSLocalizedString("OK", comment: ""), role: .cancel) { }
                     }
                 }, header: {
-                    Text("_diagnostics_")
+                    Text(NSLocalizedString("_diagnostics_", comment: ""))
                 }, footer: {
-                    Text("Log files contains history of all your actions on Nextcloud.")
+                    Text(NSLocalizedString("_diagnostics_footer_", comment: ""))
                         .font(.system(size: 12))
                         .multilineTextAlignment(.leading)
                 })
                 // Set Log Level() & Capabilities
                 Section {
-                    Picker("Set Log Level", selection: $viewModel.selectedLogLevel) {
+                    Picker(NSLocalizedString("_set_log_level_", comment: ""), selection: $viewModel.selectedLogLevel) {
                         ForEach(LogLevel.allCases) { level in
                             Text(level.displayText).tag(level)
                         }
@@ -165,8 +165,7 @@ struct CCSettingsAdvanced<ViewModel: CCSettingsAdvancedViewModel>: View {
             }
             // Delete in Cache & Clear Cache
             Section(content: {
-                // TODO: changing the section text to "Auto Delete Cache files after"
-                Picker("Auto Delete Cache files after", selection: $viewModel.selectedInterval) {
+                Picker(NSLocalizedString("_auto_delete_cache_files_", comment: ""), selection: $viewModel.selectedInterval) {
                     ForEach(CacheDeletionInterval.allCases) { interval in
                         Text(interval.displayText).tag(interval)
                     }
@@ -227,7 +226,7 @@ struct CCSettingsAdvanced<ViewModel: CCSettingsAdvancedViewModel>: View {
                     .font(.system(size: 12))
                     .multilineTextAlignment(.leading)
             })
-        }.navigationBarTitle("Advanced")
+        }.navigationBarTitle(NSLocalizedString("_advanced_", comment: ""))
             .onAppear {
                 viewModel.onViewAppear()
             }

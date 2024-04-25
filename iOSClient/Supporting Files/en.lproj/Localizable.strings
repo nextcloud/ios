@@ -155,6 +155,8 @@
 "_current_"                 = "Current";
 "_buy_"                     = "Buy";
 "_disabled_"                = "Disabled";
+"_standard_"                = "Standard";
+"_maximum_"                 = "Maximum";
 
 /* MARK: Files lock */
 
@@ -380,6 +382,7 @@
 "_autoupload_"                      = "Auto upload photos/videos";
 "_autoupload_select_folder_"        = "Select the \"Auto upload\" folder";
 "_autoupload_error_select_folder_"  = "Select a valid folder for the \"Auto upload\"";
+"_auto_delete_cache_files_"         = "Auto Delete Cache files after";
 "_autoupload_background_"           = "Auto upload in the background";
 "_autoupload_photos_"               = "Auto upload photos";
 "_autoupload_videos_"               = "Auto upload videos";
@@ -407,6 +410,7 @@
 "_help_activity_mail_"          = "Send activity via email";
 "_help_activity_clear_"         = "Clear activity";
 "_show_hidden_files_"           = "Show hidden files";
+"_show_hidden_files_footer"     = "All Hidden files will be visible in every device";
 "_format_compatibility_"        = "Most Compatible";
 "_format_compatibility_footer_" = "\"Most compatible\" will save photos as JPEG, if possible.";
 "_terms_"                       = "Terms of Service";
@@ -424,6 +428,9 @@
 "_view_log_"                    = "View log file";
 "_clear_log_"                   = "Clear log file";
 "_level_log_"                   = "Set Log level (disabled, standard, maximum)";
+"_set_log_level_"               = "Set Log Level";
+"_log_file_clear_alert_"        = "Log file cleared successfully!";
+"_diagnostics_footer_" = "Log files contains history of all your actions on Nextcloud.";
 "_connect_server_anyway_"       = "Do you want to connect to the server anyway?";
 "_server_is_trusted_"           = "Do you consider this server trusted?";
 "_connection_error_"            = "Connection error";
@@ -692,11 +699,19 @@
 "_create_nextcloudtext_document_"   = "Create text document";
 "_save_document_picker_"            = "Save here";
 "_destination_folder_"              = "Destination folder";
+"_filename_mode_"                   = "Filename Mode";
+"_auto_upload_"                     = "Auto Upload";
 "_use_folder_auto_upload_"          = "Use the \"Auto upload\" folder as destination";
+"_auto_upload_filename_header_"     = "You can choose to keep the original name of your files, add a type to the filename, or specify a custom filename. This can help you stay organized and quickly identify your files.";
 "_rename_filename_"                 = "Rename";
 "_filename_"                        = "Filename";
+"_filename_header_"                 = "FILENAME";
 "_enter_filename_"                  = "Enter filename …";
+"_default_preview_filename_footer"  = "Example preview of filename: IMG_0001.JPG";
+"_default_filename_image_"          = "Filename: IMG_0001.JPG";
 "_preview_filename_"                = "Example preview of filename. You can use the mask %@ for date/time";
+"_preview_filename_footer_"          = "Example preview of filename. You can use the mask MM, MMM, DD, Y Y,YYYY and HH,hh, mm,ss, ampm for date/time";
+"_preview_filename_header"          = "CUSTOM FILENAME";
 "_add_filenametype_"                = "Specify type in filename";
 "_filenametype_photo_video_"        = "Photo/Video";
 "_maintain_original_filename_"      = "Maintain original filename";

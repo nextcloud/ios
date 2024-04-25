@@ -44,7 +44,7 @@ struct AutoUploadView<ViewModel: AutoUploadViewModel>: View {
                     .animation(.easeInOut)
             }
         }
-        .navigationBarTitle("Auto Upload")
+        .navigationBarTitle(NSLocalizedString("_auto_upload_", comment: ""))
         .onAppear {
             viewModel.onViewAppear()
         }
@@ -113,7 +113,7 @@ struct AutoUploadView<ViewModel: AutoUploadViewModel>: View {
                 .onChange(of: viewModel.autoUploadCreateSubfolder) { newValue in
                     viewModel.handleAutoUploadCreateSubfolderChange(newValue: newValue)
                 }
-            Picker(NSLocalizedString("Subfolder Granularity", comment: ""), selection: $viewModel.autoUploadSubfolderGranularity) {
+            Picker(NSLocalizedString("_autoupload_subfolder_granularity_", comment: ""), selection: $viewModel.autoUploadSubfolderGranularity) {
                 Text(NSLocalizedString("_daily_", comment: "")).tag(Granularity.daily)
                 Text(NSLocalizedString("_monthly_", comment: "")).tag(Granularity.monthly)
                 Text(NSLocalizedString("_yearly_", comment: "")).tag(Granularity.yearly)

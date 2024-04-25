@@ -32,7 +32,7 @@ struct AutoUploadFileNamesView<ViewModel: AutoUploadFileNamesViewModel>: View {
             Section(content: {
             }, header: {
             }, footer: {
-                Text("You can choose to keep the original name of your files, add a type to the filename, or specify a custom filename. This can help you stay organized and quickly identify your files.")
+                Text(NSLocalizedString("_auto_upload_filename_header_", comment: ""))
                     .font(.system(size: 12))
                     .multilineTextAlignment(.leading)
             })
@@ -62,7 +62,7 @@ struct AutoUploadFileNamesView<ViewModel: AutoUploadFileNamesViewModel>: View {
                             .fontWeight(.medium)
                             .background(Color(UIColor.secondarySystemGroupedBackground))
                         Spacer()
-                        TextField("FILENAME", text: $viewModel.changedName)
+                        TextField(NSLocalizedString("_filename_header_", comment: ""), text: $viewModel.changedName)
                             .onSubmit {
                                 viewModel.submitChangedName()
                             }
@@ -73,20 +73,20 @@ struct AutoUploadFileNamesView<ViewModel: AutoUploadFileNamesViewModel>: View {
                     }
                     Text("\(viewModel.previewFileName())")
                 }, header: {
-                    Text("CUSTOM FILENAME")
+                    Text(NSLocalizedString("_preview_filename_header", comment: ""))
                 }, footer: {
-                    Text("Example preview of filename. You can use the mask MM, MMM, DD, Y Y,YYYY and HH,hh, mm,ss, ampm for date/time:")
+                    Text(NSLocalizedString("_preview_filename_footer", comment: ""))
                 })
             } else {
                 Section(content: {
-                    Text("Filename: IMG_0001.JPG")
+                    Text(NSLocalizedString("_default_filename_image_", comment: ""))
                 }, header: {
-                    Text("FILENAME")
+                    Text(NSLocalizedString("_filename_header_", comment: ""))
                 }, footer: {
-                    Text("Example preview of filename: IMG_0001.JPG")
+                    Text(NSLocalizedString("_default_preview_filename_footer", comment: ""))
                 })
             }
-        }.navigationBarTitle("Filename Mode")
+        }.navigationBarTitle(NSLocalizedString("_filename_mode_", comment: ""))
             .onAppear {
                 viewModel.onViewAppear()
             }            .padding(.top, 0)

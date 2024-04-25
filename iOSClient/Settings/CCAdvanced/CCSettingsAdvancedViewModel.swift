@@ -233,16 +233,15 @@ enum LogLevel: Int, CaseIterable, Identifiable, Equatable {
     var id: Int { self.rawValue }
 }
 
-// TODO: There are not any localized strings for `Standard`, `Maximum` & `Set Log Level`
 extension LogLevel {
     var displayText: String {
         switch self {
         case .disabled:
             return NSLocalizedString("_disabled_", comment: "")
         case .standard:
-            return "Standard"
+            return NSLocalizedString("_standard_", comment: "")
         case .maximum:
-            return "Maximum"
+            return NSLocalizedString("_maximum_", comment: "")
         }
     }
 }
@@ -262,17 +261,17 @@ extension CacheDeletionInterval {
     var displayText: String {
         switch self {
         case .never:
-            return "Never"
+            return NSLocalizedString("_never_", comment: "")
         case .oneYear:
-            return "1 Year"
+            return NSLocalizedString("_1_year_", comment: "")
         case .sixMonths:
-            return "6 Months"
+            return NSLocalizedString("_6_months_", comment: "")
         case .threeMonths:
-            return "3 Months"
+            return NSLocalizedString("_3_months_", comment: "")
         case .oneMonth:
-            return "1 Month"
+            return NSLocalizedString("_1_month_", comment: "")
         case .oneWeek:
-            return "1 Week"
+            return NSLocalizedString("_1_week_", comment: "")
         }
     }
 }
