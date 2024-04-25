@@ -219,9 +219,9 @@
 "_replace_all_action_title_" = "Replace all";
 "_keep_both_for_all_action_title_" = "Keep both for all";
 "_more_action_title_" = "More Details";
-"_wait_file_preparation_" = "Please wait, upload file in preparation";
-"_wait_file_encryption_"  = "Please wait, file encryption";
-"_passcode_counter_fail_" = "Failed attempts, please wait";
+"_wait_file_preparation_" = "Please wait, preparing file upload…";
+"_wait_file_encryption_"  = "Please wait, encrypting file…";
+"_passcode_counter_fail_" = "Too many failed attempts, please wait before reattempting";
 "_seconds_"               = "seconds";
 
 /* Background of the file listing view */
