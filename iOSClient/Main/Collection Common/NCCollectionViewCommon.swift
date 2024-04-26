@@ -346,7 +346,11 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
               let error = userInfo["error"] as? NKError else { return }
 
         if error == .success {
-            reloadDataSource()
+            if !isSearchingMode, let dragDrop = userInfo["dragdrop"] as? Bool, dragDrop {
+                reloadDataSourceNetwork(withQueryDB: true)
+            } else {
+                reloadDataSource()
+            }
         } else {
             NCContentPresenter().showError(error: error)
         }
@@ -357,7 +361,11 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
               let error = userInfo["error"] as? NKError else { return }
 
         if error == .success {
-            reloadDataSource()
+            if !isSearchingMode, let dragDrop = userInfo["dragdrop"] as? Bool, dragDrop {
+                reloadDataSourceNetwork(withQueryDB: true)
+            } else {
+                reloadDataSource()
+            }
         } else {
             NCContentPresenter().showError(error: error)
         }

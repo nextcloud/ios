@@ -216,13 +216,18 @@ extension NCCollectionViewCommon {
         }
 
         Task {
-            for metadata in sourceMetadatas {
+            var error = NKError()
+            var ocId: [String] = []
+            for metadata in sourceMetadatas where error == .success {
                 let error = await NCNetworking.shared.copyMetadata(metadata, serverUrlTo: serverUrl, overwrite: false)
-                if error != .success {
-                    NCContentPresenter().showError(error: error)
+                if error == .success {
+                    ocId.append(metadata.ocId)
                 }
             }
-            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSourceNetwork, userInfo: ["withQueryDB": true])
+            if error != .success {
+                NCContentPresenter().showError(error: error)
+            }
+            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterCopyFile, userInfo: ["ocId": ocId, "error": error, "dragdrop": true])
         }
     }
 
@@ -234,13 +239,18 @@ extension NCCollectionViewCommon {
         }
 
         Task {
-            for metadata in sourceMetadatas {
-                let error = await NCNetworking.shared.moveMetadata(metadata, serverUrlTo: serverUrl, overwrite: false)
-                if error != .success {
-                    NCContentPresenter().showError(error: error)
+            var error = NKError()
+            var ocId: [String] = []
+            for metadata in sourceMetadatas where error == .success {
+                error = await NCNetworking.shared.moveMetadata(metadata, serverUrlTo: serverUrl, overwrite: false)
+                if error == .success {
+                    ocId.append(metadata.ocId)
                 }
             }
-            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSourceNetwork, userInfo: ["withQueryDB": true])
+            if error != .success {
+                NCContentPresenter().showError(error: error)
+            }
+            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterMoveFile, userInfo: ["ocId": ocId, "error": error, "dragdrop": true])
         }
     }
 
