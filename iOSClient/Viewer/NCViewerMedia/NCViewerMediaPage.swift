@@ -328,7 +328,6 @@ class NCViewerMediaPage: UIViewController {
     // MARK: - NotificationCenter
 
     @objc func downloadedFile(_ notification: NSNotification) {
-
         guard let userInfo = notification.userInfo as NSDictionary?,
               let ocId = userInfo["ocId"] as? String
         else {
@@ -358,7 +357,6 @@ class NCViewerMediaPage: UIViewController {
     }
 
     @objc func triggerProgressTask(_ notification: NSNotification) {
-
         guard let userInfo = notification.userInfo as NSDictionary?,
               let progressNumber = userInfo["progress"] as? NSNumber
         else { return }
@@ -376,7 +374,6 @@ class NCViewerMediaPage: UIViewController {
     @objc func uploadStartFile(_ notification: NSNotification) { }
 
     @objc func uploadedFile(_ notification: NSNotification) {
-
         guard let userInfo = notification.userInfo as NSDictionary?,
               let ocId = userInfo["ocId"] as? String,
               let error = userInfo["error"] as? NKError,
@@ -398,24 +395,15 @@ class NCViewerMediaPage: UIViewController {
     }
 
     @objc func deleteFile(_ notification: NSNotification) {
-
         guard let userInfo = notification.userInfo as NSDictionary? else { return }
 
         if let ocIds = userInfo["ocId"] as? [String],
            let ocId = ocIds.first {
-
             // Stop media
             if let ncplayer = currentViewController.ncplayer, ncplayer.isPlay() {
                 ncplayer.playerPause()
             }
-
-            let metadatas = self.metadatas.filter { $0.ocId != ocId }
-            if self.metadatas.count == metadatas.count { return }
-            self.metadatas = metadatas
-
-            if ocId == currentViewController.metadata.ocId {
-                shiftCurrentPage()
-            }
+            self.viewUnload()
         }
     }
 
@@ -424,7 +412,6 @@ class NCViewerMediaPage: UIViewController {
     }
 
     @objc func copyFile(_ notification: NSNotification) {
-
         guard let userInfo = notification.userInfo as NSDictionary?,
               let error = userInfo["error"] as? NKError else { return }
 
@@ -434,7 +421,6 @@ class NCViewerMediaPage: UIViewController {
     }
 
     @objc func renameFile(_ notification: NSNotification) {
-
         guard let userInfo = notification.userInfo as NSDictionary?,
               let ocId = userInfo["ocId"] as? String,
               let index = metadatas.firstIndex(where: {$0.ocId == ocId}),
@@ -455,7 +441,6 @@ class NCViewerMediaPage: UIViewController {
     }
 
     @objc func applicationDidBecomeActive(_ notification: NSNotification) {
-
         progressView.progress = 0
         changeScreenMode(mode: .normal)
     }
@@ -559,24 +544,6 @@ class NCViewerMediaPage: UIViewController {
 // MARK: - UIPageViewController Delegate Datasource
 
 extension NCViewerMediaPage: UIPageViewControllerDelegate, UIPageViewControllerDataSource {
-
-    func shiftCurrentPage() {
-
-        if metadatas.isEmpty {
-            self.viewUnload()
-            return
-        }
-
-        var direction: UIPageViewController.NavigationDirection = .forward
-
-        if currentIndex == metadatas.count {
-            currentIndex -= 1
-            direction = .reverse
-        }
-
-        let viewerMedia = getViewerMedia(index: currentIndex, metadata: metadatas[currentIndex])
-        pageViewController.setViewControllers([viewerMedia], direction: direction, animated: true, completion: nil)
-    }
 
     func pageViewController(_ pageViewController: UIPageViewController, viewControllerBefore viewController: UIViewController) -> UIViewController? {
 
