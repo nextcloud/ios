@@ -159,9 +159,11 @@ extension NCCollectionViewCommon: UICollectionViewDropDelegate {
     func collectionView(_ collectionView: UICollectionView, dropSessionDidEnd session: UIDropSession) {
         cleanPushDragDropHover()
     }
+}
+   
+// MARK: - Drag&Drop func
 
-    // MARK: -
-
+extension NCCollectionViewCommon {
     private func handleDrop(coordinator: UICollectionViewDropCoordinator) {
         var serverUrl: String = self.serverUrl
 

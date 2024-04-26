@@ -80,7 +80,9 @@ class NCMedia: UIViewController {
         collectionView.backgroundColor = .systemBackground
         collectionView.prefetchDataSource = self
         // Drag & Drop
+        // Drag & Drop
         collectionView.dragInteractionEnabled = true
+        collectionView.dragDelegate = self
         collectionView.dropDelegate = self
 
         layout.sectionInset = UIEdgeInsets(top: 0, left: 2, bottom: 0, right: 2)
@@ -155,6 +157,7 @@ class NCMedia: UIViewController {
         NotificationCenter.default.addObserver(self, selector: #selector(deleteFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDeleteFile), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(enterForeground(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationWillEnterForeground), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(uploadedFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUploadedFile), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(reloadDataSource(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterReloadDataSourceNetwork), object: nil)
 
         startTimer()
         createMenu()
@@ -178,6 +181,7 @@ class NCMedia: UIViewController {
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDeleteFile), object: nil)
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationWillEnterForeground), object: nil)
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUploadedFile), object: nil)
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterReloadDataSourceNetwork), object: nil)
     }
 
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
@@ -233,13 +237,22 @@ class NCMedia: UIViewController {
 
     @objc func uploadedFile(_ notification: NSNotification) {
         guard let userInfo = notification.userInfo as NSDictionary?,
-              let ocId = userInfo["ocId"] as? String
-        else { return }
+              let ocId = userInfo["ocId"] as? String else { return }
 
         if let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId),
            (metadata.isVideo || metadata.isImage) {
             self.reloadDataSource()
         }
+    }
+
+    @objc func reloadDataSource(_ notification: NSNotification) {
+        if let userInfo = notification.userInfo as NSDictionary?,
+           let reload = userInfo["withQueryDB"] as? Bool, reload {
+            isEditMode = false
+            setSelectcancelButton()
+        }
+
+        self.reloadDataSource()
     }
 
     // MARK: - Image

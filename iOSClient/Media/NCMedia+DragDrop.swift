@@ -24,6 +24,37 @@
 import UIKit
 import NextcloudKit
 
+// MARK: - Drag
+
+extension NCMedia: UICollectionViewDragDelegate {
+    func collectionView(_ collectionView: UICollectionView, itemsForBeginning session: UIDragSession, at indexPath: IndexPath) -> [UIDragItem] {
+        var metadatas: [tableMetadata] = []
+
+        if isEditMode {
+            for ocId in self.selectOcId {
+                if let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId), metadata.status == 0, !isDirectoryE2EE(metadata: metadata) {
+                    metadatas.append(metadata)
+                }
+            }
+        } else {
+            guard let metadata = self.metadatas?[indexPath.row], metadata.status == 0, !isDirectoryE2EE(metadata: metadata) else { return [] }
+            metadatas.append(metadata)
+        }
+
+        let dragItems = metadatas.map { metadata in
+            let itemProvider = NSItemProvider()
+            itemProvider.registerDataRepresentation(forTypeIdentifier: NCGlobal.shared.metadataOcIdDataRepresentation, visibility: .all) { completion in
+                let data = metadata.ocId.data(using: .utf8)
+                completion(data, nil)
+                return nil
+            }
+            return UIDragItem(itemProvider: itemProvider)
+        }
+
+        return dragItems
+    }
+}
+
 // MARK: - Drop
 
 extension NCMedia: UICollectionViewDropDelegate {
@@ -71,5 +102,14 @@ extension NCMedia: UICollectionViewDropDelegate {
                 }
             }
         }
+    }
+}
+
+// MARK: - Drag&Drop func
+
+extension NCMedia {
+    private func isDirectoryE2EE(metadata: tableMetadata) -> Bool {
+        if !metadata.directory { return false }
+        return NCUtilityFileSystem().isDirectoryE2EE(account: metadata.account, urlBase: metadata.urlBase, userId: metadata.userId, serverUrl: metadata.serverUrl + "/" + metadata.fileName)
     }
 }
