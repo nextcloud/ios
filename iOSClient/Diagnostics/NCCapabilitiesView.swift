@@ -100,7 +100,7 @@ class NCCapabilitiesViewOO: ObservableObject {
             capabililies.append(Capability(text: "ONLYOFFICE", image: image, resize: true, available: onlyofficeEditors))
         }
         if let image = UIImage(named: "collabora") {
-            capabililies.append(Capability(text: "Collabora", image: image, resize: true, available: NCGlobal.shared.capabilityRichdocumentsEnabled))
+            capabililies.append(Capability(text: "Collabora", image: image, resize: true, available: NCGlobal.shared.capabilityRichDocumentsEnabled))
         }
         if let image = UIImage(systemName: "moon") {
             capabililies.append(Capability(text: "User Status", image: image, resize: false, available: NCGlobal.shared.capabilityUserStatusEnabled))
@@ -114,8 +114,11 @@ class NCCapabilitiesViewOO: ObservableObject {
         if let image = UIImage(systemName: "person.2") {
             capabililies.append(Capability(text: "Group folders", image: image, resize: false, available: NCGlobal.shared.capabilityGroupfoldersEnabled))
         }
-        if let image = UIImage(systemName: "shield") {
+        if let image = UIImage(systemName: "shield"), NCBrandOptions.shared.brand != "Nextcloud" {
             capabililies.append(Capability(text: "Security Guard Diagnostics", image: image, resize: false, available: NCGlobal.shared.capabilitySecurityGuardDiagnostics))
+        }
+        if let image = UIImage(systemName: "sparkles") {
+            capabililies.append(Capability(text: "Assistant", image: image, resize: false, available: NCGlobal.shared.capabilityAssistantEnabled))
         }
 
         homeServer = utilityFileSystem.getHomeServer(urlBase: activeAccount.urlBase, userId: activeAccount.userId) + "/"

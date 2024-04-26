@@ -25,10 +25,12 @@ import Foundation
 import NextcloudKit
 import WidgetKit
 import SwiftEntryKit
+import TOPasscodeViewController
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     var window: UIWindow?
-    let appDelegate = UIApplication.shared.delegate as? AppDelegate
+    private let appDelegate = UIApplication.shared.delegate as? AppDelegate
+    private var privacyProtectionWindow: UIWindow?
 
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         guard let windowScene = (scene as? UIWindowScene),
@@ -72,14 +74,15 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         }
         guard !appDelegate.account.isEmpty else { return }
 
-        if let window = SceneManager.shared.getWindow(scene: scene), let rootViewController = SceneManager.shared.getMainTabBarController(scene: scene) {
-            window.rootViewController = rootViewController
+        hidePrivacyProtectionWindow()
+        if let window = SceneManager.shared.getWindow(scene: scene), let mainTabBarController = SceneManager.shared.getMainTabBarController(scene: scene) {
+            window.rootViewController = mainTabBarController
             if NCKeychain().presentPasscode {
-                NCPasscode.shared.presentPasscode(rootViewController: rootViewController, delegate: appDelegate) {
+                NCPasscode.shared.presentPasscode(viewController: mainTabBarController, delegate: self) {
                     NCPasscode.shared.enableTouchFaceID()
                 }
             } else if NCKeychain().accountRequest {
-                appDelegate.requestedAccount(rootViewController: rootViewController)
+                requestedAccount(viewController: mainTabBarController)
             }
         }
 
@@ -97,7 +100,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         // START TIMER UPLOAD PROCESS
         NCNetworkingProcess.shared.startTimer(scene: scene)
 
-        self.appDelegate?.hidePrivacyProtectionWindow(scene: scene)
+        hidePrivacyProtectionWindow()
 
         NCService().startRequestServicesServer()
 
@@ -116,12 +119,14 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         // STOP TIMER UPLOAD PROCESS
         NCNetworkingProcess.shared.stopTimer()
 
-        if SwiftEntryKit.isCurrentlyDisplaying {
-            SwiftEntryKit.dismiss {
-                self.appDelegate?.showPrivacyProtectionWindow(scene: scene)
+        if NCKeychain().privacyScreenEnabled {
+            if SwiftEntryKit.isCurrentlyDisplaying {
+                SwiftEntryKit.dismiss {
+                    self.showPrivacyProtectionWindow()
+                }
+            } else {
+                showPrivacyProtectionWindow()
             }
-        } else {
-            self.appDelegate?.showPrivacyProtectionWindow(scene: scene)
         }
 
         // Reload Widget
@@ -162,6 +167,10 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         NCNetworking.shared.cancelUploadTasks()
 
         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterApplicationDidEnterBackground)
+
+        if NCKeychain().presentPasscode {
+            showPrivacyProtectionWindow()
+        }
     }
 
     func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
@@ -325,7 +334,63 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             }
         }
     }
+
+    private func showPrivacyProtectionWindow() {
+        guard let windowScene = self.window?.windowScene else {
+            return
+        }
+
+        privacyProtectionWindow = UIWindow(windowScene: windowScene)
+        privacyProtectionWindow?.rootViewController = UIStoryboard(name: "LaunchScreen", bundle: nil).instantiateInitialViewController()
+        privacyProtectionWindow?.windowLevel = .alert + 1
+        privacyProtectionWindow?.makeKeyAndVisible()
+    }
+
+    private func hidePrivacyProtectionWindow() {
+        privacyProtectionWindow?.isHidden = true
+        privacyProtectionWindow = nil
+    }
 }
+
+// MARK: - Extension
+
+extension SceneDelegate: NCPasscodeDelegate {
+    func requestedAccount(viewController: UIViewController?) {
+        let accounts = NCManageDatabase.shared.getAllAccount()
+        if accounts.count > 1, let accountRequestVC = UIStoryboard(name: "NCAccountRequest", bundle: nil).instantiateInitialViewController() as? NCAccountRequest {
+            accountRequestVC.activeAccount = NCManageDatabase.shared.getActiveAccount()
+            accountRequestVC.accounts = accounts
+            accountRequestVC.enableTimerProgress = true
+            accountRequestVC.enableAddAccount = false
+            accountRequestVC.dismissDidEnterBackground = false
+            accountRequestVC.delegate = self
+            accountRequestVC.startTimer()
+
+            let screenHeighMax = UIScreen.main.bounds.height - (UIScreen.main.bounds.height / 5)
+            let numberCell = accounts.count
+            let height = min(CGFloat(numberCell * Int(accountRequestVC.heightCell) + 45), screenHeighMax)
+
+            let popup = NCPopupViewController(contentController: accountRequestVC, popupWidth: 300, popupHeight: height + 20)
+            popup.backgroundAlpha = 0.8
+
+            viewController?.present(popup, animated: true)
+        }
+    }
+
+    func passcodeReset(_ passcodeViewController: TOPasscodeViewController) {
+        appDelegate?.resetApplication()
+    }
+}
+
+extension SceneDelegate: NCAccountRequestDelegate {
+    func accountRequestAddAccount() { }
+
+    func accountRequestChangeAccount(account: String) {
+        appDelegate?.changeAccount(account, userProfile: nil)
+    }
+}
+
+// MARK: - Scene Manager
 
 class SceneManager {
     static let shared = SceneManager()
@@ -363,5 +428,9 @@ class SceneManager {
             results.append(mainTabBarController.sceneIdentifier)
         }
         return results
+    }
+
+    func getAllMainTabBarController() -> [NCMainTabBarController] {
+        return Array(sceneMainTabBarController.keys)
     }
 }

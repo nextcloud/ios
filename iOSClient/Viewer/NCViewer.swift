@@ -112,7 +112,7 @@ class NCViewer: NSObject {
             let availableRichDocument = utility.isRichDocument(metadata)
 
             // RichDocument: Collabora
-            if (isRichDocument || (availableRichDocument && editors.isEmpty)) && NCGlobal.shared.capabilityRichdocumentsEnabled && NextcloudKit.shared.isNetworkReachable() {
+            if (isRichDocument || (availableRichDocument && editors.isEmpty)) && NCGlobal.shared.capabilityRichDocumentsEnabled && NextcloudKit.shared.isNetworkReachable() {
 
                 if metadata.url.isEmpty {
 

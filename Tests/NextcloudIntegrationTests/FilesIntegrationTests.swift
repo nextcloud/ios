@@ -44,7 +44,7 @@ final class FilesIntegrationTests: BaseIntegrationXCTestCase {
             XCTAssertEqual(NKError.success.errorCode, error.errorCode)
             XCTAssertEqual(NKError.success.errorDescription, error.errorDescription)
 
-            Thread.sleep(forTimeInterval: 0.2)
+            Thread.sleep(forTimeInterval: 1)
 
             // Test reading folder, should exist
             NCNetworking.shared.readFolder(serverUrl: serverUrlFileName, account: TestConstants.username) { account, metadataFolder, _, _, _, _ in
@@ -57,7 +57,7 @@ final class FilesIntegrationTests: BaseIntegrationXCTestCase {
                 let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "serverUrl == %@", serverUrlFileName))
                 XCTAssertNotNil(directory)
 
-                Thread.sleep(forTimeInterval: 0.2)
+                Thread.sleep(forTimeInterval: 1)
 
                 Task {
                     // Test deleting folder
@@ -66,7 +66,7 @@ final class FilesIntegrationTests: BaseIntegrationXCTestCase {
                     XCTAssertEqual(NKError.success.errorCode, error.errorCode)
                     XCTAssertEqual(NKError.success.errorDescription, error.errorDescription)
 
-                    try await Task.sleep(for: .milliseconds(200))
+                    try await Task.sleep(for: .seconds(1))
 
                     // Test reading folder, should NOT exist
                     NCNetworking.shared.readFolder(serverUrl: serverUrlFileName, account: TestConstants.username) { account, metadataFolder, _, _, _, _ in
@@ -84,6 +84,6 @@ final class FilesIntegrationTests: BaseIntegrationXCTestCase {
             }
         }
         
-        waitForExpectations(timeout: 100)
+        waitForExpectations(timeout: TestConstants.timeoutLong)
     }
 }

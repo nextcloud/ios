@@ -58,7 +58,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     var gridLayout: NCGridLayout!
     var literalSearch: String?
     var tabBarSelect: NCCollectionViewCommonSelectTabBar!
-
     var timerNotificationCenter: Timer?
     var notificationReloadDataSource: Int = 0
     var notificationReloadDataSourceNetwork: Int = 0
@@ -140,6 +139,14 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         longPressedGesture.delegate = self
         longPressedGesture.delaysTouchesBegan = true
         collectionView.addGestureRecognizer(longPressedGesture)
+
+        // Drag & Drop
+        collectionView.dragInteractionEnabled = true
+        collectionView.dragDelegate = self
+        collectionView.dropDelegate = self
+
+        let dropInteraction = UIDropInteraction(delegate: self)
+        self.navigationController?.navigationItem.leftBarButtonItems?.first?.customView?.addInteraction(dropInteraction)
 
         NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeTheming), object: nil)
     }
@@ -284,7 +291,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     }
 
     @objc func reloadAvatar(_ notification: NSNotification) {
-
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
             self.showTip()
         }
@@ -305,8 +311,14 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     }
 
     @objc func reloadDataSourceNetwork(_ notification: NSNotification) {
+        var withQueryDB = false
+        if let userInfo = notification.userInfo as NSDictionary?,
+           let reload = userInfo["withQueryDB"] as? Bool {
+            withQueryDB = reload
+        }
+
         if !isSearchingMode {
-            reloadDataSourceNetwork()
+            reloadDataSourceNetwork(withQueryDB: withQueryDB)
         }
     }
 
@@ -319,43 +331,48 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     }
 
     @objc func deleteFile(_ notification: NSNotification) {
-
         guard let userInfo = notification.userInfo as NSDictionary?,
               let error = userInfo["error"] as? NKError else { return }
 
-        notificationReloadDataSource += 1
-
-        if error != .success {
+        if error == .success {
+            reloadDataSource()
+        } else {
             NCContentPresenter().showError(error: error)
         }
     }
 
     @objc func moveFile(_ notification: NSNotification) {
-        deleteFile(notification)
-    }
-
-    @objc func copyFile(_ notification: NSNotification) {
-
         guard let userInfo = notification.userInfo as NSDictionary?,
               let error = userInfo["error"] as? NKError else { return }
 
-        if error != .success {
+        if error == .success {
+            reloadDataSource()
+        } else {
+            NCContentPresenter().showError(error: error)
+        }
+    }
+
+    @objc func copyFile(_ notification: NSNotification) {
+        guard let userInfo = notification.userInfo as NSDictionary?,
+              let error = userInfo["error"] as? NKError else { return }
+
+        if error == .success {
+            reloadDataSource()
+        } else {
             NCContentPresenter().showError(error: error)
         }
     }
 
     @objc func renameFile(_ notification: NSNotification) {
-
         guard let userInfo = notification.userInfo as NSDictionary?,
               let account = userInfo["account"] as? String,
               account == appDelegate.account
         else { return }
 
-        notificationReloadDataSource += 1
+        reloadDataSource()
     }
 
     @objc func createFolder(_ notification: NSNotification) {
-
         guard let userInfo = notification.userInfo as NSDictionary?,
               let ocId = userInfo["ocId"] as? String,
               let serverUrl = userInfo["serverUrl"] as? String,
@@ -373,7 +390,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     }
 
     @objc func favoriteFile(_ notification: NSNotification) {
-
         if self is NCFavorite {
             return notificationReloadDataSource += 1
         }
@@ -383,11 +399,10 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
               serverUrl == self.serverUrl
         else { return }
 
-        notificationReloadDataSource += 1
+        reloadDataSource()
     }
 
     @objc func downloadStartFile(_ notification: NSNotification) {
-
         guard let userInfo = notification.userInfo as NSDictionary?,
               let serverUrl = userInfo["serverUrl"] as? String,
               serverUrl == self.serverUrl,
@@ -399,7 +414,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     }
 
     @objc func downloadedFile(_ notification: NSNotification) {
-
         guard let userInfo = notification.userInfo as NSDictionary?,
               let serverUrl = userInfo["serverUrl"] as? String,
               serverUrl == self.serverUrl,
@@ -416,7 +430,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     }
 
     @objc func downloadCancelFile(_ notification: NSNotification) {
-
         guard let userInfo = notification.userInfo as NSDictionary?,
               let serverUrl = userInfo["serverUrl"] as? String,
               serverUrl == self.serverUrl,
@@ -428,7 +441,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     }
 
     @objc func uploadStartFile(_ notification: NSNotification) {
-
         guard let userInfo = notification.userInfo as NSDictionary?,
               let ocId = userInfo["ocId"] as? String,
               let serverUrl = userInfo["serverUrl"] as? String,
@@ -449,7 +461,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     }
 
     @objc func uploadedFile(_ notification: NSNotification) {
-
         guard let userInfo = notification.userInfo as NSDictionary?,
               let ocIdTemp = userInfo["ocIdTemp"] as? String,
               let serverUrl = userInfo["serverUrl"] as? String,
@@ -467,7 +478,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     }
 
     @objc func uploadedLivePhoto(_ notification: NSNotification) {
-
         guard let userInfo = notification.userInfo as NSDictionary?,
               let serverUrl = userInfo["serverUrl"] as? String,
               serverUrl == self.serverUrl,
@@ -479,7 +489,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     }
 
     @objc func uploadCancelFile(_ notification: NSNotification) {
-
         guard let userInfo = notification.userInfo as NSDictionary?,
               let ocId = userInfo["ocId"] as? String,
               let serverUrl = userInfo["serverUrl"] as? String,
@@ -497,7 +506,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     }
 
     @objc func triggerProgressTask(_ notification: NSNotification) {
-
         guard let userInfo = notification.userInfo as NSDictionary?,
               let progressNumber = userInfo["progress"] as? NSNumber,
               let totalBytes = userInfo["totalBytes"] as? Int64,
@@ -557,18 +565,14 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
     func setNavigationLeftItems() {
         guard layoutKey == NCGlobal.shared.layoutViewFiles else { return }
-
-        // PROFILE BUTTON
-
         let activeAccount = NCManageDatabase.shared.getActiveAccount()
-
         let image = utility.loadUserImage(for: appDelegate.user, displayName: activeAccount?.displayName, userBaseUrl: appDelegate)
+        let accountButton = AccountSwitcherButton(type: .custom)
 
-        let button = AccountSwitcherButton(type: .custom)
-        button.setImage(image, for: .normal)
-        button.setImage(image, for: .highlighted)
-        button.semanticContentAttribute = .forceLeftToRight
-        button.sizeToFit()
+        accountButton.setImage(image, for: .normal)
+        accountButton.setImage(image, for: .highlighted)
+        accountButton.semanticContentAttribute = .forceLeftToRight
+        accountButton.sizeToFit()
 
         let accounts = NCManageDatabase.shared.getAllAccountOrderAlias()
 
@@ -606,16 +610,16 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
             let menu = UIMenu(children: accountActions + [addAccountSubmenu])
 
-            button.menu = menu
-            button.showsMenuAsPrimaryAction = true
+            accountButton.menu = menu
+            accountButton.showsMenuAsPrimaryAction = true
 
-            button.onMenuOpened = {
+            accountButton.onMenuOpened = {
                 self.dismissTip()
             }
         }
 
-        navigationItem.setLeftBarButton(UIBarButtonItem(customView: button), animated: true)
         navigationItem.leftItemsSupplementBackButton = true
+        navigationItem.setLeftBarButtonItems([UIBarButtonItem(customView: accountButton)], animated: true)
 
         if titlePreviusFolder != nil {
             navigationController?.navigationBar.topItem?.title = titlePreviusFolder
@@ -898,7 +902,12 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             if !UIPasteboard.general.items.isEmpty, !(metadataFolder?.e2eEncrypted ?? false) {
                 return true
             }
+        } else if #selector(copyMenuFile) == action {
+            return true
+        } else if #selector(moveMenuFile) == action {
+            return true
         }
+
         return false
     }
 
@@ -937,7 +946,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         }
     }
 
-    @objc func reloadDataSourceNetwork() {
+    @objc func reloadDataSourceNetwork(withQueryDB: Bool = false) {
         DispatchQueue.main.async {
             self.collectionView?.reloadData()
         }

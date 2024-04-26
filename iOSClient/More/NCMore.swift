@@ -25,6 +25,7 @@ import UIKit
 import NextcloudKit
 import SafariServices
 import SwiftUI
+import Foundation
 
 class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
 
@@ -123,8 +124,18 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         item.name = "_activity_"
         item.icon = "bolt"
         item.url = "segueActivity"
-        item.order = 40
+        item.order = 30
         functionMenu.append(item)
+
+        if NCGlobal.shared.capabilityAssistantEnabled, NCBrandOptions.shared.disable_show_more_nextcloud_apps_in_settings {
+            // ITEM : Assistant
+            item = NKExternalSite()
+            item.name = "_assistant_"
+            item.icon = "sparkles"
+            item.url = "openAssistant"
+            item.order = 40
+            functionMenu.append(item)
+        }
 
         // ITEM : Shares
         if NCGlobal.shared.capabilityFileSharingApiEnabled {
@@ -153,6 +164,7 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
             item.order = 61
             functionMenu.append(item)
         }
+
         // ITEM : Scan
         item = NKExternalSite()
         item.name = "_scanned_images_"
@@ -444,10 +456,14 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
             let actionNo = UIAlertAction(title: NSLocalizedString("_no_delete_", comment: ""), style: .default) { (_: UIAlertAction) in
                 print("You've pressed No button")
             }
-
+            
             alertController.addAction(actionYes)
             alertController.addAction(actionNo)
             self.present(alertController, animated: true, completion: nil)
+        } else if item.url == "openAssistant" {
+            let assistant = NCAssistant().environmentObject(NCAssistantTask())
+            let hostingController = UIHostingController(rootView: assistant)
+            present(hostingController, animated: true, completion: nil)
         } else {
             applicationHandle.didSelectItem(item, viewController: self)
         }

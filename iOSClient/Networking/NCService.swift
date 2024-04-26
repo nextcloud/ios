@@ -220,7 +220,7 @@ class NCService: NSObject {
             }
 
             // Added UTI for Collabora
-            NCGlobal.shared.capabilityRichdocumentsMimetypes.forEach { mimeType in
+            NCGlobal.shared.capabilityRichDocumentsMimetypes.forEach { mimeType in
                 NextcloudKit.shared.nkCommonInstance.addInternalTypeIdentifier(typeIdentifier: mimeType, classFile: NKCommon.TypeClassFile.document.rawValue, editor: NCGlobal.shared.editorCollabora, iconName: NKCommon.TypeIconFile.document.rawValue, name: "document")
             }
 

@@ -161,7 +161,7 @@ class NCShareExtension: UIViewController {
             DispatchQueue.main.async { self.setCommandView() }
         }
         if NCKeychain().presentPasscode {
-            NCPasscode.shared.presentPasscode(rootViewController: self, delegate: self) {
+            NCPasscode.shared.presentPasscode(viewController: self, delegate: self) {
                 NCPasscode.shared.enableTouchFaceID()
             }
         }

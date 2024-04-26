@@ -25,7 +25,6 @@ import UIKit
 import NextcloudKit
 
 class NCFiles: NCCollectionViewCommon {
-
     internal var isRoot: Bool = true
     internal var fileNameBlink: String?
     internal var fileNameOpen: String?
@@ -76,7 +75,6 @@ class NCFiles: NCCollectionViewCommon {
     }
 
     override func viewWillAppear(_ animated: Bool) {
-
         if isRoot {
             serverUrl = utilityFileSystem.getHomeServer(urlBase: appDelegate.urlBase, userId: appDelegate.userId)
             titleCurrentFolder = getNavigationTitle()
@@ -84,9 +82,9 @@ class NCFiles: NCCollectionViewCommon {
         super.viewWillAppear(animated)
 
         if dataSource.metadatas.isEmpty {
-            reloadDataSource()
+            reloadDataSource(withQueryDB: true)
         }
-        reloadDataSourceNetwork()
+        reloadDataSourceNetwork(withQueryDB: true)
     }
 
     override func viewDidDisappear(_ animated: Bool) {
@@ -137,7 +135,7 @@ class NCFiles: NCCollectionViewCommon {
         }
     }
 
-    override func reloadDataSourceNetwork() {
+    override func reloadDataSourceNetwork(withQueryDB: Bool = false) {
         guard !isSearchingMode else {
             return networkSearch()
         }
@@ -170,16 +168,15 @@ class NCFiles: NCCollectionViewCommon {
                 if metadatasDifferentCount != 0 || metadatasModified != 0 {
                     self.reloadDataSource()
                 } else {
-                    self.reloadDataSource(withQueryDB: false)
+                    self.reloadDataSource(withQueryDB: withQueryDB)
                 }
             } else {
-                self.reloadDataSource(withQueryDB: false)
+                self.reloadDataSource(withQueryDB: withQueryDB)
             }
         }
     }
 
     private func networkReadFolder(completion: @escaping(_ tableDirectory: tableDirectory?, _ metadatas: [tableMetadata]?, _ metadatasDifferentCount: Int, _ metadatasModified: Int, _ error: NKError) -> Void) {
-
         var tableDirectory: tableDirectory?
 
         NCNetworking.shared.readFile(serverUrlFileName: serverUrl) { task in
@@ -260,7 +257,6 @@ class NCFiles: NCCollectionViewCommon {
     }
 
     func blinkCell(fileName: String?) {
-
         if let fileName = fileName, let metadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileName == %@", self.appDelegate.account, self.serverUrl, fileName)) {
             let (indexPath, _) = self.dataSource.getIndexPathMetadata(ocId: metadata.ocId)
             if let indexPath = indexPath {
@@ -281,7 +277,6 @@ class NCFiles: NCCollectionViewCommon {
     }
 
     func openFile(fileName: String?) {
-
         if let fileName = fileName, let metadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileName == %@", self.appDelegate.account, self.serverUrl, fileName)) {
             let (indexPath, _) = self.dataSource.getIndexPathMetadata(ocId: metadata.ocId)
             if let indexPath = indexPath {

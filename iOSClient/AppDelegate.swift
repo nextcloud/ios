@@ -24,7 +24,6 @@
 import UIKit
 import BackgroundTasks
 import NextcloudKit
-import TOPasscodeViewController
 import LocalAuthentication
 import Firebase
 import WidgetKit
@@ -162,6 +161,20 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         }
 
         NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] bye bye")
+    }
+
+    // MARK: - UISceneSession Lifecycle
+
+    func application(_ application: UIApplication, configurationForConnecting connectingSceneSession: UISceneSession, options: UIScene.ConnectionOptions) -> UISceneConfiguration {
+        // Called when a new scene session is being created.
+        // Use this method to select a configuration to create the new scene with.
+        return UISceneConfiguration(name: "Default Configuration", sessionRole: connectingSceneSession.role)
+    }
+
+    func application(_ application: UIApplication, didDiscardSceneSessions sceneSessions: Set<UISceneSession>) {
+        // Called when the user discards a scene session.
+        // If any sessions were discarded while the application was not running, this will be called shortly after application:didFinishLaunchingWithOptions.
+        // Use this method to release any resources that were specific to the discarded scenes, as they will not return.
     }
 
     // MARK: - Background Task
@@ -398,13 +411,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
     @objc func startTimerErrorNetworking(scene: UIScene) {
         timerErrorNetworkingDisabled = false
-        timerErrorNetworking = Timer.scheduledTimer(timeInterval: 3, target: self, selector: #selector(checkErrorNetworking(_:)), userInfo: ["scene": scene], repeats: true)
+        timerErrorNetworking = Timer.scheduledTimer(timeInterval: 3, target: self, selector: #selector(checkErrorNetworking(_:)), userInfo: nil, repeats: true)
     }
 
     @objc private func checkErrorNetworking(_ notification: NSNotification) {
-        guard let userInfo = notification.userInfo as NSDictionary?,
-              let scene = userInfo["scene"] as? UIScene
-        else { return }
         guard !self.timerErrorNetworkingDisabled,
               !account.isEmpty,
               NCKeychain().getPassword(account: account).isEmpty else { return }
@@ -584,7 +594,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     }
 }
 
-// MARK: -
+// MARK: - Extension
 
 extension AppDelegate: NCViewCertificateDetailsDelegate {
     func viewCertificateDetailsDismiss(host: String) {
@@ -596,62 +606,5 @@ extension AppDelegate: NCCreateFormUploadConflictDelegate {
     func dismissCreateFormUploadConflict(metadatas: [tableMetadata]?) {
         guard let metadatas = metadatas, !metadatas.isEmpty else { return }
         NCNetworkingProcess.shared.createProcessUploads(metadatas: metadatas)
-    }
-}
-
-extension AppDelegate: NCPasscodeDelegate {
-    func requestedAccount(rootViewController: UIViewController?) {
-        let accounts = NCManageDatabase.shared.getAllAccount()
-        if accounts.count > 1, let accountRequestVC = UIStoryboard(name: "NCAccountRequest", bundle: nil).instantiateInitialViewController() as? NCAccountRequest {
-            accountRequestVC.activeAccount = NCManageDatabase.shared.getActiveAccount()
-            accountRequestVC.accounts = accounts
-            accountRequestVC.enableTimerProgress = true
-            accountRequestVC.enableAddAccount = false
-            accountRequestVC.dismissDidEnterBackground = false
-            accountRequestVC.delegate = self
-            accountRequestVC.startTimer()
-
-            let screenHeighMax = UIScreen.main.bounds.height - (UIScreen.main.bounds.height / 5)
-            let numberCell = accounts.count
-            let height = min(CGFloat(numberCell * Int(accountRequestVC.heightCell) + 45), screenHeighMax)
-
-            let popup = NCPopupViewController(contentController: accountRequestVC, popupWidth: 300, popupHeight: height + 20)
-            popup.backgroundAlpha = 0.8
-
-            rootViewController?.present(popup, animated: true)
-        }
-    }
-
-    func passcodeReset(_ passcodeViewController: TOPasscodeViewController) {
-        resetApplication()
-    }
-
-    func showPrivacyProtectionWindow(scene: UIScene) {
-        guard NCKeychain().privacyScreenEnabled else { return }
-        let windows = SceneManager.shared.getWindow(scene: scene)
-        let currentRootViewController = windows?.rootViewController
-        let presentedViewController = currentRootViewController?.presentedViewController
-        if presentedViewController is TOPasscodeViewController {
-            return
-        }
-        let viewController = UIStoryboard(name: "LaunchScreen", bundle: nil).instantiateInitialViewController()
-
-        windows?.rootViewController = viewController
-    }
-
-    func hidePrivacyProtectionWindow(scene: UIScene) {
-        guard NCKeychain().privacyScreenEnabled else { return }
-        let windows = SceneManager.shared.getWindow(scene: scene)
-        let rootViewController = SceneManager.shared.getMainTabBarController(scene: scene)
-
-        windows?.rootViewController = rootViewController
-    }
-}
-
-extension AppDelegate: NCAccountRequestDelegate {
-    func accountRequestAddAccount() { }
-
-    func accountRequestChangeAccount(account: String) {
-        changeAccount(account, userProfile: nil)
     }
 }

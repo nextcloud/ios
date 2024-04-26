@@ -128,7 +128,7 @@ class NCUploadAssets: NSObject, ObservableObject, NCCreateFormUploadConflictDele
         if isUseAutoUploadFolder {
             DispatchQueue.global().async {
                 let assets = self.assets.compactMap { $0.phAsset }
-                let result = NCNetworking.shared.createFolder(assets: assets, selector: NCGlobal.shared.selectorUploadFile, useSubFolder: self.isUseAutoUploadSubFolder, account: self.userBaseUrl.account, urlBase: self.userBaseUrl.urlBase, userId: self.userBaseUrl.userId, withPush: false)
+                let result = NCNetworking.shared.createFolder(assets: assets, useSubFolder: self.isUseAutoUploadSubFolder, account: self.userBaseUrl.account, urlBase: self.userBaseUrl.urlBase, userId: self.userBaseUrl.userId, withPush: false)
                 DispatchQueue.main.async {
                     self.showHUD = false
                     self.uploadInProgress.toggle()
@@ -211,7 +211,6 @@ struct UploadAssetsView: View {
         var metadatasUploadInConflict: [tableMetadata] = []
         let autoUploadPath = NCManageDatabase.shared.getAccountAutoUploadPath(urlBase: uploadAssets.userBaseUrl.urlBase, userId: uploadAssets.userBaseUrl.userId, account: uploadAssets.userBaseUrl.account)
         var serverUrl = uploadAssets.isUseAutoUploadFolder ? autoUploadPath : uploadAssets.serverUrl
-        let autoUploadSubfolderGranularity = NCManageDatabase.shared.getAccountAutoUploadSubfolderGranularity()
 
         for tlAsset in uploadAssets.assets {
             guard let asset = tlAsset.phAsset, let previewStore = uploadAssets.previewStore.first(where: { $0.id == asset.localIdentifier }) else { continue }
@@ -237,25 +236,13 @@ struct UploadAssetsView: View {
 
             // Auto upload with subfolder
             if uploadAssets.isUseAutoUploadSubFolder {
-                let dateFormatter = DateFormatter()
-                dateFormatter.dateFormat = "yyyy"
-                let yearString = dateFormatter.string(from: creationDate)
-                dateFormatter.dateFormat = "MM"
-                let monthString = dateFormatter.string(from: creationDate)
-                dateFormatter.dateFormat = "dd"
-                let dayString = dateFormatter.string(from: creationDate)
-                if autoUploadSubfolderGranularity == NCGlobal.shared.subfolderGranularityYearly {
-                    serverUrl = autoUploadPath + "/" + yearString
-                } else if autoUploadSubfolderGranularity == NCGlobal.shared.subfolderGranularityDaily {
-                    serverUrl = autoUploadPath + "/" + yearString + "/" + monthString + "/" + dayString
-                } else {  // Month Granularity is default
-                    serverUrl = autoUploadPath + "/" + yearString + "/" + monthString
-                }
+                serverUrl = utilityFileSystem.createGranularityPath(serverUrl: serverUrl)
             }
 
             // Check if is in upload
-            let isRecordInSessions = NCManageDatabase.shared.getAdvancedMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileName == %@ AND session != ''", uploadAssets.userBaseUrl.account, serverUrl, fileName), sorted: "fileName", ascending: false)
-            if !isRecordInSessions.isEmpty { continue }
+            if let results = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileName == %@ AND session != ''", uploadAssets.userBaseUrl.account, serverUrl, fileName), sorted: "fileName", ascending: false), !results.isEmpty {
+                continue
+            }
 
             let metadata = NCManageDatabase.shared.createMetadata(account: uploadAssets.userBaseUrl.account, user: uploadAssets.userBaseUrl.user, userId: uploadAssets.userBaseUrl.userId, fileName: fileName, fileNameView: fileName, ocId: NSUUID().uuidString, serverUrl: serverUrl, urlBase: uploadAssets.userBaseUrl.urlBase, url: "", contentType: "")
 
