@@ -32,12 +32,12 @@ extension NCMedia: UICollectionViewDragDelegate {
 
         if isEditMode {
             for ocId in self.selectOcId {
-                if let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId), metadata.status == 0, !isDirectoryE2EE(metadata: metadata) {
+                if let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId), metadata.status == 0, !NCNetworkingDragDrop().isDirectoryE2EE(metadata: metadata) {
                     metadatas.append(metadata)
                 }
             }
         } else {
-            guard let metadata = self.metadatas?[indexPath.row], metadata.status == 0, !isDirectoryE2EE(metadata: metadata) else { return [] }
+            guard let metadata = self.metadatas?[indexPath.row], metadata.status == 0, !NCNetworkingDragDrop().isDirectoryE2EE(metadata: metadata) else { return [] }
             metadatas.append(metadata)
         }
 
@@ -105,11 +105,3 @@ extension NCMedia: UICollectionViewDropDelegate {
     }
 }
 
-// MARK: - Drag&Drop func
-
-extension NCMedia {
-    private func isDirectoryE2EE(metadata: tableMetadata) -> Bool {
-        if !metadata.directory { return false }
-        return NCUtilityFileSystem().isDirectoryE2EE(account: metadata.account, urlBase: metadata.urlBase, userId: metadata.userId, serverUrl: metadata.serverUrl + "/" + metadata.fileName)
-    }
-}
