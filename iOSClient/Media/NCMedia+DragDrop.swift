@@ -69,12 +69,15 @@ extension NCMedia: UICollectionViewDropDelegate {
 
         for item in coordinator.session.items {
             if item.itemProvider.hasItemConformingToTypeIdentifier(NCGlobal.shared.metadataOcIdDataRepresentation) {
+                let semaphore = DispatchSemaphore(value: 0)
                 item.itemProvider.loadDataRepresentation(forTypeIdentifier: NCGlobal.shared.metadataOcIdDataRepresentation) { data, error in
                     if error == nil, let data, let ocId = String(data: data, encoding: .utf8),
                        let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
                         metadatas.append(metadata)
                     }
+                    semaphore.signal()
                 }
+                semaphore.wait()
             } else {
                 item.itemProvider.loadFileRepresentation(forTypeIdentifier: UTType.data.identifier) { url, error in
                     if error == nil, let url = url {
@@ -82,6 +85,8 @@ extension NCMedia: UICollectionViewDropDelegate {
                     }
                 }
             }
+        }
+        if !metadatas.isEmpty {
         }
     }
 }
