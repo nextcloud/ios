@@ -23,8 +23,8 @@
 import SwiftUI
 import NextcloudKit
 
-struct CCSettingsAdvanced<ViewModel: CCSettingsAdvancedViewModel>: View {
-    @ObservedObject var viewModel: ViewModel
+struct CCSettingsAdvanced: View {
+    @ObservedObject var viewModel = CCSettingsAdvancedModel()
     /// State variable for indicating whether the exit alert is shown.
     @State var showExitAlert: Bool = false
     /// State variable for indicating whether the cache alert is shown.
@@ -234,5 +234,5 @@ struct CCSettingsAdvanced<ViewModel: CCSettingsAdvancedViewModel>: View {
 }
 
 #Preview {
-    CCSettingsAdvanced(viewModel: CCSettingsAdvancedViewModel(), showExitAlert: false, showCacheAlert: false)
+    CCSettingsAdvanced(viewModel: CCSettingsAdvancedModel(), showExitAlert: false, showCacheAlert: false)
 }

@@ -24,57 +24,32 @@
 import Foundation
 import NextcloudKit
 
-protocol AutoUploadVMRepresentable: ObservableObject, ViewOnAppearHandling, NCSelectDelegate {
-    /// A state variable that indicates whether auto upload is enabled or not
-    var autoUpload: Bool { get set }
-    /// A state variable that indicates whether to open NCSelect View or not
-    var autoUploadFolder: Bool { get set }
-    /// A state variable that indicates whether auto upload for photos is enabled or not
-    var autoUploadImage: Bool { get set }
-    /// A state variable that indicates whether auto upload for photos is restricted to Wi-Fi only or not
-    var autoUploadWWAnPhoto: Bool { get set }
-    /// A state variable that indicates whether auto upload for videos is enabled or not
-    var autoUploadVideo: Bool { get set }
-    /// A state variable that indicates whether auto upload for videos is restricted to Wi-Fi only or not
-    var autoUploadWWAnVideo: Bool { get set }
-    /// A state variable that indicates whether auto upload for full resolution photos is enabled or not
-    var autoUploadFull: Bool { get set }
-    /// A state variable that indicates whether auto upload creates subfolders based on date or not
-    var autoUploadCreateSubfolder: Bool { get set }
-    /// A state variable that indicates the granularity of the subfolders, either daily, monthly, or yearly
-    var autoUploadSubfolderGranularity: Granularity { get set }
-    /// A state variable that shows error in view in case of an error
-    var showErrorAlert: Bool { get set }
-    /// A string variable that contains error text
-    var error: String { get set }
-    // MARK: All functions re
-    func handleAutoUploadChange(newValue: Bool)
-    func handleAutoUploadImageChange(newValue: Bool)
-    func handleAutoUploadWWAnPhotoChange(newValue: Bool)
-    func handleAutoUploadVideoChange(newValue: Bool)
-    func handleAutoUploadWWAnVideoChange(newValue: Bool)
-    func handleAutoUploadFullChange(newValue: Bool)
-    func handleAutoUploadCreateSubfolderChange(newValue: Bool)
-    func handleAutoUploadSubfolderGranularityChange(newValue: Granularity)
-    func returnPath() -> String
-    func setAutoUploadDirectory(serverUrl: String?)
-}
-
-/// A viewModel that allows the user to configure the `auto upload settings for Nextcloud`
-class AutoUploadViewModel: AutoUploadVMRepresentable {
+/// A model that allows the user to configure the `auto upload settings for Nextcloud`
+class AutoUploadModel: ObservableObject, ViewOnAppearHandling, NCSelectDelegate  {
     var appDelegate = AppDelegate()
+    /// A state variable that indicates whether auto upload is enabled or not
     @Published var autoUpload: Bool = false
+    /// A state variable that indicates whether to open NCSelect View or not
     @Published var autoUploadFolder: Bool = false
+    /// A state variable that indicates whether auto upload for photos is enabled or not
     @Published var autoUploadImage: Bool = false
+    /// A state variable that indicates whether auto upload for photos is restricted to Wi-Fi only or not
     @Published var autoUploadWWAnPhoto: Bool = false
+    /// A state variable that indicates whether auto upload for videos is enabled or not
     @Published var autoUploadVideo: Bool = false
+    /// A state variable that indicates whether auto upload for videos is enabled or not
     @Published var autoUploadWWAnVideo: Bool = false
+    /// A state variable that indicates whether auto upload for full resolution photos is enabled or not
     @Published var autoUploadFull: Bool = false
+    /// A state variable that indicates whether auto upload creates subfolders based on date or not
     @Published var autoUploadCreateSubfolder: Bool = false
+    /// A state variable that indicates the granularity of the subfolders, either daily, monthly, or yearly
     @Published var autoUploadSubfolderGranularity: Granularity = .monthly
+    /// A state variable that shows error in view in case of an error
+    @Published var showErrorAlert: Bool = false
     @Published var sectionName = ""
     @Published var isAuthorized: Bool = false
-    @Published var showErrorAlert: Bool = false
+    /// A string variable that contains error text
     @Published var error: String = ""
     private let manageDatabase = NCManageDatabase.shared
     @Published var autoUploadPath = "\(NCManageDatabase.shared.getAccountAutoUploadFileName())"
@@ -83,6 +58,7 @@ class AutoUploadViewModel: AutoUploadVMRepresentable {
     init() {
         onViewAppear()
     }
+    // MARK: All functions
     /// A function to update the published properties based on the active account
     func onViewAppear() {
         let activeAccount: tableAccount? = NCManageDatabase.shared.getActiveAccount()

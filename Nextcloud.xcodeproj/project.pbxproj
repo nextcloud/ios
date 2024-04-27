@@ -16,15 +16,15 @@
 		371B5A2E23D0B04500FAFAE9 /* NCMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 371B5A2D23D0B04500FAFAE9 /* NCMenu.swift */; };
 		3781B9B023DB2B7E006B4B1D /* AppDelegate+Menu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3781B9AF23DB2B7E006B4B1D /* AppDelegate+Menu.swift */; };
 		8491B1CD273BBA82001C8C5B /* UIViewController+Menu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8491B1CC273BBA82001C8C5B /* UIViewController+Menu.swift */; };
-		AC2880D42B96FC0300A80156 /* NCSettingsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC2880D32B96FC0300A80156 /* NCSettingsViewModel.swift */; };
+		AC2880D42B96FC0300A80156 /* NCSettingsModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC2880D32B96FC0300A80156 /* NCSettingsModel.swift */; };
 		AC3068BC2B9DBAFA0082E54A /* AutoUploadFileNamesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC3068BB2B9DBAFA0082E54A /* AutoUploadFileNamesView.swift */; };
 		AC3575352B9896FE00D28E9C /* AutoUploadView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC3575342B9896FE00D28E9C /* AutoUploadView.swift */; };
 		AC454FF72B9585FB00BED89C /* AcknowledgementsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC454FF62B9585FB00BED89C /* AcknowledgementsView.swift */; };
 		AC454FF92B958B6A00BED89C /* NCWebBrowserView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC454FF82B958B6A00BED89C /* NCWebBrowserView.swift */; };
-		AC5735792BA0120200DAB67E /* AutoUploadFileNamesViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC5735782BA0120200DAB67E /* AutoUploadFileNamesViewModel.swift */; };
+		AC5735792BA0120200DAB67E /* AutoUploadFileNamesModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC5735782BA0120200DAB67E /* AutoUploadFileNamesModel.swift */; };
 		AC5FB7A02BC7FDAD00A3B55B /* OpenSSL in Frameworks */ = {isa = PBXBuildFile; productRef = AC5FB79F2BC7FDAD00A3B55B /* OpenSSL */; };
 		ACB1124F2BA72F1600BB5092 /* ViewOnAppearHandling.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACB1124E2BA72F1600BB5092 /* ViewOnAppearHandling.swift */; };
-		ACBA97E62B9ACF63006B8710 /* AutoUploadViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACBA97E52B9ACF63006B8710 /* AutoUploadViewModel.swift */; };
+		ACBA97E62B9ACF63006B8710 /* AutoUploadModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACBA97E52B9ACF63006B8710 /* AutoUploadModel.swift */; };
 		ACBA97E92B9AD90D006B8710 /* CCSettingsAdvanced.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACBA97E82B9AD90D006B8710 /* CCSettingsAdvanced.swift */; };
 		ACBA97EB2B9B03A3006B8710 /* CCSettingsAdvancedViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACBA97EA2B9B03A3006B8710 /* CCSettingsAdvancedViewModel.swift */; };
 		ACDC16982BC26AAC00EBF724 /* DefaultViewModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACDC16972BC26AAC00EBF724 /* DefaultViewModifier.swift */; };
@@ -87,7 +87,7 @@
 		F310B1EF2BA862F1001C42F5 /* NCViewerMedia+VisionKit.swift in Sources */ = {isa = PBXBuildFile; fileRef = F310B1EE2BA862F1001C42F5 /* NCViewerMedia+VisionKit.swift */; };
 		F314F1142A30E2DE00BC7FAB /* View+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7E8A390295DC5E0006CB2D0 /* View+Extension.swift */; };
 		F321DA8A2B71205A00DDA0E6 /* NCTrashSelectTabBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = F321DA892B71205A00DDA0E6 /* NCTrashSelectTabBar.swift */; };
-		F3391B022B4C40FB001C0C4B /* XLForm in Frameworks */ = {isa = PBXBuildFile; productRef = F3391B012B4C40FB001C0C4B /* XLForm */; };
+		F3391B022B4C40FB001C0C4B /* (null) in Frameworks */ = {isa = PBXBuildFile; };
 		F3391B042B4C4105001C0C4B /* XLForm in Frameworks */ = {isa = PBXBuildFile; productRef = F3391B032B4C4105001C0C4B /* XLForm */; };
 		F3391B062B4C4111001C0C4B /* XLForm in Frameworks */ = {isa = PBXBuildFile; productRef = F3391B052B4C4111001C0C4B /* XLForm */; };
 		F3391B082B4C52C5001C0C4B /* FirebaseDatabase in Frameworks */ = {isa = PBXBuildFile; productRef = F3391B072B4C52C5001C0C4B /* FirebaseDatabase */; };
@@ -986,14 +986,14 @@
 		371B5A3223D0BD5500FAFAE9 /* FloatingPanel.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FloatingPanel.framework; path = Carthage/Build/iOS/FloatingPanel.framework; sourceTree = "<group>"; };
 		3781B9AF23DB2B7E006B4B1D /* AppDelegate+Menu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AppDelegate+Menu.swift"; sourceTree = "<group>"; };
 		8491B1CC273BBA82001C8C5B /* UIViewController+Menu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIViewController+Menu.swift"; sourceTree = "<group>"; };
-		AC2880D32B96FC0300A80156 /* NCSettingsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCSettingsViewModel.swift; sourceTree = "<group>"; };
+		AC2880D32B96FC0300A80156 /* NCSettingsModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCSettingsModel.swift; sourceTree = "<group>"; };
 		AC3068BB2B9DBAFA0082E54A /* AutoUploadFileNamesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AutoUploadFileNamesView.swift; sourceTree = "<group>"; };
 		AC3575342B9896FE00D28E9C /* AutoUploadView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AutoUploadView.swift; sourceTree = "<group>"; };
 		AC454FF62B9585FB00BED89C /* AcknowledgementsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AcknowledgementsView.swift; sourceTree = "<group>"; };
 		AC454FF82B958B6A00BED89C /* NCWebBrowserView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCWebBrowserView.swift; sourceTree = "<group>"; };
-		AC5735782BA0120200DAB67E /* AutoUploadFileNamesViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AutoUploadFileNamesViewModel.swift; sourceTree = "<group>"; };
+		AC5735782BA0120200DAB67E /* AutoUploadFileNamesModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AutoUploadFileNamesModel.swift; sourceTree = "<group>"; };
 		ACB1124E2BA72F1600BB5092 /* ViewOnAppearHandling.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewOnAppearHandling.swift; sourceTree = "<group>"; };
-		ACBA97E52B9ACF63006B8710 /* AutoUploadViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AutoUploadViewModel.swift; sourceTree = "<group>"; };
+		ACBA97E52B9ACF63006B8710 /* AutoUploadModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AutoUploadModel.swift; sourceTree = "<group>"; };
 		ACBA97E82B9AD90D006B8710 /* CCSettingsAdvanced.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CCSettingsAdvanced.swift; sourceTree = "<group>"; };
 		ACBA97EA2B9B03A3006B8710 /* CCSettingsAdvancedViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CCSettingsAdvancedViewModel.swift; sourceTree = "<group>"; };
 		ACDC16972BC26AAC00EBF724 /* DefaultViewModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultViewModifier.swift; sourceTree = "<group>"; };
@@ -1626,7 +1626,7 @@
 			files = (
 				F3F0419B2B9F7E6700D5155F /* RealmSwift in Frameworks */,
 				F3F041992B9F7E6700D5155F /* Realm in Frameworks */,
-				F3391B022B4C40FB001C0C4B /* XLForm in Frameworks */,
+				F3391B022B4C40FB001C0C4B /* (null) in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1825,7 +1825,7 @@
 			isa = PBXGroup;
 			children = (
 				AC3068BB2B9DBAFA0082E54A /* AutoUploadFileNamesView.swift */,
-				AC5735782BA0120200DAB67E /* AutoUploadFileNamesViewModel.swift */,
+				AC5735782BA0120200DAB67E /* AutoUploadFileNamesModel.swift */,
 			);
 			path = ManageAutoUploadFiles;
 			sourceTree = "<group>";
@@ -1834,7 +1834,7 @@
 			isa = PBXGroup;
 			children = (
 				AC3575342B9896FE00D28E9C /* AutoUploadView.swift */,
-				ACBA97E52B9ACF63006B8710 /* AutoUploadViewModel.swift */,
+				ACBA97E52B9ACF63006B8710 /* AutoUploadModel.swift */,
 				AC3068BA2B9DBAC90082E54A /* ManageAutoUploadFiles */,
 			);
 			path = AutoUpload;
@@ -1869,7 +1869,7 @@
 			isa = PBXGroup;
 			children = (
 				ACFC775E2B944B17008BF302 /* NCSettings.swift */,
-				AC2880D32B96FC0300A80156 /* NCSettingsViewModel.swift */,
+				AC2880D32B96FC0300A80156 /* NCSettingsModel.swift */,
 			);
 			path = SettingsView;
 			sourceTree = "<group>";
@@ -3046,7 +3046,6 @@
 			);
 			name = NextcloudUnitTests;
 			packageProductDependencies = (
-				F3391B012B4C40FB001C0C4B /* XLForm */,
 				F3F041982B9F7E6700D5155F /* Realm */,
 				F3F0419A2B9F7E6700D5155F /* RealmSwift */,
 			);
@@ -4126,7 +4125,7 @@
 				F77BB74A2899857B0090FC19 /* UINavigationController+Extension.swift in Sources */,
 				ACBA97EB2B9B03A3006B8710 /* CCSettingsAdvancedViewModel.swift in Sources */,
 				F7327E282B73A53400A462C7 /* NCNetworking+Upload.swift in Sources */,
-				AC5735792BA0120200DAB67E /* AutoUploadFileNamesViewModel.swift in Sources */,
+				AC5735792BA0120200DAB67E /* AutoUploadFileNamesModel.swift in Sources */,
 				F769454622E9F1B0000A798A /* NCShareCommon.swift in Sources */,
 				F70753F12542A9A200972D44 /* NCViewerMedia.swift in Sources */,
 				F76B649C2ADFFAED00014640 /* NCImageCache.swift in Sources */,
@@ -4194,7 +4193,6 @@
 				F7C30E00291BD2610017149B /* NCNetworkingE2EERename.swift in Sources */,
 				F7651A8B23A2A3F2001403D2 /* NCCreateFormUploadDocuments.swift in Sources */,
 				F74AF3A4247FB6AE00AC767B /* NCUtilityFileSystem.swift in Sources */,
-				F7239871253D86B600257F49 /* NCEmptyDataSet.swift in Sources */,
 				AC454FF92B958B6A00BED89C /* NCWebBrowserView.swift in Sources */,
 				AFCE353327E4ED1900FEA6C2 /* UIToolbar+Extension.swift in Sources */,
 				8491B1CD273BBA82001C8C5B /* UIViewController+Menu.swift in Sources */,
@@ -4221,7 +4219,7 @@
 				F7C1EEA525053A9C00866ACC /* NCDataSource.swift in Sources */,
 				F713FF002472764100214AF6 /* UIImage+animatedGIF.m in Sources */,
 				AFCE353527E4ED5900FEA6C2 /* DateFormatter+Extension.swift in Sources */,
-				AC2880D42B96FC0300A80156 /* NCSettingsViewModel.swift in Sources */,
+				AC2880D42B96FC0300A80156 /* NCSettingsModel.swift in Sources */,
 				F718C24E254D507B00C5C256 /* NCViewerMediaDetailView.swift in Sources */,
 				F7145610296433C80038D028 /* NCDocumentCamera.swift in Sources */,
 				F7381EE1218218C9000B1560 /* NCOffline.swift in Sources */,
@@ -4237,7 +4235,7 @@
 				F77B0E981D118A16002130FE /* CCManageAccount.m in Sources */,
 				F769CA192966EA3C00039397 /* ComponentView.swift in Sources */,
 				F7C9B91D2B582F550064EA91 /* NCManageDatabase+SecurityGuard.swift in Sources */,
-				ACBA97E62B9ACF63006B8710 /* AutoUploadViewModel.swift in Sources */,
+				ACBA97E62B9ACF63006B8710 /* AutoUploadModel.swift in Sources */,
 				AF93474C27E34120002537EE /* NCUtility+Image.swift in Sources */,
 				ACFC775F2B944B17008BF302 /* NCSettings.swift in Sources */,
 				F702F30125EE5D2C008F8E80 /* NYMnemonic.m in Sources */,
@@ -5414,30 +5412,6 @@
 				minimumVersion = 3.1.5000;
 			};
 		};
-		F31F694B2A2F6EFA00162F76 /* XCRemoteSwiftPackageReference "swift-snapshot-testing" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/pointfreeco/swift-snapshot-testing.git";
-			requirement = {
-				kind = exactVersion;
-				version = 1.11.0;
-			};
-		};
-		F31F69622A2F929600162F76 /* XCRemoteSwiftPackageReference "swiftui-preview-snapshots" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/doordash-oss/swiftui-preview-snapshots";
-			requirement = {
-				branch = main;
-				kind = branch;
-			};
-		};
-		F31F69672A2F92F000162F76 /* XCRemoteSwiftPackageReference "SnapshotTestingHEIC" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/alexey1312/SnapshotTestingHEIC";
-			requirement = {
-				kind = exactVersion;
-				version = 1.4.0;
-			};
-		};
 		F3A0479C2BD268B500658E7B /* XCRemoteSwiftPackageReference "PopupView" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/exyte/PopupView.git";
@@ -5646,11 +5620,6 @@
 			isa = XCSwiftPackageProductDependency;
 			productName = OpenSSL;
 		};
-		F3131EDC2B038E4A0018DB28 /* XLForm */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = F74E771E277A2EF40013B958 /* XCRemoteSwiftPackageReference "XLForm" */;
-			productName = XLForm;
-		};
 		F3391B032B4C4105001C0C4B /* XLForm */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = F74E771E277A2EF40013B958 /* XCRemoteSwiftPackageReference "XLForm" */;
@@ -5788,7 +5757,6 @@
 		};
 		F37208BB2BAB63EF006B5430 /* OpenSSL */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = F77333862927A72100466E35 /* XCRemoteSwiftPackageReference "OpenSSL" */;
 			productName = OpenSSL;
 		};
 		F37208BD2BAB63F0006B5430 /* Swifter */ = {

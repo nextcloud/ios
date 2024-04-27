@@ -25,7 +25,7 @@ import SwiftUI
 import NextcloudKit
 
 /// Settings view for Nextcloud
-struct NCSettings<ViewModel: NCSettingsViewModel>: View {
+struct NCSettings: View {
     /// State to control the visibility of the acknowledgements view
     @State private var showAcknowledgements = false
     /// State to control the visibility of the Policy view
@@ -33,12 +33,12 @@ struct NCSettings<ViewModel: NCSettingsViewModel>: View {
     /// State to control the visibility of the Source Code  view
     @State private var showSourceCode = false
     /// Object of ViewModel of this view
-    @ObservedObject var viewModel: ViewModel
+    @ObservedObject var model = NCSettingsModel()
     var body: some View {
         Form {
             /// `Auto Upload` Section
             Section {
-                NavigationLink(destination: AutoUploadView(viewModel: AutoUploadViewModel())) {
+                NavigationLink(destination: AutoUploadView(model: AutoUploadModel())) {
                     HStack {
                         Image("autoUpload")
                             .resizable()
@@ -52,37 +52,37 @@ struct NCSettings<ViewModel: NCSettingsViewModel>: View {
             Section(content: {
                 // Lock active YES/NO
                 HStack {
-                    Image(viewModel.isLockActive ? "lock_open" : "lock")
+                    Image(model.isLockActive ? "lock_open" : "lock")
                         .resizable()
                         .renderingMode(.template)
                         .frame(width: 20, height: 20)
-                    Text(viewModel.isLockActive ? NSLocalizedString("_lock_not_active_", comment: "") : NSLocalizedString("_lock_active_", comment: ""))
+                    Text(model.isLockActive ? NSLocalizedString("_lock_not_active_", comment: "") : NSLocalizedString("_lock_active_", comment: ""))
                 }
                 .onTapGesture {
-                    viewModel.isLockActive.toggle()
+                    model.isLockActive.toggle()
                 }
-                .sheet(isPresented: $viewModel.isLockActive) {
-                    PasscodeView(isPresented: $viewModel.isLockActive, passcode: $viewModel.passcode)
+                .sheet(isPresented: $model.isLockActive) {
+                    PasscodeView(isPresented: $model.isLockActive, passcode: $model.passcode)
                 }
                 // Enable Touch ID
-                Toggle(NSLocalizedString("_enable_touch_face_id_", comment: ""), isOn: $viewModel.enableTouchID)
-                    .onChange(of: viewModel.enableTouchID) { _ in
-                        viewModel.updateTouchIDSetting()
+                Toggle(NSLocalizedString("_enable_touch_face_id_", comment: ""), isOn: $model.enableTouchID)
+                    .onChange(of: model.enableTouchID) { _ in
+                        model.updateTouchIDSetting()
                     }
                 // Lock no screen
-                Toggle(NSLocalizedString("_lock_protection_no_screen_", comment: ""), isOn: $viewModel.lockScreen)
-                    .onChange(of: viewModel.lockScreen) { _ in
-                        viewModel.updateLockScreenSetting()
+                Toggle(NSLocalizedString("_lock_protection_no_screen_", comment: ""), isOn: $model.lockScreen)
+                    .onChange(of: model.lockScreen) { _ in
+                        model.updateLockScreenSetting()
                     }
                 // Privacy screen
-                Toggle(NSLocalizedString("_privacy_screen_", comment: ""), isOn: $viewModel.privacyScreen)
-                    .onChange(of: viewModel.privacyScreen) { _ in
-                        viewModel.updatePrivacyScreenSetting()
+                Toggle(NSLocalizedString("_privacy_screen_", comment: ""), isOn: $model.privacyScreen)
+                    .onChange(of: model.privacyScreen) { _ in
+                        model.updatePrivacyScreenSetting()
                     }
                 // Reset app wrong attempts
-                Toggle(NSLocalizedString("_reset_wrong_passcode_", comment: ""), isOn: $viewModel.resetWrongAttempts)
-                    .onChange(of: viewModel.resetWrongAttempts) { _ in
-                        viewModel.updateResetWrongAttemptsSetting()
+                Toggle(NSLocalizedString("_reset_wrong_passcode_", comment: ""), isOn: $model.resetWrongAttempts)
+                    .onChange(of: model.resetWrongAttempts) { _ in
+                        model.updateResetWrongAttemptsSetting()
                     }
             }, header: {
                 Text(NSLocalizedString("_privacy_", comment: ""))
@@ -101,7 +101,7 @@ struct NCSettings<ViewModel: NCSettingsViewModel>: View {
                             .frame(width: 20, height: 20)
                         Text(NSLocalizedString("_mobile_config_", comment: ""))
                     }.onTapGesture {
-                        viewModel.getConfigFiles()
+                        model.getConfigFiles()
                     }
                 }, header: {
                     Text(NSLocalizedString("_calendar_contacts_", comment: ""))
@@ -112,12 +112,12 @@ struct NCSettings<ViewModel: NCSettingsViewModel>: View {
                 })
             }
             /// `E2EEncryption` Section
-            if viewModel.isE2EEEnable && NCGlobal.shared.e2eeVersions.contains(viewModel.versionE2EE) {
+            if model.isE2EEEnable && NCGlobal.shared.e2eeVersions.contains(model.versionE2EE) {
                 E2EESection()
             }
             /// `Advanced` Section
             Section {
-                NavigationLink(destination: CCSettingsAdvanced(viewModel: CCSettingsAdvancedViewModel(), showExitAlert: false, showCacheAlert: false)) {
+                NavigationLink(destination: CCSettingsAdvanced(viewModel: CCSettingsAdvancedModel(), showExitAlert: false, showCacheAlert: false)) {
                     HStack {
                         Image("gear")
                             .resizable()
@@ -169,18 +169,18 @@ struct NCSettings<ViewModel: NCSettingsViewModel>: View {
             /// `Watermark` Section
             Section(content: {
             }, footer: {
-                Text("Nextcloud Liquid for iOS \(viewModel.appVersion) © \(viewModel.copyrightYear) \n\nNextcloud Server \(viewModel.serverVersion)\n\(viewModel.themingName) - \(viewModel.themingSlogan)\n\n")
+                Text("Nextcloud Liquid for iOS \(model.appVersion) © \(model.copyrightYear) \n\nNextcloud Server \(model.serverVersion)\n\(model.themingName) - \(model.themingSlogan)\n\n")
 
             })
         }.navigationBarTitle("Settings")
             .onAppear {
-                viewModel.onViewAppear()
+                model.onViewAppear()
             }
     }
 }
  struct NCSettings_Previews: PreviewProvider {
      static var previews: some View {
-         NCSettings(viewModel: NCSettingsViewModel())
+         NCSettings(model: NCSettingsModel())
      }
  }
 

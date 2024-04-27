@@ -23,8 +23,8 @@
 
 import SwiftUI
 
-struct AutoUploadFileNamesView<ViewModel: AutoUploadFileNamesViewModel>: View {
-    @ObservedObject var viewModel: ViewModel
+struct AutoUploadFileNamesView: View {
+    @ObservedObject var model = AutoUploadFileNamesModel()
 
     var body: some View {
         Form {
@@ -38,22 +38,22 @@ struct AutoUploadFileNamesView<ViewModel: AutoUploadFileNamesViewModel>: View {
             })
             // Specify Filename
             Section(header: Text(NSLocalizedString("_filename_", comment: ""))) {
-                Toggle(NSLocalizedString("_maintain_original_filename_", comment: ""), isOn: $viewModel.maintainFilename)
-                    .onChange(of: viewModel.maintainFilename, perform: { newValue in
-                        viewModel.toggleMaintainOriginalFilename(newValue: newValue)
+                Toggle(NSLocalizedString("_maintain_original_filename_", comment: ""), isOn: $model.maintainFilename)
+                    .onChange(of: model.maintainFilename, perform: { newValue in
+                        model.toggleMaintainOriginalFilename(newValue: newValue)
                     })
                 // Filename
-                if !viewModel.maintainFilename {
-                    Toggle(NSLocalizedString("_add_filenametype_", comment: ""), isOn: $viewModel.specifyFilename)
-                        .onChange(of: viewModel.specifyFilename, perform: { newValue in
-                            viewModel.toggleAddFilenameType(newValue: newValue)
+                if !model.maintainFilename {
+                    Toggle(NSLocalizedString("_add_filenametype_", comment: ""), isOn: $model.specifyFilename)
+                        .onChange(of: model.specifyFilename, perform: { newValue in
+                            model.toggleAddFilenameType(newValue: newValue)
                         })
                 }
             }
             .transition(.slide)
             .animation(.easeInOut)
             // Filename Preview
-            if !viewModel.maintainFilename {
+            if !model.maintainFilename {
                 Section(content: {
                     HStack {
                         Text(NSLocalizedString("_filename_", comment: ""))
@@ -62,16 +62,16 @@ struct AutoUploadFileNamesView<ViewModel: AutoUploadFileNamesViewModel>: View {
                             .fontWeight(.medium)
                             .background(Color(UIColor.secondarySystemGroupedBackground))
                         Spacer()
-                        TextField(NSLocalizedString("_filename_header_", comment: ""), text: $viewModel.changedName)
+                        TextField(NSLocalizedString("_filename_header_", comment: ""), text: $model.changedName)
                             .onSubmit {
-                                viewModel.submitChangedName()
+                                model.submitChangedName()
                             }
                             .font(.system(size: 15))
                             .foregroundColor(Color(UIColor.label))
                             .background(Color(UIColor.secondarySystemGroupedBackground))
                             .multilineTextAlignment(.trailing)
                     }
-                    Text("\(viewModel.previewFileName())")
+                    Text("\(model.previewFileName())")
                 }, header: {
                     Text(NSLocalizedString("_preview_filename_header", comment: ""))
                 }, footer: {
@@ -88,12 +88,12 @@ struct AutoUploadFileNamesView<ViewModel: AutoUploadFileNamesViewModel>: View {
             }
         }.navigationBarTitle(NSLocalizedString("_filename_mode_", comment: ""))
             .onAppear {
-                viewModel.onViewAppear()
+                model.onViewAppear()
             }            .padding(.top, 0)
             .transition(.slide)
     }
 }
 
 #Preview {
-    AutoUploadFileNamesView(viewModel: AutoUploadFileNamesViewModel())
+    AutoUploadFileNamesView(model: AutoUploadFileNamesModel())
 }

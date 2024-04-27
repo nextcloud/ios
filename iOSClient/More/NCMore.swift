@@ -418,7 +418,7 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         // Checking if the selected row is the Settings cell
         if item.name == "_settings_" {
             // Created an instance of the NCSettings view
-            let ncSettingsView = NCSettings(viewModel: NCSettingsViewModel())
+            let ncSettingsView = NCSettings(model: NCSettingsModel())
 
             // Created a hosting controller for the NCSettings view & performing the segue
             let hostingController = UIHostingController(rootView: ncSettingsView)

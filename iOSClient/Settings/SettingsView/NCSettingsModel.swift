@@ -28,46 +28,30 @@ import SwiftUI
 import TOPasscodeViewController
 import LocalAuthentication
 
-protocol NCSettingsVMRepresentable: ObservableObject, AccountUpdateHandling, ViewOnAppearHandling {
-    var isLockActive: Bool { get set }
-    /// State to control the enable TouchID toggle
-    var enableTouchID: Bool { get set }
-    /// State to control
-    var lockScreen: Bool { get set }
-    /// State to control
-    var privacyScreen: Bool { get set }
-    /// State to control
-    var resetWrongAttempts: Bool { get set }
-    /// String url to download configuration files
-    var configLink: String? { get }
-    /// State to control the visibility of the acknowledgements view
-    var isE2EEEnable: Bool { get }
-    /// String containing the current version of E2EE
-    var versionE2EE: String { get }
-    /// String representing the current year to be shown
-    var copyrightYear: String { get }
-    func updateAccount()
-    func updateTouchIDSetting()
-    func updatePrivacyScreenSetting()
-    func updateResetWrongAttemptsSetting()
-    func getConfigFiles()
-}
-
-class NCSettingsViewModel: NCSettingsVMRepresentable {
+class NCSettingsModel: ObservableObject, AccountUpdateHandling, ViewOnAppearHandling {
     /// Keychain access
     var keychain = NCKeychain()
+    /// State to control the lock on/off section
     @Published var isLockActive: Bool = false
+    /// State to control the enable TouchID toggle
     @Published var enableTouchID: Bool = false
+    /// State to control
     @Published var lockScreen: Bool = false
+    /// State to control
     @Published var privacyScreen: Bool = false
+    /// State to control
     @Published var resetWrongAttempts: Bool = false
+    /// String url to download configuration files
     @Published var configLink: String? = "https://shared02.opsone-cloud.ch/\(String(describing: NCManageDatabase.shared.getActiveAccount()?.urlBase))\(NCBrandOptions.shared.mobileconfig)"
+    /// State to control the visibility of the acknowledgements view
     var isE2EEEnable: Bool = NCGlobal.shared.capabilityE2EEEnabled
+    /// String containing the current version of E2EE
     @Published var versionE2EE: String = NCGlobal.shared.capabilityE2EEApiVersion
     @Published var passcode: String = ""
 
     // MARK: - String Values for View
     var appVersion: String = NCUtility().getVersionApp(withBuild: true)
+    /// String representing the current year to be shown
     @Published var copyrightYear: String = ""
     var serverVersion: String = NCGlobal.shared.capabilityServerVersion
     var themingName: String = NCGlobal.shared.capabilityThemingName

@@ -26,33 +26,20 @@ import NextcloudKit
 import SwiftUI
 import Combine
 
-protocol AutoUploadFileNamesViewModelProtocol: ObservableObject, ViewOnAppearHandling, AccountUpdateHandling {
-    /// A boolean indicating whether to maintain the original file name.
-    var maintainFilename: Bool { get set }
-    /// A boolean indicating whether to specify a custom file name.
-    var specifyFilename: Bool { get set }
-    /// The changed file name.
-    var changedName: String { get set }
-    /// The original file name.
-    var oldName: String { get set }
-    func toggleMaintainOriginalFilename(newValue: Bool)
-    func toggleAddFilenameType(newValue: Bool)
-    func submitChangedName()
-    func presentForbiddenCharError()
-    func checkUploadFileName() -> String
-    func previewFileName() -> String
-}
-
 /// A view model responsible for managing auto-upload file names.
-class AutoUploadFileNamesViewModel: AutoUploadFileNamesViewModelProtocol {
+class AutoUploadFileNamesModel: ObservableObject, ViewOnAppearHandling, AccountUpdateHandling {
     // MARK: - Properties
     /// A keychain instance for handling authentication.
     private var keychain = NCKeychain()
     /// A shared global instance for managing application-wide settings.
     private let globalKey = NCGlobal.shared
+    /// A boolean indicating whether to maintain the original file name.
     @Published var maintainFilename: Bool = false
+    /// A boolean indicating whether to specify a custom file name.
     @Published var specifyFilename: Bool = false
+    /// The changed file name.
     @Published var changedName: String = ""
+    /// The original file name.
     @Published var oldName: String = ""
     let dateExample = Date()
     // MARK: - Initialization

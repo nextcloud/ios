@@ -24,60 +24,33 @@
 import Foundation
 import NextcloudKit
 
-protocol CCSettingsAdvancedViewModelProtocol: ObservableObject, ViewOnAppearHandling, AccountUpdateHandling {
-    // MARK: All published properties for the toggles
-    /// State variable for indicating whether hidden files are shown.
-    var showHiddenFiles: Bool { get set }
-    /// State variable for indicating the most compatible format.
-    var mostCompatible: Bool { get set }
-    /// State variable for enabling live photo uploads.
-    var livePhoto: Bool { get set }
-    /// State variable for indicating whether to remove photos from the camera roll after upload.
-    var removeFromCameraRoll: Bool { get set }
-    /// State variable for app integration.
-    var appIntegration: Bool { get set }
-    /// State variable for enabling the crash reporter.
-    var crashReporter: Bool { get set }
-    /// State variable for indicating whether the log file has been cleared.
-    var logFileCleared: Bool { get set }
-    // Properties for log level and cache deletion
-    /// State variable for storing the selected log level.
-    var selectedLogLevel: LogLevel { get set }
-    /// State variable for storing the selected cache deletion interval.
-    var selectedInterval: CacheDeletionInterval { get set }
-    /// State variable for storing the footer title, usually used for cache deletion.
-    var footerTitle: String { get set }
-    // MARK: All protocol functions
-    func updateShowHiddenFiles()
-    func updateMostCompatible()
-    func updateLivePhoto()
-    func updateRemoveFromCameraRoll()
-    func updateAppIntegration()
-    func updateCrashReporter()
-    func updateSelectedLogLevel()
-    func updateSelectedInterval()
-    func clearCache(_ account: String)
-    func clearAllCacheRequest()
-    func calculateSize()
-    func exitNextCloud(exit: Bool)
-    func viewLogFile()
-    func clearLogFile()
-}
+class CCSettingsAdvancedModel: ObservableObject, ViewOnAppearHandling, AccountUpdateHandling {
 
-class CCSettingsAdvancedViewModel: CCSettingsAdvancedViewModelProtocol {
     /// Keychain access
     private var keychain = NCKeychain()
     /// Callback to notify the view to present the UIViewController
     var goToCapabilitiesView: ((UIViewController) -> Void)?
+    // MARK: All published properties for the toggles
+    /// State variable for indicating whether hidden files are shown.
     @Published var showHiddenFiles: Bool = false
+    /// State variable for indicating the most compatible format.
     @Published var mostCompatible: Bool = false
+    /// State variable for enabling live photo uploads.
     @Published var livePhoto: Bool = false
+    /// State variable for indicating whether to remove photos from the camera roll after upload.
     @Published var removeFromCameraRoll: Bool = false
+    /// State variable for app integration.
     @Published var appIntegration: Bool = false
+    /// State variable for enabling the crash reporter.
     @Published var crashReporter: Bool = false
+    /// State variable for indicating whether the log file has been cleared.
     @Published var logFileCleared: Bool = false
+    // Properties for log level and cache deletion
+    /// State variable for storing the selected log level.
     @Published var selectedLogLevel: LogLevel = .standard
+    /// State variable for storing the selected cache deletion interval.
     @Published var selectedInterval: CacheDeletionInterval = .never
+    /// State variable for storing the footer title, usually used for cache deletion.
     @Published var footerTitle: String = NSLocalizedString("_clear_cache_footer_", comment: "")
     /// Initializes the view model with default values.
     init() {
@@ -102,7 +75,7 @@ class CCSettingsAdvancedViewModel: CCSettingsAdvancedViewModelProtocol {
         selectedInterval = CacheDeletionInterval(rawValue: keychain.cleanUpDay) ?? .never
         calculateSize()
     }
-    // Functions to update keychain values when toggles change
+    // MARK: All protocol functions to update keychain values when toggles change
     /// Updates the value of `showHiddenFiles` in the keychain.
     func updateShowHiddenFiles() {
         keychain.showHiddenFiles = showHiddenFiles
@@ -138,7 +111,7 @@ class CCSettingsAdvancedViewModel: CCSettingsAdvancedViewModelProtocol {
     }
     /// Clears cache associated with the specified account.
     ///
-    /// - Parameter 
+    /// - Parameter
     /// acount: The account identifier.
     func clearCache(_ account: String) {
         // Cancel all networking tasks
@@ -181,7 +154,7 @@ class CCSettingsAdvancedViewModel: CCSettingsAdvancedViewModelProtocol {
     }
     /// Exits the Nextcloud application if specified.
     ///
-    /// - Parameter 
+    /// - Parameter
     /// exit: Boolean indicating whether to exit the application.
     func exitNextCloud(exit: Bool) {
         if exit {

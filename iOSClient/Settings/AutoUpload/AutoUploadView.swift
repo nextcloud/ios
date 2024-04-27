@@ -25,30 +25,30 @@ import SwiftUI
 import UIKit
 
 /// A view that allows the user to configure the `auto upload settings for Nextcloud`
-struct AutoUploadView<ViewModel: AutoUploadViewModel>: View {
-    @ObservedObject var viewModel: ViewModel
+struct AutoUploadView: View {
+    @ObservedObject var model: AutoUploadModel
     var body: some View {
         Form {
             // Auto Upload
             Section(content: {
-                Toggle(NSLocalizedString("_autoupload_", comment: ""), isOn: $viewModel.autoUpload)
-                    .onChange(of: viewModel.autoUpload) { newValue in
-                        viewModel.handleAutoUploadChange(newValue: newValue)
+                Toggle(NSLocalizedString("_autoupload_", comment: ""), isOn: $model.autoUpload)
+                    .onChange(of: model.autoUpload) { newValue in
+                        model.handleAutoUploadChange(newValue: newValue)
                     }
             }, footer: {
                 Text(NSLocalizedString("_autoupload_description_", comment: ""))
             })
             /// If `autoUpload` state will be true, we will animate out the whole `autoUploadOnView` section
-            if viewModel.autoUpload {
+            if model.autoUpload {
                 autoUploadOnView
                     .animation(.easeInOut)
             }
         }
         .navigationBarTitle(NSLocalizedString("_auto_upload_", comment: ""))
         .onAppear {
-            viewModel.onViewAppear()
+            model.onViewAppear()
         }
-        .alert(viewModel.error, isPresented: $viewModel.showErrorAlert) {
+        .alert(model.error, isPresented: $model.showErrorAlert) {
             Button(NSLocalizedString("_ok_", comment: ""), role: .cancel) { }
         }
     }
@@ -64,44 +64,44 @@ struct AutoUploadView<ViewModel: AutoUploadViewModel>: View {
                 Text(NSLocalizedString("_autoupload_select_folder_", comment: ""))
             }
         }, footer: {
-            Text("\(NSLocalizedString("_autoupload_current_folder_", comment: "")): \(viewModel.returnPath())")
+            Text("\(NSLocalizedString("_autoupload_current_folder_", comment: "")): \(model.returnPath())")
         }).onTapGesture {
-            viewModel.autoUploadFolder.toggle()
+            model.autoUploadFolder.toggle()
         }
-        .sheet(isPresented: $viewModel.autoUploadFolder) {
-            SelectView(serverUrl: $viewModel.serverUrl)
+        .sheet(isPresented: $model.autoUploadFolder) {
+            SelectView(serverUrl: $model.serverUrl)
                 .onDisappear {
-                    viewModel.setAutoUploadDirectory(serverUrl: viewModel.serverUrl)
+                    model.setAutoUploadDirectory(serverUrl: model.serverUrl)
                 }
         }
         // Auto Upload Photo
         Section(content: {
-            Toggle(NSLocalizedString("_autoupload_photos_", comment: ""), isOn: $viewModel.autoUploadImage)
-                .onChange(of: viewModel.autoUploadImage) { newValue in
-                    viewModel.handleAutoUploadImageChange(newValue: newValue)
+            Toggle(NSLocalizedString("_autoupload_photos_", comment: ""), isOn: $model.autoUploadImage)
+                .onChange(of: model.autoUploadImage) { newValue in
+                    model.handleAutoUploadImageChange(newValue: newValue)
                 }
-            Toggle(NSLocalizedString("_wifi_only_", comment: ""), isOn: $viewModel.autoUploadWWAnPhoto)
-                .onChange(of: viewModel.autoUploadWWAnPhoto) { newValue in
-                    viewModel.handleAutoUploadWWAnPhotoChange(newValue: newValue)
+            Toggle(NSLocalizedString("_wifi_only_", comment: ""), isOn: $model.autoUploadWWAnPhoto)
+                .onChange(of: model.autoUploadWWAnPhoto) { newValue in
+                    model.handleAutoUploadWWAnPhotoChange(newValue: newValue)
                 }
         })
         // Auto Upload Video
         Section(content: {
-            Toggle(NSLocalizedString("_autoupload_videos_", comment: ""), isOn: $viewModel.autoUploadVideo)
-                .onChange(of: viewModel.autoUploadVideo) { newValue in
-                    viewModel.handleAutoUploadVideoChange(newValue: newValue)
+            Toggle(NSLocalizedString("_autoupload_videos_", comment: ""), isOn: $model.autoUploadVideo)
+                .onChange(of: model.autoUploadVideo) { newValue in
+                    model.handleAutoUploadVideoChange(newValue: newValue)
                 }
-            Toggle(NSLocalizedString("_wifi_only_", comment: ""), isOn: $viewModel.autoUploadWWAnVideo)
-                .onChange(of: viewModel.autoUploadWWAnVideo) { newValue in
-                    viewModel.handleAutoUploadWWAnVideoChange(newValue: newValue)
+            Toggle(NSLocalizedString("_wifi_only_", comment: ""), isOn: $model.autoUploadWWAnVideo)
+                .onChange(of: model.autoUploadWWAnVideo) { newValue in
+                    model.handleAutoUploadWWAnVideoChange(newValue: newValue)
                 }
         })
         // Auto Upload Full
         Section(content: {
             HStack {
-                Toggle(NSLocalizedString("_autoupload_fullphotos_", comment: ""), isOn: $viewModel.autoUploadFull)
-                    .onChange(of: viewModel.autoUploadFull) { newValue in
-                        viewModel.handleAutoUploadFullChange(newValue: newValue)
+                Toggle(NSLocalizedString("_autoupload_fullphotos_", comment: ""), isOn: $model.autoUploadFull)
+                    .onChange(of: model.autoUploadFull) { newValue in
+                        model.handleAutoUploadFullChange(newValue: newValue)
                     }
             }
         }, footer: {
@@ -109,24 +109,24 @@ struct AutoUploadView<ViewModel: AutoUploadViewModel>: View {
         })
         // Auto Upload create subfolder
         Section(content: {
-            Toggle(NSLocalizedString("_autoupload_create_subfolder_", comment: ""), isOn: $viewModel.autoUploadCreateSubfolder)
-                .onChange(of: viewModel.autoUploadCreateSubfolder) { newValue in
-                    viewModel.handleAutoUploadCreateSubfolderChange(newValue: newValue)
+            Toggle(NSLocalizedString("_autoupload_create_subfolder_", comment: ""), isOn: $model.autoUploadCreateSubfolder)
+                .onChange(of: model.autoUploadCreateSubfolder) { newValue in
+                    model.handleAutoUploadCreateSubfolderChange(newValue: newValue)
                 }
-            Picker(NSLocalizedString("_autoupload_subfolder_granularity_", comment: ""), selection: $viewModel.autoUploadSubfolderGranularity) {
+            Picker(NSLocalizedString("_autoupload_subfolder_granularity_", comment: ""), selection: $model.autoUploadSubfolderGranularity) {
                 Text(NSLocalizedString("_daily_", comment: "")).tag(Granularity.daily)
                 Text(NSLocalizedString("_monthly_", comment: "")).tag(Granularity.monthly)
                 Text(NSLocalizedString("_yearly_", comment: "")).tag(Granularity.yearly)
             }
-            .onChange(of: viewModel.autoUploadSubfolderGranularity) { newValue in
-                viewModel.handleAutoUploadSubfolderGranularityChange(newValue: newValue)
+            .onChange(of: model.autoUploadSubfolderGranularity) { newValue in
+                model.handleAutoUploadSubfolderGranularityChange(newValue: newValue)
             }
         }, footer: {
             Text(NSLocalizedString("_autoupload_create_subfolder_footer_", comment: ""))
         })
         // Auto Upload file name
         Section(content: {
-            NavigationLink(destination: AutoUploadFileNamesView(viewModel: AutoUploadFileNamesViewModel()), label: {
+            NavigationLink(destination: AutoUploadFileNamesView(model: AutoUploadFileNamesModel()), label: {
                 Text(NSLocalizedString("_autoupload_filenamemask_", comment: ""))
             })
         }, footer: {
@@ -136,5 +136,5 @@ struct AutoUploadView<ViewModel: AutoUploadViewModel>: View {
 }
 
 #Preview {
-    AutoUploadView(viewModel: AutoUploadViewModel())
+    AutoUploadView(model: AutoUploadModel())
 }
