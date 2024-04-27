@@ -89,6 +89,8 @@ extension NCMedia: UICollectionViewDropDelegate {
             }
         }
         if !metadatas.isEmpty {
+            DragDropHover.shared.sourceMetadatas = metadatas
+            openMenu(collectionView: collectionView, location: coordinator.session.location(in: collectionView))
         }
     }
 
@@ -98,5 +100,32 @@ extension NCMedia: UICollectionViewDropDelegate {
 
     func collectionView(_ collectionView: UICollectionView, dropSessionDidEnd session: UIDropSession) {
         DragDropHover.shared.cleanPushDragDropHover()
+    }
+
+    // MARK: -
+
+    private func openMenu(collectionView: UICollectionView, location: CGPoint) {
+        var listMenuItems: [UIMenuItem] = []
+
+        listMenuItems.append(UIMenuItem(title: NSLocalizedString("_copy_", comment: ""), action: #selector(copyMenuFile)))
+        listMenuItems.append(UIMenuItem(title: NSLocalizedString("_move_", comment: ""), action: #selector(moveMenuFile)))
+        UIMenuController.shared.menuItems = listMenuItems
+        UIMenuController.shared.showMenu(from: collectionView, rect: CGRect(x: location.x, y: location.y, width: 0, height: 0))
+    }
+
+    @objc func copyMenuFile() {
+        guard let sourceMetadatas = DragDropHover.shared.sourceMetadatas,
+              let tableAccount = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", appDelegate.account)) else { return }
+        let serverUrl = NCUtilityFileSystem().getHomeServer(urlBase: tableAccount.urlBase, userId: tableAccount.userId) + tableAccount.mediaPath
+
+        NCNetworkingDragDrop().copyFile(metadatas: sourceMetadatas, serverUrl: serverUrl)
+    }
+
+    @objc func moveMenuFile() {
+        guard let sourceMetadatas = DragDropHover.shared.sourceMetadatas,
+              let tableAccount = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", appDelegate.account)) else { return }
+        let serverUrl = NCUtilityFileSystem().getHomeServer(urlBase: tableAccount.urlBase, userId: tableAccount.userId) + tableAccount.mediaPath
+
+        NCNetworkingDragDrop().moveFile(metadatas: sourceMetadatas, serverUrl: serverUrl)
     }
 }

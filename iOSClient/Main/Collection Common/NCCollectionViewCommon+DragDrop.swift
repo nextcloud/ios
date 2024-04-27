@@ -147,7 +147,17 @@ extension NCCollectionViewCommon: UICollectionViewDropDelegate {
             self.openMenu(collectionView: collectionView, location: coordinator.session.location(in: collectionView))
         } else {
             // drop for url
-            self.handleDrop(coordinator: coordinator)
+            var serverUrl: String = self.serverUrl
+            for dragItem in coordinator.session.items {
+                dragItem.itemProvider.loadFileRepresentation(forTypeIdentifier: UTType.data.identifier) { url, error in
+                    if error == nil, let url {
+                        if let destinationMetadata = DragDropHover.shared.destinationMetadata, destinationMetadata.directory {
+                            serverUrl = destinationMetadata.serverUrl + "/" + destinationMetadata.fileName
+                        }
+                        NCNetworkingDragDrop().uploadFile(url: url, serverUrl: serverUrl)
+                    }
+                }
+            }
         }
     }
 
@@ -188,21 +198,6 @@ extension NCCollectionViewCommon: UICollectionViewDropDelegate {
         }
 
         NCNetworkingDragDrop().moveFile(metadatas: sourceMetadatas, serverUrl: serverUrl)
-    }
-
-    private func handleDrop(coordinator: UICollectionViewDropCoordinator) {
-        var serverUrl: String = self.serverUrl
-
-        for dragItem in coordinator.session.items {
-            dragItem.itemProvider.loadFileRepresentation(forTypeIdentifier: UTType.data.identifier) { url, error in
-                if error == nil, let url {
-                    if let destinationMetadata = DragDropHover.shared.destinationMetadata, destinationMetadata.directory {
-                        serverUrl = destinationMetadata.serverUrl + "/" + destinationMetadata.fileName
-                    }
-                    NCNetworkingDragDrop().uploadFile(url: url, serverUrl: serverUrl)
-                }
-            }
-        }
     }
 }
 
