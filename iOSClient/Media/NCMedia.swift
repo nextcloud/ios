@@ -251,8 +251,8 @@ class NCMedia: UIViewController {
         guard let userInfo = notification.userInfo as NSDictionary?,
               let dragDrop = userInfo["dragdrop"] as? Bool, dragDrop else { return }
 
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-            self.reloadDataSource()
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+            self.searchMediaUI()
         }
     }
 
@@ -260,8 +260,8 @@ class NCMedia: UIViewController {
         guard let userInfo = notification.userInfo as NSDictionary?,
               let dragDrop = userInfo["dragdrop"] as? Bool, dragDrop else { return }
 
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-            self.reloadDataSource()
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+            self.searchMediaUI()
         }
     }
 
