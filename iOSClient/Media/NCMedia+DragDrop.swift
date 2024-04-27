@@ -78,30 +78,10 @@ extension NCMedia: UICollectionViewDropDelegate {
                        !NCNetworking.shared.createFolder(assets: nil, useSubFolder: account.autoUploadCreateSubfolder, account: account.account, urlBase: account.urlBase, userId: account.userId, withPush: false) {
                         return
                     }
-                    do {
-                        let data = try Data(contentsOf: url)
-                        Task {
-                            let ocId = NSUUID().uuidString
-                            let fileName = await NCNetworking.shared.createFileName(fileNameBase: url.lastPathComponent, account: self.appDelegate.account, serverUrl: serverUrl)
-                            let fileNamePath = self.utilityFileSystem.getDirectoryProviderStorageOcId(ocId, fileNameView: fileName)
-                            try data.write(to: URL(fileURLWithPath: fileNamePath))
-                            let metadataForUpload = NCManageDatabase.shared.createMetadata(account: self.appDelegate.account, user: self.appDelegate.user, userId: self.appDelegate.userId, fileName: fileName, fileNameView: fileName, ocId: ocId, serverUrl: serverUrl, urlBase: self.appDelegate.urlBase, url: "", contentType: "")
-                            metadataForUpload.session = NCNetworking.shared.sessionUploadBackground
-                            metadataForUpload.sessionSelector = NCGlobal.shared.selectorUploadFile
-                            metadataForUpload.size = self.utilityFileSystem.getFileSize(filePath: fileNamePath)
-                            metadataForUpload.status = NCGlobal.shared.metadataStatusWaitUpload
-                            metadataForUpload.sessionDate = Date()
-
-                            NCManageDatabase.shared.addMetadata(metadataForUpload)
-                        }
-                    } catch {
-                        NCContentPresenter().showError(error: NKError(error: error))
-                        return
-                    }
+                    NCNetworkingDragDrop().uploadFile(url: url, serverUrl: serverUrl)
                     counter += 1
                 }
             }
         }
     }
 }
-

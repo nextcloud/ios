@@ -28,6 +28,32 @@ import JGProgressHUD
 import RealmSwift
 
 class NCNetworkingDragDrop: NSObject {
+    let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
+    let utilityFileSystem = NCUtilityFileSystem()
+
+    func uploadFile(url: URL, serverUrl: String) {
+        do {
+            let data = try Data(contentsOf: url)
+            Task {
+                let ocId = NSUUID().uuidString
+                let fileName = await NCNetworking.shared.createFileName(fileNameBase: url.lastPathComponent, account: appDelegate.account, serverUrl: serverUrl)
+                let fileNamePath = utilityFileSystem.getDirectoryProviderStorageOcId(ocId, fileNameView: fileName)
+
+                try data.write(to: URL(fileURLWithPath: fileNamePath))
+                let metadataForUpload = await NCManageDatabase.shared.createMetadata(account: appDelegate.account, user: appDelegate.user, userId: appDelegate.userId, fileName: fileName, fileNameView: fileName, ocId: ocId, serverUrl: serverUrl, urlBase: self.appDelegate.urlBase, url: "", contentType: "")
+                metadataForUpload.session = NCNetworking.shared.sessionUploadBackground
+                metadataForUpload.sessionSelector = NCGlobal.shared.selectorUploadFile
+                metadataForUpload.size = utilityFileSystem.getFileSize(filePath: fileNamePath)
+                metadataForUpload.status = NCGlobal.shared.metadataStatusWaitUpload
+                metadataForUpload.sessionDate = Date()
+
+                NCManageDatabase.shared.addMetadata(metadataForUpload)
+            }
+        } catch {
+            NCContentPresenter().showError(error: NKError(error: error))
+            return
+        }
+    }
 
     func copyFile(metadatas: [tableMetadata], serverUrl: String) {
         Task {
@@ -65,6 +91,6 @@ class NCNetworkingDragDrop: NSObject {
 
     func isDirectoryE2EE(metadata: tableMetadata) -> Bool {
         if !metadata.directory { return false }
-        return NCUtilityFileSystem().isDirectoryE2EE(account: metadata.account, urlBase: metadata.urlBase, userId: metadata.userId, serverUrl: metadata.serverUrl + "/" + metadata.fileName)
+        return utilityFileSystem.isDirectoryE2EE(account: metadata.account, urlBase: metadata.urlBase, userId: metadata.userId, serverUrl: metadata.serverUrl + "/" + metadata.fileName)
     }
 }
