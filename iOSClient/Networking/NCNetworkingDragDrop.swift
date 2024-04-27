@@ -94,3 +94,23 @@ class NCNetworkingDragDrop: NSObject {
         return utilityFileSystem.isDirectoryE2EE(account: metadata.account, urlBase: metadata.urlBase, userId: metadata.userId, serverUrl: metadata.serverUrl + "/" + metadata.fileName)
     }
 }
+
+// MARK: -
+
+class DragDropHover {
+    static let shared = DragDropHover()
+
+    var pushTimerIndexPath: Timer?
+    var pushCollectionView: UICollectionView?
+    var pushIndexPath: IndexPath?
+
+    var sourceMetadatas: [tableMetadata]?
+    var destinationMetadata: tableMetadata?
+
+    func cleanPushDragDropHover() {
+        pushTimerIndexPath?.invalidate()
+        pushTimerIndexPath = nil
+        pushCollectionView = nil
+        pushIndexPath = nil
+    }
+}

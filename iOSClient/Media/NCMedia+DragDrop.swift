@@ -63,8 +63,10 @@ extension NCMedia: UICollectionViewDropDelegate {
     }
 
     func collectionView(_ collectionView: UICollectionView, performDropWith coordinator: UICollectionViewDropCoordinator) {
-        guard let account = NCManageDatabase.shared.getActiveAccount(),
-              let serverUrl = NCManageDatabase.shared.getActiveAccount()?.mediaPath else { return }
+        DragDropHover.shared.cleanPushDragDropHover()
+        DragDropHover.shared.sourceMetadatas = nil
+        guard let tableAccount = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", appDelegate.account)) else { return }
+        let serverUrl = NCUtilityFileSystem().getHomeServer(urlBase: tableAccount.urlBase, userId: tableAccount.userId) + tableAccount.mediaPath
         var metadatas: [tableMetadata] = []
 
         for item in coordinator.session.items {
@@ -88,5 +90,13 @@ extension NCMedia: UICollectionViewDropDelegate {
         }
         if !metadatas.isEmpty {
         }
+    }
+
+    func collectionView(_ collectionView: UICollectionView, dropSessionDidExit session: UIDropSession) {
+        DragDropHover.shared.cleanPushDragDropHover()
+    }
+
+    func collectionView(_ collectionView: UICollectionView, dropSessionDidEnd session: UIDropSession) {
+        DragDropHover.shared.cleanPushDragDropHover()
     }
 }

@@ -87,16 +87,16 @@ extension NCCollectionViewCommon: UICollectionViewDropDelegate {
 
         if let destinationMetadata {
             if NCNetworkingDragDrop().isDirectoryE2EE(metadata: destinationMetadata) {
-                cleanPushDragDropHover()
+                DragDropHover.shared.cleanPushDragDropHover()
                 return UICollectionViewDropProposal(operation: .forbidden)
             }
             if !destinationMetadata.directory && serverUrl.isEmpty {
-                cleanPushDragDropHover()
+                DragDropHover.shared.cleanPushDragDropHover()
                 return UICollectionViewDropProposal(operation: .forbidden)
             }
         } else {
             if serverUrl.isEmpty {
-                cleanPushDragDropHover()
+                DragDropHover.shared.cleanPushDragDropHover()
                 return UICollectionViewDropProposal(operation: .forbidden)
             }
         }
@@ -113,7 +113,7 @@ extension NCCollectionViewCommon: UICollectionViewDropDelegate {
                    DragDropHover.shared.pushCollectionView == collectionView,
                    let metadata = self.dataSource.cellForItemAt(indexPath: destinationIndexPath),
                    metadata.directory {
-                    self.cleanPushDragDropHover()
+                    DragDropHover.shared.cleanPushDragDropHover()
                     self.pushMetadata(metadata)
                 }
             }
@@ -123,9 +123,8 @@ extension NCCollectionViewCommon: UICollectionViewDropDelegate {
     }
 
     func collectionView(_ collectionView: UICollectionView, performDropWith coordinator: UICollectionViewDropCoordinator) {
-        cleanPushDragDropHover()
         var metadatas: [tableMetadata] = []
-
+        DragDropHover.shared.cleanPushDragDropHover()
         DragDropHover.shared.sourceMetadatas = nil
 
         for item in coordinator.items {
@@ -153,11 +152,11 @@ extension NCCollectionViewCommon: UICollectionViewDropDelegate {
     }
 
     func collectionView(_ collectionView: UICollectionView, dropSessionDidExit session: UIDropSession) {
-        cleanPushDragDropHover()
+        DragDropHover.shared.cleanPushDragDropHover()
     }
 
     func collectionView(_ collectionView: UICollectionView, dropSessionDidEnd session: UIDropSession) {
-        cleanPushDragDropHover()
+        DragDropHover.shared.cleanPushDragDropHover()
     }
 
     // MARK: -
@@ -205,28 +204,8 @@ extension NCCollectionViewCommon: UICollectionViewDropDelegate {
             }
         }
     }
-
-    private func cleanPushDragDropHover() {
-        DragDropHover.shared.pushTimerIndexPath?.invalidate()
-        DragDropHover.shared.pushTimerIndexPath = nil
-        DragDropHover.shared.pushCollectionView = nil
-        DragDropHover.shared.pushIndexPath = nil
-    }
 }
 
 // MARK: - Drop Interaction Delegate
 
 extension NCCollectionViewCommon: UIDropInteractionDelegate { }
-
-// MARK: -
-
-class DragDropHover {
-    static let shared = DragDropHover()
-
-    var pushTimerIndexPath: Timer?
-    var pushCollectionView: UICollectionView?
-    var pushIndexPath: IndexPath?
-
-    var sourceMetadatas: [tableMetadata]?
-    var destinationMetadata: tableMetadata?
-}
