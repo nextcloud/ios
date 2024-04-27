@@ -52,7 +52,7 @@ class NCLoginWeb: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        
         let accountCount = NCManageDatabase.shared.getAccounts()?.count ?? 0
 
         // load AppConfig
@@ -86,13 +86,14 @@ class NCLoginWeb: UIViewController {
         config.websiteDataStore = WKWebsiteDataStore.nonPersistent()
 
         webView = WKWebView(frame: CGRect.zero, configuration: config)
+        webView?.insetsLayoutMarginsFromSafeArea = true
         webView!.navigationDelegate = self
         view.addSubview(webView!)
 
         webView!.translatesAutoresizingMaskIntoConstraints = false
         webView!.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 0).isActive = true
         webView!.rightAnchor.constraint(equalTo: view.rightAnchor, constant: 0).isActive = true
-        webView!.topAnchor.constraint(equalTo: view.topAnchor, constant: 0).isActive = true
+        webView!.topAnchor.constraint(equalTo: view.topAnchor, constant: 100).isActive = true
         webView!.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: 0).isActive = true
 
         // AppConfig
@@ -135,6 +136,8 @@ class NCLoginWeb: UIViewController {
             }
         }
         self.title = titleView
+//        self.navigationController?.navigationBar.backgroundColor = NCBrandColor.shared.customer
+        self.navigationController?.navigationBar.tintColor = NCBrandColor.shared.customer
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -156,6 +159,7 @@ class NCLoginWeb: UIViewController {
         super.viewDidDisappear(animated)
         NCActivityIndicator.shared.stop()
         appDelegate.startTimerErrorNetworking()
+      
     }
 
     func loadWebPage(webView: WKWebView, url: URL) {
