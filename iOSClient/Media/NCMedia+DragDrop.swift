@@ -63,23 +63,23 @@ extension NCMedia: UICollectionViewDropDelegate {
     }
 
     func collectionView(_ collectionView: UICollectionView, performDropWith coordinator: UICollectionViewDropCoordinator) {
-        guard let account = NCManageDatabase.shared.getActiveAccount() else { return }
-        let autoUploadPath = NCManageDatabase.shared.getAccountAutoUploadPath(urlBase: account.urlBase, userId: account.userId, account: account.account)
-        let serverUrl = utilityFileSystem.createGranularityPath(serverUrl: autoUploadPath)
-        var counter: Int = 0
-        for dragItem in coordinator.session.items {
-            dragItem.itemProvider.loadFileRepresentation(forTypeIdentifier: UTType.data.identifier) { url, error in
-                if let error {
-                    NCContentPresenter().showError(error: NKError(error: error))
-                    return
-                }
-                if let url = url {
-                    if counter == 0,
-                       !NCNetworking.shared.createFolder(assets: nil, useSubFolder: account.autoUploadCreateSubfolder, account: account.account, urlBase: account.urlBase, userId: account.userId, withPush: false) {
-                        return
+        guard let account = NCManageDatabase.shared.getActiveAccount(),
+              let serverUrl = NCManageDatabase.shared.getActiveAccount()?.mediaPath else { return }
+        var metadatas: [tableMetadata] = []
+
+        for item in coordinator.session.items {
+            if item.itemProvider.hasItemConformingToTypeIdentifier(NCGlobal.shared.metadataOcIdDataRepresentation) {
+                item.itemProvider.loadDataRepresentation(forTypeIdentifier: NCGlobal.shared.metadataOcIdDataRepresentation) { data, error in
+                    if error == nil, let data, let ocId = String(data: data, encoding: .utf8),
+                       let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
+                        metadatas.append(metadata)
                     }
-                    NCNetworkingDragDrop().uploadFile(url: url, serverUrl: serverUrl)
-                    counter += 1
+                }
+            } else {
+                item.itemProvider.loadFileRepresentation(forTypeIdentifier: UTType.data.identifier) { url, error in
+                    if error == nil, let url = url {
+                        NCNetworkingDragDrop().uploadFile(url: url, serverUrl: serverUrl)
+                    }
                 }
             }
         }
