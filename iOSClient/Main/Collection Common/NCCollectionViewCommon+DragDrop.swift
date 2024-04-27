@@ -42,7 +42,7 @@ extension NCCollectionViewCommon: UICollectionViewDragDelegate {
             metadatas.append(metadata)
         }
 
-        var dragItems = metadatas.map { metadata in
+        let dragItems = metadatas.map { metadata in
             let itemProvider = NSItemProvider()
             itemProvider.registerDataRepresentation(forTypeIdentifier: NCGlobal.shared.metadataOcIdDataRepresentation, visibility: .all) { completion in
                 let data = metadata.ocId.data(using: .utf8)
@@ -160,7 +160,7 @@ extension NCCollectionViewCommon: UICollectionViewDropDelegate {
         cleanPushDragDropHover()
     }
 }
-   
+
 // MARK: - Drag&Drop func
 
 extension NCCollectionViewCommon {
