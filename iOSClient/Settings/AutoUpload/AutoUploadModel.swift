@@ -25,7 +25,7 @@ import Foundation
 import NextcloudKit
 
 /// A model that allows the user to configure the `auto upload settings for Nextcloud`
-class AutoUploadModel: ObservableObject, ViewOnAppearHandling, NCSelectDelegate  {
+class AutoUploadModel: ObservableObject, ViewOnAppearHandling, NCSelectDelegate {
     var appDelegate = AppDelegate()
     /// A state variable that indicates whether auto upload is enabled or not
     @Published var autoUpload: Bool = false

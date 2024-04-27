@@ -35,6 +35,7 @@ struct AutoUploadView: View {
                     .onChange(of: model.autoUpload) { newValue in
                         model.handleAutoUploadChange(newValue: newValue)
                     }
+                    .font(.system(size: 16))
             }, footer: {
                 Text(NSLocalizedString("_autoupload_description_", comment: ""))
             })
@@ -60,9 +61,10 @@ struct AutoUploadView: View {
                     .resizable()
                     .renderingMode(.template)
                     .frame(width: 20, height: 20)
-                    .foregroundColor(Color(UIColor.systemGray))
+                    .foregroundColor(.secondary)
                 Text(NSLocalizedString("_autoupload_select_folder_", comment: ""))
             }
+            .font(.system(size: 16))
         }, footer: {
             Text("\(NSLocalizedString("_autoupload_current_folder_", comment: "")): \(model.returnPath())")
         }).onTapGesture {
@@ -80,10 +82,12 @@ struct AutoUploadView: View {
                 .onChange(of: model.autoUploadImage) { newValue in
                     model.handleAutoUploadImageChange(newValue: newValue)
                 }
+                .font(.system(size: 16))
             Toggle(NSLocalizedString("_wifi_only_", comment: ""), isOn: $model.autoUploadWWAnPhoto)
                 .onChange(of: model.autoUploadWWAnPhoto) { newValue in
                     model.handleAutoUploadWWAnPhotoChange(newValue: newValue)
                 }
+                .font(.system(size: 16))
         })
         // Auto Upload Video
         Section(content: {
@@ -91,19 +95,20 @@ struct AutoUploadView: View {
                 .onChange(of: model.autoUploadVideo) { newValue in
                     model.handleAutoUploadVideoChange(newValue: newValue)
                 }
+                .font(.system(size: 16))
             Toggle(NSLocalizedString("_wifi_only_", comment: ""), isOn: $model.autoUploadWWAnVideo)
                 .onChange(of: model.autoUploadWWAnVideo) { newValue in
                     model.handleAutoUploadWWAnVideoChange(newValue: newValue)
                 }
+                .font(.system(size: 16))
         })
         // Auto Upload Full
         Section(content: {
-            HStack {
-                Toggle(NSLocalizedString("_autoupload_fullphotos_", comment: ""), isOn: $model.autoUploadFull)
-                    .onChange(of: model.autoUploadFull) { newValue in
-                        model.handleAutoUploadFullChange(newValue: newValue)
-                    }
-            }
+            Toggle(NSLocalizedString("_autoupload_fullphotos_", comment: ""), isOn: $model.autoUploadFull)
+                .onChange(of: model.autoUploadFull) { newValue in
+                    model.handleAutoUploadFullChange(newValue: newValue)
+                }
+                .font(.system(size: 16))
         }, footer: {
             Text(NSLocalizedString("_autoupload_fullphotos_footer_", comment: ""))
         })
@@ -113,11 +118,13 @@ struct AutoUploadView: View {
                 .onChange(of: model.autoUploadCreateSubfolder) { newValue in
                     model.handleAutoUploadCreateSubfolderChange(newValue: newValue)
                 }
+                .font(.system(size: 16))
             Picker(NSLocalizedString("_autoupload_subfolder_granularity_", comment: ""), selection: $model.autoUploadSubfolderGranularity) {
                 Text(NSLocalizedString("_daily_", comment: "")).tag(Granularity.daily)
                 Text(NSLocalizedString("_monthly_", comment: "")).tag(Granularity.monthly)
                 Text(NSLocalizedString("_yearly_", comment: "")).tag(Granularity.yearly)
             }
+            .font(.system(size: 16))
             .onChange(of: model.autoUploadSubfolderGranularity) { newValue in
                 model.handleAutoUploadSubfolderGranularityChange(newValue: newValue)
             }
@@ -128,6 +135,7 @@ struct AutoUploadView: View {
         Section(content: {
             NavigationLink(destination: AutoUploadFileNamesView(model: AutoUploadFileNamesModel()), label: {
                 Text(NSLocalizedString("_autoupload_filenamemask_", comment: ""))
+                    .font(.system(size: 16))
             })
         }, footer: {
             Text(NSLocalizedString("_autoupload_filenamemask_footer_", comment: ""))

@@ -414,7 +414,6 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
             tapImageLogoManageAccount()
             return
         }
-        
         // Checking if the selected row is the Settings cell
         if item.name == "_settings_" {
             // Created an instance of the NCSettings view

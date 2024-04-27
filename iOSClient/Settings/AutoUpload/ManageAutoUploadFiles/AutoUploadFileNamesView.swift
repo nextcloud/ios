@@ -39,12 +39,14 @@ struct AutoUploadFileNamesView: View {
             // Specify Filename
             Section(header: Text(NSLocalizedString("_filename_", comment: ""))) {
                 Toggle(NSLocalizedString("_maintain_original_filename_", comment: ""), isOn: $model.maintainFilename)
+                    .font(.system(size: 16))
                     .onChange(of: model.maintainFilename, perform: { newValue in
                         model.toggleMaintainOriginalFilename(newValue: newValue)
                     })
                 // Filename
                 if !model.maintainFilename {
                     Toggle(NSLocalizedString("_add_filenametype_", comment: ""), isOn: $model.specifyFilename)
+                        .font(.system(size: 16))
                         .onChange(of: model.specifyFilename, perform: { newValue in
                             model.toggleAddFilenameType(newValue: newValue)
                         })
@@ -71,11 +73,13 @@ struct AutoUploadFileNamesView: View {
                             .background(Color(UIColor.secondarySystemGroupedBackground))
                             .multilineTextAlignment(.trailing)
                     }
+                    .font(.system(size: 16))
                     Text("\(model.previewFileName())")
+                        .font(.system(size: 16))
                 }, header: {
-                    Text(NSLocalizedString("_preview_filename_header", comment: ""))
+                    Text(NSLocalizedString("_preview_filename_header_", comment: ""))
                 }, footer: {
-                    Text(NSLocalizedString("_preview_filename_footer", comment: ""))
+                    Text(NSLocalizedString("_preview_filename_footer_", comment: ""))
                 })
             } else {
                 Section(content: {
@@ -83,7 +87,7 @@ struct AutoUploadFileNamesView: View {
                 }, header: {
                     Text(NSLocalizedString("_filename_header_", comment: ""))
                 }, footer: {
-                    Text(NSLocalizedString("_default_preview_filename_footer", comment: ""))
+                    Text(NSLocalizedString("_default_preview_filename_footer_", comment: ""))
                 })
             }
         }.navigationBarTitle(NSLocalizedString("_filename_mode_", comment: ""))

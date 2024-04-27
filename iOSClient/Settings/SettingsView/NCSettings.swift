@@ -43,9 +43,11 @@ struct NCSettings: View {
                         Image("autoUpload")
                             .resizable()
                             .renderingMode(.template)
+                            .foregroundColor(.secondary)
                             .frame(width: 20, height: 20)
                         Text(NSLocalizedString("_settings_autoupload_", comment: ""))
                     }
+                    .font(.system(size: 16))
                 }
             }
             /// `Privacy` Section
@@ -55,9 +57,11 @@ struct NCSettings: View {
                     Image(model.isLockActive ? "lock_open" : "lock")
                         .resizable()
                         .renderingMode(.template)
+                        .foregroundColor(.secondary)
                         .frame(width: 20, height: 20)
                     Text(model.isLockActive ? NSLocalizedString("_lock_not_active_", comment: "") : NSLocalizedString("_lock_active_", comment: ""))
                 }
+                .font(.system(size: 16))
                 .onTapGesture {
                     model.isLockActive.toggle()
                 }
@@ -66,21 +70,25 @@ struct NCSettings: View {
                 }
                 // Enable Touch ID
                 Toggle(NSLocalizedString("_enable_touch_face_id_", comment: ""), isOn: $model.enableTouchID)
+                    .font(.system(size: 16))
                     .onChange(of: model.enableTouchID) { _ in
                         model.updateTouchIDSetting()
                     }
                 // Lock no screen
                 Toggle(NSLocalizedString("_lock_protection_no_screen_", comment: ""), isOn: $model.lockScreen)
+                    .font(.system(size: 16))
                     .onChange(of: model.lockScreen) { _ in
                         model.updateLockScreenSetting()
                     }
                 // Privacy screen
                 Toggle(NSLocalizedString("_privacy_screen_", comment: ""), isOn: $model.privacyScreen)
+                    .font(.system(size: 16))
                     .onChange(of: model.privacyScreen) { _ in
                         model.updatePrivacyScreenSetting()
                     }
                 // Reset app wrong attempts
                 Toggle(NSLocalizedString("_reset_wrong_passcode_", comment: ""), isOn: $model.resetWrongAttempts)
+                    .font(.system(size: 16))
                     .onChange(of: model.resetWrongAttempts) { _ in
                         model.updateResetWrongAttemptsSetting()
                     }
@@ -99,8 +107,11 @@ struct NCSettings: View {
                             .resizable()
                             .renderingMode(.template)
                             .frame(width: 20, height: 20)
+                            .foregroundColor(.secondary)
                         Text(NSLocalizedString("_mobile_config_", comment: ""))
-                    }.onTapGesture {
+                    }
+                    .font(.system(size: 16))
+                    .onTapGesture {
                         model.getConfigFiles()
                     }
                 }, header: {
@@ -123,8 +134,10 @@ struct NCSettings: View {
                             .resizable()
                             .renderingMode(.template)
                             .frame(width: 20, height: 20)
+                            .foregroundColor(.secondary)
                         Text(NSLocalizedString("_advanced_", comment: ""))
                     }
+                    .font(.system(size: 16))
                 }
             }
             /// `Information` Section
@@ -135,8 +148,11 @@ struct NCSettings: View {
                         .resizable()
                         .renderingMode(.template)
                         .frame(width: 20, height: 20)
+                        .foregroundColor(.secondary)
                     Text(NSLocalizedString("_acknowledgements_", comment: ""))
-                }.onTapGesture {
+                }
+                .font(.system(size: 16))
+                .onTapGesture {
                     showAcknowledgements = true
                 }.sheet(isPresented: $showAcknowledgements) {
                     AcknowledgementsView(showText: $showAcknowledgements, browserTitle: "Acknowledgements")
@@ -147,8 +163,11 @@ struct NCSettings: View {
                         .resizable()
                         .renderingMode(.template)
                         .frame(width: 20, height: 20)
+                        .foregroundColor(.secondary)
                     Text(NSLocalizedString("_privacy_legal_", comment: ""))
-                }.onTapGesture {
+                }
+                .font(.system(size: 16))
+                .onTapGesture {
                     showBrowser = true
                 }.sheet(isPresented: $showBrowser) {
                     NCBrowserWebView(isPresented: $showBrowser, urlBase: URL(string: NCBrandOptions.shared.privacy)!, browserTitle: "Privacy Policies")
@@ -159,8 +178,11 @@ struct NCSettings: View {
                         .resizable()
                         .renderingMode(.template)
                         .frame(width: 20, height: 20)
+                        .foregroundColor(.secondary)
                     Text(NSLocalizedString("_source_code_", comment: ""))
-                }.onTapGesture {
+                }
+                .font(.system(size: 16))
+                .onTapGesture {
                     showSourceCode = true
                 }.sheet(isPresented: $showSourceCode) {
                     NCBrowserWebView(isPresented: $showSourceCode, urlBase: URL(string: NCBrandOptions.shared.sourceCode)!, browserTitle: "Source Code")
@@ -192,9 +214,11 @@ struct E2EESection: View {
                     Image("lock")
                         .resizable()
                         .renderingMode(.template)
+                        .foregroundColor(.secondary)
                         .frame(width: 20, height: 20)
                     Text(NSLocalizedString("_e2e_settings_", comment: ""))
                 }
+                .font(.system(size: 16))
             }
         })
     }

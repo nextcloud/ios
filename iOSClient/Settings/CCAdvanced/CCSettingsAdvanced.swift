@@ -37,6 +37,7 @@ struct CCSettingsAdvanced: View {
                     .onChange(of: viewModel.showHiddenFiles) { _ in
                         viewModel.updateShowHiddenFiles()
                     }
+                    .font(.system(size: 16))
             }, footer: {
                 Text(NSLocalizedString("_show_hidden_files_footer", comment: ""))
                     .font(.system(size: 12))
@@ -48,10 +49,12 @@ struct CCSettingsAdvanced: View {
                     .onChange(of: viewModel.mostCompatible) { _ in
                         viewModel.updateMostCompatible()
                     }
+                    .font(.system(size: 16))
                 Toggle(NSLocalizedString("_upload_mov_livephoto_", comment: ""), isOn: $viewModel.livePhoto)
                     .onChange(of: viewModel.livePhoto) { _ in
                         viewModel.updateLivePhoto()
                     }
+                    .font(.system(size: 16))
             }, footer: {
                 (
                     Text(NSLocalizedString("_format_compatibility_footer_", comment: ""))
@@ -66,6 +69,7 @@ struct CCSettingsAdvanced: View {
                     .onChange(of: viewModel.removeFromCameraRoll) { _ in
                         viewModel.updateRemoveFromCameraRoll()
                     }
+                    .font(.system(size: 16))
             }, footer: {
                 Text(NSLocalizedString("_remove_photo_CameraRoll_desc_", comment: ""))
                     .font(.system(size: 12))
@@ -78,6 +82,7 @@ struct CCSettingsAdvanced: View {
                         .onChange(of: viewModel.appIntegration) { _ in
                             viewModel.updateAppIntegration()
                         }
+                        .font(.system(size: 16))
                 }, footer: {
                     Text(NSLocalizedString("_disable_files_app_footer_", comment: ""))
                         .font(.system(size: 12))
@@ -98,6 +103,7 @@ struct CCSettingsAdvanced: View {
                                 viewModel.updateCrashReporter()
                             }
                     }
+                    .font(.system(size: 16))
                 }, header: {
                     Text(NSLocalizedString("_privacy_", comment: ""))
                 }, footer: {
@@ -118,6 +124,7 @@ struct CCSettingsAdvanced: View {
                             .foregroundColor(Color(UIColor.systemGray))
                         Text(NSLocalizedString("_view_log_", comment: ""))
                     }
+                    .font(.system(size: 16))
                     .onTapGesture(perform: {
                         viewModel.viewLogFile()
                     })
@@ -129,7 +136,9 @@ struct CCSettingsAdvanced: View {
                             .frame(width: 20, height: 20)
                             .foregroundColor(Color(UIColor.systemGray))
                         Text(NSLocalizedString("_clear_log_", comment: ""))
-                    }.onTapGesture(perform: {
+                    }
+                    .font(.system(size: 16))
+                    .onTapGesture(perform: {
                         viewModel.clearLogFile()
                     })
                     .alert(NSLocalizedString("_log_file_clear_alert_", comment: ""), isPresented: $viewModel.logFileCleared) {
@@ -148,7 +157,9 @@ struct CCSettingsAdvanced: View {
                         ForEach(LogLevel.allCases) { level in
                             Text(level.displayText).tag(level)
                         }
-                    }.onChange(of: viewModel.selectedLogLevel) { _ in
+                    }
+                    .font(.system(size: 16))
+                    .onChange(of: viewModel.selectedLogLevel) { _ in
                         viewModel.updateSelectedLogLevel()
                     }
                     NavigationLink(destination: NCCapabilitiesView(capabilitiesStatus: NCCapabilitiesViewOO())) {
@@ -160,6 +171,7 @@ struct CCSettingsAdvanced: View {
                                 .foregroundColor(Color(UIColor.systemGray))
                             Text(NSLocalizedString("_capabilities_", comment: ""))
                         }
+                        .font(.system(size: 16))
                     }
                 }
             }
@@ -169,7 +181,9 @@ struct CCSettingsAdvanced: View {
                     ForEach(CacheDeletionInterval.allCases) { interval in
                         Text(interval.displayText).tag(interval)
                     }
-                }.pickerStyle(.automatic)
+                }
+                .font(.system(size: 16))
+                    .pickerStyle(.automatic)
                     .onChange(of: viewModel.selectedInterval) { _ in
                         viewModel.updateSelectedInterval()
                     }
@@ -181,6 +195,7 @@ struct CCSettingsAdvanced: View {
                         .foregroundColor(Color(UIColor.systemRed))
                     Text(NSLocalizedString("_clear_cache_", comment: ""))
                 }
+                .font(.system(size: 16))
                 .alert(NSLocalizedString("_want_delete_cache_", comment: ""), isPresented: $showCacheAlert) {
                     Button(NSLocalizedString("_yes_", comment: ""), role: .destructive) {
                         viewModel.clearAllCacheRequest()
@@ -208,6 +223,7 @@ struct CCSettingsAdvanced: View {
                     Text(NSLocalizedString("_exit_", comment: ""))
                         .foregroundColor(Color(UIColor.systemRed))
                 }
+                .font(.system(size: 16))
                 .alert(NSLocalizedString("_want_exit_", comment: ""), isPresented: $showExitAlert) {
                     Button(NSLocalizedString("_ok_", comment: ""), role: .destructive) {
                         viewModel.exitNextCloud(exit: showExitAlert)

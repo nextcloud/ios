@@ -713,7 +713,7 @@
 "_default_filename_image_"          = "Filename: IMG_0001.JPG";
 "_preview_filename_"                = "Example preview of filename. You can use the mask %@ for date/time";
 "_preview_filename_footer_"          = "Example preview of filename. You can use the mask MM, MMM, DD, Y Y,YYYY and HH,hh, mm,ss, ampm for date/time";
-"_preview_filename_header"          = "CUSTOM FILENAME";
+"_preview_filename_header_"          = "CUSTOM FILENAME";
 "_add_filenametype_"                = "Specify type in filename";
 "_filenametype_photo_video_"        = "Photo/Video";
 "_maintain_original_filename_"      = "Maintain original filename";

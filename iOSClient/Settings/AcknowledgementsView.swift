@@ -51,14 +51,11 @@ struct AcknowledgementsView: View {
                     self.showText = false
                 }) {
                     ZStack {
-                        Circle()
-                            .fill(Color(UIColor.secondarySystemBackground))
-                            .frame(width: 25, height: 25)
                         Image(systemName: "xmark")
                             .resizable()
                             .renderingMode(.template)
                             .frame(width: 14, height: 14)
-                            .foregroundColor(.gray)
+                            .foregroundColor(.secondary)
                     }
                 }
                 .padding()
