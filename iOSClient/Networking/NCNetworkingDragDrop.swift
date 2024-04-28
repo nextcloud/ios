@@ -23,9 +23,6 @@
 
 import UIKit
 import NextcloudKit
-import Photos
-import JGProgressHUD
-import RealmSwift
 
 class NCNetworkingDragDrop: NSObject {
     let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
