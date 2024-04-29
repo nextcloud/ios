@@ -15,6 +15,11 @@ extension NCMedia {
         setSelectcancelButton()
     }
 
+    func setEditMode(_ editMode: Bool) {
+        isEditMode = editMode
+        setSelectcancelButton()
+    }
+
     func setSelectcancelButton() {
         selectOcId.removeAll()
         tabBarSelect.selectCount = selectOcId.count
