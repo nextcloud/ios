@@ -28,6 +28,42 @@ class NCNetworkingDragDrop: NSObject {
     let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
     let utilityFileSystem = NCUtilityFileSystem()
 
+    func performDrop(_ collectionView: UICollectionView, performDropWith coordinator: UICollectionViewDropCoordinator, serverUrl: String) -> [tableMetadata]? {
+        var serverUrl = serverUrl
+        var metadatas: [tableMetadata] = []
+        DragDropHover.shared.cleanPushDragDropHover()
+        DragDropHover.shared.sourceMetadatas = nil
+
+        for item in coordinator.session.items {
+            if item.itemProvider.hasItemConformingToTypeIdentifier(NCGlobal.shared.metadataOcIdDataRepresentation) {
+                let semaphore = DispatchSemaphore(value: 0)
+                item.itemProvider.loadDataRepresentation(forTypeIdentifier: NCGlobal.shared.metadataOcIdDataRepresentation) { data, error in
+                    if error == nil, let data, let ocId = String(data: data, encoding: .utf8),
+                       let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
+                        metadatas.append(metadata)
+                    }
+                    semaphore.signal()
+                }
+                semaphore.wait()
+            } else {
+                item.itemProvider.loadFileRepresentation(forTypeIdentifier: UTType.data.identifier) { url, error in
+                    if error == nil, let url = url {
+                        if let destinationMetadata = DragDropHover.shared.destinationMetadata, destinationMetadata.directory {
+                            serverUrl = destinationMetadata.serverUrl + "/" + destinationMetadata.fileName
+                        }
+                        NCNetworkingDragDrop().uploadFile(url: url, serverUrl: serverUrl)
+                    }
+                }
+            }
+        }
+
+        if metadatas.isEmpty {
+            return nil
+        } else {
+            return metadatas
+        }
+    }
+
     func uploadFile(url: URL, serverUrl: String) {
         do {
             let data = try Data(contentsOf: url)

@@ -123,41 +123,12 @@ extension NCCollectionViewCommon: UICollectionViewDropDelegate {
     }
 
     func collectionView(_ collectionView: UICollectionView, performDropWith coordinator: UICollectionViewDropCoordinator) {
-        var metadatas: [tableMetadata] = []
         DragDropHover.shared.cleanPushDragDropHover()
         DragDropHover.shared.sourceMetadatas = nil
 
-        for item in coordinator.items {
-            let semaphore = DispatchSemaphore(value: 0)
-            let itemProvider = item.dragItem.itemProvider
-            if itemProvider.hasItemConformingToTypeIdentifier(NCGlobal.shared.metadataOcIdDataRepresentation) {
-                itemProvider.loadDataRepresentation(forTypeIdentifier: NCGlobal.shared.metadataOcIdDataRepresentation) { data, error in
-                    if error == nil, let data, let ocId = String(data: data, encoding: .utf8), let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
-                        metadatas.append(metadata)
-                    }
-                    semaphore.signal()
-                }
-                semaphore.wait()
-            }
-        }
-
-        // drop for metadataOcIdDataRepresentation
-        if !metadatas.isEmpty {
+        if let metadatas = NCNetworkingDragDrop().performDrop(collectionView, performDropWith: coordinator, serverUrl: self.serverUrl) {
             DragDropHover.shared.sourceMetadatas = metadatas
-            self.openMenu(collectionView: collectionView, location: coordinator.session.location(in: collectionView))
-        } else {
-            // drop for url
-            var serverUrl: String = self.serverUrl
-            for dragItem in coordinator.session.items {
-                dragItem.itemProvider.loadFileRepresentation(forTypeIdentifier: UTType.data.identifier) { url, error in
-                    if error == nil, let url {
-                        if let destinationMetadata = DragDropHover.shared.destinationMetadata, destinationMetadata.directory {
-                            serverUrl = destinationMetadata.serverUrl + "/" + destinationMetadata.fileName
-                        }
-                        NCNetworkingDragDrop().uploadFile(url: url, serverUrl: serverUrl)
-                    }
-                }
-            }
+            openMenu(collectionView: collectionView, location: coordinator.session.location(in: collectionView))
         }
     }
 
