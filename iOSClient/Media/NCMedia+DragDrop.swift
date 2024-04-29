@@ -30,9 +30,9 @@ extension NCMedia: UICollectionViewDragDelegate {
     func collectionView(_ collectionView: UICollectionView, itemsForBeginning session: UIDragSession, at indexPath: IndexPath) -> [UIDragItem] {
 
         if isEditMode {
-            return NCNetworkingDragDrop().performDrag(selectOcId: selectOcId)
+            return NCDragDrop().performDrag(selectOcId: selectOcId)
         } else if let metadata = self.metadatas?[indexPath.row] {
-            return NCNetworkingDragDrop().performDrag(metadata: metadata)
+            return NCDragDrop().performDrag(metadata: metadata)
         }
 
         return []
@@ -52,7 +52,7 @@ extension NCMedia: UICollectionViewDropDelegate {
         guard let tableAccount = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", appDelegate.account)) else { return }
         let serverUrl = NCUtilityFileSystem().getHomeServer(urlBase: tableAccount.urlBase, userId: tableAccount.userId) + tableAccount.mediaPath
 
-        if let metadatas = NCNetworkingDragDrop().performDrop(collectionView, performDropWith: coordinator, serverUrl: serverUrl) {
+        if let metadatas = NCDragDrop().performDrop(collectionView, performDropWith: coordinator, serverUrl: serverUrl) {
             DragDropHover.shared.sourceMetadatas = metadatas
             openMenu(collectionView: collectionView, location: coordinator.session.location(in: collectionView))
         }
@@ -82,7 +82,7 @@ extension NCMedia: UICollectionViewDropDelegate {
               let tableAccount = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", appDelegate.account)) else { return }
         let serverUrl = NCUtilityFileSystem().getHomeServer(urlBase: tableAccount.urlBase, userId: tableAccount.userId) + tableAccount.mediaPath
 
-        NCNetworkingDragDrop().copyFile(metadatas: sourceMetadatas, serverUrl: serverUrl)
+        NCDragDrop().copyFile(metadatas: sourceMetadatas, serverUrl: serverUrl)
     }
 
     @objc func moveMenuFile() {
@@ -90,6 +90,6 @@ extension NCMedia: UICollectionViewDropDelegate {
               let tableAccount = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", appDelegate.account)) else { return }
         let serverUrl = NCUtilityFileSystem().getHomeServer(urlBase: tableAccount.urlBase, userId: tableAccount.userId) + tableAccount.mediaPath
 
-        NCNetworkingDragDrop().moveFile(metadatas: sourceMetadatas, serverUrl: serverUrl)
+        NCDragDrop().moveFile(metadatas: sourceMetadatas, serverUrl: serverUrl)
     }
 }

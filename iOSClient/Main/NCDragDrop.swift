@@ -1,5 +1,5 @@
 //
-//  NCNetworkingDragDrop.swift
+//  NCDragDrop.swift
 //  Nextcloud
 //
 //  Created by Marino Faggiana on 27/04/24.
@@ -24,7 +24,7 @@
 import UIKit
 import NextcloudKit
 
-class NCNetworkingDragDrop: NSObject {
+class NCDragDrop: NSObject {
     let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
     let utilityFileSystem = NCUtilityFileSystem()
 
@@ -35,7 +35,7 @@ class NCNetworkingDragDrop: NSObject {
             metadatas.append(metadata)
         } else if let selectOcId {
             for ocId in selectOcId {
-                if let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId), metadata.status == 0, !NCNetworkingDragDrop().isDirectoryE2EE(metadata: metadata) {
+                if let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId), metadata.status == 0, !isDirectoryE2EE(metadata: metadata) {
                     metadatas.append(metadata)
                 }
             }
@@ -77,7 +77,7 @@ class NCNetworkingDragDrop: NSObject {
                         if let destinationMetadata = DragDropHover.shared.destinationMetadata, destinationMetadata.directory {
                             serverUrl = destinationMetadata.serverUrl + "/" + destinationMetadata.fileName
                         }
-                        NCNetworkingDragDrop().uploadFile(url: url, serverUrl: serverUrl)
+                        self.uploadFile(url: url, serverUrl: serverUrl)
                     }
                 }
             }

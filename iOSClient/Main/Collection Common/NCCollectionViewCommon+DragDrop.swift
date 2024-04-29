@@ -31,9 +31,9 @@ extension NCCollectionViewCommon: UICollectionViewDragDelegate {
     func collectionView(_ collectionView: UICollectionView, itemsForBeginning session: UIDragSession, at indexPath: IndexPath) -> [UIDragItem] {
 
         if isEditMode {
-            return NCNetworkingDragDrop().performDrag(selectOcId: selectOcId)
+            return NCDragDrop().performDrag(selectOcId: selectOcId)
         } else if let metadata = dataSource.cellForItemAt(indexPath: indexPath) {
-            return NCNetworkingDragDrop().performDrag(metadata: metadata)
+            return NCDragDrop().performDrag(metadata: metadata)
         }
 
         return []
@@ -70,7 +70,7 @@ extension NCCollectionViewCommon: UICollectionViewDropDelegate {
         DragDropHover.shared.destinationMetadata = destinationMetadata
 
         if let destinationMetadata {
-            if NCNetworkingDragDrop().isDirectoryE2EE(metadata: destinationMetadata) {
+            if NCDragDrop().isDirectoryE2EE(metadata: destinationMetadata) {
                 DragDropHover.shared.cleanPushDragDropHover()
                 return UICollectionViewDropProposal(operation: .forbidden)
             }
@@ -110,7 +110,7 @@ extension NCCollectionViewCommon: UICollectionViewDropDelegate {
         DragDropHover.shared.cleanPushDragDropHover()
         DragDropHover.shared.sourceMetadatas = nil
 
-        if let metadatas = NCNetworkingDragDrop().performDrop(collectionView, performDropWith: coordinator, serverUrl: self.serverUrl) {
+        if let metadatas = NCDragDrop().performDrop(collectionView, performDropWith: coordinator, serverUrl: self.serverUrl) {
             DragDropHover.shared.sourceMetadatas = metadatas
             openMenu(collectionView: collectionView, location: coordinator.session.location(in: collectionView))
         }
@@ -142,7 +142,7 @@ extension NCCollectionViewCommon: UICollectionViewDropDelegate {
             serverUrl = destinationMetadata.serverUrl + "/" + destinationMetadata.fileName
         }
 
-        NCNetworkingDragDrop().copyFile(metadatas: sourceMetadatas, serverUrl: serverUrl)
+        NCDragDrop().copyFile(metadatas: sourceMetadatas, serverUrl: serverUrl)
     }
 
     @objc func moveMenuFile() {
@@ -152,7 +152,7 @@ extension NCCollectionViewCommon: UICollectionViewDropDelegate {
             serverUrl = destinationMetadata.serverUrl + "/" + destinationMetadata.fileName
         }
 
-        NCNetworkingDragDrop().moveFile(metadatas: sourceMetadatas, serverUrl: serverUrl)
+        NCDragDrop().moveFile(metadatas: sourceMetadatas, serverUrl: serverUrl)
     }
 }
 
