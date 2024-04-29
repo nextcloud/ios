@@ -347,7 +347,8 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
             processor.execute { completion in
                 guard let metadata = NCManageDatabase.shared.setMetadatasSessionInWaitDownload(metadatas: [metadata],
                                                                                                session: NextcloudKit.shared.nkCommonInstance.sessionIdentifierDownload,
-                                                                                               selector: "") else { return completion() }
+                                                                                               selector: "",
+                                                                                               sceneIdentifier: mainTabBarController.sceneIdentifier) else { return completion() }
                 NCNetworking.shared.download(metadata: metadata, withNotificationProgressTask: false) {
                 } progressHandler: { progress in
                     processor.hud?.progress = Float(progress.fractionCompleted)
