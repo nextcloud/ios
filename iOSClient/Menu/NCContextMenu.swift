@@ -32,8 +32,8 @@ class NCContextMenu: NSObject {
     let utility = NCUtility()
 
     func viewMenu(ocId: String, viewController: UIViewController, image: UIImage?) -> UIMenu {
-        guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) else { return UIMenu() }
-
+        guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId),
+              let sceneIdentifier = (viewController.tabBarController as? NCMainTabBarController)?.sceneIdentifier else { return UIMenu() }
         var downloadRequest: DownloadRequest?
         var titleDeleteConfirmFile = NSLocalizedString("_delete_file_", comment: "")
         let metadataMOV = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata)
@@ -82,7 +82,8 @@ class NCContextMenu: NSObject {
             } else {
                 guard let metadata = NCManageDatabase.shared.setMetadatasSessionInWaitDownload(metadatas: [metadata],
                                                                                                session: NextcloudKit.shared.nkCommonInstance.sessionIdentifierDownload,
-                                                                                               selector: NCGlobal.shared.selectorOpenIn) else { return }
+                                                                                               selector: NCGlobal.shared.selectorOpenIn,
+                                                                                               sceneIdentifier: sceneIdentifier) else { return }
                 hud.show(in: viewController.view)
                 NCNetworking.shared.download(metadata: metadata, withNotificationProgressTask: false) {
                 } requestHandler: { request in
@@ -105,13 +106,13 @@ class NCContextMenu: NSObject {
 
         let viewInFolder = UIAction(title: NSLocalizedString("_view_in_folder_", comment: ""),
                                     image: UIImage(systemName: "questionmark.folder")) { _ in
-            NCActionCenter.shared.openFileViewInFolder(serverUrl: metadata.serverUrl, fileNameBlink: metadata.fileName, fileNameOpen: nil)
+            NCActionCenter.shared.openFileViewInFolder(serverUrl: metadata.serverUrl, fileNameBlink: metadata.fileName, fileNameOpen: nil, sceneIdentifier: sceneIdentifier)
         }
 
         let livePhotoSave = UIAction(title: NSLocalizedString("_livephoto_save_", comment: ""),
                                      image: UIImage(systemName: "livephoto")) { _ in
             if let metadataMOV = metadataMOV {
-                NCNetworking.shared.saveLivePhotoQueue.addOperation(NCOperationSaveLivePhoto(metadata: metadata, metadataMOV: metadataMOV))
+                NCNetworking.shared.saveLivePhotoQueue.addOperation(NCOperationSaveLivePhoto(metadata: metadata, metadataMOV: metadataMOV, hudView: viewController.view))
             }
         }
 
@@ -128,7 +129,8 @@ class NCContextMenu: NSObject {
             } else {
                 guard let metadata = NCManageDatabase.shared.setMetadatasSessionInWaitDownload(metadatas: [metadata],
                                                                                                session: NextcloudKit.shared.nkCommonInstance.sessionIdentifierDownload,
-                                                                                               selector: NCGlobal.shared.selectorLoadFileQuickLook) else { return }
+                                                                                               selector: NCGlobal.shared.selectorLoadFileQuickLook,
+                                                                                               sceneIdentifier: sceneIdentifier) else { return }
                 hud.show(in: viewController.view)
                 NCNetworking.shared.download(metadata: metadata, withNotificationProgressTask: false) {
                 } requestHandler: { request in

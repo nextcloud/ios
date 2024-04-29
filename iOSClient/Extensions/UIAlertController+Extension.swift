@@ -31,7 +31,7 @@ extension UIAlertController {
     ///   - urlBase: UrlBase object
     ///   - completion: If not` nil` it overrides the default behavior which shows an error using `NCContentPresenter`
     /// - Returns: The presentable alert controller
-    static func createFolder(serverUrl: String, urlBase: NCUserBaseUrl, markE2ee: Bool = false, completion: ((_ error: NKError) -> Void)? = nil) -> UIAlertController {
+    static func createFolder(serverUrl: String, urlBase: NCUserBaseUrl, markE2ee: Bool = false, sceneIdentifier: String? = nil, completion: ((_ error: NKError) -> Void)? = nil) -> UIAlertController {
         let alertController = UIAlertController(title: NSLocalizedString("_create_folder_", comment: ""), message: nil, preferredStyle: .alert)
 
         let okAction = UIAlertAction(title: NSLocalizedString("_save_", comment: ""), style: .default, handler: { _ in
@@ -49,7 +49,7 @@ extension UIAlertController {
                     }
                 }
             } else {
-                NCNetworking.shared.createFolder(fileName: fileNameFolder, serverUrl: serverUrl, account: urlBase.account, urlBase: urlBase.urlBase, userId: urlBase.userId, overwrite: false, withPush: true) { error in
+                NCNetworking.shared.createFolder(fileName: fileNameFolder, serverUrl: serverUrl, account: urlBase.account, urlBase: urlBase.urlBase, userId: urlBase.userId, overwrite: false, withPush: true, sceneIdentifier: sceneIdentifier) { error in
                     if let completion = completion {
                         completion(error)
                     } else if error != .success {

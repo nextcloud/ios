@@ -117,7 +117,7 @@ extension UIColor {
 
         guard let components = cgColor.components, components.count > 2 else {return false}
         let brightness = ((components[0] * 299) + (components[1] * 587) + (components[2] * 114)) / 1000
-        return (brightness > 0.95)
+        return (brightness > 0.90)
     }
 
     @objc func isTooDark() -> Bool {
@@ -128,7 +128,7 @@ extension UIColor {
 
         guard let components = cgColor.components, components.count > 2 else {return false}
         let brightness = ((components[0] * 299) + (components[1] * 587) + (components[2] * 114)) / 1000
-        return (brightness < 0.05)
+        return (brightness < 0.10)
     }
 
     func isLight(threshold: Float = 0.7) -> Bool {

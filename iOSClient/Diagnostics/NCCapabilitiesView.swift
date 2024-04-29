@@ -23,7 +23,6 @@
 
 import SwiftUI
 import NextcloudKit
-import PreviewSnapshots
 
 @objc class NCHostingCapabilitiesView: NSObject {
 
@@ -101,7 +100,7 @@ class NCCapabilitiesViewOO: ObservableObject {
             capabililies.append(Capability(text: "ONLYOFFICE", image: image, resize: true, available: onlyofficeEditors))
         }
         if let image = UIImage(named: "collabora") {
-            capabililies.append(Capability(text: "Collabora", image: image, resize: true, available: NCGlobal.shared.capabilityRichdocumentsEnabled))
+            capabililies.append(Capability(text: "Collabora", image: image, resize: true, available: NCGlobal.shared.capabilityRichDocumentsEnabled))
         }
         if let image = UIImage(systemName: "moon") {
             capabililies.append(Capability(text: "User Status", image: image, resize: false, available: NCGlobal.shared.capabilityUserStatusEnabled))
@@ -115,8 +114,11 @@ class NCCapabilitiesViewOO: ObservableObject {
         if let image = UIImage(systemName: "person.2") {
             capabililies.append(Capability(text: "Group folders", image: image, resize: false, available: NCGlobal.shared.capabilityGroupfoldersEnabled))
         }
-        if let image = UIImage(systemName: "shield") {
+        if let image = UIImage(systemName: "shield"), NCBrandOptions.shared.brand != "Nextcloud" {
             capabililies.append(Capability(text: "Security Guard Diagnostics", image: image, resize: false, available: NCGlobal.shared.capabilitySecurityGuardDiagnostics))
+        }
+        if let image = UIImage(systemName: "sparkles") {
+            capabililies.append(Capability(text: "Assistant", image: image, resize: false, available: NCGlobal.shared.capabilityAssistantEnabled))
         }
 
         homeServer = utilityFileSystem.getHomeServer(urlBase: activeAccount.urlBase, userId: activeAccount.userId) + "/"
@@ -194,28 +196,16 @@ struct NCCapabilitiesView: View {
     }
 }
 
-struct NCCapabilitiesView_Previews: PreviewProvider {
-    static var previews: some View {
-        snapshots.previews.previewLayout(.device)
+#Preview {
+    func getCapabilitiesViewOOForPreview() -> NCCapabilitiesViewOO {
+        let capabilitiesViewOO = NCCapabilitiesViewOO()
+        capabilitiesViewOO.capabililies = [
+            NCCapabilitiesViewOO.Capability(text: "Collabora", image: UIImage(named: "collabora")!, resize: true, available: true),
+            NCCapabilitiesViewOO.Capability(text: "XXX site", image: UIImage(systemName: "lock.shield")!, resize: false, available: false)
+        ]
+        capabilitiesViewOO.homeServer = "https://cloud.nextcloud.com/remote.php.dav/files/marino/"
+        return capabilitiesViewOO
     }
 
-    static var snapshots: PreviewSnapshots<String> {
-        PreviewSnapshots(
-            configurations: [
-                .init(name: NCGlobal.shared.defaultSnapshotConfiguration, state: "")
-            ],
-            configure: { _ in
-                NCCapabilitiesView(capabilitiesStatus: getCapabilitiesViewOOForPreview()).padding(.top, 20).frameForPreview()
-            })
-    }
-}
-
-func getCapabilitiesViewOOForPreview() -> NCCapabilitiesViewOO {
-    let capabilitiesViewOO = NCCapabilitiesViewOO()
-    capabilitiesViewOO.capabililies = [
-        NCCapabilitiesViewOO.Capability(text: "Collabora", image: UIImage(named: "collabora")!, resize: true, available: true),
-        NCCapabilitiesViewOO.Capability(text: "XXX site", image: UIImage(systemName: "lock.shield")!, resize: false, available: false)
-    ]
-    capabilitiesViewOO.homeServer = "https://cloud.nextcloud.com/remote.php.dav/files/marino/"
-    return capabilitiesViewOO
+    return NCCapabilitiesView(capabilitiesStatus: getCapabilitiesViewOOForPreview())
 }

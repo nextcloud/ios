@@ -160,8 +160,10 @@ class NCShareExtension: UIViewController {
             self.filesName = fileNames
             DispatchQueue.main.async { self.setCommandView() }
         }
-        NCPasscode.shared.presentPasscode(viewController: self, delegate: self) {
-            NCPasscode.shared.enableTouchFaceID()
+        if NCKeychain().presentPasscode {
+            NCPasscode.shared.presentPasscode(viewController: self, delegate: self) {
+                NCPasscode.shared.enableTouchFaceID()
+            }
         }
     }
 

@@ -28,18 +28,16 @@ import NextcloudKit
 extension NCViewer {
 
     func toggleMenu(viewController: UIViewController, metadata: tableMetadata, webView: Bool, imageIcon: UIImage?, indexPath: IndexPath = IndexPath()) {
-
-        guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(metadata.ocId) else { return }
-
+        guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(metadata.ocId),
+              let sceneIdentifier = (viewController.tabBarController as? NCMainTabBarController)?.sceneIdentifier else { return }
         var actions = [NCMenuAction]()
-
         let localFile = NCManageDatabase.shared.getTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
         let isOffline = localFile?.offline == true
 
         //
         // DETAIL
         //
-        if !appDelegate.disableSharesView {
+        if !NCGlobal.shared.disableSharesView {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_details_", comment: ""),
@@ -60,7 +58,7 @@ extension NCViewer {
                     title: NSLocalizedString("_view_in_folder_", comment: ""),
                     icon: utility.loadImage(named: "questionmark.folder"),
                     action: { _ in
-                        NCActionCenter.shared.openFileViewInFolder(serverUrl: metadata.serverUrl, fileNameBlink: metadata.fileName, fileNameOpen: nil)
+                       NCActionCenter.shared.openFileViewInFolder(serverUrl: metadata.serverUrl, fileNameBlink: metadata.fileName, fileNameOpen: nil, sceneIdentifier: sceneIdentifier)
                     }
                 )
             )
@@ -103,13 +101,14 @@ extension NCViewer {
         //
         // SAVE LIVE PHOTO
         //
-        if let metadataMOV = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata) {
+        if let metadataMOV = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata),
+           let hudView = viewController.tabBarController?.view {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_livephoto_save_", comment: ""),
                     icon: NCUtility().loadImage(named: "livephoto"),
                     action: { _ in
-                        NCNetworking.shared.saveLivePhotoQueue.addOperation(NCOperationSaveLivePhoto(metadata: metadata, metadataMOV: metadataMOV))
+                        NCNetworking.shared.saveLivePhotoQueue.addOperation(NCOperationSaveLivePhoto(metadata: metadata, metadataMOV: metadataMOV, hudView: hudView))
                     }
                 )
             )
@@ -135,7 +134,8 @@ extension NCViewer {
                         } else {
                             guard let metadata = NCManageDatabase.shared.setMetadatasSessionInWaitDownload(metadatas: [metadata],
                                                                                                            session: NextcloudKit.shared.nkCommonInstance.sessionIdentifierDownload,
-                                                                                                           selector: NCGlobal.shared.selectorSaveAsScan) else { return }
+                                                                                                           selector: NCGlobal.shared.selectorSaveAsScan,
+                                                                                                           sceneIdentifier: sceneIdentifier) else { return }
                             NCNetworking.shared.download(metadata: metadata, withNotificationProgressTask: true)
                         }
                     }
@@ -173,7 +173,7 @@ extension NCViewer {
         // COPY - MOVE
         //
         if !webView, metadata.isCopyableMovable {
-            actions.append(.moveOrCopyAction(selectedMetadatas: [metadata], indexPath: []))
+            actions.append(.moveOrCopyAction(selectedMetadatas: [metadata], viewController: viewController, indexPath: []))
         }
 
         //
@@ -187,7 +187,8 @@ extension NCViewer {
                     action: { _ in
                         guard let metadata = NCManageDatabase.shared.setMetadatasSessionInWaitDownload(metadatas: [metadata],
                                                                                                        session: NextcloudKit.shared.nkCommonInstance.sessionIdentifierDownload,
-                                                                                                       selector: "") else { return }
+                                                                                                       selector: "",
+                                                                                                       sceneIdentifier: sceneIdentifier) else { return }
                         NCNetworking.shared.download(metadata: metadata, withNotificationProgressTask: true)
                     }
                 )
@@ -239,7 +240,8 @@ extension NCViewer {
                         } else {
                             guard let metadata = NCManageDatabase.shared.setMetadatasSessionInWaitDownload(metadatas: [metadata],
                                                                                                            session: NextcloudKit.shared.nkCommonInstance.sessionIdentifierDownload,
-                                                                                                           selector: NCGlobal.shared.selectorLoadFileQuickLook) else { return }
+                                                                                                           selector: NCGlobal.shared.selectorLoadFileQuickLook,
+                                                                                                           sceneIdentifier: sceneIdentifier) else { return }
                             NCNetworking.shared.download(metadata: metadata, withNotificationProgressTask: true)
                         }
                     }

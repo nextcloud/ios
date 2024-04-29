@@ -30,15 +30,14 @@ import NextcloudKit
 // MARK: - Photo Picker
 
 class NCPhotosPickerViewController: NSObject {
-
     let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
-    var sourceViewController: UIViewController
+    var mainTabBarController: NCMainTabBarController
     var maxSelectedAssets = 1
     var singleSelectedMode = false
 
     @discardableResult
-    init(viewController: UIViewController, maxSelectedAssets: Int, singleSelectedMode: Bool) {
-        sourceViewController = viewController
+    init(mainTabBarController: NCMainTabBarController, maxSelectedAssets: Int, singleSelectedMode: Bool) {
+        self.mainTabBarController = mainTabBarController
         super.init()
 
         self.maxSelectedAssets = maxSelectedAssets
@@ -46,9 +45,10 @@ class NCPhotosPickerViewController: NSObject {
 
         self.openPhotosPickerViewController { assets in
             if !assets.isEmpty {
-                let vc = NCHostingUploadAssetsView().makeShipDetailsUI(assets: assets, serverUrl: self.appDelegate.activeServerUrl, userBaseUrl: self.appDelegate)
+                let serverUrl = mainTabBarController.currentServerUrl()
+                let vc = NCHostingUploadAssetsView().makeShipDetailsUI(assets: assets, serverUrl: serverUrl, userBaseUrl: self.appDelegate)
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
-                    viewController.present(vc, animated: true, completion: nil)
+                    mainTabBarController.present(vc, animated: true, completion: nil)
                 }
             }
         }
@@ -93,7 +93,7 @@ class NCPhotosPickerViewController: NSObject {
 
         viewController.configure = configure
 
-        sourceViewController.present(viewController, animated: true, completion: nil)
+        mainTabBarController.present(viewController, animated: true, completion: nil)
     }
 }
 
@@ -119,10 +119,11 @@ class NCDocumentPickerViewController: NSObject, UIDocumentPickerDelegate {
     let utilityFileSystem = NCUtilityFileSystem()
     var isViewerMedia: Bool
     var viewController: UIViewController?
+    var mainTabBarController: NCMainTabBarController
 
     @discardableResult
-    init (tabBarController: UITabBarController, isViewerMedia: Bool, allowsMultipleSelection: Bool, viewController: UIViewController? = nil) {
-
+    init (mainTabBarController: NCMainTabBarController, isViewerMedia: Bool, allowsMultipleSelection: Bool, viewController: UIViewController? = nil) {
+        self.mainTabBarController = mainTabBarController
         self.isViewerMedia = isViewerMedia
         self.viewController = viewController
         super.init()
@@ -131,11 +132,11 @@ class NCDocumentPickerViewController: NSObject, UIDocumentPickerDelegate {
 
         documentProviderMenu.modalPresentationStyle = .formSheet
         documentProviderMenu.allowsMultipleSelection = allowsMultipleSelection
-        documentProviderMenu.popoverPresentationController?.sourceView = tabBarController.tabBar
-        documentProviderMenu.popoverPresentationController?.sourceRect = tabBarController.tabBar.bounds
+        documentProviderMenu.popoverPresentationController?.sourceView = mainTabBarController.tabBar
+        documentProviderMenu.popoverPresentationController?.sourceRect = mainTabBarController.tabBar.bounds
         documentProviderMenu.delegate = self
 
-        appDelegate.window?.rootViewController?.present(documentProviderMenu, animated: true, completion: nil)
+        mainTabBarController.present(documentProviderMenu, animated: true, completion: nil)
     }
 
     func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
@@ -154,8 +155,7 @@ class NCDocumentPickerViewController: NSObject, UIDocumentPickerDelegate {
             NCViewer().view(viewController: viewController, metadata: metadata, metadatas: [metadata], imageIcon: nil)
 
         } else {
-            let serverUrl = appDelegate.activeServerUrl
-
+            let serverUrl = mainTabBarController.currentServerUrl()
             var metadatas = [tableMetadata]()
             var metadatasInConflict = [tableMetadata]()
 
@@ -192,7 +192,7 @@ class NCDocumentPickerViewController: NSObject, UIDocumentPickerDelegate {
                     conflict.serverUrl = serverUrl
                     conflict.metadatasUploadInConflict = metadatasInConflict
 
-                    appDelegate.window?.rootViewController?.present(conflict, animated: true, completion: nil)
+                    mainTabBarController.present(conflict, animated: true, completion: nil)
                 }
             }
         }

@@ -30,7 +30,6 @@ import FloatingPanel
 class NCLoginWeb: UIViewController {
 
     var webView: WKWebView?
-
     let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
     let utility = NCUtility()
 
@@ -85,6 +84,17 @@ class NCLoginWeb: UIViewController {
 
         let config = WKWebViewConfiguration()
         config.websiteDataStore = WKWebsiteDataStore.nonPersistent()
+
+        let source: String = "var meta = document.createElement('meta');" +
+            "meta.name = 'viewport';" +
+            "meta.content = 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no';" +
+            "var head = document.getElementsByTagName('head')[0];" +
+            "head.appendChild(meta);"
+
+        let script: WKUserScript = WKUserScript(source: source, injectionTime: .atDocumentEnd, forMainFrameOnly: true)
+        let userContentController: WKUserContentController = WKUserContentController()
+        config.userContentController = userContentController
+        userContentController.addUserScript(script)
 
         webView = WKWebView(frame: CGRect.zero, configuration: config)
         webView?.insetsLayoutMarginsFromSafeArea = true
@@ -145,7 +155,7 @@ class NCLoginWeb: UIViewController {
         super.viewDidAppear(animated)
 
         // Stop timer error network
-        appDelegate.timerErrorNetworking?.invalidate()
+        appDelegate.timerErrorNetworkingDisabled = true
 
         if let account = NCManageDatabase.shared.getActiveAccount(), NCKeychain().getPassword(account: account.account).isEmpty {
 
@@ -159,8 +169,8 @@ class NCLoginWeb: UIViewController {
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
         NCActivityIndicator.shared.stop()
-        appDelegate.startTimerErrorNetworking()
-      
+
+        appDelegate.timerErrorNetworkingDisabled = false
     }
 
     func loadWebPage(webView: WKWebView, url: URL) {
@@ -296,18 +306,19 @@ extension NCLoginWeb: WKNavigationDelegate {
 
                 self.appDelegate.changeAccount(account, userProfile: userProfile)
 
-                if self.presentingViewController == nil {
-                    if let viewController = UIStoryboard(name: "Main", bundle: nil).instantiateInitialViewController() {
-                        viewController.modalPresentationStyle = .fullScreen
-                        viewController.view.alpha = 0
-                        self.appDelegate.window?.rootViewController = viewController
-                        self.appDelegate.window?.makeKeyAndVisible()
+                let window = UIApplication.shared.firstWindow
+                if window?.rootViewController is NCMainTabBarController {
+                    self.dismiss(animated: true)
+                } else {
+                    if let mainTabBarController = UIStoryboard(name: "Main", bundle: nil).instantiateInitialViewController() as? NCMainTabBarController {
+                        mainTabBarController.modalPresentationStyle = .fullScreen
+                        mainTabBarController.view.alpha = 0
+                        window?.rootViewController = mainTabBarController
+                        window?.makeKeyAndVisible()
                         UIView.animate(withDuration: 0.5) {
-                            viewController.view.alpha = 1
+                            mainTabBarController.view.alpha = 1
                         }
                     }
-                } else {
-                    self.dismiss(animated: true)
                 }
 
             } else {

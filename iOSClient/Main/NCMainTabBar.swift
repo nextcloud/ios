@@ -42,8 +42,6 @@ class NCMainTabBar: UITabBar {
     required init?(coder: NSCoder) {
         super.init(coder: coder)
 
-        appDelegate.mainTabBar = self
-
         NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeTheming), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(updateBadgeNumber(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUpdateBadgeNumber), object: nil)
 
@@ -182,17 +180,16 @@ class NCMainTabBar: UITabBar {
         centerButton.layer.shadowOpacity = 0.5
         centerButton.action(for: .touchUpInside) { _ in
 
-            if let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", self.appDelegate.account, self.appDelegate.activeServerUrl)) {
-
-                if !directory.permissions.contains("CK") {
-                    let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_no_permission_add_file_")
-                    NCContentPresenter().showWarning(error: error)
-                    return
+            if let mainTabBarController = self.window?.rootViewController as? NCMainTabBarController {
+                let serverUrl = mainTabBarController.currentServerUrl()
+                if let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", self.appDelegate.account, serverUrl)) {
+                    if !directory.permissions.contains("CK") {
+                        let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_no_permission_add_file_")
+                        NCContentPresenter().showWarning(error: error)
+                        return
+                    }
                 }
-            }
-
-            if let viewController = self.window?.rootViewController {
-                self.appDelegate.toggleMenu(viewController: viewController)
+                self.appDelegate.toggleMenu(mainTabBarController: mainTabBarController)
             }
         }
 

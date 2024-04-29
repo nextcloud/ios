@@ -78,6 +78,16 @@ class NCGlobal: NSObject {
         case original = "original"
     }
 
+    // Sharing & Comments
+    //
+    var disableSharesView: Bool {
+        if !capabilityFileSharingApiEnabled && !capabilityFilesComments && capabilityActivity.isEmpty {
+            return true
+        } else {
+            return false
+        }
+    }
+
     // Directory on Group
     //
     @objc let directoryProviderStorage              = "File Provider Storage"
@@ -307,7 +317,6 @@ class NCGlobal: NSObject {
     let selectorLoadFileView                        = "loadFileView"
     let selectorLoadFileQuickLook                   = "loadFileQuickLook"
     let selectorOpenIn                              = "openIn"
-    let selectorPrint                               = "print"
     let selectorUploadAutoUpload                    = "uploadAutoUpload"
     let selectorUploadAutoUploadAll                 = "uploadAutoUploadAll"
     let selectorUploadFile                          = "uploadFile"
@@ -361,7 +370,7 @@ class NCGlobal: NSObject {
     let notificationCenterCreateMediaCacheEnded                 = "createMediaCacheEnded"
 
     @objc let notificationCenterReloadDataSource                = "reloadDataSource"
-    let notificationCenterReloadDataSourceNetwork               = "reloadDataSourceNetwork"
+    let notificationCenterReloadDataSourceNetwork               = "reloadDataSourceNetwork"         // userInfo: withQueryDB
 
     let notificationCenterChangeStatusFolderE2EE                = "changeStatusFolderE2EE"          // userInfo: serverUrl
 
@@ -379,10 +388,10 @@ class NCGlobal: NSObject {
 
     let notificationCenterUpdateBadgeNumber                     = "updateBadgeNumber"               // userInfo: counterDownload, counterUpload
 
-    let notificationCenterCreateFolder                          = "createFolder"                    // userInfo: ocId, serverUrl, account, withPush
+    let notificationCenterCreateFolder                          = "createFolder"                    // userInfo: ocId, serverUrl, account, withPush, sceneIdentifier
     let notificationCenterDeleteFile                            = "deleteFile"                      // userInfo: [ocId], onlyLocalCache, error
-    let notificationCenterMoveFile                              = "moveFile"                        // userInfo: [ocId], error
-    let notificationCenterCopyFile                              = "copyFile"                        // userInfo: [ocId], error
+    let notificationCenterMoveFile                              = "moveFile"                        // userInfo: [ocId], error, dragdrop
+    let notificationCenterCopyFile                              = "copyFile"                        // userInfo: [ocId], error, dragdrop
     let notificationCenterRenameFile                            = "renameFile"                      // userInfo: ocId, account, indexPath
     let notificationCenterFavoriteFile                          = "favoriteFile"                    // userInfo: ocId, serverUrl
 
@@ -463,8 +472,8 @@ class NCGlobal: NSObject {
     @objc var capabilityE2EEEnabled: Bool                       = false
     @objc var capabilityE2EEApiVersion: String                  = ""
 
-    var capabilityRichdocumentsEnabled: Bool                    = false
-    var capabilityRichdocumentsMimetypes = ThreadSafeArray<String>()
+    var capabilityRichDocumentsEnabled: Bool                    = false
+    var capabilityRichDocumentsMimetypes = ThreadSafeArray<String>()
     var capabilityActivity = ThreadSafeArray<String>()
     var capabilityNotification = ThreadSafeArray<String>()
 
@@ -476,6 +485,7 @@ class NCGlobal: NSObject {
     @objc var capabilityUserStatusEnabled: Bool                 = false
     var capabilityExternalSites: Bool                           = false
     var capabilityGroupfoldersEnabled: Bool                     = false // NC27
+    var capabilityAssistantEnabled: Bool                        = false // NC28
     var isLivePhotoServerAvailable: Bool {                              // NC28
         return capabilityServerVersionMajor >= nextcloudVersion28
     }
@@ -512,4 +522,8 @@ class NCGlobal: NSObject {
     //
     let mediaLayoutRatio                    = "mediaLayoutRatio"
     let mediaLayoutSquare                   = "mediaLayoutSquare"
+
+    // DRAG & DROP
+    //
+    let metadataOcIdDataRepresentation      = "text/com.nextcloud.ocId"
 }

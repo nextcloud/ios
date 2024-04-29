@@ -21,9 +21,7 @@
 
 import XCTest
 
-class BaseUIXCTestCase: XCTestCase {
-    let timeoutSeconds: Double = 100
-
+class BaseUIXCTestCase: BaseXCTestCase {
     override final class var runsForEachTargetApplicationUIConfiguration: Bool {
         false
     }
@@ -31,13 +29,13 @@ class BaseUIXCTestCase: XCTestCase {
     internal func waitForEnabled(object: Any?) {
         let predicate = NSPredicate(format: "enabled == true")
         expectation(for: predicate, evaluatedWith: object, handler: nil)
-        waitForExpectations(timeout: timeoutSeconds, handler: nil)
+        waitForExpectations(timeout: TestConstants.timeoutLong, handler: nil)
     }
 
     internal func waitForHittable(object: Any?) {
         let predicate = NSPredicate(format: "hittable == true")
         expectation(for: predicate, evaluatedWith: object, handler: nil)
-        waitForExpectations(timeout: timeoutSeconds, handler: nil)
+        waitForExpectations(timeout: TestConstants.timeoutLong, handler: nil)
     }
 
     internal func waitForEnabledAndHittable(object: Any?) {

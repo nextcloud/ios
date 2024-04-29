@@ -186,13 +186,6 @@ class NCService: NSObject {
                 NCImageCache.shared.createImagesBrandCache()
             }
 
-            // Sharing & Comments
-            if !NCGlobal.shared.capabilityFileSharingApiEnabled && !NCGlobal.shared.capabilityFilesComments && NCGlobal.shared.capabilityActivity.isEmpty {
-                self.appDelegate.disableSharesView = true
-            } else {
-                self.appDelegate.disableSharesView = false
-            }
-
             // Text direct editor detail
             if NCGlobal.shared.capabilityServerVersionMajor >= NCGlobal.shared.nextcloudVersion18 {
                 let options = NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
@@ -227,7 +220,7 @@ class NCService: NSObject {
             }
 
             // Added UTI for Collabora
-            NCGlobal.shared.capabilityRichdocumentsMimetypes.forEach { mimeType in
+            NCGlobal.shared.capabilityRichDocumentsMimetypes.forEach { mimeType in
                 NextcloudKit.shared.nkCommonInstance.addInternalTypeIdentifier(typeIdentifier: mimeType, classFile: NKCommon.TypeClassFile.document.rawValue, editor: NCGlobal.shared.editorCollabora, iconName: NKCommon.TypeIconFile.document.rawValue, name: "document")
             }
 

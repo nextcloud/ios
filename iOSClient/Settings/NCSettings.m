@@ -230,8 +230,6 @@
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-    
-    appDelegate.activeViewController = self;
 
     versionServer = [[NCGlobal shared] capabilityServerVersion];
     themingName = [[NCGlobal shared] capabilityThemingName];
@@ -339,7 +337,7 @@
 {
     [self deselectFormRow:sender];
 
-    UIViewController *vc = [[NCManageE2EEInterface alloc] makeShipDetailsUIWithAccount:appDelegate.account];
+    UIViewController *vc = [[NCManageE2EEInterface alloc] makeShipDetailsUIWithAccount:appDelegate.account rootViewController: self.tabBarController];
     [self.navigationController pushViewController:vc animated:YES];
 }
 

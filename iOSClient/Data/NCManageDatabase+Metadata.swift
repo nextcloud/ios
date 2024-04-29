@@ -97,6 +97,7 @@ class tableMetadata: Object, NCUserBaseUrl {
     @objc dynamic var quotaAvailableBytes: Int64 = 0
     @objc dynamic var resourceType = ""
     @objc dynamic var richWorkspace: String?
+    @objc dynamic var sceneIdentifier: String?
     @objc dynamic var serverUrl = ""
     @objc dynamic var session = ""
     @objc dynamic var sessionDate: Date?
@@ -410,7 +411,7 @@ extension NCManageDatabase {
             let metadata = convertFileToMetadata(file, isDirectoryE2EE: isDirectoryE2EE)
 
             if counter == 0 && useMetadataFolder {
-                metadataFolder = tableMetadata.init(value: metadata)
+                metadataFolder = tableMetadata(value: metadata)
             } else {
                 metadatas.append(metadata)
                 if metadata.directory {
@@ -488,7 +489,7 @@ extension NCManageDatabase {
 
     @discardableResult
     func addMetadata(_ metadata: tableMetadata) -> tableMetadata? {
-        let result = tableMetadata.init(value: metadata)
+        let result = tableMetadata(value: metadata)
 
         do {
             let realm = try Realm()
@@ -499,7 +500,7 @@ extension NCManageDatabase {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not write to database: \(error)")
             return nil
         }
-        return tableMetadata.init(value: result)
+        return tableMetadata(value: result)
     }
 
     func addMetadatasWithoutUpdate(_ metadatas: [tableMetadata]) {
@@ -671,7 +672,7 @@ extension NCManageDatabase {
             let realm = try Realm()
             realm.refresh()
             guard let result = realm.objects(tableMetadata.self).filter(predicate).first else { return nil }
-            return tableMetadata.init(value: result)
+            return tableMetadata(value: result)
         } catch let error as NSError {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not access database: \(error)")
         }
@@ -684,7 +685,7 @@ extension NCManageDatabase {
             let realm = try Realm()
             realm.refresh()
             guard let result = realm.objects(tableMetadata.self).filter(predicate).sorted(byKeyPath: sorted, ascending: ascending).first else { return nil }
-            return tableMetadata.init(value: result)
+            return tableMetadata(value: result)
         } catch let error as NSError {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not access database: \(error)")
         }
@@ -698,7 +699,7 @@ extension NCManageDatabase {
             let realm = try Realm()
             realm.refresh()
             let results = realm.objects(tableMetadata.self).filter(predicate)
-            return Array(results.map { tableMetadata.init(value: $0) })
+            return Array(results.map { tableMetadata(value: $0) })
         } catch let error as NSError {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not access database: \(error)")
         }
@@ -711,7 +712,7 @@ extension NCManageDatabase {
         do {
             let realm = try Realm()
             let results = realm.objects(tableMetadata.self).filter(predicate).sorted(byKeyPath: sorted, ascending: ascending)
-            return Array(results.map { tableMetadata.init(value: $0) })
+            return Array(results.map { tableMetadata(value: $0) })
         } catch let error as NSError {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not access database: \(error)")
         }
@@ -759,33 +760,18 @@ extension NCManageDatabase {
         return nil
     }
 
-    func getAdvancedMetadatas(predicate: NSPredicate, page: Int = 0, limit: Int = 0, sorted: String, ascending: Bool) -> [tableMetadata] {
-
-        var metadatas: [tableMetadata] = []
-
+    func getMetadatas(predicate: NSPredicate, numItems: Int, sorted: String, ascending: Bool) -> [tableMetadata] {
         do {
             let realm = try Realm()
             realm.refresh()
             let results = realm.objects(tableMetadata.self).filter(predicate).sorted(byKeyPath: sorted, ascending: ascending)
-            if !results.isEmpty {
-                if page == 0 || limit == 0 {
-                    return Array(results.map { tableMetadata.init(value: $0) })
-                } else {
-                    let nFrom = (page - 1) * limit
-                    let nTo = nFrom + (limit - 1)
-                    for n in nFrom...nTo {
-                        if n == results.count {
-                            break
-                        }
-                        metadatas.append(tableMetadata.init(value: results[n]))
-                    }
-                }
-            }
+            let itemsResults = Array(results.prefix(numItems))
+            return (itemsResults.map { tableMetadata(value: $0) })
         } catch let error as NSError {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not access database: \(error)")
         }
 
-        return metadatas
+        return []
     }
 
     func getMetadataAtIndex(predicate: NSPredicate, sorted: String, ascending: Bool, index: Int) -> tableMetadata? {
@@ -797,7 +783,7 @@ extension NCManageDatabase {
             if results.isEmpty {
                 return nil
             } else {
-                return tableMetadata.init(value: results[index])
+                return tableMetadata(value: results[index])
             }
         } catch let error as NSError {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not access database: \(error)")
@@ -813,7 +799,7 @@ extension NCManageDatabase {
             let realm = try Realm()
             realm.refresh()
             guard let result = realm.objects(tableMetadata.self).filter("ocId == %@", ocId).first else { return nil }
-            return tableMetadata.init(value: result)
+            return tableMetadata(value: result)
         } catch let error as NSError {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not access database: \(error)")
         }
@@ -827,7 +813,7 @@ extension NCManageDatabase {
             let realm = try Realm()
             realm.refresh()
             guard let result = realm.objects(tableMetadata.self).filter("fileName == %@ AND serverUrl == %@", fileName, serverUrl).first else { return nil }
-            return tableMetadata.init(value: result)
+            return tableMetadata(value: result)
         } catch let error as NSError {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not access database: \(error)")
         }
@@ -845,7 +831,7 @@ extension NCManageDatabase {
                 let realm = try Realm()
                 realm.refresh()
                 guard let result = realm.objects(tableMetadata.self).filter("ocId == %@", ocId).first else { return nil }
-                return tableMetadata.init(value: result)
+                return tableMetadata(value: result)
             } catch let error as NSError {
                 NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not access database: \(error)")
             }
@@ -874,7 +860,7 @@ extension NCManageDatabase {
             realm.refresh()
             guard let fileId = fileId else { return nil }
             guard let result = realm.objects(tableMetadata.self).filter("fileId == %@", fileId).first else { return nil }
-            return tableMetadata.init(value: result)
+            return tableMetadata(value: result)
         } catch let error as NSError {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not access database: \(error)")
         }
@@ -902,7 +888,7 @@ extension NCManageDatabase {
             let realm = try Realm()
             realm.refresh()
             guard let result = realm.objects(tableMetadata.self).filter("account == %@ AND serverUrl == %@ AND fileName == %@", account, serverUrl, fileName).first else { return nil }
-            return tableMetadata.init(value: result)
+            return tableMetadata(value: result)
         } catch let error as NSError {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not access database: \(error)")
         }
@@ -992,7 +978,7 @@ extension NCManageDatabase {
         do {
             let realm = try Realm()
             guard let result = realm.objects(tableMetadata.self).filter(NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileId == %@", metadata.account, metadata.serverUrl, metadata.livePhotoFile)).first else { return nil }
-            return tableMetadata.init(value: result)
+            return tableMetadata(value: result)
         } catch let error as NSError {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not access database: \(error)")
         }
@@ -1053,7 +1039,7 @@ extension NCManageDatabase {
             realm.refresh()
             guard let directory = realm.objects(tableDirectory.self).filter("account == %@ AND serverUrl == %@", account, serverUrl).first else { return nil }
             guard let result = realm.objects(tableMetadata.self).filter("ocId == %@", directory.ocId).first else { return nil }
-            return tableMetadata.init(value: result)
+            return tableMetadata(value: result)
         } catch let error as NSError {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not access database: \(error)")
         }
@@ -1150,7 +1136,7 @@ extension NCManageDatabase {
         do {
             let realm = try Realm()
             let results = realm.objects(tableMetadata.self).filter(predicate).sorted(byKeyPath: "date", ascending: false)
-            return ThreadSafeArray(results.map { tableMetadata.init(value: $0) })
+            return ThreadSafeArray(results.map { tableMetadata(value: $0) })
         } catch let error as NSError {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not access database: \(error)")
         }

@@ -31,15 +31,13 @@ extension NCNetworking {
 
     func download(metadata: tableMetadata,
                   withNotificationProgressTask: Bool,
-                  hudView: UIView? = nil,
-                  hud: JGProgressHUD? = nil,
                   start: @escaping () -> Void = { },
                   requestHandler: @escaping (_ request: DownloadRequest) -> Void = { _ in },
                   progressHandler: @escaping (_ progress: Progress) -> Void = { _ in },
                   completion: @escaping (_ afError: AFError?, _ error: NKError) -> Void = { _, _ in }) {
 
         if metadata.session == NextcloudKit.shared.nkCommonInstance.sessionIdentifierDownload {
-            downloadFile(metadata: metadata, withNotificationProgressTask: withNotificationProgressTask, hudView: hudView, hud: hud) {
+            downloadFile(metadata: metadata, withNotificationProgressTask: withNotificationProgressTask) {
                 start()
             } requestHandler: { request in
                 requestHandler(request)
@@ -57,8 +55,6 @@ extension NCNetworking {
 
     private func downloadFile(metadata: tableMetadata,
                               withNotificationProgressTask: Bool,
-                              hudView: UIView?,
-                              hud: JGProgressHUD?,
                               start: @escaping () -> Void = { },
                               requestHandler: @escaping (_ request: DownloadRequest) -> Void = { _ in },
                               progressHandler: @escaping (_ progress: Progress) -> Void = { _ in },
