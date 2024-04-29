@@ -395,7 +395,13 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         notificationReloadDataSource += 1
 
         if withPush, let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
-            pushMetadata(metadata)
+            if let sceneIdentifier = userInfo["sceneIdentifier"] as? String {
+                if sceneIdentifier == (self.tabBarController as? NCMainTabBarController)?.sceneIdentifier {
+                    pushMetadata(metadata)
+                }
+            } else {
+                pushMetadata(metadata)
+            }
         }
     }
 
