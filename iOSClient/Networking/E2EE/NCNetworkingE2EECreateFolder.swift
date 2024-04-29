@@ -27,13 +27,11 @@ import Alamofire
 import Foundation
 
 class NCNetworkingE2EECreateFolder: NSObject {
-
     let networkingE2EE = NCNetworkingE2EE()
     let utilityFileSystem = NCUtilityFileSystem()
     let utility = NCUtility()
 
     func createFolder(fileName: String, serverUrl: String, account: String, urlBase: String, userId: String, withPush: Bool, sceneIdentifier: String?) async -> NKError {
-
         var fileNameFolder = utility.removeForbiddenCharacters(fileName)
         if fileName != fileNameFolder {
             let errorDescription = String(format: NSLocalizedString("_forbidden_characters_", comment: ""), NCGlobal.shared.forbiddenCharacters.joined(separator: " "))
