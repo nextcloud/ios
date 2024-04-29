@@ -41,7 +41,7 @@ class NCIntroViewController: UIViewController, UICollectionViewDataSource, UICol
     private var timerAutoScroll: Timer?
     private var textColor: UIColor = .white
     private var textColorOpponent: UIColor = .black
-
+    
     // MARK: - View Life Cycle
 
     override func viewDidLoad() {

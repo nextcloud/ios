@@ -349,14 +349,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     @objc func openLogin(selector: Int, openLoginWeb: Bool) {
         func showLoginViewController(_ viewController: UIViewController?) {
             guard let viewController else { return }
+            
             let navigationController = NCLoginNavigationController(rootViewController: viewController)
 
             navigationController.modalPresentationStyle = .fullScreen
-            navigationController.navigationBar.barStyle = .black
-            navigationController.navigationBar.tintColor = NCBrandColor.shared.customerText
-            navigationController.navigationBar.barTintColor = NCBrandColor.shared.customer
-            navigationController.navigationBar.isTranslucent = false
-
+            navigationController.navigationBar.barStyle = .default
+            navigationController.navigationBar.tintColor = .blue//NCBrandColor.shared.customerText
+            navigationController.navigationBar.barTintColor = .white//NCBrandColor.shared.customer
+            navigationController.navigationBar.isTranslucent = true//false
+            
             UIApplication.shared.allSceneSessionDestructionExceptFirst()
             UIApplication.shared.firstWindow?.rootViewController?.present(navigationController, animated: true)
         }
@@ -380,6 +381,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                 } else {
                     activeLoginWeb?.urlBase = self.urlBase
                 }
+                activeLoginWeb?.showBackButton = true
                 showLoginViewController(activeLoginWeb)
             }
 
@@ -402,6 +404,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         } else {
             if activeLogin?.view.window == nil {
                 activeLogin = UIStoryboard(name: "NCLogin", bundle: nil).instantiateViewController(withIdentifier: "NCLogin") as? NCLogin
+                activeLogin?.showBackButton = true
                 showLoginViewController(activeLogin)
             }
         }
