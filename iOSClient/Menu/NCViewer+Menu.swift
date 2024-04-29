@@ -134,7 +134,8 @@ extension NCViewer {
                         } else {
                             guard let metadata = NCManageDatabase.shared.setMetadatasSessionInWaitDownload(metadatas: [metadata],
                                                                                                            session: NextcloudKit.shared.nkCommonInstance.sessionIdentifierDownload,
-                                                                                                           selector: NCGlobal.shared.selectorSaveAsScan) else { return }
+                                                                                                           selector: NCGlobal.shared.selectorSaveAsScan,
+                                                                                                           sceneIdentifier: sceneIdentifier) else { return }
                             NCNetworking.shared.download(metadata: metadata, withNotificationProgressTask: true)
                         }
                     }
@@ -186,7 +187,8 @@ extension NCViewer {
                     action: { _ in
                         guard let metadata = NCManageDatabase.shared.setMetadatasSessionInWaitDownload(metadatas: [metadata],
                                                                                                        session: NextcloudKit.shared.nkCommonInstance.sessionIdentifierDownload,
-                                                                                                       selector: "") else { return }
+                                                                                                       selector: "",
+                                                                                                       sceneIdentifier: sceneIdentifier) else { return }
                         NCNetworking.shared.download(metadata: metadata, withNotificationProgressTask: true)
                     }
                 )
@@ -238,7 +240,8 @@ extension NCViewer {
                         } else {
                             guard let metadata = NCManageDatabase.shared.setMetadatasSessionInWaitDownload(metadatas: [metadata],
                                                                                                            session: NextcloudKit.shared.nkCommonInstance.sessionIdentifierDownload,
-                                                                                                           selector: NCGlobal.shared.selectorLoadFileQuickLook) else { return }
+                                                                                                           selector: NCGlobal.shared.selectorLoadFileQuickLook,
+                                                                                                           sceneIdentifier: sceneIdentifier) else { return }
                             NCNetworking.shared.download(metadata: metadata, withNotificationProgressTask: true)
                         }
                     }

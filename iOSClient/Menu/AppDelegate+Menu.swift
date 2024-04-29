@@ -104,7 +104,7 @@ extension AppDelegate {
         actions.append(
             NCMenuAction(title: titleCreateFolder,
                          icon: imageCreateFolder.image(color: NCBrandColor.shared.brandElement, size: 50), action: { _ in
-                             let alertController = UIAlertController.createFolder(serverUrl: serverUrl, urlBase: appDelegate)
+                             let alertController = UIAlertController.createFolder(serverUrl: serverUrl, urlBase: appDelegate, sceneIdentifier: mainTabBarController.sceneIdentifier)
                              mainTabBarController.present(alertController, animated: true, completion: nil)
                          }
                         )
@@ -116,7 +116,7 @@ extension AppDelegate {
                 NCMenuAction(title: NSLocalizedString("_create_folder_e2ee_", comment: ""),
                              icon: UIImage(named: "folderEncrypted")!.image(color: NCBrandColor.shared.brandElement, size: 50),
                              action: { _ in
-                                 let alertController = UIAlertController.createFolder(serverUrl: serverUrl, urlBase: appDelegate, markE2ee: true)
+                                 let alertController = UIAlertController.createFolder(serverUrl: serverUrl, urlBase: appDelegate, markE2ee: true, sceneIdentifier: mainTabBarController.sceneIdentifier)
                                  mainTabBarController.present(alertController, animated: true, completion: nil)
                              })
             )

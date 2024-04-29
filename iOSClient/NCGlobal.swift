@@ -388,7 +388,7 @@ class NCGlobal: NSObject {
 
     let notificationCenterUpdateBadgeNumber                     = "updateBadgeNumber"               // userInfo: counterDownload, counterUpload
 
-    let notificationCenterCreateFolder                          = "createFolder"                    // userInfo: ocId, serverUrl, account, withPush
+    let notificationCenterCreateFolder                          = "createFolder"                    // userInfo: ocId, serverUrl, account, withPush, sceneIdentifier
     let notificationCenterDeleteFile                            = "deleteFile"                      // userInfo: [ocId], onlyLocalCache, error
     let notificationCenterMoveFile                              = "moveFile"                        // userInfo: [ocId], error, dragdrop
     let notificationCenterCopyFile                              = "copyFile"                        // userInfo: [ocId], error, dragdrop

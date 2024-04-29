@@ -205,6 +205,7 @@ extension NCNetworking {
                       userId: String,
                       overwrite: Bool = false,
                       withPush: Bool,
+                      sceneIdentifier: String?,
                       completion: @escaping (_ error: NKError) -> Void) {
 
         let isDirectoryEncrypted = utilityFileSystem.isDirectoryE2EE(account: account, urlBase: urlBase, userId: userId, serverUrl: serverUrl)
@@ -213,12 +214,12 @@ extension NCNetworking {
         if isDirectoryEncrypted {
 #if !EXTENSION
             Task {
-                let error = await NCNetworkingE2EECreateFolder().createFolder(fileName: fileName, serverUrl: serverUrl, account: account, urlBase: urlBase, userId: userId, withPush: withPush)
+                let error = await NCNetworkingE2EECreateFolder().createFolder(fileName: fileName, serverUrl: serverUrl, account: account, urlBase: urlBase, userId: userId, withPush: withPush, sceneIdentifier: sceneIdentifier)
                 completion(error)
             }
 #endif
         } else {
-            createFolderPlain(fileName: fileName, serverUrl: serverUrl, account: account, urlBase: urlBase, overwrite: overwrite, withPush: withPush, completion: completion)
+            createFolderPlain(fileName: fileName, serverUrl: serverUrl, account: account, urlBase: urlBase, overwrite: overwrite, withPush: withPush, sceneIdentifier: sceneIdentifier, completion: completion)
         }
     }
 
@@ -228,6 +229,7 @@ extension NCNetworking {
                                    urlBase: String,
                                    overwrite: Bool,
                                    withPush: Bool,
+                                   sceneIdentifier: String?,
                                    completion: @escaping (_ error: NKError) -> Void) {
 
         var fileNameFolder = utility.removeForbiddenCharacters(fileName)
@@ -263,7 +265,7 @@ extension NCNetworking {
                         NCManageDatabase.shared.addDirectory(e2eEncrypted: metadata.e2eEncrypted, favorite: metadata.favorite, ocId: metadata.ocId, fileId: metadata.fileId, permissions: metadata.permissions, serverUrl: fileNameFolderUrl, account: account)
                     }
                     if let metadata = NCManageDatabase.shared.getMetadataFromOcId(metadataFolder?.ocId) {
-                        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterCreateFolder, userInfo: ["ocId": metadata.ocId, "serverUrl": metadata.serverUrl, "account": metadata.account, "withPush": withPush])
+                        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterCreateFolder, userInfo: ["ocId": metadata.ocId, "serverUrl": metadata.serverUrl, "account": metadata.account, "withPush": withPush, "sceneIdentifier": sceneIdentifier as Any])
                     }
                 }
                 completion(error)
@@ -276,7 +278,8 @@ extension NCNetworking {
                       account: String,
                       urlBase: String,
                       userId: String,
-                      withPush: Bool) -> Bool {
+                      withPush: Bool,
+                      sceneIdentifier: String? = nil) -> Bool {
 
         let autoUploadPath = NCManageDatabase.shared.getAccountAutoUploadPath(urlBase: urlBase, userId: userId, account: account)
         let serverUrlBase = NCManageDatabase.shared.getAccountAutoUploadDirectory(urlBase: urlBase, userId: userId, account: account)
@@ -286,7 +289,7 @@ extension NCNetworking {
         func createFolder(fileName: String, serverUrl: String) -> Bool {
             var result: Bool = false
             let semaphore = DispatchSemaphore(value: 0)
-            NCNetworking.shared.createFolder(fileName: fileName, serverUrl: serverUrl, account: account, urlBase: urlBase, userId: userId, overwrite: true, withPush: withPush) { error in
+            NCNetworking.shared.createFolder(fileName: fileName, serverUrl: serverUrl, account: account, urlBase: urlBase, userId: userId, overwrite: true, withPush: withPush, sceneIdentifier: sceneIdentifier) { error in
                 if error == .success { result = true }
                 semaphore.signal()
             }
