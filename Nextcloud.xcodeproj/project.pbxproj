@@ -750,6 +750,7 @@
 		F7B769AD2B7A0B2000C1AAEB /* NCManageDatabase+Metadata+Session.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7B769A72B7A0B2000C1AAEB /* NCManageDatabase+Metadata+Session.swift */; };
 		F7B769AE2B7A0B2000C1AAEB /* NCManageDatabase+Metadata+Session.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7B769A72B7A0B2000C1AAEB /* NCManageDatabase+Metadata+Session.swift */; };
 		F7B8B83025681C3400967775 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = F7B8B82F25681C3400967775 /* GoogleService-Info.plist */; };
+		F7B934FE2BDCFE1E002B2FC9 /* NCDragDrop.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7B934FD2BDCFE1E002B2FC9 /* NCDragDrop.swift */; };
 		F7BAADCB1ED5A87C00B7EAD4 /* NCManageDatabase.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7BAADB51ED5A87C00B7EAD4 /* NCManageDatabase.swift */; };
 		F7BAADCC1ED5A87C00B7EAD4 /* NCManageDatabase.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7BAADB51ED5A87C00B7EAD4 /* NCManageDatabase.swift */; };
 		F7BB7E4727A18C56009B9F29 /* Parchment in Frameworks */ = {isa = PBXBuildFile; productRef = F7BB7E4627A18C56009B9F29 /* Parchment */; };
@@ -1446,6 +1447,7 @@
 		F7B7504A2397D38E004E13EC /* UIImage+Extension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIImage+Extension.swift"; sourceTree = "<group>"; };
 		F7B769A72B7A0B2000C1AAEB /* NCManageDatabase+Metadata+Session.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NCManageDatabase+Metadata+Session.swift"; sourceTree = "<group>"; };
 		F7B8B82F25681C3400967775 /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "GoogleService-Info.plist"; sourceTree = SOURCE_ROOT; };
+		F7B934FD2BDCFE1E002B2FC9 /* NCDragDrop.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCDragDrop.swift; sourceTree = "<group>"; };
 		F7BAADB51ED5A87C00B7EAD4 /* NCManageDatabase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCManageDatabase.swift; sourceTree = "<group>"; };
 		F7BB04851FD58ACB00BBFD2A /* cs-CZ */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "cs-CZ"; path = "cs-CZ.lproj/Localizable.strings"; sourceTree = "<group>"; };
 		F7BC287D26663F6C004D46C5 /* NCViewCertificateDetails.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = NCViewCertificateDetails.storyboard; sourceTree = "<group>"; };
@@ -1915,14 +1917,15 @@
 		F70211F31BAC56E9003FC03E /* Main */ = {
 			isa = PBXGroup;
 			children = (
-				F7DFB7E9219C5A0500680748 /* Create cloud */,
 				F7603298252F0E550015A421 /* Collection Common */,
+				F7DFB7E9219C5A0500680748 /* Create cloud */,
 				F7226EDB1EE4089300EBECB1 /* Main.storyboard */,
+				F75B0ABC244C4DBB00E58DCA /* NCActionCenter.swift */,
+				F7B934FD2BDCFE1E002B2FC9 /* NCDragDrop.swift */,
 				F7682FDF23C36B0500983A04 /* NCMainTabBar.swift */,
 				F794E13C2BBBFF2E003693D7 /* NCMainTabBarController.swift */,
-				F75B0ABC244C4DBB00E58DCA /* NCActionCenter.swift */,
-				F77444F7222816D5000D5EB0 /* NCPickerViewController.swift */,
 				F737DA9C2B7B893C0063BAFC /* NCPasscode.swift */,
+				F77444F7222816D5000D5EB0 /* NCPickerViewController.swift */,
 			);
 			path = Main;
 			sourceTree = "<group>";
@@ -4034,6 +4037,7 @@
 				F757CC8229E7F88B00F31428 /* NCManageDatabase+Groupfolders.swift in Sources */,
 				F7B769A82B7A0B2000C1AAEB /* NCManageDatabase+Metadata+Session.swift in Sources */,
 				F79EDAA326B004980007D134 /* NCPlayerToolBar.swift in Sources */,
+				F7B934FE2BDCFE1E002B2FC9 /* NCDragDrop.swift in Sources */,
 				F77444F8222816D5000D5EB0 /* NCPickerViewController.swift in Sources */,
 				F77BB74A2899857B0090FC19 /* UINavigationController+Extension.swift in Sources */,
 				F7327E282B73A53400A462C7 /* NCNetworking+Upload.swift in Sources */,

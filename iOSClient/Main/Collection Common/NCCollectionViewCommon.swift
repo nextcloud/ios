@@ -347,6 +347,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
         if error == .success {
             if !isSearchingMode, let dragDrop = userInfo["dragdrop"] as? Bool, dragDrop {
+                setEditMode(false)
                 reloadDataSourceNetwork(withQueryDB: true)
             } else {
                 reloadDataSource()
@@ -362,6 +363,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
         if error == .success {
             if !isSearchingMode, let dragDrop = userInfo["dragdrop"] as? Bool, dragDrop {
+                setEditMode(false)
                 reloadDataSourceNetwork(withQueryDB: true)
             } else {
                 reloadDataSource()

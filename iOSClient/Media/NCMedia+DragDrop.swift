@@ -28,30 +28,14 @@ import NextcloudKit
 
 extension NCMedia: UICollectionViewDragDelegate {
     func collectionView(_ collectionView: UICollectionView, itemsForBeginning session: UIDragSession, at indexPath: IndexPath) -> [UIDragItem] {
-        var metadatas: [tableMetadata] = []
 
         if isEditMode {
-            for ocId in self.selectOcId {
-                if let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId), metadata.status == 0, !isDirectoryE2EE(metadata: metadata) {
-                    metadatas.append(metadata)
-                }
-            }
-        } else {
-            guard let metadata = self.metadatas?[indexPath.row], metadata.status == 0, !isDirectoryE2EE(metadata: metadata) else { return [] }
-            metadatas.append(metadata)
+            return NCDragDrop().performDrag(selectOcId: selectOcId)
+        } else if let metadata = self.metadatas?[indexPath.row] {
+            return NCDragDrop().performDrag(metadata: metadata)
         }
 
-        let dragItems = metadatas.map { metadata in
-            let itemProvider = NSItemProvider()
-            itemProvider.registerDataRepresentation(forTypeIdentifier: NCGlobal.shared.metadataOcIdDataRepresentation, visibility: .all) { completion in
-                let data = metadata.ocId.data(using: .utf8)
-                completion(data, nil)
-                return nil
-            }
-            return UIDragItem(itemProvider: itemProvider)
-        }
-
-        return dragItems
+        return []
     }
 }
 
@@ -59,57 +43,53 @@ extension NCMedia: UICollectionViewDragDelegate {
 
 extension NCMedia: UICollectionViewDropDelegate {
     func collectionView(_ collectionView: UICollectionView, canHandle session: UIDropSession) -> Bool {
-        return session.canLoadObjects(ofClass: UIImage.self) || session.hasItemsConforming(toTypeIdentifiers: [UTType.movie.identifier])
+        return session.canLoadObjects(ofClass: UIImage.self) || session.hasItemsConforming(toTypeIdentifiers: [UTType.movie.identifier, NCGlobal.shared.metadataOcIdDataRepresentation])
     }
 
     func collectionView(_ collectionView: UICollectionView, performDropWith coordinator: UICollectionViewDropCoordinator) {
-        guard let account = NCManageDatabase.shared.getActiveAccount() else { return }
-        let autoUploadPath = NCManageDatabase.shared.getAccountAutoUploadPath(urlBase: account.urlBase, userId: account.userId, account: account.account)
-        let serverUrl = utilityFileSystem.createGranularityPath(serverUrl: autoUploadPath)
-        var counter: Int = 0
-        for dragItem in coordinator.session.items {
-            dragItem.itemProvider.loadFileRepresentation(forTypeIdentifier: UTType.data.identifier) { url, error in
-                if let error {
-                    NCContentPresenter().showError(error: NKError(error: error))
-                    return
-                }
-                if let url = url {
-                    if counter == 0,
-                       !NCNetworking.shared.createFolder(assets: nil, useSubFolder: account.autoUploadCreateSubfolder, account: account.account, urlBase: account.urlBase, userId: account.userId, withPush: false) {
-                        return
-                    }
-                    do {
-                        let data = try Data(contentsOf: url)
-                        Task {
-                            let ocId = NSUUID().uuidString
-                            let fileName = await NCNetworking.shared.createFileName(fileNameBase: url.lastPathComponent, account: self.appDelegate.account, serverUrl: serverUrl)
-                            let fileNamePath = self.utilityFileSystem.getDirectoryProviderStorageOcId(ocId, fileNameView: fileName)
-                            try data.write(to: URL(fileURLWithPath: fileNamePath))
-                            let metadataForUpload = NCManageDatabase.shared.createMetadata(account: self.appDelegate.account, user: self.appDelegate.user, userId: self.appDelegate.userId, fileName: fileName, fileNameView: fileName, ocId: ocId, serverUrl: serverUrl, urlBase: self.appDelegate.urlBase, url: "", contentType: "")
-                            metadataForUpload.session = NCNetworking.shared.sessionUploadBackground
-                            metadataForUpload.sessionSelector = NCGlobal.shared.selectorUploadFile
-                            metadataForUpload.size = self.utilityFileSystem.getFileSize(filePath: fileNamePath)
-                            metadataForUpload.status = NCGlobal.shared.metadataStatusWaitUpload
-                            metadataForUpload.sessionDate = Date()
+        DragDropHover.shared.cleanPushDragDropHover()
+        DragDropHover.shared.sourceMetadatas = nil
+        guard let tableAccount = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", appDelegate.account)) else { return }
+        let serverUrl = NCUtilityFileSystem().getHomeServer(urlBase: tableAccount.urlBase, userId: tableAccount.userId) + tableAccount.mediaPath
 
-                            NCManageDatabase.shared.addMetadata(metadataForUpload)
-                        }
-                    } catch {
-                        NCContentPresenter().showError(error: NKError(error: error))
-                        return
-                    }
-                    counter += 1
-                }
-            }
+        if let metadatas = NCDragDrop().performDrop(collectionView, performDropWith: coordinator, serverUrl: serverUrl, isImageVideo: true) {
+            DragDropHover.shared.sourceMetadatas = metadatas
+            openMenu(collectionView: collectionView, location: coordinator.session.location(in: collectionView))
         }
     }
-}
 
-// MARK: - Drag&Drop func
+    func collectionView(_ collectionView: UICollectionView, dropSessionDidExit session: UIDropSession) {
+        DragDropHover.shared.cleanPushDragDropHover()
+    }
 
-extension NCMedia {
-    private func isDirectoryE2EE(metadata: tableMetadata) -> Bool {
-        if !metadata.directory { return false }
-        return NCUtilityFileSystem().isDirectoryE2EE(account: metadata.account, urlBase: metadata.urlBase, userId: metadata.userId, serverUrl: metadata.serverUrl + "/" + metadata.fileName)
+    func collectionView(_ collectionView: UICollectionView, dropSessionDidEnd session: UIDropSession) {
+        DragDropHover.shared.cleanPushDragDropHover()
+    }
+
+    // MARK: -
+
+    private func openMenu(collectionView: UICollectionView, location: CGPoint) {
+        var listMenuItems: [UIMenuItem] = []
+
+        listMenuItems.append(UIMenuItem(title: NSLocalizedString("_copy_", comment: ""), action: #selector(copyMenuFile)))
+        listMenuItems.append(UIMenuItem(title: NSLocalizedString("_move_", comment: ""), action: #selector(moveMenuFile)))
+        UIMenuController.shared.menuItems = listMenuItems
+        UIMenuController.shared.showMenu(from: collectionView, rect: CGRect(x: location.x, y: location.y, width: 0, height: 0))
+    }
+
+    @objc func copyMenuFile() {
+        guard let sourceMetadatas = DragDropHover.shared.sourceMetadatas,
+              let tableAccount = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", appDelegate.account)) else { return }
+        let serverUrl = NCUtilityFileSystem().getHomeServer(urlBase: tableAccount.urlBase, userId: tableAccount.userId) + tableAccount.mediaPath
+
+        NCDragDrop().copyFile(metadatas: sourceMetadatas, serverUrl: serverUrl)
+    }
+
+    @objc func moveMenuFile() {
+        guard let sourceMetadatas = DragDropHover.shared.sourceMetadatas,
+              let tableAccount = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", appDelegate.account)) else { return }
+        let serverUrl = NCUtilityFileSystem().getHomeServer(urlBase: tableAccount.urlBase, userId: tableAccount.userId) + tableAccount.mediaPath
+
+        NCDragDrop().moveFile(metadatas: sourceMetadatas, serverUrl: serverUrl)
     }
 }
