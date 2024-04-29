@@ -70,7 +70,7 @@ extension NCCollectionViewCommon: UICollectionViewDropDelegate {
         DragDropHover.shared.destinationMetadata = destinationMetadata
 
         if let destinationMetadata {
-            if NCDragDrop().isDirectoryE2EE(metadata: destinationMetadata) {
+            if destinationMetadata.e2eEncrypted || destinationMetadata.isDirectoryE2EE {
                 DragDropHover.shared.cleanPushDragDropHover()
                 return UICollectionViewDropProposal(operation: .forbidden)
             }

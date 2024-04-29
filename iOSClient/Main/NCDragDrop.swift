@@ -31,11 +31,11 @@ class NCDragDrop: NSObject {
     func performDrag(metadata: tableMetadata? = nil, selectOcId: [String]? = nil) -> [UIDragItem] {
         var metadatas: [tableMetadata] = []
 
-        if let metadata, metadata.status == 0, !isDirectoryE2EE(metadata: metadata) {
+        if let metadata, metadata.status == 0, !metadata.isDirectoryE2EE, !metadata.e2eEncrypted {
             metadatas.append(metadata)
         } else if let selectOcId {
             for ocId in selectOcId {
-                if let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId), metadata.status == 0, !isDirectoryE2EE(metadata: metadata) {
+                if let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId), metadata.status == 0, !metadata.isDirectoryE2EE, !metadata.e2eEncrypted {
                     metadatas.append(metadata)
                 }
             }
@@ -146,11 +146,6 @@ class NCDragDrop: NSObject {
             }
             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterMoveFile, userInfo: ["ocId": ocId, "error": error, "dragdrop": true])
         }
-    }
-
-    func isDirectoryE2EE(metadata: tableMetadata) -> Bool {
-        if !metadata.directory { return false }
-        return utilityFileSystem.isDirectoryE2EE(account: metadata.account, urlBase: metadata.urlBase, userId: metadata.userId, serverUrl: metadata.serverUrl + "/" + metadata.fileName)
     }
 }
 

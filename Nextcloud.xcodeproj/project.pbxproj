@@ -1917,15 +1917,15 @@
 		F70211F31BAC56E9003FC03E /* Main */ = {
 			isa = PBXGroup;
 			children = (
-				F7DFB7E9219C5A0500680748 /* Create cloud */,
 				F7603298252F0E550015A421 /* Collection Common */,
+				F7DFB7E9219C5A0500680748 /* Create cloud */,
 				F7226EDB1EE4089300EBECB1 /* Main.storyboard */,
+				F75B0ABC244C4DBB00E58DCA /* NCActionCenter.swift */,
+				F7B934FD2BDCFE1E002B2FC9 /* NCDragDrop.swift */,
 				F7682FDF23C36B0500983A04 /* NCMainTabBar.swift */,
 				F794E13C2BBBFF2E003693D7 /* NCMainTabBarController.swift */,
-				F7B934FD2BDCFE1E002B2FC9 /* NCDragDrop.swift */,
-				F75B0ABC244C4DBB00E58DCA /* NCActionCenter.swift */,
-				F77444F7222816D5000D5EB0 /* NCPickerViewController.swift */,
 				F737DA9C2B7B893C0063BAFC /* NCPasscode.swift */,
+				F77444F7222816D5000D5EB0 /* NCPickerViewController.swift */,
 			);
 			path = Main;
 			sourceTree = "<group>";
