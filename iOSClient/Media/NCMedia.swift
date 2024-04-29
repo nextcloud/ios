@@ -252,6 +252,7 @@ class NCMedia: UIViewController {
               let dragDrop = userInfo["dragdrop"] as? Bool, dragDrop else { return }
 
         DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+            self.reloadDataSource()
             self.searchMediaUI()
         }
     }
@@ -261,6 +262,7 @@ class NCMedia: UIViewController {
               let dragDrop = userInfo["dragdrop"] as? Bool, dragDrop else { return }
 
         DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+            self.reloadDataSource()
             self.searchMediaUI()
         }
     }
