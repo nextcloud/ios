@@ -28,6 +28,32 @@ class NCNetworkingDragDrop: NSObject {
     let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
     let utilityFileSystem = NCUtilityFileSystem()
 
+    func performDrag(metadata: tableMetadata? = nil, selectOcId: [String]? = nil) -> [UIDragItem] {
+        var metadatas: [tableMetadata] = []
+
+        if let metadata, metadata.status == 0, !isDirectoryE2EE(metadata: metadata) {
+            metadatas.append(metadata)
+        } else if let selectOcId {
+            for ocId in selectOcId {
+                if let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId), metadata.status == 0, !NCNetworkingDragDrop().isDirectoryE2EE(metadata: metadata) {
+                    metadatas.append(metadata)
+                }
+            }
+        }
+
+        let dragItems = metadatas.map { metadata in
+            let itemProvider = NSItemProvider()
+            itemProvider.registerDataRepresentation(forTypeIdentifier: NCGlobal.shared.metadataOcIdDataRepresentation, visibility: .all) { completion in
+                let data = metadata.ocId.data(using: .utf8)
+                completion(data, nil)
+                return nil
+            }
+            return UIDragItem(itemProvider: itemProvider)
+        }
+
+        return dragItems
+    }
+
     func performDrop(_ collectionView: UICollectionView, performDropWith coordinator: UICollectionViewDropCoordinator, serverUrl: String) -> [tableMetadata]? {
         var serverUrl = serverUrl
         var metadatas: [tableMetadata] = []
