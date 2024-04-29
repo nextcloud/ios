@@ -68,7 +68,7 @@ extension NCMedia: UICollectionViewDropDelegate {
         guard let tableAccount = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", appDelegate.account)) else { return }
         let serverUrl = NCUtilityFileSystem().getHomeServer(urlBase: tableAccount.urlBase, userId: tableAccount.userId) + tableAccount.mediaPath
 
-        if let metadatas = NCNetworkingDragDrop().performDrop(collectionView, performDropWith: coordinator, serverUrl: self.serverUrl) {
+        if let metadatas = NCNetworkingDragDrop().performDrop(collectionView, performDropWith: coordinator, serverUrl: serverUrl) {
             DragDropHover.shared.sourceMetadatas = metadatas
             openMenu(collectionView: collectionView, location: coordinator.session.location(in: collectionView))
         }
