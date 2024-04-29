@@ -77,6 +77,9 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
             let windowScenes = UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }
             if windowScenes.count == 1 {
                 mainTabBarController = UIApplication.shared.firstWindow?.rootViewController as? NCMainTabBarController
+            } else if let sceneIdentifier = metadata.sceneIdentifier,
+                      let tabBarController = SceneManager.shared.getMainTabBarController(sceneIdentifier: sceneIdentifier) {
+                mainTabBarController = tabBarController
             } else {
                 for windowScene in windowScenes {
                     if let rootViewController = windowScene.keyWindow?.rootViewController as? NCMainTabBarController,
