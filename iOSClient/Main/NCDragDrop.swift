@@ -54,7 +54,7 @@ class NCDragDrop: NSObject {
         return dragItems
     }
 
-    func performDrop(_ collectionView: UICollectionView, performDropWith coordinator: UICollectionViewDropCoordinator, serverUrl: String) -> [tableMetadata]? {
+    func performDrop(_ collectionView: UICollectionView, performDropWith coordinator: UICollectionViewDropCoordinator, serverUrl: String, isImageVideo: Bool) -> [tableMetadata]? {
         var serverUrl = serverUrl
         var metadatas: [tableMetadata] = []
         DragDropHover.shared.cleanPushDragDropHover()
@@ -66,7 +66,11 @@ class NCDragDrop: NSObject {
                 item.itemProvider.loadDataRepresentation(forTypeIdentifier: NCGlobal.shared.metadataOcIdDataRepresentation) { data, error in
                     if error == nil, let data, let ocId = String(data: data, encoding: .utf8),
                        let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
-                        metadatas.append(metadata)
+                        if !isImageVideo {
+                            metadatas.append(metadata)
+                        } else if isImageVideo, (metadata.isImage || metadata.isVideo) {
+                            metadatas.append(metadata)
+                        }
                     }
                     semaphore.signal()
                 }
