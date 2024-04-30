@@ -103,7 +103,7 @@ class NCLoginWeb: UIViewController {
         webView!.translatesAutoresizingMaskIntoConstraints = false
         webView!.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 0).isActive = true
         webView!.rightAnchor.constraint(equalTo: view.rightAnchor, constant: 0).isActive = true
-        webView!.topAnchor.constraint(equalTo: view.topAnchor, constant: 100).isActive = true
+        webView!.topAnchor.constraint(equalTo: view.topAnchor, constant: 80).isActive = true
         webView!.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: 0).isActive = true
 
         // AppConfig
@@ -146,8 +146,6 @@ class NCLoginWeb: UIViewController {
             }
         }
         self.title = titleView
-//        self.navigationController?.navigationBar.tintColor = .blue
-//        self.navigationController?.navigationBar.backgroundColor = .black
         
     }
 

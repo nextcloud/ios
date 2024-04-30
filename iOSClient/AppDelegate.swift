@@ -354,9 +354,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
             navigationController.modalPresentationStyle = .fullScreen
             navigationController.navigationBar.barStyle = .default
-            navigationController.navigationBar.tintColor = .blue//NCBrandColor.shared.customerText
-            navigationController.navigationBar.barTintColor = .white//NCBrandColor.shared.customer
-            navigationController.navigationBar.isTranslucent = true//false
+            navigationController.navigationBar.tintColor = NCBrandColor.shared.blackColor
+            navigationController.navigationBar.barTintColor = NCBrandColor.shared.brandElement
+            navigationController.navigationBar.isTranslucent = true
             
             UIApplication.shared.allSceneSessionDestructionExceptFirst()
             UIApplication.shared.firstWindow?.rootViewController?.present(navigationController, animated: true)
