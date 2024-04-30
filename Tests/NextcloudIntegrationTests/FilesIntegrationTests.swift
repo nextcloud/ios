@@ -40,7 +40,7 @@ final class FilesIntegrationTests: BaseIntegrationXCTestCase {
         NextcloudKit.shared.setup(account: TestConstants.account, user: TestConstants.username, userId: TestConstants.username, password: appToken, urlBase: TestConstants.server)
 
         // Test creating folder
-        NCNetworking.shared.createFolder(fileName: folderName, serverUrl: serverUrl, account: TestConstants.account, urlBase: TestConstants.server, userId: TestConstants.username, withPush: true) { error in
+        NCNetworking.shared.createFolder(fileName: folderName, serverUrl: serverUrl, account: TestConstants.account, urlBase: TestConstants.server, userId: TestConstants.username, withPush: true, sceneIdentifier: nil) { error in
             XCTAssertEqual(NKError.success.errorCode, error.errorCode)
             XCTAssertEqual(NKError.success.errorDescription, error.errorDescription)
 
