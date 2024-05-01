@@ -42,11 +42,22 @@ class NCNetworkingProcess: NSObject {
 
     func startTimer(scene: UIScene) {
         self.timerProcess?.invalidate()
-        self.timerProcess = Timer.scheduledTimer(withTimeInterval: 1, repeats: true, block: { _ in
+        self.timerProcess = Timer.scheduledTimer(withTimeInterval: 2, repeats: true, block: { _ in
             guard !self.appDelegate.account.isEmpty,
                   !self.pauseProcess else { return }
 
-            if NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND status != %d", self.appDelegate.account, NCGlobal.shared.metadataStatusNormal)).isEmpty {
+            // In Downloading or Uploading [TEST]
+            /*
+            if let results = NCManageDatabase.shared.getResultsMetadatas(predicate: NSPredicate(format: "account == %@ AND (status == %d || status == %d)", self.appDelegate.account, NCGlobal.shared.metadataStatusDownloading, NCGlobal.shared.metadataStatusUploading)) {
+                if !results.isEmpty {
+                   return
+                }
+            }
+            */
+
+            guard let results = NCManageDatabase.shared.getResultsMetadatas(predicate: NSPredicate(format: "account == %@ AND status != %d", self.appDelegate.account, NCGlobal.shared.metadataStatusNormal)) else { return }
+
+            if results.isEmpty {
                 //
                 // Remove Photo CameraRoll
                 //
