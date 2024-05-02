@@ -635,7 +635,7 @@ extension NCManageDatabase {
                     result.favorite = false
                 }
                 for metadata in metadatas {
-                    realm.add(metadata, update: .all)
+                    realm.add(metadata, update: .modified)
                 }
             }
         } catch let error {
