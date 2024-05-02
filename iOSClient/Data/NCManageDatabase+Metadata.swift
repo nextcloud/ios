@@ -635,7 +635,7 @@ extension NCManageDatabase {
                     result.favorite = false
                 }
                 for metadata in metadatas {
-                    realm.add(metadata, update: .all)
+                    realm.add(metadata, update: .modified)
                 }
             }
         } catch let error {
@@ -721,7 +721,6 @@ extension NCManageDatabase {
     }
 
     func getResultsMetadatas(predicate: NSPredicate, sorted: String? = nil, ascending: Bool = false) -> Results<tableMetadata>? {
-
         do {
             let realm = try Realm()
             if let sorted {
@@ -761,17 +760,22 @@ extension NCManageDatabase {
     }
 
     func getMetadatas(predicate: NSPredicate, numItems: Int, sorted: String, ascending: Bool) -> [tableMetadata] {
+        var counter: Int = 0
+        var metadatas: [tableMetadata] = []
+
         do {
             let realm = try Realm()
             realm.refresh()
             let results = realm.objects(tableMetadata.self).filter(predicate).sorted(byKeyPath: sorted, ascending: ascending)
-            let itemsResults = Array(results.prefix(numItems))
-            return (itemsResults.map { tableMetadata(value: $0) })
+            for result in results where counter < numItems {
+                metadatas.append(tableMetadata(value: result))
+                counter += 1
+            }
         } catch let error as NSError {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not access database: \(error)")
         }
 
-        return []
+        return metadatas
     }
 
     func getMetadataAtIndex(predicate: NSPredicate, sorted: String, ascending: Bool, index: Int) -> tableMetadata? {

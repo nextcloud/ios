@@ -329,10 +329,10 @@ class NCGlobal: NSObject {
 
     // Metadata : Status
     //
-    // 1) wait download/upload
-    // 2) in download/upload
-    // 3) downloading/uploading
-    // 4) done or error
+    //   0 normal
+    // ± 1 wait download/upload
+    // ± 2 downloading/uploading
+    // ± 3 error
     //
     let metadataStatusNormal: Int                   = 0
 
