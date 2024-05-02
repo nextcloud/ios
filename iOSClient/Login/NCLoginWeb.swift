@@ -47,6 +47,9 @@ class NCLoginWeb: UIViewController {
     var loginFlowV2Endpoint = ""
     var loginFlowV2Login = ""
 
+    // Opens the login URL in external browser instead of in app. User must manually go back to the app.
+    let loginFlowv2ExternalBrowser = false
+
     // MARK: - View Life Cycle
 
     override func viewDidLoad() {
@@ -145,6 +148,8 @@ class NCLoginWeb: UIViewController {
             }
         }
         self.title = titleView
+
+        NotificationCenter.default.addObserver(self, selector: #selector(applicationDidBecomeActive(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationDidBecomeActive), object: nil)
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -169,21 +174,32 @@ class NCLoginWeb: UIViewController {
     }
 
     func loadWebPage(webView: WKWebView, url: URL) {
-
-        let language = NSLocale.preferredLanguages[0] as String
-        var request = URLRequest(url: url)
-
-        if let deviceName = "\(UIDevice.current.name) (\(NCBrandOptions.shared.brand) iOS)".cString(using: .utf8),
-            let deviceUserAgent = String(cString: deviceName, encoding: .ascii) {
-            webView.customUserAgent = deviceUserAgent
+        if loginFlowV2Available, loginFlowv2ExternalBrowser {
+            UIApplication.shared.open(url)
         } else {
-            webView.customUserAgent = userAgent
+            let language = NSLocale.preferredLanguages[0] as String
+            var request = URLRequest(url: url)
+
+            if let deviceName = "\(UIDevice.current.name) (\(NCBrandOptions.shared.brand) iOS)".cString(using: .utf8),
+                let deviceUserAgent = String(cString: deviceName, encoding: .ascii) {
+                webView.customUserAgent = deviceUserAgent
+            } else {
+                webView.customUserAgent = userAgent
+            }
+
+            request.addValue("true", forHTTPHeaderField: "OCS-APIRequest")
+            request.addValue(language, forHTTPHeaderField: "Accept-Language")
+
+            webView.load(request)
         }
+    }
 
-        request.addValue("true", forHTTPHeaderField: "OCS-APIRequest")
-        request.addValue(language, forHTTPHeaderField: "Accept-Language")
-
-        webView.load(request)
+    private func pollLogin() {
+        NextcloudKit.shared.getLoginFlowV2Poll(token: self.loginFlowV2Token, endpoint: self.loginFlowV2Endpoint) { server, loginName, appPassword, _, error in
+            if error == .success, let server, let loginName, let appPassword {
+                self.createAccount(server: server, username: loginName, password: appPassword)
+            }
+        }
     }
 
     func getAppPassword(serverUrl: String, username: String, password: String) {
@@ -204,6 +220,10 @@ class NCLoginWeb: UIViewController {
 
     @objc func changeUser(sender: UIBarButtonItem) {
         toggleMenu()
+    }
+
+    @objc func applicationDidBecomeActive(_ notification: NSNotification) {
+        pollLogin()
     }
 }
 
@@ -271,15 +291,7 @@ extension NCLoginWeb: WKNavigationDelegate {
 
         NCActivityIndicator.shared.stop()
 
-        if loginFlowV2Available {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                NextcloudKit.shared.getLoginFlowV2Poll(token: self.loginFlowV2Token, endpoint: self.loginFlowV2Endpoint) { server, loginName, appPassword, _, error in
-                    if error == .success && server != nil && loginName != nil && appPassword != nil {
-                        self.createAccount(server: server!, username: loginName!, password: appPassword!)
-                    }
-                }
-            }
-        }
+        pollLogin()
     }
 
     // MARK: -

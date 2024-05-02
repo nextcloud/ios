@@ -272,16 +272,16 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
                     self.loginButton.isEnabled = true
 
                     // Login Flow V2
-                    if error == .success && NCBrandOptions.shared.use_loginflowv2 && token != nil && endpoint != nil && login != nil {
+                    if error == .success, let token, let endpoint, let login {
 
                         if let loginWeb = UIStoryboard(name: "NCLogin", bundle: nil).instantiateViewController(withIdentifier: "NCLoginWeb") as? NCLoginWeb {
 
                             loginWeb.urlBase = url
                             loginWeb.user = user
                             loginWeb.loginFlowV2Available = true
-                            loginWeb.loginFlowV2Token = token!
-                            loginWeb.loginFlowV2Endpoint = endpoint!
-                            loginWeb.loginFlowV2Login = login!
+                            loginWeb.loginFlowV2Token = token
+                            loginWeb.loginFlowV2Endpoint = endpoint
+                            loginWeb.loginFlowV2Login = login
 
                             self.navigationController?.pushViewController(loginWeb, animated: true)
                         }
