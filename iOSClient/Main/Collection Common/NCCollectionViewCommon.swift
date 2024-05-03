@@ -214,6 +214,9 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         NCNetworking.shared.cancelUnifiedSearchFiles()
         dismissTip()
         setEditMode(false)
+
+        // Cancel Retrieves Properties
+        NCNetworking.shared.cancelRetrievesProperties()
     }
 
     override func viewDidDisappear(_ animated: Bool) {
