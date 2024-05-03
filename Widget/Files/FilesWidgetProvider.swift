@@ -38,13 +38,13 @@ struct FilesWidgetProvider: IntentTimelineProvider {
     }
 
     func getSnapshot(for configuration: AccountIntent, in context: Context, completion: @escaping (Entry) -> Void) {
-        getFilesDataEntry(configuration: configuration, isPreview: false, displaySize: context.displaySize) { entry in
+        getFilesDataEntry(configuration: configuration, isPreview: false) { entry in
             completion(entry)
         }
     }
 
     func getTimeline(for configuration: AccountIntent, in context: Context, completion: @escaping (Timeline<Entry>) -> Void) {
-        getFilesDataEntry(configuration: configuration, isPreview: context.isPreview, displaySize: context.displaySize) { entry in
+        getFilesDataEntry(configuration: configuration, isPreview: context.isPreview) { entry in
             let timeLine = Timeline(entries: [entry], policy: .atEnd)
             completion(timeLine)
         }
