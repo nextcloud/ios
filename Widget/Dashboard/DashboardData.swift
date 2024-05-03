@@ -64,14 +64,12 @@ let dashboardDatasTest: [DashboardData] = [
     .init(id: 9, title: "title9", subTitle: "subTitle-description9", link: URL(string: "https://nextcloud.com/")!, icon: UIImage(named: "widget")!, template: true, avatar: false, imageColor: nil)
 ]
 
-func getDashboardItems(displaySize: CGSize, withButton: Bool) -> Int {
+func getDashboardItems(withButton: Bool) -> Int {
 
     if withButton {
-        let height = Int((displaySize.height - 85) / 50)
-        return height
+        return 4
     } else {
-        let height = Int((displaySize.height - 60) / 50)
-        return height
+        return 5
     }
 }
 
@@ -97,11 +95,11 @@ func convertDataToImage(data: Data?, size: CGSize, fileNameToWrite: String?) -> 
     return imageData
 }
 
-func getDashboardDataEntry(configuration: DashboardIntent?, isPreview: Bool, displaySize: CGSize, completion: @escaping (_ entry: DashboardDataEntry) -> Void) {
+func getDashboardDataEntry(configuration: DashboardIntent?, isPreview: Bool, completion: @escaping (_ entry: DashboardDataEntry) -> Void) {
 
     let utilityFileSystem = NCUtilityFileSystem()
     let utility = NCUtility()
-    let dashboardItems = getDashboardItems(displaySize: displaySize, withButton: false)
+    let dashboardItems = getDashboardItems(withButton: false)
     let datasPlaceholder = Array(dashboardDatasTest[0...dashboardItems - 1])
     var account: tableAccount?
 
@@ -181,7 +179,7 @@ func getDashboardDataEntry(configuration: DashboardIntent?, isPreview: Bool, dis
                     if let items = result.items {
                         numberItems = result.items?.count ?? 0
                         var counter: Int = 0
-                        let dashboardItems = getDashboardItems(displaySize: displaySize, withButton: existsButton)
+                        let dashboardItems = getDashboardItems(withButton: existsButton)
                         for item in items {
                             counter += 1
                             let title = item.title ?? ""

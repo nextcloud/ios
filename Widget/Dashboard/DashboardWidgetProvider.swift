@@ -31,7 +31,7 @@ struct DashboardWidgetProvider: IntentTimelineProvider {
     typealias Entry = DashboardDataEntry
 
     func placeholder(in context: Context) -> Entry {
-        let dashboardItems = getDashboardItems(displaySize: context.displaySize, withButton: false)
+        let dashboardItems = getDashboardItems(withButton: false)
         let datasPlaceholder = Array(dashboardDatasTest[0...dashboardItems])
         let title = "Dashboard"
         let titleImage = UIImage(named: "widget")!
@@ -39,13 +39,13 @@ struct DashboardWidgetProvider: IntentTimelineProvider {
     }
 
     func getSnapshot(for configuration: DashboardIntent, in context: Context, completion: @escaping (DashboardDataEntry) -> Void) {
-        getDashboardDataEntry(configuration: configuration, isPreview: false, displaySize: context.displaySize) { entry in
+        getDashboardDataEntry(configuration: configuration, isPreview: false) { entry in
             completion(entry)
         }
     }
 
     func getTimeline(for configuration: DashboardIntent, in context: Context, completion: @escaping (Timeline<DashboardDataEntry>) -> Void) {
-        getDashboardDataEntry(configuration: configuration, isPreview: context.isPreview, displaySize: context.displaySize) { entry in
+        getDashboardDataEntry(configuration: configuration, isPreview: context.isPreview) { entry in
             let timeLine = Timeline(entries: [entry], policy: .atEnd)
             completion(timeLine)
         }
