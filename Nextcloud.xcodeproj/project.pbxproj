@@ -5486,7 +5486,7 @@
 			repositoryURL = "https://github.com/FabrizioBrancati/Queuer";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 3.0.0;
+				minimumVersion = 2.0.0;
 			};
 		};
 		F76DA967277B77E90082465B /* XCRemoteSwiftPackageReference "DropDown" */ = {
