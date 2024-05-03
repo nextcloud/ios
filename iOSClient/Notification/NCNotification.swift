@@ -69,6 +69,13 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate {
         getNetwokingNotification()
     }
 
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+
+        // Cancel Retrieves Properties
+        dataSourceTask?.cancel()
+    }
+
     @objc func viewClose() {
         self.dismiss(animated: true, completion: nil)
     }
