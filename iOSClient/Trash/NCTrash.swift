@@ -102,6 +102,7 @@ class NCTrash: UIViewController, NCTrashListCellDelegate, NCTrashGridCellDelegat
         super.viewWillDisappear(animated)
 
         // Cancel Retrieves Properties
+        NCNetworking.shared.downloadThumbnailTrashQueue.cancelAll()
         dataSourceTask?.cancel()
     }
 

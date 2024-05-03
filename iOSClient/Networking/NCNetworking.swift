@@ -131,6 +131,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
     // OPERATIONQUEUE
     let downloadThumbnailQueue = Queuer(name: "downloadThumbnailQueue", maxConcurrentOperationCount: 10, qualityOfService: .default)
     let downloadThumbnailActivityQueue = Queuer(name: "downloadThumbnailActivityQueue", maxConcurrentOperationCount: 10, qualityOfService: .default)
+    let downloadThumbnailTrashQueue = Queuer(name: "downloadThumbnailTrashQueue", maxConcurrentOperationCount: 10, qualityOfService: .default)
     let unifiedSearchQueue = Queuer(name: "unifiedSearchQueue", maxConcurrentOperationCount: 1, qualityOfService: .default)
     let saveLivePhotoQueue = Queuer(name: "saveLivePhotoQueue", maxConcurrentOperationCount: 1, qualityOfService: .default)
     let downloadQueue = Queuer(name: "downloadQueue", maxConcurrentOperationCount: NCBrandOptions.shared.maxConcurrentOperationDownload, qualityOfService: .default)
@@ -197,6 +198,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
         downloadQueue.cancelAll()
         downloadThumbnailQueue.cancelAll()
         downloadThumbnailActivityQueue.cancelAll()
+        downloadThumbnailTrashQueue.cancelAll()
         downloadAvatarQueue.cancelAll()
         unifiedSearchQueue.cancelAll()
         saveLivePhotoQueue.cancelAll()
