@@ -69,7 +69,7 @@ extension NCManageDatabase {
                     if let richWorkspace { result.richWorkspace = richWorkspace }
                     result.serverUrl = serverUrl
                     result.account = account
-                    realm.add(result)
+                    realm.add(result, update: .modified)
                 }
             }
         } catch let error {
