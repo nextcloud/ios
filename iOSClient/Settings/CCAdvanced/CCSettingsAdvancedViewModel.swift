@@ -22,12 +22,15 @@
 //
 
 import Foundation
+import UIKit
 import NextcloudKit
+import Combine
+import SwiftUI
 
 class CCSettingsAdvancedModel: ObservableObject, ViewOnAppearHandling, AccountUpdateHandling {
 
     /// Keychain access
-    private var keychain = NCKeychain()
+    var keychain = NCKeychain()
     /// Callback to notify the view to present the UIViewController
     var goToCapabilitiesView: ((UIViewController) -> Void)?
     // MARK: All published properties for the toggles
@@ -145,12 +148,10 @@ class CCSettingsAdvancedModel: ObservableObject, ViewOnAppearHandling, AccountUp
 
     /// Asynchronously calculates the size of cache directory and updates the footer title.
     func calculateSize() {
-        DispatchQueue.global(qos: .default).async {
             let ufs = NCUtilityFileSystem()
             let directory = ufs.directoryProviderStorage
             let totalSize = ufs.getDirectorySize(directory: directory)
             self.footerTitle = "\(NSLocalizedString("_clear_cache_footer_", comment: "")). (\(NSLocalizedString("_used_space_", comment: "")) \(ufs.transformedSize(totalSize)))"
-        }
     }
     /// Exits the Nextcloud application if specified.
     ///
