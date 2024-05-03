@@ -48,7 +48,7 @@ class NCLoginWeb: UIViewController {
     var loginFlowV2Login = ""
 
     // Opens the login URL in external browser instead of in app. User must manually go back to the app.
-    let loginFlowv2ExternalBrowser = false
+    let loginFlowv2ExternalBrowser = true
 
     // MARK: - View Life Cycle
 
