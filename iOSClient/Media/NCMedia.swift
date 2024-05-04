@@ -48,7 +48,6 @@ class NCMedia: UIViewController {
     var serverUrl = ""
     let refreshControl = UIRefreshControl()
     var loadingTask: Task<Void, any Error>?
-    var dataSourceTask: URLSessionTask?
     var isTop: Bool = true
     var isEditMode = false
     var selectOcId: [String] = []
@@ -188,7 +187,6 @@ class NCMedia: UIViewController {
 
         // Cancel Retrieves Properties
         NCNetworking.shared.downloadThumbnailQueue.cancelAll()
-
     }
 
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
