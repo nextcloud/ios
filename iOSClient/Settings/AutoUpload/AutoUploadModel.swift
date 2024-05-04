@@ -126,7 +126,16 @@ class AutoUploadModel: ObservableObject, ViewOnAppearHandling, NCSelectDelegate 
     /// - Returns: The path for auto-upload.
     func returnPath() -> String {
         let path = NCManageDatabase.shared.getAccountAutoUploadFileName()
-        return path.replacingOccurrences(of: NCUtilityFileSystem().deleteLastPath(serverUrlPath: path) ?? "", with: "")
+        let userEmail = NCManageDatabase.shared.getActiveAccount()?.email
+
+        // Check if userEmail is a present in userEmail
+        guard let range = path.range(of: userEmail ?? "") else {
+            return "" // Return etymp if userEmail is not found in path
+        }
+        // Get the range of the substring after string2
+        let uploadPath = Range(uncheckedBounds: (range.upperBound, path.endIndex))
+        // Extract the uploadPath
+        return path.substring(with: uploadPath)
     }
     /// Sets the auto-upload directory based on the provided server URL.
     ///
@@ -138,7 +147,7 @@ class AutoUploadModel: ObservableObject, ViewOnAppearHandling, NCSelectDelegate 
         // It checks if the provided server URL is the home server. If it is, an error is set, and the function returns early.
         let home = NCUtilityFileSystem().getHomeServer(urlBase: appDelegate.urlBase, userId: appDelegate.userId)
         if serverUrl == home {
-            let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_autoupload_error_select_folder_", responseData: nil)
+            let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: NSLocalizedString("_autoupload_error_select_folder_", comment: ""), responseData: nil)
             self.error = error.errorDescription
             self.showErrorAlert = true
             return

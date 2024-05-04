@@ -203,7 +203,7 @@ struct CCSettingsAdvanced: View {
                         .renderingMode(.template)
                         .frame(width: 22, height: 20)
                         .foregroundColor(Color(UIColor.systemRed))
-                    Text(NSLocalizedString("_clear_cache_", comment: ""))
+                    Text(NSLocalizedString("_clear_cache_", comment: "") + NSLocalizedString("_extra_space_for_form_taps_", comment: ""))
                 }
                 .font(.system(size: 16))
                 .alert(NSLocalizedString("_want_delete_cache_", comment: ""), isPresented: $showCacheAlert) {
