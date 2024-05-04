@@ -371,7 +371,7 @@
 "_advanced_"                    = "Advanced";
 "_permissions_"                 = "Permissions";
 "_disable_files_app_"           = "Disable Files App integration";
-"_disable_files_app_footer_"    = "Do not permit the access of files via the iOS Files application";
+"_disable_files_app_footer_"    = "Do not permit the access of files via the iOS Files application. Note that on initial install Nextcloud will not appear in Files' Locations list until manually added via More > Edit";
 "_trial_"                       = "Trial";
 "_trial_expired_day_"           = "Days remaining";
 "_time_remaining_"              = "%@ remaining";
