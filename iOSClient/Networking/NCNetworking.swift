@@ -214,20 +214,6 @@ class NCNetworking: NSObject, NKCommonDelegate {
         cancelUploadBackgroundTask()
     }
 
-    func cancelRetrievesProperties() {
-        cancelAllQueue()
-        let sessionManager = NextcloudKit.shared.sessionManager
-        sessionManager.session.getTasksWithCompletionHandler { dataTasks, _, _ in
-            dataTasks.forEach {
-                if let request = $0.currentRequest {
-                    if request.httpMethod == "PROPFIND" || request.httpMethod == "REPORT" || request.httpMethod == "SEARCH" {
-                        $0.cancel()
-                    }
-                }
-            }
-        }
-    }
-
     // MARK: - Pinning check
 
     public func checkTrustedChallenge(_ session: URLSession,

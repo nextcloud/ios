@@ -216,7 +216,9 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         setEditMode(false)
 
         // Cancel Retrieves Properties
-        NCNetworking.shared.cancelRetrievesProperties()
+        NCNetworking.shared.downloadThumbnailQueue.cancelAll()
+        NCNetworking.shared.unifiedSearchQueue.cancelAll()
+        dataSourceTask?.cancel()
     }
 
     override func viewDidDisappear(_ animated: Bool) {
