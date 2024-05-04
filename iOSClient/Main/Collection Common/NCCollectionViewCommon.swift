@@ -215,7 +215,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         dismissTip()
         setEditMode(false)
 
-        // Cancel Retrieves Properties
+        // Cancel Queue & Retrieves Properties
         NCNetworking.shared.downloadThumbnailQueue.cancelAll()
         NCNetworking.shared.unifiedSearchQueue.cancelAll()
         dataSourceTask?.cancel()
