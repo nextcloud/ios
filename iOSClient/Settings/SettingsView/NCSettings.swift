@@ -59,7 +59,7 @@ struct NCSettings: View {
                         .renderingMode(.template)
                         .foregroundColor(.secondary)
                         .frame(width: 20, height: 20)
-                    Text(model.isLockActive ? NSLocalizedString("_lock_not_active_", comment: "") : NSLocalizedString("_lock_active_", comment: ""))
+                    Text(model.isLockActive ? NSLocalizedString("_lock_not_active_", comment: "") : NSLocalizedString("_lock_active_", comment: "") + NSLocalizedString("_extra_space_for_form_taps_", comment: ""))
                 }
                 .font(.system(size: 16))
                 .onTapGesture {
@@ -149,7 +149,7 @@ struct NCSettings: View {
                         .renderingMode(.template)
                         .frame(width: 20, height: 20)
                         .foregroundColor(.secondary)
-                    Text(NSLocalizedString("_acknowledgements_", comment: ""))
+                    Text(NSLocalizedString("_acknowledgements_", comment: "") + NSLocalizedString("_extra_space_for_form_taps_", comment: ""))
                 }
                 .font(.system(size: 16))
                 .onTapGesture {
@@ -164,7 +164,7 @@ struct NCSettings: View {
                         .renderingMode(.template)
                         .frame(width: 20, height: 20)
                         .foregroundColor(.secondary)
-                    Text(NSLocalizedString("_privacy_legal_", comment: ""))
+                    Text(NSLocalizedString("_privacy_legal_", comment: "") + NSLocalizedString("_extra_space_for_form_taps_", comment: ""))
                 }
                 .font(.system(size: 16))
                 .onTapGesture {
@@ -179,7 +179,7 @@ struct NCSettings: View {
                         .renderingMode(.template)
                         .frame(width: 20, height: 20)
                         .foregroundColor(.secondary)
-                    Text(NSLocalizedString("_source_code_", comment: ""))
+                    Text(NSLocalizedString("_source_code_", comment: "") + NSLocalizedString("_extra_space_for_form_taps_", comment: ""))
                 }
                 .font(.system(size: 16))
                 .onTapGesture {

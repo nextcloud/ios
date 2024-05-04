@@ -153,13 +153,22 @@ class CCSettingsAdvancedModel: ObservableObject, ViewOnAppearHandling, AccountUp
             let totalSize = ufs.getDirectorySize(directory: directory)
             self.footerTitle = "\(NSLocalizedString("_clear_cache_footer_", comment: "")). (\(NSLocalizedString("_used_space_", comment: "")) \(ufs.transformedSize(totalSize)))"
     }
+    /// Removes all accounts & exits the Nextcloud application if specified.
+    ///
+    /// - Parameter
+    /// exit: Boolean indicating whether to reset the application.
+    func resetNextCloud(exit: Bool) {
+        if exit {
+            AppDelegate().resetApplication()
+        } else { }
+    }
     /// Exits the Nextcloud application if specified.
     ///
     /// - Parameter
     /// exit: Boolean indicating whether to exit the application.
-    func exitNextCloud(exit: Bool) {
-        if exit {
-            AppDelegate().resetApplication()
+    func exitNextCloud(ext: Bool) {
+        if ext {
+            exit(0)
         } else { }
     }
     /// Presents the log file viewer.

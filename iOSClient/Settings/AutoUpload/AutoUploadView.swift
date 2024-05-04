@@ -62,7 +62,7 @@ struct AutoUploadView: View {
                     .renderingMode(.template)
                     .frame(width: 20, height: 20)
                     .foregroundColor(.secondary)
-                Text(NSLocalizedString("_autoupload_select_folder_", comment: ""))
+                Text(NSLocalizedString("_autoupload_select_folder_", comment: "") + NSLocalizedString("_extra_space_for_form_taps_", comment: ""))
             }
             .font(.system(size: 16))
         }, footer: {

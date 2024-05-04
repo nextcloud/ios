@@ -29,6 +29,8 @@ struct CCSettingsAdvanced: View {
     @State var showExitAlert: Bool = false
     /// State variable for indicating whether the cache alert is shown.
     @State var showCacheAlert: Bool = false
+    /// State variable for indicating whether to disable crash reporter.
+    @State var showCrashReporter: Bool = false
     var body: some View {
         Form {
             // Show Hidden Files
@@ -101,9 +103,17 @@ struct CCSettingsAdvanced: View {
                         Toggle(NSLocalizedString("_crashservice_title_", comment: ""), isOn: $viewModel.crashReporter)
                             .onChange(of: viewModel.crashReporter) { _ in
                                 viewModel.updateCrashReporter()
+                                showCrashReporter.toggle()
                             }
                     }
                     .font(.system(size: 16))
+                    .alert(NSLocalizedString("_crashservice_title_", comment: ""), isPresented: $showCrashReporter, actions: {
+                        Button(NSLocalizedString("OK", comment: ""), role: .cancel) {
+                            viewModel.exitNextCloud(ext: showCrashReporter)
+                        }
+                    }, message: {
+                        Text(NSLocalizedString("_crashservice_alert_", comment: ""))
+                    })
                 }, header: {
                     Text(NSLocalizedString("_privacy_", comment: ""))
                 }, footer: {
@@ -122,7 +132,7 @@ struct CCSettingsAdvanced: View {
                             .renderingMode(.template)
                             .frame(width: 20, height: 20)
                             .foregroundColor(Color(UIColor.systemGray))
-                        Text(NSLocalizedString("_view_log_", comment: ""))
+                        Text(NSLocalizedString("_view_log_", comment: "") + NSLocalizedString("_extra_space_for_form_taps_", comment: ""))
                     }
                     .font(.system(size: 16))
                     .onTapGesture(perform: {
@@ -135,7 +145,7 @@ struct CCSettingsAdvanced: View {
                             .renderingMode(.template)
                             .frame(width: 20, height: 20)
                             .foregroundColor(Color(UIColor.systemGray))
-                        Text(NSLocalizedString("_clear_log_", comment: ""))
+                        Text(NSLocalizedString("_clear_log_", comment: "") + NSLocalizedString("_extra_space_for_form_taps_", comment: ""))
                     }
                     .font(.system(size: 16))
                     .onTapGesture(perform: {
@@ -220,13 +230,13 @@ struct CCSettingsAdvanced: View {
                         .renderingMode(.template)
                         .frame(width: 22, height: 20)
                         .foregroundColor(Color(UIColor.systemRed))
-                    Text(NSLocalizedString("_exit_", comment: ""))
+                    Text(NSLocalizedString("_exit_", comment: "") + NSLocalizedString("_extra_space_for_form_taps_", comment: ""))
                         .foregroundColor(Color(UIColor.systemRed))
                 }
                 .font(.system(size: 16))
                 .alert(NSLocalizedString("_want_exit_", comment: ""), isPresented: $showExitAlert) {
                     Button(NSLocalizedString("_ok_", comment: ""), role: .destructive) {
-                        viewModel.exitNextCloud(exit: showExitAlert)
+                        viewModel.resetNextCloud(exit: showExitAlert)
                     }
                     Button(NSLocalizedString("_cancel_", comment: ""), role: .cancel) { }
                 }
