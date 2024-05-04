@@ -79,16 +79,15 @@ func getTitleFilesWidget(account: tableAccount?) -> String {
 }
 
 func getFilesItems(displaySize: CGSize) -> Int {
-
-    let height = Int((displaySize.height - 100) / 50)
-    return height
+    let items = Int((displaySize.height - 100) / 60)
+    return items
 }
 
-func getFilesDataEntry(configuration: AccountIntent?, isPreview: Bool, completion: @escaping (_ entry: FilesDataEntry) -> Void) {
+func getFilesDataEntry(configuration: AccountIntent?, isPreview: Bool, displaySize: CGSize, completion: @escaping (_ entry: FilesDataEntry) -> Void) {
 
     let utilityFileSystem = NCUtilityFileSystem()
     let utility = NCUtility()
-    let filesItems = 4
+    let filesItems = getFilesItems(displaySize: displaySize)
     let datasPlaceholder = Array(filesDatasTest[0...filesItems - 1])
     var account: tableAccount?
 
