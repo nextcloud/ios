@@ -168,17 +168,12 @@ extension NCNetworking {
     func downloadingFinish(_ session: URLSession, downloadTask: URLSessionDownloadTask, didFinishDownloadingTo location: URL) {
 
         if let httpResponse = (downloadTask.response as? HTTPURLResponse) {
-            if httpResponse.statusCode >= 200 && httpResponse.statusCode < 300 {
-                print(downloadTask.currentRequest?.url)
-                /*
-                if let destinationFilePath = downloadTask.taskDescription {
-                    let destinationUrl = NSURL.fileURL(withPath: destinationFilePath)
-                    do {
-                        try FileManager.default.removeItem(at: destinationUrl)
-                        try FileManager.default.copyItem(at: location, to: destinationUrl)
-                    } catch { }
-                }
-                */
+            if httpResponse.statusCode >= 200 && httpResponse.statusCode < 300,
+               let destinationUrl = getFileNameDestination(from: downloadTask.currentRequest?.url) {
+                do {
+                    try FileManager.default.removeItem(at: destinationUrl)
+                    try FileManager.default.copyItem(at: location, to: destinationUrl)
+                } catch { }
             }
         }
     }
