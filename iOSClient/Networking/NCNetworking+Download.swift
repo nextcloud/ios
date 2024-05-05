@@ -165,6 +165,24 @@ extension NCNetworking {
         }
     }
 
+    func downloadingFinish(_ session: URLSession, downloadTask: URLSessionDownloadTask, didFinishDownloadingTo location: URL) {
+
+        if let httpResponse = (downloadTask.response as? HTTPURLResponse) {
+            if httpResponse.statusCode >= 200 && httpResponse.statusCode < 300 {
+                print(downloadTask.currentRequest?.url)
+                /*
+                if let destinationFilePath = downloadTask.taskDescription {
+                    let destinationUrl = NSURL.fileURL(withPath: destinationFilePath)
+                    do {
+                        try FileManager.default.removeItem(at: destinationUrl)
+                        try FileManager.default.copyItem(at: location, to: destinationUrl)
+                    } catch { }
+                }
+                */
+            }
+        }
+    }
+
     func downloadComplete(fileName: String,
                           serverUrl: String,
                           etag: String?,
@@ -230,7 +248,6 @@ extension NCNetworking {
             }
 
             self.downloadMetadataInBackground.removeValue(forKey: FileNameServerUrl(fileName: fileName, serverUrl: serverUrl))
-            self.delegate?.downloadComplete?(fileName: fileName, serverUrl: serverUrl, etag: etag, date: date, dateLastModified: dateLastModified, length: length, fileNameLocalPath: fileNameLocalPath, task: task, error: error)
         }
     }
 
@@ -243,8 +260,6 @@ extension NCNetworking {
                           task: URLSessionTask) {
 
         DispatchQueue.global().async {
-
-            self.delegate?.downloadProgress?(progress, totalBytes: totalBytes, totalBytesExpected: totalBytesExpected, fileName: fileName, serverUrl: serverUrl, session: session, task: task)
 
             var metadata: tableMetadata?
 

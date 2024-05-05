@@ -461,7 +461,6 @@ extension NCNetworking {
             }
 
             self.uploadMetadataInBackground.removeValue(forKey: FileNameServerUrl(fileName: fileName, serverUrl: serverUrl))
-            self.delegate?.uploadComplete?(fileName: fileName, serverUrl: serverUrl, ocId: ocId, etag: etag, date: date, size: size, fileNameLocalPath: fileNameLocalPath, task: task, error: error)
         }
     }
 
@@ -474,8 +473,6 @@ extension NCNetworking {
                         task: URLSessionTask) {
 
         DispatchQueue.global().async {
-
-            self.delegate?.uploadProgress?(progress, totalBytes: totalBytes, totalBytesExpected: totalBytesExpected, fileName: fileName, serverUrl: serverUrl, session: session, task: task)
 
             var metadata: tableMetadata?
 
