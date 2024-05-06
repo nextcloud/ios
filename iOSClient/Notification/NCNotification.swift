@@ -72,7 +72,7 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate {
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
 
-        // Cancel Retrieves Properties
+        // Cancel Queue & Retrieves Properties
         dataSourceTask?.cancel()
     }
 

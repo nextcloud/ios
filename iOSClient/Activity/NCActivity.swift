@@ -44,6 +44,7 @@ class NCActivity: UIViewController, NCSharePagingContent {
     let utility = NCUtility()
     var allItems: [DateCompareable] = []
     var sectionDates: [Date] = []
+    var dataSourceTask: URLSessionTask?
 
     var insets = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
     var didSelectItemEnable: Bool = true
@@ -100,6 +101,14 @@ class NCActivity: UIViewController, NCSharePagingContent {
 
         navigationController?.setNavigationBarAppearance()
         fetchAll(isInitial: true)
+    }
+
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+
+        // Cancel Queue & Retrieves Properties
+        NCNetworking.shared.downloadThumbnailActivityQueue.cancelAll()
+        dataSourceTask?.cancel()
     }
 
     override func viewWillLayoutSubviews() {
@@ -421,7 +430,9 @@ extension NCActivity {
             limit: 1,
             objectId: nil,
             objectType: objectType,
-            previews: true) { account, _, activityFirstKnown, activityLastGiven, _, error in
+            previews: true) { task in
+                self.dataSourceTask = task
+            } completion: { account, _, activityFirstKnown, activityLastGiven, _, error in
                 defer { disptachGroup.leave() }
 
                 let largestActivityId = max(activityFirstKnown, activityLastGiven)
@@ -448,7 +459,9 @@ extension NCActivity {
             limit: min(limit, 200),
             objectId: metadata?.fileId,
             objectType: objectType,
-            previews: true) { account, activities, activityFirstKnown, activityLastGiven, _, error in
+            previews: true) { task in
+                self.dataSourceTask = task
+            } completion: { account, activities, activityFirstKnown, activityLastGiven, _, error in
                 defer { disptachGroup.leave() }
                 guard error == .success,
                       account == self.appDelegate.account,

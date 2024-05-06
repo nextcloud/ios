@@ -27,13 +27,6 @@ import NextcloudKit
 import Alamofire
 import Queuer
 
-@objc public protocol NCNetworkingDelegate {
-    @objc optional func downloadProgress(_ progress: Float, totalBytes: Int64, totalBytesExpected: Int64, fileName: String, serverUrl: String, session: URLSession, task: URLSessionTask)
-    @objc optional func uploadProgress(_ progress: Float, totalBytes: Int64, totalBytesExpected: Int64, fileName: String, serverUrl: String, session: URLSession, task: URLSessionTask)
-    @objc optional func downloadComplete(fileName: String, serverUrl: String, etag: String?, date: NSDate?, dateLastModified: NSDate?, length: Int64, fileNameLocalPath: String?, task: URLSessionTask, error: NKError)
-    @objc optional func uploadComplete(fileName: String, serverUrl: String, ocId: String?, etag: String?, date: NSDate?, size: Int64, fileNameLocalPath: String?, task: URLSessionTask, error: NKError)
-}
-
 #if EXTENSION_FILE_PROVIDER_EXTENSION || EXTENSION_WIDGET
 @objc protocol uploadE2EEDelegate: AnyObject { }
 #endif
@@ -56,7 +49,6 @@ class NCNetworking: NSObject, NKCommonDelegate {
 
     }
 
-    weak var delegate: NCNetworkingDelegate?
     let utilityFileSystem = NCUtilityFileSystem()
     let utility = NCUtility()
     var lastReachability: Bool = true
@@ -131,6 +123,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
     // OPERATIONQUEUE
     let downloadThumbnailQueue = Queuer(name: "downloadThumbnailQueue", maxConcurrentOperationCount: 10, qualityOfService: .default)
     let downloadThumbnailActivityQueue = Queuer(name: "downloadThumbnailActivityQueue", maxConcurrentOperationCount: 10, qualityOfService: .default)
+    let downloadThumbnailTrashQueue = Queuer(name: "downloadThumbnailTrashQueue", maxConcurrentOperationCount: 10, qualityOfService: .default)
     let unifiedSearchQueue = Queuer(name: "unifiedSearchQueue", maxConcurrentOperationCount: 1, qualityOfService: .default)
     let saveLivePhotoQueue = Queuer(name: "saveLivePhotoQueue", maxConcurrentOperationCount: 1, qualityOfService: .default)
     let downloadQueue = Queuer(name: "downloadQueue", maxConcurrentOperationCount: NCBrandOptions.shared.maxConcurrentOperationDownload, qualityOfService: .default)
@@ -197,6 +190,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
         downloadQueue.cancelAll()
         downloadThumbnailQueue.cancelAll()
         downloadThumbnailActivityQueue.cancelAll()
+        downloadThumbnailTrashQueue.cancelAll()
         downloadAvatarQueue.cancelAll()
         unifiedSearchQueue.cancelAll()
         saveLivePhotoQueue.cancelAll()
@@ -210,20 +204,6 @@ class NCNetworking: NSObject, NKCommonDelegate {
         cancelUploadTasks()
         cancelDownloadBackgroundTask()
         cancelUploadBackgroundTask()
-    }
-
-    func cancelRetrievesProperties() {
-        cancelAllQueue()
-        let sessionManager = NextcloudKit.shared.sessionManager
-        sessionManager.session.getTasksWithCompletionHandler { dataTasks, _, _ in
-            dataTasks.forEach {
-                if let request = $0.currentRequest {
-                    if request.httpMethod == "PROPFIND" || request.httpMethod == "REPORT" || request.httpMethod == "SEARCH" {
-                        $0.cancel()
-                    }
-                }
-            }
-        }
     }
 
     // MARK: - Pinning check
