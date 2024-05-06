@@ -326,32 +326,4 @@ class NCNetworking: NSObject, NKCommonDelegate {
             }
         }
     }
-
-    // MARK: - 
-
-    func getFileNameDestination(from url: URL?) -> URL? {
-        guard let url else { return nil }
-
-        let fileName = url.lastPathComponent
-        var serverUrl = url.deletingLastPathComponent().absoluteString
-        if serverUrl.hasSuffix("/") {
-            serverUrl = String(serverUrl.dropLast())
-        }
-        if let metadata = NCManageDatabase.shared.getResultMetadata(predicate: NSPredicate(format: "serverUrl == '\(serverUrl)' AND fileName == '\(fileName)'")) {
-            let destinationFilePath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileName)
-            return NSURL.fileURL(withPath: destinationFilePath)
-        }
-        return nil
-    }
-
-    func getMetadata(from url: URL?) -> tableMetadata? {
-        guard let url else { return nil }
-
-        let fileName = url.lastPathComponent
-        var serverUrl = url.deletingLastPathComponent().absoluteString
-        if serverUrl.hasSuffix("/") {
-            serverUrl = String(serverUrl.dropLast())
-        }
-        return NCManageDatabase.shared.getResultMetadata(predicate: NSPredicate(format: "serverUrl == '\(serverUrl)' AND fileName == '\(fileName)'"))
-    }
 }

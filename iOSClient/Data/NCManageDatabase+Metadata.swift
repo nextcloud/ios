@@ -1147,4 +1147,15 @@ extension NCManageDatabase {
 
         return nil
     }
+
+    func getMetadata(from url: URL?) -> tableMetadata? {
+        guard let url else { return nil }
+
+        let fileName = url.lastPathComponent
+        var serverUrl = url.deletingLastPathComponent().absoluteString
+        if serverUrl.hasSuffix("/") {
+            serverUrl = String(serverUrl.dropLast())
+        }
+        return NCManageDatabase.shared.getResultMetadata(predicate: NSPredicate(format: "serverUrl == '\(serverUrl)' AND fileName == '\(fileName)'"))
+    }
 }

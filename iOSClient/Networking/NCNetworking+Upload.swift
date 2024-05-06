@@ -165,7 +165,7 @@ extension NCNetworking {
                 if afError?.isExplicitlyCancelledError ?? false {
                     error = NKError(errorCode: NCGlobal.shared.errorRequestExplicityCancelled, errorDescription: "error request explicity cancelled")
                 }
-                self.uploadComplete(fileName: metadata.fileName, serverUrl: metadata.serverUrl, ocId: ocId, etag: etag, date: date, size: size, fileNameLocalPath: fileNameLocalPath, task: uploadTask, error: error)
+                self.uploadComplete(fileName: metadata.fileName, serverUrl: metadata.serverUrl, ocId: ocId, etag: etag, date: date, size: size, task: uploadTask, error: error)
             }
             completion(account, ocId, etag, date, size, allHeaderFields, afError, error)
         }
@@ -252,7 +252,7 @@ extension NCNetworking {
                 NCManageDatabase.shared.deleteChunks(account: account, ocId: metadata.ocId, directory: directory)
             }
             if withUploadComplete, let uploadTask {
-                self.uploadComplete(fileName: metadata.fileName, serverUrl: metadata.serverUrl, ocId: file?.ocId, etag: file?.etag, date: file?.date, size: file?.size ?? 0, fileNameLocalPath: fileNameLocalPath, task: uploadTask, error: error)
+                self.uploadComplete(fileName: metadata.fileName, serverUrl: metadata.serverUrl, ocId: file?.ocId, etag: file?.etag, date: file?.date, size: file?.size ?? 0, task: uploadTask, error: error)
             }
             completion(account, file, afError, error)
         }
@@ -314,7 +314,6 @@ extension NCNetworking {
                         etag: String?,
                         date: NSDate?,
                         size: Int64,
-                        fileNameLocalPath: String?,
                         task: URLSessionTask,
                         error: NKError) {
 
@@ -325,7 +324,8 @@ extension NCNetworking {
 
         DispatchQueue.global().async {
 
-            guard let metadata = NCManageDatabase.shared.getMetadataFromFileNameLocalPath(fileNameLocalPath) else { return }
+            guard let url = task.currentRequest?.url,
+                  let metadata = NCManageDatabase.shared.getMetadata(from: url) else { return }
             let ocIdTemp = metadata.ocId
             let selector = metadata.sessionSelector
 

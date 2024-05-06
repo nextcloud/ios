@@ -120,7 +120,7 @@ extension NCNetworking {
                     if afError?.isExplicitlyCancelledError ?? false {
                         error = NKError(errorCode: NCGlobal.shared.errorRequestExplicityCancelled, errorDescription: "error request explicity cancelled")
                     }
-                    self.downloadComplete(fileName: metadata.fileName, serverUrl: metadata.serverUrl, etag: etag, date: date, dateLastModified: dateLastModified, length: length, fileNameLocalPath: fileNameLocalPath, task: downloadTask, error: error)
+                    self.downloadComplete(fileName: metadata.fileName, serverUrl: metadata.serverUrl, etag: etag, date: date, dateLastModified: dateLastModified, length: length, task: downloadTask, error: error)
                 }
                 completion(afError, error)
             }
@@ -169,11 +169,14 @@ extension NCNetworking {
 
         if let httpResponse = (downloadTask.response as? HTTPURLResponse) {
             if httpResponse.statusCode >= 200 && httpResponse.statusCode < 300,
-               let destinationUrl = getFileNameDestination(from: downloadTask.currentRequest?.url) {
-                do {
-                    try FileManager.default.removeItem(at: destinationUrl)
-                    try FileManager.default.copyItem(at: location, to: destinationUrl)
-                } catch { }
+               let url = downloadTask.currentRequest?.url {
+                let fileName = url.lastPathComponent
+                var serverUrl = url.deletingLastPathComponent().absoluteString
+                if serverUrl.hasSuffix("/") { serverUrl = String(serverUrl.dropLast()) }
+                if let metadata = NCManageDatabase.shared.getResultMetadata(predicate: NSPredicate(format: "serverUrl == '\(serverUrl)' AND fileName == '\(fileName)'")) {
+                    let destinationFilePath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileName)
+                    utilityFileSystem.copyFile(at: location, to: NSURL.fileURL(withPath: destinationFilePath))
+                }
             }
         }
     }
@@ -184,13 +187,13 @@ extension NCNetworking {
                           date: NSDate?,
                           dateLastModified: NSDate?,
                           length: Int64,
-                          fileNameLocalPath: String?,
                           task: URLSessionTask,
                           error: NKError) {
 
         DispatchQueue.global().async {
 
-            guard let metadata = NCManageDatabase.shared.getMetadataFromFileNameLocalPath(fileNameLocalPath) else { return }
+            guard let url = task.currentRequest?.url,
+                  let metadata = NCManageDatabase.shared.getMetadata(from: url) else { return }
 
             if error == .success {
 
