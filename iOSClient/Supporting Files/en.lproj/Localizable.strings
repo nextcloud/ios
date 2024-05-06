@@ -759,7 +759,6 @@
 "_file_creation_"                   = "File creation";
 "_delete_all_scanned_images_"       = "Delete all scanned images";
 "_text_recognition_"                = "Text recognition";
-"_extra_space_for_form_taps_"       = "                                         ";
 
 /* The title on the navigation bar of the Scanning screen. */
 "wescan.scanning.title"             = "Scanning";

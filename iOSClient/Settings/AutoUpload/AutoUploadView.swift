@@ -56,20 +56,23 @@ struct AutoUploadView: View {
     @ViewBuilder
     var autoUploadOnView: some View {
         Section(content: {
-            HStack {
-                Image("foldersOnTop")
-                    .resizable()
-                    .renderingMode(.template)
-                    .frame(width: 20, height: 20)
-                    .foregroundColor(.secondary)
-                Text(NSLocalizedString("_autoupload_select_folder_", comment: "") + NSLocalizedString("_extra_space_for_form_taps_", comment: ""))
-            }
-            .font(.system(size: 16))
+            Button(action: {
+                model.autoUploadFolder.toggle()
+            }, label: {
+                HStack {
+                    Image("foldersOnTop")
+                        .resizable()
+                        .renderingMode(.template)
+                        .frame(width: 20, height: 20)
+                        .foregroundColor(.secondary)
+                    Text(NSLocalizedString("_autoupload_select_folder_", comment: ""))
+                }
+                .font(.system(size: 16))
+            })
+            .tint(Color(UIColor.label))
         }, footer: {
             Text("\(NSLocalizedString("_autoupload_current_folder_", comment: "")): \(model.returnPath())")
-        }).onTapGesture {
-            model.autoUploadFolder.toggle()
-        }
+        })
         .sheet(isPresented: $model.autoUploadFolder) {
             SelectView(serverUrl: $model.serverUrl)
                 .onDisappear {

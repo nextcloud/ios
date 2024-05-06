@@ -126,31 +126,35 @@ struct CCSettingsAdvanced: View {
             if FileManager.default.fileExists(atPath: NextcloudKit.shared.nkCommonInstance.filenamePathLog) && !NCBrandOptions.shared.disable_log {
                 Section(content: {
                     // View Log File
-                    HStack {
-                        Image("log")
-                            .resizable()
-                            .renderingMode(.template)
-                            .frame(width: 20, height: 20)
-                            .foregroundColor(Color(UIColor.systemGray))
-                        Text(NSLocalizedString("_view_log_", comment: "") + NSLocalizedString("_extra_space_for_form_taps_", comment: ""))
-                    }
-                    .font(.system(size: 16))
-                    .onTapGesture(perform: {
+                    Button(action: {
                         viewModel.viewLogFile()
+                    }, label: {
+                        HStack {
+                            Image("log")
+                                .resizable()
+                                .renderingMode(.template)
+                                .frame(width: 20, height: 20)
+                                .foregroundColor(Color(UIColor.systemGray))
+                            Text(NSLocalizedString("_view_log_", comment: ""))
+                        }
+                        .font(.system(size: 16))
                     })
+                    .tint(Color(UIColor.label))
                     // Clear Log File
-                    HStack {
-                        Image("clear")
-                            .resizable()
-                            .renderingMode(.template)
-                            .frame(width: 20, height: 20)
-                            .foregroundColor(Color(UIColor.systemGray))
-                        Text(NSLocalizedString("_clear_log_", comment: "") + NSLocalizedString("_extra_space_for_form_taps_", comment: ""))
-                    }
-                    .font(.system(size: 16))
-                    .onTapGesture(perform: {
+                    Button(action: {
                         viewModel.clearLogFile()
+                    }, label: {
+                        HStack {
+                            Image("clear")
+                                .resizable()
+                                .renderingMode(.template)
+                                .frame(width: 20, height: 20)
+                                .foregroundColor(Color(UIColor.systemGray))
+                            Text(NSLocalizedString("_clear_log_", comment: ""))
+                        }
+                        .font(.system(size: 16))
                     })
+                    .tint(Color(UIColor.label))
                     .alert(NSLocalizedString("_log_file_clear_alert_", comment: ""), isPresented: $viewModel.logFileCleared) {
                         Button(NSLocalizedString("OK", comment: ""), role: .cancel) { }
                     }
@@ -197,24 +201,26 @@ struct CCSettingsAdvanced: View {
                     .onChange(of: viewModel.selectedInterval) { _ in
                         viewModel.updateSelectedInterval()
                     }
-                HStack {
-                    Image("trash")
-                        .resizable()
-                        .renderingMode(.template)
-                        .frame(width: 22, height: 20)
-                        .foregroundColor(Color(UIColor.systemRed))
-                    Text(NSLocalizedString("_clear_cache_", comment: "") + NSLocalizedString("_extra_space_for_form_taps_", comment: ""))
-                }
-                .font(.system(size: 16))
+                Button(action: {
+                    showCacheAlert.toggle()
+                }, label: {
+                    HStack {
+                        Image("trash")
+                            .resizable()
+                            .renderingMode(.template)
+                            .frame(width: 22, height: 20)
+                            .foregroundColor(Color(UIColor.systemRed))
+                        Text(NSLocalizedString("_clear_cache_", comment: ""))
+                    }
+                    .font(.system(size: 16))
+                })
+                .tint(Color(UIColor.label))
                 .alert(NSLocalizedString("_want_delete_cache_", comment: ""), isPresented: $showCacheAlert) {
                     Button(NSLocalizedString("_yes_", comment: ""), role: .destructive) {
                         viewModel.clearAllCacheRequest()
                     }
                     Button(NSLocalizedString("_cancel_", comment: ""), role: .cancel) { }
                 }
-                .onTapGesture(perform: {
-                    showCacheAlert.toggle()
-                })
             }, header: {
                 Text(NSLocalizedString("_delete_files_desc_", comment: ""))
             }, footer: {
@@ -224,25 +230,27 @@ struct CCSettingsAdvanced: View {
             })
             // Reset Application
             Section(content: {
-                HStack {
-                    Image("xmark")
-                        .resizable()
-                        .renderingMode(.template)
-                        .frame(width: 22, height: 20)
-                        .foregroundColor(Color(UIColor.systemRed))
-                    Text(NSLocalizedString("_exit_", comment: "") + NSLocalizedString("_extra_space_for_form_taps_", comment: ""))
-                        .foregroundColor(Color(UIColor.systemRed))
-                }
-                .font(.system(size: 16))
+                Button(action: {
+                    showExitAlert.toggle()
+                }, label: {
+                    HStack {
+                        Image("xmark")
+                            .resizable()
+                            .renderingMode(.template)
+                            .frame(width: 22, height: 20)
+                            .foregroundColor(Color(UIColor.systemRed))
+                        Text(NSLocalizedString("_exit_", comment: ""))
+                            .foregroundColor(Color(UIColor.systemRed))
+                    }
+                    .font(.system(size: 16))
+                })
+                .tint(Color(UIColor.label))
                 .alert(NSLocalizedString("_want_exit_", comment: ""), isPresented: $showExitAlert) {
                     Button(NSLocalizedString("_ok_", comment: ""), role: .destructive) {
                         viewModel.resetNextCloud(exit: showExitAlert)
                     }
                     Button(NSLocalizedString("_cancel_", comment: ""), role: .cancel) { }
                 }
-                .onTapGesture(perform: {
-                    showExitAlert.toggle()
-                })
             }, footer: {
                (
                 Text(NSLocalizedString("_exit_footer_", comment: ""))

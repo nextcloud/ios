@@ -53,18 +53,20 @@ struct NCSettings: View {
             /// `Privacy` Section
             Section(content: {
                 // Lock active YES/NO
-                HStack {
-                    Image(model.isLockActive ? "lock_open" : "lock")
-                        .resizable()
-                        .renderingMode(.template)
-                        .foregroundColor(.secondary)
-                        .frame(width: 20, height: 20)
-                    Text(model.isLockActive ? NSLocalizedString("_lock_not_active_", comment: "") : NSLocalizedString("_lock_active_", comment: "") + NSLocalizedString("_extra_space_for_form_taps_", comment: ""))
-                }
-                .font(.system(size: 16))
-                .onTapGesture {
+                Button(action: {
                     model.isLockActive.toggle()
-                }
+                }, label: {
+                    HStack {
+                        Image(model.isLockActive ? "lock_open" : "lock")
+                            .resizable()
+                            .renderingMode(.template)
+                            .foregroundColor(.secondary)
+                            .frame(width: 20, height: 20)
+                        Text(model.isLockActive ? NSLocalizedString("_lock_not_active_", comment: "") : NSLocalizedString("_lock_active_", comment: ""))
+                    }
+                    .font(.system(size: 16))
+                })
+                .tint(Color(UIColor.label))
                 .sheet(isPresented: $model.isLockActive) {
                     PasscodeView(isPresented: $model.isLockActive, passcode: $model.passcode)
                 }
@@ -102,18 +104,20 @@ struct NCSettings: View {
             // Calender & Contacts
             if !NCBrandOptions.shared.disable_mobileconfig {
                 Section(content: {
-                    HStack {
-                        Image("caldavcardav")
-                            .resizable()
-                            .renderingMode(.template)
-                            .frame(width: 20, height: 20)
-                            .foregroundColor(.secondary)
-                        Text(NSLocalizedString("_mobile_config_", comment: ""))
-                    }
-                    .font(.system(size: 16))
-                    .onTapGesture {
+                    Button(action: {
                         model.getConfigFiles()
-                    }
+                    }, label: {
+                        HStack {
+                            Image("caldavcardav")
+                                .resizable()
+                                .renderingMode(.template)
+                                .frame(width: 20, height: 20)
+                                .foregroundColor(.secondary)
+                            Text(NSLocalizedString("_mobile_config_", comment: ""))
+                        }
+                        .font(.system(size: 16))
+                    })
+                    .tint(Color(UIColor.label))
                 }, header: {
                     Text(NSLocalizedString("_calendar_contacts_", comment: ""))
                 }, footer: {
@@ -143,48 +147,57 @@ struct NCSettings: View {
             /// `Information` Section
             Section(header: Text(NSLocalizedString("_information_", comment: "")), content: {
                 // Acknowledgements
-                HStack {
-                    Image("acknowledgements")
-                        .resizable()
-                        .renderingMode(.template)
-                        .frame(width: 20, height: 20)
-                        .foregroundColor(.secondary)
-                    Text(NSLocalizedString("_acknowledgements_", comment: "") + NSLocalizedString("_extra_space_for_form_taps_", comment: ""))
-                }
-                .font(.system(size: 16))
-                .onTapGesture {
+                Button(action: {
                     showAcknowledgements = true
-                }.sheet(isPresented: $showAcknowledgements) {
+                }, label: {
+                    HStack {
+                        Image("acknowledgements")
+                            .resizable()
+                            .renderingMode(.template)
+                            .frame(width: 20, height: 20)
+                            .foregroundColor(.secondary)
+                        Text(NSLocalizedString("_acknowledgements_", comment: ""))
+                    }
+                    .font(.system(size: 16))
+                })
+                .tint(Color(UIColor.label))
+                .sheet(isPresented: $showAcknowledgements) {
                     AcknowledgementsView(showText: $showAcknowledgements, browserTitle: "Acknowledgements")
                 }
                 // Terms & Privacy Conditions
-                HStack {
-                    Image("shield.checkerboard")
-                        .resizable()
-                        .renderingMode(.template)
-                        .frame(width: 20, height: 20)
-                        .foregroundColor(.secondary)
-                    Text(NSLocalizedString("_privacy_legal_", comment: "") + NSLocalizedString("_extra_space_for_form_taps_", comment: ""))
-                }
-                .font(.system(size: 16))
-                .onTapGesture {
+                Button(action: {
                     showBrowser = true
-                }.sheet(isPresented: $showBrowser) {
+                }, label: {
+                    HStack {
+                        Image("shield.checkerboard")
+                            .resizable()
+                            .renderingMode(.template)
+                            .frame(width: 20, height: 20)
+                            .foregroundColor(.secondary)
+                        Text(NSLocalizedString("_privacy_legal_", comment: ""))
+                    }
+                    .font(.system(size: 16))
+                })
+                .tint(Color(UIColor.label))
+                .sheet(isPresented: $showBrowser) {
                     NCBrowserWebView(isPresented: $showBrowser, urlBase: URL(string: NCBrandOptions.shared.privacy)!, browserTitle: "Privacy Policies")
                 }
                 // Source Code
-                HStack {
-                    Image("gitHub")
-                        .resizable()
-                        .renderingMode(.template)
-                        .frame(width: 20, height: 20)
-                        .foregroundColor(.secondary)
-                    Text(NSLocalizedString("_source_code_", comment: "") + NSLocalizedString("_extra_space_for_form_taps_", comment: ""))
-                }
-                .font(.system(size: 16))
-                .onTapGesture {
+                Button(action: {
                     showSourceCode = true
-                }.sheet(isPresented: $showSourceCode) {
+                }, label: {
+                    HStack {
+                        Image("gitHub")
+                            .resizable()
+                            .renderingMode(.template)
+                            .frame(width: 20, height: 20)
+                            .foregroundColor(.secondary)
+                        Text(NSLocalizedString("_source_code_", comment: ""))
+                    }
+                    .font(.system(size: 16))
+                })
+                .tint(Color(UIColor.label))
+                .sheet(isPresented: $showSourceCode) {
                     NCBrowserWebView(isPresented: $showSourceCode, urlBase: URL(string: NCBrandOptions.shared.sourceCode)!, browserTitle: "Source Code")
                 }
             })
