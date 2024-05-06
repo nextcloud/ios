@@ -92,18 +92,17 @@ extension NCNetworking {
 
         }, progressHandler: { progress in
 
-            if withNotificationProgressTask, Int(floor(progress.fractionCompleted * 100)).isMultiple(of: 5) {
-                NotificationCenter.default.post(name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterProgressTask),
-                                                object: nil,
-                                                userInfo: ["account": metadata.account,
-                                                           "ocId": metadata.ocId,
-                                                           "fileName": metadata.fileName,
-                                                           "serverUrl": metadata.serverUrl,
-                                                           "status": NSNumber(value: NCGlobal.shared.metadataStatusDownloading),
-                                                           "progress": NSNumber(value: progress.fractionCompleted),
-                                                           "totalBytes": NSNumber(value: progress.totalUnitCount),
-                                                           "totalBytesExpected": NSNumber(value: progress.completedUnitCount)])
-            }
+            NotificationCenter.default.post(name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterProgressTask),
+                                            object: nil,
+                                            userInfo: ["account": metadata.account,
+                                                       "ocId": metadata.ocId,
+                                                       "fileName": metadata.fileName,
+                                                       "serverUrl": metadata.serverUrl,
+                                                       "status": NSNumber(value: NCGlobal.shared.metadataStatusDownloading),
+                                                       "progress": NSNumber(value: progress.fractionCompleted),
+                                                       "totalBytes": NSNumber(value: progress.totalUnitCount),
+                                                       "totalBytesExpected": NSNumber(value: progress.completedUnitCount)])
+
             progressHandler(progress)
 
         }) { _, etag, date, length, allHeaderFields, afError, error in
@@ -268,7 +267,7 @@ extension NCNetworking {
                 metadata = metadataTmp
             }
 
-            if let metadata = metadata, Int(floor(progress * 100)).isMultiple(of: 5) {
+            if let metadata {
                 NotificationCenter.default.post(name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterProgressTask),
                                                 object: nil,
                                                 userInfo: ["account": metadata.account,
