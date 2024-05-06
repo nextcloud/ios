@@ -168,9 +168,9 @@ extension NCNetworking {
 
         if let httpResponse = (downloadTask.response as? HTTPURLResponse) {
             if httpResponse.statusCode >= 200 && httpResponse.statusCode < 300,
-               let url = downloadTask.currentRequest?.url {
-                let fileName = url.lastPathComponent
-                var serverUrl = url.deletingLastPathComponent().absoluteString
+               let url = downloadTask.currentRequest?.url,
+               let fileName = url.lastPathComponent.removingPercentEncoding,
+               var serverUrl = url.deletingLastPathComponent().absoluteString.removingPercentEncoding {
                 if serverUrl.hasSuffix("/") { serverUrl = String(serverUrl.dropLast()) }
                 if let metadata = NCManageDatabase.shared.getResultMetadata(predicate: NSPredicate(format: "serverUrl == '\(serverUrl)' AND fileName == '\(fileName)'")) {
                     let destinationFilePath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileName)

@@ -1149,10 +1149,11 @@ extension NCManageDatabase {
     }
 
     func getMetadata(from url: URL?) -> tableMetadata? {
-        guard let url else { return nil }
+        guard let url,
+              let fileName = url.lastPathComponent.removingPercentEncoding,
+              var serverUrl = url.deletingLastPathComponent().absoluteString.removingPercentEncoding
+        else { return nil }
 
-        let fileName = url.lastPathComponent
-        var serverUrl = url.deletingLastPathComponent().absoluteString
         if serverUrl.hasSuffix("/") {
             serverUrl = String(serverUrl.dropLast())
         }
