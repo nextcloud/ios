@@ -95,6 +95,7 @@ struct NCTrashSelectTabBarView: View {
                     Image(systemName: "arrow.circlepath")
                         .imageScale(sizeClass == .compact ? .medium : .large)
                 }
+                .tint(Color(NCBrandColor.shared.iconImageColor))
                 .frame(maxWidth: .infinity)
                 .disabled(tabBarSelect.isSelectedEmpty)
 
@@ -103,8 +104,8 @@ struct NCTrashSelectTabBarView: View {
                 } label: {
                     Image(systemName: "trash")
                         .imageScale(sizeClass == .compact ? .medium : .large)
-                        .tint(.red)
                 }
+                .tint(.red)
                 .frame(maxWidth: .infinity)
                 .disabled(tabBarSelect.isSelectedEmpty)
 
@@ -114,6 +115,7 @@ struct NCTrashSelectTabBarView: View {
                     Image(systemName: "checkmark")
                         .imageScale(sizeClass == .compact ? .medium : .large)
                 }
+                .tint(Color(NCBrandColor.shared.iconImageColor))
                 .frame(maxWidth: .infinity)
             }
         }
