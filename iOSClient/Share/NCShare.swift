@@ -112,8 +112,6 @@ class NCShare: UIViewController, NCShareNetworkingDelegate, NCSharePagingContent
         btnContact.layer.cornerRadius = 5
         btnContact.layer.masksToBounds = true
         btnContact.layer.borderWidth = 1
-        btnContact.layer.borderColor = UIColor.gray.cgColor
-        btnContact.tintColor = .gray
         btnContact.setImage(utility.loadImage(named: "contact", color: NCBrandColor.shared.iconImageColor, size: 24), for: .normal)
     }
 
@@ -156,7 +154,7 @@ class NCShare: UIViewController, NCShareNetworkingDelegate, NCSharePagingContent
         if !metadata.note.isEmpty {
             searchFieldTopConstraint.constant = 95
             sharedWithYouByNoteImage.isHidden = false
-            sharedWithYouByNoteImage.image = utility.loadImage(named: "note.text", color: .gray)
+            sharedWithYouByNoteImage.image = utility.loadImage(named: "note.text", color: NCBrandColor.shared.iconImageColor)
             sharedWithYouByNote.isHidden = false
             sharedWithYouByNote.text = metadata.note
             sharedWithYouByNote.textColor = .label
