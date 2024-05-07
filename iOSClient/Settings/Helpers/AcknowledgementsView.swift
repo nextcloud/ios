@@ -55,7 +55,7 @@ struct AcknowledgementsView: View {
                             .resizable()
                             .renderingMode(.template)
                             .frame(width: 14, height: 14)
-                            .foregroundColor(.secondary)
+                            .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
                     }
                 }
                 .padding()
@@ -68,7 +68,7 @@ struct AcknowledgementsView: View {
                 }
             }
         }
-        .navigationBarTitle("_acknowledgements_", displayMode: .inline)
+        .navigationBarTitle(Text(NSLocalizedString("_autoupload_description_", comment: "")), displayMode: .inline)
         .onAppear {
             loadRTF()
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {

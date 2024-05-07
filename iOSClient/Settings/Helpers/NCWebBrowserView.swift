@@ -53,7 +53,7 @@ struct NCBrowserWebView: View {
                             .resizable()
                             .renderingMode(.template)
                             .frame(width: 14, height: 14)
-                           .foregroundColor(.secondary)
+                           .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
                     }
                 }
                 .padding()

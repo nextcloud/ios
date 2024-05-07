@@ -43,7 +43,7 @@ struct NCSettings: View {
                         Image("autoUpload")
                             .resizable()
                             .renderingMode(.template)
-                            .foregroundColor(.secondary)
+                            .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
                             .frame(width: 20, height: 20)
                         Text(NSLocalizedString("_settings_autoupload_", comment: ""))
                     }
@@ -60,7 +60,7 @@ struct NCSettings: View {
                         Image(model.isLockActive ? "lock_open" : "lock")
                             .resizable()
                             .renderingMode(.template)
-                            .foregroundColor(.secondary)
+                            .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
                             .frame(width: 20, height: 20)
                         Text(model.isLockActive ? NSLocalizedString("_lock_not_active_", comment: "") : NSLocalizedString("_lock_active_", comment: ""))
                     }
@@ -112,7 +112,7 @@ struct NCSettings: View {
                                 .resizable()
                                 .renderingMode(.template)
                                 .frame(width: 20, height: 20)
-                                .foregroundColor(.secondary)
+                                .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
                             Text(NSLocalizedString("_mobile_config_", comment: ""))
                         }
                         .font(.system(size: 16))
@@ -138,7 +138,7 @@ struct NCSettings: View {
                             .resizable()
                             .renderingMode(.template)
                             .frame(width: 20, height: 20)
-                            .foregroundColor(.secondary)
+                            .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
                         Text(NSLocalizedString("_advanced_", comment: ""))
                     }
                     .font(.system(size: 16))
@@ -155,7 +155,7 @@ struct NCSettings: View {
                             .resizable()
                             .renderingMode(.template)
                             .frame(width: 20, height: 20)
-                            .foregroundColor(.secondary)
+                            .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
                         Text(NSLocalizedString("_acknowledgements_", comment: ""))
                     }
                     .font(.system(size: 16))
@@ -173,7 +173,7 @@ struct NCSettings: View {
                             .resizable()
                             .renderingMode(.template)
                             .frame(width: 20, height: 20)
-                            .foregroundColor(.secondary)
+                            .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
                         Text(NSLocalizedString("_privacy_legal_", comment: ""))
                     }
                     .font(.system(size: 16))
@@ -191,7 +191,7 @@ struct NCSettings: View {
                             .resizable()
                             .renderingMode(.template)
                             .frame(width: 20, height: 20)
-                            .foregroundColor(.secondary)
+                            .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
                         Text(NSLocalizedString("_source_code_", comment: ""))
                     }
                     .font(.system(size: 16))
@@ -227,7 +227,7 @@ struct E2EESection: View {
                     Image("lock")
                         .resizable()
                         .renderingMode(.template)
-                        .foregroundColor(.secondary)
+                        .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
                         .frame(width: 20, height: 20)
                     Text(NSLocalizedString("_e2e_settings_", comment: ""))
                 }

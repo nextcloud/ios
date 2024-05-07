@@ -64,7 +64,7 @@ struct AutoUploadView: View {
                         .resizable()
                         .renderingMode(.template)
                         .frame(width: 20, height: 20)
-                        .foregroundColor(.secondary)
+                        .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
                     Text(NSLocalizedString("_autoupload_select_folder_", comment: ""))
                 }
                 .font(.system(size: 16))
