@@ -748,12 +748,14 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             tabBarSelect.hide()
             if navigationItem.rightBarButtonItems == nil || enableMenu {
                 let menuButton = UIBarButtonItem(image: .init(systemName: "ellipsis.circle"), menu: UIMenu(children: createMenuActions()))
+                menuButton.tintColor = NCBrandColor.shared.iconImageColor
                 if layoutKey == NCGlobal.shared.layoutViewFiles {
                     let notification = UIBarButtonItem(image: .init(systemName: "bell"), style: .plain) {
                         if let viewController = UIStoryboard(name: "NCNotification", bundle: nil).instantiateInitialViewController() as? NCNotification {
                             self.navigationController?.pushViewController(viewController, animated: true)
                         }
                     }
+                    notification.tintColor = NCBrandColor.shared.iconImageColor
                     navigationItem.rightBarButtonItems = [menuButton, notification]
                 } else {
                     navigationItem.rightBarButtonItems = [menuButton]
