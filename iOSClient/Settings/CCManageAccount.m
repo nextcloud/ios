@@ -74,7 +74,7 @@
     
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"alias" rowType:XLFormRowDescriptorTypeText];
     row.cellConfigAtConfigure[@"backgroundColor"] = UIColor.secondarySystemGroupedBackgroundColor;
-    [row.cellConfig setObject:[[UIImage imageNamed:@"form-textbox"] imageWithColor:UIColor.systemGrayColor size:25] forKey:@"imageView.image"];
+    [row.cellConfig setObject:[[UIImage imageNamed:@"form-textbox"] imageWithColor:[NCBrandColor shared].iconImageColor size:25] forKey:@"imageView.image"];
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textField.font"];
     [row.cellConfig setObject:UIColor.labelColor forKey:@"textField.textColor"];
     row.value = activeAccount.alias;
@@ -93,7 +93,7 @@
             row = [XLFormRowDescriptor formRowDescriptorWithTag:@"addAccount" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_add_account_", nil)];
             row.cellConfigAtConfigure[@"backgroundColor"] = UIColor.secondarySystemGroupedBackgroundColor;
             [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
-            [row.cellConfig setObject:[[UIImage systemImageNamed:@"plus"] imageWithColor:UIColor.systemGrayColor size:25] forKey:@"imageView.image"];
+            [row.cellConfig setObject:[[UIImage systemImageNamed:@"plus"] imageWithColor:[NCBrandColor shared].iconImageColor size:25] forKey:@"imageView.image"];
             [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
             [row.cellConfig setObject:UIColor.labelColor forKey:@"textLabel.textColor"];
             row.action.formSelector = @selector(addAccount:);
@@ -108,7 +108,7 @@
             row.cellConfigAtConfigure[@"backgroundColor"] = UIColor.secondarySystemGroupedBackgroundColor;
             [row.cellConfig setObject:UIColor.labelColor forKey:@"textLabel.textColor"];
             [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
-            [row.cellConfig setObject:[[UIImage imageNamed:@"userStatusAway"] imageWithColor:UIColor.systemGrayColor size:25] forKey:@"imageView.image"];
+            [row.cellConfig setObject:[[UIImage imageNamed:@"userStatusAway"] imageWithColor:[NCBrandColor shared].iconImageColor size:25] forKey:@"imageView.image"];
             [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
             row.action.formSelector = @selector(setUserStatus:);
             if (accounts.count == 0) row.disabled = @YES;
@@ -119,7 +119,7 @@
             
             row = [XLFormRowDescriptor formRowDescriptorWithTag:@"accountRequest" rowType:XLFormRowDescriptorTypeBooleanSwitch title:NSLocalizedString(@"_settings_account_request_", nil)];
             row.cellConfigAtConfigure[@"backgroundColor"] = UIColor.secondarySystemGroupedBackgroundColor;
-            [row.cellConfig setObject:[[UIImage imageNamed:@"users"] imageWithColor:UIColor.systemGrayColor size:25] forKey:@"imageView.image"];
+            [row.cellConfig setObject:[[UIImage imageNamed:@"users"] imageWithColor:[NCBrandColor shared].iconImageColor size:25] forKey:@"imageView.image"];
             [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
             [row.cellConfig setObject:UIColor.labelColor forKey:@"textLabel.textColor"];
             if ([[NCKeychain alloc] init].accountRequest) row.value = @1;
@@ -136,7 +136,7 @@
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"certificateDetails" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_certificate_details_", nil)];
     row.cellConfigAtConfigure[@"backgroundColor"] = UIColor.secondarySystemGroupedBackgroundColor;
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
-    [row.cellConfig setObject:[[UIImage imageNamed:@"lock"] imageWithColor:UIColor.systemGrayColor size:25] forKey:@"imageView.image"];
+    [row.cellConfig setObject:[[UIImage imageNamed:@"lock"] imageWithColor:[NCBrandColor shared].iconImageColor size:25] forKey:@"imageView.image"];
     [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
     [row.cellConfig setObject:UIColor.labelColor forKey:@"textLabel.textColor"];
     row.action.formSelector = @selector(certificateDetails:);
@@ -145,7 +145,7 @@
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"certificatePNDetails" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_certificate_pn_details_", nil)];
     row.cellConfigAtConfigure[@"backgroundColor"] = UIColor.secondarySystemGroupedBackgroundColor;
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
-    [row.cellConfig setObject:[[UIImage imageNamed:@"lock"] imageWithColor:UIColor.systemGrayColor size:25] forKey:@"imageView.image"];
+    [row.cellConfig setObject:[[UIImage imageNamed:@"lock"] imageWithColor:[NCBrandColor shared].iconImageColor size:25] forKey:@"imageView.image"];
     [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
     [row.cellConfig setObject:UIColor.labelColor forKey:@"textLabel.textColor"];
     row.action.formSelector = @selector(certificatePNDetails:);
@@ -163,7 +163,7 @@
         [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
         [row.cellConfig setObject:UIColor.labelColor forKey:@"textLabel.textColor"];
         [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"detailTextLabel.font"];
-        [row.cellConfig setObject:[[UIImage imageNamed:@"user"] imageWithColor:UIColor.systemGrayColor size:25] forKey:@"imageView.image"];
+        [row.cellConfig setObject:[[UIImage imageNamed:@"user"] imageWithColor:[NCBrandColor shared].iconImageColor size:25] forKey:@"imageView.image"];
         row.value = activeAccount.displayName;
         [section addFormRow:row];
     }
@@ -175,7 +175,7 @@
         [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
         [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"detailTextLabel.font"];
         [row.cellConfig setObject:UIColor.labelColor forKey:@"textLabel.textColor"];
-        [row.cellConfig setObject:[[UIImage imageNamed:@"address"] imageWithColor:UIColor.systemGrayColor size:25] forKey:@"imageView.image"];
+        [row.cellConfig setObject:[[UIImage imageNamed:@"address"] imageWithColor:[NCBrandColor shared].iconImageColor size:25] forKey:@"imageView.image"];
         row.value = activeAccount.address;
         [section addFormRow:row];
     }
@@ -187,7 +187,7 @@
         [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
         [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"detailTextLabel.font"];
         [row.cellConfig setObject:UIColor.labelColor forKey:@"textLabel.textColor"];
-        [row.cellConfig setObject:[[UIImage imageNamed:@"city"] imageWithColor:UIColor.systemGrayColor size:25] forKey:@"imageView.image"];
+        [row.cellConfig setObject:[[UIImage imageNamed:@"city"] imageWithColor:[NCBrandColor shared].iconImageColor size:25] forKey:@"imageView.image"];
         row.value = activeAccount.city;
         if ([activeAccount.zip length] > 0) {
             row.value = [NSString stringWithFormat:@"%@ %@", row.value, activeAccount.zip];
@@ -202,7 +202,7 @@
         [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
         [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"detailTextLabel.font"];
         [row.cellConfig setObject:UIColor.labelColor forKey:@"textLabel.textColor"];
-        [row.cellConfig setObject:[[UIImage imageNamed:@"country"] imageWithColor:UIColor.systemGrayColor size:25] forKey:@"imageView.image"];
+        [row.cellConfig setObject:[[UIImage imageNamed:@"country"] imageWithColor:[NCBrandColor shared].iconImageColor size:25] forKey:@"imageView.image"];
         row.value = [[NSLocale systemLocale] displayNameForKey:NSLocaleCountryCode value:activeAccount.country];
         [section addFormRow:row];
     }
@@ -214,7 +214,7 @@
         [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
         [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"detailTextLabel.font"];
         [row.cellConfig setObject:UIColor.labelColor forKey:@"textLabel.textColor"];
-        [row.cellConfig setObject:[[UIImage imageNamed:@"phone"] imageWithColor:UIColor.systemGrayColor size:25] forKey:@"imageView.image"];
+        [row.cellConfig setObject:[[UIImage imageNamed:@"phone"] imageWithColor:[NCBrandColor shared].iconImageColor size:25] forKey:@"imageView.image"];
         row.value = activeAccount.phone;
         [section addFormRow:row];
     }
@@ -226,7 +226,7 @@
         [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
         [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"detailTextLabel.font"];
         [row.cellConfig setObject:UIColor.labelColor forKey:@"textLabel.textColor"];
-        [row.cellConfig setObject:[[UIImage imageNamed:@"email"] imageWithColor:UIColor.systemGrayColor size:25] forKey:@"imageView.image"];
+        [row.cellConfig setObject:[[UIImage imageNamed:@"email"] imageWithColor:[NCBrandColor shared].iconImageColor size:25] forKey:@"imageView.image"];
         row.value = activeAccount.email;
         [section addFormRow:row];
     }
@@ -238,7 +238,7 @@
         [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
         [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"detailTextLabel.font"];
         [row.cellConfig setObject:UIColor.labelColor forKey:@"textLabel.textColor"];
-        [row.cellConfig setObject:[[UIImage imageNamed:@"network"] imageWithColor:UIColor.systemGrayColor size:25] forKey:@"imageView.image"];
+        [row.cellConfig setObject:[[UIImage imageNamed:@"network"] imageWithColor:[NCBrandColor shared].iconImageColor size:25] forKey:@"imageView.image"];
         row.value = activeAccount.website;
         [section addFormRow:row];
     }
@@ -250,7 +250,7 @@
         [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
         [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"detailTextLabel.font"];
         [row.cellConfig setObject:UIColor.labelColor forKey:@"textLabel.textColor"];
-        [row.cellConfig setObject:[[UIImage imageNamed:@"twitter"] imageWithColor:UIColor.systemGrayColor size:25] forKey:@"imageView.image"];
+        [row.cellConfig setObject:[[UIImage imageNamed:@"twitter"] imageWithColor:[NCBrandColor shared].iconImageColor size:25] forKey:@"imageView.image"];
         row.value = activeAccount.twitter;
         [section addFormRow:row];
     }

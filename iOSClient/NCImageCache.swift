@@ -244,7 +244,8 @@ import RealmSwift
     func createImagesCache() {
 
         let yellowFavorite = NCBrandColor.shared.yellowFavorite
-        let iconImageColor2 = NCBrandColor.shared.brandElement
+        let iconImageColor = NCBrandColor.shared.iconImageColor
+        let iconImageColor2 = NCBrandColor.shared.iconImageColor2
         let utility = NCUtility()
 
         images.file = UIImage(named: "file")!
@@ -255,7 +256,7 @@ import RealmSwift
 
         images.favorite = utility.loadImage(named: "star.fill", color: yellowFavorite)
         images.comment = UIImage(named: "comment")!.image(color: iconImageColor2, size: 50)
-        images.livePhoto = utility.loadImage(named: "livephoto", color: .label)
+        images.livePhoto = utility.loadImage(named: "livephoto", color: iconImageColor)
         images.offlineFlag = UIImage(named: "offlineFlag")!
         images.local = UIImage(named: "local")!
 
