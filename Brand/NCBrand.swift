@@ -163,7 +163,6 @@ class NCBrandColor: NSObject {
 
     public let iconImageColor: UIColor = .label
     public let iconImageColor2: UIColor = .systemGray
-    public let emptyImageColor: UIColor = .gray
 
     @objc public var systemMint: UIColor {
         get {

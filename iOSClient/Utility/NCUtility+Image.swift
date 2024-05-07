@@ -143,11 +143,11 @@ extension NCUtility {
         }
 
         if metadata.isVideo {
-            return UIImage(named: "noPreviewVideo")?.image(color: .gray, size: size)
+            return UIImage(named: "noPreviewVideo")?.image(color: NCBrandColor.shared.iconImageColor2, size: size)
         } else if metadata.isAudio {
-            return UIImage(named: "noPreviewAudio")?.image(color: .gray, size: size)
+            return UIImage(named: "noPreviewAudio")?.image(color: NCBrandColor.shared.iconImageColor2, size: size)
         } else {
-            return UIImage(named: "noPreview")?.image(color: .gray, size: size)
+            return UIImage(named: "noPreview")?.image(color: NCBrandColor.shared.iconImageColor2, size: size)
         }
     }
 

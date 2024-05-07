@@ -71,12 +71,12 @@ class NCShareLinkCell: UITableViewCell {
             imageName = "sharebylink"
             imageBGColor = NCBrandColor.shared.brandElement
 
-            menuButton.setImage(UIImage(named: menuImageName)?.image(color: .gray, size: 50), for: .normal)
+            menuButton.setImage(UIImage(named: menuImageName)?.image(color: NCBrandColor.shared.iconImageColor2, size: 50), for: .normal)
         }
 
         labelTitle.textColor = .label
         imageItem.image = NCShareCommon().createLinkAvatar(imageName: imageName, colorCircle: imageBGColor)
-        copyButton.setImage(UIImage(named: "shareCopy")?.image(color: .gray, size: 50), for: .normal)
+        copyButton.setImage(UIImage(named: "shareCopy")?.image(color: NCBrandColor.shared.iconImageColor2, size: 50), for: .normal)
     }
 
     @IBAction func touchUpCopy(_ sender: Any) {
