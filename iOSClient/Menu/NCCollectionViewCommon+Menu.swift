@@ -299,7 +299,8 @@ extension NCCollectionViewCommon {
                         } else {
                             guard let metadata = NCManageDatabase.shared.setMetadatasSessionInWaitDownload(metadatas: [metadata],
                                                                                                            session: NextcloudKit.shared.nkCommonInstance.sessionIdentifierDownload,
-                                                                                                           selector: NCGlobal.shared.selectorSaveAsScan) else { return }
+                                                                                                           selector: NCGlobal.shared.selectorSaveAsScan,
+                                                                                                           sceneIdentifier: sceneIdentifier) else { return }
                             NCNetworking.shared.download(metadata: metadata, withNotificationProgressTask: true)
                         }
                     }
@@ -361,7 +362,8 @@ extension NCCollectionViewCommon {
                         } else {
                             guard let metadata = NCManageDatabase.shared.setMetadatasSessionInWaitDownload(metadatas: [metadata],
                                                                                                            session: NextcloudKit.shared.nkCommonInstance.sessionIdentifierDownload,
-                                                                                                           selector: NCGlobal.shared.selectorLoadFileQuickLook) else { return }
+                                                                                                           selector: NCGlobal.shared.selectorLoadFileQuickLook,
+                                                                                                           sceneIdentifier: sceneIdentifier) else { return }
                             NCNetworking.shared.download(metadata: metadata, withNotificationProgressTask: true)
                         }
                     }

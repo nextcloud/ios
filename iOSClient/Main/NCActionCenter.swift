@@ -77,6 +77,9 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
             let windowScenes = UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }
             if windowScenes.count == 1 {
                 mainTabBarController = UIApplication.shared.firstWindow?.rootViewController as? NCMainTabBarController
+            } else if let sceneIdentifier = metadata.sceneIdentifier,
+                      let tabBarController = SceneManager.shared.getMainTabBarController(sceneIdentifier: sceneIdentifier) {
+                mainTabBarController = tabBarController
             } else {
                 for windowScene in windowScenes {
                     if let rootViewController = windowScene.keyWindow?.rootViewController as? NCMainTabBarController,
@@ -344,7 +347,8 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
             processor.execute { completion in
                 guard let metadata = NCManageDatabase.shared.setMetadatasSessionInWaitDownload(metadatas: [metadata],
                                                                                                session: NextcloudKit.shared.nkCommonInstance.sessionIdentifierDownload,
-                                                                                               selector: "") else { return completion() }
+                                                                                               selector: "",
+                                                                                               sceneIdentifier: mainTabBarController.sceneIdentifier) else { return completion() }
                 NCNetworking.shared.download(metadata: metadata, withNotificationProgressTask: false) {
                 } progressHandler: { progress in
                     processor.hud?.progress = Float(progress.fractionCompleted)

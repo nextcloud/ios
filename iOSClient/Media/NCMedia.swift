@@ -48,6 +48,7 @@ class NCMedia: UIViewController {
     var serverUrl = ""
     let refreshControl = UIRefreshControl()
     var loadingTask: Task<Void, any Error>?
+    let taskDescriptionRetrievesProperties = "retrievesProperties"
     var isTop: Bool = true
     var isEditMode = false
     var selectOcId: [String] = []
@@ -80,7 +81,9 @@ class NCMedia: UIViewController {
         collectionView.backgroundColor = .systemBackground
         collectionView.prefetchDataSource = self
         // Drag & Drop
+        // Drag & Drop
         collectionView.dragInteractionEnabled = true
+        collectionView.dragDelegate = self
         collectionView.dropDelegate = self
 
         layout.sectionInset = UIEdgeInsets(top: 0, left: 2, bottom: 0, right: 2)
@@ -153,6 +156,8 @@ class NCMedia: UIViewController {
         super.viewDidAppear(animated)
 
         NotificationCenter.default.addObserver(self, selector: #selector(deleteFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDeleteFile), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(moveFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterMoveFile), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(copyFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterCopyFile), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(enterForeground(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationWillEnterForeground), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(uploadedFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUploadedFile), object: nil)
 
@@ -176,8 +181,20 @@ class NCMedia: UIViewController {
         super.viewDidDisappear(animated)
 
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDeleteFile), object: nil)
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterCopyFile), object: nil)
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterMoveFile), object: nil)
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationWillEnterForeground), object: nil)
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUploadedFile), object: nil)
+
+        // Cancel Queue & Retrieves Properties
+        NCNetworking.shared.downloadThumbnailQueue.cancelAll()
+        NextcloudKit.shared.sessionManager.session.getTasksWithCompletionHandler { dataTasks, _, _ in
+            dataTasks.forEach {
+                if $0.taskDescription == self.taskDescriptionRetrievesProperties {
+                    $0.cancel()
+                }
+            }
+        }
     }
 
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
@@ -233,12 +250,33 @@ class NCMedia: UIViewController {
 
     @objc func uploadedFile(_ notification: NSNotification) {
         guard let userInfo = notification.userInfo as NSDictionary?,
-              let ocId = userInfo["ocId"] as? String
-        else { return }
+              let ocId = userInfo["ocId"] as? String else { return }
 
         if let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId),
            (metadata.isVideo || metadata.isImage) {
             self.reloadDataSource()
+        }
+    }
+
+    @objc func moveFile(_ notification: NSNotification) {
+        guard let userInfo = notification.userInfo as NSDictionary?,
+              let dragDrop = userInfo["dragdrop"] as? Bool, dragDrop else { return }
+
+        setEditMode(false)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+            self.reloadDataSource()
+            self.searchMediaUI()
+        }
+    }
+
+    @objc func copyFile(_ notification: NSNotification) {
+        guard let userInfo = notification.userInfo as NSDictionary?,
+              let dragDrop = userInfo["dragdrop"] as? Bool, dragDrop else { return }
+
+        setEditMode(false)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+            self.reloadDataSource()
+            self.searchMediaUI()
         }
     }
 
@@ -348,7 +386,7 @@ extension NCMedia: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
         if kind == "collectionViewMediaElementKindSectionHeader" {
             guard let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionHeaderEmptyData", for: indexPath) as? NCSectionHeaderEmptyData else { return NCSectionHeaderEmptyData() }
-            header.emptyImage.image = UIImage(named: "media")?.image(color: .gray, size: UIScreen.main.bounds.width)
+            header.emptyImage.image = UIImage(named: "media")?.image(color: NCBrandColor.shared.iconImageColor, size: UIScreen.main.bounds.width)
             if loadingTask != nil || imageCache.createMediaCacheInProgress {
                 header.emptyTitle.text = NSLocalizedString("_search_in_progress_", comment: "")
             } else {

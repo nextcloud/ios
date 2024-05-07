@@ -97,6 +97,7 @@ class tableMetadata: Object, NCUserBaseUrl {
     @objc dynamic var quotaAvailableBytes: Int64 = 0
     @objc dynamic var resourceType = ""
     @objc dynamic var richWorkspace: String?
+    @objc dynamic var sceneIdentifier: String?
     @objc dynamic var serverUrl = ""
     @objc dynamic var session = ""
     @objc dynamic var sessionDate: Date?
@@ -211,7 +212,7 @@ extension tableMetadata {
     }
 
     var canSetAsAvailableOffline: Bool {
-        return session.isEmpty && !isDocumentViewableOnly && !isDirectoryE2EE && !e2eEncrypted
+        return session.isEmpty && !isDirectoryE2EE && !e2eEncrypted
     }
 
     var canShare: Bool {
@@ -634,7 +635,11 @@ extension NCManageDatabase {
                     result.favorite = false
                 }
                 for metadata in metadatas {
-                    realm.add(metadata, update: .all)
+                    if let result = realm.objects(tableMetadata.self).filter("account == %@ AND ocId == %@", account, metadata.ocId).first {
+                        result.favorite = true
+                    } else {
+                        realm.add(metadata, update: .modified)
+                    }
                 }
             }
         } catch let error {
@@ -720,7 +725,6 @@ extension NCManageDatabase {
     }
 
     func getResultsMetadatas(predicate: NSPredicate, sorted: String? = nil, ascending: Bool = false) -> Results<tableMetadata>? {
-
         do {
             let realm = try Realm()
             if let sorted {
@@ -760,17 +764,22 @@ extension NCManageDatabase {
     }
 
     func getMetadatas(predicate: NSPredicate, numItems: Int, sorted: String, ascending: Bool) -> [tableMetadata] {
+        var counter: Int = 0
+        var metadatas: [tableMetadata] = []
+
         do {
             let realm = try Realm()
             realm.refresh()
             let results = realm.objects(tableMetadata.self).filter(predicate).sorted(byKeyPath: sorted, ascending: ascending)
-            let itemsResults = Array(results.prefix(numItems))
-            return (itemsResults.map { tableMetadata(value: $0) })
+            for result in results where counter < numItems {
+                metadatas.append(tableMetadata(value: result))
+                counter += 1
+            }
         } catch let error as NSError {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not access database: \(error)")
         }
 
-        return []
+        return metadatas
     }
 
     func getMetadataAtIndex(predicate: NSPredicate, sorted: String, ascending: Bool, index: Int) -> tableMetadata? {
@@ -1141,5 +1150,17 @@ extension NCManageDatabase {
         }
 
         return nil
+    }
+
+    func getMetadata(from url: URL?) -> tableMetadata? {
+        guard let url,
+              let fileName = url.lastPathComponent.removingPercentEncoding,
+              var serverUrl = url.deletingLastPathComponent().absoluteString.removingPercentEncoding
+        else { return nil }
+
+        if serverUrl.hasSuffix("/") {
+            serverUrl = String(serverUrl.dropLast())
+        }
+        return NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "serverUrl == '\(serverUrl)' AND fileName == '\(fileName)'"))
     }
 }

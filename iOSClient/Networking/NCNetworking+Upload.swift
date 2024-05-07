@@ -143,18 +143,17 @@ extension NCNetworking {
 
         }, progressHandler: { progress in
 
-            if Int(floor(progress.fractionCompleted * 100)).isMultiple(of: 5) {
-                NotificationCenter.default.post(name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterProgressTask),
-                                                object: nil,
-                                                userInfo: ["account": metadata.account,
-                                                           "ocId": metadata.ocId,
-                                                           "fileName": metadata.fileName,
-                                                           "serverUrl": metadata.serverUrl,
-                                                           "status": NSNumber(value: NCGlobal.shared.metadataStatusUploading),
-                                                           "progress": NSNumber(value: progress.fractionCompleted),
-                                                           "totalBytes": NSNumber(value: progress.totalUnitCount),
-                                                           "totalBytesExpected": NSNumber(value: progress.completedUnitCount)])
-            }
+            NotificationCenter.default.post(name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterProgressTask),
+                                            object: nil,
+                                            userInfo: ["account": metadata.account,
+                                                       "ocId": metadata.ocId,
+                                                       "fileName": metadata.fileName,
+                                                       "serverUrl": metadata.serverUrl,
+                                                       "status": NSNumber(value: NCGlobal.shared.metadataStatusUploading),
+                                                       "progress": NSNumber(value: progress.fractionCompleted),
+                                                       "totalBytes": NSNumber(value: progress.totalUnitCount),
+                                                       "totalBytesExpected": NSNumber(value: progress.completedUnitCount)])
+
             progressHandler(progress.completedUnitCount, progress.totalUnitCount, progress.fractionCompleted)
 
         }) { account, ocId, etag, date, size, allHeaderFields, afError, error in
@@ -165,7 +164,7 @@ extension NCNetworking {
                 if afError?.isExplicitlyCancelledError ?? false {
                     error = NKError(errorCode: NCGlobal.shared.errorRequestExplicityCancelled, errorDescription: "error request explicity cancelled")
                 }
-                self.uploadComplete(fileName: metadata.fileName, serverUrl: metadata.serverUrl, ocId: ocId, etag: etag, date: date, size: size, fileNameLocalPath: fileNameLocalPath, task: uploadTask, error: error)
+                self.uploadComplete(fileName: metadata.fileName, serverUrl: metadata.serverUrl, ocId: ocId, etag: etag, date: date, size: size, task: uploadTask, error: error)
             }
             completion(account, ocId, etag, date, size, allHeaderFields, afError, error)
         }
@@ -252,7 +251,7 @@ extension NCNetworking {
                 NCManageDatabase.shared.deleteChunks(account: account, ocId: metadata.ocId, directory: directory)
             }
             if withUploadComplete, let uploadTask {
-                self.uploadComplete(fileName: metadata.fileName, serverUrl: metadata.serverUrl, ocId: file?.ocId, etag: file?.etag, date: file?.date, size: file?.size ?? 0, fileNameLocalPath: fileNameLocalPath, task: uploadTask, error: error)
+                self.uploadComplete(fileName: metadata.fileName, serverUrl: metadata.serverUrl, ocId: file?.ocId, etag: file?.etag, date: file?.date, size: file?.size ?? 0, task: uploadTask, error: error)
             }
             completion(account, file, afError, error)
         }
@@ -314,7 +313,6 @@ extension NCNetworking {
                         etag: String?,
                         date: NSDate?,
                         size: Int64,
-                        fileNameLocalPath: String?,
                         task: URLSessionTask,
                         error: NKError) {
 
@@ -325,7 +323,8 @@ extension NCNetworking {
 
         DispatchQueue.global().async {
 
-            guard let metadata = NCManageDatabase.shared.getMetadataFromFileNameLocalPath(fileNameLocalPath) else { return }
+            guard let url = task.currentRequest?.url,
+                  let metadata = NCManageDatabase.shared.getMetadata(from: url) else { return }
             let ocIdTemp = metadata.ocId
             let selector = metadata.sessionSelector
 
@@ -461,7 +460,6 @@ extension NCNetworking {
             }
 
             self.uploadMetadataInBackground.removeValue(forKey: FileNameServerUrl(fileName: fileName, serverUrl: serverUrl))
-            self.delegate?.uploadComplete?(fileName: fileName, serverUrl: serverUrl, ocId: ocId, etag: etag, date: date, size: size, fileNameLocalPath: fileNameLocalPath, task: task, error: error)
         }
     }
 
@@ -475,8 +473,6 @@ extension NCNetworking {
 
         DispatchQueue.global().async {
 
-            self.delegate?.uploadProgress?(progress, totalBytes: totalBytes, totalBytesExpected: totalBytesExpected, fileName: fileName, serverUrl: serverUrl, session: session, task: task)
-
             var metadata: tableMetadata?
 
             if let metadataTmp = self.uploadMetadataInBackground[FileNameServerUrl(fileName: fileName, serverUrl: serverUrl)] {
@@ -486,7 +482,7 @@ extension NCNetworking {
                 metadata = metadataTmp
             }
 
-            if let metadata = metadata, Int(floor(progress * 100)).isMultiple(of: 5) {
+            if let metadata {
                 NotificationCenter.default.post(name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterProgressTask),
                                                 object: nil,
                                                 userInfo: ["account": metadata.account,

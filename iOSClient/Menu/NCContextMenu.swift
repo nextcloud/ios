@@ -82,7 +82,8 @@ class NCContextMenu: NSObject {
             } else {
                 guard let metadata = NCManageDatabase.shared.setMetadatasSessionInWaitDownload(metadatas: [metadata],
                                                                                                session: NextcloudKit.shared.nkCommonInstance.sessionIdentifierDownload,
-                                                                                               selector: NCGlobal.shared.selectorOpenIn) else { return }
+                                                                                               selector: NCGlobal.shared.selectorOpenIn,
+                                                                                               sceneIdentifier: sceneIdentifier) else { return }
                 hud.show(in: viewController.view)
                 NCNetworking.shared.download(metadata: metadata, withNotificationProgressTask: false) {
                 } requestHandler: { request in
@@ -128,7 +129,8 @@ class NCContextMenu: NSObject {
             } else {
                 guard let metadata = NCManageDatabase.shared.setMetadatasSessionInWaitDownload(metadatas: [metadata],
                                                                                                session: NextcloudKit.shared.nkCommonInstance.sessionIdentifierDownload,
-                                                                                               selector: NCGlobal.shared.selectorLoadFileQuickLook) else { return }
+                                                                                               selector: NCGlobal.shared.selectorLoadFileQuickLook,
+                                                                                               sceneIdentifier: sceneIdentifier) else { return }
                 hud.show(in: viewController.view)
                 NCNetworking.shared.download(metadata: metadata, withNotificationProgressTask: false) {
                 } requestHandler: { request in

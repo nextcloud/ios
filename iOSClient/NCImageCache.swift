@@ -244,28 +244,30 @@ import RealmSwift
     func createImagesCache() {
 
         let yellowFavorite = NCBrandColor.shared.yellowFavorite
+        let iconImageColor = NCBrandColor.shared.iconImageColor
+        let iconImageColor2 = NCBrandColor.shared.iconImageColor2
         let utility = NCUtility()
 
         images.file = UIImage(named: "file")!
 
-        images.shared = UIImage(named: "share")!.image(color: .systemGray, size: 50)
-        images.canShare = UIImage(named: "share")!.image(color: .systemGray, size: 50)
-        images.shareByLink = UIImage(named: "sharebylink")!.image(color: .systemGray, size: 50)
+        images.shared = UIImage(named: "share")!.image(color: iconImageColor2, size: 50)
+        images.canShare = UIImage(named: "share")!.image(color: iconImageColor2, size: 50)
+        images.shareByLink = UIImage(named: "sharebylink")!.image(color: iconImageColor2, size: 50)
 
         images.favorite = utility.loadImage(named: "star.fill", color: yellowFavorite)
-        images.comment = UIImage(named: "comment")!.image(color: .systemGray, size: 50)
-        images.livePhoto = utility.loadImage(named: "livephoto", color: .label)
+        images.comment = UIImage(named: "comment")!.image(color: iconImageColor2, size: 50)
+        images.livePhoto = utility.loadImage(named: "livephoto", color: iconImageColor)
         images.offlineFlag = UIImage(named: "offlineFlag")!
         images.local = UIImage(named: "local")!
 
         images.checkedYes = utility.loadImage(named: "checkmark.circle.fill", color: .systemBlue)
-        images.checkedNo = utility.loadImage(named: "circle", color: .systemGray)
+        images.checkedNo = utility.loadImage(named: "circle", color: iconImageColor2)
 
-        images.buttonMore = UIImage(named: "more")!.image(color: .systemGray, size: 50)
-        images.buttonStop = UIImage(named: "stop")!.image(color: .systemGray, size: 50)
-        images.buttonMoreLock = UIImage(named: "moreLock")!.image(color: .systemGray, size: 50)
-        images.buttonRestore = UIImage(named: "restore")!.image(color: .systemGray, size: 50)
-        images.buttonTrash = UIImage(named: "trash")!.image(color: .systemGray, size: 50)
+        images.buttonMore = UIImage(named: "more")!.image(color: iconImageColor2, size: 50)
+        images.buttonStop = UIImage(named: "stop")!.image(color: iconImageColor2, size: 50)
+        images.buttonMoreLock = UIImage(named: "moreLock")!.image(color: iconImageColor2, size: 50)
+        images.buttonRestore = UIImage(named: "restore")!.image(color: iconImageColor2, size: 50)
+        images.buttonTrash = UIImage(named: "trash")!.image(color: iconImageColor2, size: 50)
 
         createImagesBrandCache()
     }

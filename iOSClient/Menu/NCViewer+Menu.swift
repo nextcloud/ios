@@ -134,7 +134,8 @@ extension NCViewer {
                         } else {
                             guard let metadata = NCManageDatabase.shared.setMetadatasSessionInWaitDownload(metadatas: [metadata],
                                                                                                            session: NextcloudKit.shared.nkCommonInstance.sessionIdentifierDownload,
-                                                                                                           selector: NCGlobal.shared.selectorSaveAsScan) else { return }
+                                                                                                           selector: NCGlobal.shared.selectorSaveAsScan,
+                                                                                                           sceneIdentifier: sceneIdentifier) else { return }
                             NCNetworking.shared.download(metadata: metadata, withNotificationProgressTask: true)
                         }
                     }
@@ -186,7 +187,8 @@ extension NCViewer {
                     action: { _ in
                         guard let metadata = NCManageDatabase.shared.setMetadatasSessionInWaitDownload(metadatas: [metadata],
                                                                                                        session: NextcloudKit.shared.nkCommonInstance.sessionIdentifierDownload,
-                                                                                                       selector: "") else { return }
+                                                                                                       selector: "",
+                                                                                                       sceneIdentifier: sceneIdentifier) else { return }
                         NCNetworking.shared.download(metadata: metadata, withNotificationProgressTask: true)
                     }
                 )
@@ -200,7 +202,7 @@ extension NCViewer {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_search_", comment: ""),
-                    icon: UIImage(named: "search")!.image(color: UIColor.systemGray, size: 50),
+                    icon: UIImage(named: "search")!.image(color: NCBrandColor.shared.iconImageColor2, size: 50),
                     action: { _ in
                         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterMenuSearchTextPDF)
                     }
@@ -238,7 +240,8 @@ extension NCViewer {
                         } else {
                             guard let metadata = NCManageDatabase.shared.setMetadatasSessionInWaitDownload(metadatas: [metadata],
                                                                                                            session: NextcloudKit.shared.nkCommonInstance.sessionIdentifierDownload,
-                                                                                                           selector: NCGlobal.shared.selectorLoadFileQuickLook) else { return }
+                                                                                                           selector: NCGlobal.shared.selectorLoadFileQuickLook,
+                                                                                                           sceneIdentifier: sceneIdentifier) else { return }
                             NCNetworking.shared.download(metadata: metadata, withNotificationProgressTask: true)
                         }
                     }

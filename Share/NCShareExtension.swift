@@ -107,7 +107,6 @@ class NCShareExtension: UIViewController {
 
         uploadView.layer.cornerRadius = 10
 
-        // uploadImage.image = utility).loadImage(named: "square.and.arrow.up", color: .label)
         uploadLabel.text = NSLocalizedString("_upload_", comment: "")
         uploadLabel.textColor = .systemBlue
         let uploadGesture = UITapGestureRecognizer(target: self, action: #selector(actionUpload))

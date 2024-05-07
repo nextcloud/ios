@@ -50,8 +50,9 @@ extension NCManageDatabase {
     func addDirectory(e2eEncrypted: Bool, favorite: Bool, ocId: String, fileId: String, etag: String? = nil, permissions: String? = nil, richWorkspace: String? = nil, serverUrl: String, account: String) {
         do {
             let realm = try Realm()
+            let result = realm.objects(tableDirectory.self).filter("account == %@ AND ocId == %@", account, ocId).first
             try realm.write {
-                if let result = realm.objects(tableDirectory.self).filter("account == %@ AND ocId == %@", account, ocId).first {
+                if let result {
                     result.e2eEncrypted = e2eEncrypted
                     result.favorite = favorite
                     if let etag { result.etag = etag }
@@ -68,7 +69,7 @@ extension NCManageDatabase {
                     if let richWorkspace { result.richWorkspace = richWorkspace }
                     result.serverUrl = serverUrl
                     result.account = account
-                    realm.add(result, update: .all)
+                    realm.add(result, update: .modified)
                 }
             }
         } catch let error {

@@ -214,6 +214,11 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         NCNetworking.shared.cancelUnifiedSearchFiles()
         dismissTip()
         setEditMode(false)
+
+        // Cancel Queue & Retrieves Properties
+        NCNetworking.shared.downloadThumbnailQueue.cancelAll()
+        NCNetworking.shared.unifiedSearchQueue.cancelAll()
+        dataSourceTask?.cancel()
     }
 
     override func viewDidDisappear(_ animated: Bool) {
@@ -346,7 +351,12 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
               let error = userInfo["error"] as? NKError else { return }
 
         if error == .success {
-            reloadDataSource()
+            if !isSearchingMode, let dragDrop = userInfo["dragdrop"] as? Bool, dragDrop {
+                setEditMode(false)
+                reloadDataSourceNetwork(withQueryDB: true)
+            } else {
+                reloadDataSource()
+            }
         } else {
             NCContentPresenter().showError(error: error)
         }
@@ -357,7 +367,12 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
               let error = userInfo["error"] as? NKError else { return }
 
         if error == .success {
-            reloadDataSource()
+            if !isSearchingMode, let dragDrop = userInfo["dragdrop"] as? Bool, dragDrop {
+                setEditMode(false)
+                reloadDataSourceNetwork(withQueryDB: true)
+            } else {
+                reloadDataSource()
+            }
         } else {
             NCContentPresenter().showError(error: error)
         }
@@ -385,7 +400,13 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         notificationReloadDataSource += 1
 
         if withPush, let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
-            pushMetadata(metadata)
+            if let sceneIdentifier = userInfo["sceneIdentifier"] as? String {
+                if sceneIdentifier == (self.tabBarController as? NCMainTabBarController)?.sceneIdentifier {
+                    pushMetadata(metadata)
+                }
+            } else {
+                pushMetadata(metadata)
+            }
         }
     }
 
@@ -405,7 +426,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     @objc func downloadStartFile(_ notification: NSNotification) {
         guard let userInfo = notification.userInfo as NSDictionary?,
               let serverUrl = userInfo["serverUrl"] as? String,
-              serverUrl == self.serverUrl,
+              serverUrl == self.serverUrl || self.serverUrl.isEmpty,
               let account = userInfo["account"] as? String,
               account == appDelegate.account
         else { return }
@@ -416,7 +437,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     @objc func downloadedFile(_ notification: NSNotification) {
         guard let userInfo = notification.userInfo as NSDictionary?,
               let serverUrl = userInfo["serverUrl"] as? String,
-              serverUrl == self.serverUrl,
+              serverUrl == self.serverUrl || self.serverUrl.isEmpty,
               let account = userInfo["account"] as? String,
               account == appDelegate.account,
               let error = userInfo["error"] as? NKError
@@ -432,7 +453,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     @objc func downloadCancelFile(_ notification: NSNotification) {
         guard let userInfo = notification.userInfo as NSDictionary?,
               let serverUrl = userInfo["serverUrl"] as? String,
-              serverUrl == self.serverUrl,
+              serverUrl == self.serverUrl || self.serverUrl.isEmpty,
               let account = userInfo["account"] as? String,
               account == appDelegate.account
         else { return }
@@ -1120,7 +1141,8 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
             } else if NextcloudKit.shared.isNetworkReachable(),
                       let metadata = NCManageDatabase.shared.setMetadatasSessionInWaitDownload(metadatas: [metadata],
                                                                                                session: NextcloudKit.shared.nkCommonInstance.sessionIdentifierDownload,
-                                                                                               selector: NCGlobal.shared.selectorLoadFileView) {
+                                                                                               selector: NCGlobal.shared.selectorLoadFileView,
+                                                                                               sceneIdentifier: (self.tabBarController as? NCMainTabBarController)?.sceneIdentifier) {
                 NCNetworking.shared.download(metadata: metadata, withNotificationProgressTask: true)
             } else {
                 let error = NKError(errorCode: NCGlobal.shared.errorOffline, errorDescription: "_go_online_")
@@ -1515,7 +1537,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                 }
 
                 if isSearchingMode {
-                    header.emptyImage.image = UIImage(named: "search")?.image(color: .gray, size: UIScreen.main.bounds.width)
+                    header.emptyImage.image = UIImage(named: "search")?.image(color: NCBrandColor.shared.iconImageColor, size: UIScreen.main.bounds.width)
                     if self.dataSourceTask?.state == .running {
                         header.emptyTitle.text = NSLocalizedString("_search_in_progress_", comment: "")
                     } else {
@@ -1523,7 +1545,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                     }
                     header.emptyDescription.text = NSLocalizedString("_search_instruction_", comment: "")
                 } else if self.dataSourceTask?.state == .running {
-                    header.emptyImage.image = UIImage(named: "networkInProgress")?.image(color: .gray, size: UIScreen.main.bounds.width)
+                    header.emptyImage.image = UIImage(named: "networkInProgress")?.image(color: NCBrandColor.shared.iconImageColor, size: UIScreen.main.bounds.width)
                     header.emptyTitle.text = NSLocalizedString("_request_in_progress_", comment: "")
                     header.emptyDescription.text = ""
                 } else {

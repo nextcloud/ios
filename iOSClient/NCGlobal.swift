@@ -329,10 +329,10 @@ class NCGlobal: NSObject {
 
     // Metadata : Status
     //
-    // 1) wait download/upload
-    // 2) in download/upload
-    // 3) downloading/uploading
-    // 4) done or error
+    //   0 normal
+    // ± 1 wait download/upload
+    // ± 2 downloading/uploading
+    // ± 3 error
     //
     let metadataStatusNormal: Int                   = 0
 
@@ -388,10 +388,10 @@ class NCGlobal: NSObject {
 
     let notificationCenterUpdateBadgeNumber                     = "updateBadgeNumber"               // userInfo: counterDownload, counterUpload
 
-    let notificationCenterCreateFolder                          = "createFolder"                    // userInfo: ocId, serverUrl, account, withPush
+    let notificationCenterCreateFolder                          = "createFolder"                    // userInfo: ocId, serverUrl, account, withPush, sceneIdentifier
     let notificationCenterDeleteFile                            = "deleteFile"                      // userInfo: [ocId], onlyLocalCache, error
-    let notificationCenterMoveFile                              = "moveFile"                        // userInfo: [ocId], error
-    let notificationCenterCopyFile                              = "copyFile"                        // userInfo: [ocId], error
+    let notificationCenterMoveFile                              = "moveFile"                        // userInfo: [ocId], error, dragdrop
+    let notificationCenterCopyFile                              = "copyFile"                        // userInfo: [ocId], error, dragdrop
     let notificationCenterRenameFile                            = "renameFile"                      // userInfo: ocId, account, indexPath
     let notificationCenterFavoriteFile                          = "favoriteFile"                    // userInfo: ocId, serverUrl
 
