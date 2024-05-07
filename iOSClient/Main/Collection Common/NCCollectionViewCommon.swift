@@ -1537,7 +1537,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                 }
 
                 if isSearchingMode {
-                    header.emptyImage.image = UIImage(named: "search")?.image(color: .gray, size: UIScreen.main.bounds.width)
+                    header.emptyImage.image = UIImage(named: "search")?.image(color: NCBrandColor.shared.iconImageColor, size: UIScreen.main.bounds.width)
                     if self.dataSourceTask?.state == .running {
                         header.emptyTitle.text = NSLocalizedString("_search_in_progress_", comment: "")
                     } else {
@@ -1545,7 +1545,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                     }
                     header.emptyDescription.text = NSLocalizedString("_search_instruction_", comment: "")
                 } else if self.dataSourceTask?.state == .running {
-                    header.emptyImage.image = UIImage(named: "networkInProgress")?.image(color: .gray, size: UIScreen.main.bounds.width)
+                    header.emptyImage.image = UIImage(named: "networkInProgress")?.image(color: NCBrandColor.shared.iconImageColor, size: UIScreen.main.bounds.width)
                     header.emptyTitle.text = NSLocalizedString("_request_in_progress_", comment: "")
                     header.emptyDescription.text = ""
                 } else {

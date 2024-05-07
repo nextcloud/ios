@@ -54,7 +54,7 @@ class NCShareLinkCell: UITableViewCell {
 
         if isInternalLink {
             imageName = "shareInternalLink"
-            imageBGColor = .gray
+            imageBGColor = NCBrandColor.shared.iconImageColor
             labelTitle.text = NSLocalizedString("_share_internal_link_", comment: "")
             descriptionLabel.text = NSLocalizedString("_share_internal_link_des_", comment: "")
         } else {
@@ -71,12 +71,12 @@ class NCShareLinkCell: UITableViewCell {
             imageName = "sharebylink"
             imageBGColor = NCBrandColor.shared.brandElement
 
-            menuButton.setImage(UIImage(named: menuImageName)?.image(color: .gray, size: 50), for: .normal)
+            menuButton.setImage(UIImage(named: menuImageName)?.image(color: NCBrandColor.shared.iconImageColor, size: 50), for: .normal)
         }
 
         labelTitle.textColor = .label
         imageItem.image = NCShareCommon().createLinkAvatar(imageName: imageName, colorCircle: imageBGColor)
-        copyButton.setImage(UIImage(named: "shareCopy")?.image(color: .gray, size: 50), for: .normal)
+        copyButton.setImage(UIImage(named: "shareCopy")?.image(color: NCBrandColor.shared.iconImageColor, size: 50), for: .normal)
     }
 
     @IBAction func touchUpCopy(_ sender: Any) {

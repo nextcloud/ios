@@ -295,7 +295,7 @@ class NCSharePagingView: PagingView {
         if metadata.favorite {
             headerView.favorite.setImage(utility.loadImage(named: "star.fill", color: NCBrandColor.shared.yellowFavorite, size: 20), for: .normal)
         } else {
-            headerView.favorite.setImage(utility.loadImage(named: "star.fill", color: .systemGray, size: 20), for: .normal)
+            headerView.favorite.setImage(utility.loadImage(named: "star.fill", color: NCBrandColor.shared.iconImageColor2, size: 20), for: .normal)
         }
         headerView.info.text = utilityFileSystem.transformedSize(metadata.size) + ", " + NSLocalizedString("_modified_", comment: "") + " " + dateFormatter.string(from: metadata.date as Date)
         headerView.info.textColor = .systemGray
