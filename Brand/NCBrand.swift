@@ -161,6 +161,10 @@ class NCBrandColor: NSObject {
     public var themingColorElement: String = ""
     public var themingColorText: String = ""
 
+    public let iconImageColor: UIColor = .label
+    public let iconImageColor2: UIColor = .systemGray
+    public let emptyImageColor: UIColor = .gray
+
     @objc public var systemMint: UIColor {
         get {
             return UIColor(red: 0.0 / 255.0, green: 199.0 / 255.0, blue: 190.0 / 255.0, alpha: 1.0)

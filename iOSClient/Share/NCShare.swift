@@ -114,7 +114,7 @@ class NCShare: UIViewController, NCShareNetworkingDelegate, NCSharePagingContent
         btnContact.layer.borderWidth = 1
         btnContact.layer.borderColor = UIColor.gray.cgColor
         btnContact.tintColor = .gray
-        btnContact.setImage(utility.loadImage(named: "contact", color: .gray, size: 24), for: .normal)
+        btnContact.setImage(utility.loadImage(named: "contact", color: NCBrandColor.shared.iconImageColor, size: 24), for: .normal)
     }
 
     func makeNewLinkShare() {

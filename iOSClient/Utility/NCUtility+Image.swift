@@ -31,7 +31,7 @@ import SVGKit
 
 extension NCUtility {
 
-    func loadImage(named imageName: String, color: UIColor = UIColor.systemGray, size: CGFloat = 50, symbolConfiguration: Any? = nil, renderingMode: UIImage.RenderingMode = .alwaysOriginal) -> UIImage {
+    func loadImage(named imageName: String, color: UIColor = NCBrandColor.shared.iconImageColor, size: CGFloat = 50, symbolConfiguration: Any? = nil, renderingMode: UIImage.RenderingMode = .alwaysOriginal) -> UIImage {
 
         var image: UIImage?
 
