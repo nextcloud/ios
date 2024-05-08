@@ -55,6 +55,7 @@ class NCScan: UIViewController, NCScanCellCellDelegate {
         super.viewDidLoad()
 
         view.backgroundColor = .secondarySystemGroupedBackground
+        navigationController?.navigationBar.tintColor = NCBrandColor.shared.iconImageColor
         navigationItem.title = NSLocalizedString("_scanned_images_", comment: "")
 
         collectionViewSource.dragInteractionEnabled = true
