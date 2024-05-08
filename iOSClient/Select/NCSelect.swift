@@ -79,8 +79,9 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        self.navigationController?.navigationBar.prefersLargeTitles = true
-        self.navigationController?.presentationController?.delegate = self
+        navigationController?.navigationBar.prefersLargeTitles = true
+        navigationController?.presentationController?.delegate = self
+        navigationController?.navigationBar.tintColor = NCBrandColor.shared.iconImageColor
 
         view.backgroundColor = .systemBackground
         selectCommandViewSelect?.separatorView.backgroundColor = .separator
