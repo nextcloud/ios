@@ -74,7 +74,8 @@ class NCUserStatus: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        self.navigationItem.title = NSLocalizedString("_online_status_", comment: "")
+        navigationController?.navigationBar.tintColor = NCBrandColor.shared.iconImageColor
+        navigationItem.title = NSLocalizedString("_online_status_", comment: "")
 
         view.backgroundColor = .systemBackground
         tableView.backgroundColor = .systemBackground
