@@ -50,7 +50,8 @@ class NCViewCertificateDetails: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        self.navigationItem.title = certificateTitle
+        navigationController?.navigationBar.tintColor = NCBrandColor.shared.iconImageColor
+        navigationItem.title = certificateTitle
         buttonCancel.title = NSLocalizedString("_close_", comment: "")
 
         if fileNamePath.isEmpty {
