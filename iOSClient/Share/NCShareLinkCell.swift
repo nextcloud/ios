@@ -54,7 +54,7 @@ class NCShareLinkCell: UITableViewCell {
 
         if isInternalLink {
             imageName = "shareInternalLink"
-            imageBGColor = NCBrandColor.shared.iconImageColor
+            imageBGColor = NCBrandColor.shared.iconImageColor2
             labelTitle.text = NSLocalizedString("_share_internal_link_", comment: "")
             descriptionLabel.text = NSLocalizedString("_share_internal_link_des_", comment: "")
         } else {
