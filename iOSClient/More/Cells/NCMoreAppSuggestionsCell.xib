@@ -25,7 +25,7 @@
                                 <subviews>
                                     <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" verticalCompressionResistancePriority="749" image="sparkles" catalog="system" translatesAutoresizingMaskIntoConstraints="NO" id="Uby-L5-yV4" userLabel="Icon">
                                         <rect key="frame" x="122.66666666666669" y="7.0000000000000018" width="18" height="18.666666666666671"/>
-                                        <color key="tintColor" systemColor="linkColor"/>
+                                        <color key="tintColor" red="0.0" green="0.50980392159999999" blue="0.78823529410000004" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="18" id="Vl1-Ip-OUw"/>
                                             <constraint firstAttribute="width" constant="18" id="m7P-Or-Esh"/>
@@ -55,7 +55,7 @@
                                 <subviews>
                                     <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" verticalCompressionResistancePriority="749" image="talk-template" translatesAutoresizingMaskIntoConstraints="NO" id="zLh-jf-KKN" userLabel="Icon">
                                         <rect key="frame" x="122.66666666666669" y="8" width="18" height="18"/>
-                                        <color key="tintColor" systemColor="linkColor"/>
+                                        <color key="tintColor" red="0.0" green="0.50980392159999999" blue="0.78823529410000004" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="18" id="KVE-Ou-EQq"/>
                                             <constraint firstAttribute="width" constant="18" id="o18-Us-gIE"/>
@@ -85,7 +85,7 @@
                                 <subviews>
                                     <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" verticalCompressionResistancePriority="749" image="notes-template" translatesAutoresizingMaskIntoConstraints="NO" id="BT7-Nt-9RH" userLabel="Icon">
                                         <rect key="frame" x="122.66666666666663" y="8" width="18" height="18"/>
-                                        <color key="tintColor" systemColor="linkColor"/>
+                                        <color key="tintColor" red="0.0" green="0.50980392159999999" blue="0.78823529410000004" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="18" id="3YI-i4-Ykd"/>
                                             <constraint firstAttribute="width" constant="18" id="Riu-Cr-O0l"/>
@@ -115,7 +115,7 @@
                                 <subviews>
                                     <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" verticalCompressionResistancePriority="749" image="more-apps-template" translatesAutoresizingMaskIntoConstraints="NO" id="dzE-0b-iBn" userLabel="Icon">
                                         <rect key="frame" x="122.66666666666663" y="8" width="18" height="18"/>
-                                        <color key="tintColor" systemColor="linkColor"/>
+                                        <color key="tintColor" red="0.0" green="0.50980392159999999" blue="0.78823529410000004" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                         <constraints>
                                             <constraint firstAttribute="width" constant="18" id="Yo0-sL-LJN"/>
                                             <constraint firstAttribute="height" constant="18" id="bOc-vN-4Ry"/>
@@ -176,9 +176,6 @@
         <image name="notes-template" width="24" height="24"/>
         <image name="sparkles" catalog="system" width="115" height="128"/>
         <image name="talk-template" width="600" height="600"/>
-        <systemColor name="linkColor">
-            <color red="0.0" green="0.47843137254901963" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-        </systemColor>
         <systemColor name="secondarySystemGroupedBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>

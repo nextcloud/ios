@@ -32,7 +32,7 @@ extension UINavigationController {
 
     func setNavigationBarAppearance() {
 
-        navigationBar.tintColor = .systemBlue
+        navigationBar.tintColor = NCBrandColor.shared.iconImageColor
 
         let standardAppearance = UINavigationBarAppearance()
         standardAppearance.configureWithDefaultBackground()
@@ -52,7 +52,7 @@ extension UINavigationController {
 
     func setGroupAppearance() {
 
-        navigationBar.tintColor = .systemBlue
+        navigationBar.tintColor = NCBrandColor.shared.iconImageColor
 
         let standardAppearance = UINavigationBarAppearance()
         standardAppearance.configureWithDefaultBackground()

@@ -940,16 +940,14 @@ class NCOperationDownloadAvatar: ConcurrentOperation {
     var fileNameLocalPath: String
     var cell: NCCellProtocol!
     var view: UIView?
-    var cellImageView: UIImageView?
 
-    init(user: String, fileName: String, fileNameLocalPath: String, cell: NCCellProtocol, view: UIView?, cellImageView: UIImageView?) {
+    init(user: String, fileName: String, fileNameLocalPath: String, cell: NCCellProtocol, view: UIView?) {
         self.user = user
         self.fileName = fileName
         self.fileNameLocalPath = fileNameLocalPath
         self.cell = cell
         self.view = view
         self.etag = NCManageDatabase.shared.getTableAvatar(fileName: fileName)?.etag
-        self.cellImageView = cellImageView
     }
 
     override func start() {
@@ -966,11 +964,12 @@ class NCOperationDownloadAvatar: ConcurrentOperation {
             if error == .success, let imageAvatar = imageAvatar, let etag = etag {
                 NCManageDatabase.shared.addAvatar(fileName: self.fileName, etag: etag)
                 DispatchQueue.main.async {
-                    if self.user == self.cell.fileUser, let avatarImageView = self.cellImageView {
-                        UIView.transition(with: avatarImageView,
+                    if self.user == self.cell.fileUser, let cellFileAvatarImageView = self.cell.fileAvatarImageView {
+                        cellFileAvatarImageView.contentMode = .scaleAspectFill
+                        UIView.transition(with: cellFileAvatarImageView,
                                           duration: 0.75,
                                           options: .transitionCrossDissolve,
-                                          animations: { avatarImageView.image = imageAvatar },
+                                          animations: { cellFileAvatarImageView.image = imageAvatar },
                                           completion: nil)
                     } else {
                         if self.view is UICollectionView {

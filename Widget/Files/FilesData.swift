@@ -79,7 +79,7 @@ func getTitleFilesWidget(account: tableAccount?) -> String {
 }
 
 func getFilesItems(displaySize: CGSize) -> Int {
-    let items = Int((displaySize.height - 100) / 60)
+    let items = Int((displaySize.height - 90) / 55)
     return items
 }
 

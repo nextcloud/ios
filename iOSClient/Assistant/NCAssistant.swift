@@ -69,6 +69,7 @@ struct NCAssistant: View {
                 .autohideIn(2)
                 .position(.bottom)
         }
+        .accentColor(Color(NCBrandColor.shared.iconImageColor))
         .environmentObject(model)
     }
 }

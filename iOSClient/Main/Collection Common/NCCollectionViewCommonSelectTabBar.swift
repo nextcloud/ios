@@ -147,6 +147,7 @@ struct NCCollectionViewCommonSelectTabBarView: View {
                     Image(systemName: "square.and.arrow.up")
                         .imageScale(sizeClass == .compact ? .medium : .large)
                 }
+                .tint(Color(NCBrandColor.shared.iconImageColor))
                 .frame(maxWidth: .infinity)
                 .disabled(tabBarSelect.isSelectedEmpty || tabBarSelect.isAllDirectory)
 
@@ -156,6 +157,7 @@ struct NCCollectionViewCommonSelectTabBarView: View {
                     Image(systemName: "rectangle.portrait.and.arrow.right")
                         .imageScale(sizeClass == .compact ? .medium : .large)
                 }
+                .tint(Color(NCBrandColor.shared.iconImageColor))
                 .frame(maxWidth: .infinity)
                 .disabled(tabBarSelect.isSelectedEmpty)
 
@@ -201,6 +203,7 @@ struct NCCollectionViewCommonSelectTabBarView: View {
                     Image(systemName: "ellipsis.circle")
                         .imageScale(sizeClass == .compact ? .medium : .large)
                 }
+                .tint(Color(NCBrandColor.shared.iconImageColor))
                 .frame(maxWidth: .infinity)
             }
         }

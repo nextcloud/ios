@@ -108,11 +108,6 @@ class NCShare: UIViewController, NCShareNetworkingDelegate, NCSharePagingContent
             let isVisible = (self.navigationController?.topViewController as? NCSharePaging)?.page == .sharing
             networking?.readShare(showLoadingIndicator: isVisible)
         }
-
-        btnContact.layer.cornerRadius = 5
-        btnContact.layer.masksToBounds = true
-        btnContact.layer.borderWidth = 1
-        btnContact.setImage(utility.loadImage(named: "contact", color: NCBrandColor.shared.iconImageColor, size: 24), for: .normal)
     }
 
     func makeNewLinkShare() {
@@ -379,7 +374,7 @@ extension NCShare: UITableViewDataSource {
                 cell.delegate = self
                 cell.setupCellUI(userId: appDelegate.userId)
                 let fileName = appDelegate.userBaseUrl + "-" + tableShare.shareWith + ".png"
-                NCNetworking.shared.downloadAvatar(user: tableShare.shareWith, dispalyName: tableShare.shareWithDisplayname, fileName: fileName, cell: cell, view: tableView, cellImageView: cell.fileAvatarImageView)
+                NCNetworking.shared.downloadAvatar(user: tableShare.shareWith, dispalyName: tableShare.shareWithDisplayname, fileName: fileName, cell: cell, view: tableView)
                 return cell
             }
         }
