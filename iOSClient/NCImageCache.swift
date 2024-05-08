@@ -260,7 +260,7 @@ import RealmSwift
         images.checkedNo = utility.loadImage(named: "circle", color: NCBrandColor.shared.brand)
 
         images.buttonMore = utility.loadImage(named: "ellipsis", color: iconImageColor)
-        images.buttonStop = utility.loadImage(named: "stop.fill", color: iconImageColor)
+        images.buttonStop = utility.loadImage(named: "stop.circle", color: iconImageColor)
         images.buttonMoreLock = utility.loadImage(named: "lock.fill", color: iconImageColor)
 
         createImagesBrandCache()
