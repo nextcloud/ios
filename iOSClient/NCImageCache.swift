@@ -247,9 +247,9 @@ import RealmSwift
 
         images.file = UIImage(named: "file")!
 
-        images.shared = UIImage(named: "share")!.image(color: iconImageColor, size: 50)
-        images.canShare = UIImage(named: "share")!.image(color: iconImageColor, size: 50)
-        images.shareByLink = UIImage(named: "sharebylink")!.image(color: iconImageColor, size: 50)
+        images.shared = utility.loadImage(named: "person.fill.badge.plus", color: NCBrandColor.shared.iconImageColor)
+        images.canShare = utility.loadImage(named: "person.fill.badge.plus", color: NCBrandColor.shared.iconImageColor)
+        images.shareByLink = utility.loadImage(named: "link", color: NCBrandColor.shared.iconImageColor)
 
         images.favorite = utility.loadImage(named: "star.fill", color: NCBrandColor.shared.yellowFavorite)
         images.comment = UIImage(named: "comment")!.image(color: iconImageColor, size: 50)
@@ -260,7 +260,7 @@ import RealmSwift
         images.checkedYes = utility.loadImage(named: "checkmark.circle.fill", color: NCBrandColor.shared.brand)
         images.checkedNo = utility.loadImage(named: "circle", color: NCBrandColor.shared.brand)
 
-        images.buttonMore = UIImage(named: "more")!.image(color: iconImageColor, size: 50)
+        images.buttonMore = utility.loadImage(named: "ellipsis", color: NCBrandColor.shared.iconImageColor)
         images.buttonStop = UIImage(named: "stop")!.image(color: iconImageColor, size: 50)
         images.buttonMoreLock = UIImage(named: "moreLock")!.image(color: iconImageColor, size: 50)
         images.buttonRestore = UIImage(named: "restore")!.image(color: iconImageColor, size: 50)
