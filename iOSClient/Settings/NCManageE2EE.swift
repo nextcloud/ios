@@ -196,7 +196,7 @@ struct NCViewE2EE: View {
                             Image(systemName: "eye")
                                 .resizable()
                                 .scaledToFit()
-                                .foregroundColor(Color(UIColor.systemGray))
+                                .foregroundColor(.black)
                         }
                         Spacer()
                     }
@@ -213,10 +213,10 @@ struct NCViewE2EE: View {
                         Label {
                             Text(NSLocalizedString("_e2e_settings_remove_", comment: ""))
                         } icon: {
-                            Image(systemName: "trash.circle")
+                            Image(systemName: "trash")
                                 .resizable()
                                 .scaledToFit()
-                                .foregroundColor(Color.red)
+                                .foregroundColor(.red)
                         }
                         Spacer()
                     }

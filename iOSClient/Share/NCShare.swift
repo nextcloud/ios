@@ -108,11 +108,6 @@ class NCShare: UIViewController, NCShareNetworkingDelegate, NCSharePagingContent
             let isVisible = (self.navigationController?.topViewController as? NCSharePaging)?.page == .sharing
             networking?.readShare(showLoadingIndicator: isVisible)
         }
-
-        btnContact.layer.cornerRadius = 5
-        btnContact.layer.masksToBounds = true
-        btnContact.layer.borderWidth = 1
-        btnContact.setImage(utility.loadImage(named: "contact", color: NCBrandColor.shared.iconImageColor, size: 24), for: .normal)
     }
 
     func makeNewLinkShare() {
