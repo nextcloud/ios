@@ -294,7 +294,7 @@ extension NCNetworking {
 
         if let image = NCManageDatabase.shared.getImageAvatarLoaded(fileName: fileName) {
             cellImageView?.image = image
-            cell.fileAvatarImageView?.image = image
+            cellImageView?.contentMode = .scaleAspectFill
             return
         }
 

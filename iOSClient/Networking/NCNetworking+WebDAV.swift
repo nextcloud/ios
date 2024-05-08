@@ -967,6 +967,7 @@ class NCOperationDownloadAvatar: ConcurrentOperation {
                 NCManageDatabase.shared.addAvatar(fileName: self.fileName, etag: etag)
                 DispatchQueue.main.async {
                     if self.user == self.cell.fileUser, let avatarImageView = self.cellImageView {
+                        self.cellImageView?.contentMode = .scaleAspectFill
                         UIView.transition(with: avatarImageView,
                                           duration: 0.75,
                                           options: .transitionCrossDissolve,
