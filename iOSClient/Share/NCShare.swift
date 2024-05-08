@@ -379,7 +379,7 @@ extension NCShare: UITableViewDataSource {
                 cell.delegate = self
                 cell.setupCellUI(userId: appDelegate.userId)
                 let fileName = appDelegate.userBaseUrl + "-" + tableShare.shareWith + ".png"
-                NCNetworking.shared.downloadAvatar(user: tableShare.shareWith, dispalyName: tableShare.shareWithDisplayname, fileName: fileName, cell: cell, view: tableView, cellImageView: cell.fileAvatarImageView)
+                NCNetworking.shared.downloadAvatar(user: tableShare.shareWith, dispalyName: tableShare.shareWithDisplayname, fileName: fileName, cell: cell, view: tableView)
                 return cell
             }
         }

@@ -1198,7 +1198,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                 cell.fileAvatarImageView?.contentMode = .scaleAspectFill
                 cell.fileAvatarImageView?.image = image
             } else {
-                NCNetworking.shared.downloadAvatar(user: user, dispalyName: dispalyName, fileName: fileName, cell: cell, view: collectionView, cellImageView: cell.fileAvatarImageView)
+                NCNetworking.shared.downloadAvatar(user: user, dispalyName: dispalyName, fileName: fileName, cell: cell, view: collectionView)
             }
         }
 
@@ -1269,7 +1269,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
            metadata.ownerId != appDelegate.userId,
            appDelegate.account == metadata.account {
             let fileName = metadata.userBaseUrl + "-" + metadata.ownerId + ".png"
-            NCNetworking.shared.downloadAvatar(user: metadata.ownerId, dispalyName: metadata.ownerDisplayName, fileName: fileName, cell: cell, view: collectionView, cellImageView: cell.fileAvatarImageView)
+            downloadAvatar(fileName: fileName, user: metadata.ownerId, dispalyName: metadata.ownerDisplayName)
         }
     }
 

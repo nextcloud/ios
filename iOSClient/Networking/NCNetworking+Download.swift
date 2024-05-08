@@ -287,22 +287,20 @@ extension NCNetworking {
                         dispalyName: String?,
                         fileName: String,
                         cell: NCCellProtocol,
-                        view: UIView?,
-                        cellImageView: UIImageView?) {
-
+                        view: UIView?) {
         let fileNameLocalPath = utilityFileSystem.directoryUserData + "/" + fileName
 
         if let image = NCManageDatabase.shared.getImageAvatarLoaded(fileName: fileName) {
-            cellImageView?.image = image
+            cell.fileAvatarImageView?.image = image
             return
         }
 
         if let account = NCManageDatabase.shared.getActiveAccount() {
-            cellImageView?.image = utility.loadUserImage(for: user, displayName: dispalyName, userBaseUrl: account)
+            cell.fileAvatarImageView?.image = utility.loadUserImage(for: user, displayName: dispalyName, userBaseUrl: account)
         }
 
         for case let operation as NCOperationDownloadAvatar in downloadAvatarQueue.operations where operation.fileName == fileName { return }
-        downloadAvatarQueue.addOperation(NCOperationDownloadAvatar(user: user, fileName: fileName, fileNameLocalPath: fileNameLocalPath, cell: cell, view: view, cellImageView: cellImageView))
+        downloadAvatarQueue.addOperation(NCOperationDownloadAvatar(user: user, fileName: fileName, fileNameLocalPath: fileNameLocalPath, cell: cell, view: view))
     }
 #endif
 
