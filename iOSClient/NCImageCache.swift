@@ -247,24 +247,21 @@ import RealmSwift
 
         images.file = UIImage(named: "file")!
 
-        images.shared = utility.loadImage(named: "person.fill.badge.plus", color: NCBrandColor.shared.iconImageColor)
-        images.canShare = utility.loadImage(named: "person.fill.badge.plus", color: NCBrandColor.shared.iconImageColor)
+        images.shared = utility.loadImage(named: "person.fill.badge.plus", color: iconImageColor)
+        images.canShare = utility.loadImage(named: "person.fill.badge.plus", color: iconImageColor)
         images.shareByLink = utility.loadImage(named: "link", color: NCBrandColor.shared.iconImageColor)
 
         images.favorite = utility.loadImage(named: "star.fill", color: NCBrandColor.shared.yellowFavorite)
-        images.comment = UIImage(named: "comment")!.image(color: iconImageColor, size: 50)
         images.livePhoto = utility.loadImage(named: "livephoto", color: iconImageColor)
-        images.offlineFlag = UIImage(named: "offlineFlag")!
-        images.local = UIImage(named: "local")!
+        images.offlineFlag = utility.loadImage(named: "arrow.down.circle.fill", color: .systemGreen)
+        images.local = utility.loadImage(named: "checkmark.circle.fill", color: .systemGreen)
 
         images.checkedYes = utility.loadImage(named: "checkmark.circle.fill", color: NCBrandColor.shared.brand)
         images.checkedNo = utility.loadImage(named: "circle", color: NCBrandColor.shared.brand)
 
-        images.buttonMore = utility.loadImage(named: "ellipsis", color: NCBrandColor.shared.iconImageColor)
-        images.buttonStop = UIImage(named: "stop")!.image(color: iconImageColor, size: 50)
-        images.buttonMoreLock = UIImage(named: "moreLock")!.image(color: iconImageColor, size: 50)
-        images.buttonRestore = UIImage(named: "restore")!.image(color: iconImageColor, size: 50)
-        images.buttonTrash = UIImage(named: "trash")!.image(color: iconImageColor, size: 50)
+        images.buttonMore = utility.loadImage(named: "ellipsis", color: iconImageColor)
+        images.buttonStop = utility.loadImage(named: "stop.fill", color: iconImageColor)
+        images.buttonMoreLock = utility.loadImage(named: "lock.fill", color: iconImageColor)
 
         createImagesBrandCache()
     }
