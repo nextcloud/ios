@@ -961,8 +961,8 @@ class NCOperationDownloadAvatar: ConcurrentOperation {
                                            etag: self.etag,
                                            options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { _, imageAvatar, _, etag, error in
 
-            if error == .success, let imageAvatar = imageAvatar, let etag = etag {
-                NCManageDatabase.shared.addAvatar(fileName: self.fileName, etag: etag)
+            if error == .success, let imageAvatar {
+                NCManageDatabase.shared.addAvatar(fileName: self.fileName, etag: etag ?? "")
                 DispatchQueue.main.async {
                     if self.user == self.cell.fileUser, let cellFileAvatarImageView = self.cell.fileAvatarImageView {
                         cellFileAvatarImageView.contentMode = .scaleAspectFill
