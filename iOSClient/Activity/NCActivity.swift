@@ -502,7 +502,7 @@ extension NCActivity: NCShareCommentsCellDelegate {
         actions.append(
             NCMenuAction(
                 title: NSLocalizedString("_edit_comment_", comment: ""),
-                icon: UIImage(named: "pencil")!.image(color: NCBrandColor.shared.iconImageColor2, size: 50),
+                icon: utility.loadImage(named: "pencil"),
                 action: { _ in
                     guard let metadata = self.metadata, let tableComments = tableComments else { return }
 
