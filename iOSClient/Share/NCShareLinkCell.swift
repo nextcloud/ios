@@ -44,7 +44,7 @@ class NCShareLinkCell: UITableViewCell {
     func setupCellUI() {
         var imageName: String
         var imageBGColor: UIColor
-        var menuImageName = "shareMenu"
+        var menuImageName = "ellipsis"
 
         menuButton.isHidden = isInternalLink
         descriptionLabel.isHidden = !isInternalLink
@@ -71,12 +71,11 @@ class NCShareLinkCell: UITableViewCell {
             imageName = "sharebylink"
             imageBGColor = NCBrandColor.shared.brandElement
 
-            menuButton.setImage(UIImage(named: menuImageName)?.image(color: NCBrandColor.shared.iconImageColor, size: 50), for: .normal)
+            menuButton.setImage(NCUtility().loadImage(named: menuImageName, color: NCBrandColor.shared.iconImageColor), for: .normal)
         }
 
         labelTitle.textColor = .label
         imageItem.image = NCShareCommon().createLinkAvatar(imageName: imageName, colorCircle: imageBGColor)
-        copyButton.setImage(UIImage(named: "shareCopy")?.image(color: NCBrandColor.shared.iconImageColor, size: 50), for: .normal)
     }
 
     @IBAction func touchUpCopy(_ sender: Any) {
