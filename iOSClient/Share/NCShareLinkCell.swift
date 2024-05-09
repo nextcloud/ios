@@ -42,8 +42,6 @@ class NCShareLinkCell: UITableViewCell {
     }
 
     func setupCellUI() {
-        var imageName: String
-        var imageBGColor: UIColor
         var menuImageName = "ellipsis"
 
         menuButton.isHidden = isInternalLink
@@ -53,10 +51,9 @@ class NCShareLinkCell: UITableViewCell {
         menuButton.accessibilityLabel = NSLocalizedString("_more_", comment: "")
 
         if isInternalLink {
-            imageName = "shareInternalLink"
-            imageBGColor = NCBrandColor.shared.iconImageColor2
             labelTitle.text = NSLocalizedString("_share_internal_link_", comment: "")
             descriptionLabel.text = NSLocalizedString("_share_internal_link_des_", comment: "")
+            imageItem.image = NCUtility().loadImage(named: "square.and.arrow.up.circle.fill", color: NCBrandColor.shared.iconImageColor2)
         } else {
             labelTitle.text = NSLocalizedString("_share_link_", comment: "")
             if let tableShare = tableShare {
@@ -68,14 +65,11 @@ class NCShareLinkCell: UITableViewCell {
                 menuButton.accessibilityLabel = NSLocalizedString("_add_", comment: "")
             }
 
-            imageName = "link"
-            imageBGColor = NCBrandColor.shared.brandElement
-
+            imageItem.image = NCUtility().loadImage(named: "link.circle.fill", color: NCBrandColor.shared.brand)
             menuButton.setImage(NCUtility().loadImage(named: menuImageName, color: NCBrandColor.shared.iconImageColor), for: .normal)
         }
 
         labelTitle.textColor = .label
-        imageItem.image = NCShareCommon().createLinkAvatar(imageName: imageName, colorCircle: imageBGColor)
     }
 
     @IBAction func touchUpCopy(_ sender: Any) {
