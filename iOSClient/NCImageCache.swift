@@ -245,7 +245,7 @@ import RealmSwift
         let iconImageColor = NCBrandColor.shared.iconImageColor
         let utility = NCUtility()
 
-        images.file = UIImage(named: "file")!
+        images.file = utility.loadImage(named: "doc", color: iconImageColor)
 
         images.shared = utility.loadImage(named: "person.fill.badge.plus", color: iconImageColor)
         images.canShare = utility.loadImage(named: "person.fill.badge.plus", color: iconImageColor)

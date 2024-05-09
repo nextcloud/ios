@@ -288,7 +288,7 @@ class NCSharePagingView: PagingView {
             } else if !metadata.iconName.isEmpty {
                 headerView.imageView.image = UIImage(named: metadata.iconName)
             } else {
-                headerView.imageView.image = UIImage(named: "file")
+                headerView.imageView.image = NCImageCache.images.file
             }
         }
         headerView.path.text = utilityFileSystem.getPath(path: metadata.path, user: metadata.user, fileName: metadata.fileName)

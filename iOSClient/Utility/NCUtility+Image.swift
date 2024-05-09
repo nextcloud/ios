@@ -49,7 +49,7 @@ extension NCUtility {
             return image
         }
 
-        return  UIImage(named: "file")!.image(color: color, size: size)
+        return  UIImage(systemName: "doc")!.image(color: color, size: size)
     }
 
     @objc func loadUserImage(for user: String, displayName: String?, userBaseUrl: NCUserBaseUrl) -> UIImage {

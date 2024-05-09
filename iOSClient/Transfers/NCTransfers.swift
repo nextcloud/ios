@@ -203,7 +203,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
         } else if !metadata.iconName.isEmpty {
             cell.imageItem.image = UIImage(named: metadata.iconName)
         } else {
-            cell.imageItem.image = UIImage(named: "file")
+            cell.imageItem.image = NCImageCache.images.file
         }
         cell.labelInfo.text = utility.dateDiff(metadata.date as Date) + " · " + utilityFileSystem.transformedSize(metadata.size)
         if metadata.status == NCGlobal.shared.metadataStatusDownloading || metadata.status == NCGlobal.shared.metadataStatusUploading {
