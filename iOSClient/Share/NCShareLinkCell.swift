@@ -64,7 +64,7 @@ class NCShareLinkCell: UITableViewCell {
                     labelTitle.text? += " (\(tableShare.label))"
                 }
             } else {
-                menuImageName = "shareAdd"
+                menuImageName = "plus"
                 menuButton.accessibilityLabel = NSLocalizedString("_add_", comment: "")
             }
 
