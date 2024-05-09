@@ -748,12 +748,14 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             tabBarSelect.hide()
             if navigationItem.rightBarButtonItems == nil || enableMenu {
                 let menuButton = UIBarButtonItem(image: .init(systemName: "ellipsis.circle"), menu: UIMenu(children: createMenuActions()))
+                menuButton.tintColor = NCBrandColor.shared.iconImageColor
                 if layoutKey == NCGlobal.shared.layoutViewFiles {
                     let notification = UIBarButtonItem(image: .init(systemName: "bell"), style: .plain) {
                         if let viewController = UIStoryboard(name: "NCNotification", bundle: nil).instantiateInitialViewController() as? NCNotification {
                             self.navigationController?.pushViewController(viewController, animated: true)
                         }
                     }
+                    notification.tintColor = NCBrandColor.shared.iconImageColor
                     navigationItem.rightBarButtonItems = [menuButton, notification]
                 } else {
                     navigationItem.rightBarButtonItems = [menuButton]
@@ -1191,13 +1193,22 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         guard let metadata = dataSource.cellForItemAt(indexPath: indexPath),
               let cell = (cell as? NCCellProtocol) else { return }
 
-        cell.filePreviewImageView?.layer.borderWidth = 0
+        func downloadAvatar(fileName: String, user: String, dispalyName: String?) {
+            if let image = NCManageDatabase.shared.getImageAvatarLoaded(fileName: fileName) {
+                cell.fileAvatarImageView?.contentMode = .scaleAspectFill
+                cell.fileAvatarImageView?.image = image
+            } else {
+                NCNetworking.shared.downloadAvatar(user: user, dispalyName: dispalyName, fileName: fileName, cell: cell, view: collectionView)
+            }
+        }
 
+        cell.filePreviewImageView?.layer.borderWidth = 0
         if metadata.isImage {
             cell.filePreviewImageView?.contentMode = .scaleAspectFill
         } else {
             cell.filePreviewImageView?.contentMode = .scaleAspectFit
         }
+        cell.fileAvatarImageView?.contentMode = .center
 
         // Thumbnail
         if !metadata.directory {
@@ -1213,7 +1224,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                     if metadata.iconName.isEmpty {
                         cell.filePreviewImageView?.image = NCImageCache.images.file
                     } else {
-                        cell.filePreviewImageView?.image = UIImage(named: metadata.iconName)
+                        cell.filePreviewImageView?.image = utility.loadImage(named: metadata.iconName)
                     }
                     if metadata.hasPreview && metadata.status == NCGlobal.shared.metadataStatusNormal && (!utilityFileSystem.fileProviderStoragePreviewIconExists(metadata.ocId, etag: metadata.etag)) {
                         for case let operation as NCCollectionViewDownloadThumbnail in NCNetworking.shared.downloadThumbnailQueue.operations where operation.metadata.ocId == metadata.ocId { return }
@@ -1243,10 +1254,11 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                     cell.filePreviewImageView?.image = NCImageCache.images.file
                 }
 
+                // Avatar
                 if !metadata.iconUrl.isEmpty {
                     if let ownerId = getAvatarFromIconUrl(metadata: metadata) {
                         let fileName = metadata.userBaseUrl + "-" + ownerId + ".png"
-                        NCNetworking.shared.downloadAvatar(user: ownerId, dispalyName: nil, fileName: fileName, cell: cell, view: collectionView, cellImageView: cell.filePreviewImageView)
+                        downloadAvatar(fileName: fileName, user: ownerId, dispalyName: nil)
                     }
                 }
             }
@@ -1257,7 +1269,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
            metadata.ownerId != appDelegate.userId,
            appDelegate.account == metadata.account {
             let fileName = metadata.userBaseUrl + "-" + metadata.ownerId + ".png"
-            NCNetworking.shared.downloadAvatar(user: metadata.ownerId, dispalyName: metadata.ownerDisplayName, fileName: fileName, cell: cell, view: collectionView, cellImageView: cell.fileAvatarImageView)
+            downloadAvatar(fileName: fileName, user: metadata.ownerId, dispalyName: metadata.ownerDisplayName)
         }
     }
 

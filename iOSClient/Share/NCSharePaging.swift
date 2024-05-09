@@ -51,7 +51,9 @@ class NCSharePaging: UIViewController {
         view.backgroundColor = .systemBackground
         title = NSLocalizedString("_details_", comment: "")
 
+        navigationController?.navigationBar.tintColor = NCBrandColor.shared.iconImageColor
         navigationItem.leftBarButtonItem = UIBarButtonItem(title: NSLocalizedString("_close_", comment: ""), style: .done, target: self, action: #selector(exitTapped))
+
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(notification:)), name: UIResponder.keyboardWillShowNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(notification:)), name: UIResponder.keyboardWillHideNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(applicationDidEnterBackground(notification:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationDidEnterBackground), object: nil)
@@ -284,9 +286,9 @@ class NCSharePagingView: PagingView {
                 headerView.imageView.image = image?.image(color: NCBrandColor.shared.brandElement, size: image?.size.width ?? 0)
                 headerView.imageView.image = headerView.imageView.image?.colorizeFolder(metadata: metadata)
             } else if !metadata.iconName.isEmpty {
-                headerView.imageView.image = UIImage(named: metadata.iconName)
+                headerView.imageView.image = utility.loadImage(named: metadata.iconName)
             } else {
-                headerView.imageView.image = UIImage(named: "file")
+                headerView.imageView.image = NCImageCache.images.file
             }
         }
         headerView.path.text = utilityFileSystem.getPath(path: metadata.path, user: metadata.user, fileName: metadata.fileName)

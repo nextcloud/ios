@@ -113,7 +113,6 @@ class NCAssistantTask: ObservableObject {
                 return
             }
 
-
             guard let filteredTypes = types?.filter({ !self.excludedTypeIds.contains($0.id ?? "")}), !filteredTypes.isEmpty else { return }
 
             withAnimation {

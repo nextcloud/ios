@@ -64,8 +64,8 @@ class NCCapabilitiesViewOO: ObservableObject {
 
         capabililies.removeAll()
 
-        if let image = UIImage(named: "share") {
-            capabililies.append(Capability(text: "File sharing", image: image, resize: true, available: NCGlobal.shared.capabilityFileSharingApiEnabled))
+        if let image = UIImage(systemName: "person.fill.badge.plus") {
+            capabililies.append(Capability(text: "File sharing", image: image, resize: false, available: NCGlobal.shared.capabilityFileSharingApiEnabled))
         }
         if let image = UIImage(systemName: "network") {
             capabililies.append(Capability(text: "External site", image: image, resize: false, available: NCGlobal.shared.capabilityExternalSites))

@@ -33,7 +33,7 @@ extension NCShare {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_share_add_sharelink_", comment: ""),
-                    icon: utility.loadImage(named: "shareAdd"),
+                    icon: utility.loadImage(named: "plus"),
                     action: { _ in
                         self.makeNewLinkShare()
                     }

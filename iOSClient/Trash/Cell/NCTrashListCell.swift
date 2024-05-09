@@ -66,7 +66,7 @@ class NCTrashListCell: UICollectionViewCell, NCTrashCellProtocol {
         ]
 
         imageRestore.image = UIImage(systemName: "arrow.circlepath")
-        imageRestore.tintColor = .gray
+        imageRestore.tintColor = NCBrandColor.shared.iconImageColor
 
         imageMore.image = UIImage(systemName: "trash")
         imageMore.tintColor = .red

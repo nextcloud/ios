@@ -141,7 +141,7 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         if NCGlobal.shared.capabilityFileSharingApiEnabled {
             item = NKExternalSite()
             item.name = "_list_shares_"
-            item.icon = "share"
+            item.icon = "person.badge.plus"
             item.url = "segueShares"
             item.order = 50
             functionMenu.append(item)
