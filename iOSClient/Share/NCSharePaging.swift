@@ -286,7 +286,7 @@ class NCSharePagingView: PagingView {
                 headerView.imageView.image = image?.image(color: NCBrandColor.shared.brandElement, size: image?.size.width ?? 0)
                 headerView.imageView.image = headerView.imageView.image?.colorizeFolder(metadata: metadata)
             } else if !metadata.iconName.isEmpty {
-                headerView.imageView.image = UIImage(named: metadata.iconName)
+                headerView.imageView.image = utility.loadImage(named: metadata.iconName)
             } else {
                 headerView.imageView.image = NCImageCache.images.file
             }

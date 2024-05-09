@@ -146,7 +146,7 @@ class NCSectionHeaderMenu: UICollectionReusableView, UIGestureRecognizerDelegate
                let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
                 image = utility.createFilePreviewImage(ocId: metadata.ocId, etag: metadata.etag, fileNameView: metadata.fileNameView, classFile: metadata.classFile, status: metadata.status, createPreviewMedia: true)?.darken()
                 if image == nil {
-                    image = UIImage(named: metadata.iconName)
+                    image = utility.loadImage(named: metadata.iconName)
                     buttonTransfer.backgroundColor = .lightGray
                 } else {
                     buttonTransfer.backgroundColor = .clear
