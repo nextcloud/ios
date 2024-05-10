@@ -73,7 +73,7 @@ extension AppDelegate {
 
         actions.append(
             NCMenuAction(
-                title: NSLocalizedString("_scans_document_", comment: ""), icon: utility.loadImage(named: "doc.text.viewfinder"), action: { _ in
+                title: NSLocalizedString("_scans_document_", comment: ""), icon: utility.loadImage(named: "doc.text.viewfinder", color: NCBrandColor.shared.iconImageColor), action: { _ in
                     NCDocumentCamera.shared.openScannerDocument(viewController: mainTabBarController)
                 }
             )

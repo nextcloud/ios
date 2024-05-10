@@ -76,7 +76,7 @@ extension NCTrash {
             NCMenuAction(
                 title: NSLocalizedString("_delete_", comment: ""),
                 destructive: true,
-                icon: utility.loadImage(named: "trash"),
+                icon: utility.loadImage(named: "trash", color: .red),
                 action: { _ in
                     self.deleteItem(with: objectId)
                 }

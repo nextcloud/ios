@@ -31,25 +31,39 @@ import SVGKit
 
 extension NCUtility {
 
-    func loadImage(named imageName: String, color: UIColor = NCBrandColor.shared.iconImageColor, size: CGFloat = 50, symbolConfiguration: Any? = nil, renderingMode: UIImage.RenderingMode = .alwaysOriginal) -> UIImage {
-
+    func loadImage(named imageName: String, color: UIColor? = nil, size: CGFloat? = nil, symbolConfiguration: Any? = nil, renderingMode: UIImage.RenderingMode = .alwaysOriginal) -> UIImage {
         var image: UIImage?
 
-        // see https://stackoverflow.com/questions/71764255
-        let sfSymbolName = imageName.replacingOccurrences(of: "_", with: ".")
-        if let symbolConfiguration {
-            image = UIImage(systemName: sfSymbolName, withConfiguration: symbolConfiguration as? UIImage.Configuration)?.withTintColor(color, renderingMode: renderingMode)
-        } else {
-            image = UIImage(systemName: sfSymbolName)?.withTintColor(color, renderingMode: renderingMode)
+        // SF IMAGE
+        if let symbolConfiguration, let color {
+            image = UIImage(systemName: imageName, withConfiguration: symbolConfiguration as? UIImage.Configuration)?.withTintColor(color, renderingMode: renderingMode)
+        } else if let symbolConfiguration, color == nil {
+            image = UIImage(systemName: imageName, withConfiguration: symbolConfiguration as? UIImage.Configuration)
+        } else if symbolConfiguration == nil, let color {
+            image = UIImage(systemName: imageName)?.withTintColor(color, renderingMode: renderingMode)
+        } else if symbolConfiguration == nil, color == nil {
+            image = UIImage(systemName: imageName)
         }
-        if image == nil {
-            image = UIImage(named: imageName)?.image(color: color, size: size)
-        }
-        if let image {
-            return image
-        }
+        if let image { return image }
 
-        return  UIImage(systemName: "doc")!.image(color: color, size: size)
+        // IMAGES
+        if let color, let size {
+            image = UIImage(named: imageName)?.image(color: color, size: size)
+        } else if let color, size == nil {
+            image = UIImage(named: imageName)?.image(color: color, size: 50)
+        } else if color == nil, size == nil {
+            image = UIImage(named: imageName)?.resizeImage(size: CGSize(width: 50, height: 50))
+        } else if color == nil, let size {
+            image = UIImage(named: imageName)?.resizeImage(size: CGSize(width: size, height: size))
+        }
+        if let image { return image }
+
+        // NO IMAGES FOUND
+        if let color, let size {
+            return UIImage(systemName: "doc")!.image(color: color, size: size)
+        } else {
+            return UIImage(systemName: "doc")!
+        }
     }
 
     @objc func loadUserImage(for user: String, displayName: String?, userBaseUrl: NCUserBaseUrl) -> UIImage {

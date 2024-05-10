@@ -401,7 +401,7 @@ extension NCShare: CNContactPickerDelegate {
             actions.append(
                 NCMenuAction(
                     title: email,
-                    icon: utility.loadImage(named: "email"),
+                    icon: utility.loadImage(named: "email", color: NCBrandColor.shared.iconImageColor),
                     selected: false,
                     on: false,
                     action: { _ in

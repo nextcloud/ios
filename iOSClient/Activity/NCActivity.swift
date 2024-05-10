@@ -502,7 +502,7 @@ extension NCActivity: NCShareCommentsCellDelegate {
         actions.append(
             NCMenuAction(
                 title: NSLocalizedString("_edit_comment_", comment: ""),
-                icon: utility.loadImage(named: "pencil"),
+                icon: utility.loadImage(named: "pencil", color: NCBrandColor.shared.iconImageColor),
                 action: { _ in
                     guard let metadata = self.metadata, let tableComments = tableComments else { return }
 
@@ -533,7 +533,8 @@ extension NCActivity: NCShareCommentsCellDelegate {
         actions.append(
             NCMenuAction(
                 title: NSLocalizedString("_delete_comment_", comment: ""),
-                icon: utility.loadImage(named: "trash"),
+                destructive: true,
+                icon: utility.loadImage(named: "trash", color: .red),
                 action: { _ in
                     guard let metadata = self.metadata, let tableComments = tableComments else { return }
 

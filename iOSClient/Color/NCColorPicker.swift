@@ -65,7 +65,7 @@ class NCColorPicker: UIViewController {
             }
         }
 
-        closeButton.setImage(NCUtility().loadImage(named: "xmark", color: .label), for: .normal)
+        closeButton.setImage(NCUtility().loadImage(named: "xmark", color: NCBrandColor.shared.iconImageColor), for: .normal)
         titleLabel.text = NSLocalizedString("_select_color_", comment: "")
 
         orangeButton.backgroundColor = .orange
