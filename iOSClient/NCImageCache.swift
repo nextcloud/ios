@@ -243,7 +243,7 @@ import RealmSwift
 
     func createImagesCache() {
         let iconImageColor = NCBrandColor.shared.iconImageColor
-        let iconImageMultiColors = NCBrandColor.shared.iconImageMultiColors
+        let iconImageMultiColors: [UIColor] = [NCBrandColor.shared.iconImageColor2, NCBrandColor.shared.iconImageColor]
         let utility = NCUtility()
 
         images.file = utility.loadImage(named: "doc", colors: [iconImageColor])
