@@ -53,7 +53,7 @@ class NCShareLinkCell: UITableViewCell {
         if isInternalLink {
             labelTitle.text = NSLocalizedString("_share_internal_link_", comment: "")
             descriptionLabel.text = NSLocalizedString("_share_internal_link_des_", comment: "")
-            imageItem.image = NCUtility().loadImage(named: "square.and.arrow.up.circle.fill", color: NCBrandColor.shared.iconImageColor2)
+            imageItem.image = NCUtility().loadImage(named: "square.and.arrow.up.circle.fill", colors: [NCBrandColor.shared.iconImageColor2])
         } else {
             labelTitle.text = NSLocalizedString("_share_link_", comment: "")
             if let tableShare = tableShare {
@@ -65,8 +65,8 @@ class NCShareLinkCell: UITableViewCell {
                 menuButton.accessibilityLabel = NSLocalizedString("_add_", comment: "")
             }
 
-            imageItem.image = NCUtility().loadImage(named: "link.circle.fill", color: NCBrandColor.shared.brand)
-            menuButton.setImage(NCUtility().loadImage(named: menuImageName, color: NCBrandColor.shared.iconImageColor), for: .normal)
+            imageItem.image = NCUtility().loadImage(named: "link.circle.fill", colors: [NCBrandColor.shared.brand])
+            menuButton.setImage(NCUtility().loadImage(named: menuImageName, colors: [NCBrandColor.shared.iconImageColor]), for: .normal)
         }
 
         labelTitle.textColor = .label

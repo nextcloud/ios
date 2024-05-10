@@ -40,7 +40,7 @@ extension AppDelegate {
 
         actions.append(
             NCMenuAction(
-                title: NSLocalizedString("_upload_photos_videos_", comment: ""), icon: utility.loadImage(named: "photo", color: NCBrandColor.shared.iconImageColor), action: { _ in
+                title: NSLocalizedString("_upload_photos_videos_", comment: ""), icon: utility.loadImage(named: "photo", colors: [NCBrandColor.shared.iconImageColor]), action: { _ in
                     NCAskAuthorization().askAuthorizationPhotoLibrary(viewController: mainTabBarController) { hasPermission in
                         if hasPermission {NCPhotosPickerViewController(mainTabBarController: mainTabBarController, maxSelectedAssets: 0, singleSelectedMode: false)
                         }
@@ -51,7 +51,7 @@ extension AppDelegate {
 
         actions.append(
             NCMenuAction(
-                title: NSLocalizedString("_upload_file_", comment: ""), icon: utility.loadImage(named: "doc", color: NCBrandColor.shared.iconImageColor), action: { _ in
+                title: NSLocalizedString("_upload_file_", comment: ""), icon: utility.loadImage(named: "doc", colors: [NCBrandColor.shared.iconImageColor]), action: { _ in
                     mainTabBarController.documentPickerViewController = NCDocumentPickerViewController(mainTabBarController: mainTabBarController, isViewerMedia: false, allowsMultipleSelection: true)
                 }
             )
@@ -59,7 +59,7 @@ extension AppDelegate {
 
         if NextcloudKit.shared.isNetworkReachable() && directEditingCreators != nil && directEditingCreators!.contains(where: { $0.editor == NCGlobal.shared.editorText}) && !isDirectoryE2EE {
             actions.append(
-                NCMenuAction(title: NSLocalizedString("_create_nextcloudtext_document_", comment: ""), icon: utility.loadImage(named: "doc.text", color: NCBrandColor.shared.iconImageColor), action: { _ in
+                NCMenuAction(title: NSLocalizedString("_create_nextcloudtext_document_", comment: ""), icon: utility.loadImage(named: "doc.text", colors: [NCBrandColor.shared.iconImageColor]), action: { _ in
                     let directEditingCreator = directEditingCreators!.first(where: { $0.editor == NCGlobal.shared.editorText})!
 
                     Task {
@@ -73,7 +73,7 @@ extension AppDelegate {
 
         actions.append(
             NCMenuAction(
-                title: NSLocalizedString("_scans_document_", comment: ""), icon: utility.loadImage(named: "doc.text.viewfinder", color: NCBrandColor.shared.iconImageColor), action: { _ in
+                title: NSLocalizedString("_scans_document_", comment: ""), icon: utility.loadImage(named: "doc.text.viewfinder", colors: [NCBrandColor.shared.iconImageColor]), action: { _ in
                     NCDocumentCamera.shared.openScannerDocument(viewController: mainTabBarController)
                 }
             )
@@ -130,7 +130,7 @@ extension AppDelegate {
         if NCGlobal.shared.capabilityServerVersionMajor >= NCGlobal.shared.nextcloudVersion18 && directory?.richWorkspace == nil && !isDirectoryE2EE && NextcloudKit.shared.isNetworkReachable() {
             actions.append(
                 NCMenuAction(
-                    title: NSLocalizedString("_add_folder_info_", comment: ""), icon: NCUtility().loadImage(named: "list.dash.header.rectangle", color: NCBrandColor.shared.iconImageColor), action: { _ in
+                    title: NSLocalizedString("_add_folder_info_", comment: ""), icon: NCUtility().loadImage(named: "list.dash.header.rectangle", colors: [NCBrandColor.shared.iconImageColor]), action: { _ in
                         let richWorkspaceCommon = NCRichWorkspaceCommon()
                         if let viewController = mainTabBarController.currentViewController() {
                             if NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView LIKE[c] %@", appDelegate.account, serverUrl, NCGlobal.shared.fileNameRichWorkspace.lowercased())) == nil {

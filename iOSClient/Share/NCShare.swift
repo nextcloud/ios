@@ -149,7 +149,7 @@ class NCShare: UIViewController, NCShareNetworkingDelegate, NCSharePagingContent
         if !metadata.note.isEmpty {
             searchFieldTopConstraint.constant = 95
             sharedWithYouByNoteImage.isHidden = false
-            sharedWithYouByNoteImage.image = utility.loadImage(named: "note.text", color: NCBrandColor.shared.iconImageColor)
+            sharedWithYouByNoteImage.image = utility.loadImage(named: "note.text", colors: [NCBrandColor.shared.iconImageColor])
             sharedWithYouByNote.isHidden = false
             sharedWithYouByNote.text = metadata.note
             sharedWithYouByNote.textColor = .label
@@ -401,7 +401,7 @@ extension NCShare: CNContactPickerDelegate {
             actions.append(
                 NCMenuAction(
                     title: email,
-                    icon: utility.loadImage(named: "email", color: NCBrandColor.shared.iconImageColor),
+                    icon: utility.loadImage(named: "email", colors: [NCBrandColor.shared.iconImageColor]),
                     selected: false,
                     on: false,
                     action: { _ in

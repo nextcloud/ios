@@ -123,7 +123,7 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate {
         if let image = image {
             cell.icon.image = image.withTintColor(NCBrandColor.shared.brandElement, renderingMode: .alwaysOriginal)
         } else {
-            cell.icon.image = utility.loadImage(named: "bell", color: NCBrandColor.shared.brandElement)
+            cell.icon.image = utility.loadImage(named: "bell", colors: [NCBrandColor.shared.iconImageColor])
         }
 
         // Avatar

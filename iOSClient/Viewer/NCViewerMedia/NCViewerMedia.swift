@@ -93,7 +93,7 @@ class NCViewerMedia: UIViewController {
         view.addGestureRecognizer(doubleTapGestureRecognizer)
 
         if NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata) != nil {
-            statusViewImage.image = utility.loadImage(named: "livephoto", color: NCBrandColor.shared.iconImageColor2)
+            statusViewImage.image = utility.loadImage(named: "livephoto", colors: [NCBrandColor.shared.iconImageColor2])
             statusLabel.text = "LIVE"
         } else {
             statusViewImage.image = nil

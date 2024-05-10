@@ -31,35 +31,41 @@ import SVGKit
 
 extension NCUtility {
 
-    func loadImage(named imageName: String, color: UIColor? = nil, size: CGFloat? = nil, symbolConfiguration: Any? = nil, renderingMode: UIImage.RenderingMode = .alwaysOriginal) -> UIImage {
+    func loadImage(named imageName: String, colors: [UIColor]? = nil, size: CGFloat? = nil, symbolConfiguration: Any? = nil, renderingMode: UIImage.RenderingMode = .alwaysOriginal) -> UIImage {
         var image: UIImage?
 
+        /*
+        let config = UIImage.SymbolConfiguration(paletteColors: [.red, .green])
+        image = UIImage(systemName: imageName, withConfiguration: config)
+        */
+
         // SF IMAGE
-        if let symbolConfiguration, let color {
+        if let symbolConfiguration, let color = colors?.first {
             image = UIImage(systemName: imageName, withConfiguration: symbolConfiguration as? UIImage.Configuration)?.withTintColor(color, renderingMode: renderingMode)
-        } else if let symbolConfiguration, color == nil {
+        } else if let symbolConfiguration, colors == nil {
             image = UIImage(systemName: imageName, withConfiguration: symbolConfiguration as? UIImage.Configuration)
-        } else if symbolConfiguration == nil, let color {
-            image = UIImage(systemName: imageName)?.withTintColor(color, renderingMode: renderingMode)
-        } else if symbolConfiguration == nil, color == nil {
+        } else if symbolConfiguration == nil, let colors {
+            let configuration = UIImage.SymbolConfiguration(paletteColors: colors)
+            image = UIImage(systemName: imageName, withConfiguration: configuration)
+        } else if symbolConfiguration == nil, colors == nil {
             image = UIImage(systemName: imageName)
         }
         if let image { return image }
 
         // IMAGES
-        if let color, let size {
+        if let color = colors?.first, let size {
             image = UIImage(named: imageName)?.image(color: color, size: size)
-        } else if let color, size == nil {
+        } else if let color = colors?.first, size == nil {
             image = UIImage(named: imageName)?.image(color: color, size: 50)
-        } else if color == nil, size == nil {
+        } else if colors == nil, size == nil {
             image = UIImage(named: imageName)?.resizeImage(size: CGSize(width: 50, height: 50))
-        } else if color == nil, let size {
+        } else if colors == nil, let size {
             image = UIImage(named: imageName)?.resizeImage(size: CGSize(width: size, height: size))
         }
         if let image { return image }
 
         // NO IMAGES FOUND
-        if let color, let size {
+        if let color = colors?.first, let size {
             return UIImage(systemName: "doc")!.image(color: color, size: size)
         } else {
             return UIImage(systemName: "doc")!

@@ -75,12 +75,12 @@ class NCPlayerToolBar: UIView {
 
         self.backgroundColor = UIColor.black.withAlphaComponent(0.1)
 
-        fullscreenButton.setImage(utility.loadImage(named: "arrow.up.left.and.arrow.down.right", color: .white), for: .normal)
+        fullscreenButton.setImage(utility.loadImage(named: "arrow.up.left.and.arrow.down.right", colors: [.white]), for: .normal)
 
-        subtitleButton.setImage(utility.loadImage(named: "captions.bubble", color: .white), for: .normal)
+        subtitleButton.setImage(utility.loadImage(named: "captions.bubble", colors: [.white]), for: .normal)
         subtitleButton.isEnabled = false
 
-        audioButton.setImage(utility.loadImage(named: "speaker.zzz", color: .white), for: .normal)
+        audioButton.setImage(utility.loadImage(named: "speaker.zzz", colors: [.white]), for: .normal)
         audioButton.isEnabled = false
 
         if UIDevice.current.userInterfaceIdiom == .pad {
@@ -92,16 +92,16 @@ class NCPlayerToolBar: UIView {
         playerButtonView.spacing = pointSize
         playerButtonView.isHidden = true
 
-        backButton.setImage(utility.loadImage(named: "gobackward.10", color: .white, symbolConfiguration: UIImage.SymbolConfiguration(pointSize: pointSize)), for: .normal)
-        playButton.setImage(utility.loadImage(named: "play.fill", color: .white, symbolConfiguration: UIImage.SymbolConfiguration(pointSize: pointSize)), for: .normal)
-        forwardButton.setImage(utility.loadImage(named: "goforward.10", color: .white, symbolConfiguration: UIImage.SymbolConfiguration(pointSize: pointSize)), for: .normal)
+        backButton.setImage(utility.loadImage(named: "gobackward.10", colors: [.white], symbolConfiguration: UIImage.SymbolConfiguration(pointSize: pointSize)), for: .normal)
+        playButton.setImage(utility.loadImage(named: "play.fill", colors: [.white], symbolConfiguration: UIImage.SymbolConfiguration(pointSize: pointSize)), for: .normal)
+        forwardButton.setImage(utility.loadImage(named: "goforward.10", colors: [.white], symbolConfiguration: UIImage.SymbolConfiguration(pointSize: pointSize)), for: .normal)
 
         playbackSlider.addTapGesture()
         playbackSlider.setThumbImage(UIImage(systemName: "circle.fill", withConfiguration: UIImage.SymbolConfiguration(pointSize: 15)), for: .normal)
         playbackSlider.value = 0
         playbackSlider.tintColor = .white
         playbackSlider.addTarget(self, action: #selector(playbackValChanged(slider:event:)), for: .valueChanged)
-        repeatButton.setImage(utility.loadImage(named: "repeat", color: .gray), for: .normal)
+        repeatButton.setImage(utility.loadImage(named: "repeat", colors: [.gray]), for: .normal)
 
         utilityView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(tap(gestureRecognizer:))))
         playbackSliderView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(tap(gestureRecognizer:))))
@@ -141,7 +141,7 @@ class NCPlayerToolBar: UIView {
 
         playerButtonView.isHidden = true
 
-        playButton.setImage(utility.loadImage(named: "play.fill", color: .white, symbolConfiguration: UIImage.SymbolConfiguration(pointSize: pointSize)), for: .normal)
+        playButton.setImage(utility.loadImage(named: "play.fill", colors: [.white], symbolConfiguration: UIImage.SymbolConfiguration(pointSize: pointSize)), for: .normal)
 
         playbackSlider.value = position
 
@@ -205,13 +205,13 @@ class NCPlayerToolBar: UIView {
 
     func playButtonPause() {
 
-        playButton.setImage(utility.loadImage(named: "pause.fill", color: .white, symbolConfiguration: UIImage.SymbolConfiguration(pointSize: pointSize)), for: .normal)
+        playButton.setImage(utility.loadImage(named: "pause.fill", colors: [.white], symbolConfiguration: UIImage.SymbolConfiguration(pointSize: pointSize)), for: .normal)
         MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPNowPlayingInfoPropertyPlaybackRate] = 1
     }
 
     func playButtonPlay() {
 
-        playButton.setImage(utility.loadImage(named: "play.fill", color: .white, symbolConfiguration: UIImage.SymbolConfiguration(pointSize: pointSize)), for: .normal)
+        playButton.setImage(utility.loadImage(named: "play.fill", colors: [.white], symbolConfiguration: UIImage.SymbolConfiguration(pointSize: pointSize)), for: .normal)
         MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPNowPlayingInfoPropertyPlaybackRate] = 0
     }
 
@@ -253,9 +253,9 @@ class NCPlayerToolBar: UIView {
 
         isFullscreen = !isFullscreen
         if isFullscreen {
-            fullscreenButton.setImage(utility.loadImage(named: "arrow.down.right.and.arrow.up.left", color: .white), for: .normal)
+            fullscreenButton.setImage(utility.loadImage(named: "arrow.down.right.and.arrow.up.left", colors: [.white]), for: .normal)
         } else {
-            fullscreenButton.setImage(utility.loadImage(named: "arrow.up.left.and.arrow.down.right", color: .white), for: .normal)
+            fullscreenButton.setImage(utility.loadImage(named: "arrow.up.left.and.arrow.down.right", colors: [.white]), for: .normal)
         }
         viewerMediaPage?.changeScreenMode(mode: viewerMediaScreenMode)
     }
@@ -314,10 +314,10 @@ class NCPlayerToolBar: UIView {
 
         if playRepeat {
             playRepeat = false
-            repeatButton.setImage(utility.loadImage(named: "repeat", color: .gray), for: .normal)
+            repeatButton.setImage(utility.loadImage(named: "repeat", colors: [.gray]), for: .normal)
         } else {
             playRepeat = true
-            repeatButton.setImage(utility.loadImage(named: "repeat", color: .white), for: .normal)
+            repeatButton.setImage(utility.loadImage(named: "repeat", colors: [.white]), for: .normal)
         }
     }
 }

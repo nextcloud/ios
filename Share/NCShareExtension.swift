@@ -100,7 +100,7 @@ class NCShareExtension: UIViewController {
         commandViewHeightConstraint.constant = heightCommandView
 
         createFolderView.layer.cornerRadius = 10
-        createFolderImage.image = utility.loadImage(named: "folder.badge.plus", color: .label)
+        createFolderImage.image = utility.loadImage(named: "folder.badge.plus", colors: [.label])
         createFolderLabel.text = NSLocalizedString("_create_folder_", comment: "")
         let createFolderGesture = UITapGestureRecognizer(target: self, action: #selector(actionCreateFolder))
         createFolderView.addGestureRecognizer(createFolderGesture)

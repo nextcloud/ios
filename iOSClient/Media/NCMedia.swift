@@ -92,8 +92,8 @@ class NCMedia: UIViewController {
 
         tabBarSelect = NCMediaSelectTabBar(tabBarController: self.tabBarController, delegate: self)
 
-        livePhotoImage = utility.loadImage(named: "livephoto", color: .white)
-        playImage = utility.loadImage(named: "play.fill", color: .white)
+        livePhotoImage = utility.loadImage(named: "livephoto", colors: [.white])
+        playImage = utility.loadImage(named: "play.fill", colors: [.white])
 
         titleDate.text = ""
 
@@ -386,7 +386,7 @@ extension NCMedia: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
         if kind == "collectionViewMediaElementKindSectionHeader" {
             guard let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionHeaderEmptyData", for: indexPath) as? NCSectionHeaderEmptyData else { return NCSectionHeaderEmptyData() }
-            header.emptyImage.image = utility.loadImage(named: "photo", color: NCBrandColor.shared.iconImageColor, size: UIScreen.main.bounds.width)
+            header.emptyImage.image = utility.loadImage(named: "photo", colors: [NCBrandColor.shared.iconImageColor], size: UIScreen.main.bounds.width)
             if loadingTask != nil || imageCache.createMediaCacheInProgress {
                 header.emptyTitle.text = NSLocalizedString("_search_in_progress_", comment: "")
             } else {

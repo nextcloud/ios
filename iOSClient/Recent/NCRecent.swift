@@ -33,7 +33,7 @@ class NCRecent: NCCollectionViewCommon {
         layoutKey = NCGlobal.shared.layoutViewRecent
         enableSearchBar = false
         headerRichWorkspaceDisable = true
-        emptyImage = utility.loadImage(named: "clock.arrow.circlepath", color: NCBrandColor.shared.iconImageColor, size: UIScreen.main.bounds.width)
+        emptyImage = utility.loadImage(named: "clock.arrow.circlepath", colors: [NCBrandColor.shared.iconImageColor], size: UIScreen.main.bounds.width)
         emptyTitle = "_files_no_files_"
         emptyDescription = ""
     }

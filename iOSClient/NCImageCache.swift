@@ -243,25 +243,26 @@ import RealmSwift
 
     func createImagesCache() {
         let iconImageColor = NCBrandColor.shared.iconImageColor
+        let iconImageMultiColors = NCBrandColor.shared.iconImageMultiColors
         let utility = NCUtility()
 
-        images.file = utility.loadImage(named: "doc", color: iconImageColor)
+        images.file = utility.loadImage(named: "doc", colors: [iconImageColor])
 
-        images.shared = utility.loadImage(named: "person.fill.badge.plus", color: iconImageColor)
-        images.canShare = utility.loadImage(named: "person.fill.badge.plus", color: iconImageColor)
-        images.shareByLink = utility.loadImage(named: "link", color: NCBrandColor.shared.iconImageColor)
+        images.shared = utility.loadImage(named: "person.fill.badge.plus", colors: iconImageMultiColors)
+        images.canShare = utility.loadImage(named: "person.fill.badge.plus", colors: iconImageMultiColors)
+        images.shareByLink = utility.loadImage(named: "link", colors: [NCBrandColor.shared.iconImageColor])
 
-        images.favorite = utility.loadImage(named: "star.fill", color: NCBrandColor.shared.yellowFavorite)
-        images.livePhoto = utility.loadImage(named: "livephoto", color: iconImageColor)
-        images.offlineFlag = utility.loadImage(named: "arrow.down.circle.fill", color: .systemGreen)
-        images.local = utility.loadImage(named: "checkmark.circle.fill", color: .systemGreen)
+        images.favorite = utility.loadImage(named: "star.fill", colors: [NCBrandColor.shared.yellowFavorite])
+        images.livePhoto = utility.loadImage(named: "livephoto", colors: [iconImageColor])
+        images.offlineFlag = utility.loadImage(named: "arrow.down.circle.fill", colors: [.systemGreen])
+        images.local = utility.loadImage(named: "checkmark.circle.fill", colors: [.systemGreen])
 
-        images.checkedYes = utility.loadImage(named: "checkmark.circle.fill", color: NCBrandColor.shared.brand)
-        images.checkedNo = utility.loadImage(named: "circle", color: NCBrandColor.shared.brand)
+        images.checkedYes = utility.loadImage(named: "checkmark.circle.fill", colors: [NCBrandColor.shared.brand])
+        images.checkedNo = utility.loadImage(named: "circle", colors: [NCBrandColor.shared.brand])
 
-        images.buttonMore = utility.loadImage(named: "ellipsis", color: iconImageColor)
-        images.buttonStop = utility.loadImage(named: "stop.circle", color: iconImageColor)
-        images.buttonMoreLock = utility.loadImage(named: "lock.fill", color: iconImageColor)
+        images.buttonMore = utility.loadImage(named: "ellipsis", colors: [iconImageColor])
+        images.buttonStop = utility.loadImage(named: "stop.circle", colors: [iconImageColor])
+        images.buttonMoreLock = utility.loadImage(named: "lock.fill", colors: [iconImageColor])
 
         createImagesBrandCache()
     }

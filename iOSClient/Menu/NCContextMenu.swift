@@ -61,7 +61,7 @@ class NCContextMenu: NSObject {
         let favorite = UIAction(title: metadata.favorite ?
                                 NSLocalizedString("_remove_favorites_", comment: "") :
                                 NSLocalizedString("_add_favorites_", comment: ""),
-                                image: utility.loadImage(named: metadata.favorite ? "star.slash" : "star", color: NCBrandColor.shared.yellowFavorite)) { _ in
+                                image: utility.loadImage(named: metadata.favorite ? "star.slash" : "star", colors: [NCBrandColor.shared.yellowFavorite])) { _ in
             NCNetworking.shared.favoriteMetadata(metadata) { error in
                 if error != .success {
                     NCContentPresenter().showError(error: error)
