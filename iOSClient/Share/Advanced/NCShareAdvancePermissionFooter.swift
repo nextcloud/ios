@@ -49,7 +49,7 @@ class NCShareAdvancePermissionFooter: UIView {
         buttonNext.setTitle(NSLocalizedString(delegate?.isNewShare == true ? "_share_" : "_save_", comment: ""), for: .normal)
         buttonNext.layer.cornerRadius = 25
         buttonNext.layer.masksToBounds = true
-        buttonNext.backgroundColor = NCBrandColor.shared.brand
+        buttonNext.backgroundColor = NCBrandColor.shared.brandElement
         buttonNext.addTarget(self, action: #selector(nextClicked), for: .touchUpInside)
         buttonNext.setTitleColor(NCBrandColor.shared.brandText, for: .normal)
     }

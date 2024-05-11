@@ -244,6 +244,7 @@ import RealmSwift
     func createImagesCache() {
         let iconImageColor = NCBrandColor.shared.iconImageColor
         let iconImageMultiColors: [UIColor] = [NCBrandColor.shared.iconImageColor2, NCBrandColor.shared.iconImageColor]
+        let brandElement = NCBrandColor.shared.brandElement
         let utility = NCUtility()
 
         images.file = utility.loadImage(named: "doc", colors: [iconImageColor])
@@ -257,8 +258,8 @@ import RealmSwift
         images.offlineFlag = utility.loadImage(named: "arrow.down.circle.fill", colors: [.systemGreen])
         images.local = utility.loadImage(named: "checkmark.circle.fill", colors: [.systemGreen])
 
-        images.checkedYes = utility.loadImage(named: "checkmark.circle.fill", colors: [NCBrandColor.shared.brand])
-        images.checkedNo = utility.loadImage(named: "circle", colors: [NCBrandColor.shared.brand])
+        images.checkedYes = utility.loadImage(named: "checkmark.circle.fill", colors: [brandElement])
+        images.checkedNo = utility.loadImage(named: "circle", colors: [brandElement])
 
         images.buttonMore = utility.loadImage(named: "ellipsis", colors: [iconImageColor])
         images.buttonStop = utility.loadImage(named: "stop.circle", colors: [iconImageColor])
