@@ -212,7 +212,7 @@ extension NCViewer {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_go_to_page_", comment: ""),
-                    icon: utility.loadImage(named: "repeat", colors: [NCBrandColor.shared.iconImageColor]),
+                    icon: utility.loadImage(named: "book.pages", colors: [NCBrandColor.shared.iconImageColor]),
                     action: { _ in
                         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterMenuGotToPageInPDF)
                     }
