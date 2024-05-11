@@ -141,7 +141,7 @@ extension NCMenuAction {
         return NCMenuAction(
             title: titleDelete,
             destructive: destructive,
-            icon: NCUtility().loadImage(named: icon),
+            icon: NCUtility().loadImage(named: icon, colors: [NCBrandColor.shared.iconImageColor]),
             order: order,
             action: { _ in
                 let alertController = UIAlertController.deleteFileOrFolder(titleString: titleDelete + "?", message: message + fileList, canDeleteServer: canDeleteServer, selectedMetadatas: selectedMetadatas) { _ in
