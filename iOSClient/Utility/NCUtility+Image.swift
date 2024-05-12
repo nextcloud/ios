@@ -31,7 +31,7 @@ import SVGKit
 
 extension NCUtility {
 
-    func loadImage(named imageName: String, colors: [UIColor]? = nil, size: CGFloat? = nil, symbolConfiguration: Any? = nil, renderingMode: UIImage.RenderingMode = .alwaysOriginal) -> UIImage {
+    func loadImage(named imageName: String, colors: [UIColor]? = nil, size: CGFloat? = nil) -> UIImage {
         var image: UIImage?
 
         /*
@@ -40,14 +40,10 @@ extension NCUtility {
         */
 
         // SF IMAGE
-        if let symbolConfiguration, let color = colors?.first {
-            image = UIImage(systemName: imageName, withConfiguration: symbolConfiguration as? UIImage.Configuration)?.withTintColor(color, renderingMode: renderingMode)
-        } else if let symbolConfiguration, colors == nil {
-            image = UIImage(systemName: imageName, withConfiguration: symbolConfiguration as? UIImage.Configuration)
-        } else if symbolConfiguration == nil, let colors {
+        if let colors {
             let configuration = UIImage.SymbolConfiguration(paletteColors: colors)
             image = UIImage(systemName: imageName, withConfiguration: configuration)
-        } else if symbolConfiguration == nil, colors == nil {
+        } else {
             image = UIImage(systemName: imageName)
         }
         if let image { return image }
@@ -90,8 +86,7 @@ extension NCUtility {
         } else if let displayName = displayName, !displayName.isEmpty, let avatarImg = createAvatar(displayName: displayName, size: 30) {
             return avatarImg
         } else {
-            let config = UIImage.SymbolConfiguration(pointSize: 30)
-            return loadImage(named: "person.crop.circle", symbolConfiguration: config)
+            return UIImage(systemName: "person.crop.circle", withConfiguration: UIImage.SymbolConfiguration(pointSize: 30))!
         }
     }
 
