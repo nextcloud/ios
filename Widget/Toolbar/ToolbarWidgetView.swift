@@ -97,7 +97,6 @@ struct ToolbarWidgetView: View {
                 .redacted(reason: entry.isPlaceholder ? .placeholder : [])
 
                 HStack {
-
                     Image(systemName: entry.footerImage)
                         .resizable()
                         .font(Font.system(.body).weight(.light))

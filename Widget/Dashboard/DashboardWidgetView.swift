@@ -49,9 +49,7 @@ struct DashboardWidgetView: View {
             }
 
             ZStack(alignment: .topLeading) {
-
                 HStack {
-
                     Image(uiImage: entry.titleImage)
                         .renderingMode(.template)
                         .resizable()
