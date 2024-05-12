@@ -145,6 +145,7 @@ struct NCCollectionViewCommonSelectTabBarView: View {
                     tabBarSelect.delegate?.share()
                 } label: {
                     Image(systemName: "square.and.arrow.up")
+                        .font(Font.system(.body).weight(.light))
                         .imageScale(sizeClass == .compact ? .medium : .large)
                 }
                 .tint(Color(NCBrandColor.shared.iconImageColor))
@@ -155,6 +156,7 @@ struct NCCollectionViewCommonSelectTabBarView: View {
                     tabBarSelect.delegate?.move()
                 } label: {
                     Image(systemName: "rectangle.portrait.and.arrow.right")
+                        .font(Font.system(.body).weight(.light))
                         .imageScale(sizeClass == .compact ? .medium : .large)
                 }
                 .tint(Color(NCBrandColor.shared.iconImageColor))
@@ -165,6 +167,7 @@ struct NCCollectionViewCommonSelectTabBarView: View {
                     tabBarSelect.delegate?.delete()
                 } label: {
                     Image(systemName: "trash")
+                        .font(Font.system(.body).weight(.light))
                         .imageScale(sizeClass == .compact ? .medium : .large)
                 }
                 .tint(.red)
@@ -201,6 +204,7 @@ struct NCCollectionViewCommonSelectTabBarView: View {
                     })
                 } label: {
                     Image(systemName: "ellipsis.circle")
+                        .font(Font.system(.body).weight(.light))
                         .imageScale(sizeClass == .compact ? .medium : .large)
                 }
                 .tint(Color(NCBrandColor.shared.iconImageColor))

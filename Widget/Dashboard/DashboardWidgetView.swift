@@ -37,6 +37,7 @@ struct DashboardWidgetView: View {
                     Image(systemName: "checkmark")
                         .resizable()
                         .scaledToFit()
+                        .font(Font.system(.body).weight(.light))
                         .frame(width: 50, height: 50)
                     Text(NSLocalizedString("_no_items_", comment: ""))
                         .font(.system(size: 25))
@@ -181,6 +182,7 @@ struct DashboardWidgetView: View {
                         .resizable()
                         .scaledToFit()
                         .frame(width: 15, height: 15)
+                        .font(Font.system(.body).weight(.light))
                         .foregroundColor(entry.isPlaceholder ? Color(.systemGray4) : Color(NCBrandColor.shared.brandElement))
 
                     Text(entry.footerText)

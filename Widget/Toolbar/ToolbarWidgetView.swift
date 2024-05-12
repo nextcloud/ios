@@ -61,6 +61,7 @@ struct ToolbarWidgetView: View {
                         Image(systemName: "doc.text.viewfinder")
                             .resizable()
                             .renderingMode(.template)
+                            .font(Font.system(.body).weight(.light))
                             .foregroundColor(entry.isPlaceholder ? Color(.systemGray4) : Color(NCBrandColor.shared.brandText))
                             .padding()
                             .background(entry.isPlaceholder ? Color(.systemGray4) : Color(NCBrandColor.shared.brandElement))
@@ -99,6 +100,7 @@ struct ToolbarWidgetView: View {
 
                     Image(systemName: entry.footerImage)
                         .resizable()
+                        .font(Font.system(.body).weight(.light))
                         .scaledToFit()
                         .frame(width: 15, height: 15)
                         .foregroundColor(entry.isPlaceholder ? Color(.systemGray4) : Color(NCBrandColor.shared.brandElement))
