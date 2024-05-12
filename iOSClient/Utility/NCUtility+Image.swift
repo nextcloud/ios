@@ -38,7 +38,7 @@ extension NCUtility {
         if let colors {
             image = UIImage(systemName: imageName, withConfiguration: UIImage.SymbolConfiguration(weight: .light))?.applyingSymbolConfiguration(UIImage.SymbolConfiguration(paletteColors: colors))
         } else {
-            image = UIImage(systemName: imageName)
+            image = UIImage(systemName: imageName, withConfiguration: UIImage.SymbolConfiguration(weight: .light))
         }
 
         if let image { return image }

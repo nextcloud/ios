@@ -687,11 +687,11 @@ extension UIPageViewController {
 extension NCViewerMediaPage: NCViewerMediaViewDelegate {
     func didOpenDetail() {
         changeScreenMode(mode: .normal)
-        imageDetailNavigationItem.image = UIImage(systemName: "info.circle.fill")
+        imageDetailNavigationItem.image = NCUtility().loadImage(named: "info.circle.fill")
     }
 
     func didCloseDetail() {
-        imageDetailNavigationItem.image = UIImage(systemName: "info.circle")
+        imageDetailNavigationItem.image = NCUtility().loadImage(named: "info.circle")
     }
 }
 

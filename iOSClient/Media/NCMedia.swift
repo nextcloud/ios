@@ -108,7 +108,7 @@ class NCMedia: UIViewController {
         menuButton.layer.masksToBounds = true
         menuButton.showsMenuAsPrimaryAction = true
         menuButton.configuration = UIButton.Configuration.plain()
-        menuButton.setImage(UIImage(systemName: "ellipsis"), for: .normal)
+        menuButton.setImage(NCUtility().loadImage(named: "ellipsis"), for: .normal)
         menuButton.changesSelectionAsPrimaryAction = false
         menuButton.addBlur(style: .systemThinMaterial)
 

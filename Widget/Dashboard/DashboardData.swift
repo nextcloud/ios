@@ -221,7 +221,7 @@ func getDashboardDataEntry(configuration: DashboardIntent?, isPreview: Bool, dis
                                     let path = (urlComponents.path as NSString)
                                     let colorString = ((path.lastPathComponent) as NSString).deletingPathExtension
                                     imageColor = UIColor(hex: colorString)
-                                    icon = UIImage(systemName: "circle.fill")!
+                                    icon = utility.loadImage(named: "circle.fill")
                                 } else if let fileName = iconFileName {
                                     let fileNamePath: String = utilityFileSystem.directoryUserData + "/" + fileName + ".png"
                                     if FileManager().fileExists(atPath: fileNamePath), let image = UIImage(contentsOfFile: fileNamePath) {
