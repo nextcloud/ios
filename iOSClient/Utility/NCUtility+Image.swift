@@ -34,18 +34,13 @@ extension NCUtility {
     func loadImage(named imageName: String, colors: [UIColor]? = nil, size: CGFloat? = nil) -> UIImage {
         var image: UIImage?
 
-        /*
-        let config = UIImage.SymbolConfiguration(paletteColors: [.red, .green])
-        image = UIImage(systemName: imageName, withConfiguration: config)
-        */
-
         // SF IMAGE
         if let colors {
-            let configuration = UIImage.SymbolConfiguration(paletteColors: colors)
-            image = UIImage(systemName: imageName, withConfiguration: configuration)
+            image = UIImage(systemName: imageName, withConfiguration: UIImage.SymbolConfiguration(weight: .light))?.applyingSymbolConfiguration(UIImage.SymbolConfiguration(paletteColors: colors))
         } else {
             image = UIImage(systemName: imageName)
         }
+
         if let image { return image }
 
         // IMAGES
