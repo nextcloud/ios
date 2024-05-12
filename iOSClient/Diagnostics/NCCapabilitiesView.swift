@@ -137,7 +137,7 @@ struct NCCapabilitiesView: View {
                     }
                 }
                 Section {
-                    CapabilityName(text: $capabilitiesViewOO.homeServer, image: Image(systemName: "house"), resize: false)
+                    CapabilityName(text: $capabilitiesViewOO.homeServer, image: Image(uiImage: NCUtility().loadImage(named: "house")), resize: false)
                 }
             }
         }
