@@ -88,7 +88,7 @@ extension NCMedia {
         var columnCount = NCKeychain().mediaColumnCount
         let layout = NCKeychain().mediaTypeLayout
         let layoutTitle = (layout == NCGlobal.shared.mediaLayoutRatio) ? NSLocalizedString("_media_square_", comment: "") : NSLocalizedString("_media_ratio_", comment: "")
-        let layoutImage = (layout == NCGlobal.shared.mediaLayoutRatio) ? UIImage(systemName: "square.grid.3x3") : UIImage(systemName: "rectangle.grid.3x2")
+        let layoutImage = (layout == NCGlobal.shared.mediaLayoutRatio) ? utility.loadImage(named: "square.grid.3x3") : utility.loadImage(named: "rectangle.grid.3x2")
 
         if UIDevice.current.userInterfaceIdiom == .phone, UIDevice.current.orientation.isLandscape {
             columnCount += 2
@@ -106,17 +106,17 @@ extension NCMedia {
         }
 
         let viewFilterMenu = UIMenu(title: "", options: .displayInline, children: [
-            UIAction(title: NSLocalizedString("_media_viewimage_show_", comment: ""), image: UIImage(systemName: "photo")) { _ in
+            UIAction(title: NSLocalizedString("_media_viewimage_show_", comment: ""), image: utility.loadImage(named: "photo")) { _ in
                 self.showOnlyImages = true
                 self.showOnlyVideos = false
                 self.reloadDataSource()
             },
-            UIAction(title: NSLocalizedString("_media_viewvideo_show_", comment: ""), image: UIImage(systemName: "video")) { _ in
+            UIAction(title: NSLocalizedString("_media_viewvideo_show_", comment: ""), image: utility.loadImage(named: "video")) { _ in
                 self.showOnlyImages = false
                 self.showOnlyVideos = true
                 self.reloadDataSource()
             },
-            UIAction(title: NSLocalizedString("_media_show_all_", comment: ""), image: UIImage(systemName: "photo.on.rectangle")) { _ in
+            UIAction(title: NSLocalizedString("_media_show_all_", comment: ""), image: utility.loadImage(named: "photo.on.rectangle")) { _ in
                 self.showOnlyImages = false
                 self.showOnlyVideos = false
                 self.reloadDataSource()
@@ -134,14 +134,14 @@ extension NCMedia {
 
         let zoomViewMediaFolder = UIMenu(title: "", options: .displayInline, children: [
             UIMenu(title: NSLocalizedString("_zoom_", comment: ""), children: [
-                UIAction(title: NSLocalizedString("_zoom_out_", comment: ""), image: UIImage(systemName: "minus.magnifyingglass"), attributes: self.attributesZoomOut) { _ in
+                UIAction(title: NSLocalizedString("_zoom_out_", comment: ""), image: utility.loadImage(named: "minus.magnifyingglass"), attributes: self.attributesZoomOut) { _ in
                     UIView.animate(withDuration: 0.0, animations: {
                         NCKeychain().mediaColumnCount = columnCount + 1
                         self.createMenu()
                         self.collectionViewReloadData()
                     })
                 },
-                UIAction(title: NSLocalizedString("_zoom_in_", comment: ""), image: UIImage(systemName: "plus.magnifyingglass"), attributes: self.attributesZoomIn) { _ in
+                UIAction(title: NSLocalizedString("_zoom_in_", comment: ""), image: utility.loadImage(named: "plus.magnifyingglass"), attributes: self.attributesZoomIn) { _ in
                     UIView.animate(withDuration: 0.0, animations: {
                         NCKeychain().mediaColumnCount = columnCount - 1
                         self.createMenu()
@@ -150,7 +150,7 @@ extension NCMedia {
                 }
             ]),
             UIMenu(title: NSLocalizedString("_media_view_options_", comment: ""), children: [viewFilterMenu, viewLayoutMenu]),
-            UIAction(title: NSLocalizedString("_select_media_folder_", comment: ""), image: UIImage(systemName: "folder"), handler: { _ in
+            UIAction(title: NSLocalizedString("_select_media_folder_", comment: ""), image: utility.loadImage(named: "folder"), handler: { _ in
                 guard let navigationController = UIStoryboard(name: "NCSelect", bundle: nil).instantiateInitialViewController() as? UINavigationController,
                       let viewController = navigationController.topViewController as? NCSelect else { return }
                 viewController.delegate = self
@@ -160,12 +160,12 @@ extension NCMedia {
             })
         ])
 
-        let playFile = UIAction(title: NSLocalizedString("_play_from_files_", comment: ""), image: UIImage(systemName: "play.circle")) { _ in
+        let playFile = UIAction(title: NSLocalizedString("_play_from_files_", comment: ""), image: utility.loadImage(named: "play.circle")) { _ in
             guard let mainTabBarController = self.tabBarController as? NCMainTabBarController else { return }
             self.documentPickerViewController = NCDocumentPickerViewController(mainTabBarController: mainTabBarController, isViewerMedia: true, allowsMultipleSelection: false, viewController: self)
         }
 
-        let playURL = UIAction(title: NSLocalizedString("_play_from_url_", comment: ""), image: UIImage(systemName: "link")) { _ in
+        let playURL = UIAction(title: NSLocalizedString("_play_from_url_", comment: ""), image: utility.loadImage(named: "link")) { _ in
             let alert = UIAlertController(title: NSLocalizedString("_valid_video_url_", comment: ""), message: nil, preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel, handler: nil))
             alert.addTextField(configurationHandler: { textField in

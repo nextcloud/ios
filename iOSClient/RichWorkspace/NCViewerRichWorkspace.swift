@@ -50,7 +50,7 @@ import MarkdownKit
         let closeItem = UIBarButtonItem(title: NSLocalizedString("_back_", comment: ""), style: .plain, target: self, action: #selector(closeItemTapped(_:)))
         self.navigationItem.leftBarButtonItem = closeItem
 
-        let editItem = UIBarButtonItem(image: UIImage(systemName: "square.and.pencil"), style: UIBarButtonItem.Style.plain, target: self, action: #selector(editItemAction(_:)))
+        let editItem = UIBarButtonItem(image: NCUtility().loadImage(named: "square.and.pencil"), style: UIBarButtonItem.Style.plain, target: self, action: #selector(editItemAction(_:)))
         self.navigationItem.rightBarButtonItem = editItem
 
         markdownParser = MarkdownParser(font: UIFont.systemFont(ofSize: 15), color: .label)
