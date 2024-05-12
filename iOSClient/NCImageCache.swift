@@ -243,7 +243,7 @@ import RealmSwift
 
     func createImagesCache() {
         let iconImageColor = NCBrandColor.shared.iconImageColor
-        let iconImageMultiColors: [UIColor] = [NCBrandColor.shared.iconImageColor2, NCBrandColor.shared.iconImageColor]
+        let iconImageMultiColors = NCBrandColor.shared.iconImageMultiColors
         let brandElement = NCBrandColor.shared.brandElement
         let utility = NCUtility()
 
