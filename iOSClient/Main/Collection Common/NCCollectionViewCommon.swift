@@ -623,7 +623,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                 return action
             }
 
-            let addAccountAction = UIAction(title: NSLocalizedString("_add_account_", comment: ""), image: .init(systemName: "person.crop.circle.badge.plus")) { _ in
+            let addAccountAction = UIAction(title: NSLocalizedString("_add_account_", comment: ""), image: utility.loadImage(named: "person.crop.circle.badge.plus")) { _ in
                 self.appDelegate.openLogin(selector: NCGlobal.shared.introLogin, openLoginWeb: false)
             }
 
@@ -657,16 +657,16 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         func createMenuActions() -> [UIMenuElement] {
             guard let layoutForView = NCManageDatabase.shared.getLayoutForView(account: appDelegate.account, key: layoutKey, serverUrl: serverUrl) else { return [] }
 
-            let select = UIAction(title: NSLocalizedString("_select_", comment: ""), image: .init(systemName: "checkmark.circle"), attributes: self.dataSource.getMetadataSourceForAllSections().isEmpty ? .disabled : []) { _ in
+            let select = UIAction(title: NSLocalizedString("_select_", comment: ""), image: utility.loadImage(named: "checkmark.circle"), attributes: self.dataSource.getMetadataSourceForAllSections().isEmpty ? .disabled : []) { _ in
                 self.setEditMode(true)
             }
 
-            let list = UIAction(title: NSLocalizedString("_list_", comment: ""), image: .init(systemName: "list.bullet"), state: layoutForView.layout == NCGlobal.shared.layoutList ? .on : .off) { _ in
+            let list = UIAction(title: NSLocalizedString("_list_", comment: ""), image: utility.loadImage(named: "list.bullet"), state: layoutForView.layout == NCGlobal.shared.layoutList ? .on : .off) { _ in
                 self.onListSelected()
                 self.setNavigationRightItems()
             }
 
-            let grid = UIAction(title: NSLocalizedString("_icons_", comment: ""), image: .init(systemName: "square.grid.2x2"), state: layoutForView.layout == NCGlobal.shared.layoutGrid ? .on : .off) { _ in
+            let grid = UIAction(title: NSLocalizedString("_icons_", comment: ""), image: utility.loadImage(named: "square.grid.2x2"), state: layoutForView.layout == NCGlobal.shared.layoutGrid ? .on : .off) { _ in
                 self.onGridSelected()
                 self.setNavigationRightItems()
             }
@@ -674,7 +674,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             let viewStyleSubmenu = UIMenu(title: "", options: .displayInline, children: [list, grid])
 
             let ascending = layoutForView.ascending
-            let ascendingChevronImage = UIImage(systemName: ascending ? "chevron.up" : "chevron.down")
+            let ascendingChevronImage = utility.loadImage(named: ascending ? "chevron.up" : "chevron.down")
             let isName = layoutForView.sort == "fileName"
             let isDate = layoutForView.sort == "date"
             let isSize = layoutForView.sort == "size"
@@ -705,19 +705,19 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
             let sortSubmenu = UIMenu(title: NSLocalizedString("_order_by_", comment: ""), options: .displayInline, children: [byName, byNewest, byLargest])
 
-            let foldersOnTop = UIAction(title: NSLocalizedString("_directory_on_top_no_", comment: ""), image: UIImage(systemName: "folder"), state: layoutForView.directoryOnTop ? .on : .off) { _ in
+            let foldersOnTop = UIAction(title: NSLocalizedString("_directory_on_top_no_", comment: ""), image:utility.loadImage(named: "folder"), state: layoutForView.directoryOnTop ? .on : .off) { _ in
                 layoutForView.directoryOnTop = !layoutForView.directoryOnTop
                 self.saveLayout(layoutForView)
             }
 
             let personalFilesOnly = NCKeychain().getPersonalFilesOnly(account: appDelegate.account)
-            let personalFilesOnlyAction = UIAction(title: NSLocalizedString("_personal_files_only_", comment: ""), image: UIImage(systemName: "folder.badge.person.crop"), state: personalFilesOnly ? .on : .off) { _ in
+            let personalFilesOnlyAction = UIAction(title: NSLocalizedString("_personal_files_only_", comment: ""), image: utility.loadImage(named: "folder.badge.person.crop"), state: personalFilesOnly ? .on : .off) { _ in
                 NCKeychain().setPersonalFilesOnly(account: self.appDelegate.account, value: !personalFilesOnly)
                 self.reloadDataSource()
             }
 
             let showDescriptionKeychain = NCKeychain().showDescription
-            let showDescription = UIAction(title: NSLocalizedString("_show_description_", comment: ""), image: UIImage(systemName: "list.dash.header.rectangle"), attributes: richWorkspaceText == nil ? .disabled : [], state: showDescriptionKeychain && richWorkspaceText != nil ? .on : .off) { _ in
+            let showDescription = UIAction(title: NSLocalizedString("_show_description_", comment: ""), image: utility.loadImage(named: "list.dash.header.rectangle"), attributes: richWorkspaceText == nil ? .disabled : [], state: showDescriptionKeychain && richWorkspaceText != nil ? .on : .off) { _ in
                 NCKeychain().showDescription = !showDescriptionKeychain
                 self.collectionView.reloadData()
                 self.setNavigationRightItems()
@@ -747,10 +747,10 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         } else {
             tabBarSelect.hide()
             if navigationItem.rightBarButtonItems == nil || enableMenu {
-                let menuButton = UIBarButtonItem(image: .init(systemName: "ellipsis.circle"), menu: UIMenu(children: createMenuActions()))
+                let menuButton = UIBarButtonItem(image: utility.loadImage(named: "ellipsis.circle"), menu: UIMenu(children: createMenuActions()))
                 menuButton.tintColor = NCBrandColor.shared.iconImageColor
                 if layoutKey == NCGlobal.shared.layoutViewFiles {
-                    let notification = UIBarButtonItem(image: .init(systemName: "bell"), style: .plain) {
+                    let notification = UIBarButtonItem(image: utility.loadImage(named: "bell"), style: .plain) {
                         if let viewController = UIStoryboard(name: "NCNotification", bundle: nil).instantiateInitialViewController() as? NCNotification {
                             self.navigationController?.pushViewController(viewController, animated: true)
                         }

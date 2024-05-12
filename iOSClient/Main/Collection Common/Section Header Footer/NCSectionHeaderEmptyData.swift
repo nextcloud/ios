@@ -62,7 +62,7 @@ class NCSectionHeaderEmptyData: UICollectionReusableView {
         buttonTransfer.setImage(nil, for: .normal)
         buttonTransfer.layer.cornerRadius = 6
         buttonTransfer.layer.masksToBounds = true
-        imageButtonTransfer.image = UIImage(systemName: "stop.circle")
+        imageButtonTransfer.image = NCUtility().loadImage(named: "stop.circle")
         imageButtonTransfer.tintColor = .white
         labelTransfer.text = ""
         progressTransfer.progress = 0
