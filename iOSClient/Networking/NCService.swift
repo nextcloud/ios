@@ -45,12 +45,12 @@ class NCService: NSObject {
             addInternalTypeIdentifier()
             let result = await requestServerStatus()
             if result {
-                synchronize()
-                getAvatar()
                 requestServerCapabilities()
+                getAvatar()
                 requestDashboardWidget()
                 NCNetworkingE2EE().unlockAll(account: account)
                 sendClientDiagnosticsRemoteOperation(account: account)
+                synchronize()
             }
         }
     }
