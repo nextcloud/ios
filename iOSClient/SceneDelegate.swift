@@ -162,7 +162,9 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
         appDelegate.scheduleAppRefresh()
         appDelegate.scheduleAppProcessing()
+
         NCNetworking.shared.cancelAllQueue()
+        NCNetworking.shared.cancelDataTask()
         NCNetworking.shared.cancelDownloadTasks()
         NCNetworking.shared.cancelUploadTasks()
 

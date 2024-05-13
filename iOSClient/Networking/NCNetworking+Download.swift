@@ -305,7 +305,6 @@ extension NCNetworking {
 #endif
 
     func cancelDownloadTasks() {
-
         downloadRequest.removeAll()
         let sessionManager = NextcloudKit.shared.sessionManager
         sessionManager.session.getTasksWithCompletionHandler { _, _, downloadTasks in
@@ -319,7 +318,6 @@ extension NCNetworking {
     }
 
     func cancelDownloadBackgroundTask() {
-
         Task {
             let tasksBackground = await NCNetworking.shared.sessionManagerDownloadBackground.tasks
             for task in tasksBackground.2 { // ([URLSessionDataTask], [URLSessionUploadTask], [URLSessionDownloadTask])

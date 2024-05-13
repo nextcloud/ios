@@ -922,7 +922,6 @@ extension NCNetworking {
     }
 
     func cancelDataTask() {
-
         let sessionManager = NextcloudKit.shared.sessionManager
         sessionManager.session.getTasksWithCompletionHandler { dataTasks, _, _ in
             dataTasks.forEach {

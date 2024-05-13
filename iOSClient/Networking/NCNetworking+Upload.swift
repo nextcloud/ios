@@ -260,7 +260,6 @@ extension NCNetworking {
     private func uploadFileInBackground(metadata: tableMetadata,
                                         start: @escaping () -> Void = { },
                                         completion: @escaping (_ error: NKError) -> Void) {
-
         var session: URLSession?
         let metadata = tableMetadata.init(value: metadata)
         let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
@@ -501,7 +500,6 @@ extension NCNetworking {
 
     func getUploadBackgroundSession(queue: DispatchQueue = .main,
                                     completion: @escaping (_ filesNameLocalPath: [String]) -> Void) {
-
         var filesNameLocalPath: [String] = []
 
         sessionManagerUploadBackground.getAllTasks(completionHandler: { tasks in
@@ -518,7 +516,6 @@ extension NCNetworking {
     }
 
     func cancelUploadTasks() {
-
         uploadRequest.removeAll()
         let sessionManager = NextcloudKit.shared.sessionManager
         sessionManager.session.getTasksWithCompletionHandler { _, uploadTasks, _ in
@@ -533,7 +530,6 @@ extension NCNetworking {
     }
 
     func cancelUploadBackgroundTask() {
-
         Task {
             let tasksBackground = await NCNetworking.shared.sessionManagerUploadBackground.tasks
             for task in tasksBackground.1 { // ([URLSessionDataTask], [URLSessionUploadTask], [URLSessionDownloadTask])
