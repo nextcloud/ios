@@ -171,6 +171,24 @@ class NCBrandColor: NSObject {
         }
     }
 
+    @objc public var documentIconColor: UIColor {
+        get {
+            return UIColor(hex: "#49abe9")!
+        }
+    }
+
+    @objc public var spreadsheetIconColor: UIColor {
+        get {
+            return UIColor(hex: "#9abd4e")!
+        }
+    }
+
+    @objc public var presentationIconColor: UIColor {
+        get {
+            return UIColor(hex: "#f0965f")!
+        }
+    }
+
     override init() {
         brand = customer
         brandElement = customer
