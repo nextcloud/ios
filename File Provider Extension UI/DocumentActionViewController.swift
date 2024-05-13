@@ -32,7 +32,7 @@ class DocumentActionViewController: FPUIActionExtensionViewController {
     override func loadView() {
         super.loadView()
 
-        view.backgroundColor = NCBrandColor.shared.brand
+        view.backgroundColor = NCBrandColor.shared.brandElement
         titleError.textColor = NCBrandColor.shared.brandText
         cancelButton.setTitleColor(NCBrandColor.shared.brandText, for: .normal)
 

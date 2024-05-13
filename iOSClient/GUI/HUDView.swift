@@ -54,7 +54,7 @@ struct Blur: UIViewRepresentable {
 
     func makeUIView(context: Context) -> UIVisualEffectView {
         let effectView = UIVisualEffectView(effect: UIBlurEffect(style: style))
-        effectView.backgroundColor = NCBrandColor.shared.brand
+        effectView.backgroundColor = NCBrandColor.shared.brandElement
         return effectView
     }
 

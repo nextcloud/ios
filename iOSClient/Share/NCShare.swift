@@ -108,13 +108,6 @@ class NCShare: UIViewController, NCShareNetworkingDelegate, NCSharePagingContent
             let isVisible = (self.navigationController?.topViewController as? NCSharePaging)?.page == .sharing
             networking?.readShare(showLoadingIndicator: isVisible)
         }
-
-        btnContact.layer.cornerRadius = 5
-        btnContact.layer.masksToBounds = true
-        btnContact.layer.borderWidth = 1
-        btnContact.layer.borderColor = UIColor.gray.cgColor
-        btnContact.tintColor = .gray
-        btnContact.setImage(utility.loadImage(named: "contact", color: .gray, size: 24), for: .normal)
     }
 
     func makeNewLinkShare() {
@@ -156,7 +149,7 @@ class NCShare: UIViewController, NCShareNetworkingDelegate, NCSharePagingContent
         if !metadata.note.isEmpty {
             searchFieldTopConstraint.constant = 95
             sharedWithYouByNoteImage.isHidden = false
-            sharedWithYouByNoteImage.image = utility.loadImage(named: "note.text", color: .gray)
+            sharedWithYouByNoteImage.image = utility.loadImage(named: "note.text", colors: [NCBrandColor.shared.iconImageColor])
             sharedWithYouByNote.isHidden = false
             sharedWithYouByNote.text = metadata.note
             sharedWithYouByNote.textColor = .label
@@ -381,7 +374,7 @@ extension NCShare: UITableViewDataSource {
                 cell.delegate = self
                 cell.setupCellUI(userId: appDelegate.userId)
                 let fileName = appDelegate.userBaseUrl + "-" + tableShare.shareWith + ".png"
-                NCNetworking.shared.downloadAvatar(user: tableShare.shareWith, dispalyName: tableShare.shareWithDisplayname, fileName: fileName, cell: cell, view: tableView, cellImageView: cell.fileAvatarImageView)
+                NCNetworking.shared.downloadAvatar(user: tableShare.shareWith, dispalyName: tableShare.shareWithDisplayname, fileName: fileName, cell: cell, view: tableView)
                 return cell
             }
         }
@@ -408,7 +401,7 @@ extension NCShare: CNContactPickerDelegate {
             actions.append(
                 NCMenuAction(
                     title: email,
-                    icon: utility.loadImage(named: "email"),
+                    icon: utility.loadImage(named: "email", colors: [NCBrandColor.shared.iconImageColor]),
                     selected: false,
                     on: false,
                     action: { _ in

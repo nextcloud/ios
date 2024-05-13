@@ -48,7 +48,7 @@ extension NCTrash {
             iconHeader = icon
         } else {
             if tableTrash.directory {
-                iconHeader = UIImage(named: "folder")!.image(color: UIColor.systemGray, size: 50)
+                iconHeader = UIImage(named: "folder")!.image(color: NCBrandColor.shared.brandElement, size: 50)
             } else {
                 iconHeader = UIImage(named: tableTrash.iconName)
             }
@@ -65,7 +65,7 @@ extension NCTrash {
         actions.append(
             NCMenuAction(
                 title: NSLocalizedString("_restore_", comment: ""),
-                icon: UIImage(named: "restore")!.image(color: UIColor.systemGray, size: 50),
+                icon: UIImage(named: "restore")!.image(color: NCBrandColor.shared.iconImageColor, size: 50),
                 action: { _ in
                     self.restoreItem(with: objectId)
                 }
@@ -76,7 +76,7 @@ extension NCTrash {
             NCMenuAction(
                 title: NSLocalizedString("_delete_", comment: ""),
                 destructive: true,
-                icon: utility.loadImage(named: "trash"),
+                icon: utility.loadImage(named: "trash", colors: [.red]),
                 action: { _ in
                     self.deleteItem(with: objectId)
                 }

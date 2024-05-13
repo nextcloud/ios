@@ -130,7 +130,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
                 }
                 if !accountTemp.isEmpty {
                     self.shareAccounts = accountTemp
-                    let image = UIImage(systemName: "person.badge.plus")
+                    let image = NCUtility().loadImage(named: "person.badge.plus")
                     let navigationItem = UIBarButtonItem(image: image, style: .plain, target: self, action: #selector(openShareAccountsViewController))
                     navigationItem.tintColor = textColor
                     self.navigationItem.rightBarButtonItem = navigationItem

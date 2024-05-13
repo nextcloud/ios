@@ -113,7 +113,6 @@ class NCAssistantTask: ObservableObject {
                 return
             }
 
-
             guard let filteredTypes = types?.filter({ !self.excludedTypeIds.contains($0.id ?? "")}), !filteredTypes.isEmpty else { return }
 
             withAnimation {
@@ -177,16 +176,11 @@ extension NKTextProcessingTask {
 
     var statusInfo: StatusInfo {
         return switch status {
-        case 1:
-            StatusInfo(stringKey: "_assistant_task_scheduled_", imageSystemName: "clock")
-        case 2:
-            StatusInfo(stringKey: "_assistant_task_in_progress_", imageSystemName: "clock.badge")
-        case 3:
-            StatusInfo(stringKey: "_assistant_task_completed_", imageSystemName: "checkmark.circle")
-        case 4:
-            StatusInfo(stringKey: "_assistant_task_failed_", imageSystemName: "exclamationmark.circle")
-        default:
-            StatusInfo(stringKey: "_assistant_task_unknown_", imageSystemName: "questionmark.circle")
+        case 1: StatusInfo(stringKey: "_assistant_task_scheduled_", imageSystemName: "clock")
+        case 2: StatusInfo(stringKey: "_assistant_task_in_progress_", imageSystemName: "clock.badge")
+        case 3: StatusInfo(stringKey: "_assistant_task_completed_", imageSystemName: "checkmark.circle")
+        case 4: StatusInfo(stringKey: "_assistant_task_failed_", imageSystemName: "exclamationmark.circle")
+        default: StatusInfo(stringKey: "_assistant_task_unknown_", imageSystemName: "questionmark.circle")
         }
     }
 }

@@ -185,6 +185,7 @@ struct NCViewE2EE: View {
                             Image(systemName: "checkmark.circle.fill")
                                 .resizable()
                                 .scaledToFit()
+                                .font(Font.system(.body).weight(.light))
                                 .foregroundColor(.green)
                         }
                     }
@@ -196,7 +197,8 @@ struct NCViewE2EE: View {
                             Image(systemName: "eye")
                                 .resizable()
                                 .scaledToFit()
-                                .foregroundColor(Color(UIColor.systemGray))
+                                .font(Font.system(.body).weight(.light))
+                                .foregroundColor(.black)
                         }
                         Spacer()
                     }
@@ -213,10 +215,11 @@ struct NCViewE2EE: View {
                         Label {
                             Text(NSLocalizedString("_e2e_settings_remove_", comment: ""))
                         } icon: {
-                            Image(systemName: "trash.circle")
+                            Image(systemName: "trash")
                                 .resizable()
                                 .scaledToFit()
-                                .foregroundColor(Color.red)
+                                .font(Font.system(.body).weight(.light))
+                                .foregroundColor(.red)
                         }
                         Spacer()
                     }
@@ -246,6 +249,7 @@ struct NCViewE2EE: View {
                                 Image(systemName: "play.circle")
                                     .resizable()
                                     .scaledToFit()
+                                    .font(Font.system(.body).weight(.light))
                                     .foregroundColor(.green)
                             }
                             Spacer()
@@ -283,6 +287,7 @@ struct DeleteCerificateSection: View {
                     Image(systemName: "exclamationmark.triangle")
                         .resizable()
                         .scaledToFit()
+                        .font(Font.system(.body).weight(.light))
                         .foregroundColor(Color(UIColor.systemGray))
                 }
                 Spacer()
@@ -305,6 +310,7 @@ struct DeleteCerificateSection: View {
                     Image(systemName: "exclamationmark.triangle")
                         .resizable()
                         .scaledToFit()
+                        .font(Font.system(.body).weight(.light))
                         .foregroundColor(Color(UIColor.systemGray))
                 }
                 Spacer()
@@ -352,6 +358,7 @@ struct NCViewE2EETest: View {
                             .resizable()
                             .scaledToFit()
                             .frame(width: 25, height: 25)
+                            .font(Font.system(.body).weight(.light))
                             .foregroundColor(.green)
                     }
                 }
@@ -363,6 +370,7 @@ struct NCViewE2EETest: View {
                             .resizable()
                             .scaledToFit()
                             .frame(width: 25, height: 25)
+                            .font(Font.system(.body).weight(.light))
                             .foregroundColor(.red)
                     }
                 }

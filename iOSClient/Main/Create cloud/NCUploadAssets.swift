@@ -398,14 +398,14 @@ struct UploadAssetsView: View {
                             Text(NSLocalizedString("_maintain_original_filename_", comment: ""))
                                 .font(.system(size: 15))
                         })
-                        .toggleStyle(SwitchToggleStyle(tint: Color(NCBrandColor.shared.brand)))
+                        .toggleStyle(SwitchToggleStyle(tint: Color(NCBrandColor.shared.brandElement)))
 
                         if !isMaintainOriginalFilename {
                             Toggle(isOn: $isAddFilenametype, label: {
                                 Text(NSLocalizedString("_add_filenametype_", comment: ""))
                                     .font(.system(size: 15))
                             })
-                            .toggleStyle(SwitchToggleStyle(tint: Color(NCBrandColor.shared.brand)))
+                            .toggleStyle(SwitchToggleStyle(tint: Color(NCBrandColor.shared.brandElement)))
                         }
                     }
 
@@ -414,14 +414,14 @@ struct UploadAssetsView: View {
                             Text(NSLocalizedString("_use_folder_auto_upload_", comment: ""))
                                 .font(.system(size: 15))
                         })
-                        .toggleStyle(SwitchToggleStyle(tint: Color(NCBrandColor.shared.brand)))
+                        .toggleStyle(SwitchToggleStyle(tint: Color(NCBrandColor.shared.brandElement)))
 
                         if uploadAssets.isUseAutoUploadFolder {
                             Toggle(isOn: $uploadAssets.isUseAutoUploadSubFolder, label: {
                                 Text(NSLocalizedString("_autoupload_create_subfolder_", comment: ""))
                                     .font(.system(size: 15))
                             })
-                            .toggleStyle(SwitchToggleStyle(tint: Color(NCBrandColor.shared.brand)))
+                            .toggleStyle(SwitchToggleStyle(tint: Color(NCBrandColor.shared.brandElement)))
                         }
 
                         if !uploadAssets.isUseAutoUploadFolder {
@@ -441,7 +441,7 @@ struct UploadAssetsView: View {
                                         .renderingMode(.template)
                                         .resizable()
                                         .scaledToFit()
-                                        .foregroundColor(Color(NCBrandColor.shared.brand))
+                                        .foregroundColor(Color(NCBrandColor.shared.brandElement))
                                 }
                             }
                             .contentShape(Rectangle())

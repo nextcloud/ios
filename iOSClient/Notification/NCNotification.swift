@@ -69,6 +69,13 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate {
         getNetwokingNotification()
     }
 
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+
+        // Cancel Queue & Retrieves Properties
+        dataSourceTask?.cancel()
+    }
+
     @objc func viewClose() {
         self.dismiss(animated: true, completion: nil)
     }
@@ -116,7 +123,7 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate {
         if let image = image {
             cell.icon.image = image.withTintColor(NCBrandColor.shared.brandElement, renderingMode: .alwaysOriginal)
         } else {
-            cell.icon.image = utility.loadImage(named: "bell", color: NCBrandColor.shared.brandElement)
+            cell.icon.image = utility.loadImage(named: "bell", colors: [NCBrandColor.shared.iconImageColor])
         }
 
         // Avatar
@@ -135,7 +142,7 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate {
                 cell.avatar.image = image
             } else if !FileManager.default.fileExists(atPath: fileNameLocalPath) {
                 cell.fileUser = user
-                NCNetworking.shared.downloadAvatar(user: user, dispalyName: json["user"]?["name"].string, fileName: fileName, cell: cell, view: tableView, cellImageView: cell.fileAvatarImageView)
+                NCNetworking.shared.downloadAvatar(user: user, dispalyName: json["user"]?["name"].string, fileName: fileName, cell: cell, view: tableView)
             }
         }
 
@@ -148,7 +155,7 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate {
         cell.message.text = notification.message.replacingOccurrences(of: "<br />", with: "\n")
         cell.message.textColor = .gray
 
-        cell.remove.setImage(UIImage(named: "xmark")!.image(color: .gray, size: 20), for: .normal)
+        cell.remove.setImage(UIImage(named: "xmark")!.image(color: NCBrandColor.shared.iconImageColor2, size: 20), for: .normal)
 
         cell.primary.isEnabled = false
         cell.primary.isHidden = true

@@ -31,25 +31,36 @@ import SVGKit
 
 extension NCUtility {
 
-    func loadImage(named imageName: String, color: UIColor = UIColor.systemGray, size: CGFloat = 50, symbolConfiguration: Any? = nil, renderingMode: UIImage.RenderingMode = .alwaysOriginal) -> UIImage {
-
+    func loadImage(named imageName: String, colors: [UIColor]? = nil, size: CGFloat? = nil) -> UIImage {
         var image: UIImage?
 
-        // see https://stackoverflow.com/questions/71764255
-        let sfSymbolName = imageName.replacingOccurrences(of: "_", with: ".")
-        if let symbolConfiguration {
-            image = UIImage(systemName: sfSymbolName, withConfiguration: symbolConfiguration as? UIImage.Configuration)?.withTintColor(color, renderingMode: renderingMode)
+        // SF IMAGE
+        if let colors {
+            image = UIImage(systemName: imageName, withConfiguration: UIImage.SymbolConfiguration(weight: .light))?.applyingSymbolConfiguration(UIImage.SymbolConfiguration(paletteColors: colors))
         } else {
-            image = UIImage(systemName: sfSymbolName)?.withTintColor(color, renderingMode: renderingMode)
-        }
-        if image == nil {
-            image = UIImage(named: imageName)?.image(color: color, size: size)
-        }
-        if let image {
-            return image
+            image = UIImage(systemName: imageName, withConfiguration: UIImage.SymbolConfiguration(weight: .light))
         }
 
-        return  UIImage(named: "file")!.image(color: color, size: size)
+        if let image { return image }
+
+        // IMAGES
+        if let color = colors?.first, let size {
+            image = UIImage(named: imageName)?.image(color: color, size: size)
+        } else if let color = colors?.first, size == nil {
+            image = UIImage(named: imageName)?.image(color: color, size: 50)
+        } else if colors == nil, size == nil {
+            image = UIImage(named: imageName)?.resizeImage(size: CGSize(width: 50, height: 50))
+        } else if colors == nil, let size {
+            image = UIImage(named: imageName)?.resizeImage(size: CGSize(width: size, height: size))
+        }
+        if let image { return image }
+
+        // NO IMAGES FOUND
+        if let color = colors?.first, let size {
+            return UIImage(systemName: "doc")!.image(color: color, size: size)
+        } else {
+            return UIImage(systemName: "doc")!
+        }
     }
 
     @objc func loadUserImage(for user: String, displayName: String?, userBaseUrl: NCUserBaseUrl) -> UIImage {
@@ -70,8 +81,7 @@ extension NCUtility {
         } else if let displayName = displayName, !displayName.isEmpty, let avatarImg = createAvatar(displayName: displayName, size: 30) {
             return avatarImg
         } else {
-            let config = UIImage.SymbolConfiguration(pointSize: 30)
-            return loadImage(named: "person.crop.circle", symbolConfiguration: config)
+            return UIImage(systemName: "person.crop.circle", withConfiguration: UIImage.SymbolConfiguration(pointSize: 30))!
         }
     }
 
@@ -143,11 +153,11 @@ extension NCUtility {
         }
 
         if metadata.isVideo {
-            return UIImage(named: "noPreviewVideo")?.image(color: .gray, size: size)
+            return UIImage(named: "noPreviewVideo")?.image(color: NCBrandColor.shared.iconImageColor2, size: size)
         } else if metadata.isAudio {
-            return UIImage(named: "noPreviewAudio")?.image(color: .gray, size: size)
+            return UIImage(named: "noPreviewAudio")?.image(color: NCBrandColor.shared.iconImageColor2, size: size)
         } else {
-            return UIImage(named: "noPreview")?.image(color: .gray, size: size)
+            return UIImage(named: "noPreview")?.image(color: NCBrandColor.shared.iconImageColor2, size: size)
         }
     }
 

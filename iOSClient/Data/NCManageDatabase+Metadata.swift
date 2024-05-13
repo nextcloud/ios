@@ -212,7 +212,7 @@ extension tableMetadata {
     }
 
     var canSetAsAvailableOffline: Bool {
-        return session.isEmpty && !isDocumentViewableOnly && !isDirectoryE2EE && !e2eEncrypted
+        return session.isEmpty && !isDirectoryE2EE && !e2eEncrypted
     }
 
     var canShare: Bool {
@@ -635,7 +635,11 @@ extension NCManageDatabase {
                     result.favorite = false
                 }
                 for metadata in metadatas {
-                    realm.add(metadata, update: .modified)
+                    if let result = realm.objects(tableMetadata.self).filter("account == %@ AND ocId == %@", account, metadata.ocId).first {
+                        result.favorite = true
+                    } else {
+                        realm.add(metadata, update: .modified)
+                    }
                 }
             }
         } catch let error {
@@ -1146,5 +1150,17 @@ extension NCManageDatabase {
         }
 
         return nil
+    }
+
+    func getMetadata(from url: URL?) -> tableMetadata? {
+        guard let url,
+              let fileName = url.lastPathComponent.removingPercentEncoding,
+              var serverUrl = url.deletingLastPathComponent().absoluteString.removingPercentEncoding
+        else { return nil }
+
+        if serverUrl.hasSuffix("/") {
+            serverUrl = String(serverUrl.dropLast())
+        }
+        return NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "serverUrl == '\(serverUrl)' AND fileName == '\(fileName)'"))
     }
 }

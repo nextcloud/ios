@@ -141,7 +141,7 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         if NCGlobal.shared.capabilityFileSharingApiEnabled {
             item = NKExternalSite()
             item.name = "_list_shares_"
-            item.icon = "share"
+            item.icon = "person.badge.plus"
             item.url = "segueShares"
             item.order = 50
             functionMenu.append(item)
@@ -300,6 +300,8 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         if sections[indexPath.section].type == .account {
             return 75
+        } else if sections[indexPath.section].type == .moreApps {
+            return 50
         } else {
             return NCGlobal.shared.heightCellSettings
         }
@@ -368,14 +370,13 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
 
         } else if section.type == .moreApps {
             guard let cell = tableView.dequeueReusableCell(withIdentifier: NCMoreAppSuggestionsCell.reuseIdentifier, for: indexPath) as? NCMoreAppSuggestionsCell else { return UITableViewCell() }
-
             return cell
         } else {
             guard let cell = tableView.dequeueReusableCell(withIdentifier: CCCellMore.reuseIdentifier, for: indexPath) as? CCCellMore else { return UITableViewCell() }
 
             let item = sections[indexPath.section].items[indexPath.row]
 
-            cell.imageIcon?.image = utility.loadImage(named: item.icon)
+            cell.imageIcon?.image = utility.loadImage(named: item.icon, colors: [NCBrandColor.shared.iconImageColor])
             cell.imageIcon?.contentMode = .scaleAspectFit
             cell.labelText?.text = NSLocalizedString(item.name, comment: "")
             cell.labelText.textColor = .label
@@ -446,7 +447,7 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
             let actionNo = UIAlertAction(title: NSLocalizedString("_no_delete_", comment: ""), style: .default) { (_: UIAlertAction) in
                 print("You've pressed No button")
             }
-            
+
             alertController.addAction(actionYes)
             alertController.addAction(actionNo)
             self.present(alertController, animated: true, completion: nil)

@@ -92,18 +92,17 @@ extension NCNetworking {
 
         }, progressHandler: { progress in
 
-            if withNotificationProgressTask, Int(floor(progress.fractionCompleted * 100)).isMultiple(of: 5) {
-                NotificationCenter.default.post(name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterProgressTask),
-                                                object: nil,
-                                                userInfo: ["account": metadata.account,
-                                                           "ocId": metadata.ocId,
-                                                           "fileName": metadata.fileName,
-                                                           "serverUrl": metadata.serverUrl,
-                                                           "status": NSNumber(value: NCGlobal.shared.metadataStatusDownloading),
-                                                           "progress": NSNumber(value: progress.fractionCompleted),
-                                                           "totalBytes": NSNumber(value: progress.totalUnitCount),
-                                                           "totalBytesExpected": NSNumber(value: progress.completedUnitCount)])
-            }
+            NotificationCenter.default.post(name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterProgressTask),
+                                            object: nil,
+                                            userInfo: ["account": metadata.account,
+                                                       "ocId": metadata.ocId,
+                                                       "fileName": metadata.fileName,
+                                                       "serverUrl": metadata.serverUrl,
+                                                       "status": NSNumber(value: NCGlobal.shared.metadataStatusDownloading),
+                                                       "progress": NSNumber(value: progress.fractionCompleted),
+                                                       "totalBytes": NSNumber(value: progress.totalUnitCount),
+                                                       "totalBytesExpected": NSNumber(value: progress.completedUnitCount)])
+
             progressHandler(progress)
 
         }) { _, etag, date, length, allHeaderFields, afError, error in
@@ -120,7 +119,7 @@ extension NCNetworking {
                     if afError?.isExplicitlyCancelledError ?? false {
                         error = NKError(errorCode: NCGlobal.shared.errorRequestExplicityCancelled, errorDescription: "error request explicity cancelled")
                     }
-                    self.downloadComplete(fileName: metadata.fileName, serverUrl: metadata.serverUrl, etag: etag, date: date, dateLastModified: dateLastModified, length: length, fileNameLocalPath: fileNameLocalPath, task: downloadTask, error: error)
+                    self.downloadComplete(fileName: metadata.fileName, serverUrl: metadata.serverUrl, etag: etag, date: date, dateLastModified: dateLastModified, length: length, task: downloadTask, error: error)
                 }
                 completion(afError, error)
             }
@@ -165,19 +164,35 @@ extension NCNetworking {
         }
     }
 
+    func downloadingFinish(_ session: URLSession, downloadTask: URLSessionDownloadTask, didFinishDownloadingTo location: URL) {
+
+        if let httpResponse = (downloadTask.response as? HTTPURLResponse) {
+            if httpResponse.statusCode >= 200 && httpResponse.statusCode < 300,
+               let url = downloadTask.currentRequest?.url,
+               let fileName = url.lastPathComponent.removingPercentEncoding,
+               var serverUrl = url.deletingLastPathComponent().absoluteString.removingPercentEncoding {
+                if serverUrl.hasSuffix("/") { serverUrl = String(serverUrl.dropLast()) }
+                if let metadata = NCManageDatabase.shared.getResultMetadata(predicate: NSPredicate(format: "serverUrl == '\(serverUrl)' AND fileName == '\(fileName)'")) {
+                    let destinationFilePath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileName)
+                    utilityFileSystem.copyFile(at: location, to: NSURL.fileURL(withPath: destinationFilePath))
+                }
+            }
+        }
+    }
+
     func downloadComplete(fileName: String,
                           serverUrl: String,
                           etag: String?,
                           date: NSDate?,
                           dateLastModified: NSDate?,
                           length: Int64,
-                          fileNameLocalPath: String?,
                           task: URLSessionTask,
                           error: NKError) {
 
         DispatchQueue.global().async {
 
-            guard let metadata = NCManageDatabase.shared.getMetadataFromFileNameLocalPath(fileNameLocalPath) else { return }
+            guard let url = task.currentRequest?.url,
+                  let metadata = NCManageDatabase.shared.getMetadata(from: url) else { return }
 
             if error == .success {
 
@@ -230,7 +245,6 @@ extension NCNetworking {
             }
 
             self.downloadMetadataInBackground.removeValue(forKey: FileNameServerUrl(fileName: fileName, serverUrl: serverUrl))
-            self.delegate?.downloadComplete?(fileName: fileName, serverUrl: serverUrl, etag: etag, date: date, dateLastModified: dateLastModified, length: length, fileNameLocalPath: fileNameLocalPath, task: task, error: error)
         }
     }
 
@@ -244,8 +258,6 @@ extension NCNetworking {
 
         DispatchQueue.global().async {
 
-            self.delegate?.downloadProgress?(progress, totalBytes: totalBytes, totalBytesExpected: totalBytesExpected, fileName: fileName, serverUrl: serverUrl, session: session, task: task)
-
             var metadata: tableMetadata?
 
             if let metadataTmp = self.downloadMetadataInBackground[FileNameServerUrl(fileName: fileName, serverUrl: serverUrl)] {
@@ -255,7 +267,7 @@ extension NCNetworking {
                 metadata = metadataTmp
             }
 
-            if let metadata = metadata, Int(floor(progress * 100)).isMultiple(of: 5) {
+            if let metadata {
                 NotificationCenter.default.post(name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterProgressTask),
                                                 object: nil,
                                                 userInfo: ["account": metadata.account,
@@ -275,28 +287,24 @@ extension NCNetworking {
                         dispalyName: String?,
                         fileName: String,
                         cell: NCCellProtocol,
-                        view: UIView?,
-                        cellImageView: UIImageView?) {
-
+                        view: UIView?) {
         let fileNameLocalPath = utilityFileSystem.directoryUserData + "/" + fileName
 
         if let image = NCManageDatabase.shared.getImageAvatarLoaded(fileName: fileName) {
-            cellImageView?.image = image
             cell.fileAvatarImageView?.image = image
             return
         }
 
         if let account = NCManageDatabase.shared.getActiveAccount() {
-            cellImageView?.image = utility.loadUserImage(for: user, displayName: dispalyName, userBaseUrl: account)
+            cell.fileAvatarImageView?.image = utility.loadUserImage(for: user, displayName: dispalyName, userBaseUrl: account)
         }
 
         for case let operation as NCOperationDownloadAvatar in downloadAvatarQueue.operations where operation.fileName == fileName { return }
-        downloadAvatarQueue.addOperation(NCOperationDownloadAvatar(user: user, fileName: fileName, fileNameLocalPath: fileNameLocalPath, cell: cell, view: view, cellImageView: cellImageView))
+        downloadAvatarQueue.addOperation(NCOperationDownloadAvatar(user: user, fileName: fileName, fileNameLocalPath: fileNameLocalPath, cell: cell, view: view))
     }
 #endif
 
     func cancelDownloadTasks() {
-
         downloadRequest.removeAll()
         let sessionManager = NextcloudKit.shared.sessionManager
         sessionManager.session.getTasksWithCompletionHandler { _, _, downloadTasks in
@@ -310,7 +318,6 @@ extension NCNetworking {
     }
 
     func cancelDownloadBackgroundTask() {
-
         Task {
             let tasksBackground = await NCNetworking.shared.sessionManagerDownloadBackground.tasks
             for task in tasksBackground.2 { // ([URLSessionDataTask], [URLSessionUploadTask], [URLSessionDownloadTask])

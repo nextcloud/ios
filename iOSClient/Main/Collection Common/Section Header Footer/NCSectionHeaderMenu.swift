@@ -77,12 +77,12 @@ class NCSectionHeaderMenu: UICollectionReusableView, UIGestureRecognizerDelegate
         buttonTransfer.setImage(nil, for: .normal)
         buttonTransfer.layer.cornerRadius = 6
         buttonTransfer.layer.masksToBounds = true
-        imageButtonTransfer.image = UIImage(systemName: "stop.circle")
+        imageButtonTransfer.image = NCUtility().loadImage(named: "stop.circle")
         imageButtonTransfer.tintColor = .white
         labelTransfer.text = ""
         progressTransfer.progress = 0
-        progressTransfer.tintColor = NCBrandColor.shared.brand
-        progressTransfer.trackTintColor = NCBrandColor.shared.brand.withAlphaComponent(0.2)
+        progressTransfer.tintColor = NCBrandColor.shared.brandElement
+        progressTransfer.trackTintColor = NCBrandColor.shared.brandElement.withAlphaComponent(0.2)
         transferSeparatorBottom.backgroundColor = .separator
         transferSeparatorBottomHeightConstraint.constant = 0.5
     }
@@ -146,7 +146,7 @@ class NCSectionHeaderMenu: UICollectionReusableView, UIGestureRecognizerDelegate
                let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
                 image = utility.createFilePreviewImage(ocId: metadata.ocId, etag: metadata.etag, fileNameView: metadata.fileNameView, classFile: metadata.classFile, status: metadata.status, createPreviewMedia: true)?.darken()
                 if image == nil {
-                    image = UIImage(named: metadata.iconName)
+                    image = utility.loadImage(named: metadata.iconName)
                     buttonTransfer.backgroundColor = .lightGray
                 } else {
                     buttonTransfer.backgroundColor = .clear

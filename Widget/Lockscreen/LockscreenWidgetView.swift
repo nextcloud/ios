@@ -39,7 +39,7 @@ struct LockscreenWidgetView: View {
                     label: {},
                     currentValueLabel: {
                         Image(systemName: "xmark.icloud")
-                            .font(.system(size: 25.0))
+                            .font(.system(size: 25.0).weight(.light))
                     }
                 )
                 .gaugeStyle(.accessoryCircularCapacity)
@@ -76,7 +76,7 @@ struct LockscreenWidgetView: View {
                 if entry.error {
                     VStack(spacing: 1) {
                         Image(systemName: "xmark.icloud")
-                            .font(.system(size: 25.0))
+                            .font(Font.system(size: 25.0).weight(.light))
                             .frame(maxWidth: .infinity, alignment: .center)
                     }.padding(8)
                 } else {

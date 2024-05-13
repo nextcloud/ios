@@ -63,11 +63,9 @@ class NCViewerProviderContextMenu: UIViewController {
         } else {
 
             // ICON
-            if let image = UIImage(named: metadata.iconName)?.resizeImage(size: CGSize(width: sizeIcon * 2, height: sizeIcon * 2)) {
-
-                imageView.image = image
-                imageView.frame = resize(CGSize(width: sizeIcon, height: sizeIcon))
-            }
+            let image = NCUtility().loadImage(named: metadata.iconName, size: sizeIcon * 2)
+            imageView.image = image
+            imageView.frame = resize(CGSize(width: sizeIcon, height: sizeIcon))
 
             // PREVIEW
             if utilityFileSystem.fileProviderStoragePreviewIconExists(metadata.ocId, etag: metadata.etag) {

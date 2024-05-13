@@ -148,7 +148,7 @@ class NCBrandColor: NSObject {
     @objc public let customer: UIColor = UIColor(red: 0.0 / 255.0, green: 130.0 / 255.0, blue: 201.0 / 255.0, alpha: 1.0)         // BLU NC : #0082c9
     @objc public var customerText: UIColor = .white
 
-    @objc public var brand: UIColor                                                                                         // don't touch me
+    @objc private var brand: UIColor                                                                                         // don't touch me
     @objc public var brandElement: UIColor                                                                                  // don't touch me
     @objc public var brandText: UIColor                                                                                     // don't touch me
 
@@ -159,6 +159,10 @@ class NCBrandColor: NSObject {
     public var themingColor: String = ""
     public var themingColorElement: String = ""
     public var themingColorText: String = ""
+
+    @objc public let iconImageColor: UIColor = .label
+    @objc public let iconImageColor2: UIColor = .systemGray
+    @objc public let iconImageMultiColors: [UIColor] = [.systemGray, .label]
 
     @objc public var systemMint: UIColor {
         get {

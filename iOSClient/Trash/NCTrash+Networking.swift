@@ -22,6 +22,7 @@
 import Realm
 import UIKit
 import NextcloudKit
+import Queuer
 
 extension NCTrash {
     @objc func loadListingTrash() {
@@ -82,10 +83,26 @@ extension NCTrash {
             self.reloadDataSource()
         }
     }
+}
 
-    func downloadThumbnail(with tableTrash: tableTrash, indexPath: IndexPath) {
-        let fileNamePreviewLocalPath = utilityFileSystem.getDirectoryProviderStoragePreviewOcId(tableTrash.fileId, etag: tableTrash.fileName)
-        let fileNameIconLocalPath = utilityFileSystem.getDirectoryProviderStorageIconOcId(tableTrash.fileId, etag: tableTrash.fileName)
+class NCOperationDownloadThumbnailTrash: ConcurrentOperation {
+
+    var tableTrash: tableTrash
+    var fileId: String
+    var collectionView: UICollectionView?
+    var cell: NCTrashCellProtocol?
+
+    init(tableTrash: tableTrash, fileId: String, cell: NCTrashCellProtocol?, collectionView: UICollectionView?) {
+        self.tableTrash = tableTrash
+        self.fileId = fileId
+        self.cell = cell
+        self.collectionView = collectionView
+    }
+
+    override func start() {
+        guard !isCancelled else { return self.finish() }
+        let fileNamePreviewLocalPath = NCUtilityFileSystem().getDirectoryProviderStoragePreviewOcId(tableTrash.fileId, etag: tableTrash.fileName)
+        let fileNameIconLocalPath = NCUtilityFileSystem().getDirectoryProviderStorageIconOcId(tableTrash.fileId, etag: tableTrash.fileName)
 
         NextcloudKit.shared.downloadPreview(fileNamePathOrFileId: tableTrash.fileId,
                                             fileNamePreviewLocalPath: fileNamePreviewLocalPath,
@@ -94,14 +111,23 @@ extension NCTrash {
                                             fileNameIconLocalPath: fileNameIconLocalPath,
                                             sizeIcon: NCGlobal.shared.sizeIcon,
                                             etag: nil,
-                                            endpointTrashbin: true) { account, _, imageIcon, _, _, error in
-            guard error == .success, let imageIcon = imageIcon, account == self.appDelegate.account,
-                let cell = self.collectionView.cellForItem(at: indexPath) else { return }
-            if let cell = cell as? NCTrashListCell {
-                cell.imageItem.image = imageIcon
-            } else if let cell = cell as? NCGridCell {
-                cell.imageItem.image = imageIcon
-            } // else: undefined cell
+                                            endpointTrashbin: true,
+                                            options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { _, imagePreview, _, _, _, error in
+
+            if error == .success, let imagePreview = imagePreview {
+                DispatchQueue.main.async {
+                    if self.fileId == self.cell?.objectId, let imageView = self.cell?.imageItem {
+                        UIView.transition(with: imageView,
+                                          duration: 0.75,
+                                          options: .transitionCrossDissolve,
+                                          animations: { imageView.image = imagePreview },
+                                          completion: nil)
+                    } else {
+                        self.collectionView?.reloadData()
+                    }
+                }
+            }
+            self.finish()
         }
     }
 }

@@ -81,7 +81,7 @@ class NCLoginWeb: UIViewController {
         }
 
         if accountCount > 0 {
-            navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(named: "users")!.image(color: .label, size: 35), style: .plain, target: self, action: #selector(self.changeUser(sender:)))
+            navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(named: "users")!.image(color: NCBrandColor.shared.iconImageColor, size: 35), style: .plain, target: self, action: #selector(self.changeUser(sender:)))
         }
 
         let config = WKWebViewConfiguration()

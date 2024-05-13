@@ -49,6 +49,7 @@ class NCCapabilitiesViewOO: ObservableObject {
     @Published var capabililies: [Capability] = []
     @Published var homeServer = ""
     let utilityFileSystem = NCUtilityFileSystem()
+    let utility = NCUtility()
 
     init() {
         loadCapabilities()
@@ -64,24 +65,23 @@ class NCCapabilitiesViewOO: ObservableObject {
 
         capabililies.removeAll()
 
-        if let image = UIImage(named: "share") {
-            capabililies.append(Capability(text: "File sharing", image: image, resize: true, available: NCGlobal.shared.capabilityFileSharingApiEnabled))
-        }
-        if let image = UIImage(systemName: "network") {
-            capabililies.append(Capability(text: "External site", image: image, resize: false, available: NCGlobal.shared.capabilityExternalSites))
-        }
-        if let image = UIImage(systemName: "lock") {
-            capabililies.append(Capability(text: "End-to-End Encryption", image: image, resize: false, available: NCGlobal.shared.capabilityE2EEEnabled))
-        }
-        if let image = UIImage(systemName: "bolt") {
-            capabililies.append(Capability(text: "Activity", image: image, resize: false, available: !NCGlobal.shared.capabilityActivity.isEmpty))
-        }
-        if let image = UIImage(systemName: "bell") {
-            capabililies.append(Capability(text: "Notification", image: image, resize: false, available: !NCGlobal.shared.capabilityNotification.isEmpty))
-        }
-        if let image = UIImage(systemName: "trash") {
-            capabililies.append(Capability(text: "Deleted files", image: image, resize: false, available: NCGlobal.shared.capabilityFilesUndelete))
-        }
+        var image = utility.loadImage(named: "person.fill.badge.plus")
+        capabililies.append(Capability(text: "File sharing", image: image, resize: false, available: NCGlobal.shared.capabilityFileSharingApiEnabled))
+
+        image = utility.loadImage(named: "network")
+        capabililies.append(Capability(text: "External site", image: image, resize: false, available: NCGlobal.shared.capabilityExternalSites))
+
+        image = utility.loadImage(named: "lock")
+        capabililies.append(Capability(text: "End-to-End Encryption", image: image, resize: false, available: NCGlobal.shared.capabilityE2EEEnabled))
+
+        image = utility.loadImage(named: "bolt")
+        capabililies.append(Capability(text: "Activity", image: image, resize: false, available: !NCGlobal.shared.capabilityActivity.isEmpty))
+
+        image = utility.loadImage(named: "bell")
+        capabililies.append(Capability(text: "Notification", image: image, resize: false, available: !NCGlobal.shared.capabilityNotification.isEmpty))
+
+        image = utility.loadImage(named: "trash")
+        capabililies.append(Capability(text: "Deleted files", image: image, resize: false, available: NCGlobal.shared.capabilityFilesUndelete))
 
         if let editors = NCManageDatabase.shared.getDirectEditingEditors(account: activeAccount.account) {
             for editor in editors {
@@ -93,33 +93,25 @@ class NCCapabilitiesViewOO: ObservableObject {
             }
         }
 
-        if let image = UIImage(systemName: "doc.text") {
-            capabililies.append(Capability(text: "Text", image: image, resize: false, available: textEditor))
+        capabililies.append(Capability(text: "Text", image: utility.loadImage(named: "doc.text"), resize: false, available: textEditor))
+
+        capabililies.append(Capability(text: "ONLYOFFICE", image: utility.loadImage(named: "onlyoffice"), resize: true, available: onlyofficeEditors))
+
+        capabililies.append(Capability(text: "Collabora", image: utility.loadImage(named: "collabora"), resize: true, available: NCGlobal.shared.capabilityRichDocumentsEnabled))
+
+        capabililies.append(Capability(text: "User Status", image: utility.loadImage(named: "moon"), resize: false, available: NCGlobal.shared.capabilityUserStatusEnabled))
+
+        capabililies.append(Capability(text: "Comments", image: utility.loadImage(named: "ellipsis.bubble"), resize: false, available: NCGlobal.shared.capabilityFilesComments))
+
+        capabililies.append(Capability(text: "Lock file", image: utility.loadImage(named: "lock"), resize: false, available: !NCGlobal.shared.capabilityFilesLockVersion.isEmpty))
+
+        capabililies.append(Capability(text: "Group folders", image: utility.loadImage(named: "person.2"), resize: false, available: NCGlobal.shared.capabilityGroupfoldersEnabled))
+
+        if NCBrandOptions.shared.brand != "Nextcloud" {
+            capabililies.append(Capability(text: "Security Guard Diagnostics", image: utility.loadImage(named: "shield"), resize: false, available: NCGlobal.shared.capabilitySecurityGuardDiagnostics))
         }
-        if let image = UIImage(named: "onlyoffice") {
-            capabililies.append(Capability(text: "ONLYOFFICE", image: image, resize: true, available: onlyofficeEditors))
-        }
-        if let image = UIImage(named: "collabora") {
-            capabililies.append(Capability(text: "Collabora", image: image, resize: true, available: NCGlobal.shared.capabilityRichDocumentsEnabled))
-        }
-        if let image = UIImage(systemName: "moon") {
-            capabililies.append(Capability(text: "User Status", image: image, resize: false, available: NCGlobal.shared.capabilityUserStatusEnabled))
-        }
-        if let image = UIImage(systemName: "ellipsis.bubble") {
-            capabililies.append(Capability(text: "Comments", image: image, resize: false, available: NCGlobal.shared.capabilityFilesComments))
-        }
-        if let image = UIImage(systemName: "lock") {
-            capabililies.append(Capability(text: "Lock file", image: image, resize: false, available: !NCGlobal.shared.capabilityFilesLockVersion.isEmpty))
-        }
-        if let image = UIImage(systemName: "person.2") {
-            capabililies.append(Capability(text: "Group folders", image: image, resize: false, available: NCGlobal.shared.capabilityGroupfoldersEnabled))
-        }
-        if let image = UIImage(systemName: "shield"), NCBrandOptions.shared.brand != "Nextcloud" {
-            capabililies.append(Capability(text: "Security Guard Diagnostics", image: image, resize: false, available: NCGlobal.shared.capabilitySecurityGuardDiagnostics))
-        }
-        if let image = UIImage(systemName: "sparkles") {
-            capabililies.append(Capability(text: "Assistant", image: image, resize: false, available: NCGlobal.shared.capabilityAssistantEnabled))
-        }
+
+        capabililies.append(Capability(text: "Assistant", image: utility.loadImage(named: "sparkles"), resize: false, available: NCGlobal.shared.capabilityAssistantEnabled))
 
         homeServer = utilityFileSystem.getHomeServer(urlBase: activeAccount.urlBase, userId: activeAccount.userId) + "/"
     }
@@ -145,7 +137,7 @@ struct NCCapabilitiesView: View {
                     }
                 }
                 Section {
-                    CapabilityName(text: $capabilitiesViewOO.homeServer, image: Image(systemName: "house"), resize: false)
+                    CapabilityName(text: $capabilitiesViewOO.homeServer, image: Image(uiImage: NCUtility().loadImage(named: "house")), resize: false)
                 }
             }
         }

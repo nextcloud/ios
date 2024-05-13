@@ -37,6 +37,7 @@ struct DashboardWidgetView: View {
                     Image(systemName: "checkmark")
                         .resizable()
                         .scaledToFit()
+                        .font(Font.system(.body).weight(.light))
                         .frame(width: 50, height: 50)
                     Text(NSLocalizedString("_no_items_", comment: ""))
                         .font(.system(size: 25))
@@ -48,9 +49,7 @@ struct DashboardWidgetView: View {
             }
 
             ZStack(alignment: .topLeading) {
-
                 HStack {
-
                     Image(uiImage: entry.titleImage)
                         .renderingMode(.template)
                         .resizable()
@@ -156,7 +155,7 @@ struct DashboardWidgetView: View {
 
                     HStack(spacing: 10) {
 
-                        let brandColor = Color(NCBrandColor.shared.brand)
+                        let brandColor = Color(NCBrandColor.shared.brandElement)
                         let brandTextColor = Color(NCBrandColor.shared.brandText)
 
                         ForEach(buttons, id: \.index) { element in
@@ -181,12 +180,13 @@ struct DashboardWidgetView: View {
                         .resizable()
                         .scaledToFit()
                         .frame(width: 15, height: 15)
-                        .foregroundColor(entry.isPlaceholder ? Color(.systemGray4) : Color(NCBrandColor.shared.brand))
+                        .font(Font.system(.body).weight(.light))
+                        .foregroundColor(entry.isPlaceholder ? Color(.systemGray4) : Color(NCBrandColor.shared.brandElement))
 
                     Text(entry.footerText)
                         .font(.caption2)
                         .lineLimit(1)
-                        .foregroundColor(entry.isPlaceholder ? Color(.systemGray4) : Color(NCBrandColor.shared.brand))
+                        .foregroundColor(entry.isPlaceholder ? Color(.systemGray4) : Color(NCBrandColor.shared.brandElement))
                 }
                 .padding(.horizontal, 15.0)
                 .frame(maxWidth: geo.size.width, maxHeight: geo.size.height - 2, alignment: .bottomTrailing)

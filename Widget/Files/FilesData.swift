@@ -79,9 +79,8 @@ func getTitleFilesWidget(account: tableAccount?) -> String {
 }
 
 func getFilesItems(displaySize: CGSize) -> Int {
-
-    let height = Int((displaySize.height - 100) / 50)
-    return height
+    let items = Int((displaySize.height - 90) / 55)
+    return items
 }
 
 func getFilesDataEntry(configuration: AccountIntent?, isPreview: Bool, displaySize: CGSize, completion: @escaping (_ entry: FilesDataEntry) -> Void) {

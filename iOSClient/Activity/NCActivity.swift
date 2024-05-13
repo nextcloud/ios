@@ -44,6 +44,7 @@ class NCActivity: UIViewController, NCSharePagingContent {
     let utility = NCUtility()
     var allItems: [DateCompareable] = []
     var sectionDates: [Date] = []
+    var dataSourceTask: URLSessionTask?
 
     var insets = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
     var didSelectItemEnable: Bool = true
@@ -100,6 +101,14 @@ class NCActivity: UIViewController, NCSharePagingContent {
 
         navigationController?.setNavigationBarAppearance()
         fetchAll(isInitial: true)
+    }
+
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+
+        // Cancel Queue & Retrieves Properties
+        NCNetworking.shared.downloadThumbnailActivityQueue.cancelAll()
+        dataSourceTask?.cancel()
     }
 
     override func viewWillLayoutSubviews() {
@@ -204,7 +213,7 @@ extension NCActivity: UITableViewDataSource {
 
         // Image
         let fileName = appDelegate.userBaseUrl + "-" + comment.actorId + ".png"
-        NCNetworking.shared.downloadAvatar(user: comment.actorId, dispalyName: comment.actorDisplayName, fileName: fileName, cell: cell, view: tableView, cellImageView: cell.fileAvatarImageView)
+        NCNetworking.shared.downloadAvatar(user: comment.actorId, dispalyName: comment.actorDisplayName, fileName: fileName, cell: cell, view: tableView)
         // Username
         cell.labelUser.text = comment.actorDisplayName
         cell.labelUser.textColor = .label
@@ -271,7 +280,7 @@ extension NCActivity: UITableViewDataSource {
 
             let fileName = appDelegate.userBaseUrl + "-" + activity.user + ".png"
 
-            NCNetworking.shared.downloadAvatar(user: activity.user, dispalyName: nil, fileName: fileName, cell: cell, view: tableView, cellImageView: cell.fileAvatarImageView)
+            NCNetworking.shared.downloadAvatar(user: activity.user, dispalyName: nil, fileName: fileName, cell: cell, view: tableView)
         }
 
         // subject
@@ -421,7 +430,9 @@ extension NCActivity {
             limit: 1,
             objectId: nil,
             objectType: objectType,
-            previews: true) { account, _, activityFirstKnown, activityLastGiven, _, error in
+            previews: true) { task in
+                self.dataSourceTask = task
+            } completion: { account, _, activityFirstKnown, activityLastGiven, _, error in
                 defer { disptachGroup.leave() }
 
                 let largestActivityId = max(activityFirstKnown, activityLastGiven)
@@ -448,7 +459,9 @@ extension NCActivity {
             limit: min(limit, 200),
             objectId: metadata?.fileId,
             objectType: objectType,
-            previews: true) { account, activities, activityFirstKnown, activityLastGiven, _, error in
+            previews: true) { task in
+                self.dataSourceTask = task
+            } completion: { account, activities, activityFirstKnown, activityLastGiven, _, error in
                 defer { disptachGroup.leave() }
                 guard error == .success,
                       account == self.appDelegate.account,
@@ -489,7 +502,7 @@ extension NCActivity: NCShareCommentsCellDelegate {
         actions.append(
             NCMenuAction(
                 title: NSLocalizedString("_edit_comment_", comment: ""),
-                icon: UIImage(named: "pencil")!.image(color: UIColor.systemGray, size: 50),
+                icon: utility.loadImage(named: "pencil", colors: [NCBrandColor.shared.iconImageColor]),
                 action: { _ in
                     guard let metadata = self.metadata, let tableComments = tableComments else { return }
 
@@ -520,7 +533,8 @@ extension NCActivity: NCShareCommentsCellDelegate {
         actions.append(
             NCMenuAction(
                 title: NSLocalizedString("_delete_comment_", comment: ""),
-                icon: utility.loadImage(named: "trash"),
+                destructive: true,
+                icon: utility.loadImage(named: "trash", colors: [.red]),
                 action: { _ in
                     guard let metadata = self.metadata, let tableComments = tableComments else { return }
 

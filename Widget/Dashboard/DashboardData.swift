@@ -65,13 +65,12 @@ let dashboardDatasTest: [DashboardData] = [
 ]
 
 func getDashboardItems(displaySize: CGSize, withButton: Bool) -> Int {
-
     if withButton {
-        let height = Int((displaySize.height - 85) / 50)
-        return height
+        let items = Int((displaySize.height - 90) / 55)
+        return items
     } else {
-        let height = Int((displaySize.height - 60) / 50)
-        return height
+        let items = Int((displaySize.height - 50) / 55)
+        return items
     }
 }
 
@@ -222,7 +221,7 @@ func getDashboardDataEntry(configuration: DashboardIntent?, isPreview: Bool, dis
                                     let path = (urlComponents.path as NSString)
                                     let colorString = ((path.lastPathComponent) as NSString).deletingPathExtension
                                     imageColor = UIColor(hex: colorString)
-                                    icon = UIImage(systemName: "circle.fill")!
+                                    icon = utility.loadImage(named: "circle.fill")
                                 } else if let fileName = iconFileName {
                                     let fileNamePath: String = utilityFileSystem.directoryUserData + "/" + fileName + ".png"
                                     if FileManager().fileExists(atPath: fileNamePath), let image = UIImage(contentsOfFile: fileNamePath) {

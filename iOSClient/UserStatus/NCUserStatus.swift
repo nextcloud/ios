@@ -67,14 +67,15 @@ class NCUserStatus: UIViewController {
     private var clearAtTimestamp: Double = 0     // Unix Timestamp representing the time to clear the status
 
     private let borderWidthButton: CGFloat = 1.5
-    private let borderColorButton: CGColor = NCBrandColor.shared.brand.cgColor
+    private let borderColorButton: CGColor = NCBrandColor.shared.brandElement.cgColor
 
     // MARK: - View Life Cycle
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        self.navigationItem.title = NSLocalizedString("_online_status_", comment: "")
+        navigationController?.navigationBar.tintColor = NCBrandColor.shared.iconImageColor
+        navigationItem.title = NSLocalizedString("_online_status_", comment: "")
 
         view.backgroundColor = .systemBackground
         tableView.backgroundColor = .systemBackground
@@ -160,7 +161,7 @@ class NCUserStatus: UIViewController {
 
         setStatusMessageButton.layer.cornerRadius = 20
         setStatusMessageButton.layer.masksToBounds = true
-        setStatusMessageButton.backgroundColor = NCBrandColor.shared.brand
+        setStatusMessageButton.backgroundColor = NCBrandColor.shared.brandElement
         setStatusMessageButton.setTitle(NSLocalizedString("_set_status_message_", comment: ""), for: .normal)
         setStatusMessageButton.setTitleColor(NCBrandColor.shared.brandText, for: .normal)
 

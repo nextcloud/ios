@@ -37,9 +37,9 @@ class NCShareAdvancePermissionHeader: UIView {
             imageView.isHidden = true
         } else {
             if metadata.directory {
-                imageView.image = metadata.e2eEncrypted ? UIImage(named: "folderEncrypted") : UIImage(named: "folder")
+                imageView.image = metadata.e2eEncrypted ? NCImageCache.images.folderEncrypted : NCImageCache.images.folder
             } else if !metadata.iconName.isEmpty {
-                imageView.image = UIImage(named: metadata.iconName)
+                imageView.image = NCUtility().loadImage(named: metadata.iconName)
             } else {
                 imageView.image = NCImageCache.images.file
             }
