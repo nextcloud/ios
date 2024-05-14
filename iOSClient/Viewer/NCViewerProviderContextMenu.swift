@@ -63,7 +63,7 @@ class NCViewerProviderContextMenu: UIViewController {
         } else {
 
             // ICON
-            let image = NCUtility().loadImage(named: metadata.iconName, size: sizeIcon * 2)
+            let image = NCUtility().loadImage(named: metadata.iconName, useTypeIconFile: true)
             imageView.image = image
             imageView.frame = resize(CGSize(width: sizeIcon, height: sizeIcon))
 

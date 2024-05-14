@@ -201,7 +201,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
         if let image = utility.createFilePreviewImage(ocId: metadata.ocId, etag: metadata.etag, fileNameView: metadata.fileNameView, classFile: metadata.classFile, status: metadata.status, createPreviewMedia: true) {
             cell.imageItem.image = image
         } else if !metadata.iconName.isEmpty {
-            cell.imageItem.image = utility.loadImage(named: metadata.iconName)
+            cell.imageItem.image = utility.loadImage(named: metadata.iconName, useTypeIconFile: true)
         } else {
             cell.imageItem.image = NCImageCache.images.file
         }

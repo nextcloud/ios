@@ -274,7 +274,7 @@ extension NCSelect: UICollectionViewDataSource {
                 if metadata.iconName.isEmpty {
                     (cell as? NCCellProtocol)?.filePreviewImageView?.image = NCImageCache.images.file
                 } else {
-                    (cell as? NCCellProtocol)?.filePreviewImageView?.image = utility.loadImage(named: metadata.iconName)
+                    (cell as? NCCellProtocol)?.filePreviewImageView?.image = utility.loadImage(named: metadata.iconName, useTypeIconFile: true)
                 }
                 if metadata.hasPreview && metadata.status == NCGlobal.shared.metadataStatusNormal && (!utilityFileSystem.fileProviderStoragePreviewIconExists(metadata.ocId, etag: metadata.etag)) {
                     for case let operation as NCCollectionViewDownloadThumbnail in NCNetworking.shared.downloadThumbnailQueue.operations where operation.metadata.ocId == metadata.ocId { return }
