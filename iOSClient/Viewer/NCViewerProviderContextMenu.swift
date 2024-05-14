@@ -51,13 +51,7 @@ class NCViewerProviderContextMenu: UIViewController {
 
         if metadata.directory {
 
-            var imageFolder = UIImage(named: "folder")!.image(color: NCBrandColor.shared.brandElement, size: sizeIcon * 2)
-
-            if let image = self.image {
-                imageFolder = image.image(color: NCBrandColor.shared.brandElement, size: sizeIcon * 2)
-            }
-
-            imageView.image = imageFolder.colorizeFolder(metadata: metadata)
+            imageView.image = NCImageCache.images.folder.colorizeFolder(metadata: metadata)
             imageView.frame = resize(CGSize(width: sizeIcon, height: sizeIcon))
 
         } else {

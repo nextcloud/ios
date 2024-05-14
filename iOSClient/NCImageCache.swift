@@ -229,8 +229,6 @@ import RealmSwift
         static var buttonMore = UIImage()
         static var buttonStop = UIImage()
         static var buttonMoreLock = UIImage()
-        static var buttonRestore = UIImage()
-        static var buttonTrash = UIImage()
 
         static var iconContacts = UIImage()
         static var iconTalk = UIImage()
@@ -274,22 +272,21 @@ import RealmSwift
         guard brandElement != self.brandElementColor else { return }
         self.brandElementColor = brandElement
 
-        let folderWidth: CGFloat = UIScreen.main.bounds.width / 3
-        images.folderEncrypted = UIImage(named: "folderEncrypted")!.image(color: brandElement, size: folderWidth)
-        images.folderSharedWithMe = UIImage(named: "folder_shared_with_me")!.image(color: brandElement, size: folderWidth)
-        images.folderPublic = UIImage(named: "folder_public")!.image(color: brandElement, size: folderWidth)
-        images.folderGroup = UIImage(named: "folder_group")!.image(color: brandElement, size: folderWidth)
-        images.folderExternal = UIImage(named: "folder_external")!.image(color: brandElement, size: folderWidth)
-        images.folderAutomaticUpload = UIImage(named: "folderAutomaticUpload")!.image(color: brandElement, size: folderWidth)
-        images.folder = UIImage(named: "folder")!.image(color: brandElement, size: folderWidth)
+        images.folderEncrypted = UIImage(named: "folderEncrypted")!.image(color: brandElement)
+        images.folderSharedWithMe = UIImage(named: "folder_shared_with_me")!.image(color: brandElement)
+        images.folderPublic = UIImage(named: "folder_public")!.image(color: brandElement)
+        images.folderGroup = UIImage(named: "folder_group")!.image(color: brandElement)
+        images.folderExternal = UIImage(named: "folder_external")!.image(color: brandElement)
+        images.folderAutomaticUpload = UIImage(named: "folderAutomaticUpload")!.image(color: brandElement)
+        images.folder = UIImage(named: "folder")!.image(color: brandElement)
 
-        images.iconContacts = UIImage(named: "icon-contacts")!.image(color: brandElement, size: folderWidth)
-        images.iconTalk = UIImage(named: "icon-talk")!.image(color: brandElement, size: folderWidth)
-        images.iconCalendar = UIImage(named: "icon-calendar")!.image(color: brandElement, size: folderWidth)
-        images.iconDeck = UIImage(named: "icon-deck")!.image(color: brandElement, size: folderWidth)
-        images.iconMail = UIImage(named: "icon-mail")!.image(color: brandElement, size: folderWidth)
-        images.iconConfirm = UIImage(named: "icon-confirm")!.image(color: brandElement, size: folderWidth)
-        images.iconPages = UIImage(named: "icon-pages")!.image(color: brandElement, size: folderWidth)
+        images.iconContacts = UIImage(named: "icon-contacts")!.image(color: brandElement)
+        images.iconTalk = UIImage(named: "icon-talk")!.image(color: brandElement)
+        images.iconCalendar = UIImage(named: "icon-calendar")!.image(color: brandElement)
+        images.iconDeck = UIImage(named: "icon-deck")!.image(color: brandElement)
+        images.iconMail = UIImage(named: "icon-mail")!.image(color: brandElement)
+        images.iconConfirm = UIImage(named: "icon-confirm")!.image(color: brandElement)
+        images.iconPages = UIImage(named: "icon-pages")!.image(color: brandElement)
 
         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterChangeTheming)
     }
