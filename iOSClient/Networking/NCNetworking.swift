@@ -31,6 +31,10 @@ import Queuer
 @objc protocol uploadE2EEDelegate: AnyObject { }
 #endif
 
+@objc protocol ClientCertificateDelegate {
+    func didAskForClientCertificate()
+}
+
 @objcMembers
 class NCNetworking: NSObject, NKCommonDelegate {
     public static let shared: NCNetworking = {
@@ -58,6 +62,9 @@ class NCNetworking: NSObject, NKCommonDelegate {
     let uploadMetadataInBackground = ThreadSafeDictionary<FileNameServerUrl, tableMetadata>()
     let downloadMetadataInBackground = ThreadSafeDictionary<FileNameServerUrl, tableMetadata>()
     var transferInForegorund: TransferInForegorund?
+    weak var delegate: ClientCertificateDelegate?
+
+    var p12Data: Data?
 
     lazy var nkBackground: NKBackground = {
         let nckb = NKBackground(nkCommonInstance: NextcloudKit.shared.nkCommonInstance)
@@ -168,6 +175,24 @@ class NCNetworking: NSObject, NKCommonDelegate {
     func authenticationChallenge(_ session: URLSession,
                                  didReceive challenge: URLAuthenticationChallenge,
                                  completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
+        if challenge.protectionSpace.authenticationMethod == NSURLAuthenticationMethodClientCertificate {
+            DispatchQueue.main.async {
+                if let p12Data = self.p12Data {
+//                    completionHandler(URLSession.AuthChallengeDisposition.useCredential, PKCS12.urlCredential(for: (p12Data, "velikana100") as? UserCertificate))
+
+                } else {
+                    self.delegate?.didAskForClientCertificate()
+                }
+            }
+
+//            let alert = UIAlertController(title: NSLocalizedString("_edit_comment_", comment: ""), message: nil, preferredStyle: .alert)
+//            alert.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel, handler: nil))
+//            UIApplication.shared.?.rootViewController?.present(alert, animated: true)
+//            let p12Data = try? Data(contentsOf: URL(fileURLWithPath: Bundle.module.path(forResource: "identity", ofType: "p12")!))
+            //                let certificate = PKCS12(pkcs12Data: p12Data!, password: "")
+
+//            completionHandler(URLSession.AuthChallengeDisposition.useCredential, PKCS12.urlCredential(for: (p12Data, "velikana100") as? UserCertificate))
+        }
         DispatchQueue.global().async {
             self.checkTrustedChallenge(session, didReceive: challenge, completionHandler: completionHandler)
         }

@@ -143,6 +143,8 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
 
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(_:)), name: UIResponder.keyboardWillShowNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(_:)), name: UIResponder.keyboardWillHideNotification, object: nil)
+
+        NCNetworking.shared.delegate = self
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -455,5 +457,31 @@ extension NCLogin: NCShareAccountsDelegate {
 
     func selected(url: String, user: String) {
         isUrlValid(url: url, user: user)
+    }
+}
+
+extension NCLogin: ClientCertificateDelegate, UIDocumentPickerDelegate {
+    func didAskForClientCertificate() {
+        let alert = UIAlertController(title: NSLocalizedString("_no_client_cert_found_", comment: ""), message: NSLocalizedString("_no_client_cert_found_desc_", comment: ""), preferredStyle: .alert)
+
+        alert.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel, handler: nil))
+
+        alert.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { _ in
+            let documentProviderMenu = UIDocumentPickerViewController(forOpeningContentTypes: [UTType.pkcs12])
+
+//            documentProviderMenu.modalPresentationStyle = .formSheet
+//            documentProviderMenu.popoverPresentationController?.sourceView = mainTabBarController.tabBar
+//            documentProviderMenu.popoverPresentationController?.sourceRect = mainTabBarController.tabBar.bounds
+            documentProviderMenu.delegate = self
+
+            self.present(documentProviderMenu, animated: true, completion: nil)
+        }))
+
+        present(alert, animated: true)
+    }
+
+    func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
+        NCNetworking.shared.p12Data = try? Data(contentsOf: urls[0])
+        actionButtonLogin(self)
     }
 }
