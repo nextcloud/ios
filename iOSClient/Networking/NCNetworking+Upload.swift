@@ -55,12 +55,14 @@ extension NCNetworking {
                             hud.indicatorView = JGProgressHUDRingIndicatorView()
                             if let indicatorView = hud.indicatorView as? JGProgressHUDRingIndicatorView {
                                 indicatorView.ringWidth = 1.5
+                                indicatorView.ringColor = NCBrandColor.shared.brandElement
                             }
                             hud.tapOnHUDViewBlock = { _ in
                                 NotificationCenter.default.postOnMainThread(name: "NextcloudKit.chunkedFile.stop")
                             }
                             hud.textLabel.text = NSLocalizedString("_wait_file_preparation_", comment: "")
                             hud.detailTextLabel.text = NSLocalizedString("_tap_to_cancel_", comment: "")
+                            hud.detailTextLabel.textColor = NCBrandColor.shared.iconImageColor2
                             hud.show(in: hudView)
                         }
                     }

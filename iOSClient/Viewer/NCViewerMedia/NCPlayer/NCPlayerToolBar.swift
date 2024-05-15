@@ -480,8 +480,10 @@ extension NCPlayerToolBar: NCSelectDelegate {
                 hud.indicatorView = JGProgressHUDRingIndicatorView()
                 hud.textLabel.text = NSLocalizedString("_downloading_", comment: "")
                 hud.detailTextLabel.text = NSLocalizedString("_tap_to_cancel_", comment: "")
+                hud.detailTextLabel.textColor = NCBrandColor.shared.iconImageColor2
                 if let indicatorView = hud.indicatorView as? JGProgressHUDRingIndicatorView {
                     indicatorView.ringWidth = 1.5
+                    indicatorView.ringColor = NCBrandColor.shared.brandElement
                 }
                 hud.tapOnHUDViewBlock = { _ in
                     if let request = downloadRequest {
