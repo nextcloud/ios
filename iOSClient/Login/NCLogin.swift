@@ -44,6 +44,10 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
 
     private var shareAccounts: [NKShareAccounts.DataAccounts]?
 
+    var loginFlowV2Token = ""
+    var loginFlowV2Endpoint = ""
+    var loginFlowV2Login = ""
+
     // MARK: - View Life Cycle
 
     override func viewDidLoad() {
@@ -143,6 +147,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
 
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(_:)), name: UIResponder.keyboardWillShowNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(_:)), name: UIResponder.keyboardWillHideNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(applicationDidBecomeActive(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationDidBecomeActive), object: nil)
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -163,6 +168,10 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
         appDelegate.timerErrorNetworkingDisabled = false
+    }
+
+    @objc func applicationDidBecomeActive(_ notification: NSNotification) {
+        pollLogin()
     }
 
     // MARK: - TextField
@@ -273,32 +282,14 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
 
                     // Login Flow V2
                     if error == .success, let token, let endpoint, let login {
+                        self.pollLogin()
 
-                        if let loginWeb = UIStoryboard(name: "NCLogin", bundle: nil).instantiateViewController(withIdentifier: "NCLoginWeb") as? NCLoginWeb {
+                        self.loginFlowV2Token = token
+                        self.loginFlowV2Endpoint = endpoint
+                        self.loginFlowV2Login = login
 
-                            loginWeb.urlBase = url
-                            loginWeb.user = user
-                            loginWeb.loginFlowV2Available = true
-                            loginWeb.loginFlowV2Token = token
-                            loginWeb.loginFlowV2Endpoint = endpoint
-                            loginWeb.loginFlowV2Login = login
-
-                            self.navigationController?.pushViewController(loginWeb, animated: true)
-                        }
-
-                    // Login Flow
-                    } else if serverInfo.versionMajor >= NCGlobal.shared.nextcloudVersion12 {
-
-                        if let loginWeb = UIStoryboard(name: "NCLogin", bundle: nil).instantiateViewController(withIdentifier: "NCLoginWeb") as? NCLoginWeb {
-
-                            loginWeb.urlBase = url
-                            loginWeb.user = user
-
-                            self.navigationController?.pushViewController(loginWeb, animated: true)
-                        }
-
-                    // NO Login flow available
-                    } else if serverInfo.versionMajor < NCGlobal.shared.nextcloudVersion12 {
+                        UIApplication.shared.open(URL(string: login)!)
+                    } else if serverInfo.versionMajor < NCGlobal.shared.nextcloudVersion12 { // No login flow available
 
                         let alertController = UIAlertController(title: NSLocalizedString("_error_", comment: ""), message: NSLocalizedString("_webflow_not_available_", comment: ""), preferredStyle: .alert)
 
@@ -447,6 +438,55 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
             let alertController = UIAlertController(title: NSLocalizedString("_error_", comment: ""), message: message, preferredStyle: .alert)
             alertController.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { _ in }))
             self.present(alertController, animated: true, completion: { })
+        }
+    }
+
+    private func pollLogin() {
+        NextcloudKit.shared.getLoginFlowV2Poll(token: self.loginFlowV2Token, endpoint: self.loginFlowV2Endpoint) { server, loginName, appPassword, _, error in
+            if error == .success, let server, let loginName, let appPassword {
+                self.createAccount(server: server, username: loginName, password: appPassword)
+            }
+        }
+    }
+
+    func createAccount(server: String, username: String, password: String) {
+
+        var urlBase = server
+        if urlBase.last == "/" { urlBase = String(urlBase.dropLast()) }
+        let account: String = "\(username) \(urlBase)"
+        let user = username
+
+        NextcloudKit.shared.setup(account: account, user: user, userId: user, password: password, urlBase: urlBase)
+        NextcloudKit.shared.getUserProfile { _, userProfile, _, error in
+
+            if error == .success, let userProfile {
+
+                NCManageDatabase.shared.deleteAccount(account)
+                NCManageDatabase.shared.addAccount(account, urlBase: urlBase, user: user, userId: userProfile.userId, password: password)
+
+                self.appDelegate.changeAccount(account, userProfile: userProfile)
+
+                let window = UIApplication.shared.firstWindow
+                if window?.rootViewController is NCMainTabBarController {
+                    self.dismiss(animated: true)
+                } else {
+                    if let mainTabBarController = UIStoryboard(name: "Main", bundle: nil).instantiateInitialViewController() as? NCMainTabBarController {
+                        mainTabBarController.modalPresentationStyle = .fullScreen
+                        mainTabBarController.view.alpha = 0
+                        window?.rootViewController = mainTabBarController
+                        window?.makeKeyAndVisible()
+                        UIView.animate(withDuration: 0.5) {
+                            mainTabBarController.view.alpha = 1
+                        }
+                    }
+                }
+
+            } else {
+
+                let alertController = UIAlertController(title: NSLocalizedString("_error_", comment: ""), message: error.errorDescription, preferredStyle: .alert)
+                alertController.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { _ in }))
+                self.present(alertController, animated: true)
+            }
         }
     }
 }
