@@ -42,14 +42,6 @@ class NCLoginWeb: UIViewController {
     var configPassword: String?
     var configAppPassword: String?
 
-    var loginFlowV2Available = false
-    var loginFlowV2Token = ""
-    var loginFlowV2Endpoint = ""
-    var loginFlowV2Login = ""
-
-    // Opens the login URL in external browser instead of in app. User must manually go back to the app.
-    let loginFlowv2ExternalBrowser = true
-
     // MARK: - View Life Cycle
 
     override func viewDidLoad() {
@@ -123,13 +115,9 @@ class NCLoginWeb: UIViewController {
 
         // ADD end point for Web Flow
         if urlBase != NCBrandOptions.shared.linkloginPreferredProviders {
-            if loginFlowV2Available {
-                urlBase = loginFlowV2Login
-            } else {
-                urlBase += "/index.php/login/flow"
-                if let user = self.user {
-                    urlBase += "?user=\(user)"
-                }
+            urlBase += "/index.php/login/flow"
+            if let user = self.user {
+                urlBase += "?user=\(user)"
             }
         }
 
@@ -147,9 +135,8 @@ class NCLoginWeb: UIViewController {
                 titleView = NSLocalizedString("_user_", comment: "") + " " + account.userId + " " + NSLocalizedString("_in_", comment: "") + " " + host
             }
         }
-        self.title = titleView
 
-        NotificationCenter.default.addObserver(self, selector: #selector(applicationDidBecomeActive(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationDidBecomeActive), object: nil)
+        self.title = titleView
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -174,32 +161,20 @@ class NCLoginWeb: UIViewController {
     }
 
     func loadWebPage(webView: WKWebView, url: URL) {
-        if loginFlowV2Available, loginFlowv2ExternalBrowser {
-            UIApplication.shared.open(url)
+        let language = NSLocale.preferredLanguages[0] as String
+        var request = URLRequest(url: url)
+
+        if let deviceName = "\(UIDevice.current.name) (\(NCBrandOptions.shared.brand) iOS)".cString(using: .utf8),
+           let deviceUserAgent = String(cString: deviceName, encoding: .ascii) {
+            webView.customUserAgent = deviceUserAgent
         } else {
-            let language = NSLocale.preferredLanguages[0] as String
-            var request = URLRequest(url: url)
-
-            if let deviceName = "\(UIDevice.current.name) (\(NCBrandOptions.shared.brand) iOS)".cString(using: .utf8),
-                let deviceUserAgent = String(cString: deviceName, encoding: .ascii) {
-                webView.customUserAgent = deviceUserAgent
-            } else {
-                webView.customUserAgent = userAgent
-            }
-
-            request.addValue("true", forHTTPHeaderField: "OCS-APIRequest")
-            request.addValue(language, forHTTPHeaderField: "Accept-Language")
-
-            webView.load(request)
+            webView.customUserAgent = userAgent
         }
-    }
 
-    private func pollLogin() {
-        NextcloudKit.shared.getLoginFlowV2Poll(token: self.loginFlowV2Token, endpoint: self.loginFlowV2Endpoint) { server, loginName, appPassword, _, error in
-            if error == .success, let server, let loginName, let appPassword {
-                self.createAccount(server: server, username: loginName, password: appPassword)
-            }
-        }
+        request.addValue("true", forHTTPHeaderField: "OCS-APIRequest")
+        request.addValue(language, forHTTPHeaderField: "Accept-Language")
+
+        webView.load(request)
     }
 
     func getAppPassword(serverUrl: String, username: String, password: String) {
@@ -220,10 +195,6 @@ class NCLoginWeb: UIViewController {
 
     @objc func changeUser(sender: UIBarButtonItem) {
         toggleMenu()
-    }
-
-    @objc func applicationDidBecomeActive(_ notification: NSNotification) {
-        pollLogin()
     }
 }
 
@@ -288,10 +259,7 @@ extension NCLoginWeb: WKNavigationDelegate {
     }
 
     func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
-
         NCActivityIndicator.shared.stop()
-
-        pollLogin()
     }
 
     // MARK: -
