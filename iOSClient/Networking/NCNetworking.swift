@@ -178,8 +178,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
         if challenge.protectionSpace.authenticationMethod == NSURLAuthenticationMethodClientCertificate {
             DispatchQueue.main.async {
                 if let p12Data = self.p12Data {
-//                    completionHandler(URLSession.AuthChallengeDisposition.useCredential, PKCS12.urlCredential(for: (p12Data, "velikana100") as? UserCertificate))
-
+                    completionHandler(URLSession.AuthChallengeDisposition.useCredential, PKCS12.urlCredential(for: (p12Data, "velikana100") as? UserCertificate))
                 } else {
                     self.delegate?.didAskForClientCertificate()
                 }
