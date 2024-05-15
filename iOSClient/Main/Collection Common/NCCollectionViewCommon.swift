@@ -48,6 +48,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     var dataSource = NCDataSource()
     var richWorkspaceText: String?
     var headerMenu: NCSectionHeaderMenu?
+    var headerEmptyData: NCSectionHeaderEmptyData?
     var isSearchingMode: Bool = false
     var layoutForView: NCDBLayoutForView?
     var dataSourceTask: URLSessionTask?
@@ -546,7 +547,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                     self.collectionView.reloadData()
                 }
                 self.headerMenu?.progressTransfer.progress = progressNumber.floatValue
-                print("XXX \(progressNumber.floatValue) - \(self.headerMenu?.progressTransfer.progress)")
+                self.headerEmptyData?.progressTransfer.progress = progressNumber.floatValue
             } else {
                 guard let indexPath = self.dataSource.getIndexPathMetadata(ocId: ocId).indexPath,
                       let cell = self.collectionView?.cellForItem(at: indexPath),
@@ -1540,6 +1541,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             if dataSource.getMetadataSourceForAllSections().isEmpty {
 
                 guard let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionHeaderEmptyData", for: indexPath) as? NCSectionHeaderEmptyData else { return NCSectionHeaderEmptyData() }
+                self.headerEmptyData = header
                 header.delegate = self
 
                 if !isSearchingMode, headerMenuTransferView, let ocId = NCNetworking.shared.transferInForegorund?.ocId {
@@ -1579,9 +1581,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
 
                 guard let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionHeaderMenu", for: indexPath) as? NCSectionHeaderMenu else { return NCSectionHeaderMenu() }
                 let (_, heightHeaderRichWorkspace, heightHeaderSection) = getHeaderHeight(section: indexPath.section)
-
                 self.headerMenu = header
-
                 header.delegate = self
 
                 if !isSearchingMode, headerMenuTransferView, let ocId = NCNetworking.shared.transferInForegorund?.ocId {

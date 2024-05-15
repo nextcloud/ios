@@ -53,9 +53,11 @@ class NCOperationSaveLivePhoto: ConcurrentOperation {
             self.hud.indicatorView = JGProgressHUDRingIndicatorView()
             if let indicatorView = self.hud.indicatorView as? JGProgressHUDRingIndicatorView {
                 indicatorView.ringWidth = 1.5
+                indicatorView.ringColor = NCBrandColor.shared.brandElement
             }
             self.hud.textLabel.text = NSLocalizedString("_download_image_", comment: "")
             self.hud.detailTextLabel.text = self.metadata.fileName
+            self.hud.detailTextLabel.textColor = NCBrandColor.shared.iconImageColor2
             self.hud.show(in: self.hudView)
         }
 
@@ -114,6 +116,7 @@ class NCOperationSaveLivePhoto: ConcurrentOperation {
                             self.hud.textLabel.text = NSLocalizedString("_livephoto_save_error_", comment: "")
                         } else {
                             self.hud.indicatorView = JGProgressHUDSuccessIndicatorView()
+                            self.hud.indicatorView?.backgroundColor = NCBrandColor.shared.brandElement
                             self.hud.textLabel.text = NSLocalizedString("_success_", comment: "")
                         }
                         self.hud.dismiss()
