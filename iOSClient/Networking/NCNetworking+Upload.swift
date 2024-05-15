@@ -164,7 +164,7 @@ extension NCNetworking {
                 if afError?.isExplicitlyCancelledError ?? false {
                     error = NKError(errorCode: NCGlobal.shared.errorRequestExplicityCancelled, errorDescription: "error request explicity cancelled")
                 }
-                self.uploadComplete(fileName: metadata.fileName, serverUrl: metadata.serverUrl, ocId: ocId, etag: etag, date: date, size: size, task: uploadTask, error: error)
+                self.uploadComplete(metadata: metadata, ocId: ocId, etag: etag, date: date, size: size, error: error)
             }
             completion(account, ocId, etag, date, size, allHeaderFields, afError, error)
         }
@@ -251,7 +251,7 @@ extension NCNetworking {
                 NCManageDatabase.shared.deleteChunks(account: account, ocId: metadata.ocId, directory: directory)
             }
             if withUploadComplete, let uploadTask {
-                self.uploadComplete(fileName: metadata.fileName, serverUrl: metadata.serverUrl, ocId: file?.ocId, etag: file?.etag, date: file?.date, size: file?.size ?? 0, task: uploadTask, error: error)
+                self.uploadComplete(metadata: metadata, ocId: file?.ocId, etag: file?.etag, date: file?.date, size: file?.size ?? 0, error: error)
             }
             completion(account, file, afError, error)
         }
@@ -314,6 +314,17 @@ extension NCNetworking {
                         size: Int64,
                         task: URLSessionTask,
                         error: NKError) {
+        guard let url = task.currentRequest?.url,
+              let metadata = NCManageDatabase.shared.getMetadata(from: url) else { return }
+        uploadComplete(metadata: metadata, ocId: ocId, etag: etag, date: date, size: size, error: error)
+    }
+
+    func uploadComplete(metadata: tableMetadata,
+                        ocId: String?,
+                        etag: String?,
+                        date: NSDate?,
+                        size: Int64,
+                        error: NKError) {
 
         var isApplicationStateActive = false
 #if !EXTENSION
@@ -322,12 +333,10 @@ extension NCNetworking {
 
         DispatchQueue.global().async {
 
-            guard let url = task.currentRequest?.url,
-                  let metadata = NCManageDatabase.shared.getMetadata(from: url) else { return }
             let ocIdTemp = metadata.ocId
             let selector = metadata.sessionSelector
 
-            self.uploadMetadataInBackground.removeValue(forKey: FileNameServerUrl(fileName: fileName, serverUrl: serverUrl))
+            self.uploadMetadataInBackground.removeValue(forKey: FileNameServerUrl(fileName: metadata.fileName, serverUrl: metadata.serverUrl))
 
             if error == .success, let ocId = ocId, size == metadata.size {
 
@@ -357,7 +366,7 @@ extension NCNetworking {
                     self.utilityFileSystem.removeFile(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(ocIdTemp))
                 }
 
-                NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Upload complete " + serverUrl + "/" + fileName + ", result: success(\(size) bytes)")
+                NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Upload complete " + metadata.serverUrl + "/" + metadata.fileName + ", result: success(\(size) bytes)")
 
                 let userInfo: [AnyHashable: Any] = ["ocId": metadata.ocId, "serverUrl": metadata.serverUrl, "account": metadata.account, "fileName": metadata.fileName, "ocIdTemp": ocIdTemp, "error": error]
                 if metadata.isLivePhoto, NCGlobal.shared.isLivePhotoServerAvailable {
@@ -429,7 +438,7 @@ extension NCNetworking {
                         let windowScenes = UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }
                         for windowScene in windowScenes {
                             if let rootViewController = windowScene.keyWindow?.rootViewController as? NCMainTabBarController,
-                               rootViewController.currentServerUrl() == serverUrl {
+                               rootViewController.currentServerUrl() == metadata.serverUrl {
                                 mainTabBarController = rootViewController
                                 break
                             }
