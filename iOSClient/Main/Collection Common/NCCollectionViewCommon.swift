@@ -459,7 +459,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
               account == appDelegate.account
         else { return }
 
-        notificationReloadDataSource += 1
+        reloadDataSource()
     }
 
     @objc func uploadStartFile(_ notification: NSNotification) {
@@ -523,7 +523,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         }
 
         if account == appDelegate.account, serverUrl == self.serverUrl {
-            notificationReloadDataSource += 1
+            reloadDataSource()
         }
     }
 
