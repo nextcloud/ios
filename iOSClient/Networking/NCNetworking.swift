@@ -35,6 +35,7 @@ import Queuer
 class NCNetworking: NSObject, NKCommonDelegate {
     public static let shared: NCNetworking = {
         let instance = NCNetworking()
+        NotificationCenter.default.addObserver(instance, selector: #selector(applicationDidEnterBackground), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationDidEnterBackground), object: nil)
         return instance
     }()
 
@@ -58,6 +59,19 @@ class NCNetworking: NSObject, NKCommonDelegate {
     let uploadMetadataInBackground = ThreadSafeDictionary<FileNameServerUrl, tableMetadata>()
     let downloadMetadataInBackground = ThreadSafeDictionary<FileNameServerUrl, tableMetadata>()
     var transferInForegorund: TransferInForegorund?
+    let transferInError = ThreadSafeDictionary<String, Int>()
+
+    func transferInError(ocId: String) {
+        if let counter = self.transferInError[ocId] {
+            self.transferInError[ocId] = counter + 1
+        } else {
+            self.transferInError[ocId] = 1
+        }
+    }
+
+    func removeTransferInError(ocId: String) {
+        self.transferInError.removeValue(forKey: ocId)
+    }
 
     lazy var nkBackground: NKBackground = {
         let nckb = NKBackground(nkCommonInstance: NextcloudKit.shared.nkCommonInstance)
@@ -142,6 +156,12 @@ class NCNetworking: NSObject, NKCommonDelegate {
         print("Start Background Upload: ", sessionManagerUploadBackground)
         print("Start Background Upload WWan: ", sessionManagerUploadBackgroundWWan)
 #endif
+    }
+
+    // MARK: - NotificationCenter
+
+    func applicationDidEnterBackground() {
+        self.transferInError.removeAll()
     }
 
     // MARK: - Communication Delegate

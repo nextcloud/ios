@@ -1161,6 +1161,6 @@ extension NCManageDatabase {
         if serverUrl.hasSuffix("/") {
             serverUrl = String(serverUrl.dropLast())
         }
-        return NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "serverUrl == '\(serverUrl)' AND fileName == '\(fileName)'"))
+        return NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "serverUrl == %@ AND fileName == %@", serverUrl, fileName))
     }
 }

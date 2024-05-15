@@ -78,7 +78,7 @@ extension NCNetworking {
         let ocId = metadata.ocId
 
         DispatchQueue.global().async {
-            if let result = NCManageDatabase.shared.getResultMetadata(predicate: NSPredicate(format: "account == '\(account)' AND status == \(NCGlobal.shared.metadataStatusNormal) AND (fileName == '\(livePhotoFile)' || fileId == '\(livePhotoFile)')")) {
+            if let result = NCManageDatabase.shared.getResultMetadata(predicate: NSPredicate(format: "account == %@ AND status == %d AND (fileName == %@ || fileId == %@)", account, NCGlobal.shared.metadataStatusNormal, livePhotoFile, livePhotoFile)) {
                 if livePhotoFile == result.fileId { return }
                 for case let operation as NCOperationConvertLivePhoto in self.convertLivePhotoQueue.operations where operation.serverUrlfileNamePath == serverUrlfileNamePath { continue }
                 self.convertLivePhotoQueue.addOperation(NCOperationConvertLivePhoto(serverUrlfileNamePath: serverUrlfileNamePath, livePhotoFile: result.fileId, account: account, ocId: ocId))

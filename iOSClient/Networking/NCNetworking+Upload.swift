@@ -327,10 +327,13 @@ extension NCNetworking {
             let ocIdTemp = metadata.ocId
             let selector = metadata.sessionSelector
 
+            self.uploadMetadataInBackground.removeValue(forKey: FileNameServerUrl(fileName: fileName, serverUrl: serverUrl))
+
             if error == .success, let ocId = ocId, size == metadata.size {
 
-                let metadata = tableMetadata.init(value: metadata)
+                self.removeTransferInError(ocId: ocIdTemp)
 
+                let metadata = tableMetadata.init(value: metadata)
                 metadata.uploadDate = date ?? NSDate()
                 metadata.etag = etag ?? ""
                 metadata.ocId = ocId
@@ -368,6 +371,7 @@ extension NCNetworking {
 
                 if error.errorCode == NSURLErrorCancelled || error.errorCode == NCGlobal.shared.errorRequestExplicityCancelled {
 
+                    self.removeTransferInError(ocId: ocIdTemp)
                     self.utilityFileSystem.removeFile(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId))
                     NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
                     NotificationCenter.default.post(name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterUploadCancelFile),
@@ -378,6 +382,7 @@ extension NCNetworking {
 
                 } else if error.errorCode == NCGlobal.shared.errorBadRequest || error.errorCode == NCGlobal.shared.errorUnsupportedMediaType {
 
+                    self.removeTransferInError(ocId: ocIdTemp)
                     self.utilityFileSystem.removeFile(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId))
                     NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
                     NotificationCenter.default.post(name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterUploadCancelFile),
@@ -393,6 +398,8 @@ extension NCNetworking {
                     NCManageDatabase.shared.addDiagnostic(account: metadata.account, issue: NCGlobal.shared.diagnosticIssueVirusDetected)
 
                 } else if error.errorCode == NCGlobal.shared.errorForbidden && isApplicationStateActive {
+
+                    self.removeTransferInError(ocId: ocIdTemp)
 #if !EXTENSION
                     DispatchQueue.main.async {
                         let newFileName = self.utilityFileSystem.createFileName(metadata.fileName, serverUrl: metadata.serverUrl, account: metadata.account)
@@ -436,6 +443,7 @@ extension NCNetworking {
 #endif
                 } else {
 
+                    self.transferInError(ocId: metadata.ocId)
                     NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId,
                                                                sessionError: error.errorDescription,
                                                                status: NCGlobal.shared.metadataStatusUploadError,
@@ -457,8 +465,6 @@ extension NCNetworking {
                     }
                 }
             }
-
-            self.uploadMetadataInBackground.removeValue(forKey: FileNameServerUrl(fileName: fileName, serverUrl: serverUrl))
         }
     }
 

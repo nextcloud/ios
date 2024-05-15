@@ -193,6 +193,10 @@ class NCNetworkingProcess: NSObject {
         // No upload available ? --> Retry Upload in Error
         if counterUploading == 0 {
             for metadata in metadatasUploadError {
+                // Verify COUNTER ERROR
+                if let counter = NCNetworking.shared.transferInError[metadata.ocId] {
+                    print("ciao")
+                }
                 // Verify QUOTA
                 if metadata.sessionError.contains("\(NCGlobal.shared.errorQuota)") {
                     NextcloudKit.shared.getUserProfile { _, userProfile, _, error in
