@@ -44,11 +44,11 @@ extension NCShareExtension: UICollectionViewDelegate {
         if kind == UICollectionView.elementKindSectionHeader {
             guard let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionHeaderEmptyData", for: indexPath) as? NCSectionHeaderEmptyData else { return NCSectionHeaderEmptyData() }
             if self.dataSourceTask?.state == .running {
-                header.emptyImage.image = UIImage(named: "networkInProgress")?.image(color: NCBrandColor.shared.iconImageColor, size: UIScreen.main.bounds.width)
+                header.emptyImage.image = UIImage(named: "networkInProgress")?.image(color: NCBrandColor.shared.brandElement)
                 header.emptyTitle.text = NSLocalizedString("_request_in_progress_", comment: "")
                 header.emptyDescription.text = ""
             } else {
-                header.emptyImage.image = UIImage(named: "folder")?.image(color: NCBrandColor.shared.brandElement, size: UIScreen.main.bounds.width)
+                header.emptyImage.image = UIImage(named: "folder")?.image(color: NCBrandColor.shared.brandElement)
                 header.emptyTitle.text = NSLocalizedString("_files_no_folders_", comment: "")
                 header.emptyDescription.text = ""
             }

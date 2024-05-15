@@ -140,7 +140,7 @@ extension NCTrash: UICollectionViewDataSource {
         if kind == UICollectionView.elementKindSectionHeader {
             guard let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionHeaderEmptyData", for: indexPath) as? NCSectionHeaderEmptyData
             else { return NCSectionHeaderEmptyData() }
-            header.emptyImage.image = UIImage(named: "trash")?.image(color: NCBrandColor.shared.iconImageColor, size: UIScreen.main.bounds.width)
+            header.emptyImage.image = UIImage(named: "trash")?.image(color: NCBrandColor.shared.brandElement)
             header.emptyTitle.text = NSLocalizedString("_trash_no_trash_", comment: "")
             header.emptyDescription.text = NSLocalizedString("_trash_no_trash_description_", comment: "")
             return header

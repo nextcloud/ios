@@ -48,7 +48,7 @@ extension NCTrash {
             iconHeader = icon
         } else {
             if tableTrash.directory {
-                iconHeader = UIImage(named: "folder")!.image(color: NCBrandColor.shared.brandElement, size: 50)
+                iconHeader = NCImageCache.images.folder
             } else {
                 iconHeader = UIImage(named: tableTrash.iconName)
             }
@@ -65,7 +65,7 @@ extension NCTrash {
         actions.append(
             NCMenuAction(
                 title: NSLocalizedString("_restore_", comment: ""),
-                icon: UIImage(named: "restore")!.image(color: NCBrandColor.shared.iconImageColor, size: 50),
+                icon: utility.loadImage(named: "arrow.circlepath", colors: [NCBrandColor.shared.iconImageColor]),
                 action: { _ in
                     self.restoreItem(with: objectId)
                 }
