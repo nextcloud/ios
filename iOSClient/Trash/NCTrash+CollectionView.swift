@@ -74,7 +74,7 @@ extension NCTrash: UICollectionViewDataSource {
         if tableTrash.iconName.isEmpty {
             image = NCImageCache.images.file
         } else {
-            image = UIImage(named: tableTrash.iconName)
+            image = NCUtility().loadImage(named: tableTrash.iconName, useTypeIconFile: true)
         }
 
         if FileManager().fileExists(atPath: utilityFileSystem.getDirectoryProviderStorageIconOcId(tableTrash.fileId, etag: tableTrash.fileName)) {
@@ -140,7 +140,7 @@ extension NCTrash: UICollectionViewDataSource {
         if kind == UICollectionView.elementKindSectionHeader {
             guard let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionHeaderEmptyData", for: indexPath) as? NCSectionHeaderEmptyData
             else { return NCSectionHeaderEmptyData() }
-            header.emptyImage.image = UIImage(named: "trash")?.image(color: NCBrandColor.shared.brandElement)
+            header.emptyImage.image = utility.loadImage(named: "trash", colors: [NCBrandColor.shared.brandElement])
             header.emptyTitle.text = NSLocalizedString("_trash_no_trash_", comment: "")
             header.emptyDescription.text = NSLocalizedString("_trash_no_trash_description_", comment: "")
             return header
