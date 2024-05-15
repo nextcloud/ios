@@ -546,6 +546,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                     self.collectionView.reloadData()
                 }
                 self.headerMenu?.progressTransfer.progress = progressNumber.floatValue
+                print("XXX \(progressNumber.floatValue) - \(self.headerMenu?.progressTransfer.progress)")
             } else {
                 guard let indexPath = self.dataSource.getIndexPathMetadata(ocId: ocId).indexPath,
                       let cell = self.collectionView?.cellForItem(at: indexPath),
