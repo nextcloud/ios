@@ -79,7 +79,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
 
     override func downloadCancelFile(_ notification: NSNotification) {
 
-        notificationReloadDataSource += 1
+        reloadDataSource()
     }
 
     override func uploadStartFile(_ notification: NSNotification) {
@@ -99,10 +99,18 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
 
     override func uploadCancelFile(_ notification: NSNotification) {
 
-        notificationReloadDataSource += 1
+        reloadDataSource()
     }
 
     // MARK: TAP EVENT
+
+    override func tapMoreGridItem(with objectId: String, namedButtonMore: String, image: UIImage?, indexPath: IndexPath, sender: Any) {
+        guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(objectId) else { return }
+
+        Task {
+            await cancelSession(metadata: metadata)
+        }
+    }
 
     override func longPressMoreListItem(with objectId: String, namedButtonMore: String, indexPath: IndexPath, gestureRecognizer: UILongPressGestureRecognizer) {
 

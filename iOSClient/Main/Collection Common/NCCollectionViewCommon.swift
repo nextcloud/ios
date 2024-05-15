@@ -1856,6 +1856,16 @@ extension NCCollectionViewCommon {
                     }
                 }
             }
+            NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId,
+                                                       session: "",
+                                                       sessionError: "",
+                                                       selector: "",
+                                                       status: NCGlobal.shared.metadataStatusNormal)
+            NotificationCenter.default.post(name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterDownloadCancelFile),
+                                            object: nil,
+                                            userInfo: ["ocId": metadata.ocId,
+                                                       "serverUrl": metadata.serverUrl,
+                                                       "account": metadata.account])
         }
 
         // UPLOAD FOREGROUND
