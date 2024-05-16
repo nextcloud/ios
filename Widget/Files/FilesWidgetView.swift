@@ -163,7 +163,7 @@ struct FilesWidgetView: View {
                             .frame(width: geo.size.width / 4, height: sizeButton)
                     })
                 }
-                .frame(width: geo.size.width, height: geo.size.height - 25, alignment: .bottomTrailing)
+                .frame(width: geo.size.width, height: geo.size.height - 22, alignment: .bottomTrailing)
                 .redacted(reason: entry.isPlaceholder ? .placeholder : [])
 
                 HStack {
