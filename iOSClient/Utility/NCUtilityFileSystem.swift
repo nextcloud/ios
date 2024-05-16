@@ -124,7 +124,7 @@ class NCUtilityFileSystem: NSObject {
                     return false
                 }
             } else {
-                return fileNameViewSize == metadata.size
+                return (fileNameViewSize == metadata.size) && metadata.size > 0
             }
         } catch { print("Error: \(error)") }
         return false
