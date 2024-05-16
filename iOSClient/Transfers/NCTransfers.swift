@@ -154,6 +154,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
         cameraRoll.extractCameraRoll(from: metadata) { metadatas in
             for metadata in metadatas {
                 if let metadata = NCManageDatabase.shared.setMetadataStatus(ocId: metadata.ocId, status: NCGlobal.shared.metadataStatusUploading) {
+                    NCNetworking.shared.removeTransferInError(ocId: metadata.ocId)
                     NCNetworking.shared.upload(metadata: metadata, hudView: hudView, hud: JGProgressHUD())
                 }
             }
