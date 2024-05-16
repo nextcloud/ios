@@ -106,24 +106,6 @@ func getFilesDataEntry(configuration: AccountIntent?, isPreview: Bool, displaySi
         return completion(FilesDataEntry(date: Date(), datas: datasPlaceholder, isPlaceholder: true, isEmpty: false, userId: "", url: "", tile: getTitleFilesWidget(account: nil), footerImage: "xmark.icloud", footerText: NSLocalizedString("_no_active_account_", value: "No account found", comment: "")))
     }
 
-    @Sendable func isLive(file: NKFile, files: [NKFile]) -> Bool {
-
-        let ext = (file.fileName as NSString).pathExtension.lowercased()
-        if ext != "mov" { return false }
-
-        let fileName = (file.fileName as NSString).deletingPathExtension.lowercased()
-        let fileNameViewMOV = fileName + ".mov"
-        let fileNameViewJPG = fileName + ".jpg"
-        let fileNameViewHEIC = fileName + ".heic"
-
-        let results = files.filter({ $0.fileName.lowercased() == fileNameViewJPG.lowercased() || $0.fileName.lowercased() == fileNameViewHEIC.lowercased() || $0.fileName.lowercased() == fileNameViewMOV.lowercased() })
-        if results.count == 2 {
-            return true
-        } else {
-            return false
-        }
-    }
-
     // NETWORKING
     let password = NCKeychain().getPassword(account: account.account)
     NextcloudKit.shared.setup(
@@ -180,7 +162,7 @@ func getFilesDataEntry(configuration: AccountIntent?, isPreview: Bool, displaySi
         </d:order>
     </d:orderby>
     <d:limit>
-        <d:nresults>50</d:nresults>
+        <d:nresults>25</d:nresults>
     </d:limit>
     </d:basicsearch>
     </d:searchrequest>
@@ -206,18 +188,19 @@ func getFilesDataEntry(configuration: AccountIntent?, isPreview: Bool, displaySi
         NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Start \(NCBrandOptions.shared.brand) widget session with level \(levelLog) " + versionNextcloudiOS)
     }
 
-    let options = NKRequestOptions(timeout: 90, queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
+    let options = NKRequestOptions(timeout: 30, queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
     NextcloudKit.shared.searchBodyRequest(serverUrl: account.urlBase, requestBody: requestBody, showHiddenFiles: NCKeychain().showHiddenFiles, options: options) { _, files, data, error in
         Task {
             var datas: [FilesData] = []
-            var imageRecent = UIImage(named: "file")!
+            var imageRecent = utility.loadImage(named: "file", useTypeIconFile: true)
             let title = getTitleFilesWidget(account: account)
             let files = files.sorted(by: { ($0.date as Date) > ($1.date as Date) })
 
             for file in files {
 
-                guard !file.directory else { continue }
-                guard !isLive(file: file, files: files) else { continue }
+                guard !file.directory else {
+                    continue
+                }
 
                 // SUBTITLE
                 let subTitle = utility.dateDiff(file.date as Date) + " · " + utilityFileSystem.transformedSize(file.size)
@@ -232,7 +215,7 @@ func getFilesDataEntry(configuration: AccountIntent?, isPreview: Bool, displaySi
 
                 // IMAGE
                 if !file.iconName.isEmpty {
-                    imageRecent = UIImage(named: file.iconName)!
+                    imageRecent = utility.loadImage(named: file.iconName, useTypeIconFile: true)
                 }
                 if let image = utility.createFilePreviewImage(ocId: file.ocId, etag: file.etag, fileNameView: file.fileName, classFile: file.classFile, status: 0, createPreviewMedia: false) {
                     imageRecent = image
