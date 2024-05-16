@@ -77,7 +77,7 @@ struct FilesWidgetView: View {
                                             Image(uiImage: element.image)
                                                 .resizable()
                                                 .renderingMode(.template)
-                                                .foregroundColor(Color(.systemGray))
+                                                .foregroundColor(Color(NCBrandColor.shared.iconImageColor2))
                                                 .scaledToFit()
                                                 .frame(width: 35, height: 35)
                                         } else {
@@ -95,7 +95,7 @@ struct FilesWidgetView: View {
                                                 .fontWeight(.regular)
                                             Text(element.subTitle)
                                                 .font(.system(size: CGFloat(10)))
-                                                .foregroundColor(Color(.systemGray))
+                                                .foregroundColor(Color(NCBrandColor.shared.iconImageColor2))
                                         }
                                         Spacer()
                                     }
