@@ -175,7 +175,7 @@
         <image name="more-apps-template" width="32" height="32"/>
         <image name="notes-template" width="24" height="24"/>
         <image name="sparkles" catalog="system" width="115" height="128"/>
-        <image name="talk-template" width="600" height="600"/>
+        <image name="talk-template" width="16" height="16"/>
         <systemColor name="secondarySystemGroupedBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>
