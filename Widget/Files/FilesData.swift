@@ -43,6 +43,7 @@ struct FilesData: Identifiable, Hashable {
     var title: String
     var subTitle: String
     var url: URL
+    var useTypeIconFile: Bool = false
 }
 
 let filesDatasTest: [FilesData] = [
@@ -192,11 +193,12 @@ func getFilesDataEntry(configuration: AccountIntent?, isPreview: Bool, displaySi
     NextcloudKit.shared.searchBodyRequest(serverUrl: account.urlBase, requestBody: requestBody, showHiddenFiles: NCKeychain().showHiddenFiles, options: options) { _, files, data, error in
         Task {
             var datas: [FilesData] = []
-            var imageRecent = utility.loadImage(named: "file", useTypeIconFile: true)
             let title = getTitleFilesWidget(account: account)
             let files = files.sorted(by: { ($0.date as Date) > ($1.date as Date) })
 
             for file in files {
+                var image: UIImage?
+                var useTypeIconFile = false
 
                 guard !file.directory else {
                     continue
@@ -214,27 +216,28 @@ func getFilesDataEntry(configuration: AccountIntent?, isPreview: Bool, displaySi
                 guard let url = URL(string: urlString) else { continue }
 
                 // IMAGE
-                if !file.iconName.isEmpty {
-                    imageRecent = utility.loadImage(named: file.iconName, useTypeIconFile: true)
-                }
-                if let image = utility.createFilePreviewImage(ocId: file.ocId, etag: file.etag, fileNameView: file.fileName, classFile: file.classFile, status: 0, createPreviewMedia: false) {
-                    imageRecent = image
+                if let result = utility.createFilePreviewImage(ocId: file.ocId, etag: file.etag, fileNameView: file.fileName, classFile: file.classFile, status: 0, createPreviewMedia: false) {
+                    image = result
                 } else if file.hasPreview {
                     let fileNamePathOrFileId = utilityFileSystem.getFileNamePath(file.fileName, serverUrl: file.serverUrl, urlBase: file.urlBase, userId: file.userId)
                     let fileNamePreviewLocalPath = utilityFileSystem.getDirectoryProviderStoragePreviewOcId(file.ocId, etag: file.etag)
                     let fileNameIconLocalPath = utilityFileSystem.getDirectoryProviderStorageIconOcId(file.ocId, etag: file.etag)
                     let sizePreview = NCUtility().getSizePreview(width: Int(file.width), height: Int(file.height))
                     let (_, _, imageIcon, _, _, _) = await NextcloudKit.shared.downloadPreview(fileNamePathOrFileId: fileNamePathOrFileId, fileNamePreviewLocalPath: fileNamePreviewLocalPath, widthPreview: Int(sizePreview.width), heightPreview: Int(sizePreview.height), fileNameIconLocalPath: fileNameIconLocalPath, sizeIcon: NCGlobal.shared.sizeIcon, options: options)
-                    if let image = imageIcon {
-                        imageRecent = image
+                    if let result = imageIcon {
+                         image = result
                     }
+                }
+                if image == nil {
+                    image = utility.loadImage(named: file.iconName, useTypeIconFile: true)
+                    useTypeIconFile = true
                 }
 
                 let isDirectoryE2EE = utilityFileSystem.isDirectoryE2EE(file: file)
                 let metadata = NCManageDatabase.shared.convertFileToMetadata(file, isDirectoryE2EE: isDirectoryE2EE)
 
                 // DATA
-                let data = FilesData(id: metadata.ocId, image: imageRecent, title: metadata.fileNameView, subTitle: subTitle, url: url)
+                let data = FilesData(id: metadata.ocId, image: image!, title: metadata.fileNameView, subTitle: subTitle, url: url, useTypeIconFile: useTypeIconFile)
                 datas.append(data)
                 if datas.count == filesItems { break}
             }
