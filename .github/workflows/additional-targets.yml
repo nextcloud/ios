@@ -1,0 +1,68 @@
+name: Build additional targets
+
+on:
+  push:
+    branches:
+      - master
+      - develop
+  pull_request:
+    types: [synchronize, opened, reopened, ready_for_review]
+    branches:
+      - master
+      - develop
+
+jobs:
+  build-and-test:
+    name: Build and Test
+    runs-on: macos-latest
+    if: github.event.pull_request.draft == false
+    env:
+      PROJECT: Nextcloud.xcodeproj
+      DESTINATION: platform=iOS Simulator,name=iPhone 14
+    steps:
+    - name: Set env var
+      run: echo "DEVELOPER_DIR=$(xcode-select --print-path)" >> $GITHUB_ENV
+    - uses: actions/checkout@v3
+    - name: Setup Bundler and Install Gems
+      run: |
+        gem install bundler
+        bundle install
+        bundle update
+    - name: Restore Carhage Cache
+      uses: actions/cache@v3
+      id: carthage-cache
+      with:
+        path: Carthage
+        key: ${{ runner.os }}-carthage-${{ hashFiles('**/Cartfile.resolved') }}
+        restore-keys: |
+          ${{ runner.os }}-carthage-
+    - name: Carthage
+      if: steps.carthage-cache.outputs.cache-hit != 'true'
+      run: carthage bootstrap --use-xcframeworks --platform iOS
+    - name: Download GoogleService-Info.plist
+      run: wget "https://raw.githubusercontent.com/firebase/quickstart-ios/master/mock-GoogleService-Info.plist" -O GoogleService-Info.plist
+    - name: Build iOS Share
+      run: |
+        xcodebuild build -project $PROJECT -scheme "$SCHEME" -destination "$DESTINATION" | xcpretty
+      env:
+          SCHEME: Share
+    - name: Build iOS File Extension
+      run: |
+        xcodebuild build -project $PROJECT -scheme "$SCHEME" -destination "$DESTINATION" | xcpretty
+      env:
+          SCHEME: File Provider Extension
+    - name: Build iOS Notification Extension
+      run: |
+        xcodebuild build -project $PROJECT -scheme "$SCHEME" -destination "$DESTINATION" | xcpretty
+      env:
+          SCHEME: Notification Service Extension
+    - name: Build iOS Widget
+      run: |
+        xcodebuild build -project $PROJECT -scheme "$SCHEME" -destination "$DESTINATION" | xcpretty
+      env:
+          SCHEME: Widget
+    - name: Build iOS Widget Dashboard IntentHandler
+      run: |
+        xcodebuild build -project $PROJECT -scheme "$SCHEME" -destination "$DESTINATION" | xcpretty
+      env:
+          SCHEME: WidgetDashboardIntentHandler

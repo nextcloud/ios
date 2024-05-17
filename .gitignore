@@ -1,0 +1,46 @@
+# file
+
+#########################################################################
+#                                                                       #
+#       Title         - .gitignore file                                 #
+#       For           - iOS - Xcode                                    #
+#                                                                       #
+#########################################################################
+
+## Nextcloud
+*.xcodeproj
+!Nextcloud.xcodeproj
+Documentation/
+Custom/
+GoogleService-Info.plist
+DevicePushKey-Info.plist
+iOSClient/Brand/Device*
+
+## Xcode
+.DS_Store
+*/build/*
+*.pbxuser
+!default.pbxuser
+*.mode1v3
+!default.mode1v3
+*.mode2v3
+!default.mode2v3
+*.perspectivev3
+!default.perspectivev3
+xcuserdata
+profile
+*.moved-aside
+DerivedData
+.idea/
+*.hmap
+*.xccheckout
+
+## Package
+Carthage/
+
+### SwiftPackageManager ###
+.swiftpm
+Package.resolved
+
+*.generated.swift
+/.env-vars

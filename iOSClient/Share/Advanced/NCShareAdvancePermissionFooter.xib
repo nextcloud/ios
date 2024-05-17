@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="20037" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina6_1" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="20020"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="System colors in document resources" minToolsVersion="11.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view contentMode="scaleToFill" id="iN0-l3-epB" customClass="NCShareAdvancePermissionFooter" customModule="Nextcloud" customModuleProvider="target">
+            <rect key="frame" x="0.0" y="0.0" width="688" height="376"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="rCI-63-PtL">
+                    <rect key="frame" x="16" y="168" width="320" height="50"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="50" id="vdI-sH-cTb"/>
+                    </constraints>
+                    <fontDescription key="fontDescription" type="system" pointSize="18"/>
+                    <color key="tintColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                    <state key="normal" title="Cancel">
+                        <color key="titleColor" systemColor="labelColor"/>
+                    </state>
+                </button>
+                <button opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="249" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Mg2-Ou-yoX">
+                    <rect key="frame" x="352" y="168" width="320" height="50"/>
+                    <color key="backgroundColor" systemColor="systemBlueColor"/>
+                    <fontDescription key="fontDescription" type="system" pointSize="18"/>
+                    <state key="normal" title="Send share">
+                        <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    </state>
+                </button>
+            </subviews>
+            <viewLayoutGuide key="safeArea" id="sWQ-1v-CIt"/>
+            <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+            <constraints>
+                <constraint firstItem="Mg2-Ou-yoX" firstAttribute="leading" secondItem="rCI-63-PtL" secondAttribute="trailing" constant="16" id="4Px-cS-Hta"/>
+                <constraint firstItem="sWQ-1v-CIt" firstAttribute="trailing" secondItem="Mg2-Ou-yoX" secondAttribute="trailing" constant="16" id="Jdi-WJ-zVF"/>
+                <constraint firstItem="sWQ-1v-CIt" firstAttribute="centerY" secondItem="Mg2-Ou-yoX" secondAttribute="centerY" id="SzT-aI-aUz"/>
+                <constraint firstItem="Mg2-Ou-yoX" firstAttribute="height" secondItem="rCI-63-PtL" secondAttribute="height" id="bNp-Nf-uMw"/>
+                <constraint firstItem="Mg2-Ou-yoX" firstAttribute="width" secondItem="rCI-63-PtL" secondAttribute="width" id="dfu-GZ-P99"/>
+                <constraint firstItem="rCI-63-PtL" firstAttribute="centerY" secondItem="Mg2-Ou-yoX" secondAttribute="centerY" id="hEl-ij-sMX"/>
+                <constraint firstItem="rCI-63-PtL" firstAttribute="leading" secondItem="sWQ-1v-CIt" secondAttribute="leading" constant="16" id="s9t-ud-ofw"/>
+            </constraints>
+            <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
+            <connections>
+                <outlet property="buttonCancel" destination="rCI-63-PtL" id="SoT-Ko-LL5"/>
+                <outlet property="buttonNext" destination="Mg2-Ou-yoX" id="F2d-L5-dHo"/>
+            </connections>
+            <point key="canvasLocation" x="139.13043478260872" y="43.526785714285715"/>
+        </view>
+    </objects>
+    <resources>
+        <systemColor name="labelColor">
+            <color white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
+        <systemColor name="systemBlueColor">
+            <color red="0.0" green="0.47843137254901963" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </systemColor>
+    </resources>
+</document>

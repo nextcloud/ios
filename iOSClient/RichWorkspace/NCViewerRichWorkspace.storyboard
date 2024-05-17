@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="21507" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="eDT-g5-qb3">
+    <device id="retina6_1" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21505"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="System colors in document resources" minToolsVersion="11.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <scenes>
+        <!--Viewer Rich Workspace-->
+        <scene sceneID="5lu-RQ-5e2">
+            <objects>
+                <viewController storyboardIdentifier="NCViewerRichWorkspace" id="6oU-Ar-6R2" customClass="NCViewerRichWorkspace" customModule="Nextcloud" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="Hcj-yo-mxA">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" editable="NO" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="tWU-uH-OcN">
+                                <rect key="frame" x="15" y="92" width="389" height="770"/>
+                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <color key="textColor" systemColor="labelColor"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
+                            </textView>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="Isy-ab-db7"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <constraints>
+                            <constraint firstItem="tWU-uH-OcN" firstAttribute="leading" secondItem="Isy-ab-db7" secondAttribute="leading" constant="15" id="U5r-S4-VjQ"/>
+                            <constraint firstItem="tWU-uH-OcN" firstAttribute="top" secondItem="Isy-ab-db7" secondAttribute="top" id="UoK-d1-aHC"/>
+                            <constraint firstItem="Isy-ab-db7" firstAttribute="bottom" secondItem="tWU-uH-OcN" secondAttribute="bottom" id="hKD-qx-JT8"/>
+                            <constraint firstItem="Isy-ab-db7" firstAttribute="trailing" secondItem="tWU-uH-OcN" secondAttribute="trailing" constant="10" id="x1a-WA-AX7"/>
+                        </constraints>
+                    </view>
+                    <navigationItem key="navigationItem" id="YSS-NL-35O"/>
+                    <connections>
+                        <outlet property="textView" destination="tWU-uH-OcN" id="41C-KX-15c"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="hXn-we-pg4" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1013.0434782608696" y="23.4375"/>
+        </scene>
+        <!--Viewer Rich Workspace Web View-->
+        <scene sceneID="FAF-zB-yaq">
+            <objects>
+                <viewController storyboardIdentifier="NCViewerRichWorkspaceWebView" id="Ces-GG-tAv" customClass="NCViewerRichWorkspaceWebView" customModule="Nextcloud" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="T4r-I1-FJU">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <wkWebView contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="hsc-I0-5ib">
+                                <rect key="frame" x="0.0" y="48" width="414" height="814"/>
+                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <wkWebViewConfiguration key="configuration">
+                                    <audiovisualMediaTypes key="mediaTypesRequiringUserActionForPlayback" none="YES"/>
+                                    <wkPreferences key="preferences"/>
+                                </wkWebViewConfiguration>
+                            </wkWebView>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="2i0-Vr-dr1"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <constraints>
+                            <constraint firstItem="2i0-Vr-dr1" firstAttribute="trailing" secondItem="hsc-I0-5ib" secondAttribute="trailing" id="5Os-LM-5Yz"/>
+                            <constraint firstItem="2i0-Vr-dr1" firstAttribute="bottom" secondItem="hsc-I0-5ib" secondAttribute="bottom" id="Hsc-5E-1br"/>
+                            <constraint firstItem="hsc-I0-5ib" firstAttribute="top" secondItem="2i0-Vr-dr1" secondAttribute="top" id="h4D-CW-VTS"/>
+                            <constraint firstItem="hsc-I0-5ib" firstAttribute="leading" secondItem="2i0-Vr-dr1" secondAttribute="leading" id="rtd-Ru-0UY"/>
+                        </constraints>
+                    </view>
+                    <connections>
+                        <outlet property="webView" destination="hsc-I0-5ib" id="xu8-Ll-srm"/>
+                        <outlet property="webViewBottomConstraint" destination="Hsc-5E-1br" id="Xpx-v3-vZA"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="o3L-2f-s1m" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1943" y="22"/>
+        </scene>
+        <!--Navigation Controller-->
+        <scene sceneID="yfZ-KI-HLn">
+            <objects>
+                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="eDT-g5-qb3" sceneMemberID="viewController">
+                    <toolbarItems/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="snn-6x-Fpr">
+                        <rect key="frame" x="0.0" y="48" width="414" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <nil name="viewControllers"/>
+                    <connections>
+                        <segue destination="6oU-Ar-6R2" kind="relationship" relationship="rootViewController" id="Mqf-fJ-MEu"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="bIe-TD-iXo" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="102.89855072463769" y="23.4375"/>
+        </scene>
+    </scenes>
+    <resources>
+        <systemColor name="labelColor">
+            <color red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </systemColor>
+        <systemColor name="systemBackgroundColor">
+            <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
+    </resources>
+</document>

@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="15702" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="QS9-pa-PcE">
+    <device id="retina6_1" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="15704"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <scenes>
+        <!--Intro View Controller-->
+        <scene sceneID="f2b-bc-1G0">
+            <objects>
+                <viewController id="QS9-pa-PcE" customClass="NCIntroViewController" customModule="Nextcloud" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="Xnz-EW-9gg">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" pagingEnabled="YES" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="o6I-qu-IDh">
+                                <rect key="frame" x="8" y="104" width="398" height="398"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" secondItem="o6I-qu-IDh" secondAttribute="height" multiplier="1:1" priority="750" id="N8S-l1-3ac"/>
+                                </constraints>
+                                <collectionViewFlowLayout key="collectionViewLayout" scrollDirection="horizontal" minimumLineSpacing="0.0" minimumInteritemSpacing="0.0" id="VRH-dG-Ra1">
+                                    <size key="itemSize" width="0.0" height="0.0"/>
+                                    <size key="headerReferenceSize" width="0.0" height="0.0"/>
+                                    <size key="footerReferenceSize" width="0.0" height="0.0"/>
+                                    <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
+                                </collectionViewFlowLayout>
+                            </collectionView>
+                            <pageControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" numberOfPages="3" translatesAutoresizingMaskIntoConstraints="NO" id="Eu1-Gv-7Jx">
+                                <rect key="frame" x="187.5" y="510" width="39" height="10"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="10" id="6xY-X5-z4w"/>
+                                    <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="10" id="HuN-3g-bM7"/>
+                                </constraints>
+                            </pageControl>
+                            <button opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Yyc-bK-mqW">
+                                <rect key="frame" x="72" y="584" width="270" height="40"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="40" id="h0h-Pp-A9q"/>
+                                    <constraint firstAttribute="width" constant="270" id="mXS-9b-u5o"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                                <state key="normal" title="Login"/>
+                                <connections>
+                                    <action selector="login:" destination="QS9-pa-PcE" eventType="touchUpInside" id="Lb4-EV-uT9"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="N4X-JQ-1c1">
+                                <rect key="frame" x="72" y="632" width="270" height="40"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="40" id="Z1i-8h-Kkj"/>
+                                    <constraint firstAttribute="width" constant="270" id="ski-k5-xeL"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <state key="normal" title="Signup"/>
+                                <connections>
+                                    <action selector="signup:" destination="QS9-pa-PcE" eventType="touchUpInside" id="wKo-W5-MBd"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Z5d-gx-rTR">
+                                <rect key="frame" x="72" y="832" width="270" height="30"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="270" id="rtc-VW-fLA"/>
+                                    <constraint firstAttribute="height" constant="30" id="wPA-Ly-uB0"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <state key="normal" title="Host"/>
+                                <connections>
+                                    <action selector="host:" destination="QS9-pa-PcE" eventType="touchUpInside" id="Zev-U0-oLN"/>
+                                </connections>
+                            </button>
+                        </subviews>
+                        <color key="backgroundColor" systemColor="opaqueSeparatorColor" red="0.77647058820000003" green="0.77647058820000003" blue="0.7843137255" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <constraints>
+                            <constraint firstItem="Z5d-gx-rTR" firstAttribute="centerX" secondItem="Xnz-EW-9gg" secondAttribute="centerX" id="5JN-bZ-Cfc"/>
+                            <constraint firstItem="Z5d-gx-rTR" firstAttribute="top" relation="greaterThanOrEqual" secondItem="N4X-JQ-1c1" secondAttribute="bottom" constant="8" id="5bf-uK-zTE"/>
+                            <constraint firstItem="o6I-qu-IDh" firstAttribute="leading" secondItem="Yku-CN-snD" secondAttribute="leading" constant="8" id="5fD-CQ-g64"/>
+                            <constraint firstItem="Yyc-bK-mqW" firstAttribute="centerX" secondItem="Xnz-EW-9gg" secondAttribute="centerX" id="73g-Jz-FyB"/>
+                            <constraint firstItem="Eu1-Gv-7Jx" firstAttribute="top" secondItem="o6I-qu-IDh" secondAttribute="bottom" constant="8" id="Eeu-jq-3mJ"/>
+                            <constraint firstItem="Yku-CN-snD" firstAttribute="trailing" secondItem="o6I-qu-IDh" secondAttribute="trailing" constant="8" id="Hc4-PE-nDo"/>
+                            <constraint firstItem="o6I-qu-IDh" firstAttribute="centerX" secondItem="Xnz-EW-9gg" secondAttribute="centerX" id="XgO-Ht-bat"/>
+                            <constraint firstItem="Yyc-bK-mqW" firstAttribute="top" secondItem="Eu1-Gv-7Jx" secondAttribute="bottom" priority="250" constant="64" id="avi-Qq-NVJ"/>
+                            <constraint firstItem="N4X-JQ-1c1" firstAttribute="top" secondItem="Yyc-bK-mqW" secondAttribute="bottom" constant="8" id="g2S-FI-zsd"/>
+                            <constraint firstItem="N4X-JQ-1c1" firstAttribute="centerX" secondItem="Xnz-EW-9gg" secondAttribute="centerX" id="pyF-TA-FZv"/>
+                            <constraint firstItem="Yyc-bK-mqW" firstAttribute="top" relation="greaterThanOrEqual" secondItem="Eu1-Gv-7Jx" secondAttribute="bottom" constant="8" id="qO4-JO-SuY"/>
+                            <constraint firstItem="Yku-CN-snD" firstAttribute="bottom" secondItem="Z5d-gx-rTR" secondAttribute="bottom" id="qo7-hg-l1p"/>
+                            <constraint firstItem="o6I-qu-IDh" firstAttribute="top" secondItem="Xnz-EW-9gg" secondAttribute="topMargin" constant="60" id="qoE-U2-Ogf">
+                                <variation key="heightClass=compact" constant="8"/>
+                            </constraint>
+                            <constraint firstItem="Eu1-Gv-7Jx" firstAttribute="centerX" secondItem="Xnz-EW-9gg" secondAttribute="centerX" id="rML-gL-iXA"/>
+                            <constraint firstItem="o6I-qu-IDh" firstAttribute="width" secondItem="o6I-qu-IDh" secondAttribute="height" multiplier="1:1" priority="750" id="tPF-eA-Pcb"/>
+                        </constraints>
+                        <viewLayoutGuide key="safeArea" id="Yku-CN-snD"/>
+                    </view>
+                    <connections>
+                        <outlet property="buttonHost" destination="Z5d-gx-rTR" id="Ngu-DS-yLh"/>
+                        <outlet property="buttonLogin" destination="Yyc-bK-mqW" id="LPF-TP-LmK"/>
+                        <outlet property="buttonSignUp" destination="N4X-JQ-1c1" id="jz0-6S-IxP"/>
+                        <outlet property="introCollectionView" destination="o6I-qu-IDh" id="DVx-Rt-VE8"/>
+                        <outlet property="pageControl" destination="Eu1-Gv-7Jx" id="brQ-v9-knr"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="0nF-77-z2t" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-158" y="123"/>
+        </scene>
+    </scenes>
+</document>

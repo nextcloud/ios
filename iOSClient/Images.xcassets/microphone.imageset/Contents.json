@@ -1,0 +1,15 @@
+{
+  "images" : [
+    {
+      "filename" : "icons8-microfono-400.svg",
+      "idiom" : "universal"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  },
+  "properties" : {
+    "preserves-vector-representation" : true
+  }
+}

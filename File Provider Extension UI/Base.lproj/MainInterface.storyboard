@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="21507" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="J6p-g8-CHO">
+    <device id="retina4_7" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21505"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <scenes>
+        <!--Document Action View Controller-->
+        <scene sceneID="Q8I-MS-tKG">
+            <objects>
+                <viewController id="J6p-g8-CHO" customClass="DocumentActionViewController" customModule="File_Provider_Extension_UI" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="Vdh-Gp-eV6">
+                        <rect key="frame" x="0.0" y="0.0" width="350" height="400"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="logo" translatesAutoresizingMaskIntoConstraints="NO" id="kiS-ZU-Z4Y">
+                                <rect key="frame" x="47" y="136" width="256" height="128"/>
+                            </imageView>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="title" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="gdj-d0-nZ2">
+                                <rect key="frame" x="10" y="314" width="330" height="20.5"/>
+                                <accessibility key="accessibilityConfiguration" identifier="FPUInternalActionContentLabelIdentifier"/>
+                                <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="17"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="3gV-2h-5zD">
+                                <rect key="frame" x="10" y="5" width="48" height="30"/>
+                                <accessibility key="accessibilityConfiguration" identifier="FPUInternalActionCancelButtonIdentifier"/>
+                                <state key="normal" title="Cancel">
+                                    <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                </state>
+                                <connections>
+                                    <action selector="cancelButtonTapped:" destination="J6p-g8-CHO" eventType="touchUpInside" id="rCq-0k-2gc"/>
+                                </connections>
+                            </button>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="zTo-CZ-ppy"/>
+                        <color key="backgroundColor" red="0.0" green="0.46000000000000002" blue="0.89000000000000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <constraints>
+                            <constraint firstItem="gdj-d0-nZ2" firstAttribute="leading" secondItem="zTo-CZ-ppy" secondAttribute="leading" constant="10" id="BRI-CF-hj6"/>
+                            <constraint firstItem="kiS-ZU-Z4Y" firstAttribute="centerX" secondItem="zTo-CZ-ppy" secondAttribute="centerX" id="Itg-ba-qVK"/>
+                            <constraint firstItem="gdj-d0-nZ2" firstAttribute="top" secondItem="kiS-ZU-Z4Y" secondAttribute="bottom" constant="50" id="OwB-BO-MCW"/>
+                            <constraint firstItem="kiS-ZU-Z4Y" firstAttribute="centerY" secondItem="zTo-CZ-ppy" secondAttribute="centerY" id="XGS-xL-84k"/>
+                            <constraint firstItem="kiS-ZU-Z4Y" firstAttribute="height" relation="lessThanOrEqual" secondItem="zTo-CZ-ppy" secondAttribute="height" id="bwc-bK-ais"/>
+                            <constraint firstItem="zTo-CZ-ppy" firstAttribute="trailing" secondItem="gdj-d0-nZ2" secondAttribute="trailing" constant="10" id="dN2-Z5-GAe"/>
+                            <constraint firstItem="kiS-ZU-Z4Y" firstAttribute="width" relation="lessThanOrEqual" secondItem="zTo-CZ-ppy" secondAttribute="width" id="ivT-Jj-SZi"/>
+                            <constraint firstItem="3gV-2h-5zD" firstAttribute="leading" secondItem="zTo-CZ-ppy" secondAttribute="leading" constant="10" id="oJK-eI-5et"/>
+                            <constraint firstItem="3gV-2h-5zD" firstAttribute="top" secondItem="zTo-CZ-ppy" secondAttribute="top" constant="5" id="p24-xC-TOw"/>
+                        </constraints>
+                    </view>
+                    <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
+                    <size key="freeformSize" width="350" height="400"/>
+                    <connections>
+                        <outlet property="cancelButton" destination="3gV-2h-5zD" id="TGM-bK-FdL"/>
+                        <outlet property="titleError" destination="gdj-d0-nZ2" id="Jug-Il-Bvf"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="UoZ-ya-W3e" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-80" y="63.868065967016499"/>
+        </scene>
+    </scenes>
+    <resources>
+        <image name="logo" width="256" height="128"/>
+    </resources>
+</document>
