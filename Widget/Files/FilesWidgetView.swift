@@ -102,8 +102,10 @@ struct FilesWidgetView: View {
                                     .padding(.leading, 10)
                                     .frame(height: 50)
                                 }
-                                Divider()
-                                    .padding(.leading, 54)
+                                if element != entry.datas.last {
+                                    Divider()
+                                        .padding(.leading, 54)
+                                }
                             }
                         }
                     }
