@@ -363,42 +363,42 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
         // [WEBPersonalized] [AppConfig]
         if NCBrandOptions.shared.use_login_web_personalized || NCBrandOptions.shared.use_AppConfig {
-            if activeLoginWeb?.view.window == nil {
-                activeLoginWeb = UIStoryboard(name: "NCLogin", bundle: nil).instantiateViewController(withIdentifier: "NCLoginWeb") as? NCLoginWeb
-                activeLoginWeb?.urlBase = NCBrandOptions.shared.loginBaseUrl
-                showLoginViewController(activeLoginWeb)
+            if activeLogin?.view.window == nil {
+                activeLogin = UIStoryboard(name: "NCLogin", bundle: nil).instantiateViewController(withIdentifier: "NCLogin") as? NCLogin
+//                activeLogin? = NCBrandOptions.shared.loginBaseUrl
+                showLoginViewController(activeLogin)
             }
             return
         }
 
         // Nextcloud standard login
         if selector == NCGlobal.shared.introSignup {
-            if activeLoginWeb?.view.window == nil {
-                activeLoginWeb = UIStoryboard(name: "NCLogin", bundle: nil).instantiateViewController(withIdentifier: "NCLoginWeb") as? NCLoginWeb
+            if activeLogin?.view.window == nil {
+                activeLogin = UIStoryboard(name: "NCLogin", bundle: nil).instantiateViewController(withIdentifier: "NCLogin") as? NCLogin
+
                 if selector == NCGlobal.shared.introSignup {
-                    activeLoginWeb?.urlBase = NCBrandOptions.shared.linkloginPreferredProviders
+//                    activeLogin?.urlBase = NCBrandOptions.shared.linkloginPreferredProviders
                 } else {
-                    activeLoginWeb?.urlBase = self.urlBase
+//                    activeLogin?.urlBase = self.urlBase
                 }
-                showLoginViewController(activeLoginWeb)
+                showLoginViewController(activeLogin)
             }
 
         } else if NCBrandOptions.shared.disable_intro && NCBrandOptions.shared.disable_request_login_url {
-            if activeLoginWeb?.view.window == nil {
-                activeLoginWeb = UIStoryboard(name: "NCLogin", bundle: nil).instantiateViewController(withIdentifier: "NCLoginWeb") as? NCLoginWeb
-                activeLoginWeb?.urlBase = NCBrandOptions.shared.loginBaseUrl
-                showLoginViewController(activeLoginWeb)
+            if activeLogin?.view.window == nil {
+                activeLogin = UIStoryboard(name: "NCLogin", bundle: nil).instantiateViewController(withIdentifier: "NCLogin") as? NCLogin
+//                activeLogin?.urlBase = NCBrandOptions.shared.loginBaseUrl
+                showLoginViewController(activeLogin)
             }
 
         } else if openLoginWeb {
             // Used also for reinsert the account (change passwd)
-            if activeLoginWeb?.view.window == nil {
-                activeLoginWeb = UIStoryboard(name: "NCLogin", bundle: nil).instantiateViewController(withIdentifier: "NCLoginWeb") as? NCLoginWeb
-                activeLoginWeb?.urlBase = urlBase
-                activeLoginWeb?.user = user
-                showLoginViewController(activeLoginWeb)
+            if activeLogin?.view.window == nil {
+                activeLogin = UIStoryboard(name: "NCLogin", bundle: nil).instantiateViewController(withIdentifier: "NCLogin") as? NCLogin
+                activeLogin?.urlBase = urlBase
+//                activeLogin?.user = user
+                showLoginViewController(activeLogin)
             }
-
         } else {
             if activeLogin?.view.window == nil {
                 activeLogin = UIStoryboard(name: "NCLogin", bundle: nil).instantiateViewController(withIdentifier: "NCLogin") as? NCLogin

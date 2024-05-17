@@ -48,6 +48,14 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
     var loginFlowV2Endpoint = ""
     var loginFlowV2Login = ""
 
+    var urlBase = ""
+//    var user = ""
+    
+    var configServerUrl: String?
+    var configUsername: String?
+    var configPassword: String?
+    var configAppPassword: String?
+
     // MARK: - View Life Cycle
 
     override func viewDidLoad() {
@@ -148,6 +156,10 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(_:)), name: UIResponder.keyboardWillShowNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(_:)), name: UIResponder.keyboardWillHideNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(applicationDidBecomeActive(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationDidBecomeActive), object: nil)
+
+        handleLoginWithAppConfig()
+
+        baseUrl.text = urlBase
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -172,6 +184,44 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
 
     @objc func applicationDidBecomeActive(_ notification: NSNotification) {
         pollLogin()
+    }
+
+    private func handleLoginWithAppConfig() {
+        let accountCount = NCManageDatabase.shared.getAccounts()?.count ?? 0
+
+        // load AppConfig
+        if (NCBrandOptions.shared.disable_multiaccount == false) || (NCBrandOptions.shared.disable_multiaccount == true && accountCount == 0) {
+            if let configurationManaged = UserDefaults.standard.dictionary(forKey: "com.apple.configuration.managed"), NCBrandOptions.shared.use_AppConfig {
+                if let serverUrl = configurationManaged[NCGlobal.shared.configuration_serverUrl] as? String {
+                    self.configServerUrl = serverUrl
+                }
+
+                if let username = configurationManaged[NCGlobal.shared.configuration_username] as? String, !username.isEmpty, username.lowercased() != "username" {
+                    self.configUsername = username
+                }
+
+                if let password = configurationManaged[NCGlobal.shared.configuration_password] as? String, !password.isEmpty, password.lowercased() != "password" {
+                    self.configPassword = password
+                }
+
+                if let apppassword = configurationManaged[NCGlobal.shared.configuration_apppassword] as? String, !apppassword.isEmpty, apppassword.lowercased() != "apppassword" {
+                    self.configAppPassword = apppassword
+                }
+            }
+        }
+
+        // AppConfig
+        if let serverUrl = configServerUrl {
+            if let username = self.configUsername, let password = configAppPassword {
+                createAccount(server: serverUrl, username: username, password: password)
+                return
+            } else if let username = self.configUsername, let password = configPassword {
+                getAppPassword(serverUrl: serverUrl, username: username, password: password)
+                return
+            } else {
+                urlBase = serverUrl
+            }
+        }
     }
 
     // MARK: - TextField
@@ -450,7 +500,6 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
     }
 
     func createAccount(server: String, username: String, password: String) {
-
         var urlBase = server
         if urlBase.last == "/" { urlBase = String(urlBase.dropLast()) }
         let account: String = "\(username) \(urlBase)"
@@ -486,6 +535,17 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
                 let alertController = UIAlertController(title: NSLocalizedString("_error_", comment: ""), message: error.errorDescription, preferredStyle: .alert)
                 alertController.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { _ in }))
                 self.present(alertController, animated: true)
+            }
+        }
+    }
+
+    func getAppPassword(serverUrl: String, username: String, password: String) {
+        NextcloudKit.shared.getAppPassword(serverUrl: serverUrl, username: username, password: password) { token, _, error in
+            if error == .success, let password = token {
+                self.createAccount(server: serverUrl, username: username, password: password)
+            } else {
+                NCContentPresenter().showError(error: error)
+                self.dismiss(animated: true, completion: nil)
             }
         }
     }
