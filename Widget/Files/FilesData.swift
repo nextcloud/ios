@@ -200,7 +200,7 @@ func getFilesDataEntry(configuration: AccountIntent?, isPreview: Bool, displaySi
                 var image: UIImage?
                 var useTypeIconFile = false
 
-                guard !file.directory else {
+                if file.directory || (!file.livePhotoFile.isEmpty && file.classFile == NKCommon.TypeClassFile.video.rawValue) {
                     continue
                 }
 

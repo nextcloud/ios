@@ -1216,7 +1216,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         if !metadata.directory {
             if metadata.hasPreviewBorder {
                 cell.filePreviewImageView?.layer.borderWidth = 0.2
-                cell.filePreviewImageView?.layer.borderColor = UIColor.systemGray3.cgColor
+                cell.filePreviewImageView?.layer.borderColor = UIColor.lightGray.cgColor
             }
             if metadata.name == NCGlobal.shared.appName {
                 if let image = utility.createFilePreviewImage(ocId: metadata.ocId, etag: metadata.etag, fileNameView: metadata.fileNameView, classFile: metadata.classFile, status: metadata.status, createPreviewMedia: !metadata.hasPreview) {
