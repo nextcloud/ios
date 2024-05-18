@@ -108,7 +108,7 @@ class NCContentPresenter: NSObject {
         DispatchQueue.main.asyncAfter(deadline: .now() + afterDelay) {
             switch error.errorCode {
             case Int(CFNetworkErrors.cfurlErrorNotConnectedToInternet.rawValue):
-                let image = UIImage(named: "networkInProgress")!.image(color: .white, size: 20)
+                let image = UIImage(systemName: "wifi", withConfiguration: UIImage.SymbolConfiguration(weight: .light))?.applyingSymbolConfiguration(UIImage.SymbolConfiguration(paletteColors: [.white]))
                 self.noteTop(text: NSLocalizedString(title, comment: ""), image: image, color: .lightGray, delay: delay, priority: .max)
             default:
                 var responseMessage = ""
