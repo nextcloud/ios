@@ -174,18 +174,6 @@ class NCSectionHeaderMenu: UICollectionReusableView, UIGestureRecognizerDelegate
 
     // MARK: - Action
 
-    @IBAction func touchUpInsideSwitch(_ sender: Any) {
-        delegate?.tapButtonSwitch(sender)
-    }
-
-    @IBAction func touchUpInsideOrder(_ sender: Any) {
-        delegate?.tapButtonOrder(sender)
-    }
-
-    @IBAction func touchUpInsideMore(_ sender: Any) {
-        delegate?.tapButtonMore(sender)
-    }
-
     @IBAction func touchUpTransfer(_ sender: Any) {
        delegate?.tapButtonTransfer(sender)
     }
@@ -196,18 +184,12 @@ class NCSectionHeaderMenu: UICollectionReusableView, UIGestureRecognizerDelegate
 }
 
 protocol NCSectionHeaderMenuDelegate: AnyObject {
-    func tapButtonSwitch(_ sender: Any)
-    func tapButtonOrder(_ sender: Any)
-    func tapButtonMore(_ sender: Any)
     func tapButtonTransfer(_ sender: Any)
     func tapRichWorkspace(_ sender: Any)
 }
 
 // optional func
 extension NCSectionHeaderMenuDelegate {
-    func tapButtonSwitch(_ sender: Any) {}
-    func tapButtonOrder(_ sender: Any) {}
-    func tapButtonMore(_ sender: Any) {}
     func tapButtonTransfer(_ sender: Any) {}
     func tapRichWorkspace(_ sender: Any) {}
 }
