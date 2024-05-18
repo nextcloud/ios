@@ -35,7 +35,7 @@ import Queuer
 class NCNetworking: NSObject, NKCommonDelegate {
     public static let shared: NCNetworking = {
         let instance = NCNetworking()
-        NotificationCenter.default.addObserver(instance, selector: #selector(applicationDidEnterBackground), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationDidEnterBackground), object: nil)
+        NotificationCenter.default.addObserver(instance, selector: #selector(applicationDidEnterBackground), name: UIApplication.didEnterBackgroundNotification, object: nil)
         return instance
     }()
 

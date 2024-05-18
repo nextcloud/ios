@@ -90,7 +90,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             }
         }
 
-        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterApplicationWillEnterForeground)
         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterRichdocumentGrabFocus)
         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSourceNetwork, second: 2)
     }
@@ -111,8 +110,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         NCAutoUpload.shared.initAutoUpload(viewController: nil) { items in
             NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Initialize Auto upload with \(items) uploads")
         }
-
-        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterApplicationDidBecomeActive)
     }
 
     func sceneWillResignActive(_ scene: UIScene) {
@@ -140,8 +137,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         let days = NCKeychain().cleanUpDay
         let utilityFileSystem = NCUtilityFileSystem()
         utilityFileSystem.cleanUp(directory: utilityFileSystem.directoryProviderStorage, days: TimeInterval(days))
-
-        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterApplicationWillResignActive)
     }
 
     func sceneDidEnterBackground(_ scene: UIScene) {
@@ -171,8 +166,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         NCNetworking.shared.cancelDataTask()
         NCNetworking.shared.cancelDownloadTasks()
         NCNetworking.shared.cancelUploadTasks()
-
-        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterApplicationDidEnterBackground)
 
         if NCKeychain().presentPasscode {
             showPrivacyProtectionWindow()
