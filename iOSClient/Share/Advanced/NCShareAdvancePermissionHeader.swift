@@ -45,7 +45,7 @@ class NCShareAdvancePermissionHeader: UIView {
             }
         }
         fileName.text = metadata.fileNameView
-        fileName.textColor = .label
+        fileName.textColor = NCBrandColor.shared.textColor
         info.textColor = .secondaryLabel
         info.text = utilityFileSystem.transformedSize(metadata.size) + ", " + NCUtility().dateDiff(metadata.date as Date)
     }

@@ -70,9 +70,9 @@ extension NCMedia {
 
     func setColor() {
         if isTop {
-            titleDate?.textColor = .label
-            activityIndicator.color = .label
-            selectOrCancelButton.setTitleColor(.label, for: .normal)
+            titleDate?.textColor = NCBrandColor.shared.textColor
+            activityIndicator.color = NCBrandColor.shared.textColor
+            selectOrCancelButton.setTitleColor(NCBrandColor.shared.textColor, for: .normal)
             menuButton.setImage(NCUtility().loadImage(named: "ellipsis", colors: [NCBrandColor.shared.iconImageColor]), for: .normal)
             gradientView.isHidden = true
         } else {

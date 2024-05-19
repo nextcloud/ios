@@ -1504,7 +1504,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
 
         // Color string find in search
 
-        cell.fileTitleLabel?.textColor = .label
+        cell.fileTitleLabel?.textColor = NCBrandColor.shared.textColor
         cell.fileTitleLabel?.font = .systemFont(ofSize: 15)
 
         if isSearchingMode, let literalSearch = self.literalSearch, let title = cell.fileTitleLabel?.text {
@@ -1595,7 +1595,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                 } else {
                     header.labelSection.text = self.dataSource.getSectionValueLocalization(indexPath: indexPath)
                 }
-                header.labelSection.textColor = .label
+                header.labelSection.textColor = NCBrandColor.shared.textColor
 
                 return header
 
@@ -1604,7 +1604,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                 guard let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionHeader", for: indexPath) as? NCSectionHeader else { return NCSectionHeader() }
 
                 header.labelSection.text = self.dataSource.getSectionValueLocalization(indexPath: indexPath)
-                header.labelSection.textColor = .label
+                header.labelSection.textColor = NCBrandColor.shared.textColor
 
                 return header
             }

@@ -149,7 +149,7 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
         labelTitle.text = ""
         labelInfo.text = ""
         labelSubinfo.text = ""
-        labelTitle.textColor = .label
+        labelTitle.textColor = NCBrandColor.shared.textColor
         labelInfo.textColor = .systemGray
         labelSubinfo.textColor = .systemGray
 

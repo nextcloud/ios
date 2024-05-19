@@ -63,12 +63,12 @@ class NCSectionHeaderMenu: UICollectionReusableView, UIGestureRecognizerDelegate
         tap.delegate = self
         viewRichWorkspace?.addGestureRecognizer(tap)
 
-        markdownParser = MarkdownParser(font: UIFont.systemFont(ofSize: 15), color: .label)
+        markdownParser = MarkdownParser(font: UIFont.systemFont(ofSize: 15), color: NCBrandColor.shared.textColor)
         markdownParser.header.font = UIFont.systemFont(ofSize: 25)
         if let richWorkspaceText = richWorkspaceText {
             textViewRichWorkspace.attributedText = markdownParser.parse(richWorkspaceText)
         }
-        textViewColor = .label
+        textViewColor = NCBrandColor.shared.textColor
 
         labelSection.text = ""
         viewSectionHeightConstraint.constant = 0
@@ -231,7 +231,7 @@ class NCSectionFooter: UICollectionReusableView, NCSectionFooterDelegate {
 
         buttonIsHidden(true)
         activityIndicatorSection.isHidden = true
-        activityIndicatorSection.color = .label
+        activityIndicatorSection.color = NCBrandColor.shared.textColor
     }
 
     func setTitleLabel(directories: Int, files: Int, size: Int64) {

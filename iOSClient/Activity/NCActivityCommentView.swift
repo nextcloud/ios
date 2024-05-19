@@ -48,7 +48,7 @@ class NCActivityCommentView: UIView, UITextFieldDelegate {
         } else {
             labelUser.text = account.displayName
         }
-        labelUser.textColor = .label
+        labelUser.textColor = NCBrandColor.shared.textColor
     }
 
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {

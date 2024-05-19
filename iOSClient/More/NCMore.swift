@@ -347,7 +347,7 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
                 } else {
                     cell.displayName?.text = account.displayName + " (" + account.alias + ")"
                 }
-                cell.displayName.textColor = .label
+                cell.displayName.textColor = NCBrandColor.shared.textColor
             }
             cell.accessoryType = UITableViewCell.AccessoryType.disclosureIndicator
 
@@ -355,7 +355,7 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
                 let status = utility.getUserStatus(userIcon: account.userStatusIcon, userStatus: account.userStatusStatus, userMessage: account.userStatusMessage)
                 cell.icon.image = status.onlineStatus
                 cell.status.text = status.statusMessage
-                cell.status.textColor = .label
+                cell.status.textColor = NCBrandColor.shared.textColor
                 cell.status.trailingBuffer = cell.status.frame.width
                 if cell.status.labelShouldScroll() {
                     cell.status.tapToScroll = true
@@ -379,7 +379,7 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
             cell.imageIcon?.image = utility.loadImage(named: item.icon, colors: [NCBrandColor.shared.iconImageColor])
             cell.imageIcon?.contentMode = .scaleAspectFit
             cell.labelText?.text = NSLocalizedString(item.name, comment: "")
-            cell.labelText.textColor = .label
+            cell.labelText.textColor = NCBrandColor.shared.textColor
 
             cell.accessoryType = UITableViewCell.AccessoryType.disclosureIndicator
 

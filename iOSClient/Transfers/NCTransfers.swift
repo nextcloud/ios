@@ -200,7 +200,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
         cell.imageItem.image = NCImageCache.images.file
         cell.imageItem.backgroundColor = nil
         cell.labelTitle.text = metadata.fileNameView
-        cell.labelTitle.textColor = .label
+        cell.labelTitle.textColor = NCBrandColor.shared.textColor
         let serverUrlHome = utilityFileSystem.getHomeServer(urlBase: metadata.urlBase, userId: metadata.userId)
         var pathText = metadata.serverUrl.replacingOccurrences(of: serverUrlHome, with: "")
         if pathText.isEmpty { pathText = "/" }

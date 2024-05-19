@@ -160,7 +160,7 @@ extension NCActivity: UITableViewDelegate {
 
         let label = UILabel()
         label.font = UIFont.boldSystemFont(ofSize: 13)
-        label.textColor = .label
+        label.textColor = NCBrandColor.shared.textColor
         label.text = utility.getTitleFromDate(sectionDates[section])
         label.textAlignment = .center
         label.layer.cornerRadius = 11
@@ -216,13 +216,13 @@ extension NCActivity: UITableViewDataSource {
         NCNetworking.shared.downloadAvatar(user: comment.actorId, dispalyName: comment.actorDisplayName, fileName: fileName, cell: cell, view: tableView)
         // Username
         cell.labelUser.text = comment.actorDisplayName
-        cell.labelUser.textColor = .label
+        cell.labelUser.textColor = NCBrandColor.shared.textColor
         // Date
         cell.labelDate.text = utility.dateDiff(comment.creationDateTime as Date)
         cell.labelDate.textColor = .systemGray4
         // Message
         cell.labelMessage.text = comment.message
-        cell.labelMessage.textColor = .label
+        cell.labelMessage.textColor = NCBrandColor.shared.textColor
         // Button Menu
         if comment.actorId == appDelegate.userId {
             cell.buttonMenu.isHidden = false
@@ -246,7 +246,7 @@ extension NCActivity: UITableViewDataSource {
         cell.avatar.isHidden = true
         cell.subjectTrailingConstraint.constant = 10
         cell.didSelectItemEnable = self.didSelectItemEnable
-        cell.subject.textColor = .label
+        cell.subject.textColor = NCBrandColor.shared.textColor
         cell.viewController = self
 
         // icon

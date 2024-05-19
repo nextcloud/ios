@@ -63,8 +63,8 @@ class NCSharePaging: UIViewController {
         pagingViewController.backgroundColor = .systemBackground
         pagingViewController.menuBackgroundColor = .systemBackground
         pagingViewController.selectedBackgroundColor = .systemBackground
-        pagingViewController.textColor = .label
-        pagingViewController.selectedTextColor = .label
+        pagingViewController.textColor = NCBrandColor.shared.textColor
+        pagingViewController.selectedTextColor = NCBrandColor.shared.textColor
 
         // Pagination
         addChild(pagingViewController)
@@ -293,7 +293,7 @@ class NCSharePagingView: PagingView {
             }
         }
         headerView.path.text = utilityFileSystem.getPath(path: metadata.path, user: metadata.user, fileName: metadata.fileName)
-        headerView.path.textColor = .label
+        headerView.path.textColor = NCBrandColor.shared.textColor
         headerView.path.trailingBuffer = headerView.path.frame.width
         if metadata.favorite {
             headerView.favorite.setImage(utility.loadImage(named: "star.fill", colors: [NCBrandColor.shared.yellowFavorite], size: 20), for: .normal)
@@ -307,7 +307,7 @@ class NCSharePagingView: PagingView {
         headerView.upload.text = NSLocalizedString("_upload_", comment: "") + " " + dateFormatter.string(from: metadata.uploadDate as Date)
         headerView.upload.textColor = .systemGray
 
-        headerView.details.setTitleColor(.label, for: .normal)
+        headerView.details.setTitleColor(NCBrandColor.shared.textColor, for: .normal)
         headerView.details.setTitle(NSLocalizedString("_details_", comment: ""), for: .normal)
         headerView.details.layer.cornerRadius = 9
         headerView.details.layer.masksToBounds = true

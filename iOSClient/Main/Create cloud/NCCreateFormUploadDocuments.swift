@@ -109,7 +109,7 @@ import XLForm
 
         row.cellConfig["textLabel.textAlignment"] = NSTextAlignment.right.rawValue
         row.cellConfig["textLabel.font"] = UIFont.systemFont(ofSize: 15.0)
-        row.cellConfig["textLabel.textColor"] = UIColor.label
+        row.cellConfig["textLabel.textColor"] = NCBrandColor.shared.textColor
 
         section.addFormRow(row)
 
@@ -124,11 +124,11 @@ import XLForm
 
         row.cellConfig["textField.textAlignment"] = NSTextAlignment.right.rawValue
         row.cellConfig["textField.font"] = UIFont.systemFont(ofSize: 15.0)
-        row.cellConfig["textField.textColor"] = UIColor.label
+        row.cellConfig["textField.textColor"] = NCBrandColor.shared.textColor
 
         row.cellConfig["textLabel.textAlignment"] = NSTextAlignment.right.rawValue
         row.cellConfig["textLabel.font"] = UIFont.systemFont(ofSize: 15.0)
-        row.cellConfig["textLabel.textColor"] = UIColor.label
+        row.cellConfig["textLabel.textColor"] = NCBrandColor.shared.textColor
 
         section.addFormRow(row)
 
@@ -188,7 +188,7 @@ import XLForm
         // select
         let imageSelect = cell.viewWithTag(300) as? UIImageView
         if selectTemplate != nil && selectTemplate?.name == template.name {
-            cell.backgroundColor = .label
+            cell.backgroundColor = NCBrandColor.shared.textColor
             imageSelect?.image = UIImage(named: "plus100")
             imageSelect?.isHidden = false
         } else {

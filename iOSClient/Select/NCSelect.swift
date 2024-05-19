@@ -311,7 +311,7 @@ extension NCSelect: UICollectionViewDataSource {
         cell.fileObjectId = metadata.ocId
         cell.fileUser = metadata.ownerId
         cell.labelTitle.text = metadata.fileNameView
-        cell.labelTitle.textColor = .label
+        cell.labelTitle.textColor = NCBrandColor.shared.textColor
 
         cell.imageSelect.image = nil
         cell.imageStatus.image = nil
