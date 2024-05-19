@@ -127,7 +127,7 @@ class NCActivity: UIViewController, NCSharePagingContent {
 
         let label = UILabel()
         label.font = UIFont.systemFont(ofSize: 15)
-        label.textColor = UIColor.systemGray
+        label.textColor = NCBrandColor.shared.textColor2
         label.textAlignment = .center
         label.text = NSLocalizedString("_no_activity_footer_", comment: "")
         label.frame = CGRect(x: 0, y: 10, width: tableView.frame.width, height: 60)

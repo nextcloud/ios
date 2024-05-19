@@ -41,10 +41,10 @@ class NCShareAdvancePermissionFooter: UIView {
         buttonCancel.layer.cornerRadius = 25
         buttonCancel.layer.masksToBounds = true
         buttonCancel.layer.borderWidth = 1
-        buttonCancel.layer.borderColor = UIColor.systemGray.cgColor
+        buttonCancel.layer.borderColor = NCBrandColor.shared.textColor2.cgColor
         buttonCancel.backgroundColor = .secondarySystemBackground
         buttonCancel.addTarget(self, action: #selector(cancelClicked), for: .touchUpInside)
-        buttonCancel.setTitleColor(.systemGray, for: .normal)
+        buttonCancel.setTitleColor(NCBrandColor.shared.textColor2, for: .normal)
 
         buttonNext.setTitle(NSLocalizedString(delegate?.isNewShare == true ? "_share_" : "_save_", comment: ""), for: .normal)
         buttonNext.layer.cornerRadius = 25

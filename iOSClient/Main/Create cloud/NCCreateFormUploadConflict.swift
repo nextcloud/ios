@@ -505,7 +505,7 @@ extension NCCreateFormUploadConflict: NCCreateFormUploadConflictCellDelegate {
             buttonContinue.setTitleColor(NCBrandColor.shared.textColor, for: .normal)
         } else {
             buttonContinue.isEnabled = false
-            buttonContinue.setTitleColor(UIColor.systemGray, for: .normal)
+            buttonContinue.setTitleColor(NCBrandColor.shared.textColor2, for: .normal)
         }
     }
 }

@@ -301,11 +301,11 @@ class NCSharePagingView: PagingView {
             headerView.favorite.setImage(utility.loadImage(named: "star.fill", colors: [NCBrandColor.shared.iconImageColor2], size: 20), for: .normal)
         }
         headerView.info.text = utilityFileSystem.transformedSize(metadata.size) + ", " + NSLocalizedString("_modified_", comment: "") + " " + dateFormatter.string(from: metadata.date as Date)
-        headerView.info.textColor = .systemGray
+        headerView.info.textColor = NCBrandColor.shared.textColor2
         headerView.creation.text = NSLocalizedString("_creation_", comment: "") + " " + dateFormatter.string(from: metadata.creationDate as Date)
-        headerView.creation.textColor = .systemGray
+        headerView.creation.textColor = NCBrandColor.shared.textColor2
         headerView.upload.text = NSLocalizedString("_upload_", comment: "") + " " + dateFormatter.string(from: metadata.uploadDate as Date)
-        headerView.upload.textColor = .systemGray
+        headerView.upload.textColor = NCBrandColor.shared.textColor2
 
         headerView.details.setTitleColor(NCBrandColor.shared.textColor, for: .normal)
         headerView.details.setTitle(NSLocalizedString("_details_", comment: ""), for: .normal)
@@ -374,7 +374,7 @@ class NCShareHeaderView: UIView {
                 guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(metadata.ocId) else { return }
                 self.favorite.setImage(NCUtility().loadImage(
                     named: "star.fill",
-                    colors: metadata.favorite ? [NCBrandColor.shared.yellowFavorite] : [.systemGray],
+                    colors: metadata.favorite ? [NCBrandColor.shared.yellowFavorite] : [NCBrandColor.shared.iconImageColor2],
                     size: 20), for: .normal)
             } else {
                 NCContentPresenter().showError(error: error)
