@@ -162,8 +162,11 @@ class NCBrandColor: NSObject {
     public var themingColorText: String = ""
 
     @objc public let iconImageColor: UIColor = .label
-    @objc public let iconImageColor2: UIColor = .systemGray
-    @objc public let iconImageMultiColors: [UIColor] = [.systemGray, .label]
+    @objc public let iconImageColor2: UIColor = .secondaryLabel
+    @objc public let iconImageMultiColors: [UIColor] = [.secondaryLabel, .label]
+
+    @objc public let textColor: UIColor = .label
+    @objc public let textColor2: UIColor = .secondaryLabel
 
     @objc public var systemMint: UIColor {
         get {

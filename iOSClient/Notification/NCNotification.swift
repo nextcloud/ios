@@ -149,9 +149,9 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate {
         cell.date.text = utility.dateDiff(notification.date as Date)
         cell.date.textColor = NCBrandColor.shared.iconImageColor2
         cell.subject.text = notification.subject
-        cell.subject.textColor = .label
+        cell.subject.textColor = NCBrandColor.shared.textColor
         cell.message.text = notification.message.replacingOccurrences(of: "<br />", with: "\n")
-        cell.message.textColor = NCBrandColor.shared.iconImageColor2
+        cell.message.textColor = NCBrandColor.shared.textColor2
 
         cell.remove.setImage(utility.loadImage(named: "xmark", colors: [NCBrandColor.shared.iconImageColor]), for: .normal)
 
