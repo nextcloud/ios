@@ -50,7 +50,7 @@ struct InputOutputScrollView: View {
                 Text(model.selectedTask?.input ?? "")
                     .frame(maxWidth: .infinity, alignment: .topLeading)
                     .padding()
-                    .background(.gray.opacity(0.1))
+                    .background(Color(NCBrandColor.shared.textColor2).opacity(0.1))
                     .clipShape(.rect(cornerRadius: 8))
 
                 Text(NSLocalizedString("_output_", comment: "")).font(.headline)
@@ -59,7 +59,7 @@ struct InputOutputScrollView: View {
                 Text(model.selectedTask?.output ?? "")
                     .frame(maxWidth: .infinity, alignment: .topLeading)
                     .padding()
-                    .background(.gray.opacity(0.1))
+                    .background(Color(NCBrandColor.shared.textColor2).opacity(0.1))
                     .clipShape(.rect(cornerRadius: 8))
 
             }

@@ -30,10 +30,10 @@ struct NCAssistantCreateNewTask: View {
                     .frame(maxWidth: .infinity, alignment: .topLeading)
                     .padding()
                     .transparentScrolling()
-                    .background(.gray.opacity(0.1))
+                    .background(Color(NCBrandColor.shared.textColor2).opacity(0.1))
                     .focused($inFocus)
             }
-            .background(.gray.opacity(0.1))
+            .background(Color(NCBrandColor.shared.textColor2).opacity(0.1))
             .clipShape(.rect(cornerRadius: 8))
         }
         .toolbar {
