@@ -140,7 +140,7 @@ import XLForm
     override func tableView(_ tableView: UITableView, willDisplayHeaderView view: UIView, forSection section: Int) {
         let header = view as? UITableViewHeaderFooterView
         header?.textLabel?.font = UIFont.systemFont(ofSize: 13.0)
-        header?.textLabel?.textColor = .gray
+        header?.textLabel?.textColor = NCBrandColor.shared.textColor2
         header?.tintColor = tableView.backgroundColor
     }
 

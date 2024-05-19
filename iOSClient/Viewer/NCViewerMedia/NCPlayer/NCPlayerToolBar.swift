@@ -107,7 +107,7 @@ class NCPlayerToolBar: UIView {
         playbackSlider.value = 0
         playbackSlider.tintColor = .white
         playbackSlider.addTarget(self, action: #selector(playbackValChanged(slider:event:)), for: .valueChanged)
-        repeatButton.setImage(utility.loadImage(named: "repeat", colors: [.gray]), for: .normal)
+        repeatButton.setImage(utility.loadImage(named: "repeat", colors: [NCBrandColor.shared.iconImageColor2]), for: .normal)
 
         utilityView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(tap(gestureRecognizer:))))
         playbackSliderView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(tap(gestureRecognizer:))))
@@ -321,7 +321,7 @@ class NCPlayerToolBar: UIView {
 
         if playRepeat {
             playRepeat = false
-            repeatButton.setImage(utility.loadImage(named: "repeat", colors: [.gray]), for: .normal)
+            repeatButton.setImage(utility.loadImage(named: "repeat", colors: [NCBrandColor.shared.iconImageColor2]), for: .normal)
         } else {
             playRepeat = true
             repeatButton.setImage(utility.loadImage(named: "repeat", colors: [.white]), for: .normal)
