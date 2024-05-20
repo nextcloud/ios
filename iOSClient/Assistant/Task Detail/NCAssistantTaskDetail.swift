@@ -79,8 +79,13 @@ struct BottomDetailsBar: View {
             Divider()
             HStack(alignment: .bottom) {
                 Label(
-                    title: { Text(NSLocalizedString(model.selectedTask?.statusInfo.stringKey ?? "", comment: "")) },
-                    icon: { Image(systemName: model.selectedTask?.statusInfo.imageSystemName ?? "").renderingMode(.original) }
+                    title: {
+                        Text(NSLocalizedString(model.selectedTask?.statusInfo.stringKey ?? "", comment: ""))
+                    }, icon: {
+                        Image(systemName: model.selectedTask?.statusInfo.imageSystemName ?? "")
+                            .renderingMode(.original)
+                            .font(Font.system(.body).weight(.light))
+                    }
                 )
                 .frame(maxWidth: .infinity, alignment: .leading)
 
