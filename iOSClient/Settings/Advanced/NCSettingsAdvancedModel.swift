@@ -1,5 +1,5 @@
 //
-//  CCSettingsAdvancedViewModel.swift
+//  NCSettingsAdvancedViewModel.swift
 //  Nextcloud
 //
 //  Created by Aditya Tyagi on 08/03/24.
@@ -27,7 +27,7 @@ import NextcloudKit
 import Combine
 import SwiftUI
 
-class CCSettingsAdvancedModel: ObservableObject, ViewOnAppearHandling, AccountUpdateHandling {
+class NCSettingsAdvancedModel: ObservableObject, ViewOnAppearHandling, AccountUpdateHandling {
 
     /// Keychain access
     var keychain = NCKeychain()
@@ -220,11 +220,11 @@ extension LogLevel {
     var displayText: String {
         switch self {
         case .disabled:
-            return NSLocalizedString("_disabled_", comment: "")
+            return NSLocalizedString("_log_disabled_", comment: "")
         case .standard:
-            return NSLocalizedString("_standard_", comment: "")
+            return NSLocalizedString("_log_standard_", comment: "")
         case .maximum:
-            return NSLocalizedString("_maximum_", comment: "")
+            return NSLocalizedString("_log_maximum_", comment: "")
         }
     }
 }

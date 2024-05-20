@@ -425,7 +425,10 @@
 "_diagnostics_"                 = "Diagnostics";
 "_view_log_"                    = "View log file";
 "_clear_log_"                   = "Clear log file";
-"_level_log_"                   = "Set Log level (disabled, standard, maximum)";
+"_level_log_"                   = "Set Log level";
+"_log_disabled_"                = "Disabled";
+"_log_standard_"                = "Standard";
+"_log_maximum_"                 = "Maximun";
 "_connect_server_anyway_"       = "Do you want to connect to the server anyway?";
 "_server_is_trusted_"           = "Do you consider this server trusted?";
 "_connection_error_"            = "Connection error";

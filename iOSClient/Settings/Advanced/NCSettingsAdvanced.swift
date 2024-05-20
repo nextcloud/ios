@@ -1,5 +1,5 @@
 //
-//  CCSettingsAdvanced.swift
+//  NCSettingsAdvanced.swift
 //  Nextcloud
 //
 //  Created by Aditya Tyagi on 08/03/24.
@@ -23,8 +23,8 @@
 import SwiftUI
 import NextcloudKit
 
-struct CCSettingsAdvanced: View {
-    @ObservedObject var viewModel = CCSettingsAdvancedModel()
+struct NCSettingsAdvanced: View {
+    @ObservedObject var viewModel = NCSettingsAdvancedModel()
     /// State variable for indicating whether the exit alert is shown.
     @State var showExitAlert: Bool = false
     /// State variable for indicating whether the cache alert is shown.
@@ -36,23 +36,22 @@ struct CCSettingsAdvanced: View {
             // Show Hidden Files
             Section(content: {
                 Toggle(NSLocalizedString("_show_hidden_files_", comment: ""), isOn: $viewModel.showHiddenFiles)
+                    .tint(Color(NCBrandColor.shared.brandElement))
                     .onChange(of: viewModel.showHiddenFiles) { _ in
                         viewModel.updateShowHiddenFiles()
                     }
                     .font(.system(size: 16))
-            }, footer: {
-                Text(NSLocalizedString("_show_hidden_files_footer", comment: ""))
-                    .font(.system(size: 12))
-                    .multilineTextAlignment(.leading)
-            })
+            }, footer: { })
             // Most Compatible & Enable Live Photo
             Section(content: {
                 Toggle(NSLocalizedString("_format_compatibility_", comment: ""), isOn: $viewModel.mostCompatible)
+                    .tint(Color(NCBrandColor.shared.brandElement))
                     .onChange(of: viewModel.mostCompatible) { _ in
                         viewModel.updateMostCompatible()
                     }
                     .font(.system(size: 16))
                 Toggle(NSLocalizedString("_upload_mov_livephoto_", comment: ""), isOn: $viewModel.livePhoto)
+                    .tint(Color(NCBrandColor.shared.brandElement))
                     .onChange(of: viewModel.livePhoto) { _ in
                         viewModel.updateLivePhoto()
                     }
@@ -68,6 +67,7 @@ struct CCSettingsAdvanced: View {
             // Remove from Camera Roll
             Section(content: {
                 Toggle(NSLocalizedString("_remove_photo_CameraRoll_", comment: ""), isOn: $viewModel.removeFromCameraRoll)
+                    .tint(Color(NCBrandColor.shared.brandElement))
                     .onChange(of: viewModel.removeFromCameraRoll) { _ in
                         viewModel.updateRemoveFromCameraRoll()
                     }
@@ -81,6 +81,7 @@ struct CCSettingsAdvanced: View {
             if !NCBrandOptions.shared.disable_openin_file {
                 Section(content: {
                     Toggle(NSLocalizedString("_disable_files_app_", comment: ""), isOn: $viewModel.appIntegration)
+                        .tint(Color(NCBrandColor.shared.brandElement))
                         .onChange(of: viewModel.appIntegration) { _ in
                             viewModel.updateAppIntegration()
                         }
@@ -95,12 +96,14 @@ struct CCSettingsAdvanced: View {
             if !NCBrandOptions.shared.disable_crash_service {
                 Section(content: {
                     HStack {
-                        Image("crashservice")
+                        Image(systemName: "ladybug")
                             .resizable()
-                            .renderingMode(.template)
-                            .frame(width: 20, height: 20)
-                            .foregroundColor(Color(UIColor.systemGray))
+                            .scaledToFit()
+                            .font(Font.system(.body).weight(.light))
+                            .frame(width: 25, height: 25)
+                            .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
                         Toggle(NSLocalizedString("_crashservice_title_", comment: ""), isOn: $viewModel.crashReporter)
+                            .tint(Color(NCBrandColor.shared.brandElement))
                             .onChange(of: viewModel.crashReporter) { _ in
                                 viewModel.updateCrashReporter()
                                 showCrashReporter.toggle()
@@ -130,11 +133,12 @@ struct CCSettingsAdvanced: View {
                         viewModel.viewLogFile()
                     }, label: {
                         HStack {
-                            Image("log")
+                            Image(systemName: "doc.text.magnifyingglass")
                                 .resizable()
-                                .renderingMode(.template)
-                                .frame(width: 20, height: 20)
-                                .foregroundColor(Color(UIColor.systemGray))
+                                .scaledToFit()
+                                .font(Font.system(.body).weight(.light))
+                                .frame(width: 25, height: 25)
+                                .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
                             Text(NSLocalizedString("_view_log_", comment: ""))
                         }
                         .font(.system(size: 16))
@@ -145,11 +149,12 @@ struct CCSettingsAdvanced: View {
                         viewModel.clearLogFile()
                     }, label: {
                         HStack {
-                            Image("clear")
+                            Image(systemName: "repeat")
                                 .resizable()
-                                .renderingMode(.template)
-                                .frame(width: 20, height: 20)
-                                .foregroundColor(Color(UIColor.systemGray))
+                                .scaledToFit()
+                                .font(Font.system(.body).weight(.light))
+                                .frame(width: 25, height: 25)
+                                .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
                             Text(NSLocalizedString("_clear_log_", comment: ""))
                         }
                         .font(.system(size: 16))
@@ -160,14 +165,10 @@ struct CCSettingsAdvanced: View {
                     }
                 }, header: {
                     Text(NSLocalizedString("_diagnostics_", comment: ""))
-                }, footer: {
-                    Text(NSLocalizedString("_diagnostics_footer_", comment: ""))
-                        .font(.system(size: 12))
-                        .multilineTextAlignment(.leading)
-                })
+                }, footer: { })
                 // Set Log Level() & Capabilities
                 Section {
-                    Picker(NSLocalizedString("_set_log_level_", comment: ""), selection: $viewModel.selectedLogLevel) {
+                    Picker(NSLocalizedString("_level_log_", comment: ""), selection: $viewModel.selectedLogLevel) {
                         ForEach(LogLevel.allCases) { level in
                             Text(level.displayText).tag(level)
                         }
@@ -178,11 +179,12 @@ struct CCSettingsAdvanced: View {
                     }
                     NavigationLink(destination: NCCapabilitiesView(capabilitiesStatus: NCCapabilitiesViewOO())) {
                         HStack {
-                            Image("capabilities")
+                            Image(systemName: "list.bullet")
                                 .resizable()
-                                .renderingMode(.template)
-                                .frame(width: 18, height: 18)
-                                .foregroundColor(Color(UIColor.systemGray))
+                                .scaledToFit()
+                                .font(Font.system(.body).weight(.light))
+                                .frame(width: 25, height: 25)
+                                .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
                             Text(NSLocalizedString("_capabilities_", comment: ""))
                         }
                         .font(.system(size: 16))
@@ -205,11 +207,12 @@ struct CCSettingsAdvanced: View {
                     showCacheAlert.toggle()
                 }, label: {
                     HStack {
-                        Image("trash")
+                        Image(systemName: "clear")
                             .resizable()
-                            .renderingMode(.template)
-                            .frame(width: 22, height: 20)
-                            .foregroundColor(Color(UIColor.systemRed))
+                            .scaledToFit()
+                            .font(Font.system(.body).weight(.light))
+                            .frame(width: 25, height: 25)
+                            .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
                         Text(NSLocalizedString("_clear_cache_", comment: ""))
                     }
                     .font(.system(size: 16))
@@ -268,5 +271,5 @@ struct CCSettingsAdvanced: View {
 }
 
 #Preview {
-    CCSettingsAdvanced(viewModel: CCSettingsAdvancedModel(), showExitAlert: false, showCacheAlert: false)
+    NCSettingsAdvanced(viewModel: NCSettingsAdvancedModel(), showExitAlert: false, showCacheAlert: false)
 }
