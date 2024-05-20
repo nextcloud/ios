@@ -163,7 +163,6 @@
 		F70D8D8124A4A9BF000A5756 /* NCNetworkingProcess.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70D8D8024A4A9BF000A5756 /* NCNetworkingProcess.swift */; };
 		F710D1F52405770F00A6033D /* NCViewerPDF.swift in Sources */ = {isa = PBXBuildFile; fileRef = F710D1F42405770F00A6033D /* NCViewerPDF.swift */; };
 		F710D2022405826100A6033D /* NCViewer+Menu.swift in Sources */ = {isa = PBXBuildFile; fileRef = F710D2012405826100A6033D /* NCViewer+Menu.swift */; };
-		F710FC7A277B7D0000AA9FBF /* Realm in Frameworks */ = {isa = PBXBuildFile; productRef = F710FC79277B7D0000AA9FBF /* Realm */; };
 		F710FC7C277B7D0000AA9FBF /* RealmSwift in Frameworks */ = {isa = PBXBuildFile; productRef = F710FC7B277B7D0000AA9FBF /* RealmSwift */; };
 		F710FC80277B7D2700AA9FBF /* RealmSwift in Frameworks */ = {isa = PBXBuildFile; productRef = F710FC7F277B7D2700AA9FBF /* RealmSwift */; };
 		F710FC84277B7D3500AA9FBF /* RealmSwift in Frameworks */ = {isa = PBXBuildFile; productRef = F710FC83277B7D3500AA9FBF /* RealmSwift */; };
@@ -1671,7 +1670,6 @@
 				F76DA969277B77EA0082465B /* DropDown in Frameworks */,
 				F7F623B52A5EF4D30022D3D4 /* Gzip in Frameworks */,
 				F75EAED826D2552E00F4320E /* MarqueeLabel in Frameworks */,
-				F710FC7A277B7D0000AA9FBF /* Realm in Frameworks */,
 				F72DA9B425F53E4E00B87DB1 /* SwiftRichString in Frameworks */,
 				F74E7720277A2EF40013B958 /* XLForm in Frameworks */,
 				F73ADD1C265546890069EA0D /* SwiftEntryKit in Frameworks */,
@@ -3075,7 +3073,6 @@
 				F74E771F277A2EF40013B958 /* XLForm */,
 				F76DA962277B760E0082465B /* Queuer */,
 				F76DA968277B77EA0082465B /* DropDown */,
-				F710FC79277B7D0000AA9FBF /* Realm */,
 				F710FC7B277B7D0000AA9FBF /* RealmSwift */,
 				F7BB7E4627A18C56009B9F29 /* Parchment */,
 				F758A01127A7F03E0069468B /* JGProgressHUD */,
@@ -5525,11 +5522,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = F70B86732642CE3B00ED5349 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = FirebaseCrashlytics;
-		};
-		F710FC79277B7D0000AA9FBF /* Realm */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = F710FC78277B7CFF00AA9FBF /* XCRemoteSwiftPackageReference "realm-swift" */;
-			productName = Realm;
 		};
 		F710FC7B277B7D0000AA9FBF /* RealmSwift */ = {
 			isa = XCSwiftPackageProductDependency;
