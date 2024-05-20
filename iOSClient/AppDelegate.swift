@@ -50,6 +50,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     var isUiTestingEnabled: Bool {
         return ProcessInfo.processInfo.arguments.contains("UI_TESTING")
     }
+    var notificationSettings: UNNotificationSettings?
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         if isUiTestingEnabled {
@@ -126,6 +127,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         NCImageCache.shared.createImagesCache()
 
         // Push Notification & display notification
+        UNUserNotificationCenter.current().getNotificationSettings { settings in
+            self.notificationSettings = settings
+        }
         application.registerForRemoteNotifications()
         UNUserNotificationCenter.current().delegate = self
         UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge, .sound]) { _, _ in }
@@ -149,9 +153,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
     // L'applicazione terminerà
     func applicationWillTerminate(_ application: UIApplication) {
-
-        if UIApplication.shared.backgroundRefreshStatus == .available {
-
+        if self.notificationSettings?.authorizationStatus != .denied && UIApplication.shared.backgroundRefreshStatus == .available {
             let content = UNMutableNotificationContent()
             content.title = NCBrandOptions.shared.brand
             content.body = NSLocalizedString("_keep_running_", comment: "")
