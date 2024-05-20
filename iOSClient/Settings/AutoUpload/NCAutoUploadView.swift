@@ -1,5 +1,5 @@
 //
-//  AutoUploadView.swift
+//  NCAutoUploadView.swift
 //  Nextcloud
 //
 //  Created by Aditya Tyagi on 06/03/24.
@@ -25,8 +25,8 @@ import SwiftUI
 import UIKit
 
 /// A view that allows the user to configure the `auto upload settings for Nextcloud`
-struct AutoUploadView: View {
-    @ObservedObject var model: AutoUploadModel
+struct NCAutoUploadView: View {
+    @ObservedObject var model: NCAutoUploadModel
     var body: some View {
         Form {
             // Auto Upload
@@ -46,7 +46,7 @@ struct AutoUploadView: View {
                     .animation(.easeInOut)
             }
         }
-        .navigationBarTitle(NSLocalizedString("_auto_upload_", comment: ""))
+        .navigationBarTitle(NSLocalizedString("_auto_upload_folder_", comment: ""))
         .onAppear {
             model.onViewAppear()
         }
@@ -144,7 +144,7 @@ struct AutoUploadView: View {
         })
         // Auto Upload file name
         Section(content: {
-            NavigationLink(destination: AutoUploadFileNamesView(model: AutoUploadFileNamesModel()), label: {
+            NavigationLink(destination: NCAutoUploadFileNamesView(model: NCAutoUploadFileNamesModel()), label: {
                 Text(NSLocalizedString("_autoupload_filenamemask_", comment: ""))
                     .font(.system(size: 16))
             })
@@ -155,5 +155,5 @@ struct AutoUploadView: View {
 }
 
 #Preview {
-    AutoUploadView(model: AutoUploadModel())
+    NCAutoUploadView(model: NCAutoUploadModel())
 }
