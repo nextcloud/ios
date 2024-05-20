@@ -38,7 +38,7 @@ struct NCSettings: View {
         Form {
             /// `Auto Upload` Section
             Section {
-                NavigationLink(destination: AutoUploadView(model: AutoUploadModel())) {
+                NavigationLink(destination: NCAutoUploadView(model: NCAutoUploadModel())) {
                     HStack {
                         Image(systemName: "photo.circle")
                             .resizable()
@@ -170,7 +170,7 @@ struct NCSettings: View {
                 })
                 .tint(Color(NCBrandColor.shared.textColor))
                 .sheet(isPresented: $showAcknowledgements) {
-                    AcknowledgementsView(showText: $showAcknowledgements, browserTitle: "Acknowledgements")
+                    NCAcknowledgementsView(showText: $showAcknowledgements, browserTitle: NSLocalizedString("_acknowledgements_", comment: ""))
                 }
                 // Terms & Privacy Conditions
                 Button(action: {
@@ -189,7 +189,7 @@ struct NCSettings: View {
                 })
                 .tint(Color(NCBrandColor.shared.textColor))
                 .sheet(isPresented: $showBrowser) {
-                    NCBrowserWebView(isPresented: $showBrowser, urlBase: URL(string: NCBrandOptions.shared.privacy)!, browserTitle: "Privacy Policies")
+                    NCBrowserWebView(isPresented: $showBrowser, urlBase: URL(string: NCBrandOptions.shared.privacy)!, browserTitle: NSLocalizedString("_privacy_legal_", comment: ""))
                 }
                 // Source Code
                 Button(action: {
@@ -207,7 +207,7 @@ struct NCSettings: View {
                 })
                 .tint(Color(NCBrandColor.shared.textColor))
                 .sheet(isPresented: $showSourceCode) {
-                    NCBrowserWebView(isPresented: $showSourceCode, urlBase: URL(string: NCBrandOptions.shared.sourceCode)!, browserTitle: "Source Code")
+                    NCBrowserWebView(isPresented: $showSourceCode, urlBase: URL(string: NCBrandOptions.shared.sourceCode)!, browserTitle: NSLocalizedString("_source_code_", comment: ""))
                 }
             })
             /// `Watermark` Section

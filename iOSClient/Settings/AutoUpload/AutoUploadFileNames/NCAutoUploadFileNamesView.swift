@@ -1,5 +1,5 @@
 //
-//  AutoUploadFileNamesView.swift
+//  NCAutoUploadFileNamesView.swift
 //  Nextcloud
 //
 //  Created by Aditya Tyagi on 10/03/24.
@@ -23,8 +23,8 @@
 
 import SwiftUI
 
-struct AutoUploadFileNamesView: View {
-    @ObservedObject var model = AutoUploadFileNamesModel()
+struct NCAutoUploadFileNamesView: View {
+    @ObservedObject var model = NCAutoUploadFileNamesModel()
 
     var body: some View {
         Form {
@@ -99,5 +99,5 @@ struct AutoUploadFileNamesView: View {
 }
 
 #Preview {
-    AutoUploadFileNamesView(model: AutoUploadFileNamesModel())
+    NCAutoUploadFileNamesView(model: NCAutoUploadFileNamesModel())
 }
