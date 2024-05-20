@@ -84,7 +84,6 @@ extension NCUtility {
     }
 
     @objc func loadUserImage(for user: String, displayName: String?, userBaseUrl: NCUserBaseUrl) -> UIImage {
-
         let fileName = userBaseUrl.userBaseUrl + "-" + user + ".png"
         let localFilePath = utilityFileSystem.directoryUserData + "/" + fileName
 
@@ -101,12 +100,11 @@ extension NCUtility {
         } else if let displayName = displayName, !displayName.isEmpty, let avatarImg = createAvatar(displayName: displayName, size: 30) {
             return avatarImg
         } else {
-            return UIImage(systemName: "person.crop.circle", withConfiguration: UIImage.SymbolConfiguration(pointSize: 30))!
+            return loadImage(named: "person.crop.circle", colors: [NCBrandColor.shared.iconImageColor])
         }
     }
 
     func imageFromVideo(url: URL, at time: TimeInterval) -> UIImage? {
-
         let asset = AVURLAsset(url: url)
         let assetIG = AVAssetImageGenerator(asset: asset)
 
@@ -126,9 +124,7 @@ extension NCUtility {
     }
 
     func createImageFrom(fileNameView: String, ocId: String, etag: String, classFile: String) {
-
         var originalImage, scaleImagePreview, scaleImageIcon: UIImage?
-
         let fileNamePath = utilityFileSystem.getDirectoryProviderStorageOcId(ocId, fileNameView: fileNameView)
         let fileNamePathPreview = utilityFileSystem.getDirectoryProviderStoragePreviewOcId(ocId, etag: etag)
         let fileNamePathIcon = utilityFileSystem.getDirectoryProviderStorageIconOcId(ocId, etag: etag)
@@ -159,10 +155,7 @@ extension NCUtility {
     }
 
     func getImageMetadata(_ metadata: tableMetadata, for size: CGFloat) -> UIImage? {
-
-        if let image = getImage(metadata: metadata) {
-            return image
-        }
+        if let image = getImage(metadata: metadata) { return image }
 
         if metadata.isVideo && !metadata.hasPreview {
             createImageFrom(fileNameView: metadata.fileNameView, ocId: metadata.ocId, etag: metadata.etag, classFile: metadata.classFile)
@@ -182,7 +175,6 @@ extension NCUtility {
     }
 
     func getImage(metadata: tableMetadata) -> UIImage? {
-
         let ext = (metadata.fileNameView as NSString).pathExtension.uppercased()
         var image: UIImage?
 

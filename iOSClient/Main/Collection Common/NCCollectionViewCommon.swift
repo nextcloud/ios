@@ -1215,7 +1215,6 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             }
             if metadata.name == NCGlobal.shared.appName {
                 if let image = utility.createFilePreviewImage(ocId: metadata.ocId, etag: metadata.etag, fileNameView: metadata.fileNameView, classFile: metadata.classFile, status: metadata.status, createPreviewMedia: !metadata.hasPreview) {
-
                     cell.filePreviewImageView?.image = image
                 } else {
                     if metadata.iconName.isEmpty {

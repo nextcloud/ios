@@ -40,7 +40,7 @@ class NCActivityCommentView: UIView, UITextFieldDelegate {
         if let image = UIImage(contentsOfFile: fileNameLocalPath) {
             imageItem.image = image
         } else {
-            imageItem.image = UIImage(named: "avatar")
+            imageItem.image = NCUtility().loadImage(named: "person.crop.circle", colors: [NCBrandColor.shared.iconImageColor])
         }
 
         if account.displayName.isEmpty {
