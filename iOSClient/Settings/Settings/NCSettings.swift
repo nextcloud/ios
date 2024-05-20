@@ -40,10 +40,11 @@ struct NCSettings: View {
             Section {
                 NavigationLink(destination: AutoUploadView(model: AutoUploadModel())) {
                     HStack {
-                        Image("folderAutomaticUpload")
+                        Image(systemName: "photo.circle")
                             .resizable()
-                            .renderingMode(.template)
-                            .frame(width: 30, height: 30)
+                            .scaledToFit()
+                            .font(Font.system(.body).weight(.light))
+                            .frame(width: 25, height: 25)
                             .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
                         Text(NSLocalizedString("_settings_autoupload_", comment: ""))
                     }
@@ -236,8 +237,8 @@ struct E2EESection: View {
                         .resizable()
                         .scaledToFit()
                         .font(Font.system(.body).weight(.light))
+                        .frame(width: 20, height: 20)
                         .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
-                        .frame(width: 30, height: 30)
                     Text(NSLocalizedString("_e2e_settings_", comment: ""))
                 }
                 .font(.system(size: 16))
