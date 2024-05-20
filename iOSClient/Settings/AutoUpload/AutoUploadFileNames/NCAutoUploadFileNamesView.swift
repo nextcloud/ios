@@ -28,13 +28,6 @@ struct NCAutoUploadFileNamesView: View {
 
     var body: some View {
         Form {
-            // Maintain Original Filename
-            /*
-            Section(content: {
-            }, header: {
-            }, footer: {
-            })
-            */
             // Specify Filename
             Section(header: Text(NSLocalizedString("_mode_filename_", comment: ""))) {
                 Toggle(NSLocalizedString("_maintain_original_filename_", comment: ""), isOn: $model.maintainFilename)
