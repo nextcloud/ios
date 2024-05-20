@@ -32,6 +32,7 @@ struct AutoUploadView: View {
             // Auto Upload
             Section(content: {
                 Toggle(NSLocalizedString("_autoupload_", comment: ""), isOn: $model.autoUpload)
+                    .tint(Color(NCBrandColor.shared.brandElement))
                     .onChange(of: model.autoUpload) { newValue in
                         model.handleAutoUploadChange(newValue: newValue)
                     }
@@ -60,10 +61,11 @@ struct AutoUploadView: View {
                 model.autoUploadFolder.toggle()
             }, label: {
                 HStack {
-                    Image("foldersOnTop")
+                    Image(systemName: "folder")
                         .resizable()
-                        .renderingMode(.template)
-                        .frame(width: 20, height: 20)
+                        .scaledToFit()
+                        .font(Font.system(.body).weight(.light))
+                        .frame(width: 25, height: 25)
                         .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
                     Text(NSLocalizedString("_autoupload_select_folder_", comment: ""))
                 }
@@ -82,11 +84,13 @@ struct AutoUploadView: View {
         // Auto Upload Photo
         Section(content: {
             Toggle(NSLocalizedString("_autoupload_photos_", comment: ""), isOn: $model.autoUploadImage)
+                .tint(Color(NCBrandColor.shared.brandElement))
                 .onChange(of: model.autoUploadImage) { newValue in
                     model.handleAutoUploadImageChange(newValue: newValue)
                 }
                 .font(.system(size: 16))
             Toggle(NSLocalizedString("_wifi_only_", comment: ""), isOn: $model.autoUploadWWAnPhoto)
+                .tint(Color(NCBrandColor.shared.brandElement))
                 .onChange(of: model.autoUploadWWAnPhoto) { newValue in
                     model.handleAutoUploadWWAnPhotoChange(newValue: newValue)
                 }
@@ -95,11 +99,13 @@ struct AutoUploadView: View {
         // Auto Upload Video
         Section(content: {
             Toggle(NSLocalizedString("_autoupload_videos_", comment: ""), isOn: $model.autoUploadVideo)
+                .tint(Color(NCBrandColor.shared.brandElement))
                 .onChange(of: model.autoUploadVideo) { newValue in
                     model.handleAutoUploadVideoChange(newValue: newValue)
                 }
                 .font(.system(size: 16))
             Toggle(NSLocalizedString("_wifi_only_", comment: ""), isOn: $model.autoUploadWWAnVideo)
+                .tint(Color(NCBrandColor.shared.brandElement))
                 .onChange(of: model.autoUploadWWAnVideo) { newValue in
                     model.handleAutoUploadWWAnVideoChange(newValue: newValue)
                 }
@@ -108,6 +114,7 @@ struct AutoUploadView: View {
         // Auto Upload Full
         Section(content: {
             Toggle(NSLocalizedString("_autoupload_fullphotos_", comment: ""), isOn: $model.autoUploadFull)
+                .tint(Color(NCBrandColor.shared.brandElement))
                 .onChange(of: model.autoUploadFull) { newValue in
                     model.handleAutoUploadFullChange(newValue: newValue)
                 }
@@ -118,6 +125,7 @@ struct AutoUploadView: View {
         // Auto Upload create subfolder
         Section(content: {
             Toggle(NSLocalizedString("_autoupload_create_subfolder_", comment: ""), isOn: $model.autoUploadCreateSubfolder)
+                .tint(Color(NCBrandColor.shared.brandElement))
                 .onChange(of: model.autoUploadCreateSubfolder) { newValue in
                     model.handleAutoUploadCreateSubfolderChange(newValue: newValue)
                 }
