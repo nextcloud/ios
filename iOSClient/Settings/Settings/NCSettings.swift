@@ -39,6 +39,9 @@ struct NCSettings: View {
             /// `Auto Upload` Section
             Section {
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 940b67a9f (coding)
                 NavigationLink(destination: NCAutoUploadView(model: NCAutoUploadModel())) {
                     HStack {
                         Image(systemName: "photo.circle")
@@ -186,10 +189,14 @@ struct NCSettings: View {
                 .tint(Color(NCBrandColor.shared.textColor))
                 .sheet(isPresented: $showAcknowledgements) {
 <<<<<<< HEAD
+<<<<<<< HEAD
                     NCAcknowledgementsView(showText: $showAcknowledgements, browserTitle: NSLocalizedString("_acknowledgements_", comment: ""))
 =======
                     AcknowledgementsView(showText: $showAcknowledgements, browserTitle: "Acknowledgements")
 >>>>>>> 331c3a002 (coding)
+=======
+                    NCAcknowledgementsView(showText: $showAcknowledgements, browserTitle: NSLocalizedString("_acknowledgements_", comment: ""))
+>>>>>>> 940b67a9f (coding)
                 }
                 // Terms & Privacy Conditions
                 Button(action: {
@@ -209,10 +216,14 @@ struct NCSettings: View {
                 .tint(Color(NCBrandColor.shared.textColor))
                 .sheet(isPresented: $showBrowser) {
 <<<<<<< HEAD
+<<<<<<< HEAD
                     NCBrowserWebView(isPresented: $showBrowser, urlBase: URL(string: NCBrandOptions.shared.privacy)!, browserTitle: NSLocalizedString("_privacy_legal_", comment: ""))
 =======
                     NCBrowserWebView(isPresented: $showBrowser, urlBase: URL(string: NCBrandOptions.shared.privacy)!, browserTitle: "Privacy Policies")
 >>>>>>> 331c3a002 (coding)
+=======
+                    NCBrowserWebView(isPresented: $showBrowser, urlBase: URL(string: NCBrandOptions.shared.privacy)!, browserTitle: NSLocalizedString("_privacy_legal_", comment: ""))
+>>>>>>> 940b67a9f (coding)
                 }
                 // Source Code
                 Button(action: {
@@ -231,10 +242,14 @@ struct NCSettings: View {
                 .tint(Color(NCBrandColor.shared.textColor))
                 .sheet(isPresented: $showSourceCode) {
 <<<<<<< HEAD
+<<<<<<< HEAD
                     NCBrowserWebView(isPresented: $showSourceCode, urlBase: URL(string: NCBrandOptions.shared.sourceCode)!, browserTitle: NSLocalizedString("_source_code_", comment: ""))
 =======
                     NCBrowserWebView(isPresented: $showSourceCode, urlBase: URL(string: NCBrandOptions.shared.sourceCode)!, browserTitle: "Source Code")
 >>>>>>> 331c3a002 (coding)
+=======
+                    NCBrowserWebView(isPresented: $showSourceCode, urlBase: URL(string: NCBrandOptions.shared.sourceCode)!, browserTitle: NSLocalizedString("_source_code_", comment: ""))
+>>>>>>> 940b67a9f (coding)
                 }
             })
             /// `Watermark` Section
