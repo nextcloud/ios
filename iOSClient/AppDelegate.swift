@@ -151,7 +151,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         return true
     }
 
-    // L'applicazione terminerà
     func applicationWillTerminate(_ application: UIApplication) {
         if self.notificationSettings?.authorizationStatus != .denied && UIApplication.shared.backgroundRefreshStatus == .available {
             let content = UNMutableNotificationContent()
