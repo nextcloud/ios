@@ -193,7 +193,7 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         item = NKExternalSite()
         item.name = "_settings_"
         item.icon = "gear"
-        item.url = "segueSettings"
+        item.url = "openSettings"
         settingsMenu.append(item)
 
         if !quotaMenu.isEmpty {
@@ -415,7 +415,6 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
             tapImageLogoManageAccount()
             return
         }
-
         // Action
         if item.url.contains("segue") && !item.url.contains("//") {
             self.navigationController?.performSegue(withIdentifier: item.url, sender: self)
@@ -455,6 +454,12 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
             let assistant = NCAssistant().environmentObject(NCAssistantTask())
             let hostingController = UIHostingController(rootView: assistant)
             present(hostingController, animated: true, completion: nil)
+        } else if item.url == "openSettings" {
+            // Created an instance of the NCSettings view
+            let ncSettingsView = NCSettings(model: NCSettingsModel())
+            // Created a hosting controller for the NCSettings view & performing the segue
+            let hostingController = UIHostingController(rootView: ncSettingsView)
+            self.navigationController?.pushViewController(hostingController, animated: true)
         } else {
             applicationHandle.didSelectItem(item, viewController: self)
         }
