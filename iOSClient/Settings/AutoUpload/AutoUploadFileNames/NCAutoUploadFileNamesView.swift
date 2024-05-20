@@ -29,6 +29,7 @@ struct NCAutoUploadFileNamesView: View {
     var body: some View {
         Form {
 <<<<<<< HEAD
+<<<<<<< HEAD
             // Specify Filename
             Section(header: Text(NSLocalizedString("_mode_filename_", comment: ""))) {
 =======
@@ -39,6 +40,8 @@ struct NCAutoUploadFileNamesView: View {
             }, footer: {
             })
             */
+=======
+>>>>>>> 6ee275189 (cleaning)
             // Specify Filename
 <<<<<<< HEAD
             Section(header: Text(NSLocalizedString("_filename_", comment: ""))) {
