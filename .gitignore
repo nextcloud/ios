@@ -44,3 +44,5 @@ Package.resolved
 
 *.generated.swift
 /.env-vars
+
+BuildForSimulator/
