@@ -166,11 +166,11 @@ extension NCUtility {
         }
 
         if metadata.isVideo {
-            return UIImage(named: "noPreviewVideo")?.image(color: NCBrandColor.shared.iconImageColor2, size: size)
+            return loadImage(named: "video", colors: [NCBrandColor.shared.iconImageColor2])
         } else if metadata.isAudio {
-            return UIImage(named: "noPreviewAudio")?.image(color: NCBrandColor.shared.iconImageColor2, size: size)
+            return loadImage(named: "waveform", colors: [NCBrandColor.shared.iconImageColor2])
         } else {
-            return UIImage(named: "noPreview")?.image(color: NCBrandColor.shared.iconImageColor2, size: size)
+            return loadImage(named: "photo", colors: [NCBrandColor.shared.iconImageColor2])
         }
     }
 

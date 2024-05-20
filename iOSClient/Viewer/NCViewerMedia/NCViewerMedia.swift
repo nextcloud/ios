@@ -292,7 +292,7 @@ class NCViewerMedia: UIViewController {
         if metadata.isVideo && !metadata.hasPreview {
             utility.createImageFrom(fileNameView: metadata.fileNameView, ocId: metadata.ocId, etag: metadata.etag, classFile: metadata.classFile)
         } else if metadata.isAudio {
-            return completion(UIImage(named: "noPreviewAudio")!.image(color: NCBrandColor.shared.iconImageColor2, size: view.frame.width))
+            return completion(utility.loadImage(named: "waveform", colors: [NCBrandColor.shared.iconImageColor2]))
         } else if let image = utility.getImage(metadata: metadata) {
             return completion(image)
         }
@@ -317,7 +317,7 @@ class NCViewerMedia: UIViewController {
                     NCManageDatabase.shared.setMetadataEtagResource(ocId: self.metadata.ocId, etagResource: etag)
                     return completion(image)
                 } else {
-                    return completion(UIImage(named: "noPreview")!.image(color: NCBrandColor.shared.iconImageColor2, size: self.view.frame.width))
+                    return completion(self.utility.loadImage(named: "photo", colors: [NCBrandColor.shared.iconImageColor2]))
                 }
             }
         }
