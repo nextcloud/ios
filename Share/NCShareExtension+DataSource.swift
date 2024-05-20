@@ -48,7 +48,7 @@ extension NCShareExtension: UICollectionViewDelegate {
                 header.emptyTitle.text = NSLocalizedString("_request_in_progress_", comment: "")
                 header.emptyDescription.text = ""
             } else {
-                header.emptyImage.image = UIImage(named: "folder")?.image(color: NCBrandColor.shared.brandElement)
+                header.emptyImage.image = NCImageCache.images.folder
                 header.emptyTitle.text = NSLocalizedString("_files_no_folders_", comment: "")
                 header.emptyDescription.text = ""
             }

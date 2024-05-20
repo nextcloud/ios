@@ -50,7 +50,7 @@ extension NCTrash {
             if tableTrash.directory {
                 iconHeader = NCImageCache.images.folder
             } else {
-                iconHeader = UIImage(named: tableTrash.iconName)
+                iconHeader = NCImageCache.images.file
             }
         }
 
