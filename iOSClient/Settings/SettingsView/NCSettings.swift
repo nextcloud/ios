@@ -40,11 +40,11 @@ struct NCSettings: View {
             Section {
                 NavigationLink(destination: AutoUploadView(model: AutoUploadModel())) {
                     HStack {
-                        Image("autoUpload")
+                        Image("folderAutomaticUpload")
                             .resizable()
                             .renderingMode(.template)
+                            .frame(width: 30, height: 30)
                             .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
-                            .frame(width: 20, height: 20)
                         Text(NSLocalizedString("_settings_autoupload_", comment: ""))
                     }
                     .font(.system(size: 16))
@@ -57,39 +57,44 @@ struct NCSettings: View {
                     model.isLockActive.toggle()
                 }, label: {
                     HStack {
-                        Image(model.isLockActive ? "lock_open" : "lock")
+                        Image(systemName: model.isLockActive ? "lock.open" : "lock")
                             .resizable()
-                            .renderingMode(.template)
+                            .scaledToFit()
+                            .font(Font.system(.body).weight(.light))
                             .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
                             .frame(width: 20, height: 20)
                         Text(model.isLockActive ? NSLocalizedString("_lock_not_active_", comment: "") : NSLocalizedString("_lock_active_", comment: ""))
                     }
                     .font(.system(size: 16))
                 })
-                .tint(Color(UIColor.label))
+                .tint(Color(NCBrandColor.shared.textColor))
                 .sheet(isPresented: $model.isLockActive) {
                     PasscodeView(isPresented: $model.isLockActive, passcode: $model.passcode)
                 }
                 // Enable Touch ID
                 Toggle(NSLocalizedString("_enable_touch_face_id_", comment: ""), isOn: $model.enableTouchID)
+                    .tint(Color(NCBrandColor.shared.brandElement))
                     .font(.system(size: 16))
                     .onChange(of: model.enableTouchID) { _ in
                         model.updateTouchIDSetting()
                     }
                 // Lock no screen
                 Toggle(NSLocalizedString("_lock_protection_no_screen_", comment: ""), isOn: $model.lockScreen)
+                    .tint(Color(NCBrandColor.shared.brandElement))
                     .font(.system(size: 16))
                     .onChange(of: model.lockScreen) { _ in
                         model.updateLockScreenSetting()
                     }
                 // Privacy screen
                 Toggle(NSLocalizedString("_privacy_screen_", comment: ""), isOn: $model.privacyScreen)
+                    .tint(Color(NCBrandColor.shared.brandElement))
                     .font(.system(size: 16))
                     .onChange(of: model.privacyScreen) { _ in
                         model.updatePrivacyScreenSetting()
                     }
                 // Reset app wrong attempts
                 Toggle(NSLocalizedString("_reset_wrong_passcode_", comment: ""), isOn: $model.resetWrongAttempts)
+                    .tint(Color(NCBrandColor.shared.brandElement))
                     .font(.system(size: 16))
                     .onChange(of: model.resetWrongAttempts) { _ in
                         model.updateResetWrongAttemptsSetting()
@@ -108,16 +113,17 @@ struct NCSettings: View {
                         model.getConfigFiles()
                     }, label: {
                         HStack {
-                            Image("caldavcardav")
+                            Image(systemName: "calendar.badge.plus")
                                 .resizable()
-                                .renderingMode(.template)
-                                .frame(width: 20, height: 20)
+                                .scaledToFit()
+                                .font(Font.system(.body).weight(.light))
+                                .frame(width: 25, height: 25)
                                 .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
                             Text(NSLocalizedString("_mobile_config_", comment: ""))
                         }
                         .font(.system(size: 16))
                     })
-                    .tint(Color(UIColor.label))
+                    .tint(Color(NCBrandColor.shared.textColor))
                 }, header: {
                     Text(NSLocalizedString("_calendar_contacts_", comment: ""))
                 }, footer: {
@@ -134,10 +140,11 @@ struct NCSettings: View {
             Section {
                 NavigationLink(destination: CCSettingsAdvanced(viewModel: CCSettingsAdvancedModel(), showExitAlert: false, showCacheAlert: false)) {
                     HStack {
-                        Image("gear")
+                        Image(systemName: "gear")
                             .resizable()
-                            .renderingMode(.template)
-                            .frame(width: 20, height: 20)
+                            .scaledToFit()
+                            .font(Font.system(.body).weight(.light))
+                            .frame(width: 25, height: 25)
                             .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
                         Text(NSLocalizedString("_advanced_", comment: ""))
                     }
@@ -154,13 +161,13 @@ struct NCSettings: View {
                         Image("acknowledgements")
                             .resizable()
                             .renderingMode(.template)
-                            .frame(width: 20, height: 20)
+                            .frame(width: 25, height: 25)
                             .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
                         Text(NSLocalizedString("_acknowledgements_", comment: ""))
                     }
                     .font(.system(size: 16))
                 })
-                .tint(Color(UIColor.label))
+                .tint(Color(NCBrandColor.shared.textColor))
                 .sheet(isPresented: $showAcknowledgements) {
                     AcknowledgementsView(showText: $showAcknowledgements, browserTitle: "Acknowledgements")
                 }
@@ -169,16 +176,17 @@ struct NCSettings: View {
                     showBrowser = true
                 }, label: {
                     HStack {
-                        Image("shield.checkerboard")
+                        Image(systemName: "shield.checkerboard")
                             .resizable()
-                            .renderingMode(.template)
-                            .frame(width: 20, height: 20)
+                            .scaledToFit()
+                            .font(Font.system(.body).weight(.light))
+                            .frame(width: 25, height: 25)
                             .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
                         Text(NSLocalizedString("_privacy_legal_", comment: ""))
                     }
                     .font(.system(size: 16))
                 })
-                .tint(Color(UIColor.label))
+                .tint(Color(NCBrandColor.shared.textColor))
                 .sheet(isPresented: $showBrowser) {
                     NCBrowserWebView(isPresented: $showBrowser, urlBase: URL(string: NCBrandOptions.shared.privacy)!, browserTitle: "Privacy Policies")
                 }
@@ -190,13 +198,13 @@ struct NCSettings: View {
                         Image("gitHub")
                             .resizable()
                             .renderingMode(.template)
-                            .frame(width: 20, height: 20)
+                            .frame(width: 25, height: 25)
                             .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
                         Text(NSLocalizedString("_source_code_", comment: ""))
                     }
                     .font(.system(size: 16))
                 })
-                .tint(Color(UIColor.label))
+                .tint(Color(NCBrandColor.shared.textColor))
                 .sheet(isPresented: $showSourceCode) {
                     NCBrowserWebView(isPresented: $showSourceCode, urlBase: URL(string: NCBrandOptions.shared.sourceCode)!, browserTitle: "Source Code")
                 }
@@ -224,11 +232,12 @@ struct E2EESection: View {
         Section(header: Text(NSLocalizedString("_e2e_settings_title_", comment: "")), content: {
             NavigationLink(destination: NCViewE2EE(account: AppDelegate().account, rootViewController: nil)) {
                 HStack {
-                    Image("lock")
+                    Image(systemName: "lock")
                         .resizable()
-                        .renderingMode(.template)
+                        .scaledToFit()
+                        .font(Font.system(.body).weight(.light))
                         .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
-                        .frame(width: 20, height: 20)
+                        .frame(width: 30, height: 30)
                     Text(NSLocalizedString("_e2e_settings_", comment: ""))
                 }
                 .font(.system(size: 16))

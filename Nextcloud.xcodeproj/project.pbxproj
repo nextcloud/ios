@@ -2619,12 +2619,16 @@
 			isa = PBXGroup;
 			children = (
 <<<<<<< HEAD
+<<<<<<< HEAD
 				F7A9F15C2BFB59FD00B86B6F /* AutoUploadFileNames */,
 				F7A9F15B2BFB59FD00B86B6F /* NCAutoUploadView.swift */,
 				F7A9F15F2BFB59FD00B86B6F /* NCAutoUploadModel.swift */,
 =======
 				F7A9F15B2BFB59FD00B86B6F /* AutoUploadView.swift */,
+=======
+>>>>>>> dee1acaff (Settings)
 				F7A9F15C2BFB59FD00B86B6F /* ManageAutoUploadFiles */,
+				F7A9F15B2BFB59FD00B86B6F /* AutoUploadView.swift */,
 				F7A9F15F2BFB59FD00B86B6F /* AutoUploadModel.swift */,
 >>>>>>> eb6a61e03 (Alignment code)
 			);
