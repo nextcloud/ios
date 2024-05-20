@@ -1,5 +1,5 @@
 //
-//  AutoUploadFileNamesViewModel.swift
+//  NCAutoUploadFileNamesModel.swift
 //  Nextcloud
 //
 //  Created by Aditya Tyagi on 12/03/24.
@@ -27,7 +27,7 @@ import SwiftUI
 import Combine
 
 /// A view model responsible for managing auto-upload file names.
-class AutoUploadFileNamesModel: ObservableObject, ViewOnAppearHandling, AccountUpdateHandling {
+class NCAutoUploadFileNamesModel: ObservableObject, ViewOnAppearHandling, AccountUpdateHandling {
     // MARK: - Properties
     /// A keychain instance for handling authentication.
     private var keychain = NCKeychain()
