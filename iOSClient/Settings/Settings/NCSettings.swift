@@ -38,6 +38,7 @@ struct NCSettings: View {
         Form {
             /// `Auto Upload` Section
             Section {
+<<<<<<< HEAD
                 NavigationLink(destination: NCAutoUploadView(model: NCAutoUploadModel())) {
                     HStack {
                         Image(systemName: "photo.circle")
@@ -45,6 +46,14 @@ struct NCSettings: View {
                             .scaledToFit()
                             .font(Font.system(.body).weight(.light))
                             .frame(width: 25, height: 25)
+=======
+                NavigationLink(destination: AutoUploadView(model: AutoUploadModel())) {
+                    HStack {
+                        Image("folderAutomaticUpload")
+                            .resizable()
+                            .renderingMode(.template)
+                            .frame(width: 30, height: 30)
+>>>>>>> 331c3a002 (coding)
                             .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
                         Text(NSLocalizedString("_settings_autoupload_", comment: ""))
                     }
@@ -170,7 +179,11 @@ struct NCSettings: View {
                 })
                 .tint(Color(NCBrandColor.shared.textColor))
                 .sheet(isPresented: $showAcknowledgements) {
+<<<<<<< HEAD
                     NCAcknowledgementsView(showText: $showAcknowledgements, browserTitle: NSLocalizedString("_acknowledgements_", comment: ""))
+=======
+                    AcknowledgementsView(showText: $showAcknowledgements, browserTitle: "Acknowledgements")
+>>>>>>> 331c3a002 (coding)
                 }
                 // Terms & Privacy Conditions
                 Button(action: {
@@ -189,7 +202,11 @@ struct NCSettings: View {
                 })
                 .tint(Color(NCBrandColor.shared.textColor))
                 .sheet(isPresented: $showBrowser) {
+<<<<<<< HEAD
                     NCBrowserWebView(isPresented: $showBrowser, urlBase: URL(string: NCBrandOptions.shared.privacy)!, browserTitle: NSLocalizedString("_privacy_legal_", comment: ""))
+=======
+                    NCBrowserWebView(isPresented: $showBrowser, urlBase: URL(string: NCBrandOptions.shared.privacy)!, browserTitle: "Privacy Policies")
+>>>>>>> 331c3a002 (coding)
                 }
                 // Source Code
                 Button(action: {
@@ -207,7 +224,11 @@ struct NCSettings: View {
                 })
                 .tint(Color(NCBrandColor.shared.textColor))
                 .sheet(isPresented: $showSourceCode) {
+<<<<<<< HEAD
                     NCBrowserWebView(isPresented: $showSourceCode, urlBase: URL(string: NCBrandOptions.shared.sourceCode)!, browserTitle: NSLocalizedString("_source_code_", comment: ""))
+=======
+                    NCBrowserWebView(isPresented: $showSourceCode, urlBase: URL(string: NCBrandOptions.shared.sourceCode)!, browserTitle: "Source Code")
+>>>>>>> 331c3a002 (coding)
                 }
             })
             /// `Watermark` Section
@@ -237,8 +258,13 @@ struct E2EESection: View {
                         .resizable()
                         .scaledToFit()
                         .font(Font.system(.body).weight(.light))
+<<<<<<< HEAD
                         .frame(width: 20, height: 20)
                         .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
+=======
+                        .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
+                        .frame(width: 30, height: 30)
+>>>>>>> 331c3a002 (coding)
                     Text(NSLocalizedString("_e2e_settings_", comment: ""))
                 }
                 .font(.system(size: 16))
