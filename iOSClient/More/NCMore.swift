@@ -150,7 +150,7 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         // ITEM : Offline
         item = NKExternalSite()
         item.name = "_manage_file_offline_"
-        item.icon = "tray.and.arrow.down"
+        item.icon = "icloud.and.arrow.down"
         item.url = "segueOffline"
         item.order = 60
         functionMenu.append(item)
