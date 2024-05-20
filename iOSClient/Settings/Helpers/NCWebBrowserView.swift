@@ -41,10 +41,14 @@ struct NCBrowserWebView: View {
                     Text(browserTitle)
                         .font(.title3)
 <<<<<<< HEAD
+<<<<<<< HEAD
                         .foregroundColor(Color(NCBrandColor.shared.textColor))
 =======
                         .foregroundColor(Color(UIColor.label))
 >>>>>>> eb6a61e03 (Alignment code)
+=======
+                        .foregroundColor(Color(NCBrandColor.shared.textColor))
+>>>>>>> f1727e40d (coding)
                         .padding(.leading, 8)
                 }
                 .padding()
@@ -55,6 +59,7 @@ struct NCBrowserWebView: View {
                     ZStack {
                         Image(systemName: "xmark")
 <<<<<<< HEAD
+<<<<<<< HEAD
                             .renderingMode(.template)
                             .resizable()
                             .scaledToFit()
@@ -63,10 +68,19 @@ struct NCBrowserWebView: View {
                             .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
 =======
                             .resizable()
+=======
+>>>>>>> f1727e40d (coding)
                             .renderingMode(.template)
+                            .resizable()
+                            .scaledToFit()
+                            .font(Font.system(.body).weight(.light))
                             .frame(width: 14, height: 14)
+<<<<<<< HEAD
                            .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
 >>>>>>> eb6a61e03 (Alignment code)
+=======
+                            .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
+>>>>>>> f1727e40d (coding)
                     }
                 }
                 .padding()
