@@ -29,15 +29,14 @@ struct NCAutoUploadFileNamesView: View {
     var body: some View {
         Form {
             // Maintain Original Filename
+            /*
             Section(content: {
             }, header: {
             }, footer: {
-                Text(NSLocalizedString("_auto_upload_filename_header_", comment: ""))
-                    .font(.system(size: 12))
-                    .multilineTextAlignment(.leading)
             })
+            */
             // Specify Filename
-            Section(header: Text(NSLocalizedString("_filename_", comment: ""))) {
+            Section(header: Text(NSLocalizedString("_mode_filename_", comment: ""))) {
                 Toggle(NSLocalizedString("_maintain_original_filename_", comment: ""), isOn: $model.maintainFilename)
                     .font(.system(size: 16))
                     .onChange(of: model.maintainFilename, perform: { newValue in
@@ -77,7 +76,7 @@ struct NCAutoUploadFileNamesView: View {
                     Text("\(model.previewFileName())")
                         .font(.system(size: 16))
                 }, header: {
-                    Text(NSLocalizedString("_preview_filename_header_", comment: ""))
+                    Text(NSLocalizedString("_filename_", comment: ""))
                 }, footer: {
                     Text(NSLocalizedString("_preview_filename_footer_", comment: ""))
                 })
@@ -90,10 +89,11 @@ struct NCAutoUploadFileNamesView: View {
                     Text(NSLocalizedString("_default_preview_filename_footer_", comment: ""))
                 })
             }
-        }.navigationBarTitle(NSLocalizedString("_filename_mode_", comment: ""))
+        }.navigationBarTitle(NSLocalizedString("_mode_filename_", comment: ""))
             .onAppear {
                 model.onViewAppear()
-            }            .padding(.top, 0)
+            }
+            .padding(.top, 0)
             .transition(.slide)
     }
 }
