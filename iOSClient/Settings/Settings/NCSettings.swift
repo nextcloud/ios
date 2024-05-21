@@ -73,9 +73,8 @@ struct NCSettings: View {
             }
             /// `Privacy` Section
             Section(content: {
-                // Lock active YES/NO
                 Button(action: {
-                    showPasscode = true
+                    showPasscode.toggle()
                 }, label: {
                     HStack {
                         Image(systemName: model.isLockActive ? "lock" : "lock.open")
@@ -90,7 +89,7 @@ struct NCSettings: View {
                 })
                 .tint(Color(NCBrandColor.shared.textColor))
                 .sheet(isPresented: $showPasscode) {
-                    PasscodeView(isPresented: $showPasscode)
+                    PasscodeView(isLockActive: $model.isLockActive)
                 }
                 // Enable Touch ID
                 Toggle(NSLocalizedString("_enable_touch_face_id_", comment: ""), isOn: $model.enableTouchID)
@@ -266,11 +265,6 @@ struct NCSettings: View {
             }
     }
 }
- struct NCSettings_Previews: PreviewProvider {
-     static var previews: some View {
-         NCSettings(model: NCSettingsModel())
-     }
- }
 
 struct E2EESection: View {
     var body: some View {
@@ -300,3 +294,10 @@ struct E2EESection: View {
         })
     }
 }
+
+struct NCSettings_Previews: PreviewProvider {
+    static var previews: some View {
+        NCSettings(model: NCSettingsModel())
+    }
+}
+

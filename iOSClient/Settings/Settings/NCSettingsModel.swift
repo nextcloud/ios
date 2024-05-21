@@ -103,7 +103,7 @@ class NCSettingsModel: ObservableObject, AccountUpdateHandling, ViewOnAppearHand
 }
 
 struct PasscodeView: UIViewControllerRepresentable {
-    @Binding var isPresented: Bool
+    @Binding var isLockActive: Bool
 
     func makeUIViewController(context: Context) -> UIViewController {
         let laContext = LAContext()
@@ -162,9 +162,7 @@ struct PasscodeView: UIViewControllerRepresentable {
                         if success {
                             DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                                 NCKeychain().passcode = nil
-                                passcodeViewController.dismiss(animated: true) {
-                                    self.parent.isPresented = false
-                                }
+                                passcodeViewController.dismiss(animated: true)
                             }
                         }
                     }
@@ -174,19 +172,17 @@ struct PasscodeView: UIViewControllerRepresentable {
 
         func passcodeSettingsViewController(_ passcodeSettingsViewController: TOPasscodeSettingsViewController, didChangeToNewPasscode passcode: String, of type: TOPasscodeType) {
             NCKeychain().passcode = passcode
-            passcodeSettingsViewController.dismiss(animated: true) {
-                self.parent.isPresented = false
-            }
+            self.parent.isLockActive = true
+            passcodeSettingsViewController.dismiss(animated: true)
         }
 
         func didTapCancel(in passcodeViewController: TOPasscodeViewController) {
-            passcodeViewController.dismiss(animated: true) {
-                self.parent.isPresented = false
-            }
+            passcodeViewController.dismiss(animated: true)
         }
 
         func passcodeViewController(_ passcodeViewController: TOPasscodeViewController, isCorrectCode code: String) -> Bool {
             if code == NCKeychain().passcode {
+                self.parent.isLockActive = false
                 NCKeychain().passcode = nil
                 return true
             }
