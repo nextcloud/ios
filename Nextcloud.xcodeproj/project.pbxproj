@@ -795,7 +795,6 @@
 		F7CBC1242BAC8B0000EC1D55 /* NCSectionHeaderEmptyData.xib in Resources */ = {isa = PBXBuildFile; fileRef = F7CBC1212BAC8B0000EC1D55 /* NCSectionHeaderEmptyData.xib */; };
 		F7CBC1252BAC8B0000EC1D55 /* NCSectionHeaderEmptyData.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7CBC1222BAC8B0000EC1D55 /* NCSectionHeaderEmptyData.swift */; };
 		F7CBC1262BAC8B0000EC1D55 /* NCSectionHeaderEmptyData.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7CBC1222BAC8B0000EC1D55 /* NCSectionHeaderEmptyData.swift */; };
-		F7CBC31C24F78E79004D3812 /* NCSortMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7CBC31B24F78E79004D3812 /* NCSortMenu.swift */; };
 		F7CEE6002BA9A5C9003EFD89 /* NCTrashGridCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F7CEE5FE2BA9A5C9003EFD89 /* NCTrashGridCell.xib */; };
 		F7CEE6012BA9A5C9003EFD89 /* NCTrashGridCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7CEE5FF2BA9A5C9003EFD89 /* NCTrashGridCell.swift */; };
 		F7D1612023CF19E30039EBBF /* NCViewerRichWorkspace.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7D1611F23CF19E30039EBBF /* NCViewerRichWorkspace.storyboard */; };
@@ -1616,7 +1615,6 @@
 		F7CB689F254169530050EC94 /* NCSettings.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = NCSettings.storyboard; sourceTree = "<group>"; };
 		F7CBC1212BAC8B0000EC1D55 /* NCSectionHeaderEmptyData.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = NCSectionHeaderEmptyData.xib; sourceTree = "<group>"; };
 		F7CBC1222BAC8B0000EC1D55 /* NCSectionHeaderEmptyData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCSectionHeaderEmptyData.swift; sourceTree = "<group>"; };
-		F7CBC31B24F78E79004D3812 /* NCSortMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCSortMenu.swift; sourceTree = "<group>"; };
 		F7CC04E61F5AD50D00378CEF /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es; path = es.lproj/Localizable.strings; sourceTree = "<group>"; };
 		F7CE8AFA1DC1F8D8009CAE48 /* Nextcloud.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Nextcloud.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F7CE8AFB1DC1F8D8009CAE48 /* Share.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = Share.appex; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -1877,7 +1875,6 @@
 				8491B1CC273BBA82001C8C5B /* UIViewController+Menu.swift */,
 				F77A697C250A0FBC00FF1708 /* NCCollectionViewCommon+Menu.swift */,
 				F7581D1925EFDA60004DC699 /* NCLoginWeb+Menu.swift */,
-				F7CBC31B24F78E79004D3812 /* NCSortMenu.swift */,
 				F75D19E225EFE09000D74598 /* NCTrash+Menu.swift */,
 				AF93471127E2341B002537EE /* NCShare+Menu.swift */,
 				F710D2012405826100A6033D /* NCViewer+Menu.swift */,
@@ -4293,7 +4290,6 @@
 				F73EF7AF2B0224350087E6E9 /* NCManageDatabase+DirectEditing.swift in Sources */,
 				D5B6AA7827200C7200D49C24 /* NCActivityTableViewCell.swift in Sources */,
 				F745B253222D88AE00346520 /* NCLoginQRCode.swift in Sources */,
-				F7CBC31C24F78E79004D3812 /* NCSortMenu.swift in Sources */,
 				F769454822E9F20D000A798A /* NCShareNetworking.swift in Sources */,
 				F749B64A297B0CBB00087535 /* NCManageDatabase+Share.swift in Sources */,
 				F760DE172AE66F350027D78A /* NCKeychain.swift in Sources */,
@@ -5268,7 +5264,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 14;
+				CURRENT_PROJECT_VERSION = 17;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = NKUJUXUJ3B;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -5334,7 +5330,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 14;
+				CURRENT_PROJECT_VERSION = 17;
 				DEVELOPMENT_TEAM = NKUJUXUJ3B;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;

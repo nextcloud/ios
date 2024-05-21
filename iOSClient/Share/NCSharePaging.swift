@@ -56,15 +56,15 @@ class NCSharePaging: UIViewController {
 
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(notification:)), name: UIResponder.keyboardWillShowNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(notification:)), name: UIResponder.keyboardWillHideNotification, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(applicationDidEnterBackground(notification:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationDidEnterBackground), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(applicationDidEnterBackground(notification:)), name: UIApplication.didEnterBackgroundNotification, object: nil)
 
         // *** MUST BE THE FIRST ONE ***
         pagingViewController.metadata = metadata
         pagingViewController.backgroundColor = .systemBackground
         pagingViewController.menuBackgroundColor = .systemBackground
         pagingViewController.selectedBackgroundColor = .systemBackground
-        pagingViewController.textColor = .label
-        pagingViewController.selectedTextColor = .label
+        pagingViewController.textColor = NCBrandColor.shared.textColor
+        pagingViewController.selectedTextColor = NCBrandColor.shared.textColor
 
         // Pagination
         addChild(pagingViewController)
@@ -125,6 +125,7 @@ class NCSharePaging: UIViewController {
     deinit {
         NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardDidShowNotification, object: nil)
         NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillHideNotification, object: nil)
+        NotificationCenter.default.removeObserver(self, name: UIApplication.didEnterBackgroundNotification, object: nil)
     }
 
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
@@ -286,13 +287,13 @@ class NCSharePagingView: PagingView {
                 headerView.imageView.image = image?.image(color: NCBrandColor.shared.brandElement, size: image?.size.width ?? 0)
                 headerView.imageView.image = headerView.imageView.image?.colorizeFolder(metadata: metadata)
             } else if !metadata.iconName.isEmpty {
-                headerView.imageView.image = utility.loadImage(named: metadata.iconName)
+                headerView.imageView.image = utility.loadImage(named: metadata.iconName, useTypeIconFile: true)
             } else {
                 headerView.imageView.image = NCImageCache.images.file
             }
         }
         headerView.path.text = utilityFileSystem.getPath(path: metadata.path, user: metadata.user, fileName: metadata.fileName)
-        headerView.path.textColor = .label
+        headerView.path.textColor = NCBrandColor.shared.textColor
         headerView.path.trailingBuffer = headerView.path.frame.width
         if metadata.favorite {
             headerView.favorite.setImage(utility.loadImage(named: "star.fill", colors: [NCBrandColor.shared.yellowFavorite], size: 20), for: .normal)
@@ -300,13 +301,13 @@ class NCSharePagingView: PagingView {
             headerView.favorite.setImage(utility.loadImage(named: "star.fill", colors: [NCBrandColor.shared.iconImageColor2], size: 20), for: .normal)
         }
         headerView.info.text = utilityFileSystem.transformedSize(metadata.size) + ", " + NSLocalizedString("_modified_", comment: "") + " " + dateFormatter.string(from: metadata.date as Date)
-        headerView.info.textColor = .systemGray
+        headerView.info.textColor = NCBrandColor.shared.textColor2
         headerView.creation.text = NSLocalizedString("_creation_", comment: "") + " " + dateFormatter.string(from: metadata.creationDate as Date)
-        headerView.creation.textColor = .systemGray
+        headerView.creation.textColor = NCBrandColor.shared.textColor2
         headerView.upload.text = NSLocalizedString("_upload_", comment: "") + " " + dateFormatter.string(from: metadata.uploadDate as Date)
-        headerView.upload.textColor = .systemGray
+        headerView.upload.textColor = NCBrandColor.shared.textColor2
 
-        headerView.details.setTitleColor(.label, for: .normal)
+        headerView.details.setTitleColor(NCBrandColor.shared.textColor, for: .normal)
         headerView.details.setTitle(NSLocalizedString("_details_", comment: ""), for: .normal)
         headerView.details.layer.cornerRadius = 9
         headerView.details.layer.masksToBounds = true
@@ -373,7 +374,7 @@ class NCShareHeaderView: UIView {
                 guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(metadata.ocId) else { return }
                 self.favorite.setImage(NCUtility().loadImage(
                     named: "star.fill",
-                    colors: metadata.favorite ? [NCBrandColor.shared.yellowFavorite] : [.systemGray],
+                    colors: metadata.favorite ? [NCBrandColor.shared.yellowFavorite] : [NCBrandColor.shared.iconImageColor2],
                     size: 20), for: .normal)
             } else {
                 NCContentPresenter().showError(error: error)

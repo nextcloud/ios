@@ -152,7 +152,7 @@ class NCShare: UIViewController, NCShareNetworkingDelegate, NCSharePagingContent
             sharedWithYouByNoteImage.image = utility.loadImage(named: "note.text", colors: [NCBrandColor.shared.iconImageColor])
             sharedWithYouByNote.isHidden = false
             sharedWithYouByNote.text = metadata.note
-            sharedWithYouByNote.textColor = .label
+            sharedWithYouByNote.textColor = NCBrandColor.shared.textColor
             sharedWithYouByNote.trailingBuffer = sharedWithYouByNote.frame.width
         } else {
             sharedWithYouByNoteImage.isHidden = true

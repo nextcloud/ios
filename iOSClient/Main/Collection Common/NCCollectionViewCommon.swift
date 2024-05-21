@@ -48,6 +48,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     var dataSource = NCDataSource()
     var richWorkspaceText: String?
     var headerMenu: NCSectionHeaderMenu?
+    var headerEmptyData: NCSectionHeaderEmptyData?
     var isSearchingMode: Bool = false
     var layoutForView: NCDBLayoutForView?
     var dataSourceTask: URLSessionTask?
@@ -99,7 +100,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         // Color
         view.backgroundColor = .systemBackground
         collectionView.backgroundColor = .systemBackground
-        refreshControl.tintColor = .gray
+        refreshControl.tintColor = NCBrandColor.shared.textColor2
 
         if enableSearchBar {
             searchController = UISearchController(searchResultsController: nil)
@@ -181,7 +182,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
         timerNotificationCenter = Timer.scheduledTimer(timeInterval: 1.5, target: self, selector: #selector(notificationCenterEvents), userInfo: nil, repeats: true)
 
-        NotificationCenter.default.addObserver(self, selector: #selector(applicationWillResignActive(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationWillResignActive), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(applicationWillResignActive(_:)), name: UIApplication.willResignActiveNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(closeRichWorkspaceWebView), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterCloseRichWorkspaceWebView), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(changeStatusFolderE2EE(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeStatusFolderE2EE), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(reloadAvatar(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterReloadAvatar), object: nil)
@@ -226,7 +227,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
         timerNotificationCenter?.invalidate()
 
-        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationWillResignActive), object: nil)
+        NotificationCenter.default.removeObserver(self, name: UIApplication.willResignActiveNotification, object: nil)
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterCloseRichWorkspaceWebView), object: nil)
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeStatusFolderE2EE), object: nil)
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterReloadAvatar), object: nil)
@@ -458,7 +459,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
               account == appDelegate.account
         else { return }
 
-        notificationReloadDataSource += 1
+        reloadDataSource()
     }
 
     @objc func uploadStartFile(_ notification: NSNotification) {
@@ -522,7 +523,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         }
 
         if account == appDelegate.account, serverUrl == self.serverUrl {
-            notificationReloadDataSource += 1
+            reloadDataSource()
         }
     }
 
@@ -546,6 +547,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                     self.collectionView.reloadData()
                 }
                 self.headerMenu?.progressTransfer.progress = progressNumber.floatValue
+                self.headerEmptyData?.progressTransfer.progress = progressNumber.floatValue
             } else {
                 guard let indexPath = self.dataSource.getIndexPathMetadata(ocId: ocId).indexPath,
                       let cell = self.collectionView?.cellForItem(at: indexPath),
@@ -705,13 +707,13 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
             let sortSubmenu = UIMenu(title: NSLocalizedString("_order_by_", comment: ""), options: .displayInline, children: [byName, byNewest, byLargest])
 
-            let foldersOnTop = UIAction(title: NSLocalizedString("_directory_on_top_no_", comment: ""), image:utility.loadImage(named: "folder"), state: layoutForView.directoryOnTop ? .on : .off) { _ in
+            let foldersOnTop = UIAction(title: NSLocalizedString("_directory_on_top_no_", comment: ""), image: utility.loadImage(named: "folder"), state: layoutForView.directoryOnTop ? .on : .off) { _ in
                 layoutForView.directoryOnTop = !layoutForView.directoryOnTop
                 self.saveLayout(layoutForView)
             }
 
             let personalFilesOnly = NCKeychain().getPersonalFilesOnly(account: appDelegate.account)
-            let personalFilesOnlyAction = UIAction(title: NSLocalizedString("_personal_files_only_", comment: ""), image: utility.loadImage(named: "folder.badge.person.crop"), state: personalFilesOnly ? .on : .off) { _ in
+            let personalFilesOnlyAction = UIAction(title: NSLocalizedString("_personal_files_only_", comment: ""), image: utility.loadImage(named: "folder.badge.person.crop", colors: NCBrandColor.shared.iconImageMultiColors), state: personalFilesOnly ? .on : .off) { _ in
                 NCKeychain().setPersonalFilesOnly(account: self.appDelegate.account, value: !personalFilesOnly)
                 self.reloadDataSource()
             }
@@ -816,11 +818,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     }
 
     // MARK: - TAP EVENT
-
-    func tapButtonOrder(_ sender: Any) {
-        let sortMenu = NCSortMenu()
-        sortMenu.toggleMenu(viewController: self, account: appDelegate.account, key: layoutKey, sortButton: sender as? UIButton, serverUrl: serverUrl)
-    }
 
     func tapMoreListItem(with objectId: String, namedButtonMore: String, image: UIImage?, indexPath: IndexPath, sender: Any) {
         tapMoreGridItem(with: objectId, namedButtonMore: namedButtonMore, image: image, indexPath: indexPath, sender: sender)
@@ -1214,17 +1211,16 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         if !metadata.directory {
             if metadata.hasPreviewBorder {
                 cell.filePreviewImageView?.layer.borderWidth = 0.2
-                cell.filePreviewImageView?.layer.borderColor = UIColor.systemGray3.cgColor
+                cell.filePreviewImageView?.layer.borderColor = UIColor.lightGray.cgColor
             }
             if metadata.name == NCGlobal.shared.appName {
                 if let image = utility.createFilePreviewImage(ocId: metadata.ocId, etag: metadata.etag, fileNameView: metadata.fileNameView, classFile: metadata.classFile, status: metadata.status, createPreviewMedia: !metadata.hasPreview) {
-
                     cell.filePreviewImageView?.image = image
                 } else {
                     if metadata.iconName.isEmpty {
                         cell.filePreviewImageView?.image = NCImageCache.images.file
                     } else {
-                        cell.filePreviewImageView?.image = utility.loadImage(named: metadata.iconName)
+                        cell.filePreviewImageView?.image = utility.loadImage(named: metadata.iconName, useTypeIconFile: true)
                     }
                     if metadata.hasPreview && metadata.status == NCGlobal.shared.metadataStatusNormal && (!utilityFileSystem.fileProviderStoragePreviewIconExists(metadata.ocId, etag: metadata.etag)) {
                         for case let operation as NCCollectionViewDownloadThumbnail in NCNetworking.shared.downloadThumbnailQueue.operations where operation.metadata.ocId == metadata.ocId { return }
@@ -1251,7 +1247,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                 case let str where str.contains("pages"):
                     cell.filePreviewImageView?.image = NCImageCache.images.iconPages
                 default:
-                    cell.filePreviewImageView?.image = NCImageCache.images.file
+                    cell.filePreviewImageView?.image = NCImageCache.images.iconFile
                 }
 
                 // Avatar
@@ -1507,7 +1503,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
 
         // Color string find in search
 
-        cell.fileTitleLabel?.textColor = .label
+        cell.fileTitleLabel?.textColor = NCBrandColor.shared.textColor
         cell.fileTitleLabel?.font = .systemFont(ofSize: 15)
 
         if isSearchingMode, let literalSearch = self.literalSearch, let title = cell.fileTitleLabel?.text {
@@ -1539,6 +1535,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             if dataSource.getMetadataSourceForAllSections().isEmpty {
 
                 guard let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionHeaderEmptyData", for: indexPath) as? NCSectionHeaderEmptyData else { return NCSectionHeaderEmptyData() }
+                self.headerEmptyData = header
                 header.delegate = self
 
                 if !isSearchingMode, headerMenuTransferView, let ocId = NCNetworking.shared.transferInForegorund?.ocId {
@@ -1549,7 +1546,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                 }
 
                 if isSearchingMode {
-                    header.emptyImage.image = utility.loadImage(named: "magnifyingglass", colors: [NCBrandColor.shared.iconImageColor])
+                    header.emptyImage.image = utility.loadImage(named: "magnifyingglass", colors: [NCBrandColor.shared.brandElement])
                     if self.dataSourceTask?.state == .running {
                         header.emptyTitle.text = NSLocalizedString("_search_in_progress_", comment: "")
                     } else {
@@ -1557,7 +1554,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                     }
                     header.emptyDescription.text = NSLocalizedString("_search_instruction_", comment: "")
                 } else if self.dataSourceTask?.state == .running {
-                    header.emptyImage.image = utility.loadImage(named: "wifi", colors: [NCBrandColor.shared.iconImageColor])
+                    header.emptyImage.image = utility.loadImage(named: "wifi", colors: [NCBrandColor.shared.brandElement])
                     header.emptyTitle.text = NSLocalizedString("_request_in_progress_", comment: "")
                     header.emptyDescription.text = ""
                 } else {
@@ -1578,9 +1575,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
 
                 guard let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionHeaderMenu", for: indexPath) as? NCSectionHeaderMenu else { return NCSectionHeaderMenu() }
                 let (_, heightHeaderRichWorkspace, heightHeaderSection) = getHeaderHeight(section: indexPath.section)
-
                 self.headerMenu = header
-
                 header.delegate = self
 
                 if !isSearchingMode, headerMenuTransferView, let ocId = NCNetworking.shared.transferInForegorund?.ocId {
@@ -1599,7 +1594,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                 } else {
                     header.labelSection.text = self.dataSource.getSectionValueLocalization(indexPath: indexPath)
                 }
-                header.labelSection.textColor = .label
+                header.labelSection.textColor = NCBrandColor.shared.textColor
 
                 return header
 
@@ -1608,7 +1603,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                 guard let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionHeader", for: indexPath) as? NCSectionHeader else { return NCSectionHeader() }
 
                 header.labelSection.text = self.dataSource.getSectionValueLocalization(indexPath: indexPath)
-                header.labelSection.textColor = .label
+                header.labelSection.textColor = NCBrandColor.shared.textColor
 
                 return header
             }
@@ -1855,6 +1850,16 @@ extension NCCollectionViewCommon {
                     }
                 }
             }
+            NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId,
+                                                       session: "",
+                                                       sessionError: "",
+                                                       selector: "",
+                                                       status: NCGlobal.shared.metadataStatusNormal)
+            NotificationCenter.default.post(name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterDownloadCancelFile),
+                                            object: nil,
+                                            userInfo: ["ocId": metadata.ocId,
+                                                       "serverUrl": metadata.serverUrl,
+                                                       "account": metadata.account])
         }
 
         // UPLOAD FOREGROUND

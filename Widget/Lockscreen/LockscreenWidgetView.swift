@@ -66,12 +66,12 @@ struct LockscreenWidgetView: View {
                         .renderingMode(.template)
                         .resizable()
                         .scaledToFill()
-                        .foregroundColor(.gray)
+                        .foregroundColor(Color(NCBrandColor.shared.textColor2))
                         .frame(width: 11, height: 11)
                     Text(NSLocalizedString("_recent_activity_", comment: ""))
                         .font(.system(size: 11))
                         .fontWeight(.heavy)
-                        .foregroundColor(.gray)
+                        .foregroundColor(Color(NCBrandColor.shared.textColor2))
                 }
                 if entry.error {
                     VStack(spacing: 1) {

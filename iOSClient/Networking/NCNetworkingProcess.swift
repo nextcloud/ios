@@ -120,6 +120,11 @@ class NCNetworkingProcess: NSObject {
         if counterDownloading == 0 {
             let metadatasDownloadError: [tableMetadata] = await NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND session == %@ AND status == %d", self.appDelegate.account, NCNetworking.shared.sessionDownloadBackground, NCGlobal.shared.metadataStatusDownloadError), sorted: "sessionDate", ascending: true) ?? []
             for metadata in metadatasDownloadError {
+                // Verify COUNTER ERROR
+                if let counter = NCNetworking.shared.transferInError[metadata.ocId],
+                   counter > 3 {
+                    continue
+                }
                 NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId,
                                                            sessionError: "",
                                                            status: NCGlobal.shared.metadataStatusWaitDownload)
@@ -193,6 +198,11 @@ class NCNetworkingProcess: NSObject {
         // No upload available ? --> Retry Upload in Error
         if counterUploading == 0 {
             for metadata in metadatasUploadError {
+                // Verify COUNTER ERROR
+                if let counter = NCNetworking.shared.transferInError[metadata.ocId],
+                   counter > 3 {
+                    continue
+                }
                 // Verify QUOTA
                 if metadata.sessionError.contains("\(NCGlobal.shared.errorQuota)") {
                     NextcloudKit.shared.getUserProfile { _, userProfile, _, error in

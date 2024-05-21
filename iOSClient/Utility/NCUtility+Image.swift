@@ -31,8 +31,28 @@ import SVGKit
 
 extension NCUtility {
 
-    func loadImage(named imageName: String, colors: [UIColor]? = nil, size: CGFloat? = nil) -> UIImage {
+    func loadImage(named imageName: String, colors: [UIColor]? = nil, size: CGFloat? = nil, useTypeIconFile: Bool = false ) -> UIImage {
         var image: UIImage?
+
+        if useTypeIconFile {
+            switch imageName {
+            case NKCommon.TypeIconFile.audio.rawValue: image = UIImage(systemName: "waveform", withConfiguration: UIImage.SymbolConfiguration(weight: .thin))?.applyingSymbolConfiguration(UIImage.SymbolConfiguration(paletteColors: [NCBrandColor.shared.iconImageColor2]))
+            case NKCommon.TypeIconFile.code.rawValue: image = UIImage(systemName: "ellipsis.curlybraces", withConfiguration: UIImage.SymbolConfiguration(weight: .thin))?.applyingSymbolConfiguration(UIImage.SymbolConfiguration(paletteColors: [NCBrandColor.shared.iconImageColor2]))
+            case NKCommon.TypeIconFile.compress.rawValue: image = UIImage(systemName: "doc.zipper", withConfiguration: UIImage.SymbolConfiguration(weight: .thin))?.applyingSymbolConfiguration(UIImage.SymbolConfiguration(paletteColors: [NCBrandColor.shared.iconImageColor2]))
+            case NKCommon.TypeIconFile.directory.rawValue: image = UIImage(named: "folder")! .image(color: NCBrandColor.shared.brandElement, size: UIScreen.main.bounds.width / 2)
+            case NKCommon.TypeIconFile.document.rawValue: image = UIImage(systemName: "doc.richtext", withConfiguration: UIImage.SymbolConfiguration(weight: .thin))?.applyingSymbolConfiguration(UIImage.SymbolConfiguration(paletteColors: [NCBrandColor.shared.documentIconColor]))
+            case NKCommon.TypeIconFile.image.rawValue: image = UIImage(systemName: "photo", withConfiguration: UIImage.SymbolConfiguration(weight: .thin))?.applyingSymbolConfiguration(UIImage.SymbolConfiguration(paletteColors: [NCBrandColor.shared.iconImageColor2]))
+            case NKCommon.TypeIconFile.movie.rawValue: image = UIImage(systemName: "video", withConfiguration: UIImage.SymbolConfiguration(weight: .thin))?.applyingSymbolConfiguration(UIImage.SymbolConfiguration(paletteColors: [NCBrandColor.shared.iconImageColor2]))
+            case NKCommon.TypeIconFile.pdf.rawValue: image = UIImage(named: "file_pdf")!
+            case NKCommon.TypeIconFile.ppt.rawValue: image = UIImage(systemName: "play.rectangle", withConfiguration: UIImage.SymbolConfiguration(weight: .thin))?.applyingSymbolConfiguration(UIImage.SymbolConfiguration(paletteColors: [NCBrandColor.shared.presentationIconColor]))
+            case NKCommon.TypeIconFile.txt.rawValue: image = UIImage(systemName: "doc.text", withConfiguration: UIImage.SymbolConfiguration(weight: .thin))?.applyingSymbolConfiguration(UIImage.SymbolConfiguration(paletteColors: [NCBrandColor.shared.iconImageColor2]))
+            case NKCommon.TypeIconFile.url.rawValue: image = UIImage(systemName: "network", withConfiguration: UIImage.SymbolConfiguration(weight: .thin))?.applyingSymbolConfiguration(UIImage.SymbolConfiguration(paletteColors: [NCBrandColor.shared.iconImageColor2]))
+            case NKCommon.TypeIconFile.xls.rawValue: image = UIImage(systemName: "tablecells", withConfiguration: UIImage.SymbolConfiguration(weight: .thin))?.applyingSymbolConfiguration(UIImage.SymbolConfiguration(paletteColors: [NCBrandColor.shared.spreadsheetIconColor]))
+            default: image = UIImage(systemName: "doc", withConfiguration: UIImage.SymbolConfiguration(weight: .thin))?.applyingSymbolConfiguration(UIImage.SymbolConfiguration(paletteColors: [NCBrandColor.shared.iconImageColor2]))
+            }
+        }
+
+        if let image { return image }
 
         // SF IMAGE
         if let colors {
@@ -64,7 +84,6 @@ extension NCUtility {
     }
 
     @objc func loadUserImage(for user: String, displayName: String?, userBaseUrl: NCUserBaseUrl) -> UIImage {
-
         let fileName = userBaseUrl.userBaseUrl + "-" + user + ".png"
         let localFilePath = utilityFileSystem.directoryUserData + "/" + fileName
 
@@ -81,12 +100,11 @@ extension NCUtility {
         } else if let displayName = displayName, !displayName.isEmpty, let avatarImg = createAvatar(displayName: displayName, size: 30) {
             return avatarImg
         } else {
-            return UIImage(systemName: "person.crop.circle", withConfiguration: UIImage.SymbolConfiguration(pointSize: 30))!
+            return loadImage(named: "person.crop.circle", colors: [NCBrandColor.shared.iconImageColor])
         }
     }
 
     func imageFromVideo(url: URL, at time: TimeInterval) -> UIImage? {
-
         let asset = AVURLAsset(url: url)
         let assetIG = AVAssetImageGenerator(asset: asset)
 
@@ -106,9 +124,7 @@ extension NCUtility {
     }
 
     func createImageFrom(fileNameView: String, ocId: String, etag: String, classFile: String) {
-
         var originalImage, scaleImagePreview, scaleImageIcon: UIImage?
-
         let fileNamePath = utilityFileSystem.getDirectoryProviderStorageOcId(ocId, fileNameView: fileNameView)
         let fileNamePathPreview = utilityFileSystem.getDirectoryProviderStoragePreviewOcId(ocId, etag: etag)
         let fileNamePathIcon = utilityFileSystem.getDirectoryProviderStorageIconOcId(ocId, etag: etag)
@@ -139,10 +155,7 @@ extension NCUtility {
     }
 
     func getImageMetadata(_ metadata: tableMetadata, for size: CGFloat) -> UIImage? {
-
-        if let image = getImage(metadata: metadata) {
-            return image
-        }
+        if let image = getImage(metadata: metadata) { return image }
 
         if metadata.isVideo && !metadata.hasPreview {
             createImageFrom(fileNameView: metadata.fileNameView, ocId: metadata.ocId, etag: metadata.etag, classFile: metadata.classFile)
@@ -153,16 +166,15 @@ extension NCUtility {
         }
 
         if metadata.isVideo {
-            return UIImage(named: "noPreviewVideo")?.image(color: NCBrandColor.shared.iconImageColor2, size: size)
+            return loadImage(named: "video", colors: [NCBrandColor.shared.iconImageColor2])
         } else if metadata.isAudio {
-            return UIImage(named: "noPreviewAudio")?.image(color: NCBrandColor.shared.iconImageColor2, size: size)
+            return loadImage(named: "waveform", colors: [NCBrandColor.shared.iconImageColor2])
         } else {
-            return UIImage(named: "noPreview")?.image(color: NCBrandColor.shared.iconImageColor2, size: size)
+            return loadImage(named: "photo", colors: [NCBrandColor.shared.iconImageColor2])
         }
     }
 
     func getImage(metadata: tableMetadata) -> UIImage? {
-
         let ext = (metadata.fileNameView as NSString).pathExtension.uppercased()
         var image: UIImage?
 

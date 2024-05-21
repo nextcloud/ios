@@ -149,9 +149,9 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
         labelTitle.text = ""
         labelInfo.text = ""
         labelSubinfo.text = ""
-        labelTitle.textColor = .label
-        labelInfo.textColor = .systemGray
-        labelSubinfo.textColor = .systemGray
+        labelTitle.textColor = NCBrandColor.shared.textColor
+        labelInfo.textColor = NCBrandColor.shared.textColor2
+        labelSubinfo.textColor = NCBrandColor.shared.textColor2
 
         imageFavoriteBackground.isHidden = true
     }

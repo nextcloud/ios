@@ -69,7 +69,7 @@ class NCShareLinkCell: UITableViewCell {
             menuButton.setImage(NCUtility().loadImage(named: menuImageName, colors: [NCBrandColor.shared.iconImageColor]), for: .normal)
         }
 
-        labelTitle.textColor = .label
+        labelTitle.textColor = NCBrandColor.shared.textColor
     }
 
     @IBAction func touchUpCopy(_ sender: Any) {

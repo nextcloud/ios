@@ -458,7 +458,7 @@ struct UploadAssetsView: View {
                                 Text(getOriginalFilenameForPreview().deletingPathExtension)
                                     .font(.system(size: 15))
                                     .frame(maxWidth: .infinity, alignment: .trailing)
-                                    .foregroundColor(Color.gray)
+                                    .foregroundColor(Color(NCBrandColor.shared.textColor2))
                             } else {
                                 TextField(NSLocalizedString("_enter_filename_", comment: ""), text: $fileName)
                                     .font(.system(size: 15))
@@ -469,7 +469,7 @@ struct UploadAssetsView: View {
                         if !isMaintainOriginalFilename {
                             Text(setFileNameMaskForPreview(fileName: fileName))
                                 .font(.system(size: 11))
-                                .foregroundColor(Color.gray)
+                                .foregroundColor(Color(NCBrandColor.shared.textColor2))
                         }
                     }
                     .complexModifier { view in

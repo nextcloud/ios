@@ -288,7 +288,7 @@ struct DeleteCerificateSection: View {
                         .resizable()
                         .scaledToFit()
                         .font(Font.system(.body).weight(.light))
-                        .foregroundColor(Color(UIColor.systemGray))
+                        .foregroundColor(Color(NCBrandColor.shared.textColor2))
                 }
                 Spacer()
             }
@@ -311,7 +311,7 @@ struct DeleteCerificateSection: View {
                         .resizable()
                         .scaledToFit()
                         .font(Font.system(.body).weight(.light))
-                        .foregroundColor(Color(UIColor.systemGray))
+                        .foregroundColor(Color(NCBrandColor.shared.textColor2))
                 }
                 Spacer()
             }

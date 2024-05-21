@@ -33,7 +33,7 @@ class NCShares: NCCollectionViewCommon {
         layoutKey = NCGlobal.shared.layoutViewShares
         enableSearchBar = false
         headerRichWorkspaceDisable = true
-        emptyImage = utility.loadImage(named: "person.fill.badge.plus", colors: [NCBrandColor.shared.iconImageColor])
+        emptyImage = utility.loadImage(named: "person.fill.badge.plus", colors: [NCBrandColor.shared.brandElement])
         emptyTitle = "_list_shares_no_files_"
         emptyDescription = "_tutorial_list_shares_view_"
     }

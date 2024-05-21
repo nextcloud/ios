@@ -176,7 +176,7 @@ extension NCActivityTableViewCell: UICollectionViewDataSource {
 
                 let source = activityPreview.source
 
-                utility.convertSVGtoPNGWriteToUserData(svgUrlString: source, width: 100, rewrite: false, account: appDelegate.account, id: idActivity) { imageNamePath, id in
+                utility.convertSVGtoPNGWriteToUserData(svgUrlString: source, width: 150, rewrite: false, account: appDelegate.account, id: idActivity) { imageNamePath, id in
                     if let imageNamePath = imageNamePath, id == self.idActivity, let image = UIImage(contentsOfFile: imageNamePath) {
                         cell.imageView.image = image
                     } else {
@@ -192,8 +192,10 @@ extension NCActivityTableViewCell: UICollectionViewDataSource {
 
                     if FileManager.default.fileExists(atPath: fileNamePath), let image = UIImage(contentsOfFile: fileNamePath) {
                         cell.imageView.image = image
+                        cell.imageView?.contentMode = .scaleAspectFill
                     } else {
-                        cell.imageView?.image = UIImage(named: "file_photo")
+                        cell.imageView?.image = utility.loadImage(named: "doc", colors: [NCBrandColor.shared.iconImageColor])
+                        cell.imageView?.contentMode = .scaleAspectFit
                         cell.fileId = fileId
                         if !FileManager.default.fileExists(atPath: fileNamePath) {
                             if NCNetworking.shared.downloadThumbnailActivityQueue.operations.filter({ ($0 as? NCOperationDownloadThumbnailActivity)?.fileId == fileId }).isEmpty {

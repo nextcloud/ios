@@ -37,8 +37,8 @@ extension UINavigationController {
         let standardAppearance = UINavigationBarAppearance()
         standardAppearance.configureWithDefaultBackground()
 
-        standardAppearance.largeTitleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.label]
-        standardAppearance.titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.label]
+        standardAppearance.largeTitleTextAttributes = [NSAttributedString.Key.foregroundColor: NCBrandColor.shared.textColor]
+        standardAppearance.titleTextAttributes = [NSAttributedString.Key.foregroundColor: NCBrandColor.shared.textColor]
         navigationBar.standardAppearance = standardAppearance
 
         let scrollEdgeAppearance = UINavigationBarAppearance()
@@ -57,8 +57,8 @@ extension UINavigationController {
         let standardAppearance = UINavigationBarAppearance()
         standardAppearance.configureWithDefaultBackground()
 
-        standardAppearance.largeTitleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.label]
-        standardAppearance.titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.label]
+        standardAppearance.largeTitleTextAttributes = [NSAttributedString.Key.foregroundColor: NCBrandColor.shared.textColor]
+        standardAppearance.titleTextAttributes = [NSAttributedString.Key.foregroundColor: NCBrandColor.shared.textColor]
         standardAppearance.backgroundColor = .systemGray6
         navigationBar.standardAppearance = standardAppearance
 
