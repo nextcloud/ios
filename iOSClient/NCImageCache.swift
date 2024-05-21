@@ -277,13 +277,13 @@ import RealmSwift
         images.folderAutomaticUpload = UIImage(named: "folderAutomaticUpload")!.image(color: brandElement)
         images.folder = UIImage(named: "folder")!.image(color: brandElement)
 
-        images.iconContacts = UIImage(named: "icon-contacts")!.image(color: brandElement)
-        images.iconTalk = UIImage(named: "icon-talk")!.image(color: brandElement)
-        images.iconCalendar = UIImage(named: "icon-calendar")!.image(color: brandElement)
-        images.iconDeck = UIImage(named: "icon-deck")!.image(color: brandElement)
-        images.iconMail = UIImage(named: "icon-mail")!.image(color: brandElement)
+        images.iconContacts = utility.loadImage(named: "person.crop.rectangle.stack", colors: [NCBrandColor.shared.iconImageColor])
+        images.iconTalk = UIImage(named: "talk-template")!.image(color: brandElement)
+        images.iconCalendar = utility.loadImage(named: "calendar", colors: [NCBrandColor.shared.iconImageColor])
+        images.iconDeck = utility.loadImage(named: "square.stack.fill", colors: [NCBrandColor.shared.iconImageColor])
+        images.iconMail = utility.loadImage(named: "mail", colors: [NCBrandColor.shared.iconImageColor])
         images.iconConfirm = utility.loadImage(named: "arrow.right", colors: [NCBrandColor.shared.iconImageColor])
-        images.iconPages = UIImage(named: "icon-pages")!.image(color: brandElement)
+        images.iconPages = utility.loadImage(named: "doc.richtext", colors: [NCBrandColor.shared.iconImageColor])
 
         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterChangeTheming)
     }
