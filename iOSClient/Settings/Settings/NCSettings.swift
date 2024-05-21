@@ -58,13 +58,13 @@ struct NCSettings: View {
                     model.isLockActive.toggle()
                 }, label: {
                     HStack {
-                        Image(systemName: model.isLockActive ? "lock.open" : "lock")
+                        Image(systemName: model.isLockActive ? "lock" : "lock.open")
                             .resizable()
                             .scaledToFit()
                             .font(Font.system(.body).weight(.light))
                             .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
                             .frame(width: 20, height: 20)
-                        Text(model.isLockActive ? NSLocalizedString("_lock_not_active_", comment: "") : NSLocalizedString("_lock_active_", comment: ""))
+                        Text(model.isLockActive ? NSLocalizedString("_lock_active_", comment: "") : NSLocalizedString("_lock_not_active_", comment: ""))
                     }
                     .font(.system(size: 16))
                 })
