@@ -1247,7 +1247,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                 case let str where str.contains("pages"):
                     cell.filePreviewImageView?.image = NCImageCache.images.iconPages
                 default:
-                    cell.filePreviewImageView?.image = NCImageCache.images.file
+                    cell.filePreviewImageView?.image = NCImageCache.images.iconFile
                 }
 
                 // Avatar

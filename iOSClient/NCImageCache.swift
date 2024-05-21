@@ -237,6 +237,7 @@ import RealmSwift
         static var iconMail = UIImage()
         static var iconConfirm = UIImage()
         static var iconPages = UIImage()
+        static var iconFile = UIImage()
     }
 
     func createImagesCache() {
@@ -284,6 +285,7 @@ import RealmSwift
         images.iconMail = utility.loadImage(named: "mail", colors: [NCBrandColor.shared.iconImageColor])
         images.iconConfirm = utility.loadImage(named: "arrow.right", colors: [NCBrandColor.shared.iconImageColor])
         images.iconPages = utility.loadImage(named: "doc.richtext", colors: [NCBrandColor.shared.iconImageColor])
+        images.iconFile = utility.loadImage(named: "doc", colors: [NCBrandColor.shared.iconImageColor])
 
         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterChangeTheming)
     }
