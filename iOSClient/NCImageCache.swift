@@ -240,37 +240,34 @@ import RealmSwift
     }
 
     func createImagesCache() {
-        let iconImageColor = NCBrandColor.shared.iconImageColor
-        let iconImageMultiColors = NCBrandColor.shared.iconImageMultiColors
-        let brandElement = NCBrandColor.shared.brandElement
         let utility = NCUtility()
 
-        images.file = utility.loadImage(named: "doc", colors: [iconImageColor])
+        images.file = utility.loadImage(named: "doc", colors: [NCBrandColor.shared.iconImageColor2])
 
-        images.shared = utility.loadImage(named: "person.fill.badge.plus", colors: iconImageMultiColors)
-        images.canShare = utility.loadImage(named: "person.fill.badge.plus", colors: iconImageMultiColors)
+        images.shared = utility.loadImage(named: "person.fill.badge.plus", colors: NCBrandColor.shared.iconImageMultiColors)
+        images.canShare = utility.loadImage(named: "person.fill.badge.plus", colors: NCBrandColor.shared.iconImageMultiColors)
         images.shareByLink = utility.loadImage(named: "link", colors: [NCBrandColor.shared.iconImageColor])
 
         images.favorite = utility.loadImage(named: "star.fill", colors: [NCBrandColor.shared.yellowFavorite])
-        images.livePhoto = utility.loadImage(named: "livephoto", colors: [iconImageColor])
+        images.livePhoto = utility.loadImage(named: "livephoto", colors: [NCBrandColor.shared.iconImageColor])
         images.offlineFlag = utility.loadImage(named: "arrow.down.circle.fill", colors: [.systemGreen])
         images.local = utility.loadImage(named: "checkmark.circle.fill", colors: [.systemGreen])
 
-        images.checkedYes = utility.loadImage(named: "checkmark.circle.fill", colors: [brandElement])
-        images.checkedNo = utility.loadImage(named: "circle", colors: [brandElement])
+        images.checkedYes = utility.loadImage(named: "checkmark.circle.fill", colors: [NCBrandColor.shared.brandElement])
+        images.checkedNo = utility.loadImage(named: "circle", colors: [NCBrandColor.shared.brandElement])
 
-        images.buttonMore = utility.loadImage(named: "ellipsis", colors: [iconImageColor])
-        images.buttonStop = utility.loadImage(named: "stop.circle", colors: [iconImageColor])
-        images.buttonMoreLock = utility.loadImage(named: "lock.fill", colors: [iconImageColor])
+        images.buttonMore = utility.loadImage(named: "ellipsis", colors: [NCBrandColor.shared.iconImageColor])
+        images.buttonStop = utility.loadImage(named: "stop.circle", colors: [NCBrandColor.shared.iconImageColor])
+        images.buttonMoreLock = utility.loadImage(named: "lock.fill", colors: [NCBrandColor.shared.iconImageColor])
 
         createImagesBrandCache()
     }
 
     func createImagesBrandCache() {
-
         let brandElement = NCBrandColor.shared.brandElement
         guard brandElement != self.brandElementColor else { return }
         self.brandElementColor = brandElement
+        let utility = NCUtility()
 
         images.folderEncrypted = UIImage(named: "folderEncrypted")!.image(color: brandElement)
         images.folderSharedWithMe = UIImage(named: "folder_shared_with_me")!.image(color: brandElement)
@@ -285,7 +282,7 @@ import RealmSwift
         images.iconCalendar = UIImage(named: "icon-calendar")!.image(color: brandElement)
         images.iconDeck = UIImage(named: "icon-deck")!.image(color: brandElement)
         images.iconMail = UIImage(named: "icon-mail")!.image(color: brandElement)
-        images.iconConfirm = UIImage(named: "icon-confirm")!.image(color: brandElement)
+        images.iconConfirm = utility.loadImage(named: "arrow.right", colors: [NCBrandColor.shared.iconImageColor])
         images.iconPages = UIImage(named: "icon-pages")!.image(color: brandElement)
 
         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterChangeTheming)
