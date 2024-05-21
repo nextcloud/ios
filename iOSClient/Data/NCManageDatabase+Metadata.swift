@@ -389,14 +389,13 @@ extension NCManageDatabase {
         return metadata
     }
 
-    func convertFilesToMetadatas(_ files: [NKFile], useMetadataFolder: Bool, completion: @escaping (_ metadataFolder: tableMetadata, _ metadatasFolder: [tableMetadata], _ metadatas: [tableMetadata]) -> Void) {
+    func convertFilesToMetadatas(_ files: [NKFile], useFirstAsMetadataFolder: Bool, completion: @escaping (_ metadataFolder: tableMetadata, _ metadatas: [tableMetadata]) -> Void) {
 
         var counter: Int = 0
         var isDirectoryE2EE: Bool = false
         let listServerUrl = ThreadSafeDictionary<String, Bool>()
 
         var metadataFolder = tableMetadata()
-        var metadataFolders: [tableMetadata] = []
         var metadatas: [tableMetadata] = []
 
         for file in files {
@@ -410,26 +409,23 @@ extension NCManageDatabase {
 
             let metadata = convertFileToMetadata(file, isDirectoryE2EE: isDirectoryE2EE)
 
-            if counter == 0 && useMetadataFolder {
+            if counter == 0 && useFirstAsMetadataFolder {
                 metadataFolder = tableMetadata(value: metadata)
             } else {
                 metadatas.append(metadata)
-                if metadata.directory {
-                    metadataFolders.append(metadata)
-                }
             }
 
             counter += 1
         }
 
-        completion(metadataFolder, metadataFolders, metadatas)
+        completion(metadataFolder, metadatas)
     }
 
-    func convertFilesToMetadatas(_ files: [NKFile], useMetadataFolder: Bool) async -> (metadataFolder: tableMetadata, metadatasFolder: [tableMetadata], metadatas: [tableMetadata]) {
+    func convertFilesToMetadatas(_ files: [NKFile], useFirstAsMetadataFolder: Bool) async -> (metadataFolder: tableMetadata, metadatas: [tableMetadata]) {
 
         await withUnsafeContinuation({ continuation in
-            convertFilesToMetadatas(files, useMetadataFolder: useMetadataFolder) { metadataFolder, metadatasFolder, metadatas in
-                continuation.resume(returning: (metadataFolder, metadatasFolder, metadatas))
+            convertFilesToMetadatas(files, useFirstAsMetadataFolder: useFirstAsMetadataFolder) { metadataFolder, metadatas in
+                continuation.resume(returning: (metadataFolder, metadatas))
             }
         })
     }
