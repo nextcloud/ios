@@ -56,7 +56,7 @@ import KeychainAccess
     @objc var passcode: String? {
         get {
             migrate(key: "passcodeBlock")
-            if let value = try? keychain.get("passcodeBlock") {
+            if let value = try? keychain.get("passcodeBlock"), !value.isEmpty {
                 return value
             }
             return nil
