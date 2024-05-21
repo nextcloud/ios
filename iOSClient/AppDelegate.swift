@@ -51,6 +51,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         return ProcessInfo.processInfo.arguments.contains("UI_TESTING")
     }
 
+    var loginFlowV2Token = ""
+    var loginFlowV2Endpoint = ""
+    var loginFlowV2Login = ""
+
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         if isUiTestingEnabled {
             deleteAllAccounts()
@@ -144,10 +148,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             self.handleProcessingTask(task)
         }
 
+        NotificationCenter.default.addObserver(self, selector: #selector(applicationDidBecomeActive2(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationDidBecomeActive), object: nil)
+
         return true
     }
 
-    // L'applicazione terminerà
     func applicationWillTerminate(_ application: UIApplication) {
 
         if UIApplication.shared.backgroundRefreshStatus == .available {
@@ -273,6 +278,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         }
     }
 
+    @objc private func applicationDidBecomeActive2(_ notification: NSNotification) {
+        pollLogin()
+    }
+
     // MARK: - Background Networking Session
 
     func application(_ application: UIApplication, handleEventsForBackgroundURLSession identifier: String, completionHandler: @escaping () -> Void) {
@@ -364,11 +373,28 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         // [WEBPersonalized] [AppConfig]
         if NCBrandOptions.shared.use_login_web_personalized || NCBrandOptions.shared.use_AppConfig {
             if activeLogin?.view.window == nil {
-                activeLogin = UIStoryboard(name: "NCLogin", bundle: nil).instantiateViewController(withIdentifier: "NCLogin") as? NCLogin
-//                activeLogin? = NCBrandOptions.shared.loginBaseUrl
-                showLoginViewController(activeLogin)
+                urlBase = NCBrandOptions.shared.loginBaseUrl
+                pollLogin()
+
+                NextcloudKit.shared.getLoginFlowV2(serverUrl: urlBase) { token, endpoint, login, _, error in
+
+                    // Login Flow V2
+                    if error == .success, let token, let endpoint, let login {
+                        self.pollLogin()
+
+                        self.loginFlowV2Token = token
+                        self.loginFlowV2Endpoint = endpoint
+                        self.loginFlowV2Login = login
+
+                        UIApplication.shared.open(URL(string: login)!)
+                    }
+                }
+                //                activeLogin = UIStoryboard(name: "NCLogin", bundle: nil).instantiateViewController(withIdentifier: "NCLogin") as? NCLogin
+                //                activeLogin? = NCBrandOptions.shared.loginBaseUrl
+                //                showLoginViewController(activeLogin)
+
+                return
             }
-            return
         }
 
         // Nextcloud standard login
@@ -377,9 +403,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                 activeLogin = UIStoryboard(name: "NCLogin", bundle: nil).instantiateViewController(withIdentifier: "NCLogin") as? NCLogin
 
                 if selector == NCGlobal.shared.introSignup {
-//                    activeLogin?.urlBase = NCBrandOptions.shared.linkloginPreferredProviders
+                    activeLogin?.urlBase = NCBrandOptions.shared.linkloginPreferredProviders
                 } else {
-//                    activeLogin?.urlBase = self.urlBase
+                    activeLogin?.urlBase = self.urlBase
                 }
                 showLoginViewController(activeLogin)
             }
@@ -390,12 +416,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 //                activeLogin?.urlBase = NCBrandOptions.shared.loginBaseUrl
                 showLoginViewController(activeLogin)
             }
-
         } else if openLoginWeb {
             // Used also for reinsert the account (change passwd)
             if activeLogin?.view.window == nil {
                 activeLogin = UIStoryboard(name: "NCLogin", bundle: nil).instantiateViewController(withIdentifier: "NCLogin") as? NCLogin
                 activeLogin?.urlBase = urlBase
+                activeLogin?.disableUrlField = true
 //                activeLogin?.user = user
                 showLoginViewController(activeLogin)
             }
@@ -403,6 +429,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             if activeLogin?.view.window == nil {
                 activeLogin = UIStoryboard(name: "NCLogin", bundle: nil).instantiateViewController(withIdentifier: "NCLogin") as? NCLogin
                 showLoginViewController(activeLogin)
+            }
+        }
+    }
+//
+    @objc func pollLogin() {
+        NextcloudKit.shared.getLoginFlowV2Poll(token: self.loginFlowV2Token, endpoint: self.loginFlowV2Endpoint) { server, loginName, appPassword, _, error in
+            if error == .success, let server, let loginName, let appPassword {
+                self.createAccount(server: server, username: loginName, password: appPassword, completion: { error in  })
             }
         }
     }
@@ -457,6 +491,32 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     }
 
     // MARK: - Account
+
+    func createAccount(server: String, username: String, password: String, completion: @escaping (_ error: NKError) -> Void) {
+        var urlBase = server
+        if urlBase.last == "/" { urlBase = String(urlBase.dropLast()) }
+        let account: String = "\(username) \(urlBase)"
+        let user = username
+
+        NextcloudKit.shared.setup(account: account, user: user, userId: user, password: password, urlBase: urlBase)
+        NextcloudKit.shared.getUserProfile { _, userProfile, _, error in
+
+            if error == .success, let userProfile {
+
+                NCManageDatabase.shared.deleteAccount(account)
+                NCManageDatabase.shared.addAccount(account, urlBase: urlBase, user: user, userId: userProfile.userId, password: password)
+
+                self.changeAccount(account, userProfile: userProfile)
+            } else {
+
+                let alertController = UIAlertController(title: NSLocalizedString("_error_", comment: ""), message: error.errorDescription, preferredStyle: .alert)
+                alertController.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { _ in }))
+                UIApplication.shared.firstWindow?.rootViewController?.present(alertController, animated: true)
+            }
+
+            completion(error)
+        }
+    }
 
     @objc func changeAccount(_ account: String, userProfile: NKUserProfile?) {
 
@@ -568,7 +628,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     // MARK: - Reset Application
 
     @objc func resetApplication() {
-
         let utilityFileSystem = NCUtilityFileSystem()
 
         NCNetworking.shared.cancelAllTask()
