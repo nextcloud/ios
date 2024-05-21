@@ -28,6 +28,8 @@ import NextcloudKit
 struct NCSettings: View {
     /// State to control the visibility of the acknowledgements view
     @State private var showAcknowledgements = false
+    /// State to control the visibility of the passcode view
+    @State private var showPasscode = false
     /// State to control the visibility of the Policy view
     @State private var showBrowser = false
     /// State to control the visibility of the Source Code  view
@@ -73,7 +75,7 @@ struct NCSettings: View {
             Section(content: {
                 // Lock active YES/NO
                 Button(action: {
-                    model.isLockActive.toggle()
+                    showPasscode = true
                 }, label: {
                     HStack {
                         Image(systemName: model.isLockActive ? "lock" : "lock.open")
@@ -87,8 +89,8 @@ struct NCSettings: View {
                     .font(.system(size: 16))
                 })
                 .tint(Color(NCBrandColor.shared.textColor))
-                .sheet(isPresented: $model.isLockActive) {
-                    PasscodeView(isPresented: $model.isLockActive, passcode: $model.passcode)
+                .sheet(isPresented: $showPasscode) {
+                    PasscodeView(isPresented: $showPasscode)
                 }
                 // Enable Touch ID
                 Toggle(NSLocalizedString("_enable_touch_face_id_", comment: ""), isOn: $model.enableTouchID)

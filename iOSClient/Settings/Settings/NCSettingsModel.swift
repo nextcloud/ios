@@ -47,7 +47,6 @@ class NCSettingsModel: ObservableObject, AccountUpdateHandling, ViewOnAppearHand
     var isE2EEEnable: Bool = NCGlobal.shared.capabilityE2EEEnabled
     /// String containing the current version of E2EE
     @Published var versionE2EE: String = NCGlobal.shared.capabilityE2EEApiVersion
-    @Published var passcode: String = ""
 
     // MARK: - String Values for View
     var appVersion: String = NCUtility().getVersionApp(withBuild: true)
@@ -72,7 +71,6 @@ class NCSettingsModel: ObservableObject, AccountUpdateHandling, ViewOnAppearHand
         privacyScreen = keychain.privacyScreenEnabled
         resetWrongAttempts = keychain.resetAppCounterFail
         copyrightYear = getCurrentYear()
-        passcode = keychain.passcode ?? ""
     }
     // MARK: - Settings Update Methods
     /// Function to update Touch ID / Face ID setting
@@ -106,7 +104,7 @@ class NCSettingsModel: ObservableObject, AccountUpdateHandling, ViewOnAppearHand
 
 struct PasscodeView: UIViewControllerRepresentable {
     @Binding var isPresented: Bool
-    @Binding var passcode: String
+
     func makeUIViewController(context: Context) -> UIViewController {
         let laContext = LAContext()
         var error: NSError?
@@ -128,39 +126,32 @@ struct PasscodeView: UIViewControllerRepresentable {
                     }
                 }
             }
+            passcodeViewController.delegate = context.coordinator
             return passcodeViewController
         } else {
             let passcodeSettingsViewController = TOPasscodeSettingsViewController()
             passcodeSettingsViewController.hideOptionsButton = true
             passcodeSettingsViewController.requireCurrentPasscode = false
             passcodeSettingsViewController.passcodeType = .sixDigits
+            passcodeSettingsViewController.delegate = context.coordinator
             return passcodeSettingsViewController
         }
     }
-    func makeUIViewController(context: Context) -> TOPasscodeViewController {
-        let passcodeViewController = TOPasscodeViewController(passcodeType: .sixDigits, allowCancel: false)
-        passcodeViewController.delegate = context.coordinator
-        return passcodeViewController
-    }
-    func updateUIViewController(_ uiViewController: TOPasscodeViewController, context: Context) {
+
+    func updateUIViewController(_ uiViewController: UIViewController, context: Context) {
         // Update the view controller if needed
     }
+
     func makeCoordinator() -> Coordinator {
         Coordinator(self)
     }
-    class Coordinator: NSObject, TOPasscodeViewControllerDelegate {
+
+    class Coordinator: NSObject, TOPasscodeSettingsViewControllerDelegate, TOPasscodeViewControllerDelegate {
         var parent: PasscodeView
         init(_ parent: PasscodeView) {
             self.parent = parent
         }
-        func passcodeViewController(_ passcodeViewController: TOPasscodeViewController, isCorrectCode code: String) -> Bool {
-            if code == NCKeychain().passcode {
-                NCKeychain().passcode = nil
-                parent.passcode = code
-                return true
-            }
-            return false
-        }
+
         func didPerformBiometricValidationRequest(in passcodeViewController: TOPasscodeViewController) {
             let context = LAContext()
             var error: NSError?
@@ -179,6 +170,27 @@ struct PasscodeView: UIViewControllerRepresentable {
                     }
                 }
             }
+        }
+
+        func passcodeSettingsViewController(_ passcodeSettingsViewController: TOPasscodeSettingsViewController, didChangeToNewPasscode passcode: String, of type: TOPasscodeType) {
+            NCKeychain().passcode = passcode
+            passcodeSettingsViewController.dismiss(animated: true) {
+                self.parent.isPresented = false
+            }
+        }
+
+        func didTapCancel(in passcodeViewController: TOPasscodeViewController) {
+            passcodeViewController.dismiss(animated: true) {
+                self.parent.isPresented = false
+            }
+        }
+
+        func passcodeViewController(_ passcodeViewController: TOPasscodeViewController, isCorrectCode code: String) -> Bool {
+            if code == NCKeychain().passcode {
+                NCKeychain().passcode = nil
+                return true
+            }
+            return false
         }
     }
 }
