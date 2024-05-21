@@ -385,7 +385,7 @@ extension NCShareExtension {
             }
         } else {
             hud.indicatorView = JGProgressHUDSuccessIndicatorView()
-            hud.indicatorView?.backgroundColor = NCBrandColor.shared.brandElement
+            hud.indicatorView?.tintColor = NCBrandColor.shared.brandElement
             hud.textLabel.text = NSLocalizedString("_success_", comment: "")
             DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
                 self.extensionContext?.completeRequest(returningItems: self.extensionContext?.inputItems, completionHandler: nil)

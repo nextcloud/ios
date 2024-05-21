@@ -116,7 +116,7 @@ class NCOperationSaveLivePhoto: ConcurrentOperation {
                             self.hud.textLabel.text = NSLocalizedString("_livephoto_save_error_", comment: "")
                         } else {
                             self.hud.indicatorView = JGProgressHUDSuccessIndicatorView()
-                            self.hud.indicatorView?.backgroundColor = NCBrandColor.shared.brandElement
+                            self.hud.indicatorView?.tintColor = NCBrandColor.shared.brandElement
                             self.hud.textLabel.text = NSLocalizedString("_success_", comment: "")
                         }
                         self.hud.dismiss()
