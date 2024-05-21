@@ -152,7 +152,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             self.handleProcessingTask(task)
         }
 
-        NotificationCenter.default.addObserver(self, selector: #selector(applicationDidBecomeActive2(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationDidBecomeActive), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(applicationDidBecomeActive2(_:)), name: UIApplication.didBecomeActiveNotification, object: nil)
 
         return true
     }
