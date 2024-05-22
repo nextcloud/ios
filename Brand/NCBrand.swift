@@ -69,7 +69,7 @@ let userAgent: String = {
     @objc public var use_themingLogo: Bool = false
     @objc public var use_storeLocalAutoUploadAll: Bool = false
 
-    @objc public var disable_intro: Bool = false
+    @objc public var disable_intro: Bool = true
     @objc public var disable_request_login_url: Bool = false
     @objc public var disable_multiaccount: Bool = false
     @objc public var disable_manage_account: Bool = false

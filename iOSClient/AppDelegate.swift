@@ -393,9 +393,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                         UIApplication.shared.firstWindow?.rootViewController?.present(vc, animated: true)
                     }
                 }
-                //                activeLogin = UIStoryboard(name: "NCLogin", bundle: nil).instantiateViewController(withIdentifier: "NCLogin") as? NCLogin
-                //                activeLogin? = NCBrandOptions.shared.loginBaseUrl
-                //                showLoginViewController(activeLogin)
 
                 return
             }
