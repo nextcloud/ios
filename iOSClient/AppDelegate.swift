@@ -406,10 +406,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
                 if selector == NCGlobal.shared.introSignup {
                     activeLogin?.urlBase = NCBrandOptions.shared.linkloginPreferredProviders
+                    let web = UIStoryboard(name: "NCLogin", bundle: nil).instantiateViewController(withIdentifier: "NCLoginWeb") as? NCLoginWeb
+                    web?.urlBase = NCBrandOptions.shared.linkloginPreferredProviders
+                    showLoginViewController(web)
                 } else {
                     activeLogin?.urlBase = self.urlBase
+                    showLoginViewController(activeLogin)
                 }
-                showLoginViewController(activeLogin)
             }
 
         } else if NCBrandOptions.shared.disable_intro && NCBrandOptions.shared.disable_request_login_url {
