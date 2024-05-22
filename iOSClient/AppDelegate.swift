@@ -347,7 +347,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
     // MARK: - Login
 
-    @objc func openLogin(selector: Int, openLoginWeb: Bool, window: UIWindow? = nil) {
+    @objc func openLogin(selector: Int, openLoginWeb: Bool, windowForRootViewController: UIWindow? = nil) {
         func showLoginViewController(_ viewController: UIViewController?) {
             guard let viewController else { return }
             let navigationController = NCLoginNavigationController(rootViewController: viewController)
@@ -358,7 +358,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             navigationController.navigationBar.barTintColor = NCBrandColor.shared.customer
             navigationController.navigationBar.isTranslucent = false
 
-            if let window {
+            if let window = windowForRootViewController {
                 window.rootViewController = navigationController
                 window.makeKeyAndVisible()
             } else {
