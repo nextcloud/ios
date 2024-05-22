@@ -29,6 +29,7 @@ import Firebase
 import WidgetKit
 import Queuer
 import EasyTipView
+import SwiftUI
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterDelegate, NCUserBaseUrl {
@@ -387,13 +388,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
                     // Login Flow V2
                     if error == .success, let token, let endpoint, let login {
-                        self.pollLogin()
+                        let vc = UIHostingController(rootView: NCLoginPoll(loginFlowV2Token: token, loginFlowV2Endpoint: endpoint, loginFlowV2Login: login, cancelButtonDisabled: NCManageDatabase.shared.getAccounts().isEmptyOrNil))
 
-                        self.loginFlowV2Token = token
-                        self.loginFlowV2Endpoint = endpoint
-                        self.loginFlowV2Login = login
-
-                        UIApplication.shared.open(URL(string: login)!)
+                        UIApplication.shared.firstWindow?.rootViewController?.present(vc, animated: true)
                     }
                 }
                 //                activeLogin = UIStoryboard(name: "NCLogin", bundle: nil).instantiateViewController(withIdentifier: "NCLogin") as? NCLogin
@@ -423,7 +420,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         } else if NCBrandOptions.shared.disable_intro && NCBrandOptions.shared.disable_request_login_url {
             if activeLogin?.view.window == nil {
                 activeLogin = UIStoryboard(name: "NCLogin", bundle: nil).instantiateViewController(withIdentifier: "NCLogin") as? NCLogin
-//                activeLogin?.urlBase = NCBrandOptions.shared.loginBaseUrl
+                activeLogin?.urlBase = NCBrandOptions.shared.loginBaseUrl
                 showLoginViewController(activeLogin)
             }
         } else if openLoginWeb {

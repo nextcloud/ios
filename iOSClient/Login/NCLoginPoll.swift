@@ -14,6 +14,8 @@ struct NCLoginPoll: View {
     let loginFlowV2Endpoint: String
     let loginFlowV2Login: String
 
+    var cancelButtonDisabled = false
+
     @ObservedObject private var loginManager = LoginManager()
     @Environment(\.dismiss) private var dismiss
 
@@ -21,10 +23,19 @@ struct NCLoginPoll: View {
         VStack {
             Text("Please continue in your browser")
 
-            Button("Cancel") {
+            HStack {
+                Button("Cancel") {
+                    dismiss()
+                }
+                .disabled(loginManager.isLoading || cancelButtonDisabled)
+                .buttonStyle(.bordered)
 
+                Button("Retry") {
+                    loginManager.openLoginInBrowser()
+                }
+                .buttonStyle(.borderedProminent)
             }
-            .buttonStyle(.borderedProminent)
+            .padding()
         }
         .onChange(of: loginManager.pollFinished) { value in
             if value {
@@ -46,9 +57,10 @@ struct NCLoginPoll: View {
             }
         }
         .onAppear {
-            loginManager.poll(loginFlowV2Token: loginFlowV2Token, loginFlowV2Endpoint: loginFlowV2Endpoint, loginFlowV2Login: loginFlowV2Login)
+            loginManager.configure(loginFlowV2Token: loginFlowV2Token, loginFlowV2Endpoint: loginFlowV2Endpoint, loginFlowV2Login: loginFlowV2Login)
             loginManager.openLoginInBrowser()
         }
+        .interactiveDismissDisabled()
     }
 }
 
@@ -63,23 +75,27 @@ private class LoginManager: ObservableObject {
     var loginFlowV2Endpoint = ""
     var loginFlowV2Login = ""
 
+    @Published var pollFinished = false
+    @Published var isLoading = false
+
     init() {
         NotificationCenter.default.addObserver(self, selector: #selector(applicationDidBecomeActive(_:)), name: UIApplication.didBecomeActiveNotification, object: nil)
     }
 
-    @Published var pollFinished = false
-
     @objc func applicationDidBecomeActive(_ notification: NSNotification) {
-        poll(loginFlowV2Token: loginFlowV2Token, loginFlowV2Endpoint: loginFlowV2Endpoint, loginFlowV2Login: loginFlowV2Login)
+        poll()
     }
 
-    func poll(loginFlowV2Token: String, loginFlowV2Endpoint: String, loginFlowV2Login: String) {
+    func configure(loginFlowV2Token: String, loginFlowV2Endpoint: String, loginFlowV2Login: String) {
         self.loginFlowV2Token = loginFlowV2Token
         self.loginFlowV2Endpoint = loginFlowV2Endpoint
         self.loginFlowV2Login = loginFlowV2Login
+    }
 
+    func poll() {
         NextcloudKit.shared.getLoginFlowV2Poll(token: self.loginFlowV2Token, endpoint: self.loginFlowV2Endpoint) { server, loginName, appPassword, _, error in
             if error == .success, let server, let loginName, let appPassword {
+                self.isLoading = true
                 self.createAccount(server: server, username: loginName, password: appPassword)
             }
         }
