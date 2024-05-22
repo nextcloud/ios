@@ -347,7 +347,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
     // MARK: - Login
 
-    @objc func openLogin(selector: Int, openLoginWeb: Bool) {
+    @objc func openLogin(selector: Int, openLoginWeb: Bool, window: UIWindow? = nil) {
         func showLoginViewController(_ viewController: UIViewController?) {
             guard let viewController else { return }
             let navigationController = NCLoginNavigationController(rootViewController: viewController)
@@ -358,8 +358,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             navigationController.navigationBar.barTintColor = NCBrandColor.shared.customer
             navigationController.navigationBar.isTranslucent = false
 
-            UIApplication.shared.allSceneSessionDestructionExceptFirst()
-            UIApplication.shared.firstWindow?.rootViewController?.present(navigationController, animated: true)
+            if let window {
+                window.rootViewController = navigationController
+                window.makeKeyAndVisible()
+            } else {
+                UIApplication.shared.allSceneSessionDestructionExceptFirst()
+                UIApplication.shared.firstWindow?.rootViewController?.present(navigationController, animated: true)
+            }
         }
 
         // [WEBPersonalized] [AppConfig]

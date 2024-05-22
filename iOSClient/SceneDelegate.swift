@@ -49,11 +49,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             }
         } else {
             if NCBrandOptions.shared.disable_intro {
-                if let viewController = UIStoryboard(name: "NCLogin", bundle: nil).instantiateViewController(withIdentifier: "NCLogin") as? NCLogin {
-                    let navigationController = NCLoginNavigationController(rootViewController: viewController)
-                    window?.rootViewController = navigationController
-                    window?.makeKeyAndVisible()
-                }
+                appDelegate.openLogin(selector: NCGlobal.shared.introLogin, openLoginWeb: false, window: window)
             } else {
                 if let viewController = UIStoryboard(name: "NCIntro", bundle: nil).instantiateInitialViewController() as? NCIntroViewController {
                     let navigationController = NCLoginNavigationController(rootViewController: viewController)
