@@ -24,6 +24,7 @@
 import UIKit
 import NextcloudKit
 import SwiftEntryKit
+import SwiftUI
 
 class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
 
@@ -158,7 +159,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
 
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(_:)), name: UIResponder.keyboardWillShowNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(_:)), name: UIResponder.keyboardWillHideNotification, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(applicationDidBecomeActive(_:)), name: UIApplication.didBecomeActiveNotification, object: nil)
+//        NotificationCenter.default.addObserver(self, selector: #selector(applicationDidBecomeActive(_:)), name: UIApplication.didBecomeActiveNotification, object: nil)
 
         handleLoginWithAppConfig()
 
@@ -185,9 +186,9 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
         appDelegate.timerErrorNetworkingDisabled = false
     }
 
-    @objc func applicationDidBecomeActive(_ notification: NSNotification) {
-        pollLogin()
-    }
+//    @objc func applicationDidBecomeActive(_ notification: NSNotification) {
+//        pollLogin()
+//    }
 
     private func handleLoginWithAppConfig() {
         let accountCount = NCManageDatabase.shared.getAccounts()?.count ?? 0
@@ -335,13 +336,15 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
 
                     // Login Flow V2
                     if error == .success, let token, let endpoint, let login {
-                        self.pollLogin()
+//                        self.pollLogin()
+//
+//                        self.loginFlowV2Token = token
+//                        self.loginFlowV2Endpoint = endpoint
+//                        self.loginFlowV2Login = login
 
-                        self.loginFlowV2Token = token
-                        self.loginFlowV2Endpoint = endpoint
-                        self.loginFlowV2Login = login
+                        let vc = UIHostingController(rootView: NCLoginPoll(loginFlowV2Token: token, loginFlowV2Endpoint: endpoint, loginFlowV2Login: login))
 
-                        UIApplication.shared.open(URL(string: login)!)
+                        self.present(vc, animated: true)
                     } else if serverInfo.versionMajor < NCGlobal.shared.nextcloudVersion12 { // No login flow available
 
                         let alertController = UIAlertController(title: NSLocalizedString("_error_", comment: ""), message: NSLocalizedString("_webflow_not_available_", comment: ""), preferredStyle: .alert)
@@ -494,53 +497,19 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
         }
     }
 
-    private func pollLogin() {
-        NextcloudKit.shared.getLoginFlowV2Poll(token: self.loginFlowV2Token, endpoint: self.loginFlowV2Endpoint) { server, loginName, appPassword, _, error in
-            if error == .success, let server, let loginName, let appPassword {
-                self.createAccount(server: server, username: loginName, password: appPassword)
-            }
-        }
-    }
-
-    private func createAccount(server: String, username: String, password: String) {
-        appDelegate.createAccount(server: server, username: username, password: password) { error in
-            if error == .success {
-                let window = UIApplication.shared.firstWindow
-                
-                if window?.rootViewController is NCMainTabBarController {
-                    self.dismiss(animated: true)
-                } else {
-                    if let mainTabBarController = UIStoryboard(name: "Main", bundle: nil).instantiateInitialViewController() as? NCMainTabBarController {
-                        mainTabBarController.modalPresentationStyle = .fullScreen
-                        mainTabBarController.view.alpha = 0
-                        window?.rootViewController = mainTabBarController
-                        window?.makeKeyAndVisible()
-                        UIView.animate(withDuration: 0.5) {
-                            mainTabBarController.view.alpha = 1
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-//    func createAccount(server: String, username: String, password: String) {
-//        var urlBase = server
-//        if urlBase.last == "/" { urlBase = String(urlBase.dropLast()) }
-//        let account: String = "\(username) \(urlBase)"
-//        let user = username
+//    private func pollLogin() {
+//        NextcloudKit.shared.getLoginFlowV2Poll(token: self.loginFlowV2Token, endpoint: self.loginFlowV2Endpoint) { server, loginName, appPassword, _, error in
+//            if error == .success, let server, let loginName, let appPassword {
+//                self.createAccount(server: server, username: loginName, password: appPassword)
+//            }
+//        }
+//    }
 //
-//        NextcloudKit.shared.setup(account: account, user: user, userId: user, password: password, urlBase: urlBase)
-//        NextcloudKit.shared.getUserProfile { _, userProfile, _, error in
-//
-//            if error == .success, let userProfile {
-//
-//                NCManageDatabase.shared.deleteAccount(account)
-//                NCManageDatabase.shared.addAccount(account, urlBase: urlBase, user: user, userId: userProfile.userId, password: password)
-//
-//                self.appDelegate.changeAccount(account, userProfile: userProfile)
-//
+//    private func createAccount(server: String, username: String, password: String) {
+//        appDelegate.createAccount(server: server, username: username, password: password) { error in
+//            if error == .success {
 //                let window = UIApplication.shared.firstWindow
+//                
 //                if window?.rootViewController is NCMainTabBarController {
 //                    self.dismiss(animated: true)
 //                } else {
@@ -554,15 +523,49 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
 //                        }
 //                    }
 //                }
-//
-//            } else {
-//
-//                let alertController = UIAlertController(title: NSLocalizedString("_error_", comment: ""), message: error.errorDescription, preferredStyle: .alert)
-//                alertController.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { _ in }))
-//                self.present(alertController, animated: true)
 //            }
 //        }
 //    }
+
+    func createAccount(server: String, username: String, password: String) {
+        var urlBase = server
+        if urlBase.last == "/" { urlBase = String(urlBase.dropLast()) }
+        let account: String = "\(username) \(urlBase)"
+        let user = username
+
+        NextcloudKit.shared.setup(account: account, user: user, userId: user, password: password, urlBase: urlBase)
+        NextcloudKit.shared.getUserProfile { _, userProfile, _, error in
+
+            if error == .success, let userProfile {
+
+                NCManageDatabase.shared.deleteAccount(account)
+                NCManageDatabase.shared.addAccount(account, urlBase: urlBase, user: user, userId: userProfile.userId, password: password)
+
+                self.appDelegate.changeAccount(account, userProfile: userProfile)
+
+                let window = UIApplication.shared.firstWindow
+                if window?.rootViewController is NCMainTabBarController {
+                    self.dismiss(animated: true)
+                } else {
+                    if let mainTabBarController = UIStoryboard(name: "Main", bundle: nil).instantiateInitialViewController() as? NCMainTabBarController {
+                        mainTabBarController.modalPresentationStyle = .fullScreen
+                        mainTabBarController.view.alpha = 0
+                        window?.rootViewController = mainTabBarController
+                        window?.makeKeyAndVisible()
+                        UIView.animate(withDuration: 0.5) {
+                            mainTabBarController.view.alpha = 1
+                        }
+                    }
+                }
+
+            } else {
+
+                let alertController = UIAlertController(title: NSLocalizedString("_error_", comment: ""), message: error.errorDescription, preferredStyle: .alert)
+                alertController.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { _ in }))
+                self.present(alertController, animated: true)
+            }
+        }
+    }
 
     func getAppPassword(serverUrl: String, username: String, password: String) {
         NextcloudKit.shared.getAppPassword(serverUrl: serverUrl, username: username, password: password) { token, _, error in
