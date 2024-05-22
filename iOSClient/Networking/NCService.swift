@@ -34,11 +34,13 @@ class NCService: NSObject {
     // MARK: -
 
     @objc public func startRequestServicesServer() {
-
-        NCManageDatabase.shared.clearAllAvatarLoaded()
-        guard !appDelegate.account.isEmpty else { return }
+        guard !appDelegate.account.isEmpty, UIApplication.shared.applicationState != .background else {
+            NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Service not start request service server with the application in background")
+            return
+        }
         let account = appDelegate.account
 
+        NCManageDatabase.shared.clearAllAvatarLoaded()
         NCPushNotification.shared().pushNotification()
 
         Task {
