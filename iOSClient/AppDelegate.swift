@@ -45,8 +45,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     var activeLoginWeb: NCLoginWeb?
     var timerErrorNetworking: Timer?
     var timerErrorNetworkingDisabled: Bool = false
-    var isAppRefresh: Bool = false
-    var isProcessingTask: Bool = false
+    var taskAutoUploadDate: Date = Date()
     var isUiTestingEnabled: Bool {
         return ProcessInfo.processInfo.arguments.contains("UI_TESTING")
     }
@@ -182,7 +181,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
     /*
     @discussion Schedule a refresh task request to ask that the system launch your app briefly so that you can download data and keep your app's contents up-to-date. The system will fulfill this request intelligently based on system conditions and app usage.
-     < MAX 30 seconds >
      */
     func scheduleAppRefresh() {
 
@@ -190,7 +188,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         request.earliestBeginDate = Date(timeIntervalSinceNow: 60) // Refresh after 60 seconds.
         do {
             try BGTaskScheduler.shared.submit(request)
-            NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Refresh task: ok")
         } catch {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Refresh task failed to submit request: \(error)")
         }
@@ -198,7 +195,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
     /*
      @discussion Schedule a processing task request to ask that the system launch your app when conditions are favorable for battery life to handle deferrable, longer-running processing, such as syncing, database maintenance, or similar tasks. The system will attempt to fulfill this request to the best of its ability within the next two days as long as the user has used your app within the past week.
-     < MAX over 1 minute >
      */
     func scheduleAppProcessing() {
 
@@ -208,7 +204,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         request.requiresExternalPower = false
         do {
             try BGTaskScheduler.shared.submit(request)
-            NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Processing task: ok")
         } catch {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Background Processing task failed to submit request: \(error)")
         }
@@ -217,59 +212,57 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     func handleAppRefresh(_ task: BGTask) {
         scheduleAppRefresh()
 
-        if isProcessingTask {
-            NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] ProcessingTask already in progress, abort.")
-            return task.setTaskCompleted(success: true)
-        }
-        isAppRefresh = true
-
         handleAppRefreshProcessingTask(taskText: "AppRefresh") {
             task.setTaskCompleted(success: true)
-            self.isAppRefresh = false
         }
     }
 
     func handleProcessingTask(_ task: BGTask) {
         scheduleAppProcessing()
 
-        if isAppRefresh {
-            NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] AppRefresh already in progress, abort.")
-            return task.setTaskCompleted(success: true)
-        }
-        isProcessingTask = true
-
         handleAppRefreshProcessingTask(taskText: "ProcessingTask") {
             task.setTaskCompleted(success: true)
-            self.isProcessingTask = false
         }
     }
 
     func handleAppRefreshProcessingTask(taskText: String, completion: @escaping () -> Void = {}) {
         Task {
-            NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] \(taskText) start handle")
-            let items = await NCAutoUpload.shared.initAutoUpload()
-            NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] \(taskText) auto upload with \(items) uploads")
+            var itemsAutoUpload = 0
+
+            NextcloudKit.shared.nkCommonInstance.writeLog("[DEBUG] \(taskText) start handle")
+
+            // Test every > 1 min
+            if self.taskAutoUploadDate.addingTimeInterval(60) > Date() {
+                self.taskAutoUploadDate = Date()
+                itemsAutoUpload = await NCAutoUpload.shared.initAutoUpload()
+                NextcloudKit.shared.nkCommonInstance.writeLog("[DEBUG] \(taskText) auto upload with \(itemsAutoUpload) uploads")
+            } else {
+                NextcloudKit.shared.nkCommonInstance.writeLog("[DEBUG] \(taskText) disabled auto upload")
+            }
+
             let results = await NCNetworkingProcess.shared.start(scene: nil)
-            NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] \(taskText) networking process with download: \(results.counterDownloading) upload: \(results.counterUploading)")
+            NextcloudKit.shared.nkCommonInstance.writeLog("[DEBUG] \(taskText) networking process with download: \(results.counterDownloading) upload: \(results.counterUploading)")
 
             if taskText == "ProcessingTask",
-               items == 0, results.counterDownloading == 0, results.counterUploading == 0,
+               itemsAutoUpload == 0,
+               results.counterDownloading == 0,
+               results.counterUploading == 0,
                let directories = NCManageDatabase.shared.getTablesDirectory(predicate: NSPredicate(format: "account == %@ AND offline == true", self.account), sorted: "offlineDate", ascending: true) {
                 for directory: tableDirectory in directories {
-                    // only 3 time for day
+                    // test only 3 time for day (every 8 h.)
                     if let offlineDate = directory.offlineDate, offlineDate.addingTimeInterval(28800) > Date() {
-                        NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] \(taskText) skip synchronization for \(directory.serverUrl) in date \(offlineDate)")
+                        NextcloudKit.shared.nkCommonInstance.writeLog("[DEBUG] \(taskText) skip synchronization for \(directory.serverUrl) in date \(offlineDate)")
                         continue
                     }
                     let results = await NCNetworking.shared.synchronization(account: self.account, serverUrl: directory.serverUrl, add: false)
-                    NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] \(taskText) end synchronization for \(directory.serverUrl), errorCode: \(results.errorCode), item: \(results.items)")
+                    NextcloudKit.shared.nkCommonInstance.writeLog("[DEBUG] \(taskText) end synchronization for \(directory.serverUrl), errorCode: \(results.errorCode), item: \(results.items)")
                 }
             }
 
             let counter = NCManageDatabase.shared.getResultsMetadatas(predicate: NSPredicate(format: "account == %@ AND (session == %@ || session == %@) AND status != %d", self.account, NCNetworking.shared.sessionDownloadBackground, NCNetworking.shared.sessionUploadBackground, NCGlobal.shared.metadataStatusNormal))?.count ?? 0
             UIApplication.shared.applicationIconBadgeNumber = counter
 
-            NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] \(taskText) completion handle")
+            NextcloudKit.shared.nkCommonInstance.writeLog("[DEBUG] \(taskText) completion handle")
             completion()
         }
     }
@@ -278,7 +271,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
     func application(_ application: UIApplication, handleEventsForBackgroundURLSession identifier: String, completionHandler: @escaping () -> Void) {
 
-        NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Start handle Events For Background URLSession: \(identifier)")
+        NextcloudKit.shared.nkCommonInstance.writeLog("[DEBUG] Start handle Events For Background URLSession: \(identifier)")
         WidgetCenter.shared.reloadAllTimelines()
         backgroundSessionCompletionHandler = completionHandler
     }

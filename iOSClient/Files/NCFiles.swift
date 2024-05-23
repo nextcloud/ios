@@ -137,7 +137,7 @@ class NCFiles: NCCollectionViewCommon {
 
     override func reloadDataSourceNetwork(withQueryDB: Bool = false) {
         if UIApplication.shared.applicationState == .background {
-            NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Files not reload datasource network with the application in background")
+            NextcloudKit.shared.nkCommonInstance.writeLog("[DEBUG] Files not reload datasource network with the application in background")
             return
         }
         guard !isSearchingMode else {
