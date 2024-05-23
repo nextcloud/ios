@@ -232,7 +232,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             NextcloudKit.shared.nkCommonInstance.writeLog("[DEBUG] \(taskText) start handle")
 
             // Test every > 1 min
-            if self.taskAutoUploadDate.addingTimeInterval(60) > Date() {
+            if Date() > self.taskAutoUploadDate.addingTimeInterval(60) {
                 self.taskAutoUploadDate = Date()
                 itemsAutoUpload = await NCAutoUpload.shared.initAutoUpload()
                 NextcloudKit.shared.nkCommonInstance.writeLog("[DEBUG] \(taskText) auto upload with \(itemsAutoUpload) uploads")
