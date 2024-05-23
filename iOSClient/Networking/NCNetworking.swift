@@ -198,6 +198,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
                                  completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
         if challenge.protectionSpace.authenticationMethod == NSURLAuthenticationMethodClientCertificate {
             DispatchQueue.main.async {
+                // Use openssl pkcs12 -export -legacy -out identity.p12 -inkey key.pem -in cert.pem
                 if let p12Data = self.p12Data {
                     completionHandler(URLSession.AuthChallengeDisposition.useCredential, PKCS12.urlCredential(for: (p12Data, "velikana100") as? UserCertificate))
                 } else {
@@ -211,10 +212,11 @@ class NCNetworking: NSObject, NKCommonDelegate {
 //            let p12Data = try? Data(contentsOf: URL(fileURLWithPath: Bundle.module.path(forResource: "identity", ofType: "p12")!))
             //                let certificate = PKCS12(pkcs12Data: p12Data!, password: "")
 
-//            completionHandler(URLSession.AuthChallengeDisposition.useCredential, PKCS12.urlCredential(for: (p12Data, "velikana100") as? UserCertificate))
-        }
-        DispatchQueue.global().async {
-            self.checkTrustedChallenge(session, didReceive: challenge, completionHandler: completionHandler)
+            //            completionHandler(URLSession.AuthChallengeDisposition.useCredential, PKCS12.urlCredential(for: (p12Data, "velikana100") as? UserCertificate))
+        } else {
+            DispatchQueue.global().async {
+                self.checkTrustedChallenge(session, didReceive: challenge, completionHandler: completionHandler)
+            }
         }
     }
 
