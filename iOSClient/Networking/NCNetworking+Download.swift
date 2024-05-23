@@ -169,10 +169,10 @@ extension NCNetworking {
         if let httpResponse = (downloadTask.response as? HTTPURLResponse) {
             if httpResponse.statusCode >= 200 && httpResponse.statusCode < 300,
                let url = downloadTask.currentRequest?.url,
-               let fileName = url.lastPathComponent.removingPercentEncoding,
                var serverUrl = url.deletingLastPathComponent().absoluteString.removingPercentEncoding {
+                let fileName = url.lastPathComponent
                 if serverUrl.hasSuffix("/") { serverUrl = String(serverUrl.dropLast()) }
-                if let metadata = NCManageDatabase.shared.getResultMetadata(predicate: NSPredicate(format: "serverUrl == '\(serverUrl)' AND fileName == '\(fileName)'")) {
+                if let metadata = NCManageDatabase.shared.getResultMetadata(predicate: NSPredicate(format: "serverUrl == %@ AND fileName == %@", serverUrl, fileName)) {
                     let destinationFilePath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileName)
                     utilityFileSystem.copyFile(at: location, to: NSURL.fileURL(withPath: destinationFilePath))
                 }
@@ -194,8 +194,11 @@ extension NCNetworking {
             guard let url = task.currentRequest?.url,
                   let metadata = NCManageDatabase.shared.getMetadata(from: url) else { return }
 
+            self.downloadMetadataInBackground.removeValue(forKey: FileNameServerUrl(fileName: fileName, serverUrl: serverUrl))
+
             if error == .success {
 
+                self.removeTransferInError(ocId: metadata.ocId)
 #if !EXTENSION
                 if let result = NCManageDatabase.shared.getE2eEncryption(predicate: NSPredicate(format: "fileNameIdentifier == %@ AND serverUrl == %@", metadata.fileName, metadata.serverUrl)) {
                     NCEndToEndEncryption.sharedManager()?.decryptFile(metadata.fileName, fileNameView: metadata.fileNameView, ocId: metadata.ocId, key: result.key, initializationVector: result.initializationVector, authenticationTag: result.authenticationTag)
@@ -217,6 +220,7 @@ extension NCNetworking {
 
             } else if error.errorCode == NSURLErrorCancelled || error.errorCode == NCGlobal.shared.errorRequestExplicityCancelled {
 
+                self.removeTransferInError(ocId: metadata.ocId)
                 NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId,
                                                            session: "",
                                                            sessionError: "",
@@ -230,6 +234,7 @@ extension NCNetworking {
 
             } else {
 
+                self.transferInError(ocId: metadata.ocId)
                 NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId,
                                                            session: "",
                                                            sessionError: "",
@@ -243,8 +248,6 @@ extension NCNetworking {
                                                            "selector": metadata.sessionSelector,
                                                            "error": error])
             }
-
-            self.downloadMetadataInBackground.removeValue(forKey: FileNameServerUrl(fileName: fileName, serverUrl: serverUrl))
         }
     }
 

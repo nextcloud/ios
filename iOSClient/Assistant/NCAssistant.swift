@@ -36,6 +36,7 @@ struct NCAssistant: View {
                 ToolbarItem(placement: .topBarTrailing) {
                     NavigationLink(destination: NCAssistantCreateNewTask()) {
                         Image(systemName: "plus")
+                            .font(Font.system(.body).weight(.light))
                     }
                     .disabled(model.selectedType == nil)
                 }
@@ -146,8 +147,14 @@ struct TaskItem: View {
 
                 HStack {
                     Label(
-                        title: { Text(NSLocalizedString(task.statusInfo.stringKey, comment: "")) },
-                        icon: { Image(systemName: task.statusInfo.imageSystemName).renderingMode(.original) }
+                        title: {
+                            Text(NSLocalizedString(task.statusInfo.stringKey, comment: ""))
+                        },
+                        icon: {
+                            Image(systemName: task.statusInfo.imageSystemName)
+                                .renderingMode(.original)
+                                .font(Font.system(.body).weight(.light))
+                        }
                     )
                     .padding(.top, 1)
                     .labelStyle(CustomLabelStyle())

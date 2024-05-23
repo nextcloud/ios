@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="18122" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="22505" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina4_7" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="18093"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="22504"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -11,33 +11,33 @@
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
         <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
         <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="listCell" id="jxV-Pk-fPt" customClass="NCTrashListCell" customModule="Nextcloud" customModuleProvider="target">
-            <rect key="frame" x="0.0" y="0.0" width="600" height="60"/>
+            <rect key="frame" x="0.0" y="0.0" width="620" height="161"/>
             <autoresizingMask key="autoresizingMask"/>
             <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO">
-                <rect key="frame" x="0.0" y="0.0" width="600" height="60"/>
+                <rect key="frame" x="0.0" y="0.0" width="620" height="161"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
-                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" translatesAutoresizingMaskIntoConstraints="NO" id="w2m-Vw-hpd" userLabel="ImageItem">
-                        <rect key="frame" x="45" y="10" width="40" height="40"/>
+                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" translatesAutoresizingMaskIntoConstraints="NO" id="w2m-Vw-hpd" userLabel="ImageItem">
+                        <rect key="frame" x="45" y="70.5" width="40" height="40"/>
                         <constraints>
                             <constraint firstAttribute="height" constant="40" id="Dpd-Xj-z4U"/>
                             <constraint firstAttribute="width" constant="40" id="v0e-MW-EeE"/>
                         </constraints>
                     </imageView>
                     <label opaque="NO" userInteractionEnabled="NO" tag="101" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="middleTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="UtT-L6-mgW" userLabel="labelTitle">
-                        <rect key="frame" x="95" y="13" width="420" height="18"/>
+                        <rect key="frame" x="95" y="33" width="440" height="18"/>
                         <fontDescription key="fontDescription" type="system" pointSize="15"/>
                         <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <nil key="highlightedColor"/>
                     </label>
                     <label opaque="NO" userInteractionEnabled="NO" tag="102" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="AXX-71-9Q6" userLabel="labelInfo">
-                        <rect key="frame" x="95" y="31" width="420" height="15"/>
+                        <rect key="frame" x="95" y="132" width="440" height="15"/>
                         <fontDescription key="fontDescription" type="system" pointSize="12"/>
                         <color key="textColor" red="0.59999999999999998" green="0.59999999999999998" blue="0.59999999999999998" alpha="1" colorSpace="calibratedRGB"/>
                         <nil key="highlightedColor"/>
                     </label>
                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="yhy-xd-w5C" userLabel="buttonMore">
-                        <rect key="frame" x="560" y="0.0" width="40" height="60"/>
+                        <rect key="frame" x="580" y="60.5" width="40" height="60"/>
                         <constraints>
                             <constraint firstAttribute="width" constant="40" id="ZgH-mI-l2k"/>
                             <constraint firstAttribute="height" constant="60" id="woC-64-Tyc"/>
@@ -47,21 +47,21 @@
                         </connections>
                     </button>
                     <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="dgL-g5-Nkc" userLabel="imageMore">
-                        <rect key="frame" x="570" y="20" width="20" height="20"/>
+                        <rect key="frame" x="590" y="80.5" width="20" height="20"/>
                         <constraints>
                             <constraint firstAttribute="width" constant="20" id="05P-NL-pd8"/>
                             <constraint firstAttribute="height" constant="20" id="Jet-eo-x1M" userLabel="height = 20"/>
                         </constraints>
                     </imageView>
                     <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="nwZ-pi-Igj" userLabel="imageRestore">
-                        <rect key="frame" x="530" y="20" width="20" height="20"/>
+                        <rect key="frame" x="550" y="80.5" width="20" height="20"/>
                         <constraints>
                             <constraint firstAttribute="width" constant="20" id="5Zc-h7-ZRJ"/>
                             <constraint firstAttribute="height" constant="20" id="xvo-pN-hfE"/>
                         </constraints>
                     </imageView>
                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="3mk-e2-iDg" userLabel="buttonRestore">
-                        <rect key="frame" x="520" y="0.0" width="40" height="60"/>
+                        <rect key="frame" x="540" y="60.5" width="40" height="60"/>
                         <constraints>
                             <constraint firstAttribute="height" constant="60" id="c3w-wJ-nqd"/>
                             <constraint firstAttribute="width" constant="40" id="eC4-Ee-c7B"/>
@@ -71,7 +71,7 @@
                         </connections>
                     </button>
                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Egg-cb-EhZ" userLabel="separator">
-                        <rect key="frame" x="85" y="59" width="515" height="1"/>
+                        <rect key="frame" x="85" y="160" width="535" height="1"/>
                         <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <color key="tintColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
@@ -79,7 +79,7 @@
                         </constraints>
                     </view>
                     <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="AyA-hP-r6w" userLabel="imageSelect">
-                        <rect key="frame" x="10" y="17.5" width="25" height="25"/>
+                        <rect key="frame" x="10" y="78" width="25" height="25"/>
                         <constraints>
                             <constraint firstAttribute="width" constant="25" id="bIF-gu-6Jj"/>
                             <constraint firstAttribute="height" constant="25" id="nJa-oj-gcQ"/>
@@ -111,7 +111,7 @@
                 <constraint firstItem="AyA-hP-r6w" firstAttribute="centerY" secondItem="Gu8-oz-zWa" secondAttribute="centerY" id="sJp-0x-bdC"/>
                 <constraint firstItem="nwZ-pi-Igj" firstAttribute="centerX" secondItem="3mk-e2-iDg" secondAttribute="centerX" id="vYW-cL-DlK"/>
             </constraints>
-            <size key="customSize" width="650" height="58"/>
+            <size key="customSize" width="670" height="159"/>
             <connections>
                 <outlet property="buttonMore" destination="yhy-xd-w5C" id="agm-M9-xtq"/>
                 <outlet property="buttonRestore" destination="3mk-e2-iDg" id="rGX-0C-OHo"/>
@@ -125,7 +125,7 @@
                 <outlet property="separator" destination="Egg-cb-EhZ" id="uhq-Nc-z8K"/>
                 <outlet property="separatorHeightConstraint" destination="G5S-67-boG" id="azN-3h-Cvp"/>
             </connections>
-            <point key="canvasLocation" x="97.599999999999994" y="129.53523238380811"/>
+            <point key="canvasLocation" x="113.59999999999999" y="174.96251874062969"/>
         </collectionViewCell>
     </objects>
 </document>

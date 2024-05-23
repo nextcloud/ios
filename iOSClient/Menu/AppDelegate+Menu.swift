@@ -81,7 +81,7 @@ extension AppDelegate {
 
         actions.append(
             NCMenuAction(
-                title: NSLocalizedString("_create_voice_memo_", comment: ""), icon: UIImage(named: "microphone")!.image(color: NCBrandColor.shared.iconImageColor, size: 50), action: { _ in
+                title: NSLocalizedString("_create_voice_memo_", comment: ""), icon: utility.loadImage(named: "mic", colors: [NCBrandColor.shared.iconImageColor]), action: { _ in
                     NCAskAuthorization().askAuthorizationAudioRecord(viewController: mainTabBarController) { hasPermission in
                         if hasPermission {
                             if let viewController = UIStoryboard(name: "NCAudioRecorderViewController", bundle: nil).instantiateInitialViewController() as? NCAudioRecorderViewController {
@@ -101,10 +101,10 @@ extension AppDelegate {
         }
 
         let titleCreateFolder = isDirectoryE2EE ? NSLocalizedString("_create_folder_e2ee_", comment: "") : NSLocalizedString("_create_folder_", comment: "")
-        let imageCreateFolder = isDirectoryE2EE ? UIImage(named: "folderEncrypted")! : UIImage(named: "folder")!
+        let imageCreateFolder = isDirectoryE2EE ? NCImageCache.images.folderEncrypted : NCImageCache.images.folder
         actions.append(
             NCMenuAction(title: titleCreateFolder,
-                         icon: imageCreateFolder.image(color: NCBrandColor.shared.brandElement, size: 50), action: { _ in
+                         icon: imageCreateFolder, action: { _ in
                              let alertController = UIAlertController.createFolder(serverUrl: serverUrl, urlBase: appDelegate, sceneIdentifier: mainTabBarController.sceneIdentifier)
                              mainTabBarController.present(alertController, animated: true, completion: nil)
                          }
@@ -115,7 +115,7 @@ extension AppDelegate {
         if !isDirectoryE2EE && NCKeychain().isEndToEndEnabled(account: appDelegate.account) {
             actions.append(
                 NCMenuAction(title: NSLocalizedString("_create_folder_e2ee_", comment: ""),
-                             icon: UIImage(named: "folderEncrypted")!.image(color: NCBrandColor.shared.brandElement, size: 50),
+                             icon: NCImageCache.images.folderEncrypted,
                              action: { _ in
                                  let alertController = UIAlertController.createFolder(serverUrl: serverUrl, urlBase: appDelegate, markE2ee: true, sceneIdentifier: mainTabBarController.sceneIdentifier)
                                  mainTabBarController.present(alertController, animated: true, completion: nil)
@@ -148,7 +148,7 @@ extension AppDelegate {
             let directEditingCreator = directEditingCreators!.first(where: { $0.editor == NCGlobal.shared.editorOnlyoffice && $0.identifier == NCGlobal.shared.onlyofficeDocx})!
             actions.append(
                 NCMenuAction(
-                    title: NSLocalizedString("_create_new_document_", comment: ""), icon: UIImage(named: "create_file_document")!, action: { _ in
+                    title: NSLocalizedString("_create_new_document_", comment: ""), icon: utility.loadImage(named: "doc.text", colors: [NCBrandColor.shared.documentIconColor]), action: { _ in
                         guard let navigationController = UIStoryboard(name: "NCCreateFormUploadDocuments", bundle: nil).instantiateInitialViewController() else {
                             return
                         }
@@ -173,7 +173,7 @@ extension AppDelegate {
             let directEditingCreator = directEditingCreators!.first(where: { $0.editor == NCGlobal.shared.editorOnlyoffice && $0.identifier == NCGlobal.shared.onlyofficeXlsx})!
             actions.append(
                 NCMenuAction(
-                    title: NSLocalizedString("_create_new_spreadsheet_", comment: ""), icon: UIImage(named: "create_file_xls")!, action: { _ in
+                    title: NSLocalizedString("_create_new_spreadsheet_", comment: ""), icon: utility.loadImage(named: "tablecells", colors: [NCBrandColor.shared.spreadsheetIconColor]), action: { _ in
                         guard let navigationController = UIStoryboard(name: "NCCreateFormUploadDocuments", bundle: nil).instantiateInitialViewController() else {
                             return
                         }
@@ -198,7 +198,7 @@ extension AppDelegate {
             let directEditingCreator = directEditingCreators!.first(where: { $0.editor == NCGlobal.shared.editorOnlyoffice && $0.identifier == NCGlobal.shared.onlyofficePptx})!
             actions.append(
                 NCMenuAction(
-                    title: NSLocalizedString("_create_new_presentation_", comment: ""), icon: UIImage(named: "create_file_ppt")!, action: { _ in
+                    title: NSLocalizedString("_create_new_presentation_", comment: ""), icon: utility.loadImage(named: "play.rectangle", colors: [NCBrandColor.shared.presentationIconColor]), action: { _ in
                         guard let navigationController = UIStoryboard(name: "NCCreateFormUploadDocuments", bundle: nil).instantiateInitialViewController() else {
                             return
                         }
@@ -223,7 +223,7 @@ extension AppDelegate {
             if NextcloudKit.shared.isNetworkReachable() && !isDirectoryE2EE {
                 actions.append(
                     NCMenuAction(
-                        title: NSLocalizedString("_create_new_document_", comment: ""), icon: UIImage(named: "create_file_document")!, action: { _ in
+                        title: NSLocalizedString("_create_new_document_", comment: ""), icon: utility.loadImage(named: "doc.richtext", colors: [NCBrandColor.shared.documentIconColor]), action: { _ in
                             guard let navigationController = UIStoryboard(name: "NCCreateFormUploadDocuments", bundle: nil).instantiateInitialViewController() else {
                                 return
                             }
@@ -244,7 +244,7 @@ extension AppDelegate {
 
                 actions.append(
                     NCMenuAction(
-                        title: NSLocalizedString("_create_new_spreadsheet_", comment: ""), icon: UIImage(named: "create_file_xls")!, action: { _ in
+                        title: NSLocalizedString("_create_new_spreadsheet_", comment: ""), icon: utility.loadImage(named: "tablecells", colors: [NCBrandColor.shared.spreadsheetIconColor]), action: { _ in
                             guard let navigationController = UIStoryboard(name: "NCCreateFormUploadDocuments", bundle: nil).instantiateInitialViewController() else {
                                 return
                             }
@@ -265,7 +265,7 @@ extension AppDelegate {
 
                 actions.append(
                     NCMenuAction(
-                        title: NSLocalizedString("_create_new_presentation_", comment: ""), icon: UIImage(named: "create_file_ppt")!, action: { _ in
+                        title: NSLocalizedString("_create_new_presentation_", comment: ""), icon: utility.loadImage(named: "play.rectangle", colors: [NCBrandColor.shared.presentationIconColor]), action: { _ in
                             guard let navigationController = UIStoryboard(name: "NCCreateFormUploadDocuments", bundle: nil).instantiateInitialViewController() else {
                                 return
                             }

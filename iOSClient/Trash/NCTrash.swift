@@ -73,7 +73,7 @@ class NCTrash: UIViewController, NCTrashListCellDelegate, NCTrashGridCellDelegat
 
         // Add Refresh Control
         collectionView.refreshControl = refreshControl
-        refreshControl.tintColor = .gray
+        refreshControl.tintColor = NCBrandColor.shared.textColor2
         refreshControl.addTarget(self, action: #selector(loadListingTrash), for: .valueChanged)
 
         setNavigationRightItems()
@@ -158,7 +158,7 @@ class NCTrash: UIViewController, NCTrashListCellDelegate, NCTrashGridCellDelegat
         } else {
             tabBarSelect.hide()
             if navigationItem.rightBarButtonItems == nil || enableMenu {
-                let menu = UIBarButtonItem(image:utility.loadImage(named: "ellipsis.circle", colors: [NCBrandColor.shared.iconImageColor]), menu: UIMenu(children: createMenuActions()))
+                let menu = UIBarButtonItem(image: utility.loadImage(named: "ellipsis.circle", colors: [NCBrandColor.shared.iconImageColor]), menu: UIMenu(children: createMenuActions()))
                 navigationItem.rightBarButtonItems = [menu]
             } else {
                 navigationItem.rightBarButtonItems?.first?.menu = navigationItem.rightBarButtonItems?.first?.menu?.replacingChildren(createMenuActions())

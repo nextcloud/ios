@@ -68,7 +68,6 @@
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
     [row.cellConfig setObject:UIColor.labelColor forKey:@"textLabel.textColor"];
     [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
-    //[row.cellConfig setObject:@(UITableViewCellAccessoryDisclosureIndicator) forKey:@"accessoryType"];
     row.action.formSelector = @selector(selectAutomaticUploadFolder);
     [section addFormRow:row];
     
@@ -232,7 +231,7 @@
             [[NCManageDatabase shared] setAccountAutoUploadProperty:@"autoUpload" state:YES];
             
             // Default
-            [[NCManageDatabase shared] setAccountAutoUploadFileName:nil];
+            [[NCManageDatabase shared] setAccountAutoUploadFileName:@""];
             [[NCManageDatabase shared] setAccountAutoUploadDirectory:nil urlBase:appDelegate.urlBase userId:appDelegate.userId account:appDelegate.account];
             
             // verifichiamo che almeno uno dei servizi (foto video) siano attivi, in caso contrario attiviamo le foto

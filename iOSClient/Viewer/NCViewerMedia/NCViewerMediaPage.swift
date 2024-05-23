@@ -61,7 +61,7 @@ class NCViewerMediaPage: UIViewController {
     var panGestureRecognizer: UIPanGestureRecognizer!
     var singleTapGestureRecognizer: UITapGestureRecognizer!
     var longtapGestureRecognizer: UILongPressGestureRecognizer!
-    var textColor: UIColor = .label
+    var textColor: UIColor = NCBrandColor.shared.textColor
     var playCommand: Any?
     var pauseCommand: Any?
     var skipForwardCommand: Any?
@@ -137,7 +137,7 @@ class NCViewerMediaPage: UIViewController {
         NotificationCenter.default.addObserver(self, selector: #selector(uploadStartFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUploadStartFile), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(uploadedFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUploadedFile), object: nil)
 
-        NotificationCenter.default.addObserver(self, selector: #selector(applicationDidBecomeActive(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationDidBecomeActive), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(applicationDidBecomeActive(_:)), name: UIApplication.didBecomeActiveNotification, object: nil)
 
         if currentViewController.metadata.isImage {
             navigationItem.rightBarButtonItems = [moreNavigationItem, imageDetailNavigationItem]
@@ -170,7 +170,7 @@ class NCViewerMediaPage: UIViewController {
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUploadStartFile), object: nil)
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUploadedFile), object: nil)
 
-        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationDidBecomeActive), object: nil)
+        NotificationCenter.default.removeObserver(self, name: UIApplication.didBecomeActiveNotification, object: nil)
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -254,14 +254,14 @@ class NCViewerMediaPage: UIViewController {
             }
 
             if metadata.isAudioOrVideo {
-                colorNavigationController(backgroundColor: .black, titleColor: .label, tintColor: nil, withoutShadow: false)
+                colorNavigationController(backgroundColor: .black, titleColor: NCBrandColor.shared.textColor, tintColor: nil, withoutShadow: false)
                 currentViewController.playerToolBar?.show()
                 view.backgroundColor = .black
                 textColor = .white
             } else {
-                colorNavigationController(backgroundColor: .systemBackground, titleColor: .label, tintColor: nil, withoutShadow: false)
+                colorNavigationController(backgroundColor: .systemBackground, titleColor: NCBrandColor.shared.textColor, tintColor: nil, withoutShadow: false)
                 view.backgroundColor = .systemGray6
-                textColor = .label
+                textColor = NCBrandColor.shared.textColor
             }
 
         } else if !currentViewController.detailView.isShown {

@@ -34,23 +34,25 @@ class NCService: NSObject {
     // MARK: -
 
     @objc public func startRequestServicesServer() {
-
-        NCManageDatabase.shared.clearAllAvatarLoaded()
-        guard !appDelegate.account.isEmpty else { return }
+        guard !appDelegate.account.isEmpty, UIApplication.shared.applicationState != .background else {
+            NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Service not start request service server with the application in background")
+            return
+        }
         let account = appDelegate.account
 
+        NCManageDatabase.shared.clearAllAvatarLoaded()
         NCPushNotification.shared().pushNotification()
 
         Task {
             addInternalTypeIdentifier()
             let result = await requestServerStatus()
             if result {
-                synchronize()
-                getAvatar()
                 requestServerCapabilities()
+                getAvatar()
                 requestDashboardWidget()
                 NCNetworkingE2EE().unlockAll(account: account)
                 sendClientDiagnosticsRemoteOperation(account: account)
+                synchronize()
             }
         }
     }
@@ -135,7 +137,7 @@ class NCService: NSObject {
                                              options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { account, files, _, error in
 
             guard error == .success else { return }
-            NCManageDatabase.shared.convertFilesToMetadatas(files, useMetadataFolder: false) { _, _, metadatas in
+            NCManageDatabase.shared.convertFilesToMetadatas(files, useFirstAsMetadataFolder: false) { _, metadatas in
                 NCManageDatabase.shared.updateMetadatasFavorite(account: account, metadatas: metadatas)
             }
             NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Synchronize Favorite")

@@ -18,6 +18,7 @@ struct NCAssistantEmptyView: View {
                 .resizable()
                 .aspectRatio(contentMode: .fit)
                 .foregroundStyle(Color(NCBrandColor.shared.brandElement))
+                .font(Font.system(.body).weight(.light))
                 .frame(height: 100)
 
             Text(NSLocalizedString(titleKey, comment: ""))

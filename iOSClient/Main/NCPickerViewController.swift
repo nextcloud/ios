@@ -145,7 +145,6 @@ class NCDocumentPickerViewController: NSObject, UIDocumentPickerDelegate {
             let url = self.copySecurityScopedResource(url: urlIn, urlOut: FileManager.default.temporaryDirectory.appendingPathComponent(urlIn.lastPathComponent)),
             let viewController = self.viewController {
             let ocId = NSUUID().uuidString
-
             let fileName = url.lastPathComponent
             let metadata = NCManageDatabase.shared.createMetadata(account: appDelegate.account, user: appDelegate.user, userId: appDelegate.userId, fileName: fileName, fileNameView: fileName, ocId: ocId, serverUrl: "", urlBase: appDelegate.urlBase, url: url.path, contentType: "")
             if metadata.classFile == NKCommon.TypeClassFile.unknow.rawValue {

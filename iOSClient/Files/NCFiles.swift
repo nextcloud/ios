@@ -136,6 +136,10 @@ class NCFiles: NCCollectionViewCommon {
     }
 
     override func reloadDataSourceNetwork(withQueryDB: Bool = false) {
+        if UIApplication.shared.applicationState == .background {
+            NextcloudKit.shared.nkCommonInstance.writeLog("[DEBUG] Files not reload datasource network with the application in background")
+            return
+        }
         guard !isSearchingMode else {
             return networkSearch()
         }
@@ -182,34 +186,34 @@ class NCFiles: NCCollectionViewCommon {
         NCNetworking.shared.readFile(serverUrlFileName: serverUrl) { task in
             self.dataSourceTask = task
             self.collectionView.reloadData()
-        } completion: { account, metadataFolder, error in
-            guard error == .success, let metadataFolder else {
+        } completion: { account, metadata, error in
+            guard error == .success, let metadata else {
                 return completion(nil, nil, 0, 0, error)
             }
-            tableDirectory = NCManageDatabase.shared.setDirectory(serverUrl: self.serverUrl, richWorkspace: metadataFolder.richWorkspace, account: account)
+            tableDirectory = NCManageDatabase.shared.setDirectory(serverUrl: self.serverUrl, richWorkspace: metadata.richWorkspace, account: account)
             // swiftlint:disable empty_string
             let forceReplaceMetadatas = tableDirectory?.etag == ""
             // swiftlint:enable empty_string
 
-            if tableDirectory?.etag != metadataFolder.etag || metadataFolder.e2eEncrypted {
+            if tableDirectory?.etag != metadata.etag || metadata.e2eEncrypted {
                 NCNetworking.shared.readFolder(serverUrl: self.serverUrl,
                                                account: self.appDelegate.account,
                                                forceReplaceMetadatas: forceReplaceMetadatas) { task in
                     self.dataSourceTask = task
                     self.collectionView.reloadData()
-                } completion: { _, metadataFolder, metadatas, metadatasDifferentCount, metadatasModified, error in
-                    guard error == .success else {
+                } completion: { account, metadataFolder, metadatas, metadatasDifferentCount, metadatasModified, error in
+                    guard account == self.appDelegate.account, error == .success else {
                         return completion(tableDirectory, nil, 0, 0, error)
                     }
                     self.metadataFolder = metadataFolder
                     // E2EE
                     if let metadataFolder = metadataFolder,
                        metadataFolder.e2eEncrypted,
-                       NCKeychain().isEndToEndEnabled(account: self.appDelegate.account),
-                       !NCNetworkingE2EE().isInUpload(account: self.appDelegate.account, serverUrl: self.serverUrl) {
-                        let lock = NCManageDatabase.shared.getE2ETokenLock(account: self.appDelegate.account, serverUrl: self.serverUrl)
+                       NCKeychain().isEndToEndEnabled(account: account),
+                       !NCNetworkingE2EE().isInUpload(account: account, serverUrl: self.serverUrl) {
+                        let lock = NCManageDatabase.shared.getE2ETokenLock(account: account, serverUrl: self.serverUrl)
                         NCNetworkingE2EE().getMetadata(fileId: metadataFolder.ocId, e2eToken: lock?.e2eToken) { account, version, e2eMetadata, signature, _, error in
-                            if error == .success, let e2eMetadata = e2eMetadata {
+                            if account == self.appDelegate.account, error == .success, let e2eMetadata = e2eMetadata {
                                 let error = NCEndToEndMetadata().decodeMetadata(e2eMetadata, signature: signature, serverUrl: self.serverUrl, account: account, urlBase: self.appDelegate.urlBase, userId: self.appDelegate.userId)
                                 if error == .success {
                                     if version == "v1", NCGlobal.shared.capabilityE2EEApiVersion == NCGlobal.shared.e2eeVersionV20 {

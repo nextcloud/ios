@@ -212,7 +212,7 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
 
         pageViewLabel.translatesAutoresizingMaskIntoConstraints = false
         pageViewLabel.textAlignment = .center
-        pageViewLabel.textColor = .label
+        pageViewLabel.textColor = NCBrandColor.shared.textColor
         pageView.addSubview(pageViewLabel)
 
         NSLayoutConstraint.activate([

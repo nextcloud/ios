@@ -162,12 +162,33 @@ class NCBrandColor: NSObject {
     public var themingColorText: String = ""
 
     @objc public let iconImageColor: UIColor = .label
-    @objc public let iconImageColor2: UIColor = .systemGray
-    @objc public let iconImageMultiColors: [UIColor] = [.systemGray, .label]
+    @objc public let iconImageColor2: UIColor = .secondaryLabel
+    @objc public let iconImageMultiColors: [UIColor] = [.secondaryLabel, .label]
+
+    @objc public let textColor: UIColor = .label
+    @objc public let textColor2: UIColor = .secondaryLabel
 
     @objc public var systemMint: UIColor {
         get {
             return UIColor(red: 0.0 / 255.0, green: 199.0 / 255.0, blue: 190.0 / 255.0, alpha: 1.0)
+        }
+    }
+
+    @objc public var documentIconColor: UIColor {
+        get {
+            return UIColor(hex: "#49abe9")!
+        }
+    }
+
+    @objc public var spreadsheetIconColor: UIColor {
+        get {
+            return UIColor(hex: "#9abd4e")!
+        }
+    }
+
+    @objc public var presentationIconColor: UIColor {
+        get {
+            return UIColor(hex: "#f0965f")!
         }
     }
 

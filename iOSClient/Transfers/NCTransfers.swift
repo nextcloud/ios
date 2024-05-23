@@ -37,7 +37,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
         enableSearchBar = false
         headerRichWorkspaceDisable = true
         headerMenuTransferView = true
-        emptyImage = utility.loadImage(named: "arrow.left.arrow.right", colors: [NCBrandColor.shared.iconImageColor])
+        emptyImage = utility.loadImage(named: "arrow.left.arrow.right", colors: [NCBrandColor.shared.brandElement])
         emptyTitle = "_no_transfer_"
         emptyDescription = "_no_transfer_sub_"
     }
@@ -79,7 +79,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
 
     override func downloadCancelFile(_ notification: NSNotification) {
 
-        notificationReloadDataSource += 1
+        reloadDataSource()
     }
 
     override func uploadStartFile(_ notification: NSNotification) {
@@ -99,10 +99,18 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
 
     override func uploadCancelFile(_ notification: NSNotification) {
 
-        notificationReloadDataSource += 1
+        reloadDataSource()
     }
 
     // MARK: TAP EVENT
+
+    override func tapMoreGridItem(with objectId: String, namedButtonMore: String, image: UIImage?, indexPath: IndexPath, sender: Any) {
+        guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(objectId) else { return }
+
+        Task {
+            await cancelSession(metadata: metadata)
+        }
+    }
 
     override func longPressMoreListItem(with objectId: String, namedButtonMore: String, indexPath: IndexPath, gestureRecognizer: UILongPressGestureRecognizer) {
 
@@ -146,6 +154,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
         cameraRoll.extractCameraRoll(from: metadata) { metadatas in
             for metadata in metadatas {
                 if let metadata = NCManageDatabase.shared.setMetadataStatus(ocId: metadata.ocId, status: NCGlobal.shared.metadataStatusUploading) {
+                    NCNetworking.shared.removeTransferInError(ocId: metadata.ocId)
                     NCNetworking.shared.upload(metadata: metadata, hudView: hudView, hud: JGProgressHUD())
                 }
             }
@@ -191,7 +200,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
         cell.imageItem.image = NCImageCache.images.file
         cell.imageItem.backgroundColor = nil
         cell.labelTitle.text = metadata.fileNameView
-        cell.labelTitle.textColor = .label
+        cell.labelTitle.textColor = NCBrandColor.shared.textColor
         let serverUrlHome = utilityFileSystem.getHomeServer(urlBase: metadata.urlBase, userId: metadata.userId)
         var pathText = metadata.serverUrl.replacingOccurrences(of: serverUrlHome, with: "")
         if pathText.isEmpty { pathText = "/" }
@@ -201,7 +210,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
         if let image = utility.createFilePreviewImage(ocId: metadata.ocId, etag: metadata.etag, fileNameView: metadata.fileNameView, classFile: metadata.classFile, status: metadata.status, createPreviewMedia: true) {
             cell.imageItem.image = image
         } else if !metadata.iconName.isEmpty {
-            cell.imageItem.image = utility.loadImage(named: metadata.iconName)
+            cell.imageItem.image = utility.loadImage(named: metadata.iconName, useTypeIconFile: true)
         } else {
             cell.imageItem.image = NCImageCache.images.file
         }

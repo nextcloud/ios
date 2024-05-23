@@ -39,14 +39,14 @@ class NCShareAdvancePermissionHeader: UIView {
             if metadata.directory {
                 imageView.image = metadata.e2eEncrypted ? NCImageCache.images.folderEncrypted : NCImageCache.images.folder
             } else if !metadata.iconName.isEmpty {
-                imageView.image = NCUtility().loadImage(named: metadata.iconName)
+                imageView.image = NCUtility().loadImage(named: metadata.iconName, useTypeIconFile: true)
             } else {
                 imageView.image = NCImageCache.images.file
             }
         }
         fileName.text = metadata.fileNameView
-        fileName.textColor = .label
-        info.textColor = .secondaryLabel
+        fileName.textColor = NCBrandColor.shared.textColor
+        info.textColor = NCBrandColor.shared.textColor2
         info.text = utilityFileSystem.transformedSize(metadata.size) + ", " + NCUtility().dateDiff(metadata.date as Date)
     }
 }

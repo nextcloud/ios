@@ -33,7 +33,7 @@ class NCOffline: NCCollectionViewCommon {
         layoutKey = NCGlobal.shared.layoutViewOffline
         enableSearchBar = false
         headerRichWorkspaceDisable = true
-        emptyImage = NCImageCache.images.folder
+        emptyImage = NCUtility().loadImage(named: "icloud.and.arrow.down", colors: [NCBrandColor.shared.brandElement])
         emptyTitle = "_files_no_files_"
         emptyDescription = "_tutorial_offline_view_"
         emptyDataPortaitOffset = 30

@@ -163,7 +163,7 @@ func getDashboardDataEntry(configuration: DashboardIntent?, isPreview: Bool, dis
     if let fileName = tableDashboard?.iconClass {
         let fileNamePath: String = utilityFileSystem.directoryUserData + "/" + fileName + ".png"
         if let image = UIImage(contentsOfFile: fileNamePath) {
-            imagetmp = image.withTintColor(.label, renderingMode: .alwaysOriginal)
+            imagetmp = image.withTintColor(NCBrandColor.shared.iconImageColor, renderingMode: .alwaysOriginal)
         }
     }
     let titleImage = imagetmp

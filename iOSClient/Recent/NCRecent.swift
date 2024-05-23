@@ -33,7 +33,7 @@ class NCRecent: NCCollectionViewCommon {
         layoutKey = NCGlobal.shared.layoutViewRecent
         enableSearchBar = false
         headerRichWorkspaceDisable = true
-        emptyImage = utility.loadImage(named: "clock.arrow.circlepath", colors: [NCBrandColor.shared.iconImageColor])
+        emptyImage = utility.loadImage(named: "clock.arrow.circlepath", colors: [NCBrandColor.shared.brandElement])
         emptyTitle = "_files_no_files_"
         emptyDescription = ""
     }
@@ -137,14 +137,9 @@ class NCRecent: NCCollectionViewCommon {
                                               options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { task in
             self.dataSourceTask = task
             self.collectionView.reloadData()
-        } completion: { account, files, _, error in
+        } completion: { _, files, _, error in
             if error == .success {
-                NCManageDatabase.shared.convertFilesToMetadatas(files, useMetadataFolder: false) { _, metadatasFolder, metadatas in
-                    // Update sub directories
-                    for metadata in metadatasFolder {
-                        let serverUrl = metadata.serverUrl + "/" + metadata.fileName
-                        NCManageDatabase.shared.addDirectory(e2eEncrypted: metadata.e2eEncrypted, favorite: metadata.favorite, ocId: metadata.ocId, fileId: metadata.fileId, permissions: metadata.permissions, serverUrl: serverUrl, account: account)
-                    }
+                NCManageDatabase.shared.convertFilesToMetadatas(files, useFirstAsMetadataFolder: false) { _, metadatas in
                     // Add metadatas
                     NCManageDatabase.shared.addMetadatas(metadatas)
                     self.reloadDataSource()
