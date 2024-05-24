@@ -42,6 +42,7 @@ struct NCBrowserWebView: View {
                         .font(.title3)
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
                         .foregroundColor(Color(NCBrandColor.shared.textColor))
 =======
                         .foregroundColor(Color(UIColor.label))
@@ -49,6 +50,9 @@ struct NCBrowserWebView: View {
 =======
                         .foregroundColor(Color(NCBrandColor.shared.textColor))
 >>>>>>> f1727e40d (coding)
+=======
+                        .foregroundColor(Color(NCBrandColor.shared.textColor))
+>>>>>>> a6e002c54a58ccbf1d4855200a58aa6f9cd3e966
                         .padding(.leading, 8)
                 }
                 .padding()
@@ -60,12 +64,16 @@ struct NCBrowserWebView: View {
                         Image(systemName: "xmark")
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> a6e002c54a58ccbf1d4855200a58aa6f9cd3e966
                             .renderingMode(.template)
                             .resizable()
                             .scaledToFit()
                             .font(Font.system(.body).weight(.light))
                             .frame(width: 14, height: 14)
                             .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
+<<<<<<< HEAD
 =======
                             .resizable()
 =======
@@ -81,6 +89,8 @@ struct NCBrowserWebView: View {
 =======
                             .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
 >>>>>>> f1727e40d (coding)
+=======
+>>>>>>> a6e002c54a58ccbf1d4855200a58aa6f9cd3e966
                     }
                 }
                 .padding()
