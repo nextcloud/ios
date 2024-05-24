@@ -1,0 +1,42 @@
+variables:
+  IPA_PATH: "build/sym/*.ipa"
+  DSYM_PATH: "*.dSYM.zip"
+
+stages:
+- build
+
+.mac_general_scripts: &mac_general_scripts
+  - brew install carthage
+  - fastlane -v
+  - xcodebuild -version
+  - date
+
+.install_carthage_dependencies: &install_carthage_dependencies
+  - carthage update --use-xcframeworks --platform iOS
+
+.build_general_script: &build_general_script
+  - fastlane gym --scheme Nextcloud --output_directory ./build/sym --derived_data_path ./ipaDerivedData --output_name Nextcloud --archive_path ./build/sym/Nextcloud --export_options ./exportOptionsAdHoc.plist --silent --clean
+
+############## build ##############
+
+.build_general_params: &build_general_params
+  retry: 1
+  stage: build
+  tags:
+    - xcode15
+  before_script:
+    - *mac_general_scripts
+  artifacts:
+    paths:
+      - $IPA_PATH
+      - $DSYM_PATH
+    expire_in: 1 week
+
+build_develop_feature:
+  <<: *build_general_params
+  script:
+    - *install_carthage_dependencies
+    - *build_general_script
+  only:
+    - develop
+    - /^feature/
