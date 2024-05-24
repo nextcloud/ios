@@ -29,7 +29,7 @@ struct NCAutoUploadFileNamesView: View {
     var body: some View {
         Form {
             // Specify Filename
-            Section(header: Text(NSLocalizedString("_filename_", comment: ""))) {
+            Section(header: Text(NSLocalizedString("_mode_filename_", comment: ""))) {
                 Toggle(NSLocalizedString("_maintain_original_filename_", comment: ""), isOn: $model.maintainFilename)
                     .font(.system(size: 16))
                     .onChange(of: model.maintainFilename, perform: { newValue in
