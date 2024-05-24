@@ -717,26 +717,3 @@ extension NCViewerMediaPage: UIScrollViewDelegate {
         preventScrollOnDragAndDrop = true
     }
 }
-
-extension NCViewerMediaPage: UIScrollViewDelegate {
-
-    func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
-        preventScrollOnDragAndDrop = false
-    }
-
-    func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        if preventScrollOnDragAndDrop {
-            scrollView.setContentOffset(CGPoint(x: view.frame.width + 10, y: 0), animated: false)
-        }
-    }
-
-    func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
-        if !decelerate {
-            preventScrollOnDragAndDrop = true
-        }
-    }
-
-    func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
-        preventScrollOnDragAndDrop = true
-    }
-}
