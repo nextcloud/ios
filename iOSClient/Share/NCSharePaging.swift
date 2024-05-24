@@ -270,57 +270,62 @@ class NCSharePagingView: PagingView {
 
     override func setupConstraints() {
 
-        guard let headerView = Bundle.main.loadNibNamed("NCShareHeaderView", owner: self, options: nil)?.first as? NCShareHeaderView else { return }
+//        guard let headerView = Bundle.main.loadNibNamed("NCShareHeaderView", owner: self, options: nil)?.first as? NCShareHeaderView else { return }
+
+        guard let headerView = Bundle.main.loadNibNamed("NCShareAdvancePermissionHeader", owner: self, options: nil)?.first as? NCShareAdvancePermissionHeader else { return }
+
         headerView.backgroundColor = .systemBackground
-        headerView.ocId = metadata.ocId
+//        headerView.ocId = metadata.ocId
 
         let dateFormatter = DateFormatter()
         dateFormatter.dateStyle = .short
         dateFormatter.timeStyle = .short
         dateFormatter.locale = Locale.current
 
-        if FileManager.default.fileExists(atPath: utilityFileSystem.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)) {
-            headerView.imageView.image = UIImage(contentsOfFile: utilityFileSystem.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag))
-        } else {
-            if metadata.directory {
-                let image = metadata.e2eEncrypted ? UIImage(named: "folderEncrypted") : UIImage(named: "folder")
-                headerView.imageView.image = image?.image(color: NCBrandColor.shared.brandElement, size: image?.size.width ?? 0)
-                headerView.imageView.image = headerView.imageView.image?.colorizeFolder(metadata: metadata)
-            } else if !metadata.iconName.isEmpty {
-                headerView.imageView.image = utility.loadImage(named: metadata.iconName, useTypeIconFile: true)
-            } else {
-                headerView.imageView.image = NCImageCache.images.file
-            }
-        }
-        headerView.path.text = utilityFileSystem.getPath(path: metadata.path, user: metadata.user, fileName: metadata.fileName)
-        headerView.path.textColor = NCBrandColor.shared.textColor
-        headerView.path.trailingBuffer = headerView.path.frame.width
-        if metadata.favorite {
-            headerView.favorite.setImage(utility.loadImage(named: "star.fill", colors: [NCBrandColor.shared.yellowFavorite], size: 20), for: .normal)
-        } else {
-            headerView.favorite.setImage(utility.loadImage(named: "star.fill", colors: [NCBrandColor.shared.iconImageColor2], size: 20), for: .normal)
-        }
-        headerView.info.text = utilityFileSystem.transformedSize(metadata.size) + ", " + NSLocalizedString("_modified_", comment: "") + " " + dateFormatter.string(from: metadata.date as Date)
-        headerView.info.textColor = NCBrandColor.shared.textColor2
-        headerView.creation.text = NSLocalizedString("_creation_", comment: "") + " " + dateFormatter.string(from: metadata.creationDate as Date)
-        headerView.creation.textColor = NCBrandColor.shared.textColor2
-        headerView.upload.text = NSLocalizedString("_upload_", comment: "") + " " + dateFormatter.string(from: metadata.uploadDate as Date)
-        headerView.upload.textColor = NCBrandColor.shared.textColor2
+//        if FileManager.default.fileExists(atPath: utilityFileSystem.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)) {
+//            headerView.imageView.image = UIImage(contentsOfFile: utilityFileSystem.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag))
+//        } else {
+            headerView.setupUI(with: metadata)
+//            print(metadata.iconName)
+//            if metadata.directory {
+//                let image = metadata.e2eEncrypted ? UIImage(named: "folderEncrypted") : UIImage(named: "folder")
+//                headerView.imageView.image = image?.image(color: NCBrandColor.shared.brandElement, size: image?.size.width ?? 0)
+//                headerView.imageView.image = headerView.imageView.image?.colorizeFolder(metadata: metadata)
+//            } else if !metadata.iconName.isEmpty {
+//                headerView.imageView.image = utility.loadImage(named: metadata.iconName, useTypeIconFile: true)
+//            } else {
+//                headerView.imageView.image = NCImageCache.images.file
+//            }
+//        }
+//        headerView.path.text = utilityFileSystem.getPath(path: metadata.path, user: metadata.user, fileName: metadata.fileName)
+//        headerView.path.textColor = NCBrandColor.shared.textColor
+//        headerView.path.trailingBuffer = headerView.path.frame.width
+//        if metadata.favorite {
+//            headerView.favorite.setImage(utility.loadImage(named: "star.fill", colors: [NCBrandColor.shared.yellowFavorite], size: 20), for: .normal)
+//        } else {
+//            headerView.favorite.setImage(utility.loadImage(named: "star.fill", colors: [NCBrandColor.shared.iconImageColor2], size: 20), for: .normal)
+//        }
+//        headerView.info.text = utilityFileSystem.transformedSize(metadata.size) + ", " + NSLocalizedString("_modified_", comment: "") + " " + dateFormatter.string(from: metadata.date as Date)
+//        headerView.info.textColor = NCBrandColor.shared.textColor2
+//        headerView.creation.text = NSLocalizedString("_creation_", comment: "") + " " + dateFormatter.string(from: metadata.creationDate as Date)
+//        headerView.creation.textColor = NCBrandColor.shared.textColor2
+//        headerView.upload.text = NSLocalizedString("_upload_", comment: "") + " " + dateFormatter.string(from: metadata.uploadDate as Date)
+//        headerView.upload.textColor = NCBrandColor.shared.textColor2
+//
+//        headerView.details.setTitleColor(NCBrandColor.shared.textColor, for: .normal)
+//        headerView.details.setTitle(NSLocalizedString("_details_", comment: ""), for: .normal)
+//        headerView.details.layer.cornerRadius = 9
+//        headerView.details.layer.masksToBounds = true
+//        headerView.details.layer.backgroundColor = UIColor(red: 152.0 / 255.0, green: 167.0 / 255.0, blue: 181.0 / 255.0, alpha: 0.8).cgColor
 
-        headerView.details.setTitleColor(NCBrandColor.shared.textColor, for: .normal)
-        headerView.details.setTitle(NSLocalizedString("_details_", comment: ""), for: .normal)
-        headerView.details.layer.cornerRadius = 9
-        headerView.details.layer.masksToBounds = true
-        headerView.details.layer.backgroundColor = UIColor(red: 152.0 / 255.0, green: 167.0 / 255.0, blue: 181.0 / 255.0, alpha: 0.8).cgColor
+//        for tag in metadata.tags {
+////            headerView.tagListView.addTag(tag)
+//        }
 
-        for tag in metadata.tags {
-            headerView.tagListView.addTag(tag)
-        }
-
-        if metadata.tags.isEmpty {
-            NCSharePagingView.tagHeaderHeight = 0
+        if headerView.fullWidthImageView?.image == nil {
+            NCSharePagingView.tagHeaderHeight = 80
         } else {
-            NCSharePagingView.tagHeaderHeight = headerView.tagListView.intrinsicContentSize.height + 10
+            NCSharePagingView.tagHeaderHeight = 120
         }
 
         addSubview(headerView)
