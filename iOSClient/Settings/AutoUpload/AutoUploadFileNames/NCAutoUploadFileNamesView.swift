@@ -30,7 +30,6 @@ struct NCAutoUploadFileNamesView: View {
         Form {
 <<<<<<< HEAD
 <<<<<<< HEAD
-<<<<<<< HEAD
             // Specify Filename
             Section(header: Text(NSLocalizedString("_mode_filename_", comment: ""))) {
 =======
@@ -50,10 +49,6 @@ struct NCAutoUploadFileNamesView: View {
 =======
             Section(header: Text(NSLocalizedString("_mode_filename_", comment: ""))) {
 >>>>>>> 35039dc64 (coding)
-=======
-            // Specify Filename
-            Section(header: Text(NSLocalizedString("_mode_filename_", comment: ""))) {
->>>>>>> a6e002c54a58ccbf1d4855200a58aa6f9cd3e966
                 Toggle(NSLocalizedString("_maintain_original_filename_", comment: ""), isOn: $model.maintainFilename)
                     .font(.system(size: 16))
                     .onChange(of: model.maintainFilename, perform: { newValue in
@@ -95,7 +90,6 @@ struct NCAutoUploadFileNamesView: View {
                 }, header: {
 <<<<<<< HEAD
 <<<<<<< HEAD
-<<<<<<< HEAD
                     Text(NSLocalizedString("_filename_", comment: ""))
 =======
                     Text(NSLocalizedString("_preview_filename_header_", comment: ""))
@@ -103,9 +97,6 @@ struct NCAutoUploadFileNamesView: View {
 =======
                     Text(NSLocalizedString("_filename_", comment: ""))
 >>>>>>> 35039dc64 (coding)
-=======
-                    Text(NSLocalizedString("_filename_", comment: ""))
->>>>>>> a6e002c54a58ccbf1d4855200a58aa6f9cd3e966
                 }, footer: {
                     Text(NSLocalizedString("_preview_filename_footer_", comment: ""))
                 })
@@ -120,15 +111,11 @@ struct NCAutoUploadFileNamesView: View {
             }
 <<<<<<< HEAD
 <<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> a6e002c54a58ccbf1d4855200a58aa6f9cd3e966
         }.navigationBarTitle(NSLocalizedString("_mode_filename_", comment: ""))
             .onAppear {
                 model.onViewAppear()
             }
             .padding(.top, 0)
-<<<<<<< HEAD
 =======
         }.navigationBarTitle(NSLocalizedString("_filename_mode_", comment: ""))
             .onAppear {
@@ -142,8 +129,6 @@ struct NCAutoUploadFileNamesView: View {
             }
             .padding(.top, 0)
 >>>>>>> 35039dc64 (coding)
-=======
->>>>>>> a6e002c54a58ccbf1d4855200a58aa6f9cd3e966
             .transition(.slide)
     }
 }

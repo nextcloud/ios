@@ -42,11 +42,8 @@ struct NCSettings: View {
             Section {
 <<<<<<< HEAD
 <<<<<<< HEAD
-<<<<<<< HEAD
 =======
 >>>>>>> 940b67a9f (coding)
-=======
->>>>>>> a6e002c54a58ccbf1d4855200a58aa6f9cd3e966
                 NavigationLink(destination: NCAutoUploadView(model: NCAutoUploadModel())) {
                     HStack {
                         Image(systemName: "photo.circle")
@@ -54,7 +51,6 @@ struct NCSettings: View {
                             .scaledToFit()
                             .font(Font.system(.body).weight(.light))
                             .frame(width: 25, height: 25)
-<<<<<<< HEAD
 =======
                 NavigationLink(destination: AutoUploadView(model: AutoUploadModel())) {
                     HStack {
@@ -69,8 +65,6 @@ struct NCSettings: View {
                             .font(Font.system(.body).weight(.light))
                             .frame(width: 25, height: 25)
 >>>>>>> 98c1f6cfa (coding)
-=======
->>>>>>> a6e002c54a58ccbf1d4855200a58aa6f9cd3e966
                             .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
                         Text(NSLocalizedString("_settings_autoupload_", comment: ""))
                     }
@@ -197,7 +191,6 @@ struct NCSettings: View {
                 .sheet(isPresented: $showAcknowledgements) {
 <<<<<<< HEAD
 <<<<<<< HEAD
-<<<<<<< HEAD
                     NCAcknowledgementsView(showText: $showAcknowledgements, browserTitle: NSLocalizedString("_acknowledgements_", comment: ""))
 =======
                     AcknowledgementsView(showText: $showAcknowledgements, browserTitle: "Acknowledgements")
@@ -205,9 +198,6 @@ struct NCSettings: View {
 =======
                     NCAcknowledgementsView(showText: $showAcknowledgements, browserTitle: NSLocalizedString("_acknowledgements_", comment: ""))
 >>>>>>> 940b67a9f (coding)
-=======
-                    NCAcknowledgementsView(showText: $showAcknowledgements, browserTitle: NSLocalizedString("_acknowledgements_", comment: ""))
->>>>>>> a6e002c54a58ccbf1d4855200a58aa6f9cd3e966
                 }
                 // Terms & Privacy Conditions
                 Button(action: {
@@ -228,7 +218,6 @@ struct NCSettings: View {
                 .sheet(isPresented: $showBrowser) {
 <<<<<<< HEAD
 <<<<<<< HEAD
-<<<<<<< HEAD
                     NCBrowserWebView(isPresented: $showBrowser, urlBase: URL(string: NCBrandOptions.shared.privacy)!, browserTitle: NSLocalizedString("_privacy_legal_", comment: ""))
 =======
                     NCBrowserWebView(isPresented: $showBrowser, urlBase: URL(string: NCBrandOptions.shared.privacy)!, browserTitle: "Privacy Policies")
@@ -236,9 +225,6 @@ struct NCSettings: View {
 =======
                     NCBrowserWebView(isPresented: $showBrowser, urlBase: URL(string: NCBrandOptions.shared.privacy)!, browserTitle: NSLocalizedString("_privacy_legal_", comment: ""))
 >>>>>>> 940b67a9f (coding)
-=======
-                    NCBrowserWebView(isPresented: $showBrowser, urlBase: URL(string: NCBrandOptions.shared.privacy)!, browserTitle: NSLocalizedString("_privacy_legal_", comment: ""))
->>>>>>> a6e002c54a58ccbf1d4855200a58aa6f9cd3e966
                 }
                 // Source Code
                 Button(action: {
@@ -258,7 +244,6 @@ struct NCSettings: View {
                 .sheet(isPresented: $showSourceCode) {
 <<<<<<< HEAD
 <<<<<<< HEAD
-<<<<<<< HEAD
                     NCBrowserWebView(isPresented: $showSourceCode, urlBase: URL(string: NCBrandOptions.shared.sourceCode)!, browserTitle: NSLocalizedString("_source_code_", comment: ""))
 =======
                     NCBrowserWebView(isPresented: $showSourceCode, urlBase: URL(string: NCBrandOptions.shared.sourceCode)!, browserTitle: "Source Code")
@@ -266,9 +251,6 @@ struct NCSettings: View {
 =======
                     NCBrowserWebView(isPresented: $showSourceCode, urlBase: URL(string: NCBrandOptions.shared.sourceCode)!, browserTitle: NSLocalizedString("_source_code_", comment: ""))
 >>>>>>> 940b67a9f (coding)
-=======
-                    NCBrowserWebView(isPresented: $showSourceCode, urlBase: URL(string: NCBrandOptions.shared.sourceCode)!, browserTitle: NSLocalizedString("_source_code_", comment: ""))
->>>>>>> a6e002c54a58ccbf1d4855200a58aa6f9cd3e966
                 }
             })
             /// `Watermark` Section
@@ -295,7 +277,6 @@ struct E2EESection: View {
                         .font(Font.system(.body).weight(.light))
 <<<<<<< HEAD
 <<<<<<< HEAD
-<<<<<<< HEAD
                         .frame(width: 20, height: 20)
                         .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
 =======
@@ -306,10 +287,6 @@ struct E2EESection: View {
                         .frame(width: 20, height: 20)
                         .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
 >>>>>>> 98c1f6cfa (coding)
-=======
-                        .frame(width: 20, height: 20)
-                        .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
->>>>>>> a6e002c54a58ccbf1d4855200a58aa6f9cd3e966
                     Text(NSLocalizedString("_e2e_settings_", comment: ""))
                 }
                 .font(.system(size: 16))
