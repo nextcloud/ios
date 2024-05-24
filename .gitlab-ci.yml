@@ -1,6 +1,11 @@
 variables:
-  IPA_PATH: "build/sym/*.ipa"
+  outputDirPath: "./build/sym"
+  IPA_PATH: "${outputDirPath}/*.ipa"
   DSYM_PATH: "*.dSYM.zip"
+  scheme: "Nextcloud"
+  archive_path: "${outputDirPath}/${scheme}"
+  exportOptionsPath: "./exportOptionsAdHoc.plist"
+
 
 stages:
 - build
@@ -14,8 +19,22 @@ stages:
 .install_carthage_dependencies: &install_carthage_dependencies
   - carthage update --use-xcframeworks --platform iOS
 
+.download_google_info_plist: &download_google_info_plist
+  - curl "https://raw.githubusercontent.com/firebase/quickstart-ios/main/mock-GoogleService-Info.plist" -o ./GoogleService-Info.plist
+
 .build_general_script: &build_general_script
-  - fastlane gym --scheme Nextcloud --output_directory ./build/sym --derived_data_path ./ipaDerivedData --output_name Nextcloud --archive_path ./build/sym/Nextcloud --export_options ./exportOptionsAdHoc.plist --silent --clean
+  - fastlane gym
+    --scheme $scheme
+    --output_directory $outputDirPath
+    --derived_data_path ./ipaDerivedData
+    --output_name $scheme
+    --archive_path $archive_path
+    --export_options $exportOptionsPath
+    --silent
+    --clean
+    
+.build_simulator_general_script: &build_simulator_general_script
+  - xcodebuild -configuration Debug -scheme $scheme -sdk iphonesimulator -derivedDataPath ./BuildForSimulator -quiet
 
 ############## build ##############
 
@@ -40,3 +59,21 @@ build_develop_feature:
   only:
     - develop
     - /^feature/
+
+build_simulator:
+  <<: *build_general_params
+  when: manual
+  script:
+    - *install_carthage_dependencies
+    - *download_google_info_plist
+    - *build_simulator_general_script
+    - zip -r ../../../../${scheme}.zip ${scheme}.app
+  only:
+    - develop
+    - /^feature/
+    - /^hotfix/
+    - /^release/
+  artifacts:
+    paths:
+      - Nextcloud.zip
+    expire_in: 1 week
