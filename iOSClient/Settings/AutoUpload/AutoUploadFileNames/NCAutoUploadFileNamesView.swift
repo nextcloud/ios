@@ -28,27 +28,8 @@ struct NCAutoUploadFileNamesView: View {
 
     var body: some View {
         Form {
-<<<<<<< HEAD
-<<<<<<< HEAD
             // Specify Filename
-            Section(header: Text(NSLocalizedString("_mode_filename_", comment: ""))) {
-=======
-            // Maintain Original Filename
-            /*
-            Section(content: {
-            }, header: {
-            }, footer: {
-            })
-            */
-=======
->>>>>>> 6ee275189 (cleaning)
-            // Specify Filename
-<<<<<<< HEAD
             Section(header: Text(NSLocalizedString("_filename_", comment: ""))) {
->>>>>>> 940b67a9f (coding)
-=======
-            Section(header: Text(NSLocalizedString("_mode_filename_", comment: ""))) {
->>>>>>> 35039dc64 (coding)
                 Toggle(NSLocalizedString("_maintain_original_filename_", comment: ""), isOn: $model.maintainFilename)
                     .font(.system(size: 16))
                     .onChange(of: model.maintainFilename, perform: { newValue in
@@ -88,15 +69,7 @@ struct NCAutoUploadFileNamesView: View {
                     Text("\(model.previewFileName())")
                         .font(.system(size: 16))
                 }, header: {
-<<<<<<< HEAD
-<<<<<<< HEAD
                     Text(NSLocalizedString("_filename_", comment: ""))
-=======
-                    Text(NSLocalizedString("_preview_filename_header_", comment: ""))
->>>>>>> 940b67a9f (coding)
-=======
-                    Text(NSLocalizedString("_filename_", comment: ""))
->>>>>>> 35039dc64 (coding)
                 }, footer: {
                     Text(NSLocalizedString("_preview_filename_footer_", comment: ""))
                 })
@@ -109,26 +82,11 @@ struct NCAutoUploadFileNamesView: View {
                     Text(NSLocalizedString("_default_preview_filename_footer_", comment: ""))
                 })
             }
-<<<<<<< HEAD
-<<<<<<< HEAD
         }.navigationBarTitle(NSLocalizedString("_mode_filename_", comment: ""))
             .onAppear {
                 model.onViewAppear()
             }
             .padding(.top, 0)
-=======
-        }.navigationBarTitle(NSLocalizedString("_filename_mode_", comment: ""))
-            .onAppear {
-                model.onViewAppear()
-            }            .padding(.top, 0)
->>>>>>> 940b67a9f (coding)
-=======
-        }.navigationBarTitle(NSLocalizedString("_mode_filename_", comment: ""))
-            .onAppear {
-                model.onViewAppear()
-            }
-            .padding(.top, 0)
->>>>>>> 35039dc64 (coding)
             .transition(.slide)
     }
 }
