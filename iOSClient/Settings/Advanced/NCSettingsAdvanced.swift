@@ -264,9 +264,7 @@ struct NCSettingsAdvanced: View {
                     .multilineTextAlignment(.leading)
             })
         }.navigationBarTitle(NSLocalizedString("_advanced_", comment: ""))
-            .onAppear {
-                viewModel.onViewAppear()
-            }
+            .defaultViewModifier(viewModel)
     }
 }
 

@@ -83,9 +83,7 @@ struct NCAutoUploadFileNamesView: View {
                 })
             }
         }.navigationBarTitle(NSLocalizedString("_mode_filename_", comment: ""))
-            .onAppear {
-                model.onViewAppear()
-            }
+            .defaultViewModifier(model)
             .padding(.top, 0)
             .transition(.slide)
     }

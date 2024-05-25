@@ -25,7 +25,7 @@ import Foundation
 import NextcloudKit
 
 /// A model that allows the user to configure the `auto upload settings for Nextcloud`
-class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling, NCSelectDelegate {
+class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling, NCSelectDelegate, AccountUpdateHandling {
     var appDelegate = AppDelegate()
     /// A state variable that indicates whether auto upload is enabled or not
     @Published var autoUpload: Bool = false
@@ -76,6 +76,8 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling, NCSelectDelegat
             }
         }
     }
+    // MARK: AccountUpdateHandling
+    func updateAccount() { }
     func requestAuthorization() {
         PHPhotoLibrary.requestAuthorization { status in
             DispatchQueue.main.async {
