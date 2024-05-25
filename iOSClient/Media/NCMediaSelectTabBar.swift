@@ -89,6 +89,7 @@ struct MediaTabBarSelectView: View {
                     tabBarSelect.delegate?.delete()
                 } label: {
                     Image(systemName: "trash")
+                    .font(Font.system(.body).weight(.light))
                     .imageScale(sizeClass == .compact ? .medium : .large)
                 }
                 .tint(.red)

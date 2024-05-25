@@ -27,13 +27,6 @@ import NextcloudKit
 import Alamofire
 import Queuer
 
-@objc public protocol NCNetworkingDelegate {
-    @objc optional func downloadProgress(_ progress: Float, totalBytes: Int64, totalBytesExpected: Int64, fileName: String, serverUrl: String, session: URLSession, task: URLSessionTask)
-    @objc optional func uploadProgress(_ progress: Float, totalBytes: Int64, totalBytesExpected: Int64, fileName: String, serverUrl: String, session: URLSession, task: URLSessionTask)
-    @objc optional func downloadComplete(fileName: String, serverUrl: String, etag: String?, date: NSDate?, dateLastModified: NSDate?, length: Int64, fileNameLocalPath: String?, task: URLSessionTask, error: NKError)
-    @objc optional func uploadComplete(fileName: String, serverUrl: String, ocId: String?, etag: String?, date: NSDate?, size: Int64, fileNameLocalPath: String?, task: URLSessionTask, error: NKError)
-}
-
 #if EXTENSION_FILE_PROVIDER_EXTENSION || EXTENSION_WIDGET
 @objc protocol uploadE2EEDelegate: AnyObject { }
 #endif
@@ -42,6 +35,7 @@ import Queuer
 class NCNetworking: NSObject, NKCommonDelegate {
     public static let shared: NCNetworking = {
         let instance = NCNetworking()
+        NotificationCenter.default.addObserver(instance, selector: #selector(applicationDidEnterBackground), name: UIApplication.didEnterBackgroundNotification, object: nil)
         return instance
     }()
 
@@ -56,7 +50,6 @@ class NCNetworking: NSObject, NKCommonDelegate {
 
     }
 
-    weak var delegate: NCNetworkingDelegate?
     let utilityFileSystem = NCUtilityFileSystem()
     let utility = NCUtility()
     var lastReachability: Bool = true
@@ -66,6 +59,19 @@ class NCNetworking: NSObject, NKCommonDelegate {
     let uploadMetadataInBackground = ThreadSafeDictionary<FileNameServerUrl, tableMetadata>()
     let downloadMetadataInBackground = ThreadSafeDictionary<FileNameServerUrl, tableMetadata>()
     var transferInForegorund: TransferInForegorund?
+    let transferInError = ThreadSafeDictionary<String, Int>()
+
+    func transferInError(ocId: String) {
+        if let counter = self.transferInError[ocId] {
+            self.transferInError[ocId] = counter + 1
+        } else {
+            self.transferInError[ocId] = 1
+        }
+    }
+
+    func removeTransferInError(ocId: String) {
+        self.transferInError.removeValue(forKey: ocId)
+    }
 
     lazy var nkBackground: NKBackground = {
         let nckb = NKBackground(nkCommonInstance: NextcloudKit.shared.nkCommonInstance)
@@ -131,6 +137,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
     // OPERATIONQUEUE
     let downloadThumbnailQueue = Queuer(name: "downloadThumbnailQueue", maxConcurrentOperationCount: 10, qualityOfService: .default)
     let downloadThumbnailActivityQueue = Queuer(name: "downloadThumbnailActivityQueue", maxConcurrentOperationCount: 10, qualityOfService: .default)
+    let downloadThumbnailTrashQueue = Queuer(name: "downloadThumbnailTrashQueue", maxConcurrentOperationCount: 10, qualityOfService: .default)
     let unifiedSearchQueue = Queuer(name: "unifiedSearchQueue", maxConcurrentOperationCount: 1, qualityOfService: .default)
     let saveLivePhotoQueue = Queuer(name: "saveLivePhotoQueue", maxConcurrentOperationCount: 1, qualityOfService: .default)
     let downloadQueue = Queuer(name: "downloadQueue", maxConcurrentOperationCount: NCBrandOptions.shared.maxConcurrentOperationDownload, qualityOfService: .default)
@@ -149,6 +156,12 @@ class NCNetworking: NSObject, NKCommonDelegate {
         print("Start Background Upload: ", sessionManagerUploadBackground)
         print("Start Background Upload WWan: ", sessionManagerUploadBackgroundWWan)
 #endif
+    }
+
+    // MARK: - NotificationCenter
+
+    func applicationDidEnterBackground() {
+        self.transferInError.removeAll()
     }
 
     // MARK: - Communication Delegate
@@ -197,6 +210,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
         downloadQueue.cancelAll()
         downloadThumbnailQueue.cancelAll()
         downloadThumbnailActivityQueue.cancelAll()
+        downloadThumbnailTrashQueue.cancelAll()
         downloadAvatarQueue.cancelAll()
         unifiedSearchQueue.cancelAll()
         saveLivePhotoQueue.cancelAll()

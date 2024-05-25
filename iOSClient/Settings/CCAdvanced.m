@@ -113,7 +113,7 @@
         row.cellConfigAtConfigure[@"backgroundColor"] = UIColor.secondarySystemGroupedBackgroundColor;
         [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
         [row.cellConfig setObject:UIColor.labelColor forKey:@"textLabel.textColor"];
-        [row.cellConfig setObject:[[UIImage imageNamed:@"crashservice"] imageWithColor:UIColor.systemGrayColor size:25] forKey:@"imageView.image"];
+        [row.cellConfig setObject:[[UIImage imageNamed:@"crashservice"] imageWithColor:[NCBrandColor shared].iconImageColor size:25] forKey:@"imageView.image"];
         if ([[[NCKeychain alloc] init] disableCrashservice]) row.value = @"1";
         else row.value = @"0";
         [section addFormRow:row];
@@ -131,7 +131,7 @@
         [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
         [row.cellConfig setObject:UIColor.labelColor forKey:@"textLabel.textColor"];
         [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
-        [row.cellConfig setObject:[[UIImage imageNamed:@"log"] imageWithColor:UIColor.systemGrayColor size:25] forKey:@"imageView.image"];
+        [row.cellConfig setObject:[[UIImage imageNamed:@"log"] imageWithColor:[NCBrandColor shared].iconImageColor size:25] forKey:@"imageView.image"];
         row.action.formBlock = ^(XLFormRowDescriptor * sender) {
                     
             [self deselectFormRow:sender];
@@ -145,7 +145,7 @@
         [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
         [row.cellConfig setObject:UIColor.labelColor forKey:@"textLabel.textColor"];
         [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
-        [row.cellConfig setObject:[[UIImage imageNamed:@"clear"] imageWithColor:UIColor.systemGrayColor size:25] forKey:@"imageView.image"];
+        [row.cellConfig setObject:[[UIImage imageNamed:@"clear"] imageWithColor:[NCBrandColor shared].iconImageColor size:25] forKey:@"imageView.image"];
         row.action.formBlock = ^(XLFormRowDescriptor * sender) {
                     
             [self deselectFormRow:sender];
@@ -181,7 +181,7 @@
     [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
     [row.cellConfig setObject:UIColor.labelColor forKey:@"textLabel.textColor"];
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
-    [row.cellConfig setObject:[[UIImage imageNamed:@"capabilities"] imageWithColor:UIColor.systemGrayColor size:25] forKey:@"imageView.image"];
+    [row.cellConfig setObject:[[UIImage imageNamed:@"capabilities"] imageWithColor:[NCBrandColor shared].iconImageColor size:25] forKey:@"imageView.image"];
     row.action.formBlock = ^(XLFormRowDescriptor * sender) {
                 
         [self deselectFormRow:sender];
@@ -245,7 +245,7 @@
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
     [row.cellConfig setObject:UIColor.labelColor forKey:@"textLabel.textColor"];
     [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
-    [row.cellConfig setObject:[[UIImage imageNamed:@"trash"] imageWithColor:UIColor.systemGrayColor size:25] forKey:@"imageView.image"];
+    [row.cellConfig setObject:[[UIImage imageNamed:@"trash"] imageWithColor:[NCBrandColor shared].iconImageColor size:25] forKey:@"imageView.image"];
     row.action.formSelector = @selector(clearCacheRequest:);
     [sectionSize addFormRow:row];
 
@@ -283,13 +283,6 @@
     
     [self initializeForm];
     [self calculateSize];
-}
-
-- (void)viewWillAppear:(BOOL)animated
-{
-    [super viewWillAppear:animated];
-    
-    appDelegate.activeViewController = self;
 }
 
 #pragma mark -

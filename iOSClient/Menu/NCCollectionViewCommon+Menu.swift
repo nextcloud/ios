@@ -31,12 +31,10 @@ import NextcloudKit
 import Queuer
 
 extension NCCollectionViewCommon {
-
     func toggleMenu(metadata: tableMetadata, indexPath: IndexPath, imageIcon: UIImage?) {
-
+        guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(metadata.ocId),
+              let sceneIdentifier = (tabBarController as? NCMainTabBarController)?.sceneIdentifier else { return }
         var actions = [NCMenuAction]()
-
-        guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(metadata.ocId) else { return }
         let serverUrl = metadata.serverUrl + "/" + metadata.fileName
         var isOffline: Bool = false
 
@@ -77,11 +75,11 @@ extension NCCollectionViewCommon {
         //
         // DETAILS
         //
-        if !appDelegate.disableSharesView {
+        if !NCGlobal.shared.disableSharesView {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_details_", comment: ""),
-                    icon: utility.loadImage(named: "info.circle"),
+                    icon: utility.loadImage(named: "info.circle", colors: [NCBrandColor.shared.iconImageColor]),
                     order: 10,
                     action: { _ in
                         NCActionCenter.shared.openShare(viewController: self, metadata: metadata, page: .activity)
@@ -130,10 +128,10 @@ extension NCCollectionViewCommon {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_view_in_folder_", comment: ""),
-                    icon: utility.loadImage(named: "questionmark.folder"),
+                    icon: utility.loadImage(named: "questionmark.folder", colors: [NCBrandColor.shared.iconImageColor]),
                     order: 21,
                     action: { _ in
-                        NCActionCenter.shared.openFileViewInFolder(serverUrl: metadata.serverUrl, fileNameBlink: metadata.fileName, fileNameOpen: nil)
+                        NCActionCenter.shared.openFileViewInFolder(serverUrl: metadata.serverUrl, fileNameBlink: metadata.fileName, fileNameOpen: nil, sceneIdentifier: sceneIdentifier)
                     }
                 )
             )
@@ -153,7 +151,7 @@ extension NCCollectionViewCommon {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_e2e_set_folder_encrypted_", comment: ""),
-                    icon: utility.loadImage(named: "lock"),
+                    icon: utility.loadImage(named: "lock", colors: [NCBrandColor.shared.iconImageColor]),
                     order: 30,
                     action: { _ in
                         Task {
@@ -174,7 +172,7 @@ extension NCCollectionViewCommon {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_e2e_remove_folder_encrypted_", comment: ""),
-                    icon: utility.loadImage(named: "lock"),
+                    icon: utility.loadImage(named: "lock", colors: [NCBrandColor.shared.iconImageColor]),
                     order: 30,
                     action: { _ in
                         NextcloudKit.shared.markE2EEFolder(fileId: metadata.fileId, delete: true) { _, error in
@@ -201,7 +199,7 @@ extension NCCollectionViewCommon {
             actions.append(
                 NCMenuAction(
                     title: metadata.favorite ? NSLocalizedString("_remove_favorites_", comment: "") : NSLocalizedString("_add_favorites_", comment: ""),
-                    icon: utility.loadImage(named: metadata.favorite ? "star.slash.fill" : "star.fill", color: NCBrandColor.shared.yellowFavorite),
+                    icon: utility.loadImage(named: metadata.favorite ? "star.slash" : "star", colors: [NCBrandColor.shared.yellowFavorite]),
                     order: 50,
                     action: { _ in
                         NCNetworking.shared.favoriteMetadata(metadata) { error in
@@ -235,11 +233,11 @@ extension NCCollectionViewCommon {
             if editors.contains(NCGlobal.shared.editorOnlyoffice) {
                 editor = NCGlobal.shared.editorOnlyoffice
                 title = NSLocalizedString("_open_in_onlyoffice_", comment: "")
-                icon = utility.loadImage(named: "onlyoffice")
+                icon = utility.loadImage(named: "onlyoffice", colors: [NCBrandColor.shared.iconImageColor])
             } else if isRichDocument {
                 editor = NCGlobal.shared.editorCollabora
                 title = NSLocalizedString("_open_in_collabora_", comment: "")
-                icon = utility.loadImage(named: "collabora")
+                icon = utility.loadImage(named: "collabora", colors: [NCBrandColor.shared.iconImageColor])
             }
 
             if !editor.isEmpty {
@@ -266,14 +264,15 @@ extension NCCollectionViewCommon {
         //
         // SAVE LIVE PHOTO
         //
-        if let metadataMOV = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata) {
+        if let metadataMOV = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata),
+           let hudView = self.tabBarController?.view {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_livephoto_save_", comment: ""),
-                    icon: NCUtility().loadImage(named: "livephoto"),
+                    icon: NCUtility().loadImage(named: "livephoto", colors: [NCBrandColor.shared.iconImageColor]),
                     order: 100,
                     action: { _ in
-                        NCNetworking.shared.saveLivePhotoQueue.addOperation(NCOperationSaveLivePhoto(metadata: metadata, metadataMOV: metadataMOV))
+                        NCNetworking.shared.saveLivePhotoQueue.addOperation(NCOperationSaveLivePhoto(metadata: metadata, metadataMOV: metadataMOV, hudView: hudView))
                     }
                 )
             )
@@ -286,7 +285,7 @@ extension NCCollectionViewCommon {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_save_as_scan_", comment: ""),
-                    icon: utility.loadImage(named: "doc.viewfinder"),
+                    icon: utility.loadImage(named: "doc.viewfinder", colors: [NCBrandColor.shared.iconImageColor]),
                     order: 110,
                     action: { _ in
                         if self.utilityFileSystem.fileProviderStorageExists(metadata) {
@@ -300,7 +299,8 @@ extension NCCollectionViewCommon {
                         } else {
                             guard let metadata = NCManageDatabase.shared.setMetadatasSessionInWaitDownload(metadatas: [metadata],
                                                                                                            session: NextcloudKit.shared.nkCommonInstance.sessionIdentifierDownload,
-                                                                                                           selector: NCGlobal.shared.selectorSaveAsScan) else { return }
+                                                                                                           selector: NCGlobal.shared.selectorSaveAsScan,
+                                                                                                           sceneIdentifier: sceneIdentifier) else { return }
                             NCNetworking.shared.download(metadata: metadata, withNotificationProgressTask: true)
                         }
                     }
@@ -315,7 +315,7 @@ extension NCCollectionViewCommon {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_rename_", comment: ""),
-                    icon: utility.loadImage(named: "text.cursor"),
+                    icon: utility.loadImage(named: "text.cursor", colors: [NCBrandColor.shared.iconImageColor]),
                     order: 120,
                     action: { _ in
 
@@ -338,7 +338,7 @@ extension NCCollectionViewCommon {
         // COPY - MOVE
         //
         if metadata.isCopyableMovable {
-            actions.append(.moveOrCopyAction(selectedMetadatas: [metadata], indexPath: [indexPath], order: 130))
+            actions.append(.moveOrCopyAction(selectedMetadatas: [metadata], viewController: self, indexPath: [indexPath], order: 130))
         }
 
         //
@@ -348,7 +348,7 @@ extension NCCollectionViewCommon {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_modify_", comment: ""),
-                    icon: utility.loadImage(named: "pencil.tip.crop.circle"),
+                    icon: utility.loadImage(named: "pencil.tip.crop.circle", colors: [NCBrandColor.shared.iconImageColor]),
                     order: 150,
                     action: { _ in
                         if self.utilityFileSystem.fileProviderStorageExists(metadata) {
@@ -362,7 +362,8 @@ extension NCCollectionViewCommon {
                         } else {
                             guard let metadata = NCManageDatabase.shared.setMetadatasSessionInWaitDownload(metadatas: [metadata],
                                                                                                            session: NextcloudKit.shared.nkCommonInstance.sessionIdentifierDownload,
-                                                                                                           selector: NCGlobal.shared.selectorLoadFileQuickLook) else { return }
+                                                                                                           selector: NCGlobal.shared.selectorLoadFileQuickLook,
+                                                                                                           sceneIdentifier: sceneIdentifier) else { return }
                             NCNetworking.shared.download(metadata: metadata, withNotificationProgressTask: true)
                         }
                     }
@@ -377,7 +378,7 @@ extension NCCollectionViewCommon {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_change_color_", comment: ""),
-                    icon: utility.loadImage(named: "paintpalette"),
+                    icon: utility.loadImage(named: "paintpalette", colors: [NCBrandColor.shared.iconImageColor]),
                     order: 160,
                     action: { _ in
                         if let picker = UIStoryboard(name: "NCColorPicker", bundle: nil).instantiateInitialViewController() as? NCColorPicker {

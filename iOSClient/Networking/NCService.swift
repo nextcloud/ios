@@ -34,23 +34,25 @@ class NCService: NSObject {
     // MARK: -
 
     @objc public func startRequestServicesServer() {
-
-        NCManageDatabase.shared.clearAllAvatarLoaded()
-        guard !appDelegate.account.isEmpty else { return }
+        guard !appDelegate.account.isEmpty, UIApplication.shared.applicationState != .background else {
+            NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Service not start request service server with the application in background")
+            return
+        }
         let account = appDelegate.account
 
+        NCManageDatabase.shared.clearAllAvatarLoaded()
         NCPushNotification.shared().pushNotification()
 
         Task {
             addInternalTypeIdentifier()
             let result = await requestServerStatus()
             if result {
-                synchronize()
-                getAvatar()
                 requestServerCapabilities()
+                getAvatar()
                 requestDashboardWidget()
                 NCNetworkingE2EE().unlockAll(account: account)
                 sendClientDiagnosticsRemoteOperation(account: account)
+                synchronize()
             }
         }
     }
@@ -135,7 +137,7 @@ class NCService: NSObject {
                                              options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { account, files, _, error in
 
             guard error == .success else { return }
-            NCManageDatabase.shared.convertFilesToMetadatas(files, useMetadataFolder: false) { _, _, metadatas in
+            NCManageDatabase.shared.convertFilesToMetadatas(files, useFirstAsMetadataFolder: false) { _, metadatas in
                 NCManageDatabase.shared.updateMetadatasFavorite(account: account, metadatas: metadatas)
             }
             NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Synchronize Favorite")
@@ -186,13 +188,6 @@ class NCService: NSObject {
                 NCImageCache.shared.createImagesBrandCache()
             }
 
-            // Sharing & Comments
-            if !NCGlobal.shared.capabilityFileSharingApiEnabled && !NCGlobal.shared.capabilityFilesComments && NCGlobal.shared.capabilityActivity.isEmpty {
-                self.appDelegate.disableSharesView = true
-            } else {
-                self.appDelegate.disableSharesView = false
-            }
-
             // Text direct editor detail
             if NCGlobal.shared.capabilityServerVersionMajor >= NCGlobal.shared.nextcloudVersion18 {
                 let options = NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
@@ -227,7 +222,7 @@ class NCService: NSObject {
             }
 
             // Added UTI for Collabora
-            NCGlobal.shared.capabilityRichdocumentsMimetypes.forEach { mimeType in
+            NCGlobal.shared.capabilityRichDocumentsMimetypes.forEach { mimeType in
                 NextcloudKit.shared.nkCommonInstance.addInternalTypeIdentifier(typeIdentifier: mimeType, classFile: NKCommon.TypeClassFile.document.rawValue, editor: NCGlobal.shared.editorCollabora, iconName: NKCommon.TypeIconFile.document.rawValue, name: "document")
             }
 

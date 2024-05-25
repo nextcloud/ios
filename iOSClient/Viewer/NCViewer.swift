@@ -112,7 +112,7 @@ class NCViewer: NSObject {
             let availableRichDocument = utility.isRichDocument(metadata)
 
             // RichDocument: Collabora
-            if (isRichDocument || (availableRichDocument && editors.isEmpty)) && NCGlobal.shared.capabilityRichdocumentsEnabled && NextcloudKit.shared.isNetworkReachable() {
+            if (isRichDocument || (availableRichDocument && editors.isEmpty)) && NCGlobal.shared.capabilityRichDocumentsEnabled && NextcloudKit.shared.isNetworkReachable() {
 
                 if metadata.url.isEmpty {
 
@@ -235,7 +235,9 @@ class NCViewer: NSObject {
             viewController.present(viewerQuickLook, animated: true)
         } else {
         // Document Interaction Controller
-            NCActionCenter.shared.openDocumentController(metadata: metadata)
+            if let mainTabBarController = viewController.tabBarController as? NCMainTabBarController {
+                NCActionCenter.shared.openDocumentController(metadata: metadata, mainTabBarController: mainTabBarController)
+            }
         }
     }
 }

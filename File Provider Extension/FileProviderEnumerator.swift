@@ -212,24 +212,20 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
 
                     if error == .success {
                         DispatchQueue.global().async {
-                            NCManageDatabase.shared.convertFilesToMetadatas(files, useMetadataFolder: true) { _, metadatasFolder, metadatas in
+                            NCManageDatabase.shared.convertFilesToMetadatas(files, useFirstAsMetadataFolder: true) { _, metadatas in
                                 let predicate = NSPredicate(format: "account == %@ AND serverUrl == %@ AND status == %d", account, serverUrl, NCGlobal.shared.metadataStatusNormal)
                                 NCManageDatabase.shared.updateMetadatas(metadatas, predicate: predicate)
-                                for metadata in metadatasFolder {
-                                    let serverUrl = metadata.serverUrl + "/" + metadata.fileNameView
-                                    NCManageDatabase.shared.addDirectory(e2eEncrypted: metadata.e2eEncrypted, favorite: metadata.favorite, ocId: metadata.ocId, fileId: metadata.fileId, permissions: metadata.permissions, serverUrl: serverUrl, account: metadata.account)
-                                }
-                                let metadatas = NCManageDatabase.shared.getAdvancedMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", fileProviderData.shared.account, serverUrl), sorted: "fileName", ascending: true)
+                                let metadatas = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", fileProviderData.shared.account, serverUrl), sorted: "fileName", ascending: true)
                                 completionHandler(metadatas)
                             }
                         }
                     } else {
-                        let metadatas = NCManageDatabase.shared.getAdvancedMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", fileProviderData.shared.account, serverUrl), sorted: "fileName", ascending: true)
+                        let metadatas = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", fileProviderData.shared.account, serverUrl), sorted: "fileName", ascending: true)
                         completionHandler(metadatas)
                     }
                 }
             } else {
-                let metadatas = NCManageDatabase.shared.getAdvancedMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", fileProviderData.shared.account, serverUrl), sorted: "fileName", ascending: true)
+                let metadatas = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", fileProviderData.shared.account, serverUrl), sorted: "fileName", ascending: true)
                 completionHandler(metadatas)
             }
         }
