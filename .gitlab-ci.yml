@@ -11,6 +11,7 @@ stages:
 - build
 
 .mac_general_scripts: &mac_general_scripts
+  - security unlock-keychain -p $PASSWORD_BUILDE ~/Library/Keychains/login.keychain-db
   - brew install carthage
   - fastlane -v
   - xcodebuild -version
@@ -55,6 +56,7 @@ build_develop_feature:
   <<: *build_general_params
   script:
     - *install_carthage_dependencies
+    - *download_google_info_plist
     - *build_general_script
   only:
     - develop
@@ -67,7 +69,8 @@ build_simulator:
     - *install_carthage_dependencies
     - *download_google_info_plist
     - *build_simulator_general_script
-    - zip -r ../../../../${scheme}.zip ${scheme}.app
+    - zip -r ./${scheme}.zip ./BuildForSimulator/Build/Products/Debug-iphonesimulator/${scheme}.app
+
   only:
     - develop
     - /^feature/
