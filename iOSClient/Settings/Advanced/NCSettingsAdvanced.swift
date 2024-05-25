@@ -168,7 +168,7 @@ struct NCSettingsAdvanced: View {
                 }, footer: { })
                 // Set Log Level() & Capabilities
                 Section {
-                    Picker(NSLocalizedString("_level_log_", comment: ""), selection: $viewModel.selectedLogLevel) {
+                    Picker(NSLocalizedString("_set_log_level_", comment: ""), selection: $viewModel.selectedLogLevel) {
                         ForEach(LogLevel.allCases) { level in
                             Text(level.displayText).tag(level)
                         }

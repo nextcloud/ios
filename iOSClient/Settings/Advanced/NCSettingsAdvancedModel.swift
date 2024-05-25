@@ -220,11 +220,11 @@ extension LogLevel {
     var displayText: String {
         switch self {
         case .disabled:
-            return NSLocalizedString("_log_disabled_", comment: "")
+            return NSLocalizedString("_disabled_", comment: "")
         case .standard:
-            return NSLocalizedString("_log_standard_", comment: "")
+            return NSLocalizedString("_standard_", comment: "")
         case .maximum:
-            return NSLocalizedString("_log_maximum_", comment: "")
+            return NSLocalizedString("_maximum_", comment: "")
         }
     }
 }

@@ -156,6 +156,8 @@
 "_current_"                 = "Current";
 "_buy_"                     = "Buy";
 "_disabled_"                = "Disabled";
+"_standard_"                = "Standard";
+"_maximum_"                 = "Maximum";
 "_error_occurred_"           = "An error occurred, please try again";
 
 /* MARK: Files lock */
@@ -386,6 +388,7 @@
 "_autoupload_photos_"               = "Auto upload photos";
 "_autoupload_videos_"               = "Auto upload videos";
 "_autoupload_description_"          = "New photos/videos will be automatically uploaded to your server";
+"_auto_delete_cache_files_"         = "Auto Delete Cache files after";
 "_autoupload_description_background_"  = "This option requires the use of GPS to trigger the detection of new photos/videos in the camera roll once the location changes significantly";
 "_autoupload_background_title_"     = "Limitations";
 "_autoupload_background_msg_"       = "Due to iOS restrictions, it is not yet possible to perform background processes, unless GPS services are activated. Once the cell in the cellular network is changed, the system wakes up for a short time and checks for new photos to upload to the cloud.";
@@ -415,6 +418,7 @@
 "_privacy_"                     = "Privacy";
 "_privacy_policy_"              = "Privacy Policy";
 "_privacy_footer_"              = "This app uses a service for the analysis of a crash. Your personal information is not sent with the report. If you want disable it, please change the setting \"Disable crash reporter\" to ON";
+"_show_hidden_files_footer"     = "All Hidden files will be visible in every device";
 "_crashservice_title_"          = "Disable crash reporter";
 "_crashservice_alert_"          = "This option requires a restart of the app to take effect";
 "_upload_mov_livephoto_"        = "Live Photo";
@@ -426,6 +430,9 @@
 "_view_log_"                    = "View log file";
 "_clear_log_"                   = "Clear log file";
 "_level_log_"                   = "Set Log level (disabled, standard, maximum)";
+"_set_log_level_"               = "Set Log Level";
+"_log_file_clear_alert_"        = "Log file cleared \n successfully!";
+"_diagnostics_footer_" = "Log files contains history of all your actions on Nextcloud.";
 "_connect_server_anyway_"       = "Do you want to connect to the server anyway?";
 "_server_is_trusted_"           = "Do you consider this server trusted?";
 "_connection_error_"            = "Connection error";
@@ -698,6 +705,8 @@
 "_rename_filename_"                 = "Rename";
 "_filename_"                        = "Filename";
 "_enter_filename_"                  = "Enter filename …";
+"_preview_filename_footer_"         = "Example preview of filename. You can use the mask YYYY.MM.DD hh.mm.ss am/pm for date/time.";
+"_filename_header_"                 = "Enter filename";
 "_preview_filename_"                = "Example preview of filename. You can use the mask %@ for date/time";
 "_add_filenametype_"                = "Specify type in filename";
 "_filenametype_photo_video_"        = "Photo/Video";

@@ -141,6 +141,7 @@ struct NCCapabilitiesView: View {
                 }
             }
         }
+        .navigationBarTitle(NSLocalizedString("_capabilities_", comment: ""))
         .frame(maxWidth: .infinity, alignment: .top)
     }
 
