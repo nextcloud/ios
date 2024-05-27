@@ -5,13 +5,14 @@
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="22504"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
         <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
         <view contentMode="scaleToFill" id="wbW-yR-MZC" customClass="NCShareAdvancePermissionHeader" customModule="Nextcloud" customModuleProvider="target">
-            <rect key="frame" x="0.0" y="0.0" width="414" height="210"/>
+            <rect key="frame" x="0.0" y="0.0" width="414" height="248"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
                 <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="cki-Ql-o1I">
@@ -39,19 +40,44 @@
                         <constraint firstAttribute="width" constant="96" id="Vbz-xZ-L5k"/>
                     </constraints>
                 </imageView>
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="qpa-L5-mof" customClass="TagListView" customModule="TagListView">
+                    <rect key="frame" x="10" y="179" width="394" height="69"/>
+                    <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                    <userDefinedRuntimeAttributes>
+                        <userDefinedRuntimeAttribute type="number" keyPath="cornerRadius">
+                            <real key="value" value="8"/>
+                        </userDefinedRuntimeAttribute>
+                        <userDefinedRuntimeAttribute type="number" keyPath="borderWidth">
+                            <real key="value" value="1"/>
+                        </userDefinedRuntimeAttribute>
+                        <userDefinedRuntimeAttribute type="color" keyPath="tagBackgroundColor">
+                            <color key="value" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        </userDefinedRuntimeAttribute>
+                        <userDefinedRuntimeAttribute type="color" keyPath="borderColor">
+                            <color key="value" systemColor="systemGray5Color"/>
+                        </userDefinedRuntimeAttribute>
+                        <userDefinedRuntimeAttribute type="color" keyPath="textColor">
+                            <color key="value" systemColor="systemGrayColor"/>
+                        </userDefinedRuntimeAttribute>
+                    </userDefinedRuntimeAttributes>
+                </view>
             </subviews>
             <viewLayoutGuide key="safeArea" id="KLE-vd-Dsn"/>
             <constraints>
                 <constraint firstItem="pu4-Nd-M08" firstAttribute="leading" secondItem="KLE-vd-Dsn" secondAttribute="leading" constant="16" id="0Uy-ra-MtM"/>
+                <constraint firstItem="qpa-L5-mof" firstAttribute="top" secondItem="VaC-Fz-kHk" secondAttribute="bottom" constant="9" id="9P5-sA-LdV"/>
                 <constraint firstItem="pu4-Nd-M08" firstAttribute="top" secondItem="cki-Ql-o1I" secondAttribute="bottom" constant="-38" id="Cce-7Y-iw9"/>
                 <constraint firstAttribute="trailing" secondItem="VaC-Fz-kHk" secondAttribute="trailing" constant="15" id="Ebg-3T-03W"/>
                 <constraint firstItem="Dkw-QP-be6" firstAttribute="leading" secondItem="KLE-vd-Dsn" secondAttribute="leading" constant="16" id="KPc-al-RWN"/>
                 <constraint firstItem="KLE-vd-Dsn" firstAttribute="top" secondItem="cki-Ql-o1I" secondAttribute="top" id="KsC-jf-M6F"/>
+                <constraint firstItem="KLE-vd-Dsn" firstAttribute="trailing" secondItem="qpa-L5-mof" secondAttribute="trailing" constant="10" id="SMV-fn-U36"/>
                 <constraint firstAttribute="trailing" secondItem="cki-Ql-o1I" secondAttribute="trailing" id="Wdl-Rb-Pjy"/>
+                <constraint firstItem="qpa-L5-mof" firstAttribute="leading" secondItem="KLE-vd-Dsn" secondAttribute="leading" constant="10" id="YSd-5w-XAH"/>
                 <constraint firstItem="VaC-Fz-kHk" firstAttribute="leading" secondItem="pu4-Nd-M08" secondAttribute="leading" id="Ycb-wy-uL6"/>
                 <constraint firstItem="cki-Ql-o1I" firstAttribute="leading" secondItem="KLE-vd-Dsn" secondAttribute="leading" id="ZlH-LU-x2x"/>
                 <constraint firstItem="KLE-vd-Dsn" firstAttribute="trailing" secondItem="pu4-Nd-M08" secondAttribute="trailing" constant="16" id="bO0-yQ-OWX"/>
                 <constraint firstItem="Dkw-QP-be6" firstAttribute="centerY" secondItem="cki-Ql-o1I" secondAttribute="centerY" constant="-27" id="dME-jJ-PwO"/>
+                <constraint firstItem="qpa-L5-mof" firstAttribute="bottom" secondItem="KLE-vd-Dsn" secondAttribute="bottom" id="v3t-y8-sw0"/>
                 <constraint firstItem="VaC-Fz-kHk" firstAttribute="top" secondItem="pu4-Nd-M08" secondAttribute="bottom" constant="4" id="zkb-Jm-sin"/>
             </constraints>
             <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
@@ -61,11 +87,21 @@
                 <outlet property="fullWidthImageView" destination="cki-Ql-o1I" id="KYn-3Y-SZH"/>
                 <outlet property="imageView" destination="Dkw-QP-be6" id="wzX-Sb-Ajt"/>
                 <outlet property="info" destination="VaC-Fz-kHk" id="n9O-6c-qsd"/>
+                <outlet property="tagListView" destination="qpa-L5-mof" id="XJL-YO-eAV"/>
             </connections>
-            <point key="canvasLocation" x="35.625" y="27.5"/>
+            <point key="canvasLocation" x="35.200000000000003" y="44.07796101949026"/>
         </view>
     </objects>
     <resources>
         <image name="directory" width="300" height="300"/>
+        <systemColor name="systemBackgroundColor">
+            <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
+        <systemColor name="systemGray5Color">
+            <color red="0.89803921568627454" green="0.89803921568627454" blue="0.91764705882352937" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </systemColor>
+        <systemColor name="systemGrayColor">
+            <color red="0.55686274509803924" green="0.55686274509803924" blue="0.57647058823529407" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </systemColor>
     </resources>
 </document>

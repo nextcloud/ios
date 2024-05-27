@@ -22,6 +22,7 @@
 //
 
 import UIKit
+import TagListView
 
 class NCShareAdvancePermissionHeader: UIView {
     @IBOutlet weak var imageView: UIImageView!
@@ -29,7 +30,8 @@ class NCShareAdvancePermissionHeader: UIView {
     @IBOutlet weak var info: UILabel!
     @IBOutlet weak var fullWidthImageView: UIImageView!
     @IBOutlet weak var fileNameBottomConstraint: NSLayoutConstraint!
-    
+    @IBOutlet weak var tagListView: TagListView!
+
     func setupUI(with metadata: tableMetadata) {
         let utilityFileSystem = NCUtilityFileSystem()
         if FileManager.default.fileExists(atPath: utilityFileSystem.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)) {
@@ -50,5 +52,7 @@ class NCShareAdvancePermissionHeader: UIView {
         fileName.textColor = NCBrandColor.shared.textColor
         info.textColor = NCBrandColor.shared.textColor2
         info.text = utilityFileSystem.transformedSize(metadata.size) + ", " + NCUtility().dateDiff(metadata.date as Date)
+
+        tagListView.addTags(Array(metadata.tags))
     }
 }

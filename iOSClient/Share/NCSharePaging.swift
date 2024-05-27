@@ -325,7 +325,7 @@ class NCSharePagingView: PagingView {
         if headerView.fullWidthImageView?.image == nil {
             NCSharePagingView.tagHeaderHeight = 80
         } else {
-            NCSharePagingView.tagHeaderHeight = 120
+            NCSharePagingView.tagHeaderHeight = 130
         }
 
         addSubview(headerView)
