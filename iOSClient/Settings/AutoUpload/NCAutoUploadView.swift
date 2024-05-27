@@ -147,7 +147,11 @@ struct NCAutoUploadView: View {
                     .font(.system(size: 16))
             })
         }, footer: {
-            Text(NSLocalizedString("_autoupload_filenamemask_footer_", comment: ""))
+            Text(
+                NSLocalizedString("_autoupload_filenamemask_footer_", comment: "")
+            +
+                "\n \n"
+            )
         })
     }
 }

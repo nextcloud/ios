@@ -41,6 +41,8 @@ class NCAutoUploadFileNamesModel: ObservableObject, ViewOnAppearHandling, Accoun
     @Published var changedName: String = ""
     /// The original file name.
     @Published var oldName: String = ""
+    /// The complete new file name.
+    @Published var fileName: String = ""
     let dateExample = Date()
     // MARK: - Initialization
     /// Initializes the view model with default values.
@@ -58,6 +60,11 @@ class NCAutoUploadFileNamesModel: ObservableObject, ViewOnAppearHandling, Accoun
         specifyFilename = keychain.getOriginalFileName(key: globalKey.keyFileNameAutoUploadType)
         changedName = keychain.getFileNameMask(key: globalKey.keyFileNameAutoUploadMask)
         oldName = keychain.getFileNameMask(key: globalKey.keyFileNameAutoUploadMask)
+        getFileName()
+    }
+    
+    func getFileName() {
+        fileName = previewFileName()
     }
     // MARK: - Methods
     /// Toggles maintaining the original filename.
