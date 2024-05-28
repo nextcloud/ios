@@ -40,7 +40,7 @@ struct NCSettings: View {
         Form {
             /// `Auto Upload` Section
             Section {
-                NavigationLink(destination: NCAutoUploadView(model: NCAutoUploadModel(controller: model.tabBarControllerBaseView))) {
+                NavigationLink(destination: NCAutoUploadView(model: NCAutoUploadModel(controller: model.controller))) {
                     HStack {
                         Image(systemName: "photo.circle")
                             .resizable()
@@ -240,4 +240,3 @@ struct E2EESection: View {
         })
     }
 }
-
