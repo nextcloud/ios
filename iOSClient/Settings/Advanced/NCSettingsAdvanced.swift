@@ -24,7 +24,7 @@ import SwiftUI
 import NextcloudKit
 
 struct NCSettingsAdvanced: View {
-    @ObservedObject var viewModel = NCSettingsAdvancedModel()
+    @ObservedObject var model: NCSettingsAdvancedModel
     /// State variable for indicating whether the exit alert is shown.
     @State var showExitAlert: Bool = false
     /// State variable for indicating whether the cache alert is shown.
@@ -35,25 +35,25 @@ struct NCSettingsAdvanced: View {
         Form {
             // Show Hidden Files
             Section(content: {
-                Toggle(NSLocalizedString("_show_hidden_files_", comment: ""), isOn: $viewModel.showHiddenFiles)
+                Toggle(NSLocalizedString("_show_hidden_files_", comment: ""), isOn: $model.showHiddenFiles)
                     .tint(Color(NCBrandColor.shared.brandElement))
-                    .onChange(of: viewModel.showHiddenFiles) { _ in
-                        viewModel.updateShowHiddenFiles()
+                    .onChange(of: model.showHiddenFiles) { _ in
+                        model.updateShowHiddenFiles()
                     }
                     .font(.system(size: 16))
             }, footer: { })
             // Most Compatible & Enable Live Photo
             Section(content: {
-                Toggle(NSLocalizedString("_format_compatibility_", comment: ""), isOn: $viewModel.mostCompatible)
+                Toggle(NSLocalizedString("_format_compatibility_", comment: ""), isOn: $model.mostCompatible)
                     .tint(Color(NCBrandColor.shared.brandElement))
-                    .onChange(of: viewModel.mostCompatible) { _ in
-                        viewModel.updateMostCompatible()
+                    .onChange(of: model.mostCompatible) { _ in
+                        model.updateMostCompatible()
                     }
                     .font(.system(size: 16))
-                Toggle(NSLocalizedString("_upload_mov_livephoto_", comment: ""), isOn: $viewModel.livePhoto)
+                Toggle(NSLocalizedString("_upload_mov_livephoto_", comment: ""), isOn: $model.livePhoto)
                     .tint(Color(NCBrandColor.shared.brandElement))
-                    .onChange(of: viewModel.livePhoto) { _ in
-                        viewModel.updateLivePhoto()
+                    .onChange(of: model.livePhoto) { _ in
+                        model.updateLivePhoto()
                     }
                     .font(.system(size: 16))
             }, footer: {
@@ -66,10 +66,10 @@ struct NCSettingsAdvanced: View {
             })
             // Remove from Camera Roll
             Section(content: {
-                Toggle(NSLocalizedString("_remove_photo_CameraRoll_", comment: ""), isOn: $viewModel.removeFromCameraRoll)
+                Toggle(NSLocalizedString("_remove_photo_CameraRoll_", comment: ""), isOn: $model.removeFromCameraRoll)
                     .tint(Color(NCBrandColor.shared.brandElement))
-                    .onChange(of: viewModel.removeFromCameraRoll) { _ in
-                        viewModel.updateRemoveFromCameraRoll()
+                    .onChange(of: model.removeFromCameraRoll) { _ in
+                        model.updateRemoveFromCameraRoll()
                     }
                     .font(.system(size: 16))
             }, footer: {
@@ -80,10 +80,10 @@ struct NCSettingsAdvanced: View {
             // Section : Files App
             if !NCBrandOptions.shared.disable_openin_file {
                 Section(content: {
-                    Toggle(NSLocalizedString("_disable_files_app_", comment: ""), isOn: $viewModel.appIntegration)
+                    Toggle(NSLocalizedString("_disable_files_app_", comment: ""), isOn: $model.appIntegration)
                         .tint(Color(NCBrandColor.shared.brandElement))
-                        .onChange(of: viewModel.appIntegration) { _ in
-                            viewModel.updateAppIntegration()
+                        .onChange(of: model.appIntegration) { _ in
+                            model.updateAppIntegration()
                         }
                         .font(.system(size: 16))
                 }, footer: {
@@ -102,17 +102,17 @@ struct NCSettingsAdvanced: View {
                             .font(Font.system(.body).weight(.light))
                             .frame(width: 25, height: 25)
                             .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
-                        Toggle(NSLocalizedString("_crashservice_title_", comment: ""), isOn: $viewModel.crashReporter)
+                        Toggle(NSLocalizedString("_crashservice_title_", comment: ""), isOn: $model.crashReporter)
                             .tint(Color(NCBrandColor.shared.brandElement))
-                            .onChange(of: viewModel.crashReporter) { _ in
-                                viewModel.updateCrashReporter()
+                            .onChange(of: model.crashReporter) { _ in
+                                model.updateCrashReporter()
                                 showCrashReporter.toggle()
                             }
                     }
                     .font(.system(size: 16))
                     .alert(NSLocalizedString("_crashservice_title_", comment: ""), isPresented: $showCrashReporter, actions: {
                         Button(NSLocalizedString("OK", comment: ""), role: .cancel) {
-                            viewModel.exitNextCloud(ext: showCrashReporter)
+                            model.exitNextCloud(ext: showCrashReporter)
                         }
                     }, message: {
                         Text(NSLocalizedString("_crashservice_alert_", comment: ""))
@@ -130,7 +130,7 @@ struct NCSettingsAdvanced: View {
                 Section(content: {
                     // View Log File
                     Button(action: {
-                        viewModel.viewLogFile()
+                        model.viewLogFile()
                     }, label: {
                         HStack {
                             Image(systemName: "doc.text.magnifyingglass")
@@ -146,7 +146,7 @@ struct NCSettingsAdvanced: View {
                     .tint(Color(UIColor.label))
                     // Clear Log File
                     Button(action: {
-                        viewModel.clearLogFile()
+                        model.clearLogFile()
                     }, label: {
                         HStack {
                             Image(systemName: "repeat")
@@ -160,7 +160,7 @@ struct NCSettingsAdvanced: View {
                         .font(.system(size: 16))
                     })
                     .tint(Color(UIColor.label))
-                    .alert(NSLocalizedString("_log_file_clear_alert_", comment: ""), isPresented: $viewModel.logFileCleared) {
+                    .alert(NSLocalizedString("_log_file_clear_alert_", comment: ""), isPresented: $model.logFileCleared) {
                         Button(NSLocalizedString("OK", comment: ""), role: .cancel) { }
                     }
                 }, header: {
@@ -168,14 +168,14 @@ struct NCSettingsAdvanced: View {
                 }, footer: { })
                 // Set Log Level() & Capabilities
                 Section {
-                    Picker(NSLocalizedString("_set_log_level_", comment: ""), selection: $viewModel.selectedLogLevel) {
+                    Picker(NSLocalizedString("_set_log_level_", comment: ""), selection: $model.selectedLogLevel) {
                         ForEach(LogLevel.allCases) { level in
                             Text(level.displayText).tag(level)
                         }
                     }
                     .font(.system(size: 16))
-                    .onChange(of: viewModel.selectedLogLevel) { _ in
-                        viewModel.updateSelectedLogLevel()
+                    .onChange(of: model.selectedLogLevel) { _ in
+                        model.updateSelectedLogLevel()
                     }
                     NavigationLink(destination: NCCapabilitiesView(capabilitiesStatus: NCCapabilitiesViewOO())) {
                         HStack {
@@ -193,15 +193,15 @@ struct NCSettingsAdvanced: View {
             }
             // Delete in Cache & Clear Cache
             Section(content: {
-                Picker(NSLocalizedString("_auto_delete_cache_files_", comment: ""), selection: $viewModel.selectedInterval) {
+                Picker(NSLocalizedString("_auto_delete_cache_files_", comment: ""), selection: $model.selectedInterval) {
                     ForEach(CacheDeletionInterval.allCases) { interval in
                         Text(interval.displayText).tag(interval)
                     }
                 }
                 .font(.system(size: 16))
                     .pickerStyle(.automatic)
-                    .onChange(of: viewModel.selectedInterval) { _ in
-                        viewModel.updateSelectedInterval()
+                    .onChange(of: model.selectedInterval) { _ in
+                        model.updateSelectedInterval()
                     }
                 Button(action: {
                     showCacheAlert.toggle()
@@ -220,14 +220,14 @@ struct NCSettingsAdvanced: View {
                 .tint(Color(UIColor.label))
                 .alert(NSLocalizedString("_want_delete_cache_", comment: ""), isPresented: $showCacheAlert) {
                     Button(NSLocalizedString("_yes_", comment: ""), role: .destructive) {
-                        viewModel.clearAllCacheRequest()
+                        model.clearAllCacheRequest()
                     }
                     Button(NSLocalizedString("_cancel_", comment: ""), role: .cancel) { }
                 }
             }, header: {
                 Text(NSLocalizedString("_delete_files_desc_", comment: ""))
             }, footer: {
-                Text(viewModel.footerTitle)
+                Text(model.footerTitle)
                     .font(.system(size: 12))
                     .multilineTextAlignment(.leading)
             })
@@ -250,7 +250,7 @@ struct NCSettingsAdvanced: View {
                 .tint(Color(UIColor.label))
                 .alert(NSLocalizedString("_want_exit_", comment: ""), isPresented: $showExitAlert) {
                     Button(NSLocalizedString("_ok_", comment: ""), role: .destructive) {
-                        viewModel.resetNextCloud(exit: showExitAlert)
+                        model.resetNextCloud(exit: showExitAlert)
                     }
                     Button(NSLocalizedString("_cancel_", comment: ""), role: .cancel) { }
                 }
@@ -264,10 +264,10 @@ struct NCSettingsAdvanced: View {
                     .multilineTextAlignment(.leading)
             })
         }.navigationBarTitle(NSLocalizedString("_advanced_", comment: ""))
-            .defaultViewModifier(viewModel)
+            .defaultViewModifier(model)
     }
 }
 
 #Preview {
-    NCSettingsAdvanced(viewModel: NCSettingsAdvancedModel(), showExitAlert: false, showCacheAlert: false)
+    NCSettingsAdvanced(model: NCSettingsAdvancedModel(controller: nil), showExitAlert: false, showCacheAlert: false)
 }

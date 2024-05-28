@@ -140,7 +140,7 @@ struct NCSettings: View {
             }
             /// `Advanced` Section
             Section {
-                NavigationLink(destination: NCSettingsAdvanced(viewModel: NCSettingsAdvancedModel(), showExitAlert: false, showCacheAlert: false)) {
+                NavigationLink(destination: NCSettingsAdvanced(model: NCSettingsAdvancedModel(controller: model.controller), showExitAlert: false, showCacheAlert: false)) {
                     HStack {
                         Image(systemName: "gear")
                             .resizable()

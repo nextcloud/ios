@@ -55,8 +55,11 @@ class NCSettingsAdvancedModel: ObservableObject, ViewOnAppearHandling, AccountUp
     @Published var selectedInterval: CacheDeletionInterval = .never
     /// State variable for storing the footer title, usually used for cache deletion.
     @Published var footerTitle: String = NSLocalizedString("_clear_cache_footer_", comment: "")
+
+    @Published var controller: UITabBarController?
     /// Initializes the view model with default values.
-    init() {
+    init(controller: UITabBarController?) {
+        self.controller = controller
         onViewAppear()
     }
     /// Updates the account information.
