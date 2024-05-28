@@ -29,6 +29,8 @@ import TOPasscodeViewController
 import LocalAuthentication
 
 class NCSettingsModel: ObservableObject, AccountUpdateHandling, ViewOnAppearHandling {
+    /// AppDelegate
+    let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
     /// Keychain access
     var keychain = NCKeychain()
     /// State to control the lock on/off section
@@ -41,8 +43,6 @@ class NCSettingsModel: ObservableObject, AccountUpdateHandling, ViewOnAppearHand
     @Published var privacyScreen: Bool = false
     /// State to control
     @Published var resetWrongAttempts: Bool = false
-    /// String url to download configuration files
-    @Published var configLink: String? = "https://shared02.opsone-cloud.ch/\(String(describing: NCManageDatabase.shared.getActiveAccount()?.urlBase))\(NCBrandOptions.shared.mobileconfig)"
     /// State to control the visibility of the acknowledgements view
     var isE2EEEnable: Bool = NCGlobal.shared.capabilityE2EEEnabled
     /// String containing the current version of E2EE
@@ -94,6 +94,7 @@ class NCSettingsModel: ObservableObject, AccountUpdateHandling, ViewOnAppearHand
     /// This function initiates a service call to download the configuration files
     /// using the URL provided in the `configLink` property.
     func getConfigFiles() {
+        let configLink = appDelegate.urlBase + NCBrandOptions.shared.mobileconfig
         let configServer = NCConfigServer()
         configServer.startService(url: URL(string: configLink)!)
     }
