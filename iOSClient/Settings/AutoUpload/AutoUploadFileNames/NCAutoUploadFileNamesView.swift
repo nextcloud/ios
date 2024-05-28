@@ -50,12 +50,13 @@ struct NCAutoUploadFileNamesView: View {
             .animation(.easeInOut)
             // Filename Preview
             fileNamePreview
-                .animation(.easeInOut)
+            .animation(.easeInOut)
         }.navigationBarTitle(NSLocalizedString("_mode_filename_", comment: ""))
             .defaultViewModifier(model)
             .padding(.top, 0)
             .transition(.slide)
     }
+
     @ViewBuilder
     var fileNamePreview: some View {
         if !model.maintainFilename {

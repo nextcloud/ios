@@ -23,6 +23,7 @@
 
 import SwiftUI
 import WebKit
+
 /// Returns a WebView preferably for Sheets in SwiftUI, using a UIViewRepresentable struct with WebKit library
 ///
 /// - Parameters:
@@ -33,6 +34,7 @@ struct NCBrowserWebView: View {
     var urlBase: URL
     var browserTitle: String
     @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
+
     var body: some View {
         VStack(spacing: 0) {
             HStack {

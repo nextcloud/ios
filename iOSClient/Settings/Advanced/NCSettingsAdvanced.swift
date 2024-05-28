@@ -31,6 +31,7 @@ struct NCSettingsAdvanced: View {
     @State var showCacheAlert: Bool = false
     /// State variable for indicating whether to disable crash reporter.
     @State var showCrashReporter: Bool = false
+
     var body: some View {
         Form {
             // Show Hidden Files
@@ -263,8 +264,9 @@ struct NCSettingsAdvanced: View {
                     .font(.system(size: 12))
                     .multilineTextAlignment(.leading)
             })
-        }.navigationBarTitle(NSLocalizedString("_advanced_", comment: ""))
-            .defaultViewModifier(model)
+        }
+        .navigationBarTitle(NSLocalizedString("_advanced_", comment: ""))
+        .defaultViewModifier(model)
     }
 }
 

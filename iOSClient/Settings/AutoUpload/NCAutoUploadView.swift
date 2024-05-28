@@ -27,6 +27,8 @@ import UIKit
 /// A view that allows the user to configure the `auto upload settings for Nextcloud`
 struct NCAutoUploadView: View {
     @ObservedObject var model: NCAutoUploadModel
+    @State private var scale: CGFloat = 1.0
+
     var body: some View {
         Form {
             // Auto Upload
@@ -43,7 +45,7 @@ struct NCAutoUploadView: View {
             /// If `autoUpload` state will be true, we will animate out the whole `autoUploadOnView` section
             if model.autoUpload {
                 autoUploadOnView
-                    .animation(.easeInOut)
+                .animation(.easeInOut)
             }
         }
         .navigationBarTitle(NSLocalizedString("_auto_upload_folder_", comment: ""))
@@ -52,6 +54,7 @@ struct NCAutoUploadView: View {
             Button(NSLocalizedString("_ok_", comment: ""), role: .cancel) { }
         }
     }
+
     @ViewBuilder
     var autoUploadOnView: some View {
         Section(content: {

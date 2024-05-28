@@ -36,6 +36,7 @@ struct NCSettings: View {
     @State private var showSourceCode = false
     /// Object of ViewModel of this view
     @ObservedObject var model: NCSettingsModel
+
     var body: some View {
         Form {
             /// `Auto Upload` Section
@@ -217,7 +218,8 @@ struct NCSettings: View {
                 Text("Nextcloud Liquid for iOS \(model.appVersion) © \(model.copyrightYear) \n\nNextcloud Server \(model.serverVersion)\n\(model.themingName) - \(model.themingSlogan)\n\n")
 
             })
-        }.navigationBarTitle("Settings")
+        }
+        .navigationBarTitle("Settings")
         .defaultViewModifier(model)
     }
 }
