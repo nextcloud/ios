@@ -25,8 +25,9 @@ import Foundation
 import NextcloudKit
 
 /// A model that allows the user to configure the `auto upload settings for Nextcloud`
-class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling, NCSelectDelegate, AccountUpdateHandling {
-    var appDelegate = AppDelegate()
+class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling, AccountUpdateHandling {
+    /// AppDelegate
+    let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
     /// A state variable that indicates whether auto upload is enabled or not
     @Published var autoUpload: Bool = false
     /// A state variable that indicates whether to open NCSelect View or not
@@ -54,7 +55,7 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling, NCSelectDelegat
     private let manageDatabase = NCManageDatabase.shared
     @Published var autoUploadPath = "\(NCManageDatabase.shared.getAccountAutoUploadFileName())"
     var controller: UITabBarController?
-    var serverUrl: String = NCUtilityFileSystem().getHomeServer(urlBase: AppDelegate().urlBase, userId: AppDelegate().userId)
+    var serverUrl: String = ""
     /// Initialization code to set up the ViewModel with the active account
     init(controller: UITabBarController?) {
         onViewAppear()
@@ -63,7 +64,7 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling, NCSelectDelegat
     // MARK: All functions
     /// A function to update the published properties based on the active account
     func onViewAppear() {
-        let activeAccount: tableAccount? = NCManageDatabase.shared.getActiveAccount()
+        let activeAccount: tableAccount? = manageDatabase.getActiveAccount()
         if let account = activeAccount {
             autoUpload = account.autoUpload
             autoUploadImage = account.autoUploadImage
@@ -73,6 +74,7 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling, NCSelectDelegat
             autoUploadFull = account.autoUploadFull
             autoUploadCreateSubfolder = account.autoUploadCreateSubfolder
             autoUploadSubfolderGranularity = Granularity(rawValue: account.autoUploadSubfolderGranularity) ?? .monthly
+            serverUrl = NCUtilityFileSystem().getHomeServer(urlBase: appDelegate.urlBase, userId: appDelegate.userId)
             if autoUpload {
                 requestAuthorization()
             }
@@ -136,17 +138,10 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling, NCSelectDelegat
     ///
     /// - Returns: The path for auto-upload.
     func returnPath() -> String {
-        let path = NCManageDatabase.shared.getAccountAutoUploadFileName()
-        let userEmail = NCManageDatabase.shared.getActiveAccount()?.email
-
-        // Check if userEmail is a present in userEmail
-        guard let range = path.range(of: userEmail ?? "") else {
-            return "" // Return etymp if userEmail is not found in path
-        }
-        // Get the range of the substring after string2
-        let uploadPath = Range(uncheckedBounds: (range.upperBound, path.endIndex))
-        // Extract the uploadPath
-        return path.substring(with: uploadPath)
+        let autoUploadPath = manageDatabase.getAccountAutoUploadDirectory(urlBase: appDelegate.urlBase, userId: appDelegate.userId, account: appDelegate.account) + "/" + manageDatabase.getAccountAutoUploadFileName()
+        let homeServer = NCUtilityFileSystem().getHomeServer(urlBase: appDelegate.urlBase, userId: appDelegate.userId)
+        let path = autoUploadPath.replacingOccurrences(of: homeServer, with: "")
+        return path
     }
     /// Sets the auto-upload directory based on the provided server URL.
     ///
@@ -154,25 +149,19 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling, NCSelectDelegat
     /// serverUrl: The server URL to set as the auto-upload directory.
     func setAutoUploadDirectory(serverUrl: String?) {
         guard let serverUrl = serverUrl else { return }
-
-        // It checks if the provided server URL is the home server. If it is, an error is set, and the function returns early.
         let home = NCUtilityFileSystem().getHomeServer(urlBase: appDelegate.urlBase, userId: appDelegate.userId)
-        if serverUrl == home {
+        if home == serverUrl {
             let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: NSLocalizedString("_autoupload_error_select_folder_", comment: ""), responseData: nil)
-            self.error = error.errorDescription
-            self.showErrorAlert = true
-            return
-        }
-
-        // Otherwise, it updates the auto-upload directory in the database
-        NCManageDatabase.shared.setAccountAutoUploadFileName(serverUrl)
-        if let path = NCUtilityFileSystem().deleteLastPath(serverUrlPath: serverUrl, home: home) {
-            NCManageDatabase.shared.setAccountAutoUploadDirectory(path, urlBase: appDelegate.urlBase, userId: appDelegate.userId, account: appDelegate.account)
+            NCContentPresenter().messageNotification("_error_", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: .error)
+        } else {
+            let fileName = (serverUrl as NSString).lastPathComponent
+            NCManageDatabase.shared.setAccountAutoUploadFileName(fileName)
+            if let path = NCUtilityFileSystem().deleteLastPath(serverUrlPath: serverUrl, home: home) {
+                NCManageDatabase.shared.setAccountAutoUploadDirectory(path, urlBase: appDelegate.urlBase, userId: appDelegate.userId, account: appDelegate.account)
+            }
         }
         onViewAppear()
     }
-    // MARK: NCSelectDelegate
-    func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String, items: [Any], overwrite: Bool, copy: Bool, move: Bool) {}
 }
 
 /// An enum that represents the granularity of the subfolders for auto upload
