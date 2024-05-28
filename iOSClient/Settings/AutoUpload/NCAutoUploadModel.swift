@@ -54,8 +54,11 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling, AccountUpdateHa
     @Published var error: String = ""
     private let manageDatabase = NCManageDatabase.shared
     @Published var autoUploadPath = "\(NCManageDatabase.shared.getAccountAutoUploadFileName())"
+    /// Root View Controller
     var controller: UITabBarController?
+    /// A variable user for change the auto upload directory
     var serverUrl: String = ""
+
     /// Initialization code to set up the ViewModel with the active account
     init(controller: UITabBarController?) {
         onViewAppear()

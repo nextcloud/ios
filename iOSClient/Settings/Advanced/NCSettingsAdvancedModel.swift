@@ -28,7 +28,8 @@ import Combine
 import SwiftUI
 
 class NCSettingsAdvancedModel: ObservableObject, ViewOnAppearHandling, AccountUpdateHandling {
-
+    /// AppDelegate
+    let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
     /// Keychain access
     var keychain = NCKeychain()
     /// Callback to notify the view to present the UIViewController
@@ -55,8 +56,9 @@ class NCSettingsAdvancedModel: ObservableObject, ViewOnAppearHandling, AccountUp
     @Published var selectedInterval: CacheDeletionInterval = .never
     /// State variable for storing the footer title, usually used for cache deletion.
     @Published var footerTitle: String = NSLocalizedString("_clear_cache_footer_", comment: "")
-
+    /// Root View Controller
     @Published var controller: UITabBarController?
+
     /// Initializes the view model with default values.
     init(controller: UITabBarController?) {
         self.controller = controller
@@ -116,36 +118,28 @@ class NCSettingsAdvancedModel: ObservableObject, ViewOnAppearHandling, AccountUp
         keychain.cleanUpDay = selectedInterval.rawValue
     }
     /// Clears cache associated with the specified account.
-    ///
-    /// - Parameter
-    /// acount: The account identifier.
-    func clearCache(_ account: String) {
+    func clearCache() {
+        NCActivityIndicator.shared.startActivity(style: .large, blurEffect: true)
         // Cancel all networking tasks
         NCNetworking.shared.cancelAllTask()
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-            let ufs = NCUtilityFileSystem()
-            // Clear URL cache
             URLCache.shared.memoryCapacity = 0
             URLCache.shared.diskCapacity = 0
-            // Clear database and remove directories
-            NCManageDatabase.shared.clearDatabase(account: account, removeAccount: false)
+
+            NCManageDatabase.shared.clearDatabase(account: self.appDelegate.account, removeAccount: false)
+
+            let ufs = NCUtilityFileSystem()
             ufs.removeGroupDirectoryProviderStorage()
             ufs.removeGroupLibraryDirectory()
             ufs.removeDocumentsDirectory()
             ufs.removeTemporaryDirectory()
             ufs.createDirectoryStandard()
-            NCImageCache.shared.createMediaCache(account: account, withCacheSize: true)
-            // Stop activity indicator and recalculate cache size
+
+            NCAutoUpload.shared.alignPhotoLibrary(viewController: self.controller)
+            NCImageCache.shared.createMediaCache(account: self.appDelegate.account, withCacheSize: true)
+
             NCActivityIndicator.shared.stop()
             self.calculateSize()
-        }
-    }
-
-    /// Initiates cache clearance after starting the activity indicator.
-    func clearAllCacheRequest() {
-        NCActivityIndicator.shared.startActivity(style: .large, blurEffect: true)
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-            self.clearCache(AppDelegate().account)
         }
     }
 

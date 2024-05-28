@@ -47,6 +47,7 @@ class NCSettingsModel: ObservableObject, AccountUpdateHandling, ViewOnAppearHand
     var isE2EEEnable: Bool = NCGlobal.shared.capabilityE2EEEnabled
     /// String containing the current version of E2EE
     @Published var versionE2EE: String = NCGlobal.shared.capabilityE2EEApiVersion
+    /// Root View Controller
     @Published var controller: UITabBarController?
 
     // MARK: - String Values for View
@@ -56,6 +57,7 @@ class NCSettingsModel: ObservableObject, AccountUpdateHandling, ViewOnAppearHand
     var serverVersion: String = NCGlobal.shared.capabilityServerVersion
     var themingName: String = NCGlobal.shared.capabilityThemingName
     var themingSlogan: String = NCGlobal.shared.capabilityThemingSlogan
+
     /// Initializes the view model with default values.
     init(controller: UITabBarController?) {
         self.controller = controller

@@ -220,7 +220,7 @@ struct NCSettingsAdvanced: View {
                 .tint(Color(UIColor.label))
                 .alert(NSLocalizedString("_want_delete_cache_", comment: ""), isPresented: $showCacheAlert) {
                     Button(NSLocalizedString("_yes_", comment: ""), role: .destructive) {
-                        model.clearAllCacheRequest()
+                        model.clearCache()
                     }
                     Button(NSLocalizedString("_cancel_", comment: ""), role: .cancel) { }
                 }
