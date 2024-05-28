@@ -2425,8 +2425,8 @@
 		F78E98D52C008CF200961613 /* AutoUpload */ = {
 			isa = PBXGroup;
 			children = (
-				F78E98D62C008CF200961613 /* NCAutoUploadModel.swift */,
 				F78E98D72C008CF200961613 /* AutoUploadFileNames */,
+				F78E98D62C008CF200961613 /* NCAutoUploadModel.swift */,
 				F78E98DA2C008CF200961613 /* NCAutoUploadView.swift */,
 			);
 			path = AutoUpload;

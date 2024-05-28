@@ -34,6 +34,7 @@ struct NCAutoUploadFileNamesView: View {
                     .font(.system(size: 16))
                     .onChange(of: model.maintainFilename, perform: { newValue in
                         model.toggleMaintainOriginalFilename(newValue: newValue)
+                        model.getFileName()
                     })
                 // Filename
                 if !model.maintainFilename {
@@ -41,53 +42,62 @@ struct NCAutoUploadFileNamesView: View {
                         .font(.system(size: 16))
                         .onChange(of: model.specifyFilename, perform: { newValue in
                             model.toggleAddFilenameType(newValue: newValue)
+                            model.getFileName()
                         })
                 }
             }
             .transition(.slide)
             .animation(.easeInOut)
             // Filename Preview
-            if !model.maintainFilename {
-                Section(content: {
-                    HStack {
-                        Text(NSLocalizedString("_filename_", comment: ""))
-                            .font(.system(size: 17))
-                            .foregroundColor(Color(UIColor.label))
-                            .fontWeight(.medium)
-                            .background(Color(UIColor.secondarySystemGroupedBackground))
-                        Spacer()
-                        TextField(NSLocalizedString("_filename_header_", comment: ""), text: $model.changedName)
-                            .onSubmit {
-                                model.submitChangedName()
-                            }
-                            .font(.system(size: 15))
-                            .foregroundColor(Color(UIColor.label))
-                            .background(Color(UIColor.secondarySystemGroupedBackground))
-                            .multilineTextAlignment(.trailing)
-                    }
-                    .font(.system(size: 16))
-                    Text("\(model.previewFileName())")
-                        .font(.system(size: 16))
-                }, header: {
-                    Text(NSLocalizedString("_filename_", comment: ""))
-                }, footer: {
-                    Text(NSLocalizedString("_preview_filename_footer_", comment: ""))
-                })
-            } else {
-                Section(content: {
-                    Text(NSLocalizedString("_default_filename_image_", comment: ""))
-                }, header: {
-                    Text(NSLocalizedString("_filename_header_", comment: ""))
-                }, footer: {
-                    Text(NSLocalizedString("_default_preview_filename_footer_", comment: ""))
-                })
-            }
+            fileNamePreview
+                .animation(.easeInOut)
         }.navigationBarTitle(NSLocalizedString("_mode_filename_", comment: ""))
-            .onAppear {
-                model.onViewAppear()
-            }
+            .defaultViewModifier(model)
             .padding(.top, 0)
             .transition(.slide)
+    }
+    @ViewBuilder
+    var fileNamePreview: some View {
+        if !model.maintainFilename {
+            Section(content: {
+                HStack {
+                    Text(NSLocalizedString("_filename_", comment: ""))
+                        .font(.system(size: 17))
+                        .foregroundColor(Color(UIColor.label))
+                        .fontWeight(.medium)
+                        .background(Color(UIColor.secondarySystemGroupedBackground))
+                    Spacer()
+                    TextField(NSLocalizedString("_filename_header_", comment: ""), text: $model.changedName)
+                        .onSubmit {
+                            model.submitChangedName()
+                        }
+                        .onChange(of: model.changedName, perform: { _ in
+                            model.getFileName()
+                        })
+
+                        .font(.system(size: 15))
+                        .foregroundColor(Color(UIColor.label))
+                        .background(Color(UIColor.secondarySystemGroupedBackground))
+                        .multilineTextAlignment(.trailing)
+                }
+                .font(.system(size: 16))
+                Text("\(model.fileName)")
+                    .font(.system(size: 16))
+            }, header: {
+                Text(NSLocalizedString("_filename_", comment: ""))
+            }, footer: {
+                Text(NSLocalizedString("_preview_filename_footer_", comment: ""))
+            })
+        } else {
+            Section(content: {
+                Text(NSLocalizedString("_default_filename_image_", comment: ""))
+            }, header: {
+                Text(NSLocalizedString("_filename_", comment: ""))
+            }, footer: {
+                Text(NSLocalizedString("_default_preview_filename_footer_", comment: ""))
+            })
+        }
+
     }
 }
 

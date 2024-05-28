@@ -22,6 +22,7 @@
 //
 
 import Foundation
+import SwiftUI
 
 /// A protocol defining methods to handle view appearance events.
 protocol ViewOnAppearHandling: ObservableObject {
@@ -29,10 +30,16 @@ protocol ViewOnAppearHandling: ObservableObject {
     func onViewAppear()
 }
 
-typealias DefaultViewModelRepresentable = AccountUpdateHandling & ViewOnAppearHandling
-
 /// A protocol defining methods to handle account updates.
 protocol AccountUpdateHandling {
     /// Updates the account information.
     func updateAccount()
+}
+
+typealias DefaultViewModelRepresentable = AccountUpdateHandling & ViewOnAppearHandling
+
+extension View {
+    @discardableResult func defaultViewModifier(_ model: some DefaultViewModelRepresentable) -> some View {
+        return modifier(DefaultViewModifier(viewModel: model))
+    }
 }

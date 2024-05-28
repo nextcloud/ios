@@ -31,7 +31,7 @@ import SwiftUI
 ///   - browserTitle: A String value to show as the title of the webView
 struct NCAcknowledgementsView: View {
     @State private var text = ""
-    @Binding var showText: Bool
+    @State var showText: Bool = false
     var browserTitle: String
     @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
 
@@ -47,7 +47,7 @@ struct NCAcknowledgementsView: View {
                 .padding()
                 Spacer()
                 Button(action: {
-                    self.showText = false
+                    presentationMode.wrappedValue.dismiss()
                 }) {
                     ZStack {
                         Image(systemName: "xmark")

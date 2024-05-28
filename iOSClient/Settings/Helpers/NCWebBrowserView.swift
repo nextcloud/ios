@@ -30,7 +30,6 @@ import WebKit
 ///   - urlBase: A URL value to which our view will open initially
 ///   - browserTitle: A String value to show as the title of the webView
 struct NCBrowserWebView: View {
-    @Binding var isPresented: Bool
     var urlBase: URL
     var browserTitle: String
     @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
@@ -46,7 +45,7 @@ struct NCBrowserWebView: View {
                 .padding()
                 Spacer()
                 Button(action: {
-                    self.isPresented = false
+                    presentationMode.wrappedValue.dismiss()
                 }) {
                     ZStack {
                         Image(systemName: "xmark")

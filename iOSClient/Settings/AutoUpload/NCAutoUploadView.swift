@@ -47,9 +47,7 @@ struct NCAutoUploadView: View {
             }
         }
         .navigationBarTitle(NSLocalizedString("_auto_upload_folder_", comment: ""))
-        .onAppear {
-            model.onViewAppear()
-        }
+        .defaultViewModifier(model)
         .alert(model.error, isPresented: $model.showErrorAlert) {
             Button(NSLocalizedString("_ok_", comment: ""), role: .cancel) { }
         }
@@ -149,11 +147,11 @@ struct NCAutoUploadView: View {
                     .font(.system(size: 16))
             })
         }, footer: {
-            Text(NSLocalizedString("_autoupload_filenamemask_footer_", comment: ""))
+            Text(
+                NSLocalizedString("_autoupload_filenamemask_footer_", comment: "")
+            +
+                "\n \n"
+            )
         })
     }
-}
-
-#Preview {
-    NCAutoUploadView(model: NCAutoUploadModel())
 }
