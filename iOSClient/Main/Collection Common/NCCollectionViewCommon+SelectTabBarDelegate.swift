@@ -21,6 +21,7 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+import UIKit
 import Foundation
 import NextcloudKit
 
@@ -161,7 +162,7 @@ extension NCCollectionViewCommon: NCCollectionViewCommonSelectTabBarDelegate {
     func saveLayout(_ layoutForView: NCDBLayoutForView) {
         NCManageDatabase.shared.setLayoutForView(layoutForView: layoutForView)
         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSource)
-        setNavigationRightItems(enableMenu: false)
+        setNavigationRightItems()
     }
 
     func getSelectedMetadatas() -> [tableMetadata] {
@@ -176,7 +177,17 @@ extension NCCollectionViewCommon: NCCollectionViewCommonSelectTabBarDelegate {
     func setEditMode(_ editMode: Bool) {
         isEditMode = editMode
         selectOcId.removeAll()
-        setNavigationRightItems(enableMenu: !editMode)
+
+        if editMode {
+            navigationItem.leftBarButtonItems = nil
+        } else {
+            setNavigationLeftItems()
+        }
+        setNavigationRightItems()
+
+        navigationController?.interactivePopGestureRecognizer?.isEnabled = !editMode
+        navigationItem.hidesBackButton = editMode
+        searchController(enabled: !editMode)
         collectionView.reloadData()
     }
 }

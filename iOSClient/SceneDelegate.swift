@@ -21,7 +21,7 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-import Foundation
+import UIKit
 import NextcloudKit
 import WidgetKit
 import SwiftEntryKit
@@ -63,7 +63,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
 
     func sceneDidDisconnect(_ scene: UIScene) {
-        NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Scene did disconnect")
+        print("[DEBUG] Scene did disconnect")
     }
 
     func sceneWillEnterForeground(_ scene: UIScene) {
