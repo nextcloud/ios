@@ -53,10 +53,12 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling, NCSelectDelegat
     @Published var error: String = ""
     private let manageDatabase = NCManageDatabase.shared
     @Published var autoUploadPath = "\(NCManageDatabase.shared.getAccountAutoUploadFileName())"
+    var controller: UITabBarController?
     var serverUrl: String = NCUtilityFileSystem().getHomeServer(urlBase: AppDelegate().urlBase, userId: AppDelegate().userId)
     /// Initialization code to set up the ViewModel with the active account
-    init() {
+    init(controller: UITabBarController?) {
         onViewAppear()
+        self.controller = controller
     }
     // MARK: All functions
     /// A function to update the published properties based on the active account
@@ -108,6 +110,13 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling, NCSelectDelegat
     /// Updates the auto-upload full content setting.
     func handleAutoUploadFullChange(newValue: Bool) {
         updateAccountProperty(\.autoUploadFull, value: newValue)
+        if newValue {
+            NCAutoUpload.shared.autoUploadFullPhotos(viewController: self.controller, log: "Auto upload full")
+            NCManageDatabase.shared.setAccountAutoUploadProperty("autoUploadFull", state: true)
+        } else {
+            NCManageDatabase.shared.clearMetadatasUpload(account: appDelegate.account)
+            NCManageDatabase.shared.setAccountAutoUploadProperty("autoUploadFull", state: false)
+        }
     }
     /// Updates the auto-upload create subfolder setting.
     func handleAutoUploadCreateSubfolderChange(newValue: Bool) {

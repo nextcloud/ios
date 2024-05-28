@@ -35,12 +35,12 @@ struct NCSettings: View {
     /// State to control the visibility of the Source Code  view
     @State private var showSourceCode = false
     /// Object of ViewModel of this view
-    @ObservedObject var model = NCSettingsModel()
+    @ObservedObject var model: NCSettingsModel
     var body: some View {
         Form {
             /// `Auto Upload` Section
             Section {
-                NavigationLink(destination: NCAutoUploadView(model: NCAutoUploadModel())) {
+                NavigationLink(destination: NCAutoUploadView(model: NCAutoUploadModel(controller: model.tabBarControllerBaseView))) {
                     HStack {
                         Image(systemName: "photo.circle")
                             .resizable()
@@ -157,7 +157,7 @@ struct NCSettings: View {
             Section(header: Text(NSLocalizedString("_information_", comment: "")), content: {
                 // Acknowledgements
                 Button(action: {
-                    showAcknowledgements = true
+                    showAcknowledgements.toggle()
                 }, label: {
                     HStack {
                         Image("acknowledgements")
@@ -171,11 +171,11 @@ struct NCSettings: View {
                 })
                 .tint(Color(NCBrandColor.shared.textColor))
                 .sheet(isPresented: $showAcknowledgements) {
-                    NCAcknowledgementsView(showText: $showAcknowledgements, browserTitle: NSLocalizedString("_acknowledgements_", comment: ""))
+                    NCAcknowledgementsView(browserTitle: NSLocalizedString("_acknowledgements_", comment: ""))
                 }
                 // Terms & Privacy Conditions
                 Button(action: {
-                    showBrowser = true
+                    showBrowser.toggle()
                 }, label: {
                     HStack {
                         Image(systemName: "shield.checkerboard")
@@ -190,11 +190,11 @@ struct NCSettings: View {
                 })
                 .tint(Color(NCBrandColor.shared.textColor))
                 .sheet(isPresented: $showBrowser) {
-                    NCBrowserWebView(isPresented: $showBrowser, urlBase: URL(string: NCBrandOptions.shared.privacy)!, browserTitle: NSLocalizedString("_privacy_legal_", comment: ""))
+                    NCBrowserWebView(urlBase: URL(string: NCBrandOptions.shared.privacy)!, browserTitle: NSLocalizedString("_privacy_legal_", comment: ""))
                 }
                 // Source Code
                 Button(action: {
-                    showSourceCode = true
+                    showSourceCode.toggle()
                 }, label: {
                     HStack {
                         Image("gitHub")
@@ -208,7 +208,7 @@ struct NCSettings: View {
                 })
                 .tint(Color(NCBrandColor.shared.textColor))
                 .sheet(isPresented: $showSourceCode) {
-                    NCBrowserWebView(isPresented: $showSourceCode, urlBase: URL(string: NCBrandOptions.shared.sourceCode)!, browserTitle: NSLocalizedString("_source_code_", comment: ""))
+                    NCBrowserWebView(urlBase: URL(string: NCBrandOptions.shared.sourceCode)!, browserTitle: NSLocalizedString("_source_code_", comment: ""))
                 }
             })
             /// `Watermark` Section
@@ -238,12 +238,6 @@ struct E2EESection: View {
                 .font(.system(size: 16))
             }
         })
-    }
-}
-
-struct NCSettings_Previews: PreviewProvider {
-    static var previews: some View {
-        NCSettings(model: NCSettingsModel())
     }
 }
 
