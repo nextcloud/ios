@@ -22,6 +22,7 @@ struct NCLoginPoll: View {
     var body: some View {
         VStack {
             Text("Please continue in your browser")
+                .foregroundStyle(.white)
 
             HStack {
                 Button("Cancel") {
@@ -29,14 +30,18 @@ struct NCLoginPoll: View {
                 }
                 .disabled(loginManager.isLoading || cancelButtonDisabled)
                 .buttonStyle(.bordered)
+                .tint(.white)
 
                 Button("Retry") {
                     loginManager.openLoginInBrowser()
                 }
                 .buttonStyle(.borderedProminent)
+                .foregroundStyle(Color(NCBrandColor.shared.customer))
+                .tint(.white)
             }
             .padding()
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
         .onChange(of: loginManager.pollFinished) { value in
             if value {
                 let window = UIApplication.shared.firstWindow
@@ -56,10 +61,11 @@ struct NCLoginPoll: View {
                 }
             }
         }
-        .onAppear {
-            loginManager.configure(loginFlowV2Token: loginFlowV2Token, loginFlowV2Endpoint: loginFlowV2Endpoint, loginFlowV2Login: loginFlowV2Login)
-            loginManager.openLoginInBrowser()
-        }
+        .background(Color(NCBrandColor.shared.customer))
+//        .onAppear {
+//            loginManager.configure(loginFlowV2Token: loginFlowV2Token, loginFlowV2Endpoint: loginFlowV2Endpoint, loginFlowV2Login: loginFlowV2Login)
+//            loginManager.openLoginInBrowser()
+//        }
         .interactiveDismissDisabled()
     }
 }
