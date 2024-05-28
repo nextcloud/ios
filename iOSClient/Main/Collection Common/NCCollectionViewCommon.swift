@@ -160,6 +160,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         navigationController?.setNavigationBarHidden(false, animated: true)
         navigationItem.title = titleCurrentFolder
 
+        isEditMode = false
         setNavigationLeftItems()
         setNavigationRightItems()
 
@@ -214,7 +215,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
         NCNetworking.shared.cancelUnifiedSearchFiles()
         dismissTip()
-        setEditMode(false)
 
         // Cancel Queue & Retrieves Properties
         NCNetworking.shared.downloadThumbnailQueue.cancelAll()
@@ -651,7 +651,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         navigationItem.title = titleCurrentFolder
     }
 
-    func setNavigationRightItems(enableMenu: Bool = false) {
+    func setNavigationRightItems() {
         guard layoutKey != NCGlobal.shared.layoutViewTransfers else { return }
         let isTabBarHidden = self.tabBarController?.tabBar.isHidden ?? true
         let isTabBarSelectHidden = tabBarSelect.isHidden()
@@ -748,22 +748,18 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             navigationItem.rightBarButtonItems = [select]
         } else {
             tabBarSelect.hide()
-            if navigationItem.rightBarButtonItems == nil || enableMenu {
-                let menuButton = UIBarButtonItem(image: utility.loadImage(named: "ellipsis.circle"), menu: UIMenu(children: createMenuActions()))
-                menuButton.tintColor = NCBrandColor.shared.iconImageColor
-                if layoutKey == NCGlobal.shared.layoutViewFiles {
-                    let notification = UIBarButtonItem(image: utility.loadImage(named: "bell"), style: .plain) {
-                        if let viewController = UIStoryboard(name: "NCNotification", bundle: nil).instantiateInitialViewController() as? NCNotification {
-                            self.navigationController?.pushViewController(viewController, animated: true)
-                        }
+            let menuButton = UIBarButtonItem(image: utility.loadImage(named: "ellipsis.circle"), menu: UIMenu(children: createMenuActions()))
+            menuButton.tintColor = NCBrandColor.shared.iconImageColor
+            if layoutKey == NCGlobal.shared.layoutViewFiles {
+                let notification = UIBarButtonItem(image: utility.loadImage(named: "bell"), style: .plain) {
+                    if let viewController = UIStoryboard(name: "NCNotification", bundle: nil).instantiateInitialViewController() as? NCNotification {
+                        self.navigationController?.pushViewController(viewController, animated: true)
                     }
-                    notification.tintColor = NCBrandColor.shared.iconImageColor
-                    navigationItem.rightBarButtonItems = [menuButton, notification]
-                } else {
-                    navigationItem.rightBarButtonItems = [menuButton]
                 }
+                notification.tintColor = NCBrandColor.shared.iconImageColor
+                navigationItem.rightBarButtonItems = [menuButton, notification]
             } else {
-                navigationItem.rightBarButtonItems?.first?.menu = navigationItem.rightBarButtonItems?.first?.menu?.replacingChildren(createMenuActions())
+                navigationItem.rightBarButtonItems = [menuButton]
             }
         }
         // fix, if the tabbar was hidden before the update, set it in hidden
@@ -783,30 +779,37 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
     // MARK: - SEARCH
 
+    func searchController(enabled: Bool) {
+        guard enableSearchBar else { return }
+        searchController?.searchBar.isUserInteractionEnabled = enabled
+        if enabled {
+            searchController?.searchBar.alpha = 1
+        } else {
+            searchController?.searchBar.alpha = 0.3
+
+        }
+    }
+
     func updateSearchResults(for searchController: UISearchController) {
         self.literalSearch = searchController.searchBar.text
     }
 
     func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
-
         isSearchingMode = true
         self.providers?.removeAll()
         self.dataSource.clearDataSource()
         self.collectionView.reloadData()
-
         // TIP
         dismissTip()
     }
 
     func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {
-
         if isSearchingMode && self.literalSearch?.count ?? 0 >= 2 {
             reloadDataSourceNetwork()
         }
     }
 
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
-
         DispatchQueue.global().async {
             NCNetworking.shared.cancelUnifiedSearchFiles()
             self.isSearchingMode = false
@@ -824,14 +827,12 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     }
 
     func tapShareListItem(with objectId: String, indexPath: IndexPath, sender: Any) {
-        if isEditMode { return }
         guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(objectId) else { return }
 
         NCActionCenter.shared.openShare(viewController: self, metadata: metadata, page: .sharing)
     }
 
     func tapMoreGridItem(with objectId: String, namedButtonMore: String, image: UIImage?, indexPath: IndexPath, sender: Any) {
-        if isEditMode { return }
         guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(objectId) else { return }
 
         if namedButtonMore == NCGlobal.shared.buttonMoreMore || namedButtonMore == NCGlobal.shared.buttonMoreLock {
@@ -1704,7 +1705,9 @@ extension NCCollectionViewCommon: UICollectionViewDelegateFlowLayout {
 
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
         var height: CGFloat = 0
-        if dataSource.getMetadataSourceForAllSections().isEmpty {
+        if isEditMode {
+            return CGSize.zero
+        } else if dataSource.getMetadataSourceForAllSections().isEmpty {
             height = NCGlobal.shared.getHeightHeaderEmptyData(view: view, portraitOffset: emptyDataPortaitOffset, landscapeOffset: emptyDataLandscapeOffset, isHeaderMenuTransferViewEnabled: isHeaderMenuTransferViewEnabled())
         } else {
             let (heightHeaderCommands, heightHeaderRichWorkspace, heightHeaderSection) = getHeaderHeight(section: section)
