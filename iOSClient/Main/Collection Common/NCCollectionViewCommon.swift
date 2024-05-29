@@ -746,7 +746,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                 self.setEditMode(false)
             }
             navigationItem.rightBarButtonItems = [select]
-        } else {
+        } else if navigationItem.rightBarButtonItems == nil {
             tabBarSelect.hide()
             let menuButton = UIBarButtonItem(image: utility.loadImage(named: "ellipsis.circle"), menu: UIMenu(children: createMenuActions()))
             menuButton.tintColor = NCBrandColor.shared.iconImageColor
@@ -761,6 +761,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             } else {
                 navigationItem.rightBarButtonItems = [menuButton]
             }
+        } else {
+            navigationItem.rightBarButtonItems?.first?.menu = navigationItem.rightBarButtonItems?.first?.menu?.replacingChildren(createMenuActions())
         }
         // fix, if the tabbar was hidden before the update, set it in hidden
         if isTabBarHidden, isTabBarSelectHidden {
