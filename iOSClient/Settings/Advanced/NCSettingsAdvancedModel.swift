@@ -64,6 +64,7 @@ class NCSettingsAdvancedModel: ObservableObject, ViewOnAppearHandling {
         self.controller = controller
         onViewAppear()
     }
+
     /// Triggered when the view appears.
     func onViewAppear() {
         // Initialize all properties with values from the keychain or defaults
