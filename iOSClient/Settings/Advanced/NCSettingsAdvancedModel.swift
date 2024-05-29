@@ -55,7 +55,7 @@ class NCSettingsAdvancedModel: ObservableObject, ViewOnAppearHandling {
     /// State variable for storing the selected cache deletion interval.
     @Published var selectedInterval: CacheDeletionInterval = .never
     /// State variable for storing the footer title, usually used for cache deletion.
-    @Published var footerTitle: String = NSLocalizedString("_clear_cache_footer_", comment: "")
+    @Published var footerTitle: String = ""
     /// Root View Controller
     @Published var controller: UITabBarController?
 
@@ -151,7 +151,7 @@ class NCSettingsAdvancedModel: ObservableObject, ViewOnAppearHandling {
     /// exit: Boolean indicating whether to reset the application.
     func resetNextCloud(exit: Bool) {
         if exit {
-            AppDelegate().resetApplication()
+            self.appDelegate.resetApplication()
         } else { }
     }
     /// Exits the Nextcloud application if specified.
@@ -222,11 +222,11 @@ extension LogLevel {
 /// An enum that represents the intervals for cache deletion
 enum CacheDeletionInterval: Int, CaseIterable, Identifiable {
     case never = 0
-    case oneYear = 1
-    case sixMonths = 2
-    case threeMonths = 3
-    case oneMonth = 4
-    case oneWeek = 5
+    case oneYear = 365
+    case sixMonths = 180
+    case threeMonths = 90
+    case oneMonth = 30
+    case oneWeek = 7
     var id: Int { self.rawValue }
 }
 
