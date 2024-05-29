@@ -78,6 +78,11 @@ class NCTrashSelectTabBar: ObservableObject {
     func update(selectOcId: [String]) {
         isSelectedEmpty = selectOcId.isEmpty
     }
+
+    func isHidden() -> Bool {
+        guard let hostingController else { return false }
+        return hostingController.view.isHidden
+    }
 }
 
 struct NCTrashSelectTabBarView: View {
