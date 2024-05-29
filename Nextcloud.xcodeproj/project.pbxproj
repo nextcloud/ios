@@ -680,8 +680,7 @@
 		F78E98ED2C008CF200961613 /* NCAcknowledgementsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F78E98DD2C008CF200961613 /* NCAcknowledgementsView.swift */; };
 		F78E98EE2C008CF200961613 /* NCSettingsModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F78E98DF2C008CF200961613 /* NCSettingsModel.swift */; };
 		F78E98EF2C008CF200961613 /* NCSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = F78E98E02C008CF200961613 /* NCSettings.swift */; };
-		F78E98F02C008CF200961613 /* DefaultViewModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = F78E98E22C008CF200961613 /* DefaultViewModifier.swift */; };
-		F78E98F12C008CF200961613 /* ViewOnAppearHandling.swift in Sources */ = {isa = PBXBuildFile; fileRef = F78E98E42C008CF200961613 /* ViewOnAppearHandling.swift */; };
+		F78E98F12C008CF200961613 /* settingsServices.swift in Sources */ = {isa = PBXBuildFile; fileRef = F78E98E42C008CF200961613 /* settingsServices.swift */; };
 		F78E98F22C008CF200961613 /* NCSettingsAdvancedModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F78E98E62C008CF200961613 /* NCSettingsAdvancedModel.swift */; };
 		F78E98F32C008CF200961613 /* NCSettingsAdvanced.swift in Sources */ = {isa = PBXBuildFile; fileRef = F78E98E72C008CF200961613 /* NCSettingsAdvanced.swift */; };
 		F78F74342163757000C2ADAD /* NCTrash.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F78F74332163757000C2ADAD /* NCTrash.storyboard */; };
@@ -1463,8 +1462,7 @@
 		F78E98DD2C008CF200961613 /* NCAcknowledgementsView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCAcknowledgementsView.swift; sourceTree = "<group>"; };
 		F78E98DF2C008CF200961613 /* NCSettingsModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCSettingsModel.swift; sourceTree = "<group>"; };
 		F78E98E02C008CF200961613 /* NCSettings.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCSettings.swift; sourceTree = "<group>"; };
-		F78E98E22C008CF200961613 /* DefaultViewModifier.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DefaultViewModifier.swift; sourceTree = "<group>"; };
-		F78E98E42C008CF200961613 /* ViewOnAppearHandling.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ViewOnAppearHandling.swift; sourceTree = "<group>"; };
+		F78E98E42C008CF200961613 /* settingsServices.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = settingsServices.swift; sourceTree = "<group>"; };
 		F78E98E62C008CF200961613 /* NCSettingsAdvancedModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCSettingsAdvancedModel.swift; sourceTree = "<group>"; };
 		F78E98E72C008CF200961613 /* NCSettingsAdvanced.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCSettingsAdvanced.swift; sourceTree = "<group>"; };
 		F78F74332163757000C2ADAD /* NCTrash.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = NCTrash.storyboard; sourceTree = "<group>"; };
@@ -2459,22 +2457,6 @@
 			path = Settings;
 			sourceTree = "<group>";
 		};
-		F78E98E12C008CF200961613 /* ViewModifiers */ = {
-			isa = PBXGroup;
-			children = (
-				F78E98E22C008CF200961613 /* DefaultViewModifier.swift */,
-			);
-			path = ViewModifiers;
-			sourceTree = "<group>";
-		};
-		F78E98E32C008CF200961613 /* Protocols */ = {
-			isa = PBXGroup;
-			children = (
-				F78E98E42C008CF200961613 /* ViewOnAppearHandling.swift */,
-			);
-			path = Protocols;
-			sourceTree = "<group>";
-		};
 		F78E98E52C008CF200961613 /* Advanced */ = {
 			isa = PBXGroup;
 			children = (
@@ -2615,8 +2597,7 @@
 				F78E98D52C008CF200961613 /* AutoUpload */,
 				F78E98DB2C008CF200961613 /* Helpers */,
 				F78E98DE2C008CF200961613 /* Settings */,
-				F78E98E32C008CF200961613 /* Protocols */,
-				F78E98E12C008CF200961613 /* ViewModifiers */,
+				F78E98E42C008CF200961613 /* settingsServices.swift */,
 				F7ACE42A1BAC0268006C0017 /* Acknowledgements.m */,
 				F7ACE4291BAC0268006C0017 /* Acknowledgements.h */,
 				F7ACE42B1BAC0268006C0017 /* Acknowledgements.rtf */,
@@ -4189,7 +4170,6 @@
 				F77444F522281649000D5EB0 /* NCGridMediaCell.swift in Sources */,
 				F78C6FDE296D677300C952C3 /* NCContextMenu.swift in Sources */,
 				F7E402332BA89551007E5609 /* NCTrash+Networking.swift in Sources */,
-				F78E98F02C008CF200961613 /* DefaultViewModifier.swift in Sources */,
 				F78E98EC2C008CF200961613 /* NCWebBrowserView.swift in Sources */,
 				F7E7AEA72BA32D0000512E52 /* NCCollectionViewUnifiedSearch.swift in Sources */,
 				F769CA172965AB7C00039397 /* NCUploadAssets.swift in Sources */,
@@ -4258,7 +4238,7 @@
 				F77A697D250A0FBC00FF1708 /* NCCollectionViewCommon+Menu.swift in Sources */,
 				F7BF9D822934CA21009EE9A6 /* NCManageDatabase+LayoutForView.swift in Sources */,
 				AF7E504E27A2D8FF00B5E4AF /* UIBarButton+Extension.swift in Sources */,
-				F78E98F12C008CF200961613 /* ViewOnAppearHandling.swift in Sources */,
+				F78E98F12C008CF200961613 /* settingsServices.swift in Sources */,
 				F7A846DE2BB01ACB0024816F /* NCTrashCellProtocol.swift in Sources */,
 				F78A10BF29322E8A008499B8 /* NCManageDatabase+Directory.swift in Sources */,
 				F704B5E92430C0B800632F5F /* NCCreateFormUploadConflictCell.swift in Sources */,

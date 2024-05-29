@@ -61,12 +61,21 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
 
     /// Initialization code to set up the ViewModel with the active account
     init(controller: UITabBarController?) {
-        onViewAppear()
+        updatePublishedProperties()
         self.controller = controller
     }
-    // MARK: All functions
-    /// A function to update the published properties based on the active account
+
     func onViewAppear() {
+        updatePublishedProperties()
+        if autoUpload {
+            requestAuthorization()
+        }
+    }
+
+    // MARK: - All functions
+
+    /// A function to update the published properties based on the active account
+    func updatePublishedProperties() {
         let activeAccount: tableAccount? = manageDatabase.getActiveAccount()
         if let account = activeAccount {
             autoUpload = account.autoUpload
@@ -78,19 +87,16 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
             autoUploadCreateSubfolder = account.autoUploadCreateSubfolder
             autoUploadSubfolderGranularity = Granularity(rawValue: account.autoUploadSubfolderGranularity) ?? .monthly
             serverUrl = NCUtilityFileSystem().getHomeServer(urlBase: appDelegate.urlBase, userId: appDelegate.userId)
-            if autoUpload {
-                requestAuthorization()
-            }
         }
     }
-    // MARK: AccountUpdateHandling
+
     func requestAuthorization() {
         PHPhotoLibrary.requestAuthorization { status in
             DispatchQueue.main.async {
-                var newValue = (status == .authorized)
-                self.autoUpload = newValue
-                self.updateAccountProperty(\.autoUpload, value: newValue)
-                if !newValue {
+                let value = (status == .authorized)
+                self.autoUpload = value
+                self.updateAccountProperty(\.autoUpload, value: value)
+                if !value {
                     let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: NSLocalizedString("_access_photo_not_enabled_msg_", comment: ""), responseData: nil)
                     NCContentPresenter().messageNotification("_error_", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: .error)
                 } else if UIApplication.shared.backgroundRefreshStatus != .available {
@@ -100,6 +106,7 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
             }
         }
     }
+
     /// Updates the auto-upload setting.
     func handleAutoUploadChange(newValue: Bool) {
         if newValue {
@@ -108,23 +115,27 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
             updateAccountProperty(\.autoUpload, value: newValue)
         }
     }
-    ///
+
     /// Updates the auto-upload image setting.
     func handleAutoUploadImageChange(newValue: Bool) {
         updateAccountProperty(\.autoUploadImage, value: newValue)
     }
+
     /// Updates the auto-upload image over WWAN setting.
     func handleAutoUploadWWAnPhotoChange(newValue: Bool) {
         updateAccountProperty(\.autoUploadWWAnPhoto, value: newValue)
     }
+
     /// Updates the auto-upload video setting.
     func handleAutoUploadVideoChange(newValue: Bool) {
         updateAccountProperty(\.autoUploadVideo, value: newValue)
     }
+
     /// Updates the auto-upload video over WWAN setting.
     func handleAutoUploadWWAnVideoChange(newValue: Bool) {
         updateAccountProperty(\.autoUploadWWAnVideo, value: newValue)
     }
+
     /// Updates the auto-upload full content setting.
     func handleAutoUploadFullChange(newValue: Bool) {
         updateAccountProperty(\.autoUploadFull, value: newValue)
@@ -136,20 +147,24 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
             NCManageDatabase.shared.setAccountAutoUploadProperty("autoUploadFull", state: false)
         }
     }
+
     /// Updates the auto-upload create subfolder setting.
     func handleAutoUploadCreateSubfolderChange(newValue: Bool) {
         updateAccountProperty(\.autoUploadCreateSubfolder, value: newValue)
     }
+
     /// Updates the auto-upload subfolder granularity setting.
     func handleAutoUploadSubfolderGranularityChange(newValue: Granularity) {
         updateAccountProperty(\.autoUploadSubfolderGranularity, value: newValue.rawValue)
     }
+
     /// Updates a property of the active account in the database.
     private func updateAccountProperty<T>(_ keyPath: ReferenceWritableKeyPath<tableAccount, T>, value: T) {
         guard let activeAccount = manageDatabase.getActiveAccount() else { return }
         activeAccount[keyPath: keyPath] = value
         manageDatabase.updateAccount(activeAccount)
     }
+
     /// Returns the path for auto-upload based on the active account's settings.
     ///
     /// - Returns: The path for auto-upload.
@@ -159,6 +174,7 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
         let path = autoUploadPath.replacingOccurrences(of: homeServer, with: "")
         return path
     }
+
     /// Sets the auto-upload directory based on the provided server URL.
     ///
     /// - Parameter
