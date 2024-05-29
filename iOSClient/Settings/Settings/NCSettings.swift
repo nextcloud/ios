@@ -105,7 +105,7 @@ struct NCSettings: View {
             }, header: {
                 Text(NSLocalizedString("_privacy_", comment: ""))
             }, footer: {
-                Text(NSLocalizedString("_privacy_footer_", comment: ""))
+                Text(NSLocalizedString("_lock_protection_no_screen_footer_", comment: "") + "\n" + String(format: NSLocalizedString("_reset_wrong_passcode_desc_", comment: ""), NCBrandOptions.shared.resetAppPasscodeAttempts))
                     .font(.system(size: 12))
                     .lineSpacing(1)
             })
@@ -215,8 +215,7 @@ struct NCSettings: View {
             /// `Watermark` Section
             Section(content: {
             }, footer: {
-                Text("Nextcloud Liquid for iOS \(NCUtility().getVersionApp(withBuild: true)) © \(String(Calendar.current.component(.year, from: Date()))) \n\nNextcloud Server \(NCGlobal.shared.capabilityServerVersion)\n\(NCGlobal.shared.capabilityThemingName) - \(NCGlobal.shared.capabilityThemingSlogan)\n\n")
-
+                Text(model.footerApp + model.footerServer + model.footerSlogan)
             })
         }
         .navigationBarTitle("Settings")
