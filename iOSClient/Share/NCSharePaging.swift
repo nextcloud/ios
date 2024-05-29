@@ -63,8 +63,9 @@ class NCSharePaging: UIViewController {
         pagingViewController.backgroundColor = .systemBackground
         pagingViewController.menuBackgroundColor = .systemBackground
         pagingViewController.selectedBackgroundColor = .systemBackground
+        pagingViewController.indicatorColor = NCBrandColor.shared.brandElement
         pagingViewController.textColor = NCBrandColor.shared.textColor
-        pagingViewController.selectedTextColor = NCBrandColor.shared.textColor
+        pagingViewController.selectedTextColor = NCBrandColor.shared.brandElement
 
         // Pagination
         addChild(pagingViewController)
@@ -76,8 +77,10 @@ class NCSharePaging: UIViewController {
             height: 1,
             zIndex: Int.max,
             spacing: .zero,
-            insets: UIEdgeInsets(top: 0, left: 5, bottom: 0, right: 5)
+            insets: .zero
         )
+
+        pagingViewController.borderOptions = .visible(height: 1, zIndex: Int.max, insets: .zero)
 
         // Contrain the paging view to all edges.
         pagingViewController.view.translatesAutoresizingMaskIntoConstraints = false

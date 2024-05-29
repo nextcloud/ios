@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="22505" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="Ts3-RO-A9l">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="32700.99.1234" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="Ts3-RO-A9l">
     <device id="retina5_5" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="22504"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="22685"/>
         <capability name="Image references" minToolsVersion="12.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
@@ -63,14 +63,14 @@
                                         <rect key="frame" x="-5" y="10" width="409" height="90"/>
                                         <subviews>
                                             <imageView clipsSubviews="YES" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="fKv-xM-rVY">
-                                                <rect key="frame" x="10" y="0.0" width="40" height="40"/>
+                                                <rect key="frame" x="15" y="2" width="35" height="35"/>
                                                 <constraints>
-                                                    <constraint firstAttribute="height" constant="40" id="DJa-7z-oGM"/>
-                                                    <constraint firstAttribute="width" constant="40" id="PwX-iy-H0o"/>
+                                                    <constraint firstAttribute="height" constant="35" id="DJa-7z-oGM"/>
+                                                    <constraint firstAttribute="width" constant="35" id="PwX-iy-H0o"/>
                                                 </constraints>
                                             </imageView>
                                             <label opaque="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Shared with you by" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ngi-GT-jvv">
-                                                <rect key="frame" x="60" y="11" width="339" height="18"/>
+                                                <rect key="frame" x="65" y="11" width="334" height="18"/>
                                                 <fontDescription key="fontDescription" type="system" pointSize="15"/>
                                                 <nil key="textColor"/>
                                                 <nil key="highlightedColor"/>
@@ -95,14 +95,14 @@
                                         <constraints>
                                             <constraint firstItem="fhO-Tk-u8Z" firstAttribute="leading" secondItem="oBQ-TP-qof" secondAttribute="leading" constant="60" id="6Go-2t-dND"/>
                                             <constraint firstItem="KHG-xj-wfG" firstAttribute="centerY" secondItem="fhO-Tk-u8Z" secondAttribute="centerY" id="DEz-SB-eWP"/>
-                                            <constraint firstItem="fKv-xM-rVY" firstAttribute="top" secondItem="oBQ-TP-qof" secondAttribute="top" id="Gap-v5-Pkh"/>
+                                            <constraint firstItem="fKv-xM-rVY" firstAttribute="top" secondItem="oBQ-TP-qof" secondAttribute="top" constant="2" id="Gap-v5-Pkh"/>
                                             <constraint firstAttribute="trailing" secondItem="ngi-GT-jvv" secondAttribute="trailing" constant="10" id="Gsg-bh-cgu"/>
-                                            <constraint firstItem="ngi-GT-jvv" firstAttribute="centerY" secondItem="fKv-xM-rVY" secondAttribute="centerY" id="MIg-bS-4Te"/>
-                                            <constraint firstItem="fKv-xM-rVY" firstAttribute="leading" secondItem="oBQ-TP-qof" secondAttribute="leading" constant="10" id="O2h-N9-cgt"/>
+                                            <constraint firstItem="ngi-GT-jvv" firstAttribute="centerY" secondItem="fKv-xM-rVY" secondAttribute="centerY" constant="0.5" id="MIg-bS-4Te"/>
+                                            <constraint firstItem="fKv-xM-rVY" firstAttribute="leading" secondItem="oBQ-TP-qof" secondAttribute="leading" constant="15" id="O2h-N9-cgt"/>
                                             <constraint firstAttribute="trailing" secondItem="KHG-xj-wfG" secondAttribute="trailing" constant="20" id="kKc-BN-iLN"/>
                                             <constraint firstAttribute="height" constant="90" id="reh-5m-KFy"/>
-                                            <constraint firstItem="ngi-GT-jvv" firstAttribute="leading" secondItem="fKv-xM-rVY" secondAttribute="trailing" constant="10" id="taI-rs-B3r"/>
-                                            <constraint firstItem="fhO-Tk-u8Z" firstAttribute="top" secondItem="fKv-xM-rVY" secondAttribute="bottom" constant="5" id="tpt-vT-Nto"/>
+                                            <constraint firstItem="ngi-GT-jvv" firstAttribute="leading" secondItem="fKv-xM-rVY" secondAttribute="trailing" constant="15" id="taI-rs-B3r"/>
+                                            <constraint firstItem="fhO-Tk-u8Z" firstAttribute="top" secondItem="fKv-xM-rVY" secondAttribute="bottom" constant="8" id="tpt-vT-Nto"/>
                                             <constraint firstItem="KHG-xj-wfG" firstAttribute="leading" secondItem="fhO-Tk-u8Z" secondAttribute="trailing" constant="10" id="xk0-AH-pfR"/>
                                         </constraints>
                                     </view>
