@@ -87,14 +87,28 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
     func requestAuthorization() {
         PHPhotoLibrary.requestAuthorization { status in
             DispatchQueue.main.async {
-                self.isAuthorized = status == .authorized
+                var newValue = (status == .authorized)
+                self.autoUpload = newValue
+                self.updateAccountProperty(\.autoUpload, value: newValue)
+                if !newValue {
+                    let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: NSLocalizedString("_access_photo_not_enabled_msg_", comment: ""), responseData: nil)
+                    NCContentPresenter().messageNotification("_error_", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: .error)
+                } else if UIApplication.shared.backgroundRefreshStatus != .available {
+                    let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: NSLocalizedString("_access_background_app_refresh_denied_", comment: ""), responseData: nil)
+                    NCContentPresenter().messageNotification("_info_", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: .info)
+                }
             }
         }
     }
     /// Updates the auto-upload setting.
     func handleAutoUploadChange(newValue: Bool) {
-        updateAccountProperty(\.autoUpload, value: newValue)
+        if newValue {
+            requestAuthorization()
+        } else {
+            updateAccountProperty(\.autoUpload, value: newValue)
+        }
     }
+    ///
     /// Updates the auto-upload image setting.
     func handleAutoUploadImageChange(newValue: Bool) {
         updateAccountProperty(\.autoUploadImage, value: newValue)
