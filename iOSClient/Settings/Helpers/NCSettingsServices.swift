@@ -1,5 +1,5 @@
 //
-//  settingsServices.swift
+//  NCSettingsServices.swift
 //  Nextcloud
 //
 //  Created by Aditya Tyagi on 17/03/24.
