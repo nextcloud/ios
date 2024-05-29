@@ -43,20 +43,8 @@ class NCSettingsModel: ObservableObject, AccountUpdateHandling, ViewOnAppearHand
     @Published var privacyScreen: Bool = false
     /// State to control
     @Published var resetWrongAttempts: Bool = false
-    /// State to control the visibility of the acknowledgements view
-    var isE2EEEnable: Bool = NCGlobal.shared.capabilityE2EEEnabled
-    /// String containing the current version of E2EE
-    @Published var versionE2EE: String = NCGlobal.shared.capabilityE2EEApiVersion
     /// Root View Controller
     @Published var controller: UITabBarController?
-
-    // MARK: - String Values for View
-    var appVersion: String = NCUtility().getVersionApp(withBuild: true)
-    /// String representing the current year to be shown
-    @Published var copyrightYear: String = ""
-    var serverVersion: String = NCGlobal.shared.capabilityServerVersion
-    var themingName: String = NCGlobal.shared.capabilityThemingName
-    var themingSlogan: String = NCGlobal.shared.capabilityThemingSlogan
 
     /// Initializes the view model with default values.
     init(controller: UITabBarController?) {
@@ -74,7 +62,6 @@ class NCSettingsModel: ObservableObject, AccountUpdateHandling, ViewOnAppearHand
         lockScreen = !keychain.requestPasscodeAtStart
         privacyScreen = keychain.privacyScreenEnabled
         resetWrongAttempts = keychain.resetAppCounterFail
-        copyrightYear = getCurrentYear()
     }
     // MARK: - Settings Update Methods
     /// Function to update Touch ID / Face ID setting
@@ -99,11 +86,6 @@ class NCSettingsModel: ObservableObject, AccountUpdateHandling, ViewOnAppearHand
         let configLink = appDelegate.urlBase + NCBrandOptions.shared.mobileconfig
         let configServer = NCConfigServer()
         configServer.startService(url: URL(string: configLink)!)
-    }
-    /// This function gets the current year as a string.
-    /// and returns it as a string value.
-    func getCurrentYear() -> String {
-        return String(Calendar.current.component(.year, from: Date()))
     }
 }
 

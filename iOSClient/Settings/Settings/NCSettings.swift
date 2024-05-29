@@ -136,7 +136,7 @@ struct NCSettings: View {
                 })
             }
             /// `E2EEncryption` Section
-            if model.isE2EEEnable && NCGlobal.shared.e2eeVersions.contains(model.versionE2EE) {
+            if NCGlobal.shared.capabilityE2EEEnabled && NCGlobal.shared.e2eeVersions.contains(NCGlobal.shared.capabilityE2EEApiVersion) {
                 E2EESection(model: model)
             }
             /// `Advanced` Section
@@ -215,7 +215,7 @@ struct NCSettings: View {
             /// `Watermark` Section
             Section(content: {
             }, footer: {
-                Text("Nextcloud Liquid for iOS \(model.appVersion) © \(model.copyrightYear) \n\nNextcloud Server \(model.serverVersion)\n\(model.themingName) - \(model.themingSlogan)\n\n")
+                Text("Nextcloud Liquid for iOS \(NCUtility().getVersionApp(withBuild: true)) © \(String(Calendar.current.component(.year, from: Date()))) \n\nNextcloud Server \(NCGlobal.shared.capabilityServerVersion)\n\(NCGlobal.shared.capabilityThemingName) - \(NCGlobal.shared.capabilityThemingSlogan)\n\n")
 
             })
         }
