@@ -30,16 +30,8 @@ protocol ViewOnAppearHandling: ObservableObject {
     func onViewAppear()
 }
 
-/// A protocol defining methods to handle account updates.
-protocol AccountUpdateHandling {
-    /// Updates the account information.
-    func updateAccount()
-}
-
-typealias DefaultViewModelRepresentable = AccountUpdateHandling & ViewOnAppearHandling
-
 extension View {
-    @discardableResult func defaultViewModifier(_ model: some DefaultViewModelRepresentable) -> some View {
+    @discardableResult func defaultViewModifier(_ model: some ViewOnAppearHandling) -> some View {
         return modifier(DefaultViewModifier(viewModel: model))
     }
 }

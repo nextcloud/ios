@@ -27,7 +27,7 @@ import NextcloudKit
 import Combine
 import SwiftUI
 
-class NCSettingsAdvancedModel: ObservableObject, ViewOnAppearHandling, AccountUpdateHandling {
+class NCSettingsAdvancedModel: ObservableObject, ViewOnAppearHandling {
     /// AppDelegate
     let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
     /// Keychain access
@@ -64,13 +64,8 @@ class NCSettingsAdvancedModel: ObservableObject, ViewOnAppearHandling, AccountUp
         self.controller = controller
         onViewAppear()
     }
-    /// Updates the account information.
-    func updateAccount() {
-        self.keychain = NCKeychain()
-    }
     /// Triggered when the view appears.
     func onViewAppear() {
-        updateAccount()
         // Initialize all properties with values from the keychain or defaults
         showHiddenFiles = keychain.showHiddenFiles
         mostCompatible = keychain.formatCompatibility

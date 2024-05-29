@@ -27,7 +27,7 @@ import SwiftUI
 import Combine
 
 /// A view model responsible for managing auto-upload file names.
-class NCAutoUploadFileNamesModel: ObservableObject, ViewOnAppearHandling, AccountUpdateHandling {
+class NCAutoUploadFileNamesModel: ObservableObject, ViewOnAppearHandling {
     // MARK: - Properties
     /// A keychain instance for handling authentication.
     private var keychain = NCKeychain()
@@ -49,13 +49,8 @@ class NCAutoUploadFileNamesModel: ObservableObject, ViewOnAppearHandling, Accoun
     init() {
         onViewAppear()
     }
-    /// Updates the account information.
-    func updateAccount() {
-        self.keychain = NCKeychain()
-    }
     /// Triggered when the view appears.
     func onViewAppear() {
-        updateAccount()
         maintainFilename = keychain.getOriginalFileName(key: globalKey.keyFileNameOriginalAutoUpload)
         specifyFilename = keychain.getOriginalFileName(key: globalKey.keyFileNameAutoUploadType)
         changedName = keychain.getFileNameMask(key: globalKey.keyFileNameAutoUploadMask)

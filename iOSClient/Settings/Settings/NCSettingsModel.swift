@@ -28,7 +28,7 @@ import SwiftUI
 import TOPasscodeViewController
 import LocalAuthentication
 
-class NCSettingsModel: ObservableObject, AccountUpdateHandling, ViewOnAppearHandling {
+class NCSettingsModel: ObservableObject, ViewOnAppearHandling {
     /// AppDelegate
     let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
     /// Keychain access
@@ -54,10 +54,6 @@ class NCSettingsModel: ObservableObject, AccountUpdateHandling, ViewOnAppearHand
     init(controller: UITabBarController?) {
         self.controller = controller
         onViewAppear()
-    }
-    /// Updates the account information.
-    func updateAccount() {
-        self.keychain = NCKeychain()
     }
     /// Triggered when the view appears.
     func onViewAppear() {
