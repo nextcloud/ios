@@ -41,8 +41,8 @@ struct NCSettingsAdvanced: View {
                     .tint(Color(NCBrandColor.shared.brandElement))
                     .onChange(of: model.showHiddenFiles) { _ in
                         model.updateShowHiddenFiles()
-                    }
-                    .font(.system(size: 16))
+                }
+                .font(.system(size: 16))
             }, footer: { })
             // Most Compatible & Enable Live Photo
             Section(content: {
@@ -50,14 +50,14 @@ struct NCSettingsAdvanced: View {
                     .tint(Color(NCBrandColor.shared.brandElement))
                     .onChange(of: model.mostCompatible) { _ in
                         model.updateMostCompatible()
-                    }
-                    .font(.system(size: 16))
+                }
+                .font(.system(size: 16))
                 Toggle(NSLocalizedString("_upload_mov_livephoto_", comment: ""), isOn: $model.livePhoto)
                     .tint(Color(NCBrandColor.shared.brandElement))
                     .onChange(of: model.livePhoto) { _ in
                         model.updateLivePhoto()
-                    }
-                    .font(.system(size: 16))
+                }
+                .font(.system(size: 16))
             }, footer: {
                 (
                     Text(NSLocalizedString("_format_compatibility_footer_", comment: ""))
@@ -72,8 +72,8 @@ struct NCSettingsAdvanced: View {
                     .tint(Color(NCBrandColor.shared.brandElement))
                     .onChange(of: model.removeFromCameraRoll) { _ in
                         model.updateRemoveFromCameraRoll()
-                    }
-                    .font(.system(size: 16))
+                }
+                .font(.system(size: 16))
             }, footer: {
                 Text(NSLocalizedString("_remove_photo_CameraRoll_desc_", comment: ""))
                     .font(.system(size: 12))
@@ -86,8 +86,8 @@ struct NCSettingsAdvanced: View {
                         .tint(Color(NCBrandColor.shared.brandElement))
                         .onChange(of: model.appIntegration) { _ in
                             model.updateAppIntegration()
-                        }
-                        .font(.system(size: 16))
+                    }
+                    .font(.system(size: 16))
                 }, footer: {
                     Text(NSLocalizedString("_disable_files_app_footer_", comment: ""))
                         .font(.system(size: 12))
@@ -97,19 +97,11 @@ struct NCSettingsAdvanced: View {
             // Section: Privacy
             if !NCBrandOptions.shared.disable_crash_service {
                 Section(content: {
-                    HStack {
-                        Image(systemName: "ladybug")
-                            .resizable()
-                            .scaledToFit()
-                            .font(Font.system(.body).weight(.light))
-                            .frame(width: 25, height: 25)
-                            .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
-                        Toggle(NSLocalizedString("_crashservice_title_", comment: ""), isOn: $model.crashReporter)
-                            .tint(Color(NCBrandColor.shared.brandElement))
-                            .onChange(of: model.crashReporter) { _ in
-                                model.updateCrashReporter()
-                                showCrashReporter.toggle()
-                            }
+                    Toggle(NSLocalizedString("_crashservice_title_", comment: ""), isOn: $model.crashReporter)
+                        .tint(Color(NCBrandColor.shared.brandElement))
+                        .onChange(of: model.crashReporter) { _ in
+                            model.updateCrashReporter()
+                            showCrashReporter.toggle()
                     }
                     .font(.system(size: 16))
                     .alert(NSLocalizedString("_crashservice_title_", comment: ""), isPresented: $showCrashReporter, actions: {
