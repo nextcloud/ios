@@ -224,8 +224,8 @@ struct NCSettings: View {
 }
 
 struct E2EESection: View {
-    /// Object of ViewModel of this view
     @ObservedObject var model: NCSettingsModel
+
     var body: some View {
         Section(header: Text(NSLocalizedString("_e2e_settings_title_", comment: "")), content: {
             NavigationLink(destination: NCViewE2EE(account: model.appDelegate.account, rootViewController: model.controller)) {

@@ -27,9 +27,7 @@ import TOPasscodeViewController
 import LocalAuthentication
 
 @objc class NCManageE2EEInterface: NSObject {
-
     @objc func makeShipDetailsUI(account: String, rootViewController: UIViewController?) -> UIViewController {
-
         let details = NCViewE2EE(account: account, rootViewController: rootViewController)
         let vc = UIHostingController(rootView: details)
         vc.title = NSLocalizedString("_e2e_settings_", comment: "")
@@ -38,7 +36,6 @@ import LocalAuthentication
 }
 
 class NCManageE2EE: NSObject, ObservableObject, NCEndToEndInitializeDelegate, TOPasscodeViewControllerDelegate {
-
     let endToEndInitialize = NCEndToEndInitialize()
     let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
     var passcodeType = ""
@@ -74,7 +71,6 @@ class NCManageE2EE: NSObject, ObservableObject, NCEndToEndInitializeDelegate, TO
     // MARK: - Passcode
 
     @objc func requestPasscodeType(_ passcodeType: String) {
-
         let laContext = LAContext()
         var error: NSError?
 
@@ -99,7 +95,6 @@ class NCManageE2EE: NSObject, ObservableObject, NCEndToEndInitializeDelegate, TO
     }
 
     @objc func correctPasscode() {
-
         switch self.passcodeType {
         case "startE2E":
             endToEndInitialize.initEndToEndEncryption(viewController: rootViewController, metadata: nil)
@@ -128,7 +123,6 @@ class NCManageE2EE: NSObject, ObservableObject, NCEndToEndInitializeDelegate, TO
     }
 
     func passcodeViewController(_ passcodeViewController: TOPasscodeViewController, isCorrectCode code: String) -> Bool {
-
         if code == NCKeychain().passcode {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
                 self.correctPasscode()
@@ -140,7 +134,6 @@ class NCManageE2EE: NSObject, ObservableObject, NCEndToEndInitializeDelegate, TO
     }
 
     func didPerformBiometricValidationRequest(in passcodeViewController: TOPasscodeViewController) {
-
         LAContext().evaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, localizedReason: NCBrandOptions.shared.brand) { success, _ in
             if success {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
@@ -159,7 +152,6 @@ class NCManageE2EE: NSObject, ObservableObject, NCEndToEndInitializeDelegate, TO
 // MARK: Views
 
 struct NCViewE2EE: View {
-
     @ObservedObject var manageE2EE: NCManageE2EE
     @State var account: String
     @State var rootViewController: UIViewController?
@@ -171,13 +163,9 @@ struct NCViewE2EE: View {
     }
 
     var body: some View {
-
         VStack {
-
             if manageE2EE.isEndToEndEnabled {
-
                 List {
-
                     Section(header: Text(""), footer: Text(manageE2EE.statusOfService + "\n\n" + "End-to-End Encryption " + NCGlobal.shared.capabilityE2EEApiVersion)) {
                         Label {
                             Text(NSLocalizedString("_e2e_settings_activated_", comment: ""))
@@ -189,7 +177,6 @@ struct NCViewE2EE: View {
                                 .foregroundColor(.green)
                         }
                     }
-
                     HStack {
                         Label {
                             Text(NSLocalizedString("_e2e_settings_read_passphrase_", comment: ""))
@@ -210,7 +197,6 @@ struct NCViewE2EE: View {
                             NCContentPresenter().showInfo(error: NKError(errorCode: 0, errorDescription: "_e2e_settings_lock_not_active_"))
                         }
                     }
-
                     HStack {
                         Label {
                             Text(NSLocalizedString("_e2e_settings_remove_", comment: ""))
@@ -231,16 +217,12 @@ struct NCViewE2EE: View {
                             NCContentPresenter().showInfo(error: NKError(errorCode: 0, errorDescription: "_e2e_settings_lock_not_active_"))
                         }
                     }
-
 #if DEBUG
                     DeleteCerificateSection()
 #endif
                 }
-
             } else {
-
                 List {
-
                     Section(header: Text(""), footer: Text(manageE2EE.statusOfService + "\n\n" + "End-to-End Encryption " + NCGlobal.shared.capabilityE2EEApiVersion)) {
                         HStack {
                             Label {
@@ -263,7 +245,6 @@ struct NCViewE2EE: View {
                             }
                         }
                     }
-
 #if DEBUG
                     DeleteCerificateSection()
 #endif
@@ -276,11 +257,8 @@ struct NCViewE2EE: View {
 }
 
 struct DeleteCerificateSection: View {
-
     var body: some View {
-
         Section(header: Text("Delete Server keys"), footer: Text("Available only in debug mode")) {
-
             HStack {
                 Label {
                     Text("Delete Certificate")
@@ -303,7 +281,6 @@ struct DeleteCerificateSection: View {
                     }
                 }
             }
-
             HStack {
                 Label {
                     Text("Delete PrivateKey")
@@ -333,7 +310,6 @@ struct DeleteCerificateSection: View {
 // MARK: - Preview / Test
 
 struct SectionView: View {
-
     @State var height: CGFloat = 0
     @State var text: String = ""
 
@@ -346,9 +322,7 @@ struct SectionView: View {
 }
 
 struct NCViewE2EETest: View {
-
     var body: some View {
-
         VStack {
             List {
                 Section(header: SectionView(height: 50, text: "Section Header View")) {
@@ -382,7 +356,6 @@ struct NCViewE2EETest: View {
 
 struct NCViewE2EE_Previews: PreviewProvider {
     static var previews: some View {
-
         // swiftlint:disable force_cast
         let account = (UIApplication.shared.delegate as! AppDelegate).account
         NCViewE2EE(account: account, rootViewController: nil)
