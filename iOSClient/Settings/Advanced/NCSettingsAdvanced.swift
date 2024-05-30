@@ -208,11 +208,10 @@ struct NCSettingsAdvanced: View {
                     showCacheAlert.toggle()
                 }, label: {
                     HStack {
-                        Image(systemName: "clear")
+                        Image(systemName: "xmark")
                             .resizable()
-                            .scaledToFit()
-                            .font(Font.system(.body).weight(.light))
-                            .frame(width: 25, height: 25)
+                            .renderingMode(.template)
+                            .frame(width: 15, height: 15)
                             .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
                         Text(NSLocalizedString("_clear_cache_", comment: ""))
                     }
@@ -238,10 +237,10 @@ struct NCSettingsAdvanced: View {
                     showExitAlert.toggle()
                 }, label: {
                     HStack {
-                        Image("xmark")
+                        Image(systemName: "xmark")
                             .resizable()
                             .renderingMode(.template)
-                            .frame(width: 22, height: 20)
+                            .frame(width: 15, height: 15)
                             .foregroundColor(Color(UIColor.systemRed))
                         Text(NSLocalizedString("_exit_", comment: ""))
                             .foregroundColor(Color(UIColor.systemRed))
