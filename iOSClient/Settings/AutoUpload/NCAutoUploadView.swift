@@ -158,3 +158,7 @@ struct NCAutoUploadView: View {
         })
     }
 }
+
+#Preview {
+    NCAutoUploadView(model: NCAutoUploadModel(controller: nil))
+}

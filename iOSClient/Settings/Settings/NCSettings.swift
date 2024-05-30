@@ -243,3 +243,7 @@ struct E2EESection: View {
         })
     }
 }
+
+#Preview {
+    NCSettings(model: NCSettingsModel(controller: nil))
+}
