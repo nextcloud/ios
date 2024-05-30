@@ -23,25 +23,15 @@
 
 import SwiftUI
 import NextcloudKit
-import TOPasscodeViewController
-import LocalAuthentication
 
 struct NCViewE2EE: View {
-    @ObservedObject var manageE2EE: NCManageE2EE
-    @State var account: String
-    @State var controller: UITabBarController?
-
-    init(account: String, controller: UITabBarController?) {
-        self.manageE2EE = NCManageE2EE(controller: controller)
-        self.account = account
-        self.controller = controller
-    }
+    @ObservedObject var model: NCManageE2EE
 
     var body: some View {
         VStack {
-            if manageE2EE.isEndToEndEnabled {
+            if model.isEndToEndEnabled {
                 List {
-                    Section(header: Text(""), footer: Text(manageE2EE.statusOfService + "\n\n" + "End-to-End Encryption " + NCGlobal.shared.capabilityE2EEApiVersion)) {
+                    Section(header: Text(""), footer: Text(model.statusOfService + "\n\n" + "End-to-End Encryption " + NCGlobal.shared.capabilityE2EEApiVersion)) {
                         Label {
                             Text(NSLocalizedString("_e2e_settings_activated_", comment: ""))
                         } icon: {
@@ -67,7 +57,7 @@ struct NCViewE2EE: View {
                     .contentShape(Rectangle())
                     .onTapGesture {
                         if NCKeychain().passcode != nil {
-                            manageE2EE.requestPasscodeType("readPassphrase")
+                            model.requestPasscodeType("readPassphrase")
                         } else {
                             NCContentPresenter().showInfo(error: NKError(errorCode: 0, errorDescription: "_e2e_settings_lock_not_active_"))
                         }
@@ -87,7 +77,7 @@ struct NCViewE2EE: View {
                     .contentShape(Rectangle())
                     .onTapGesture {
                         if NCKeychain().passcode != nil {
-                            manageE2EE.requestPasscodeType("removeLocallyEncryption")
+                            model.requestPasscodeType("removeLocallyEncryption")
                         } else {
                             NCContentPresenter().showInfo(error: NKError(errorCode: 0, errorDescription: "_e2e_settings_lock_not_active_"))
                         }
@@ -98,7 +88,7 @@ struct NCViewE2EE: View {
                 }
             } else {
                 List {
-                    Section(header: Text(""), footer: Text(manageE2EE.statusOfService + "\n\n" + "End-to-End Encryption " + NCGlobal.shared.capabilityE2EEApiVersion)) {
+                    Section(header: Text(""), footer: Text(model.statusOfService + "\n\n" + "End-to-End Encryption " + NCGlobal.shared.capabilityE2EEApiVersion)) {
                         HStack {
                             Label {
                                 Text(NSLocalizedString("_e2e_settings_start_", comment: ""))
@@ -114,7 +104,7 @@ struct NCViewE2EE: View {
                         .contentShape(Rectangle())
                         .onTapGesture {
                             if NCKeychain().passcode != nil {
-                                manageE2EE.requestPasscodeType("startE2E")
+                                model.requestPasscodeType("startE2E")
                             } else {
                                 NCContentPresenter().showInfo(error: NKError(errorCode: 0, errorDescription: "_e2e_settings_lock_not_active_"))
                             }
@@ -128,7 +118,7 @@ struct NCViewE2EE: View {
         }
         .navigationBarTitle(NSLocalizedString("_e2e_settings_", comment: ""))
         .background(Color(UIColor.systemGroupedBackground))
-        .defaultViewModifier(manageE2EE)
+        .defaultViewModifier(model)
     }
 }
 
@@ -230,11 +220,6 @@ struct NCViewE2EETest: View {
     }
 }
 
-struct NCViewE2EE_Previews: PreviewProvider {
-    static var previews: some View {
-        // swiftlint:disable force_cast
-        let account = (UIApplication.shared.delegate as! AppDelegate).account
-        NCViewE2EE(account: account, controller: nil)
-        // swiftlint:enable force_cast
-    }
+#Preview {
+    NCViewE2EE(model: NCManageE2EE(controller: nil))
 }
