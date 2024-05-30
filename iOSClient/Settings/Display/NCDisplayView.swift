@@ -15,7 +15,7 @@ struct NCDisplayView: View {
         Form {
             // Specify Filename
             Section(header: Text(NSLocalizedString("_appearance_", comment: ""))) {
-                VStack() {
+                VStack {
                     HStack {
                         Spacer()
                         VStack {
@@ -62,10 +62,10 @@ struct NCDisplayView: View {
                     Divider()
                         .padding(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: -50))
 
-                    Toggle(NSLocalizedString("_automatic_", comment: ""), isOn: $model.enableAutomatic)
+                    Toggle(NSLocalizedString("_automatic_", comment: ""), isOn: $model.appearanceAutomatic)
                         .tint(Color(NCBrandColor.shared.brandElement))
-                        .onChange(of: true) { _ in
-
+                        .onChange(of: model.appearanceAutomatic) { _ in
+                            model.updateAppearanceAutomatic()
                         }
                 }
             }

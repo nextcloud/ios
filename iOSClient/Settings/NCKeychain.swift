@@ -346,6 +346,18 @@ import KeychainAccess
         }
     }
 
+    var appearanceAutomatic: Bool {
+        get {
+            if let value = try? keychain.get("appearanceAutomatic"), let result = Bool(value) {
+                return result
+            }
+            return true
+        }
+        set {
+            keychain["appearanceAutomatic"] = String(newValue)
+        }
+    }
+
     // MARK: -
 
     @objc func getPassword(account: String) -> String {
