@@ -413,17 +413,20 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                 activeLogin?.urlBase = NCBrandOptions.shared.loginBaseUrl
                 showLoginViewController(activeLogin)
             }
-        } else if openLoginWeb {
+        } else if openLoginWeb { // remove this, create a bool for no accounts
             // Used also for reinsert the account (change passwd)
             if activeLogin?.view.window == nil {
                 activeLogin = UIStoryboard(name: "NCLogin", bundle: nil).instantiateViewController(withIdentifier: "NCLogin") as? NCLogin
                 activeLogin?.urlBase = urlBase
                 activeLogin?.disableUrlField = true
+                activeLogin?.disableCloseButton = true
 //                activeLogin?.user = user
                 showLoginViewController(activeLogin)
             }
         } else {
             if activeLogin?.view.window == nil {
+                activeLogin?.disableCloseButton = true
+
                 activeLogin = UIStoryboard(name: "NCLogin", bundle: nil).instantiateViewController(withIdentifier: "NCLogin") as? NCLogin
                 showLoginViewController(activeLogin)
             }

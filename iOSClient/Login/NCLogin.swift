@@ -52,6 +52,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
     /// The URL that will show up on the URL field when this screen appears
     var urlBase = ""
     var disableUrlField = false
+    var disableCloseButton = false
 
     // Used for MDM
     var configServerUrl: String?
@@ -125,7 +126,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
         self.navigationController?.view.backgroundColor = NCBrandColor.shared.customer
         self.navigationController?.navigationBar.tintColor = textColor
 
-        if !NCManageDatabase.shared.getAllAccount().isEmpty {
+        if !NCManageDatabase.shared.getAllAccount().isEmpty && !disableCloseButton {
             let navigationItemCancel = UIBarButtonItem(barButtonSystemItem: .stop, target: self, action: #selector(self.actionCancel))
             navigationItemCancel.tintColor = textColor
             navigationItem.leftBarButtonItem = navigationItemCancel
