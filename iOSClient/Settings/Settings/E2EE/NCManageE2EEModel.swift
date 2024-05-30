@@ -25,6 +25,11 @@ class NCManageE2EE: NSObject, ObservableObject, ViewOnAppearHandling, NCEndToEnd
         super.init()
         self.controller = controller
         endToEndInitialize.delegate = self
+        onViewAppear()
+    }
+
+    /// Triggered when the view appears.
+    func onViewAppear() {
         isEndToEndEnabled = NCKeychain().isEndToEndEnabled(account: appDelegate.account)
         if isEndToEndEnabled {
             statusOfService = NSLocalizedString("_status_e2ee_configured_", comment: "")
@@ -37,11 +42,6 @@ class NCManageE2EE: NSObject, ObservableObject, ViewOnAppearHandling, NCEndToEnd
                 }
             }
         }
-    }
-
-    /// Triggered when the view appears.
-    func onViewAppear() {
-        print("")
     }
 
     // MARK: - Delegate
