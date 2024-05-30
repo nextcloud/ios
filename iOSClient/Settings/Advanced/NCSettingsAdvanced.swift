@@ -135,7 +135,7 @@ struct NCSettingsAdvanced: View {
                         model.viewLogFile()
                     }, label: {
                         HStack {
-                            Image(systemName: "doc.text.magnifyingglass")
+                            Image(systemName: "doc.badge.gearshape")
                                 .resizable()
                                 .scaledToFit()
                                 .font(Font.system(.body).weight(.light))
@@ -155,7 +155,7 @@ struct NCSettingsAdvanced: View {
                                 .resizable()
                                 .scaledToFit()
                                 .font(Font.system(.body).weight(.light))
-                                .frame(width: 15, height: 15)
+                                .frame(width: 25, height: 15)
                                 .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
                             Text(NSLocalizedString("_clear_log_", comment: ""))
                         }
