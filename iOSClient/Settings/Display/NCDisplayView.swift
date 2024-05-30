@@ -10,10 +10,10 @@ import SwiftUI
 
 struct NCDisplayView: View {
     @ObservedObject var model: NCDisplayModel
+    @Environment(\.colorScheme) var colorScheme
 
     var body: some View {
         Form {
-            // Specify Filename
             Section(header: Text(NSLocalizedString("_appearance_", comment: ""))) {
                 VStack {
                     HStack {
@@ -26,16 +26,14 @@ struct NCDisplayView: View {
                                 .frame(width: 50, height: 100)
                                 .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
                             Text(NSLocalizedString("_light_", comment: ""))
-                            Button(action: {
-                                // Azione da eseguire quando il bottone viene premuto
-                                print("Button pressed")
-                            }) {
-                                Image(systemName: "circle")
-                                    .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
-                                    .imageScale(.large)
-                                    .font(Font.system(.body).weight(.light))
-                                    .frame(width: .infinity, height: 40)
-                            }
+                            Image(systemName: colorScheme == .light ? "checkmark.circle.fill" : "circle")
+                                .foregroundColor(Color(NCBrandColor.shared.brandElement))
+                                .imageScale(.large)
+                                .font(Font.system(.body).weight(.light))
+                                .frame(width: 50, height: 50)
+                        }
+                        .onTapGesture {
+                            model.userInterfaceStyle(.light)
                         }
                         Spacer()
                         VStack {
@@ -46,16 +44,14 @@ struct NCDisplayView: View {
                                 .frame(width: 50, height: 100)
                                 .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
                             Text(NSLocalizedString("_dark_", comment: ""))
-                            Button(action: {
-                                // Azione da eseguire quando il bottone viene premuto
-                                print("Button pressed")
-                            }) {
-                                Image(systemName: "checkmark.circle.fill")
-                                    .foregroundColor(Color(NCBrandColor.shared.brandElement))
-                                    .imageScale(.large)
-                                    .font(Font.system(.body).weight(.light))
-                                    .frame(width: .infinity, height: 40)
-                            }
+                            Image(systemName: colorScheme == .dark ? "checkmark.circle.fill" : "circle")
+                                .foregroundColor(Color(NCBrandColor.shared.brandElement))
+                                .imageScale(.large)
+                                .font(Font.system(.body).weight(.light))
+                                .frame(width: 50, height: 50)
+                        }
+                        .onTapGesture {
+                            model.userInterfaceStyle(.dark)
                         }
                         Spacer()
                     }

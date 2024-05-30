@@ -32,6 +32,17 @@ class NCDisplayModel: ObservableObject, ViewOnAppearHandling {
 
     // MARK: - All functions
 
+    /// Update
+    func userInterfaceStyle(_ style: UIUserInterfaceStyle) {
+        let connectedScenes = UIApplication.shared.connectedScenes
+        for scene in connectedScenes {
+            if let windowScene = scene as? UIWindowScene {
+                for window in windowScene.windows {
+                    window.overrideUserInterfaceStyle = style
+                }
+            }
+        }
+    }
     /// Updates the value of `appearanceAutomatic` in the keychain.
     func updateAppearanceAutomatic() {
         keychain.appearanceAutomatic = appearanceAutomatic
