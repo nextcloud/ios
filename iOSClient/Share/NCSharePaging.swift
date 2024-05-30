@@ -29,7 +29,7 @@ import MarqueeLabel
 import TagListView
 
 protocol NCSharePagingContent {
-    var textField: UITextField? { get }
+    var textField: UISearchBar? { get }
 }
 
 class NCSharePaging: UIViewController {

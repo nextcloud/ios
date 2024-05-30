@@ -39,8 +39,8 @@ class NCShare: UIViewController, NCShareNetworkingDelegate, NCSharePagingContent
     @IBOutlet weak var sharedWithYouByNoteImage: UIImageView!
     @IBOutlet weak var sharedWithYouByNote: MarqueeLabel!
     @IBOutlet weak var searchFieldTopConstraint: NSLayoutConstraint!
-    @IBOutlet weak var searchField: UITextField!
-    var textField: UITextField? { searchField }
+    @IBOutlet weak var searchField: UISearchBar!
+    var textField: UISearchBar? { searchField }
 
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var btnContact: UIButton!
@@ -108,6 +108,9 @@ class NCShare: UIViewController, NCShareNetworkingDelegate, NCSharePagingContent
             let isVisible = (self.navigationController?.topViewController as? NCSharePaging)?.page == .sharing
             networking?.readShare(showLoadingIndicator: isVisible)
         }
+
+        searchField.searchTextField.font = .systemFont(ofSize: 14)
+        searchField.delegate = self
     }
 
     func makeNewLinkShare() {
@@ -128,7 +131,8 @@ class NCShare: UIViewController, NCShareNetworkingDelegate, NCSharePagingContent
         guard let appDelegate = self.appDelegate, let metadata = metadata, !metadata.ownerId.isEmpty, metadata.ownerId != appDelegate.userId else { return }
 
         if !canReshare {
-            searchField.isEnabled = false
+            searchField.isUserInteractionEnabled = false
+            searchField.alpha = 0.5
             searchField.placeholder = NSLocalizedString("_share_reshare_disabled_", comment: "")
         }
 
@@ -308,7 +312,7 @@ extension NCShare: UITableViewDelegate {
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         if indexPath.section == 0, indexPath.row == 0 {
             // internal cell has description
-            return 90
+            return 40
         }
         return 70
     }
@@ -345,7 +349,7 @@ extension NCShare: UITableViewDataSource {
             if metadata.e2eEncrypted && NCGlobal.shared.capabilityE2EEApiVersion == NCGlobal.shared.e2eeVersionV12 {
                 cell.tableShare = shares.firstShareLink
             } else {
-                if indexPath.row == 0 {
+                if indexPath.row == 1 {
                     cell.isInternalLink = true
                 } else if shares.firstShareLink?.isInvalidated != true {
                     cell.tableShare = shares.firstShareLink
@@ -414,5 +418,20 @@ extension NCShare: CNContactPickerDelegate {
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
             self.presentMenu(with: actions)
         }
+    }
+}
+
+extension NCShare: UISearchBarDelegate {
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        // https://stackoverflow.com/questions/25471114/how-to-validate-an-e-mail-address-in-swift
+        func isValidEmail(_ email: String) -> Bool {
+
+            let emailRegEx = "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,64}"
+            let emailPred = NSPredicate(format: "SELF MATCHES %@", emailRegEx)
+            return emailPred.evaluate(with: email)
+        }
+        guard let searchString = searchBar.text, !searchString.isEmpty else { return }
+        if searchString.contains("@"), !isValidEmail(searchString) { return }
+        networking?.getSharees(searchString: searchString)
     }
 }

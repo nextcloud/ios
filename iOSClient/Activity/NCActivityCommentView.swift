@@ -26,7 +26,7 @@ import UIKit
 class NCActivityCommentView: UIView, UITextFieldDelegate {
     @IBOutlet weak var imageItem: UIImageView!
     @IBOutlet weak var labelUser: UILabel!
-    @IBOutlet weak var newCommentField: UITextField!
+    @IBOutlet weak var newCommentField: UISearchBar!
 
     var completionHandler: ((String?) -> Void)?
 
@@ -50,10 +50,21 @@ class NCActivityCommentView: UIView, UITextFieldDelegate {
         }
         labelUser.textColor = NCBrandColor.shared.textColor
     }
+//
+//    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+//        textField.resignFirstResponder()
+//        completionHandler?(textField.text)
+//        return true
+//    }
+}
 
-    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-        textField.resignFirstResponder()
-        completionHandler?(textField.text)
-        return true
+extension NCActivityCommentView: UISearchBarDelegate {
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        searchBar.resignFirstResponder()
+        completionHandler?(searchBar.text)
+    }
+    func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {
+
+//        return true
     }
 }
