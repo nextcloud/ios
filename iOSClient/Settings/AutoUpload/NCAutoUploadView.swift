@@ -44,7 +44,8 @@ struct NCAutoUploadView: View {
             /// If `autoUpload` state will be true, we will animate out the whole `autoUploadOnView` section
             if model.autoUpload {
                 autoUploadOnView
-                .animation(.easeInOut)
+                    .transition(.slide)
+                    .animation(.easeInOut, value: model.autoUpload)
             }
         }
         .navigationBarTitle(NSLocalizedString("_auto_upload_folder_", comment: ""))

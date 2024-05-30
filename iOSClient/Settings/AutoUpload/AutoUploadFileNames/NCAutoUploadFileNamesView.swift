@@ -49,14 +49,16 @@ struct NCAutoUploadFileNamesView: View {
                 }
             }
             .transition(.slide)
-            .animation(.easeInOut)
+            .animation(.easeInOut, value: model.maintainFilename)
+
             // Filename Preview
             fileNamePreview
-            .animation(.easeInOut)
-        }.navigationBarTitle(NSLocalizedString("_mode_filename_", comment: ""))
-            .defaultViewModifier(model)
-            .padding(.top, 0)
-            .transition(.slide)
+                .animation(.easeInOut, value: model.specifyFilename)
+        }
+        .navigationBarTitle(NSLocalizedString("_mode_filename_", comment: ""))
+        .defaultViewModifier(model)
+        .padding(.top, 0)
+        .transition(.slide)
     }
 
     @ViewBuilder
