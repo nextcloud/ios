@@ -22,6 +22,7 @@
 //
 
 import Foundation
+import UIKit
 
 extension Optional where Wrapped: Collection {
     var isEmptyOrNil: Bool {

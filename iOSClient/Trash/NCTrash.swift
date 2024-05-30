@@ -76,8 +76,6 @@ class NCTrash: UIViewController, NCTrashListCellDelegate, NCTrashGridCellDelegat
         refreshControl.tintColor = NCBrandColor.shared.textColor2
         refreshControl.addTarget(self, action: #selector(loadListingTrash), for: .valueChanged)
 
-        setNavigationRightItems()
-
         NotificationCenter.default.addObserver(self, selector: #selector(reloadDataSource), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterReloadDataSource), object: nil)
     }
 
@@ -94,6 +92,9 @@ class NCTrash: UIViewController, NCTrashListCellDelegate, NCTrashGridCellDelegat
             collectionView.collectionViewLayout = gridLayout
         }
 
+        isEditMode = false
+        setNavigationRightItems()
+
         reloadDataSource()
         loadListingTrash()
     }
@@ -104,11 +105,6 @@ class NCTrash: UIViewController, NCTrashListCellDelegate, NCTrashGridCellDelegat
         // Cancel Queue & Retrieves Properties
         NCNetworking.shared.downloadThumbnailTrashQueue.cancelAll()
         dataSourceTask?.cancel()
-    }
-
-    override func viewDidDisappear(_ animated: Bool) {
-        super.viewDidDisappear(animated)
-        setEditMode(false)
     }
 
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
@@ -129,7 +125,7 @@ class NCTrash: UIViewController, NCTrashListCellDelegate, NCTrashGridCellDelegat
 
     // MARK: - Layout
 
-    func setNavigationRightItems(enableMenu: Bool = false) {
+    func setNavigationRightItems() {
         func createMenuActions() -> [UIMenuElement] {
             guard let layoutForView = NCManageDatabase.shared.getLayoutForView(account: appDelegate.account, key: layoutKey, serverUrl: "") else { return [] }
             let select = UIAction(title: NSLocalizedString("_select_", comment: ""), image: utility.loadImage(named: "checkmark.circle", colors: [NCBrandColor.shared.iconImageColor]), attributes: self.datasource.isEmpty ? .disabled : []) { _ in
@@ -155,14 +151,12 @@ class NCTrash: UIViewController, NCTrashListCellDelegate, NCTrashGridCellDelegat
                 self.setEditMode(false)
             }
             navigationItem.rightBarButtonItems = [select]
-        } else {
+        } else if navigationItem.rightBarButtonItems == nil || (!isEditMode && !tabBarSelect.isHidden()) {
             tabBarSelect.hide()
-            if navigationItem.rightBarButtonItems == nil || enableMenu {
-                let menu = UIBarButtonItem(image: utility.loadImage(named: "ellipsis.circle", colors: [NCBrandColor.shared.iconImageColor]), menu: UIMenu(children: createMenuActions()))
-                navigationItem.rightBarButtonItems = [menu]
-            } else {
-                navigationItem.rightBarButtonItems?.first?.menu = navigationItem.rightBarButtonItems?.first?.menu?.replacingChildren(createMenuActions())
-            }
+            let menu = UIBarButtonItem(image: utility.loadImage(named: "ellipsis.circle", colors: [NCBrandColor.shared.iconImageColor]), menu: UIMenu(children: createMenuActions()))
+            navigationItem.rightBarButtonItems = [menu]
+        } else {
+            navigationItem.rightBarButtonItems?.first?.menu = navigationItem.rightBarButtonItems?.first?.menu?.replacingChildren(createMenuActions())
         }
     }
 
