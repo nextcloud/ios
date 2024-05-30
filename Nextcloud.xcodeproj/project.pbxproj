@@ -244,6 +244,8 @@
 		F71CD6CA2930D7B1006C95C1 /* NCApplicationHandle.swift in Sources */ = {isa = PBXBuildFile; fileRef = F71CD6C92930D7B1006C95C1 /* NCApplicationHandle.swift */; };
 		F71DAC482C0873F40022B0C7 /* NCManageE2EEModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F71DAC472C0873F40022B0C7 /* NCManageE2EEModel.swift */; };
 		F71DAC492C087E320022B0C7 /* ViewOnAppear.swift in Sources */ = {isa = PBXBuildFile; fileRef = F78E98E42C008CF200961613 /* ViewOnAppear.swift */; };
+		F71DAC4C2C08A1CF0022B0C7 /* NCDisplayModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F71DAC4B2C08A1CF0022B0C7 /* NCDisplayModel.swift */; };
+		F71DAC4E2C08A1E80022B0C7 /* NCDisplayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F71DAC4D2C08A1E80022B0C7 /* NCDisplayView.swift */; };
 		F71F6D072B6A6A5E00F1EB15 /* ThreadSafeArray.swift in Sources */ = {isa = PBXBuildFile; fileRef = F71F6D062B6A6A5E00F1EB15 /* ThreadSafeArray.swift */; };
 		F71F6D082B6A6A5E00F1EB15 /* ThreadSafeArray.swift in Sources */ = {isa = PBXBuildFile; fileRef = F71F6D062B6A6A5E00F1EB15 /* ThreadSafeArray.swift */; };
 		F71F6D092B6A6A5E00F1EB15 /* ThreadSafeArray.swift in Sources */ = {isa = PBXBuildFile; fileRef = F71F6D062B6A6A5E00F1EB15 /* ThreadSafeArray.swift */; };
@@ -677,7 +679,7 @@
 		F78E98EC2C008CF200961613 /* NCWebBrowserView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F78E98DC2C008CF200961613 /* NCWebBrowserView.swift */; };
 		F78E98ED2C008CF200961613 /* NCAcknowledgementsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F78E98DD2C008CF200961613 /* NCAcknowledgementsView.swift */; };
 		F78E98EE2C008CF200961613 /* NCSettingsModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F78E98DF2C008CF200961613 /* NCSettingsModel.swift */; };
-		F78E98EF2C008CF200961613 /* NCSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = F78E98E02C008CF200961613 /* NCSettings.swift */; };
+		F78E98EF2C008CF200961613 /* NCSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F78E98E02C008CF200961613 /* NCSettingsView.swift */; };
 		F78E98F12C008CF200961613 /* ViewOnAppear.swift in Sources */ = {isa = PBXBuildFile; fileRef = F78E98E42C008CF200961613 /* ViewOnAppear.swift */; };
 		F78E98F22C008CF200961613 /* NCSettingsAdvancedModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F78E98E62C008CF200961613 /* NCSettingsAdvancedModel.swift */; };
 		F78E98F32C008CF200961613 /* NCSettingsAdvanced.swift in Sources */ = {isa = PBXBuildFile; fileRef = F78E98E72C008CF200961613 /* NCSettingsAdvanced.swift */; };
@@ -1242,6 +1244,8 @@
 		F719D9E1288D396100762E33 /* NCColorPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCColorPicker.swift; sourceTree = "<group>"; };
 		F71CD6C92930D7B1006C95C1 /* NCApplicationHandle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCApplicationHandle.swift; sourceTree = "<group>"; };
 		F71DAC472C0873F40022B0C7 /* NCManageE2EEModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCManageE2EEModel.swift; sourceTree = "<group>"; };
+		F71DAC4B2C08A1CF0022B0C7 /* NCDisplayModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCDisplayModel.swift; sourceTree = "<group>"; };
+		F71DAC4D2C08A1E80022B0C7 /* NCDisplayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCDisplayView.swift; sourceTree = "<group>"; };
 		F71F6D062B6A6A5E00F1EB15 /* ThreadSafeArray.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreadSafeArray.swift; sourceTree = "<group>"; };
 		F7226EDB1EE4089300EBECB1 /* Main.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Main.storyboard; sourceTree = "<group>"; };
 		F723985B253C95CE00257F49 /* NCViewerRichdocument.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = NCViewerRichdocument.storyboard; sourceTree = "<group>"; };
@@ -1457,7 +1461,7 @@
 		F78E98DC2C008CF200961613 /* NCWebBrowserView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCWebBrowserView.swift; sourceTree = "<group>"; };
 		F78E98DD2C008CF200961613 /* NCAcknowledgementsView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCAcknowledgementsView.swift; sourceTree = "<group>"; };
 		F78E98DF2C008CF200961613 /* NCSettingsModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCSettingsModel.swift; sourceTree = "<group>"; };
-		F78E98E02C008CF200961613 /* NCSettings.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCSettings.swift; sourceTree = "<group>"; };
+		F78E98E02C008CF200961613 /* NCSettingsView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCSettingsView.swift; sourceTree = "<group>"; };
 		F78E98E42C008CF200961613 /* ViewOnAppear.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ViewOnAppear.swift; sourceTree = "<group>"; };
 		F78E98E62C008CF200961613 /* NCSettingsAdvancedModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCSettingsAdvancedModel.swift; sourceTree = "<group>"; };
 		F78E98E72C008CF200961613 /* NCSettingsAdvanced.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCSettingsAdvanced.swift; sourceTree = "<group>"; };
@@ -2102,6 +2106,15 @@
 			path = E2EE;
 			sourceTree = "<group>";
 		};
+		F71DAC4A2C08A1B40022B0C7 /* Display */ = {
+			isa = PBXGroup;
+			children = (
+				F71DAC4B2C08A1CF0022B0C7 /* NCDisplayModel.swift */,
+				F71DAC4D2C08A1E80022B0C7 /* NCDisplayView.swift */,
+			);
+			path = Display;
+			sourceTree = "<group>";
+		};
 		F720B5B72507B9A5008C94E5 /* Cell */ = {
 			isa = PBXGroup;
 			children = (
@@ -2450,7 +2463,7 @@
 			isa = PBXGroup;
 			children = (
 				F71DAC462C0873BE0022B0C7 /* E2EE */,
-				F78E98E02C008CF200961613 /* NCSettings.swift */,
+				F78E98E02C008CF200961613 /* NCSettingsView.swift */,
 				F78E98DF2C008CF200961613 /* NCSettingsModel.swift */,
 			);
 			path = Settings;
@@ -2593,6 +2606,7 @@
 			isa = PBXGroup;
 			children = (
 				F78E98DE2C008CF200961613 /* Settings */,
+				F71DAC4A2C08A1B40022B0C7 /* Display */,
 				F78E98D52C008CF200961613 /* AutoUpload */,
 				F78E98E52C008CF200961613 /* Advanced */,
 				F78E98DB2C008CF200961613 /* Helpers */,
@@ -4156,6 +4170,7 @@
 				F77444F522281649000D5EB0 /* NCGridMediaCell.swift in Sources */,
 				F78C6FDE296D677300C952C3 /* NCContextMenu.swift in Sources */,
 				F7E402332BA89551007E5609 /* NCTrash+Networking.swift in Sources */,
+				F71DAC4E2C08A1E80022B0C7 /* NCDisplayView.swift in Sources */,
 				F78E98EC2C008CF200961613 /* NCWebBrowserView.swift in Sources */,
 				F7E7AEA72BA32D0000512E52 /* NCCollectionViewUnifiedSearch.swift in Sources */,
 				F769CA172965AB7C00039397 /* NCUploadAssets.swift in Sources */,
@@ -4203,6 +4218,7 @@
 				F70753F12542A9A200972D44 /* NCViewerMedia.swift in Sources */,
 				F76B649C2ADFFAED00014640 /* NCImageCache.swift in Sources */,
 				F78A18B823CDE2B300F681F3 /* NCViewerRichWorkspace.swift in Sources */,
+				F71DAC4C2C08A1CF0022B0C7 /* NCDisplayModel.swift in Sources */,
 				F7A60F86292D215000FCE1F2 /* NCShareAccounts.swift in Sources */,
 				F72408332B8A27C900F128E2 /* NCMedia+Command.swift in Sources */,
 				F77910AB25DD53C700CEDB9E /* NCSettingsBundleHelper.swift in Sources */,
@@ -4322,7 +4338,7 @@
 				AF3FDCC22796ECC300710F60 /* NCTrash+CollectionView.swift in Sources */,
 				F70D7C3725FFBF82002B9E34 /* NCCollectionViewCommon.swift in Sources */,
 				F76D364628A4F8BF00214537 /* NCActivityIndicator.swift in Sources */,
-				F78E98EF2C008CF200961613 /* NCSettings.swift in Sources */,
+				F78E98EF2C008CF200961613 /* NCSettingsView.swift in Sources */,
 				F3A047992BD2668800658E7B /* NCAssistantTask.swift in Sources */,
 				F7134186259747BA00768D21 /* NCPushNotification.m in Sources */,
 				F78E98EB2C008CF200961613 /* NCAutoUploadView.swift in Sources */,

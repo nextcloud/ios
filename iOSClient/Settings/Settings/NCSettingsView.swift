@@ -1,5 +1,5 @@
 //
-//  NCSettings.swift
+//  NCSettingsView.swift
 //  Nextcloud
 //
 //  Created by Aditya Tyagi on 03/03/24.
@@ -26,7 +26,7 @@ import SwiftUI
 import NextcloudKit
 
 /// Settings view for Nextcloud
-struct NCSettings: View {
+struct NCSettingsView: View {
     /// State to control the visibility of the acknowledgements view
     @State private var showAcknowledgements = false
     /// State to control the visibility of the passcode view
@@ -109,6 +109,21 @@ struct NCSettings: View {
                 Text(NSLocalizedString("_lock_protection_no_screen_footer_", comment: "") + "\n" + String(format: NSLocalizedString("_reset_wrong_passcode_desc_", comment: ""), NCBrandOptions.shared.resetAppPasscodeAttempts))
                     .font(.system(size: 12))
                     .lineSpacing(1)
+            })
+            // Display
+            Section(header: Text(NSLocalizedString("_display_", comment: "")), content: {
+                NavigationLink(destination: NCDisplayView(model: NCDisplayModel(controller: model.controller))) {
+                    HStack {
+                        Image(systemName: "iphone")
+                            .resizable()
+                            .scaledToFit()
+                            .font(Font.system(.body).weight(.light))
+                            .frame(width: 20, height: 20)
+                            .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
+                        Text(NSLocalizedString("_display_", comment: ""))
+                    }
+                    .font(.system(size: 16))
+                }
             })
             // Calender & Contacts
             if !NCBrandOptions.shared.disable_mobileconfig {
@@ -246,5 +261,5 @@ struct E2EESection: View {
 }
 
 #Preview {
-    NCSettings(model: NCSettingsModel(controller: nil))
+    NCSettingsView(model: NCSettingsModel(controller: nil))
 }

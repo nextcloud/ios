@@ -456,7 +456,7 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
             present(hostingController, animated: true, completion: nil)
         } else if item.url == "openSettings" {
             // Created an instance of the NCSettings view
-            let ncSettingsView = NCSettings(model: NCSettingsModel(controller: self.tabBarController))
+            let ncSettingsView = NCSettingsView(model: NCSettingsModel(controller: self.tabBarController))
             // Created a hosting controller for the NCSettings view & performing the segue
             let hostingController = UIHostingController(rootView: ncSettingsView)
             self.navigationController?.pushViewController(hostingController, animated: true)
