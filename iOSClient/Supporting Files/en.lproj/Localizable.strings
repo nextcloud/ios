@@ -986,6 +986,7 @@
 "_delete_selected_photos_"  = "Delete selected photos";
 "_media_square_"            = "Square photo grid";
 "_media_ratio_"             = "Aspect ratio grid";
+"_autoupload_notice_"       = "To ensure the proper functioning of the application, it is necessary to enable Background App Refresh. Otherwise, new photos or videos will not be detected when the application is in the background.\n\nAdditionally, please note that the application will not be able to detect new photos and videos if it is manually terminated. When the app is in the background, data transfer may be slower, and new photos and/or videos will generally be detected every 10 minutes, depending on the phone’s battery level.\n\nTo verify that the app is functioning correctly, you can use the log file available in Advanced.";
 
 // Video
 "_select_trace_"            = "Select the trace";
