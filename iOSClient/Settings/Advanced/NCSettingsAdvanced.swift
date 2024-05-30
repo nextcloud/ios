@@ -151,11 +151,11 @@ struct NCSettingsAdvanced: View {
                         model.clearLogFile()
                     }, label: {
                         HStack {
-                            Image(systemName: "repeat")
+                            Image(systemName: "xmark")
                                 .resizable()
                                 .scaledToFit()
                                 .font(Font.system(.body).weight(.light))
-                                .frame(width: 25, height: 25)
+                                .frame(width: 15, height: 15)
                                 .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
                             Text(NSLocalizedString("_clear_log_", comment: ""))
                         }
