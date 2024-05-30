@@ -20,6 +20,7 @@ class NCManageE2EE: NSObject, ObservableObject, ViewOnAppearHandling, NCEndToEnd
     @Published var controller: UITabBarController?
     @Published var isEndToEndEnabled: Bool = false
     @Published var statusOfService: String = NSLocalizedString("_status_in_progress_", comment: "")
+    @Published var navigateBack: Bool = false
 
     init(controller: UITabBarController?) {
         super.init()
@@ -30,17 +31,21 @@ class NCManageE2EE: NSObject, ObservableObject, ViewOnAppearHandling, NCEndToEnd
 
     /// Triggered when the view appears.
     func onViewAppear() {
-        isEndToEndEnabled = NCKeychain().isEndToEndEnabled(account: appDelegate.account)
-        if isEndToEndEnabled {
-            statusOfService = NSLocalizedString("_status_e2ee_configured_", comment: "")
-        } else {
-            endToEndInitialize.statusOfService { error in
-                if error == .success {
-                    self.statusOfService = NSLocalizedString("_status_e2ee_on_server_", comment: "")
-                } else {
-                    self.statusOfService = NSLocalizedString("_status_e2ee_not_setup_", comment: "")
+        if NCGlobal.shared.capabilityE2EEEnabled && NCGlobal.shared.e2eeVersions.contains(NCGlobal.shared.capabilityE2EEApiVersion) {
+            isEndToEndEnabled = NCKeychain().isEndToEndEnabled(account: appDelegate.account)
+            if isEndToEndEnabled {
+                statusOfService = NSLocalizedString("_status_e2ee_configured_", comment: "")
+            } else {
+                endToEndInitialize.statusOfService { error in
+                    if error == .success {
+                        self.statusOfService = NSLocalizedString("_status_e2ee_on_server_", comment: "")
+                    } else {
+                        self.statusOfService = NSLocalizedString("_status_e2ee_not_setup_", comment: "")
+                    }
                 }
             }
+        } else {
+            navigateBack = true
         }
     }
 

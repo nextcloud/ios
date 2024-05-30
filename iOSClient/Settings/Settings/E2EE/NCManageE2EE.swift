@@ -26,6 +26,7 @@ import NextcloudKit
 
 struct NCViewE2EE: View {
     @ObservedObject var model: NCManageE2EE
+    @Environment(\.presentationMode) var presentationMode
 
     var body: some View {
         VStack {
@@ -119,6 +120,11 @@ struct NCViewE2EE: View {
         .navigationBarTitle(NSLocalizedString("_e2e_settings_", comment: ""))
         .background(Color(UIColor.systemGroupedBackground))
         .defaultViewModifier(model)
+        .onChange(of: model.navigateBack) { newValue in
+            if newValue {
+                presentationMode.wrappedValue.dismiss()
+            }
+        }
     }
 }
 
