@@ -16,6 +16,8 @@ class NCDisplayModel: ObservableObject, ViewOnAppearHandling {
     var keychain = NCKeychain()
     /// Root View Controller
     @Published var controller: UITabBarController?
+    /// State to control the enable TouchID toggle
+    @Published var enableAutomatic: Bool = false
 
     /// Initializes the view model with default values.
     init(controller: UITabBarController?) {
