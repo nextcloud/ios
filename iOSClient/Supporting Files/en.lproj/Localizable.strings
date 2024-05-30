@@ -991,7 +991,7 @@
 "_appearance_"              = "Appearance";
 "_light_"                   = "Light";
 "_dark_"                    = "Dark";
-"_automatic_"               = "Automatic";
+"_use_system_style_"        = "Use system style";
 
 // Video
 "_select_trace_"            = "Select the trace";

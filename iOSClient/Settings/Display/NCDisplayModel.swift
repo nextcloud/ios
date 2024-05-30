@@ -46,5 +46,24 @@ class NCDisplayModel: ObservableObject, ViewOnAppearHandling {
     /// Updates the value of `appearanceAutomatic` in the keychain.
     func updateAppearanceAutomatic() {
         keychain.appearanceAutomatic = appearanceAutomatic
+        if appearanceAutomatic {
+            userInterfaceStyle(determineSystemPreferredInterfaceStyle())
+        }
+    }
+
+    func determineSystemPreferredInterfaceStyle() -> UIUserInterfaceStyle {
+        let temporaryWindow = UIWindow(frame: UIScreen.main.bounds)
+        temporaryWindow.overrideUserInterfaceStyle = .light
+        let lightStyle = temporaryWindow.traitCollection.userInterfaceStyle
+        temporaryWindow.overrideUserInterfaceStyle = .dark
+        let darkStyle = temporaryWindow.traitCollection.userInterfaceStyle
+
+        if lightStyle == .light && darkStyle == .dark {
+            return .light
+        } else if lightStyle == .dark && darkStyle == .dark {
+            return .dark
+        } else {
+            return .light
+        }
     }
 }
