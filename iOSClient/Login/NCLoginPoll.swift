@@ -62,10 +62,10 @@ struct NCLoginPoll: View {
             }
         }
         .background(Color(NCBrandColor.shared.customer))
-//        .onAppear {
-//            loginManager.configure(loginFlowV2Token: loginFlowV2Token, loginFlowV2Endpoint: loginFlowV2Endpoint, loginFlowV2Login: loginFlowV2Login)
-//            loginManager.openLoginInBrowser()
-//        }
+        .onAppear {
+            loginManager.configure(loginFlowV2Token: loginFlowV2Token, loginFlowV2Endpoint: loginFlowV2Endpoint, loginFlowV2Login: loginFlowV2Login)
+            loginManager.openLoginInBrowser()
+        }
         .interactiveDismissDisabled()
     }
 }
