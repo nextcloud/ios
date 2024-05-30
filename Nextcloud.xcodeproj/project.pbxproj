@@ -242,6 +242,7 @@
 		F719D9E0288D37A300762E33 /* NCColorPicker.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F719D9DF288D37A300762E33 /* NCColorPicker.storyboard */; };
 		F719D9E2288D396100762E33 /* NCColorPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = F719D9E1288D396100762E33 /* NCColorPicker.swift */; };
 		F71CD6CA2930D7B1006C95C1 /* NCApplicationHandle.swift in Sources */ = {isa = PBXBuildFile; fileRef = F71CD6C92930D7B1006C95C1 /* NCApplicationHandle.swift */; };
+		F71DAC482C0873F40022B0C7 /* NCManageE2EEModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F71DAC472C0873F40022B0C7 /* NCManageE2EEModel.swift */; };
 		F71F6D072B6A6A5E00F1EB15 /* ThreadSafeArray.swift in Sources */ = {isa = PBXBuildFile; fileRef = F71F6D062B6A6A5E00F1EB15 /* ThreadSafeArray.swift */; };
 		F71F6D082B6A6A5E00F1EB15 /* ThreadSafeArray.swift in Sources */ = {isa = PBXBuildFile; fileRef = F71F6D062B6A6A5E00F1EB15 /* ThreadSafeArray.swift */; };
 		F71F6D092B6A6A5E00F1EB15 /* ThreadSafeArray.swift in Sources */ = {isa = PBXBuildFile; fileRef = F71F6D062B6A6A5E00F1EB15 /* ThreadSafeArray.swift */; };
@@ -1239,6 +1240,7 @@
 		F719D9DF288D37A300762E33 /* NCColorPicker.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = NCColorPicker.storyboard; sourceTree = "<group>"; };
 		F719D9E1288D396100762E33 /* NCColorPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCColorPicker.swift; sourceTree = "<group>"; };
 		F71CD6C92930D7B1006C95C1 /* NCApplicationHandle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCApplicationHandle.swift; sourceTree = "<group>"; };
+		F71DAC472C0873F40022B0C7 /* NCManageE2EEModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCManageE2EEModel.swift; sourceTree = "<group>"; };
 		F71F6D062B6A6A5E00F1EB15 /* ThreadSafeArray.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreadSafeArray.swift; sourceTree = "<group>"; };
 		F7226EDB1EE4089300EBECB1 /* Main.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Main.storyboard; sourceTree = "<group>"; };
 		F723985B253C95CE00257F49 /* NCViewerRichdocument.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = NCViewerRichdocument.storyboard; sourceTree = "<group>"; };
@@ -2089,6 +2091,16 @@
 			path = Shares;
 			sourceTree = "<group>";
 		};
+		F71DAC462C0873BE0022B0C7 /* E2EE */ = {
+			isa = PBXGroup;
+			children = (
+				F726EEEB1FED1C820030B9C8 /* NCEndToEndInitialize.swift */,
+				F7A7FA6229265CF4000603EF /* NCManageE2EE.swift */,
+				F71DAC472C0873F40022B0C7 /* NCManageE2EEModel.swift */,
+			);
+			path = E2EE;
+			sourceTree = "<group>";
+		};
 		F720B5B72507B9A5008C94E5 /* Cell */ = {
 			isa = PBXGroup;
 			children = (
@@ -2436,10 +2448,9 @@
 		F78E98DE2C008CF200961613 /* Settings */ = {
 			isa = PBXGroup;
 			children = (
-				F78E98DF2C008CF200961613 /* NCSettingsModel.swift */,
+				F71DAC462C0873BE0022B0C7 /* E2EE */,
 				F78E98E02C008CF200961613 /* NCSettings.swift */,
-				F7A7FA6229265CF4000603EF /* NCManageE2EE.swift */,
-				F726EEEB1FED1C820030B9C8 /* NCEndToEndInitialize.swift */,
+				F78E98DF2C008CF200961613 /* NCSettingsModel.swift */,
 			);
 			path = Settings;
 			sourceTree = "<group>";
@@ -4194,6 +4205,7 @@
 				F72408332B8A27C900F128E2 /* NCMedia+Command.swift in Sources */,
 				F77910AB25DD53C700CEDB9E /* NCSettingsBundleHelper.swift in Sources */,
 				F755CB402B8CB13C00CE27E9 /* NCMediaLayout.swift in Sources */,
+				F71DAC482C0873F40022B0C7 /* NCManageE2EEModel.swift in Sources */,
 				F73EF7B72B0224AB0087E6E9 /* NCManageDatabase+ExternalSites.swift in Sources */,
 				AF4BF61927562A4B0081CEEF /* NCManageDatabase+Metadata.swift in Sources */,
 				F73EF7E72B0226B90087E6E9 /* NCManageDatabase+UserStatus.swift in Sources */,

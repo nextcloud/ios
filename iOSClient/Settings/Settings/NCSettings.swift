@@ -228,7 +228,7 @@ struct E2EESection: View {
 
     var body: some View {
         Section(header: Text(NSLocalizedString("_e2e_settings_title_", comment: "")), content: {
-            NavigationLink(destination: NCViewE2EE(account: model.appDelegate.account, rootViewController: model.controller)) {
+            NavigationLink(destination: NCViewE2EE(account: model.appDelegate.account, controller: model.controller)) {
                 HStack {
                     Image(systemName: "lock")
                         .resizable()
