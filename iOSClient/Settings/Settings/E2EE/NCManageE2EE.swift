@@ -84,7 +84,7 @@ struct NCViewE2EE: View {
                         }
                     }
 #if DEBUG
-                    DeleteCerificateSection()
+                    deleteCerificateSection
 #endif
                 }
             } else {
@@ -112,7 +112,7 @@ struct NCViewE2EE: View {
                         }
                     }
 #if DEBUG
-                    DeleteCerificateSection()
+                    deleteCerificateSection
 #endif
                 }
             }
@@ -126,10 +126,9 @@ struct NCViewE2EE: View {
             }
         }
     }
-}
 
-struct DeleteCerificateSection: View {
-    var body: some View {
+    @ViewBuilder
+    var deleteCerificateSection: some View {
         Section(header: Text("Delete Server keys"), footer: Text("Available only in debug mode")) {
             HStack {
                 Label {
@@ -172,53 +171,6 @@ struct DeleteCerificateSection: View {
                         NCContentPresenter().messageNotification("E2E delete privateKey", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: .success)
                     } else {
                         NCContentPresenter().messageNotification("E2E delete privateKey", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: .error)
-                    }
-                }
-            }
-        }
-    }
-}
-
-// MARK: - Preview / Test
-
-struct SectionView: View {
-    @State var height: CGFloat = 0
-    @State var text: String = ""
-
-    var body: some View {
-        HStack {
-            Text(text)
-        }
-        .frame(maxWidth: .infinity, minHeight: height, alignment: .bottomLeading)
-    }
-}
-
-struct NCViewE2EETest: View {
-    var body: some View {
-        VStack {
-            List {
-                Section(header: SectionView(height: 50, text: "Section Header View")) {
-                    Label {
-                        Text(NSLocalizedString("_e2e_settings_activated_", comment: ""))
-                    } icon: {
-                        Image(systemName: "checkmark.circle.fill")
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: 25, height: 25)
-                            .font(Font.system(.body).weight(.light))
-                            .foregroundColor(.green)
-                    }
-                }
-                Section(header: SectionView(text: "Section Header View 42")) {
-                    Label {
-                        Text(NSLocalizedString("_e2e_settings_activated_", comment: ""))
-                    } icon: {
-                        Image(systemName: "checkmark.circle.fill")
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: 25, height: 25)
-                            .font(Font.system(.body).weight(.light))
-                            .foregroundColor(.red)
                     }
                 }
             }
