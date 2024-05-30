@@ -35,7 +35,7 @@ import LocalAuthentication
     }
 }
 
-class NCManageE2EE: NSObject, ObservableObject, NCEndToEndInitializeDelegate, TOPasscodeViewControllerDelegate {
+class NCManageE2EE: NSObject, ObservableObject, ViewOnAppearHandling, NCEndToEndInitializeDelegate, TOPasscodeViewControllerDelegate {
     let endToEndInitialize = NCEndToEndInitialize()
     let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
     var passcodeType = ""
@@ -60,6 +60,11 @@ class NCManageE2EE: NSObject, ObservableObject, NCEndToEndInitializeDelegate, TO
                 }
             }
         }
+    }
+
+    /// Triggered when the view appears.
+    func onViewAppear() {
+        print("")
     }
 
     // MARK: - Delegate
@@ -253,6 +258,7 @@ struct NCViewE2EE: View {
         }
         .navigationBarTitle(NSLocalizedString("_e2e_settings_", comment: ""))
         .background(Color(UIColor.systemGroupedBackground))
+        .defaultViewModifier(manageE2EE)
     }
 }
 
