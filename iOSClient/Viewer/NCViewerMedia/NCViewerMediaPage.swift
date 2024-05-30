@@ -400,7 +400,7 @@ class NCViewerMediaPage: UIViewController {
         guard let userInfo = notification.userInfo as NSDictionary? else { return }
 
         if let ocIds = userInfo["ocId"] as? [String],
-           let ocId = ocIds.first {
+           ocIds.first != nil {
             // Stop media
             if let ncplayer = currentViewController.ncplayer, ncplayer.isPlay() {
                 ncplayer.playerPause()

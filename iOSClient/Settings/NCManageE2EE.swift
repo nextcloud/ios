@@ -256,7 +256,7 @@ struct NCViewE2EE: View {
                         }
                         .contentShape(Rectangle())
                         .onTapGesture {
-                            if let passcode = NCKeychain().passcode {
+                            if NCKeychain().passcode != nil {
                                 manageE2EE.requestPasscodeType("startE2E")
                             } else {
                                 NCContentPresenter().showInfo(error: NKError(errorCode: 0, errorDescription: "_e2e_settings_lock_not_active_"))

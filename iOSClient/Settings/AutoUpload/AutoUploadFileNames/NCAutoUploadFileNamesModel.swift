@@ -28,7 +28,6 @@ import Combine
 
 /// A view model responsible for managing auto-upload file names.
 class NCAutoUploadFileNamesModel: ObservableObject, ViewOnAppearHandling {
-    // MARK: - Properties
     /// A keychain instance for handling authentication.
     private var keychain = NCKeychain()
     /// A shared global instance for managing application-wide settings.
@@ -44,11 +43,12 @@ class NCAutoUploadFileNamesModel: ObservableObject, ViewOnAppearHandling {
     /// The complete new file name.
     @Published var fileName: String = ""
     let dateExample = Date()
-    // MARK: - Initialization
+
     /// Initializes the view model with default values.
     init() {
         onViewAppear()
     }
+
     /// Triggered when the view appears.
     func onViewAppear() {
         maintainFilename = keychain.getOriginalFileName(key: globalKey.keyFileNameOriginalAutoUpload)
@@ -57,25 +57,30 @@ class NCAutoUploadFileNamesModel: ObservableObject, ViewOnAppearHandling {
         oldName = keychain.getFileNameMask(key: globalKey.keyFileNameAutoUploadMask)
         getFileName()
     }
-    
+
+    // MARK: - All functions
+
     func getFileName() {
         fileName = previewFileName()
     }
-    // MARK: - Methods
+
     /// Toggles maintaining the original filename.
     func toggleMaintainOriginalFilename(newValue: Bool) {
         NCKeychain().setOriginalFileName(key: NCGlobal.shared.keyFileNameOriginalAutoUpload, value: newValue)
     }
+
     /// Toggles adding filename type.
     func toggleAddFilenameType(newValue: Bool) {
         NCKeychain().setFileNameType(key: NCGlobal.shared.keyFileNameAutoUploadType, prefix: newValue)
     }
+
     /// Submits the changed file name.
     func submitChangedName() {
         changedName = checkUploadFileName()
         presentForbiddenCharError()
         oldName = changedName
     }
+
     /// Presents an error message if the changed file name contains forbidden characters.
     func presentForbiddenCharError() {
         if changedName != oldName {
@@ -84,11 +89,13 @@ class NCAutoUploadFileNamesModel: ObservableObject, ViewOnAppearHandling {
             NCContentPresenter().showInfo(error: error)
         }
     }
+
     /// Checks and removes forbidden characters from the changed file name.
     /// - Returns: The sanitized file name.
     func checkUploadFileName() -> String {
         return NCUtility().removeForbiddenCharacters(changedName)
     }
+
     /// Generates a preview file name based on current settings and file name mask.
     /// - Returns: The preview file name.
     func previewFileName() -> String {

@@ -55,6 +55,7 @@ class NCSettingsModel: ObservableObject, ViewOnAppearHandling {
         self.controller = controller
         onViewAppear()
     }
+
     /// Triggered when the view appears.
     func onViewAppear() {
         isLockActive = (keychain.passcode != nil)
@@ -66,23 +67,29 @@ class NCSettingsModel: ObservableObject, ViewOnAppearHandling {
         footerServer = String(format: NCBrandOptions.shared.textCopyrightNextcloudServer, NCGlobal.shared.capabilityServerVersion) + "\n"
         footerSlogan = NCGlobal.shared.capabilityThemingName + " - " + NCGlobal.shared.capabilityThemingSlogan + "\n\n"
     }
-    // MARK: - Settings Update Methods
+
+    // MARK: - All functions
+
     /// Function to update Touch ID / Face ID setting
     func updateTouchIDSetting() {
         keychain.touchFaceID = enableTouchID
     }
+
     /// Function to update Lock Screen setting
     func updateLockScreenSetting() {
         keychain.requestPasscodeAtStart = !lockScreen
     }
+
     /// Function to update Privacy Screen setting
     func updatePrivacyScreenSetting() {
         keychain.privacyScreenEnabled = privacyScreen
     }
+
     /// Function to update Reset Wrong Attempts setting
     func updateResetWrongAttemptsSetting() {
         keychain.resetAppCounterFail = resetWrongAttempts
     }
+
     /// This function initiates a service call to download the configuration files
     /// using the URL provided in the `configLink` property.
     func getConfigFiles() {

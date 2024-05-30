@@ -79,40 +79,50 @@ class NCSettingsAdvancedModel: ObservableObject, ViewOnAppearHandling {
         selectedInterval = CacheDeletionInterval(rawValue: keychain.cleanUpDay) ?? .never
         calculateSize()
     }
-    // MARK: All protocol functions to update keychain values when toggles change
+
+    // MARK: - All functions
+
     /// Updates the value of `showHiddenFiles` in the keychain.
     func updateShowHiddenFiles() {
         keychain.showHiddenFiles = showHiddenFiles
     }
+
     /// Updates the value of `mostCompatible` in the keychain.
     func updateMostCompatible() {
         keychain.formatCompatibility = mostCompatible
     }
+
     /// Updates the value of `livePhoto` in the keychain.
     func updateLivePhoto() {
         keychain.livePhoto = livePhoto
     }
+
     /// Updates the value of `removeFromCameraRoll` in the keychain.
     func updateRemoveFromCameraRoll() {
         keychain.removePhotoCameraRoll = removeFromCameraRoll
     }
+
     /// Updates the value of `appIntegration` in the keychain.
     func updateAppIntegration() {
         keychain.disableFilesApp = !appIntegration
     }
+
     /// Updates the value of `crashReporter` in the keychain.
     func updateCrashReporter() {
         keychain.disableCrashservice = !crashReporter
     }
+
     /// Updates the value of `selectedLogLevel` in the keychain and sets it for NextcloudKit.
     func updateSelectedLogLevel() {
         keychain.logLevel = selectedLogLevel.rawValue
         NextcloudKit.shared.nkCommonInstance.levelLog = selectedLogLevel.rawValue
     }
+
     /// Updates the value of `selectedInterval` in the keychain.
     func updateSelectedInterval() {
         keychain.cleanUpDay = selectedInterval.rawValue
     }
+
     /// Clears cache associated with the specified account.
     func clearCache() {
         NCActivityIndicator.shared.startActivity(style: .large, blurEffect: true)
@@ -146,6 +156,7 @@ class NCSettingsAdvancedModel: ObservableObject, ViewOnAppearHandling {
             let totalSize = ufs.getDirectorySize(directory: directory)
             self.footerTitle = "\(NSLocalizedString("_clear_cache_footer_", comment: "")). (\(NSLocalizedString("_used_space_", comment: "")) \(ufs.transformedSize(totalSize)))"
     }
+
     /// Removes all accounts & exits the Nextcloud application if specified.
     ///
     /// - Parameter
@@ -155,6 +166,7 @@ class NCSettingsAdvancedModel: ObservableObject, ViewOnAppearHandling {
             self.appDelegate.resetApplication()
         } else { }
     }
+
     /// Exits the Nextcloud application if specified.
     ///
     /// - Parameter
@@ -164,6 +176,7 @@ class NCSettingsAdvancedModel: ObservableObject, ViewOnAppearHandling {
             exit(0)
         } else { }
     }
+
     /// Presents the log file viewer.
     func viewLogFile() {
         // Instantiate NCViewerQuickLook with the log file URL, editing disabled, and no metadata
@@ -171,6 +184,7 @@ class NCSettingsAdvancedModel: ObservableObject, ViewOnAppearHandling {
         // Present the NCViewerQuickLook view controller
         controller?.present(viewerQuickLook, animated: true, completion: nil)
     }
+
     /// Clears the log file.
     func clearLogFile() {
         // Clear the log file using NextcloudKit
@@ -188,6 +202,7 @@ class NCSettingsAdvancedModel: ObservableObject, ViewOnAppearHandling {
         // Set the alert state to show that log file has been cleared
         self.logFileCleared = true
     }
+
     func triggerGoToCapabilitiesView() {
         // Create an instance of NCHostingCapabilitiesView
         let capabilitiesView = NCHostingCapabilitiesView()
