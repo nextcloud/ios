@@ -1,6 +1,6 @@
 variables:
   outputDirPath: "./build/sym"
-  IPA_PATH: "${outputDirPath}/*.ipa"
+  IPA_PATH: "${outputDirPath}/${scheme}.ipa"
   DSYM_PATH: "*.dSYM.zip"
   scheme: "Nextcloud"
   archive_path: "${outputDirPath}/${scheme}"
@@ -9,6 +9,7 @@ variables:
 
 stages:
 - build
+- deploy
 
 .mac_general_scripts: &mac_general_scripts
   - security unlock-keychain -p $PASSWORD_BUILDE ~/Library/Keychains/login.keychain-db
@@ -80,3 +81,22 @@ build_simulator:
     paths:
       - Nextcloud.zip
     expire_in: 1 week
+    
+############ deploy ###########
+    
+.deploy_general_params: &deploy_general_params
+  stage: deploy
+  image: ruby
+  tags:
+    - docker
+
+deploy_develop_feature:
+  <<: *deploy_general_params
+  script:
+    - curl $STORE_UPLOAD_URL -F token=$DEV_STORE_TOKEN -F bundle=@"${IPA_PATH}" -F comment=$CI_PIPELINE_ID
+  dependencies:
+    - build_develop_feature
+  needs: [build_develop_feature]
+  only:
+    - develop
+    - /^feature/
