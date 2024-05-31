@@ -32,17 +32,17 @@ class NCDisplayModel: ObservableObject, ViewOnAppearHandling {
 
     // MARK: - All functions
 
-    /// Update
+    /// Update window(s)  style
     func userInterfaceStyle(_ style: UIUserInterfaceStyle) {
-        let connectedScenes = UIApplication.shared.connectedScenes
-        for scene in connectedScenes {
-            if let windowScene = scene as? UIWindowScene {
-                for window in windowScene.windows {
-                    window.overrideUserInterfaceStyle = style
-                }
+        let windowScenes = UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }
+        keychain.appearanceInterfaceStyle = style
+        for windowScene in windowScenes {
+            for window in windowScene.windows {
+                window.overrideUserInterfaceStyle = style
             }
         }
     }
+
     /// Updates the value of `appearanceAutomatic` in the keychain.
     func updateAppearanceAutomatic() {
         keychain.appearanceAutomatic = appearanceAutomatic
@@ -51,6 +51,7 @@ class NCDisplayModel: ObservableObject, ViewOnAppearHandling {
         }
     }
 
+    /// determine the style of system
     func determineSystemPreferredInterfaceStyle() -> UIUserInterfaceStyle {
         let temporaryWindow = UIWindow(frame: UIScreen.main.bounds)
         temporaryWindow.overrideUserInterfaceStyle = .light

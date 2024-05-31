@@ -114,7 +114,7 @@ struct NCSettingsView: View {
             Section(header: Text(NSLocalizedString("_display_", comment: "")), content: {
                 NavigationLink(destination: NCDisplayView(model: NCDisplayModel(controller: model.controller))) {
                     HStack {
-                        Image(systemName: "iphone")
+                        Image(systemName: "sun.max.circle")
                             .resizable()
                             .scaledToFit()
                             .font(Font.system(.body).weight(.light))

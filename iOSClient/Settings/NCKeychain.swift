@@ -358,6 +358,26 @@ import KeychainAccess
         }
     }
 
+    var appearanceInterfaceStyle: UIUserInterfaceStyle {
+        get {
+            if let value = try? keychain.get("appearanceInterfaceStyle") {
+                if value == "light" {
+                    return .light
+                } else {
+                    return .dark
+                }
+            }
+            return .light
+        }
+        set {
+            if newValue == .light {
+                keychain["appearanceInterfaceStyle"] = "light"
+            } else {
+                keychain["appearanceInterfaceStyle"] = "dark"
+            }
+        }
+    }
+
     // MARK: -
 
     @objc func getPassword(account: String) -> String {
