@@ -60,7 +60,7 @@
                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                     </tableView>
                                     <searchBar opaque="NO" contentMode="redraw" horizontalHuggingPriority="249" searchBarStyle="minimal" translatesAutoresizingMaskIntoConstraints="NO" id="iSO-mc-0TB">
-                                        <rect key="frame" x="0.0" y="95" width="361" height="40"/>
+                                        <rect key="frame" x="0.0" y="95" width="366" height="40"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="40" id="0aG-z9-fcy"/>
                                         </constraints>
@@ -75,7 +75,7 @@
                                         <fontDescription key="fontDescription" type="system" pointSize="18"/>
                                         <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
                                         <state key="normal">
-                                            <imageReference key="image" image="person.circle" catalog="system" renderingMode="hierarchical">
+                                            <imageReference key="image" image="person.circle" catalog="system" symbolScale="large" renderingMode="hierarchical">
                                                 <hierarchicalColors>
                                                     <color systemColor="labelColor"/>
                                                     <color systemColor="secondaryLabelColor"/>
@@ -143,7 +143,7 @@
                                     <constraint firstItem="GsB-jy-SBk" firstAttribute="centerY" secondItem="iSO-mc-0TB" secondAttribute="centerY" id="Qe6-An-Hda"/>
                                     <constraint firstAttribute="bottom" secondItem="c94-b9-Sim" secondAttribute="bottom" id="Svm-RV-vnl"/>
                                     <constraint firstAttribute="trailing" secondItem="oBQ-TP-qof" secondAttribute="trailing" constant="-10" id="ZuM-2G-aoM"/>
-                                    <constraint firstItem="GsB-jy-SBk" firstAttribute="leading" secondItem="iSO-mc-0TB" secondAttribute="trailing" constant="10" id="cqh-P5-H1x"/>
+                                    <constraint firstItem="GsB-jy-SBk" firstAttribute="leading" secondItem="iSO-mc-0TB" secondAttribute="trailing" constant="5" id="cqh-P5-H1x"/>
                                     <constraint firstItem="iSO-mc-0TB" firstAttribute="leading" secondItem="X2m-IC-J1u" secondAttribute="leading" id="d8E-WM-YfC"/>
                                     <constraint firstItem="iSO-mc-0TB" firstAttribute="top" secondItem="X2m-IC-J1u" secondAttribute="top" constant="95" id="jPM-Uo-0lS"/>
                                     <constraint firstItem="c94-b9-Sim" firstAttribute="leading" secondItem="X2m-IC-J1u" secondAttribute="leading" id="rvD-u3-Dug"/>
@@ -175,7 +175,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="4Te-U6-4XT" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2689.8550724637685" y="-167.41071428571428"/>
+            <point key="canvasLocation" x="2689.8550724637685" y="-167.93478260869566"/>
         </scene>
         <!--Share New User Add Comment-->
         <scene sceneID="JJ2-tz-qZ7">
