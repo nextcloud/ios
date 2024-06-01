@@ -1,5 +1,5 @@
 //
-//  NCManageE2EE.swift
+//  NCManageE2EEView.swift
 //  Nextcloud
 //
 //  Created by Marino Faggiana on 17/11/22.
@@ -24,7 +24,7 @@
 import SwiftUI
 import NextcloudKit
 
-struct NCViewE2EE: View {
+struct NCManageE2EEView: View {
     @ObservedObject var model: NCManageE2EE
     @Environment(\.presentationMode) var presentationMode
 
@@ -179,5 +179,5 @@ struct NCViewE2EE: View {
 }
 
 #Preview {
-    NCViewE2EE(model: NCManageE2EE(controller: nil))
+    NCManageE2EEView(model: NCManageE2EE(controller: nil))
 }

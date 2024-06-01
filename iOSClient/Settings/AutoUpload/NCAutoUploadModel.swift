@@ -65,6 +65,7 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
         self.controller = controller
     }
 
+    /// Triggered when the view appears.
     func onViewAppear() {
         let activeAccount: tableAccount? = manageDatabase.getActiveAccount()
         if let account = activeAccount {

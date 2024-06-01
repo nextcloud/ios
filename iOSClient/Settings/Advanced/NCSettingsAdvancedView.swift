@@ -1,5 +1,5 @@
 //
-//  NCSettingsAdvanced.swift
+//  NCSettingsAdvancedView.swift
 //  Nextcloud
 //
 //  Created by Aditya Tyagi on 08/03/24.
@@ -24,7 +24,7 @@
 import SwiftUI
 import NextcloudKit
 
-struct NCSettingsAdvanced: View {
+struct NCSettingsAdvancedView: View {
     @ObservedObject var model: NCSettingsAdvancedModel
     /// State variable for indicating whether the exit alert is shown.
     @State var showExitAlert: Bool = false
@@ -263,5 +263,5 @@ struct NCSettingsAdvanced: View {
 }
 
 #Preview {
-    NCSettingsAdvanced(model: NCSettingsAdvancedModel(controller: nil), showExitAlert: false, showCacheAlert: false)
+    NCSettingsAdvancedView(model: NCSettingsAdvancedModel(controller: nil), showExitAlert: false, showCacheAlert: false)
 }

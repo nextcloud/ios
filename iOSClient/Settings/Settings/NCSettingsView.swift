@@ -157,7 +157,7 @@ struct NCSettingsView: View {
             }
             /// `Advanced` Section
             Section {
-                NavigationLink(destination: NCSettingsAdvanced(model: NCSettingsAdvancedModel(controller: model.controller), showExitAlert: false, showCacheAlert: false)) {
+                NavigationLink(destination: NCSettingsAdvancedView(model: NCSettingsAdvancedModel(controller: model.controller), showExitAlert: false, showCacheAlert: false)) {
                     HStack {
                         Image(systemName: "gear")
                             .resizable()
@@ -244,7 +244,7 @@ struct E2EESection: View {
 
     var body: some View {
         Section(header: Text(NSLocalizedString("_e2e_settings_title_", comment: "")), content: {
-            NavigationLink(destination: NCViewE2EE(model: NCManageE2EE(controller: model.controller))) {
+            NavigationLink(destination: NCManageE2EEView(model: NCManageE2EE(controller: model.controller))) {
                 HStack {
                     Image(systemName: "lock")
                         .resizable()
