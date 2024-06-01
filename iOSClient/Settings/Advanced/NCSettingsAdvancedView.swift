@@ -203,7 +203,8 @@ struct NCSettingsAdvancedView: View {
                     HStack {
                         Image(systemName: "xmark")
                             .resizable()
-                            .renderingMode(.template)
+                            .scaledToFit()
+                            .font(Font.system(.body).weight(.light))
                             .frame(width: 15, height: 15)
                             .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
                         Text(NSLocalizedString("_clear_cache_", comment: ""))
@@ -232,7 +233,8 @@ struct NCSettingsAdvancedView: View {
                     HStack {
                         Image(systemName: "xmark")
                             .resizable()
-                            .renderingMode(.template)
+                            .scaledToFit()
+                            .font(Font.system(.body).weight(.light))
                             .frame(width: 15, height: 15)
                             .foregroundColor(Color(UIColor.systemRed))
                         Text(NSLocalizedString("_exit_", comment: ""))
