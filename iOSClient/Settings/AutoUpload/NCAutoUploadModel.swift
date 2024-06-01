@@ -62,21 +62,10 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
 
     /// Initialization code to set up the ViewModel with the active account
     init(controller: UITabBarController?) {
-        updatePublishedProperties()
         self.controller = controller
     }
 
     func onViewAppear() {
-        updatePublishedProperties()
-        if autoUpload {
-            requestAuthorization()
-        }
-    }
-
-    // MARK: - All functions
-
-    /// A function to update the published properties based on the active account
-    func updatePublishedProperties() {
         let activeAccount: tableAccount? = manageDatabase.getActiveAccount()
         if let account = activeAccount {
             autoUpload = account.autoUpload
@@ -89,7 +78,12 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
             autoUploadSubfolderGranularity = Granularity(rawValue: account.autoUploadSubfolderGranularity) ?? .monthly
             serverUrl = NCUtilityFileSystem().getHomeServer(urlBase: appDelegate.urlBase, userId: appDelegate.userId)
         }
+        if autoUpload {
+            requestAuthorization()
+        }
     }
+
+    // MARK: - All functions
 
     func requestAuthorization() {
         PHPhotoLibrary.requestAuthorization { status in

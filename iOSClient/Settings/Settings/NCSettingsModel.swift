@@ -53,7 +53,6 @@ class NCSettingsModel: ObservableObject, ViewOnAppearHandling {
     /// Initializes the view model with default values.
     init(controller: UITabBarController?) {
         self.controller = controller
-        onViewAppear()
     }
 
     /// Triggered when the view appears.

@@ -46,9 +46,7 @@ class NCAutoUploadFileNamesModel: ObservableObject, ViewOnAppearHandling {
     let dateExample = Date()
 
     /// Initializes the view model with default values.
-    init() {
-        onViewAppear()
-    }
+    init() { }
 
     /// Triggered when the view appears.
     func onViewAppear() {

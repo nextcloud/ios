@@ -63,12 +63,10 @@ class NCSettingsAdvancedModel: ObservableObject, ViewOnAppearHandling {
     /// Initializes the view model with default values.
     init(controller: UITabBarController?) {
         self.controller = controller
-        onViewAppear()
     }
 
     /// Triggered when the view appears.
     func onViewAppear() {
-        // Initialize all properties with values from the keychain or defaults
         showHiddenFiles = keychain.showHiddenFiles
         mostCompatible = keychain.formatCompatibility
         livePhoto = keychain.livePhoto
