@@ -63,6 +63,7 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
     /// Initialization code to set up the ViewModel with the active account
     init(controller: UITabBarController?) {
         self.controller = controller
+        onViewAppear()
     }
 
     /// Triggered when the view appears.

@@ -41,6 +41,7 @@ class NCManageE2EE: NSObject, ObservableObject, ViewOnAppearHandling, NCEndToEnd
         super.init()
         self.controller = controller
         endToEndInitialize.delegate = self
+        onViewAppear()
     }
 
     /// Triggered when the view appears.
