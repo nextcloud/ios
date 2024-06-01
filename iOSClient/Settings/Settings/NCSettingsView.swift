@@ -234,7 +234,7 @@ struct NCSettingsView: View {
                 Text(model.footerApp + model.footerServer + model.footerSlogan)
             })
         }
-        .navigationBarTitle("Settings")
+        .navigationBarTitle(NSLocalizedString("_settings_", comment: ""))
         .defaultViewModifier(model)
     }
 }

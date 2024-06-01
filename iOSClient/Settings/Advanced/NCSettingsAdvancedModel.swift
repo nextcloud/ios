@@ -75,7 +75,9 @@ class NCSettingsAdvancedModel: ObservableObject, ViewOnAppearHandling {
         crashReporter = keychain.disableCrashservice
         selectedLogLevel = LogLevel(rawValue: keychain.logLevel) ?? .standard
         selectedInterval = CacheDeletionInterval(rawValue: keychain.cleanUpDay) ?? .never
-        calculateSize()
+        DispatchQueue.global().async {
+            self.calculateSize()
+        }
     }
 
     // MARK: - All functions
@@ -149,10 +151,12 @@ class NCSettingsAdvancedModel: ObservableObject, ViewOnAppearHandling {
 
     /// Asynchronously calculates the size of cache directory and updates the footer title.
     func calculateSize() {
-            let ufs = NCUtilityFileSystem()
-            let directory = ufs.directoryProviderStorage
-            let totalSize = ufs.getDirectorySize(directory: directory)
+        let ufs = NCUtilityFileSystem()
+        let directory = ufs.directoryProviderStorage
+        let totalSize = ufs.getDirectorySize(directory: directory)
+        DispatchQueue.main.async {
             self.footerTitle = "\(NSLocalizedString("_clear_cache_footer_", comment: "")). (\(NSLocalizedString("_used_space_", comment: "")) \(ufs.transformedSize(totalSize)))"
+        }
     }
 
     /// Removes all accounts & exits the Nextcloud application if specified.
