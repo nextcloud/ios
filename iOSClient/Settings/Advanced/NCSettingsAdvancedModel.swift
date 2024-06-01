@@ -71,9 +71,8 @@ class NCSettingsAdvancedModel: ObservableObject, ViewOnAppearHandling {
         mostCompatible = keychain.formatCompatibility
         livePhoto = keychain.livePhoto
         removeFromCameraRoll = keychain.removePhotoCameraRoll
-        appIntegration = !keychain.disableFilesApp
-        crashReporter = !keychain.disableCrashservice
-        // Default log level and cache deletion interval
+        appIntegration = keychain.disableFilesApp
+        crashReporter = keychain.disableCrashservice
         selectedLogLevel = LogLevel(rawValue: keychain.logLevel) ?? .standard
         selectedInterval = CacheDeletionInterval(rawValue: keychain.cleanUpDay) ?? .never
         calculateSize()
@@ -103,12 +102,12 @@ class NCSettingsAdvancedModel: ObservableObject, ViewOnAppearHandling {
 
     /// Updates the value of `appIntegration` in the keychain.
     func updateAppIntegration() {
-        keychain.disableFilesApp = !appIntegration
+        keychain.disableFilesApp = appIntegration
     }
 
     /// Updates the value of `crashReporter` in the keychain.
     func updateCrashReporter() {
-        keychain.disableCrashservice = !crashReporter
+        keychain.disableCrashservice = crashReporter
     }
 
     /// Updates the value of `selectedLogLevel` in the keychain and sets it for NextcloudKit.
