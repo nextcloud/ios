@@ -112,6 +112,22 @@ struct NCSettingsView: View {
             })
             // Display
             Section(header: Text(NSLocalizedString("_display_", comment: "")), content: {
+                NavigationLink(destination: LazyView {
+                    NCDisplayView(model: NCDisplayModel(controller: model.controller))
+                }) {
+                    HStack {
+                        Image(systemName: "sun.max.circle")
+                            .resizable()
+                            .scaledToFit()
+                            .font(Font.system(.body).weight(.light))
+                            .frame(width: 20, height: 20)
+                            .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
+                        Text(NSLocalizedString("_display_", comment: ""))
+                    }
+                    .font(.system(size: 16))
+                }
+
+                /*
                 NavigationLink(destination: NCDisplayView(model: NCDisplayModel(controller: model.controller))) {
                     HStack {
                         Image(systemName: "sun.max.circle")
@@ -124,6 +140,7 @@ struct NCSettingsView: View {
                     }
                     .font(.system(size: 16))
                 }
+                */
             })
             // Calender & Contacts
             if !NCBrandOptions.shared.disable_mobileconfig {
@@ -263,3 +280,5 @@ struct E2EESection: View {
 #Preview {
     NCSettingsView(model: NCSettingsModel(controller: nil))
 }
+
+
