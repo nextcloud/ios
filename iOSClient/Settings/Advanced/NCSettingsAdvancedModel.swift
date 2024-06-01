@@ -192,7 +192,7 @@ class NCSettingsAdvancedModel: ObservableObject, ViewOnAppearHandling {
         // Clear the log file using NextcloudKit
         NextcloudKit.shared.nkCommonInstance.clearFileLog()
         // Fetch the log level from the keychain
-        let logLevel = NCKeychain().logLevel
+        let logLevel = keychain.logLevel
         // Check if the app is running in a simulator or TestFlight environment
         let isSimulatorOrTestFlight = NCUtility().isSimulatorOrTestFlight()
         // Get the app's version and copyright information

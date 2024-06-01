@@ -65,12 +65,12 @@ class NCAutoUploadFileNamesModel: ObservableObject, ViewOnAppearHandling {
 
     /// Toggles maintaining the original filename.
     func toggleMaintainOriginalFilename(newValue: Bool) {
-        NCKeychain().setOriginalFileName(key: NCGlobal.shared.keyFileNameOriginalAutoUpload, value: newValue)
+        keychain.setOriginalFileName(key: NCGlobal.shared.keyFileNameOriginalAutoUpload, value: newValue)
     }
 
     /// Toggles adding filename type.
     func toggleAddFilenameType(newValue: Bool) {
-        NCKeychain().setFileNameType(key: NCGlobal.shared.keyFileNameAutoUploadType, prefix: newValue)
+        keychain.setFileNameType(key: NCGlobal.shared.keyFileNameAutoUploadType, prefix: newValue)
     }
 
     /// Submits the changed file name.
@@ -100,18 +100,18 @@ class NCAutoUploadFileNamesModel: ObservableObject, ViewOnAppearHandling {
     func previewFileName() -> String {
         var returnString: String = ""
         // Check if maintaining original file name is enabled
-        if NCKeychain().getOriginalFileName(key: NCGlobal.shared.keyFileNameOriginalAutoUpload) {
+        if keychain.getOriginalFileName(key: NCGlobal.shared.keyFileNameOriginalAutoUpload) {
             // If maintaining original file name, return a default filename
             return (NSLocalizedString("_filename_", comment: "") + ": IMG_0001.JPG")
         } else {
             let valueRenameTrimming = changedName.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
             // If the changed name is empty, set the filename mask to empty and generate a new filename
             if valueRenameTrimming.isEmpty {
-                NCKeychain().setFileNameMask(key: NCGlobal.shared.keyFileNameAutoUploadMask, mask: "")
+                keychain.setFileNameMask(key: NCGlobal.shared.keyFileNameAutoUploadMask, mask: "")
                 returnString = CCUtility.createFileName("IMG_0001.JPG", fileDate: dateExample, fileType: PHAssetMediaType.image, keyFileName: nil, keyFileNameType: NCGlobal.shared.keyFileNameAutoUploadType, keyFileNameOriginal: NCGlobal.shared.keyFileNameOriginalAutoUpload, forcedNewFileName: false)
             } else {
                 // If there is a changed name, set the filename mask and generate a new filename
-                NCKeychain().setFileNameMask(key: NCGlobal.shared.keyFileNameAutoUploadMask, mask: changedName)
+                keychain.setFileNameMask(key: NCGlobal.shared.keyFileNameAutoUploadMask, mask: changedName)
                 returnString = CCUtility.createFileName("IMG_0001.JPG", fileDate: dateExample, fileType: PHAssetMediaType.image, keyFileName: NCGlobal.shared.keyFileNameAutoUploadMask, keyFileNameType: NCGlobal.shared.keyFileNameAutoUploadType, keyFileNameOriginal: NCGlobal.shared.keyFileNameOriginalAutoUpload, forcedNewFileName: false)
             }
         }
