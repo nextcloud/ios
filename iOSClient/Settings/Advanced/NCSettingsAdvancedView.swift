@@ -119,8 +119,8 @@ struct NCSettingsAdvancedView: View {
                         .multilineTextAlignment(.leading)
                 })
             }
-            // Section: Diagnostic
-            if FileManager.default.fileExists(atPath: NextcloudKit.shared.nkCommonInstance.filenamePathLog) && !NCBrandOptions.shared.disable_log {
+            // Section: Diagnostic LOG
+            if !NCBrandOptions.shared.disable_log {
                 Section(content: {
                     // View Log File
                     Button(action: {
@@ -157,11 +157,7 @@ struct NCSettingsAdvancedView: View {
                     .alert(NSLocalizedString("_log_file_clear_alert_", comment: ""), isPresented: $model.logFileCleared) {
                         Button(NSLocalizedString("OK", comment: ""), role: .cancel) { }
                     }
-                }, header: {
-                    Text(NSLocalizedString("_diagnostics_", comment: ""))
-                }, footer: { })
-                // Set Log Level() & Capabilities
-                Section {
+                    // Set Log Level()
                     Picker(NSLocalizedString("_set_log_level_", comment: ""), selection: $model.selectedLogLevel) {
                         ForEach(LogLevel.allCases) { level in
                             Text(level.displayText).tag(level)
@@ -171,6 +167,11 @@ struct NCSettingsAdvancedView: View {
                     .onChange(of: model.selectedLogLevel) { _ in
                         model.updateSelectedLogLevel()
                     }
+                }, header: {
+                    Text(NSLocalizedString("_diagnostics_", comment: ""))
+                }, footer: { })
+                // Set Log Level() & Capabilities
+                Section(content: {
                     NavigationLink(destination: LazyView {
                         NCCapabilitiesView(model: NCCapabilitiesModel())
                     }) {
@@ -185,7 +186,11 @@ struct NCSettingsAdvancedView: View {
                         }
                         .font(.system(size: 16))
                     }
-                }
+                }, header: {
+                    Text(NSLocalizedString("_capabilities_", comment: ""))
+                }, footer: {
+                    Text(NSLocalizedString("_capabilities_footer_", comment: ""))
+                })
             }
             // Delete in Cache & Clear Cache
             Section(content: {

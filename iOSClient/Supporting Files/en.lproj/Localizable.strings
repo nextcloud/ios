@@ -426,6 +426,7 @@
 "_view_capabilities_"           = "View the capabilities";
 "_capabilities_"                = "Capabilities";
 "_no_capabilities_found_"       = "Capabilities not found";
+"_capabilities_footer_"         = "Display the packages used by the app if they are installed and available on the server";
 "_diagnostics_"                 = "Diagnostics";
 "_view_log_"                    = "View log file";
 "_clear_log_"                   = "Clear log file";
