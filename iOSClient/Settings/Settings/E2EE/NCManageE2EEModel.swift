@@ -75,8 +75,8 @@ class NCManageE2EE: NSObject, ObservableObject, ViewOnAppearHandling, NCEndToEnd
     @objc func requestPasscodeType(_ passcodeType: String) {
         let laContext = LAContext()
         var error: NSError?
-
         let passcodeViewController = TOPasscodeViewController(passcodeType: .sixDigits, allowCancel: true)
+
         passcodeViewController.delegate = self
         passcodeViewController.keypadButtonShowLettering = false
         if NCKeychain().touchFaceID, laContext.canEvaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, error: &error) {

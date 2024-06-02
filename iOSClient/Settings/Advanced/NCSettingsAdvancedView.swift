@@ -171,7 +171,9 @@ struct NCSettingsAdvancedView: View {
                     .onChange(of: model.selectedLogLevel) { _ in
                         model.updateSelectedLogLevel()
                     }
-                    NavigationLink(destination: NCCapabilitiesView(capabilitiesStatus: NCCapabilitiesViewOO())) {
+                    NavigationLink(destination: LazyView {
+                        NCCapabilitiesView(model: NCCapabilitiesModel())
+                    }) {
                         HStack {
                             Image(systemName: "list.bullet")
                                 .resizable()

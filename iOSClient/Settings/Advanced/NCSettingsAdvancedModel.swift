@@ -33,9 +33,6 @@ class NCSettingsAdvancedModel: ObservableObject, ViewOnAppearHandling {
     let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
     /// Keychain access
     var keychain = NCKeychain()
-    /// Callback to notify the view to present the UIViewController
-    var goToCapabilitiesView: ((UIViewController) -> Void)?
-    // MARK: All published properties for the toggles
     /// State variable for indicating whether hidden files are shown.
     @Published var showHiddenFiles: Bool = false
     /// State variable for indicating the most compatible format.
@@ -204,13 +201,6 @@ class NCSettingsAdvancedModel: ObservableObject, ViewOnAppearHandling {
         NextcloudKit.shared.nkCommonInstance.writeLog(logMessage)
         // Set the alert state to show that log file has been cleared
         self.logFileCleared = true
-    }
-
-    func triggerGoToCapabilitiesView() {
-        // Create an instance of NCHostingCapabilitiesView
-        let capabilitiesView = NCHostingCapabilitiesView()
-        // Call the callback to present the UIViewController
-        goToCapabilitiesView?(capabilitiesView.makeShipDetailsUI())
     }
 }
 

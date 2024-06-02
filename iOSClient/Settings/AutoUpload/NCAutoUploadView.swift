@@ -146,10 +146,12 @@ struct NCAutoUploadView: View {
         })
         // Auto Upload file name
         Section(content: {
-            NavigationLink(destination: NCAutoUploadFileNamesView(model: NCAutoUploadFileNamesModel()), label: {
+            NavigationLink(destination: LazyView {
+                NCAutoUploadFileNamesView(model: NCAutoUploadFileNamesModel())
+            }) {
                 Text(NSLocalizedString("_autoupload_filenamemask_", comment: ""))
                     .font(.system(size: 16))
-            })
+            }
         }, footer: {
             Text(
                 NSLocalizedString("_autoupload_filenamemask_footer_", comment: "")
