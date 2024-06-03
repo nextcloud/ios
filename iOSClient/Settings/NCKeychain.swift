@@ -56,7 +56,7 @@ import KeychainAccess
     @objc var passcode: String? {
         get {
             migrate(key: "passcodeBlock")
-            if let value = try? keychain.get("passcodeBlock") {
+            if let value = try? keychain.get("passcodeBlock"), !value.isEmpty {
                 return value
             }
             return nil
@@ -343,6 +343,38 @@ import KeychainAccess
         }
         set {
             keychain["qualityScanDocument"] = String(newValue)
+        }
+    }
+
+    var appearanceAutomatic: Bool {
+        get {
+            if let value = try? keychain.get("appearanceAutomatic"), let result = Bool(value) {
+                return result
+            }
+            return true
+        }
+        set {
+            keychain["appearanceAutomatic"] = String(newValue)
+        }
+    }
+
+    var appearanceInterfaceStyle: UIUserInterfaceStyle {
+        get {
+            if let value = try? keychain.get("appearanceInterfaceStyle") {
+                if value == "light" {
+                    return .light
+                } else {
+                    return .dark
+                }
+            }
+            return .light
+        }
+        set {
+            if newValue == .light {
+                keychain["appearanceInterfaceStyle"] = "light"
+            } else {
+                keychain["appearanceInterfaceStyle"] = "dark"
+            }
         }
     }
 
