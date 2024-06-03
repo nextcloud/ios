@@ -659,7 +659,7 @@
 "_delete_comment_"              = "Delete comment";
 "_share_allow_editing_"         = "Allow editing";
 "_share_read_only_"             = "View only";
-"_share_editing_"               = "Editing";
+"_share_editing_"               = "Can edit";
 "_share_allow_upload_"          = "Allow upload and editing";
 "_share_file_drop_"             = "File drop (upload only)";
 "_share_secure_file_drop_"      = "Secure file drop (upload only)";
@@ -676,7 +676,7 @@
 "_share_can_download_"          = "Allow download";
 "_share_unshare_"               = "Unshare";
 "_share_internal_link_"         = "Internal link";
-"_share_internal_link_des_"     = "Only works for users with access to this folder";
+"_share_internal_link_des_"     = "Only works for users with access to this file/folder";
 "_share_reshare_disabled_"      = "You are not allowed to reshare this file/folder";
 "_share_reshare_restricted_"    = "Note: You only have limited permission to reshare this file/folder";
 

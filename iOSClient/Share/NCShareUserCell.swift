@@ -105,7 +105,7 @@ class NCShareUserCell: UITableViewCell, NCCellProtocol {
         imageItem?.addGestureRecognizer(tapGesture)
 
         labelQuickStatus.textColor = NCBrandColor.shared.customer
-        imageDownArrow.image = utility.loadImage(named: "arrowtriangle.down.fill", colors: [NCBrandColor.shared.customer])
+        imageDownArrow.image = utility.loadImage(named: "arrowtriangle.down.circle", colors: [NCBrandColor.shared.customer])
     }
 
     @objc func tapAvatarImage(_ sender: UITapGestureRecognizer) {

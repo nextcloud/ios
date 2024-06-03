@@ -36,8 +36,6 @@ class NCShare: UIViewController, NCShareNetworkingDelegate, NCSharePagingContent
     @IBOutlet weak var sharedWithYouByView: UIView!
     @IBOutlet weak var sharedWithYouByImage: UIImageView!
     @IBOutlet weak var sharedWithYouByLabel: UILabel!
-    @IBOutlet weak var sharedWithYouByNoteImage: UIImageView!
-    @IBOutlet weak var sharedWithYouByNote: MarqueeLabel!
     @IBOutlet weak var searchFieldTopConstraint: NSLayoutConstraint!
     @IBOutlet weak var searchField: UISearchBar!
     var textField: UISearchBar? { searchField }
@@ -72,7 +70,7 @@ class NCShare: UIViewController, NCShareNetworkingDelegate, NCSharePagingContent
         view.backgroundColor = .systemBackground
 
         viewContainerConstraint.constant = height
-        searchFieldTopConstraint.constant = 10
+        searchFieldTopConstraint.constant = 0
 
         searchField.placeholder = NSLocalizedString("_shareLinksearch_placeholder_", comment: "")
         searchField.autocorrectionType = .no
@@ -136,7 +134,7 @@ class NCShare: UIViewController, NCShareNetworkingDelegate, NCSharePagingContent
             searchField.placeholder = NSLocalizedString("_share_reshare_disabled_", comment: "")
         }
 
-        searchFieldTopConstraint.constant = 65
+        searchFieldTopConstraint.constant = 45
         sharedWithYouByView.isHidden = false
         sharedWithYouByLabel.text = NSLocalizedString("_shared_with_you_by_", comment: "") + " " + metadata.ownerDisplayName
         sharedWithYouByImage.image = utility.loadUserImage(
@@ -149,19 +147,6 @@ class NCShare: UIViewController, NCShareNetworkingDelegate, NCSharePagingContent
         sharedWithYouByImage.addGestureRecognizer(shareAction)
         let shareLabelAction = UITapGestureRecognizer(target: self, action: #selector(openShareProfile))
         sharedWithYouByLabel.addGestureRecognizer(shareLabelAction)
-
-        if !metadata.note.isEmpty {
-            searchFieldTopConstraint.constant = 95
-            sharedWithYouByNoteImage.isHidden = false
-            sharedWithYouByNoteImage.image = utility.loadImage(named: "note.text", colors: [NCBrandColor.shared.iconImageColor])
-            sharedWithYouByNote.isHidden = false
-            sharedWithYouByNote.text = metadata.note
-            sharedWithYouByNote.textColor = NCBrandColor.shared.textColor
-            sharedWithYouByNote.trailingBuffer = sharedWithYouByNote.frame.width
-        } else {
-            sharedWithYouByNoteImage.isHidden = true
-            sharedWithYouByNote.isHidden = true
-        }
 
         let fileName = appDelegate.userBaseUrl + "-" + metadata.ownerId + ".png"
 
@@ -314,7 +299,7 @@ extension NCShare: UITableViewDelegate {
             // internal cell has description
             return 40
         }
-        return 70
+        return 60
     }
 }
 

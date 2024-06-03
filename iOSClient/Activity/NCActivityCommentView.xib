@@ -21,10 +21,7 @@
                     </constraints>
                 </imageView>
                 <searchBar opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="249" searchBarStyle="minimal" translatesAutoresizingMaskIntoConstraints="NO" id="5pv-VB-vbL">
-                    <rect key="frame" x="60" y="60" width="199" height="36"/>
-                    <constraints>
-                        <constraint firstAttribute="height" constant="36" id="OLX-lD-EIH"/>
-                    </constraints>
+                    <rect key="frame" x="0.0" y="60" width="269" height="36"/>
                     <textInputTraits key="textInputTraits"/>
                 </searchBar>
                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="user" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="0Ja-ik-S0n">
@@ -39,10 +36,10 @@
                 <constraint firstItem="YXy-gE-g7y" firstAttribute="top" secondItem="GuF-Pi-nHv" secondAttribute="top" constant="10" id="26g-rF-Ags"/>
                 <constraint firstAttribute="trailing" secondItem="0Ja-ik-S0n" secondAttribute="trailing" constant="10" id="7ue-4o-ZT2"/>
                 <constraint firstItem="0Ja-ik-S0n" firstAttribute="centerY" secondItem="YXy-gE-g7y" secondAttribute="centerY" id="NxM-vu-j06"/>
-                <constraint firstItem="5pv-VB-vbL" firstAttribute="leading" secondItem="YXy-gE-g7y" secondAttribute="trailing" constant="10" id="Oza-Za-mDZ"/>
+                <constraint firstItem="5pv-VB-vbL" firstAttribute="leading" secondItem="Y5x-Vi-PYA" secondAttribute="leading" id="ZTc-t9-TN5"/>
                 <constraint firstItem="5pv-VB-vbL" firstAttribute="top" secondItem="YXy-gE-g7y" secondAttribute="bottom" constant="10" id="iie-Nv-YUr"/>
                 <constraint firstItem="0Ja-ik-S0n" firstAttribute="leading" secondItem="YXy-gE-g7y" secondAttribute="trailing" constant="10" id="j0L-NP-Z4H"/>
-                <constraint firstAttribute="trailing" secondItem="5pv-VB-vbL" secondAttribute="trailing" constant="10" id="oXJ-ov-XCK"/>
+                <constraint firstAttribute="trailing" secondItem="5pv-VB-vbL" secondAttribute="trailing" id="oXJ-ov-XCK"/>
                 <constraint firstItem="YXy-gE-g7y" firstAttribute="leading" secondItem="GuF-Pi-nHv" secondAttribute="leading" constant="10" id="t5p-fd-swt"/>
                 <constraint firstAttribute="bottom" secondItem="5pv-VB-vbL" secondAttribute="bottom" constant="10" id="yEr-QL-mtD"/>
             </constraints>

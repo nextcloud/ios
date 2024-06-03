@@ -63,7 +63,7 @@ extension NCShare {
             NCMenuAction(
                 title: NSLocalizedString("_share_unshare_", comment: ""),
                 destructive: true,
-                icon: utility.loadImage(named: "trash", colors: [.red]),
+                icon: utility.loadImage(named: "person.2.slash"),
                 action: { _ in
                     Task {
                         if share.shareType != NCShareCommon().SHARE_TYPE_LINK, let metadata = self.metadata, metadata.e2eEncrypted && NCGlobal.shared.capabilityE2EEApiVersion == NCGlobal.shared.e2eeVersionV20 {
