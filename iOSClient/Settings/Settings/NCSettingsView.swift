@@ -41,7 +41,7 @@ struct NCSettingsView: View {
     var body: some View {
         Form {
             /// `Auto Upload` Section
-            Section {
+            Section(content: {
                 NavigationLink(destination: LazyView {
                     NCAutoUploadView(model: NCAutoUploadModel(controller: model.controller))
                 }) {
@@ -56,7 +56,10 @@ struct NCSettingsView: View {
                     }
                     .font(.system(size: 16))
                 }
-            }
+            }, header: {
+            }, footer: {
+                Text(NSLocalizedString("_autoupload_description_", comment: ""))
+            })
             /// `Privacy` Section
             Section(content: {
                 Button(action: {
@@ -77,28 +80,28 @@ struct NCSettingsView: View {
                 .sheet(isPresented: $showPasscode) {
                     PasscodeView(isLockActive: $model.isLockActive)
                 }
-                // Enable Touch ID
+                /// Enable Touch ID
                 Toggle(NSLocalizedString("_enable_touch_face_id_", comment: ""), isOn: $model.enableTouchID)
                     .tint(Color(NCBrandColor.shared.brandElement))
                     .font(.system(size: 16))
                     .onChange(of: model.enableTouchID) { _ in
                         model.updateTouchIDSetting()
                     }
-                // Lock no screen
+                /// Lock no screen
                 Toggle(NSLocalizedString("_lock_protection_no_screen_", comment: ""), isOn: $model.lockScreen)
                     .tint(Color(NCBrandColor.shared.brandElement))
                     .font(.system(size: 16))
                     .onChange(of: model.lockScreen) { _ in
                         model.updateLockScreenSetting()
                     }
-                // Privacy screen
+                /// Privacy screen
                 Toggle(NSLocalizedString("_privacy_screen_", comment: ""), isOn: $model.privacyScreen)
                     .tint(Color(NCBrandColor.shared.brandElement))
                     .font(.system(size: 16))
                     .onChange(of: model.privacyScreen) { _ in
                         model.updatePrivacyScreenSetting()
                     }
-                // Reset app wrong attempts
+                /// Reset app wrong attempts
                 Toggle(NSLocalizedString("_reset_wrong_passcode_", comment: ""), isOn: $model.resetWrongAttempts)
                     .tint(Color(NCBrandColor.shared.brandElement))
                     .font(.system(size: 16))
@@ -112,7 +115,7 @@ struct NCSettingsView: View {
                     .font(.system(size: 12))
                     .lineSpacing(1)
             })
-            // Display
+            /// Display
             Section(header: Text(NSLocalizedString("_display_", comment: "")), content: {
                 NavigationLink(destination: LazyView {
                     NCDisplayView(model: NCDisplayModel(controller: model.controller))
@@ -129,7 +132,7 @@ struct NCSettingsView: View {
                     .font(.system(size: 16))
                 }
             })
-            // Calender & Contacts
+            /// Calender & Contacts
             if !NCBrandOptions.shared.disable_mobileconfig {
                 Section(content: {
                     Button(action: {
@@ -196,7 +199,7 @@ struct NCSettingsView: View {
                 .sheet(isPresented: $showAcknowledgements) {
                     NCAcknowledgementsView(browserTitle: NSLocalizedString("_acknowledgements_", comment: ""))
                 }
-                // Terms & Privacy Conditions
+                /// Terms & Privacy Conditions
                 Button(action: {
                     showBrowser.toggle()
                 }, label: {
@@ -215,7 +218,7 @@ struct NCSettingsView: View {
                 .sheet(isPresented: $showBrowser) {
                     NCBrowserWebView(urlBase: URL(string: NCBrandOptions.shared.privacy)!, browserTitle: NSLocalizedString("_privacy_legal_", comment: ""))
                 }
-                // Source Code
+                /// Source Code
                 Button(action: {
                     showSourceCode.toggle()
                 }, label: {

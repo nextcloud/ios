@@ -179,10 +179,7 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
     func setAutoUploadDirectory(serverUrl: String?) {
         guard let serverUrl = serverUrl else { return }
         let home = NCUtilityFileSystem().getHomeServer(urlBase: appDelegate.urlBase, userId: appDelegate.userId)
-        if home == serverUrl {
-            let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: NSLocalizedString("_autoupload_error_select_folder_", comment: ""), responseData: nil)
-            NCContentPresenter().messageNotification("_error_", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: .error)
-        } else {
+        if home != serverUrl {
             let fileName = (serverUrl as NSString).lastPathComponent
             NCManageDatabase.shared.setAccountAutoUploadFileName(fileName)
             if let path = NCUtilityFileSystem().deleteLastPath(serverUrlPath: serverUrl, home: home) {

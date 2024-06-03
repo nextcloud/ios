@@ -35,7 +35,7 @@ struct NCSettingsAdvancedView: View {
 
     var body: some View {
         Form {
-            // Show Hidden Files
+            /// Show Hidden Files
             Section(content: {
                 Toggle(NSLocalizedString("_show_hidden_files_", comment: ""), isOn: $model.showHiddenFiles)
                     .tint(Color(NCBrandColor.shared.brandElement))
@@ -44,7 +44,7 @@ struct NCSettingsAdvancedView: View {
                 }
                 .font(.system(size: 16))
             }, footer: { })
-            // Most Compatible & Enable Live Photo
+            /// Most Compatible & Enable Live Photo
             Section(content: {
                 Toggle(NSLocalizedString("_format_compatibility_", comment: ""), isOn: $model.mostCompatible)
                     .tint(Color(NCBrandColor.shared.brandElement))
@@ -66,7 +66,7 @@ struct NCSettingsAdvancedView: View {
                 ).font(.system(size: 12))
                     .multilineTextAlignment(.leading)
             })
-            // Remove from Camera Roll
+            /// Remove from Camera Roll
             Section(content: {
                 Toggle(NSLocalizedString("_remove_photo_CameraRoll_", comment: ""), isOn: $model.removeFromCameraRoll)
                     .tint(Color(NCBrandColor.shared.brandElement))
@@ -79,7 +79,7 @@ struct NCSettingsAdvancedView: View {
                     .font(.system(size: 12))
                     .multilineTextAlignment(.leading)
             })
-            // Section : Files App
+            /// Section : Files App
             if !NCBrandOptions.shared.disable_openin_file {
                 Section(content: {
                     Toggle(NSLocalizedString("_disable_files_app_", comment: ""), isOn: $model.appIntegration)
@@ -94,7 +94,7 @@ struct NCSettingsAdvancedView: View {
                         .multilineTextAlignment(.leading)
                 })
             }
-            // Section: Privacy
+            /// Section: Privacy
             if !NCBrandOptions.shared.disable_crash_service {
                 Section(content: {
                     Toggle(NSLocalizedString("_crashservice_title_", comment: ""), isOn: $model.crashReporter)
@@ -119,10 +119,10 @@ struct NCSettingsAdvancedView: View {
                         .multilineTextAlignment(.leading)
                 })
             }
-            // Section: Diagnostic LOG
+            /// Section: Diagnostic LOG
             if !NCBrandOptions.shared.disable_log {
                 Section(content: {
-                    // View Log File
+                    /// View Log File
                     Button(action: {
                         model.viewLogFile()
                     }, label: {
@@ -138,7 +138,7 @@ struct NCSettingsAdvancedView: View {
                         .font(.system(size: 16))
                     })
                     .tint(Color(UIColor.label))
-                    // Clear Log File
+                    /// Clear Log File
                     Button(action: {
                         model.clearLogFile()
                     }, label: {
@@ -157,7 +157,7 @@ struct NCSettingsAdvancedView: View {
                     .alert(NSLocalizedString("_log_file_clear_alert_", comment: ""), isPresented: $model.logFileCleared) {
                         Button(NSLocalizedString("OK", comment: ""), role: .cancel) { }
                     }
-                    // Set Log Level()
+                    /// Set Log Level()
                     Picker(NSLocalizedString("_set_log_level_", comment: ""), selection: $model.selectedLogLevel) {
                         ForEach(LogLevel.allCases) { level in
                             Text(level.displayText).tag(level)
@@ -170,7 +170,7 @@ struct NCSettingsAdvancedView: View {
                 }, header: {
                     Text(NSLocalizedString("_diagnostics_", comment: ""))
                 }, footer: { })
-                // Set Log Level() & Capabilities
+                /// Set Log Level() & Capabilities
                 Section(content: {
                     NavigationLink(destination: LazyView {
                         NCCapabilitiesView(model: NCCapabilitiesModel())
@@ -192,7 +192,7 @@ struct NCSettingsAdvancedView: View {
                     Text(NSLocalizedString("_capabilities_footer_", comment: ""))
                 })
             }
-            // Delete in Cache & Clear Cache
+            /// Delete in Cache & Clear Cache
             Section(content: {
                 Picker(NSLocalizedString("_auto_delete_cache_files_", comment: ""), selection: $model.selectedInterval) {
                     ForEach(CacheDeletionInterval.allCases) { interval in
@@ -232,7 +232,7 @@ struct NCSettingsAdvancedView: View {
                     .font(.system(size: 12))
                     .multilineTextAlignment(.leading)
             })
-            // Reset Application
+            /// Reset Application
             Section(content: {
                 Button(action: {
                     showExitAlert.toggle()

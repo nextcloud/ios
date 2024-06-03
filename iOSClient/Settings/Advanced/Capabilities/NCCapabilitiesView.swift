@@ -49,7 +49,6 @@ struct NCCapabilitiesView: View {
     }
 
     struct CapabilityName: View {
-
         @Binding var text: String
         @State var image: Image
         @State var resize: Bool
@@ -77,7 +76,6 @@ struct NCCapabilitiesView: View {
     }
 
     struct CapabilityStatus: View {
-
         @State var available: Bool
 
         var body: some View {

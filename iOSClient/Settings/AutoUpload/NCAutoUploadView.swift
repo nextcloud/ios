@@ -31,7 +31,7 @@ struct NCAutoUploadView: View {
 
     var body: some View {
         Form {
-            // Auto Upload
+            /// Auto Upload
             Section(content: {
                 Toggle(NSLocalizedString("_autoupload_", comment: ""), isOn: $model.autoUpload)
                     .tint(Color(NCBrandColor.shared.brandElement))
@@ -40,7 +40,7 @@ struct NCAutoUploadView: View {
                     }
                     .font(.system(size: 16))
             }, footer: {
-                Text(NSLocalizedString("_autoupload_description_", comment: "") + "\n\n" + NSLocalizedString("_autoupload_notice_", comment: ""))
+                Text(NSLocalizedString("_autoupload_notice_", comment: ""))
             })
             /// If `autoUpload` state will be true, we will animate out the whole `autoUploadOnView` section
             if model.autoUpload {
@@ -83,7 +83,7 @@ struct NCAutoUploadView: View {
                     model.setAutoUploadDirectory(serverUrl: model.serverUrl)
                 }
         }
-        // Auto Upload Photo
+        /// Auto Upload Photo
         Section(content: {
             Toggle(NSLocalizedString("_autoupload_photos_", comment: ""), isOn: $model.autoUploadImage)
                 .tint(Color(NCBrandColor.shared.brandElement))
@@ -98,7 +98,7 @@ struct NCAutoUploadView: View {
                 }
                 .font(.system(size: 16))
         })
-        // Auto Upload Video
+        /// Auto Upload Video
         Section(content: {
             Toggle(NSLocalizedString("_autoupload_videos_", comment: ""), isOn: $model.autoUploadVideo)
                 .tint(Color(NCBrandColor.shared.brandElement))
@@ -113,7 +113,7 @@ struct NCAutoUploadView: View {
                 }
                 .font(.system(size: 16))
         })
-        // Auto Upload Full
+        /// Auto Upload Full
         Section(content: {
             Toggle(NSLocalizedString("_autoupload_fullphotos_", comment: ""), isOn: $model.autoUploadFull)
                 .tint(Color(NCBrandColor.shared.brandElement))
@@ -124,7 +124,7 @@ struct NCAutoUploadView: View {
         }, footer: {
             Text(NSLocalizedString("_autoupload_fullphotos_footer_", comment: ""))
         })
-        // Auto Upload create subfolder
+        /// Auto Upload create subfolder
         Section(content: {
             Toggle(NSLocalizedString("_autoupload_create_subfolder_", comment: ""), isOn: $model.autoUploadCreateSubfolder)
                 .tint(Color(NCBrandColor.shared.brandElement))
@@ -144,7 +144,7 @@ struct NCAutoUploadView: View {
         }, footer: {
             Text(NSLocalizedString("_autoupload_create_subfolder_footer_", comment: ""))
         })
-        // Auto Upload file name
+        /// Auto Upload file name
         Section(content: {
             NavigationLink(destination: LazyView {
                 NCAutoUploadFileNamesView(model: NCAutoUploadFileNamesModel())

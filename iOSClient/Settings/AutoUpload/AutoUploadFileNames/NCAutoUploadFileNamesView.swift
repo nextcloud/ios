@@ -29,7 +29,7 @@ struct NCAutoUploadFileNamesView: View {
 
     var body: some View {
         Form {
-            // Specify Filename
+            /// Specify Filename
             Section(header: Text(NSLocalizedString("_mode_filename_", comment: ""))) {
                 Toggle(NSLocalizedString("_maintain_original_filename_", comment: ""), isOn: $model.maintainFilename)
                     .font(.system(size: 16))
@@ -38,7 +38,7 @@ struct NCAutoUploadFileNamesView: View {
                         model.toggleMaintainOriginalFilename(newValue: newValue)
                         model.getFileName()
                     })
-                // Filename
+                /// Filename
                 if !model.maintainFilename {
                     Toggle(NSLocalizedString("_add_filenametype_", comment: ""), isOn: $model.specifyFilename)
                         .font(.system(size: 16))
@@ -52,7 +52,7 @@ struct NCAutoUploadFileNamesView: View {
             .transition(.slide)
             .animation(.easeInOut, value: model.maintainFilename)
 
-            // Filename Preview
+            /// Filename Preview
             fileNamePreview
                 .animation(.easeInOut, value: model.specifyFilename)
         }
