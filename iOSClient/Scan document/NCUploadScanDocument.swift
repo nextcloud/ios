@@ -491,7 +491,7 @@ struct UploadScanDocumentView: View {
                 }
                 HUDView(showHUD: $uploadScanDocument.showHUD, textLabel: NSLocalizedString("_wait_", comment: ""), image: "doc.badge.arrow.up")
                     .offset(y: uploadScanDocument.showHUD ? 5 : -200)
-                    .animation(.easeOut, value: UUID())
+                    .animation(.easeOut, value: uploadScanDocument.showHUD)
             }
         }
         .background(Color(UIColor.systemGroupedBackground))

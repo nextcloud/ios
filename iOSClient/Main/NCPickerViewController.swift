@@ -26,6 +26,7 @@ import TLPhotoPicker
 import MobileCoreServices
 import Photos
 import NextcloudKit
+import SwiftUI
 
 // MARK: - Photo Picker
 
@@ -46,9 +47,10 @@ class NCPhotosPickerViewController: NSObject {
         self.openPhotosPickerViewController { assets in
             if !assets.isEmpty {
                 let serverUrl = mainTabBarController.currentServerUrl()
-                let vc = NCHostingUploadAssetsView().makeShipDetailsUI(assets: assets, serverUrl: serverUrl, userBaseUrl: self.appDelegate)
+                let view = NCUploadAssetsView(model: NCUploadAssetsModel(assets: assets, serverUrl: serverUrl, userBaseUrl: self.appDelegate, controller: mainTabBarController))
+                let controller = UIHostingController(rootView: view)
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
-                    mainTabBarController.present(vc, animated: true, completion: nil)
+                    mainTabBarController.present(controller, animated: true, completion: nil)
                 }
             }
         }
