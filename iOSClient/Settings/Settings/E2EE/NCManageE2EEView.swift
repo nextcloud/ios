@@ -40,6 +40,7 @@ struct NCManageE2EEView: View {
                                 .resizable()
                                 .scaledToFit()
                                 .font(Font.system(.body).weight(.light))
+                                .frame(width: 25, height: 25)
                                 .foregroundColor(.green)
                         }
                     }
@@ -51,7 +52,8 @@ struct NCManageE2EEView: View {
                                 .resizable()
                                 .scaledToFit()
                                 .font(Font.system(.body).weight(.light))
-                                .foregroundColor(.black)
+                                .frame(width: 25, height: 25)
+                                .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
                         }
                         Spacer()
                     }
@@ -67,10 +69,11 @@ struct NCManageE2EEView: View {
                         Label {
                             Text(NSLocalizedString("_e2e_settings_remove_", comment: ""))
                         } icon: {
-                            Image(systemName: "trash")
+                            Image(systemName: "xmark")
                                 .resizable()
                                 .scaledToFit()
                                 .font(Font.system(.body).weight(.light))
+                                .frame(width: 25, height: 15)
                                 .foregroundColor(.red)
                         }
                         Spacer()
@@ -98,6 +101,7 @@ struct NCManageE2EEView: View {
                                     .resizable()
                                     .scaledToFit()
                                     .font(Font.system(.body).weight(.light))
+                                    .frame(width: 25, height: 25)
                                     .foregroundColor(.green)
                             }
                             Spacer()
@@ -138,6 +142,7 @@ struct NCManageE2EEView: View {
                         .resizable()
                         .scaledToFit()
                         .font(Font.system(.body).weight(.light))
+                        .frame(width: 25, height: 25)
                         .foregroundColor(Color(NCBrandColor.shared.textColor2))
                 }
                 Spacer()
@@ -160,6 +165,7 @@ struct NCManageE2EEView: View {
                         .resizable()
                         .scaledToFit()
                         .font(Font.system(.body).weight(.light))
+                        .frame(width: 25, height: 25)
                         .foregroundColor(Color(NCBrandColor.shared.textColor2))
                 }
                 Spacer()

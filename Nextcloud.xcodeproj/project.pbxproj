@@ -2317,14 +2317,14 @@
 		F76882042C0DD1E7001CF441 /* Settings */ = {
 			isa = PBXGroup;
 			children = (
-				F76882142C0DD1E7001CF441 /* Acknowledgements.rtf */,
-				F76882052C0DD1E7001CF441 /* Advanced */,
+				F768820B2C0DD1E7001CF441 /* Settings */,
 				F76882162C0DD1E7001CF441 /* AutoUpload */,
 				F768821C2C0DD1E7001CF441 /* Display */,
+				F76882052C0DD1E7001CF441 /* Advanced */,
 				F768821F2C0DD1E7001CF441 /* Helpers */,
+				F76882142C0DD1E7001CF441 /* Acknowledgements.rtf */,
 				F76882132C0DD1E7001CF441 /* NCKeychain.swift */,
 				F76882152C0DD1E7001CF441 /* NCSettingsBundleHelper.swift */,
-				F768820B2C0DD1E7001CF441 /* Settings */,
 				F76882122C0DD1E7001CF441 /* Settings.bundle */,
 			);
 			path = Settings;
@@ -2352,9 +2352,9 @@
 		F768820B2C0DD1E7001CF441 /* Settings */ = {
 			isa = PBXGroup;
 			children = (
-				F768820C2C0DD1E7001CF441 /* NCSettingsView.swift */,
 				F768820D2C0DD1E7001CF441 /* E2EE */,
 				F76882112C0DD1E7001CF441 /* NCSettingsModel.swift */,
+				F768820C2C0DD1E7001CF441 /* NCSettingsView.swift */,
 			);
 			path = Settings;
 			sourceTree = "<group>";
@@ -2362,9 +2362,9 @@
 		F768820D2C0DD1E7001CF441 /* E2EE */ = {
 			isa = PBXGroup;
 			children = (
-				F768820E2C0DD1E7001CF441 /* NCManageE2EEView.swift */,
 				F768820F2C0DD1E7001CF441 /* NCEndToEndInitialize.swift */,
 				F76882102C0DD1E7001CF441 /* NCManageE2EEModel.swift */,
+				F768820E2C0DD1E7001CF441 /* NCManageE2EEView.swift */,
 			);
 			path = E2EE;
 			sourceTree = "<group>";
