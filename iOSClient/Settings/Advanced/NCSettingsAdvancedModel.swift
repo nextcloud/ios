@@ -55,10 +55,10 @@ class NCSettingsAdvancedModel: ObservableObject, ViewOnAppearHandling {
     /// State variable for storing the footer title, usually used for cache deletion.
     @Published var footerTitle: String = ""
     /// Root View Controller
-    @Published var controller: UITabBarController?
+    @Published var controller: NCMainTabBarController?
 
     /// Initializes the view model with default values.
-    init(controller: UITabBarController?) {
+    init(controller: NCMainTabBarController?) {
         self.controller = controller
         onViewAppear()
     }

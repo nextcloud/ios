@@ -421,6 +421,12 @@ class SceneManager {
         return (scene as? UIWindowScene)?.keyWindow
     }
 
+    func getWindow(controller: NCMainTabBarController?) -> UIWindow? {
+        guard let controller,
+              let scene = sceneMainTabBarController[controller] else { return nil }
+        return getWindow(scene: scene)
+    }
+
     func getSceneIdentifier() -> [String] {
         var results: [String] = []
         for mainTabBarController in sceneMainTabBarController.keys {

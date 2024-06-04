@@ -44,14 +44,14 @@ class NCSettingsModel: ObservableObject, ViewOnAppearHandling {
     /// State to control
     @Published var resetWrongAttempts: Bool = false
     /// Root View Controller
-    @Published var controller: UITabBarController?
+    @Published var controller: NCMainTabBarController?
     /// Footer
     var footerApp = ""
     var footerServer = ""
     var footerSlogan = ""
 
     /// Initializes the view model with default values.
-    init(controller: UITabBarController?) {
+    init(controller: NCMainTabBarController?) {
         self.controller = controller
         onViewAppear()
     }
