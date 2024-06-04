@@ -46,6 +46,7 @@ let userAgent: String = {
     @objc public var privacy: String = "https://nextcloud.com/privacy"
     @objc public var sourceCode: String = "https://github.com/nextcloud/ios"
     @objc public var mobileconfig: String = "/remote.php/dav/provisioning/apple-provisioning.mobileconfig"
+    @objc public var appStoreUrl: String = "https://apps.apple.com/in/app/nextcloud/id1125420102"
 
     // Personalized
     @objc public var webCloseViewProtocolPersonalized: String = ""                                                  // example "abc://change/plan"      Don't touch me !!
