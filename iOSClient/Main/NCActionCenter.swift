@@ -624,17 +624,3 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
         }
     }
 }
-
-fileprivate extension tableMetadata {
-    func toPasteBoardItem() -> [String: Any]? {
-        // Get Data
-        let fileUrl = URL(fileURLWithPath: NCUtilityFileSystem().getDirectoryProviderStorageOcId(ocId, fileNameView: fileNameView))
-        guard NCUtilityFileSystem().fileProviderStorageExists(self),
-              let data = try? Data(contentsOf: fileUrl),
-              let unmanagedFileUTI = UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, fileExtension as CFString, nil)
-        else { return nil }
-        // Pasteboard item
-        let fileUTI = unmanagedFileUTI.takeRetainedValue() as String
-        return [fileUTI: data]
-    }
-}
