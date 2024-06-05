@@ -316,21 +316,21 @@ class NCGlobal: NSObject {
 
     // Auto upload subfolder granularity
     //
-    @objc let subfolderGranularityDaily             = 2
-    @objc let subfolderGranularityMonthly           = 1
-    @objc let subfolderGranularityYearly            = 0
+    let subfolderGranularityDaily                   = 2
+    let subfolderGranularityMonthly                 = 1
+    let subfolderGranularityYearly                  = 0
 
     // Notification Center
     //
     @objc let notificationCenterChangeUser                      = "changeUser"
-    @objc let notificationCenterChangeTheming                   = "changeTheming"
+    let notificationCenterChangeTheming                         = "changeTheming"
     let notificationCenterRichdocumentGrabFocus                 = "richdocumentGrabFocus"
     let notificationCenterReloadDataNCShare                     = "reloadDataNCShare"
     let notificationCenterCloseRichWorkspaceWebView             = "closeRichWorkspaceWebView"
     let notificationCenterReloadAvatar                          = "reloadAvatar"
     let notificationCenterCreateMediaCacheEnded                 = "createMediaCacheEnded"
 
-    @objc let notificationCenterReloadDataSource                = "reloadDataSource"
+    let notificationCenterReloadDataSource                      = "reloadDataSource"
     let notificationCenterReloadDataSourceNetwork               = "reloadDataSourceNetwork"         // userInfo: withQueryDB
 
     let notificationCenterChangeStatusFolderE2EE                = "changeStatusFolderE2EE"          // userInfo: serverUrl
@@ -340,7 +340,7 @@ class NCGlobal: NSObject {
     let notificationCenterDownloadCancelFile                    = "downloadCancelFile"              // userInfo: ocId, serverUrl, account
 
     let notificationCenterUploadStartFile                       = "uploadStartFile"                 // userInfo: ocId, serverUrl, account, fileName, sessionSelector
-    @objc let notificationCenterUploadedFile                    = "uploadedFile"                    // userInfo: ocId, serverUrl, account, fileName, ocIdTemp, error
+    let notificationCenterUploadedFile                          = "uploadedFile"                    // userInfo: ocId, serverUrl, account, fileName, ocIdTemp, error
     let notificationCenterUploadedLivePhoto                     = "uploadedLivePhoto"               // userInfo: ocId, serverUrl, account, fileName, ocIdTemp, error
 
     let notificationCenterUploadCancelFile                      = "uploadCancelFile"                // userInfo: ocId, serverUrl, account
