@@ -1364,9 +1364,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         }
 
         if metadata.directory {
-
             let tableDirectory = NCManageDatabase.shared.getTableDirectory(ocId: metadata.ocId)
-
             if metadata.e2eEncrypted {
                 cell.filePreviewImageView?.image = NCImageCache.images.folderEncrypted
             } else if isShare {

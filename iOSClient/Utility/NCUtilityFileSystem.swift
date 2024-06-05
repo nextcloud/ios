@@ -153,7 +153,7 @@ class NCUtilityFileSystem: NSObject {
             } else {
                 return false
             }
-        } catch { print("Error: \(error)") }
+        } catch { }
         return false
     }
 
