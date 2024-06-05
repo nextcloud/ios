@@ -37,8 +37,4 @@
 + (NSString *)createFileName:(NSString *)fileName fileDate:(NSDate *)fileDate fileType:(PHAssetMediaType)fileType keyFileName:(NSString *)keyFileName keyFileNameType:(NSString *)keyFileNameType keyFileNameOriginal:(NSString *)keyFileNameOriginal forcedNewFileName:(BOOL)forcedNewFileName;
 + (NSString *)getMimeType:(NSString *)fileNameView;
 
-// ===== Third parts =====
-
-+ (NSDate *)getATime:(const char *)path;
-
 @end

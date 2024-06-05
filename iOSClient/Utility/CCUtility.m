@@ -159,17 +159,4 @@
     return returnFileUTI;
 }
 
-#pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== Third parts =====
-#pragma --------------------------------------------------------------------------------------------
-
-
-+ (NSDate *)getATime:(const char *)path
-{
-    struct stat st;
-    stat(path, &st);
-    time_t accessed = st.st_atime;
-    NSDate *date = [NSDate dateWithTimeIntervalSince1970:accessed];
-    return date;
-}
 @end
