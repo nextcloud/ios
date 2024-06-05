@@ -238,12 +238,14 @@ class NCNetworking: NSObject, NKCommonDelegate {
         let certificateSavedPath = directoryCertificate + "/" + host + ".der"
         var isTrusted: Bool
 
-        if let serverTrust: SecTrust = protectionSpace.serverTrust, let certificate = SecTrustGetCertificateAtIndex(serverTrust, 0) {
+        if let trust: SecTrust = protectionSpace.serverTrust,
+           let certificates = (SecTrustCopyCertificateChain(trust) as? [SecCertificate]),
+           let certificate = certificates.first {
 
             // extarct certificate txt
             saveX509Certificate(certificate, host: host, directoryCertificate: directoryCertificate)
 
-            let isServerTrusted = SecTrustEvaluateWithError(serverTrust, nil)
+            let isServerTrusted = SecTrustEvaluateWithError(trust, nil)
             let certificateCopyData = SecCertificateCopyData(certificate)
             let data = CFDataGetBytePtr(certificateCopyData)
             let size = CFDataGetLength(certificateCopyData)
