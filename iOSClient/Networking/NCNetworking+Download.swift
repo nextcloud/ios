@@ -192,7 +192,7 @@ extension NCNetworking {
         DispatchQueue.global().async {
 
             guard let url = task.currentRequest?.url,
-                  let metadata = NCManageDatabase.shared.getMetadata(from: url) else { return }
+                  let metadata = NCManageDatabase.shared.getMetadata(from: url, sessionTaskIdentifier: task.taskIdentifier) else { return }
 
             self.downloadMetadataInBackground.removeValue(forKey: FileNameServerUrl(fileName: fileName, serverUrl: serverUrl))
 

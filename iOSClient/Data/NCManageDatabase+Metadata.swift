@@ -1147,16 +1147,4 @@ extension NCManageDatabase {
 
         return nil
     }
-
-    func getMetadata(from url: URL?) -> tableMetadata? {
-        guard let url,
-              var serverUrl = url.deletingLastPathComponent().absoluteString.removingPercentEncoding
-        else { return nil }
-        let fileName = url.lastPathComponent
-
-        if serverUrl.hasSuffix("/") {
-            serverUrl = String(serverUrl.dropLast())
-        }
-        return NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "serverUrl == %@ AND fileName == %@", serverUrl, fileName))
-    }
 }

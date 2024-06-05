@@ -313,7 +313,7 @@ extension NCNetworking {
                         task: URLSessionTask,
                         error: NKError) {
         guard let url = task.currentRequest?.url,
-              let metadata = NCManageDatabase.shared.getMetadata(from: url) else { return }
+              let metadata = NCManageDatabase.shared.getMetadata(from: url, sessionTaskIdentifier: task.taskIdentifier) else { return }
         uploadComplete(metadata: metadata, ocId: ocId, etag: etag, date: date, size: size, error: error)
     }
 
