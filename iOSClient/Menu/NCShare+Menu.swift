@@ -98,7 +98,7 @@ extension NCShare {
                 on: false,
                 action: { _ in
                     let canShare = permissions.isPermissionToCanShare(tableShare.permissions)
-                    let permissions = permissions.getPermission(canEdit: false, canCreate: false, canChange: false, canDelete: false, canShare: canShare, isFolder: isDirectory)
+                    let permissions = permissions.getPermission(canEdit: false, canCreate: false, canChange: false, canDelete: false, canShare: canShare, isDirectory: isDirectory)
                     self.updateSharePermissions(share: tableShare, permissions: permissions)
                 }
             )
@@ -112,7 +112,7 @@ extension NCShare {
                 on: false,
                 action: { _ in
                     let canShare = permissions.isPermissionToCanShare(tableShare.permissions)
-                    let permissions = permissions.getPermission(canEdit: true, canCreate: true, canChange: true, canDelete: true, canShare: canShare, isFolder: isDirectory)
+                    let permissions = permissions.getPermission(canEdit: true, canCreate: true, canChange: true, canDelete: true, canShare: canShare, isDirectory: isDirectory)
                     self.updateSharePermissions(share: tableShare, permissions: permissions)
                 }
             )

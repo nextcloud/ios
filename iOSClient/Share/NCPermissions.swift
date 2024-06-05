@@ -64,19 +64,19 @@ class NCPermissions: NSObject {
         let canChange = isPermissionToCanChange(permission)
         return canCreate && canChange && canRead
     }
-    func getPermission(canEdit: Bool, canCreate: Bool, canChange: Bool, canDelete: Bool, canShare: Bool, isFolder: Bool) -> Int {
+    func getPermission(canEdit: Bool, canCreate: Bool, canChange: Bool, canDelete: Bool, canShare: Bool, isDirectory: Bool) -> Int {
         var permission = permissionReadShare
 
-        if canEdit && !isFolder {
+        if canEdit && !isDirectory {
             permission = permission + permissionUpdateShare
         }
-        if canCreate && isFolder {
+        if canCreate && isDirectory {
             permission = permission + permissionCreateShare
         }
-        if canChange && isFolder {
+        if canChange && isDirectory {
             permission = permission + permissionUpdateShare
         }
-        if canDelete && isFolder {
+        if canDelete && isDirectory {
             permission = permission + permissionDeleteShare
         }
         if canShare {
