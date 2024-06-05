@@ -194,7 +194,7 @@ struct NCSettingsAdvancedView: View {
             }
             /// Delete in Cache & Clear Cache
             Section(content: {
-                Picker(NSLocalizedString("_auto_delete_cache_files_", comment: ""), selection: $model.selectedInterval) {
+                Picker(NSLocalizedString("_delete_old_files_", comment: ""), selection: $model.selectedInterval) {
                     ForEach(CacheDeletionInterval.allCases) { interval in
                         Text(interval.displayText).tag(interval)
                     }

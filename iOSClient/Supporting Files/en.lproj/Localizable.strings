@@ -388,7 +388,6 @@
 "_autoupload_photos_"               = "Auto upload photos";
 "_autoupload_videos_"               = "Auto upload videos";
 "_autoupload_description_"          = "New photos/videos will be automatically uploaded to your server";
-"_auto_delete_cache_files_"         = "Auto Delete Cache files after";
 "_autoupload_description_background_"  = "This option requires the use of GPS to trigger the detection of new photos/videos in the camera roll once the location changes significantly";
 "_autoupload_background_title_"     = "Limitations";
 "_autoupload_background_msg_"       = "Due to iOS restrictions, it is not yet possible to perform background processes, unless GPS services are activated. Once the cell in the cellular network is changed, the system wakes up for a short time and checks for new photos to upload to the cloud.";
@@ -418,7 +417,6 @@
 "_privacy_"                     = "Privacy";
 "_privacy_policy_"              = "Privacy Policy";
 "_privacy_footer_"              = "This app uses a service for the analysis of a crash. Your personal information is not sent with the report. If you want disable it, please change the setting \"Disable crash reporter\" to ON";
-"_show_hidden_files_footer"     = "All Hidden files will be visible in every device";
 "_crashservice_title_"          = "Disable crash reporter";
 "_crashservice_alert_"          = "This option requires a restart of the app to take effect";
 "_upload_mov_livephoto_"        = "Live Photo";
@@ -430,10 +428,8 @@
 "_diagnostics_"                 = "Diagnostics";
 "_view_log_"                    = "View log file";
 "_clear_log_"                   = "Clear log file";
-"_level_log_"                   = "Set Log level (disabled, standard, maximum)";
-"_set_log_level_"               = "Set Log Level";
+"_set_log_level_"               = "Set Log level";
 "_log_file_clear_alert_"        = "Log file cleared \n successfully!";
-"_diagnostics_footer_" = "Log files contains history of all your actions on Nextcloud.";
 "_connect_server_anyway_"       = "Do you want to connect to the server anyway?";
 "_server_is_trusted_"           = "Do you consider this server trusted?";
 "_connection_error_"            = "Connection error";
@@ -987,7 +983,7 @@
 "_delete_selected_photos_"  = "Delete selected photos";
 "_media_square_"            = "Square photo grid";
 "_media_ratio_"             = "Aspect ratio grid";
-"_autoupload_notice_"       = "To ensure the proper functioning of the application, it is necessary to enable Background App Refresh. Otherwise, new photos or videos will not be detected when the application is in the background.\n\nAdditionally, please note that the application will not be able to detect new photos and videos if it is manually terminated. When the app is in the background, data transfer may be slower, and new photos and/or videos will generally be detected every 10 minutes, depending on the phone’s battery level.\n\nTo verify that the app is functioning correctly, you can use the log file available in Advanced.";
+"_autoupload_notice_"       = "To ensure the proper functioning of the application, it is necessary to enable Background App Refresh. Otherwise, new photos or videos will not be detected when the application is in the background.\n\nAdditionally, please note that the application will not be able to detect new photos and videos if it is manually terminated. When the app is in the background, data transfer may be slower, and new photos and/or videos will generally be detected every 10 minutes, depending on the device’s battery level.\n\nTo verify that the app is functioning correctly, you can use the log file available in Advanced.";
 "_display_"                 = "Display";
 "_appearance_"              = "Appearance";
 "_light_"                   = "Light";
