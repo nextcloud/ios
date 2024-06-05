@@ -1211,7 +1211,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         }
         cell.fileAvatarImageView?.contentMode = .center
 
-        // Thumbnail
+        /// THUMBNAIL
         if !metadata.directory {
             if metadata.hasPreviewBorder {
                 cell.filePreviewImageView?.layer.borderWidth = 0.2
@@ -1232,7 +1232,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                     }
                 }
             } else {
-                // Unified search
+                /// APP NAME - UNIFIED SEARCH
                 switch metadata.iconName {
                 case let str where str.contains("contacts"):
                     cell.filePreviewImageView?.image = NCImageCache.images.iconContacts
@@ -1253,8 +1253,6 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                 default:
                     cell.filePreviewImageView?.image = NCImageCache.images.iconFile
                 }
-
-                // Avatar
                 if !metadata.iconUrl.isEmpty {
                     if let ownerId = getAvatarFromIconUrl(metadata: metadata) {
                         let fileName = metadata.userBaseUrl + "-" + ownerId + ".png"
@@ -1264,7 +1262,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             }
         }
 
-        // Avatar
+        /// AVATAR
         if !metadata.ownerId.isEmpty,
            metadata.ownerId != appDelegate.userId,
            appDelegate.account == metadata.account {
@@ -1894,14 +1892,14 @@ extension NCCollectionViewCommon {
             for task in tasks.1 { // ([URLSessionDataTask], [URLSessionUploadTask], [URLSessionDownloadTask])
                 if task.taskIdentifier == metadata.sessionTaskIdentifier {
                     task.cancel()
-                    NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
-                    NotificationCenter.default.post(name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterUploadCancelFile),
-                                                    object: nil,
-                                                    userInfo: ["ocId": metadata.ocId,
-                                                               "serverUrl": metadata.serverUrl,
-                                                               "account": metadata.account])
                 }
             }
+            NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
+            NotificationCenter.default.post(name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterUploadCancelFile),
+                                            object: nil,
+                                            userInfo: ["ocId": metadata.ocId,
+                                                       "serverUrl": metadata.serverUrl,
+                                                       "account": metadata.account])
         }
     }
 }
