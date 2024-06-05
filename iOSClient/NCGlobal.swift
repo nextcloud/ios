@@ -134,10 +134,6 @@ class NCGlobal: NSObject {
     @objc let introLogin: Int                       = 0
     let introSignup: Int                            = 1
 
-    // Varie size GUI
-    //
-    @objc let heightCellSettings: CGFloat           = 50
-
     // Avatar & Preview size
     //
     let avatarSize: Int                             = 128 * Int(UIScreen.main.scale)
@@ -148,7 +144,7 @@ class NCGlobal: NSObject {
     // E2EE
     //
     let e2eePassphraseTest                          = "more over television factory tendency independence international intellectual impress interest sentence pony"
-    @objc let e2eeVersions                          = ["1.1", "1.2", "2.0"]
+    let e2eeVersions                                = ["1.1", "1.2", "2.0"]
     let e2eeVersionV11                              = "1.1"
     let e2eeVersionV12                              = "1.2"
     let e2eeVersionV20                              = "2.0"
@@ -285,11 +281,59 @@ class NCGlobal: NSObject {
     // Share permission
     // permissions - (int) 1 = read; 2 = update; 4 = create; 8 = delete; 16 = share; 31 = all
     //
-    @objc let permissionReadShare: Int              = 1
-    @objc let permissionUpdateShare: Int            = 2
-    @objc let permissionCreateShare: Int            = 4
-    @objc let permissionDeleteShare: Int            = 8
-    @objc let permissionShareShare: Int             = 16
+    let permissionReadShare: Int    = 1
+    let permissionUpdateShare: Int  = 2
+    let permissionCreateShare: Int  = 4
+    let permissionDeleteShare: Int  = 8
+    let permissionShareShare: Int   = 16
+
+    func isPermissionToRead(_ permission: Int) -> Bool {
+        return ((permission & NCGlobal.shared.permissionReadShare) > 0)
+    }
+    func isPermissionToCanDelete(_ permission: Int) -> Bool {
+        return ((permission & NCGlobal.shared.permissionDeleteShare) > 0)
+    }
+    func isPermissionToCanCreate(_ permission: Int) -> Bool {
+        return ((permission & NCGlobal.shared.permissionCreateShare) > 0)
+    }
+    func isPermissionToCanChange(_ permission: Int) -> Bool {
+        return ((permission & NCGlobal.shared.permissionUpdateShare) > 0)
+    }
+    func isPermissionToCanShare(_ permission: Int) -> Bool {
+        return ((permission & NCGlobal.shared.permissionShareShare) > 0)
+    }
+    func isAnyPermissionToEdit(_ permission: Int) -> Bool {
+        let canCreate = isPermissionToCanCreate(permission)
+        let canChange = isPermissionToCanChange(permission)
+        let canDelete = isPermissionToCanDelete(permission)
+        return canCreate || canChange || canDelete
+    }
+    func isPermissionToReadCreateUpdate(_ permission: Int) -> Bool {
+        let canRead   = isPermissionToRead(permission)
+        let canCreate = isPermissionToCanCreate(permission)
+        let canChange = isPermissionToCanChange(permission)
+        return canCreate && canChange && canRead
+    }
+    func getPermission(canEdit: Bool, canCreate: Bool, canChange: Bool, canDelete: Bool, canShare: Bool, isFolder: Bool) -> Int {
+        var permission = NCGlobal.shared.permissionReadShare
+
+        if canEdit && !isFolder {
+            permission = permission + NCGlobal.shared.permissionUpdateShare
+        }
+        if canCreate && isFolder {
+            permission = permission + NCGlobal.shared.permissionCreateShare
+        }
+        if canChange && isFolder {
+            permission = permission + NCGlobal.shared.permissionUpdateShare
+        }
+        if canDelete && isFolder {
+            permission = permission + NCGlobal.shared.permissionDeleteShare
+        }
+        if canShare {
+            permission = permission + NCGlobal.shared.permissionShareShare
+        }
+        return permission
+    }
 
     @objc let permissionMinFileShare: Int           = 1
     @objc let permissionMaxFileShare: Int           = 19

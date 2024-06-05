@@ -125,31 +125,31 @@ enum NCLinkPermission: NCPermission {
     var permissionValue: Int {
         switch self {
         case .allowEdit:
-            return CCUtility.getPermissionsValue(
-                byCanEdit: true,
-                andCanCreate: true,
-                andCanChange: true,
-                andCanDelete: true,
-                andCanShare: false,
-                andIsFolder: false)
+            return NCGlobal.shared.getPermission(
+                canEdit: true,
+                canCreate: true,
+                canChange: true,
+                canDelete: true,
+                canShare: false,
+                isFolder: false)
         case .viewOnly:
-            return CCUtility.getPermissionsValue(
-                byCanEdit: false,
-                andCanCreate: false,
-                andCanChange: false,
-                andCanDelete: false,
+            return NCGlobal.shared.getPermission(
+                canEdit: false,
+                canCreate: false,
+                canChange: false,
+                canDelete: false,
                 // not possible to create "read-only" shares without reshare option
                 // https://github.com/nextcloud/server/blame/f99876997a9119518fe5f7ad3a3a51d33459d4cc/apps/files_sharing/lib/Controller/ShareAPIController.php#L1104-L1107
-                andCanShare: true,
-                andIsFolder: true)
+                canShare: true,
+                isFolder: true)
         case .uploadEdit:
-            return CCUtility.getPermissionsValue(
-                byCanEdit: true,
-                andCanCreate: true,
-                andCanChange: true,
-                andCanDelete: true,
-                andCanShare: false,
-                andIsFolder: true)
+            return NCGlobal.shared.getPermission(
+                canEdit: true,
+                canCreate: true,
+                canChange: true,
+                canDelete: true,
+                canShare: false,
+                isFolder: true)
         case .fileDrop:
             return NCGlobal.shared.permissionCreateShare
         case .secureFileDrop:
@@ -159,9 +159,9 @@ enum NCLinkPermission: NCPermission {
 
     func isOn(for share: NCTableShareable) -> Bool {
         switch self {
-        case .allowEdit: return CCUtility.isAnyPermission(toEdit: share.permissions)
-        case .viewOnly: return !CCUtility.isAnyPermission(toEdit: share.permissions) && share.permissions != NCGlobal.shared.permissionCreateShare
-        case .uploadEdit: return CCUtility.isAnyPermission(toEdit: share.permissions) && share.permissions != NCGlobal.shared.permissionCreateShare
+        case .allowEdit: return NCGlobal.shared.isAnyPermissionToEdit(share.permissions)
+        case .viewOnly: return !NCGlobal.shared.isAnyPermissionToEdit(share.permissions) && share.permissions != NCGlobal.shared.permissionCreateShare
+        case .uploadEdit: return NCGlobal.shared.isAnyPermissionToEdit(share.permissions) && share.permissions != NCGlobal.shared.permissionCreateShare
         case .fileDrop: return share.permissions == NCGlobal.shared.permissionCreateShare
         case .secureFileDrop: return share.permissions == NCGlobal.shared.permissionCreateShare
         }

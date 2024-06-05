@@ -91,7 +91,7 @@ class NCShareUserCell: UITableViewCell, NCCellProtocol {
             labelQuickStatus.text = NSLocalizedString("_share_file_drop_", comment: "")
         } else {
             // Read Only
-            if CCUtility.isAnyPermission(toEdit: tableShare.permissions) {
+            if NCGlobal.shared.isAnyPermissionToEdit(tableShare.permissions) {
                 labelQuickStatus.text = NSLocalizedString("_share_editing_", comment: "")
             } else {
                 labelQuickStatus.text = NSLocalizedString("_share_read_only_", comment: "")

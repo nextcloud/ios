@@ -22,6 +22,7 @@
 //
 
 import Foundation
+import UIKit
 import NextcloudKit
 
 extension NCShare {
@@ -95,8 +96,8 @@ extension NCShare {
                 selected: tableShare.permissions == (NCGlobal.shared.permissionReadShare + NCGlobal.shared.permissionShareShare) || tableShare.permissions == NCGlobal.shared.permissionReadShare,
                 on: false,
                 action: { _ in
-                    let canShare = CCUtility.isPermission(toCanShare: tableShare.permissions)
-                    let permissions = CCUtility.getPermissionsValue(byCanEdit: false, andCanCreate: false, andCanChange: false, andCanDelete: false, andCanShare: canShare, andIsFolder: isDirectory)
+                    let canShare = NCGlobal.shared.isPermissionToCanShare(tableShare.permissions)
+                    let permissions = NCGlobal.shared.getPermission(canEdit: false, canCreate: false, canChange: false, canDelete: false, canShare: canShare, isFolder: isDirectory)
                     self.updateSharePermissions(share: tableShare, permissions: permissions)
                 }
             )
@@ -109,8 +110,8 @@ extension NCShare {
                 selected: hasUploadPermission(tableShare: tableShare),
                 on: false,
                 action: { _ in
-                    let canShare = CCUtility.isPermission(toCanShare: tableShare.permissions)
-                    let permissions = CCUtility.getPermissionsValue(byCanEdit: true, andCanCreate: true, andCanChange: true, andCanDelete: true, andCanShare: canShare, andIsFolder: isDirectory)
+                    let canShare = NCGlobal.shared.isPermissionToCanShare(tableShare.permissions)
+                    let permissions = NCGlobal.shared.getPermission(canEdit: true, canCreate: true, canChange: true, canDelete: true, canShare: canShare, isFolder: isDirectory)
                     self.updateSharePermissions(share: tableShare, permissions: permissions)
                 }
             )
