@@ -69,9 +69,7 @@ struct NCAutoUploadFileNamesView: View {
                 HStack {
                     Text(NSLocalizedString("_filename_", comment: ""))
                         .font(.system(size: 17))
-                        .foregroundColor(Color(UIColor.label))
                         .fontWeight(.medium)
-                        .background(Color(UIColor.secondarySystemGroupedBackground))
                     Spacer()
                     TextField(NSLocalizedString("_filename_header_", comment: ""), text: $model.changedName)
                         .onSubmit {
@@ -80,23 +78,22 @@ struct NCAutoUploadFileNamesView: View {
                         .onChange(of: model.changedName, perform: { _ in
                             model.getFileName()
                         })
-
                         .font(.system(size: 15))
-                        .foregroundColor(Color(UIColor.label))
-                        .background(Color(UIColor.secondarySystemGroupedBackground))
                         .multilineTextAlignment(.trailing)
                 }
                 .font(.system(size: 16))
                 Text("\(model.fileName)")
                     .font(.system(size: 16))
+                    .foregroundColor(Color(UIColor.lightGray))
             }, header: {
                 Text(NSLocalizedString("_filename_", comment: ""))
             }, footer: {
-                Text(NSLocalizedString("_preview_filename_footer_", comment: ""))
+                Text(String(format: NSLocalizedString("_preview_filename_", comment: ""), "MM, MMM, DD, YY, YYYY, HH, hh, mm, ss, ampm"))
             })
         } else {
             Section(content: {
-                Text(NSLocalizedString("_default_filename_image_", comment: ""))
+                Text("IMG_0001.JPG")
+                    .foregroundColor(Color(UIColor.lightGray))
             }, header: {
                 Text(NSLocalizedString("_filename_", comment: ""))
             }, footer: {

@@ -104,7 +104,7 @@ class NCAutoUploadFileNamesModel: ObservableObject, ViewOnAppearHandling {
         // Check if maintaining original file name is enabled
         if keychain.getOriginalFileName(key: NCGlobal.shared.keyFileNameOriginalAutoUpload) {
             // If maintaining original file name, return a default filename
-            return (NSLocalizedString("_filename_", comment: "") + ": IMG_0001.JPG")
+            return ("IMG_0001.JPG")
         } else {
             let valueRenameTrimming = changedName.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
             // If the changed name is empty, set the filename mask to empty and generate a new filename
