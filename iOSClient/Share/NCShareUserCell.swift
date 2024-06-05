@@ -61,7 +61,7 @@ class NCShareUserCell: UITableViewCell, NCCellProtocol {
             name: NSLocalizedString("_show_profile_", comment: ""),
             target: self,
             selector: #selector(tapAvatarImage))]
-
+        let permissions = NCPermissions()
         labelTitle.text = tableShare.shareWithDisplayname
         labelTitle.textColor = NCBrandColor.shared.textColor
         isUserInteractionEnabled = true
@@ -87,11 +87,11 @@ class NCShareUserCell: UITableViewCell, NCCellProtocol {
         btnQuickStatus.setTitle("", for: .normal)
         btnQuickStatus.contentHorizontalAlignment = .left
 
-        if tableShare.permissions == NCGlobal.shared.permissionCreateShare {
+        if tableShare.permissions == permissions.permissionCreateShare {
             labelQuickStatus.text = NSLocalizedString("_share_file_drop_", comment: "")
         } else {
             // Read Only
-            if NCGlobal.shared.isAnyPermissionToEdit(tableShare.permissions) {
+            if permissions.isAnyPermissionToEdit(tableShare.permissions) {
                 labelQuickStatus.text = NSLocalizedString("_share_editing_", comment: "")
             } else {
                 labelQuickStatus.text = NSLocalizedString("_share_read_only_", comment: "")

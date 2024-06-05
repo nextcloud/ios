@@ -88,16 +88,17 @@ extension NCShare {
 
     func toggleUserPermissionMenu(isDirectory: Bool, tableShare: tableShare) {
         var actions = [NCMenuAction]()
+        let permissions = NCPermissions()
 
         actions.append(
             NCMenuAction(
                 title: NSLocalizedString("_share_read_only_", comment: ""),
                 icon: utility.loadImage(named: "eye", colors: [NCBrandColor.shared.iconImageColor]),
-                selected: tableShare.permissions == (NCGlobal.shared.permissionReadShare + NCGlobal.shared.permissionShareShare) || tableShare.permissions == NCGlobal.shared.permissionReadShare,
+                selected: tableShare.permissions == (permissions.permissionReadShare + permissions.permissionShareShare) || tableShare.permissions == permissions.permissionReadShare,
                 on: false,
                 action: { _ in
-                    let canShare = NCGlobal.shared.isPermissionToCanShare(tableShare.permissions)
-                    let permissions = NCGlobal.shared.getPermission(canEdit: false, canCreate: false, canChange: false, canDelete: false, canShare: canShare, isFolder: isDirectory)
+                    let canShare = permissions.isPermissionToCanShare(tableShare.permissions)
+                    let permissions = permissions.getPermission(canEdit: false, canCreate: false, canChange: false, canDelete: false, canShare: canShare, isFolder: isDirectory)
                     self.updateSharePermissions(share: tableShare, permissions: permissions)
                 }
             )
@@ -110,8 +111,8 @@ extension NCShare {
                 selected: hasUploadPermission(tableShare: tableShare),
                 on: false,
                 action: { _ in
-                    let canShare = NCGlobal.shared.isPermissionToCanShare(tableShare.permissions)
-                    let permissions = NCGlobal.shared.getPermission(canEdit: true, canCreate: true, canChange: true, canDelete: true, canShare: canShare, isFolder: isDirectory)
+                    let canShare = permissions.isPermissionToCanShare(tableShare.permissions)
+                    let permissions = permissions.getPermission(canEdit: true, canCreate: true, canChange: true, canDelete: true, canShare: canShare, isFolder: isDirectory)
                     self.updateSharePermissions(share: tableShare, permissions: permissions)
                 }
             )
@@ -121,11 +122,12 @@ extension NCShare {
     }
 
     fileprivate func hasUploadPermission(tableShare: tableShare) -> Bool {
+        let permissions = NCPermissions()
         let uploadPermissions = [
-            NCGlobal.shared.permissionMaxFileShare,
-            NCGlobal.shared.permissionMaxFolderShare,
-            NCGlobal.shared.permissionDefaultFileRemoteShareNoSupportShareOption,
-            NCGlobal.shared.permissionDefaultFolderRemoteShareNoSupportShareOption]
+            permissions.permissionMaxFileShare,
+            permissions.permissionMaxFolderShare,
+            permissions.permissionDefaultFileRemoteShareNoSupportShareOption,
+            permissions.permissionDefaultFolderRemoteShareNoSupportShareOption]
         return uploadPermissions.contains(tableShare.permissions)
     }
 
