@@ -217,6 +217,6 @@ class NCFilesExtensionHandler {
 extension NSItemProvider {
     var typeIdentifier: String {
         if hasItemConformingToTypeIdentifier("public.url") { return "public.url" } else
-        if hasItemConformingToTypeIdentifier(kUTTypeItem as String) { return kUTTypeItem as String } else { return "" }
+        if hasItemConformingToTypeIdentifier(UTType.item.identifier as String) { return UTType.item.identifier as String } else { return "" }
     }
 }
