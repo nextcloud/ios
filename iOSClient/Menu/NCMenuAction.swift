@@ -162,8 +162,8 @@ extension NCMenuAction {
             icon: NCUtility().loadImage(named: "square.and.arrow.up", colors: [NCBrandColor.shared.iconImageColor]),
             order: order,
             action: { _ in
-                let mainTabBarController = viewController.tabBarController as? NCMainTabBarController
-                NCActionCenter.shared.openActivityViewController(selectedMetadata: selectedMetadatas, mainTabBarController: mainTabBarController)
+                let controller = viewController.tabBarController as? NCMainTabBarController
+                NCActionCenter.shared.openActivityViewController(selectedMetadata: selectedMetadatas, controller: controller)
                 completion?()
             }
         )
@@ -201,8 +201,8 @@ extension NCMenuAction {
             icon: NCUtility().loadImage(named: "rectangle.portrait.and.arrow.right", colors: [NCBrandColor.shared.iconImageColor]),
             order: order,
             action: { _ in
-                let mainTabBarController = viewController.tabBarController as? NCMainTabBarController
-                NCActionCenter.shared.openSelectView(items: selectedMetadatas, mainTabBarController: mainTabBarController)
+                let controller = viewController.tabBarController as? NCMainTabBarController
+                NCActionCenter.shared.openSelectView(items: selectedMetadatas, controller: controller)
                 completion?()
             }
         )

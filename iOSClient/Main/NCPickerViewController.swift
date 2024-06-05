@@ -32,13 +32,13 @@ import SwiftUI
 
 class NCPhotosPickerViewController: NSObject {
     let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
-    var mainTabBarController: NCMainTabBarController
+    var controller: NCMainTabBarController
     var maxSelectedAssets = 1
     var singleSelectedMode = false
 
     @discardableResult
-    init(mainTabBarController: NCMainTabBarController, maxSelectedAssets: Int, singleSelectedMode: Bool) {
-        self.mainTabBarController = mainTabBarController
+    init(controller: NCMainTabBarController, maxSelectedAssets: Int, singleSelectedMode: Bool) {
+        self.controller = controller
         super.init()
 
         self.maxSelectedAssets = maxSelectedAssets
@@ -46,11 +46,11 @@ class NCPhotosPickerViewController: NSObject {
 
         self.openPhotosPickerViewController { assets in
             if !assets.isEmpty {
-                let serverUrl = mainTabBarController.currentServerUrl()
-                let view = NCUploadAssetsView(model: NCUploadAssetsModel(assets: assets, serverUrl: serverUrl, userBaseUrl: self.appDelegate, controller: mainTabBarController))
+                let serverUrl = controller.currentServerUrl()
+                let view = NCUploadAssetsView(model: NCUploadAssetsModel(assets: assets, serverUrl: serverUrl, userBaseUrl: self.appDelegate, controller: controller))
                 let controller = UIHostingController(rootView: view)
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
-                    mainTabBarController.present(controller, animated: true, completion: nil)
+                    controller.present(controller, animated: true, completion: nil)
                 }
             }
         }
@@ -95,7 +95,7 @@ class NCPhotosPickerViewController: NSObject {
 
         viewController.configure = configure
 
-        mainTabBarController.present(viewController, animated: true, completion: nil)
+        controller.present(viewController, animated: true, completion: nil)
     }
 }
 
@@ -124,8 +124,8 @@ class NCDocumentPickerViewController: NSObject, UIDocumentPickerDelegate {
     var mainTabBarController: NCMainTabBarController
 
     @discardableResult
-    init (mainTabBarController: NCMainTabBarController, isViewerMedia: Bool, allowsMultipleSelection: Bool, viewController: UIViewController? = nil) {
-        self.mainTabBarController = mainTabBarController
+    init (controller: NCMainTabBarController, isViewerMedia: Bool, allowsMultipleSelection: Bool, viewController: UIViewController? = nil) {
+        self.mainTabBarController = controller
         self.isViewerMedia = isViewerMedia
         self.viewController = viewController
         super.init()

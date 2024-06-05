@@ -29,11 +29,11 @@ import NextcloudKit
 
 extension AppDelegate {
 
-    func toggleMenu(mainTabBarController: NCMainTabBarController) {
+    func toggleMenu(controller: NCMainTabBarController) {
         var actions: [NCMenuAction] = []
         let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
         let directEditingCreators = NCManageDatabase.shared.getDirectEditingCreators(account: appDelegate.account)
-        let serverUrl = mainTabBarController.currentServerUrl()
+        let serverUrl = controller.currentServerUrl()
         let isDirectoryE2EE = NCUtilityFileSystem().isDirectoryE2EE(serverUrl: serverUrl, userBase: appDelegate)
         let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", appDelegate.account, serverUrl))
         let utility = NCUtility()
@@ -41,8 +41,8 @@ extension AppDelegate {
         actions.append(
             NCMenuAction(
                 title: NSLocalizedString("_upload_photos_videos_", comment: ""), icon: utility.loadImage(named: "photo", colors: [NCBrandColor.shared.iconImageColor]), action: { _ in
-                    NCAskAuthorization().askAuthorizationPhotoLibrary(viewController: mainTabBarController) { hasPermission in
-                        if hasPermission {NCPhotosPickerViewController(mainTabBarController: mainTabBarController, maxSelectedAssets: 0, singleSelectedMode: false)
+                    NCAskAuthorization().askAuthorizationPhotoLibrary(viewController: controller) { hasPermission in
+                        if hasPermission {NCPhotosPickerViewController(controller: controller, maxSelectedAssets: 0, singleSelectedMode: false)
                         }
                     }
                 }
@@ -52,7 +52,7 @@ extension AppDelegate {
         actions.append(
             NCMenuAction(
                 title: NSLocalizedString("_upload_file_", comment: ""), icon: utility.loadImage(named: "doc", colors: [NCBrandColor.shared.iconImageColor]), action: { _ in
-                    mainTabBarController.documentPickerViewController = NCDocumentPickerViewController(mainTabBarController: mainTabBarController, isViewerMedia: false, allowsMultipleSelection: true)
+                    controller.documentPickerViewController = NCDocumentPickerViewController(controller: controller, isViewerMedia: false, allowsMultipleSelection: true)
                 }
             )
         )
@@ -65,7 +65,7 @@ extension AppDelegate {
                     Task {
                         let fileName = await NCNetworking.shared.createFileName(fileNameBase: NSLocalizedString("_untitled_", comment: "") + ".md", account: appDelegate.account, serverUrl: serverUrl)
                         let fileNamePath = NCUtilityFileSystem().getFileNamePath(String(describing: fileName), serverUrl: serverUrl, urlBase: appDelegate.urlBase, userId: appDelegate.userId)
-                        self.createTextDocument(mainTabBarController: mainTabBarController, fileNamePath: fileNamePath, fileName: String(describing: fileName), creatorId: directEditingCreator.identifier)
+                        self.createTextDocument(controller: controller, fileNamePath: fileNamePath, fileName: String(describing: fileName), creatorId: directEditingCreator.identifier)
                     }
                 })
             )
@@ -74,7 +74,7 @@ extension AppDelegate {
         actions.append(
             NCMenuAction(
                 title: NSLocalizedString("_scans_document_", comment: ""), icon: utility.loadImage(named: "doc.text.viewfinder", colors: [NCBrandColor.shared.iconImageColor]), action: { _ in
-                    NCDocumentCamera.shared.openScannerDocument(viewController: mainTabBarController)
+                    NCDocumentCamera.shared.openScannerDocument(viewController: controller)
                 }
             )
         )
@@ -82,13 +82,13 @@ extension AppDelegate {
         actions.append(
             NCMenuAction(
                 title: NSLocalizedString("_create_voice_memo_", comment: ""), icon: utility.loadImage(named: "mic", colors: [NCBrandColor.shared.iconImageColor]), action: { _ in
-                    NCAskAuthorization().askAuthorizationAudioRecord(viewController: mainTabBarController) { hasPermission in
+                    NCAskAuthorization().askAuthorizationAudioRecord(viewController: controller) { hasPermission in
                         if hasPermission {
                             if let viewController = UIStoryboard(name: "NCAudioRecorderViewController", bundle: nil).instantiateInitialViewController() as? NCAudioRecorderViewController {
                                 viewController.serverUrl = serverUrl
                                 viewController.modalTransitionStyle = .crossDissolve
                                 viewController.modalPresentationStyle = UIModalPresentationStyle.overCurrentContext
-                                mainTabBarController.present(viewController, animated: true, completion: nil)
+                                controller.present(viewController, animated: true, completion: nil)
                             }
                         }
                     }
@@ -105,8 +105,8 @@ extension AppDelegate {
         actions.append(
             NCMenuAction(title: titleCreateFolder,
                          icon: imageCreateFolder, action: { _ in
-                             let alertController = UIAlertController.createFolder(serverUrl: serverUrl, urlBase: appDelegate, sceneIdentifier: mainTabBarController.sceneIdentifier)
-                             mainTabBarController.present(alertController, animated: true, completion: nil)
+                             let alertController = UIAlertController.createFolder(serverUrl: serverUrl, urlBase: appDelegate, sceneIdentifier: controller.sceneIdentifier)
+                             controller.present(alertController, animated: true, completion: nil)
                          }
                         )
         )
@@ -117,8 +117,8 @@ extension AppDelegate {
                 NCMenuAction(title: NSLocalizedString("_create_folder_e2ee_", comment: ""),
                              icon: NCImageCache.images.folderEncrypted,
                              action: { _ in
-                                 let alertController = UIAlertController.createFolder(serverUrl: serverUrl, urlBase: appDelegate, markE2ee: true, sceneIdentifier: mainTabBarController.sceneIdentifier)
-                                 mainTabBarController.present(alertController, animated: true, completion: nil)
+                                 let alertController = UIAlertController.createFolder(serverUrl: serverUrl, urlBase: appDelegate, markE2ee: true, sceneIdentifier: controller.sceneIdentifier)
+                                 controller.present(alertController, animated: true, completion: nil)
                              })
             )
         }
@@ -132,7 +132,7 @@ extension AppDelegate {
                 NCMenuAction(
                     title: NSLocalizedString("_add_folder_info_", comment: ""), icon: NCUtility().loadImage(named: "list.dash.header.rectangle", colors: [NCBrandColor.shared.iconImageColor]), action: { _ in
                         let richWorkspaceCommon = NCRichWorkspaceCommon()
-                        if let viewController = mainTabBarController.currentViewController() {
+                        if let viewController = controller.currentViewController() {
                             if NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView LIKE[c] %@", appDelegate.account, serverUrl, NCGlobal.shared.fileNameRichWorkspace.lowercased())) == nil {
                                 richWorkspaceCommon.createViewerNextcloudText(serverUrl: serverUrl, viewController: viewController)
                             } else {
@@ -155,14 +155,14 @@ extension AppDelegate {
                         navigationController.modalPresentationStyle = UIModalPresentationStyle.formSheet
 
                         if let viewController = (navigationController as? UINavigationController)?.topViewController as? NCCreateFormUploadDocuments {
-                            viewController.mainTabBarController = mainTabBarController
+                            viewController.controller = controller
                             viewController.editorId = NCGlobal.shared.editorOnlyoffice
                             viewController.creatorId = directEditingCreator.identifier
                             viewController.typeTemplate = NCGlobal.shared.templateDocument
                             viewController.serverUrl = serverUrl
                             viewController.titleForm = NSLocalizedString("_create_new_document_", comment: "")
 
-                            mainTabBarController.present(navigationController, animated: true, completion: nil)
+                            controller.present(navigationController, animated: true, completion: nil)
                         }
                     }
                 )
@@ -180,14 +180,14 @@ extension AppDelegate {
                         navigationController.modalPresentationStyle = UIModalPresentationStyle.formSheet
 
                         if let viewController = (navigationController as? UINavigationController)?.topViewController as? NCCreateFormUploadDocuments {
-                            viewController.mainTabBarController = mainTabBarController
+                            viewController.controller = controller
                             viewController.editorId = NCGlobal.shared.editorOnlyoffice
                             viewController.creatorId = directEditingCreator.identifier
                             viewController.typeTemplate = NCGlobal.shared.templateSpreadsheet
                             viewController.serverUrl = serverUrl
                             viewController.titleForm = NSLocalizedString("_create_new_spreadsheet_", comment: "")
 
-                            mainTabBarController.present(navigationController, animated: true, completion: nil)
+                            controller.present(navigationController, animated: true, completion: nil)
                         }
                     }
                 )
@@ -205,14 +205,14 @@ extension AppDelegate {
                         navigationController.modalPresentationStyle = UIModalPresentationStyle.formSheet
 
                         if let viewController = (navigationController as? UINavigationController)?.topViewController as? NCCreateFormUploadDocuments {
-                            viewController.mainTabBarController = mainTabBarController
+                            viewController.controller = controller
                             viewController.editorId = NCGlobal.shared.editorOnlyoffice
                             viewController.creatorId = directEditingCreator.identifier
                             viewController.typeTemplate = NCGlobal.shared.templatePresentation
                             viewController.serverUrl = serverUrl
                             viewController.titleForm = NSLocalizedString("_create_new_presentation_", comment: "")
 
-                            mainTabBarController.present(navigationController, animated: true, completion: nil)
+                            controller.present(navigationController, animated: true, completion: nil)
                         }
                     }
                 )
@@ -230,13 +230,13 @@ extension AppDelegate {
                             navigationController.modalPresentationStyle = UIModalPresentationStyle.formSheet
 
                             if let viewController = (navigationController as? UINavigationController)?.topViewController as? NCCreateFormUploadDocuments {
-                                viewController.mainTabBarController = mainTabBarController
+                                viewController.controller = controller
                                 viewController.editorId = NCGlobal.shared.editorCollabora
                                 viewController.typeTemplate = NCGlobal.shared.templateDocument
                                 viewController.serverUrl = serverUrl
                                 viewController.titleForm = NSLocalizedString("_create_nextcloudtext_document_", comment: "")
 
-                                mainTabBarController.present(navigationController, animated: true, completion: nil)
+                                controller.present(navigationController, animated: true, completion: nil)
                             }
                         }
                     )
@@ -251,13 +251,13 @@ extension AppDelegate {
                             navigationController.modalPresentationStyle = UIModalPresentationStyle.formSheet
 
                             if let viewController = (navigationController as? UINavigationController)?.topViewController as? NCCreateFormUploadDocuments {
-                                viewController.mainTabBarController = mainTabBarController
+                                viewController.controller = controller
                                 viewController.editorId = NCGlobal.shared.editorCollabora
                                 viewController.typeTemplate = NCGlobal.shared.templateSpreadsheet
                                 viewController.serverUrl = serverUrl
                                 viewController.titleForm = NSLocalizedString("_create_new_spreadsheet_", comment: "")
 
-                                mainTabBarController.present(navigationController, animated: true, completion: nil)
+                                controller.present(navigationController, animated: true, completion: nil)
                             }
                         }
                     )
@@ -272,13 +272,13 @@ extension AppDelegate {
                             navigationController.modalPresentationStyle = UIModalPresentationStyle.formSheet
 
                             if let viewController = (navigationController as? UINavigationController)?.topViewController as? NCCreateFormUploadDocuments {
-                                viewController.mainTabBarController = mainTabBarController
+                                viewController.controller = controller
                                 viewController.editorId = NCGlobal.shared.editorCollabora
                                 viewController.typeTemplate = NCGlobal.shared.templatePresentation
                                 viewController.serverUrl = serverUrl
                                 viewController.titleForm = NSLocalizedString("_create_new_presentation_", comment: "")
 
-                                mainTabBarController.present(navigationController, animated: true, completion: nil)
+                                controller.present(navigationController, animated: true, completion: nil)
                             }
                         }
                     )
@@ -286,14 +286,14 @@ extension AppDelegate {
             }
         }
 
-        mainTabBarController.presentMenu(with: actions)
+        controller.presentMenu(with: actions)
     }
 
-    func createTextDocument(mainTabBarController: NCMainTabBarController, fileNamePath: String, fileName: String, creatorId: String) {
-        guard let viewController = mainTabBarController.currentViewController() else { return }
+    func createTextDocument(controller: NCMainTabBarController, fileNamePath: String, fileName: String, creatorId: String) {
+        guard let viewController = controller.currentViewController() else { return }
         var UUID = NSUUID().uuidString
         UUID = "TEMP" + UUID.replacingOccurrences(of: "-", with: "")
-        let serverUrl = mainTabBarController.currentServerUrl()
+        let serverUrl = controller.currentServerUrl()
         let options = NKRequestOptions(customUserAgent: NCUtility().getCustomUserAgentNCText())
 
         NextcloudKit.shared.NCTextCreateFile(fileNamePath: fileNamePath, editorId: NCGlobal.shared.editorText, creatorId: creatorId, templateId: NCGlobal.shared.templateDocument, options: options) { account, url, _, error in

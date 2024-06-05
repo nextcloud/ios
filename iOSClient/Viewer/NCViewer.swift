@@ -235,8 +235,8 @@ class NCViewer: NSObject {
             viewController.present(viewerQuickLook, animated: true)
         } else {
         // Document Interaction Controller
-            if let mainTabBarController = viewController.tabBarController as? NCMainTabBarController {
-                NCActionCenter.shared.openDocumentController(metadata: metadata, mainTabBarController: mainTabBarController)
+            if let controller = viewController.tabBarController as? NCMainTabBarController {
+                NCActionCenter.shared.openDocumentController(metadata: metadata, controller: controller)
             }
         }
     }

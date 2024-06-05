@@ -2690,6 +2690,7 @@
 		F7BFFA991A24D7BB0044ED85 /* Utility */ = {
 			isa = PBXGroup;
 			children = (
+				F702F2FC25EE5D2C008F8E80 /* NYMnemonic */,
 				F7053E3C1C639DF500741EA5 /* CCUtility.h */,
 				F7053E3D1C639DF500741EA5 /* CCUtility.m */,
 				F76D364528A4F8BF00214537 /* NCActivityIndicator.swift */,
@@ -2705,7 +2706,6 @@
 				F359D8662A7D03420023F405 /* NCUtility+Exif.swift */,
 				AF93474B27E34120002537EE /* NCUtility+Image.swift */,
 				F74AF3A3247FB6AE00AC767B /* NCUtilityFileSystem.swift */,
-				F702F2FC25EE5D2C008F8E80 /* NYMnemonic */,
 				AF36077027BFA4E8001A243D /* ParallelWorker.swift */,
 				F71F6D062B6A6A5E00F1EB15 /* ThreadSafeArray.swift */,
 				F7245923289BB50B00474787 /* ThreadSafeDictionary.swift */,
