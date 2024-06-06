@@ -430,8 +430,8 @@ class NCUtilityFileSystem: NSObject {
     func createFileName(_ fileName: String, fileDate: Date, fileType: PHAssetMediaType, keyFileName: String?, keyFileNameType: String, keyFileNameOriginal: String, forcedNewFileName: Bool) -> String {
         var fileName = fileName
         let keychain = NCKeychain()
-        var addFileNameType: Bool = keychain.getFileNameType(key: keyFileNameType)
-        var useFileNameOriginal: Bool = keychain.getOriginalFileName(key: keyFileNameOriginal)
+        let addFileNameType: Bool = keychain.getFileNameType(key: keyFileNameType)
+        let useFileNameOriginal: Bool = keychain.getOriginalFileName(key: keyFileNameOriginal)
         var numberFileName: String = ""
         var fileNameType = ""
         let fileNameExt = (fileName as NSString).pathExtension.lowercased()
