@@ -32,8 +32,10 @@ class NCManageAccountModel: ObservableObject, ViewOnAppearHandling {
     var controller: NCMainTabBarController?
     /// All account
     var accounts: [tableAccount] = []
-
+    ///
     @Published var indexActiveAccount: Int = 0
+    ///
+    @Published var alias: String = ""
 
     /// Initialization code to set up the ViewModel with the active account
     init(controller: NCMainTabBarController?) {
@@ -52,6 +54,7 @@ class NCManageAccountModel: ObservableObject, ViewOnAppearHandling {
         for (index, item) in accounts.enumerated() {
             if item.active {
                 self.indexActiveAccount = index
+                self.alias = item.alias
             }
         }
     }
@@ -60,7 +63,7 @@ class NCManageAccountModel: ObservableObject, ViewOnAppearHandling {
         if account.alias.isEmpty {
             return account.displayName
         } else {
-            return account.displayName + " (\(account.alias)"
+            return account.displayName + " (\(account.alias))"
         }
     }
 
@@ -72,5 +75,9 @@ class NCManageAccountModel: ObservableObject, ViewOnAppearHandling {
             return (image, text)
         }
         return (nil, nil)
+    }
+
+    func submitChangedAlias(account: tableAccount) {
+        NCManageDatabase.shared.setAccountAlias(account.account, alias: alias)
     }
 }

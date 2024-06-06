@@ -453,19 +453,14 @@ extension NCManageDatabase {
         }
     }
 
-    @objc func setAccountAlias(_ alias: String?) {
-
-        let alias = alias?.trimmingCharacters(in: .whitespacesAndNewlines)
+    @objc func setAccountAlias(_ account: String, alias: String) {
+        let alias = alias.trimmingCharacters(in: .whitespacesAndNewlines)
 
         do {
             let realm = try Realm()
             try realm.write {
-                if let result = realm.objects(tableAccount.self).filter("active == true").first {
-                    if let alias = alias {
-                        result.alias = alias
-                    } else {
-                        result.alias = ""
-                    }
+                if let result = realm.objects(tableAccount.self).filter("account == %@", account).first {
+                    result.alias = alias
                 }
             }
         } catch let error {

@@ -34,6 +34,7 @@ struct NCManageAccountView: View {
                         let account = model.accounts[index]
                         let status = model.getUserStatus(account: account)
                         let avatar = NCUtility().loadUserImage(for: account.user, displayName: account.displayName, userBaseUrl: account)
+                        ///
                         VStack {
                             Image(uiImage: avatar)
                                 .resizable()
@@ -48,6 +49,16 @@ struct NCManageAccountView: View {
                                 Text(message)
                                     .font(.system(size: 10))
                             }
+                            Spacer()
+                            TextField(NSLocalizedString("_alias_", comment: ""), text: $model.alias)
+                                .onSubmit {
+                                    model.submitChangedAlias(account: account)
+                                }
+                                .onChange(of: model.alias, perform: { _ in
+                                    model.submitChangedAlias(account: account)
+                                })
+                                .font(.system(size: 15))
+                                .multilineTextAlignment(.trailing)
                         }
                     }
                 }
