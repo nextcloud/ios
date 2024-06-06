@@ -4,6 +4,8 @@
 //  Created by Shashank on 29/10/20.
 //
 
+import Foundation
+
 class ThreadSafeDictionary<V: Hashable, T>: Collection {
 
     private var dictionary: [V: T]

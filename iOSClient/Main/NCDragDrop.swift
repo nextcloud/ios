@@ -22,6 +22,7 @@
 //
 
 import UIKit
+import UniformTypeIdentifiers
 import NextcloudKit
 
 class NCDragDrop: NSObject {

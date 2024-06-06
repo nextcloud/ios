@@ -427,6 +427,96 @@ class NCUtilityFileSystem: NSObject {
         return fileNamePath
     }
 
+    func createFileName(_ fileName: String, fileDate: Date, fileType: PHAssetMediaType, keyFileName: String?, keyFileNameType: String, keyFileNameOriginal: String, forcedNewFileName: Bool) -> String {
+        var fileName = fileName
+        let keychain = NCKeychain()
+        var addFileNameType: Bool = keychain.getFileNameType(key: keyFileNameType)
+        var useFileNameOriginal: Bool = keychain.getOriginalFileName(key: keyFileNameOriginal)
+        var numberFileName: String = ""
+        var fileNameType = ""
+        let fileNameExt = (fileName as NSString).pathExtension.lowercased()
+
+        /// Original FileName
+        if useFileNameOriginal && !forcedNewFileName { return fileName }
+
+        if fileName.count > 8 {
+            let index = fileName.index(fileName.startIndex, offsetBy: 4)
+            numberFileName = String(fileName[index..<fileName.index(index, offsetBy: 4)])
+        } else {
+            numberFileName = keychain.incrementalNumber
+        }
+
+        let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "en_US_POSIX")
+        formatter.dateFormat = "yy-MM-dd HH-mm-ss"
+        let fileNameDate = formatter.string(from: fileDate)
+
+        switch fileType {
+        case .image:
+            fileNameType = NSLocalizedString("_photo_", comment: "")
+        case .video:
+            fileNameType = NSLocalizedString("_video_", comment: "")
+        case .audio:
+            fileNameType = NSLocalizedString("_audio_", comment: "")
+        case .unknown:
+            fileNameType = NSLocalizedString("_unknown_", comment: "")
+        default:
+            fileNameType = NSLocalizedString("_unknown_", comment: "")
+        }
+
+        if let keyFileName = keyFileName {
+            fileName = keychain.getFileNameMask(key: keyFileName)
+            if !fileName.isEmpty {
+                formatter.dateFormat = "dd"
+                let dayNumber = formatter.string(from: fileDate)
+                formatter.dateFormat = "MMM"
+                let month = formatter.string(from: fileDate)
+                formatter.dateFormat = "MM"
+                let monthNumber = formatter.string(from: fileDate)
+                formatter.dateFormat = "yyyy"
+                let year = formatter.string(from: fileDate)
+                formatter.dateFormat = "yy"
+                let yearNumber = formatter.string(from: fileDate)
+                formatter.dateFormat = "HH"
+                let hour24 = formatter.string(from: fileDate)
+                formatter.dateFormat = "hh"
+                let hour12 = formatter.string(from: fileDate)
+                formatter.dateFormat = "mm"
+                let minute = formatter.string(from: fileDate)
+                formatter.dateFormat = "ss"
+                let second = formatter.string(from: fileDate)
+                formatter.dateFormat = "a"
+                let ampm = formatter.string(from: fileDate)
+
+                // Replace string with date
+                fileName = fileName.replacingOccurrences(of: "DD", with: dayNumber)
+                fileName = fileName.replacingOccurrences(of: "MMM", with: month)
+                fileName = fileName.replacingOccurrences(of: "MM", with: monthNumber)
+                fileName = fileName.replacingOccurrences(of: "YYYY", with: year)
+                fileName = fileName.replacingOccurrences(of: "YY", with: yearNumber)
+                fileName = fileName.replacingOccurrences(of: "HH", with: hour24)
+                fileName = fileName.replacingOccurrences(of: "hh", with: hour12)
+                fileName = fileName.replacingOccurrences(of: "mm", with: minute)
+                fileName = fileName.replacingOccurrences(of: "ss", with: second)
+                fileName = fileName.replacingOccurrences(of: "ampm", with: ampm)
+
+                if addFileNameType {
+                    fileName = "\(fileNameType)\(fileName)\(numberFileName).\(fileNameExt)"
+                } else {
+                    fileName = "\(fileName)\(numberFileName).\(fileNameExt)"
+                }
+                fileName = fileName.trimmingCharacters(in: .whitespacesAndNewlines)
+                return fileName
+            }
+        }
+        if addFileNameType {
+            fileName = "\(fileNameType) \(fileNameDate) \(numberFileName).\(fileNameExt)"
+        } else {
+            fileName = "\(fileNameDate) \(numberFileName).\(fileNameExt)"
+        }
+        return fileName
+    }
+
     func createFileName(_ fileName: String, serverUrl: String, account: String) -> String {
         var resultFileName = fileName
         var exitLoop = false

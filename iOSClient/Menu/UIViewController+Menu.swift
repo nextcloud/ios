@@ -22,9 +22,10 @@
 //
 
 import Foundation
+import UIKit
+import MessageUI
 import SVGKit
 import NextcloudKit
-import UIKit
 
 extension UIViewController {
     fileprivate func handleProfileAction(_ action: NKHovercard.Action, for userId: String) {

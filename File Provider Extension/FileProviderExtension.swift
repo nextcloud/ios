@@ -22,6 +22,7 @@
 //
 
 import UIKit
+import UniformTypeIdentifiers
 import FileProvider
 import NextcloudKit
 import Alamofire

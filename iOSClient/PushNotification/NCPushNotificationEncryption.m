@@ -28,7 +28,6 @@
 #import <OpenSSL/OpenSSL.h>
 #import <CommonCrypto/CommonDigest.h>
 #import "NCEndToEndEncryption.h"
-#import "CCUtility.h"
 
 @implementation NCPushNotificationEncryption
 

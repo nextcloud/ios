@@ -23,7 +23,6 @@
 
 #import "CCManageAccount.h"
 #import "NCBridgeSwift.h"
-#import "CCUtility.h"
 
 #define actionSheetCancellaAccount 1
 

@@ -23,6 +23,7 @@
 //
 
 import Foundation
+import Photos
 import NextcloudKit
 
 /// A model that allows the user to configure the `auto upload settings for Nextcloud`

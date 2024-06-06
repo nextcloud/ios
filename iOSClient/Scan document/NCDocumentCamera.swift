@@ -22,6 +22,8 @@
 //
 
 import Foundation
+import UIKit
+import Photos
 import VisionKit
 
 class NCDocumentCamera: NSObject, VNDocumentCameraViewControllerDelegate {
@@ -46,13 +48,13 @@ class NCDocumentCamera: NSObject, VNDocumentCameraViewControllerDelegate {
     func documentCameraViewController(_ controller: VNDocumentCameraViewController, didFinishWith scan: VNDocumentCameraScan) {
 
         for pageNumber in 0..<scan.pageCount {
-            let fileName = CCUtility.createFileName("scan.png",
-                                                    fileDate: Date(),
-                                                    fileType: PHAssetMediaType.image,
-                                                    keyFileName: NCGlobal.shared.keyFileNameMask,
-                                                    keyFileNameType: NCGlobal.shared.keyFileNameType,
-                                                    keyFileNameOriginal: NCGlobal.shared.keyFileNameOriginal,
-                                                    forcedNewFileName: true)!
+            let fileName = utilityFileSystem.createFileName("scan.png",
+                                                            fileDate: Date(),
+                                                            fileType: PHAssetMediaType.image,
+                                                            keyFileName: NCGlobal.shared.keyFileNameMask,
+                                                            keyFileNameType: NCGlobal.shared.keyFileNameType,
+                                                            keyFileNameOriginal: NCGlobal.shared.keyFileNameOriginal,
+                                                            forcedNewFileName: true)
             let fileNamePath = utilityFileSystem.directoryScan + "/" + fileName
             let image = scan.imageOfPage(at: pageNumber)
             do {

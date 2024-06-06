@@ -23,7 +23,6 @@
 
 #import "NCEndToEndEncryption.h"
 #import "NCBridgeSwift.h"
-#import "CCUtility.h"
 
 #import <CommonCrypto/CommonDigest.h>
 #import <CommonCrypto/CommonKeyDerivation.h>

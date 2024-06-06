@@ -25,7 +25,7 @@
 import Foundation
 import NextcloudKit
 import SwiftUI
-import Combine
+import Photos
 
 /// A view model responsible for managing auto-upload file names.
 class NCAutoUploadFileNamesModel: ObservableObject, ViewOnAppearHandling {
@@ -110,11 +110,23 @@ class NCAutoUploadFileNamesModel: ObservableObject, ViewOnAppearHandling {
             // If the changed name is empty, set the filename mask to empty and generate a new filename
             if valueRenameTrimming.isEmpty {
                 keychain.setFileNameMask(key: NCGlobal.shared.keyFileNameAutoUploadMask, mask: "")
-                returnString = CCUtility.createFileName("IMG_0001.JPG", fileDate: dateExample, fileType: PHAssetMediaType.image, keyFileName: nil, keyFileNameType: NCGlobal.shared.keyFileNameAutoUploadType, keyFileNameOriginal: NCGlobal.shared.keyFileNameOriginalAutoUpload, forcedNewFileName: false)
+                returnString = NCUtilityFileSystem().createFileName("IMG_0001.JPG",
+                                                                    fileDate: dateExample,
+                                                                    fileType: PHAssetMediaType.image,
+                                                                    keyFileName: nil,
+                                                                    keyFileNameType: NCGlobal.shared.keyFileNameAutoUploadType,
+                                                                    keyFileNameOriginal: NCGlobal.shared.keyFileNameOriginalAutoUpload,
+                                                                    forcedNewFileName: false)
             } else {
                 // If there is a changed name, set the filename mask and generate a new filename
                 keychain.setFileNameMask(key: NCGlobal.shared.keyFileNameAutoUploadMask, mask: changedName)
-                returnString = CCUtility.createFileName("IMG_0001.JPG", fileDate: dateExample, fileType: PHAssetMediaType.image, keyFileName: NCGlobal.shared.keyFileNameAutoUploadMask, keyFileNameType: NCGlobal.shared.keyFileNameAutoUploadType, keyFileNameOriginal: NCGlobal.shared.keyFileNameOriginalAutoUpload, forcedNewFileName: false)
+                returnString = NCUtilityFileSystem().createFileName("IMG_0001.JPG",
+                                                                    fileDate: dateExample,
+                                                                    fileType: PHAssetMediaType.image,
+                                                                    keyFileName: NCGlobal.shared.keyFileNameAutoUploadMask,
+                                                                    keyFileNameType: NCGlobal.shared.keyFileNameAutoUploadType,
+                                                                    keyFileNameOriginal: NCGlobal.shared.keyFileNameOriginalAutoUpload,
+                                                                    forcedNewFileName: false)
             }
         }
         return returnString
