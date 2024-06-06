@@ -554,7 +554,6 @@
 		F768823C2C0DD231001CF441 /* NCKeychain.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76882132C0DD1E7001CF441 /* NCKeychain.swift */; };
 		F768823E2C0DD305001CF441 /* LazyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F768823D2C0DD304001CF441 /* LazyView.swift */; };
 		F76882402C0DD30B001CF441 /* ViewOnAppear.swift in Sources */ = {isa = PBXBuildFile; fileRef = F768823F2C0DD30B001CF441 /* ViewOnAppear.swift */; };
-		F76882432C0DD3B4001CF441 /* CCManageAccount.m in Sources */ = {isa = PBXBuildFile; fileRef = F76882422C0DD3B4001CF441 /* CCManageAccount.m */; };
 		F769453C22E9CFFF000A798A /* NCShareUserCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F769453B22E9CFFF000A798A /* NCShareUserCell.xib */; };
 		F769454022E9F077000A798A /* NCSharePaging.swift in Sources */ = {isa = PBXBuildFile; fileRef = F769453F22E9F077000A798A /* NCSharePaging.swift */; };
 		F769454622E9F1B0000A798A /* NCShareCommon.swift in Sources */ = {isa = PBXBuildFile; fileRef = F769454522E9F1B0000A798A /* NCShareCommon.swift */; };
@@ -746,6 +745,8 @@
 		F7AE00F5230D5F9E007ACF8A /* NCLoginWeb.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7AE00F4230D5F9E007ACF8A /* NCLoginWeb.swift */; };
 		F7AE00F8230E81CB007ACF8A /* NCBrowserWeb.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7AE00F7230E81CB007ACF8A /* NCBrowserWeb.swift */; };
 		F7AE00FA230E81EB007ACF8A /* NCBrowserWeb.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7AE00F9230E81EB007ACF8A /* NCBrowserWeb.storyboard */; };
+		F7AEEAA62C11DBAF00011412 /* NCManageAccountView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7AEEAA52C11DBAF00011412 /* NCManageAccountView.swift */; };
+		F7AEEAA82C11DBFD00011412 /* NCManageAccountModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7AEEAA72C11DBFD00011412 /* NCManageAccountModel.swift */; };
 		F7B398422A6A91D5007538D6 /* NCSectionHeaderMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = F7B398412A6A91D5007538D6 /* NCSectionHeaderMenu.xib */; };
 		F7B398432A6A91D5007538D6 /* NCSectionHeaderMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = F7B398412A6A91D5007538D6 /* NCSectionHeaderMenu.xib */; };
 		F7B6B70427C4E7FA00A7F6EB /* NCScan+CollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7B6B70327C4E7FA00A7F6EB /* NCScan+CollectionView.swift */; };
@@ -1380,8 +1381,6 @@
 		F76882212C0DD1E7001CF441 /* NCAcknowledgementsView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCAcknowledgementsView.swift; sourceTree = "<group>"; };
 		F768823D2C0DD304001CF441 /* LazyView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LazyView.swift; sourceTree = "<group>"; };
 		F768823F2C0DD30B001CF441 /* ViewOnAppear.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ViewOnAppear.swift; sourceTree = "<group>"; };
-		F76882412C0DD3B4001CF441 /* CCManageAccount.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCManageAccount.h; sourceTree = "<group>"; };
-		F76882422C0DD3B4001CF441 /* CCManageAccount.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCManageAccount.m; sourceTree = "<group>"; };
 		F769453B22E9CFFF000A798A /* NCShareUserCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = NCShareUserCell.xib; sourceTree = "<group>"; };
 		F769453F22E9F077000A798A /* NCSharePaging.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCSharePaging.swift; sourceTree = "<group>"; };
 		F769454522E9F1B0000A798A /* NCShareCommon.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCShareCommon.swift; sourceTree = "<group>"; };
@@ -1538,6 +1537,8 @@
 		F7AE00F4230D5F9E007ACF8A /* NCLoginWeb.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCLoginWeb.swift; sourceTree = "<group>"; };
 		F7AE00F7230E81CB007ACF8A /* NCBrowserWeb.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCBrowserWeb.swift; sourceTree = "<group>"; };
 		F7AE00F9230E81EB007ACF8A /* NCBrowserWeb.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = NCBrowserWeb.storyboard; sourceTree = "<group>"; };
+		F7AEEAA52C11DBAF00011412 /* NCManageAccountView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCManageAccountView.swift; sourceTree = "<group>"; };
+		F7AEEAA72C11DBFD00011412 /* NCManageAccountModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCManageAccountModel.swift; sourceTree = "<group>"; };
 		F7AF7632246BEDFE00B86E3C /* TOPasscodeViewController.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = TOPasscodeViewController.framework; path = Carthage/Build/iOS/TOPasscodeViewController.framework; sourceTree = "<group>"; };
 		F7B1076C25D3CF2800E72DE2 /* BackgroundTasks.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = BackgroundTasks.framework; path = System/Library/Frameworks/BackgroundTasks.framework; sourceTree = SDKROOT; };
 		F7B1A7761EBB3C8000BFB6D1 /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/Localizable.strings; sourceTree = "<group>"; };
@@ -2625,6 +2626,15 @@
 			path = BrowserWeb;
 			sourceTree = "<group>";
 		};
+		F7AEEAA92C11DC0600011412 /* Manage Account */ = {
+			isa = PBXGroup;
+			children = (
+				F7AEEAA52C11DBAF00011412 /* NCManageAccountView.swift */,
+				F7AEEAA72C11DBFD00011412 /* NCManageAccountModel.swift */,
+			);
+			path = "Manage Account";
+			sourceTree = "<group>";
+		};
 		F7BAAD951ED5A63D00B7EAD4 /* Data */ = {
 			isa = PBXGroup;
 			children = (
@@ -2783,11 +2793,10 @@
 		F7CB68942541670D0050EC94 /* More */ = {
 			isa = PBXGroup;
 			children = (
+				F7AEEAA92C11DC0600011412 /* Manage Account */,
 				F3BB46502A39EC2D00461F6E /* Cells */,
 				F7CB68992541676B0050EC94 /* NCMore.storyboard */,
 				F73F537E1E929C8500F8678D /* NCMore.swift */,
-				F76882412C0DD3B4001CF441 /* CCManageAccount.h */,
-				F76882422C0DD3B4001CF441 /* CCManageAccount.m */,
 			);
 			path = More;
 			sourceTree = "<group>";
@@ -4303,7 +4312,6 @@
 				F70BFC7420E0FA7D00C67599 /* NCUtility.swift in Sources */,
 				F79EDAA526B004980007D134 /* NCPlayer.swift in Sources */,
 				F7C1EEA525053A9C00866ACC /* NCDataSource.swift in Sources */,
-				F76882432C0DD3B4001CF441 /* CCManageAccount.m in Sources */,
 				F713FF002472764100214AF6 /* UIImage+animatedGIF.m in Sources */,
 				AFCE353527E4ED5900FEA6C2 /* DateFormatter+Extension.swift in Sources */,
 				F718C24E254D507B00C5C256 /* NCViewerMediaDetailView.swift in Sources */,
@@ -4325,6 +4333,7 @@
 				F769CA192966EA3C00039397 /* ComponentView.swift in Sources */,
 				F7C9B91D2B582F550064EA91 /* NCManageDatabase+SecurityGuard.swift in Sources */,
 				AF93474C27E34120002537EE /* NCUtility+Image.swift in Sources */,
+				F7AEEAA62C11DBAF00011412 /* NCManageAccountView.swift in Sources */,
 				F702F30125EE5D2C008F8E80 /* NYMnemonic.m in Sources */,
 				AF93474E27E3F212002537EE /* NCShareNewUserAddComment.swift in Sources */,
 				F7C30DFD291BD0B80017149B /* NCNetworkingE2EEDelete.swift in Sources */,
@@ -4375,6 +4384,7 @@
 				D5B6AA7827200C7200D49C24 /* NCActivityTableViewCell.swift in Sources */,
 				F745B253222D88AE00346520 /* NCLoginQRCode.swift in Sources */,
 				F769454822E9F20D000A798A /* NCShareNetworking.swift in Sources */,
+				F7AEEAA82C11DBFD00011412 /* NCManageAccountModel.swift in Sources */,
 				F749B64A297B0CBB00087535 /* NCManageDatabase+Share.swift in Sources */,
 				F7C9555521F0C5470024296E /* NCActivity.swift in Sources */,
 				F7725A60251F33BB00D125E0 /* NCFiles.swift in Sources */,

@@ -275,7 +275,6 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
     // MARK: - Action
 
     @objc func tapLabelQuotaExternalSite() {
-
         if !quotaMenu.isEmpty {
             let item = quotaMenu[0]
             if let browserWebVC = UIStoryboard(name: "NCBrowserWeb", bundle: nil).instantiateInitialViewController() as? NCBrowserWeb {
@@ -289,8 +288,9 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
     }
 
     @objc func tapImageLogoManageAccount() {
-        let controller = CCManageAccount()
-        self.navigationController?.pushViewController(controller, animated: true)
+        let manageAccountView = NCManageAccountView(model: NCManageAccountModel(controller: tabBarController as? NCMainTabBarController))
+        let manageAccountController = UIHostingController(rootView: manageAccountView)
+        navigationController?.pushViewController(manageAccountController, animated: true)
     }
 
     // MARK: -
@@ -337,7 +337,6 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
 
             if let account = tabAccount {
                 cell.avatar.image = utility.loadUserImage(for: account.user, displayName: account.displayName, userBaseUrl: appDelegate)
-
                 if account.alias.isEmpty {
                     cell.displayName?.text = account.displayName
                 } else {
@@ -431,11 +430,9 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
             }
         } else if item.url == "logout" {
             let alertController = UIAlertController(title: "", message: NSLocalizedString("_want_delete_", comment: ""), preferredStyle: .alert)
-
             let actionYes = UIAlertAction(title: NSLocalizedString("_yes_delete_", comment: ""), style: .default) { (_: UIAlertAction) in
-                let manageAccount = CCManageAccount()
-                manageAccount.delete(self.appDelegate.account)
-
+                // let manageAccount = CCManageAccount()
+                // manageAccount.delete(self.appDelegate.account)
                 self.appDelegate.openLogin(selector: NCGlobal.shared.introLogin, openLoginWeb: false)
             }
 
