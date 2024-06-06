@@ -39,33 +39,43 @@ struct NCManageAccountView: View {
                             Image(uiImage: avatar)
                                 .resizable()
                                 .scaledToFit()
-                                .frame(width: UIScreen.main.bounds.width)
+                                .frame(width: UIScreen.main.bounds.width, height: 75)
                                 .clipped()
-                            Spacer()
                             Text(model.getUserName(account: account))
                                 .font(.system(size: 16))
-                            Spacer()
                             if let message = status.statusMessage {
                                 Text(message)
                                     .font(.system(size: 10))
                             }
+                            HStack {
+                                Spacer()
+                                    .frame(width: 5)
+                                Text(NSLocalizedString("_alias_", comment: ""))
+                                    .font(.system(size: 17))
+                                    .fontWeight(.medium)
+                                Spacer()
+                                TextField(NSLocalizedString("_alias_", comment: ""), text: $model.alias)
+                                    .onSubmit {
+                                        model.submitChangedAlias(account: account)
+                                    }
+                                    .font(.system(size: 17))
+                                    .multilineTextAlignment(.trailing)
+                                Spacer()
+                                    .frame(width: 5)
+                            }
                             Spacer()
-                            TextField(NSLocalizedString("_alias_", comment: ""), text: $model.alias)
-                                .onSubmit {
-                                    model.submitChangedAlias(account: account)
-                                }
-                                .onChange(of: model.alias, perform: { _ in
-                                    model.submitChangedAlias(account: account)
-                                })
-                                .font(.system(size: 15))
-                                .multilineTextAlignment(.trailing)
                         }
                     }
                 }
             }
             .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
-            .frame(height: 100)
+            .frame(height: 400)
             .edgesIgnoringSafeArea(.all)
+            .onChange(of: model.indexActiveAccount) { index in
+                if let account = model.getTableAccount(account: model.accounts[index].account) {
+                    model.alias = account.alias
+                }
+            }
         }
         .navigationBarTitle(NSLocalizedString("_credentials_", comment: ""))
         .defaultViewModifier(model)

@@ -80,4 +80,8 @@ class NCManageAccountModel: ObservableObject, ViewOnAppearHandling {
     func submitChangedAlias(account: tableAccount) {
         NCManageDatabase.shared.setAccountAlias(account.account, alias: alias)
     }
+
+    func getTableAccount(account: String) -> tableAccount? {
+        return NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", account))
+    }
 }
