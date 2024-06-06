@@ -44,9 +44,13 @@ struct NCManageAccountView: View {
                             Text(model.getUserName(account: account))
                                 .font(.system(size: 16))
                             if let message = status.statusMessage {
+                                Spacer()
+                                    .frame(height: 10)
                                 Text(message)
                                     .font(.system(size: 10))
                             }
+                            Spacer()
+                                .frame(height: 30)
                             HStack {
                                 Spacer()
                                     .frame(width: 5)
@@ -63,6 +67,14 @@ struct NCManageAccountView: View {
                                 Spacer()
                                     .frame(width: 5)
                             }
+                            HStack {
+                                Spacer()
+                                    .frame(width: 5)
+                                Text(NSLocalizedString("_alias_footer_", comment: ""))
+                                    .font(.system(size: 10))
+                                    .foregroundColor(Color(UIColor.lightGray))
+                            }
+                            .background(Color.blue)
                             Spacer()
                         }
                     }
