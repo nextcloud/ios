@@ -37,19 +37,4 @@
 + (NSString *)createFileName:(NSString *)fileName fileDate:(NSDate *)fileDate fileType:(PHAssetMediaType)fileType keyFileName:(NSString *)keyFileName keyFileNameType:(NSString *)keyFileNameType keyFileNameOriginal:(NSString *)keyFileNameOriginal forcedNewFileName:(BOOL)forcedNewFileName;
 + (NSString *)getMimeType:(NSString *)fileNameView;
 
-// ===== Share Permissions =====
-
-+ (NSInteger)getPermissionsValueByCanEdit:(BOOL)canEdit andCanCreate:(BOOL)canCreate andCanChange:(BOOL)canChange andCanDelete:(BOOL)canDelete andCanShare:(BOOL)canShare andIsFolder:(BOOL) isFolder;
-+ (BOOL)isPermissionToCanCreate:(NSInteger) permissionValue;
-+ (BOOL)isPermissionToCanChange:(NSInteger) permissionValue;
-+ (BOOL)isPermissionToCanDelete:(NSInteger) permissionValue;
-+ (BOOL)isPermissionToCanShare:(NSInteger) permissionValue;
-+ (BOOL)isAnyPermissionToEdit:(NSInteger) permissionValue;
-+ (BOOL)isPermissionToRead:(NSInteger) permissionValue;
-+ (BOOL)isPermissionToReadCreateUpdate:(NSInteger) permissionValue;
-
-// ===== Third parts =====
-
-+ (NSDate *)getATime:(const char *)path;
-
 @end

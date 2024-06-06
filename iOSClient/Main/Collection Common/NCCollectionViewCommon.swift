@@ -89,7 +89,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        tabBarSelect = NCCollectionViewCommonSelectTabBar(tabBarController: tabBarController as? NCMainTabBarController, delegate: self)
+        tabBarSelect = NCCollectionViewCommonSelectTabBar(controller: tabBarController as? NCMainTabBarController, delegate: self)
         self.navigationController?.presentationController?.delegate = self
 
         // CollectionView & layout
@@ -1289,8 +1289,8 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
     }
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-
         var cell: NCCellProtocol & UICollectionViewCell
+        let permissions = NCPermissions()
 
         // LAYOUT LIST
         if layoutForView?.layout == NCGlobal.shared.layoutList {
@@ -1317,8 +1317,8 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         var a11yValues: [String] = []
 
         if metadataFolder != nil {
-            isShare = metadata.permissions.contains(NCGlobal.shared.permissionShared) && !metadataFolder!.permissions.contains(NCGlobal.shared.permissionShared)
-            isMounted = metadata.permissions.contains(NCGlobal.shared.permissionMounted) && !metadataFolder!.permissions.contains(NCGlobal.shared.permissionMounted)
+            isShare = metadata.permissions.contains(permissions.permissionShared) && !metadataFolder!.permissions.contains(permissions.permissionShared)
+            isMounted = metadata.permissions.contains(permissions.permissionMounted) && !metadataFolder!.permissions.contains(permissions.permissionMounted)
         }
 
         cell.fileSelectImage?.image = nil

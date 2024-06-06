@@ -289,9 +289,7 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
     }
 
     @objc func tapImageLogoManageAccount() {
-
         let controller = CCManageAccount()
-
         self.navigationController?.pushViewController(controller, animated: true)
     }
 
@@ -300,10 +298,8 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         if sections[indexPath.section].type == .account {
             return 75
-        } else if sections[indexPath.section].type == .moreApps {
-            return 50
         } else {
-            return NCGlobal.shared.heightCellSettings
+            return 50
         }
     }
 

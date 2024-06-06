@@ -305,13 +305,13 @@ extension NCLoginWeb: WKNavigationDelegate {
                 if window?.rootViewController is NCMainTabBarController {
                     self.dismiss(animated: true)
                 } else {
-                    if let mainTabBarController = UIStoryboard(name: "Main", bundle: nil).instantiateInitialViewController() as? NCMainTabBarController {
-                        mainTabBarController.modalPresentationStyle = .fullScreen
-                        mainTabBarController.view.alpha = 0
-                        window?.rootViewController = mainTabBarController
+                    if let controller = UIStoryboard(name: "Main", bundle: nil).instantiateInitialViewController() as? NCMainTabBarController {
+                        controller.modalPresentationStyle = .fullScreen
+                        controller.view.alpha = 0
+                        window?.rootViewController = controller
                         window?.makeKeyAndVisible()
                         UIView.animate(withDuration: 0.5) {
-                            mainTabBarController.view.alpha = 1
+                            controller.view.alpha = 1
                         }
                     }
                 }
