@@ -186,8 +186,7 @@ class NCManageDatabase: NSObject {
     // MARK: -
     // MARK: Utility Database
 
-    @objc func clearTable(_ table: Object.Type, account: String? = nil) {
-
+    func clearTable(_ table: Object.Type, account: String? = nil) {
         do {
             let realm = try Realm()
             try realm.write {
@@ -206,8 +205,7 @@ class NCManageDatabase: NSObject {
         }
     }
 
-    @objc func clearDatabase(account: String?, removeAccount: Bool) {
-
+    func clearDatabase(account: String?, removeAccount: Bool) {
         if removeAccount {
             self.clearTable(tableAccount.self, account: account)
         }

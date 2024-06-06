@@ -27,7 +27,7 @@ import XLForm
 
 // MARK: -
 
-@objc class NCCreateFormUploadDocuments: XLFormViewController, NCSelectDelegate, UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, NCCreateFormUploadConflictDelegate {
+class NCCreateFormUploadDocuments: XLFormViewController, NCSelectDelegate, UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, NCCreateFormUploadConflictDelegate {
 
     @IBOutlet weak var indicator: UIActivityIndicatorView!
     @IBOutlet weak var collectionView: UICollectionView!
