@@ -113,17 +113,6 @@ struct NCAutoUploadView: View {
                 }
                 .font(.system(size: 16))
         })
-        /// Auto Upload Full
-        Section(content: {
-            Toggle(NSLocalizedString("_autoupload_fullphotos_", comment: ""), isOn: $model.autoUploadFull)
-                .tint(Color(NCBrandColor.shared.brandElement))
-                .onChange(of: model.autoUploadFull) { newValue in
-                    model.handleAutoUploadFullChange(newValue: newValue)
-                }
-                .font(.system(size: 16))
-        }, footer: {
-            Text(NSLocalizedString("_autoupload_fullphotos_footer_", comment: ""))
-        })
         /// Auto Upload create subfolder
         Section(content: {
             Toggle(NSLocalizedString("_autoupload_create_subfolder_", comment: ""), isOn: $model.autoUploadCreateSubfolder)
@@ -153,11 +142,19 @@ struct NCAutoUploadView: View {
                     .font(.system(size: 16))
             }
         }, footer: {
+            Text(NSLocalizedString("_autoupload_filenamemask_footer_", comment: ""))
+        })
+        /// Auto Upload Full
+        Section(content: {
+            Toggle(NSLocalizedString("_autoupload_fullphotos_", comment: ""), isOn: $model.autoUploadFull)
+                .tint(Color(NCBrandColor.shared.brandElement))
+                .onChange(of: model.autoUploadFull) { newValue in
+                    model.handleAutoUploadFullChange(newValue: newValue)
+                }
+                .font(.system(size: 16))
+        }, footer: {
             Text(
-                NSLocalizedString("_autoupload_filenamemask_footer_", comment: "")
-            +
-                "\n \n"
-            )
+                NSLocalizedString("_autoupload_fullphotos_footer_", comment: "") + "\n \n")
         })
     }
 }
