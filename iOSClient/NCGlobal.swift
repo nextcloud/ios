@@ -24,7 +24,7 @@
 import UIKit
 
 class NCGlobal: NSObject {
-    @objc static let shared: NCGlobal = {
+    static let shared: NCGlobal = {
         let instance = NCGlobal()
         return instance
     }()
@@ -90,12 +90,12 @@ class NCGlobal: NSObject {
 
     // Directory on Group
     //
-    @objc let directoryProviderStorage              = "File Provider Storage"
-    @objc let appApplicationSupport                 = "Library/Application Support"
-    @objc let appCertificates                       = "Library/Application Support/Certificates"
-    @objc let appDatabaseNextcloud                  = "Library/Application Support/Nextcloud"
-    @objc let appScan                               = "Library/Application Support/Scan"
-    @objc let appUserData                           = "Library/Application Support/UserData"
+    let directoryProviderStorage                    = "File Provider Storage"
+    let appApplicationSupport                       = "Library/Application Support"
+    let appCertificates                             = "Library/Application Support/Certificates"
+    let appDatabaseNextcloud                        = "Library/Application Support/Nextcloud"
+    let appScan                                     = "Library/Application Support/Scan"
+    let appUserData                                 = "Library/Application Support/UserData"
 
     // Service
     //
@@ -131,7 +131,7 @@ class NCGlobal: NSObject {
 
     // Intro selector
     //
-    @objc let introLogin: Int                       = 0
+    let introLogin: Int                             = 0
     let introSignup: Int                            = 1
 
     // Avatar & Preview size
@@ -216,82 +216,82 @@ class NCGlobal: NSObject {
 
     // ContentPresenter
     //
-    @objc let dismissAfterSecond: TimeInterval      = 4
-    @objc let dismissAfterSecondLong: TimeInterval  = 10
+    let dismissAfterSecond: TimeInterval        = 4
+    let dismissAfterSecondLong: TimeInterval    = 10
 
     // Error
     //
-    @objc let errorRequestExplicityCancelled: Int   = 15
-    @objc let errorNotModified: Int                 = 304
-    @objc let errorBadRequest: Int                  = 400
-    @objc let errorUnauthorized401: Int             = 401
-    @objc let errorForbidden: Int                   = 403
-    @objc let errorResourceNotFound: Int            = 404
-    @objc let errorMethodNotSupported: Int          = 405
-    @objc let errorConflict: Int                    = 409
-    @objc let errorPreconditionFailed: Int          = 412
-    @objc let errorUnsupportedMediaType: Int        = 415
-    @objc let errorInternalServerError: Int         = 500
-    @objc let errorQuota: Int                       = 507
-    @objc let errorUnauthorized997: Int             = 997
-    @objc let errorExplicitlyCancelled: Int         = -999
-    @objc let errorConnectionLost: Int              = -1005
-    @objc let errorNetworkNotAvailable: Int         = -1009
-    @objc let errorBadServerResponse: Int           = -1011
-    @objc let errorInternalError: Int               = -99999
-    @objc let errorFileNotSaved: Int                = -99998
-    @objc let errorOffline: Int                     = -99997
-    @objc let errorCharactersForbidden: Int         = -99996
-    @objc let errorCreationFile: Int                = -99995
-    @objc let errorReadFile: Int                    = -99994
-    @objc let errorUnauthorizedFilesPasscode: Int   = -99993
-    @objc let errorDisableFilesApp: Int             = -99992
-    @objc let errorUnexpectedResponseFromDB: Int    = -99991
+    let errorRequestExplicityCancelled: Int     = 15
+    let errorNotModified: Int                   = 304
+    let errorBadRequest: Int                    = 400
+    let errorUnauthorized401: Int               = 401
+    let errorForbidden: Int                     = 403
+    let errorResourceNotFound: Int              = 404
+    let errorMethodNotSupported: Int            = 405
+    let errorConflict: Int                      = 409
+    let errorPreconditionFailed: Int            = 412
+    let errorUnsupportedMediaType: Int          = 415
+    let errorInternalServerError: Int           = 500
+    let errorQuota: Int                         = 507
+    let errorUnauthorized997: Int               = 997
+    let errorExplicitlyCancelled: Int           = -999
+    let errorConnectionLost: Int                = -1005
+    let errorNetworkNotAvailable: Int           = -1009
+    let errorBadServerResponse: Int             = -1011
+    let errorInternalError: Int                 = -99999
+    let errorFileNotSaved: Int                  = -99998
+    let errorOffline: Int                       = -99997
+    let errorCharactersForbidden: Int           = -99996
+    let errorCreationFile: Int                  = -99995
+    let errorReadFile: Int                      = -99994
+    let errorUnauthorizedFilesPasscode: Int     = -99993
+    let errorDisableFilesApp: Int               = -99992
+    let errorUnexpectedResponseFromDB: Int      = -99991
     // E2EE
-    @objc let errorE2EENotEnabled: Int              = -98000
-    @objc let errorE2EEVersion: Int                 = -98001
-    @objc let errorE2EEKeyChecksums: Int            = -98002
-    @objc let errorE2EEKeyEncodeMetadata: Int       = -98003
-    @objc let errorE2EEKeyDecodeMetadata: Int       = -98004
-    @objc let errorE2EEKeyVerifySignature: Int      = -98005
-    @objc let errorE2EEKeyCiphertext: Int           = -98006
-    @objc let errorE2EEKeyFiledropCiphertext: Int   = -98007
-    @objc let errorE2EEJSon: Int                    = -98008
-    @objc let errorE2EELock: Int                    = -98009
-    @objc let errorE2EEEncryptFile: Int             = -98010
-    @objc let errorE2EEEncryptPayloadFile: Int      = -98011
-    @objc let errorE2EECounter: Int                 = -98012
-    @objc let errorE2EEGenerateKey: Int             = -98013
-    @objc let errorE2EEEncodedKey: Int              = -98014
-    @objc let errorE2EENoUserFound: Int             = -98015
-    @objc let errorE2EEUploadInProgress: Int        = -98016
+    let errorE2EENotEnabled: Int                = -98000
+    let errorE2EEVersion: Int                   = -98001
+    let errorE2EEKeyChecksums: Int              = -98002
+    let errorE2EEKeyEncodeMetadata: Int         = -98003
+    let errorE2EEKeyDecodeMetadata: Int         = -98004
+    let errorE2EEKeyVerifySignature: Int        = -98005
+    let errorE2EEKeyCiphertext: Int             = -98006
+    let errorE2EEKeyFiledropCiphertext: Int     = -98007
+    let errorE2EEJSon: Int                      = -98008
+    let errorE2EELock: Int                      = -98009
+    let errorE2EEEncryptFile: Int               = -98010
+    let errorE2EEEncryptPayloadFile: Int        = -98011
+    let errorE2EECounter: Int                   = -98012
+    let errorE2EEGenerateKey: Int               = -98013
+    let errorE2EEEncodedKey: Int                = -98014
+    let errorE2EENoUserFound: Int               = -98015
+    let errorE2EEUploadInProgress: Int          = -98016
 
     // Filename Mask and Type
     //
-    let keyFileNameMask                             = "fileNameMask"
-    let keyFileNameType                             = "fileNameType"
-    let keyFileNameAutoUploadMask                   = "fileNameAutoUploadMask"
-    let keyFileNameAutoUploadType                   = "fileNameAutoUploadType"
-    let keyFileNameOriginal                         = "fileNameOriginal"
-    let keyFileNameOriginalAutoUpload               = "fileNameOriginalAutoUpload"
+    let keyFileNameMask                         = "fileNameMask"
+    let keyFileNameType                         = "fileNameType"
+    let keyFileNameAutoUploadMask               = "fileNameAutoUploadMask"
+    let keyFileNameAutoUploadType               = "fileNameAutoUploadType"
+    let keyFileNameOriginal                     = "fileNameOriginal"
+    let keyFileNameOriginalAutoUpload           = "fileNameOriginalAutoUpload"
 
     // Selector
     //
-    let selectorDownloadFile                        = "downloadFile"
-    let selectorReadFile                            = "readFile"
-    let selectorListingFavorite                     = "listingFavorite"
-    let selectorLoadFileView                        = "loadFileView"
-    let selectorLoadFileQuickLook                   = "loadFileQuickLook"
-    let selectorOpenIn                              = "openIn"
-    let selectorUploadAutoUpload                    = "uploadAutoUpload"
-    let selectorUploadAutoUploadAll                 = "uploadAutoUploadAll"
-    let selectorUploadFile                          = "uploadFile"
-    let selectorUploadFileNODelete                  = "UploadFileNODelete"
-    let selectorUploadFileShareExtension            = "uploadFileShareExtension"
-    let selectorSaveAlbum                           = "saveAlbum"
-    let selectorSaveAsScan                          = "saveAsScan"
-    let selectorOpenDetail                          = "openDetail"
-    let selectorSynchronizationOffline              = "synchronizationOffline"
+    let selectorDownloadFile                    = "downloadFile"
+    let selectorReadFile                        = "readFile"
+    let selectorListingFavorite                 = "listingFavorite"
+    let selectorLoadFileView                    = "loadFileView"
+    let selectorLoadFileQuickLook               = "loadFileQuickLook"
+    let selectorOpenIn                          = "openIn"
+    let selectorUploadAutoUpload                = "uploadAutoUpload"
+    let selectorUploadAutoUploadAll             = "uploadAutoUploadAll"
+    let selectorUploadFile                      = "uploadFile"
+    let selectorUploadFileNODelete              = "UploadFileNODelete"
+    let selectorUploadFileShareExtension        = "uploadFileShareExtension"
+    let selectorSaveAlbum                       = "saveAlbum"
+    let selectorSaveAsScan                      = "saveAsScan"
+    let selectorOpenDetail                      = "openDetail"
+    let selectorSynchronizationOffline          = "synchronizationOffline"
 
     // Metadata : Status
     //
@@ -300,15 +300,15 @@ class NCGlobal: NSObject {
     // ± 2 downloading/uploading
     // ± 3 error
     //
-    let metadataStatusNormal: Int                   = 0
+    let metadataStatusNormal: Int               = 0
 
-    let metadataStatusWaitDownload: Int             = -1
-    let metadataStatusDownloading: Int              = -2
-    let metadataStatusDownloadError: Int            = -3
+    let metadataStatusWaitDownload: Int         = -1
+    let metadataStatusDownloading: Int          = -2
+    let metadataStatusDownloadError: Int        = -3
 
-    let metadataStatusWaitUpload: Int               = 1
-    let metadataStatusUploading: Int                = 2
-    let metadataStatusUploadError: Int              = 3
+    let metadataStatusWaitUpload: Int           = 1
+    let metadataStatusUploading: Int            = 2
+    let metadataStatusUploadError: Int          = 3
 
     //  Hidden files included in the read
     //
@@ -316,13 +316,13 @@ class NCGlobal: NSObject {
 
     // Auto upload subfolder granularity
     //
-    let subfolderGranularityDaily                   = 2
-    let subfolderGranularityMonthly                 = 1
-    let subfolderGranularityYearly                  = 0
+    let subfolderGranularityDaily               = 2
+    let subfolderGranularityMonthly             = 1
+    let subfolderGranularityYearly              = 0
 
     // Notification Center
     //
-    @objc let notificationCenterChangeUser                      = "changeUser"
+    let notificationCenterChangeUser                            = "changeUser"
     let notificationCenterChangeTheming                         = "changeTheming"
     let notificationCenterRichdocumentGrabFocus                 = "richdocumentGrabFocus"
     let notificationCenterReloadDataNCShare                     = "reloadDataNCShare"
@@ -412,7 +412,7 @@ class NCGlobal: NSObject {
     // CAPABILITIES
     //
     var capabilityServerVersionMajor: Int                       = 0
-    @objc var capabilityServerVersion: String                   = ""
+    var capabilityServerVersion: String                         = ""
 
     var capabilityFileSharingApiEnabled: Bool                   = false
     var capabilityFileSharingPubPasswdEnforced: Bool            = false
@@ -427,11 +427,11 @@ class NCGlobal: NSObject {
     var capabilityThemingColor: String                          = ""
     var capabilityThemingColorElement: String                   = ""
     var capabilityThemingColorText: String                      = ""
-    @objc var capabilityThemingName: String                     = ""
-    @objc var capabilityThemingSlogan: String                   = ""
+    var capabilityThemingName: String                           = ""
+    var capabilityThemingSlogan: String                         = ""
 
-    @objc var capabilityE2EEEnabled: Bool                       = false
-    @objc var capabilityE2EEApiVersion: String                  = ""
+    var capabilityE2EEEnabled: Bool                             = false
+    var capabilityE2EEApiVersion: String                        = ""
 
     var capabilityRichDocumentsEnabled: Bool                    = false
     var capabilityRichDocumentsMimetypes = ThreadSafeArray<String>()
@@ -443,7 +443,7 @@ class NCGlobal: NSObject {
     var capabilityFilesComments: Bool                           = false // NC 20
     var capabilityFilesBigfilechunking: Bool                    = false
 
-    @objc var capabilityUserStatusEnabled: Bool                 = false
+    var capabilityUserStatusEnabled: Bool                       = false
     var capabilityExternalSites: Bool                           = false
     var capabilityGroupfoldersEnabled: Bool                     = false // NC27
     var capabilityAssistantEnabled: Bool                        = false // NC28

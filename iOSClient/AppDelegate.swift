@@ -33,11 +33,11 @@ import EasyTipView
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterDelegate, NCUserBaseUrl {
 
-    @objc var account: String = ""
-    @objc var urlBase: String = ""
-    @objc var user: String = ""
-    @objc var userId: String = ""
-    @objc var password: String = ""
+    var account: String = ""
+    var urlBase: String = ""
+    var user: String = ""
+    var userId: String = ""
+    var password: String = ""
 
     var tipView: EasyTipView?
     var backgroundSessionCompletionHandler: (() -> Void)?
@@ -340,7 +340,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
     // MARK: - Login
 
-    @objc func openLogin(selector: Int, openLoginWeb: Bool, windowForRootViewController: UIWindow? = nil) {
+    func openLogin(selector: Int, openLoginWeb: Bool, windowForRootViewController: UIWindow? = nil) {
         func showLoginViewController(_ viewController: UIViewController?) {
             guard let viewController else { return }
             let navigationController = NCLoginNavigationController(rootViewController: viewController)
@@ -408,7 +408,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
     // MARK: - Error Networking
 
-    @objc func startTimerErrorNetworking(scene: UIScene) {
+    func startTimerErrorNetworking(scene: UIScene) {
         timerErrorNetworkingDisabled = false
         timerErrorNetworking = Timer.scheduledTimer(timeInterval: 3, target: self, selector: #selector(checkErrorNetworking(_:)), userInfo: nil, repeats: true)
     }
@@ -457,7 +457,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
     // MARK: - Account
 
-    @objc func changeAccount(_ account: String, userProfile: NKUserProfile?) {
+    func changeAccount(_ account: String, userProfile: NKUserProfile?) {
 
         NCNetworking.shared.cancelAllQueue()
         NCNetworking.shared.cancelDataTask()
@@ -500,7 +500,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterChangeUser)
     }
 
-    @objc func deleteAccount(_ account: String, wipe: Bool) {
+    func deleteAccount(_ account: String, wipe: Bool) {
 
         UIApplication.shared.allSceneSessionDestructionExceptFirst()
 
@@ -566,7 +566,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
     // MARK: - Reset Application
 
-    @objc func resetApplication() {
+    func resetApplication() {
 
         let utilityFileSystem = NCUtilityFileSystem()
 
