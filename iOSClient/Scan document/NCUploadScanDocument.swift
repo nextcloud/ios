@@ -30,7 +30,7 @@ import PDFKit
 
 class NCHostingUploadScanDocumentView: NSObject {
 
-    @objc func makeShipDetailsUI(images: [UIImage], userBaseUrl: NCUserBaseUrl, serverUrl: String) -> UIViewController {
+    func makeShipDetailsUI(images: [UIImage], userBaseUrl: NCUserBaseUrl, serverUrl: String) -> UIViewController {
 
         let uploadScanDocument = NCUploadScanDocument(images: images, userBaseUrl: userBaseUrl, serverUrl: serverUrl)
         let details = UploadScanDocumentView(uploadScanDocument: uploadScanDocument)

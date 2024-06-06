@@ -26,8 +26,8 @@ import LRUCache
 import NextcloudKit
 import RealmSwift
 
-@objc class NCImageCache: NSObject {
-    @objc public static let shared: NCImageCache = {
+class NCImageCache: NSObject {
+    public static let shared: NCImageCache = {
         let instance = NCImageCache()
         return instance
     }()
@@ -70,7 +70,7 @@ import RealmSwift
 
     override private init() {}
 
-    @objc func createMediaCache(account: String, withCacheSize: Bool) {
+    func createMediaCache(account: String, withCacheSize: Bool) {
         if createMediaCacheInProgress {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] ThumbnailLRUCache image process already in progress")
             return

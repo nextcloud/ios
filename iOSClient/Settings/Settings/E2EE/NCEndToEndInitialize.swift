@@ -25,12 +25,10 @@ import UIKit
 import NextcloudKit
 
 @objc protocol NCEndToEndInitializeDelegate {
-
     func endToEndInitializeSuccess(metadata: tableMetadata?)
 }
 
 class NCEndToEndInitialize: NSObject {
-
     @objc weak var delegate: NCEndToEndInitializeDelegate?
     let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
     let utilityFileSystem = NCUtilityFileSystem()

@@ -40,7 +40,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
     let utilityFileSystem = NCUtilityFileSystem()
     let utility = NCUtility()
 
-    @objc enum selectType: Int {
+    enum selectType: Int {
         case select
         case selectCreateFolder
         case copyMove
@@ -48,14 +48,14 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
     }
 
     // ------ external settings ------------------------------------
-    @objc weak var delegate: NCSelectDelegate?
-    @objc var typeOfCommandView: selectType = .select
+    weak var delegate: NCSelectDelegate?
+    var typeOfCommandView: selectType = .select
 
-    @objc var includeDirectoryE2EEncryption = false
-    @objc var includeImages = false
-    @objc var enableSelectFile = false
-    @objc var type = ""
-    @objc var items: [tableMetadata] = []
+    var includeDirectoryE2EEncryption = false
+    var includeImages = false
+    var enableSelectFile = false
+    var type = ""
+    var items: [tableMetadata] = []
 
     var titleCurrentFolder = NCBrandOptions.shared.brand
     var serverUrl = ""
