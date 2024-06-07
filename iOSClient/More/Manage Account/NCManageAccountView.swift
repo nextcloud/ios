@@ -52,6 +52,7 @@ struct NCManageAccountView: View {
                         }
                         Spacer()
                             .frame(height: 30)
+
                         HStack {
                             Text(NSLocalizedString("_alias_", comment: ""))
                                 .font(.system(size: 17))
@@ -63,17 +64,19 @@ struct NCManageAccountView: View {
                                 }
                                 .font(.system(size: 16))
                                 .multilineTextAlignment(.trailing)
-                            Spacer()
-                                .frame(width: 5)
-
                         }
+                        .padding(EdgeInsets(top: 0, leading: 15, bottom: 0, trailing: 15))
+
                         Text(NSLocalizedString("_alias_footer_", comment: ""))
+                            .padding(EdgeInsets(top: 0, leading: 15, bottom: 0, trailing: 15))
                             .frame(maxWidth: .infinity, alignment: .leading)
                             .font(.system(size: 12))
                             .foregroundColor(Color(UIColor.lightGray))
+                        
                         Spacer()
                         ///
                         Divider()
+                            .padding(EdgeInsets(top: 0, leading: 15, bottom: 0, trailing: 0))
                         ///
                         Button(action: {
                             showServerCertificate.toggle()
@@ -89,13 +92,14 @@ struct NCManageAccountView: View {
                             }
                             .font(.system(size: 14))
                         })
+                        .padding(EdgeInsets(top: 0, leading: 15, bottom: 0, trailing: 0))
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .tint(Color(NCBrandColor.shared.textColor))
                         .sheet(isPresented: $showServerCertificate) {
                         }
                         ///
                         Divider()
-
+                            .padding(EdgeInsets(top: 0, leading: 15, bottom: 0, trailing: 0))
                         ///
                         Button(action: {
                             showPushCertificate.toggle()
@@ -112,6 +116,7 @@ struct NCManageAccountView: View {
                             .multilineTextAlignment(.leading)
                             .font(.system(size: 14))
                         })
+                        .padding(EdgeInsets(top: 0, leading: 15, bottom: 0, trailing: 0))
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .tint(Color(NCBrandColor.shared.textColor))
                         .sheet(isPresented: $showPushCertificate) {
@@ -120,6 +125,7 @@ struct NCManageAccountView: View {
                     }
                 }
             }
+            .listRowInsets(EdgeInsets(top: 10, leading: 0, bottom: 10, trailing: 0))
             .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
             .frame(height: 300)
             .onChange(of: model.indexActiveAccount) { index in
