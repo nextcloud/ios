@@ -25,6 +25,7 @@ import SwiftUI
 
 struct NCManageAccountView: View {
     @ObservedObject var model: NCManageAccountModel
+    @State private var showUserStatus = false
     @State private var showServerCertificate = false
     @State private var showPushCertificate = false
 
@@ -72,11 +73,37 @@ struct NCManageAccountView: View {
                             .padding(EdgeInsets(top: 1, leading: 15, bottom: 0, trailing: 15))
                             .frame(maxWidth: .infinity, alignment: .leading)
                             .font(.system(size: 12))
-                            .foregroundColor(Color(UIColor.lightGray))
+                            .foregroundStyle(Color(UIColor.lightGray))
                         ///
                         Divider()
                             .padding(EdgeInsets(top: 5, leading: 15, bottom: 5, trailing: 5))
-                        /// Certificates
+                        /// User Status
+                        Button(action: {
+                            showUserStatus.toggle()
+                        }, label: {
+                            HStack {
+                                Image(systemName: "moon.fill")
+                                    .resizable()
+                                    .scaledToFit()
+                                    .font(Font.system(.body).weight(.light))
+                                    .frame(width: 25, height: 25)
+                                    .foregroundStyle(Color(NCBrandColor.shared.iconImageColor))
+                                Text(NSLocalizedString("_set_user_status_", comment: ""))
+                                    .lineLimit(1)
+                                    .truncationMode(.middle)
+                                    .foregroundStyle(Color(NCBrandColor.shared.textColor))
+                                    .padding(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 15))
+                            }
+                            .font(.system(size: 14))
+                        })
+                        .padding(EdgeInsets(top: 0, leading: 15, bottom: 0, trailing: 0))
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .sheet(isPresented: $showUserStatus) {
+                        }
+                        ///
+                        Divider()
+                            .padding(EdgeInsets(top: 5, leading: 15, bottom: 5, trailing: 5))
+                        /// Certificate server
                         Button(action: {
                             showServerCertificate.toggle()
                         }, label: {
@@ -86,23 +113,23 @@ struct NCManageAccountView: View {
                                     .scaledToFit()
                                     .font(Font.system(.body).weight(.light))
                                     .frame(width: 25, height: 25)
-                                    .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
+                                    .foregroundStyle(Color(NCBrandColor.shared.iconImageColor))
                                 Text(NSLocalizedString("_certificate_details_", comment: ""))
                                     .lineLimit(1)
                                     .truncationMode(.middle)
+                                    .foregroundStyle(Color(NCBrandColor.shared.textColor))
                                     .padding(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 15))
                             }
                             .font(.system(size: 14))
                         })
                         .padding(EdgeInsets(top: 0, leading: 15, bottom: 0, trailing: 0))
                         .frame(maxWidth: .infinity, alignment: .leading)
-                        .tint(Color(NCBrandColor.shared.textColor))
                         .sheet(isPresented: $showServerCertificate) {
                         }
                         ///
                         Divider()
                             .padding(EdgeInsets(top: 5, leading: 15, bottom: 5, trailing: 0))
-                        ///
+                        /// Certificate push
                         Button(action: {
                             showPushCertificate.toggle()
                         }, label: {
@@ -112,26 +139,49 @@ struct NCManageAccountView: View {
                                     .scaledToFit()
                                     .font(Font.system(.body).weight(.light))
                                     .frame(width: 25, height: 25)
-                                    .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
+                                    .foregroundStyle(Color(NCBrandColor.shared.iconImageColor))
                                 Text(NSLocalizedString("_certificate_pn_details_", comment: ""))
                                     .lineLimit(1)
                                     .truncationMode(.middle)
+                                    .foregroundStyle(Color(NCBrandColor.shared.textColor))
                                     .padding(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 15))
                             }
                             .font(.system(size: 14))
                         })
                         .padding(EdgeInsets(top: 0, leading: 15, bottom: 0, trailing: 0))
                         .frame(maxWidth: .infinity, alignment: .leading)
-                        .tint(Color(NCBrandColor.shared.textColor))
                         .sheet(isPresented: $showPushCertificate) {
                         }
-                        Spacer()
+                        ///
+                        Divider()
+                            .padding(EdgeInsets(top: 5, leading: 15, bottom: 5, trailing: 0))
+                        /// Delete account
+                        Button(action: {
+
+                        }, label: {
+                        HStack {
+                            Image(systemName: "trash")
+                                .resizable()
+                                .scaledToFit()
+                                .font(Font.system(.body).weight(.light))
+                                .frame(width: 25, height: 25)
+                                .foregroundStyle(.red)
+                            Text(NSLocalizedString("_remove_local_account_", comment: ""))
+                                .lineLimit(1)
+                                .truncationMode(.middle)
+                                .foregroundStyle(.red)
+                                .padding(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 15))
+                        }
+                        .font(.system(size: 14))
+                        })
+                        .padding(EdgeInsets(top: 0, leading: 15, bottom: 0, trailing: 0))
+                        .frame(maxWidth: .infinity, alignment: .leading)
                     }
                 }
             }
             .listRowInsets(EdgeInsets(top: 10, leading: 0, bottom: 10, trailing: 0))
             .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
-            .frame(height: 500)
+            .frame(height: 410)
             .onChange(of: model.indexActiveAccount) { index in
                 if let account = model.getTableAccount(account: model.accounts[index].account) {
                     model.alias = account.alias
