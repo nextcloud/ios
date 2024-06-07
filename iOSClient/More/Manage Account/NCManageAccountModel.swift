@@ -40,6 +40,9 @@ class NCManageAccountModel: ObservableObject, ViewOnAppearHandling {
     /// Initialization code to set up the ViewModel with the active account
     init(controller: NCMainTabBarController?) {
         self.controller = controller
+        if ProcessInfo.processInfo.environment["XCODE_RUNNING_FOR_PREVIEWS"] == "1" {
+            NCManageDatabase.shared.previewCreateDB()
+        }
         onViewAppear()
     }
 
