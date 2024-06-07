@@ -78,7 +78,7 @@ struct NCManageAccountView: View {
                                 .foregroundStyle(Color(UIColor.lightGray))
                             ///
                             Divider()
-                                .padding(EdgeInsets(top: 5, leading: 20, bottom: 5, trailing: 0))
+                                .padding(EdgeInsets(top: 5, leading: 50, bottom: 5, trailing: 0))
                             /// User Status
                             Button(action: {
                                 showUserStatus.toggle()
@@ -104,7 +104,7 @@ struct NCManageAccountView: View {
                             }
                             ///
                             Divider()
-                                .padding(EdgeInsets(top: 5, leading: 20, bottom: 5, trailing: 0))
+                                .padding(EdgeInsets(top: 5, leading: 50, bottom: 5, trailing: 0))
                             /// Certificate server
                             Button(action: {
                                 showServerCertificate.toggle()
@@ -130,7 +130,7 @@ struct NCManageAccountView: View {
                             }
                             ///
                             Divider()
-                                .padding(EdgeInsets(top: 5, leading: 20, bottom: 5, trailing: 0))
+                                .padding(EdgeInsets(top: 5, leading: 50, bottom: 5, trailing: 0))
                             /// Certificate push
                             Button(action: {
                                 showPushCertificate.toggle()
@@ -156,7 +156,7 @@ struct NCManageAccountView: View {
                             }
                             ///
                             Divider()
-                                .padding(EdgeInsets(top: 5, leading: 20, bottom: 5, trailing: 0))
+                                .padding(EdgeInsets(top: 5, leading: 50, bottom: 5, trailing: 0))
                             /// Delete account
                             Button(action: {
 
@@ -210,6 +210,12 @@ struct NCManageAccountView: View {
                     }
                     .font(.system(size: 14))
                 })
+                Toggle(NSLocalizedString("_settings_account_request_", comment: ""), isOn: $model.accountRequest)
+                    .font(.system(size: 16))
+                    .tint(Color(NCBrandColor.shared.brandElement))
+                    .onChange(of: model.accountRequest, perform: { _ in
+                        model.updateAccountRequest()
+                    })
             })
         }
         .navigationBarTitle(NSLocalizedString("_credentials_", comment: ""))

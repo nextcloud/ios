@@ -36,6 +36,8 @@ class NCManageAccountModel: ObservableObject, ViewOnAppearHandling {
     @Published var indexActiveAccount: Int = 0
     ///
     @Published var alias: String = ""
+    ///
+    @Published var accountRequest: Bool = false
 
     /// Initialization code to set up the ViewModel with the active account
     init(controller: NCMainTabBarController?) {
@@ -86,5 +88,10 @@ class NCManageAccountModel: ObservableObject, ViewOnAppearHandling {
 
     func getTableAccount(account: String) -> tableAccount? {
         return NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", account))
+    }
+
+    /// 
+    func updateAccountRequest() {
+        NCKeychain().accountRequest = accountRequest
     }
 }
