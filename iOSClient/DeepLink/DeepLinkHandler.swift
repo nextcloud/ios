@@ -21,19 +21,11 @@ enum ControllerConstants {
     static let settingIdentifire = "NCSettings"
 }
 class DeepLinkHandler {
-    private var appDelegate: AppDelegate? {
-        return (UIApplication.shared.delegate as? AppDelegate)
-    }
-    private var mainTabBarController: NCMainTabBarController? {
-        guard let appDelegate, !appDelegate.account.isEmpty else { return nil }
-        return appDelegate.window?.rootViewController as? NCMainTabBarController
-    }
     
-    func parseDeepLink(_ url: URL) -> Bool {
-        guard let action = url.host, let deepLink = DeepLink(rawValue: action) else { return false }
+    func parseDeepLink(_ url: URL, mainTabBarController: NCMainTabBarController) {
+        guard let action = url.host, let deepLink = DeepLink(rawValue: action) else { return }
         let params = getQueryParamsFromUrl(url: url)
-        handleDeepLink(deepLink, params: params)
-        return true
+        handleDeepLink(deepLink, mainTabBarController: mainTabBarController, params: params)
     }
     
     func getQueryParamsFromUrl(url: URL) -> [String: Any]? {
@@ -45,67 +37,69 @@ class DeepLinkHandler {
         }
     }
     
-    func handleDeepLink(_ deepLink: DeepLink, params:[String: Any]? = nil) {
+    func handleDeepLink(_ deepLink: DeepLink, mainTabBarController: NCMainTabBarController, params:[String: Any]? = nil) {
         switch deepLink {
         case .openFiles:
-            navigateTo(index: ControllerConstants.filesIndex)
+            navigateTo(index: ControllerConstants.filesIndex, mainTabBarController: mainTabBarController)
         case .openFavorites:
-            navigateTo(index: ControllerConstants.favouriteIndex)
+            navigateTo(index: ControllerConstants.favouriteIndex, mainTabBarController: mainTabBarController)
         case .openMedia:
-            navigateTo(index: ControllerConstants.mediaIndex)
+            navigateTo(index: ControllerConstants.mediaIndex, mainTabBarController: mainTabBarController)
         case .openShared:
-            navigateToMore(withSegue: ControllerConstants.shares)
+            navigateToMore(withSegue: ControllerConstants.shares, mainTabBarController: mainTabBarController)
         case .openOffline:
-            navigateToMore(withSegue: ControllerConstants.offline)
+            navigateToMore(withSegue: ControllerConstants.offline, mainTabBarController: mainTabBarController)
         case .openNotifications:
-            navigateToNotification()
+            navigateToNotification(mainTabBarController: mainTabBarController)
         case .openDeleted:
-            navigateToMore(withSegue: ControllerConstants.delete)
+            navigateToMore(withSegue: ControllerConstants.delete, mainTabBarController: mainTabBarController)
         case .openSettings:
-            navigateToMore(withSegue: ControllerConstants.settings)
+            navigateToMore(withSegue: ControllerConstants.settings, mainTabBarController: mainTabBarController)
         case .openAutoUpload:
-            navigateToAutoUpload()
+            navigateToAutoUpload(mainTabBarController: mainTabBarController)
         case .openUrl:
             openUrl(params: params)
         case .createNew:
-            navigateToCreateNew()
+            navigateToCreateNew(mainTabBarController: mainTabBarController)
         case .checkAppUpdate:
             navigateAppUpdate()
         }
     }
     
-    private func navigateTo(index: Int) {
-        guard let mainTabBarController  else { return }
+    private func navigateTo(index: Int,mainTabBarController: NCMainTabBarController) {
         mainTabBarController.selectedIndex = index
     }
     
-    private func navigateToNotification() {
-        guard let mainTabBarController,
-              let navigationController = mainTabBarController.viewControllers?[mainTabBarController.selectedIndex] as? UINavigationController,
+    private func navigateToNotification(mainTabBarController: NCMainTabBarController) {
+        mainTabBarController.selectedIndex = ControllerConstants.filesIndex
+        guard let navigationController = mainTabBarController.viewControllers?[mainTabBarController.selectedIndex] as? UINavigationController,
               let viewController = UIStoryboard(name: ControllerConstants.notification, bundle: nil).instantiateInitialViewController() as? NCNotification else { return }
         navigationController.pushViewController(viewController, animated: true)
     }
     
-    private func navigateToCreateNew() {
-        guard let mainTabBarController, let appDelegate  else { return }
-        appDelegate.toggleMenu(viewController: mainTabBarController)
+    private func navigateToCreateNew(mainTabBarController: NCMainTabBarController) {
+        guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else { return }
+        mainTabBarController.selectedIndex = ControllerConstants.filesIndex
+        DispatchQueue.main.asyncAfter(deadline: .now() + 4) {
+            appDelegate.toggleMenu(mainTabBarController: mainTabBarController)
+        }
     }
     
-    private func navigateToMore(withSegue segue: String) {
-        guard let mainTabBarController  else { return }
+    private func navigateToMore(withSegue segue: String, mainTabBarController: NCMainTabBarController) {
         mainTabBarController.selectedIndex = ControllerConstants.moreIndex
         guard let navigationController = mainTabBarController.viewControllers?[mainTabBarController.selectedIndex] as? UINavigationController else { return }
+        navigationController.viewControllers = navigationController.viewControllers.filter({$0.isKind(of: NCMore.self)})
         navigationController.performSegue(withIdentifier: segue, sender: self)
     }
     
-    private func navigateToAutoUpload() {
-        guard let mainTabBarController  else { return }
+    private func navigateToAutoUpload(mainTabBarController: NCMainTabBarController) {
         mainTabBarController.selectedIndex = ControllerConstants.moreIndex
         guard let navigationController = mainTabBarController.viewControllers?[mainTabBarController.selectedIndex] as? UINavigationController,
               let moreViewController = navigationController.viewControllers.first,
               let settingViewController = UIStoryboard(name: ControllerConstants.settingIdentifire, bundle: nil).instantiateInitialViewController() else { return }
         let manageAutoUploadVC = CCManageAutoUpload()
-        navigationController.setViewControllers([moreViewController, settingViewController, manageAutoUploadVC], animated: true)
+        navigationController.viewControllers = navigationController.viewControllers.filter({$0.isKind(of: NCMore.self)})
+        navigationController.setViewControllers([settingViewController, manageAutoUploadVC], animated: true)
     }
     
     private func navigateAppUpdate() {

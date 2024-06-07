@@ -323,6 +323,9 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             }
             // Otherwise open the app and switch accounts
             return
+        } else if !account.isEmpty, let action, let _ = DeepLink(rawValue: action) {
+            DeepLinkHandler().parseDeepLink(url, mainTabBarController: mainTabBarController)
+            return
         } else {
             let applicationHandle = NCApplicationHandle()
             let isHandled = applicationHandle.applicationOpenURL(url)
