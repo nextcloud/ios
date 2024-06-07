@@ -33,6 +33,8 @@ class NCManageAccountModel: ObservableObject, ViewOnAppearHandling {
     /// All account
     var accounts: [tableAccount] = []
     ///
+    @Published var account: tableAccount?
+    ///
     @Published var indexActiveAccount: Int = 0
     ///
     @Published var alias: String = ""
@@ -56,15 +58,17 @@ class NCManageAccountModel: ObservableObject, ViewOnAppearHandling {
 
     func getIndexActiveAccount() {
         self.indexActiveAccount = 0
-        for (index, item) in accounts.enumerated() {
-            if item.active {
+        for (index, account) in accounts.enumerated() {
+            if account.active {
+                self.account = account
                 self.indexActiveAccount = index
-                self.alias = item.alias
+                self.alias = account.alias
             }
         }
     }
 
-    func getUserName(account: tableAccount) -> String {
+    func getUserName() -> String {
+        guard let account else { return "" }
         if account.alias.isEmpty {
             return account.displayName
         } else {
@@ -72,7 +76,8 @@ class NCManageAccountModel: ObservableObject, ViewOnAppearHandling {
         }
     }
 
-    func getUserStatus(account: tableAccount) -> (onlineStatus: UIImage?, statusMessage: String?) {
+    func getUserStatus() -> (onlineStatus: UIImage?, statusMessage: String?) {
+        guard let account else { return (nil, nil) }
         if NCGlobal.shared.capabilityUserStatusEnabled {
             let status = NCUtility().getUserStatus(userIcon: account.userStatusIcon, userStatus: account.userStatusStatus, userMessage: account.userStatusMessage)
             let image = status.onlineStatus
@@ -82,7 +87,8 @@ class NCManageAccountModel: ObservableObject, ViewOnAppearHandling {
         return (nil, nil)
     }
 
-    func submitChangedAlias(account: tableAccount) {
+    func submitChangedAlias() {
+        guard let account else { return }
         NCManageDatabase.shared.setAccountAlias(account.account, alias: alias)
     }
 

@@ -34,9 +34,8 @@ struct NCManageAccountView: View {
             Section(content: {
                 TabView(selection: $model.indexActiveAccount) {
                     ForEach(0..<model.accounts.count, id: \.self) { index in
-                        let account = model.accounts[index]
-                        let status = model.getUserStatus(account: account)
-                        let avatar = NCUtility().loadUserImage(for: account.user, displayName: account.displayName, userBaseUrl: account)
+                        let status = model.getUserStatus()
+                        let avatar = NCUtility().loadUserImage(for: model.accounts[index].user, displayName: model.accounts[index].displayName, userBaseUrl: model.accounts[index])
                         /// Avatar zone
                         VStack {
                             Image(uiImage: avatar)
@@ -44,7 +43,7 @@ struct NCManageAccountView: View {
                                 .scaledToFit()
                                 .frame(width: UIScreen.main.bounds.width, height: 75)
                                 .clipped()
-                            Text(model.getUserName(account: account))
+                            Text(model.getUserName())
                                 .font(.system(size: 16))
                             if let message = status.statusMessage {
                                 Spacer()
@@ -52,42 +51,40 @@ struct NCManageAccountView: View {
                                 Text(message)
                                     .font(.system(size: 10))
                             }
-                            ///
-                            Spacer()
-                                .frame(height: 50)
-                            /// Change alias
-                            HStack {
-                                Text(NSLocalizedString("_alias_", comment: ""))
-                                    .font(.system(size: 17))
-                                    .fontWeight(.medium)
-                                Spacer()
-                                TextField(NSLocalizedString("_alias_placeholder_", comment: ""), text: $model.alias)
-                                    .onSubmit {
-                                        model.submitChangedAlias(account: account)
-                                    }
-                                    .font(.system(size: 16))
-                                    .multilineTextAlignment(.trailing)
-                            }
-                            .padding(EdgeInsets(top: 0, leading: 20, bottom: 0, trailing: 20))
-
-                            Text(NSLocalizedString("_alias_footer_", comment: ""))
-                                .padding(EdgeInsets(top: 1, leading: 20, bottom: 0, trailing: 20))
-                                .frame(maxWidth: .infinity, alignment: .leading)
-                                .font(.system(size: 12))
-                                .lineLimit(2)
-                                .foregroundStyle(Color(UIColor.lightGray))
-                            ///
                         }
                     }
                 }
-                .listRowInsets(EdgeInsets(top: 20, leading: 0, bottom: 20, trailing: 0))
                 .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
-                .frame(height: 300)
+                .frame(height: 150)
                 .onChange(of: model.indexActiveAccount) { index in
                     if let account = model.getTableAccount(account: model.accounts[index].account) {
+                        model.account = account
                         model.alias = account.alias
                     }
                 }
+                ///
+                /// Change alias
+                VStack {
+                    HStack {
+                        Text(NSLocalizedString("_alias_", comment: ""))
+                            .font(.system(size: 17))
+                            .fontWeight(.medium)
+                        Spacer()
+                        TextField(NSLocalizedString("_alias_placeholder_", comment: ""), text: $model.alias)
+                            .onSubmit {
+                                model.submitChangedAlias()
+                            }
+                            .font(.system(size: 16))
+                            .multilineTextAlignment(.trailing)
+                    }
+
+                    Text(NSLocalizedString("_alias_footer_", comment: ""))
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .font(.system(size: 12))
+                        .lineLimit(2)
+                        .foregroundStyle(Color(UIColor.lightGray))
+                }
+                ///
                 /// User Status
                 Button(action: {
                     showUserStatus.toggle()
@@ -109,6 +106,7 @@ struct NCManageAccountView: View {
                 })
                 .sheet(isPresented: $showUserStatus) {
                 }
+                ///
                 /// Certificate server
                 Button(action: {
                     showServerCertificate.toggle()
@@ -130,6 +128,7 @@ struct NCManageAccountView: View {
                 })
                 .sheet(isPresented: $showServerCertificate) {
                 }
+                ///
                 /// Certificate push
                 Button(action: {
                     showPushCertificate.toggle()
@@ -151,6 +150,7 @@ struct NCManageAccountView: View {
                 })
                 .sheet(isPresented: $showPushCertificate) {
                 }
+                ///
                 /// Delete account
                 Button(action: {
 
@@ -171,8 +171,10 @@ struct NCManageAccountView: View {
                     .font(.system(size: 14))
                 })
             })
-            /// All users
+
             Section(content: {
+                ///
+                /// Add account
                 Button(action: {
 
                 }, label: {
@@ -191,6 +193,8 @@ struct NCManageAccountView: View {
                     }
                     .font(.system(size: 14))
                 })
+                ///
+                /// Request account
                 Toggle(NSLocalizedString("_settings_account_request_", comment: ""), isOn: $model.accountRequest)
                     .font(.system(size: 16))
                     .tint(Color(NCBrandColor.shared.brandElement))
