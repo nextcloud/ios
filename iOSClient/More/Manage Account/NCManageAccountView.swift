@@ -57,10 +57,7 @@ struct NCManageAccountView: View {
                 .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
                 .frame(height: 150)
                 .onChange(of: model.indexActiveAccount) { index in
-                    if let account = model.getTableAccount(account: model.accounts[index].account) {
-                        model.account = account
-                        model.alias = account.alias
-                    }
+                    model.setAccount(account: model.accounts[index].account)
                 }
                 ///
                 /// Change alias

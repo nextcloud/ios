@@ -69,10 +69,10 @@ class NCManageAccountModel: ObservableObject, ViewOnAppearHandling {
 
     func getUserName() -> String {
         guard let account else { return "" }
-        if account.alias.isEmpty {
+        if self.alias.isEmpty {
             return account.displayName
         } else {
-            return account.displayName + " (\(account.alias))"
+            return account.displayName + " (\(self.alias))"
         }
     }
 
@@ -92,8 +92,11 @@ class NCManageAccountModel: ObservableObject, ViewOnAppearHandling {
         NCManageDatabase.shared.setAccountAlias(account.account, alias: alias)
     }
 
-    func getTableAccount(account: String) -> tableAccount? {
-        return NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", account))
+    func setAccount(account: String) {
+        if let tableAccount = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", account)) {
+            self.account = tableAccount
+            self.alias = tableAccount.alias
+        }
     }
 
     /// 
