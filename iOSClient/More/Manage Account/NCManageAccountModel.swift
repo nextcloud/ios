@@ -32,7 +32,7 @@ class NCManageAccountModel: ObservableObject, ViewOnAppearHandling {
     var controller: NCMainTabBarController?
     /// All account
     var accounts: [tableAccount] = []
-    ///
+    /// Account
     @Published var account: tableAccount?
     ///
     @Published var indexActiveAccount: Int = 0
@@ -69,10 +69,11 @@ class NCManageAccountModel: ObservableObject, ViewOnAppearHandling {
 
     func getUserName() -> String {
         guard let account else { return "" }
-        if self.alias.isEmpty {
+        NCManageDatabase.shared.setAccountAlias(account.account, alias: alias)
+        if alias.isEmpty {
             return account.displayName
         } else {
-            return account.displayName + " (\(self.alias))"
+            return account.displayName + " (\(alias))"
         }
     }
 
@@ -85,11 +86,6 @@ class NCManageAccountModel: ObservableObject, ViewOnAppearHandling {
             return (image, text)
         }
         return (nil, nil)
-    }
-
-    func submitChangedAlias() {
-        guard let account else { return }
-        NCManageDatabase.shared.setAccountAlias(account.account, alias: alias)
     }
 
     func setAccount(account: String) {

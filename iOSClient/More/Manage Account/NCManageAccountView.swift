@@ -68,9 +68,6 @@ struct NCManageAccountView: View {
                             .fontWeight(.medium)
                         Spacer()
                         TextField(NSLocalizedString("_alias_placeholder_", comment: ""), text: $model.alias)
-                            .onSubmit {
-                                model.submitChangedAlias()
-                            }
                             .font(.system(size: 16))
                             .multilineTextAlignment(.trailing)
                     }
