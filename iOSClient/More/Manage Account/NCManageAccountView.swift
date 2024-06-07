@@ -52,36 +52,32 @@ struct NCManageAccountView: View {
                             Spacer()
                                 .frame(height: 30)
                             HStack {
-                                Spacer()
-                                    .frame(width: 5)
                                 Text(NSLocalizedString("_alias_", comment: ""))
                                     .font(.system(size: 17))
                                     .fontWeight(.medium)
                                 Spacer()
-                                TextField(NSLocalizedString("_alias_", comment: ""), text: $model.alias)
+                                TextField(NSLocalizedString("_alias_placeholder_", comment: ""), text: $model.alias)
                                     .onSubmit {
                                         model.submitChangedAlias(account: account)
                                     }
-                                    .font(.system(size: 17))
+                                    .font(.system(size: 16))
                                     .multilineTextAlignment(.trailing)
                                 Spacer()
                                     .frame(width: 5)
+
                             }
-                            HStack {
-                                Spacer()
-                                    .frame(width: 5)
-                                Text(NSLocalizedString("_alias_footer_", comment: ""))
-                                    .font(.system(size: 10))
-                                    .foregroundColor(Color(UIColor.lightGray))
-                            }
-                            .background(Color.blue)
+                            Text(NSLocalizedString("_alias_footer_", comment: ""))
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                                .font(.system(size: 12))
+                                .foregroundColor(Color(UIColor.lightGray))
+
                             Spacer()
                         }
                     }
                 }
             }
             .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
-            .frame(height: 400)
+            .frame(height: 300)
             .edgesIgnoringSafeArea(.all)
             .onChange(of: model.indexActiveAccount) { index in
                 if let account = model.getTableAccount(account: model.accounts[index].account) {

@@ -292,10 +292,15 @@ class NCManageDatabase: NSObject {
     func previewCreateDB() {
         /// Account
         let account = "marinofaggiana https://cloud.nextcloud.com"
+        let account2 = "mariorossi https://cloud.nextcloud.com"
+        NCManageDatabase.shared.addAccount(account, urlBase: "https://cloud.nextcloud.com", user: "marinofaggiana", userId: "marinofaggiana", password: "password")
+        NCManageDatabase.shared.addAccount(account2, urlBase: "https://cloud.nextcloud.com", user: "mariorossi", userId: "mariorossi", password: "password")
         let userProfile = NKUserProfile()
         userProfile.displayName = "Marino Faggiana"
-        userProfile.phone = "000 000000000"
-        NCManageDatabase.shared.addAccount(account, urlBase: "https://cloud.nextcloud.com", user: "marinofaggiana", userId: "marinofaggiana", password: "password")
         NCManageDatabase.shared.setAccountUserProfile(account: account, userProfile: userProfile)
+        let userProfile2 = NKUserProfile()
+        userProfile2.displayName = "Mario Rossi"
+        NCManageDatabase.shared.setAccountUserProfile(account: account2, userProfile: userProfile2)
+
     }
 }
