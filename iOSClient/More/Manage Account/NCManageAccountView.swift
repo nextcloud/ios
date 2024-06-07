@@ -77,118 +77,99 @@ struct NCManageAccountView: View {
                                 .lineLimit(2)
                                 .foregroundStyle(Color(UIColor.lightGray))
                             ///
-                            Divider()
-                                .padding(EdgeInsets(top: 5, leading: 50, bottom: 5, trailing: 0))
-                            /// User Status
-                            Button(action: {
-                                showUserStatus.toggle()
-                            }, label: {
-                                HStack {
-                                    Image(systemName: "moon.fill")
-                                        .resizable()
-                                        .scaledToFit()
-                                        .font(Font.system(.body).weight(.light))
-                                        .frame(width: 20, height: 20)
-                                        .foregroundStyle(Color(NCBrandColor.shared.iconImageColor))
-                                    Text(NSLocalizedString("_set_user_status_", comment: ""))
-                                        .lineLimit(1)
-                                        .truncationMode(.middle)
-                                        .foregroundStyle(Color(NCBrandColor.shared.textColor))
-                                        .padding(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 20))
-                                }
-                                .font(.system(size: 14))
-                            })
-                            .padding(EdgeInsets(top: 0, leading: 20, bottom: 0, trailing: 0))
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                            .sheet(isPresented: $showUserStatus) {
-                            }
-                            ///
-                            Divider()
-                                .padding(EdgeInsets(top: 5, leading: 50, bottom: 5, trailing: 0))
-                            /// Certificate server
-                            Button(action: {
-                                showServerCertificate.toggle()
-                            }, label: {
-                                HStack {
-                                    Image(systemName: "lock")
-                                        .resizable()
-                                        .scaledToFit()
-                                        .font(Font.system(.body).weight(.light))
-                                        .frame(width: 20, height: 20)
-                                        .foregroundStyle(Color(NCBrandColor.shared.iconImageColor))
-                                    Text(NSLocalizedString("_certificate_details_", comment: ""))
-                                        .lineLimit(1)
-                                        .truncationMode(.middle)
-                                        .foregroundStyle(Color(NCBrandColor.shared.textColor))
-                                        .padding(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 20))
-                                }
-                                .font(.system(size: 14))
-                            })
-                            .padding(EdgeInsets(top: 0, leading: 20, bottom: 0, trailing: 0))
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                            .sheet(isPresented: $showServerCertificate) {
-                            }
-                            ///
-                            Divider()
-                                .padding(EdgeInsets(top: 5, leading: 50, bottom: 5, trailing: 0))
-                            /// Certificate push
-                            Button(action: {
-                                showPushCertificate.toggle()
-                            }, label: {
-                                HStack {
-                                    Image(systemName: "lock")
-                                        .resizable()
-                                        .scaledToFit()
-                                        .font(Font.system(.body).weight(.light))
-                                        .frame(width: 20, height: 20)
-                                        .foregroundStyle(Color(NCBrandColor.shared.iconImageColor))
-                                    Text(NSLocalizedString("_certificate_pn_details_", comment: ""))
-                                        .lineLimit(1)
-                                        .truncationMode(.middle)
-                                        .foregroundStyle(Color(NCBrandColor.shared.textColor))
-                                        .padding(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 20))
-                                }
-                                .font(.system(size: 14))
-                            })
-                            .padding(EdgeInsets(top: 0, leading: 20, bottom: 0, trailing: 0))
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                            .sheet(isPresented: $showPushCertificate) {
-                            }
-                            ///
-                            Divider()
-                                .padding(EdgeInsets(top: 5, leading: 50, bottom: 5, trailing: 0))
-                            /// Delete account
-                            Button(action: {
-
-                            }, label: {
-                                HStack {
-                                    Image(systemName: "trash")
-                                        .resizable()
-                                        .scaledToFit()
-                                        .font(Font.system(.body).weight(.light))
-                                        .frame(width: 20, height: 20)
-                                        .foregroundStyle(.red)
-                                    Text(NSLocalizedString("_remove_local_account_", comment: ""))
-                                        .lineLimit(1)
-                                        .truncationMode(.middle)
-                                        .foregroundStyle(.red)
-                                        .padding(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 20))
-                                }
-                                .font(.system(size: 14))
-                            })
-                            .padding(EdgeInsets(top: 0, leading: 20, bottom: 0, trailing: 0))
-                            .frame(maxWidth: .infinity, alignment: .leading)
                         }
                     }
                 }
                 .listRowInsets(EdgeInsets(top: 20, leading: 0, bottom: 20, trailing: 0))
                 .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
-                .frame(height: 390)
+                .frame(height: 300)
                 .onChange(of: model.indexActiveAccount) { index in
                     if let account = model.getTableAccount(account: model.accounts[index].account) {
                         model.alias = account.alias
                     }
                 }
+                /// User Status
+                Button(action: {
+                    showUserStatus.toggle()
+                }, label: {
+                    HStack {
+                        Image(systemName: "moon.fill")
+                            .resizable()
+                            .scaledToFit()
+                            .font(Font.system(.body).weight(.light))
+                            .frame(width: 20, height: 20)
+                            .foregroundStyle(Color(NCBrandColor.shared.iconImageColor))
+                        Text(NSLocalizedString("_set_user_status_", comment: ""))
+                            .lineLimit(1)
+                            .truncationMode(.middle)
+                            .foregroundStyle(Color(NCBrandColor.shared.textColor))
+                            .padding(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 20))
+                    }
+                    .font(.system(size: 14))
+                })
+                .sheet(isPresented: $showUserStatus) {
+                }
+                /// Certificate server
+                Button(action: {
+                    showServerCertificate.toggle()
+                }, label: {
+                    HStack {
+                        Image(systemName: "lock")
+                            .resizable()
+                            .scaledToFit()
+                            .font(Font.system(.body).weight(.light))
+                            .frame(width: 20, height: 20)
+                            .foregroundStyle(Color(NCBrandColor.shared.iconImageColor))
+                        Text(NSLocalizedString("_certificate_details_", comment: ""))
+                            .lineLimit(1)
+                            .truncationMode(.middle)
+                            .foregroundStyle(Color(NCBrandColor.shared.textColor))
+                            .padding(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 20))
+                    }
+                    .font(.system(size: 14))
+                })
+                .sheet(isPresented: $showServerCertificate) {
+                }
+                /// Certificate push
+                Button(action: {
+                    showPushCertificate.toggle()
+                }, label: {
+                    HStack {
+                        Image(systemName: "lock")
+                            .resizable()
+                            .scaledToFit()
+                            .font(Font.system(.body).weight(.light))
+                            .frame(width: 20, height: 20)
+                            .foregroundStyle(Color(NCBrandColor.shared.iconImageColor))
+                        Text(NSLocalizedString("_certificate_pn_details_", comment: ""))
+                            .lineLimit(1)
+                            .truncationMode(.middle)
+                            .foregroundStyle(Color(NCBrandColor.shared.textColor))
+                            .padding(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 20))
+                    }
+                    .font(.system(size: 14))
+                })
+                .sheet(isPresented: $showPushCertificate) {
+                }
+                /// Delete account
+                Button(action: {
+
+                }, label: {
+                    HStack {
+                        Image(systemName: "trash")
+                            .resizable()
+                            .scaledToFit()
+                            .font(Font.system(.body).weight(.light))
+                            .frame(width: 20, height: 20)
+                            .foregroundStyle(.red)
+                        Text(NSLocalizedString("_remove_local_account_", comment: ""))
+                            .lineLimit(1)
+                            .truncationMode(.middle)
+                            .foregroundStyle(.red)
+                            .padding(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 20))
+                    }
+                    .font(.system(size: 14))
+                })
             })
             /// All users
             Section(content: {
