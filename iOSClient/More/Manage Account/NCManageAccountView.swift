@@ -35,7 +35,7 @@ struct NCManageAccountView: View {
                     let account = model.accounts[index]
                     let status = model.getUserStatus(account: account)
                     let avatar = NCUtility().loadUserImage(for: account.user, displayName: account.displayName, userBaseUrl: account)
-                    ///
+                    /// Avatar zone
                     VStack {
                         Image(uiImage: avatar)
                             .resizable()
@@ -50,9 +50,10 @@ struct NCManageAccountView: View {
                             Text(message)
                                 .font(.system(size: 10))
                         }
+                        ///
                         Spacer()
-                            .frame(height: 30)
-
+                            .frame(height: 50)
+                        /// Change alias
                         HStack {
                             Text(NSLocalizedString("_alias_", comment: ""))
                                 .font(.system(size: 17))
@@ -68,16 +69,14 @@ struct NCManageAccountView: View {
                         .padding(EdgeInsets(top: 0, leading: 15, bottom: 0, trailing: 15))
 
                         Text(NSLocalizedString("_alias_footer_", comment: ""))
-                            .padding(EdgeInsets(top: 0, leading: 15, bottom: 0, trailing: 15))
+                            .padding(EdgeInsets(top: 1, leading: 15, bottom: 0, trailing: 15))
                             .frame(maxWidth: .infinity, alignment: .leading)
                             .font(.system(size: 12))
                             .foregroundColor(Color(UIColor.lightGray))
-                        
-                        Spacer()
                         ///
                         Divider()
-                            .padding(EdgeInsets(top: 0, leading: 15, bottom: 0, trailing: 0))
-                        ///
+                            .padding(EdgeInsets(top: 5, leading: 15, bottom: 5, trailing: 5))
+                        /// Certificates
                         Button(action: {
                             showServerCertificate.toggle()
                         }, label: {
@@ -89,6 +88,9 @@ struct NCManageAccountView: View {
                                     .frame(width: 25, height: 25)
                                     .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
                                 Text(NSLocalizedString("_certificate_details_", comment: ""))
+                                    .lineLimit(1)
+                                    .truncationMode(.middle)
+                                    .padding(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 15))
                             }
                             .font(.system(size: 14))
                         })
@@ -99,7 +101,7 @@ struct NCManageAccountView: View {
                         }
                         ///
                         Divider()
-                            .padding(EdgeInsets(top: 0, leading: 15, bottom: 0, trailing: 0))
+                            .padding(EdgeInsets(top: 5, leading: 15, bottom: 5, trailing: 0))
                         ///
                         Button(action: {
                             showPushCertificate.toggle()
@@ -112,8 +114,10 @@ struct NCManageAccountView: View {
                                     .frame(width: 25, height: 25)
                                     .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
                                 Text(NSLocalizedString("_certificate_pn_details_", comment: ""))
+                                    .lineLimit(1)
+                                    .truncationMode(.middle)
+                                    .padding(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 15))
                             }
-                            .multilineTextAlignment(.leading)
                             .font(.system(size: 14))
                         })
                         .padding(EdgeInsets(top: 0, leading: 15, bottom: 0, trailing: 0))
@@ -127,7 +131,7 @@ struct NCManageAccountView: View {
             }
             .listRowInsets(EdgeInsets(top: 10, leading: 0, bottom: 10, trailing: 0))
             .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
-            .frame(height: 300)
+            .frame(height: 500)
             .onChange(of: model.indexActiveAccount) { index in
                 if let account = model.getTableAccount(account: model.accounts[index].account) {
                     model.alias = account.alias
