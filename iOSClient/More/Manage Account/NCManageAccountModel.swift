@@ -110,11 +110,14 @@ class NCManageAccountModel: ObservableObject, ViewOnAppearHandling {
 
     ///
     func deleteAccount() {
-
+        if let tableAccount {
+            appDelegate.deleteAccount(tableAccount.account, wipe: false)
+            onViewAppear()
+        }
     }
 
     ///
     func addAccount() {
-
+       // appDelegate.openLogin(selector: NCGlobal.shared.introLogin, openLoginWeb: false)
     }
 }
