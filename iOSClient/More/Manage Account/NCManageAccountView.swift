@@ -36,13 +36,27 @@ struct NCManageAccountView: View {
                     ForEach(0..<model.accounts.count, id: \.self) { index in
                         let status = model.getUserStatus()
                         let avatar = NCUtility().loadUserImage(for: model.accounts[index].user, displayName: model.accounts[index].displayName, userBaseUrl: model.accounts[index])
-                        /// Avatar zone
+                        ///
+                        /// User
                         VStack {
-                            Image(uiImage: avatar)
-                                .resizable()
-                                .scaledToFit()
-                                .frame(width: UIScreen.main.bounds.width, height: 75)
-                                .clipped()
+                            ZStack {
+                                Image(uiImage: avatar)
+                                    .resizable()
+                                    .scaledToFit()
+                                    .frame(width: UIScreen.main.bounds.width, height: 75)
+
+                                ZStack {
+                                    Circle()
+                                        .fill(.white)
+                                        .frame(width: 30, height: 30)
+                                    Image(uiImage: status.onlineStatus ?? UIImage())
+                                        .resizable()
+                                        .scaledToFit()
+                                        .frame(width: 30, height: 30)
+                                    }
+                                    .offset(x: 25, y: 25)
+                            }
+                            .frame(maxWidth: .infinity, maxHeight: .infinity)
                             Text(model.getUserName())
                                 .font(.system(size: 16))
                             if let message = status.statusMessage {
