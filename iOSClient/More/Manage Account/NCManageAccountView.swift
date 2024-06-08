@@ -121,6 +121,9 @@ struct NCManageAccountView: View {
                     .font(.system(size: 14))
                 })
                 .sheet(isPresented: $showServerCertificate) {
+                    if let url = URL(string: model.account?.urlBase), let host = url.host {
+                        certificateDetailsView(host: host, title: NSLocalizedString("_certificate_view_", comment: ""))
+                    }
                 }
                 ///
                 /// Certificate push
@@ -143,6 +146,9 @@ struct NCManageAccountView: View {
                     .font(.system(size: 14))
                 })
                 .sheet(isPresented: $showPushCertificate) {
+                    if let url = URL(string: NCBrandOptions.shared.pushNotificationServerProxy), let host = url.host {
+                        certificateDetailsView(host: host, title: NSLocalizedString("_certificate_pn_view_", comment: ""))
+                    }
                 }
                 ///
                 /// Delete account
