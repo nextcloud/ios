@@ -89,9 +89,11 @@ class NCManageAccountModel: ObservableObject, ViewOnAppearHandling {
     }
 
     func setAccount(account: String) {
-        if let tableAccount = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", account)) {
+        if let tableAccount = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", account)), self.account?.account != tableAccount.account {
             self.account = tableAccount
             self.alias = tableAccount.alias
+            /// Change active account
+            appDelegate.changeAccount(tableAccount.account, userProfile: nil)
         }
     }
 
