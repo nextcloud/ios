@@ -112,6 +112,11 @@ class NCManageAccountModel: ObservableObject, ViewOnAppearHandling {
     func deleteAccount() {
         if let tableAccount {
             appDelegate.deleteAccount(tableAccount.account, wipe: false)
+            if let tableAccount = NCManageDatabase.shared.getAllAccount().first {
+                appDelegate.changeAccount(tableAccount.account, userProfile: nil)
+            } else {
+                addAccount()
+            }
             onViewAppear()
         }
     }
