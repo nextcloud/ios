@@ -22,8 +22,9 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-import UIKit
 import Foundation
+import UIKit
+import SwiftUI
 import NextcloudKit
 import DropDown
 
@@ -603,5 +604,27 @@ extension NCUserStatus: UITableViewDataSource {
         }
 
         return cell
+    }
+}
+
+struct UserStatusView: UIViewControllerRepresentable {
+    class Coordinator: NSObject {
+        var parent: UserStatusView
+
+        init(_ parent: UserStatusView) {
+            self.parent = parent
+        }
+    }
+
+    func makeUIViewController(context: Context) -> UINavigationController {
+        let storyboard = UIStoryboard(name: "NCUserStatus", bundle: nil)
+        let navigationController = storyboard.instantiateInitialViewController() as? UINavigationController
+        return navigationController!
+    }
+
+    func updateUIViewController(_ uiViewController: UINavigationController, context: Context) { }
+
+    func makeCoordinator() -> Coordinator {
+        Coordinator(self)
     }
 }

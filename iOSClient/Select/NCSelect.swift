@@ -647,13 +647,9 @@ struct NCSelectViewControllerRepresentable: UIViewControllerRepresentable {
 }
 
 struct SelectView: UIViewControllerRepresentable {
-
-    typealias UIViewControllerType = UINavigationController
-
     @Binding var serverUrl: String
 
     class Coordinator: NSObject, NCSelectDelegate {
-
         var parent: SelectView
 
         init(_ parent: SelectView) {
@@ -668,7 +664,6 @@ struct SelectView: UIViewControllerRepresentable {
     }
 
     func makeUIViewController(context: Context) -> UINavigationController {
-
         let storyboard = UIStoryboard(name: "NCSelect", bundle: nil)
         let navigationController = storyboard.instantiateInitialViewController() as? UINavigationController
         let viewController = navigationController?.topViewController as? NCSelect

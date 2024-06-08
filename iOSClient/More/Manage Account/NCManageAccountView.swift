@@ -99,6 +99,7 @@ struct NCManageAccountView: View {
                     .font(.system(size: 14))
                 })
                 .sheet(isPresented: $showUserStatus) {
+                    UserStatusView()
                 }
                 ///
                 /// Certificate server
