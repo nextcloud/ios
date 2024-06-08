@@ -33,7 +33,7 @@ class NCManageAccountModel: ObservableObject, ViewOnAppearHandling {
     /// All account
     var accounts: [tableAccount] = []
     /// Account
-    @Published var account: tableAccount?
+    @Published var tableAccount: tableAccount?
     ///
     @Published var indexActiveAccount: Int = 0
     ///
@@ -60,7 +60,7 @@ class NCManageAccountModel: ObservableObject, ViewOnAppearHandling {
         self.indexActiveAccount = 0
         for (index, account) in accounts.enumerated() {
             if account.active {
-                self.account = account
+                self.tableAccount = account
                 self.indexActiveAccount = index
                 self.alias = account.alias
             }
@@ -68,19 +68,20 @@ class NCManageAccountModel: ObservableObject, ViewOnAppearHandling {
     }
 
     func getUserName() -> String {
-        guard let account else { return "" }
-        NCManageDatabase.shared.setAccountAlias(account.account, alias: alias)
+        guard let tableAccount else { return "" }
+        NCManageDatabase.shared.setAccountAlias(tableAccount.account, alias: alias)
         if alias.isEmpty {
-            return account.displayName
+            return tableAccount.displayName
         } else {
-            return account.displayName + " (\(alias))"
+            return tableAccount.displayName + " (\(alias))"
         }
     }
 
     func getUserStatus() -> (onlineStatus: UIImage?, statusMessage: String?) {
-        guard let account else { return (nil, nil) }
-        if NCGlobal.shared.capabilityUserStatusEnabled {
-            let status = NCUtility().getUserStatus(userIcon: account.userStatusIcon, userStatus: account.userStatusStatus, userMessage: account.userStatusMessage)
+        guard let tableAccount else { return (nil, nil) }
+        if NCGlobal.shared.capabilityUserStatusEnabled,
+           let tableAccount = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", tableAccount.account)) {
+            let status = NCUtility().getUserStatus(userIcon: tableAccount.userStatusIcon, userStatus: tableAccount.userStatusStatus, userMessage: tableAccount.userStatusMessage)
             let image = status.onlineStatus
             let text = status.statusMessage
             return (image, text)
@@ -89,8 +90,8 @@ class NCManageAccountModel: ObservableObject, ViewOnAppearHandling {
     }
 
     func setAccount(account: String) {
-        if let tableAccount = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", account)), self.account?.account != tableAccount.account {
-            self.account = tableAccount
+        if let tableAccount = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", account)), self.tableAccount?.account != tableAccount.account {
+            self.tableAccount = tableAccount
             self.alias = tableAccount.alias
             /// Change active account
             appDelegate.changeAccount(tableAccount.account, userProfile: nil)

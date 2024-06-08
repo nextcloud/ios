@@ -81,7 +81,7 @@ struct NCManageAccountView: View {
                 ///
                 /// User Status
                 Button(action: {
-                    showUserStatus.toggle()
+                    showUserStatus = true
                 }, label: {
                     HStack {
                         Image(systemName: "moon.fill")
@@ -99,8 +99,9 @@ struct NCManageAccountView: View {
                     .font(.system(size: 14))
                 })
                 .sheet(isPresented: $showUserStatus) {
-                    UserStatusView()
+                    UserStatusView(showUserStatus: $showUserStatus)
                 }
+                .onChange(of: showUserStatus) { _ in }
                 ///
                 /// Certificate server
                 Button(action: {
@@ -122,7 +123,7 @@ struct NCManageAccountView: View {
                     .font(.system(size: 14))
                 })
                 .sheet(isPresented: $showServerCertificate) {
-                    if let url = URL(string: model.account?.urlBase), let host = url.host {
+                    if let url = URL(string: model.tableAccount?.urlBase), let host = url.host {
                         certificateDetailsView(host: host, title: NSLocalizedString("_certificate_view_", comment: ""))
                     }
                 }
