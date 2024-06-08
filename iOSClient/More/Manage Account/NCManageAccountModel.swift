@@ -53,9 +53,11 @@ class NCManageAccountModel: ObservableObject, ViewOnAppearHandling {
     /// Triggered when the view appears.
     func onViewAppear() {
         accounts = NCManageDatabase.shared.getAllAccount()
+        accountRequest = NCKeychain().accountRequest
         getIndexActiveAccount()
     }
 
+    ///
     func getIndexActiveAccount() {
         self.indexActiveAccount = 0
         for (index, account) in accounts.enumerated() {
@@ -67,6 +69,7 @@ class NCManageAccountModel: ObservableObject, ViewOnAppearHandling {
         }
     }
 
+    ///
     func getUserName() -> String {
         guard let tableAccount else { return "" }
         NCManageDatabase.shared.setAccountAlias(tableAccount.account, alias: alias)
@@ -77,6 +80,7 @@ class NCManageAccountModel: ObservableObject, ViewOnAppearHandling {
         }
     }
 
+    ///
     func getUserStatus() -> (onlineStatus: UIImage?, statusMessage: String?) {
         guard let tableAccount else { return (nil, nil) }
         if NCGlobal.shared.capabilityUserStatusEnabled,
@@ -89,6 +93,7 @@ class NCManageAccountModel: ObservableObject, ViewOnAppearHandling {
         return (nil, nil)
     }
 
+    ///
     func setAccount(account: String) {
         if let tableAccount = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", account)), self.tableAccount?.account != tableAccount.account {
             self.tableAccount = tableAccount
