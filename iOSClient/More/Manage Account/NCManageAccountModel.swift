@@ -107,4 +107,14 @@ class NCManageAccountModel: ObservableObject, ViewOnAppearHandling {
     func updateAccountRequest() {
         NCKeychain().accountRequest = accountRequest
     }
+
+    ///
+    func deleteAccount() {
+
+    }
+
+    ///
+    func addAccount() {
+
+    }
 }

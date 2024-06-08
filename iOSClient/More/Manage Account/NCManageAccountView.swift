@@ -29,7 +29,7 @@ struct NCManageAccountView: View {
     @State private var showServerCertificate = false
     @State private var showPushCertificate = false
     @State private var showDeleteAccountAlert: Bool = false
-
+    @State private var showAddAccount: Bool = false
 
     var body: some View {
         Form {
@@ -190,7 +190,7 @@ struct NCManageAccountView: View {
                 })
                 .alert(NSLocalizedString("_want_delete_account_", comment: ""), isPresented: $showDeleteAccountAlert) {
                     Button(NSLocalizedString("_remove_local_account_", comment: ""), role: .destructive) {
-                        //model.resetNextCloud(exit: showExitAlert)
+                        model.deleteAccount()
                     }
                     Button(NSLocalizedString("_cancel_", comment: ""), role: .cancel) { }
                 }
@@ -200,7 +200,7 @@ struct NCManageAccountView: View {
                 ///
                 /// Add account
                 Button(action: {
-
+                    showAddAccount.toggle()
                 }, label: {
                     HStack {
                         Image(systemName: "plus")
@@ -217,6 +217,9 @@ struct NCManageAccountView: View {
                     }
                     .font(.system(size: 14))
                 })
+                .sheet(isPresented: $showAddAccount) {
+
+                }
                 ///
                 /// Request account
                 Toggle(NSLocalizedString("_settings_account_request_", comment: ""), isOn: $model.accountRequest)
