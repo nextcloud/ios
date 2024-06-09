@@ -30,7 +30,6 @@ import Photos
 import SVGKit
 
 extension NCUtility {
-
     func loadImage(named imageName: String, colors: [UIColor]? = nil, size: CGFloat? = nil, useTypeIconFile: Bool = false ) -> UIImage {
         var image: UIImage?
 
@@ -404,5 +403,52 @@ extension NCUtility {
             }
         }
         return CGSize(width: widthPreview, height: heightPreview)
+    }
+
+    func getUserStatus(userIcon: String?, userStatus: String?, userMessage: String?) -> (statusImage: UIImage, statusMessage: String, descriptionMessage: String) {
+        var statusImage: UIImage?
+        var statusMessage: String = ""
+        var descriptionMessage: String = ""
+        var messageUserDefined: String = ""
+
+        if userStatus?.lowercased() == "online" {
+            statusImage = loadImage(named: "circle_fill", colors: [.systemGreen])
+            messageUserDefined = NSLocalizedString("_online_", comment: "")
+        }
+        if userStatus?.lowercased() == "away" {
+            statusImage = loadImage(named: "userStatusAway", colors: [UIColor(red: 233.0 / 255.0, green: 166.0 / 255.0, blue: 75.0 / 255.0, alpha: 1.0)])
+            /*
+            onlineStatus = UIImage(named: "userStatusAway")!.image(color: UIColor(red: 233.0 / 255.0, green: 166.0 / 255.0, blue: 75.0 / 255.0, alpha: 1.0), size: 50)
+            */
+            messageUserDefined = NSLocalizedString("_away_", comment: "")
+        }
+        if userStatus?.lowercased() == "dnd" {
+            statusImage = UIImage(named: "userStatusDnd")?.resizeImage(size: CGSize(width: 100, height: 100), isAspectRation: false)
+            messageUserDefined = NSLocalizedString("_dnd_", comment: "")
+            descriptionMessage = NSLocalizedString("_dnd_description_", comment: "")
+        }
+        if userStatus?.lowercased() == "offline" || userStatus?.lowercased() == "invisible" {
+            statusImage = UIImage(named: "userStatusOffline")!.withTintColor(.init(named: "SystemBackgroundInverted")!)
+            messageUserDefined = NSLocalizedString("_invisible_", comment: "")
+            descriptionMessage = NSLocalizedString("_invisible_description_", comment: "")
+        }
+
+        if let userIcon = userIcon {
+            statusMessage = userIcon + " "
+        }
+        if let userMessage = userMessage {
+            statusMessage += userMessage
+        }
+        statusMessage = statusMessage.trimmingCharacters(in: .whitespaces)
+        if statusMessage.isEmpty {
+            statusMessage = messageUserDefined
+        }
+
+        if let statusImage {
+            return(statusImage, statusMessage, descriptionMessage)
+        } else {
+            return(UIImage(), statusMessage, descriptionMessage)
+
+        }
     }
 }

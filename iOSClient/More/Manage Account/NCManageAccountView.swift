@@ -46,12 +46,11 @@ struct NCManageAccountView: View {
                                     .resizable()
                                     .scaledToFit()
                                     .frame(width: UIScreen.main.bounds.width, height: 75)
-
                                 ZStack {
                                     Circle()
                                         .fill(.white)
                                         .frame(width: 30, height: 30)
-                                    Image(uiImage: status.onlineStatus ?? UIImage())
+                                    Image(uiImage: status.statusImage)
                                         .resizable()
                                         .scaledToFit()
                                         .frame(width: 30, height: 30)
@@ -61,12 +60,10 @@ struct NCManageAccountView: View {
                             .frame(maxWidth: .infinity, maxHeight: .infinity)
                             Text(model.getUserName())
                                 .font(.system(size: 16))
-                            if let message = status.statusMessage {
-                                Spacer()
-                                    .frame(height: 10)
-                                Text(message)
-                                    .font(.system(size: 10))
-                            }
+                            Spacer()
+                                .frame(height: 10)
+                            Text(status.statusMessage)
+                                .font(.system(size: 10))
                         }
                     }
                 }

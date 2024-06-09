@@ -348,7 +348,7 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
 
             if NCGlobal.shared.capabilityUserStatusEnabled, let account = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", appDelegate.account)) {
                 let status = utility.getUserStatus(userIcon: account.userStatusIcon, userStatus: account.userStatusStatus, userMessage: account.userStatusMessage)
-                cell.icon.image = status.onlineStatus
+                cell.icon.image = status.statusImage
                 cell.status.text = status.statusMessage
                 cell.status.textColor = NCBrandColor.shared.textColor
                 cell.status.trailingBuffer = cell.status.frame.width

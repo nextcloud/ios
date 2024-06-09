@@ -81,16 +81,13 @@ class NCManageAccountModel: ObservableObject, ViewOnAppearHandling {
     }
 
     ///
-    func getUserStatus() -> (onlineStatus: UIImage?, statusMessage: String?) {
-        guard let tableAccount else { return (nil, nil) }
+    func getUserStatus() -> (statusImage: UIImage, statusMessage: String, descriptionMessage: String) {
+        guard let tableAccount else { return (UIImage(), "", "") }
         if NCGlobal.shared.capabilityUserStatusEnabled,
            let tableAccount = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", tableAccount.account)) {
-            let status = NCUtility().getUserStatus(userIcon: tableAccount.userStatusIcon, userStatus: tableAccount.userStatusStatus, userMessage: tableAccount.userStatusMessage)
-            let image = status.onlineStatus
-            let text = status.statusMessage
-            return (image, text)
+            return NCUtility().getUserStatus(userIcon: tableAccount.userStatusIcon, userStatus: tableAccount.userStatusStatus, userMessage: tableAccount.userStatusMessage)
         }
-        return (nil, nil)
+        return (UIImage(), "", "")
     }
 
     ///
