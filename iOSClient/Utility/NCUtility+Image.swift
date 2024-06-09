@@ -412,18 +412,15 @@ extension NCUtility {
         var messageUserDefined: String = ""
 
         if userStatus?.lowercased() == "online" {
-            statusImage = loadImage(named: "circle_fill", colors: [.systemGreen])
+            statusImage = loadImage(named: "circle_fill", colors: [UIColor(red: 103.0 / 255.0, green: 176.0 / 255.0, blue: 134.0 / 255.0, alpha: 1.0)])
             messageUserDefined = NSLocalizedString("_online_", comment: "")
         }
         if userStatus?.lowercased() == "away" {
             statusImage = loadImage(named: "userStatusAway", colors: [UIColor(red: 233.0 / 255.0, green: 166.0 / 255.0, blue: 75.0 / 255.0, alpha: 1.0)])
-            /*
-            onlineStatus = UIImage(named: "userStatusAway")!.image(color: UIColor(red: 233.0 / 255.0, green: 166.0 / 255.0, blue: 75.0 / 255.0, alpha: 1.0), size: 50)
-            */
             messageUserDefined = NSLocalizedString("_away_", comment: "")
         }
         if userStatus?.lowercased() == "dnd" {
-            statusImage = UIImage(named: "userStatusDnd")?.resizeImage(size: CGSize(width: 100, height: 100), isAspectRation: false)
+            statusImage = loadImage(named: "userStatusDnd")
             messageUserDefined = NSLocalizedString("_dnd_", comment: "")
             descriptionMessage = NSLocalizedString("_dnd_description_", comment: "")
         }
@@ -448,7 +445,6 @@ extension NCUtility {
             return(statusImage, statusMessage, descriptionMessage)
         } else {
             return(UIImage(), statusMessage, descriptionMessage)
-
         }
     }
 }
