@@ -55,7 +55,7 @@ struct NCManageAccountView: View {
                                         .scaledToFit()
                                         .frame(width: 30, height: 30)
                                     }
-                                    .offset(x: 25, y: 25)
+                                    .offset(x: 30, y: 30)
                             }
                             .frame(maxWidth: .infinity, maxHeight: .infinity)
                             Text(model.getUserName())
