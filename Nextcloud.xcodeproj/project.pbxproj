@@ -744,7 +744,7 @@
 		F7A8D74428F1827B008BBE1C /* ThreadSafeDictionary.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7245923289BB50B00474787 /* ThreadSafeDictionary.swift */; };
 		F7AC1CB028AB94490032D99F /* Array+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7AC1CAF28AB94490032D99F /* Array+Extension.swift */; };
 		F7AC934A296193050002BC0F /* Reasons to use Nextcloud.pdf in Resources */ = {isa = PBXBuildFile; fileRef = F7AC9349296193050002BC0F /* Reasons to use Nextcloud.pdf */; };
-		F7AE00F5230D5F9E007ACF8A /* NCLoginWeb.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7AE00F4230D5F9E007ACF8A /* NCLoginWeb.swift */; };
+		F7AE00F5230D5F9E007ACF8A /* NCLoginProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7AE00F4230D5F9E007ACF8A /* NCLoginProvider.swift */; };
 		F7AE00F8230E81CB007ACF8A /* NCBrowserWeb.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7AE00F7230E81CB007ACF8A /* NCBrowserWeb.swift */; };
 		F7AE00FA230E81EB007ACF8A /* NCBrowserWeb.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7AE00F9230E81EB007ACF8A /* NCBrowserWeb.storyboard */; };
 		F7B398422A6A91D5007538D6 /* NCSectionHeaderMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = F7B398412A6A91D5007538D6 /* NCSectionHeaderMenu.xib */; };
@@ -1537,7 +1537,7 @@
 		F7AA41E127C7CF8100494705 /* es-MX */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "es-MX"; path = "es-MX.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
 		F7AC1CAF28AB94490032D99F /* Array+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Array+Extension.swift"; sourceTree = "<group>"; };
 		F7AC9349296193050002BC0F /* Reasons to use Nextcloud.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = "Reasons to use Nextcloud.pdf"; sourceTree = SOURCE_ROOT; };
-		F7AE00F4230D5F9E007ACF8A /* NCLoginWeb.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCLoginWeb.swift; sourceTree = "<group>"; };
+		F7AE00F4230D5F9E007ACF8A /* NCLoginProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCLoginProvider.swift; sourceTree = "<group>"; };
 		F7AE00F7230E81CB007ACF8A /* NCBrowserWeb.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCBrowserWeb.swift; sourceTree = "<group>"; };
 		F7AE00F9230E81EB007ACF8A /* NCBrowserWeb.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = NCBrowserWeb.storyboard; sourceTree = "<group>"; };
 		F7AF7632246BEDFE00B86E3C /* TOPasscodeViewController.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = TOPasscodeViewController.framework; path = Carthage/Build/iOS/TOPasscodeViewController.framework; sourceTree = "<group>"; };
@@ -2668,7 +2668,7 @@
 				F702F2F625EE5CEC008F8E80 /* NCLogin.swift */,
 				F738D48F2756740100CD1D38 /* NCLoginNavigationController.swift */,
 				F745B252222D88AE00346520 /* NCLoginQRCode.swift */,
-				F7AE00F4230D5F9E007ACF8A /* NCLoginWeb.swift */,
+				F7AE00F4230D5F9E007ACF8A /* NCLoginProvider.swift */,
 				F7BC287D26663F6C004D46C5 /* NCViewCertificateDetails.storyboard */,
 				F7BC287F26663F85004D46C5 /* NCViewCertificateDetails.swift */,
 				F3EF2E0B2BFCF3810025EF46 /* NCLoginPoll.swift */,
@@ -4364,7 +4364,7 @@
 				F7FAFD3A28BFA948000777FE /* NCNotification+Menu.swift in Sources */,
 				F74C0436253F1CDC009762AB /* NCShares.swift in Sources */,
 				F7AC1CB028AB94490032D99F /* Array+Extension.swift in Sources */,
-				F7AE00F5230D5F9E007ACF8A /* NCLoginWeb.swift in Sources */,
+				F7AE00F5230D5F9E007ACF8A /* NCLoginProvider.swift in Sources */,
 				F707C26521A2DC5200F6181E /* NCStoreReview.swift in Sources */,
 				F7BAADCB1ED5A87C00B7EAD4 /* NCManageDatabase.swift in Sources */,
 				F768822A2C0DD1E7001CF441 /* NCSettingsModel.swift in Sources */,

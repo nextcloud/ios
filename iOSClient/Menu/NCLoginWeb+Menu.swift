@@ -24,7 +24,7 @@
 import UIKit
 import FloatingPanel
 
-extension NCLoginWeb {
+extension NCLoginProvider {
 
     func toggleMenu() {
 

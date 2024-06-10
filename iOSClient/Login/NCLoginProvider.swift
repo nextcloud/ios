@@ -26,7 +26,7 @@ import WebKit
 import NextcloudKit
 import FloatingPanel
 
-class NCLoginWeb: UIViewController {
+class NCLoginProvider: UIViewController {
 
     var webView: WKWebView?
     let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
@@ -198,7 +198,7 @@ class NCLoginWeb: UIViewController {
     }
 }
 
-extension NCLoginWeb: WKNavigationDelegate {
+extension NCLoginProvider: WKNavigationDelegate {
 
     func webView(_ webView: WKWebView, didReceiveServerRedirectForProvisionalNavigation navigation: WKNavigation!) {
 

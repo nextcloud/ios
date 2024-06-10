@@ -43,7 +43,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     var tipView: EasyTipView?
     var backgroundSessionCompletionHandler: (() -> Void)?
     var activeLogin: NCLogin?
-    var activeLoginWeb: NCLoginWeb?
+    var activeLoginWeb: NCLoginProvider?
     var timerErrorNetworking: Timer?
     var timerErrorNetworkingDisabled: Bool = false
     var taskAutoUploadDate: Date = Date()
@@ -398,7 +398,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
                 if selector == NCGlobal.shared.introSignup {
                     activeLogin?.urlBase = NCBrandOptions.shared.linkloginPreferredProviders
-                    let web = UIStoryboard(name: "NCLogin", bundle: nil).instantiateViewController(withIdentifier: "NCLoginWeb") as? NCLoginWeb
+                    let web = UIStoryboard(name: "NCLogin", bundle: nil).instantiateViewController(withIdentifier: "NCLoginWeb") as? NCLoginProvider
                     web?.urlBase = NCBrandOptions.shared.linkloginPreferredProviders
                     showLoginViewController(web)
                 } else {
