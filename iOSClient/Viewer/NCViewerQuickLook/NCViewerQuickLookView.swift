@@ -1,5 +1,5 @@
 //
-//  ViewerQuickLook.swift
+//  NCViewerQuickLookView.swift
 //  Nextcloud
 //
 //  Created by Marino Faggiana on 12/01/23.
@@ -26,13 +26,11 @@ import QuickLook
 import Mantis
 import NextcloudKit
 
-struct ViewerQuickLook: UIViewControllerRepresentable {
-
+struct NCViewerQuickLookView: UIViewControllerRepresentable {
     let url: URL
-
     @Binding var index: Int
     @Binding var isPresentedQuickLook: Bool
-    @ObservedObject var uploadAssets: NCUploadAssets
+    @ObservedObject var model: NCUploadAssetsModel
 
     func makeUIViewController(context: Context) -> UINavigationController {
         let controller = QLPreviewController()
@@ -45,10 +43,10 @@ struct ViewerQuickLook: UIViewControllerRepresentable {
         let buttonCrop = UIBarButtonItem(image: NCUtility().loadImage(named: "crop"), style: .plain, target: context.coordinator, action: #selector(context.coordinator.crop))
         controller.navigationItem.leftBarButtonItems = [buttonDone, buttonCrop]
 
-        uploadAssets.startTimer(navigationItem: controller.navigationItem)
+        model.startTimer(navigationItem: controller.navigationItem)
 
         DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-            if uploadAssets.previewStore[index].assetType == .livePhoto && uploadAssets.previewStore[index].asset.type == .livePhoto && uploadAssets.previewStore[index].data == nil {
+            if model.previewStore[index].assetType == .livePhoto && model.previewStore[index].asset.type == .livePhoto && model.previewStore[index].data == nil {
                 let error = NKError(errorCode: NCGlobal.shared.errorCharactersForbidden, errorDescription: "_message_disable_livephoto_")
                 NCContentPresenter().showInfo(error: error)
             }
@@ -65,23 +63,21 @@ struct ViewerQuickLook: UIViewControllerRepresentable {
     }
 
     class Coordinator: NSObject, QLPreviewControllerDataSource, QLPreviewControllerDelegate, CropViewControllerDelegate {
-
         weak var viewController: QLPreviewController?
-        let parent: ViewerQuickLook
-
+        let parent: NCViewerQuickLookView
         var image: UIImage?
         var hasChange = false
 
-        init(parent: ViewerQuickLook) {
+        init(parent: NCViewerQuickLookView) {
             self.parent = parent
         }
 
         @objc func dismiss() {
-            parent.uploadAssets.stopTimer()
+            parent.model.stopTimer()
             parent.isPresentedQuickLook = false
             if let imageData = image, let image = image?.resizeImage(size: CGSize(width: 300, height: 300), isAspectRation: true) {
-                parent.uploadAssets.previewStore[parent.index].image = image
-                parent.uploadAssets.previewStore[parent.index].data = imageData.jpegData(compressionQuality: 0.9)
+                parent.model.previewStore[parent.index].image = image
+                parent.model.previewStore[parent.index].data = imageData.jpegData(compressionQuality: 0.9)
             }
         }
 

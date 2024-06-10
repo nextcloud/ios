@@ -22,6 +22,8 @@
 //
 
 import Foundation
+import UIKit
+import Photos
 import RealmSwift
 import NextcloudKit
 

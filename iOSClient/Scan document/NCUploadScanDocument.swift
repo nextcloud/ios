@@ -30,7 +30,7 @@ import PDFKit
 
 class NCHostingUploadScanDocumentView: NSObject {
 
-    @objc func makeShipDetailsUI(images: [UIImage], userBaseUrl: NCUserBaseUrl, serverUrl: String) -> UIViewController {
+    func makeShipDetailsUI(images: [UIImage], userBaseUrl: NCUserBaseUrl, serverUrl: String) -> UIViewController {
 
         let uploadScanDocument = NCUploadScanDocument(images: images, userBaseUrl: userBaseUrl, serverUrl: serverUrl)
         let details = UploadScanDocumentView(uploadScanDocument: uploadScanDocument)
@@ -491,7 +491,7 @@ struct UploadScanDocumentView: View {
                 }
                 HUDView(showHUD: $uploadScanDocument.showHUD, textLabel: NSLocalizedString("_wait_", comment: ""), image: "doc.badge.arrow.up")
                     .offset(y: uploadScanDocument.showHUD ? 5 : -200)
-                    .animation(.easeOut, value: UUID())
+                    .animation(.easeOut, value: uploadScanDocument.showHUD)
             }
         }
         .background(Color(UIColor.systemGroupedBackground))

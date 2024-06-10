@@ -167,7 +167,6 @@ class NCNetworking: NSObject, NKCommonDelegate {
     // MARK: - Communication Delegate
 
     func networkReachabilityObserver(_ typeReachability: NKCommon.TypeReachability) {
-
         if typeReachability == NKCommon.TypeReachability.reachableCellular || typeReachability == NKCommon.TypeReachability.reachableEthernetOrWiFi {
             if !lastReachability {
 #if !EXTENSION
@@ -194,7 +193,6 @@ class NCNetworking: NSObject, NKCommonDelegate {
     }
 
     func urlSessionDidFinishEvents(forBackgroundURLSession session: URLSession) {
-
 #if !EXTENSION
         if let appDelegate = UIApplication.shared.delegate as? AppDelegate, let completionHandler = appDelegate.backgroundSessionCompletionHandler {
             NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Called urlSessionDidFinishEvents for Background URLSession")
@@ -231,19 +229,20 @@ class NCNetworking: NSObject, NKCommonDelegate {
     public func checkTrustedChallenge(_ session: URLSession,
                                       didReceive challenge: URLAuthenticationChallenge,
                                       completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
-
         let protectionSpace: URLProtectionSpace = challenge.protectionSpace
         let directoryCertificate = utilityFileSystem.directoryCertificates
         let host = challenge.protectionSpace.host
         let certificateSavedPath = directoryCertificate + "/" + host + ".der"
         var isTrusted: Bool
 
-        if let serverTrust: SecTrust = protectionSpace.serverTrust, let certificate = SecTrustGetCertificateAtIndex(serverTrust, 0) {
+        if let trust: SecTrust = protectionSpace.serverTrust,
+           let certificates = (SecTrustCopyCertificateChain(trust) as? [SecCertificate]),
+           let certificate = certificates.first {
 
             // extarct certificate txt
             saveX509Certificate(certificate, host: host, directoryCertificate: directoryCertificate)
 
-            let isServerTrusted = SecTrustEvaluateWithError(serverTrust, nil)
+            let isServerTrusted = SecTrustEvaluateWithError(trust, nil)
             let certificateCopyData = SecCertificateCopyData(certificate)
             let data = CFDataGetBytePtr(certificateCopyData)
             let size = CFDataGetLength(certificateCopyData)
@@ -273,7 +272,6 @@ class NCNetworking: NSObject, NKCommonDelegate {
     }
 
     func writeCertificate(host: String) {
-
         let directoryCertificate = utilityFileSystem.directoryCertificates
         let certificateAtPath = directoryCertificate + "/" + host + ".tmp"
         let certificateToPath = directoryCertificate + "/" + host + ".der"
@@ -284,7 +282,6 @@ class NCNetworking: NSObject, NKCommonDelegate {
     }
 
     func saveX509Certificate(_ certificate: SecCertificate, host: String, directoryCertificate: String) {
-
         let certNamePathTXT = directoryCertificate + "/" + host + ".txt"
         let data: CFData = SecCertificateCopyData(certificate)
         let mem = BIO_new_mem_buf(CFDataGetBytePtr(data), Int32(CFDataGetLength(data)))
@@ -314,7 +311,6 @@ class NCNetworking: NSObject, NKCommonDelegate {
 
     func checkPushNotificationServerProxyCertificateUntrusted(viewController: UIViewController?,
                                                               completion: @escaping (_ error: NKError) -> Void) {
-
         guard let host = URL(string: NCBrandOptions.shared.pushNotificationServerProxy)?.host else { return }
 
         NextcloudKit.shared.checkServer(serverUrl: NCBrandOptions.shared.pushNotificationServerProxy) { error in

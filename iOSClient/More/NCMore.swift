@@ -193,7 +193,7 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         item = NKExternalSite()
         item.name = "_settings_"
         item.icon = "gear"
-        item.url = "segueSettings"
+        item.url = "openSettings"
         settingsMenu.append(item)
 
         if !quotaMenu.isEmpty {
@@ -289,9 +289,7 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
     }
 
     @objc func tapImageLogoManageAccount() {
-
         let controller = CCManageAccount()
-
         self.navigationController?.pushViewController(controller, animated: true)
     }
 
@@ -300,10 +298,8 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         if sections[indexPath.section].type == .account {
             return 75
-        } else if sections[indexPath.section].type == .moreApps {
-            return 50
         } else {
-            return NCGlobal.shared.heightCellSettings
+            return 50
         }
     }
 
@@ -415,7 +411,6 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
             tapImageLogoManageAccount()
             return
         }
-
         // Action
         if item.url.contains("segue") && !item.url.contains("//") {
             self.navigationController?.performSegue(withIdentifier: item.url, sender: self)
@@ -455,6 +450,10 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
             let assistant = NCAssistant().environmentObject(NCAssistantTask())
             let hostingController = UIHostingController(rootView: assistant)
             present(hostingController, animated: true, completion: nil)
+        } else if item.url == "openSettings" {
+            let settingsView = NCSettingsView(model: NCSettingsModel(controller: tabBarController as? NCMainTabBarController))
+            let settingsController = UIHostingController(rootView: settingsView)
+            navigationController?.pushViewController(settingsController, animated: true)
         } else {
             applicationHandle.didSelectItem(item, viewController: self)
         }

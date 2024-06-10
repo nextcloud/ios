@@ -23,7 +23,6 @@
 
 #import "CCManageAccount.h"
 #import "NCBridgeSwift.h"
-#import "CCUtility.h"
 
 #define actionSheetCancellaAccount 1
 
@@ -380,7 +379,7 @@
     if (indexPath.section == 0) {
         return 60;
     } else {
-        return NCGlobal.shared.heightCellSettings;
+        return 50;
     }
 }
 

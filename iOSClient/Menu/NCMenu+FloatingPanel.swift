@@ -27,22 +27,16 @@ import UIKit
 
 class NCMenuFloatingPanelLayout: FloatingPanelLayout {
     var position: FloatingPanelPosition = .bottom
-
     var initialState: FloatingPanelState = .full
-
     var anchors: [FloatingPanelState: FloatingPanelLayoutAnchoring] {
         [
             .full: FloatingPanelLayoutAnchor(absoluteInset: topInset, edge: .top, referenceGuide: .superview)
         ]
     }
-
     let topInset: CGFloat
 
     init(actionsHeight: CGFloat) {
-        // sometimes UIScreen.main.bounds.size.height is not updated correctly
-        // this ensures we use the correct height value
-        // can't use `layoutFor size` since menu is dieplayed on top of the whole screen not just the VC
-        let screenHeight = UIDevice.current.orientation.isLandscapeHardCheck
+        let screenHeight = UIDevice.current.orientation.isLandscape
         ? min(UIScreen.main.bounds.size.width, UIScreen.main.bounds.size.height)
         : max(UIScreen.main.bounds.size.width, UIScreen.main.bounds.size.height)
         let window = UIApplication.shared.connectedScenes.flatMap { ($0 as? UIWindowScene)?.windows ?? [] }.first { $0.isKeyWindow }

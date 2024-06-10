@@ -43,7 +43,7 @@ import XLForm
     var fileName = ""
     var fileNameExtension = ""
     var titleForm = ""
-    var mainTabBarController: NCMainTabBarController?
+    var controller: NCMainTabBarController?
     var listOfTemplate: [NKEditorTemplates] = []
     var selectTemplate: NKEditorTemplates?
     let utilityFileSystem = NCUtilityFileSystem()
@@ -323,7 +323,7 @@ import XLForm
 
                 self.dismiss(animated: true, completion: {
                     let metadata = NCManageDatabase.shared.createMetadata(account: self.appDelegate.account, user: self.appDelegate.user, userId: self.appDelegate.userId, fileName: fileName, fileNameView: fileName, ocId: UUID, serverUrl: self.serverUrl, urlBase: self.appDelegate.urlBase, url: url, contentType: results.mimeType)
-                    if let viewController = self.mainTabBarController?.currentViewController() {
+                    if let viewController = self.controller?.currentViewController() {
                         NCViewer().view(viewController: viewController, metadata: metadata, metadatas: [metadata], imageIcon: nil)
                     }
                 })
@@ -340,9 +340,9 @@ import XLForm
                 }
 
                 self.dismiss(animated: true, completion: {
-                    let createFileName = (fileName as NSString).deletingPathExtension + "." + self.fileNameExtension
-                    let metadata = NCManageDatabase.shared.createMetadata(account: self.appDelegate.account, user: self.appDelegate.user, userId: self.appDelegate.userId, fileName: createFileName, fileNameView: createFileName, ocId: UUID, serverUrl: self.serverUrl, urlBase: self.appDelegate.urlBase, url: url, contentType: "")
-                    if let viewController = self.mainTabBarController?.currentViewController() {
+                    let newFileName = (fileName as NSString).deletingPathExtension + "." + self.fileNameExtension
+                    let metadata = NCManageDatabase.shared.createMetadata(account: self.appDelegate.account, user: self.appDelegate.user, userId: self.appDelegate.userId, fileName: newFileName, fileNameView: newFileName, ocId: UUID, serverUrl: self.serverUrl, urlBase: self.appDelegate.urlBase, url: url, contentType: "")
+                    if let viewController = self.controller?.currentViewController() {
                         NCViewer().view(viewController: viewController, metadata: metadata, metadatas: [metadata], imageIcon: nil)
                     }
                })

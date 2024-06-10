@@ -313,7 +313,7 @@ extension NCNetworking {
                         task: URLSessionTask,
                         error: NKError) {
         guard let url = task.currentRequest?.url,
-              let metadata = NCManageDatabase.shared.getMetadata(from: url) else { return }
+              let metadata = NCManageDatabase.shared.getMetadata(from: url, sessionTaskIdentifier: task.taskIdentifier) else { return }
         uploadComplete(metadata: metadata, ocId: ocId, etag: etag, date: date, size: size, error: error)
     }
 
@@ -432,17 +432,16 @@ extension NCNetworking {
                         }))
 
                         // Select UIWindowScene active in serverUrl
-                        var mainTabBarController = UIApplication.shared.firstWindow?.rootViewController
+                        var controller = UIApplication.shared.firstWindow?.rootViewController
                         let windowScenes = UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }
                         for windowScene in windowScenes {
                             if let rootViewController = windowScene.keyWindow?.rootViewController as? NCMainTabBarController,
                                rootViewController.currentServerUrl() == metadata.serverUrl {
-                                mainTabBarController = rootViewController
+                                controller = rootViewController
                                 break
                             }
                         }
-
-                        mainTabBarController?.present(alertController, animated: true)
+                        controller?.present(alertController, animated: true)
 
                         // Client Diagnostic
                         NCManageDatabase.shared.addDiagnostic(account: metadata.account, issue: NCGlobal.shared.diagnosticIssueProblems, error: NCGlobal.shared.diagnosticProblemsForbidden)

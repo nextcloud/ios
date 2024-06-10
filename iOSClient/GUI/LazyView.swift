@@ -1,9 +1,9 @@
 //
-//  CCManageAutoUpload.h
+//  LazyView.swift
 //  Nextcloud
 //
-//  Created by Marino Faggiana on 01/09/15.
-//  Copyright (c) 2015 Marino Faggiana. All rights reserved.
+//  Created by Marino Faggiana on 01/06/24.
+//  Copyright © 2024 Marino Faggiana. All rights reserved.
 //
 //  Author Marino Faggiana <marino.faggiana@nextcloud.com>
 //
@@ -21,8 +21,15 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#import <XLForm.h>
+import SwiftUI
 
-@interface CCManageAutoUpload : XLFormViewController
-
-@end
+/// LazyView is a view that delays the initialization of its contained view until it is actually needed.
+struct LazyView<Content: View>: View {
+    let build: () -> Content
+    init(_ build: @escaping () -> Content) {
+        self.build = build
+    }
+    var body: Content {
+        build()
+    }
+}

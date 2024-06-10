@@ -26,7 +26,6 @@
 #import "NCPushNotification.h"
 #import "NCPushNotificationEncryption.h"
 #import "NCEndToEndEncryption.h"
-#import "CCUtility.h"
 
 @interface NCPushNotification ()
 {

@@ -89,7 +89,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        tabBarSelect = NCCollectionViewCommonSelectTabBar(tabBarController: tabBarController as? NCMainTabBarController, delegate: self)
+        tabBarSelect = NCCollectionViewCommonSelectTabBar(controller: tabBarController as? NCMainTabBarController, delegate: self)
         self.navigationController?.presentationController?.delegate = self
 
         // CollectionView & layout
@@ -746,7 +746,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                 self.setEditMode(false)
             }
             navigationItem.rightBarButtonItems = [select]
-        } else {
+        } else if navigationItem.rightBarButtonItems == nil || (!isEditMode && !tabBarSelect.isHidden()) {
             tabBarSelect.hide()
             let menuButton = UIBarButtonItem(image: utility.loadImage(named: "ellipsis.circle"), menu: UIMenu(children: createMenuActions()))
             menuButton.tintColor = NCBrandColor.shared.iconImageColor
@@ -761,6 +761,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             } else {
                 navigationItem.rightBarButtonItems = [menuButton]
             }
+        } else {
+            navigationItem.rightBarButtonItems?.first?.menu = navigationItem.rightBarButtonItems?.first?.menu?.replacingChildren(createMenuActions())
         }
         // fix, if the tabbar was hidden before the update, set it in hidden
         if isTabBarHidden, isTabBarSelectHidden {
@@ -1190,6 +1192,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
         guard let metadata = dataSource.cellForItemAt(indexPath: indexPath),
               let cell = (cell as? NCCellProtocol) else { return }
+        let existsIcon = utilityFileSystem.fileProviderStoragePreviewIconExists(metadata.ocId, etag: metadata.etag)
 
         func downloadAvatar(fileName: String, user: String, dispalyName: String?) {
             if let image = NCManageDatabase.shared.getImageAvatarLoaded(fileName: fileName) {
@@ -1199,16 +1202,16 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                 NCNetworking.shared.downloadAvatar(user: user, dispalyName: dispalyName, fileName: fileName, cell: cell, view: collectionView)
             }
         }
-
+        /// CONTENT MODE
         cell.filePreviewImageView?.layer.borderWidth = 0
-        if metadata.isImage {
+        if existsIcon {
             cell.filePreviewImageView?.contentMode = .scaleAspectFill
         } else {
             cell.filePreviewImageView?.contentMode = .scaleAspectFit
         }
         cell.fileAvatarImageView?.contentMode = .center
 
-        // Thumbnail
+        /// THUMBNAIL
         if !metadata.directory {
             if metadata.hasPreviewBorder {
                 cell.filePreviewImageView?.layer.borderWidth = 0.2
@@ -1223,13 +1226,13 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                     } else {
                         cell.filePreviewImageView?.image = utility.loadImage(named: metadata.iconName, useTypeIconFile: true)
                     }
-                    if metadata.hasPreview && metadata.status == NCGlobal.shared.metadataStatusNormal && (!utilityFileSystem.fileProviderStoragePreviewIconExists(metadata.ocId, etag: metadata.etag)) {
+                    if metadata.hasPreview && metadata.status == NCGlobal.shared.metadataStatusNormal && !existsIcon {
                         for case let operation as NCCollectionViewDownloadThumbnail in NCNetworking.shared.downloadThumbnailQueue.operations where operation.metadata.ocId == metadata.ocId { return }
                         NCNetworking.shared.downloadThumbnailQueue.addOperation(NCCollectionViewDownloadThumbnail(metadata: metadata, cell: cell, collectionView: collectionView))
                     }
                 }
             } else {
-                // Unified search
+                /// APP NAME - UNIFIED SEARCH
                 switch metadata.iconName {
                 case let str where str.contains("contacts"):
                     cell.filePreviewImageView?.image = NCImageCache.images.iconContacts
@@ -1250,8 +1253,6 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                 default:
                     cell.filePreviewImageView?.image = NCImageCache.images.iconFile
                 }
-
-                // Avatar
                 if !metadata.iconUrl.isEmpty {
                     if let ownerId = getAvatarFromIconUrl(metadata: metadata) {
                         let fileName = metadata.userBaseUrl + "-" + ownerId + ".png"
@@ -1261,7 +1262,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             }
         }
 
-        // Avatar
+        /// AVATAR
         if !metadata.ownerId.isEmpty,
            metadata.ownerId != appDelegate.userId,
            appDelegate.account == metadata.account {
@@ -1288,8 +1289,8 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
     }
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-
         var cell: NCCellProtocol & UICollectionViewCell
+        let permissions = NCPermissions()
 
         // LAYOUT LIST
         if layoutForView?.layout == NCGlobal.shared.layoutList {
@@ -1316,8 +1317,8 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         var a11yValues: [String] = []
 
         if metadataFolder != nil {
-            isShare = metadata.permissions.contains(NCGlobal.shared.permissionShared) && !metadataFolder!.permissions.contains(NCGlobal.shared.permissionShared)
-            isMounted = metadata.permissions.contains(NCGlobal.shared.permissionMounted) && !metadataFolder!.permissions.contains(NCGlobal.shared.permissionMounted)
+            isShare = metadata.permissions.contains(permissions.permissionShared) && !metadataFolder!.permissions.contains(permissions.permissionShared)
+            isMounted = metadata.permissions.contains(permissions.permissionMounted) && !metadataFolder!.permissions.contains(permissions.permissionMounted)
         }
 
         cell.fileSelectImage?.image = nil
@@ -1363,9 +1364,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         }
 
         if metadata.directory {
-
             let tableDirectory = NCManageDatabase.shared.getTableDirectory(ocId: metadata.ocId)
-
             if metadata.e2eEncrypted {
                 cell.filePreviewImageView?.image = NCImageCache.images.folderEncrypted
             } else if isShare {
@@ -1891,14 +1890,14 @@ extension NCCollectionViewCommon {
             for task in tasks.1 { // ([URLSessionDataTask], [URLSessionUploadTask], [URLSessionDownloadTask])
                 if task.taskIdentifier == metadata.sessionTaskIdentifier {
                     task.cancel()
-                    NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
-                    NotificationCenter.default.post(name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterUploadCancelFile),
-                                                    object: nil,
-                                                    userInfo: ["ocId": metadata.ocId,
-                                                               "serverUrl": metadata.serverUrl,
-                                                               "account": metadata.account])
                 }
             }
+            NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
+            NotificationCenter.default.post(name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterUploadCancelFile),
+                                            object: nil,
+                                            userInfo: ["ocId": metadata.ocId,
+                                                       "serverUrl": metadata.serverUrl,
+                                                       "account": metadata.account])
         }
     }
 }

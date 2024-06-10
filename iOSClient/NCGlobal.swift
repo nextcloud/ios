@@ -134,10 +134,6 @@ class NCGlobal: NSObject {
     @objc let introLogin: Int                       = 0
     let introSignup: Int                            = 1
 
-    // Varie size GUI
-    //
-    @objc let heightCellSettings: CGFloat           = 50
-
     // Avatar & Preview size
     //
     let avatarSize: Int                             = 128 * Int(UIScreen.main.scale)
@@ -148,7 +144,7 @@ class NCGlobal: NSObject {
     // E2EE
     //
     let e2eePassphraseTest                          = "more over television factory tendency independence international intellectual impress interest sentence pony"
-    @objc let e2eeVersions                          = ["1.1", "1.2", "2.0"]
+    let e2eeVersions                                = ["1.1", "1.2", "2.0"]
     let e2eeVersionV11                              = "1.1"
     let e2eeVersionV12                              = "1.2"
     let e2eeVersionV20                              = "2.0"
@@ -270,36 +266,6 @@ class NCGlobal: NSObject {
     @objc let errorE2EENoUserFound: Int             = -98015
     @objc let errorE2EEUploadInProgress: Int        = -98016
 
-    // Constants to identify the different permissions of a file
-    //
-    @objc let permissionShared                      = "S"
-    @objc let permissionCanShare                    = "R"
-    @objc let permissionMounted                     = "M"
-    @objc let permissionFileCanWrite                = "W"
-    @objc let permissionCanCreateFile               = "C"
-    @objc let permissionCanCreateFolder             = "K"
-    @objc let permissionCanDelete                   = "D"
-    @objc let permissionCanRename                   = "N"
-    @objc let permissionCanMove                     = "V"
-
-    // Share permission
-    // permissions - (int) 1 = read; 2 = update; 4 = create; 8 = delete; 16 = share; 31 = all
-    //
-    @objc let permissionReadShare: Int              = 1
-    @objc let permissionUpdateShare: Int            = 2
-    @objc let permissionCreateShare: Int            = 4
-    @objc let permissionDeleteShare: Int            = 8
-    @objc let permissionShareShare: Int             = 16
-
-    @objc let permissionMinFileShare: Int           = 1
-    @objc let permissionMaxFileShare: Int           = 19
-    @objc let permissionMinFolderShare: Int         = 1
-    @objc let permissionMaxFolderShare: Int         = 31
-    @objc let permissionDefaultFileRemoteShareNoSupportShareOption: Int     = 3
-    @objc let permissionDefaultFolderRemoteShareNoSupportShareOption: Int   = 15
-    // ATTRIBUTES
-    @objc let permissionDownloadShare: Int = 0
-
     // Filename Mask and Type
     //
     let keyFileNameMask                             = "fileNameMask"
@@ -350,21 +316,21 @@ class NCGlobal: NSObject {
 
     // Auto upload subfolder granularity
     //
-    @objc let subfolderGranularityDaily             = 2
-    @objc let subfolderGranularityMonthly           = 1
-    @objc let subfolderGranularityYearly            = 0
+    let subfolderGranularityDaily                   = 2
+    let subfolderGranularityMonthly                 = 1
+    let subfolderGranularityYearly                  = 0
 
     // Notification Center
     //
     @objc let notificationCenterChangeUser                      = "changeUser"
-    @objc let notificationCenterChangeTheming                   = "changeTheming"
+    let notificationCenterChangeTheming                         = "changeTheming"
     let notificationCenterRichdocumentGrabFocus                 = "richdocumentGrabFocus"
     let notificationCenterReloadDataNCShare                     = "reloadDataNCShare"
     let notificationCenterCloseRichWorkspaceWebView             = "closeRichWorkspaceWebView"
     let notificationCenterReloadAvatar                          = "reloadAvatar"
     let notificationCenterCreateMediaCacheEnded                 = "createMediaCacheEnded"
 
-    @objc let notificationCenterReloadDataSource                = "reloadDataSource"
+    let notificationCenterReloadDataSource                      = "reloadDataSource"
     let notificationCenterReloadDataSourceNetwork               = "reloadDataSourceNetwork"         // userInfo: withQueryDB
 
     let notificationCenterChangeStatusFolderE2EE                = "changeStatusFolderE2EE"          // userInfo: serverUrl
@@ -374,7 +340,7 @@ class NCGlobal: NSObject {
     let notificationCenterDownloadCancelFile                    = "downloadCancelFile"              // userInfo: ocId, serverUrl, account
 
     let notificationCenterUploadStartFile                       = "uploadStartFile"                 // userInfo: ocId, serverUrl, account, fileName, sessionSelector
-    @objc let notificationCenterUploadedFile                    = "uploadedFile"                    // userInfo: ocId, serverUrl, account, fileName, ocIdTemp, error
+    let notificationCenterUploadedFile                          = "uploadedFile"                    // userInfo: ocId, serverUrl, account, fileName, ocIdTemp, error
     let notificationCenterUploadedLivePhoto                     = "uploadedLivePhoto"               // userInfo: ocId, serverUrl, account, fileName, ocIdTemp, error
 
     let notificationCenterUploadCancelFile                      = "uploadCancelFile"                // userInfo: ocId, serverUrl, account

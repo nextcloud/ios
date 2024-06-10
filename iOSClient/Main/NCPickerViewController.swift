@@ -26,18 +26,19 @@ import TLPhotoPicker
 import MobileCoreServices
 import Photos
 import NextcloudKit
+import SwiftUI
 
 // MARK: - Photo Picker
 
 class NCPhotosPickerViewController: NSObject {
     let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
-    var mainTabBarController: NCMainTabBarController
+    var controller: NCMainTabBarController
     var maxSelectedAssets = 1
     var singleSelectedMode = false
 
     @discardableResult
-    init(mainTabBarController: NCMainTabBarController, maxSelectedAssets: Int, singleSelectedMode: Bool) {
-        self.mainTabBarController = mainTabBarController
+    init(controller: NCMainTabBarController, maxSelectedAssets: Int, singleSelectedMode: Bool) {
+        self.controller = controller
         super.init()
 
         self.maxSelectedAssets = maxSelectedAssets
@@ -45,10 +46,10 @@ class NCPhotosPickerViewController: NSObject {
 
         self.openPhotosPickerViewController { assets in
             if !assets.isEmpty {
-                let serverUrl = mainTabBarController.currentServerUrl()
-                let vc = NCHostingUploadAssetsView().makeShipDetailsUI(assets: assets, serverUrl: serverUrl, userBaseUrl: self.appDelegate)
+                let serverUrl = controller.currentServerUrl()
+                let view = NCUploadAssetsView(model: NCUploadAssetsModel(assets: assets, serverUrl: serverUrl, userBaseUrl: self.appDelegate, controller: controller))
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
-                    mainTabBarController.present(vc, animated: true, completion: nil)
+                    controller.present(UIHostingController(rootView: view), animated: true, completion: nil)
                 }
             }
         }
@@ -93,7 +94,7 @@ class NCPhotosPickerViewController: NSObject {
 
         viewController.configure = configure
 
-        mainTabBarController.present(viewController, animated: true, completion: nil)
+        controller.present(viewController, animated: true, completion: nil)
     }
 }
 
@@ -122,8 +123,8 @@ class NCDocumentPickerViewController: NSObject, UIDocumentPickerDelegate {
     var mainTabBarController: NCMainTabBarController
 
     @discardableResult
-    init (mainTabBarController: NCMainTabBarController, isViewerMedia: Bool, allowsMultipleSelection: Bool, viewController: UIViewController? = nil) {
-        self.mainTabBarController = mainTabBarController
+    init (controller: NCMainTabBarController, isViewerMedia: Bool, allowsMultipleSelection: Bool, viewController: UIViewController? = nil) {
+        self.mainTabBarController = controller
         self.isViewerMedia = isViewerMedia
         self.viewController = viewController
         super.init()

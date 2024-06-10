@@ -22,6 +22,8 @@
 //
 
 import Foundation
+import UIKit
+import Photos
 import VisionKit
 
 class NCDocumentCamera: NSObject, VNDocumentCameraViewControllerDelegate {
@@ -46,13 +48,13 @@ class NCDocumentCamera: NSObject, VNDocumentCameraViewControllerDelegate {
     func documentCameraViewController(_ controller: VNDocumentCameraViewController, didFinishWith scan: VNDocumentCameraScan) {
 
         for pageNumber in 0..<scan.pageCount {
-            let fileName = CCUtility.createFileName("scan.png",
-                                                    fileDate: Date(),
-                                                    fileType: PHAssetMediaType.image,
-                                                    keyFileName: NCGlobal.shared.keyFileNameMask,
-                                                    keyFileNameType: NCGlobal.shared.keyFileNameType,
-                                                    keyFileNameOriginal: NCGlobal.shared.keyFileNameOriginal,
-                                                    forcedNewFileName: true)!
+            let fileName = utilityFileSystem.createFileName("scan.png",
+                                                            fileDate: Date(),
+                                                            fileType: PHAssetMediaType.image,
+                                                            keyFileName: NCGlobal.shared.keyFileNameMask,
+                                                            keyFileNameType: NCGlobal.shared.keyFileNameType,
+                                                            keyFileNameOriginal: NCGlobal.shared.keyFileNameOriginal,
+                                                            forcedNewFileName: true)
             let fileNamePath = utilityFileSystem.directoryScan + "/" + fileName
             let image = scan.imageOfPage(at: pageNumber)
             do {
@@ -63,11 +65,11 @@ class NCDocumentCamera: NSObject, VNDocumentCameraViewControllerDelegate {
         controller.dismiss(animated: true) {
             if let viewController = self.viewController as? NCScan {
                 viewController.loadImage()
-            } else if let mainTabBarController = self.viewController as? NCMainTabBarController {
+            } else if let controller = self.viewController as? NCMainTabBarController {
                 if let navigationController = UIStoryboard(name: "NCScan", bundle: nil).instantiateInitialViewController() {
                     navigationController.modalPresentationStyle = UIModalPresentationStyle.pageSheet
                     if let viewController = navigationController.topMostViewController() as? NCScan {
-                        viewController.serverUrl = mainTabBarController.currentServerUrl()
+                        viewController.serverUrl = controller.currentServerUrl()
                     }
                     self.viewController?.present(navigationController, animated: true, completion: nil)
                 }

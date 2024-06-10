@@ -83,8 +83,8 @@ extension NCManageDatabase {
         DispatchQueue.main.async {
             let windowScenes = UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }
             for windowScene in windowScenes {
-                if let mainTabBarController = windowScene.keyWindow?.rootViewController as? NCMainTabBarController {
-                    mainTabBarController.filesServerUrl.removeValue(forKey: serverUrl)
+                if let controller = windowScene.keyWindow?.rootViewController as? NCMainTabBarController {
+                    controller.filesServerUrl.removeValue(forKey: serverUrl)
                 }
             }
         }
@@ -174,7 +174,11 @@ extension NCManageDatabase {
         do {
             let realm = try Realm()
             realm.refresh()
-            return realm.objects(tableDirectory.self).filter("ocId == %@", ocId).first
+            if let result = realm.objects(tableDirectory.self).filter("ocId == %@", ocId).first {
+                return tableDirectory(value: result)
+            } else {
+                return nil
+            }
         } catch let error as NSError {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not access database: \(error)")
         }
