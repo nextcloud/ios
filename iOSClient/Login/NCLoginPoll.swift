@@ -21,8 +21,15 @@ struct NCLoginPoll: View {
 
     var body: some View {
         VStack {
-            Text("Please continue in your browser")
+            Text("Please complete the log in process your browser")
+                .multilineTextAlignment(.center)
                 .foregroundStyle(.white)
+                .padding()
+
+            ProgressView()
+                .scaleEffect(1.5)
+                .tint(.white)
+                .padding()
 
             HStack {
                 Button("Cancel") {
@@ -64,7 +71,10 @@ struct NCLoginPoll: View {
         .background(Color(NCBrandColor.shared.customer))
         .onAppear {
             loginManager.configure(loginFlowV2Token: loginFlowV2Token, loginFlowV2Endpoint: loginFlowV2Endpoint, loginFlowV2Login: loginFlowV2Login)
-            loginManager.openLoginInBrowser()
+
+            if !isRunningForPreviews {
+                loginManager.openLoginInBrowser()
+            }
         }
         .interactiveDismissDisabled()
     }
