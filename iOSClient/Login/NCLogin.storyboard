@@ -121,7 +121,7 @@
         <!--Login Provider-->
         <scene sceneID="3Rv-vf-u17">
             <objects>
-                <viewController storyboardIdentifier="NCLoginWeb" id="yEb-Ky-35s" customClass="NCLoginProvider" customModule="Nextcloud" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="NCLoginProvider" id="yEb-Ky-35s" customClass="NCLoginProvider" customModule="Nextcloud" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="UX5-cJ-bY6">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>

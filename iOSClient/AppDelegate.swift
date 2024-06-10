@@ -398,7 +398,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
                 if selector == NCGlobal.shared.introSignup {
                     activeLogin?.urlBase = NCBrandOptions.shared.linkloginPreferredProviders
-                    let web = UIStoryboard(name: "NCLogin", bundle: nil).instantiateViewController(withIdentifier: "NCLoginWeb") as? NCLoginProvider
+                    let web = UIStoryboard(name: "NCLogin", bundle: nil).instantiateViewController(withIdentifier: "NCLoginProvider") as? NCLoginProvider
                     web?.urlBase = NCBrandOptions.shared.linkloginPreferredProviders
                     showLoginViewController(web)
                 } else {
@@ -413,14 +413,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                 activeLogin?.urlBase = NCBrandOptions.shared.loginBaseUrl
                 showLoginViewController(activeLogin)
             }
-        } else if openLoginWeb { // remove this, create a bool for no accounts
+        } else if openLoginWeb {
             // Used also for reinsert the account (change passwd)
             if activeLogin?.view.window == nil {
                 activeLogin = UIStoryboard(name: "NCLogin", bundle: nil).instantiateViewController(withIdentifier: "NCLogin") as? NCLogin
                 activeLogin?.urlBase = urlBase
                 activeLogin?.disableUrlField = true
                 activeLogin?.disableCloseButton = true
-//                activeLogin?.user = user
                 showLoginViewController(activeLogin)
             }
         } else {
@@ -432,7 +431,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             }
         }
     }
-//
+
     @objc func pollLogin() {
         NextcloudKit.shared.getLoginFlowV2Poll(token: self.loginFlowV2Token, endpoint: self.loginFlowV2Endpoint) { server, loginName, appPassword, _, error in
             if error == .success, let server, let loginName, let appPassword {
