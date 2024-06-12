@@ -158,7 +158,8 @@
 "_disabled_"                = "Disabled";
 "_standard_"                = "Standard";
 "_maximum_"                 = "Maximum";
-"_error_occurred_"           = "An error occurred, please try again";
+"_error_occurred_"          = "An error occurred, please try again";
+"_retry_"                   = "Retry";
 
 /* MARK: Files lock */
 
@@ -1075,3 +1076,5 @@
 "_no_types_"                     = "No provider found";
 "_no_types_subtitle_"            = "AI Providers need to be installed to use the Assistant";
 
+// MARK: Login poll
+"_poll_desc_"                    = "Please complete the log in process your browser";

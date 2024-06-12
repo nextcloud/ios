@@ -21,7 +21,7 @@ struct NCLoginPoll: View {
 
     var body: some View {
         VStack {
-            Text("Please complete the log in process your browser")
+            Text(NSLocalizedString("_poll_desc_", comment: ""))
                 .multilineTextAlignment(.center)
                 .foregroundStyle(.white)
                 .padding()
@@ -32,14 +32,14 @@ struct NCLoginPoll: View {
                 .padding()
 
             HStack {
-                Button("Cancel") {
+                Button(NSLocalizedString("_cancel_", comment: "")) {
                     dismiss()
                 }
                 .disabled(loginManager.isLoading || cancelButtonDisabled)
                 .buttonStyle(.bordered)
                 .tint(.white)
 
-                Button("Retry") {
+                Button(NSLocalizedString("_retry_", comment: "")) {
                     loginManager.openLoginInBrowser()
                 }
                 .buttonStyle(.borderedProminent)

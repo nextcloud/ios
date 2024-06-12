@@ -372,7 +372,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         }
 
         // [WEBPersonalized] [AppConfig]
-        if NCBrandOptions.shared.use_login_web_personalized || NCBrandOptions.shared.use_AppConfig {
+        if NCBrandOptions.shared.use_AppConfig {
             if activeLogin?.view.window == nil {
                 urlBase = NCBrandOptions.shared.loginBaseUrl
                 pollLogin()
