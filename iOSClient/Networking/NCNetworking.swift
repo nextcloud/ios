@@ -200,9 +200,10 @@ class NCNetworking: NSObject, NKCommonDelegate {
             DispatchQueue.main.async {
                 // Use openssl pkcs12 -export -legacy -out identity.p12 -inkey key.pem -in cert.pem
                 if let p12Data = self.p12Data {
-                    completionHandler(URLSession.AuthChallengeDisposition.useCredential, PKCS12.urlCredential(for: (p12Data, "velikana100") as? UserCertificate))
+                    completionHandler(URLSession.AuthChallengeDisposition.useCredential, PKCS12.urlCredential(for: (p12Data, "12345") as? UserCertificate))
                 } else {
                     self.delegate?.didAskForClientCertificate()
+                    completionHandler(URLSession.AuthChallengeDisposition.performDefaultHandling, nil)
                 }
             }
 
