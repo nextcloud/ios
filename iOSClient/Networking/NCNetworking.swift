@@ -31,6 +31,10 @@ import Queuer
 @objc protocol uploadE2EEDelegate: AnyObject { }
 #endif
 
+@objc protocol ClientCertificateDelegate {
+    func didAskForClientCertificate()
+}
+
 @objcMembers
 class NCNetworking: NSObject, NKCommonDelegate {
     public static let shared: NCNetworking = {
@@ -59,6 +63,10 @@ class NCNetworking: NSObject, NKCommonDelegate {
     let uploadMetadataInBackground = ThreadSafeDictionary<FileNameServerUrl, tableMetadata>()
     let downloadMetadataInBackground = ThreadSafeDictionary<FileNameServerUrl, tableMetadata>()
     var transferInForegorund: TransferInForegorund?
+    weak var delegate: ClientCertificateDelegate?
+
+    var p12Data: Data?
+    
     let transferInError = ThreadSafeDictionary<String, Int>()
 
     func transferInError(ocId: String) {
@@ -187,8 +195,28 @@ class NCNetworking: NSObject, NKCommonDelegate {
     func authenticationChallenge(_ session: URLSession,
                                  didReceive challenge: URLAuthenticationChallenge,
                                  completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
-        DispatchQueue.global().async {
-            self.checkTrustedChallenge(session, didReceive: challenge, completionHandler: completionHandler)
+        if challenge.protectionSpace.authenticationMethod == NSURLAuthenticationMethodClientCertificate {
+            DispatchQueue.main.async {
+                // Use openssl pkcs12 -export -legacy -out identity.p12 -inkey key.pem -in cert.pem
+                if let p12Data = self.p12Data {
+                    completionHandler(URLSession.AuthChallengeDisposition.useCredential, PKCS12.urlCredential(for: (p12Data, "12345") as? UserCertificate))
+                } else {
+                    self.delegate?.didAskForClientCertificate()
+                    completionHandler(URLSession.AuthChallengeDisposition.performDefaultHandling, nil)
+                }
+            }
+
+//            let alert = UIAlertController(title: NSLocalizedString("_edit_comment_", comment: ""), message: nil, preferredStyle: .alert)
+//            alert.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel, handler: nil))
+//            UIApplication.shared.?.rootViewController?.present(alert, animated: true)
+//            let p12Data = try? Data(contentsOf: URL(fileURLWithPath: Bundle.module.path(forResource: "identity", ofType: "p12")!))
+            //                let certificate = PKCS12(pkcs12Data: p12Data!, password: "")
+
+            //            completionHandler(URLSession.AuthChallengeDisposition.useCredential, PKCS12.urlCredential(for: (p12Data, "velikana100") as? UserCertificate))
+        } else {
+            DispatchQueue.global().async {
+                self.checkTrustedChallenge(session, didReceive: challenge, completionHandler: completionHandler)
+            }
         }
     }
 

@@ -1076,5 +1076,13 @@
 "_no_types_"                     = "No provider found";
 "_no_types_subtitle_"            = "AI Providers need to be installed to use the Assistant";
 
+// MARK: Client certificate
+"_no_client_cert_found_"         = "No client certificate was found";
+"_no_client_cert_found_desc_"    = "Do you want to install a TLS client certificate?";
+
+// MARK: Client certificate
+"_no_client_cert_found_"         = "No client certificate was found";
+"_no_client_cert_found_desc_"    = "Do you want to install a TLS client certificate?";
+
 // MARK: Login poll
 "_poll_desc_"                    = "Please complete the log in process your browser";
