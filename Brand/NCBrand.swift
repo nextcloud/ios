@@ -55,7 +55,7 @@ let userAgent: String = {
     @objc public var folderDefaultAutoUpload: String = "Photos"
 
     // Capabilities Group
-    @objc public var capabilitiesGroups: String = "com.viseven.ionos.easystorage"
+    @objc public var capabilitiesGroups: String = "group.com.viseven.ionos.easystorage"
     @objc public var capabilitiesGroupApps: String = "group.com.nextcloud.apps"
 
     // BRAND ONLY
