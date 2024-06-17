@@ -1078,11 +1078,9 @@
 
 // MARK: Client certificate
 "_no_client_cert_found_"         = "No client certificate was found";
-"_no_client_cert_found_desc_"    = "Do you want to install a TLS client certificate?";
-
-// MARK: Client certificate
-"_no_client_cert_found_"         = "No client certificate was found";
-"_no_client_cert_found_desc_"    = "Do you want to install a TLS client certificate?";
+"_no_client_cert_found_desc_"    = "Do you want to install a TLS client certificate? \n Note: Only .p12 created through OpenSSL with the -legacy flag can work on Apple devices.";
+"_client_cert_enter_password_"   = "Enter the password for the chosen certificate";
+"_client_cert_wrong_password_"   = "Sorry, you entered an invalid password";
 
 // MARK: Login poll
 "_poll_desc_"                    = "Please complete the log in process your browser";

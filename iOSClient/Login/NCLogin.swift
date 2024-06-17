@@ -21,6 +21,7 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+import UniformTypeIdentifiers
 import UIKit
 import NextcloudKit
 import SwiftEntryKit
@@ -60,6 +61,9 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
     var configPassword: String?
     var configAppPassword: String?
 
+    private var p12Data: Data?
+    private var p12Password: String?
+    
     // MARK: - View Life Cycle
 
     override func viewDidLoad() {
@@ -452,6 +456,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
                         }
                     }
 
+                    NCKeychain().setClientCertificate(account: account, p12Data: NCNetworking.shared.tempP12Data, p12Password: NCNetworking.shared.tempP12Password)
                 } else {
 
                     let alertController = UIAlertController(title: NSLocalizedString("_error_", comment: ""), message: error.errorDescription, preferredStyle: .alert)
@@ -520,6 +525,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
                     }
                 }
 
+                NCKeychain().setClientCertificate(account: account, p12Data: NCNetworking.shared.tempP12Data, p12Password: NCNetworking.shared.tempP12Password)
             } else {
 
                 let alertController = UIAlertController(title: NSLocalizedString("_error_", comment: ""), message: error.errorDescription, preferredStyle: .alert)
@@ -549,26 +555,51 @@ extension NCLogin: NCShareAccountsDelegate {
 
 extension NCLogin: ClientCertificateDelegate, UIDocumentPickerDelegate {
     func didAskForClientCertificate() {
-        let alert = UIAlertController(title: NSLocalizedString("_no_client_cert_found_", comment: ""), message: NSLocalizedString("_no_client_cert_found_desc_", comment: ""), preferredStyle: .alert)
+        let alertNoCertFound = UIAlertController(title: NSLocalizedString("_no_client_cert_found_", comment: ""), message: NSLocalizedString("_no_client_cert_found_desc_", comment: ""), preferredStyle: .alert)
 
-        alert.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel, handler: nil))
+        alertNoCertFound.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel, handler: nil))
 
-        alert.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { _ in
+        alertNoCertFound.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { _ in
             let documentProviderMenu = UIDocumentPickerViewController(forOpeningContentTypes: [UTType.pkcs12])
-
-//            documentProviderMenu.modalPresentationStyle = .formSheet
-//            documentProviderMenu.popoverPresentationController?.sourceView = mainTabBarController.tabBar
-//            documentProviderMenu.popoverPresentationController?.sourceRect = mainTabBarController.tabBar.bounds
             documentProviderMenu.delegate = self
 
             self.present(documentProviderMenu, animated: true, completion: nil)
         }))
 
-        present(alert, animated: true)
+        present(alertNoCertFound, animated: true)
     }
 
     func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
-        NCNetworking.shared.p12Data = try? Data(contentsOf: urls[0])
-        actionButtonLogin(self)
+        NCNetworking.shared.tempP12Data = try? Data(contentsOf: urls[0])
+
+        let alertEnterPassword = UIAlertController(title: NSLocalizedString("_client_cert_enter_password_", comment: ""), message: "", preferredStyle: .alert)
+
+        alertEnterPassword.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel, handler: nil))
+
+        alertEnterPassword.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { _ in
+            let documentProviderMenu = UIDocumentPickerViewController(forOpeningContentTypes: [UTType.pkcs12])
+            NCNetworking.shared.tempP12Password = alertEnterPassword.textFields?[0].text
+
+//            NCKeychain().setClientCertificate(account: acco, p12Data: p12Data, p12Password: p12Password)
+
+            self.actionButtonLogin(self)
+        }))
+
+        alertEnterPassword.addTextField { textField in
+            textField.isSecureTextEntry = true
+        }
+
+        present(alertEnterPassword, animated: true)
+    }
+
+    func onIncorrectPassword() {
+//        NCNetworking.shared.p12Data = nil
+//        NCNetworking.shared.p12Password = nil
+
+        let alertWrongPassword = UIAlertController(title: NSLocalizedString("_client_cert_wrong_password_", comment: ""), message: "", preferredStyle: .alert)
+
+        alertWrongPassword.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default))
+
+        present(alertWrongPassword, animated: true)
     }
 }

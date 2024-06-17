@@ -32,6 +32,7 @@ import Queuer
 #endif
 
 @objc protocol ClientCertificateDelegate {
+    func onIncorrectPassword()
     func didAskForClientCertificate()
 }
 
@@ -65,7 +66,10 @@ class NCNetworking: NSObject, NKCommonDelegate {
     var transferInForegorund: TransferInForegorund?
     weak var delegate: ClientCertificateDelegate?
 
-    var p12Data: Data?
+    var tempP12Data: Data?
+    var tempP12Password: String?
+    private var p12Data: Data?
+    private var p12Password: String?
     
     let transferInError = ThreadSafeDictionary<String, Int>()
 
@@ -157,6 +161,16 @@ class NCNetworking: NSObject, NKCommonDelegate {
     override init() {
         super.init()
 
+//        if let account = NCManageDatabase.shared.getActiveAccount()?.account {
+//            (self.p12Data, self.p12Password) = NCKeychain().getClientCertificate(account: account)
+//        }
+        
+        NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeUser), object: nil, queue: nil) { _ in
+            if let account = NCManageDatabase.shared.getActiveAccount()?.account {
+                (self.p12Data, self.p12Password) = NCKeychain().getClientCertificate(account: account)
+            }
+        }
+
 #if EXTENSION
         print("Start Background Upload Extension: ", sessionUploadBackgroundExtension)
 #else
@@ -197,22 +211,22 @@ class NCNetworking: NSObject, NKCommonDelegate {
                                  completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
         if challenge.protectionSpace.authenticationMethod == NSURLAuthenticationMethodClientCertificate {
             DispatchQueue.main.async {
-                // Use openssl pkcs12 -export -legacy -out identity.p12 -inkey key.pem -in cert.pem
-                if let p12Data = self.p12Data {
-                    completionHandler(URLSession.AuthChallengeDisposition.useCredential, PKCS12.urlCredential(for: (p12Data, "12345") as? UserCertificate))
+
+                (self.p12Data, self.p12Password) = NCKeychain().getClientCertificate(account: NCManageDatabase.shared.getActiveAccount()!.account)
+
+                if let p12Data = self.tempP12Data ?? self.p12Data,
+                   let cert = (p12Data, self.tempP12Password ?? self.p12Password) as? UserCertificate,
+                   let pkcs12 = try? PKCS12(pkcs12Data: cert.data, password: cert.password, onIncorrectPassword: {
+                       self.delegate?.onIncorrectPassword()
+                   }) {
+                    let creds = PKCS12.urlCredential(for: pkcs12)
+
+                    completionHandler(URLSession.AuthChallengeDisposition.useCredential, creds)
                 } else {
                     self.delegate?.didAskForClientCertificate()
                     completionHandler(URLSession.AuthChallengeDisposition.performDefaultHandling, nil)
                 }
             }
-
-//            let alert = UIAlertController(title: NSLocalizedString("_edit_comment_", comment: ""), message: nil, preferredStyle: .alert)
-//            alert.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel, handler: nil))
-//            UIApplication.shared.?.rootViewController?.present(alert, animated: true)
-//            let p12Data = try? Data(contentsOf: URL(fileURLWithPath: Bundle.module.path(forResource: "identity", ofType: "p12")!))
-            //                let certificate = PKCS12(pkcs12Data: p12Data!, password: "")
-
-            //            completionHandler(URLSession.AuthChallengeDisposition.useCredential, PKCS12.urlCredential(for: (p12Data, "velikana100") as? UserCertificate))
         } else {
             DispatchQueue.global().async {
                 self.checkTrustedChallenge(session, didReceive: challenge, completionHandler: completionHandler)

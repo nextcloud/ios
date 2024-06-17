@@ -10,6 +10,12 @@ import Foundation
 
 typealias UserCertificate = (data: Data, password: String)
 
+enum PKCS12Error: Error {
+    case wrongPasswordError(String)
+    case runtimeError(String)
+}
+
+
 class PKCS12 {
     let label: String?
     let keyID: NSData?
@@ -21,25 +27,26 @@ class PKCS12 {
     /// - Parameters:
     ///   - pkcs12Data: the actual data we want to parse.
     ///   - password: he password required to unlock the PKCS12 data.
-    public init(pkcs12Data: Data, password: String) {
+    public init(pkcs12Data: Data, password: String, onIncorrectPassword: () -> Void) throws {
         let importPasswordOption: NSDictionary
-            = [kSecImportExportPassphrase as NSString: password]
+        = [kSecImportExportPassphrase as NSString: password]
         var items: CFArray?
         let secError: OSStatus
-            = SecPKCS12Import(pkcs12Data as NSData,
-                              importPasswordOption, &items)
-        guard secError == errSecSuccess else {
-            if secError == errSecAuthFailed {
-                NSLog("Incorrect password?")
-            }
-            fatalError("Error trying to import PKCS12 data")
+        = SecPKCS12Import(pkcs12Data as NSData,
+                          importPasswordOption, &items)
+
+        if secError == errSecAuthFailed {
+            onIncorrectPassword()
+            throw PKCS12Error.wrongPasswordError("Wrong password entered")
         }
-        guard let theItemsCFArray = items else { fatalError() }
+
+        guard let theItemsCFArray = items else { throw PKCS12Error.runtimeError("") }
+
         let theItemsNSArray: NSArray = theItemsCFArray as NSArray
         guard let dictArray
-            = theItemsNSArray as? [[String: AnyObject]]
+                = theItemsNSArray as? [[String: AnyObject]]
         else {
-            fatalError()
+            throw PKCS12Error.runtimeError("")
         }
 
         label = dictArray.element(for: kSecImportItemLabel)
@@ -49,12 +56,8 @@ class PKCS12 {
         identity = dictArray.element(for: kSecImportItemIdentity)
     }
 
-    static func urlCredential(for userCertificate: UserCertificate?) -> URLCredential? {
-        guard let userCertificate = userCertificate else { return nil }
-
-        let p12Contents = PKCS12(pkcs12Data: userCertificate.data, password: userCertificate.password)
-
-        guard let identity = p12Contents.identity else {
+    static func urlCredential(for pkcs12: PKCS12) -> URLCredential? {
+        guard let identity = pkcs12.identity else {
             return nil
         }
 

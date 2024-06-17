@@ -577,6 +577,26 @@ import KeychainAccess
         setPushNotificationDeviceIdentifierSignature(account: account, deviceIdentifierSignature: nil)
     }
 
+    // MARK: - Certificates
+
+    func setClientCertificate(account: String, p12Data: Data?, p12Password: String?) {
+        var key = "ClientCertificateData" + account
+        keychain[data: key] = p12Data
+
+        key = "ClientCertificatePassword" + account
+        keychain[key] = p12Password
+    }
+
+    func getClientCertificate(account: String) -> (p12Data: Data?, p12Password: String?) {
+        var key = "ClientCertificateData" + account
+        let data = try? keychain.getData(key)
+
+        key = "ClientCertificatePassword" + account
+        let password = keychain[key]
+
+        return (data, password)
+    }
+
     // MARK: -
 
     private func migrate(key: String) {
