@@ -505,7 +505,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                 NCManageDatabase.shared.deleteAccount(account)
                 NCManageDatabase.shared.addAccount(account, urlBase: urlBase, user: user, userId: userProfile.userId, password: password)
 
-                NCKeychain().setClientCertificate(account: account, p12Data: NCNetworking.shared.tempP12Data, p12Password: NCNetworking.shared.tempP12Password)
+                NCKeychain().setClientCertificate(account: account, p12Data: NCNetworking.shared.p12Data, p12Password: NCNetworking.shared.p12Password)
 
                 self.changeAccount(account, userProfile: userProfile)
             } else {

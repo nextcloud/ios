@@ -66,10 +66,8 @@ class NCNetworking: NSObject, NKCommonDelegate {
     var transferInForegorund: TransferInForegorund?
     weak var delegate: ClientCertificateDelegate?
 
-    var tempP12Data: Data?
-    var tempP12Password: String?
-    private var p12Data: Data?
-    private var p12Password: String?
+    var p12Data: Data?
+    var p12Password: String?
     
     let transferInError = ThreadSafeDictionary<String, Int>()
 
@@ -161,14 +159,10 @@ class NCNetworking: NSObject, NKCommonDelegate {
     override init() {
         super.init()
 
-//        if let account = NCManageDatabase.shared.getActiveAccount()?.account {
-//            (self.p12Data, self.p12Password) = NCKeychain().getClientCertificate(account: account)
-//        }
-        
+        getActiveAccountCertificate()
+
         NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeUser), object: nil, queue: nil) { _ in
-            if let account = NCManageDatabase.shared.getActiveAccount()?.account {
-                (self.p12Data, self.p12Password) = NCKeychain().getClientCertificate(account: account)
-            }
+            self.getActiveAccountCertificate()
         }
 
 #if EXTENSION
@@ -211,11 +205,8 @@ class NCNetworking: NSObject, NKCommonDelegate {
                                  completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
         if challenge.protectionSpace.authenticationMethod == NSURLAuthenticationMethodClientCertificate {
             DispatchQueue.main.async {
-
-                (self.p12Data, self.p12Password) = NCKeychain().getClientCertificate(account: NCManageDatabase.shared.getActiveAccount()!.account)
-
-                if let p12Data = self.tempP12Data ?? self.p12Data,
-                   let cert = (p12Data, self.tempP12Password ?? self.p12Password) as? UserCertificate,
+                if let p12Data = self.p12Data,
+                   let cert = (p12Data, self.p12Password) as? UserCertificate,
                    let pkcs12 = try? PKCS12(pkcs12Data: cert.data, password: cert.password, onIncorrectPassword: {
                        self.delegate?.onIncorrectPassword()
                    }) {
@@ -382,6 +373,12 @@ class NCNetworking: NSObject, NKCommonDelegate {
                 }))
                 viewController?.present(alertController, animated: true)
             }
+        }
+    }
+
+    private func getActiveAccountCertificate() {
+        if let account = NCManageDatabase.shared.getActiveAccount()?.account {
+            (self.p12Data, self.p12Password) = NCKeychain().getClientCertificate(account: account)
         }
     }
 }

@@ -273,17 +273,9 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
     }
 
     @IBAction func actionButtonLogin(_ sender: Any) {
-
-        guard var url = baseUrl.text?.trimmingCharacters(in: .whitespacesAndNewlines) else { return }
-        if url.hasSuffix("/") { url = String(url.dropLast()) }
-        if url.isEmpty { return }
-
-        // Check whether baseUrl contain protocol. If not add https:// by default.
-        if url.hasPrefix("https") == false && url.hasPrefix("http") == false {
-            url = "https://" + url
-        }
-        self.baseUrl.text = url
-        isUrlValid(url: url)
+        NCNetworking.shared.p12Data = nil
+        NCNetworking.shared.p12Password = nil
+        login()
     }
 
     @IBAction func actionQRCode(_ sender: Any) {
@@ -318,6 +310,19 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
     }
 
     // MARK: - Login
+
+    private func login() {
+        guard var url = baseUrl.text?.trimmingCharacters(in: .whitespacesAndNewlines) else { return }
+        if url.hasSuffix("/") { url = String(url.dropLast()) }
+        if url.isEmpty { return }
+
+        // Check whether baseUrl contain protocol. If not add https:// by default.
+        if url.hasPrefix("https") == false && url.hasPrefix("http") == false {
+            url = "https://" + url
+        }
+        self.baseUrl.text = url
+        isUrlValid(url: url)
+    }
 
     func isUrlValid(url: String, user: String? = nil) {
 
@@ -455,8 +460,6 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
                             }
                         }
                     }
-
-                    NCKeychain().setClientCertificate(account: account, p12Data: NCNetworking.shared.tempP12Data, p12Password: NCNetworking.shared.tempP12Password)
                 } else {
 
                     let alertController = UIAlertController(title: NSLocalizedString("_error_", comment: ""), message: error.errorDescription, preferredStyle: .alert)
@@ -494,22 +497,9 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
         }
     }
 
-    func createAccount(server: String, username: String, password: String) {
-        var urlBase = server
-        if urlBase.last == "/" { urlBase = String(urlBase.dropLast()) }
-        let account: String = "\(username) \(urlBase)"
-        let user = username
-
-        NextcloudKit.shared.setup(account: account, user: user, userId: user, password: password, urlBase: urlBase)
-        NextcloudKit.shared.getUserProfile { _, userProfile, _, error in
-
-            if error == .success, let userProfile {
-
-                NCManageDatabase.shared.deleteAccount(account)
-                NCManageDatabase.shared.addAccount(account, urlBase: urlBase, user: user, userId: userProfile.userId, password: password)
-
-                self.appDelegate.changeAccount(account, userProfile: userProfile)
-
+    private func createAccount(server: String, username: String, password: String) {
+        appDelegate.createAccount(server: server, username: username, password: password) { error in
+            if error == .success {
                 let window = UIApplication.shared.firstWindow
                 if window?.rootViewController is NCMainTabBarController {
                     self.dismiss(animated: true)
@@ -524,18 +514,11 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
                         }
                     }
                 }
-
-                NCKeychain().setClientCertificate(account: account, p12Data: NCNetworking.shared.tempP12Data, p12Password: NCNetworking.shared.tempP12Password)
-            } else {
-
-                let alertController = UIAlertController(title: NSLocalizedString("_error_", comment: ""), message: error.errorDescription, preferredStyle: .alert)
-                alertController.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { _ in }))
-                self.present(alertController, animated: true)
             }
         }
     }
 
-    func getAppPassword(serverUrl: String, username: String, password: String) {
+    private func getAppPassword(serverUrl: String, username: String, password: String) {
         NextcloudKit.shared.getAppPassword(serverUrl: serverUrl, username: username, password: password) { token, _, error in
             if error == .success, let password = token {
                 self.createAccount(server: serverUrl, username: username, password: password)
@@ -570,19 +553,16 @@ extension NCLogin: ClientCertificateDelegate, UIDocumentPickerDelegate {
     }
 
     func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
-        NCNetworking.shared.tempP12Data = try? Data(contentsOf: urls[0])
-
         let alertEnterPassword = UIAlertController(title: NSLocalizedString("_client_cert_enter_password_", comment: ""), message: "", preferredStyle: .alert)
 
         alertEnterPassword.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel, handler: nil))
 
         alertEnterPassword.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { _ in
             let documentProviderMenu = UIDocumentPickerViewController(forOpeningContentTypes: [UTType.pkcs12])
-            NCNetworking.shared.tempP12Password = alertEnterPassword.textFields?[0].text
+            NCNetworking.shared.p12Data = try? Data(contentsOf: urls[0])
+            NCNetworking.shared.p12Password = alertEnterPassword.textFields?[0].text
 
-//            NCKeychain().setClientCertificate(account: acco, p12Data: p12Data, p12Password: p12Password)
-
-            self.actionButtonLogin(self)
+            self.login()
         }))
 
         alertEnterPassword.addTextField { textField in
@@ -593,8 +573,8 @@ extension NCLogin: ClientCertificateDelegate, UIDocumentPickerDelegate {
     }
 
     func onIncorrectPassword() {
-//        NCNetworking.shared.p12Data = nil
-//        NCNetworking.shared.p12Password = nil
+        NCNetworking.shared.p12Data = nil
+        NCNetworking.shared.p12Password = nil
 
         let alertWrongPassword = UIAlertController(title: NSLocalizedString("_client_cert_wrong_password_", comment: ""), message: "", preferredStyle: .alert)
 
