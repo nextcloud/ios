@@ -68,7 +68,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
 
     var p12Data: Data?
     var p12Password: String?
-    
+
     let transferInError = ThreadSafeDictionary<String, Int>()
 
     func transferInError(ocId: String) {
