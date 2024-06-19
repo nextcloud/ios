@@ -22,6 +22,7 @@
 //
 
 import UIKit
+import SwiftUI
 import Realm
 import NextcloudKit
 import EasyTipView
@@ -625,11 +626,19 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                 return action
             }
 
+            /*
             let addAccountAction = UIAction(title: NSLocalizedString("_add_account_", comment: ""), image: utility.loadImage(named: "person.crop.circle.badge.plus", colors: NCBrandColor.shared.iconImageMultiColors)) { _ in
                 self.appDelegate.openLogin(selector: NCGlobal.shared.introLogin, openLoginWeb: false)
             }
+            */
 
-            let addAccountSubmenu = UIMenu(title: "", options: .displayInline, children: [addAccountAction])
+            let settingsAccountAction = UIAction(title: NSLocalizedString("_settings_", comment: ""), image: utility.loadImage(named: "gear", colors: [NCBrandColor.shared.iconImageColor])) { _ in
+                let manageAccountView = NCManageAccountView(model: NCManageAccountModel(controller: self.tabBarController as? NCMainTabBarController))
+                let manageAccountController = UIHostingController(rootView: manageAccountView)
+                self.present(manageAccountController, animated: true, completion: nil)
+            }
+
+            let addAccountSubmenu = UIMenu(title: "", options: .displayInline, children: [settingsAccountAction])
 
             let menu = UIMenu(children: accountActions + [addAccountSubmenu])
 
