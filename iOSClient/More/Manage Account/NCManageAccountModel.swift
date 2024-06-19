@@ -91,6 +91,19 @@ class NCManageAccountModel: ObservableObject, ViewOnAppearHandling {
     }
 
     ///
+    func getTableViewHeight() -> CGFloat {
+        guard let tableAccount else { return 0 }
+        var height: CGFloat = 170
+        if NCGlobal.shared.capabilityUserStatusEnabled,
+           let tableAccount = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", tableAccount.account)) {
+            if !tableAccount.email.isEmpty { height += 30 }
+            if !tableAccount.phone.isEmpty { height += 30 }
+            if !tableAccount.address.isEmpty { height += 30 }
+        }
+        return height
+    }
+
+    ///
     func setAccount(account: String) {
         if let tableAccount = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", account)), self.tableAccount?.account != tableAccount.account {
             self.tableAccount = tableAccount

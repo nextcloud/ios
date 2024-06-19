@@ -64,11 +64,56 @@ struct NCManageAccountView: View {
                                 .frame(height: 10)
                             Text(status.statusMessage)
                                 .font(.system(size: 10))
+                            Spacer()
+                                .frame(height: 20)
+                            /// Personal data
+                            if let tableAccount = model.tableAccount, !tableAccount.email.isEmpty {
+                                HStack {
+                                    Image(systemName: "mail")
+                                        .resizable()
+                                        .scaledToFit()
+                                        .lineLimit(1)
+                                        .truncationMode(.middle)
+                                        .frame(width: 25, height: 25)
+                                    Text(tableAccount.email)
+                                        .frame(maxWidth: .infinity, alignment: .leading)
+                                        .font(.system(size: 16))
+                                }
+                                .frame(maxWidth: .infinity, maxHeight: 30)
+                            }
+                            if let tableAccount = model.tableAccount, !tableAccount.phone.isEmpty {
+                                HStack {
+                                    Image(systemName: "phone")
+                                        .resizable()
+                                        .scaledToFit()
+                                        .lineLimit(1)
+                                        .truncationMode(.middle)
+                                        .frame(width: 25, height: 25)
+                                    Text(tableAccount.phone)
+                                        .frame(maxWidth: .infinity, alignment: .leading)
+                                        .font(.system(size: 16))
+                                }
+                                .frame(maxWidth: .infinity, maxHeight: 30)
+                            }
+                            if let tableAccount = model.tableAccount, !tableAccount.address.isEmpty {
+                                HStack {
+                                    Image(systemName: "house")
+                                        .resizable()
+                                        .scaledToFit()
+                                        .lineLimit(1)
+                                        .truncationMode(.middle)
+                                        .frame(width: 25, height: 25)
+                                    Text(tableAccount.address)
+                                        .frame(maxWidth: .infinity, alignment: .leading)
+                                        .font(.system(size: 16))
+                                }
+                                .frame(maxWidth: .infinity, maxHeight: 30)
+                            }
                         }
                     }
                 }
                 .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
-                .frame(height: 150)
+                .frame(height: model.getTableViewHeight())
                 .onChange(of: model.indexActiveAccount) { index in
                     model.setAccount(account: model.accounts[index].account)
                 }
