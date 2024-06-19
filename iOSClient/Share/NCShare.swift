@@ -91,9 +91,9 @@ class NCShare: UIViewController, NCShareNetworkingDelegate, NCSharePagingContent
             let direcrory = NCManageDatabase.shared.getTableDirectory(account: metadata.account, serverUrl: metadata.serverUrl)
             if NCGlobal.shared.capabilityE2EEApiVersion == NCGlobal.shared.e2eeVersionV12 ||
                 (NCGlobal.shared.capabilityE2EEApiVersion == NCGlobal.shared.e2eeVersionV20 && direcrory?.e2eEncrypted ?? false) {
-                // searchField.isEnabled = false
                 searchFieldTopConstraint.constant = -50
-                searchField.isHidden = true
+                searchField.alpha = 0
+                btnContact.alpha = 0
             }
         } else {
             checkSharedWithYou()
@@ -242,6 +242,13 @@ class NCShare: UIViewController, NCShareNetworkingDelegate, NCSharePagingContent
         dropDown = DropDown()
         let appearance = DropDown.appearance()
 
+        // Setting up the blur effect
+        let blurEffect = UIBlurEffect(style: .light) // You can choose .dark, .extraLight, or .light
+        let blurEffectView = UIVisualEffectView(effect: blurEffect)
+        blurEffectView.frame = CGRect(x: 0, y: 0, width: 500, height: 20)
+//        blurEffectView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+
+//        appearance.addBlur(style: .dark)
         appearance.backgroundColor = .systemBackground
         appearance.cornerRadius = 10
         appearance.shadowColor = UIColor(white: 0.5, alpha: 1)
@@ -249,7 +256,6 @@ class NCShare: UIViewController, NCShareNetworkingDelegate, NCSharePagingContent
         appearance.shadowRadius = 25
         appearance.animationduration = 0.25
         appearance.textColor = .darkGray
-        appearance.setupMaskedCorners([.layerMaxXMaxYCorner, .layerMinXMaxYCorner])
 
         for sharee in sharees {
             var label = sharee.label
@@ -260,8 +266,8 @@ class NCShare: UIViewController, NCShareNetworkingDelegate, NCSharePagingContent
         }
 
         dropDown.anchorView = searchField
-        dropDown.bottomOffset = CGPoint(x: 0, y: searchField.bounds.height)
-        dropDown.width = searchField.bounds.width
+        dropDown.bottomOffset = CGPoint(x: 10, y: searchField.bounds.height)
+        dropDown.width = searchField.bounds.width - 20
         dropDown.direction = .bottom
 
         dropDown.cellNib = UINib(nibName: "NCSearchUserDropDownCell", bundle: nil)
@@ -270,6 +276,9 @@ class NCShare: UIViewController, NCShareNetworkingDelegate, NCSharePagingContent
             let sharee = sharees[index]
             cell.setupCell(sharee: sharee, baseUrl: appDelegate)
         }
+
+//        dropDown.insertSubview(blurEffectView, at: 0) // Insert at the bottom to ensure blur is behind other views//        appearance.setupMaskedCorners([.layerMaxXMaxYCorner, .layerMinXMaxYCorner])
+
 
         dropDown.selectionAction = { index, _ in
             let sharee = sharees[index]
