@@ -152,8 +152,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             self.handleProcessingTask(task)
         }
 
-        NotificationCenter.default.addObserver(self, selector: #selector(applicationDidBecomeActive2(_:)), name: UIApplication.didBecomeActiveNotification, object: nil)
-
         return true
     }
 
@@ -274,10 +272,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         }
     }
 
-    @objc private func applicationDidBecomeActive2(_ notification: NSNotification) {
-        pollLogin()
-    }
-
     // MARK: - Background Networking Session
 
     func application(_ application: UIApplication, handleEventsForBackgroundURLSession identifier: String, completionHandler: @escaping () -> Void) {
@@ -375,7 +369,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         if NCBrandOptions.shared.use_AppConfig {
             if activeLogin?.view.window == nil {
                 urlBase = NCBrandOptions.shared.loginBaseUrl
-                pollLogin()
 
                 NextcloudKit.shared.getLoginFlowV2(serverUrl: urlBase) { token, endpoint, login, _, error in
 
@@ -428,14 +421,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
                 activeLogin = UIStoryboard(name: "NCLogin", bundle: nil).instantiateViewController(withIdentifier: "NCLogin") as? NCLogin
                 showLoginViewController(activeLogin)
-            }
-        }
-    }
-
-    @objc func pollLogin() {
-        NextcloudKit.shared.getLoginFlowV2Poll(token: self.loginFlowV2Token, endpoint: self.loginFlowV2Endpoint) { server, loginName, appPassword, _, error in
-            if error == .success, let server, let loginName, let appPassword {
-                self.createAccount(server: server, username: loginName, password: appPassword, completion: { error in  })
             }
         }
     }
