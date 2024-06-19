@@ -26,20 +26,17 @@ import FileProvider
 import NextcloudKit
 
 class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
-
     var enumeratedItemIdentifier: NSFileProviderItemIdentifier
     var serverUrl: String?
     let fpUtility = fileProviderUtility()
 
     init(enumeratedItemIdentifier: NSFileProviderItemIdentifier) {
-
         self.enumeratedItemIdentifier = enumeratedItemIdentifier
 
         // Select ServerUrl
         if enumeratedItemIdentifier == .rootContainer {
             serverUrl = fileProviderData.shared.homeServerUrl
         } else {
-
             let metadata = fpUtility.getTableMetadataFromItemIdentifier(enumeratedItemIdentifier)
             if metadata != nil {
                 if let directorySource = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", metadata!.account, metadata!.serverUrl)) {
@@ -56,12 +53,10 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
     }
 
     func enumerateItems(for observer: NSFileProviderEnumerationObserver, startingAt page: NSFileProviderPage) {
-
         var items: [NSFileProviderItemProtocol] = []
 
         /*** WorkingSet ***/
         if enumeratedItemIdentifier == .workingSet {
-
             var itemIdentifierMetadata: [NSFileProviderItemIdentifier: tableMetadata] = [:]
 
             // ***** Tags *****
@@ -103,13 +98,10 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
             }
 
             if page == NSFileProviderPage.initialPageSortedByDate as NSFileProviderPage || page == NSFileProviderPage.initialPageSortedByName as NSFileProviderPage {
-
                 self.readFileOrFolder(serverUrl: serverUrl) { metadatas in
                     self.completeObserver(observer, numPage: 1, metadatas: metadatas)
                 }
-
             } else {
-
                 let numPage = Int(String(data: page.rawValue, encoding: .utf8)!)!
                 completeObserver(observer, numPage: numPage, metadatas: nil)
             }
@@ -117,7 +109,6 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
     }
 
     func enumerateChanges(for observer: NSFileProviderChangeObserver, from anchor: NSFileProviderSyncAnchor) {
-
         var itemsDelete: [NSFileProviderItemIdentifier] = []
         var itemsUpdate: [FileProviderItem] = []
 
@@ -166,18 +157,13 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
     // --------------------------------------------------------------------------------------------
 
     func completeObserver(_ observer: NSFileProviderEnumerationObserver, numPage: Int, metadatas: [tableMetadata]?) {
-
         var numPage = numPage
         var items: [NSFileProviderItemProtocol] = []
 
         if metadatas != nil {
-
             for metadata in metadatas! {
-
                 if metadata.e2eEncrypted || (!metadata.session.isEmpty && metadata.session != NCNetworking.shared.sessionUploadBackgroundExtension) { continue }
-
                 fpUtility.createocIdentifierOnFileSystem(metadata: metadata)
-
                 let parentItemIdentifier = fpUtility.getParentItemIdentifier(metadata: metadata)
                 if parentItemIdentifier != nil {
                     let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier!)
@@ -197,29 +183,16 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
     }
 
     func readFileOrFolder(serverUrl: String, completionHandler: @escaping (_ metadatas: [tableMetadata]?) -> Void) {
-
-        var directoryEtag: String?
-
-        if let tableDirectory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", fileProviderData.shared.account, serverUrl)) {
-            directoryEtag = tableDirectory.etag
-        }
-
-        NextcloudKit.shared.readFileOrFolder(serverUrlFileName: serverUrl, depth: "0", showHiddenFiles: NCKeychain().showHiddenFiles) { account, files, _, error in
-
-            if directoryEtag != files.first?.etag {
-
-                NextcloudKit.shared.readFileOrFolder(serverUrlFileName: serverUrl, depth: "1", showHiddenFiles: NCKeychain().showHiddenFiles) { account, files, _, error in
-
-                    if error == .success {
-                        DispatchQueue.global().async {
-                            NCManageDatabase.shared.convertFilesToMetadatas(files, useFirstAsMetadataFolder: true) { _, metadatas in
-                                let predicate = NSPredicate(format: "account == %@ AND serverUrl == %@ AND status == %d", account, serverUrl, NCGlobal.shared.metadataStatusNormal)
-                                NCManageDatabase.shared.updateMetadatas(metadatas, predicate: predicate)
-                                let metadatas = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", fileProviderData.shared.account, serverUrl), sorted: "fileName", ascending: true)
-                                completionHandler(metadatas)
-                            }
-                        }
-                    } else {
+        NextcloudKit.shared.readFileOrFolder(serverUrlFileName: serverUrl, depth: "1", showHiddenFiles: NCKeychain().showHiddenFiles) { account, files, _, error in
+            if error == .success {
+                DispatchQueue.global().async {
+                    NCManageDatabase.shared.convertFilesToMetadatas(files, useFirstAsMetadataFolder: true) { metadataFolder, metadatas in
+                        /// FOLDER
+                        NCManageDatabase.shared.addMetadata(metadataFolder)
+                        NCManageDatabase.shared.addDirectory(e2eEncrypted: metadataFolder.e2eEncrypted, favorite: metadataFolder.favorite, ocId: metadataFolder.ocId, fileId: metadataFolder.fileId, etag: metadataFolder.etag, permissions: metadataFolder.permissions, richWorkspace: metadataFolder.richWorkspace, serverUrl: serverUrl, account: metadataFolder.account)
+                        /// FILES
+                        let predicate = NSPredicate(format: "account == %@ AND serverUrl == %@ AND status == %d", account, serverUrl, NCGlobal.shared.metadataStatusNormal)
+                        NCManageDatabase.shared.updateMetadatas(metadatas, predicate: predicate)
                         let metadatas = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", fileProviderData.shared.account, serverUrl), sorted: "fileName", ascending: true)
                         completionHandler(metadatas)
                     }
