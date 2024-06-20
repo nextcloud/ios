@@ -25,6 +25,7 @@ import SwiftUI
 
 struct NCManageAccountView: View {
     @ObservedObject var model: NCManageAccountModel
+
     @State private var showUserStatus = false
     @State private var showServerCertificate = false
     @State private var showPushCertificate = false
@@ -68,6 +69,7 @@ struct NCManageAccountView: View {
                                 .font(.system(size: 10))
                             Spacer()
                                 .frame(height: 20)
+                            ///
                             /// Personal data
                             if let tableAccount = model.tableAccount, !tableAccount.email.isEmpty {
                                 HStack {

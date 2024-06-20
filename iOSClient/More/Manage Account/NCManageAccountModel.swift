@@ -102,6 +102,7 @@ class NCManageAccountModel: ObservableObject, ViewOnAppearHandling {
             if !tableAccount.phone.isEmpty { height += 30 }
             if !tableAccount.address.isEmpty { height += 30 }
         }
+        if height == 190 { return 170 }
         return height
     }
 
