@@ -124,7 +124,8 @@ class NCManageAccountModel: ObservableObject, ViewOnAppearHandling {
             if let tableAccount = NCManageDatabase.shared.getAllAccount().first {
                 appDelegate.changeAccount(tableAccount.account, userProfile: nil)
             } else {
-                self.dismissView = true
+                dismissView = true
+                appDelegate.openLogin(selector: NCGlobal.shared.introLogin, openLoginWeb: false)
             }
             onViewAppear()
         }
