@@ -24,8 +24,9 @@
 import Foundation
 import UIKit
 
+/// Protocol for know when the Account Settings has dimissed
 protocol NCAccountSettingsModelDelegate: AnyObject {
-    func accountSettingsDismiss()
+    func accountSettingsDidDismiss(tableAccount: tableAccount?)
 }
 
 /// A model that allows the user to configure the account
@@ -36,8 +37,8 @@ class NCAccountSettingsModel: ObservableObject, ViewOnAppearHandling {
     var controller: NCMainTabBarController?
     /// All account
     var accounts: [tableAccount] = []
-    /// Timer change account
-    var timerChanheAccount: Timer?
+    /// Delegate
+    weak var delegate: NCAccountSettingsModelDelegate?
     /// Account now active
     @Published var tableAccount: tableAccount?
     /// Index
@@ -50,8 +51,9 @@ class NCAccountSettingsModel: ObservableObject, ViewOnAppearHandling {
     @Published var dismissView = false
 
     /// Initialization code to set up the ViewModel with the active account
-    init(controller: NCMainTabBarController?) {
+    init(controller: NCMainTabBarController?, delegate: NCAccountSettingsModelDelegate?) {
         self.controller = controller
+        self.delegate = delegate
         if ProcessInfo.processInfo.environment["XCODE_RUNNING_FOR_PREVIEWS"] == "1" {
             NCManageDatabase.shared.previewCreateDB()
         }
@@ -117,15 +119,6 @@ class NCAccountSettingsModel: ObservableObject, ViewOnAppearHandling {
         if let tableAccount = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", account)), self.tableAccount?.account != tableAccount.account {
             self.tableAccount = tableAccount
             self.alias = tableAccount.alias
-            /// Change active account
-            timerChanheAccount?.invalidate()
-            timerChanheAccount = Timer.scheduledTimer(timeInterval: 1.5, target: self, selector: #selector(changeAccount), userInfo: nil, repeats: false)
-        }
-    }
-
-    @objc func changeAccount() {
-        if let tableAccount = self.tableAccount {
-            self.appDelegate.changeAccount(tableAccount.account, userProfile: nil)
         }
     }
 
@@ -137,7 +130,6 @@ class NCAccountSettingsModel: ObservableObject, ViewOnAppearHandling {
                 appDelegate.changeAccount(tableAccount.account, userProfile: nil)
             } else {
                 dismissView = true
-                appDelegate.openLogin(selector: NCGlobal.shared.introLogin, openLoginWeb: false)
             }
             onViewAppear()
         }

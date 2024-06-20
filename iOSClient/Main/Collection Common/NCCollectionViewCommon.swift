@@ -28,7 +28,7 @@ import NextcloudKit
 import EasyTipView
 import JGProgressHUD
 
-class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UISearchResultsUpdating, UISearchControllerDelegate, UISearchBarDelegate, NCListCellDelegate, NCGridCellDelegate, NCSectionHeaderMenuDelegate, NCSectionFooterDelegate, NCSectionHeaderEmptyDataDelegate, UIAdaptivePresentationControllerDelegate, UIContextMenuInteractionDelegate {
+class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UISearchResultsUpdating, UISearchControllerDelegate, UISearchBarDelegate, NCListCellDelegate, NCGridCellDelegate, NCSectionHeaderMenuDelegate, NCSectionFooterDelegate, NCSectionHeaderEmptyDataDelegate, NCAccountSettingsModelDelegate, UIAdaptivePresentationControllerDelegate, UIContextMenuInteractionDelegate {
 
     @IBOutlet weak var collectionView: UICollectionView!
 
@@ -631,7 +631,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             }
 
             let settingsAccountAction = UIAction(title: NSLocalizedString("_account_settings_", comment: ""), image: utility.loadImage(named: "person.crop.circle", colors: [NCBrandColor.shared.iconImageColor])) { _ in
-                let accountSettingsView = NCAccountSettingsView(model: NCAccountSettingsModel(controller: self.tabBarController as? NCMainTabBarController))
+                let accountSettingsModel = NCAccountSettingsModel(controller: self.tabBarController as? NCMainTabBarController, delegate: self)
+                let accountSettingsView = NCAccountSettingsView(model: accountSettingsModel)
                 let accountSettingsController = UIHostingController(rootView: accountSettingsView)
                 self.present(accountSettingsController, animated: true, completion: nil)
             }
@@ -778,13 +779,14 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     }
 
     func getNavigationTitle() -> String {
-
         let activeAccount = NCManageDatabase.shared.getActiveAccount()
         guard let userAlias = activeAccount?.alias, !userAlias.isEmpty else {
             return NCBrandOptions.shared.brand
         }
         return userAlias
     }
+
+    func accountSettingsDidDismiss(tableAccount: tableAccount?) { }
 
     // MARK: - SEARCH
 

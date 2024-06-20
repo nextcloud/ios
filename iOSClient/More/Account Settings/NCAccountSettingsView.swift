@@ -253,9 +253,12 @@ struct NCAccountSettingsView: View {
                 presentationMode.wrappedValue.dismiss()
             }
         }
+        .onDisappear {
+            model.delegate?.accountSettingsDidDismiss(tableAccount: model.tableAccount)
+        }
     }
 }
 
 #Preview {
-    NCAccountSettingsView(model: NCAccountSettingsModel(controller: nil))
+    NCAccountSettingsView(model: NCAccountSettingsModel(controller: nil, delegate: nil))
 }
