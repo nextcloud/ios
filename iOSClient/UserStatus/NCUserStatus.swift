@@ -28,10 +28,6 @@ import SwiftUI
 import NextcloudKit
 import DropDown
 
-protocol NCUserStatusDelegate: AnyObject {
-    func userStatusDismiss(_ viewController: NCUserStatus)
-}
-
 class NCUserStatus: UIViewController {
 
     @IBOutlet weak var buttonCancel: UIBarButtonItem!
@@ -66,8 +62,6 @@ class NCUserStatus: UIViewController {
 
     @IBOutlet weak var clearStatusMessageButton: UIButton!
     @IBOutlet weak var setStatusMessageButton: UIButton!
-
-    weak var delegate: NCUserStatusDelegate?
 
     private var statusPredefinedStatuses: [NKUserStatus] = []
     private let utility = NCUtility()
@@ -181,7 +175,6 @@ class NCUserStatus: UIViewController {
         NextcloudKit.shared.getUserStatus { account, clearAt, icon, message, messageId, messageIsPredefined, status, statusIsUserDefined, _, _, error in
             if error == .success {
                 NCManageDatabase.shared.setAccountUserStatus(userStatusClearAt: clearAt, userStatusIcon: icon, userStatusMessage: message, userStatusMessageId: messageId, userStatusMessageIsPredefined: messageIsPredefined, userStatusStatus: status, userStatusStatusIsUserDefined: statusIsUserDefined, account: account)
-                self.delegate?.userStatusDismiss(self)
             }
         }
     }
@@ -615,15 +608,11 @@ extension NCUserStatus: UITableViewDataSource {
 struct UserStatusView: UIViewControllerRepresentable {
     @Binding var showUserStatus: Bool
 
-    class Coordinator: NSObject, NCUserStatusDelegate {
+    class Coordinator: NSObject {
         var parent: UserStatusView
 
         init(_ parent: UserStatusView) {
             self.parent = parent
-        }
-
-        func userStatusDismiss(_ viewController: NCUserStatus) {
-            parent.showUserStatus = false
         }
     }
 
@@ -632,7 +621,6 @@ struct UserStatusView: UIViewControllerRepresentable {
         let navigationController = storyboard.instantiateInitialViewController() as? UINavigationController
         let viewController = navigationController?.topViewController as? NCUserStatus
 
-        viewController?.delegate = context.coordinator
         return navigationController!
     }
 
