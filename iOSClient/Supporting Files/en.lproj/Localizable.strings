@@ -988,7 +988,7 @@
 "_light_"                   = "Light";
 "_dark_"                    = "Dark";
 "_use_system_style_"        = "Use system style";
-"_account_settings_"        = "Settings account";
+"_account_settings_"        = "Account settings";
 "_users_"                   = "Users";
 "_users_footer_"            = "Every time the app is reactivated, the account will be requested";
 

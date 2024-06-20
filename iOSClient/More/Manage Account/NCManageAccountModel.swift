@@ -32,14 +32,16 @@ class NCManageAccountModel: ObservableObject, ViewOnAppearHandling {
     var controller: NCMainTabBarController?
     /// All account
     var accounts: [tableAccount] = []
-    /// Account
+    /// Account now active
     @Published var tableAccount: tableAccount?
-    ///
+    /// Index
     @Published var indexActiveAccount: Int = 0
-    ///
+    /// Current alias
     @Published var alias: String = ""
-    ///
+    /// State to control
     @Published var accountRequest: Bool = false
+    /// Set true for dismiss the view
+    @Published var dismissView = false
 
     /// Initialization code to set up the ViewModel with the active account
     init(controller: NCMainTabBarController?) {
@@ -57,7 +59,7 @@ class NCManageAccountModel: ObservableObject, ViewOnAppearHandling {
         getIndexActiveAccount()
     }
 
-    ///
+    /// Internal use
     func getIndexActiveAccount() {
         self.indexActiveAccount = 0
         for (index, account) in accounts.enumerated() {
@@ -69,7 +71,7 @@ class NCManageAccountModel: ObservableObject, ViewOnAppearHandling {
         }
     }
 
-    ///
+    /// Func to get the user display name + alias
     func getUserName() -> String {
         guard let tableAccount else { return "" }
         NCManageDatabase.shared.setAccountAlias(tableAccount.account, alias: alias)
@@ -80,7 +82,7 @@ class NCManageAccountModel: ObservableObject, ViewOnAppearHandling {
         }
     }
 
-    ///
+    /// Function to update the user data
     func getUserStatus() -> (statusImage: UIImage, statusMessage: String, descriptionMessage: String) {
         guard let tableAccount else { return (UIImage(), "", "") }
         if NCGlobal.shared.capabilityUserStatusEnabled,
@@ -90,7 +92,7 @@ class NCManageAccountModel: ObservableObject, ViewOnAppearHandling {
         return (UIImage(), "", "")
     }
 
-    ///
+    /// Function to know the height of "account" data
     func getTableViewHeight() -> CGFloat {
         guard let tableAccount else { return 0 }
         var height: CGFloat = 190
@@ -103,33 +105,28 @@ class NCManageAccountModel: ObservableObject, ViewOnAppearHandling {
         return height
     }
 
-    ///
+    /// Function to change account
     func setAccount(account: String) {
-        DispatchQueue.global().async {
-            if let tableAccount = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", account)), self.tableAccount?.account != tableAccount.account {
-                self.tableAccount = tableAccount
-                self.alias = tableAccount.alias
-                /// Change active account
+        if let tableAccount = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", account)), self.tableAccount?.account != tableAccount.account {
+            self.tableAccount = tableAccount
+            self.alias = tableAccount.alias
+            /// Change active account
+            DispatchQueue.global().async {
                 self.appDelegate.changeAccount(tableAccount.account, userProfile: nil)
             }
         }
     }
 
-    ///
+    /// Function to delete the current account
     func deleteAccount() {
         if let tableAccount {
             appDelegate.deleteAccount(tableAccount.account, wipe: false)
             if let tableAccount = NCManageDatabase.shared.getAllAccount().first {
                 appDelegate.changeAccount(tableAccount.account, userProfile: nil)
             } else {
-                addAccount()
+                self.dismissView = true
             }
             onViewAppear()
         }
-    }
-
-    ///
-    func addAccount() {
-       // appDelegate.openLogin(selector: NCGlobal.shared.introLogin, openLoginWeb: false)
     }
 }

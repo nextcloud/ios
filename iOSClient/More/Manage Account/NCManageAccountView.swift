@@ -31,6 +31,8 @@ struct NCManageAccountView: View {
     @State private var showDeleteAccountAlert: Bool = false
     @State private var showAddAccount: Bool = false
 
+    @Environment(\.presentationMode) var presentationMode
+
     var body: some View {
         Form {
             Section(content: {
@@ -244,6 +246,11 @@ struct NCManageAccountView: View {
         }
         .navigationBarTitle(NSLocalizedString("_credentials_", comment: ""))
         .defaultViewModifier(model)
+        .onReceive(model.$dismissView) { newValue in
+            if newValue {
+                presentationMode.wrappedValue.dismiss()
+            }
+        }
     }
 }
 
