@@ -72,12 +72,13 @@ struct NCManageAccountView: View {
                                     Image(systemName: "mail")
                                         .resizable()
                                         .scaledToFit()
+                                        .font(Font.system(.body).weight(.light))
+                                        .frame(width: 20, height: 20)
+                                    Text(tableAccount.email)
                                         .lineLimit(1)
                                         .truncationMode(.middle)
-                                        .frame(width: 25, height: 25)
-                                    Text(tableAccount.email)
                                         .frame(maxWidth: .infinity, alignment: .leading)
-                                        .font(.system(size: 16))
+
                                 }
                                 .frame(maxWidth: .infinity, maxHeight: 30)
                             }
@@ -86,12 +87,12 @@ struct NCManageAccountView: View {
                                     Image(systemName: "phone")
                                         .resizable()
                                         .scaledToFit()
+                                        .font(Font.system(.body).weight(.light))
+                                        .frame(width: 20, height: 20)
+                                    Text(tableAccount.phone)
                                         .lineLimit(1)
                                         .truncationMode(.middle)
-                                        .frame(width: 25, height: 25)
-                                    Text(tableAccount.phone)
                                         .frame(maxWidth: .infinity, alignment: .leading)
-                                        .font(.system(size: 16))
                                 }
                                 .frame(maxWidth: .infinity, maxHeight: 30)
                             }
@@ -100,18 +101,19 @@ struct NCManageAccountView: View {
                                     Image(systemName: "house")
                                         .resizable()
                                         .scaledToFit()
+                                        .font(Font.system(.body).weight(.light))
+                                        .frame(width: 20, height: 20)
+                                    Text(tableAccount.address)
                                         .lineLimit(1)
                                         .truncationMode(.middle)
-                                        .frame(width: 25, height: 25)
-                                    Text(tableAccount.address)
                                         .frame(maxWidth: .infinity, alignment: .leading)
-                                        .font(.system(size: 16))
                                 }
                                 .frame(maxWidth: .infinity, maxHeight: 30)
                             }
                         }
                     }
                 }
+                .font(.system(size: 14))
                 .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
                 .frame(height: model.getTableViewHeight())
                 .onChange(of: model.indexActiveAccount) { index in
@@ -210,8 +212,10 @@ struct NCManageAccountView: View {
                         certificateDetailsView(host: host, title: NSLocalizedString("_certificate_pn_view_", comment: ""))
                     }
                 }
-                ///
-                /// Delete account
+            })
+            ///
+            /// Delete account
+            Section(content: {
                 Button(action: {
                     showDeleteAccountAlert.toggle()
                 }, label: {
@@ -236,40 +240,6 @@ struct NCManageAccountView: View {
                     }
                     Button(NSLocalizedString("_cancel_", comment: ""), role: .cancel) { }
                 }
-            })
-
-            Section(content: {
-                ///
-                /// Add account
-                Button(action: {
-                    showAddAccount.toggle()
-                }, label: {
-                    HStack {
-                        Image(systemName: "plus")
-                            .resizable()
-                            .scaledToFit()
-                            .font(Font.system(.body).weight(.light))
-                            .frame(width: 20, height: 20)
-                            .foregroundStyle(Color(NCBrandColor.shared.iconImageColor))
-                        Text(NSLocalizedString("_add_account_", comment: ""))
-                            .lineLimit(1)
-                            .truncationMode(.middle)
-                            .foregroundStyle(Color(NCBrandColor.shared.iconImageColor))
-                            .padding(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 20))
-                    }
-                    .font(.system(size: 14))
-                })
-                .sheet(isPresented: $showAddAccount) {
-
-                }
-                ///
-                /// Request account
-                Toggle(NSLocalizedString("_settings_account_request_", comment: ""), isOn: $model.accountRequest)
-                    .font(.system(size: 16))
-                    .tint(Color(NCBrandColor.shared.brandElement))
-                    .onChange(of: model.accountRequest, perform: { _ in
-                        model.updateAccountRequest()
-                    })
             })
         }
         .navigationBarTitle(NSLocalizedString("_credentials_", comment: ""))

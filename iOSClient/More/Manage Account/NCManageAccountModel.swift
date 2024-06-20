@@ -93,7 +93,7 @@ class NCManageAccountModel: ObservableObject, ViewOnAppearHandling {
     ///
     func getTableViewHeight() -> CGFloat {
         guard let tableAccount else { return 0 }
-        var height: CGFloat = 170
+        var height: CGFloat = 190
         if NCGlobal.shared.capabilityUserStatusEnabled,
            let tableAccount = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", tableAccount.account)) {
             if !tableAccount.email.isEmpty { height += 30 }
@@ -113,11 +113,6 @@ class NCManageAccountModel: ObservableObject, ViewOnAppearHandling {
                 self.appDelegate.changeAccount(tableAccount.account, userProfile: nil)
             }
         }
-    }
-
-    /// 
-    func updateAccountRequest() {
-        NCKeychain().accountRequest = accountRequest
     }
 
     ///

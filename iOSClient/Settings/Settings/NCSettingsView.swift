@@ -158,7 +158,22 @@ struct NCSettingsView: View {
                         .lineSpacing(1)
                 })
             }
-            /// `E2EEncryption` Section
+            /// Users
+            Section(content: {
+                Toggle(NSLocalizedString("_settings_account_request_", comment: ""), isOn: $model.accountRequest)
+                    .font(.system(size: 16))
+                    .tint(Color(NCBrandColor.shared.brandElement))
+                    .onChange(of: model.accountRequest, perform: { _ in
+                        model.updateAccountRequest()
+                    })
+            }, header: {
+                Text(NSLocalizedString("_users_", comment: ""))
+            }, footer: {
+                Text(NSLocalizedString("_users_footer_", comment: ""))
+                    .font(.system(size: 12))
+                    .lineSpacing(1)
+            })
+            /// E2EEncryption` Section
             if NCGlobal.shared.capabilityE2EEEnabled && NCGlobal.shared.e2eeVersions.contains(NCGlobal.shared.capabilityE2EEApiVersion) {
                 E2EESection(model: model)
             }
