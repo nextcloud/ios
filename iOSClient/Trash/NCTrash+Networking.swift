@@ -104,7 +104,7 @@ class NCOperationDownloadThumbnailTrash: ConcurrentOperation {
         let fileNamePreviewLocalPath = NCUtilityFileSystem().getDirectoryProviderStoragePreviewOcId(tableTrash.fileId, etag: tableTrash.fileName)
         let fileNameIconLocalPath = NCUtilityFileSystem().getDirectoryProviderStorageIconOcId(tableTrash.fileId, etag: tableTrash.fileName)
 
-        NextcloudKit.shared.downloadPreview(fileNamePathOrFileId: tableTrash.fileId,
+        NextcloudKit.shared.downloadPreview(fileId: tableTrash.fileId,
                                             fileNamePreviewLocalPath: fileNamePreviewLocalPath,
                                             widthPreview: NCGlobal.shared.sizePreview,
                                             heightPreview: NCGlobal.shared.sizePreview,

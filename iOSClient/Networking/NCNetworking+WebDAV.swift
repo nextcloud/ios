@@ -695,7 +695,7 @@ extension NCNetworking {
 
     // MARK: - Download Preview
 
-    func downloadPreview(fileNamePathOrFileId: String,
+    func downloadPreview(fileId: String,
                          fileNamePreviewLocalPath: String,
                          widthPreview: Int,
                          heightPreview: Int,
@@ -707,7 +707,7 @@ extension NCNetworking {
                          options: NKRequestOptions = NKRequestOptions()) async -> (account: String, imagePreview: UIImage?, imageIcon: UIImage?, imageOriginal: UIImage?, etag: String?, error: NKError) {
 
         await withUnsafeContinuation({ continuation in
-            NextcloudKit.shared.downloadPreview(fileNamePathOrFileId: fileNamePathOrFileId, fileNamePreviewLocalPath: fileNamePreviewLocalPath, widthPreview: widthPreview, heightPreview: heightPreview, fileNameIconLocalPath: fileNameIconLocalPath, sizeIcon: sizeIcon, etag: etag, options: options) { account, imagePreview, imageIcon, imageOriginal, etag, error in
+            NextcloudKit.shared.downloadPreview(fileId: fileId, fileNamePreviewLocalPath: fileNamePreviewLocalPath, widthPreview: widthPreview, heightPreview: heightPreview, fileNameIconLocalPath: fileNameIconLocalPath, sizeIcon: sizeIcon, etag: etag, options: options) { account, imagePreview, imageIcon, imageOriginal, etag, error in
                 continuation.resume(returning: (account: account, imagePreview: imagePreview, imageIcon: imageIcon, imageOriginal: imageOriginal, etag: etag, error: error))
             }
         })

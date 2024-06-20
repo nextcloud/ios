@@ -247,7 +247,7 @@ class NCOperationDownloadThumbnailActivity: ConcurrentOperation {
 
         guard !isCancelled else { return self.finish() }
 
-        NextcloudKit.shared.downloadPreview(fileNamePathOrFileId: fileNamePathOrFileId,
+        NextcloudKit.shared.downloadPreview(fileId: fileNamePathOrFileId,
                                             fileNamePreviewLocalPath: fileNamePreviewLocalPath,
                                             widthPreview: 0,
                                             heightPreview: 0,

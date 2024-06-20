@@ -300,12 +300,11 @@ class NCViewerMedia: UIViewController {
         if utilityFileSystem.fileProviderStoragePreviewIconExists(metadata.ocId, etag: metadata.etag) {
             return completion(UIImage(contentsOfFile: utilityFileSystem.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)))
         } else {
-            let fileNamePath = utilityFileSystem.getFileNamePath(metadata.fileName, serverUrl: metadata.serverUrl, urlBase: metadata.urlBase, userId: metadata.userId)
             let fileNamePreviewLocalPath = utilityFileSystem.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)
             let fileNameIconLocalPath = utilityFileSystem.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)
             let sizePreview = NCUtility().getSizePreview(width: metadata.width, height: metadata.height)
 
-            NextcloudKit.shared.downloadPreview(fileNamePathOrFileId: fileNamePath,
+            NextcloudKit.shared.downloadPreview(fileId: metadata.fileId,
                                                 fileNamePreviewLocalPath: fileNamePreviewLocalPath,
                                                 widthPreview: Int(sizePreview.width),
                                                 heightPreview: Int(sizePreview.height),
