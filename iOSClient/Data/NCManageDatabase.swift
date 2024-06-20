@@ -303,8 +303,6 @@ class NCManageDatabase: NSObject {
         NCManageDatabase.shared.setAccountUserProfile(account: account, userProfile: userProfile)
         let userProfile2 = NKUserProfile()
         userProfile2.displayName = "Mario Rossi"
-        userProfile2.phone = "+49 (711) 252 428 - 90"
-        userProfile2.address = "Hirschstrasse 26, 70192 Stuttgart, Germany"
         userProfile2.email = "cloudtest@nextcloud.com"
         NCManageDatabase.shared.setAccountUserProfile(account: account2, userProfile: userProfile2)
     }

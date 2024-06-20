@@ -26,6 +26,7 @@ import SwiftUI
 struct NCAccountSettingsView: View {
     @ObservedObject var model: NCAccountSettingsModel
 
+    @State private var isExpanded: Bool = false
     @State private var showUserStatus = false
     @State private var showServerCertificate = false
     @State private var showPushCertificate = false
@@ -45,8 +46,10 @@ struct NCAccountSettingsView: View {
                 .font(.system(size: 14))
                 .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
                 .frame(height: model.getTableViewHeight())
+                .animation(.easeIn(duration: 0.4), value: isExpanded)
                 .onChange(of: model.indexActiveAccount) { index in
                     model.setAccount(account: model.accounts[index].account)
+                    isExpanded.toggle()
                 }
                 ///
                 /// Change alias
