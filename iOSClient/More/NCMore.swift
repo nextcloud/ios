@@ -287,12 +287,6 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         }
     }
 
-    @objc func tapImageLogoManageAccount() {
-        let manageAccountView = NCManageAccountView(model: NCManageAccountModel(controller: tabBarController as? NCMainTabBarController))
-        let manageAccountController = UIHostingController(rootView: manageAccountView)
-        navigationController?.pushViewController(manageAccountController, animated: true)
-    }
-
     // MARK: -
 
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {

@@ -631,9 +631,9 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             }
 
             let settingsAccountAction = UIAction(title: NSLocalizedString("_account_settings_", comment: ""), image: utility.loadImage(named: "person.crop.circle", colors: [NCBrandColor.shared.iconImageColor])) { _ in
-                let manageAccountView = NCManageAccountView(model: NCManageAccountModel(controller: self.tabBarController as? NCMainTabBarController))
-                let manageAccountController = UIHostingController(rootView: manageAccountView)
-                self.present(manageAccountController, animated: true, completion: nil)
+                let accountSettingsView = NCAccountSettingsView(model: NCAccountSettingsModel(controller: self.tabBarController as? NCMainTabBarController))
+                let accountSettingsController = UIHostingController(rootView: accountSettingsView)
+                self.present(accountSettingsController, animated: true, completion: nil)
             }
 
             let addAccountSubmenu = UIMenu(title: "", options: .displayInline, children: [addAccountAction, settingsAccountAction])

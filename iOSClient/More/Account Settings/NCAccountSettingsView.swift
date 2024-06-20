@@ -1,5 +1,5 @@
 //
-//  NCManageAccountView.swift
+//  NCAccountSettingsView.swift
 //  Nextcloud
 //
 //  Created by Marino Faggiana on 06/06/24.
@@ -23,8 +23,8 @@
 
 import SwiftUI
 
-struct NCManageAccountView: View {
-    @ObservedObject var model: NCManageAccountModel
+struct NCAccountSettingsView: View {
+    @ObservedObject var model: NCAccountSettingsModel
 
     @State private var showUserStatus = false
     @State private var showServerCertificate = false
@@ -257,5 +257,5 @@ struct NCManageAccountView: View {
 }
 
 #Preview {
-    NCManageAccountView(model: NCManageAccountModel(controller: nil))
+    NCAccountSettingsView(model: NCAccountSettingsModel(controller: nil))
 }

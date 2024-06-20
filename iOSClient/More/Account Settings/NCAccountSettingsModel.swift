@@ -1,5 +1,5 @@
 //
-//  NCManageAccountModel.swift
+//  NCAccountSettingsModel.swift
 //  Nextcloud
 //
 //  Created by Marino Faggiana on 06/06/24.
@@ -24,8 +24,12 @@
 import Foundation
 import UIKit
 
+protocol NCAccountSettingsModelDelegate: AnyObject {
+    func accountSettingsDismiss()
+}
+
 /// A model that allows the user to configure the account
-class NCManageAccountModel: ObservableObject, ViewOnAppearHandling {
+class NCAccountSettingsModel: ObservableObject, ViewOnAppearHandling {
     /// AppDelegate
     let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
     /// Root View Controller

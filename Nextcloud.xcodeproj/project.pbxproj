@@ -743,8 +743,8 @@
 		F7AE00F5230D5F9E007ACF8A /* NCLoginWeb.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7AE00F4230D5F9E007ACF8A /* NCLoginWeb.swift */; };
 		F7AE00F8230E81CB007ACF8A /* NCBrowserWeb.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7AE00F7230E81CB007ACF8A /* NCBrowserWeb.swift */; };
 		F7AE00FA230E81EB007ACF8A /* NCBrowserWeb.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7AE00F9230E81EB007ACF8A /* NCBrowserWeb.storyboard */; };
-		F7AEEAA62C11DBAF00011412 /* NCManageAccountView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7AEEAA52C11DBAF00011412 /* NCManageAccountView.swift */; };
-		F7AEEAA82C11DBFD00011412 /* NCManageAccountModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7AEEAA72C11DBFD00011412 /* NCManageAccountModel.swift */; };
+		F7AEEAA62C11DBAF00011412 /* NCAccountSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7AEEAA52C11DBAF00011412 /* NCAccountSettingsView.swift */; };
+		F7AEEAA82C11DBFD00011412 /* NCAccountSettingsModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7AEEAA72C11DBFD00011412 /* NCAccountSettingsModel.swift */; };
 		F7B398422A6A91D5007538D6 /* NCSectionHeaderMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = F7B398412A6A91D5007538D6 /* NCSectionHeaderMenu.xib */; };
 		F7B398432A6A91D5007538D6 /* NCSectionHeaderMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = F7B398412A6A91D5007538D6 /* NCSectionHeaderMenu.xib */; };
 		F7B6B70427C4E7FA00A7F6EB /* NCScan+CollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7B6B70327C4E7FA00A7F6EB /* NCScan+CollectionView.swift */; };
@@ -1533,8 +1533,8 @@
 		F7AE00F4230D5F9E007ACF8A /* NCLoginWeb.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCLoginWeb.swift; sourceTree = "<group>"; };
 		F7AE00F7230E81CB007ACF8A /* NCBrowserWeb.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCBrowserWeb.swift; sourceTree = "<group>"; };
 		F7AE00F9230E81EB007ACF8A /* NCBrowserWeb.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = NCBrowserWeb.storyboard; sourceTree = "<group>"; };
-		F7AEEAA52C11DBAF00011412 /* NCManageAccountView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCManageAccountView.swift; sourceTree = "<group>"; };
-		F7AEEAA72C11DBFD00011412 /* NCManageAccountModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCManageAccountModel.swift; sourceTree = "<group>"; };
+		F7AEEAA52C11DBAF00011412 /* NCAccountSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCAccountSettingsView.swift; sourceTree = "<group>"; };
+		F7AEEAA72C11DBFD00011412 /* NCAccountSettingsModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCAccountSettingsModel.swift; sourceTree = "<group>"; };
 		F7AF7632246BEDFE00B86E3C /* TOPasscodeViewController.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = TOPasscodeViewController.framework; path = Carthage/Build/iOS/TOPasscodeViewController.framework; sourceTree = "<group>"; };
 		F7B1076C25D3CF2800E72DE2 /* BackgroundTasks.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = BackgroundTasks.framework; path = System/Library/Frameworks/BackgroundTasks.framework; sourceTree = SDKROOT; };
 		F7B1A7761EBB3C8000BFB6D1 /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/Localizable.strings; sourceTree = "<group>"; };
@@ -2620,13 +2620,13 @@
 			path = BrowserWeb;
 			sourceTree = "<group>";
 		};
-		F7AEEAA92C11DC0600011412 /* Manage Account */ = {
+		F7AEEAA92C11DC0600011412 /* Account Settings */ = {
 			isa = PBXGroup;
 			children = (
-				F7AEEAA52C11DBAF00011412 /* NCManageAccountView.swift */,
-				F7AEEAA72C11DBFD00011412 /* NCManageAccountModel.swift */,
+				F7AEEAA52C11DBAF00011412 /* NCAccountSettingsView.swift */,
+				F7AEEAA72C11DBFD00011412 /* NCAccountSettingsModel.swift */,
 			);
-			path = "Manage Account";
+			path = "Account Settings";
 			sourceTree = "<group>";
 		};
 		F7BAAD951ED5A63D00B7EAD4 /* Data */ = {
@@ -2787,7 +2787,7 @@
 		F7CB68942541670D0050EC94 /* More */ = {
 			isa = PBXGroup;
 			children = (
-				F7AEEAA92C11DC0600011412 /* Manage Account */,
+				F7AEEAA92C11DC0600011412 /* Account Settings */,
 				F3BB46502A39EC2D00461F6E /* Cells */,
 				F7CB68992541676B0050EC94 /* NCMore.storyboard */,
 				F73F537E1E929C8500F8678D /* NCMore.swift */,
@@ -4326,7 +4326,7 @@
 				F769CA192966EA3C00039397 /* ComponentView.swift in Sources */,
 				F7C9B91D2B582F550064EA91 /* NCManageDatabase+SecurityGuard.swift in Sources */,
 				AF93474C27E34120002537EE /* NCUtility+Image.swift in Sources */,
-				F7AEEAA62C11DBAF00011412 /* NCManageAccountView.swift in Sources */,
+				F7AEEAA62C11DBAF00011412 /* NCAccountSettingsView.swift in Sources */,
 				F702F30125EE5D2C008F8E80 /* NYMnemonic.m in Sources */,
 				AF93474E27E3F212002537EE /* NCShareNewUserAddComment.swift in Sources */,
 				F7C30DFD291BD0B80017149B /* NCNetworkingE2EEDelete.swift in Sources */,
@@ -4376,7 +4376,7 @@
 				D5B6AA7827200C7200D49C24 /* NCActivityTableViewCell.swift in Sources */,
 				F745B253222D88AE00346520 /* NCLoginQRCode.swift in Sources */,
 				F769454822E9F20D000A798A /* NCShareNetworking.swift in Sources */,
-				F7AEEAA82C11DBFD00011412 /* NCManageAccountModel.swift in Sources */,
+				F7AEEAA82C11DBFD00011412 /* NCAccountSettingsModel.swift in Sources */,
 				F749B64A297B0CBB00087535 /* NCManageDatabase+Share.swift in Sources */,
 				F7C9555521F0C5470024296E /* NCActivity.swift in Sources */,
 				F7725A60251F33BB00D125E0 /* NCFiles.swift in Sources */,
