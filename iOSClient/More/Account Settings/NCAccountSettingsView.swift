@@ -127,7 +127,7 @@ struct NCAccountSettingsView: View {
                 /// Change alias
                 VStack {
                     HStack {
-                        Text(NSLocalizedString("_alias_", comment: ""))
+                        Text(NSLocalizedString("_alias_", comment: "") + ":")
                             .font(.system(size: 17))
                             .fontWeight(.medium)
                         Spacer()

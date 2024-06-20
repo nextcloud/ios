@@ -196,7 +196,7 @@
 "_account_request_"         = "Request account";
 "_settings_account_request_" = "Request account at startup";
 "_print_"                   = "Print";
-"_alias_"                   = "Alias :";
+"_alias_"                   = "Alias";
 "_alias_placeholder_"       = "Write the alias";
 "_alias_footer_"            = "Give your account names a descriptive name such as Home, Office, School …";
 "_chunk_size_mb_"           = "Chunk size in MB";
