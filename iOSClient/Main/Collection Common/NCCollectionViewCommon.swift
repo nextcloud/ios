@@ -630,7 +630,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                 self.appDelegate.openLogin(selector: NCGlobal.shared.introLogin, openLoginWeb: false)
             }
 
-            let settingsAccountAction = UIAction(title: NSLocalizedString("_account_settings_", comment: ""), image: utility.loadImage(named: "person.crop.circle.badge.checkmark", colors: NCBrandColor.shared.iconImageMultiColors)) { _ in
+            let settingsAccountAction = UIAction(title: NSLocalizedString("_account_settings_", comment: ""), image: utility.loadImage(named: "person.crop.circle", colors: [NCBrandColor.shared.iconImageColor])) { _ in
                 let manageAccountView = NCManageAccountView(model: NCManageAccountModel(controller: self.tabBarController as? NCMainTabBarController))
                 let manageAccountController = UIHostingController(rootView: manageAccountView)
                 self.present(manageAccountController, animated: true, completion: nil)
