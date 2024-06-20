@@ -32,6 +32,8 @@ class NCManageAccountModel: ObservableObject, ViewOnAppearHandling {
     var controller: NCMainTabBarController?
     /// All account
     var accounts: [tableAccount] = []
+    /// Timer change account
+    var timerChanheAccount: Timer?
     /// Account now active
     @Published var tableAccount: tableAccount?
     /// Index
@@ -112,9 +114,14 @@ class NCManageAccountModel: ObservableObject, ViewOnAppearHandling {
             self.tableAccount = tableAccount
             self.alias = tableAccount.alias
             /// Change active account
-            DispatchQueue.global().async {
-                self.appDelegate.changeAccount(tableAccount.account, userProfile: nil)
-            }
+            timerChanheAccount?.invalidate()
+            timerChanheAccount = Timer.scheduledTimer(timeInterval: 1.5, target: self, selector: #selector(changeAccount), userInfo: nil, repeats: false)
+        }
+    }
+
+    @objc func changeAccount() {
+        if let tableAccount = self.tableAccount {
+            self.appDelegate.changeAccount(tableAccount.account, userProfile: nil)
         }
     }
 
