@@ -52,7 +52,7 @@ class NCAccountSettingsModel: ObservableObject, ViewOnAppearHandling {
     @Published var accountRequest: Bool = false
     /// Set true for dismiss the view
     @Published var dismissView = false
-    ///
+    /// Token observe tableAccount
     private var notificationToken: NotificationToken?
 
     /// Initialization code to set up the ViewModel with the active account
@@ -82,11 +82,11 @@ class NCAccountSettingsModel: ObservableObject, ViewOnAppearHandling {
                 switch changes {
                 case .initial:
                     break
-                case .update(let results, let deletions, let insertions, let modifications):
+                case .update:
                     DispatchQueue.main.async {
                         self?.objectWillChange.send()
                     }
-                case .error(let error):
+                case .error:
                     break
                 }
             }
