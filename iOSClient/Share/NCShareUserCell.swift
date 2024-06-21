@@ -72,7 +72,7 @@ class NCShareUserCell: UITableViewCell, NCCellProtocol {
         imageItem.image = NCShareCommon().getImageShareType(shareType: tableShare.shareType)
 
         let status = utility.getUserStatus(userIcon: tableShare.userIcon, userStatus: tableShare.userStatus, userMessage: tableShare.userMessage)
-        imageStatus.image = status.onlineStatus
+        imageStatus.image = status.statusImage
         self.status.text = status.statusMessage
 
         // If the initiator or the recipient is not the current user, show the list of sharees without any options to edit it.
@@ -157,7 +157,7 @@ class NCSearchUserDropDownCell: DropDownCell, NCCellProtocol {
         imageItem.image = NCShareCommon().getImageShareType(shareType: sharee.shareType)
         imageShareeType.image = NCShareCommon().getImageShareType(shareType: sharee.shareType)
         let status = utility.getUserStatus(userIcon: sharee.userIcon, userStatus: sharee.userStatus, userMessage: sharee.userMessage)
-        imageStatus.image = status.onlineStatus
+        imageStatus.image = status.statusImage
         self.status.text = status.statusMessage
         if self.status.text?.count ?? 0 > 0 {
             centerTitle.constant = -5

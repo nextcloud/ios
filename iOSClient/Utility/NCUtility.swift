@@ -136,45 +136,6 @@ class NCUtility: NSObject {
         return String(intFileId)
     }
 
-    func getUserStatus(userIcon: String?, userStatus: String?, userMessage: String?) -> (onlineStatus: UIImage?, statusMessage: String, descriptionMessage: String) {
-        var onlineStatus: UIImage?
-        var statusMessage: String = ""
-        var descriptionMessage: String = ""
-        var messageUserDefined: String = ""
-
-        if userStatus?.lowercased() == "online" {
-            onlineStatus = UIImage(named: "circle_fill")!.image(color: UIColor(red: 103.0 / 255.0, green: 176.0 / 255.0, blue: 134.0 / 255.0, alpha: 1.0), size: 50)
-            messageUserDefined = NSLocalizedString("_online_", comment: "")
-        }
-        if userStatus?.lowercased() == "away" {
-            onlineStatus = UIImage(named: "userStatusAway")!.image(color: UIColor(red: 233.0 / 255.0, green: 166.0 / 255.0, blue: 75.0 / 255.0, alpha: 1.0), size: 50)
-            messageUserDefined = NSLocalizedString("_away_", comment: "")
-        }
-        if userStatus?.lowercased() == "dnd" {
-            onlineStatus = UIImage(named: "userStatusDnd")?.resizeImage(size: CGSize(width: 100, height: 100), isAspectRation: false)
-            messageUserDefined = NSLocalizedString("_dnd_", comment: "")
-            descriptionMessage = NSLocalizedString("_dnd_description_", comment: "")
-        }
-        if userStatus?.lowercased() == "offline" || userStatus?.lowercased() == "invisible" {
-            onlineStatus = UIImage(named: "userStatusOffline")!.withTintColor(.init(named: "SystemBackgroundInverted")!)
-            messageUserDefined = NSLocalizedString("_invisible_", comment: "")
-            descriptionMessage = NSLocalizedString("_invisible_description_", comment: "")
-        }
-
-        if let userIcon = userIcon {
-            statusMessage = userIcon + " "
-        }
-        if let userMessage = userMessage {
-            statusMessage += userMessage
-        }
-        statusMessage = statusMessage.trimmingCharacters(in: .whitespaces)
-        if statusMessage.isEmpty {
-            statusMessage = messageUserDefined
-        }
-
-        return(onlineStatus, statusMessage, descriptionMessage)
-    }
-
     @objc func getVersionApp(withBuild: Bool = true) -> String {
         if let dictionary = Bundle.main.infoDictionary {
             if let version = dictionary["CFBundleShortVersionString"], let build = dictionary["CFBundleVersion"] {

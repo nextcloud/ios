@@ -74,7 +74,7 @@ struct NCManageE2EEView: View {
                                 .scaledToFit()
                                 .font(Font.system(.body).weight(.light))
                                 .frame(width: 25, height: 15)
-                                .foregroundColor(.red)
+                                .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
                         }
                         Spacer()
                     }

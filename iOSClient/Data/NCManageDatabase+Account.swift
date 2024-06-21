@@ -26,7 +26,6 @@ import RealmSwift
 import NextcloudKit
 
 class tableAccount: Object, NCUserBaseUrl {
-
     @objc dynamic var account = ""
     @objc dynamic var active: Bool = false
     @objc dynamic var address = ""
@@ -44,10 +43,6 @@ class tableAccount: Object, NCUserBaseUrl {
     @objc dynamic var backend = ""
     @objc dynamic var backendCapabilitiesSetDisplayName: Bool = false
     @objc dynamic var backendCapabilitiesSetPassword: Bool = false
-    @objc dynamic var businessSize: String = ""
-    @objc dynamic var businessType = ""
-    @objc dynamic var city = ""
-    @objc dynamic var country = ""
     @objc dynamic var displayName = ""
     @objc dynamic var email = ""
     @objc dynamic var enabled: Bool = false
@@ -64,7 +59,6 @@ class tableAccount: Object, NCUserBaseUrl {
     @objc dynamic var quotaRelative: Double = 0
     @objc dynamic var quotaTotal: Int64 = 0
     @objc dynamic var quotaUsed: Int64 = 0
-    @objc dynamic var role = ""
     @objc dynamic var storageLocation = ""
     @objc dynamic var subadmin = ""
     @objc dynamic var twitter = ""
@@ -79,7 +73,6 @@ class tableAccount: Object, NCUserBaseUrl {
     @objc dynamic var userStatusStatus: String?
     @objc dynamic var userStatusStatusIsUserDefined: Bool = false
     @objc dynamic var website = ""
-    @objc dynamic var zip = ""
 
     override static func primaryKey() -> String {
         return "account"
@@ -453,19 +446,14 @@ extension NCManageDatabase {
         }
     }
 
-    @objc func setAccountAlias(_ alias: String?) {
-
-        let alias = alias?.trimmingCharacters(in: .whitespacesAndNewlines)
+    @objc func setAccountAlias(_ account: String, alias: String) {
+        let alias = alias.trimmingCharacters(in: .whitespacesAndNewlines)
 
         do {
             let realm = try Realm()
             try realm.write {
-                if let result = realm.objects(tableAccount.self).filter("active == true").first {
-                    if let alias = alias {
-                        result.alias = alias
-                    } else {
-                        result.alias = ""
-                    }
+                if let result = realm.objects(tableAccount.self).filter("account == %@", account).first {
+                    result.alias = alias
                 }
             }
         } catch let error {

@@ -32,7 +32,6 @@ class NCCollectionViewDownloadThumbnail: ConcurrentOperation {
     var metadata: tableMetadata
     var cell: NCCellProtocol?
     var collectionView: UICollectionView?
-    var fileNamePath: String
     var fileNamePreviewLocalPath: String
     var fileNameIconLocalPath: String
     let utilityFileSystem = NCUtilityFileSystem()
@@ -41,7 +40,6 @@ class NCCollectionViewDownloadThumbnail: ConcurrentOperation {
         self.metadata = tableMetadata.init(value: metadata)
         self.cell = cell
         self.collectionView = collectionView
-        self.fileNamePath = utilityFileSystem.getFileNamePath(metadata.fileName, serverUrl: metadata.serverUrl, urlBase: metadata.urlBase, userId: metadata.userId)
         self.fileNamePreviewLocalPath = utilityFileSystem.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)
         self.fileNameIconLocalPath = utilityFileSystem.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)
     }
@@ -56,11 +54,11 @@ class NCCollectionViewDownloadThumbnail: ConcurrentOperation {
             etagResource = metadata.etagResource
         }
 
-        NextcloudKit.shared.downloadPreview(fileNamePathOrFileId: fileNamePath,
+        NextcloudKit.shared.downloadPreview(fileId: metadata.fileId,
                                             fileNamePreviewLocalPath: fileNamePreviewLocalPath,
+                                            fileNameIconLocalPath: fileNameIconLocalPath,
                                             widthPreview: Int(sizePreview.width),
                                             heightPreview: Int(sizePreview.height),
-                                            fileNameIconLocalPath: fileNameIconLocalPath,
                                             sizeIcon: NCGlobal.shared.sizeIcon,
                                             etag: etagResource,
                                             options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { _, _, imageIcon, _, etag, error in
