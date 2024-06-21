@@ -84,7 +84,6 @@ class NCAccountSettingsModel: ObservableObject, ViewOnAppearHandling {
                     break
                 case .update:
                     DispatchQueue.main.async {
-                        print("UPDATE tableAccount")
                         self?.objectWillChange.send()
                     }
                 case .error:
@@ -126,7 +125,7 @@ class NCAccountSettingsModel: ObservableObject, ViewOnAppearHandling {
         }
     }
 
-    /// Func to set new alias
+    /// Func to set alias
     func setAlias(_ value: String) {
         guard let activeAccount else { return }
         NCManageDatabase.shared.setAccountAlias(activeAccount.account, alias: alias)
@@ -156,7 +155,7 @@ class NCAccountSettingsModel: ObservableObject, ViewOnAppearHandling {
         return height
     }
 
-    /// Function to change account
+    /// Function to change account after 1.5 sec of change
     func setAccount(account: String) {
         if let tableAccount = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", account)), self.activeAccount?.account != tableAccount.account {
             self.activeAccount = tableAccount
