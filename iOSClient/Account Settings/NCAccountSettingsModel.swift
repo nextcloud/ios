@@ -42,6 +42,8 @@ class NCAccountSettingsModel: ObservableObject, ViewOnAppearHandling {
     weak var delegate: NCAccountSettingsModelDelegate?
     /// Timer change user
     var timerChangeAccount: Timer?
+    /// Token observe tableAccount
+    var notificationToken: NotificationToken?
     /// Account now active
     @Published var activeAccount: tableAccount?
     /// Index
@@ -52,8 +54,6 @@ class NCAccountSettingsModel: ObservableObject, ViewOnAppearHandling {
     @Published var accountRequest: Bool = false
     /// Set true for dismiss the view
     @Published var dismissView = false
-    /// Token observe tableAccount
-    private var notificationToken: NotificationToken?
 
     /// Initialization code to set up the ViewModel with the active account
     init(controller: NCMainTabBarController?, delegate: NCAccountSettingsModelDelegate?) {

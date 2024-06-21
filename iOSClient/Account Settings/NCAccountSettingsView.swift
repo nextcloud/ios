@@ -32,6 +32,7 @@ struct NCAccountSettingsView: View {
     @State private var showPushCertificate = false
     @State private var showDeleteAccountAlert: Bool = false
     @State private var showAddAccount: Bool = false
+    @State private var animation: Bool = false
 
     @Environment(\.presentationMode) var presentationMode
 
@@ -46,8 +47,9 @@ struct NCAccountSettingsView: View {
                 .font(.system(size: 14))
                 .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
                 .frame(height: model.getTableViewHeight())
-                .animation(.easeIn, value: model.getTableViewHeight())
+                .animation(.easeIn(duration: 0.3), value: animation)
                 .onChange(of: model.indexActiveAccount) { index in
+                    animation.toggle()
                     model.setAccount(account: model.accounts[index].account)
                 }
                 ///
@@ -65,7 +67,6 @@ struct NCAccountSettingsView: View {
                                 model.setAlias(newValue)
                             }
                     }
-
                     Text(NSLocalizedString("_alias_footer_", comment: ""))
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .font(.system(size: 12))
