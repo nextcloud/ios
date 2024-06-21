@@ -42,8 +42,8 @@ struct DefaultViewModifier<ViewModel: ViewOnAppearHandling>: ViewModifier {
 
     func body(content: Content) -> some View {
         content
-            .onAppear {
-                viewModel.onViewAppear()        // Call onViewAppear on view appearance
-            }
+        .onAppear {
+            viewModel.onViewAppear()        // Call onViewAppear on view appearance
+        }
     }
 }

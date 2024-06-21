@@ -37,148 +37,153 @@ struct NCAccountSettingsView: View {
     @Environment(\.presentationMode) var presentationMode
 
     var body: some View {
-        Form {
-            Section(content: {
-                TabView(selection: $model.indexActiveAccount) {
-                    ForEach(0..<model.accounts.count, id: \.self) { index in
-                        TabContentView(index: index, model: model)
-                    }
-                }
-                .font(.system(size: 14))
-                .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
-                .frame(height: model.getTableViewHeight())
-                .animation(.easeIn(duration: 0.3), value: animation)
-                .onChange(of: model.indexActiveAccount) { index in
-                    animation.toggle()
-                    model.setAccount(account: model.accounts[index].account)
-                }
-                ///
-                /// Change alias
-                VStack {
-                    HStack {
-                        Text(NSLocalizedString("_alias_", comment: "") + ":")
-                            .font(.system(size: 17))
-                            .fontWeight(.medium)
-                        Spacer()
-                        TextField(NSLocalizedString("_alias_placeholder_", comment: ""), text: $model.alias)
-                            .font(.system(size: 16))
-                            .multilineTextAlignment(.trailing)
-                            .onChange(of: model.alias) { newValue in
-                                model.setAlias(newValue)
-                            }
-                    }
-                    Text(NSLocalizedString("_alias_footer_", comment: ""))
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .font(.system(size: 12))
-                        .lineLimit(2)
-                        .foregroundStyle(Color(UIColor.lightGray))
-                }
-                ///
-                /// User Status
-                Button(action: {
-                    showUserStatus = true
-                }, label: {
-                    HStack {
-                        Image(systemName: "moon.fill")
-                            .resizable()
-                            .scaledToFit()
-                            .font(Font.system(.body).weight(.light))
-                            .frame(width: 20, height: 20)
-                            .foregroundStyle(Color(NCBrandColor.shared.iconImageColor))
-                        Text(NSLocalizedString("_set_user_status_", comment: ""))
-                            .lineLimit(1)
-                            .truncationMode(.middle)
-                            .foregroundStyle(Color(NCBrandColor.shared.textColor))
-                            .padding(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 20))
+        NavigationView {
+            
+            Form {
+                Section(content: {
+                    TabView(selection: $model.indexActiveAccount) {
+                        ForEach(0..<model.accounts.count, id: \.self) { index in
+                            TabContentView(index: index, model: model)
+                        }
                     }
                     .font(.system(size: 14))
+                    .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
+                    .frame(height: model.getTableViewHeight())
+                    .animation(.easeIn(duration: 0.3), value: animation)
+                    .onChange(of: model.indexActiveAccount) { index in
+                        animation.toggle()
+                        model.setAccount(account: model.accounts[index].account)
+                    }
+                    ///
+                    /// Change alias
+                    VStack {
+                        HStack {
+                            Text(NSLocalizedString("_alias_", comment: "") + ":")
+                                .font(.system(size: 17))
+                                .fontWeight(.medium)
+                            Spacer()
+                            TextField(NSLocalizedString("_alias_placeholder_", comment: ""), text: $model.alias)
+                                .font(.system(size: 16))
+                                .multilineTextAlignment(.trailing)
+                                .onChange(of: model.alias) { newValue in
+                                    model.setAlias(newValue)
+                                }
+                        }
+                        Text(NSLocalizedString("_alias_footer_", comment: ""))
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .font(.system(size: 12))
+                            .lineLimit(2)
+                            .foregroundStyle(Color(UIColor.lightGray))
+                    }
+                    ///
+                    /// User Status
+                    Button(action: {
+                        showUserStatus = true
+                    }, label: {
+                        HStack {
+                            Image(systemName: "moon.fill")
+                                .resizable()
+                                .scaledToFit()
+                                .font(Font.system(.body).weight(.light))
+                                .frame(width: 20, height: 20)
+                                .foregroundStyle(Color(NCBrandColor.shared.iconImageColor))
+                            Text(NSLocalizedString("_set_user_status_", comment: ""))
+                                .lineLimit(1)
+                                .truncationMode(.middle)
+                                .foregroundStyle(Color(NCBrandColor.shared.textColor))
+                                .padding(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 20))
+                        }
+                        .font(.system(size: 14))
+                    })
+                    .sheet(isPresented: $showUserStatus) {
+                        UserStatusView(showUserStatus: $showUserStatus)
+                    }
+                    .onChange(of: showUserStatus) { _ in }
+                    ///
+                    /// Certificate server
+                    Button(action: {
+                        showServerCertificate.toggle()
+                    }, label: {
+                        HStack {
+                            Image(systemName: "lock")
+                                .resizable()
+                                .scaledToFit()
+                                .font(Font.system(.body).weight(.light))
+                                .frame(width: 20, height: 20)
+                                .foregroundStyle(Color(NCBrandColor.shared.iconImageColor))
+                            Text(NSLocalizedString("_certificate_details_", comment: ""))
+                                .lineLimit(1)
+                                .truncationMode(.middle)
+                                .foregroundStyle(Color(NCBrandColor.shared.textColor))
+                                .padding(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 20))
+                        }
+                        .font(.system(size: 14))
+                    })
+                    .sheet(isPresented: $showServerCertificate) {
+                        if let url = URL(string: model.activeAccount?.urlBase), let host = url.host {
+                            certificateDetailsView(host: host, title: NSLocalizedString("_certificate_view_", comment: ""))
+                        }
+                    }
+                    ///
+                    /// Certificate push
+                    Button(action: {
+                        showPushCertificate.toggle()
+                    }, label: {
+                        HStack {
+                            Image(systemName: "lock")
+                                .resizable()
+                                .scaledToFit()
+                                .font(Font.system(.body).weight(.light))
+                                .frame(width: 20, height: 20)
+                                .foregroundStyle(Color(NCBrandColor.shared.iconImageColor))
+                            Text(NSLocalizedString("_certificate_pn_details_", comment: ""))
+                                .lineLimit(1)
+                                .truncationMode(.middle)
+                                .foregroundStyle(Color(NCBrandColor.shared.textColor))
+                                .padding(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 20))
+                        }
+                        .font(.system(size: 14))
+                    })
+                    .sheet(isPresented: $showPushCertificate) {
+                        if let url = URL(string: NCBrandOptions.shared.pushNotificationServerProxy), let host = url.host {
+                            certificateDetailsView(host: host, title: NSLocalizedString("_certificate_pn_view_", comment: ""))
+                        }
+                    }
                 })
-                .sheet(isPresented: $showUserStatus) {
-                    UserStatusView(showUserStatus: $showUserStatus)
-                }
-                .onChange(of: showUserStatus) { _ in }
                 ///
-                /// Certificate server
-                Button(action: {
-                    showServerCertificate.toggle()
-                }, label: {
-                    HStack {
-                        Image(systemName: "lock")
-                            .resizable()
-                            .scaledToFit()
-                            .font(Font.system(.body).weight(.light))
-                            .frame(width: 20, height: 20)
-                            .foregroundStyle(Color(NCBrandColor.shared.iconImageColor))
-                        Text(NSLocalizedString("_certificate_details_", comment: ""))
-                            .lineLimit(1)
-                            .truncationMode(.middle)
-                            .foregroundStyle(Color(NCBrandColor.shared.textColor))
-                            .padding(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 20))
+                /// Delete account
+                Section(content: {
+                    Button(action: {
+                        showDeleteAccountAlert.toggle()
+                    }, label: {
+                        HStack {
+                            Image(systemName: "trash")
+                                .resizable()
+                                .scaledToFit()
+                                .font(Font.system(.body).weight(.light))
+                                .frame(width: 20, height: 20)
+                                .foregroundStyle(.red)
+                            Text(NSLocalizedString("_remove_local_account_", comment: ""))
+                                .lineLimit(1)
+                                .truncationMode(.middle)
+                                .foregroundStyle(.red)
+                                .padding(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 20))
+                        }
+                        .font(.system(size: 14))
+                    })
+                    .alert(NSLocalizedString("_want_delete_account_", comment: ""), isPresented: $showDeleteAccountAlert) {
+                        Button(NSLocalizedString("_remove_local_account_", comment: ""), role: .destructive) {
+                            model.deleteAccount()
+                        }
+                        Button(NSLocalizedString("_cancel_", comment: ""), role: .cancel) { }
                     }
-                    .font(.system(size: 14))
                 })
-                .sheet(isPresented: $showServerCertificate) {
-                    if let url = URL(string: model.activeAccount?.urlBase), let host = url.host {
-                        certificateDetailsView(host: host, title: NSLocalizedString("_certificate_view_", comment: ""))
-                    }
-                }
-                ///
-                /// Certificate push
-                Button(action: {
-                    showPushCertificate.toggle()
-                }, label: {
-                    HStack {
-                        Image(systemName: "lock")
-                            .resizable()
-                            .scaledToFit()
-                            .font(Font.system(.body).weight(.light))
-                            .frame(width: 20, height: 20)
-                            .foregroundStyle(Color(NCBrandColor.shared.iconImageColor))
-                        Text(NSLocalizedString("_certificate_pn_details_", comment: ""))
-                            .lineLimit(1)
-                            .truncationMode(.middle)
-                            .foregroundStyle(Color(NCBrandColor.shared.textColor))
-                            .padding(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 20))
-                    }
-                    .font(.system(size: 14))
-                })
-                .sheet(isPresented: $showPushCertificate) {
-                    if let url = URL(string: NCBrandOptions.shared.pushNotificationServerProxy), let host = url.host {
-                        certificateDetailsView(host: host, title: NSLocalizedString("_certificate_pn_view_", comment: ""))
-                    }
-                }
-            })
-            ///
-            /// Delete account
-            Section(content: {
-                Button(action: {
-                    showDeleteAccountAlert.toggle()
-                }, label: {
-                    HStack {
-                        Image(systemName: "trash")
-                            .resizable()
-                            .scaledToFit()
-                            .font(Font.system(.body).weight(.light))
-                            .frame(width: 20, height: 20)
-                            .foregroundStyle(.red)
-                        Text(NSLocalizedString("_remove_local_account_", comment: ""))
-                            .lineLimit(1)
-                            .truncationMode(.middle)
-                            .foregroundStyle(.red)
-                            .padding(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 20))
-                    }
-                    .font(.system(size: 14))
-                })
-                .alert(NSLocalizedString("_want_delete_account_", comment: ""), isPresented: $showDeleteAccountAlert) {
-                    Button(NSLocalizedString("_remove_local_account_", comment: ""), role: .destructive) {
-                        model.deleteAccount()
-                    }
-                    Button(NSLocalizedString("_cancel_", comment: ""), role: .cancel) { }
-                }
-            })
+            }
+            .navigationBarTitle(NSLocalizedString("_account_settings_", comment: ""))
+            .navigationBarTitleDisplayMode(.inline)
         }
-        .navigationBarTitle(NSLocalizedString("_credentials_", comment: ""))
         .defaultViewModifier(model)
+        .navigationViewStyle(StackNavigationViewStyle())
         .onReceive(model.$dismissView) { newValue in
             if newValue {
                 presentationMode.wrappedValue.dismiss()
