@@ -104,15 +104,13 @@ class NCOperationDownloadThumbnailTrash: ConcurrentOperation {
         let fileNamePreviewLocalPath = NCUtilityFileSystem().getDirectoryProviderStoragePreviewOcId(tableTrash.fileId, etag: tableTrash.fileName)
         let fileNameIconLocalPath = NCUtilityFileSystem().getDirectoryProviderStorageIconOcId(tableTrash.fileId, etag: tableTrash.fileName)
 
-        NextcloudKit.shared.downloadPreview(fileNamePathOrFileId: tableTrash.fileId,
-                                            fileNamePreviewLocalPath: fileNamePreviewLocalPath,
-                                            widthPreview: NCGlobal.shared.sizePreview,
-                                            heightPreview: NCGlobal.shared.sizePreview,
-                                            fileNameIconLocalPath: fileNameIconLocalPath,
-                                            sizeIcon: NCGlobal.shared.sizeIcon,
-                                            etag: nil,
-                                            endpointTrashbin: true,
-                                            options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { _, imagePreview, _, _, _, error in
+        NextcloudKit.shared.downloadTrashPreview(fileId: tableTrash.fileId,
+                                                 fileNamePreviewLocalPath: fileNamePreviewLocalPath,
+                                                 fileNameIconLocalPath: fileNameIconLocalPath,
+                                                 widthPreview: NCGlobal.shared.sizePreview,
+                                                 heightPreview: NCGlobal.shared.sizePreview,
+                                                 sizeIcon: NCGlobal.shared.sizeIcon,
+                                                 options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { _, imagePreview, _, _, _, error in
 
             if error == .success, let imagePreview = imagePreview {
                 DispatchQueue.main.async {
