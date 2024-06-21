@@ -61,6 +61,9 @@ struct NCAccountSettingsView: View {
                         TextField(NSLocalizedString("_alias_placeholder_", comment: ""), text: $model.alias)
                             .font(.system(size: 16))
                             .multilineTextAlignment(.trailing)
+                            .onChange(of: model.alias) { newValue in
+                                model.setAlias(newValue)
+                            }
                     }
 
                     Text(NSLocalizedString("_alias_footer_", comment: ""))

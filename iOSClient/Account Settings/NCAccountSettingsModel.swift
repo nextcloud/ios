@@ -84,6 +84,7 @@ class NCAccountSettingsModel: ObservableObject, ViewOnAppearHandling {
                     break
                 case .update:
                     DispatchQueue.main.async {
+                        print("UPDATE tableAccount")
                         self?.objectWillChange.send()
                     }
                 case .error:
@@ -98,6 +99,7 @@ class NCAccountSettingsModel: ObservableObject, ViewOnAppearHandling {
     /// Triggered when the view appears.
     func onViewAppear() {
         accounts = NCManageDatabase.shared.getAllAccount()
+        activeAccount = NCManageDatabase.shared.getActiveAccount()
         accountRequest = NCKeychain().accountRequest
         getIndexActiveAccount()
     }
@@ -117,12 +119,17 @@ class NCAccountSettingsModel: ObservableObject, ViewOnAppearHandling {
     /// Func to get the user display name + alias
     func getUserName() -> String {
         guard let activeAccount else { return "" }
-        NCManageDatabase.shared.setAccountAlias(activeAccount.account, alias: alias)
         if alias.isEmpty {
             return activeAccount.displayName
         } else {
             return activeAccount.displayName + " (\(alias))"
         }
+    }
+
+    /// Func to set new alias
+    func setAlias(_ value: String) {
+        guard let activeAccount else { return }
+        NCManageDatabase.shared.setAccountAlias(activeAccount.account, alias: alias)
     }
 
     /// Function to update the user data
