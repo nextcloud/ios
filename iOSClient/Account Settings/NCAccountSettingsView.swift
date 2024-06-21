@@ -114,7 +114,7 @@ struct NCAccountSettingsView: View {
                     .font(.system(size: 14))
                 })
                 .sheet(isPresented: $showServerCertificate) {
-                    if let url = URL(string: model.tableAccount?.urlBase), let host = url.host {
+                    if let url = URL(string: model.activeAccount?.urlBase), let host = url.host {
                         certificateDetailsView(host: host, title: NSLocalizedString("_certificate_view_", comment: ""))
                     }
                 }
@@ -181,7 +181,7 @@ struct NCAccountSettingsView: View {
             }
         }
         .onDisappear {
-            model.delegate?.accountSettingsDidDismiss(tableAccount: model.tableAccount)
+            model.delegate?.accountSettingsDidDismiss(tableAccount: model.activeAccount)
         }
     }
 }
@@ -223,48 +223,50 @@ struct TabContentView: View {
                 .frame(height: 20)
             ///
             /// Personal data
-            if let tableAccount = model.tableAccount, !tableAccount.email.isEmpty {
-                HStack {
-                    Image(systemName: "mail")
-                        .resizable()
-                        .scaledToFit()
-                        .font(Font.system(.body).weight(.light))
-                        .frame(width: 20, height: 20)
-                    Text(tableAccount.email)
-                        .lineLimit(1)
-                        .truncationMode(.middle)
-                        .frame(maxWidth: .infinity, alignment: .leading)
+            if let activeAccount = model.activeAccount {
+                if !activeAccount.email.isEmpty {
+                    HStack {
+                        Image(systemName: "mail")
+                            .resizable()
+                            .scaledToFit()
+                            .font(Font.system(.body).weight(.light))
+                            .frame(width: 20, height: 20)
+                        Text(activeAccount.email)
+                            .lineLimit(1)
+                            .truncationMode(.middle)
+                            .frame(maxWidth: .infinity, alignment: .leading)
 
+                    }
+                    .frame(maxWidth: .infinity, maxHeight: 30)
                 }
-                .frame(maxWidth: .infinity, maxHeight: 30)
-            }
-            if let tableAccount = model.tableAccount, !tableAccount.phone.isEmpty {
-                HStack {
-                    Image(systemName: "phone")
-                        .resizable()
-                        .scaledToFit()
-                        .font(Font.system(.body).weight(.light))
-                        .frame(width: 20, height: 20)
-                    Text(tableAccount.phone)
-                        .lineLimit(1)
-                        .truncationMode(.middle)
-                        .frame(maxWidth: .infinity, alignment: .leading)
+                if !activeAccount.phone.isEmpty {
+                    HStack {
+                        Image(systemName: "phone")
+                            .resizable()
+                            .scaledToFit()
+                            .font(Font.system(.body).weight(.light))
+                            .frame(width: 20, height: 20)
+                        Text(activeAccount.phone)
+                            .lineLimit(1)
+                            .truncationMode(.middle)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                    }
+                    .frame(maxWidth: .infinity, maxHeight: 30)
                 }
-                .frame(maxWidth: .infinity, maxHeight: 30)
-            }
-            if let tableAccount = model.tableAccount, !tableAccount.address.isEmpty {
-                HStack {
-                    Image(systemName: "house")
-                        .resizable()
-                        .scaledToFit()
-                        .font(Font.system(.body).weight(.light))
-                        .frame(width: 20, height: 20)
-                    Text(tableAccount.address)
-                        .lineLimit(1)
-                        .truncationMode(.middle)
-                        .frame(maxWidth: .infinity, alignment: .leading)
+                if !activeAccount.address.isEmpty {
+                    HStack {
+                        Image(systemName: "house")
+                            .resizable()
+                            .scaledToFit()
+                            .font(Font.system(.body).weight(.light))
+                            .frame(width: 20, height: 20)
+                        Text(activeAccount.address)
+                            .lineLimit(1)
+                            .truncationMode(.middle)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                    }
+                    .frame(maxWidth: .infinity, maxHeight: 30)
                 }
-                .frame(maxWidth: .infinity, maxHeight: 30)
             }
         }
     }
