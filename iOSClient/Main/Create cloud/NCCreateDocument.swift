@@ -14,14 +14,12 @@ class NCCreateDocument: NSObject {
     let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
     let utility = NCUtility()
 
-    func getTemplate(editorId: String, typeTemplate: String) {
-        var listOfTemplate: [NKEditorTemplates] = []
-        var selectTemplate: NKEditorTemplates?
-        var fileNameExtension = ""
-
+    func getTemplate(editorId: String, typeTemplate: String) async -> (templates: [NKEditorTemplates], selectedTemplate: NKEditorTemplates?, ext: String) {
+        var templates: [NKEditorTemplates] = []
+        var selectedTemplate: NKEditorTemplates?
+        var ext: String = ""
 
         if editorId == NCGlobal.shared.editorText || editorId == NCGlobal.shared.editorOnlyoffice {
-
             var options = NKRequestOptions()
             if editorId == NCGlobal.shared.editorOnlyoffice {
                 options = NKRequestOptions(customUserAgent: NCUtility().getCustomUserAgentOnlyOffice())
@@ -29,105 +27,67 @@ class NCCreateDocument: NSObject {
                 options = NKRequestOptions(customUserAgent: NCUtility().getCustomUserAgentNCText())
             }
 
-            NextcloudKit.shared.NCTextGetListOfTemplates(options: options) { account, templates, _, error in
-
-                if error == .success {
-
-                    for template in templates {
-
-                        let temp = NKEditorTemplates()
-
-                        temp.identifier = template.identifier
-                        temp.ext = template.ext
-                        temp.name = template.name
-                        temp.preview = template.preview
-
-                        listOfTemplate.append(temp)
-
-                        // default: template empty
-                        if temp.preview.isEmpty {
-                            selectTemplate = temp
-                            fileNameExtension = template.ext
-                        }
-                    }
-                }
-
-                if listOfTemplate.isEmpty {
-
+            let results = await TextGetListOfTemplates(options: options)
+            if results.error == .success {
+                for template in results.templates {
                     let temp = NKEditorTemplates()
-
-                    temp.identifier = ""
-                    if editorId == NCGlobal.shared.editorText {
-                        temp.ext = "md"
-                    } else if editorId == NCGlobal.shared.editorOnlyoffice && typeTemplate == NCGlobal.shared.templateDocument {
-                        temp.ext = "docx"
-                    } else if editorId == NCGlobal.shared.editorOnlyoffice && typeTemplate == NCGlobal.shared.templateSpreadsheet {
-                        temp.ext = "xlsx"
-                    } else if editorId == NCGlobal.shared.editorOnlyoffice && typeTemplate == NCGlobal.shared.templatePresentation {
-                        temp.ext = "pptx"
+                    temp.identifier = template.identifier
+                    temp.ext = template.ext
+                    temp.name = template.name
+                    temp.preview = template.preview
+                    templates.append(temp)
+                    // default: template empty
+                    if temp.preview.isEmpty {
+                        selectedTemplate = temp
+                        ext = template.ext
                     }
-                    temp.name = "Empty"
-                    temp.preview = ""
-
-                    listOfTemplate.append(temp)
-
-                    selectTemplate = temp
-                    fileNameExtension = temp.ext
                 }
+            }
+
+            if templates.isEmpty {
+                let temp = NKEditorTemplates()
+                temp.identifier = ""
+                if editorId == NCGlobal.shared.editorText {
+                    temp.ext = "md"
+                } else if editorId == NCGlobal.shared.editorOnlyoffice && typeTemplate == NCGlobal.shared.templateDocument {
+                    temp.ext = "docx"
+                } else if editorId == NCGlobal.shared.editorOnlyoffice && typeTemplate == NCGlobal.shared.templateSpreadsheet {
+                    temp.ext = "xlsx"
+                } else if editorId == NCGlobal.shared.editorOnlyoffice && typeTemplate == NCGlobal.shared.templatePresentation {
+                    temp.ext = "pptx"
+                }
+                temp.name = "Empty"
+                temp.preview = ""
+                templates.append(temp)
+                selectedTemplate = temp
+                ext = temp.ext
             }
         }
 
         if editorId == NCGlobal.shared.editorCollabora {
-
-            NextcloudKit.shared.getTemplatesRichdocuments(typeTemplate: typeTemplate) { account, templates, _, error in
-
-
-                if error == .success && account == self.appDelegate.account {
-
-                    for template in templates! {
-
-                        let temp = NKEditorTemplates()
-
-                        temp.identifier = "\(template.templateId)"
-                        temp.delete = template.delete
-                        temp.ext = template.ext
-                        temp.name = template.name
-                        temp.preview = template.preview
-                        temp.type = template.type
-
-                        listOfTemplate.append(temp)
-
-                        // default: template empty
-                        if temp.preview.isEmpty {
-                            selectTemplate = temp
-                            fileNameExtension = temp.ext
-                        }
-                    }
-                }
-
-                if listOfTemplate.isEmpty {
-
+            let results = await getTemplatesRichdocuments(typeTemplate: typeTemplate)
+            if results.error == .success {
+                for template in results.templates! {
                     let temp = NKEditorTemplates()
-
-                    temp.identifier = ""
-                    if typeTemplate == NCGlobal.shared.templateDocument {
-                        temp.ext = "docx"
-                    } else if typeTemplate == NCGlobal.shared.templateSpreadsheet {
-                        temp.ext = "xlsx"
-                    } else if typeTemplate == NCGlobal.shared.templatePresentation {
-                        temp.ext = "pptx"
+                    temp.identifier = "\(template.templateId)"
+                    temp.delete = template.delete
+                    temp.ext = template.ext
+                    temp.name = template.name
+                    temp.preview = template.preview
+                    temp.type = template.type
+                    templates.append(temp)
+                    // default: template empty
+                    if temp.preview.isEmpty {
+                        selectedTemplate = temp
+                        ext = temp.ext
                     }
-                    temp.name = "Empty"
-                    temp.preview = ""
-
-                    listOfTemplate.append(temp)
-
-                    selectTemplate = temp
-                    fileNameExtension = temp.ext
                 }
             }
         }
+
+        return (templates, selectedTemplate, ext)
     }
+
     // MARK: -
 
     func createDocument(controller: NCMainTabBarController, fileNamePath: String, fileName: String, editorId: String, creatorId: String? = nil, templateId: String) {
@@ -174,5 +134,25 @@ class NCCreateDocument: NSObject {
                */
             }
         }
+    }
+
+    // MARK: -
+
+    func TextGetListOfTemplates(options: NKRequestOptions = NKRequestOptions()) async -> (account: String, templates: [NKEditorTemplates], data: Data?, error: NKError) {
+
+        await withUnsafeContinuation({ continuation in
+            NextcloudKit.shared.NCTextGetListOfTemplates { account, templates, data, error in
+                continuation.resume(returning: (account: account, templates: templates, data: data, error: error))
+            }
+        })
+    }
+
+    func getTemplatesRichdocuments(typeTemplate: String, options: NKRequestOptions = NKRequestOptions()) async -> (account: String, templates: [NKRichdocumentsTemplate]?, data: Data?, error: NKError) {
+
+        await withUnsafeContinuation({ continuation in
+            NextcloudKit.shared.getTemplatesRichdocuments(typeTemplate: typeTemplate, options: options) { account, templates, data, error in
+                continuation.resume(returning: (account: account, templates: templates, data: data, error: error))
+            }
+        })
     }
 }

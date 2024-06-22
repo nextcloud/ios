@@ -240,6 +240,9 @@ extension AppDelegate {
                             Task {
                                 let fileName = await NCNetworking.shared.createFileName(fileNameBase: NSLocalizedString("_untitled_", comment: "") + ".docx", account: appDelegate.account, serverUrl: serverUrl)
                                 let fileNamePath = NCUtilityFileSystem().getFileNamePath(String(describing: fileName), serverUrl: serverUrl, urlBase: appDelegate.urlBase, userId: appDelegate.userId)
+                                let createDocument = NCCreateDocument()
+                                
+
 
                                 /*
                                 self.createDocument(controller: controller, fileNamePath: fileNamePath, fileName: String(describing: fileName), editorId: NCGlobal.shared.editorCollabora, templateId: NCGlobal.shared.templateDocument)
