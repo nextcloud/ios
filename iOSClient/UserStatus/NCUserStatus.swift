@@ -30,6 +30,8 @@ import DropDown
 
 class NCUserStatus: UIViewController {
 
+    @IBOutlet weak var buttonCancel: UIBarButtonItem!
+
     @IBOutlet weak var onlineButton: UIButton!
     @IBOutlet weak var onlineImage: UIImageView!
     @IBOutlet weak var onlineLabel: UILabel!
@@ -78,6 +80,8 @@ class NCUserStatus: UIViewController {
 
         view.backgroundColor = .systemBackground
         tableView.backgroundColor = .systemBackground
+
+        buttonCancel.title = NSLocalizedString("_close_", comment: "")
 
         onlineButton.layer.cornerRadius = 10
         onlineButton.layer.masksToBounds = true
@@ -186,6 +190,10 @@ class NCUserStatus: UIViewController {
     }
 
     // MARK: ACTION
+
+    @IBAction func actionCancel(_ sender: UIBarButtonItem) {
+        self.dismiss(animated: true, completion: nil)
+    }
 
     @IBAction func actionOnline(_ sender: UIButton) {
 
