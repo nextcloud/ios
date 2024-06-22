@@ -697,6 +697,7 @@
 		F7A1050E29E587AF00FFD92B /* TagListView in Frameworks */ = {isa = PBXBuildFile; productRef = F7A1050D29E587AF00FFD92B /* TagListView */; };
 		F7A48415297028FC00BD1B49 /* Nextcloud Hub.png in Resources */ = {isa = PBXBuildFile; fileRef = F7A48414297028FC00BD1B49 /* Nextcloud Hub.png */; };
 		F7A509252C26BD5D00326106 /* NCCreateDocument.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7A509242C26BD5D00326106 /* NCCreateDocument.swift */; };
+		F7A509262C26D95D00326106 /* RealmSwift in Embed Frameworks */ = {isa = PBXBuildFile; productRef = F7160A812BE933390034DCB3 /* RealmSwift */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		F7A560422AE1593700BE8FD6 /* NCOperationSaveLivePhoto.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7A560412AE1593700BE8FD6 /* NCOperationSaveLivePhoto.swift */; };
 		F7A560442AE15D2900BE8FD6 /* Queuer in Frameworks */ = {isa = PBXBuildFile; productRef = F7A560432AE15D2900BE8FD6 /* Queuer */; };
 		F7A560462AE15D3D00BE8FD6 /* Queuer in Frameworks */ = {isa = PBXBuildFile; productRef = F7A560452AE15D3D00BE8FD6 /* Queuer */; };
@@ -1016,6 +1017,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
+				F7A509262C26D95D00326106 /* RealmSwift in Embed Frameworks */,
 				F78AF1E82BE938C100F3F060 /* MobileVLCKit.xcframework in Embed Frameworks */,
 				F76DA95C277B75A90082465B /* TOPasscodeViewController.xcframework in Embed Frameworks */,
 			);
