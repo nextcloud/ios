@@ -150,24 +150,15 @@ extension AppDelegate {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_create_new_document_", comment: ""), icon: utility.loadImage(named: "doc.text", colors: [NCBrandColor.shared.documentIconColor]), action: { _ in
+                        let createDocument = NCCreateDocument()
 
-                        /*
-                        guard let navigationController = UIStoryboard(name: "NCCreateFormUploadDocuments", bundle: nil).instantiateInitialViewController() else {
-                            return
+                        Task {
+                            let templates = await createDocument.getTemplate(editorId: NCGlobal.shared.editorOnlyoffice, templateId: NCGlobal.shared.templateDocument)
+                            let fileName = await NCNetworking.shared.createFileName(fileNameBase: NSLocalizedString("_untitled_", comment: "") + "." + templates.ext, account: appDelegate.account, serverUrl: serverUrl)
+                            let fileNamePath = NCUtilityFileSystem().getFileNamePath(String(describing: fileName), serverUrl: serverUrl, urlBase: appDelegate.urlBase, userId: appDelegate.userId)
+
+                            createDocument.createDocument(controller: controller, fileNamePath: fileNamePath, fileName: String(describing: fileName), editorId: NCGlobal.shared.editorOnlyoffice, creatorId: directEditingCreator.identifier, templateId: templates.selectedTemplate.identifier)
                         }
-                        navigationController.modalPresentationStyle = UIModalPresentationStyle.formSheet
-
-                        if let viewController = (navigationController as? UINavigationController)?.topViewController as? NCCreateFormUploadDocuments {
-                            viewController.controller = controller
-                            viewController.editorId = NCGlobal.shared.editorOnlyoffice
-                            viewController.creatorId = directEditingCreator.identifier
-                            viewController.typeTemplate = NCGlobal.shared.templateDocument
-                            viewController.serverUrl = serverUrl
-                            viewController.titleForm = NSLocalizedString("_create_new_document_", comment: "")
-
-                            controller.present(navigationController, animated: true, completion: nil)
-                        }
-                        */
                     }
                 )
             )
@@ -178,25 +169,15 @@ extension AppDelegate {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_create_new_spreadsheet_", comment: ""), icon: utility.loadImage(named: "tablecells", colors: [NCBrandColor.shared.spreadsheetIconColor]), action: { _ in
+                        let createDocument = NCCreateDocument()
 
-                        /*
-                        guard let navigationController = UIStoryboard(name: "NCCreateFormUploadDocuments", bundle: nil).instantiateInitialViewController() else {
-                            return
+                        Task {
+                            let templates = await createDocument.getTemplate(editorId: NCGlobal.shared.editorOnlyoffice, templateId: NCGlobal.shared.templateSpreadsheet)
+                            let fileName = await NCNetworking.shared.createFileName(fileNameBase: NSLocalizedString("_untitled_", comment: "") + "." + templates.ext, account: appDelegate.account, serverUrl: serverUrl)
+                            let fileNamePath = NCUtilityFileSystem().getFileNamePath(String(describing: fileName), serverUrl: serverUrl, urlBase: appDelegate.urlBase, userId: appDelegate.userId)
+
+                            createDocument.createDocument(controller: controller, fileNamePath: fileNamePath, fileName: String(describing: fileName), editorId: NCGlobal.shared.editorOnlyoffice, creatorId: directEditingCreator.identifier, templateId: templates.selectedTemplate.identifier)
                         }
-                        navigationController.modalPresentationStyle = UIModalPresentationStyle.formSheet
-
-                        if let viewController = (navigationController as? UINavigationController)?.topViewController as? NCCreateFormUploadDocuments {
-                            viewController.controller = controller
-                            viewController.editorId = NCGlobal.shared.editorOnlyoffice
-                            viewController.creatorId = directEditingCreator.identifier
-                            viewController.typeTemplate = NCGlobal.shared.templateSpreadsheet
-                            viewController.serverUrl = serverUrl
-                            viewController.titleForm = NSLocalizedString("_create_new_spreadsheet_", comment: "")
-
-                            controller.present(navigationController, animated: true, completion: nil)
-                        }
-                        */
-
                     }
                 )
             )
@@ -207,24 +188,15 @@ extension AppDelegate {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_create_new_presentation_", comment: ""), icon: utility.loadImage(named: "play.rectangle", colors: [NCBrandColor.shared.presentationIconColor]), action: { _ in
+                        let createDocument = NCCreateDocument()
 
-                        /*
-                        guard let navigationController = UIStoryboard(name: "NCCreateFormUploadDocuments", bundle: nil).instantiateInitialViewController() else {
-                            return
+                        Task {
+                            let templates = await createDocument.getTemplate(editorId: NCGlobal.shared.editorOnlyoffice, templateId: NCGlobal.shared.templatePresentation)
+                            let fileName = await NCNetworking.shared.createFileName(fileNameBase: NSLocalizedString("_untitled_", comment: "") + "." + templates.ext, account: appDelegate.account, serverUrl: serverUrl)
+                            let fileNamePath = NCUtilityFileSystem().getFileNamePath(String(describing: fileName), serverUrl: serverUrl, urlBase: appDelegate.urlBase, userId: appDelegate.userId)
+
+                            createDocument.createDocument(controller: controller, fileNamePath: fileNamePath, fileName: String(describing: fileName), editorId: NCGlobal.shared.editorOnlyoffice, creatorId: directEditingCreator.identifier, templateId: templates.selectedTemplate.identifier)
                         }
-                        navigationController.modalPresentationStyle = UIModalPresentationStyle.formSheet
-
-                        if let viewController = (navigationController as? UINavigationController)?.topViewController as? NCCreateFormUploadDocuments {
-                            viewController.controller = controller
-                            viewController.editorId = NCGlobal.shared.editorOnlyoffice
-                            viewController.creatorId = directEditingCreator.identifier
-                            viewController.typeTemplate = NCGlobal.shared.templatePresentation
-                            viewController.serverUrl = serverUrl
-                            viewController.titleForm = NSLocalizedString("_create_new_presentation_", comment: "")
-
-                            controller.present(navigationController, animated: true, completion: nil)
-                        }
-                        */
                     }
                 )
             )
