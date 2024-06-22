@@ -65,7 +65,7 @@ extension AppDelegate {
                     Task {
                         let fileName = await NCNetworking.shared.createFileName(fileNameBase: NSLocalizedString("_untitled_", comment: "") + ".md", account: appDelegate.account, serverUrl: serverUrl)
                         let fileNamePath = NCUtilityFileSystem().getFileNamePath(String(describing: fileName), serverUrl: serverUrl, urlBase: appDelegate.urlBase, userId: appDelegate.userId)
-                        self.createTextDocument(controller: controller, fileNamePath: fileNamePath, fileName: String(describing: fileName), creatorId: directEditingCreator.identifier)
+                        self.createDocument(controller: controller, fileNamePath: fileNamePath, fileName: String(describing: fileName), editorId: NCGlobal.shared.editorText, creatorId: directEditingCreator.identifier, templateId: NCGlobal.shared.templateDocument)
                     }
                 })
             )
@@ -235,6 +235,17 @@ extension AppDelegate {
                     NCMenuAction(
                         title: NSLocalizedString("_create_new_document_", comment: ""), icon: utility.loadImage(named: "doc.richtext", colors: [NCBrandColor.shared.documentIconColor]), action: { _ in
 
+                            Task {
+                                let fileName = await NCNetworking.shared.createFileName(fileNameBase: NSLocalizedString("_untitled_", comment: "") + ".md", account: appDelegate.account, serverUrl: serverUrl)
+                                let fileNamePath = NCUtilityFileSystem().getFileNamePath(String(describing: fileName), serverUrl: serverUrl, urlBase: appDelegate.urlBase, userId: appDelegate.userId)
+
+
+
+
+
+                            }
+
+
                             /*
                             guard let navigationController = UIStoryboard(name: "NCCreateFormUploadDocuments", bundle: nil).instantiateInitialViewController() else {
                                 return
@@ -308,28 +319,48 @@ extension AppDelegate {
         controller.presentMenu(with: actions)
     }
 
-    func createTextDocument(controller: NCMainTabBarController, fileNamePath: String, fileName: String, creatorId: String) {
+    func createDocument(controller: NCMainTabBarController, fileNamePath: String, fileName: String, editorId: String, creatorId: String, templateId: String) {
         guard let viewController = controller.currentViewController() else { return }
         var UUID = NSUUID().uuidString
         UUID = "TEMP" + UUID.replacingOccurrences(of: "-", with: "")
+        var options = NKRequestOptions()
         let serverUrl = controller.currentServerUrl()
-        let options = NKRequestOptions(customUserAgent: NCUtility().getCustomUserAgentNCText())
 
-        NextcloudKit.shared.NCTextCreateFile(fileNamePath: fileNamePath, editorId: NCGlobal.shared.editorText, creatorId: creatorId, templateId: NCGlobal.shared.templateDocument, options: options) { account, url, _, error in
-            guard error == .success, account == self.account, let url = url else {
-                NCContentPresenter().showError(error: error)
-                return
+        if editorId == NCGlobal.shared.editorText || editorId == NCGlobal.shared.editorOnlyoffice {
+            if editorId == NCGlobal.shared.editorOnlyoffice {
+                options = NKRequestOptions(customUserAgent: NCUtility().getCustomUserAgentOnlyOffice())
+            } else if editorId == NCGlobal.shared.editorText {
+                options = NKRequestOptions(customUserAgent: NCUtility().getCustomUserAgentNCText())
             }
 
-            var results = NextcloudKit.shared.nkCommonInstance.getInternalType(fileName: fileName, mimeType: "", directory: false)
-            // FIXME: iOS 12.0,* don't detect UTI text/markdown, text/x-markdown
-            if results.mimeType.isEmpty {
-                results.mimeType = "text/x-markdown"
+            NextcloudKit.shared.NCTextCreateFile(fileNamePath: fileNamePath, editorId: NCGlobal.shared.editorText, creatorId: creatorId, templateId: NCGlobal.shared.templateDocument, options: options) { account, url, _, error in
+                guard error == .success, account == self.account, let url = url else {
+                    NCContentPresenter().showError(error: error)
+                    return
+                }
+                let contentType = NextcloudKit.shared.nkCommonInstance.getInternalType(fileName: fileName, mimeType: "", directory: false).mimeType
+                let metadata = NCManageDatabase.shared.createMetadata(account: self.account, user: self.user, userId: self.userId, fileName: fileName, fileNameView: fileName, ocId: UUID, serverUrl: serverUrl, urlBase: self.urlBase, url: url, contentType: contentType)
+
+                NCViewer().view(viewController: viewController, metadata: metadata, metadatas: [metadata], imageIcon: nil)
             }
+        } else if editorId == NCGlobal.shared.editorCollabora {
 
-            let metadata = NCManageDatabase.shared.createMetadata(account: self.account, user: self.user, userId: self.userId, fileName: fileName, fileNameView: fileName, ocId: UUID, serverUrl: serverUrl, urlBase: self.urlBase, url: url, contentType: results.mimeType)
+            NextcloudKit.shared.createRichdocuments(path: fileNamePath, templateId: templateId) { account, url, _, error in
+                guard error == .success, account == self.account, let url = url else {
+                    NCContentPresenter().showError(error: error)
+                    return
+                }
 
-            NCViewer().view(viewController: viewController, metadata: metadata, metadatas: [metadata], imageIcon: nil)
+                /*
+                self.dismiss(animated: true, completion: {
+                    let newFileName = (fileName as NSString).deletingPathExtension + "." + self.fileNameExtension
+                    let metadata = NCManageDatabase.shared.createMetadata(account: self.appDelegate.account, user: self.appDelegate.user, userId: self.appDelegate.userId, fileName: newFileName, fileNameView: newFileName, ocId: UUID, serverUrl: self.serverUrl, urlBase: self.appDelegate.urlBase, url: url, contentType: "")
+                    if let viewController = self.controller?.currentViewController() {
+                        NCViewer().view(viewController: viewController, metadata: metadata, metadatas: [metadata], imageIcon: nil)
+                    }
+               })
+               */
+            }
         }
     }
 }
