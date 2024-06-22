@@ -27,7 +27,7 @@ class NCCreateDocument: NSObject {
                 options = NKRequestOptions(customUserAgent: NCUtility().getCustomUserAgentNCText())
             }
 
-            let results = await TextGetListOfTemplates(options: options)
+            let results = await textGetListOfTemplates(options: options)
             if results.error == .success {
                 for template in results.templates {
                     let temp = NKEditorTemplates()
@@ -138,7 +138,7 @@ class NCCreateDocument: NSObject {
 
     // MARK: -
 
-    func TextGetListOfTemplates(options: NKRequestOptions = NKRequestOptions()) async -> (account: String, templates: [NKEditorTemplates], data: Data?, error: NKError) {
+    func textGetListOfTemplates(options: NKRequestOptions = NKRequestOptions()) async -> (account: String, templates: [NKEditorTemplates], data: Data?, error: NKError) {
 
         await withUnsafeContinuation({ continuation in
             NextcloudKit.shared.NCTextGetListOfTemplates { account, templates, data, error in

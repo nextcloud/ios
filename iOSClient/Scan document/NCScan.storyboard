@@ -55,6 +55,7 @@
                                                                 <color systemColor="tertiaryLabelColor"/>
                                                             </hierarchicalColors>
                                                         </imageReference>
+                                                        <preferredSymbolConfiguration key="preferredSymbolConfiguration" weight="light"/>
                                                     </state>
                                                 </button>
                                             </subviews>
@@ -122,6 +123,7 @@
                                                                 <color systemColor="tertiaryLabelColor"/>
                                                             </hierarchicalColors>
                                                         </imageReference>
+                                                        <preferredSymbolConfiguration key="preferredSymbolConfiguration" weight="light"/>
                                                     </state>
                                                     <connections>
                                                         <action selector="touchUpInsideDelete:" destination="Pph-tY-PGX" eventType="touchUpInside" id="KcT-WM-s1K"/>
@@ -141,6 +143,7 @@
                                                                 <color systemColor="tertiaryLabelColor"/>
                                                             </hierarchicalColors>
                                                         </imageReference>
+                                                        <preferredSymbolConfiguration key="preferredSymbolConfiguration" weight="light"/>
                                                     </state>
                                                     <connections>
                                                         <action selector="touchUpInsideRotate:" destination="Pph-tY-PGX" eventType="touchUpInside" id="x5z-go-m4Y"/>
