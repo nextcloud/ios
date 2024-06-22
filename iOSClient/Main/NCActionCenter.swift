@@ -156,7 +156,7 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
         let serverUrl = metadata.serverUrl + "/" + metadata.fileName
         if isOffline {
             if metadata.directory {
-                NCManageDatabase.shared.setDirectory(serverUrl: serverUrl, offline: false, account: appDelegate.account)
+                NCManageDatabase.shared.setDirectory(serverUrl: serverUrl, offline: false, metadata: metadata)
                 if let metadatas = NCManageDatabase.shared.getResultsMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND sessionSelector == %@ AND status == %d", metadata.account, serverUrl, NCGlobal.shared.selectorSynchronizationOffline, NCGlobal.shared.metadataStatusWaitDownload)) {
                     NCManageDatabase.shared.clearMetadataSession(metadatas: metadatas)
                 }
@@ -164,7 +164,7 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
                 NCManageDatabase.shared.setOffLocalFile(ocId: metadata.ocId)
             }
         } else if metadata.directory {
-            NCManageDatabase.shared.setDirectory(serverUrl: serverUrl, offline: true, account: metadata.account)
+            NCManageDatabase.shared.setDirectory(serverUrl: serverUrl, offline: true, metadata: metadata)
             NCNetworking.shared.synchronization(account: metadata.account, serverUrl: serverUrl, add: true)
         } else {
             var metadatasSynchronizationOffline: [tableMetadata] = []
