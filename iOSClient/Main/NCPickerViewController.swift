@@ -56,7 +56,6 @@ class NCPhotosPickerViewController: NSObject {
     }
 
     private func openPhotosPickerViewController(completition: @escaping ([TLPHAsset]) -> Void) {
-
         var configure = TLPhotosPickerConfigure()
 
         configure.cancelTitle = NSLocalizedString("_cancel_", comment: "")
@@ -72,26 +71,20 @@ class NCPhotosPickerViewController: NSObject {
         configure.allowedAlbumCloudShared = true
 
         let viewController = customPhotoPickerViewController(withTLPHAssets: { assets in
-
             completition(assets)
-
         }, didCancel: nil)
-
         viewController.didExceedMaximumNumberOfSelection = { _ in
             let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_limited_dimension_")
             NCContentPresenter().showError(error: error)
         }
-
         viewController.handleNoAlbumPermissions = { _ in
             let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_denied_album_")
             NCContentPresenter().showError(error: error)
         }
-
         viewController.handleNoCameraPermissions = { _ in
             let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_denied_camera_")
             NCContentPresenter().showError(error: error)
         }
-
         viewController.configure = configure
 
         controller.present(viewController, animated: true, completion: nil)
@@ -99,7 +92,6 @@ class NCPhotosPickerViewController: NSObject {
 }
 
 class customPhotoPickerViewController: TLPhotosPickerViewController {
-
     override var preferredStatusBarStyle: UIStatusBarStyle {
         return .lightContent
     }
@@ -107,15 +99,14 @@ class customPhotoPickerViewController: TLPhotosPickerViewController {
     override func makeUI() {
         super.makeUI()
 
-        self.customNavItem.leftBarButtonItem?.tintColor = .systemBlue
-        self.customNavItem.rightBarButtonItem?.tintColor = .systemBlue
+        self.customNavItem.leftBarButtonItem?.tintColor = .label
+        self.customNavItem.rightBarButtonItem?.tintColor = .label
     }
 }
 
 // MARK: - Document Picker
 
 class NCDocumentPickerViewController: NSObject, UIDocumentPickerDelegate {
-
     let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
     let utilityFileSystem = NCUtilityFileSystem()
     var isViewerMedia: Bool
@@ -199,7 +190,6 @@ class NCDocumentPickerViewController: NSObject, UIDocumentPickerDelegate {
     }
 
     func copySecurityScopedResource(url: URL, urlOut: URL) -> URL? {
-
         try? FileManager.default.removeItem(at: urlOut)
         if url.startAccessingSecurityScopedResource() {
             do {

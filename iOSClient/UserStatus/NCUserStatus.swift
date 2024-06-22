@@ -81,6 +81,8 @@ class NCUserStatus: UIViewController {
         view.backgroundColor = .systemBackground
         tableView.backgroundColor = .systemBackground
 
+        buttonCancel.image = utility.loadImage(named: "xmark", colors: [NCBrandColor.shared.iconImageColor])
+
         onlineButton.layer.cornerRadius = 10
         onlineButton.layer.masksToBounds = true
         onlineButton.backgroundColor = .systemGray5

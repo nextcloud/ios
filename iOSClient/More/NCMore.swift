@@ -28,7 +28,6 @@ import SwiftUI
 import Foundation
 
 class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
-
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var labelQuota: UILabel!
     @IBOutlet weak var labelQuotaExternalSite: UILabel!
@@ -42,6 +41,7 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
     private let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
     private let applicationHandle = NCApplicationHandle()
     private var tabAccount: tableAccount?
+
     let utilityFileSystem = NCUtilityFileSystem()
     let utility = NCUtility()
 
@@ -54,7 +54,6 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
             case regular
         }
     }
-
     private var sections: [Section] = []
 
     // MARK: - View Life Cycle
@@ -88,7 +87,6 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
     // MARK: -
 
     func loadItems() {
-
         var item = NKExternalSite()
         var quota: String = ""
 
@@ -200,9 +198,7 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         }
 
         // Display Name user & Quota
-
         if let activeAccount = NCManageDatabase.shared.getActiveAccount() {
-
             self.tabAccount = activeAccount
 
             if activeAccount.quotaRelative > 0 {
@@ -249,12 +245,6 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
     }
 
     private func loadSections() {
-        /*
-        if tabAccount != nil {
-            sections.append(Section(items: [NKExternalSite()], type: .account))
-        }
-        */
-
         if !NCBrandOptions.shared.disable_show_more_nextcloud_apps_in_settings {
             sections.append(Section(items: [NKExternalSite()], type: .moreApps))
         }
