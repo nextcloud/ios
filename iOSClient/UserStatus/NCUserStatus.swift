@@ -619,8 +619,6 @@ struct UserStatusView: UIViewControllerRepresentable {
     func makeUIViewController(context: Context) -> UINavigationController {
         let storyboard = UIStoryboard(name: "NCUserStatus", bundle: nil)
         let navigationController = storyboard.instantiateInitialViewController() as? UINavigationController
-        let viewController = navigationController?.topViewController as? NCUserStatus
-
         return navigationController!
     }
 

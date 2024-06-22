@@ -38,7 +38,6 @@ struct NCAccountSettingsView: View {
 
     var body: some View {
         NavigationView {
-            
             Form {
                 Section(content: {
                     TabView(selection: $model.indexActiveAccount) {
@@ -181,6 +180,13 @@ struct NCAccountSettingsView: View {
             }
             .navigationBarTitle(NSLocalizedString("_account_settings_", comment: ""))
             .navigationBarTitleDisplayMode(.inline)
+            .navigationBarItems(leading: Button(action: {
+                presentationMode.wrappedValue.dismiss()
+            }) {
+                Image(systemName: "xmark")
+                    .font(Font.system(.body).weight(.light))
+                    .foregroundStyle(Color(NCBrandColor.shared.iconImageColor))
+            })
         }
         .defaultViewModifier(model)
         .navigationViewStyle(StackNavigationViewStyle())
