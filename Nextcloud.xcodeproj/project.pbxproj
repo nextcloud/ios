@@ -2768,11 +2768,11 @@
 			isa = PBXGroup;
 			children = (
 				F7FA7FFD2C0F4F3B0072FC60 /* Upload Assets */,
+				F7A509242C26BD5D00326106 /* NCCreateDocument.swift */,
 				F704B5E22430AA6F00632F5F /* NCCreateFormUploadConflict.storyboard */,
 				F704B5E42430AA8000632F5F /* NCCreateFormUploadConflict.swift */,
 				F704B5E82430C0B800632F5F /* NCCreateFormUploadConflictCell.swift */,
 				F704B5E62430C06700632F5F /* NCCreateFormUploadConflictCell.xib */,
-				F7A509242C26BD5D00326106 /* NCCreateDocument.swift */,
 			);
 			path = "Create cloud";
 			sourceTree = "<group>";
