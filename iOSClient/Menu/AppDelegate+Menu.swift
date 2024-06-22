@@ -149,6 +149,8 @@ extension AppDelegate {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_create_new_document_", comment: ""), icon: utility.loadImage(named: "doc.text", colors: [NCBrandColor.shared.documentIconColor]), action: { _ in
+
+                        /*
                         guard let navigationController = UIStoryboard(name: "NCCreateFormUploadDocuments", bundle: nil).instantiateInitialViewController() else {
                             return
                         }
@@ -164,6 +166,7 @@ extension AppDelegate {
 
                             controller.present(navigationController, animated: true, completion: nil)
                         }
+                        */
                     }
                 )
             )
@@ -174,6 +177,8 @@ extension AppDelegate {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_create_new_spreadsheet_", comment: ""), icon: utility.loadImage(named: "tablecells", colors: [NCBrandColor.shared.spreadsheetIconColor]), action: { _ in
+
+                        /*
                         guard let navigationController = UIStoryboard(name: "NCCreateFormUploadDocuments", bundle: nil).instantiateInitialViewController() else {
                             return
                         }
@@ -189,6 +194,8 @@ extension AppDelegate {
 
                             controller.present(navigationController, animated: true, completion: nil)
                         }
+                        */
+
                     }
                 )
             )
@@ -199,6 +206,8 @@ extension AppDelegate {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_create_new_presentation_", comment: ""), icon: utility.loadImage(named: "play.rectangle", colors: [NCBrandColor.shared.presentationIconColor]), action: { _ in
+
+                        /*
                         guard let navigationController = UIStoryboard(name: "NCCreateFormUploadDocuments", bundle: nil).instantiateInitialViewController() else {
                             return
                         }
@@ -214,6 +223,7 @@ extension AppDelegate {
 
                             controller.present(navigationController, animated: true, completion: nil)
                         }
+                        */
                     }
                 )
             )
@@ -224,6 +234,8 @@ extension AppDelegate {
                 actions.append(
                     NCMenuAction(
                         title: NSLocalizedString("_create_new_document_", comment: ""), icon: utility.loadImage(named: "doc.richtext", colors: [NCBrandColor.shared.documentIconColor]), action: { _ in
+
+                            /*
                             guard let navigationController = UIStoryboard(name: "NCCreateFormUploadDocuments", bundle: nil).instantiateInitialViewController() else {
                                 return
                             }
@@ -238,6 +250,7 @@ extension AppDelegate {
 
                                 controller.present(navigationController, animated: true, completion: nil)
                             }
+                            */
                         }
                     )
                 )
@@ -245,6 +258,8 @@ extension AppDelegate {
                 actions.append(
                     NCMenuAction(
                         title: NSLocalizedString("_create_new_spreadsheet_", comment: ""), icon: utility.loadImage(named: "tablecells", colors: [NCBrandColor.shared.spreadsheetIconColor]), action: { _ in
+
+                            /*
                             guard let navigationController = UIStoryboard(name: "NCCreateFormUploadDocuments", bundle: nil).instantiateInitialViewController() else {
                                 return
                             }
@@ -259,6 +274,7 @@ extension AppDelegate {
 
                                 controller.present(navigationController, animated: true, completion: nil)
                             }
+                            */
                         }
                     )
                 )
@@ -266,6 +282,8 @@ extension AppDelegate {
                 actions.append(
                     NCMenuAction(
                         title: NSLocalizedString("_create_new_presentation_", comment: ""), icon: utility.loadImage(named: "play.rectangle", colors: [NCBrandColor.shared.presentationIconColor]), action: { _ in
+
+                            /*
                             guard let navigationController = UIStoryboard(name: "NCCreateFormUploadDocuments", bundle: nil).instantiateInitialViewController() else {
                                 return
                             }
@@ -280,6 +298,7 @@ extension AppDelegate {
 
                                 controller.present(navigationController, animated: true, completion: nil)
                             }
+                            */
                         }
                     )
                 )
