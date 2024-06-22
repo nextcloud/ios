@@ -206,7 +206,7 @@ struct NCUploadAssetsView: View {
                 }
                 .navigationTitle(NSLocalizedString("_upload_photos_videos_", comment: ""))
                 .navigationBarTitleDisplayMode(.inline)
-                .navigationBarItems(leading: Button(action: {
+                .navigationBarItems(trailing: Button(action: {
                     presentationMode.wrappedValue.dismiss()
                 }) {
                     Image(systemName: "xmark")

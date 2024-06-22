@@ -81,8 +81,6 @@ class NCUserStatus: UIViewController {
         view.backgroundColor = .systemBackground
         tableView.backgroundColor = .systemBackground
 
-        buttonCancel.title = NSLocalizedString("_close_", comment: "")
-
         onlineButton.layer.cornerRadius = 10
         onlineButton.layer.masksToBounds = true
         onlineButton.backgroundColor = .systemGray5

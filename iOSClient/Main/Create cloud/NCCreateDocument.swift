@@ -43,7 +43,7 @@ class NCCreateDocument: NSObject {
                 options = NKRequestOptions(customUserAgent: NCUtility().getCustomUserAgentNCText())
             }
 
-            NextcloudKit.shared.NCTextCreateFile(fileNamePath: fileNamePath, editorId: NCGlobal.shared.editorText, creatorId: creatorId, templateId: templateId, options: options) { account, url, _, error in
+            NextcloudKit.shared.NCTextCreateFile(fileNamePath: fileNamePath, editorId: editorId, creatorId: creatorId, templateId: templateId, options: options) { account, url, _, error in
                 guard error == .success, account == self.appDelegate.account, let url = url else {
                     NCContentPresenter().showError(error: error)
                     return
