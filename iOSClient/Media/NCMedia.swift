@@ -283,11 +283,12 @@ class NCMedia: UIViewController {
     // MARK: - Image
 
     func getImage(metadata: tableMetadata) -> UIImage? {
+        let fileNamePath = utilityFileSystem.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)
 
         if let image = imageCache.getMediaImage(ocId: metadata.ocId, etag: metadata.etag) {
             return image
-        } else if FileManager().fileExists(atPath: utilityFileSystem.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)),
-                  let image = UIImage(contentsOfFile: utilityFileSystem.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)) {
+        } else if FileManager().fileExists(atPath: fileNamePath),
+                  let image = UIImage(contentsOfFile: fileNamePath) {
             imageCache.setMediaSize(ocId: metadata.ocId, etag: metadata.etag, size: image.size)
             if imageCache.hasMediaImageEnoughSpace() {
                 imageCache.setMediaImage(ocId: metadata.ocId, etag: metadata.etag, image: image, date: metadata.date as Date)
