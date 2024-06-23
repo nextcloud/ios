@@ -171,6 +171,9 @@ struct NCUploadAssetsView: View {
                                     .font(.system(size: 15))
                                     .modifier(TextFieldClearButton(text: $model.fileName))
                                     .multilineTextAlignment(.trailing)
+                                    .onChange(of: model.fileName, perform: { _ in
+                                        model.submitChangedName()
+                                    })
                             }
                         }
                         if !model.maintainOriginalFilename {

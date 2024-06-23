@@ -407,7 +407,7 @@ import KeychainAccess
     @objc func getFileNameMask(key: String) -> String {
         migrate(key: key)
         if let value = try? keychain.get(key) {
-            return value
+            return NCUtility().removeForbiddenCharacters(value)
         } else {
             return ""
         }

@@ -39,8 +39,6 @@ class NCAutoUploadFileNamesModel: ObservableObject, ViewOnAppearHandling {
     @Published var specifyFilename: Bool = false
     /// The changed file name.
     @Published var changedName: String = ""
-    /// The original file name.
-    @Published var oldName: String = ""
     /// The complete new file name.
     @Published var fileName: String = ""
     let dateExample = Date()
@@ -55,7 +53,6 @@ class NCAutoUploadFileNamesModel: ObservableObject, ViewOnAppearHandling {
         maintainFilename = keychain.getOriginalFileName(key: globalKey.keyFileNameOriginalAutoUpload)
         specifyFilename = keychain.getOriginalFileName(key: globalKey.keyFileNameAutoUploadType)
         changedName = keychain.getFileNameMask(key: globalKey.keyFileNameAutoUploadMask)
-        oldName = keychain.getFileNameMask(key: globalKey.keyFileNameAutoUploadMask)
         getFileName()
     }
 
@@ -77,24 +74,13 @@ class NCAutoUploadFileNamesModel: ObservableObject, ViewOnAppearHandling {
 
     /// Submits the changed file name.
     func submitChangedName() {
-        changedName = checkUploadFileName()
-        presentForbiddenCharError()
-        oldName = changedName
-    }
-
-    /// Presents an error message if the changed file name contains forbidden characters.
-    func presentForbiddenCharError() {
-        if changedName != oldName {
+        let fileNameWithoutForbiddenChars = NCUtility().removeForbiddenCharacters(changedName)
+        if changedName != fileNameWithoutForbiddenChars {
+            changedName = fileNameWithoutForbiddenChars
             let errorDescription = String(format: NSLocalizedString("_forbidden_characters_", comment: ""), NCGlobal.shared.forbiddenCharacters.joined(separator: " "))
             let error = NKError(errorCode: NCGlobal.shared.errorConflict, errorDescription: errorDescription)
             NCContentPresenter().showInfo(error: error)
         }
-    }
-
-    /// Checks and removes forbidden characters from the changed file name.
-    /// - Returns: The sanitized file name.
-    func checkUploadFileName() -> String {
-        return NCUtility().removeForbiddenCharacters(changedName)
     }
 
     /// Generates a preview file name based on current settings and file name mask.
