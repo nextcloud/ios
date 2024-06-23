@@ -169,7 +169,6 @@ class NCFiles: NCCollectionViewCommon {
                         }
                     }
                     self.richWorkspaceText = tableDirectory?.richWorkspace
-                    
                     if metadatasDifferentCount != 0 || metadatasModified != 0 {
                         self.reloadDataSource()
                     } else {
