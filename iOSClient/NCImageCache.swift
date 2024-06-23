@@ -120,8 +120,6 @@ class NCImageCache: NSObject {
                     }
                 } else if let date = metadatasInfo[ocId]?.date, let etag = metadatasInfo[ocId]?.etag, fileName == etag + ext {
                     files.append(FileInfo(path: fileURL, ocIdEtag: ocId + etag, date: date as Date, fileSize: fileSize, width: width, height: height))
-                } else {
-                    print("Nothing")
                 }
             }
         }
