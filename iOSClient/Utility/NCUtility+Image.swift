@@ -244,7 +244,8 @@ extension NCUtility {
         let iconImagePath = utilityFileSystem.getDirectoryProviderStorageIconOcId(ocId, etag: etag)
 
         if FileManager.default.fileExists(atPath: iconImagePath) {
-            debugPrint("Size \(fileNameView): \(NCUtilityFileSystem().getFileSize(filePath: iconImagePath))")
+            let fileSize = utilityFileSystem.getFileSize(filePath: iconImagePath)
+            debugPrint("Size \(fileNameView): \(fileSize)")
             imagePreview = UIImage(contentsOfFile: iconImagePath)
         } else if !createPreviewMedia {
             return nil
