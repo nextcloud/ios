@@ -29,6 +29,7 @@ import Firebase
 import WidgetKit
 import Queuer
 import EasyTipView
+import SwiftUI
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterDelegate, NCUserBaseUrl {
@@ -42,7 +43,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     var tipView: EasyTipView?
     var backgroundSessionCompletionHandler: (() -> Void)?
     var activeLogin: NCLogin?
-    var activeLoginWeb: NCLoginWeb?
+    var activeLoginWeb: NCLoginProvider?
     var timerErrorNetworking: Timer?
     var timerErrorNetworkingDisabled: Bool = false
     var taskAutoUploadDate: Date = Date()
@@ -50,6 +51,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         return ProcessInfo.processInfo.arguments.contains("UI_TESTING")
     }
     var notificationSettings: UNNotificationSettings?
+
+    var loginFlowV2Token = ""
+    var loginFlowV2Endpoint = ""
+    var loginFlowV2Login = ""
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         if isUiTestingEnabled {
@@ -361,45 +366,59 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         }
 
         // [WEBPersonalized] [AppConfig]
-        if NCBrandOptions.shared.use_login_web_personalized || NCBrandOptions.shared.use_AppConfig {
-            if activeLoginWeb?.view.window == nil {
-                activeLoginWeb = UIStoryboard(name: "NCLogin", bundle: nil).instantiateViewController(withIdentifier: "NCLoginWeb") as? NCLoginWeb
-                activeLoginWeb?.urlBase = NCBrandOptions.shared.loginBaseUrl
-                showLoginViewController(activeLoginWeb)
+        if NCBrandOptions.shared.use_AppConfig {
+            if activeLogin?.view.window == nil {
+                urlBase = NCBrandOptions.shared.loginBaseUrl
+
+                NextcloudKit.shared.getLoginFlowV2(serverUrl: urlBase) { token, endpoint, login, _, error in
+
+                    // Login Flow V2
+                    if error == .success, let token, let endpoint, let login {
+                        let vc = UIHostingController(rootView: NCLoginPoll(loginFlowV2Token: token, loginFlowV2Endpoint: endpoint, loginFlowV2Login: login, cancelButtonDisabled: NCManageDatabase.shared.getAccounts().isEmptyOrNil))
+
+                        UIApplication.shared.firstWindow?.rootViewController?.present(vc, animated: true)
+                    }
+                }
+
+                return
             }
-            return
         }
 
         // Nextcloud standard login
         if selector == NCGlobal.shared.introSignup {
-            if activeLoginWeb?.view.window == nil {
-                activeLoginWeb = UIStoryboard(name: "NCLogin", bundle: nil).instantiateViewController(withIdentifier: "NCLoginWeb") as? NCLoginWeb
+            if activeLogin?.view.window == nil {
+                activeLogin = UIStoryboard(name: "NCLogin", bundle: nil).instantiateViewController(withIdentifier: "NCLogin") as? NCLogin
+
                 if selector == NCGlobal.shared.introSignup {
-                    activeLoginWeb?.urlBase = NCBrandOptions.shared.linkloginPreferredProviders
+                    activeLogin?.urlBase = NCBrandOptions.shared.linkloginPreferredProviders
+                    let web = UIStoryboard(name: "NCLogin", bundle: nil).instantiateViewController(withIdentifier: "NCLoginProvider") as? NCLoginProvider
+                    web?.urlBase = NCBrandOptions.shared.linkloginPreferredProviders
+                    showLoginViewController(web)
                 } else {
-                    activeLoginWeb?.urlBase = self.urlBase
+                    activeLogin?.urlBase = self.urlBase
+                    showLoginViewController(activeLogin)
                 }
-                showLoginViewController(activeLoginWeb)
             }
 
         } else if NCBrandOptions.shared.disable_intro && NCBrandOptions.shared.disable_request_login_url {
-            if activeLoginWeb?.view.window == nil {
-                activeLoginWeb = UIStoryboard(name: "NCLogin", bundle: nil).instantiateViewController(withIdentifier: "NCLoginWeb") as? NCLoginWeb
-                activeLoginWeb?.urlBase = NCBrandOptions.shared.loginBaseUrl
-                showLoginViewController(activeLoginWeb)
+            if activeLogin?.view.window == nil {
+                activeLogin = UIStoryboard(name: "NCLogin", bundle: nil).instantiateViewController(withIdentifier: "NCLogin") as? NCLogin
+                activeLogin?.urlBase = NCBrandOptions.shared.loginBaseUrl
+                showLoginViewController(activeLogin)
             }
-
         } else if openLoginWeb {
             // Used also for reinsert the account (change passwd)
-            if activeLoginWeb?.view.window == nil {
-                activeLoginWeb = UIStoryboard(name: "NCLogin", bundle: nil).instantiateViewController(withIdentifier: "NCLoginWeb") as? NCLoginWeb
-                activeLoginWeb?.urlBase = urlBase
-                activeLoginWeb?.user = user
-                showLoginViewController(activeLoginWeb)
+            if activeLogin?.view.window == nil {
+                activeLogin = UIStoryboard(name: "NCLogin", bundle: nil).instantiateViewController(withIdentifier: "NCLogin") as? NCLogin
+                activeLogin?.urlBase = urlBase
+                activeLogin?.disableUrlField = true
+                activeLogin?.disableCloseButton = true
+                showLoginViewController(activeLogin)
             }
-
         } else {
             if activeLogin?.view.window == nil {
+                activeLogin?.disableCloseButton = true
+
                 activeLogin = UIStoryboard(name: "NCLogin", bundle: nil).instantiateViewController(withIdentifier: "NCLogin") as? NCLogin
                 showLoginViewController(activeLogin)
             }
@@ -456,6 +475,34 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     }
 
     // MARK: - Account
+
+    func createAccount(server: String, username: String, password: String, completion: @escaping (_ error: NKError) -> Void) {
+        var urlBase = server
+        if urlBase.last == "/" { urlBase = String(urlBase.dropLast()) }
+        let account: String = "\(username) \(urlBase)"
+        let user = username
+
+        NextcloudKit.shared.setup(account: account, user: user, userId: user, password: password, urlBase: urlBase)
+        NextcloudKit.shared.getUserProfile { _, userProfile, _, error in
+
+            if error == .success, let userProfile {
+
+                NCManageDatabase.shared.deleteAccount(account)
+                NCManageDatabase.shared.addAccount(account, urlBase: urlBase, user: user, userId: userProfile.userId, password: password)
+
+                NCKeychain().setClientCertificate(account: account, p12Data: NCNetworking.shared.p12Data, p12Password: NCNetworking.shared.p12Password)
+
+                self.changeAccount(account, userProfile: userProfile)
+            } else {
+
+                let alertController = UIAlertController(title: NSLocalizedString("_error_", comment: ""), message: error.errorDescription, preferredStyle: .alert)
+                alertController.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { _ in }))
+                UIApplication.shared.firstWindow?.rootViewController?.present(alertController, animated: true)
+            }
+
+            completion(error)
+        }
+    }
 
     func changeAccount(_ account: String, userProfile: NKUserProfile?) {
 

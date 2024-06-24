@@ -47,10 +47,6 @@ let userAgent: String = {
     var sourceCode: String = "https://github.com/nextcloud/ios"
     var mobileconfig: String = "/remote.php/dav/provisioning/apple-provisioning.mobileconfig"
 
-    // Personalized
-    var webCloseViewProtocolPersonalized: String = ""                                                  // example "abc://change/plan"      Don't touch me !!
-    var folderBrandAutoUpload: String = ""                                                             // example "_auto_upload_folder_"   Don't touch me !!
-
     // Auto Upload default folder
     var folderDefaultAutoUpload: String = "Photos"
 
@@ -59,16 +55,10 @@ let userAgent: String = {
     var capabilitiesGroupApps: String = "group.com.nextcloud.apps"
 
     // BRAND ONLY
-    var use_login_web_personalized: Bool = false                                   // Don't touch me !!
-    var use_AppConfig: Bool = false                                                // Don't touch me !!
-    var use_GroupApps: Bool = true                                                 // Don't touch me !!
+    @objc public var use_AppConfig: Bool = false                                                // Don't touch me !!
 
     // Options
-    var use_default_auto_upload: Bool = false
-    var use_themingColor: Bool = true
-    var use_themingLogo: Bool = false
-    var use_storeLocalAutoUploadAll: Bool = false
-    var use_loginflowv2: Bool = false                                              // Don't touch me !!
+    @objc public var use_themingColor: Bool = true
 
     var disable_intro: Bool = false
     var disable_request_login_url: Bool = false
@@ -99,11 +89,6 @@ let userAgent: String = {
     }
 
     override init() {
-
-        if folderBrandAutoUpload != "" {
-            folderDefaultAutoUpload = folderBrandAutoUpload
-        }
-
         // wrapper AppConfig
         if let configurationManaged = UserDefaults.standard.dictionary(forKey: "com.apple.configuration.managed"), use_AppConfig {
 

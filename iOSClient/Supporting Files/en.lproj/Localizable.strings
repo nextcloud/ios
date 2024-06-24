@@ -158,7 +158,8 @@
 "_disabled_"                = "Disabled";
 "_standard_"                = "Standard";
 "_maximum_"                 = "Maximum";
-"_error_occurred_"           = "An error occurred, please try again";
+"_error_occurred_"          = "An error occurred, please try again";
+"_retry_"                   = "Retry";
 
 /* MARK: Files lock */
 
@@ -686,7 +687,7 @@
 "_transfers_"                       = "Transfers";
 "_activity_"                        = "Activity";
 "_activity_file_not_present_"       = "File no longer present";
-"_trash_file_not_found_"            = "It seems that the file is not in the trash, go to the trash to update it and try again";
+"_trash_file_not_found_"            = "It seems that the file is not in the trash. Go to the trash to update it and try again";
 "_list_shares_"                     = "Shares";
 "_list_shares_no_files_"            = "No shares yet";
 "_tutorial_list_shares_view_"       = "Files and folders you share will show up here";
@@ -733,7 +734,7 @@
 "_e2e_set_folder_encrypted_"        = "Encrypt";
 "_e2e_remove_folder_encrypted_"     = "Decrypt";
 "_e2e_goto_settings_for_enable_"    = "This is an encrypted directory, go to \"Settings\" and enable end-to-end encryption";
-"_e2e_error_"                       = "Serious internal error end-to-end encryption";
+"_e2e_error_"                       = "An internal end-to-end encryption error occurred";
 "_e2e_in_upload_"                   = "Upload in progress, please wait for all files to be transferred";
 "_scans_document_"                  = "Scan document";
 "_scanned_images_"                  = "Scanned images";
@@ -1079,3 +1080,11 @@
 "_no_types_"                     = "No provider found";
 "_no_types_subtitle_"            = "AI Providers need to be installed to use the Assistant";
 
+// MARK: Client certificate
+"_no_client_cert_found_"         = "The server is requesting a client certificate";
+"_no_client_cert_found_desc_"    = "Do you want to install a TLS client certificate? \n Note that only .p12 archives created through OpenSSL with the -legacy flag can work on Apple devices.";
+"_client_cert_enter_password_"   = "Enter the password for the chosen certificate";
+"_client_cert_wrong_password_"   = "Sorry, you entered an invalid password";
+
+// MARK: Login poll
+"_poll_desc_"                    = "Please complete the log in process in your browser";

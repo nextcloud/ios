@@ -98,6 +98,23 @@ class NCIntroViewController: UIViewController, UICollectionViewDataSource, UICol
 
         view.backgroundColor = NCBrandColor.shared.customer
         timerAutoScroll = Timer.scheduledTimer(timeInterval: 5, target: self, selector: (#selector(NCIntroViewController.autoScroll)), userInfo: nil, repeats: true)
+
+        NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeUser), object: nil, queue: nil) { _ in
+            let window = UIApplication.shared.firstWindow
+            if window?.rootViewController is NCMainTabBarController {
+                self.dismiss(animated: true)
+            } else {
+                if let mainTabBarController = UIStoryboard(name: "Main", bundle: nil).instantiateInitialViewController() as? NCMainTabBarController {
+                    mainTabBarController.modalPresentationStyle = .fullScreen
+                    mainTabBarController.view.alpha = 0
+                    window?.rootViewController = mainTabBarController
+                    window?.makeKeyAndVisible()
+                    UIView.animate(withDuration: 0.5) {
+                        mainTabBarController.view.alpha = 1
+                    }
+                }
+            }
+        }
     }
 
     override var preferredStatusBarStyle: UIStatusBarStyle {

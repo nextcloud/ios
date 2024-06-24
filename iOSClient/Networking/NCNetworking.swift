@@ -31,6 +31,11 @@ import Queuer
 @objc protocol uploadE2EEDelegate: AnyObject { }
 #endif
 
+@objc protocol ClientCertificateDelegate {
+    func onIncorrectPassword()
+    func didAskForClientCertificate()
+}
+
 @objcMembers
 class NCNetworking: NSObject, NKCommonDelegate {
     public static let shared: NCNetworking = {
@@ -59,6 +64,11 @@ class NCNetworking: NSObject, NKCommonDelegate {
     let uploadMetadataInBackground = ThreadSafeDictionary<FileNameServerUrl, tableMetadata>()
     let downloadMetadataInBackground = ThreadSafeDictionary<FileNameServerUrl, tableMetadata>()
     var transferInForegorund: TransferInForegorund?
+    weak var delegate: ClientCertificateDelegate?
+
+    var p12Data: Data?
+    var p12Password: String?
+
     let transferInError = ThreadSafeDictionary<String, Int>()
 
     func transferInError(ocId: String) {
@@ -149,6 +159,12 @@ class NCNetworking: NSObject, NKCommonDelegate {
     override init() {
         super.init()
 
+        getActiveAccountCertificate()
+
+        NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeUser), object: nil, queue: nil) { _ in
+            self.getActiveAccountCertificate()
+        }
+
 #if EXTENSION
         print("Start Background Upload Extension: ", sessionUploadBackgroundExtension)
 #else
@@ -187,8 +203,25 @@ class NCNetworking: NSObject, NKCommonDelegate {
     func authenticationChallenge(_ session: URLSession,
                                  didReceive challenge: URLAuthenticationChallenge,
                                  completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
-        DispatchQueue.global().async {
-            self.checkTrustedChallenge(session, didReceive: challenge, completionHandler: completionHandler)
+        if challenge.protectionSpace.authenticationMethod == NSURLAuthenticationMethodClientCertificate {
+            DispatchQueue.main.async {
+                if let p12Data = self.p12Data,
+                   let cert = (p12Data, self.p12Password) as? UserCertificate,
+                   let pkcs12 = try? PKCS12(pkcs12Data: cert.data, password: cert.password, onIncorrectPassword: {
+                       self.delegate?.onIncorrectPassword()
+                   }) {
+                    let creds = PKCS12.urlCredential(for: pkcs12)
+
+                    completionHandler(URLSession.AuthChallengeDisposition.useCredential, creds)
+                } else {
+                    self.delegate?.didAskForClientCertificate()
+                    completionHandler(URLSession.AuthChallengeDisposition.performDefaultHandling, nil)
+                }
+            }
+        } else {
+            DispatchQueue.global().async {
+                self.checkTrustedChallenge(session, didReceive: challenge, completionHandler: completionHandler)
+            }
         }
     }
 
@@ -340,6 +373,12 @@ class NCNetworking: NSObject, NKCommonDelegate {
                 }))
                 viewController?.present(alertController, animated: true)
             }
+        }
+    }
+
+    private func getActiveAccountCertificate() {
+        if let account = NCManageDatabase.shared.getActiveAccount()?.account {
+            (self.p12Data, self.p12Password) = NCKeychain().getClientCertificate(account: account)
         }
     }
 }

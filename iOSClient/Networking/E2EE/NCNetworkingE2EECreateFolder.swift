@@ -20,7 +20,6 @@
 //
 
 import UIKit
-import OpenSSL
 import NextcloudKit
 import CFNetwork
 import Alamofire

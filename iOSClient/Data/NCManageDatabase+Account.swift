@@ -90,15 +90,6 @@ extension NCManageDatabase {
 
                 addObject.account = account
 
-                // Brand
-                if NCBrandOptions.shared.use_default_auto_upload {
-
-                    addObject.autoUpload = true
-                    addObject.autoUploadImage = true
-                    addObject.autoUploadVideo = true
-                    addObject.autoUploadWWAnVideo = true
-                }
-
                 NCKeychain().setPassword(account: account, password: password)
 
                 addObject.urlBase = urlBase
