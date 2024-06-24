@@ -81,6 +81,10 @@ class NCCollectionViewDownloadThumbnail: ConcurrentOperation {
                         self.collectionView?.reloadData()
                     }
                 }
+                let fileSizeIcon = self.utilityFileSystem.getFileSize(filePath: self.fileNameIconLocalPath)
+                if NCImageCache.shared.hasIconImageEnoughSize(fileSizeIcon) {
+                    NCImageCache.shared.setIconImage(ocId: self.metadata.ocId, etag: self.metadata.etag, image: imageIcon)
+                }
             }
             self.finish()
         }

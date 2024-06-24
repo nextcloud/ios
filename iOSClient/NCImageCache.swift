@@ -35,7 +35,9 @@ class NCImageCache: NSObject {
     // MARK: -
 
     private let limitCacheImagePreview: Int = 1000
-    private let limitSizeImage: Int = 100000
+    private let limitSizeImagePreview: Int = 100000
+    private let limitSizeImageIcon: Int = 100000
+
     private var brandElementColor: UIColor?
     private var totalSize: Int64 = 0
 
@@ -52,14 +54,18 @@ class NCImageCache: NSObject {
         var date: Date
     }
 
-    private typealias ThumbnailImageLRUCache = LRUCache<String, imageInfo>
-    private typealias ThumbnailSizeLRUCache = LRUCache<String, CGSize?>
+    private typealias ThumbnailImagePreviewLRUCache = LRUCache<String, imageInfo>
+    private typealias ThumbnailImageIconLRUCache = LRUCache<String, UIImage>
+    private typealias ThumbnailSizePreviewLRUCache = LRUCache<String, CGSize?>
 
-    private lazy var cacheImagePreview: ThumbnailImageLRUCache = {
-        return ThumbnailImageLRUCache(countLimit: limitCacheImagePreview)
+    private lazy var cacheImagePreview: ThumbnailImagePreviewLRUCache = {
+        return ThumbnailImagePreviewLRUCache(countLimit: limitCacheImagePreview)
     }()
-    private lazy var cacheSizePreview: ThumbnailSizeLRUCache = {
-        return ThumbnailSizeLRUCache()
+    private lazy var cacheImageIcon: ThumbnailImageIconLRUCache = {
+        return ThumbnailImageIconLRUCache()
+    }()
+    private lazy var cacheSizePreview: ThumbnailSizePreviewLRUCache = {
+        return ThumbnailSizePreviewLRUCache()
     }()
     private var metadatasInfo: [String: metadataInfo] = [:]
     private var metadatas: ThreadSafeArray<tableMetadata>?
@@ -139,7 +145,7 @@ class NCImageCache: NSObject {
             }
             autoreleasepool {
                 if let image = UIImage(contentsOfFile: file.path.path) {
-                    if counter < limitCacheImagePreview, file.fileSize > limitSizeImage {
+                    if counter < limitCacheImagePreview, file.fileSize > limitSizeImagePreview {
                         cacheImagePreview.setValue(imageInfo(image: image, size: image.size, date: file.date), forKey: file.ocIdEtag)
                         totalSize = totalSize + Int64(file.fileSize)
                         counter += 1
@@ -184,7 +190,7 @@ class NCImageCache: NSObject {
     }
 
     func hasMediaImageEnoughSize(_ size: Int64) -> Bool {
-        return limitSizeImage < size
+        return limitSizeImagePreview < size
     }
 
     func setMediaSize(ocId: String, etag: String, size: CGSize) {
@@ -200,6 +206,18 @@ class NCImageCache: NSObject {
         let startServerUrl = NCUtilityFileSystem().getHomeServer(urlBase: tableAccount.urlBase, userId: tableAccount.userId) + tableAccount.mediaPath
         let predicateBoth = NSPredicate(format: showBothPredicateMediaString, account, startServerUrl)
         return NCManageDatabase.shared.getMediaMetadatas(predicate: predicate ?? predicateBoth)
+    }
+
+    func hasIconImageEnoughSize(_ size: Int64) -> Bool {
+        return limitSizeImageIcon < size
+    }
+
+    func setIconImage(ocId: String, etag: String, image: UIImage) {
+        cacheImageIcon.setValue(image, forKey: ocId + etag)
+    }
+
+    func getIconImage(ocId: String, etag: String) -> UIImage? {
+        return cacheImageIcon.value(forKey: ocId + etag)
     }
 
     // MARK: -
