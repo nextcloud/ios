@@ -121,7 +121,7 @@ class NCMedia: UIViewController {
 
         collectionView.refreshControl = refreshControl
         refreshControl.action(for: .valueChanged) { _ in
-            DispatchQueue.global().async {
+            DispatchQueue.global(qos: .userInteractive).async {
                 self.reloadDataSource()
             }
             self.refreshControl.endRefreshing()
@@ -171,7 +171,7 @@ class NCMedia: UIViewController {
             self.metadatas = metadatas
             self.collectionViewReloadData()
         } else {
-            DispatchQueue.global().async {
+            DispatchQueue.global(qos: .userInteractive).async {
                 self.reloadDataSource()
             }
         }

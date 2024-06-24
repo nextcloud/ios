@@ -214,8 +214,7 @@ extension NCUtility {
     }
 
     func imageFromVideo(url: URL, at time: TimeInterval, completion: @escaping (UIImage?) -> Void) {
-        DispatchQueue.global().async {
-
+        DispatchQueue.global(qos: .userInteractive).async {
             let asset = AVURLAsset(url: url)
             let assetIG = AVAssetImageGenerator(asset: asset)
 

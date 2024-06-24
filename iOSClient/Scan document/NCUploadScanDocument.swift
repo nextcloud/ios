@@ -100,7 +100,7 @@ class NCUploadScanDocument: ObservableObject {
 
     func createPDF(metadata: tableMetadata, completion: @escaping (_ error: Bool) -> Void) {
 
-        DispatchQueue.global().async {
+        DispatchQueue.global(qos: .userInteractive).async {
             let fileNamePath = self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)
             let pdfData = NSMutableData()
 
@@ -145,7 +145,7 @@ class NCUploadScanDocument: ObservableObject {
 
     func createPDFPreview(quality: Double, isTextRecognition: Bool, completion: @escaping (_ data: Data) -> Void) {
 
-        DispatchQueue.global().async {
+        DispatchQueue.global(qos: .userInteractive).async {
             if let image = self.images.first {
 
                 let pdfData = NSMutableData()

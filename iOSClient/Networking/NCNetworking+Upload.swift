@@ -484,7 +484,6 @@ extension NCNetworking {
                         task: URLSessionTask) {
 
         DispatchQueue.global().async {
-
             var metadata: tableMetadata?
 
             if let metadataTmp = self.uploadMetadataInBackground[FileNameServerUrl(fileName: fileName, serverUrl: serverUrl)] {

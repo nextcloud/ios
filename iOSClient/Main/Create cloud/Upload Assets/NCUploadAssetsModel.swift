@@ -69,7 +69,7 @@ class NCUploadAssetsModel: NSObject, ObservableObject, NCCreateFormUploadConflic
         self.showHUD = true
         super.init()
 
-        DispatchQueue.global().async {
+        DispatchQueue.global(qos: .userInteractive).async {
             for asset in self.assets {
                 guard let image = asset.fullResolutionImage?.resizeImage(size: CGSize(width: 300, height: 300), isAspectRation: true),
                       let localIdentifier = asset.phAsset?.localIdentifier else { continue }

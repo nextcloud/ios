@@ -969,7 +969,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             groupByField = "name"
         }
 
-        DispatchQueue.global().async {
+        DispatchQueue.global(qos: .userInteractive).async {
             if withQueryDB { self.queryDB() }
             DispatchQueue.main.async {
                 self.refreshControl.endRefreshing()
