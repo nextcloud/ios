@@ -968,7 +968,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             groupByField = "name"
         }
 
-        DispatchQueue.global().async {
+        DispatchQueue.global(qos: .userInteractive).async {
             if withQueryDB { self.queryDB() }
             DispatchQueue.main.async {
                 self.refreshControl.endRefreshing()
@@ -1227,7 +1227,14 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                 cell.filePreviewImageView?.layer.borderColor = UIColor.lightGray.cgColor
             }
             if metadata.name == NCGlobal.shared.appName {
-                if let image = utility.createFilePreviewImage(ocId: metadata.ocId, etag: metadata.etag, fileNameView: metadata.fileNameView, classFile: metadata.classFile, status: metadata.status, createPreviewMedia: !metadata.hasPreview) {
+                if let image = NCImageCache.shared.getIconImage(ocId: metadata.ocId, etag: metadata.etag) {
+                    cell.filePreviewImageView?.image = image
+                } else if let image = utility.createFilePreviewImage(ocId: metadata.ocId, etag: metadata.etag, fileNameView: metadata.fileNameView, classFile: metadata.classFile, status: metadata.status, createPreviewMedia: !metadata.hasPreview) {
+                    let fileNamePathIcon = utilityFileSystem.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)
+                    let fileSizeIcon = self.utilityFileSystem.getFileSize(filePath: fileNamePathIcon)
+                    if NCImageCache.shared.hasIconImageEnoughSize(fileSizeIcon) {
+                        NCImageCache.shared.setIconImage(ocId: metadata.ocId, etag: metadata.etag, image: image)
+                    }
                     cell.filePreviewImageView?.image = image
                 } else {
                     if metadata.iconName.isEmpty {

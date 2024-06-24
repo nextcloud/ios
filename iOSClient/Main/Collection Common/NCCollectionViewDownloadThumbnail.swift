@@ -63,7 +63,7 @@ class NCCollectionViewDownloadThumbnail: ConcurrentOperation {
                                             etag: etagResource,
                                             options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { _, _, imageIcon, _, etag, error in
 
-            if error == .success, let image = imageIcon {
+            if error == .success, let imageIcon {
                 NCManageDatabase.shared.setMetadataEtagResource(ocId: self.metadata.ocId, etagResource: etag)
                 DispatchQueue.main.async {
                     if self.metadata.ocId == self.cell?.fileObjectId, let filePreviewImageView = self.cell?.filePreviewImageView {
@@ -75,11 +75,15 @@ class NCCollectionViewDownloadThumbnail: ConcurrentOperation {
                         UIView.transition(with: filePreviewImageView,
                                           duration: 0.75,
                                           options: .transitionCrossDissolve,
-                                          animations: { filePreviewImageView.image = image },
+                                          animations: { filePreviewImageView.image = imageIcon },
                                           completion: nil)
                     } else {
                         self.collectionView?.reloadData()
                     }
+                }
+                let fileSizeIcon = self.utilityFileSystem.getFileSize(filePath: self.fileNameIconLocalPath)
+                if NCImageCache.shared.hasIconImageEnoughSize(fileSizeIcon) {
+                    NCImageCache.shared.setIconImage(ocId: self.metadata.ocId, etag: self.metadata.etag, image: imageIcon)
                 }
             }
             self.finish()

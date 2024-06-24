@@ -189,8 +189,7 @@ extension NCNetworking {
                           task: URLSessionTask,
                           error: NKError) {
 
-        DispatchQueue.global().async {
-
+        DispatchQueue.global(qos: .userInteractive).async {
             guard let url = task.currentRequest?.url,
                   let metadata = NCManageDatabase.shared.getMetadata(from: url, sessionTaskIdentifier: task.taskIdentifier) else { return }
 
@@ -260,7 +259,6 @@ extension NCNetworking {
                           task: URLSessionTask) {
 
         DispatchQueue.global().async {
-
             var metadata: tableMetadata?
 
             if let metadataTmp = self.downloadMetadataInBackground[FileNameServerUrl(fileName: fileName, serverUrl: serverUrl)] {

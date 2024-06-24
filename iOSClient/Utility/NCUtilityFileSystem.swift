@@ -95,11 +95,11 @@ class NCUtilityFileSystem: NSObject {
     }
 
     func getDirectoryProviderStorageIconOcId(_ ocId: String, etag: String) -> String {
-        return getDirectoryProviderStorageOcId(ocId) + "/" + etag + ".small.ico"
+        return getDirectoryProviderStorageOcId(ocId) + "/" + etag + NCGlobal.shared.storageExtIcon
     }
 
     func getDirectoryProviderStoragePreviewOcId(_ ocId: String, etag: String) -> String {
-        return getDirectoryProviderStorageOcId(ocId) + "/" + etag + ".preview.ico"
+        return getDirectoryProviderStorageOcId(ocId) + "/" + etag + NCGlobal.shared.storageExtPreview
     }
 
     func fileProviderStorageExists(_ metadata: tableMetadata) -> Bool {
