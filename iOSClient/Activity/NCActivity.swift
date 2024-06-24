@@ -141,22 +141,23 @@ class NCActivity: UIViewController, NCSharePagingContent {
 
 extension NCActivity: UITableViewDelegate {
 
-    func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 120
-    }
+//    func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
+//        return 120
+//    }
 
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        return 60
+        return 42
     }
 
-    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return UITableView.automaticDimension
-    }
+//    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+//        return UITableView.automaticDimension
+//    }
 
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
 
-        let view = UIView(frame: CGRect(x: 0, y: 0, width: tableView.frame.width, height: 60))
-        view.backgroundColor = .clear
+        let view = UIView()
+        view.frame = CGRect(x: tableView.bounds.width / 2, y: 10, width: 40, height: 22)
+//        view.backgroundColor = .red
 
         let label = UILabel()
         label.font = UIFont.boldSystemFont(ofSize: 13)
@@ -164,13 +165,22 @@ extension NCActivity: UITableViewDelegate {
         label.text = utility.getTitleFromDate(sectionDates[section])
         label.textAlignment = .center
         label.layer.cornerRadius = 11
-        label.layer.masksToBounds = true
-        label.layer.backgroundColor = UIColor(red: 152.0 / 255.0, green: 167.0 / 255.0, blue: 181.0 / 255.0, alpha: 0.8).cgColor
+//        label.layer.masksToBounds = true
+//        label.layer.backgroundColor = UIColor(red: 152.0 / 255.0, green: 167.0 / 255.0, blue: 181.0 / 255.0, alpha: 0.8).cgColor
         let widthFrame = label.intrinsicContentSize.width + 30
-        let xFrame = tableView.bounds.width / 2 - widthFrame / 2
-        label.frame = CGRect(x: xFrame, y: 10, width: widthFrame, height: 22)
+//        let xFrame =
+//        label
+
+        view.addBlur(style: .systemThinMaterial)
+
 
         view.addSubview(label)
+
+        label.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            label.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            label.centerYAnchor.constraint(equalTo: view.centerYAnchor)
+        ])
         return view
     }
 }
