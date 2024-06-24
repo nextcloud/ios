@@ -56,7 +56,7 @@
                                 <rect key="frame" x="5" y="0.0" width="404" height="726"/>
                                 <subviews>
                                     <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="none" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="36" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="c94-b9-Sim">
-                                        <rect key="frame" x="0.0" y="101" width="404" height="625"/>
+                                        <rect key="frame" x="0.0" y="101" width="404" height="605"/>
                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                     </tableView>
                                     <searchBar opaque="NO" contentMode="redraw" horizontalHuggingPriority="249" searchBarStyle="minimal" translatesAutoresizingMaskIntoConstraints="NO" id="iSO-mc-0TB">
@@ -117,7 +117,7 @@
                                     <constraint firstAttribute="trailing" secondItem="c94-b9-Sim" secondAttribute="trailing" id="BtN-cJ-TTc"/>
                                     <constraint firstItem="c94-b9-Sim" firstAttribute="top" secondItem="iSO-mc-0TB" secondAttribute="bottom" id="Co6-l6-HiT"/>
                                     <constraint firstItem="GsB-jy-SBk" firstAttribute="centerY" secondItem="iSO-mc-0TB" secondAttribute="centerY" id="Qe6-An-Hda"/>
-                                    <constraint firstAttribute="bottom" secondItem="c94-b9-Sim" secondAttribute="bottom" id="Svm-RV-vnl"/>
+                                    <constraint firstAttribute="bottom" secondItem="c94-b9-Sim" secondAttribute="bottom" constant="20" id="Svm-RV-vnl"/>
                                     <constraint firstAttribute="trailing" secondItem="oBQ-TP-qof" secondAttribute="trailing" constant="-10" id="ZuM-2G-aoM"/>
                                     <constraint firstItem="GsB-jy-SBk" firstAttribute="leading" secondItem="iSO-mc-0TB" secondAttribute="trailing" constant="5" id="cqh-P5-H1x"/>
                                     <constraint firstItem="iSO-mc-0TB" firstAttribute="leading" secondItem="X2m-IC-J1u" secondAttribute="leading" id="d8E-WM-YfC"/>

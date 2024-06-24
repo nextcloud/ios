@@ -26,7 +26,7 @@ import UIKit
 class NCActivityCommentView: UIView, UITextFieldDelegate {
     @IBOutlet weak var imageItem: UIImageView!
     @IBOutlet weak var labelUser: UILabel!
-    @IBOutlet weak var newCommentField: UISearchBar!
+    @IBOutlet weak var newCommentField: UITextField!
 
     var completionHandler: ((String?) -> Void)?
 

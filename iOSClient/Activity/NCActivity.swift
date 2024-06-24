@@ -31,7 +31,7 @@ class NCActivity: UIViewController, NCSharePagingContent {
     @IBOutlet weak var tableView: UITableView!
 
     var commentView: NCActivityCommentView?
-    var textField: UISearchBar? { commentView?.newCommentField }
+    var textField: UIView? { commentView?.newCommentField }
 
     @IBOutlet weak var viewContainerConstraint: NSLayoutConstraint!
     var height: CGFloat = 0

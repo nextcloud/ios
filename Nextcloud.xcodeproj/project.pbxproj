@@ -2607,8 +2607,8 @@
 			isa = PBXGroup;
 			children = (
 				F7C9555221F0C4CA0024296E /* NCActivity.storyboard */,
-				AF56C1DB2784856200D8BAE2 /* NCActivityCommentView.xib */,
 				F7C9555421F0C5470024296E /* NCActivity.swift */,
+				AF56C1DB2784856200D8BAE2 /* NCActivityCommentView.xib */,
 				AFA2AC8427849604008E1EA7 /* NCActivityCommentView.swift */,
 				D5B6AA7727200C7200D49C24 /* NCActivityTableViewCell.swift */,
 			);

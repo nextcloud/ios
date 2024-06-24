@@ -31,14 +31,13 @@ import MarqueeLabel
 import ContactsUI
 
 class NCShare: UIViewController, NCShareNetworkingDelegate, NCSharePagingContent {
-
     @IBOutlet weak var viewContainerConstraint: NSLayoutConstraint!
     @IBOutlet weak var sharedWithYouByView: UIView!
     @IBOutlet weak var sharedWithYouByImage: UIImageView!
     @IBOutlet weak var sharedWithYouByLabel: UILabel!
     @IBOutlet weak var searchFieldTopConstraint: NSLayoutConstraint!
     @IBOutlet weak var searchField: UISearchBar!
-    var textField: UISearchBar? { searchField }
+    var textField: UIView? { searchField }
 
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var btnContact: UIButton!
@@ -388,7 +387,7 @@ extension NCShare: CNContactPickerDelegate {
         if  contact.emailAddresses.count > 1 {
             showEmailList(arrEmail: contact.emailAddresses.map({$0.value as String}))
         } else if let email = contact.emailAddresses.first?.value as? String {
-            textField?.text = email
+            searchField?.text = email
             networking?.getSharees(searchString: email)
         }
     }
@@ -403,7 +402,7 @@ extension NCShare: CNContactPickerDelegate {
                     selected: false,
                     on: false,
                     action: { _ in
-                        self.textField?.text = email
+                        self.searchField?.text = email
                         self.networking?.getSharees(searchString: email)
                     }
                 )

@@ -29,7 +29,7 @@ import MarqueeLabel
 import TagListView
 
 protocol NCSharePagingContent {
-    var textField: UISearchBar? { get }
+    var textField: UIView? { get }
 }
 
 class NCSharePaging: UIViewController {
@@ -86,7 +86,7 @@ class NCSharePaging: UIViewController {
         pagingViewController.view.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             pagingViewController.view.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-            pagingViewController.view.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
+            pagingViewController.view.bottomAnchor.constraint(equalTo: view.bottomAnchor),
             pagingViewController.view.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
             pagingViewController.view.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor)
         ])
