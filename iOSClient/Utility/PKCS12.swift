@@ -70,7 +70,7 @@ class PKCS12 {
     }
 }
 
-extension Array where Element == [String: AnyObject] {
+private extension Array where Element == [String: AnyObject] {
     func element<T>(for key: CFString) -> T? {
         for dictElement in self {
             if let value = dictElement[key as String] as? T {
