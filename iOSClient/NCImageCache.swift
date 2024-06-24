@@ -174,6 +174,9 @@ class NCImageCache: NSObject {
         return self.metadatas
     }
 
+    ///
+    /// MEDIA PREVIEW CACHE
+    ///
     func setMediaImage(ocId: String, etag: String, image: UIImage, date: Date) {
         cacheImagePreview.setValue(imageInfo(image: image, size: image.size, date: date), forKey: ocId + etag)
     }
@@ -193,6 +196,9 @@ class NCImageCache: NSObject {
         return limitSizeImagePreview < size
     }
 
+    ///
+    /// MEDIA SIZE CACHE
+    ///
     func setMediaSize(ocId: String, etag: String, size: CGSize) {
         cacheSizePreview.setValue(size, forKey: ocId + etag)
     }
@@ -208,6 +214,9 @@ class NCImageCache: NSObject {
         return NCManageDatabase.shared.getMediaMetadatas(predicate: predicate ?? predicateBoth)
     }
 
+    ///
+    /// ICON CACHE
+    ///
     func hasIconImageEnoughSize(_ size: Int64) -> Bool {
         return limitSizeImageIcon < size
     }
