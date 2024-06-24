@@ -81,7 +81,6 @@ class NCImageCache: NSObject {
         self.metadatasInfo.removeAll()
         self.metadatas = nil
         self.metadatas = getMediaMetadatas(account: account)
-        let ext = ".preview.ico"
         let manager = FileManager.default
         let resourceKeys = Set<URLResourceKey>([.nameKey, .pathKey, .fileSizeKey, .creationDateKey])
         struct FileInfo {
@@ -102,7 +101,7 @@ class NCImageCache: NSObject {
         }
 
         if let enumerator = manager.enumerator(at: URL(fileURLWithPath: NCUtilityFileSystem().directoryProviderStorage), includingPropertiesForKeys: [.isRegularFileKey], options: [.skipsHiddenFiles]) {
-            for case let fileURL as URL in enumerator where fileURL.lastPathComponent.hasSuffix(ext) {
+            for case let fileURL as URL in enumerator where fileURL.lastPathComponent.hasSuffix(NCGlobal.shared.storageExtPreview) {
                 let fileName = fileURL.lastPathComponent
                 let ocId = fileURL.deletingLastPathComponent().lastPathComponent
                 guard let resourceValues = try? fileURL.resourceValues(forKeys: resourceKeys),
@@ -113,13 +112,13 @@ class NCImageCache: NSObject {
                 if withCacheSize {
                     if let date = metadatasInfo[ocId]?.date,
                        let etag = metadatasInfo[ocId]?.etag,
-                       fileName == etag + ext {
+                       fileName == etag + NCGlobal.shared.storageExtPreview {
                         files.append(FileInfo(path: fileURL, ocIdEtag: ocId + etag, date: date as Date, fileSize: fileSize, width: width, height: height))
                     } else {
-                        let etag = fileName.replacingOccurrences(of: ".preview.ico", with: "")
+                        let etag = fileName.replacingOccurrences(of: NCGlobal.shared.storageExtPreview, with: "")
                         files.append(FileInfo(path: fileURL, ocIdEtag: ocId + etag, date: Date.distantPast, fileSize: fileSize, width: width, height: height))
                     }
-                } else if let date = metadatasInfo[ocId]?.date, let etag = metadatasInfo[ocId]?.etag, fileName == etag + ext {
+                } else if let date = metadatasInfo[ocId]?.date, let etag = metadatasInfo[ocId]?.etag, fileName == etag + NCGlobal.shared.storageExtPreview {
                     files.append(FileInfo(path: fileURL, ocIdEtag: ocId + etag, date: date as Date, fileSize: fileSize, width: width, height: height))
                 }
             }

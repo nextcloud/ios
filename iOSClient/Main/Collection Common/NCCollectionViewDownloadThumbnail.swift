@@ -61,9 +61,9 @@ class NCCollectionViewDownloadThumbnail: ConcurrentOperation {
                                             heightPreview: Int(sizePreview.height),
                                             sizeIcon: NCGlobal.shared.sizeIcon,
                                             etag: etagResource,
-                                            options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { _, imagePreview, imageIcon, _, etag, error in
+                                            options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { _, _, imageIcon, _, etag, error in
 
-            if error == .success, let imageIcon, let imagePreview {
+            if error == .success, let imageIcon {
                 NCManageDatabase.shared.setMetadataEtagResource(ocId: self.metadata.ocId, etagResource: etag)
                 DispatchQueue.main.async {
                     if self.metadata.ocId == self.cell?.fileObjectId, let filePreviewImageView = self.cell?.filePreviewImageView {
@@ -80,11 +80,6 @@ class NCCollectionViewDownloadThumbnail: ConcurrentOperation {
                     } else {
                         self.collectionView?.reloadData()
                     }
-                }
-                NCImageCache.shared.setMediaSize(ocId: self.metadata.ocId, etag: self.metadata.etag, size: imagePreview.size)
-                let fileSizeIcon = self.utilityFileSystem.getFileSize(filePath: self.fileNameIconLocalPath)
-                if NCImageCache.shared.hasMediaImageEnoughSize(fileSizeIcon), NCImageCache.shared.hasMediaImageEnoughSpace() {
-                    NCImageCache.shared.setMediaImage(ocId: self.metadata.ocId, etag: self.metadata.etag, image: imageIcon, date: self.metadata.date as Date)
                 }
             }
             self.finish()
