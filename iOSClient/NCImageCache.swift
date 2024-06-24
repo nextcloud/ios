@@ -77,6 +77,9 @@ class NCImageCache: NSObject {
 
     override private init() {}
 
+    ///
+    /// MEDIA CACHE
+    ///
     func createMediaCache(account: String, withCacheSize: Bool) {
         if createMediaCacheInProgress {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] ThumbnailLRUCache image process already in progress")
