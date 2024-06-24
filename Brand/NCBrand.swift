@@ -63,7 +63,6 @@ let userAgent: String = {
     var disable_intro: Bool = false
     var disable_request_login_url: Bool = false
     var disable_multiaccount: Bool = false
-    var disable_manage_account: Bool = false
     var disable_more_external_site: Bool = false
     var disable_openin_file: Bool = false                                          // Don't touch me !!
     var disable_crash_service: Bool = false
@@ -106,9 +105,6 @@ let userAgent: String = {
             }
             if let str = configurationManaged[NCGlobal.shared.configuration_disable_log] as? String {
                 disable_log = (str as NSString).boolValue
-            }
-            if let str = configurationManaged[NCGlobal.shared.configuration_disable_manage_account] as? String {
-                disable_manage_account = (str as NSString).boolValue
             }
             if let str = configurationManaged[NCGlobal.shared.configuration_disable_more_external_site] as? String {
                 disable_more_external_site = (str as NSString).boolValue

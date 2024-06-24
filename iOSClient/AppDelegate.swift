@@ -548,7 +548,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     }
 
     func deleteAccount(_ account: String, wipe: Bool) {
-
         UIApplication.shared.allSceneSessionDestructionExceptFirst()
 
         if let account = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", account)) {
@@ -614,7 +613,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     // MARK: - Reset Application
 
     func resetApplication() {
-
         let utilityFileSystem = NCUtilityFileSystem()
 
         NCNetworking.shared.cancelAllTask()
@@ -634,7 +632,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     // MARK: - Universal Links
 
     func application(_ application: UIApplication, continue userActivity: NSUserActivity, restorationHandler: @escaping ([UIUserActivityRestoring]?) -> Void) -> Bool {
-
         let applicationHandle = NCApplicationHandle()
         return applicationHandle.applicationOpenUserActivity(userActivity)
     }

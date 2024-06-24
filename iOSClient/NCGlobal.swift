@@ -410,7 +410,6 @@ class NCGlobal: NSObject {
     let configuration_disable_multiaccount                      = "disable_multiaccount"
     let configuration_disable_crash_service                     = "disable_crash_service"
     let configuration_disable_log                               = "disable_log"
-    let configuration_disable_manage_account                    = "disable_manage_account"
     let configuration_disable_more_external_site                = "disable_more_external_site"
     let configuration_disable_openin_file                       = "disable_openin_file"
 
