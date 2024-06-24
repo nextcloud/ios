@@ -72,10 +72,8 @@ struct NCAutoUploadFileNamesView: View {
                         .fontWeight(.medium)
                     Spacer()
                     TextField(NSLocalizedString("_filename_header_", comment: ""), text: $model.changedName)
-                        .onSubmit {
-                            model.submitChangedName()
-                        }
                         .onChange(of: model.changedName, perform: { _ in
+                            model.submitChangedName()
                             model.getFileName()
                         })
                         .font(.system(size: 15))

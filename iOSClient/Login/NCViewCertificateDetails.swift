@@ -41,9 +41,10 @@ class NCViewCertificateDetails: UIViewController {
 
     var delegate: NCViewCertificateDetailsDelegate?
     let utilityFileSystem = NCUtilityFileSystem()
-    @objc public var host: String = ""
+
+    public var host: String = ""
     public var fileNamePath: String = ""
-    @objc public var certificateTitle = NSLocalizedString("_certificate_view_", comment: "")
+    public var certificateTitle = NSLocalizedString("_certificate_view_", comment: "")
 
     // MARK: - View Life Cycle
 
@@ -105,11 +106,11 @@ class NCViewCertificateDetails: UIViewController {
 
 // MARK: - UIViewControllerRepresentable
 
-struct NCViewCertificateDetailsRepresentable: UIViewControllerRepresentable {
+struct certificateDetailsView: UIViewControllerRepresentable {
 
     typealias UIViewControllerType = UINavigationController
-    var fileNamePath: String
-    var title: String
+    var host: String = ""
+    var title: String = ""
 
     func makeUIViewController(context: Context) -> UINavigationController {
 
@@ -117,7 +118,7 @@ struct NCViewCertificateDetailsRepresentable: UIViewControllerRepresentable {
         let navigationController = storyboard.instantiateInitialViewController() as? UINavigationController
         let viewController = navigationController?.topViewController as? NCViewCertificateDetails
 
-        viewController?.fileNamePath = fileNamePath
+        viewController?.host = host
         viewController?.certificateTitle = title
 
         return navigationController!

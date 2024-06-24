@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="20037" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="QH7-hC-pPW">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="22505" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="QH7-hC-pPW">
     <device id="retina6_7" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="20020"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="22504"/>
+        <capability name="Image references" minToolsVersion="12.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -18,7 +19,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="U4w-hH-mXP">
-                                <rect key="frame" x="0.0" y="88" width="428" height="694"/>
+                                <rect key="frame" x="0.0" y="91" width="428" height="691"/>
                                 <subviews>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Nv7-fc-8go" userLabel="Content View">
                                         <rect key="frame" x="0.0" y="0.0" width="428" height="495"/>
@@ -236,7 +237,7 @@
                                                 </constraints>
                                                 <prototypes>
                                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="Cell" rowHeight="45" id="laP-fj-qDh">
-                                                        <rect key="frame" x="0.0" y="44.666666030883789" width="408" height="45"/>
+                                                        <rect key="frame" x="0.0" y="50" width="408" height="45"/>
                                                         <autoresizingMask key="autoresizingMask"/>
                                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="laP-fj-qDh" id="HIM-ev-wMc">
                                                             <rect key="frame" x="0.0" y="0.0" width="408" height="45"/>
@@ -361,7 +362,9 @@
                                     <constraint firstItem="isA-Km-19L" firstAttribute="leading" secondItem="rha-b0-jMR" secondAttribute="trailing" constant="10" id="GfS-dA-0gf"/>
                                     <constraint firstItem="3xN-e7-N0L" firstAttribute="top" secondItem="rha-b0-jMR" secondAttribute="bottom" constant="30" id="KVL-2d-xDr"/>
                                     <constraint firstItem="rha-b0-jMR" firstAttribute="leading" secondItem="LVo-6E-efl" secondAttribute="leading" constant="10" id="L1H-XE-sur"/>
+                                    <constraint firstItem="3CT-dJ-sEj" firstAttribute="width" secondItem="LVo-6E-efl" secondAttribute="width" multiplier="0.45" id="OLu-8K-n7N"/>
                                     <constraint firstItem="3CT-dJ-sEj" firstAttribute="top" secondItem="rha-b0-jMR" secondAttribute="bottom" constant="30" id="P6x-uB-lne"/>
+                                    <constraint firstItem="3xN-e7-N0L" firstAttribute="width" secondItem="LVo-6E-efl" secondAttribute="width" multiplier="0.45" id="PpO-WB-uiQ"/>
                                     <constraint firstItem="3CT-dJ-sEj" firstAttribute="leading" secondItem="LVo-6E-efl" secondAttribute="leading" constant="10" id="ceW-Ca-9iB"/>
                                     <constraint firstAttribute="trailing" secondItem="3xN-e7-N0L" secondAttribute="trailing" constant="10" id="egg-HN-e1j"/>
                                     <constraint firstItem="rha-b0-jMR" firstAttribute="top" secondItem="LVo-6E-efl" secondAttribute="top" constant="10" id="mZV-JR-YrU"/>
@@ -377,8 +380,6 @@
                             <constraint firstItem="LVo-6E-efl" firstAttribute="top" secondItem="U4w-hH-mXP" secondAttribute="bottom" id="8zx-ll-pc9"/>
                             <constraint firstItem="U4w-hH-mXP" firstAttribute="bottom" secondItem="vDu-zF-Fre" secondAttribute="bottom" constant="-110" id="B30-O6-rLv"/>
                             <constraint firstItem="U4w-hH-mXP" firstAttribute="leading" secondItem="vDu-zF-Fre" secondAttribute="leading" id="C8w-CN-4hv"/>
-                            <constraint firstItem="3CT-dJ-sEj" firstAttribute="width" secondItem="LVo-6E-efl" secondAttribute="width" multiplier="0.45" id="OLu-8K-n7N"/>
-                            <constraint firstItem="3xN-e7-N0L" firstAttribute="width" secondItem="LVo-6E-efl" secondAttribute="width" multiplier="0.45" id="PpO-WB-uiQ"/>
                             <constraint firstItem="U4w-hH-mXP" firstAttribute="top" secondItem="vDu-zF-Fre" secondAttribute="top" id="RB6-bZ-Vdc"/>
                             <constraint firstItem="U4w-hH-mXP" firstAttribute="trailing" secondItem="vDu-zF-Fre" secondAttribute="trailing" id="qeY-ID-LO4"/>
                             <constraint firstItem="LVo-6E-efl" firstAttribute="leading" secondItem="U4w-hH-mXP" secondAttribute="leading" id="tOB-eF-OWh"/>
@@ -386,7 +387,14 @@
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="jEA-I6-e1c">
-                        <barButtonItem key="leftBarButtonItem" title="Cancel" id="ILZ-fb-noY">
+                        <barButtonItem key="rightBarButtonItem" title="Cancel" id="ILZ-fb-noY">
+                            <imageReference key="image" image="xmark" catalog="system" renderingMode="hierarchical">
+                                <hierarchicalColors>
+                                    <color systemColor="labelColor"/>
+                                    <color systemColor="secondaryLabelColor"/>
+                                    <color systemColor="tertiaryLabelColor"/>
+                                </hierarchicalColors>
+                            </imageReference>
                             <connections>
                                 <action selector="actionCancel:" destination="Y6W-OH-hqX" id="Xb3-GT-3HC"/>
                             </connections>
@@ -428,7 +436,7 @@
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="QH7-hC-pPW" sceneMemberID="viewController">
                     <toolbarItems/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="G9L-7e-agx">
-                        <rect key="frame" x="0.0" y="44" width="428" height="44"/>
+                        <rect key="frame" x="0.0" y="47" width="428" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
                     <nil name="viewControllers"/>
@@ -446,11 +454,21 @@
         <image name="userStatusDnd" width="425" height="425"/>
         <image name="userStatusOffline" width="425" height="425"/>
         <image name="userStatusOnline" width="425" height="425"/>
+        <image name="xmark" catalog="system" width="128" height="113"/>
+        <systemColor name="labelColor">
+            <color white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
+        <systemColor name="secondaryLabelColor">
+            <color red="0.23529411764705882" green="0.23529411764705882" blue="0.2627450980392157" alpha="0.59999999999999998" colorSpace="custom" customColorSpace="sRGB"/>
+        </systemColor>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>
         <systemColor name="systemGray6Color">
             <color red="0.94901960784313721" green="0.94901960784313721" blue="0.96862745098039216" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </systemColor>
+        <systemColor name="tertiaryLabelColor">
+            <color red="0.23529411764705882" green="0.23529411764705882" blue="0.2627450980392157" alpha="0.29803921568627451" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
     </resources>
 </document>

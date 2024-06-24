@@ -77,6 +77,16 @@ extension NCManageDatabase {
         }
     }
 
+    func addDirectory(directory: tableDirectory, metadata: tableMetadata) {
+        directory.account = metadata.account
+        directory.e2eEncrypted = metadata.e2eEncrypted
+        directory.favorite = metadata.favorite
+        directory.fileId = metadata.fileId
+        directory.ocId = metadata.ocId
+        directory.permissions = metadata.permissions
+        directory.richWorkspace = metadata.richWorkspace
+    }
+
     func deleteDirectoryAndSubDirectory(serverUrl: String, account: String) {
 
 #if !EXTENSION
@@ -214,12 +224,19 @@ extension NCManageDatabase {
         }
     }
 
-    func setDirectory(serverUrl: String, offline: Bool, account: String) {
+    func setDirectory(serverUrl: String, offline: Bool, metadata: tableMetadata) {
         do {
             let realm = try Realm()
             try realm.write {
-                let result = realm.objects(tableDirectory.self).filter("account == %@ AND serverUrl == %@", account, serverUrl).first
-                result?.offline = offline
+                if let result = realm.objects(tableDirectory.self).filter("account == %@ AND serverUrl == %@", metadata.account, serverUrl).first {
+                    result.offline = offline
+                } else {
+                    let directory = tableDirectory()
+                    directory.serverUrl = serverUrl
+                    directory.offline = offline
+                    addDirectory(directory: directory, metadata: metadata)
+                    realm.add(directory)
+                }
             }
         } catch let error {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not write to database: \(error)")
@@ -259,25 +276,22 @@ extension NCManageDatabase {
         }
     }
 
-    @discardableResult
-    func setDirectory(serverUrl: String, colorFolder: String?, account: String) -> tableDirectory? {
-
-        var result: tableDirectory?
-
+    func setDirectory(serverUrl: String, colorFolder: String?, metadata: tableMetadata) {
         do {
             let realm = try Realm()
             try realm.write {
-                result = realm.objects(tableDirectory.self).filter("account == %@ AND serverUrl == %@", account, serverUrl).first
-                result?.colorFolder = colorFolder
+                if let result = realm.objects(tableDirectory.self).filter("account == %@ AND serverUrl == %@", metadata.account, serverUrl).first {
+                    result.colorFolder = colorFolder
+                } else {
+                    let directory = tableDirectory()
+                    directory.serverUrl = serverUrl
+                    directory.colorFolder = colorFolder
+                    addDirectory(directory: directory, metadata: metadata)
+                    realm.add(directory)
+                }
             }
         } catch let error {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not write to database: \(error)")
-        }
-
-        if let result = result {
-            return tableDirectory.init(value: result)
-        } else {
-            return nil
         }
     }
 }

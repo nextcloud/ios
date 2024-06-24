@@ -107,6 +107,17 @@ class NCUploadAssetsModel: NSObject, ObservableObject, NCCreateFormUploadConflic
         }
     }
 
+    /// Submits the changed file name.
+    func submitChangedName() {
+        let fileNameWithoutForbiddenChars = NCUtility().removeForbiddenCharacters(fileName)
+        if fileName != fileNameWithoutForbiddenChars {
+            fileName = fileNameWithoutForbiddenChars
+            let errorDescription = String(format: NSLocalizedString("_forbidden_characters_", comment: ""), NCGlobal.shared.forbiddenCharacters.joined(separator: " "))
+            let error = NKError(errorCode: NCGlobal.shared.errorConflict, errorDescription: errorDescription)
+            NCContentPresenter().showInfo(error: error)
+        }
+    }
+
     func setFileNameMaskForPreview(fileName: String?) -> String {
         guard let asset = assets.first?.phAsset else { return "" }
         var preview: String = ""

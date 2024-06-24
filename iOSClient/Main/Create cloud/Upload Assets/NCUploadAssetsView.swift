@@ -171,6 +171,9 @@ struct NCUploadAssetsView: View {
                                     .font(.system(size: 15))
                                     .modifier(TextFieldClearButton(text: $model.fileName))
                                     .multilineTextAlignment(.trailing)
+                                    .onChange(of: model.fileName, perform: { _ in
+                                        model.submitChangedName()
+                                    })
                             }
                         }
                         if !model.maintainOriginalFilename {
@@ -206,7 +209,13 @@ struct NCUploadAssetsView: View {
                 }
                 .navigationTitle(NSLocalizedString("_upload_photos_videos_", comment: ""))
                 .navigationBarTitleDisplayMode(.inline)
-
+                .navigationBarItems(trailing: Button(action: {
+                    presentationMode.wrappedValue.dismiss()
+                }) {
+                    Image(systemName: "xmark")
+                        .font(Font.system(.body).weight(.light))
+                        .foregroundStyle(Color(NCBrandColor.shared.iconImageColor))
+                })
                 HUDView(showHUD: $model.showHUD, textLabel: NSLocalizedString("_wait_", comment: ""), image: "doc.badge.arrow.up")
                     .offset(y: model.showHUD ? 5 : -200)
                     .animation(.easeOut, value: model.showHUD)

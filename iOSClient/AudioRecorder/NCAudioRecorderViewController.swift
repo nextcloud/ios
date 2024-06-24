@@ -138,8 +138,7 @@ class NCAudioRecorderViewController: UIViewController, NCAudioRecorderDelegate {
 }
 
 open class NCAudioRecorder: NSObject {
-
-    @objc public enum State: Int {
+    public enum State: Int {
         case none, record, play
     }
 

@@ -22,8 +22,9 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-import UIKit
 import Foundation
+import UIKit
+import SwiftUI
 import NextcloudKit
 import DropDown
 
@@ -80,13 +81,13 @@ class NCUserStatus: UIViewController {
         view.backgroundColor = .systemBackground
         tableView.backgroundColor = .systemBackground
 
-        buttonCancel.title = NSLocalizedString("_close_", comment: "")
+        buttonCancel.image = utility.loadImage(named: "xmark", colors: [NCBrandColor.shared.iconImageColor])
 
         onlineButton.layer.cornerRadius = 10
         onlineButton.layer.masksToBounds = true
         onlineButton.backgroundColor = .systemGray5
         let onLine = utility.getUserStatus(userIcon: nil, userStatus: "online", userMessage: nil)
-        onlineImage.image = onLine.onlineStatus
+        onlineImage.image = onLine.statusImage
         onlineLabel.text = onLine.statusMessage
         onlineLabel.textColor = NCBrandColor.shared.textColor
 
@@ -94,7 +95,7 @@ class NCUserStatus: UIViewController {
         awayButton.layer.masksToBounds = true
         awayButton.backgroundColor = .systemGray5
         let away = utility.getUserStatus(userIcon: nil, userStatus: "away", userMessage: nil)
-        awayImage.image = away.onlineStatus
+        awayImage.image = away.statusImage
         awayLabel.text = away.statusMessage
         awayLabel.textColor = NCBrandColor.shared.textColor
 
@@ -102,7 +103,7 @@ class NCUserStatus: UIViewController {
         dndButton.layer.masksToBounds = true
         dndButton.backgroundColor = .systemGray5
         let dnd = utility.getUserStatus(userIcon: nil, userStatus: "dnd", userMessage: nil)
-        dndImage.image = dnd.onlineStatus
+        dndImage.image = dnd.statusImage
         dndLabel.text = dnd.statusMessage
         dndLabel.textColor = NCBrandColor.shared.textColor
         dndDescrLabel.text = dnd.descriptionMessage
@@ -112,7 +113,7 @@ class NCUserStatus: UIViewController {
         invisibleButton.layer.masksToBounds = true
         invisibleButton.backgroundColor = .systemGray5
         let invisible = utility.getUserStatus(userIcon: nil, userStatus: "invisible", userMessage: nil)
-        invisibleImage.image = invisible.onlineStatus
+        invisibleImage.image = invisible.statusImage
         invisibleLabel.text = invisible.statusMessage
         invisibleLabel.textColor = NCBrandColor.shared.textColor
         invisibleDescrLabel.text = invisible.descriptionMessage
@@ -172,9 +173,7 @@ class NCUserStatus: UIViewController {
         super.viewWillDisappear(animated)
 
         NextcloudKit.shared.getUserStatus { account, clearAt, icon, message, messageId, messageIsPredefined, status, statusIsUserDefined, _, _, error in
-
             if error == .success {
-
                 NCManageDatabase.shared.setAccountUserStatus(userStatusClearAt: clearAt, userStatusIcon: icon, userStatusMessage: message, userStatusMessageId: messageId, userStatusMessageIsPredefined: messageIsPredefined, userStatusStatus: status, userStatusStatusIsUserDefined: statusIsUserDefined, account: account)
             }
         }
@@ -603,5 +602,29 @@ extension NCUserStatus: UITableViewDataSource {
         }
 
         return cell
+    }
+}
+
+struct UserStatusView: UIViewControllerRepresentable {
+    @Binding var showUserStatus: Bool
+
+    class Coordinator: NSObject {
+        var parent: UserStatusView
+
+        init(_ parent: UserStatusView) {
+            self.parent = parent
+        }
+    }
+
+    func makeUIViewController(context: Context) -> UINavigationController {
+        let storyboard = UIStoryboard(name: "NCUserStatus", bundle: nil)
+        let navigationController = storyboard.instantiateInitialViewController() as? UINavigationController
+        return navigationController!
+    }
+
+    func updateUIViewController(_ uiViewController: UINavigationController, context: Context) { }
+
+    func makeCoordinator() -> Coordinator {
+        Coordinator(self)
     }
 }

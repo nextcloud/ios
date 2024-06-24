@@ -198,6 +198,7 @@
 "_settings_account_request_" = "Request account at startup";
 "_print_"                   = "Print";
 "_alias_"                   = "Alias";
+"_alias_placeholder_"       = "Write the alias";
 "_alias_footer_"            = "Give your account names a descriptive name such as Home, Office, School …";
 "_chunk_size_mb_"           = "Chunk size in MB";
 "_chunk_footer_title_"      = "Chunked file upload (0 is disabled)\nImportant: the chunked upload works only when the app is \"active\".";
@@ -210,7 +211,7 @@
 "_copy_failed_"             = "Copy failed";
 "_certificate_installed_"   = "Certificate installed";
 "_remove_local_account_"    = "Remove local account";
-"_want_delete_account_"     = "Do you want to remove local account %@";
+"_want_delete_account_"     = "Do you want to remove local account";
 "_prevent_http_redirection_"= "The redirection in HTTP is not permitted";
 "_pdf_vertical_"            = "PDF vertical display";
 "_pdf_horizontal_"          = "PDF horizontal display";
@@ -988,6 +989,9 @@
 "_light_"                   = "Light";
 "_dark_"                    = "Dark";
 "_use_system_style_"        = "Use system style";
+"_account_settings_"        = "Account settings";
+"_users_"                   = "Users";
+"_users_footer_"            = "Every time the app is reactivated, the account will be requested";
 
 // Video
 "_select_trace_"            = "Select the trace";

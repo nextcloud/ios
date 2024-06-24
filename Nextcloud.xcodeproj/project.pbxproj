@@ -72,16 +72,12 @@
 		F310B1EF2BA862F1001C42F5 /* NCViewerMedia+VisionKit.swift in Sources */ = {isa = PBXBuildFile; fileRef = F310B1EE2BA862F1001C42F5 /* NCViewerMedia+VisionKit.swift */; };
 		F314F1142A30E2DE00BC7FAB /* View+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7E8A390295DC5E0006CB2D0 /* View+Extension.swift */; };
 		F321DA8A2B71205A00DDA0E6 /* NCTrashSelectTabBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = F321DA892B71205A00DDA0E6 /* NCTrashSelectTabBar.swift */; };
-		F3391B022B4C40FB001C0C4B /* XLForm in Frameworks */ = {isa = PBXBuildFile; productRef = F3391B012B4C40FB001C0C4B /* XLForm */; };
-		F3391B042B4C4105001C0C4B /* XLForm in Frameworks */ = {isa = PBXBuildFile; productRef = F3391B032B4C4105001C0C4B /* XLForm */; };
-		F3391B062B4C4111001C0C4B /* XLForm in Frameworks */ = {isa = PBXBuildFile; productRef = F3391B052B4C4111001C0C4B /* XLForm */; };
 		F3391B082B4C52C5001C0C4B /* FirebaseDatabase in Frameworks */ = {isa = PBXBuildFile; productRef = F3391B072B4C52C5001C0C4B /* FirebaseDatabase */; };
 		F3391B0A2B4C52CB001C0C4B /* JGProgressHUD in Frameworks */ = {isa = PBXBuildFile; productRef = F3391B092B4C52CB001C0C4B /* JGProgressHUD */; };
 		F3391B0C2B4C52D5001C0C4B /* SVGKit in Frameworks */ = {isa = PBXBuildFile; productRef = F3391B0B2B4C52D5001C0C4B /* SVGKit */; };
 		F3391B102B4C52E6001C0C4B /* SVGKit in Frameworks */ = {isa = PBXBuildFile; productRef = F3391B0F2B4C52E6001C0C4B /* SVGKit */; };
 		F3391B142B4C52EF001C0C4B /* JGProgressHUD in Frameworks */ = {isa = PBXBuildFile; productRef = F3391B132B4C52EF001C0C4B /* JGProgressHUD */; };
 		F3391B162B4C52F6001C0C4B /* FirebaseDatabase in Frameworks */ = {isa = PBXBuildFile; productRef = F3391B152B4C52F6001C0C4B /* FirebaseDatabase */; };
-		F33AAF9A2A60394C006ECCBD /* NCMoreUserCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F33AAF992A60394C006ECCBD /* NCMoreUserCell.xib */; };
 		F33EE6E12BF4BDA500CA1A51 /* NIOSSL in Frameworks */ = {isa = PBXBuildFile; productRef = F33EE6E02BF4BDA500CA1A51 /* NIOSSL */; };
 		F33EE6E32BF4C00700CA1A51 /* NIOSSL in Frameworks */ = {isa = PBXBuildFile; productRef = F33EE6E22BF4C00700CA1A51 /* NIOSSL */; };
 		F33EE6E52BF4C02000CA1A51 /* NIOSSL in Frameworks */ = {isa = PBXBuildFile; productRef = F33EE6E42BF4C02000CA1A51 /* NIOSSL */; };
@@ -160,7 +156,6 @@
 		F3A0479E2BD268B500658E7B /* PopupView in Frameworks */ = {isa = PBXBuildFile; productRef = F3A0479D2BD268B500658E7B /* PopupView */; };
 		F3A7AFC62A41AA82001FC89C /* BaseUIXCTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3A7AFC52A41AA82001FC89C /* BaseUIXCTestCase.swift */; };
 		F3BB464D2A39ADCC00461F6E /* NCMoreAppSuggestionsCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F3BB464C2A39ADCC00461F6E /* NCMoreAppSuggestionsCell.xib */; };
-		F3BB464F2A39EBE500461F6E /* NCMoreUserCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3BB464E2A39EBE500461F6E /* NCMoreUserCell.swift */; };
 		F3BB46522A39EC4900461F6E /* NCMoreAppSuggestionsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3BB46512A39EC4900461F6E /* NCMoreAppSuggestionsCell.swift */; };
 		F3BB46542A3A1E9D00461F6E /* CCCellMore.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3BB46532A3A1E9D00461F6E /* CCCellMore.swift */; };
 		F3EF2E0C2BFCF3810025EF46 /* NCLoginPoll.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3EF2E0B2BFCF3810025EF46 /* NCLoginPoll.swift */; };
@@ -234,17 +229,7 @@
 		F7148054262ED51000693E51 /* NCListCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F78ACD4321903CF20088454D /* NCListCell.xib */; };
 		F714805E262ED52900693E51 /* NCSectionFooter.xib in Resources */ = {isa = PBXBuildFile; fileRef = F78ACD53219047D40088454D /* NCSectionFooter.xib */; };
 		F7160A7D2BE931DE0034DCB3 /* RealmSwift in Frameworks */ = {isa = PBXBuildFile; productRef = F7160A7C2BE931DE0034DCB3 /* RealmSwift */; };
-		F7160A802BE933390034DCB3 /* Realm in Frameworks */ = {isa = PBXBuildFile; productRef = F7160A7F2BE933390034DCB3 /* Realm */; };
 		F7160A822BE933390034DCB3 /* RealmSwift in Frameworks */ = {isa = PBXBuildFile; productRef = F7160A812BE933390034DCB3 /* RealmSwift */; };
-		F7160A842BE933430034DCB3 /* Realm in Frameworks */ = {isa = PBXBuildFile; productRef = F7160A832BE933430034DCB3 /* Realm */; };
-		F7160A862BE9334B0034DCB3 /* Realm in Frameworks */ = {isa = PBXBuildFile; productRef = F7160A852BE9334B0034DCB3 /* Realm */; };
-		F7160A882BE933510034DCB3 /* Realm in Frameworks */ = {isa = PBXBuildFile; productRef = F7160A872BE933510034DCB3 /* Realm */; };
-		F7160A8A2BE933610034DCB3 /* Realm in Frameworks */ = {isa = PBXBuildFile; productRef = F7160A892BE933610034DCB3 /* Realm */; };
-		F7160A8C2BE9336A0034DCB3 /* Realm in Frameworks */ = {isa = PBXBuildFile; productRef = F7160A8B2BE9336A0034DCB3 /* Realm */; };
-		F7160A8E2BE933710034DCB3 /* Realm in Frameworks */ = {isa = PBXBuildFile; productRef = F7160A8D2BE933710034DCB3 /* Realm */; };
-		F7160A902BE933770034DCB3 /* Realm in Frameworks */ = {isa = PBXBuildFile; productRef = F7160A8F2BE933770034DCB3 /* Realm */; };
-		F7160A922BE9337D0034DCB3 /* Realm in Frameworks */ = {isa = PBXBuildFile; productRef = F7160A912BE9337D0034DCB3 /* Realm */; };
-		F7160A942BE933830034DCB3 /* Realm in Frameworks */ = {isa = PBXBuildFile; productRef = F7160A932BE933830034DCB3 /* Realm */; };
 		F717402D24F699A5000C87D5 /* NCFavorite.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F717402B24F699A5000C87D5 /* NCFavorite.storyboard */; };
 		F717402E24F699A5000C87D5 /* NCFavorite.swift in Sources */ = {isa = PBXBuildFile; fileRef = F717402C24F699A5000C87D5 /* NCFavorite.swift */; };
 		F718C24E254D507B00C5C256 /* NCViewerMediaDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F718C24D254D507B00C5C256 /* NCViewerMediaDetailView.swift */; };
@@ -478,7 +463,6 @@
 		F74C863D2AEFBFD9009A1D4A /* LRUCache in Frameworks */ = {isa = PBXBuildFile; productRef = F74C863C2AEFBFD9009A1D4A /* LRUCache */; };
 		F74DE14325135B6800917068 /* NCTransfers.swift in Sources */ = {isa = PBXBuildFile; fileRef = F74DE14125135B6800917068 /* NCTransfers.swift */; };
 		F74DE14425135B6800917068 /* NCTransfers.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F74DE14225135B6800917068 /* NCTransfers.storyboard */; };
-		F74E7720277A2EF40013B958 /* XLForm in Frameworks */ = {isa = PBXBuildFile; productRef = F74E771F277A2EF40013B958 /* XLForm */; };
 		F7501C322212E57500FB1415 /* NCMedia.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7501C302212E57400FB1415 /* NCMedia.storyboard */; };
 		F7501C332212E57500FB1415 /* NCMedia.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7501C312212E57400FB1415 /* NCMedia.swift */; };
 		F75379202AE2AD9400C0250E /* JGProgressHUD in Frameworks */ = {isa = PBXBuildFile; productRef = F753791F2AE2AD9400C0250E /* JGProgressHUD */; };
@@ -529,8 +513,6 @@
 		F763D2A12A249C4500A3C901 /* NCManageDatabase+Capabilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = F763D29C2A249C4500A3C901 /* NCManageDatabase+Capabilities.swift */; };
 		F763D2A22A249C4500A3C901 /* NCManageDatabase+Capabilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = F763D29C2A249C4500A3C901 /* NCManageDatabase+Capabilities.swift */; };
 		F763D2A32A249C4500A3C901 /* NCManageDatabase+Capabilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = F763D29C2A249C4500A3C901 /* NCManageDatabase+Capabilities.swift */; };
-		F7651A8A23A2A3F2001403D2 /* NCCreateFormUploadDocuments.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7651A8823A2A3F2001403D2 /* NCCreateFormUploadDocuments.storyboard */; };
-		F7651A8B23A2A3F2001403D2 /* NCCreateFormUploadDocuments.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7651A8923A2A3F2001403D2 /* NCCreateFormUploadDocuments.swift */; };
 		F765608F23BF813600765969 /* NCContentPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = F765608E23BF813500765969 /* NCContentPresenter.swift */; };
 		F765E9CD295C585800A09ED8 /* NCUploadScanDocument.swift in Sources */ = {isa = PBXBuildFile; fileRef = F765E9CC295C585800A09ED8 /* NCUploadScanDocument.swift */; };
 		F765F73125237E3F00391DBE /* NCRecent.swift in Sources */ = {isa = PBXBuildFile; fileRef = F765F72F25237E3F00391DBE /* NCRecent.swift */; };
@@ -569,7 +551,6 @@
 		F768823C2C0DD231001CF441 /* NCKeychain.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76882132C0DD1E7001CF441 /* NCKeychain.swift */; };
 		F768823E2C0DD305001CF441 /* LazyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F768823D2C0DD304001CF441 /* LazyView.swift */; };
 		F76882402C0DD30B001CF441 /* ViewOnAppear.swift in Sources */ = {isa = PBXBuildFile; fileRef = F768823F2C0DD30B001CF441 /* ViewOnAppear.swift */; };
-		F76882432C0DD3B4001CF441 /* CCManageAccount.m in Sources */ = {isa = PBXBuildFile; fileRef = F76882422C0DD3B4001CF441 /* CCManageAccount.m */; };
 		F769453C22E9CFFF000A798A /* NCShareUserCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F769453B22E9CFFF000A798A /* NCShareUserCell.xib */; };
 		F769454022E9F077000A798A /* NCSharePaging.swift in Sources */ = {isa = PBXBuildFile; fileRef = F769453F22E9F077000A798A /* NCSharePaging.swift */; };
 		F769454622E9F1B0000A798A /* NCShareCommon.swift in Sources */ = {isa = PBXBuildFile; fileRef = F769454522E9F1B0000A798A /* NCShareCommon.swift */; };
@@ -730,6 +711,8 @@
 		F7A0D1372591FBC5008F8A13 /* String+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7A0D1342591FBC5008F8A13 /* String+Extension.swift */; };
 		F7A1050E29E587AF00FFD92B /* TagListView in Frameworks */ = {isa = PBXBuildFile; productRef = F7A1050D29E587AF00FFD92B /* TagListView */; };
 		F7A48415297028FC00BD1B49 /* Nextcloud Hub.png in Resources */ = {isa = PBXBuildFile; fileRef = F7A48414297028FC00BD1B49 /* Nextcloud Hub.png */; };
+		F7A509252C26BD5D00326106 /* NCCreateDocument.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7A509242C26BD5D00326106 /* NCCreateDocument.swift */; };
+		F7A509262C26D95D00326106 /* RealmSwift in Embed Frameworks */ = {isa = PBXBuildFile; productRef = F7160A812BE933390034DCB3 /* RealmSwift */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		F7A560422AE1593700BE8FD6 /* NCOperationSaveLivePhoto.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7A560412AE1593700BE8FD6 /* NCOperationSaveLivePhoto.swift */; };
 		F7A560442AE15D2900BE8FD6 /* Queuer in Frameworks */ = {isa = PBXBuildFile; productRef = F7A560432AE15D2900BE8FD6 /* Queuer */; };
 		F7A560462AE15D3D00BE8FD6 /* Queuer in Frameworks */ = {isa = PBXBuildFile; productRef = F7A560452AE15D3D00BE8FD6 /* Queuer */; };
@@ -761,6 +744,8 @@
 		F7AE00F5230D5F9E007ACF8A /* NCLoginProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7AE00F4230D5F9E007ACF8A /* NCLoginProvider.swift */; };
 		F7AE00F8230E81CB007ACF8A /* NCBrowserWeb.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7AE00F7230E81CB007ACF8A /* NCBrowserWeb.swift */; };
 		F7AE00FA230E81EB007ACF8A /* NCBrowserWeb.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7AE00F9230E81EB007ACF8A /* NCBrowserWeb.storyboard */; };
+		F7AEEAA62C11DBAF00011412 /* NCAccountSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7AEEAA52C11DBAF00011412 /* NCAccountSettingsView.swift */; };
+		F7AEEAA82C11DBFD00011412 /* NCAccountSettingsModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7AEEAA72C11DBFD00011412 /* NCAccountSettingsModel.swift */; };
 		F7B398422A6A91D5007538D6 /* NCSectionHeaderMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = F7B398412A6A91D5007538D6 /* NCSectionHeaderMenu.xib */; };
 		F7B398432A6A91D5007538D6 /* NCSectionHeaderMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = F7B398412A6A91D5007538D6 /* NCSectionHeaderMenu.xib */; };
 		F7B6B70427C4E7FA00A7F6EB /* NCScan+CollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7B6B70327C4E7FA00A7F6EB /* NCScan+CollectionView.swift */; };
@@ -1047,6 +1032,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
+				F7A509262C26D95D00326106 /* RealmSwift in Embed Frameworks */,
 				F78AF1E82BE938C100F3F060 /* MobileVLCKit.xcframework in Embed Frameworks */,
 				F76DA95C277B75A90082465B /* TOPasscodeViewController.xcframework in Embed Frameworks */,
 			);
@@ -1129,7 +1115,6 @@
 		F3131ED82B038DB20018DB28 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.0.sdk/System/iOSSupport/System/Library/Frameworks/SwiftUI.framework; sourceTree = DEVELOPER_DIR; };
 		F3131EDA2B038DB90018DB28 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.0.sdk/System/iOSSupport/System/Library/Frameworks/WidgetKit.framework; sourceTree = DEVELOPER_DIR; };
 		F321DA892B71205A00DDA0E6 /* NCTrashSelectTabBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCTrashSelectTabBar.swift; sourceTree = "<group>"; };
-		F33AAF992A60394C006ECCBD /* NCMoreUserCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = NCMoreUserCell.xib; sourceTree = "<group>"; };
 		F33EE6F12BF4C9B200CA1A51 /* PKCS12.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PKCS12.swift; sourceTree = "<group>"; };
 		F343A4B22A1E01FF00DDA874 /* PHAsset+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PHAsset+Extension.swift"; sourceTree = "<group>"; };
 		F343A4BA2A1E734600DDA874 /* Optional+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Optional+Extension.swift"; sourceTree = "<group>"; };
@@ -1150,7 +1135,6 @@
 		F3A047962BD2668800658E7B /* NCAssistant.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCAssistant.swift; sourceTree = "<group>"; };
 		F3A7AFC52A41AA82001FC89C /* BaseUIXCTestCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseUIXCTestCase.swift; sourceTree = "<group>"; };
 		F3BB464C2A39ADCC00461F6E /* NCMoreAppSuggestionsCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = NCMoreAppSuggestionsCell.xib; sourceTree = "<group>"; };
-		F3BB464E2A39EBE500461F6E /* NCMoreUserCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCMoreUserCell.swift; sourceTree = "<group>"; };
 		F3BB46512A39EC4900461F6E /* NCMoreAppSuggestionsCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCMoreAppSuggestionsCell.swift; sourceTree = "<group>"; };
 		F3BB46532A3A1E9D00461F6E /* CCCellMore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CCCellMore.swift; sourceTree = "<group>"; };
 		F3EF2E0B2BFCF3810025EF46 /* NCLoginPoll.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCLoginPoll.swift; sourceTree = "<group>"; };
@@ -1360,8 +1344,6 @@
 		F761856829E98543006EB3B0 /* NCIntroCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCIntroCollectionViewCell.swift; sourceTree = "<group>"; };
 		F761856929E98543006EB3B0 /* NCIntroCollectionViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = NCIntroCollectionViewCell.xib; sourceTree = "<group>"; };
 		F763D29C2A249C4500A3C901 /* NCManageDatabase+Capabilities.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NCManageDatabase+Capabilities.swift"; sourceTree = "<group>"; };
-		F7651A8823A2A3F2001403D2 /* NCCreateFormUploadDocuments.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = NCCreateFormUploadDocuments.storyboard; sourceTree = "<group>"; };
-		F7651A8923A2A3F2001403D2 /* NCCreateFormUploadDocuments.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCCreateFormUploadDocuments.swift; sourceTree = "<group>"; };
 		F765608623BF806C00765969 /* QuickLayout.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuickLayout.framework; path = Carthage/Build/iOS/QuickLayout.framework; sourceTree = "<group>"; };
 		F765608A23BF80A400765969 /* SwiftEntryKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftEntryKit.framework; path = Carthage/Build/iOS/SwiftEntryKit.framework; sourceTree = "<group>"; };
 		F765608E23BF813500765969 /* NCContentPresenter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCContentPresenter.swift; sourceTree = "<group>"; };
@@ -1396,8 +1378,6 @@
 		F76882212C0DD1E7001CF441 /* NCAcknowledgementsView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCAcknowledgementsView.swift; sourceTree = "<group>"; };
 		F768823D2C0DD304001CF441 /* LazyView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LazyView.swift; sourceTree = "<group>"; };
 		F768823F2C0DD30B001CF441 /* ViewOnAppear.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ViewOnAppear.swift; sourceTree = "<group>"; };
-		F76882412C0DD3B4001CF441 /* CCManageAccount.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCManageAccount.h; sourceTree = "<group>"; };
-		F76882422C0DD3B4001CF441 /* CCManageAccount.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCManageAccount.m; sourceTree = "<group>"; };
 		F769453B22E9CFFF000A798A /* NCShareUserCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = NCShareUserCell.xib; sourceTree = "<group>"; };
 		F769453F22E9F077000A798A /* NCSharePaging.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCSharePaging.swift; sourceTree = "<group>"; };
 		F769454522E9F1B0000A798A /* NCShareCommon.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCShareCommon.swift; sourceTree = "<group>"; };
@@ -1503,6 +1483,7 @@
 		F79FFB252A97C24A0055EEA4 /* NCNetworkingE2EEMarkFolder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCNetworkingE2EEMarkFolder.swift; sourceTree = "<group>"; };
 		F7A0D1342591FBC5008F8A13 /* String+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+Extension.swift"; sourceTree = "<group>"; };
 		F7A48414297028FC00BD1B49 /* Nextcloud Hub.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Nextcloud Hub.png"; sourceTree = SOURCE_ROOT; };
+		F7A509242C26BD5D00326106 /* NCCreateDocument.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCCreateDocument.swift; sourceTree = "<group>"; };
 		F7A560412AE1593700BE8FD6 /* NCOperationSaveLivePhoto.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCOperationSaveLivePhoto.swift; sourceTree = "<group>"; };
 		F7A60F84292D215000FCE1F2 /* NCShareAccounts.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCShareAccounts.swift; sourceTree = "<group>"; };
 		F7A60F85292D215000FCE1F2 /* NCShareAccounts.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = NCShareAccounts.storyboard; sourceTree = "<group>"; };
@@ -1554,6 +1535,8 @@
 		F7AE00F4230D5F9E007ACF8A /* NCLoginProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCLoginProvider.swift; sourceTree = "<group>"; };
 		F7AE00F7230E81CB007ACF8A /* NCBrowserWeb.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCBrowserWeb.swift; sourceTree = "<group>"; };
 		F7AE00F9230E81EB007ACF8A /* NCBrowserWeb.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = NCBrowserWeb.storyboard; sourceTree = "<group>"; };
+		F7AEEAA52C11DBAF00011412 /* NCAccountSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCAccountSettingsView.swift; sourceTree = "<group>"; };
+		F7AEEAA72C11DBFD00011412 /* NCAccountSettingsModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCAccountSettingsModel.swift; sourceTree = "<group>"; };
 		F7AF7632246BEDFE00B86E3C /* TOPasscodeViewController.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = TOPasscodeViewController.framework; path = Carthage/Build/iOS/TOPasscodeViewController.framework; sourceTree = "<group>"; };
 		F7B1076C25D3CF2800E72DE2 /* BackgroundTasks.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = BackgroundTasks.framework; path = System/Library/Frameworks/BackgroundTasks.framework; sourceTree = SDKROOT; };
 		F7B1A7761EBB3C8000BFB6D1 /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/Localizable.strings; sourceTree = "<group>"; };
@@ -1707,7 +1690,6 @@
 				F33EE6ED2BF4C03800CA1A51 /* NIOSSL in Frameworks */,
 				F72AD71128C24BBB006CB92D /* NextcloudKit in Frameworks */,
 				F710FC88277B7D3F00AA9FBF /* RealmSwift in Frameworks */,
-				F7160A8E2BE933710034DCB3 /* Realm in Frameworks */,
 				F760DE0F2AE66EE60027D78A /* KeychainAccess in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1716,9 +1698,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F7160A902BE933770034DCB3 /* Realm in Frameworks */,
 				F3F0419B2B9F7E6700D5155F /* RealmSwift in Frameworks */,
-				F3391B022B4C40FB001C0C4B /* XLForm in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1745,10 +1725,8 @@
 				F37208A42BAB63EE006B5430 /* QRCodeReader in Frameworks */,
 				F37208B22BAB63EF006B5430 /* DropDown in Frameworks */,
 				F37208BC2BAB63EF006B5430 /* OpenSSL in Frameworks */,
-				F7160A942BE933830034DCB3 /* Realm in Frameworks */,
 				F37208B82BAB63EF006B5430 /* NextcloudKit in Frameworks */,
 				F37208B42BAB63EF006B5430 /* Parchment in Frameworks */,
-				F3391B062B4C4111001C0C4B /* XLForm in Frameworks */,
 				F37208AC2BAB63EE006B5430 /* SwiftEntryKit in Frameworks */,
 				F37208BE2BAB63F0006B5430 /* Swifter in Frameworks */,
 			);
@@ -1758,12 +1736,10 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F7160A922BE9337D0034DCB3 /* Realm in Frameworks */,
 				F3F0419D2B9F7E6E00D5155F /* RealmSwift in Frameworks */,
 				F3391B082B4C52C5001C0C4B /* FirebaseDatabase in Frameworks */,
 				F3391B0A2B4C52CB001C0C4B /* JGProgressHUD in Frameworks */,
 				F3391B0C2B4C52D5001C0C4B /* SVGKit in Frameworks */,
-				F3391B042B4C4105001C0C4B /* XLForm in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1776,7 +1752,6 @@
 				F33EE6EB2BF4C03200CA1A51 /* NIOSSL in Frameworks */,
 				F7490E7229882BB4009DCE94 /* RealmSwift in Frameworks */,
 				F760DE0D2AE66EDF0027D78A /* KeychainAccess in Frameworks */,
-				F7160A8C2BE9336A0034DCB3 /* Realm in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1784,7 +1759,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F7160A882BE933510034DCB3 /* Realm in Frameworks */,
 				F711A4EF2AF932B900095DD8 /* SVGKitSwift in Frameworks */,
 				F710FC80277B7D2700AA9FBF /* RealmSwift in Frameworks */,
 				F74C863D2AEFBFD9009A1D4A /* LRUCache in Frameworks */,
@@ -1811,7 +1785,6 @@
 				F7346E1328B0EF5B006CE2D2 /* SwiftUI.framework in Frameworks */,
 				F33EE6E32BF4C00700CA1A51 /* NIOSSL in Frameworks */,
 				F7160A7D2BE931DE0034DCB3 /* RealmSwift in Frameworks */,
-				F7160A842BE933430034DCB3 /* Realm in Frameworks */,
 				F760DE052AE66EBE0027D78A /* KeychainAccess in Frameworks */,
 				F7A560462AE15D3D00BE8FD6 /* Queuer in Frameworks */,
 				F783030D28B4C59A00B84583 /* SwiftEntryKit in Frameworks */,
@@ -1824,7 +1797,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F7160A8A2BE933610034DCB3 /* Realm in Frameworks */,
 				F7A560442AE15D2900BE8FD6 /* Queuer in Frameworks */,
 				F760DE0B2AE66ED80027D78A /* KeychainAccess in Frameworks */,
 				F73ADD2426554FE20069EA0D /* SwiftEntryKit in Frameworks */,
@@ -1855,7 +1827,6 @@
 				F77333882927A72100466E35 /* OpenSSL in Frameworks */,
 				F753BA93281FD8020015BFB6 /* EasyTipView in Frameworks */,
 				F76DA95B277B75A90082465B /* TOPasscodeViewController.xcframework in Frameworks */,
-				F7160A802BE933390034DCB3 /* Realm in Frameworks */,
 				F7160A822BE933390034DCB3 /* RealmSwift in Frameworks */,
 				F76DA963277B760E0082465B /* Queuer in Frameworks */,
 				F72AD70D28C24B93006CB92D /* NextcloudKit in Frameworks */,
@@ -1866,7 +1837,6 @@
 				F75EAED826D2552E00F4320E /* MarqueeLabel in Frameworks */,
 				F72DA9B425F53E4E00B87DB1 /* SwiftRichString in Frameworks */,
 				F78AF1E72BE938C100F3F060 /* MobileVLCKit.xcframework in Frameworks */,
-				F74E7720277A2EF40013B958 /* XLForm in Frameworks */,
 				F73ADD1C265546890069EA0D /* SwiftEntryKit in Frameworks */,
 				F76B649E2ADFFDEC00014640 /* LRUCache in Frameworks */,
 			);
@@ -1881,7 +1851,6 @@
 				F33EE6E52BF4C02000CA1A51 /* NIOSSL in Frameworks */,
 				F7C9739228F17131002C43E2 /* Intents.framework in Frameworks */,
 				F760DE072AE66EC70027D78A /* KeychainAccess in Frameworks */,
-				F7160A862BE9334B0034DCB3 /* Realm in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2026,8 +1995,6 @@
 			children = (
 				F3BB464C2A39ADCC00461F6E /* NCMoreAppSuggestionsCell.xib */,
 				F3BB46512A39EC4900461F6E /* NCMoreAppSuggestionsCell.swift */,
-				F33AAF992A60394C006ECCBD /* NCMoreUserCell.xib */,
-				F3BB464E2A39EBE500461F6E /* NCMoreUserCell.swift */,
 				F3BB46532A3A1E9D00461F6E /* CCCellMore.swift */,
 				F39298962A3B12CB00509762 /* BaseNCMoreCell.swift */,
 			);
@@ -2648,6 +2615,15 @@
 			path = BrowserWeb;
 			sourceTree = "<group>";
 		};
+		F7AEEAA92C11DC0600011412 /* Account Settings */ = {
+			isa = PBXGroup;
+			children = (
+				F7AEEAA52C11DBAF00011412 /* NCAccountSettingsView.swift */,
+				F7AEEAA72C11DBFD00011412 /* NCAccountSettingsModel.swift */,
+			);
+			path = "Account Settings";
+			sourceTree = "<group>";
+		};
 		F7BAAD951ED5A63D00B7EAD4 /* Data */ = {
 			isa = PBXGroup;
 			children = (
@@ -2811,8 +2787,6 @@
 				F3BB46502A39EC2D00461F6E /* Cells */,
 				F7CB68992541676B0050EC94 /* NCMore.storyboard */,
 				F73F537E1E929C8500F8678D /* NCMore.swift */,
-				F76882412C0DD3B4001CF441 /* CCManageAccount.h */,
-				F76882422C0DD3B4001CF441 /* CCManageAccount.m */,
 			);
 			path = More;
 			sourceTree = "<group>";
@@ -2821,12 +2795,11 @@
 			isa = PBXGroup;
 			children = (
 				F7FA7FFD2C0F4F3B0072FC60 /* Upload Assets */,
+				F7A509242C26BD5D00326106 /* NCCreateDocument.swift */,
 				F704B5E22430AA6F00632F5F /* NCCreateFormUploadConflict.storyboard */,
 				F704B5E42430AA8000632F5F /* NCCreateFormUploadConflict.swift */,
 				F704B5E82430C0B800632F5F /* NCCreateFormUploadConflictCell.swift */,
 				F704B5E62430C06700632F5F /* NCCreateFormUploadConflictCell.xib */,
-				F7651A8823A2A3F2001403D2 /* NCCreateFormUploadDocuments.storyboard */,
-				F7651A8923A2A3F2001403D2 /* NCCreateFormUploadDocuments.swift */,
 			);
 			path = "Create cloud";
 			sourceTree = "<group>";
@@ -2933,6 +2906,7 @@
 				F769CA1B2966EF4F00039397 /* GUI */,
 				F70211F31BAC56E9003FC03E /* Main */,
 				F7CA213725F1372B00826ABB /* Account Request */,
+				F7AEEAA92C11DC0600011412 /* Account Settings */,
 				F7A321621E9E37960069AD1B /* Activity */,
 				F76687042B7D067400779E3F /* AudioRecorder */,
 				F3A0478E2BD2668800658E7B /* Assistant */,
@@ -3131,7 +3105,6 @@
 				F710FC87277B7D3F00AA9FBF /* RealmSwift */,
 				F72AD71028C24BBB006CB92D /* NextcloudKit */,
 				F760DE0E2AE66EE60027D78A /* KeychainAccess */,
-				F7160A8D2BE933710034DCB3 /* Realm */,
 				F33EE6EC2BF4C03800CA1A51 /* NIOSSL */,
 			);
 			productName = "Notification Service Extension";
@@ -3154,9 +3127,7 @@
 			);
 			name = NextcloudUnitTests;
 			packageProductDependencies = (
-				F3391B012B4C40FB001C0C4B /* XLForm */,
 				F3F0419A2B9F7E6700D5155F /* RealmSwift */,
-				F7160A8F2BE933770034DCB3 /* Realm */,
 			);
 			productName = NextcloudTests;
 			productReference = AF8ED1F92757821000B8DBC4 /* NextcloudUnitTests.xctest */;
@@ -3178,7 +3149,6 @@
 			);
 			name = NextcloudUITests;
 			packageProductDependencies = (
-				F3391B052B4C4111001C0C4B /* XLForm */,
 				F3391B0F2B4C52E6001C0C4B /* SVGKit */,
 				F3391B132B4C52EF001C0C4B /* JGProgressHUD */,
 				F3391B152B4C52F6001C0C4B /* FirebaseDatabase */,
@@ -3202,7 +3172,6 @@
 				F37208C32BAB63F0006B5430 /* Gzip */,
 				F37208C52BAB63F0006B5430 /* LRUCache */,
 				F37208C72BAB63F1006B5430 /* KeychainAccess */,
-				F7160A932BE933830034DCB3 /* Realm */,
 			);
 			productName = NextcloudUITests;
 			productReference = C0046CDA2A17B98400D87C9D /* NextcloudUITests.xctest */;
@@ -3224,12 +3193,10 @@
 			);
 			name = NextcloudIntegrationTests;
 			packageProductDependencies = (
-				F3391B032B4C4105001C0C4B /* XLForm */,
 				F3391B072B4C52C5001C0C4B /* FirebaseDatabase */,
 				F3391B092B4C52CB001C0C4B /* JGProgressHUD */,
 				F3391B0B2B4C52D5001C0C4B /* SVGKit */,
 				F3F0419C2B9F7E6E00D5155F /* RealmSwift */,
-				F7160A912BE9337D0034DCB3 /* Realm */,
 			);
 			productName = NextcloudIntegrationTests;
 			productReference = C04E2F202A17BB4D001BAD85 /* NextcloudIntegrationTests.xctest */;
@@ -3254,7 +3221,6 @@
 				F7490E8829882CC8009DCE94 /* SwiftEntryKit */,
 				F7490E8A29882CE4009DCE94 /* NextcloudKit */,
 				F760DE0C2AE66EDF0027D78A /* KeychainAccess */,
-				F7160A8B2BE9336A0034DCB3 /* Realm */,
 				F33EE6EA2BF4C03200CA1A51 /* NIOSSL */,
 			);
 			productName = "File Provider Extension UI";
@@ -3288,7 +3254,6 @@
 				F760DE082AE66ED00027D78A /* KeychainAccess */,
 				F74C863C2AEFBFD9009A1D4A /* LRUCache */,
 				F711A4EE2AF932B900095DD8 /* SVGKitSwift */,
-				F7160A872BE933510034DCB3 /* Realm */,
 				F33EE6E62BF4C02600CA1A51 /* NIOSSL */,
 			);
 			productName = "Share Ext";
@@ -3317,7 +3282,6 @@
 				F75379212AE2ADA100C0250E /* JGProgressHUD */,
 				F760DE042AE66EBE0027D78A /* KeychainAccess */,
 				F7160A7C2BE931DE0034DCB3 /* RealmSwift */,
-				F7160A832BE933430034DCB3 /* Realm */,
 				F33EE6E22BF4C00700CA1A51 /* NIOSSL */,
 			);
 			productName = DashboardWidgetExtension;
@@ -3345,7 +3309,6 @@
 				F7A560432AE15D2900BE8FD6 /* Queuer */,
 				F753791F2AE2AD9400C0250E /* JGProgressHUD */,
 				F760DE0A2AE66ED80027D78A /* KeychainAccess */,
-				F7160A892BE933610034DCB3 /* Realm */,
 				F33EE6E82BF4C02D00CA1A51 /* NIOSSL */,
 			);
 			productName = "File Provider Extension";
@@ -3382,7 +3345,6 @@
 				F70B86742642CE3B00ED5349 /* FirebaseCrashlytics */,
 				F73ADD1B265546890069EA0D /* SwiftEntryKit */,
 				F75EAED726D2552E00F4320E /* MarqueeLabel */,
-				F74E771F277A2EF40013B958 /* XLForm */,
 				F76DA962277B760E0082465B /* Queuer */,
 				F76DA968277B77EA0082465B /* DropDown */,
 				F7BB7E4627A18C56009B9F29 /* Parchment */,
@@ -3399,7 +3361,6 @@
 				F76B649D2ADFFDEC00014640 /* LRUCache */,
 				F760DE022AE66EA80027D78A /* KeychainAccess */,
 				F3A0479D2BD268B500658E7B /* PopupView */,
-				F7160A7F2BE933390034DCB3 /* Realm */,
 				F7160A812BE933390034DCB3 /* RealmSwift */,
 				F33EE6E02BF4BDA500CA1A51 /* NIOSSL */,
 				F33EE6EF2BF4C0FF00CA1A51 /* NIO */,
@@ -3426,7 +3387,6 @@
 				F7A8D72328F1771B008BBE1C /* NextcloudKit */,
 				F7A8D72728F17728008BBE1C /* RealmSwift */,
 				F760DE062AE66EC70027D78A /* KeychainAccess */,
-				F7160A852BE9334B0034DCB3 /* Realm */,
 				F33EE6E42BF4C02000CA1A51 /* NIOSSL */,
 			);
 			productName = WidgetDashboardIntentHandler;
@@ -3560,7 +3520,6 @@
 				F70B86732642CE3B00ED5349 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
 				F73ADD1A265546880069EA0D /* XCRemoteSwiftPackageReference "SwiftEntryKit" */,
 				F75EAED626D2552E00F4320E /* XCRemoteSwiftPackageReference "MarqueeLabel" */,
-				F74E771E277A2EF40013B958 /* XCRemoteSwiftPackageReference "XLForm" */,
 				F76DA961277B760E0082465B /* XCRemoteSwiftPackageReference "Queuer" */,
 				F76DA967277B77E90082465B /* XCRemoteSwiftPackageReference "DropDown" */,
 				F710FC78277B7CFF00AA9FBF /* XCRemoteSwiftPackageReference "realm-swift" */,
@@ -3703,7 +3662,6 @@
 				F723985C253C95CE00257F49 /* NCViewerRichdocument.storyboard in Resources */,
 				F758B45A212C564000515F55 /* NCScan.storyboard in Resources */,
 				F70D87CF25EE6E58008CBBBD /* NCRenameFile.storyboard in Resources */,
-				F33AAF9A2A60394C006ECCBD /* NCMoreUserCell.xib in Resources */,
 				F765F73225237E3F00391DBE /* NCRecent.storyboard in Resources */,
 				F78F74342163757000C2ADAD /* NCTrash.storyboard in Resources */,
 				F702F30225EE5D2C008F8E80 /* english.txt in Resources */,
@@ -3740,7 +3698,6 @@
 				F7A60F87292D215000FCE1F2 /* NCShareAccounts.storyboard in Resources */,
 				F761856A29E98543006EB3B0 /* NCIntro.storyboard in Resources */,
 				F719D9E0288D37A300762E33 /* NCColorPicker.storyboard in Resources */,
-				F7651A8A23A2A3F2001403D2 /* NCCreateFormUploadDocuments.storyboard in Resources */,
 				F7F4F10A27ECDBDB008676F9 /* Inconsolata-ExtraBold.ttf in Resources */,
 				F704B5E72430C06700632F5F /* NCCreateFormUploadConflictCell.xib in Resources */,
 				F7E402292BA85D1D007E5609 /* PrivacyInfo.xcprivacy in Resources */,
@@ -4318,7 +4275,6 @@
 				F73EF7C72B0225610087E6E9 /* NCManageDatabase+PhotoLibrary.swift in Sources */,
 				F7E41316294A19B300839300 /* UIView+Extension.swift in Sources */,
 				F7C30E00291BD2610017149B /* NCNetworkingE2EERename.swift in Sources */,
-				F7651A8B23A2A3F2001403D2 /* NCCreateFormUploadDocuments.swift in Sources */,
 				F74AF3A4247FB6AE00AC767B /* NCUtilityFileSystem.swift in Sources */,
 				AFCE353327E4ED1900FEA6C2 /* UIToolbar+Extension.swift in Sources */,
 				8491B1CD273BBA82001C8C5B /* UIViewController+Menu.swift in Sources */,
@@ -4345,7 +4301,6 @@
 				F70BFC7420E0FA7D00C67599 /* NCUtility.swift in Sources */,
 				F79EDAA526B004980007D134 /* NCPlayer.swift in Sources */,
 				F7C1EEA525053A9C00866ACC /* NCDataSource.swift in Sources */,
-				F76882432C0DD3B4001CF441 /* CCManageAccount.m in Sources */,
 				F713FF002472764100214AF6 /* UIImage+animatedGIF.m in Sources */,
 				AFCE353527E4ED5900FEA6C2 /* DateFormatter+Extension.swift in Sources */,
 				F718C24E254D507B00C5C256 /* NCViewerMediaDetailView.swift in Sources */,
@@ -4353,6 +4308,7 @@
 				F7145610296433C80038D028 /* NCDocumentCamera.swift in Sources */,
 				F76882312C0DD1E7001CF441 /* NCAutoUploadFileNamesView.swift in Sources */,
 				F7381EE1218218C9000B1560 /* NCOffline.swift in Sources */,
+				F7A509252C26BD5D00326106 /* NCCreateDocument.swift in Sources */,
 				F7FA80002C0F4F3B0072FC60 /* NCUploadAssetsModel.swift in Sources */,
 				F719D9E2288D396100762E33 /* NCColorPicker.swift in Sources */,
 				F73EF7DF2B02266D0087E6E9 /* NCManageDatabase+Trash.swift in Sources */,
@@ -4368,6 +4324,7 @@
 				F769CA192966EA3C00039397 /* ComponentView.swift in Sources */,
 				F7C9B91D2B582F550064EA91 /* NCManageDatabase+SecurityGuard.swift in Sources */,
 				AF93474C27E34120002537EE /* NCUtility+Image.swift in Sources */,
+				F7AEEAA62C11DBAF00011412 /* NCAccountSettingsView.swift in Sources */,
 				F702F30125EE5D2C008F8E80 /* NYMnemonic.m in Sources */,
 				AF93474E27E3F212002537EE /* NCShareNewUserAddComment.swift in Sources */,
 				F7C30DFD291BD0B80017149B /* NCNetworkingE2EEDelete.swift in Sources */,
@@ -4389,7 +4346,6 @@
 				F7134186259747BA00768D21 /* NCPushNotification.m in Sources */,
 				F76882322C0DD1E7001CF441 /* NCAutoUploadView.swift in Sources */,
 				F36E64F72B9245210085ABB5 /* NCCollectionViewCommon+SelectTabBarDelegate.swift in Sources */,
-				F3BB464F2A39EBE500461F6E /* NCMoreUserCell.swift in Sources */,
 				F79A65C62191D95E00FF6DCC /* NCSelect.swift in Sources */,
 				F75D19E325EFE09000D74598 /* NCTrash+Menu.swift in Sources */,
 				F70CAE3A1F8CF31A008125FD /* NCEndToEndEncryption.m in Sources */,
@@ -4418,6 +4374,7 @@
 				D5B6AA7827200C7200D49C24 /* NCActivityTableViewCell.swift in Sources */,
 				F745B253222D88AE00346520 /* NCLoginQRCode.swift in Sources */,
 				F769454822E9F20D000A798A /* NCShareNetworking.swift in Sources */,
+				F7AEEAA82C11DBFD00011412 /* NCAccountSettingsModel.swift in Sources */,
 				F749B64A297B0CBB00087535 /* NCManageDatabase+Share.swift in Sources */,
 				F7C9555521F0C5470024296E /* NCActivity.swift in Sources */,
 				F7725A60251F33BB00D125E0 /* NCFiles.swift in Sources */,
@@ -5385,7 +5342,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 4;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = NKUJUXUJ3B;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -5451,7 +5408,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 4;
 				DEVELOPMENT_TEAM = NKUJUXUJ3B;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
@@ -5630,7 +5587,7 @@
 			repositoryURL = "https://github.com/realm/realm-swift";
 			requirement = {
 				kind = exactVersion;
-				version = 10.49.2;
+				version = 10.52.0;
 			};
 		};
 		F72CD01027A7E92400E59476 /* XCRemoteSwiftPackageReference "JGProgressHUD" */ = {
@@ -5663,14 +5620,6 @@
 			requirement = {
 				kind = upToNextMajorVersion;
 				minimumVersion = 1.2.7;
-			};
-		};
-		F74E771E277A2EF40013B958 /* XCRemoteSwiftPackageReference "XLForm" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/xmartlabs/XLForm";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 4.3.0;
 			};
 		};
 		F753BA91281FD8010015BFB6 /* XCRemoteSwiftPackageReference "EasyTipView" */ = {
@@ -5741,8 +5690,8 @@
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/krzyzanowskim/OpenSSL";
 			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 3.1.5004;
+				kind = exactVersion;
+				version = 3.1.5004;
 			};
 		};
 		F77BC3E9293E5268005F2B08 /* XCRemoteSwiftPackageReference "swifter" */ = {
@@ -5757,8 +5706,8 @@
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/nextcloud/NextcloudKit";
 			requirement = {
-				kind = exactVersion;
-				version = 3.0.1;
+				branch = develop;
+				kind = branch;
 			};
 		};
 		F788ECC5263AAAF900ADC67F /* XCRemoteSwiftPackageReference "MarkdownKit" */ = {
@@ -5812,21 +5761,6 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		F3391B012B4C40FB001C0C4B /* XLForm */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = F74E771E277A2EF40013B958 /* XCRemoteSwiftPackageReference "XLForm" */;
-			productName = XLForm;
-		};
-		F3391B032B4C4105001C0C4B /* XLForm */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = F74E771E277A2EF40013B958 /* XCRemoteSwiftPackageReference "XLForm" */;
-			productName = XLForm;
-		};
-		F3391B052B4C4111001C0C4B /* XLForm */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = F74E771E277A2EF40013B958 /* XCRemoteSwiftPackageReference "XLForm" */;
-			productName = XLForm;
-		};
 		F3391B072B4C52C5001C0C4B /* FirebaseDatabase */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = F70B86732642CE3B00ED5349 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
@@ -6047,60 +5981,10 @@
 			package = F710FC78277B7CFF00AA9FBF /* XCRemoteSwiftPackageReference "realm-swift" */;
 			productName = RealmSwift;
 		};
-		F7160A7F2BE933390034DCB3 /* Realm */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = F710FC78277B7CFF00AA9FBF /* XCRemoteSwiftPackageReference "realm-swift" */;
-			productName = Realm;
-		};
 		F7160A812BE933390034DCB3 /* RealmSwift */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = F710FC78277B7CFF00AA9FBF /* XCRemoteSwiftPackageReference "realm-swift" */;
 			productName = RealmSwift;
-		};
-		F7160A832BE933430034DCB3 /* Realm */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = F710FC78277B7CFF00AA9FBF /* XCRemoteSwiftPackageReference "realm-swift" */;
-			productName = Realm;
-		};
-		F7160A852BE9334B0034DCB3 /* Realm */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = F710FC78277B7CFF00AA9FBF /* XCRemoteSwiftPackageReference "realm-swift" */;
-			productName = Realm;
-		};
-		F7160A872BE933510034DCB3 /* Realm */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = F710FC78277B7CFF00AA9FBF /* XCRemoteSwiftPackageReference "realm-swift" */;
-			productName = Realm;
-		};
-		F7160A892BE933610034DCB3 /* Realm */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = F710FC78277B7CFF00AA9FBF /* XCRemoteSwiftPackageReference "realm-swift" */;
-			productName = Realm;
-		};
-		F7160A8B2BE9336A0034DCB3 /* Realm */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = F710FC78277B7CFF00AA9FBF /* XCRemoteSwiftPackageReference "realm-swift" */;
-			productName = Realm;
-		};
-		F7160A8D2BE933710034DCB3 /* Realm */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = F710FC78277B7CFF00AA9FBF /* XCRemoteSwiftPackageReference "realm-swift" */;
-			productName = Realm;
-		};
-		F7160A8F2BE933770034DCB3 /* Realm */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = F710FC78277B7CFF00AA9FBF /* XCRemoteSwiftPackageReference "realm-swift" */;
-			productName = Realm;
-		};
-		F7160A912BE9337D0034DCB3 /* Realm */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = F710FC78277B7CFF00AA9FBF /* XCRemoteSwiftPackageReference "realm-swift" */;
-			productName = Realm;
-		};
-		F7160A932BE933830034DCB3 /* Realm */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = F710FC78277B7CFF00AA9FBF /* XCRemoteSwiftPackageReference "realm-swift" */;
-			productName = Realm;
 		};
 		F72AD70C28C24B93006CB92D /* NextcloudKit */ = {
 			isa = XCSwiftPackageProductDependency;
@@ -6176,11 +6060,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = F76B649A2ADFFAD200014640 /* XCRemoteSwiftPackageReference "LRUCache" */;
 			productName = LRUCache;
-		};
-		F74E771F277A2EF40013B958 /* XLForm */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = F74E771E277A2EF40013B958 /* XCRemoteSwiftPackageReference "XLForm" */;
-			productName = XLForm;
 		};
 		F753791F2AE2AD9400C0250E /* JGProgressHUD */ = {
 			isa = XCSwiftPackageProductDependency;

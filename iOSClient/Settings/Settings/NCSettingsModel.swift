@@ -43,6 +43,8 @@ class NCSettingsModel: ObservableObject, ViewOnAppearHandling {
     @Published var privacyScreen: Bool = false
     /// State to control
     @Published var resetWrongAttempts: Bool = false
+    /// Request account on start
+    @Published var accountRequest: Bool = false
     /// Root View Controller
     @Published var controller: NCMainTabBarController?
     /// Footer
@@ -63,6 +65,7 @@ class NCSettingsModel: ObservableObject, ViewOnAppearHandling {
         lockScreen = !keychain.requestPasscodeAtStart
         privacyScreen = keychain.privacyScreenEnabled
         resetWrongAttempts = keychain.resetAppCounterFail
+        accountRequest = keychain.accountRequest
         footerApp = String(format: NCBrandOptions.shared.textCopyrightNextcloudiOS, NCUtility().getVersionApp(withBuild: true)) + "\n\n"
         footerServer = String(format: NCBrandOptions.shared.textCopyrightNextcloudServer, NCGlobal.shared.capabilityServerVersion) + "\n"
         footerSlogan = NCGlobal.shared.capabilityThemingName + " - " + NCGlobal.shared.capabilityThemingSlogan + "\n\n"
@@ -98,6 +101,11 @@ class NCSettingsModel: ObservableObject, ViewOnAppearHandling {
         if let url = URL(string: configLink) {
             configServer.startService(url: url)
         }
+    }
+
+    /// Function to update Account request on start
+    func updateAccountRequest() {
+        keychain.accountRequest = accountRequest
     }
 }
 

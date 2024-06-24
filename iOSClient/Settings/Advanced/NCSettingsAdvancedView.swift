@@ -138,6 +138,16 @@ struct NCSettingsAdvancedView: View {
                         .font(.system(size: 16))
                     })
                     .tint(Color(UIColor.label))
+                    /// Set Log Level()
+                    Picker(NSLocalizedString("_set_log_level_", comment: ""), selection: $model.selectedLogLevel) {
+                        ForEach(LogLevel.allCases) { level in
+                            Text(level.displayText).tag(level)
+                        }
+                    }
+                    .font(.system(size: 16))
+                    .onChange(of: model.selectedLogLevel) { _ in
+                        model.updateSelectedLogLevel()
+                    }
                     /// Clear Log File
                     Button(action: {
                         model.clearLogFile()
@@ -156,16 +166,6 @@ struct NCSettingsAdvancedView: View {
                     .tint(Color(UIColor.label))
                     .alert(NSLocalizedString("_log_file_clear_alert_", comment: ""), isPresented: $model.logFileCleared) {
                         Button(NSLocalizedString("OK", comment: ""), role: .cancel) { }
-                    }
-                    /// Set Log Level()
-                    Picker(NSLocalizedString("_set_log_level_", comment: ""), selection: $model.selectedLogLevel) {
-                        ForEach(LogLevel.allCases) { level in
-                            Text(level.displayText).tag(level)
-                        }
-                    }
-                    .font(.system(size: 16))
-                    .onChange(of: model.selectedLogLevel) { _ in
-                        model.updateSelectedLogLevel()
                     }
                 }, header: {
                     Text(NSLocalizedString("_diagnostics_", comment: ""))

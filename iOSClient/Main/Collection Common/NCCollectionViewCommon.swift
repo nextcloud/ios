@@ -22,12 +22,13 @@
 //
 
 import UIKit
+import SwiftUI
 import Realm
 import NextcloudKit
 import EasyTipView
 import JGProgressHUD
 
-class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UISearchResultsUpdating, UISearchControllerDelegate, UISearchBarDelegate, NCListCellDelegate, NCGridCellDelegate, NCSectionHeaderMenuDelegate, NCSectionFooterDelegate, NCSectionHeaderEmptyDataDelegate, UIAdaptivePresentationControllerDelegate, UIContextMenuInteractionDelegate {
+class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UISearchResultsUpdating, UISearchControllerDelegate, UISearchBarDelegate, NCListCellDelegate, NCGridCellDelegate, NCSectionHeaderMenuDelegate, NCSectionFooterDelegate, NCSectionHeaderEmptyDataDelegate, NCAccountSettingsModelDelegate, UIAdaptivePresentationControllerDelegate, UIContextMenuInteractionDelegate {
 
     @IBOutlet weak var collectionView: UICollectionView!
 
@@ -629,7 +630,14 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                 self.appDelegate.openLogin(selector: NCGlobal.shared.introLogin, openLoginWeb: false)
             }
 
-            let addAccountSubmenu = UIMenu(title: "", options: .displayInline, children: [addAccountAction])
+            let settingsAccountAction = UIAction(title: NSLocalizedString("_account_settings_", comment: ""), image: utility.loadImage(named: "gear", colors: [NCBrandColor.shared.iconImageColor])) { _ in
+                let accountSettingsModel = NCAccountSettingsModel(controller: self.tabBarController as? NCMainTabBarController, delegate: self)
+                let accountSettingsView = NCAccountSettingsView(model: accountSettingsModel)
+                let accountSettingsController = UIHostingController(rootView: accountSettingsView)
+                self.present(accountSettingsController, animated: true, completion: nil)
+            }
+
+            let addAccountSubmenu = UIMenu(title: "", options: .displayInline, children: [addAccountAction, settingsAccountAction])
 
             let menu = UIMenu(children: accountActions + [addAccountSubmenu])
 
@@ -771,13 +779,14 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     }
 
     func getNavigationTitle() -> String {
-
         let activeAccount = NCManageDatabase.shared.getActiveAccount()
         guard let userAlias = activeAccount?.alias, !userAlias.isEmpty else {
             return NCBrandOptions.shared.brand
         }
         return userAlias
     }
+
+    func accountSettingsDidDismiss(tableAccount: tableAccount?) { }
 
     // MARK: - SEARCH
 
