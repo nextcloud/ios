@@ -63,7 +63,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
 
     private var p12Data: Data?
     private var p12Password: String?
-    
+
     // MARK: - View Life Cycle
 
     override func viewDidLoad() {

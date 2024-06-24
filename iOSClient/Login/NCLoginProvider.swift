@@ -27,13 +27,10 @@ import NextcloudKit
 import FloatingPanel
 
 class NCLoginProvider: UIViewController {
-
     var webView: WKWebView?
     let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
     let utility = NCUtility()
-
     var titleView: String = ""
-
     var urlBase = ""
 
     // MARK: - View Life Cycle
@@ -71,7 +68,6 @@ class NCLoginProvider: UIViewController {
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-
         // Stop timer error network
         appDelegate.timerErrorNetworkingDisabled = true
     }
@@ -105,11 +101,8 @@ class NCLoginProvider: UIViewController {
 }
 
 extension NCLoginProvider: WKNavigationDelegate {
-
     func webView(_ webView: WKWebView, didReceiveServerRedirectForProvisionalNavigation navigation: WKNavigation!) {
-
         guard let url = webView.url else { return }
-
         let urlString: String = url.absoluteString.lowercased()
 
         // prevent http redirection
@@ -123,7 +116,6 @@ extension NCLoginProvider: WKNavigationDelegate {
         }
 
         if urlString.hasPrefix(NCBrandOptions.shared.webLoginAutenticationProtocol) == true && urlString.contains("login") == true {
-
             var server: String = ""
             var user: String = ""
             var password: String = ""
@@ -171,7 +163,6 @@ extension NCLoginProvider: WKNavigationDelegate {
     // MARK: -
 
     func createAccount(server: String, username: String, password: String) {
-
         var urlBase = server
         if urlBase.last == "/" { urlBase = String(urlBase.dropLast()) }
         let account: String = "\(username) \(urlBase)"

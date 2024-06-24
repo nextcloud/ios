@@ -107,13 +107,11 @@ class NCViewCertificateDetails: UIViewController {
 // MARK: - UIViewControllerRepresentable
 
 struct certificateDetailsView: UIViewControllerRepresentable {
-
     typealias UIViewControllerType = UINavigationController
     var host: String = ""
     var title: String = ""
 
     func makeUIViewController(context: Context) -> UINavigationController {
-
         let storyboard = UIStoryboard(name: "NCViewCertificateDetails", bundle: nil)
         let navigationController = storyboard.instantiateInitialViewController() as? UINavigationController
         let viewController = navigationController?.topViewController as? NCViewCertificateDetails
