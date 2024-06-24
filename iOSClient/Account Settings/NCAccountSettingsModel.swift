@@ -50,8 +50,6 @@ class NCAccountSettingsModel: ObservableObject, ViewOnAppearHandling {
     @Published var indexActiveAccount: Int = 0
     /// Current alias
     @Published var alias: String = ""
-    /// State to control
-    @Published var accountRequest: Bool = false
     /// Set true for dismiss the view
     @Published var dismissView = false
 
@@ -97,22 +95,23 @@ class NCAccountSettingsModel: ObservableObject, ViewOnAppearHandling {
 
     /// Triggered when the view appears.
     func onViewAppear() {
-        accounts = NCManageDatabase.shared.getAllAccount()
-        activeAccount = NCManageDatabase.shared.getActiveAccount()
-        accountRequest = NCKeychain().accountRequest
-        getIndexActiveAccount()
-    }
+        var indexActiveAccount = 0
+        let accounts = NCManageDatabase.shared.getAllAccount()
+        var activeAccount = NCManageDatabase.shared.getActiveAccount()
+        var alias = ""
 
-    /// Internal use
-    func getIndexActiveAccount() {
-        self.indexActiveAccount = 0
         for (index, account) in accounts.enumerated() {
             if account.active {
-                self.activeAccount = account
-                self.indexActiveAccount = index
-                self.alias = account.alias
+                activeAccount = account
+                indexActiveAccount = index
+                alias = account.alias
             }
         }
+
+        self.indexActiveAccount = indexActiveAccount
+        self.accounts = accounts
+        self.activeAccount = activeAccount
+        self.alias = alias
     }
 
     /// Func to get the user display name + alias

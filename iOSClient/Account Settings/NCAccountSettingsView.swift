@@ -42,7 +42,84 @@ struct NCAccountSettingsView: View {
                 Section(content: {
                     TabView(selection: $model.indexActiveAccount) {
                         ForEach(0..<model.accounts.count, id: \.self) { index in
-                            TabContentView(index: index, model: model)
+                            let status = model.getUserStatus()
+                            let avatar = NCUtility().loadUserImage(for: model.accounts[index].user, displayName: model.accounts[index].displayName, userBaseUrl: model.accounts[index])
+                            ///
+                            /// User
+                            VStack {
+                                ZStack {
+                                    Image(uiImage: avatar)
+                                        .resizable()
+                                        .scaledToFit()
+                                        .frame(width: UIScreen.main.bounds.width, height: 75)
+                                    ZStack {
+                                        Circle()
+                                            .fill(.white)
+                                            .frame(width: 30, height: 30)
+                                        Image(uiImage: status.statusImage)
+                                            .resizable()
+                                            .scaledToFit()
+                                            .frame(width: 30, height: 30)
+                                        }
+                                        .offset(x: 30, y: 30)
+                                }
+                                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                                Text(model.getUserName())
+                                    .font(.system(size: 16))
+                                Spacer()
+                                    .frame(height: 10)
+                                Text(status.statusMessage)
+                                    .font(.system(size: 10))
+                                Spacer()
+                                    .frame(height: 20)
+                                ///
+                                /// Personal data
+                                if let activeAccount = model.activeAccount {
+                                    if !activeAccount.email.isEmpty {
+                                        HStack {
+                                            Image(systemName: "mail")
+                                                .resizable()
+                                                .scaledToFit()
+                                                .font(Font.system(.body).weight(.light))
+                                                .frame(width: 20, height: 20)
+                                            Text(activeAccount.email)
+                                                .lineLimit(1)
+                                                .truncationMode(.middle)
+                                                .frame(maxWidth: .infinity, alignment: .leading)
+
+                                        }
+                                        .frame(maxWidth: .infinity, maxHeight: 30)
+                                    }
+                                    if !activeAccount.phone.isEmpty {
+                                        HStack {
+                                            Image(systemName: "phone")
+                                                .resizable()
+                                                .scaledToFit()
+                                                .font(Font.system(.body).weight(.light))
+                                                .frame(width: 20, height: 20)
+                                            Text(activeAccount.phone)
+                                                .lineLimit(1)
+                                                .truncationMode(.middle)
+                                                .frame(maxWidth: .infinity, alignment: .leading)
+                                        }
+                                        .frame(maxWidth: .infinity, maxHeight: 30)
+                                    }
+                                    if !activeAccount.address.isEmpty {
+                                        HStack {
+                                            Image(systemName: "house")
+                                                .resizable()
+                                                .scaledToFit()
+                                                .font(Font.system(.body).weight(.light))
+                                                .frame(width: 20, height: 20)
+                                            Text(activeAccount.address)
+                                                .lineLimit(1)
+                                                .truncationMode(.middle)
+                                                .frame(maxWidth: .infinity, alignment: .leading)
+                                        }
+                                        .frame(maxWidth: .infinity, maxHeight: 30)
+                                    }
+                                }
+                            }
                         }
                     }
                     .font(.system(size: 14))
@@ -197,92 +274,6 @@ struct NCAccountSettingsView: View {
         }
         .onDisappear {
             model.delegate?.accountSettingsDidDismiss(tableAccount: model.activeAccount)
-        }
-    }
-}
-
-struct TabContentView: View {
-    var index: Int
-    @ObservedObject var model: NCAccountSettingsModel
-
-    var body: some View {
-        let status = model.getUserStatus()
-        let avatar = NCUtility().loadUserImage(for: model.accounts[index].user, displayName: model.accounts[index].displayName, userBaseUrl: model.accounts[index])
-        ///
-        /// User
-        VStack {
-            ZStack {
-                Image(uiImage: avatar)
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: UIScreen.main.bounds.width, height: 75)
-                ZStack {
-                    Circle()
-                        .fill(.white)
-                        .frame(width: 30, height: 30)
-                    Image(uiImage: status.statusImage)
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: 30, height: 30)
-                    }
-                    .offset(x: 30, y: 30)
-            }
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
-            Text(model.getUserName())
-                .font(.system(size: 16))
-            Spacer()
-                .frame(height: 10)
-            Text(status.statusMessage)
-                .font(.system(size: 10))
-            Spacer()
-                .frame(height: 20)
-            ///
-            /// Personal data
-            if let activeAccount = model.activeAccount {
-                if !activeAccount.email.isEmpty {
-                    HStack {
-                        Image(systemName: "mail")
-                            .resizable()
-                            .scaledToFit()
-                            .font(Font.system(.body).weight(.light))
-                            .frame(width: 20, height: 20)
-                        Text(activeAccount.email)
-                            .lineLimit(1)
-                            .truncationMode(.middle)
-                            .frame(maxWidth: .infinity, alignment: .leading)
-
-                    }
-                    .frame(maxWidth: .infinity, maxHeight: 30)
-                }
-                if !activeAccount.phone.isEmpty {
-                    HStack {
-                        Image(systemName: "phone")
-                            .resizable()
-                            .scaledToFit()
-                            .font(Font.system(.body).weight(.light))
-                            .frame(width: 20, height: 20)
-                        Text(activeAccount.phone)
-                            .lineLimit(1)
-                            .truncationMode(.middle)
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                    }
-                    .frame(maxWidth: .infinity, maxHeight: 30)
-                }
-                if !activeAccount.address.isEmpty {
-                    HStack {
-                        Image(systemName: "house")
-                            .resizable()
-                            .scaledToFit()
-                            .font(Font.system(.body).weight(.light))
-                            .frame(width: 20, height: 20)
-                        Text(activeAccount.address)
-                            .lineLimit(1)
-                            .truncationMode(.middle)
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                    }
-                    .frame(maxWidth: .infinity, maxHeight: 30)
-                }
-            }
         }
     }
 }
