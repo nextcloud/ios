@@ -34,7 +34,7 @@ class NCImageCache: NSObject {
 
     // MARK: -
 
-    private let limitCacheImage: Int = 1000
+    private let limitCacheImagePreview: Int = 1000
     private let limitSizeImage: Int = 100000
     private var brandElementColor: UIColor?
     private var totalSize: Int64 = 0
@@ -55,10 +55,10 @@ class NCImageCache: NSObject {
     private typealias ThumbnailImageLRUCache = LRUCache<String, imageInfo>
     private typealias ThumbnailSizeLRUCache = LRUCache<String, CGSize?>
 
-    private lazy var cacheImage: ThumbnailImageLRUCache = {
-        return ThumbnailImageLRUCache(countLimit: limitCacheImage)
+    private lazy var cacheImagePreview: ThumbnailImageLRUCache = {
+        return ThumbnailImageLRUCache(countLimit: limitCacheImagePreview)
     }()
-    private lazy var cacheSize: ThumbnailSizeLRUCache = {
+    private lazy var cacheSizePreview: ThumbnailSizeLRUCache = {
         return ThumbnailSizeLRUCache()
     }()
     private var metadatasInfo: [String: metadataInfo] = [:]
@@ -130,22 +130,22 @@ class NCImageCache: NSObject {
             print("Last date: \(lastDate)")
         }
 
-        cacheImage.removeAllValues()
-        cacheSize.removeAllValues()
+        cacheImagePreview.removeAllValues()
+        cacheSizePreview.removeAllValues()
         var counter: Int = 0
         for file in files {
-            if !withCacheSize, counter > limitCacheImage {
+            if !withCacheSize, counter > limitCacheImagePreview {
                 break
             }
             autoreleasepool {
                 if let image = UIImage(contentsOfFile: file.path.path) {
-                    if counter < limitCacheImage, file.fileSize > limitSizeImage {
-                        cacheImage.setValue(imageInfo(image: image, size: image.size, date: file.date), forKey: file.ocIdEtag)
+                    if counter < limitCacheImagePreview, file.fileSize > limitSizeImage {
+                        cacheImagePreview.setValue(imageInfo(image: image, size: image.size, date: file.date), forKey: file.ocIdEtag)
                         totalSize = totalSize + Int64(file.fileSize)
                         counter += 1
                     }
                     if file.width == 0, file.height == 0 {
-                        cacheSize.setValue(image.size, forKey: file.ocIdEtag)
+                        cacheSizePreview.setValue(image.size, forKey: file.ocIdEtag)
                     }
                 }
             }
@@ -153,8 +153,8 @@ class NCImageCache: NSObject {
 
         let diffDate = Date().timeIntervalSinceReferenceDate - startDate.timeIntervalSinceReferenceDate
         NextcloudKit.shared.nkCommonInstance.writeLog("--------- ThumbnailLRUCache image process ---------")
-        NextcloudKit.shared.nkCommonInstance.writeLog("Counter cache image: \(cacheImage.count)")
-        NextcloudKit.shared.nkCommonInstance.writeLog("Counter cache size: \(cacheSize.count)")
+        NextcloudKit.shared.nkCommonInstance.writeLog("Counter cache image: \(cacheImagePreview.count)")
+        NextcloudKit.shared.nkCommonInstance.writeLog("Counter cache size: \(cacheSizePreview.count)")
         NextcloudKit.shared.nkCommonInstance.writeLog("Total size images process: " + NCUtilityFileSystem().transformedSize(totalSize))
         NextcloudKit.shared.nkCommonInstance.writeLog("Time process: \(diffDate)")
         NextcloudKit.shared.nkCommonInstance.writeLog("--------- ThumbnailLRUCache image process ---------")
@@ -169,18 +169,18 @@ class NCImageCache: NSObject {
     }
 
     func setMediaImage(ocId: String, etag: String, image: UIImage, date: Date) {
-        cacheImage.setValue(imageInfo(image: image, size: image.size, date: date), forKey: ocId + etag)
+        cacheImagePreview.setValue(imageInfo(image: image, size: image.size, date: date), forKey: ocId + etag)
     }
 
     func getMediaImage(ocId: String, etag: String) -> UIImage? {
-        if let cache = cacheImage.value(forKey: ocId + etag) {
+        if let cache = cacheImagePreview.value(forKey: ocId + etag) {
             return cache.image
         }
         return nil
     }
 
     func hasMediaImageEnoughSpace() -> Bool {
-        return limitCacheImage > cacheImage.count
+        return limitCacheImagePreview > cacheImagePreview.count
     }
 
     func hasMediaImageEnoughSize(_ size: Int64) -> Bool {
@@ -188,11 +188,11 @@ class NCImageCache: NSObject {
     }
 
     func setMediaSize(ocId: String, etag: String, size: CGSize) {
-        cacheSize.setValue(size, forKey: ocId + etag)
+        cacheSizePreview.setValue(size, forKey: ocId + etag)
     }
 
     func getMediaSize(ocId: String, etag: String) -> CGSize? {
-        return cacheSize.value(forKey: ocId + etag) ?? nil
+        return cacheSizePreview.value(forKey: ocId + etag) ?? nil
     }
 
     func getMediaMetadatas(account: String, predicate: NSPredicate? = nil) -> ThreadSafeArray<tableMetadata>? {
