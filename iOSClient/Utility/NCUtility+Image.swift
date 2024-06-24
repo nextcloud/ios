@@ -82,7 +82,7 @@ extension NCUtility {
         }
     }
 
-    @objc func loadUserImage(for user: String, displayName: String?, userBaseUrl: NCUserBaseUrl) -> UIImage {
+    func loadUserImage(for user: String, displayName: String?, userBaseUrl: NCUserBaseUrl) -> UIImage {
         let fileName = userBaseUrl.userBaseUrl + "-" + user + ".png"
         let localFilePath = utilityFileSystem.directoryUserData + "/" + fileName
 
@@ -238,14 +238,11 @@ extension NCUtility {
     }
 
     func createFilePreviewImage(ocId: String, etag: String, fileNameView: String, classFile: String, status: Int, createPreviewMedia: Bool) -> UIImage? {
-
         var imagePreview: UIImage?
         let filePath = utilityFileSystem.getDirectoryProviderStorageOcId(ocId, fileNameView: fileNameView)
         let iconImagePath = utilityFileSystem.getDirectoryProviderStorageIconOcId(ocId, etag: etag)
 
         if FileManager.default.fileExists(atPath: iconImagePath) {
-            let fileSize = utilityFileSystem.getFileSize(filePath: iconImagePath)
-            debugPrint("Size \(fileNameView): \(fileSize)")
             imagePreview = UIImage(contentsOfFile: iconImagePath)
         } else if !createPreviewMedia {
             return nil
@@ -269,11 +266,9 @@ extension NCUtility {
     }
 
     @objc func pdfThumbnail(url: URL, width: CGFloat = 240) -> UIImage? {
-
         guard let data = try? Data(contentsOf: url), let page = PDFDocument(data: data)?.page(at: 0) else {
             return nil
         }
-
         let pageSize = page.bounds(for: .mediaBox)
         let pdfScale = width / pageSize.width
 
@@ -311,20 +306,16 @@ extension NCUtility {
     }
 
     func convertSVGtoPNGWriteToUserData(svgUrlString: String, fileName: String? = nil, width: CGFloat? = nil, rewrite: Bool, account: String, id: Int? = nil, completion: @escaping (_ imageNamePath: String?, _ id: Int?) -> Void) {
-
         var fileNamePNG = ""
-
         guard let svgUrlString = svgUrlString.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed),
               let iconURL = URL(string: svgUrlString) else {
             return completion(nil, id)
         }
-
         if let fileName = fileName {
             fileNamePNG = fileName
         } else {
             fileNamePNG = iconURL.deletingPathExtension().lastPathComponent + ".png"
         }
-
         let imageNamePath = utilityFileSystem.directoryUserData + "/" + fileNamePNG
 
         if !FileManager.default.fileExists(atPath: imageNamePath) || rewrite == true {

@@ -34,7 +34,8 @@ class NCImageCache: NSObject {
 
     // MARK: -
 
-    private let limit: Int = 1000
+    private let limitCacheImage: Int = 1000
+    private let limitSizeImage: Int = 100000
     private var brandElementColor: UIColor?
     private var totalSize: Int64 = 0
 
@@ -55,7 +56,7 @@ class NCImageCache: NSObject {
     private typealias ThumbnailSizeLRUCache = LRUCache<String, CGSize?>
 
     private lazy var cacheImage: ThumbnailImageLRUCache = {
-        return ThumbnailImageLRUCache(countLimit: limit)
+        return ThumbnailImageLRUCache(countLimit: limitCacheImage)
     }()
     private lazy var cacheSize: ThumbnailSizeLRUCache = {
         return ThumbnailSizeLRUCache()
@@ -134,21 +135,21 @@ class NCImageCache: NSObject {
         cacheSize.removeAllValues()
         var counter: Int = 0
         for file in files {
-            if !withCacheSize, counter > limit {
+            if !withCacheSize, counter > limitCacheImage {
                 break
             }
             autoreleasepool {
                 if let image = UIImage(contentsOfFile: file.path.path) {
-                    if counter < limit {
+                    if counter < limitCacheImage, file.fileSize > limitSizeImage {
                         cacheImage.setValue(imageInfo(image: image, size: image.size, date: file.date), forKey: file.ocIdEtag)
                         totalSize = totalSize + Int64(file.fileSize)
+                        counter += 1
                     }
                     if file.width == 0, file.height == 0 {
                         cacheSize.setValue(image.size, forKey: file.ocIdEtag)
                     }
                 }
             }
-            counter += 1
         }
 
         let diffDate = Date().timeIntervalSinceReferenceDate - startDate.timeIntervalSinceReferenceDate
@@ -180,7 +181,11 @@ class NCImageCache: NSObject {
     }
 
     func hasMediaImageEnoughSpace() -> Bool {
-        return limit > cacheImage.count
+        return limitCacheImage > cacheImage.count
+    }
+
+    func hasMediaImageEnoughSize(_ size: Int64) -> Bool {
+        return limitSizeImage < size
     }
 
     func setMediaSize(ocId: String, etag: String, size: CGSize) {

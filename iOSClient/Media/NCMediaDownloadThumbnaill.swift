@@ -57,25 +57,29 @@ class NCMediaDownloadThumbnaill: ConcurrentOperation {
                                             heightPreview: Int(sizePreview.height),
                                             sizeIcon: NCGlobal.shared.sizeIcon,
                                             etag: etagResource,
-                                            options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { _, imagePreview, _, _, etag, error in
+                                            options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { _, imagePreview, imageIcon, _, etag, error in
 
-            if error == .success, let image = imagePreview {
+            if error == .success, let imagePreview, let imageIcon {
                 NCManageDatabase.shared.setMetadataEtagResource(ocId: self.metadata.ocId, etagResource: etag)
                 DispatchQueue.main.async {
                     if let visibleCells = self.media.collectionView?.indexPathsForVisibleItems.sorted(by: { $0.row < $1.row }).compactMap({ self.media.collectionView?.cellForItem(at: $0) }) {
                         for case let cell as NCGridMediaCell in visibleCells {
-                            if cell.ocId == self.metadata.ocId, let filePreviewImageView = cell.imageItem {
-                                UIView.transition(with: filePreviewImageView,
+                            if cell.ocId == self.metadata.ocId, let imageItem = cell.imageItem {
+                                UIView.transition(with: imageItem,
                                                   duration: 0.75,
                                                   options: .transitionCrossDissolve,
-                                                  animations: { filePreviewImageView.image = image },
+                                                  animations: { imageItem.image = imageIcon },
                                                   completion: nil)
                                 break
                             }
                         }
                     }
                 }
-                NCImageCache.shared.setMediaSize(ocId: self.metadata.ocId, etag: self.metadata.etag, size: image.size)
+                NCImageCache.shared.setMediaSize(ocId: self.metadata.ocId, etag: self.metadata.etag, size: imagePreview.size)
+                let fileSizeIcon = self.utilityFileSystem.getFileSize(filePath: self.fileNameIconLocalPath)
+                if NCImageCache.shared.hasMediaImageEnoughSize(fileSizeIcon), NCImageCache.shared.hasMediaImageEnoughSpace() {
+                    NCImageCache.shared.setMediaImage(ocId: self.metadata.ocId, etag: self.metadata.etag, image: imageIcon, date: self.metadata.date as Date)
+                }
             }
             self.finish()
         }
