@@ -24,6 +24,8 @@
 import UIKit
 import Photos
 import EasyTipView
+import QuickLook
+import NextcloudKit
 
 class NCScan: UIViewController, NCScanCellCellDelegate {
 
@@ -162,14 +164,12 @@ class NCScan: UIViewController, NCScanCellCellDelegate {
 
     @IBAction func transferDown(sender: UIButton) {
         for fileName in itemsSource where !itemsDestination.contains(fileName) {
-
             let fileNamePathAt = utilityFileSystem.directoryScan + "/" + fileName
             guard let data = try? Data(contentsOf: URL(fileURLWithPath: fileNamePathAt)), let image = UIImage(data: data) else { return }
 
             imagesDestination.append(image)
             itemsDestination.append(fileName)
         }
-
         // Save button
         if imagesDestination.isEmpty {
             save.isEnabled = false
@@ -252,7 +252,6 @@ class NCScan: UIViewController, NCScanCellCellDelegate {
         let items = coordinator.items
 
         if items.count == 1, let item = items.first, let sourceIndexPath = item.sourceIndexPath {
-
             var dIndexPath = destinationIndexPath
 
             if dIndexPath.row >= collectionView.numberOfItems(inSection: 0) {
@@ -260,22 +259,16 @@ class NCScan: UIViewController, NCScanCellCellDelegate {
             }
 
             collectionView.performBatchUpdates({
-
                 if collectionView === collectionViewDestination {
-
                     imagesDestination.remove(at: sourceIndexPath.row)
                     imagesDestination.insert((item.dragItem.localObject as? UIImage)!, at: dIndexPath.row)
-
                     let fileName = itemsDestination[sourceIndexPath.row]
                     itemsDestination.remove(at: sourceIndexPath.row)
                     itemsDestination.insert(fileName, at: dIndexPath.row)
-
                 } else {
-
                     itemsSource.remove(at: sourceIndexPath.row)
                     itemsSource.insert((item.dragItem.localObject as? String)!, at: dIndexPath.row)
                 }
-
                 collectionView.deleteItems(at: [sourceIndexPath])
                 collectionView.insertItems(at: [dIndexPath])
             })
@@ -286,49 +279,36 @@ class NCScan: UIViewController, NCScanCellCellDelegate {
 
     func copyItems(coordinator: UICollectionViewDropCoordinator, destinationIndexPath: IndexPath, collectionView: UICollectionView) {
         collectionView.performBatchUpdates({
-
             var indexPaths: [IndexPath] = []
 
             for (index, item) in coordinator.items.enumerated() {
-
                 let indexPath = IndexPath(row: destinationIndexPath.row + index, section: destinationIndexPath.section)
 
                 if collectionView === collectionViewDestination {
-
                     let fileName = (item.dragItem.localObject as? String)!
                     let fileNamePathAt = utilityFileSystem.directoryScan + "/" + fileName
-
                     guard let data = try? Data(contentsOf: URL(fileURLWithPath: fileNamePathAt)), let image = UIImage(data: data) else { return }
 
                     imagesDestination.insert(image, at: indexPath.row)
                     itemsDestination.insert(fileName, at: indexPath.row)
-
                 } else {
-
                     // NOT PERMITTED
                     return
                 }
-
                 indexPaths.append(indexPath)
             }
-
             collectionView.insertItems(at: indexPaths)
         })
     }
 
     @objc func handleLongPressGesture(recognizer: UIGestureRecognizer) {
         if recognizer.state == UIGestureRecognizer.State.began {
-
             self.becomeFirstResponder()
-
             let pasteboard = UIPasteboard.general
-
             if let recognizerView = recognizer.view, let recognizerSuperView = recognizerView.superview, pasteboard.hasImages {
-
                 UIMenuController.shared.menuItems = [UIMenuItem(title: "Paste", action: #selector(pasteImage))]
                 UIMenuController.shared.showMenu(from: recognizerSuperView, rect: recognizerView.frame)
             }
-
             // TIP
             dismissTip()
         }
@@ -380,8 +360,14 @@ class NCScan: UIViewController, NCScanCellCellDelegate {
 
     func modify(with imageIndex: Int, sender: Any) {
         let indexPath = IndexPath(row: imageIndex, section: 0)
-        if let cell = collectionViewDestination.cellForItem(at: indexPath) as? NCScanCell {
-        }
+        let fileName = self.itemsDestination[imageIndex]
+        let fileNameAtPath = utilityFileSystem.directoryScan + "/" + fileName
+        let fileNameToPath = NSTemporaryDirectory() + fileName
+        utilityFileSystem.copyFile(atPath: fileNameAtPath, toPath: fileNameToPath)
+        let metadata = tableMetadata()
+        metadata.classFile = NKCommon.TypeClassFile.image.rawValue
+        let viewerQuickLook = NCViewerQuickLook(with: URL(fileURLWithPath: fileNameToPath), isEditingEnabled: true, metadata: metadata)
+        self.present(viewerQuickLook, animated: true)
     }
 }
 

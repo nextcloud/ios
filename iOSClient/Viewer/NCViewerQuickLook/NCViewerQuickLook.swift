@@ -30,11 +30,19 @@ import NextcloudKit
 import Mantis
 import SwiftUI
 
+public protocol NCViewerQuickLookDelegate: AnyObject {
+    func dismissQuickLook()
+}
+
+// optional func
+public extension NCViewerQuickLookDelegate {
+    func dismissQuickLook() {}
+}
+
 // if the document has any changes
 private var hasChangesQuickLook: Bool = false
 
 @objc class NCViewerQuickLook: QLPreviewController {
-
     let url: URL
     var previewItems: [PreviewItem] = []
     var isEditingEnabled: Bool
@@ -43,6 +51,7 @@ private var hasChangesQuickLook: Bool = false
     // used to display the save alert
     var parentVC: UIViewController?
     let utilityFileSystem = NCUtilityFileSystem()
+    weak var delegateQuickLook: NCViewerQuickLookDelegate?
 
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
@@ -86,14 +95,12 @@ private var hasChangesQuickLook: Bool = false
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-
         // needs to be saved bc in didDisappear presentingVC is already nil
         parentVC = presentingViewController
     }
 
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
-
         if let metadata = metadata, metadata.classFile != NKCommon.TypeClassFile.image.rawValue {
             dismissView()
         }
@@ -118,14 +125,14 @@ private var hasChangesQuickLook: Bool = false
     }
 
     @objc private func dismissView() {
-
         guard isEditingEnabled, hasChangesQuickLook, let metadata = metadata else {
+            self.delegateQuickLook?.dismissQuickLook()
             dismiss(animated: true)
             return
         }
-
         let alertController = UIAlertController(title: NSLocalizedString("_save_", comment: ""), message: nil, preferredStyle: .alert)
         var message: String?
+
         if metadata.isLivePhoto {
             message = NSLocalizedString("_message_disable_overwrite_livephoto_", comment: "")
         } else if metadata.lock {
@@ -255,11 +262,9 @@ extension NCViewerQuickLook: QLPreviewControllerDataSource, QLPreviewControllerD
 }
 
 extension NCViewerQuickLook: CropViewControllerDelegate {
-
     func cropViewControllerDidCrop(_ cropViewController: Mantis.CropViewController, cropped: UIImage, transformation: Mantis.Transformation, cropInfo: Mantis.CropInfo) {
         cropViewController.dismiss(animated: true)
         guard let data = cropped.jpegData(compressionQuality: 0.9) else { return }
-
         do {
             try data.write(to: self.url)
             hasChangesQuickLook = true
