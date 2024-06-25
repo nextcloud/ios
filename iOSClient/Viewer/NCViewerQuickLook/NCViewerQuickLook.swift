@@ -31,12 +31,12 @@ import Mantis
 import SwiftUI
 
 public protocol NCViewerQuickLookDelegate: AnyObject {
-    func dismissQuickLook()
+    func dismissQuickLook(fileNameSource: String, hasChangesQuickLook: Bool)
 }
 
 // optional func
 public extension NCViewerQuickLookDelegate {
-    func dismissQuickLook() {}
+    func dismissQuickLook(fileNameSource: String, hasChangesQuickLook: Bool) {}
 }
 
 // if the document has any changes
@@ -44,6 +44,7 @@ private var hasChangesQuickLook: Bool = false
 
 @objc class NCViewerQuickLook: QLPreviewController {
     let url: URL
+    let fileNameSource: String
     var previewItems: [PreviewItem] = []
     var isEditingEnabled: Bool
     var metadata: tableMetadata?
@@ -57,13 +58,13 @@ private var hasChangesQuickLook: Bool = false
         fatalError("init(coder:) has not been implemented")
     }
 
-    @objc init(with url: URL, isEditingEnabled: Bool, metadata: tableMetadata?) {
+    @objc init(with url: URL, fileNameSource: String = "", isEditingEnabled: Bool, metadata: tableMetadata?) {
         self.url = url
+        self.fileNameSource = fileNameSource
         self.isEditingEnabled = isEditingEnabled
         if let metadata = metadata {
             self.metadata = tableMetadata.init(value: metadata)
         }
-
         let previewItem = PreviewItem()
         previewItem.previewItemURL = url
         self.previewItems.append(previewItem)
@@ -126,10 +127,15 @@ private var hasChangesQuickLook: Bool = false
 
     @objc private func dismissView() {
         guard isEditingEnabled, hasChangesQuickLook, let metadata = metadata else {
-            self.delegateQuickLook?.dismissQuickLook()
             dismiss(animated: true)
             return
         }
+        if let delegateQuickLook = delegateQuickLook {
+            self.delegateQuickLook?.dismissQuickLook(fileNameSource: fileNameSource, hasChangesQuickLook: hasChangesQuickLook)
+            dismiss(animated: true)
+            return
+        }
+
         let alertController = UIAlertController(title: NSLocalizedString("_save_", comment: ""), message: nil, preferredStyle: .alert)
         var message: String?
 
@@ -143,7 +149,6 @@ private var hasChangesQuickLook: Bool = false
             })
         }
         alertController.message = message
-
         alertController.addAction(UIAlertAction(title: NSLocalizedString("_save_as_copy_", comment: ""), style: .default) { _ in
             self.saveModifiedFile(override: false)
         })
@@ -152,7 +157,6 @@ private var hasChangesQuickLook: Bool = false
         alertController.addAction(UIAlertAction(title: NSLocalizedString("_discard_changes_", comment: ""), style: .destructive) { _ in
             self.dismiss(animated: true)
         })
-
         if metadata.isImage {
             present(alertController, animated: true)
         } else {
@@ -161,10 +165,9 @@ private var hasChangesQuickLook: Bool = false
     }
 
     @objc private func crop() {
-
         guard let image = UIImage(contentsOfFile: url.path) else { return }
-
         var toolbarConfig = CropToolbarConfig()
+
         toolbarConfig.heightForVerticalOrientation = 80
         toolbarConfig.widthForHorizontalOrientation = 100
         toolbarConfig.optionButtonFontSize = 16
@@ -188,7 +191,6 @@ private var hasChangesQuickLook: Bool = false
         toolbar.iconProvider = CropToolbarIcon()
 
         let cropViewController = Mantis.cropViewController(image: image, config: config, cropToolbar: toolbar)
-
         cropViewController.delegate = self
         cropViewController.backgroundColor = .systemBackground
         cropViewController.modalPresentationStyle = .fullScreen
@@ -213,7 +215,6 @@ extension NCViewerQuickLook: QLPreviewControllerDataSource, QLPreviewControllerD
 
     fileprivate func saveModifiedFile(override: Bool) {
         guard let metadata = self.metadata else { return }
-
         let ocId = NSUUID().uuidString
         let size = utilityFileSystem.getFileSize(filePath: url.path)
 

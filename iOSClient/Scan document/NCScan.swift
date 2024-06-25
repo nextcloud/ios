@@ -41,13 +41,13 @@ class NCScan: UIViewController, NCScanCellCellDelegate {
     public var serverUrl: String?
 
     // Data Source for collectionViewSource
-    internal var itemsSource: [String] = []
+    var itemsSource: [String] = []
 
     // Data Source for collectionViewDestination
-    internal var imagesDestination: [UIImage] = []
-    internal var itemsDestination: [String] = []
+    var imagesDestination: [UIImage] = []
+    var itemsDestination: [String] = []
 
-    internal let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
+    let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
     let utilityFileSystem = NCUtilityFileSystem()
     let utility = NCUtility()
     internal var filter: NCGlobal.TypeFilterScanDocument = NCKeychain().typeFilterScanDocument
@@ -359,15 +359,17 @@ class NCScan: UIViewController, NCScanCellCellDelegate {
     }
 
     func modify(with imageIndex: Int, sender: Any) {
-        let indexPath = IndexPath(row: imageIndex, section: 0)
         let fileName = self.itemsDestination[imageIndex]
         let fileNameAtPath = utilityFileSystem.directoryScan + "/" + fileName
         let fileNameToPath = NSTemporaryDirectory() + fileName
         utilityFileSystem.copyFile(atPath: fileNameAtPath, toPath: fileNameToPath)
         let metadata = tableMetadata()
         metadata.classFile = NKCommon.TypeClassFile.image.rawValue
-        let viewerQuickLook = NCViewerQuickLook(with: URL(fileURLWithPath: fileNameToPath), isEditingEnabled: true, metadata: metadata)
-        self.present(viewerQuickLook, animated: true)
+        let viewerQuickLook = NCViewerQuickLook(with: URL(fileURLWithPath: fileNameToPath), fileNameSource: fileName, isEditingEnabled: true, metadata: metadata)
+        viewerQuickLook.delegateQuickLook = self
+        let navigationController = UINavigationController(rootViewController: viewerQuickLook)
+        navigationController.modalPresentationStyle = .fullScreen
+        self.present(navigationController, animated: true)
     }
 }
 
@@ -406,5 +408,23 @@ extension NCScan: EasyTipViewDelegate {
         }
         appDelegate.tipView?.dismiss()
         appDelegate.tipView = nil
+    }
+}
+
+extension NCScan: NCViewerQuickLookDelegate {
+    func dismissQuickLook(fileNameSource: String, hasChangesQuickLook: Bool) {
+        let fileNameAtPath = NSTemporaryDirectory() + fileNameSource
+        let fileNameToPath = utilityFileSystem.directoryScan + "/" + fileNameSource
+        utilityFileSystem.copyFile(atPath: fileNameAtPath, toPath: fileNameToPath)
+        var index = 0
+        for fileName in self.itemsDestination {
+            if fileName == fileNameSource {
+                guard let data = try? Data(contentsOf: URL(fileURLWithPath: fileNameToPath)), let image = UIImage(data: data) else { return }
+                imagesDestination.insert(image, at: index)
+                index += 1
+                break
+            }
+        }
+        collectionViewDestination.reloadData()
     }
 }
