@@ -28,6 +28,11 @@ import NextcloudKit
 extension NCScan: UICollectionViewDataSource {
 
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        if imagesDestination.isEmpty {
+            save.isEnabled = false
+        } else {
+            save.isEnabled = true
+        }
         return collectionView == collectionViewSource ? itemsSource.count : imagesDestination.count
     }
 
@@ -195,11 +200,5 @@ extension NCScan: UICollectionViewDropDelegate {
 
     func collectionView(_ collectionView: UICollectionView, dropSessionDidEnd session: UIDropSession) {
         collectionViewDestination.reloadData()
-        // Save button
-        if imagesDestination.isEmpty {
-            save.isEnabled = false
-        } else {
-            save.isEnabled = true
-        }
     }
 }

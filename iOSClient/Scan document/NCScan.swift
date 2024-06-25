@@ -168,13 +168,6 @@ class NCScan: UIViewController, NCScanCellCellDelegate {
             imagesDestination.append(image)
             itemsDestination.append(fileName)
         }
-        // Save button
-        if imagesDestination.isEmpty {
-            save.isEnabled = false
-        } else {
-            save.isEnabled = true
-        }
-
         collectionViewDestination.reloadData()
     }
 
@@ -207,13 +200,6 @@ class NCScan: UIViewController, NCScanCellCellDelegate {
         itemsSource = itemsSource.sorted()
 
         collectionViewSource.reloadData()
-
-        // Save button
-        if imagesDestination.isEmpty {
-            save.isEnabled = false
-        } else {
-            save.isEnabled = true
-        }
     }
 
     func filter(image: UIImage) -> UIImage? {
@@ -324,12 +310,6 @@ class NCScan: UIViewController, NCScanCellCellDelegate {
     func delete(with imageIndex: Int, sender: Any) {
         imagesDestination.remove(at: imageIndex)
         itemsDestination.remove(at: imageIndex)
-        // Save button
-        if imagesDestination.isEmpty {
-            save.isEnabled = false
-        } else {
-            save.isEnabled = true
-        }
         collectionViewDestination.reloadData()
     }
 
