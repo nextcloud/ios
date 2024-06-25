@@ -29,6 +29,8 @@ class NCScanCell: UICollectionViewCell {
     @IBOutlet weak var customLabel: UILabel!
     @IBOutlet weak var delete: UIButton!
     @IBOutlet weak var rotate: UIButton!
+    @IBOutlet weak var modify: UIButton!
+
 
     weak var delegate: NCScanCellCellDelegate?
     var index = 0
@@ -41,9 +43,14 @@ class NCScanCell: UICollectionViewCell {
     @IBAction func touchUpInsideRotate(_ sender: Any) {
         delegate?.rotate(with: index, sender: sender)
     }
+
+    @IBAction func touchUpInsideModify(_ sender: Any) {
+        delegate?.modify(with: index, sender: sender)
+    }
 }
 
 protocol NCScanCellCellDelegate: AnyObject {
     func delete(with index: Int, sender: Any)
     func rotate(with index: Int, sender: Any)
+    func modify(with index: Int, sender: Any)
 }

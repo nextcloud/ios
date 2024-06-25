@@ -26,20 +26,14 @@ import Foundation
 extension NCScan: UICollectionViewDataSource {
 
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-
         return collectionView == collectionViewSource ? itemsSource.count : imagesDestination.count
     }
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-
         if collectionView == collectionViewSource {
-
             let cell = (collectionView.dequeueReusableCell(withReuseIdentifier: "cell1", for: indexPath) as? NCScanCell)!
-
             let fileNamePath = utilityFileSystem.directoryScan + "/" + itemsSource[indexPath.row]
-
             guard let data = try? Data(contentsOf: URL(fileURLWithPath: fileNamePath)), var image = UIImage(data: data) else { return cell }
-
             let imageWidthInPixels = image.size.width * image.scale
             let imageHeightInPixels = image.size.height * image.scale
 
@@ -66,14 +60,12 @@ extension NCScan: UICollectionViewDataSource {
             return cell
 
         } else {
-
             let cell = (collectionView.dequeueReusableCell(withReuseIdentifier: "cell2", for: indexPath) as? NCScanCell)!
             cell.delegate = self
             cell.index = indexPath.row
             cell.indexPath = indexPath
 
             var image = imagesDestination[indexPath.row]
-
             let imageWidthInPixels = image.size.width * image.scale
             let imageHeightInPixels = image.size.height * image.scale
 
@@ -92,36 +84,30 @@ extension NCScan: UICollectionViewDataSource {
 
 extension NCScan: UICollectionViewDragDelegate {
     func collectionView(_ collectionView: UICollectionView, itemsForBeginning session: UIDragSession, at indexPath: IndexPath) -> [UIDragItem] {
-
         if collectionView == collectionViewSource {
             let item = itemsSource[indexPath.row]
             let itemProvider = NSItemProvider(object: item as NSString)
             let dragItem = UIDragItem(itemProvider: itemProvider)
 
             dragItem.localObject = item
-
             return [dragItem]
-
         } else {
             let item = imagesDestination[indexPath.row]
             let itemProvider = NSItemProvider(object: item as UIImage)
             let dragItem = UIDragItem(itemProvider: itemProvider)
 
             dragItem.localObject = item
-
             return [dragItem]
         }
     }
 
     func collectionView(_ collectionView: UICollectionView, itemsForAddingTo session: UIDragSession, at indexPath: IndexPath, point: CGPoint) -> [UIDragItem] {
-
         if collectionView == collectionViewSource {
             let item = itemsSource[indexPath.row]
             let itemProvider = NSItemProvider(object: item as NSString)
             let dragItem = UIDragItem(itemProvider: itemProvider)
 
             dragItem.localObject = item
-
             return [dragItem]
 
         } else {
@@ -130,13 +116,11 @@ extension NCScan: UICollectionViewDragDelegate {
             let dragItem = UIDragItem(itemProvider: itemProvider)
 
             dragItem.localObject = item
-
             return [dragItem]
         }
     }
 
     func collectionView(_ collectionView: UICollectionView, dragPreviewParametersForItemAt indexPath: IndexPath) -> UIDragPreviewParameters? {
-
         let previewParameters = UIDragPreviewParameters()
         if collectionView == collectionViewSource {
             previewParameters.visiblePath = UIBezierPath(rect: CGRect(x: 20, y: 20, width: 100, height: 100))
@@ -151,12 +135,10 @@ extension NCScan: UICollectionViewDragDelegate {
 extension NCScan: UICollectionViewDropDelegate {
 
     func collectionView(_ collectionView: UICollectionView, canHandle session: UIDropSession) -> Bool {
-
         return true // session.canLoadObjects(ofClass: NSString.self)
     }
 
     func collectionView(_ collectionView: UICollectionView, dropSessionDidUpdate session: UIDropSession, withDestinationIndexPath destinationIndexPath: IndexPath?) -> UICollectionViewDropProposal {
-
         if collectionView == collectionViewSource {
 
             if collectionView.hasActiveDrag {
@@ -176,45 +158,32 @@ extension NCScan: UICollectionViewDropDelegate {
     }
 
     func collectionView(_ collectionView: UICollectionView, performDropWith coordinator: UICollectionViewDropCoordinator) {
-
         let destinationIndexPath: IndexPath
-
         switch coordinator.proposal.operation {
-
         case .move:
-
             if let indexPath = coordinator.destinationIndexPath {
-
                 destinationIndexPath = indexPath
-
             } else {
-
                 // Get last index path of table view.
                 let section = collectionView.numberOfSections - 1
                 let row = collectionView.numberOfItems(inSection: section)
-
                 destinationIndexPath = IndexPath(row: row, section: section)
             }
             reorderItems(coordinator: coordinator, destinationIndexPath: destinationIndexPath, collectionView: collectionView)
-
         case .copy:
-
             // Get last index path of table view.
             let section = collectionView.numberOfSections - 1
             let row = collectionView.numberOfItems(inSection: section)
 
             destinationIndexPath = IndexPath(row: row, section: section)
             copyItems(coordinator: coordinator, destinationIndexPath: destinationIndexPath, collectionView: collectionView)
-
         default:
             return
         }
     }
 
     func collectionView(_ collectionView: UICollectionView, dropSessionDidEnd session: UIDropSession) {
-
         collectionViewDestination.reloadData()
-
         // Save button
         if imagesDestination.isEmpty {
             save.isEnabled = false

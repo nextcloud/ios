@@ -155,15 +155,12 @@ class NCScan: UIViewController, NCScanCellCellDelegate {
     }
 
     @IBAction func add(sender: UIButton) {
-
         // TIP
         dismissTip()
-
         NCDocumentCamera.shared.openScannerDocument(viewController: self)
     }
 
     @IBAction func transferDown(sender: UIButton) {
-
         for fileName in itemsSource where !itemsDestination.contains(fileName) {
 
             let fileNamePathAt = utilityFileSystem.directoryScan + "/" + fileName
@@ -184,7 +181,6 @@ class NCScan: UIViewController, NCScanCellCellDelegate {
     }
 
     @IBAction func indexChanged(_ sender: AnyObject) {
-
         switch segmentControlFilter.selectedSegmentIndex {
         case 0:
             filter = .document
@@ -199,9 +195,7 @@ class NCScan: UIViewController, NCScanCellCellDelegate {
     }
 
     func loadImage() {
-
         itemsSource.removeAll()
-
         do {
             let atPath = utilityFileSystem.directoryScan
             let directoryContents = try FileManager.default.contentsOfDirectory(atPath: atPath)
@@ -238,7 +232,6 @@ class NCScan: UIViewController, NCScanCellCellDelegate {
      */
 
     func filter(image: UIImage) -> UIImage? {
-
         guard let ciImage = CIImage(image: image) else { return image }
 
         if filter == .document {
@@ -256,7 +249,6 @@ class NCScan: UIViewController, NCScanCellCellDelegate {
     // collectionView: collectionView in which reordering needs to be done.
 
     func reorderItems(coordinator: UICollectionViewDropCoordinator, destinationIndexPath: IndexPath, collectionView: UICollectionView) {
-
         let items = coordinator.items
 
         if items.count == 1, let item = items.first, let sourceIndexPath = item.sourceIndexPath {
@@ -325,7 +317,6 @@ class NCScan: UIViewController, NCScanCellCellDelegate {
     }
 
     @objc func handleLongPressGesture(recognizer: UIGestureRecognizer) {
-
         if recognizer.state == UIGestureRecognizer.State.began {
 
             self.becomeFirstResponder()
@@ -366,29 +357,30 @@ class NCScan: UIViewController, NCScanCellCellDelegate {
     }
 
     func delete(with imageIndex: Int, sender: Any) {
-
         imagesDestination.remove(at: imageIndex)
         itemsDestination.remove(at: imageIndex)
-
         // Save button
         if imagesDestination.isEmpty {
             save.isEnabled = false
         } else {
             save.isEnabled = true
         }
-
         collectionViewDestination.reloadData()
     }
 
     func rotate(with imageIndex: Int, sender: Any) {
-
         let indexPath = IndexPath(row: imageIndex, section: 0)
         if let cell = collectionViewDestination.cellForItem(at: indexPath) as? NCScanCell {
-
             var image = imagesDestination[imageIndex]
             image = image.rotate(radians: .pi / 2)!
             imagesDestination[imageIndex] = image
             cell.customImageView.image = image
+        }
+    }
+
+    func modify(with imageIndex: Int, sender: Any) {
+        let indexPath = IndexPath(row: imageIndex, section: 0)
+        if let cell = collectionViewDestination.cellForItem(at: indexPath) as? NCScanCell {
         }
     }
 }
