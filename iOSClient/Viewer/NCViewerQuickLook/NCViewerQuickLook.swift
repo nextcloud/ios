@@ -43,16 +43,19 @@ public extension NCViewerQuickLookDelegate {
 private var hasChangesQuickLook: Bool = false
 
 @objc class NCViewerQuickLook: QLPreviewController {
-    let url: URL
-    let fileNameSource: String
-    var previewItems: [PreviewItem] = []
-    var isEditingEnabled: Bool
-    var metadata: tableMetadata?
-    var timer: Timer?
+    private let url: URL
+    private let fileNameSource: String
+    private var previewItems: [PreviewItem] = []
+    private var isEditingEnabled: Bool
+    private var metadata: tableMetadata?
+    private var timer: Timer?
     // used to display the save alert
-    var parentVC: UIViewController?
-    let utilityFileSystem = NCUtilityFileSystem()
-    weak var delegateQuickLook: NCViewerQuickLookDelegate?
+    private var parentVC: UIViewController?
+    private let utilityFileSystem = NCUtilityFileSystem()
+
+    public var saveAsCopyAlert: Bool = true
+    public var uploadMetadata: Bool = true
+    public weak var delegateQuickLook: NCViewerQuickLookDelegate?
 
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
@@ -130,12 +133,6 @@ private var hasChangesQuickLook: Bool = false
             dismiss(animated: true)
             return
         }
-        if let delegateQuickLook = delegateQuickLook {
-            self.delegateQuickLook?.dismissQuickLook(fileNameSource: fileNameSource, hasChangesQuickLook: hasChangesQuickLook)
-            dismiss(animated: true)
-            return
-        }
-
         let alertController = UIAlertController(title: NSLocalizedString("_save_", comment: ""), message: nil, preferredStyle: .alert)
         var message: String?
 
@@ -146,17 +143,24 @@ private var hasChangesQuickLook: Bool = false
         } else {
             alertController.addAction(UIAlertAction(title: NSLocalizedString("_overwrite_original_", comment: ""), style: .default) { _ in
                 self.saveModifiedFile(override: true)
+                self.delegateQuickLook?.dismissQuickLook(fileNameSource: self.fileNameSource, hasChangesQuickLook: hasChangesQuickLook)
             })
         }
+
         alertController.message = message
-        alertController.addAction(UIAlertAction(title: NSLocalizedString("_save_as_copy_", comment: ""), style: .default) { _ in
-            self.saveModifiedFile(override: false)
-        })
+
+        if saveAsCopyAlert {
+            alertController.addAction(UIAlertAction(title: NSLocalizedString("_save_as_copy_", comment: ""), style: .default) { _ in
+                self.saveModifiedFile(override: false)
+                self.delegateQuickLook?.dismissQuickLook(fileNameSource: self.fileNameSource, hasChangesQuickLook: hasChangesQuickLook)
+            })
+        }
         alertController.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel) { _ in
         })
         alertController.addAction(UIAlertAction(title: NSLocalizedString("_discard_changes_", comment: ""), style: .destructive) { _ in
             self.dismiss(animated: true)
         })
+
         if metadata.isImage {
             present(alertController, animated: true)
         } else {
@@ -215,6 +219,9 @@ extension NCViewerQuickLook: QLPreviewControllerDataSource, QLPreviewControllerD
 
     fileprivate func saveModifiedFile(override: Bool) {
         guard let metadata = self.metadata else { return }
+        if !uploadMetadata {
+            return self.dismiss(animated: true)
+        }
         let ocId = NSUUID().uuidString
         let size = utilityFileSystem.getFileSize(filePath: url.path)
 

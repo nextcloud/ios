@@ -66,14 +66,14 @@ extension NCScan: UICollectionViewDataSource {
                     metadata.classFile = NKCommon.TypeClassFile.image.rawValue
                     let viewerQuickLook = NCViewerQuickLook(with: URL(fileURLWithPath: fileNameToPath), fileNameSource: fileName, isEditingEnabled: true, metadata: metadata)
                     viewerQuickLook.delegateQuickLook = self
+                    viewerQuickLook.saveAsCopyAlert = false
+                    viewerQuickLook.uploadMetadata = false
                     let navigationController = UINavigationController(rootViewController: viewerQuickLook)
                     navigationController.modalPresentationStyle = .fullScreen
                     self.present(navigationController, animated: true)
                 }
             }
-
             return cell
-
         } else {
             let cell = (collectionView.dequeueReusableCell(withReuseIdentifier: "cell2", for: indexPath) as? NCScanCell)!
             cell.delegate = self
