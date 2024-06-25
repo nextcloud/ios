@@ -85,7 +85,7 @@
                                         </connections>
                                     </button>
                                     <view hidden="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="oBQ-TP-qof" userLabel="View Shared with you by">
-                                        <rect key="frame" x="5" y="5" width="409" height="90"/>
+                                        <rect key="frame" x="5" y="5" width="391" height="40"/>
                                         <subviews>
                                             <imageView clipsSubviews="YES" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="fKv-xM-rVY">
                                                 <rect key="frame" x="5" y="2" width="35" height="35"/>
@@ -103,10 +103,10 @@
                                         </subviews>
                                         <constraints>
                                             <constraint firstItem="fKv-xM-rVY" firstAttribute="top" secondItem="oBQ-TP-qof" secondAttribute="top" constant="2" id="Gap-v5-Pkh"/>
-                                            <constraint firstAttribute="trailing" secondItem="ngi-GT-jvv" secondAttribute="trailing" constant="10" id="Gsg-bh-cgu"/>
+                                            <constraint firstAttribute="trailing" secondItem="ngi-GT-jvv" secondAttribute="trailing" constant="-8" id="Gsg-bh-cgu"/>
                                             <constraint firstItem="ngi-GT-jvv" firstAttribute="centerY" secondItem="fKv-xM-rVY" secondAttribute="centerY" constant="0.5" id="MIg-bS-4Te"/>
                                             <constraint firstItem="fKv-xM-rVY" firstAttribute="leading" secondItem="oBQ-TP-qof" secondAttribute="leading" constant="5" id="O2h-N9-cgt"/>
-                                            <constraint firstAttribute="height" constant="90" id="reh-5m-KFy"/>
+                                            <constraint firstAttribute="height" constant="40" id="reh-5m-KFy"/>
                                             <constraint firstItem="ngi-GT-jvv" firstAttribute="leading" secondItem="fKv-xM-rVY" secondAttribute="trailing" constant="15" id="taI-rs-B3r"/>
                                         </constraints>
                                     </view>
@@ -118,7 +118,7 @@
                                     <constraint firstItem="c94-b9-Sim" firstAttribute="top" secondItem="iSO-mc-0TB" secondAttribute="bottom" id="Co6-l6-HiT"/>
                                     <constraint firstItem="GsB-jy-SBk" firstAttribute="centerY" secondItem="iSO-mc-0TB" secondAttribute="centerY" id="Qe6-An-Hda"/>
                                     <constraint firstAttribute="bottom" secondItem="c94-b9-Sim" secondAttribute="bottom" constant="20" id="Svm-RV-vnl"/>
-                                    <constraint firstAttribute="trailing" secondItem="oBQ-TP-qof" secondAttribute="trailing" constant="-10" id="ZuM-2G-aoM"/>
+                                    <constraint firstAttribute="trailing" secondItem="oBQ-TP-qof" secondAttribute="trailing" constant="8" id="ZuM-2G-aoM"/>
                                     <constraint firstItem="GsB-jy-SBk" firstAttribute="leading" secondItem="iSO-mc-0TB" secondAttribute="trailing" constant="5" id="cqh-P5-H1x"/>
                                     <constraint firstItem="iSO-mc-0TB" firstAttribute="leading" secondItem="X2m-IC-J1u" secondAttribute="leading" id="d8E-WM-YfC"/>
                                     <constraint firstItem="iSO-mc-0TB" firstAttribute="top" secondItem="X2m-IC-J1u" secondAttribute="top" constant="45" id="jPM-Uo-0lS"/>
