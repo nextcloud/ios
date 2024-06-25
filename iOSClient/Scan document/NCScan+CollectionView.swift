@@ -22,6 +22,8 @@
 //
 
 import Foundation
+import QuickLook
+import NextcloudKit
 
 extension NCScan: UICollectionViewDataSource {
 
@@ -45,15 +47,28 @@ extension NCScan: UICollectionViewDataSource {
             cell.indexPath = indexPath
             cell.customImageView?.image = image
             cell.delete.action(for: .touchUpInside) { sender in
-
                 let buttonPosition: CGPoint = (sender as? UIButton)!.convert(.zero, to: self.collectionViewSource)
                 if let indexPath = self.collectionViewSource.indexPathForItem(at: buttonPosition) {
-
                     let fileNameAtPath = self.utilityFileSystem.directoryScan + "/" + self.itemsSource[indexPath.row]
                     self.utilityFileSystem.removeFile(atPath: fileNameAtPath)
                     self.itemsSource.remove(at: indexPath.row)
-
                     self.collectionViewSource.deleteItems(at: [indexPath])
+                }
+            }
+            cell.modify.action(for: .touchUpInside) { sender in
+                let buttonPosition: CGPoint = (sender as? UIButton)!.convert(.zero, to: self.collectionViewSource)
+                if let indexPath = self.collectionViewSource.indexPathForItem(at: buttonPosition) {
+                    let fileName = self.itemsSource[indexPath.row]
+                    let fileNameAtPath = NCUtilityFileSystem().directoryScan + "/" + fileName
+                    let fileNameToPath = NSTemporaryDirectory() + fileName
+                    NCUtilityFileSystem().copyFile(atPath: fileNameAtPath, toPath: fileNameToPath)
+                    let metadata = tableMetadata()
+                    metadata.classFile = NKCommon.TypeClassFile.image.rawValue
+                    let viewerQuickLook = NCViewerQuickLook(with: URL(fileURLWithPath: fileNameToPath), fileNameSource: fileName, isEditingEnabled: true, metadata: metadata)
+                    viewerQuickLook.delegateQuickLook = self
+                    let navigationController = UINavigationController(rootViewController: viewerQuickLook)
+                    navigationController.modalPresentationStyle = .fullScreen
+                    self.present(navigationController, animated: true)
                 }
             }
 

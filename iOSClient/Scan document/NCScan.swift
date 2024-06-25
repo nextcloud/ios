@@ -24,8 +24,6 @@
 import UIKit
 import Photos
 import EasyTipView
-import QuickLook
-import NextcloudKit
 
 class NCScan: UIViewController, NCScanCellCellDelegate {
 
@@ -218,19 +216,6 @@ class NCScan: UIViewController, NCScanCellCellDelegate {
         }
     }
 
-    /*
-     func applyGrayScaleFilter(image: UIImage?) -> UIImage? {
-             guard let ciImage = image?.ciImage else { return nil }
-             let filter = CIFilter(name: "CIColorControls",
-                                   parameters: ["inputImage" : ciImage,
-                                                "inputContrast": NSNumber(1.0),
-                                                "inputSaturation": NSNumber(0.0),
-                                                "inputBrightness": NSNumber(0.0)])
-             guard let out = filter?.outputImage else { return nil }
-             return UIImage(ciImage: out)
-         }
-     */
-
     func filter(image: UIImage) -> UIImage? {
         guard let ciImage = CIImage(image: image) else { return image }
 
@@ -347,30 +332,6 @@ class NCScan: UIViewController, NCScanCellCellDelegate {
         }
         collectionViewDestination.reloadData()
     }
-
-    func rotate(with imageIndex: Int, sender: Any) {
-        let indexPath = IndexPath(row: imageIndex, section: 0)
-        if let cell = collectionViewDestination.cellForItem(at: indexPath) as? NCScanCell {
-            var image = imagesDestination[imageIndex]
-            image = image.rotate(radians: .pi / 2)!
-            imagesDestination[imageIndex] = image
-            cell.customImageView.image = image
-        }
-    }
-
-    func modify(with imageIndex: Int, sender: Any) {
-        let fileName = self.itemsDestination[imageIndex]
-        let fileNameAtPath = utilityFileSystem.directoryScan + "/" + fileName
-        let fileNameToPath = NSTemporaryDirectory() + fileName
-        utilityFileSystem.copyFile(atPath: fileNameAtPath, toPath: fileNameToPath)
-        let metadata = tableMetadata()
-        metadata.classFile = NKCommon.TypeClassFile.image.rawValue
-        let viewerQuickLook = NCViewerQuickLook(with: URL(fileURLWithPath: fileNameToPath), fileNameSource: fileName, isEditingEnabled: true, metadata: metadata)
-        viewerQuickLook.delegateQuickLook = self
-        let navigationController = UINavigationController(rootViewController: viewerQuickLook)
-        navigationController.modalPresentationStyle = .fullScreen
-        self.present(navigationController, animated: true)
-    }
 }
 
 extension NCScan: EasyTipViewDelegate {
@@ -416,15 +377,16 @@ extension NCScan: NCViewerQuickLookDelegate {
         let fileNameAtPath = NSTemporaryDirectory() + fileNameSource
         let fileNameToPath = utilityFileSystem.directoryScan + "/" + fileNameSource
         utilityFileSystem.copyFile(atPath: fileNameAtPath, toPath: fileNameToPath)
+        guard let data = try? Data(contentsOf: URL(fileURLWithPath: fileNameToPath)), let image = UIImage(data: data) else { return }
         var index = 0
         for fileName in self.itemsDestination {
             if fileName == fileNameSource {
-                guard let data = try? Data(contentsOf: URL(fileURLWithPath: fileNameToPath)), let image = UIImage(data: data) else { return }
-                imagesDestination.insert(image, at: index)
+                imagesDestination[index] = image
                 index += 1
                 break
             }
         }
+        collectionViewSource.reloadData()
         collectionViewDestination.reloadData()
     }
 }
