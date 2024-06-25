@@ -46,7 +46,7 @@ class NCActivity: UIViewController, NCSharePagingContent {
     var sectionDates: [Date] = []
     var dataSourceTask: URLSessionTask?
 
-    var insets = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
+    var insets = UIEdgeInsets(top: 8, left: 0, bottom: 0, right: 0)
     var didSelectItemEnable: Bool = true
     var objectType: String?
 
@@ -283,6 +283,7 @@ extension NCActivity: UITableViewDataSource {
             let fileName = appDelegate.userBaseUrl + "-" + activity.user + ".png"
 
             NCNetworking.shared.downloadAvatar(user: activity.user, dispalyName: nil, fileName: fileName, cell: cell, view: tableView)
+            cell.subjectLeadingConstraint.constant = 15
         } else {
             cell.subjectLeadingConstraint.constant = -30
         }

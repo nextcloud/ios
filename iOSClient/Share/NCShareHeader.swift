@@ -1,5 +1,5 @@
 //
-//  NCShareAdvancePermissionHeader.swift
+//  NCShareHeader.swift
 //  Nextcloud
 //
 //  Created by T-systems on 10/08/21.
@@ -24,7 +24,7 @@
 import UIKit
 import TagListView
 
-class NCShareAdvancePermissionHeader: UIView {
+class NCShareHeader: UIView {
     @IBOutlet weak var imageView: UIImageView!
     @IBOutlet weak var fileName: UILabel!
     @IBOutlet weak var info: UILabel!

@@ -275,7 +275,7 @@ class NCSharePagingView: PagingView {
 
 //        guard let headerView = Bundle.main.loadNibNamed("NCShareHeaderView", owner: self, options: nil)?.first as? NCShareHeaderView else { return }
 
-        guard let headerView = Bundle.main.loadNibNamed("NCShareAdvancePermissionHeader", owner: self, options: nil)?.first as? NCShareAdvancePermissionHeader else { return }
+        guard let headerView = Bundle.main.loadNibNamed("NCShareHeader", owner: self, options: nil)?.first as? NCShareHeader else { return }
 
         headerView.backgroundColor = .systemBackground
 //        headerView.ocId = metadata.ocId
