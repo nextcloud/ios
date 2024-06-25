@@ -34,6 +34,7 @@ extension NCScan: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         if collectionView == collectionViewSource {
             let cell = (collectionView.dequeueReusableCell(withReuseIdentifier: "cell1", for: indexPath) as? NCScanCell)!
+            cell.delegate = self
             let fileNamePath = utilityFileSystem.directoryScan + "/" + itemsSource[indexPath.row]
             guard let data = try? Data(contentsOf: URL(fileURLWithPath: fileNamePath)), var image = UIImage(data: data) else { return cell }
             let imageWidthInPixels = image.size.width * image.scale
@@ -73,6 +74,7 @@ extension NCScan: UICollectionViewDataSource {
                     self.present(navigationController, animated: true)
                 }
             }
+
             return cell
         } else {
             let cell = (collectionView.dequeueReusableCell(withReuseIdentifier: "cell2", for: indexPath) as? NCScanCell)!
@@ -182,6 +184,7 @@ extension NCScan: UICollectionViewDropDelegate {
                 // Get last index path of table view.
                 let section = collectionView.numberOfSections - 1
                 let row = collectionView.numberOfItems(inSection: section)
+
                 destinationIndexPath = IndexPath(row: row, section: section)
             }
             reorderItems(coordinator: coordinator, destinationIndexPath: destinationIndexPath, collectionView: collectionView)

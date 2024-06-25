@@ -332,6 +332,16 @@ class NCScan: UIViewController, NCScanCellCellDelegate {
         }
         collectionViewDestination.reloadData()
     }
+
+    func imageTapped(with index: Int, sender: Any) {
+        let fileName = self.itemsSource[index]
+        let fileNamePath = utilityFileSystem.directoryScan + "/" + fileName
+        guard let data = try? Data(contentsOf: URL(fileURLWithPath: fileNamePath)), let image = UIImage(data: data) else { return }
+
+        imagesDestination.append(image)
+        itemsDestination.append(fileName)
+        collectionViewDestination.reloadData()
+    }
 }
 
 extension NCScan: EasyTipViewDelegate {
