@@ -41,7 +41,6 @@ class NCHostingUploadScanDocumentView: NSObject {
 // MARK: - Class
 
 class NCUploadScanDocument: ObservableObject {
-
     internal var userBaseUrl: NCUserBaseUrl
     internal var metadata = tableMetadata()
     internal var images: [UIImage]
@@ -49,7 +48,7 @@ class NCUploadScanDocument: ObservableObject {
     internal var isTextRecognition: Bool = false
     internal var quality: Double = 0
     internal var removeAllFiles: Bool = false
-    let utilityFileSystem = NCUtilityFileSystem()
+    internal let utilityFileSystem = NCUtilityFileSystem()
 
     @Published var serverUrl: String
     @Published var showHUD: Bool = false
@@ -61,7 +60,6 @@ class NCUploadScanDocument: ObservableObject {
     }
 
     func save(fileName: String, password: String = "", isTextRecognition: Bool = false, removeAllFiles: Bool, quality: Double, completion: @escaping (_ openConflictViewController: Bool, _ error: Bool) -> Void) {
-
         self.password = password
         self.isTextRecognition = isTextRecognition
         self.quality = quality
@@ -331,9 +329,9 @@ struct UploadScanDocumentView: View {
     @State var isPresentedSelect = false
     @State var isPresentedUploadConflict = false
 
-    var metadatasConflict: [tableMetadata] = []
-
     @ObservedObject var uploadScanDocument: NCUploadScanDocument
+
+    var metadatasConflict: [tableMetadata] = []
 
     init(uploadScanDocument: NCUploadScanDocument) {
         self.uploadScanDocument = uploadScanDocument
@@ -380,14 +378,12 @@ struct UploadScanDocumentView: View {
                                 }
                             }
                         }
-
                         HStack {
                             Text(NSLocalizedString("_filename_", comment: ""))
                             TextField(NSLocalizedString("_enter_filename_", comment: ""), text: $fileName)
                                 .modifier(TextFieldClearButton(text: $fileName))
                                 .multilineTextAlignment(.trailing)
                         }
-
                         HStack {
                             Group {
                                 Text(NSLocalizedString("_password_", comment: ""))
@@ -407,7 +403,6 @@ struct UploadScanDocumentView: View {
                             }
                             .buttonStyle(BorderlessButtonStyle())
                         }
-
                         HStack {
                             Toggle(NSLocalizedString("_text_recognition_", comment: ""), isOn: $isTextRecognition)
                                 .toggleStyle(SwitchToggleStyle(tint: Color(NCBrandColor.shared.brandElement)))
@@ -419,15 +414,12 @@ struct UploadScanDocumentView: View {
                     .complexModifier { view in
                         view.listRowSeparator(.hidden)
                     }
-
                     VStack(spacing: 20) {
-
                         Toggle(NSLocalizedString("_delete_all_scanned_images_", comment: ""), isOn: $removeAllFiles)
                             .toggleStyle(SwitchToggleStyle(tint: Color(NCBrandColor.shared.brandElement)))
                             .onChange(of: removeAllFiles) { newValue in
                                 NCKeychain().deleteAllScanImages = newValue
                             }
-
                         Button(NSLocalizedString("_save_", comment: "")) {
                             let fileName = uploadScanDocument.fileName(fileName)
                             if !fileName.isEmpty {
@@ -448,7 +440,6 @@ struct UploadScanDocumentView: View {
                     }
 
                     Section(header: Text(NSLocalizedString("_quality_image_title_", comment: ""))) {
-
                         VStack {
                             Slider(value: $quality, in: 0...4, step: 1, onEditingChanged: { touch in
                                 if !touch {

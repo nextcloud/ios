@@ -33,8 +33,8 @@ extension NCScan: UICollectionViewDataSource {
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         if collectionView == collectionViewSource {
-            let cell = (collectionView.dequeueReusableCell(withReuseIdentifier: "cell1", for: indexPath) as? NCScanCell)!
-            cell.delegate = self
+            guard let cell = (collectionView.dequeueReusableCell(withReuseIdentifier: "cell1", for: indexPath) as? NCScanCell) else { return NCScanCell() }
+
             let fileNamePath = utilityFileSystem.directoryScan + "/" + itemsSource[indexPath.row]
             guard let data = try? Data(contentsOf: URL(fileURLWithPath: fileNamePath)), var image = UIImage(data: data) else { return cell }
             let imageWidthInPixels = image.size.width * image.scale
@@ -45,7 +45,8 @@ extension NCScan: UICollectionViewDataSource {
                 image = image.resizeImage(size: CGSize(width: 595, height: 842)) ?? image
             }
 
-            cell.indexPath = indexPath
+            cell.delegate = self
+            cell.index = indexPath.row
             cell.customImageView?.image = image
             cell.delete.action(for: .touchUpInside) { sender in
                 let buttonPosition: CGPoint = (sender as? UIButton)!.convert(.zero, to: self.collectionViewSource)
@@ -77,11 +78,7 @@ extension NCScan: UICollectionViewDataSource {
 
             return cell
         } else {
-            let cell = (collectionView.dequeueReusableCell(withReuseIdentifier: "cell2", for: indexPath) as? NCScanCell)!
-            cell.delegate = self
-            cell.index = indexPath.row
-            cell.indexPath = indexPath
-
+            guard let cell = (collectionView.dequeueReusableCell(withReuseIdentifier: "cell2", for: indexPath) as? NCScanCell) else { return NCScanCell() }
             var image = imagesDestination[indexPath.row]
             let imageWidthInPixels = image.size.width * image.scale
             let imageHeightInPixels = image.size.height * image.scale
@@ -91,6 +88,8 @@ extension NCScan: UICollectionViewDataSource {
                 image = image.resizeImage(size: CGSize(width: 595, height: 842)) ?? image
             }
 
+            cell.delegate = self
+            cell.index = indexPath.row
             cell.customImageView?.image = filter(image: image)
             cell.customLabel.text = NSLocalizedString("_scan_document_pdf_page_", comment: "") + " " + "\(indexPath.row + 1)"
 
@@ -126,7 +125,6 @@ extension NCScan: UICollectionViewDragDelegate {
 
             dragItem.localObject = item
             return [dragItem]
-
         } else {
             let item = imagesDestination[indexPath.row]
             let itemProvider = NSItemProvider(object: item as UIImage)
@@ -144,28 +142,23 @@ extension NCScan: UICollectionViewDragDelegate {
         } else {
             previewParameters.visiblePath = UIBezierPath(rect: CGRect(x: 20, y: 20, width: 80, height: 80))
         }
-
         return previewParameters
     }
 }
 
 extension NCScan: UICollectionViewDropDelegate {
-
     func collectionView(_ collectionView: UICollectionView, canHandle session: UIDropSession) -> Bool {
-        return true // session.canLoadObjects(ofClass: NSString.self)
+        return true
     }
 
     func collectionView(_ collectionView: UICollectionView, dropSessionDidUpdate session: UIDropSession, withDestinationIndexPath destinationIndexPath: IndexPath?) -> UICollectionViewDropProposal {
         if collectionView == collectionViewSource {
-
             if collectionView.hasActiveDrag {
                 return UICollectionViewDropProposal(operation: .move, intent: .insertAtDestinationIndexPath)
             } else {
                 return UICollectionViewDropProposal(operation: .forbidden)
             }
-
         } else {
-
             if collectionView.hasActiveDrag {
                 return UICollectionViewDropProposal(operation: .move, intent: .insertAtDestinationIndexPath)
             } else {

@@ -39,15 +39,15 @@ class NCScan: UIViewController, NCScanCellCellDelegate {
     public var serverUrl: String?
 
     // Data Source for collectionViewSource
-    var itemsSource: [String] = []
+    internal var itemsSource: [String] = []
 
     // Data Source for collectionViewDestination
-    var imagesDestination: [UIImage] = []
-    var itemsDestination: [String] = []
+    internal var imagesDestination: [UIImage] = []
+    internal var itemsDestination: [String] = []
 
-    let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
-    let utilityFileSystem = NCUtilityFileSystem()
-    let utility = NCUtility()
+    internal let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
+    internal let utilityFileSystem = NCUtilityFileSystem()
+    internal let utility = NCUtility()
     internal var filter: NCGlobal.TypeFilterScanDocument = NCKeychain().typeFilterScanDocument
 
     // MARK: - View Life Cycle

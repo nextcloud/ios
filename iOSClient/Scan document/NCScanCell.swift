@@ -32,7 +32,6 @@ class NCScanCell: UICollectionViewCell, UIGestureRecognizerDelegate {
 
     weak var delegate: NCScanCellCellDelegate?
     var index = 0
-    var indexPath = IndexPath()
 
     override func awakeFromNib() {
         super.awakeFromNib()
