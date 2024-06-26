@@ -152,7 +152,6 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
     }
 
     func setMetadataAvalableOffline(_ metadata: tableMetadata, isOffline: Bool) {
-        guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else { return }
         let serverUrl = metadata.serverUrl + "/" + metadata.fileName
         if isOffline {
             if metadata.directory {
