@@ -21,6 +21,7 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+import UIKit
 import Foundation
 import NextcloudKit
 
@@ -70,10 +71,9 @@ extension NCCollectionViewCommon: NCCollectionViewCommonSelectTabBarDelegate {
     }
 
     func delete() {
-        let alertController = UIAlertController(
-            title: NSLocalizedString("_confirm_delete_selected_", comment: ""),
-            message: nil,
-            preferredStyle: .alert)
+        var alertStyle = UIAlertController.Style.actionSheet
+        if UIDevice.current.userInterfaceIdiom == .pad { alertStyle = .alert }
+        let alertController = UIAlertController(title: NSLocalizedString("_confirm_delete_selected_", comment: ""), message: nil, preferredStyle: alertStyle)
         let metadatas = getSelectedMetadatas()
         let canDeleteServer = metadatas.allSatisfy { !$0.lock }
 
@@ -122,13 +122,13 @@ extension NCCollectionViewCommon: NCCollectionViewCommonSelectTabBarDelegate {
 
     func move() {
         let metadatas = getSelectedMetadatas()
-        NCActionCenter.shared.openSelectView(items: metadatas)
+        NCActionCenter.shared.openSelectView(items: metadatas, mainTabBarController: self.tabBarController as? NCMainTabBarController)
         setEditMode(false)
     }
 
     func share() {
         let metadatas = getSelectedMetadatas()
-        NCActionCenter.shared.openActivityViewController(selectedMetadata: metadatas)
+        NCActionCenter.shared.openActivityViewController(selectedMetadata: metadatas, mainTabBarController: self.tabBarController as? NCMainTabBarController)
         setEditMode(false)
     }
 
@@ -162,7 +162,7 @@ extension NCCollectionViewCommon: NCCollectionViewCommonSelectTabBarDelegate {
     func saveLayout(_ layoutForView: NCDBLayoutForView) {
         NCManageDatabase.shared.setLayoutForView(layoutForView: layoutForView)
         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSource)
-        setNavigationRightItems(enableMenu: false)
+        setNavigationRightItems()
     }
 
     func getSelectedMetadatas() -> [tableMetadata] {
@@ -177,7 +177,17 @@ extension NCCollectionViewCommon: NCCollectionViewCommonSelectTabBarDelegate {
     func setEditMode(_ editMode: Bool) {
         isEditMode = editMode
         selectOcId.removeAll()
-        setNavigationRightItems(enableMenu: !editMode)
+
+        if editMode {
+            navigationItem.leftBarButtonItems = nil
+        } else {
+            setNavigationLeftItems()
+        }
+        setNavigationRightItems()
+
+        navigationController?.interactivePopGestureRecognizer?.isEnabled = !editMode
+        navigationItem.hidesBackButton = editMode
+        searchController(enabled: !editMode)
         collectionView.reloadData()
     }
 }

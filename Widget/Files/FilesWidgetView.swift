@@ -38,12 +38,19 @@ struct FilesWidgetView: View {
         let linkActionVoiceMemo: URL = URL(string: NCGlobal.shared.widgetActionVoiceMemo + parameterLink) != nil ? URL(string: NCGlobal.shared.widgetActionVoiceMemo + parameterLink)! : URL(string: NCGlobal.shared.widgetActionVoiceMemo)!
 
         GeometryReader { geo in
+<<<<<<< HEAD
 
+=======
+>>>>>>> aa28af8228d8d3d97f2f5aa16076333e8c0faf95
             if entry.isEmpty {
                 VStack(alignment: .center) {
                     Image(systemName: "checkmark")
                         .resizable()
                         .scaledToFit()
+<<<<<<< HEAD
+=======
+                        .font(Font.system(.body).weight(.light))
+>>>>>>> aa28af8228d8d3d97f2f5aa16076333e8c0faf95
                         .frame(width: 50, height: 50)
                     Text(NSLocalizedString("_no_items_", comment: ""))
                         .font(.system(size: 25))
@@ -57,7 +64,10 @@ struct FilesWidgetView: View {
             ZStack(alignment: .topLeading) {
 
                 HStack {
+<<<<<<< HEAD
 
+=======
+>>>>>>> aa28af8228d8d3d97f2f5aa16076333e8c0faf95
                     Text(entry.tile)
                         .font(.system(size: 12))
                         .fontWeight(.bold)
@@ -70,6 +80,7 @@ struct FilesWidgetView: View {
 
                 if !entry.isEmpty {
                     VStack(alignment: .leading) {
+<<<<<<< HEAD
 
                         VStack(spacing: 0) {
 
@@ -95,14 +106,50 @@ struct FilesWidgetView: View {
                                             Text(element.subTitle)
                                                 .font(.system(size: CGFloat(10)))
                                                 .foregroundColor(Color(.systemGray))
+=======
+                        VStack(spacing: 0) {
+                            ForEach(entry.datas, id: \.id) { element in
+                                Link(destination: element.url) {
+                                    HStack {
+                                        if element.useTypeIconFile {
+                                            Image(uiImage: element.image)
+                                                .resizable()
+                                                .renderingMode(.template)
+                                                .foregroundColor(Color(NCBrandColor.shared.iconImageColor2))
+                                                .scaledToFit()
+                                                .frame(width: 35, height: 35)
+                                        } else {
+                                            Image(uiImage: element.image)
+                                                .resizable()
+                                                .scaledToFill()
+                                                .frame(width: 35, height: 35)
+                                                .clipped()
+                                                .cornerRadius(5)
+                                        }
+
+                                        VStack(alignment: .leading, spacing: 2) {
+                                            Text(element.title)
+                                                .font(.system(size: 12))
+                                                .fontWeight(.regular)
+                                            Text(element.subTitle)
+                                                .font(.system(size: CGFloat(10)))
+                                                .foregroundColor(Color(NCBrandColor.shared.iconImageColor2))
+>>>>>>> aa28af8228d8d3d97f2f5aa16076333e8c0faf95
                                         }
                                         Spacer()
                                     }
                                     .padding(.leading, 10)
                                     .frame(height: 50)
                                 }
+<<<<<<< HEAD
                                 Divider()
                                     .padding(.leading, 54)
+=======
+                                if element != entry.datas.last {
+                                    Divider()
+                                        .padding(.leading, 54)
+                                }
+>>>>>>> aa28af8228d8d3d97f2f5aa16076333e8c0faf95
                             }
                         }
                     }
@@ -111,7 +158,10 @@ struct FilesWidgetView: View {
                 }
 
                 HStack(spacing: 0) {
+<<<<<<< HEAD
 
+=======
+>>>>>>> aa28af8228d8d3d97f2f5aa16076333e8c0faf95
                     let sizeButton: CGFloat = 40
 
                     Link(destination: entry.isPlaceholder ? linkNoAction : linkActionUploadAsset, label: {
@@ -120,7 +170,11 @@ struct FilesWidgetView: View {
                             .renderingMode(.template)
                             .foregroundColor(entry.isPlaceholder ? Color(.systemGray4) : Color(NCBrandColor.shared.brandText))
                             .padding(11)
+<<<<<<< HEAD
                             .background(entry.isPlaceholder ? Color(.systemGray4) : Color(NCBrandColor.shared.brand))
+=======
+                            .background(entry.isPlaceholder ? Color(.systemGray4) : Color(NCBrandColor.shared.brandElement))
+>>>>>>> aa28af8228d8d3d97f2f5aa16076333e8c0faf95
                             .clipShape(Circle())
                             .scaledToFit()
                             .frame(width: geo.size.width / 4, height: sizeButton)
@@ -132,9 +186,16 @@ struct FilesWidgetView: View {
                             .renderingMode(.template)
                             .foregroundColor(entry.isPlaceholder ? Color(.systemGray4) : Color(NCBrandColor.shared.brandText))
                             .padding(11)
+<<<<<<< HEAD
                             .background(entry.isPlaceholder ? Color(.systemGray4) : Color(NCBrandColor.shared.brand))
                             .clipShape(Circle())
                             .scaledToFit()
+=======
+                            .background(entry.isPlaceholder ? Color(.systemGray4) : Color(NCBrandColor.shared.brandElement))
+                            .clipShape(Circle())
+                            .scaledToFit()
+                            .font(Font.system(.body).weight(.light))
+>>>>>>> aa28af8228d8d3d97f2f5aa16076333e8c0faf95
                             .frame(width: geo.size.width / 4, height: sizeButton)
                     })
 
@@ -144,7 +205,11 @@ struct FilesWidgetView: View {
                             .renderingMode(.template)
                             .foregroundColor(entry.isPlaceholder ? Color(.systemGray4) : Color(NCBrandColor.shared.brandText))
                             .padding(11)
+<<<<<<< HEAD
                             .background(entry.isPlaceholder ? Color(.systemGray4) : Color(NCBrandColor.shared.brand))
+=======
+                            .background(entry.isPlaceholder ? Color(.systemGray4) : Color(NCBrandColor.shared.brandElement))
+>>>>>>> aa28af8228d8d3d97f2f5aa16076333e8c0faf95
                             .clipShape(Circle())
                             .scaledToFit()
                             .frame(width: geo.size.width / 4, height: sizeButton)
@@ -156,27 +221,47 @@ struct FilesWidgetView: View {
                             .renderingMode(.template)
                             .foregroundColor(entry.isPlaceholder ? Color(.systemGray4) : Color(NCBrandColor.shared.brandText))
                             .padding(11)
+<<<<<<< HEAD
                             .background(entry.isPlaceholder ? Color(.systemGray4) : Color(NCBrandColor.shared.brand))
+=======
+                            .background(entry.isPlaceholder ? Color(.systemGray4) : Color(NCBrandColor.shared.brandElement))
+>>>>>>> aa28af8228d8d3d97f2f5aa16076333e8c0faf95
                             .clipShape(Circle())
                             .scaledToFit()
                             .frame(width: geo.size.width / 4, height: sizeButton)
                     })
                 }
+<<<<<<< HEAD
                 .frame(width: geo.size.width, height: geo.size.height - 25, alignment: .bottomTrailing)
                 .redacted(reason: entry.isPlaceholder ? .placeholder : [])
 
                 HStack {
 
+=======
+                .frame(width: geo.size.width, height: geo.size.height - 22, alignment: .bottomTrailing)
+                .redacted(reason: entry.isPlaceholder ? .placeholder : [])
+
+                HStack {
+>>>>>>> aa28af8228d8d3d97f2f5aa16076333e8c0faf95
                     Image(systemName: entry.footerImage)
                         .resizable()
                         .scaledToFit()
                         .frame(width: 15, height: 15)
+<<<<<<< HEAD
                         .foregroundColor(entry.isPlaceholder ? Color(.systemGray4) : Color(NCBrandColor.shared.brand))
+=======
+                        .font(Font.system(.body).weight(.light))
+                        .foregroundColor(entry.isPlaceholder ? Color(.systemGray4) : Color(NCBrandColor.shared.brandElement))
+>>>>>>> aa28af8228d8d3d97f2f5aa16076333e8c0faf95
 
                     Text(entry.footerText)
                         .font(.caption2)
                         .lineLimit(1)
+<<<<<<< HEAD
                         .foregroundColor(entry.isPlaceholder ? Color(.systemGray4) : Color(NCBrandColor.shared.brand))
+=======
+                        .foregroundColor(entry.isPlaceholder ? Color(.systemGray4) : Color(NCBrandColor.shared.brandElement))
+>>>>>>> aa28af8228d8d3d97f2f5aa16076333e8c0faf95
                 }
                 .padding(.horizontal, 15.0)
                 .frame(maxWidth: geo.size.width, maxHeight: geo.size.height - 2, alignment: .bottomTrailing)

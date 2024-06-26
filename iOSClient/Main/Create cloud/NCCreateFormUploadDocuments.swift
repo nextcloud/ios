@@ -43,6 +43,7 @@ import XLForm
     var fileName = ""
     var fileNameExtension = ""
     var titleForm = ""
+    var mainTabBarController: NCMainTabBarController?
     var listOfTemplate: [NKEditorTemplates] = []
     var selectTemplate: NKEditorTemplates?
     let utilityFileSystem = NCUtilityFileSystem()
@@ -108,7 +109,7 @@ import XLForm
 
         row.cellConfig["textLabel.textAlignment"] = NSTextAlignment.right.rawValue
         row.cellConfig["textLabel.font"] = UIFont.systemFont(ofSize: 15.0)
-        row.cellConfig["textLabel.textColor"] = UIColor.label
+        row.cellConfig["textLabel.textColor"] = NCBrandColor.shared.textColor
 
         section.addFormRow(row)
 
@@ -123,11 +124,11 @@ import XLForm
 
         row.cellConfig["textField.textAlignment"] = NSTextAlignment.right.rawValue
         row.cellConfig["textField.font"] = UIFont.systemFont(ofSize: 15.0)
-        row.cellConfig["textField.textColor"] = UIColor.label
+        row.cellConfig["textField.textColor"] = NCBrandColor.shared.textColor
 
         row.cellConfig["textLabel.textAlignment"] = NSTextAlignment.right.rawValue
         row.cellConfig["textLabel.font"] = UIFont.systemFont(ofSize: 15.0)
-        row.cellConfig["textLabel.textColor"] = UIColor.label
+        row.cellConfig["textLabel.textColor"] = NCBrandColor.shared.textColor
 
         section.addFormRow(row)
 
@@ -139,7 +140,7 @@ import XLForm
     override func tableView(_ tableView: UITableView, willDisplayHeaderView view: UIView, forSection section: Int) {
         let header = view as? UITableViewHeaderFooterView
         header?.textLabel?.font = UIFont.systemFont(ofSize: 13.0)
-        header?.textLabel?.textColor = .gray
+        header?.textLabel?.textColor = NCBrandColor.shared.textColor2
         header?.tintColor = tableView.backgroundColor
     }
 
@@ -187,7 +188,7 @@ import XLForm
         // select
         let imageSelect = cell.viewWithTag(300) as? UIImageView
         if selectTemplate != nil && selectTemplate?.name == template.name {
-            cell.backgroundColor = .label
+            cell.backgroundColor = NCBrandColor.shared.textColor
             imageSelect?.image = UIImage(named: "plus100")
             imageSelect?.isHidden = false
         } else {
@@ -322,7 +323,7 @@ import XLForm
 
                 self.dismiss(animated: true, completion: {
                     let metadata = NCManageDatabase.shared.createMetadata(account: self.appDelegate.account, user: self.appDelegate.user, userId: self.appDelegate.userId, fileName: fileName, fileNameView: fileName, ocId: UUID, serverUrl: self.serverUrl, urlBase: self.appDelegate.urlBase, url: url, contentType: results.mimeType)
-                    if let viewController = self.appDelegate.activeViewController {
+                    if let viewController = self.mainTabBarController?.currentViewController() {
                         NCViewer().view(viewController: viewController, metadata: metadata, metadatas: [metadata], imageIcon: nil)
                     }
                 })
@@ -341,7 +342,7 @@ import XLForm
                 self.dismiss(animated: true, completion: {
                     let createFileName = (fileName as NSString).deletingPathExtension + "." + self.fileNameExtension
                     let metadata = NCManageDatabase.shared.createMetadata(account: self.appDelegate.account, user: self.appDelegate.user, userId: self.appDelegate.userId, fileName: createFileName, fileNameView: createFileName, ocId: UUID, serverUrl: self.serverUrl, urlBase: self.appDelegate.urlBase, url: url, contentType: "")
-                    if let viewController = self.appDelegate.activeViewController {
+                    if let viewController = self.mainTabBarController?.currentViewController() {
                         NCViewer().view(viewController: viewController, metadata: metadata, metadatas: [metadata], imageIcon: nil)
                     }
                })

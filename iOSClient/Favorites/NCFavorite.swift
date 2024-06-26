@@ -33,7 +33,7 @@ class NCFavorite: NCCollectionViewCommon {
         layoutKey = NCGlobal.shared.layoutViewFavorite
         enableSearchBar = false
         headerRichWorkspaceDisable = true
-        emptyImage = UIImage(named: "star.fill")?.image(color: NCBrandColor.shared.yellowFavorite, size: UIScreen.main.bounds.width)
+        emptyImage = utility.loadImage(named: "star.fill", colors: [NCBrandColor.shared.yellowFavorite])
         emptyTitle = "_favorite_no_files_"
         emptyDescription = "_tutorial_favorite_view_"
     }
@@ -73,7 +73,7 @@ class NCFavorite: NCCollectionViewCommon {
                                        searchResults: self.searchResults)
     }
 
-    override func reloadDataSourceNetwork() {
+    override func reloadDataSourceNetwork(withQueryDB: Bool = false) {
         super.reloadDataSourceNetwork()
 
         NextcloudKit.shared.listingFavorites(showHiddenFiles: NCKeychain().showHiddenFiles, options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { task in
@@ -81,12 +81,12 @@ class NCFavorite: NCCollectionViewCommon {
             self.collectionView.reloadData()
         } completion: { account, files, _, error in
             if error == .success {
-                NCManageDatabase.shared.convertFilesToMetadatas(files, useMetadataFolder: false) { _, _, metadatas in
+                NCManageDatabase.shared.convertFilesToMetadatas(files, useFirstAsMetadataFolder: false) { _, metadatas in
                     NCManageDatabase.shared.updateMetadatasFavorite(account: account, metadatas: metadatas)
                     self.reloadDataSource()
                 }
             } else {
-                self.reloadDataSource(withQueryDB: false)
+                self.reloadDataSource(withQueryDB: withQueryDB)
             }
         }
     }

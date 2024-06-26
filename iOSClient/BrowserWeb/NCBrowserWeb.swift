@@ -55,7 +55,7 @@ class NCBrowserWeb: UIViewController {
             buttonExit.isHidden = true
         } else {
             self.view.bringSubviewToFront(buttonExit)
-            let image = NCUtility().loadImage(named: "xmark", color: .systemBlue)
+            let image = NCUtility().loadImage(named: "xmark", colors: [.systemBlue])
             buttonExit.setImage(image, for: .normal)
         }
 

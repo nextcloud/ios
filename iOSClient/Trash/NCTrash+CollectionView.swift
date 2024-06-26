@@ -58,21 +58,6 @@ extension NCTrash: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let tableTrash = datasource[indexPath.item]
         var image: UIImage?
-
-        if tableTrash.iconName.isEmpty {
-            image = UIImage(named: "file")
-        } else {
-            image = UIImage(named: tableTrash.iconName)
-        }
-
-        if FileManager().fileExists(atPath: utilityFileSystem.getDirectoryProviderStorageIconOcId(tableTrash.fileId, etag: tableTrash.fileName)) {
-            image = UIImage(contentsOfFile: utilityFileSystem.getDirectoryProviderStorageIconOcId(tableTrash.fileId, etag: tableTrash.fileName))
-        } else {
-            if tableTrash.hasPreview && !utilityFileSystem.fileProviderStoragePreviewIconExists(tableTrash.fileId, etag: tableTrash.fileName) {
-                downloadThumbnail(with: tableTrash, indexPath: indexPath)
-            }
-        }
-
         var cell: NCTrashCellProtocol & UICollectionViewCell
 
         if layoutForView?.layout == NCGlobal.shared.layoutList {
@@ -86,7 +71,24 @@ extension NCTrash: UICollectionViewDataSource {
             cell = gridCell
         }
 
+        if tableTrash.iconName.isEmpty {
+            image = NCImageCache.images.file
+        } else {
+            image = NCUtility().loadImage(named: tableTrash.iconName, useTypeIconFile: true)
+        }
+
+        if FileManager().fileExists(atPath: utilityFileSystem.getDirectoryProviderStorageIconOcId(tableTrash.fileId, etag: tableTrash.fileName)) {
+            image = UIImage(contentsOfFile: utilityFileSystem.getDirectoryProviderStorageIconOcId(tableTrash.fileId, etag: tableTrash.fileName))
+        } else {
+            if tableTrash.hasPreview && !utilityFileSystem.fileProviderStoragePreviewIconExists(tableTrash.fileId, etag: tableTrash.fileName) {
+                if NCNetworking.shared.downloadThumbnailTrashQueue.operations.filter({ ($0 as? NCOperationDownloadThumbnailTrash)?.fileId == tableTrash.fileId }).isEmpty {
+                    NCNetworking.shared.downloadThumbnailTrashQueue.addOperation(NCOperationDownloadThumbnailTrash(tableTrash: tableTrash, fileId: tableTrash.fileId, cell: cell, collectionView: collectionView))
+                }
+            }
+        }
+
         cell.indexPath = indexPath
+        cell.objectId = tableTrash.fileId
         cell.setupCellUI(tableTrash: tableTrash, image: image)
         cell.selectMode(isEditMode)
         if isEditMode {
@@ -138,7 +140,7 @@ extension NCTrash: UICollectionViewDataSource {
         if kind == UICollectionView.elementKindSectionHeader {
             guard let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionHeaderEmptyData", for: indexPath) as? NCSectionHeaderEmptyData
             else { return NCSectionHeaderEmptyData() }
-            header.emptyImage.image = UIImage(named: "trash")?.image(color: .gray, size: UIScreen.main.bounds.width)
+            header.emptyImage.image = utility.loadImage(named: "trash", colors: [NCBrandColor.shared.brandElement])
             header.emptyTitle.text = NSLocalizedString("_trash_no_trash_", comment: "")
             header.emptyDescription.text = NSLocalizedString("_trash_no_trash_description_", comment: "")
             return header

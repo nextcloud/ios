@@ -130,7 +130,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
                 }
                 if !accountTemp.isEmpty {
                     self.shareAccounts = accountTemp
-                    let image = UIImage(systemName: "person.badge.plus")
+                    let image = NCUtility().loadImage(named: "person.badge.plus")
                     let navigationItem = UIBarButtonItem(image: image, style: .plain, target: self, action: #selector(openShareAccountsViewController))
                     navigationItem.tintColor = textColor
                     self.navigationItem.rightBarButtonItem = navigationItem
@@ -147,8 +147,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-
-        appDelegate.timerErrorNetworking?.invalidate()
+        appDelegate.timerErrorNetworkingDisabled = true
 
         if self.shareAccounts != nil, let image = UIImage(systemName: "person.badge.plus")?.withTintColor(.white, renderingMode: .alwaysOriginal), let backgroundColor = NCBrandColor.shared.brandElement.lighter(by: 10) {
             let title = String(format: NSLocalizedString("_apps_nextcloud_detect_", comment: ""), NCBrandOptions.shared.brand)
@@ -163,8 +162,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
 
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
-
-        appDelegate.startTimerErrorNetworking()
+        appDelegate.timerErrorNetworkingDisabled = false
     }
 
     // MARK: - TextField
@@ -400,18 +398,19 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
 
                     self.appDelegate.changeAccount(account, userProfile: userProfile)
 
-                    if self.presentingViewController == nil {
-                        if let viewController = UIStoryboard(name: "Main", bundle: nil).instantiateInitialViewController() {
-                            viewController.modalPresentationStyle = .fullScreen
-                            viewController.view.alpha = 0
-                            self.appDelegate.window?.rootViewController = viewController
-                            self.appDelegate.window?.makeKeyAndVisible()
+                    let window = UIApplication.shared.firstWindow
+                    if window?.rootViewController is NCMainTabBarController {
+                        self.dismiss(animated: true)
+                    } else {
+                        if let mainTabBarController = UIStoryboard(name: "Main", bundle: nil).instantiateInitialViewController() as? NCMainTabBarController {
+                            mainTabBarController.modalPresentationStyle = .fullScreen
+                            mainTabBarController.view.alpha = 0
+                            window?.rootViewController = mainTabBarController
+                            window?.makeKeyAndVisible()
                             UIView.animate(withDuration: 0.5) {
-                                viewController.view.alpha = 1
+                                mainTabBarController.view.alpha = 1
                             }
                         }
-                    } else {
-                        self.dismiss(animated: true)
                     }
 
                 } else {

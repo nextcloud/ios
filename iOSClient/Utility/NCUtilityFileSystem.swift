@@ -124,7 +124,7 @@ class NCUtilityFileSystem: NSObject {
                     return false
                 }
             } else {
-                return fileNameViewSize == metadata.size
+                return (fileNameViewSize == metadata.size) && metadata.size > 0
             }
         } catch { print("Error: \(error)") }
         return false
@@ -361,6 +361,26 @@ class NCUtilityFileSystem: NSObject {
         }
     }
 
+    @discardableResult
+    func copyFile(at: URL, to: URL) -> Bool {
+
+        if at == to { return true }
+
+        do {
+            try FileManager.default.removeItem(at: to)
+        } catch {
+            print(error)
+        }
+
+        do {
+            try FileManager.default.copyItem(at: at, to: to)
+            return true
+        } catch {
+            print(error)
+            return false
+        }
+    }
+
     @objc func moveFileInBackground(atPath: String, toPath: String) {
 
         if atPath == toPath { return }
@@ -580,6 +600,34 @@ class NCUtilityFileSystem: NSObject {
             } catch let error as NSError {
                 print(error.localizedDescription)
             }
+        }
+    }
+
+    func createGranularityPath(asset: PHAsset? = nil, serverUrl: String? = nil) -> String {
+
+        let autoUploadSubfolderGranularity = NCManageDatabase.shared.getAccountAutoUploadSubfolderGranularity()
+        let dateFormatter = DateFormatter()
+        let date = asset?.creationDate ?? Date()
+        var path = ""
+
+        dateFormatter.dateFormat = "yyyy"
+        let year = dateFormatter.string(from: date)
+        dateFormatter.dateFormat = "MM"
+        let month = dateFormatter.string(from: date)
+        dateFormatter.dateFormat = "dd"
+        let day = dateFormatter.string(from: date)
+        if autoUploadSubfolderGranularity == NCGlobal.shared.subfolderGranularityYearly {
+            path = "\(year)"
+        } else if autoUploadSubfolderGranularity == NCGlobal.shared.subfolderGranularityDaily {
+            path = "\(year)/\(month)/\(day)"
+        } else {  // Month Granularity is default
+            path = "\(year)/\(month)"
+        }
+
+        if let serverUrl {
+            return serverUrl + "/" + path
+        } else {
+            return path
         }
     }
 }

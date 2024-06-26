@@ -229,8 +229,6 @@ import RealmSwift
         static var buttonMore = UIImage()
         static var buttonStop = UIImage()
         static var buttonMoreLock = UIImage()
-        static var buttonRestore = UIImage()
-        static var buttonTrash = UIImage()
 
         static var iconContacts = UIImage()
         static var iconTalk = UIImage()
@@ -239,59 +237,55 @@ import RealmSwift
         static var iconMail = UIImage()
         static var iconConfirm = UIImage()
         static var iconPages = UIImage()
+        static var iconFile = UIImage()
     }
 
     func createImagesCache() {
-
-        let yellowFavorite = NCBrandColor.shared.yellowFavorite
         let utility = NCUtility()
 
-        images.file = UIImage(named: "file")!
+        images.file = utility.loadImage(named: "doc", colors: [NCBrandColor.shared.iconImageColor2])
 
-        images.shared = UIImage(named: "share")!.image(color: .systemGray, size: 50)
-        images.canShare = UIImage(named: "share")!.image(color: .systemGray, size: 50)
-        images.shareByLink = UIImage(named: "sharebylink")!.image(color: .systemGray, size: 50)
+        images.shared = utility.loadImage(named: "person.fill.badge.plus", colors: NCBrandColor.shared.iconImageMultiColors)
+        images.canShare = utility.loadImage(named: "person.fill.badge.plus", colors: NCBrandColor.shared.iconImageMultiColors)
+        images.shareByLink = utility.loadImage(named: "link", colors: [NCBrandColor.shared.iconImageColor])
 
-        images.favorite = utility.loadImage(named: "star.fill", color: yellowFavorite)
-        images.comment = UIImage(named: "comment")!.image(color: .systemGray, size: 50)
-        images.livePhoto = utility.loadImage(named: "livephoto", color: .label)
-        images.offlineFlag = UIImage(named: "offlineFlag")!
-        images.local = UIImage(named: "local")!
+        images.favorite = utility.loadImage(named: "star.fill", colors: [NCBrandColor.shared.yellowFavorite])
+        images.livePhoto = utility.loadImage(named: "livephoto", colors: [NCBrandColor.shared.iconImageColor])
+        images.offlineFlag = utility.loadImage(named: "arrow.down.circle.fill", colors: [.systemGreen])
+        images.local = utility.loadImage(named: "checkmark.circle.fill", colors: [.systemGreen])
 
-        images.checkedYes = utility.loadImage(named: "checkmark.circle.fill", color: .systemBlue)
-        images.checkedNo = utility.loadImage(named: "circle", color: .systemGray)
+        images.checkedYes = utility.loadImage(named: "checkmark.circle.fill", colors: [NCBrandColor.shared.brandElement])
+        images.checkedNo = utility.loadImage(named: "circle", colors: [NCBrandColor.shared.brandElement])
 
-        images.buttonMore = UIImage(named: "more")!.image(color: .systemGray, size: 50)
-        images.buttonStop = UIImage(named: "stop")!.image(color: .systemGray, size: 50)
-        images.buttonMoreLock = UIImage(named: "moreLock")!.image(color: .systemGray, size: 50)
-        images.buttonRestore = UIImage(named: "restore")!.image(color: .systemGray, size: 50)
-        images.buttonTrash = UIImage(named: "trash")!.image(color: .systemGray, size: 50)
+        images.buttonMore = utility.loadImage(named: "ellipsis", colors: [NCBrandColor.shared.iconImageColor])
+        images.buttonStop = utility.loadImage(named: "stop.circle", colors: [NCBrandColor.shared.iconImageColor])
+        images.buttonMoreLock = utility.loadImage(named: "lock.fill", colors: [NCBrandColor.shared.iconImageColor])
 
         createImagesBrandCache()
     }
 
     func createImagesBrandCache() {
-
         let brandElement = NCBrandColor.shared.brandElement
         guard brandElement != self.brandElementColor else { return }
         self.brandElementColor = brandElement
+        let utility = NCUtility()
 
-        let folderWidth: CGFloat = UIScreen.main.bounds.width / 3
-        images.folderEncrypted = UIImage(named: "folderEncrypted")!.image(color: brandElement, size: folderWidth)
-        images.folderSharedWithMe = UIImage(named: "folder_shared_with_me")!.image(color: brandElement, size: folderWidth)
-        images.folderPublic = UIImage(named: "folder_public")!.image(color: brandElement, size: folderWidth)
-        images.folderGroup = UIImage(named: "folder_group")!.image(color: brandElement, size: folderWidth)
-        images.folderExternal = UIImage(named: "folder_external")!.image(color: brandElement, size: folderWidth)
-        images.folderAutomaticUpload = UIImage(named: "folderAutomaticUpload")!.image(color: brandElement, size: folderWidth)
-        images.folder = UIImage(named: "folder")!.image(color: brandElement, size: folderWidth)
+        images.folderEncrypted = UIImage(named: "folderEncrypted")!.image(color: brandElement)
+        images.folderSharedWithMe = UIImage(named: "folder_shared_with_me")!.image(color: brandElement)
+        images.folderPublic = UIImage(named: "folder_public")!.image(color: brandElement)
+        images.folderGroup = UIImage(named: "folder_group")!.image(color: brandElement)
+        images.folderExternal = UIImage(named: "folder_external")!.image(color: brandElement)
+        images.folderAutomaticUpload = UIImage(named: "folderAutomaticUpload")!.image(color: brandElement)
+        images.folder = UIImage(named: "folder")!.image(color: brandElement)
 
-        images.iconContacts = UIImage(named: "icon-contacts")!.image(color: brandElement, size: folderWidth)
-        images.iconTalk = UIImage(named: "icon-talk")!.image(color: brandElement, size: folderWidth)
-        images.iconCalendar = UIImage(named: "icon-calendar")!.image(color: brandElement, size: folderWidth)
-        images.iconDeck = UIImage(named: "icon-deck")!.image(color: brandElement, size: folderWidth)
-        images.iconMail = UIImage(named: "icon-mail")!.image(color: brandElement, size: folderWidth)
-        images.iconConfirm = UIImage(named: "icon-confirm")!.image(color: brandElement, size: folderWidth)
-        images.iconPages = UIImage(named: "icon-pages")!.image(color: brandElement, size: folderWidth)
+        images.iconContacts = utility.loadImage(named: "person.crop.rectangle.stack", colors: [NCBrandColor.shared.iconImageColor])
+        images.iconTalk = UIImage(named: "talk-template")!.image(color: brandElement)
+        images.iconCalendar = utility.loadImage(named: "calendar", colors: [NCBrandColor.shared.iconImageColor])
+        images.iconDeck = utility.loadImage(named: "square.stack.fill", colors: [NCBrandColor.shared.iconImageColor])
+        images.iconMail = utility.loadImage(named: "mail", colors: [NCBrandColor.shared.iconImageColor])
+        images.iconConfirm = utility.loadImage(named: "arrow.right", colors: [NCBrandColor.shared.iconImageColor])
+        images.iconPages = utility.loadImage(named: "doc.richtext", colors: [NCBrandColor.shared.iconImageColor])
+        images.iconFile = utility.loadImage(named: "doc", colors: [NCBrandColor.shared.iconImageColor])
 
         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterChangeTheming)
     }

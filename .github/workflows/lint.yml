@@ -14,13 +14,17 @@ on:
       - master
       - develop
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 jobs:
   Lint:
     runs-on: ubuntu-latest
     if: github.event.pull_request.draft == false
 
     steps:
-     - uses: actions/checkout@v3
+     - uses: actions/checkout@v4
 
      - name: GitHub Action for SwiftLint
        uses: norio-nomura/action-swiftlint@3.2.1

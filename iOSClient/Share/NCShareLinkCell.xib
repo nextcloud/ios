@@ -1,9 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<<<<<<< HEAD
 <document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="19529" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina4_7" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="19519"/>
+=======
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="22505" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina4_7" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="22504"/>
+        <capability name="Image references" minToolsVersion="12.0"/>
+>>>>>>> aa28af8228d8d3d97f2f5aa16076333e8c0faf95
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -33,7 +42,19 @@
                                     <constraint firstAttribute="width" constant="20" id="0JR-eM-oir"/>
                                     <constraint firstAttribute="height" constant="20" id="HVo-ht-9m6"/>
                                 </constraints>
+<<<<<<< HEAD
                                 <state key="normal" image="shareCopy"/>
+=======
+                                <state key="normal">
+                                    <imageReference key="image" image="doc.on.doc" catalog="system" renderingMode="hierarchical">
+                                        <hierarchicalColors>
+                                            <color systemColor="labelColor"/>
+                                            <color systemColor="secondaryLabelColor"/>
+                                            <color systemColor="tertiaryLabelColor"/>
+                                        </hierarchicalColors>
+                                    </imageReference>
+                                </state>
+>>>>>>> aa28af8228d8d3d97f2f5aa16076333e8c0faf95
                                 <connections>
                                     <action selector="touchUpCopy:" destination="qJF-Yc-gKE" eventType="touchUpInside" id="s3f-6n-cKF"/>
                                 </connections>
@@ -44,7 +65,19 @@
                                     <constraint firstAttribute="height" constant="20" id="G48-LB-BsD"/>
                                     <constraint firstAttribute="width" constant="20" id="vLI-cJ-Jqx"/>
                                 </constraints>
+<<<<<<< HEAD
                                 <state key="normal" image="shareMenu"/>
+=======
+                                <state key="normal">
+                                    <imageReference key="image" image="ellipsis" catalog="system" renderingMode="hierarchical">
+                                        <hierarchicalColors>
+                                            <color systemColor="labelColor"/>
+                                            <color systemColor="secondaryLabelColor"/>
+                                            <color systemColor="tertiaryLabelColor"/>
+                                        </hierarchicalColors>
+                                    </imageReference>
+                                </state>
+>>>>>>> aa28af8228d8d3d97f2f5aa16076333e8c0faf95
                                 <connections>
                                     <action selector="touchUpMenu:" destination="qJF-Yc-gKE" eventType="touchUpInside" id="hFx-Ib-xay"/>
                                 </connections>
@@ -97,11 +130,26 @@
         </tableViewCell>
     </objects>
     <resources>
+<<<<<<< HEAD
         <image name="circle" width="210" height="156"/>
         <image name="shareCopy" width="329" height="329"/>
         <image name="shareMenu" width="329" height="329"/>
         <systemColor name="secondaryLabelColor">
             <color red="0.23529411764705882" green="0.23529411764705882" blue="0.2627450980392157" alpha="0.59999999999999998" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
+=======
+        <image name="circle" width="300" height="300"/>
+        <image name="doc.on.doc" catalog="system" width="116" height="128"/>
+        <image name="ellipsis" catalog="system" width="128" height="37"/>
+        <systemColor name="labelColor">
+            <color white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
+        <systemColor name="secondaryLabelColor">
+            <color red="0.23529411764705882" green="0.23529411764705882" blue="0.2627450980392157" alpha="0.59999999999999998" colorSpace="custom" customColorSpace="sRGB"/>
+        </systemColor>
+        <systemColor name="tertiaryLabelColor">
+            <color red="0.23529411764705882" green="0.23529411764705882" blue="0.2627450980392157" alpha="0.29803921568627451" colorSpace="custom" customColorSpace="sRGB"/>
+        </systemColor>
+>>>>>>> aa28af8228d8d3d97f2f5aa16076333e8c0faf95
     </resources>
 </document>

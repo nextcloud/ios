@@ -63,7 +63,7 @@
     row.cellConfigAtConfigure[@"backgroundColor"] = UIColor.secondarySystemGroupedBackgroundColor;
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
     [row.cellConfig setObject:UIColor.labelColor forKey:@"textLabel.textColor"];
-    [row.cellConfig setObject:[[UIImage imageNamed:@"autoUpload"] imageWithColor:UIColor.systemGrayColor size:25] forKey:@"imageView.image"];
+    [row.cellConfig setObject:[[UIImage imageNamed:@"autoUpload"] imageWithColor:[NCBrandColor shared].iconImageColor size:25] forKey:@"imageView.image"];
     row.action.viewControllerClass = [CCManageAutoUpload class];
     [section addFormRow:row];
 
@@ -75,11 +75,10 @@
     // Lock active YES/NO
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"bloccopasscode" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_lock_not_active_", nil)];
     row.cellConfigAtConfigure[@"backgroundColor"] = UIColor.secondarySystemGroupedBackgroundColor;
-    [row.cellConfig setObject:[[UIImage imageNamed:@"lock_open"] imageWithColor:UIColor.systemGrayColor size:25] forKey:@"imageView.image"];
+    [row.cellConfig setObject:[[UIImage imageNamed:@"lock_open"] imageWithColor:[NCBrandColor shared].iconImageColor size:25] forKey:@"imageView.image"];
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
     [row.cellConfig setObject:UIColor.labelColor forKey:@"textLabel.textColor"];
     [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
-    //[row.cellConfig setObject:@(UITableViewCellAccessoryDisclosureIndicator) forKey:@"accessoryType"];
     row.action.formSelector = @selector(passcode:);
     [section addFormRow:row];
     // Enable Touch ID
@@ -122,7 +121,7 @@
         [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
         [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
         [row.cellConfig setObject:UIColor.labelColor forKey:@"textLabel.textColor"];
-        [row.cellConfig setObject:[[UIImage imageNamed:@"caldavcardav"] imageWithColor:UIColor.systemGrayColor size:25] forKey:@"imageView.image"];
+        [row.cellConfig setObject:[[UIImage imageNamed:@"caldavcardav"] imageWithColor:[NCBrandColor shared].iconImageColor size:25] forKey:@"imageView.image"];
         row.action.formSelector = @selector(CalDAVCardDAV:);
         [section addFormRow:row];
     }
@@ -144,7 +143,7 @@
         [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
         [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
         [row.cellConfig setObject:UIColor.labelColor forKey:@"textLabel.textColor"];
-        [row.cellConfig setObject:[[UIImage imageNamed:@"lock"] imageWithColor:UIColor.systemGrayColor size:25] forKey:@"imageView.image"];
+        [row.cellConfig setObject:[[UIImage imageNamed:@"lock"] imageWithColor:[NCBrandColor shared].iconImageColor size:25] forKey:@"imageView.image"];
         row.action.formSelector = @selector(manageE2EE:);
         [section addFormRow:row];
     }
@@ -159,7 +158,7 @@
     row.cellConfigAtConfigure[@"backgroundColor"] = UIColor.secondarySystemGroupedBackgroundColor;
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
     [row.cellConfig setObject:UIColor.labelColor forKey:@"textLabel.textColor"];
-    [row.cellConfig setObject:[[UIImage imageNamed:@"gear"] imageWithColor:UIColor.systemGrayColor size:25] forKey:@"imageView.image"];
+    [row.cellConfig setObject:[[UIImage imageNamed:@"gear"] imageWithColor:[NCBrandColor shared].iconImageColor size:25] forKey:@"imageView.image"];
     row.action.viewControllerClass = [CCAdvanced class];
     [section addFormRow:row];
 
@@ -174,7 +173,7 @@
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
     [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
     [row.cellConfig setObject:UIColor.labelColor forKey:@"textLabel.textColor"];
-    [row.cellConfig setObject:[[UIImage imageNamed:@"acknowledgements"] imageWithColor:UIColor.systemGrayColor size:25] forKey:@"imageView.image"];
+    [row.cellConfig setObject:[[UIImage imageNamed:@"acknowledgements"] imageWithColor:[NCBrandColor shared].iconImageColor size:25] forKey:@"imageView.image"];
     row.action.formBlock = ^(XLFormRowDescriptor * sender){
         [self performSegueWithIdentifier:@"AcknowledgementsSegue" sender:sender];
         [self deselectFormRow:sender];
@@ -189,7 +188,7 @@
         [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
         [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
         [row.cellConfig setObject:UIColor.labelColor forKey:@"textLabel.textColor"];
-        [row.cellConfig setObject:[[UIImage imageNamed:@"shield.checkerboard"] imageWithColor:UIColor.systemGrayColor size:25] forKey:@"imageView.image"];
+        [row.cellConfig setObject:[[UIImage imageNamed:@"shield.checkerboard"] imageWithColor:[NCBrandColor shared].iconImageColor size:25] forKey:@"imageView.image"];
         row.action.formSelector = @selector(privacy:);
         [section addFormRow:row];
         
@@ -199,7 +198,7 @@
         [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
         [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
         [row.cellConfig setObject:UIColor.labelColor forKey:@"textLabel.textColor"];
-        [row.cellConfig setObject:[[UIImage imageNamed:@"gitHub"] imageWithColor:UIColor.systemGrayColor size:25] forKey:@"imageView.image"];
+        [row.cellConfig setObject:[[UIImage imageNamed:@"gitHub"] imageWithColor:[NCBrandColor shared].iconImageColor size:25] forKey:@"imageView.image"];
         row.action.formSelector = @selector(sourceCode:);
         [section addFormRow:row];
     }
@@ -220,7 +219,7 @@
     self.tableView.backgroundColor = UIColor.systemGroupedBackgroundColor;
     appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
     
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationDidEnterBackground) name:NCGlobal.shared.notificationCenterApplicationDidEnterBackground object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationDidEnterBackground) name:UIApplicationDidEnterBackgroundNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeUser) name:NCGlobal.shared.notificationCenterChangeUser object:nil];
 
     [self initializeForm];
@@ -230,8 +229,6 @@
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-    
-    appDelegate.activeViewController = self;
 
     versionServer = [[NCGlobal shared] capabilityServerVersion];
     themingName = [[NCGlobal shared] capabilityThemingName];
@@ -276,10 +273,10 @@
     
     if ([[NCKeychain alloc] init].passcode) {
         rowBloccoPasscode.title = NSLocalizedString(@"_lock_active_", nil);
-        [rowBloccoPasscode.cellConfig setObject:[[UIImage imageNamed:@"lock"] imageWithColor:UIColor.systemGrayColor size:25] forKey:@"imageView.image"];
+        [rowBloccoPasscode.cellConfig setObject:[[UIImage imageNamed:@"lock"] imageWithColor:[NCBrandColor shared].iconImageColor size:25] forKey:@"imageView.image"];
     } else {
         rowBloccoPasscode.title = NSLocalizedString(@"_lock_not_active_", nil);
-        [rowBloccoPasscode.cellConfig setObject:[[UIImage imageNamed:@"lock_open"] imageWithColor:UIColor.systemGrayColor size:25] forKey:@"imageView.image"];
+        [rowBloccoPasscode.cellConfig setObject:[[UIImage imageNamed:@"lock_open"] imageWithColor:[NCBrandColor shared].iconImageColor size:25] forKey:@"imageView.image"];
     }
 
     if ([[NCKeychain alloc] init].resetAppCounterFail) [rowResetAppAttemps setValue:@1]; else [rowResetAppAttemps setValue:@0];
@@ -339,7 +336,7 @@
 {
     [self deselectFormRow:sender];
 
-    UIViewController *vc = [[NCManageE2EEInterface alloc] makeShipDetailsUIWithAccount:appDelegate.account];
+    UIViewController *vc = [[NCManageE2EEInterface alloc] makeShipDetailsUIWithAccount:appDelegate.account rootViewController: self.tabBarController];
     [self.navigationController pushViewController:vc animated:YES];
 }
 

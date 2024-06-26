@@ -85,7 +85,7 @@ class NCAskAuthorization: NSObject {
             PHPhotoLibrary.requestAuthorization { allowed in
                 self.isRequesting = false
 #if !EXTENSION
-                DispatchQueue.main.async { NCPasscode.shared.hidePrivacyProtectionWindow() }
+                // DispatchQueue.main.async { NCPasscode.shared.hidePrivacyProtectionWindow() }
 #endif
                 DispatchQueue.main.async {
                     if allowed == PHAuthorizationStatus.authorized {

@@ -50,7 +50,7 @@ class NCManageAutoUploadFileName: XLFormViewController {
         row.cellConfig["backgroundColor"] = UIColor.secondarySystemGroupedBackground
 
         row.cellConfig["textLabel.font"] = UIFont.systemFont(ofSize: 15.0)
-        row.cellConfig["textLabel.textColor"] = UIColor.label
+        row.cellConfig["textLabel.textColor"] = NCBrandColor.shared.textColor
 
         section.addFormRow(row)
 
@@ -62,7 +62,7 @@ class NCManageAutoUploadFileName: XLFormViewController {
         row.cellConfig["backgroundColor"] = UIColor.secondarySystemGroupedBackground
 
         row.cellConfig["textLabel.font"] = UIFont.systemFont(ofSize: 15.0)
-        row.cellConfig["textLabel.textColor"] = UIColor.label
+        row.cellConfig["textLabel.textColor"] = NCBrandColor.shared.textColor
 
         section.addFormRow(row)
 
@@ -80,11 +80,11 @@ class NCManageAutoUploadFileName: XLFormViewController {
         row.cellConfig["backgroundColor"] = UIColor.secondarySystemGroupedBackground
 
         row.cellConfig["textLabel.font"] = UIFont.systemFont(ofSize: 15.0)
-        row.cellConfig["textLabel.textColor"] = UIColor.label
+        row.cellConfig["textLabel.textColor"] = NCBrandColor.shared.textColor
 
         row.cellConfig["textField.textAlignment"] = NSTextAlignment.right.rawValue
         row.cellConfig["textField.font"] = UIFont.systemFont(ofSize: 15.0)
-        row.cellConfig["textField.textColor"] = UIColor.label
+        row.cellConfig["textField.textColor"] = NCBrandColor.shared.textColor
 
         section.addFormRow(row)
 
@@ -97,7 +97,7 @@ class NCManageAutoUploadFileName: XLFormViewController {
 
         row.cellConfig["textView.backgroundColor"] = UIColor.secondarySystemGroupedBackground
         row.cellConfig["textView.font"] = UIFont.systemFont(ofSize: 14.0)
-        row.cellConfig["textView.textColor"] = UIColor.label
+        row.cellConfig["textView.textColor"] = NCBrandColor.shared.textColor
 
         section.addFormRow(row)
 
@@ -117,11 +117,6 @@ class NCManageAutoUploadFileName: XLFormViewController {
 
         initializeForm()
         reloadForm()
-    }
-
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        appDelegate.activeViewController = self
     }
 
     // MARK: XLForm

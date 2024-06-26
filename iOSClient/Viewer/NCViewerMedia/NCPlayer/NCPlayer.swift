@@ -76,7 +76,7 @@ class NCPlayer: NSObject {
 
         player.stop()
         print("deinit NCPlayer with ocId \(metadata.ocId)")
-        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationDidEnterBackground), object: nil)
+        NotificationCenter.default.removeObserver(self, name: UIApplication.didEnterBackgroundNotification, object: nil)
     }
 
     func openAVPlayer(url: URL, autoplay: Bool = false) {
@@ -121,7 +121,7 @@ class NCPlayer: NSObject {
 
         playerToolBar?.setBarPlayer(position: position, ncplayer: self, metadata: metadata, viewerMediaPage: viewerMediaPage)
 
-        NotificationCenter.default.addObserver(self, selector: #selector(applicationDidEnterBackground(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationDidEnterBackground), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(applicationDidEnterBackground(_:)), name: UIApplication.didEnterBackgroundNotification, object: nil)
     }
 
     func restartAVPlayer(position: Float, pauseAfterPlay: Bool) {

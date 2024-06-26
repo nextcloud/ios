@@ -33,7 +33,7 @@ class NCGroupfolders: NCCollectionViewCommon {
         layoutKey = NCGlobal.shared.layoutViewGroupfolders
         enableSearchBar = false
         headerRichWorkspaceDisable = true
-        emptyImage = UIImage(named: "folder_group")?.image(color: NCBrandColor.shared.brandElement, size: UIScreen.main.bounds.width)
+        emptyImage = utility.loadImage(named: "folder_group", colors: [NCBrandColor.shared.brandElement])
         emptyTitle = "_files_no_files_"
         emptyDescription = "_tutorial_groupfolders_view_"
     }
@@ -74,7 +74,7 @@ class NCGroupfolders: NCCollectionViewCommon {
             searchResults: self.searchResults)
     }
 
-    override func reloadDataSourceNetwork() {
+    override func reloadDataSourceNetwork(withQueryDB: Bool = false) {
         super.reloadDataSourceNetwork()
 
         let homeServerUrl = utilityFileSystem.getHomeServer(urlBase: self.appDelegate.urlBase, userId: self.appDelegate.userId)
@@ -102,7 +102,7 @@ class NCGroupfolders: NCCollectionViewCommon {
                     self.reloadDataSource()
                 }
             } else {
-                self.reloadDataSource(withQueryDB: false)
+                self.reloadDataSource(withQueryDB: withQueryDB)
             }
         }
     }

@@ -23,6 +23,10 @@
 //
 
 import Foundation
+<<<<<<< HEAD
+=======
+import UIKit
+>>>>>>> aa28af8228d8d3d97f2f5aa16076333e8c0faf95
 
 // https://stackoverflow.com/questions/33861036/unique-objects-inside-a-array-swift/45023247#45023247
 extension Array {

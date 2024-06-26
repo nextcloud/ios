@@ -23,8 +23,10 @@
 
 import Foundation
 import SafariServices
+import SwiftUI
 
 class NCMoreAppSuggestionsCell: BaseNCMoreCell {
+    @IBOutlet weak var assistantView: UIStackView!
     @IBOutlet weak var talkView: UIStackView!
     @IBOutlet weak var notesView: UIStackView!
     @IBOutlet weak var moreAppsView: UIStackView!
@@ -39,9 +41,22 @@ class NCMoreAppSuggestionsCell: BaseNCMoreCell {
         super.awakeFromNib()
         backgroundColor = .clear
 
+        assistantView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(assistantTapped)))
         talkView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(talkTapped)))
         notesView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(notesTapped)))
         moreAppsView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(moreAppsTapped)))
+
+        if !NCGlobal.shared.capabilityAssistantEnabled {
+            assistantView.isHidden = true
+        }
+    }
+
+    @objc func assistantTapped() {
+        if let viewController = self.window?.rootViewController {
+            let assistant = NCAssistant().environmentObject(NCAssistantTask())
+            let hostingController = UIHostingController(rootView: assistant)
+            viewController.present(hostingController, animated: true, completion: nil)
+        }
     }
 
     @objc func talkTapped() {

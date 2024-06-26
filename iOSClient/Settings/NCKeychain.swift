@@ -138,6 +138,10 @@ import KeychainAccess
         }
     }
 
+    @objc var presentPasscode: Bool {
+        return passcode != nil && requestPasscodeAtStart
+    }
+
     @objc var incrementalNumber: String {
         migrate(key: "incrementalnumber")
         var incrementalString = String(format: "%04ld", 0)

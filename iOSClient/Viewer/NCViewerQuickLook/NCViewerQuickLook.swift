@@ -78,7 +78,7 @@ private var hasChangesQuickLook: Bool = false
 
         if let metadata = metadata, metadata.isImage {
             let buttonDone = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(dismissView))
-            let buttonCrop = UIBarButtonItem(image: UIImage(systemName: "crop"), style: .plain, target: self, action: #selector(crop))
+            let buttonCrop = UIBarButtonItem(image: NCUtility().loadImage(named: "crop"), style: .plain, target: self, action: #selector(crop))
             navigationItem.leftBarButtonItems = [buttonDone, buttonCrop]
             startTimer(navigationItem: navigationItem)
         }
@@ -280,10 +280,10 @@ class PreviewItem: NSObject, QLPreviewItem {
 
 class CropToolbarIcon: CropToolbarIconProvider {
     func getCropIcon() -> UIImage? {
-       return UIImage(systemName: "checkmark.circle")
+        return NCUtility().loadImage(named: "checkmark.circle")
     }
 
     func getCancelIcon() -> UIImage? {
-        return UIImage(systemName: "xmark.circle")
+        return NCUtility().loadImage(named: "xmark.circle")
     }
 }
