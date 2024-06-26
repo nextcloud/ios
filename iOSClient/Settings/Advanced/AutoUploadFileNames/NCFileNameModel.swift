@@ -39,8 +39,7 @@ class NCFileNameModel: ObservableObject, ViewOnAppearHandling {
     /// The changed file name.
     @Published var changedName: String = ""
     /// The complete new file name.
-    @Published var fileName: String = ""
-    let dateExample = Date()
+    @Published var fileNamePreview: String = ""
 
     /// Initializes the view model with default values.
     init() {
@@ -56,7 +55,7 @@ class NCFileNameModel: ObservableObject, ViewOnAppearHandling {
     // MARK: - All functions
 
     func getFileName() {
-        fileName = previewFileName()
+        fileNamePreview = previewFileName()
     }
 
     /// Toggles adding filename type.
@@ -87,6 +86,6 @@ class NCFileNameModel: ObservableObject, ViewOnAppearHandling {
             // If there is a changed name, set the filename mask and generate a new filename
             keychain.fileNameMask = changedName
         }
-        return NCUtilityFileSystem().createFileName("IMG_0001.JPG", fileDate: dateExample, fileType: PHAssetMediaType.image)
+        return NCUtilityFileSystem().createFileName("IMG_0001.JPG", fileDate: Date(), fileType: PHAssetMediaType.image)
     }
 }

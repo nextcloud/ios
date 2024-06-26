@@ -68,11 +68,12 @@ struct NCFileNameView: View {
                             model.submitChangedName()
                             model.getFileName()
                         })
+                        .autocapitalization(.none)
                         .font(.system(size: 15))
                         .multilineTextAlignment(.trailing)
                 }
                 .font(.system(size: 16))
-                Text("\(model.fileName)")
+                Text("\(model.fileNamePreview)")
                     .font(.system(size: 16))
                     .foregroundColor(Color(UIColor.lightGray))
             }, header: {
