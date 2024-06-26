@@ -88,9 +88,6 @@ class NCAutoUploadFileNamesModel: ObservableObject, ViewOnAppearHandling {
             // If there is a changed name, set the filename mask and generate a new filename
             keychain.fileNameMask = changedName
         }
-        return NCUtilityFileSystem().createFileName("IMG_0001.JPG",
-                                                    fileDate: dateExample,
-                                                    fileType: PHAssetMediaType.image,
-                                                    forcedNewFileName: false)
+        return NCUtilityFileSystem().createFileName("IMG_0001.JPG", fileDate: dateExample, fileType: PHAssetMediaType.image)
     }
 }

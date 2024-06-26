@@ -374,10 +374,7 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
 
     func saveAsScan(metadata: tableMetadata, controller: NCMainTabBarController?) {
         let fileNamePath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)
-        let fileNameDestination = utilityFileSystem.createFileName("scan.png",
-                                                                   fileDate: Date(),
-                                                                   fileType: PHAssetMediaType.image,
-                                                                   forcedNewFileName: true)
+        let fileNameDestination = utilityFileSystem.createFileName("", fileDate: Date(), fileType: PHAssetMediaType.image)
         let fileNamePathDestination = utilityFileSystem.directoryScan + "/" + fileNameDestination
 
         utilityFileSystem.copyFile(atPath: fileNamePath, toPath: fileNamePathDestination)

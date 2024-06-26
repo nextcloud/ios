@@ -194,10 +194,7 @@ class NCUploadAssetsModel: NSObject, ObservableObject, NCCreateFormUploadConflic
             let creationDate = asset.creationDate ?? Date()
             let ext = assetFileName.pathExtension.lowercased()
 
-            let fileName = previewStore.fileName.isEmpty ? utilityFileSystem.createFileName(assetFileName as String,
-                                                                                            fileDate: creationDate,
-                                                                                            fileType: asset.mediaType,
-                                                                                            forcedNewFileName: false)
+            let fileName = previewStore.fileName.isEmpty ? utilityFileSystem.createFileName(assetFileName as String, fileDate: creationDate, fileType: asset.mediaType)
             : (previewStore.fileName + "." + ext)
 
             if previewStore.assetType == .livePhoto && NCKeychain().livePhoto && previewStore.data == nil {

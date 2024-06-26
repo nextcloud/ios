@@ -427,16 +427,13 @@ class NCUtilityFileSystem: NSObject {
         return fileNamePath
     }
 
-    func createFileName(_ fileName: String, fileDate: Date, fileType: PHAssetMediaType, forcedNewFileName: Bool) -> String {
+    func createFileName(_ fileName: String, fileDate: Date, fileType: PHAssetMediaType) -> String {
         var fileName = fileName
         let keychain = NCKeychain()
         let addFileNameType: Bool = keychain.fileNameType
         var numberFileName: String = ""
         var fileNameType = ""
         let fileNameExt = (fileName as NSString).pathExtension.lowercased()
-
-        /// Original FileName
-        if !forcedNewFileName { return fileName }
 
         if fileName.count > 8 {
             let index = fileName.index(fileName.startIndex, offsetBy: 4)

@@ -115,10 +115,7 @@ class NCAutoUpload: NSObject {
                 let assetDate = asset.creationDate ?? Date()
                 let assetMediaType = asset.mediaType
                 var serverUrl: String = ""
-                let fileName = NCUtilityFileSystem().createFileName(asset.originalFilename as String,
-                                                                    fileDate: assetDate,
-                                                                    fileType: assetMediaType,
-                                                                    forcedNewFileName: false)
+                let fileName = NCUtilityFileSystem().createFileName(asset.originalFilename as String, fileDate: assetDate, fileType: assetMediaType)
 
                 if account.autoUploadCreateSubfolder {
                     serverUrl = NCUtilityFileSystem().createGranularityPath(asset: asset, serverUrl: autoUploadPath)
