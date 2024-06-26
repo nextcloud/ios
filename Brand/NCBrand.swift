@@ -31,7 +31,7 @@ let userAgent: String = {
 
 @objc class NCBrandOptions: NSObject {
     @objc static let shared: NCBrandOptions = {
-        let instance = NCBrandOptions()
+        let instance = NCBrandOptionsIONOS()
         return instance
     }()
 
@@ -55,7 +55,7 @@ let userAgent: String = {
     @objc public var folderDefaultAutoUpload: String = "Photos"
 
     // Capabilities Group
-    @objc public var capabilitiesGroups: String = "group.com.viseven.ionos.easystorage"
+    @objc public var capabilitiesGroups: String = "group.it.twsweb.Crypto-Cloud"
     @objc public var capabilitiesGroupApps: String = "group.com.nextcloud.apps"
 
     // BRAND ONLY

@@ -69,6 +69,13 @@
 		AFCE353927E5DE0500FEA6C2 /* NCShare+Helper.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFCE353827E5DE0400FEA6C2 /* NCShare+Helper.swift */; };
 		C0046CDD2A17B98400D87C9D /* LoginUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0046CDC2A17B98400D87C9D /* LoginUITests.swift */; };
 		C04E2F232A17BB4D001BAD85 /* FilesIntegrationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C04E2F222A17BB4D001BAD85 /* FilesIntegrationTests.swift */; };
+		D51C00412C2C1B4D00A04554 /* NCBrand-IONOS.swift in Sources */ = {isa = PBXBuildFile; fileRef = D51C00402C2C1B4D00A04554 /* NCBrand-IONOS.swift */; };
+		D51C00422C2C1C1B00A04554 /* NCBrand-IONOS.swift in Sources */ = {isa = PBXBuildFile; fileRef = D51C00402C2C1B4D00A04554 /* NCBrand-IONOS.swift */; };
+		D51C00432C2C1C1B00A04554 /* NCBrand-IONOS.swift in Sources */ = {isa = PBXBuildFile; fileRef = D51C00402C2C1B4D00A04554 /* NCBrand-IONOS.swift */; };
+		D51C00442C2C1C1C00A04554 /* NCBrand-IONOS.swift in Sources */ = {isa = PBXBuildFile; fileRef = D51C00402C2C1B4D00A04554 /* NCBrand-IONOS.swift */; };
+		D51C00452C2C1C1D00A04554 /* NCBrand-IONOS.swift in Sources */ = {isa = PBXBuildFile; fileRef = D51C00402C2C1B4D00A04554 /* NCBrand-IONOS.swift */; };
+		D51C00462C2C1C1D00A04554 /* NCBrand-IONOS.swift in Sources */ = {isa = PBXBuildFile; fileRef = D51C00402C2C1B4D00A04554 /* NCBrand-IONOS.swift */; };
+		D51C00472C2C1C1E00A04554 /* NCBrand-IONOS.swift in Sources */ = {isa = PBXBuildFile; fileRef = D51C00402C2C1B4D00A04554 /* NCBrand-IONOS.swift */; };
 		D575039F27146F93008DC9DC /* String+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7A0D1342591FBC5008F8A13 /* String+Extension.swift */; };
 		D5B6AA7827200C7200D49C24 /* NCActivityTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5B6AA7727200C7200D49C24 /* NCActivityTableViewCell.swift */; };
 		F30A962F2A27ADF900D7BCFE /* EnvVars.stencil in Resources */ = {isa = PBXBuildFile; fileRef = F30A962E2A27ADF900D7BCFE /* EnvVars.stencil */; };
@@ -976,6 +983,7 @@
 		C0046CDC2A17B98400D87C9D /* LoginUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginUITests.swift; sourceTree = "<group>"; };
 		C04E2F202A17BB4D001BAD85 /* NextcloudIntegrationTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = NextcloudIntegrationTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		C04E2F222A17BB4D001BAD85 /* FilesIntegrationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilesIntegrationTests.swift; sourceTree = "<group>"; };
+		D51C00402C2C1B4D00A04554 /* NCBrand-IONOS.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NCBrand-IONOS.swift"; sourceTree = "<group>"; };
 		D5B6AA7727200C7200D49C24 /* NCActivityTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCActivityTableViewCell.swift; sourceTree = "<group>"; };
 		F30A96042A27299D00D7BCFE /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Platforms/iPhoneOS.platform/Developer/Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
 		F30A962E2A27ADF900D7BCFE /* EnvVars.stencil */ = {isa = PBXFileReference; lastKnownFileType = text; path = EnvVars.stencil; sourceTree = "<group>"; };
@@ -2471,6 +2479,7 @@
 				F7362A1E220C853A005101B5 /* LaunchScreen.storyboard */,
 				F78E2D6429AF02DB0024D4F3 /* Database.swift */,
 				F76B3CCD1EAE01BD00921AC9 /* NCBrand.swift */,
+				D51C00402C2C1B4D00A04554 /* NCBrand-IONOS.swift */,
 			);
 			path = Brand;
 			sourceTree = "<group>";
@@ -3125,7 +3134,7 @@
 			attributes = {
 				LastSwiftUpdateCheck = 1430;
 				LastUpgradeCheck = 1400;
-				ORGANIZATIONNAME = "Marino Faggiana";
+				ORGANIZATIONNAME = "Viseven Europe OÜ";
 				TargetAttributes = {
 					2C33C47E23E2C475005F963B = {
 						CreatedOnToolsVersion = 11.3.1;
@@ -3550,6 +3559,7 @@
 				F359D86D2A7D03420023F405 /* NCUtility+Exif.swift in Sources */,
 				F73EF7AD2B0223900087E6E9 /* NCManageDatabase+Comments.swift in Sources */,
 				F7C9B9232B582F550064EA91 /* NCManageDatabase+SecurityGuard.swift in Sources */,
+				D51C00472C2C1C1E00A04554 /* NCBrand-IONOS.swift in Sources */,
 				F73EF7CD2B0225610087E6E9 /* NCManageDatabase+PhotoLibrary.swift in Sources */,
 				D575039F27146F93008DC9DC /* String+Extension.swift in Sources */,
 				F769CA1A2966EA3C00039397 /* ComponentView.swift in Sources */,
@@ -3619,6 +3629,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				F74B6D9A2A7E239A00F03C5F /* NCManageDatabase+Chunk.swift in Sources */,
+				D51C00462C2C1C1D00A04554 /* NCBrand-IONOS.swift in Sources */,
 				F7490E8329882C84009DCE94 /* NCManageDatabase+LayoutForView.swift in Sources */,
 				F7490E7629882BF3009DCE94 /* NCUserBaseUrl.swift in Sources */,
 				F73EF7DC2B0226080087E6E9 /* NCManageDatabase+Tip.swift in Sources */,
@@ -3740,6 +3751,7 @@
 				F763D2A02A249C4500A3C901 /* NCManageDatabase+Capabilities.swift in Sources */,
 				F757CC8529E7F88B00F31428 /* NCManageDatabase+Groupfolders.swift in Sources */,
 				F737DA9E2B7B893C0063BAFC /* NCPasscode.swift in Sources */,
+				D51C00442C2C1C1C00A04554 /* NCBrand-IONOS.swift in Sources */,
 				F7817D0129802D5F00FFBC65 /* NCViewCertificateDetails.swift in Sources */,
 				F7D57C8B26317BDE00DE301D /* NCAccountRequest.swift in Sources */,
 				F7C30DF7291BC0D30017149B /* NCNetworkingE2EEUpload.swift in Sources */,
@@ -3780,6 +3792,7 @@
 				F77ED59128C9CE9D00E24ED0 /* ToolbarData.swift in Sources */,
 				F78302F728B4C3C900B84583 /* NCManageDatabase.swift in Sources */,
 				F359D8682A7D03420023F405 /* NCUtility+Exif.swift in Sources */,
+				D51C00422C2C1C1B00A04554 /* NCBrand-IONOS.swift in Sources */,
 				F7346E1628B0EF5C006CE2D2 /* Widget.swift in Sources */,
 				F78302F828B4C3E100B84583 /* NCManageDatabase+Activity.swift in Sources */,
 				F711A4E92AF9327600095DD8 /* UIImage+animatedGIF.m in Sources */,
@@ -3904,6 +3917,7 @@
 				F74AF3A6247FB6AE00AC767B /* NCUtilityFileSystem.swift in Sources */,
 				F7B769AC2B7A0B2000C1AAEB /* NCManageDatabase+Metadata+Session.swift in Sources */,
 				F73EF7E32B02266D0087E6E9 /* NCManageDatabase+Trash.swift in Sources */,
+				D51C00452C2C1C1D00A04554 /* NCBrand-IONOS.swift in Sources */,
 				F73EF7BB2B0224AB0087E6E9 /* NCManageDatabase+ExternalSites.swift in Sources */,
 				F7817CFC29801A3500FFBC65 /* Data+Extension.swift in Sources */,
 				F72429372AFE39980040AEF3 /* NCLivePhoto.swift in Sources */,
@@ -3973,6 +3987,7 @@
 				F77910AB25DD53C700CEDB9E /* NCSettingsBundleHelper.swift in Sources */,
 				F755CB402B8CB13C00CE27E9 /* NCMediaLayout.swift in Sources */,
 				F73EF7B72B0224AB0087E6E9 /* NCManageDatabase+ExternalSites.swift in Sources */,
+				D51C00412C2C1B4D00A04554 /* NCBrand-IONOS.swift in Sources */,
 				AF4BF61927562A4B0081CEEF /* NCManageDatabase+Metadata.swift in Sources */,
 				F73EF7E72B0226B90087E6E9 /* NCManageDatabase+UserStatus.swift in Sources */,
 				F78A18B623CDD07D00F681F3 /* NCViewerRichWorkspaceWebView.swift in Sources */,
@@ -4204,6 +4219,7 @@
 				F73EF7C92B0225610087E6E9 /* NCManageDatabase+PhotoLibrary.swift in Sources */,
 				F73EF7B92B0224AB0087E6E9 /* NCManageDatabase+ExternalSites.swift in Sources */,
 				F71F6D092B6A6A5E00F1EB15 /* ThreadSafeArray.swift in Sources */,
+				D51C00432C2C1C1B00A04554 /* NCBrand-IONOS.swift in Sources */,
 				F757CC8429E7F88B00F31428 /* NCManageDatabase+Groupfolders.swift in Sources */,
 				F78E2D6729AF02DB0024D4F3 /* Database.swift in Sources */,
 				F7A8D73628F17E1A008BBE1C /* NCManageDatabase+Activity.swift in Sources */,
