@@ -1,12 +1,11 @@
 //
-//  NCAutoUploadFileNamesView.swift
+//  NCFileNameView.swift
 //  Nextcloud
 //
-//  Created by Aditya Tyagi on 10/03/24.
-//  Created by Marino Faggiana on 30/05/24.
+//  Created by Marino Faggiana on 26/06/24.
 //  Copyright © 2024 Marino Faggiana. All rights reserved.
 //
-//  Author Aditya Tyagi <adityagi02@yahoo.com>
+//  Author Marino Faggiana <marino.faggiana@nextcloud.com>
 //
 //  This program is free software: you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
@@ -24,8 +23,8 @@
 
 import SwiftUI
 
-struct NCAutoUploadFileNamesView: View {
-    @ObservedObject var model = NCAutoUploadFileNamesModel()
+struct NCFileNameView: View {
+    @ObservedObject var model = NCFileNameModel()
 
     var body: some View {
         Form {
@@ -96,5 +95,5 @@ struct NCAutoUploadFileNamesView: View {
 }
 
 #Preview {
-    NCAutoUploadFileNamesView(model: NCAutoUploadFileNamesModel())
+    NCFileNameView(model: NCFileNameModel())
 }

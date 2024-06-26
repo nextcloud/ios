@@ -535,8 +535,8 @@
 		F768822D2C0DD1E7001CF441 /* Acknowledgements.rtf in Resources */ = {isa = PBXBuildFile; fileRef = F76882142C0DD1E7001CF441 /* Acknowledgements.rtf */; };
 		F768822E2C0DD1E7001CF441 /* NCSettingsBundleHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76882152C0DD1E7001CF441 /* NCSettingsBundleHelper.swift */; };
 		F768822F2C0DD1E7001CF441 /* NCAutoUploadModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76882172C0DD1E7001CF441 /* NCAutoUploadModel.swift */; };
-		F76882302C0DD1E7001CF441 /* NCAutoUploadFileNamesModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76882192C0DD1E7001CF441 /* NCAutoUploadFileNamesModel.swift */; };
-		F76882312C0DD1E7001CF441 /* NCAutoUploadFileNamesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F768821A2C0DD1E7001CF441 /* NCAutoUploadFileNamesView.swift */; };
+		F76882302C0DD1E7001CF441 /* NCFileNameModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76882192C0DD1E7001CF441 /* NCFileNameModel.swift */; };
+		F76882312C0DD1E7001CF441 /* NCFileNameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F768821A2C0DD1E7001CF441 /* NCFileNameView.swift */; };
 		F76882322C0DD1E7001CF441 /* NCAutoUploadView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F768821B2C0DD1E7001CF441 /* NCAutoUploadView.swift */; };
 		F76882332C0DD1E7001CF441 /* NCDisplayModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F768821D2C0DD1E7001CF441 /* NCDisplayModel.swift */; };
 		F76882342C0DD1E7001CF441 /* NCDisplayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F768821E2C0DD1E7001CF441 /* NCDisplayView.swift */; };
@@ -1367,8 +1367,8 @@
 		F76882142C0DD1E7001CF441 /* Acknowledgements.rtf */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.rtf; path = Acknowledgements.rtf; sourceTree = "<group>"; };
 		F76882152C0DD1E7001CF441 /* NCSettingsBundleHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCSettingsBundleHelper.swift; sourceTree = "<group>"; };
 		F76882172C0DD1E7001CF441 /* NCAutoUploadModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCAutoUploadModel.swift; sourceTree = "<group>"; };
-		F76882192C0DD1E7001CF441 /* NCAutoUploadFileNamesModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCAutoUploadFileNamesModel.swift; sourceTree = "<group>"; };
-		F768821A2C0DD1E7001CF441 /* NCAutoUploadFileNamesView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCAutoUploadFileNamesView.swift; sourceTree = "<group>"; };
+		F76882192C0DD1E7001CF441 /* NCFileNameModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCFileNameModel.swift; sourceTree = "<group>"; };
+		F768821A2C0DD1E7001CF441 /* NCFileNameView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCFileNameView.swift; sourceTree = "<group>"; };
 		F768821B2C0DD1E7001CF441 /* NCAutoUploadView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCAutoUploadView.swift; sourceTree = "<group>"; };
 		F768821D2C0DD1E7001CF441 /* NCDisplayModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCDisplayModel.swift; sourceTree = "<group>"; };
 		F768821E2C0DD1E7001CF441 /* NCDisplayView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCDisplayView.swift; sourceTree = "<group>"; };
@@ -2316,6 +2316,7 @@
 		F76882052C0DD1E7001CF441 /* Advanced */ = {
 			isa = PBXGroup;
 			children = (
+				F76882182C0DD1E7001CF441 /* AutoUploadFileNames */,
 				F76882062C0DD1E7001CF441 /* Capabilities */,
 				F76882092C0DD1E7001CF441 /* NCSettingsAdvancedView.swift */,
 				F768820A2C0DD1E7001CF441 /* NCSettingsAdvancedModel.swift */,
@@ -2355,7 +2356,6 @@
 		F76882162C0DD1E7001CF441 /* AutoUpload */ = {
 			isa = PBXGroup;
 			children = (
-				F76882182C0DD1E7001CF441 /* AutoUploadFileNames */,
 				F76882172C0DD1E7001CF441 /* NCAutoUploadModel.swift */,
 				F768821B2C0DD1E7001CF441 /* NCAutoUploadView.swift */,
 			);
@@ -2365,8 +2365,8 @@
 		F76882182C0DD1E7001CF441 /* AutoUploadFileNames */ = {
 			isa = PBXGroup;
 			children = (
-				F76882192C0DD1E7001CF441 /* NCAutoUploadFileNamesModel.swift */,
-				F768821A2C0DD1E7001CF441 /* NCAutoUploadFileNamesView.swift */,
+				F76882192C0DD1E7001CF441 /* NCFileNameModel.swift */,
+				F768821A2C0DD1E7001CF441 /* NCFileNameView.swift */,
 			);
 			path = AutoUploadFileNames;
 			sourceTree = "<group>";
@@ -4302,7 +4302,7 @@
 				F718C24E254D507B00C5C256 /* NCViewerMediaDetailView.swift in Sources */,
 				F33EE6F22BF4C9B200CA1A51 /* PKCS12.swift in Sources */,
 				F7145610296433C80038D028 /* NCDocumentCamera.swift in Sources */,
-				F76882312C0DD1E7001CF441 /* NCAutoUploadFileNamesView.swift in Sources */,
+				F76882312C0DD1E7001CF441 /* NCFileNameView.swift in Sources */,
 				F7381EE1218218C9000B1560 /* NCOffline.swift in Sources */,
 				F7A509252C26BD5D00326106 /* NCCreateDocument.swift in Sources */,
 				F7FA80002C0F4F3B0072FC60 /* NCUploadAssetsModel.swift in Sources */,
@@ -4324,7 +4324,7 @@
 				F702F30125EE5D2C008F8E80 /* NYMnemonic.m in Sources */,
 				AF93474E27E3F212002537EE /* NCShareNewUserAddComment.swift in Sources */,
 				F7C30DFD291BD0B80017149B /* NCNetworkingE2EEDelete.swift in Sources */,
-				F76882302C0DD1E7001CF441 /* NCAutoUploadFileNamesModel.swift in Sources */,
+				F76882302C0DD1E7001CF441 /* NCFileNameModel.swift in Sources */,
 				F72FD3B5297ED49A00075D28 /* NCManageDatabase+E2EE.swift in Sources */,
 				F73EF7CF2B0225BA0087E6E9 /* NCManageDatabase+Tag.swift in Sources */,
 				F3A047982BD2668800658E7B /* NCAssistantCreateNewTask.swift in Sources */,

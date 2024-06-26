@@ -35,17 +35,6 @@ struct NCSettingsAdvancedView: View {
 
     var body: some View {
         Form {
-            /// Auto Upload file name
-           Section(content: {
-               NavigationLink(destination: LazyView {
-                   NCAutoUploadFileNamesView(model: NCAutoUploadFileNamesModel())
-               }) {
-                   Text(NSLocalizedString("_autoupload_filenamemask_", comment: ""))
-                       .font(.system(size: 16))
-               }
-           }, footer: {
-               Text(NSLocalizedString("_autoupload_filenamemask_footer_", comment: ""))
-           })
             /// Show Hidden Files
             Section(content: {
                 Toggle(NSLocalizedString("_show_hidden_files_", comment: ""), isOn: $model.showHiddenFiles)
@@ -55,6 +44,17 @@ struct NCSettingsAdvancedView: View {
                 }
                 .font(.system(size: 16))
             }, footer: { })
+            /// file name
+            Section(content: {
+               NavigationLink(destination: LazyView {
+                   NCFileNameView(model: NCFileNameModel())
+               }) {
+                   Text(NSLocalizedString("_filenamemask_", comment: ""))
+                       .font(.system(size: 16))
+               }
+            }, footer: {
+                Text(NSLocalizedString("_filenamemask_footer_", comment: ""))
+            })
             /// Most Compatible & Enable Live Photo
             Section(content: {
                 Toggle(NSLocalizedString("_format_compatibility_", comment: ""), isOn: $model.mostCompatible)

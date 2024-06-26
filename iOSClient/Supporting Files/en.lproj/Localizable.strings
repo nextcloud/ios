@@ -402,11 +402,11 @@
 "_autoupload_fullphotos_"           = "Upload the whole camera roll";
 "_autoupload_fullphotos_footer_"    = "Adjust the options above before uploading";
 "_autoupload_create_subfolder_"     = "Use subfolders";
-"_autoupload_create_subfolder_footer_" = "Store in subfolders based on year, month or daily";
-"_autoupload_subfolder_granularity_" = "Subfolder Granularity";
-"_autoupload_filenamemask_"         = "Change filename mask";
-"_autoupload_filenamemask_footer_"  = "Change the automatic filename mask";
-"_autoupload_current_folder_"       = "Currently selected folder";
+"_autoupload_create_subfolder_footer_"  = "Store in subfolders based on year, month or daily";
+"_autoupload_subfolder_granularity_"    = "Subfolder Granularity";
+"_filenamemask_"                        = "Change filename mask";
+"_filenamemask_footer_"                 = "Change the automatic filename mask";
+"_autoupload_current_folder_"           = "Currently selected folder";
 "_help_tutorial_"               = "Tutorial";
 "_help_intro_"                  = "Introduction to Nextcloud";
 "_help_activity_verbose_"       = "Detailed Activity feed";
