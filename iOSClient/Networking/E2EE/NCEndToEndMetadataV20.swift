@@ -125,7 +125,7 @@ extension NCEndToEndMetadata {
 
         if isDirectoryTop {
 
-            guard var key = NCEndToEndEncryption.shared().generateKey() as? Data else {
+            guard var key = NCEndToEndEncryption.shared().generateKey() else {
                 return (nil, nil, 0, NKError(errorCode: NCGlobal.shared.errorUnexpectedResponseFromDB, errorDescription: "_e2e_error_"))
             }
             if let tableUserId = NCManageDatabase.shared.getE2EUser(account: account, ocIdServerUrl: directoryTop.ocId, userId: userId),

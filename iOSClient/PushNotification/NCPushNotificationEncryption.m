@@ -29,6 +29,8 @@
 #import <CommonCrypto/CommonDigest.h>
 #import "NCEndToEndEncryption.h"
 
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+
 @implementation NCPushNotificationEncryption
 
 //Singleton
@@ -111,7 +113,7 @@
     
     EVP_PKEY *pkey = 0;
     PEM_read_bio_PrivateKey(bio, &pkey, 0, 0);
-    
+
     RSA *rsa = EVP_PKEY_get1_RSA(pkey);
 
     // Decrypt the message
