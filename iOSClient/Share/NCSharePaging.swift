@@ -253,7 +253,7 @@ class NCShareHeaderViewController: PagingViewController {
 class NCSharePagingView: PagingView {
 
     static let headerHeight: CGFloat = 90
-    static var tagHeaderHeight: CGFloat = 0
+    static var tagHeaderHeight: CGFloat = 150
     var metadata = tableMetadata()
     let utilityFileSystem = NCUtilityFileSystem()
     let utility = NCUtility()
@@ -325,11 +325,11 @@ class NCSharePagingView: PagingView {
 ////            headerView.tagListView.addTag(tag)
 //        }
 
-        if headerView.fullWidthImageView?.image == nil {
-            NCSharePagingView.tagHeaderHeight = 80
-        } else {
-            NCSharePagingView.tagHeaderHeight = 130
-        }
+//        if headerView.fullWidthImageView?.image == nil {
+//            NCSharePagingView.tagHeaderHeight = 80
+//        } else {
+//            NCSharePagingView.tagHeaderHeight = 130
+//        }
 
         addSubview(headerView)
 
@@ -391,7 +391,6 @@ class NCShareHeaderView: UIView {
     }
 
     @IBAction func touchUpInsideDetails(_ sender: UIButton) {
-
         creation.isHidden = !creation.isHidden
         upload.isHidden = !upload.isHidden
     }

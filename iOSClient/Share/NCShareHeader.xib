@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="32700.99.1234" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
-    <device id="retina4_7" orientation="portrait" appearance="light"/>
+    <device id="retina6_12" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="22685"/>
@@ -12,29 +12,29 @@
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
         <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
         <view contentMode="scaleToFill" id="wbW-yR-MZC" customClass="NCShareHeader" customModule="Nextcloud" customModuleProvider="target">
-            <rect key="frame" x="0.0" y="0.0" width="414" height="224"/>
+            <rect key="frame" x="0.0" y="0.0" width="414" height="472"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
-                <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="cki-Ql-o1I">
-                    <rect key="frame" x="0.0" y="0.0" width="414" height="162"/>
+                <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="image1_b.png" translatesAutoresizingMaskIntoConstraints="NO" id="cki-Ql-o1I">
+                    <rect key="frame" x="0.0" y="59" width="414" height="162"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="162" id="9GH-KF-f8P"/>
                     </constraints>
                 </imageView>
-                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="pu4-Nd-M08">
-                    <rect key="frame" x="16" y="119" width="382" height="18"/>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="pu4-Nd-M08">
+                    <rect key="frame" x="16" y="229" width="382" height="144.33333333333337"/>
                     <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="15"/>
                     <nil key="textColor"/>
                     <nil key="highlightedColor"/>
                 </label>
-                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="VaC-Fz-kHk">
-                    <rect key="frame" x="16" y="138" width="383" height="16"/>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="VaC-Fz-kHk">
+                    <rect key="frame" x="16" y="374.33333333333331" width="383" height="15.666666666666686"/>
                     <fontDescription key="fontDescription" type="system" pointSize="13"/>
                     <color key="textColor" red="0.76862745099999996" green="0.77647058820000003" blue="0.77647058820000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     <nil key="highlightedColor"/>
                 </label>
                 <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="directory" translatesAutoresizingMaskIntoConstraints="NO" id="Dkw-QP-be6">
-                    <rect key="frame" x="15" y="21" width="96" height="96"/>
+                    <rect key="frame" x="15" y="92" width="96" height="96"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="96" id="TW7-8v-NRJ">
                             <variation key="heightClass=compact" constant="45"/>
@@ -45,8 +45,11 @@
                     </constraints>
                 </imageView>
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="qpa-L5-mof" customClass="TagListView" customModule="TagListView">
-                    <rect key="frame" x="10" y="162" width="394" height="62"/>
+                    <rect key="frame" x="10" y="398" width="394" height="40"/>
                     <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="40" id="dlo-xs-pcI"/>
+                    </constraints>
                     <userDefinedRuntimeAttributes>
                         <userDefinedRuntimeAttribute type="number" keyPath="cornerRadius">
                             <real key="value" value="8"/>
@@ -69,26 +72,32 @@
             <viewLayoutGuide key="safeArea" id="KLE-vd-Dsn"/>
             <constraints>
                 <constraint firstItem="pu4-Nd-M08" firstAttribute="leading" secondItem="KLE-vd-Dsn" secondAttribute="leading" constant="16" id="0Uy-ra-MtM"/>
-                <constraint firstItem="qpa-L5-mof" firstAttribute="top" secondItem="VaC-Fz-kHk" secondAttribute="bottom" constant="8" id="9P5-sA-LdV"/>
-                <constraint firstItem="pu4-Nd-M08" firstAttribute="top" secondItem="cki-Ql-o1I" secondAttribute="bottom" constant="-43" id="Cce-7Y-iw9">
+                <constraint firstItem="qpa-L5-mof" firstAttribute="top" secondItem="VaC-Fz-kHk" secondAttribute="bottom" constant="8" symbolic="YES" id="9P5-sA-LdV"/>
+                <constraint firstItem="pu4-Nd-M08" firstAttribute="top" secondItem="cki-Ql-o1I" secondAttribute="bottom" constant="8" symbolic="YES" id="Cce-7Y-iw9">
                     <variation key="heightClass=compact" constant="-95"/>
                 </constraint>
                 <constraint firstAttribute="trailing" secondItem="VaC-Fz-kHk" secondAttribute="trailing" constant="15" id="Ebg-3T-03W"/>
                 <constraint firstItem="Dkw-QP-be6" firstAttribute="leading" secondItem="KLE-vd-Dsn" secondAttribute="leading" constant="15" id="KPc-al-RWN"/>
-                <constraint firstItem="KLE-vd-Dsn" firstAttribute="top" secondItem="cki-Ql-o1I" secondAttribute="top" constant="20" id="KsC-jf-M6F"/>
+                <constraint firstItem="KLE-vd-Dsn" firstAttribute="top" secondItem="cki-Ql-o1I" secondAttribute="top" id="KsC-jf-M6F"/>
                 <constraint firstItem="KLE-vd-Dsn" firstAttribute="trailing" secondItem="qpa-L5-mof" secondAttribute="trailing" constant="10" id="SMV-fn-U36"/>
-                <constraint firstAttribute="trailing" secondItem="cki-Ql-o1I" secondAttribute="trailing" id="Wdl-Rb-Pjy"/>
+                <constraint firstItem="KLE-vd-Dsn" firstAttribute="trailing" secondItem="cki-Ql-o1I" secondAttribute="trailing" id="Wdl-Rb-Pjy"/>
                 <constraint firstItem="qpa-L5-mof" firstAttribute="leading" secondItem="KLE-vd-Dsn" secondAttribute="leading" constant="10" id="YSd-5w-XAH"/>
                 <constraint firstItem="VaC-Fz-kHk" firstAttribute="leading" secondItem="pu4-Nd-M08" secondAttribute="leading" id="Ycb-wy-uL6"/>
                 <constraint firstItem="cki-Ql-o1I" firstAttribute="leading" secondItem="KLE-vd-Dsn" secondAttribute="leading" id="ZlH-LU-x2x"/>
                 <constraint firstItem="KLE-vd-Dsn" firstAttribute="trailing" secondItem="pu4-Nd-M08" secondAttribute="trailing" constant="16" id="bO0-yQ-OWX"/>
-                <constraint firstItem="Dkw-QP-be6" firstAttribute="centerY" secondItem="cki-Ql-o1I" secondAttribute="centerY" constant="-12" id="dME-jJ-PwO">
+                <constraint firstItem="Dkw-QP-be6" firstAttribute="centerY" secondItem="cki-Ql-o1I" secondAttribute="centerY" id="dME-jJ-PwO">
                     <variation key="heightClass=compact" constant="-38"/>
                 </constraint>
                 <constraint firstItem="qpa-L5-mof" firstAttribute="bottom" secondItem="KLE-vd-Dsn" secondAttribute="bottom" id="v3t-y8-sw0"/>
                 <constraint firstItem="VaC-Fz-kHk" firstAttribute="top" secondItem="pu4-Nd-M08" secondAttribute="bottom" constant="1" id="zkb-Jm-sin"/>
             </constraints>
             <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
+            <variation key="heightClass=compact">
+                <mask key="subviews">
+                    <exclude reference="cki-Ql-o1I"/>
+                    <exclude reference="qpa-L5-mof"/>
+                </mask>
+            </variation>
             <connections>
                 <outlet property="fileName" destination="pu4-Nd-M08" id="iLj-ya-6hM"/>
                 <outlet property="fileNameBottomConstraint" destination="Cce-7Y-iw9" id="GaA-uk-NYS"/>
@@ -97,19 +106,20 @@
                 <outlet property="info" destination="VaC-Fz-kHk" id="n9O-6c-qsd"/>
                 <outlet property="tagListView" destination="qpa-L5-mof" id="XJL-YO-eAV"/>
             </connections>
-            <point key="canvasLocation" x="35.200000000000003" y="33.283358320839582"/>
+            <point key="canvasLocation" x="71.755725190839698" y="135.21126760563382"/>
         </view>
     </objects>
     <resources>
         <image name="directory" width="300" height="300"/>
+        <image name="image1_b.png" width="80" height="40"/>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>
         <systemColor name="systemGray5Color">
-            <color red="0.89803921568627454" green="0.89803921568627454" blue="0.91764705882352937" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.8980392157" green="0.8980392157" blue="0.91764705879999997" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
         <systemColor name="systemGrayColor">
-            <color red="0.55686274509803924" green="0.55686274509803924" blue="0.57647058823529407" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.5568627451" green="0.5568627451" blue="0.57647058819999997" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
     </resources>
 </document>

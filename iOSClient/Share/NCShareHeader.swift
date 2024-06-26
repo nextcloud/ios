@@ -38,7 +38,7 @@ class NCShareHeader: UIView {
             fullWidthImageView.image = NCUtility().getImageMetadata(metadata, for: frame.height)
             fullWidthImageView.contentMode = .scaleAspectFill
             imageView.isHidden = true
-            fileNameBottomConstraint.constant = 8
+//            fileNameBottomConstraint.constant = 50
         } else {
             if metadata.directory {
                 imageView.image = metadata.e2eEncrypted ? NCImageCache.images.folderEncrypted : NCImageCache.images.folder
