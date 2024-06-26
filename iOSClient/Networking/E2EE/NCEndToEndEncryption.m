@@ -76,29 +76,30 @@
 
 - (BOOL)generateCertificateX509WithUserId:(NSString *)userId directory:(NSString *)directory
 {
-    OPENSSL_init();
-    
-    int ret;
-    EVP_PKEY * pkey;
-    pkey = EVP_PKEY_new();
-    RSA * rsa;
-    BIGNUM *bignum = BN_new();
-    ret = BN_set_word(bignum, RSA_F4);
-    if (ret != 1) {
-        return NO;
+    EVP_PKEY_CTX *ctx = EVP_PKEY_CTX_new_id(EVP_PKEY_RSA, NULL);
+    if (!ctx) {
+        return FALSE;
     }
 
-    rsa = RSA_new();
-    ret = RSA_generate_key_ex(rsa, 2048, bignum, NULL);
-    if (ret != 1) {
-        return NO;
+    // Generate an new RSA KEY
+    if (EVP_PKEY_keygen_init(ctx) <= 0) {
+        EVP_PKEY_CTX_free(ctx);
+        return FALSE;
     }
-    
-    EVP_PKEY_assign_RSA(pkey, rsa);
-    
-    X509 * x509;
-    x509 = X509_new();
-    
+
+    if (EVP_PKEY_CTX_set_rsa_keygen_bits(ctx, 2048) <= 0) {
+        EVP_PKEY_CTX_free(ctx);
+        return FALSE;
+    }
+
+    EVP_PKEY *pkey = NULL;
+    if (EVP_PKEY_keygen(ctx, &pkey) <= 0) {
+        EVP_PKEY_CTX_free(ctx);
+        return FALSE;
+    }
+
+    X509 *x509 = X509_new();
+
     ASN1_INTEGER_set(X509_get_serialNumber(x509), 1);
     
     long notBefore = [[NSDate date] timeIntervalSinceDate:[NSDate date]];
