@@ -35,6 +35,17 @@ struct NCSettingsAdvancedView: View {
 
     var body: some View {
         Form {
+            /// Auto Upload file name
+           Section(content: {
+               NavigationLink(destination: LazyView {
+                   NCAutoUploadFileNamesView(model: NCAutoUploadFileNamesModel())
+               }) {
+                   Text(NSLocalizedString("_autoupload_filenamemask_", comment: ""))
+                       .font(.system(size: 16))
+               }
+           }, footer: {
+               Text(NSLocalizedString("_autoupload_filenamemask_footer_", comment: ""))
+           })
             /// Show Hidden Files
             Section(content: {
                 Toggle(NSLocalizedString("_show_hidden_files_", comment: ""), isOn: $model.showHiddenFiles)

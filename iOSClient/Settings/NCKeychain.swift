@@ -67,7 +67,7 @@ import KeychainAccess
         }
     }
 
-    @objc var resetAppCounterFail: Bool {
+    var resetAppCounterFail: Bool {
         get {
             if let value = try? keychain.get("resetAppCounterFail"), let result = Bool(value) {
                 return result
@@ -103,7 +103,7 @@ import KeychainAccess
         }
     }
 
-    @objc var requestPasscodeAtStart: Bool {
+    var requestPasscodeAtStart: Bool {
         get {
             let keychainOLD = Keychain(service: "Crypto Cloud")
             if let value = keychainOLD["notPasscodeAtStart"], !value.isEmpty {
@@ -126,7 +126,7 @@ import KeychainAccess
         }
     }
 
-    @objc var touchFaceID: Bool {
+    var touchFaceID: Bool {
         get {
             migrate(key: "enableTouchFaceID")
             if let value = try? keychain.get("enableTouchFaceID"), let result = Bool(value) {
@@ -139,11 +139,11 @@ import KeychainAccess
         }
     }
 
-    @objc var presentPasscode: Bool {
+    var presentPasscode: Bool {
         return passcode != nil && requestPasscodeAtStart
     }
 
-    @objc var incrementalNumber: String {
+    var incrementalNumber: String {
         migrate(key: "incrementalnumber")
         var incrementalString = String(format: "%04ld", 0)
         if let value = try? keychain.get("incrementalnumber"), var result = Int(value) {
@@ -154,7 +154,7 @@ import KeychainAccess
         return incrementalString
     }
 
-    @objc var showHiddenFiles: Bool {
+    var showHiddenFiles: Bool {
         get {
             migrate(key: "showHiddenFiles")
             if let value = try? keychain.get("showHiddenFiles"), let result = Bool(value) {
@@ -167,7 +167,7 @@ import KeychainAccess
         }
     }
 
-    @objc var formatCompatibility: Bool {
+    var formatCompatibility: Bool {
         get {
             migrate(key: "formatCompatibility")
             if let value = try? keychain.get("formatCompatibility"), let result = Bool(value) {
@@ -180,7 +180,7 @@ import KeychainAccess
         }
     }
 
-    @objc var disableFilesApp: Bool {
+    var disableFilesApp: Bool {
         get {
             migrate(key: "disablefilesapp")
             if let value = try? keychain.get("disablefilesapp"), let result = Bool(value) {
@@ -193,7 +193,7 @@ import KeychainAccess
         }
     }
 
-    @objc var livePhoto: Bool {
+    var livePhoto: Bool {
         get {
             migrate(key: "livePhoto")
             if let value = try? keychain.get("livePhoto"), let result = Bool(value) {
@@ -206,7 +206,7 @@ import KeychainAccess
         }
     }
 
-    @objc var disableCrashservice: Bool {
+    var disableCrashservice: Bool {
         get {
             migrate(key: "crashservice")
             if let value = try? keychain.get("crashservice"), let result = Bool(value) {
@@ -219,7 +219,7 @@ import KeychainAccess
         }
     }
 
-    @objc var logLevel: Int {
+    var logLevel: Int {
         get {
             migrate(key: "logLevel")
             if let value = try? keychain.get("logLevel"), let result = Int(value) {
@@ -232,7 +232,7 @@ import KeychainAccess
         }
     }
 
-    @objc var accountRequest: Bool {
+    var accountRequest: Bool {
         get {
             migrate(key: "accountRequest")
             if let value = try? keychain.get("accountRequest"), let result = Bool(value) {
@@ -245,7 +245,7 @@ import KeychainAccess
         }
     }
 
-    @objc var removePhotoCameraRoll: Bool {
+    var removePhotoCameraRoll: Bool {
         get {
             migrate(key: "removePhotoCameraRoll")
             if let value = try? keychain.get("removePhotoCameraRoll"), let result = Bool(value) {
@@ -258,7 +258,7 @@ import KeychainAccess
         }
     }
 
-    @objc var privacyScreenEnabled: Bool {
+    var privacyScreenEnabled: Bool {
         get {
             migrate(key: "privacyScreen")
             if let value = try? keychain.get("privacyScreen"), let result = Bool(value) {
@@ -271,7 +271,7 @@ import KeychainAccess
         }
     }
 
-    @objc var cleanUpDay: Int {
+    var cleanUpDay: Int {
         get {
             migrate(key: "cleanUpDay")
             if let value = try? keychain.get("cleanUpDay"), let result = Int(value) {
@@ -379,6 +379,30 @@ import KeychainAccess
         }
     }
 
+    var fileNameType: Bool {
+        get {
+            if let value = try? keychain.get("fileNameType"), let result = Bool(value) {
+                return result
+            }
+            return true
+        }
+        set {
+            keychain["fileNameType"] = String(newValue)
+        }
+    }
+
+    var fileNameMask: String {
+        get {
+            if let value = try? keychain.get("fileNameMask") {
+                return value
+            }
+            return NCGlobal.shared.mediaLayoutRatio
+        }
+        set {
+            keychain["fileNameMask"] = String(newValue)
+        }
+    }
+
     // MARK: -
 
     @objc func getPassword(account: String) -> String {
@@ -387,47 +411,9 @@ import KeychainAccess
         return (try? keychain.get(key)) ?? ""
     }
 
-    @objc func setPassword(account: String, password: String?) {
+    func setPassword(account: String, password: String?) {
         let key = "password" + account
         keychain[key] = password
-    }
-
-    @objc func getOriginalFileName(key: String) -> Bool {
-        migrate(key: key)
-        if let value = try? keychain.get(key), let result = Bool(value) {
-            return result
-        }
-        return false
-    }
-
-    @objc func setOriginalFileName(key: String, value: Bool) {
-        keychain[key] = String(value)
-    }
-
-    @objc func getFileNameMask(key: String) -> String {
-        migrate(key: key)
-        if let value = try? keychain.get(key) {
-            return NCUtility().removeForbiddenCharacters(value)
-        } else {
-            return ""
-        }
-    }
-
-    @objc func setFileNameMask(key: String, mask: String?) {
-        keychain[key] = mask
-    }
-
-    @objc func getFileNameType(key: String) -> Bool {
-        migrate(key: key)
-        if let value = try? keychain.get(key), let result = Bool(value) {
-            return result
-        } else {
-            return false
-        }
-    }
-
-    @objc func setFileNameType(key: String, prefix: Bool) {
-        keychain[key] = String(prefix)
     }
 
     func setPersonalFilesOnly(account: String, value: Bool) {
@@ -607,7 +593,7 @@ import KeychainAccess
         }
     }
 
-    @objc func removeAll() {
+    func removeAll() {
         try? keychain.removeAll()
     }
 }

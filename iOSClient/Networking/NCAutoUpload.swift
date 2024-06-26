@@ -118,9 +118,6 @@ class NCAutoUpload: NSObject {
                 let fileName = NCUtilityFileSystem().createFileName(asset.originalFilename as String,
                                                                     fileDate: assetDate,
                                                                     fileType: assetMediaType,
-                                                                    keyFileName: NCGlobal.shared.keyFileNameAutoUploadMask,
-                                                                    keyFileNameType: NCGlobal.shared.keyFileNameAutoUploadType,
-                                                                    keyFileNameOriginal: NCGlobal.shared.keyFileNameOriginalAutoUpload,
                                                                     forcedNewFileName: false)
 
                 if account.autoUploadCreateSubfolder {

@@ -31,13 +31,6 @@ struct NCAutoUploadFileNamesView: View {
         Form {
             /// Specify Filename
             Section(header: Text(NSLocalizedString("_mode_filename_", comment: ""))) {
-                Toggle(NSLocalizedString("_maintain_original_filename_", comment: ""), isOn: $model.maintainFilename)
-                    .font(.system(size: 16))
-                    .tint(Color(NCBrandColor.shared.brandElement))
-                    .onChange(of: model.maintainFilename, perform: { newValue in
-                        model.toggleMaintainOriginalFilename(newValue: newValue)
-                        model.getFileName()
-                    })
                 /// Filename
                 if !model.maintainFilename {
                     Toggle(NSLocalizedString("_add_filenametype_", comment: ""), isOn: $model.specifyFilename)

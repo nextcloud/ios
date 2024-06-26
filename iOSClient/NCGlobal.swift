@@ -271,15 +271,6 @@ class NCGlobal: NSObject {
     let errorE2EENoUserFound: Int               = -98015
     let errorE2EEUploadInProgress: Int          = -98016
 
-    // Filename Mask and Type
-    //
-    let keyFileNameMask                         = "fileNameMask"
-    let keyFileNameType                         = "fileNameType"
-    let keyFileNameAutoUploadMask               = "fileNameAutoUploadMask"
-    let keyFileNameAutoUploadType               = "fileNameAutoUploadType"
-    let keyFileNameOriginal                     = "fileNameOriginal"
-    let keyFileNameOriginalAutoUpload           = "fileNameOriginalAutoUpload"
-
     // Selector
     //
     let selectorDownloadFile                    = "downloadFile"

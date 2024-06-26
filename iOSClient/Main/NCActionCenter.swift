@@ -377,9 +377,6 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
         let fileNameDestination = utilityFileSystem.createFileName("scan.png",
                                                                    fileDate: Date(),
                                                                    fileType: PHAssetMediaType.image,
-                                                                   keyFileName: NCGlobal.shared.keyFileNameMask,
-                                                                   keyFileNameType: NCGlobal.shared.keyFileNameType,
-                                                                   keyFileNameOriginal: NCGlobal.shared.keyFileNameOriginal,
                                                                    forcedNewFileName: true)
         let fileNamePathDestination = utilityFileSystem.directoryScan + "/" + fileNameDestination
 

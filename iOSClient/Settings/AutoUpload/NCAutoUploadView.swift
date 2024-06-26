@@ -133,17 +133,6 @@ struct NCAutoUploadView: View {
         }, footer: {
             Text(NSLocalizedString("_autoupload_create_subfolder_footer_", comment: ""))
         })
-        /// Auto Upload file name
-        Section(content: {
-            NavigationLink(destination: LazyView {
-                NCAutoUploadFileNamesView(model: NCAutoUploadFileNamesModel())
-            }) {
-                Text(NSLocalizedString("_autoupload_filenamemask_", comment: ""))
-                    .font(.system(size: 16))
-            }
-        }, footer: {
-            Text(NSLocalizedString("_autoupload_filenamemask_footer_", comment: ""))
-        })
         /// Auto Upload Full
         Section(content: {
             Toggle(NSLocalizedString("_autoupload_fullphotos_", comment: ""), isOn: $model.autoUploadFull)

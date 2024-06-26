@@ -101,22 +101,6 @@ struct NCUploadAssetsView: View {
                     // .redacted(reason: uploadAssets.previewStore.isEmpty ? .placeholder : [])
 
                     Section {
-                        Toggle(isOn: $model.maintainOriginalFilename, label: {
-                            Text(NSLocalizedString("_maintain_original_filename_", comment: ""))
-                                .font(.system(size: 15))
-                        })
-                        .toggleStyle(SwitchToggleStyle(tint: Color(NCBrandColor.shared.brandElement)))
-
-                        if !model.maintainOriginalFilename {
-                            Toggle(isOn: $model.addFilenametype, label: {
-                                Text(NSLocalizedString("_add_filenametype_", comment: ""))
-                                    .font(.system(size: 15))
-                            })
-                            .toggleStyle(SwitchToggleStyle(tint: Color(NCBrandColor.shared.brandElement)))
-                        }
-                    }
-
-                    Section {
                         Toggle(isOn: $model.useAutoUploadFolder, label: {
                             Text(NSLocalizedString("_use_folder_auto_upload_", comment: ""))
                                 .font(.system(size: 15))
@@ -156,34 +140,6 @@ struct NCUploadAssetsView: View {
                                 showSelect = true
                             }
                         }
-                    }
-
-                    Section {
-                        HStack {
-                            Text(NSLocalizedString("_filename_", comment: ""))
-                            if model.maintainOriginalFilename {
-                                Text(model.getOriginalFilenameForPreview().deletingPathExtension)
-                                    .font(.system(size: 15))
-                                    .frame(maxWidth: .infinity, alignment: .trailing)
-                                    .foregroundColor(Color(NCBrandColor.shared.textColor2))
-                            } else {
-                                TextField(NSLocalizedString("_enter_filename_", comment: ""), text: $model.fileName)
-                                    .font(.system(size: 15))
-                                    .modifier(TextFieldClearButton(text: $model.fileName))
-                                    .multilineTextAlignment(.trailing)
-                                    .onChange(of: model.fileName, perform: { _ in
-                                        model.submitChangedName()
-                                    })
-                            }
-                        }
-                        if !model.maintainOriginalFilename {
-                            Text(model.setFileNameMaskForPreview(fileName: model.fileName))
-                                .font(.system(size: 11))
-                                .foregroundColor(Color(NCBrandColor.shared.textColor2))
-                        }
-                    }
-                    .complexModifier { view in
-                        view.listRowSeparator(.hidden)
                     }
 
                     Button(NSLocalizedString("_save_", comment: "")) {
