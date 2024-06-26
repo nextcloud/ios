@@ -1383,22 +1383,6 @@
     return output;
 }
 
-- (NSData *)hashValueMD5OfData:(NSData *)data
-{
-    MD5_CTX md5Ctx;
-    unsigned char hashValue[MD5_DIGEST_LENGTH];
-    if(!MD5_Init(&md5Ctx)) {
-        return nil;
-    }
-    if (!MD5_Update(&md5Ctx, data.bytes, data.length)) {
-        return nil;
-    }
-    if (!MD5_Final(hashValue, &md5Ctx)) {
-        return nil;
-    }
-    return [NSData dataWithBytes:hashValue length:MD5_DIGEST_LENGTH];
-}
-
 - (NSString *)hexadecimalString:(NSData *)input
 {
     const unsigned char *dataBuffer = (const unsigned char *) [input bytes];
