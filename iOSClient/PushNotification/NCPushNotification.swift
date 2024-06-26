@@ -61,7 +61,7 @@ class NCPushNotification {
         if pushKitToken.isEmpty { return }
 
         NCPushNotificationEncryption.shared().generatePushNotificationsKeyPair(account)
-        guard let pushTokenHash = NCEndToEndEncryption.sharedManager().createSHA512(pushKitToken),
+        guard let pushTokenHash = NCEndToEndEncryption.shared().createSHA512(pushKitToken),
               let pushPublicKey = keychain.getPushNotificationPublicKey(account: account),
               let pushDevicePublicKey = String(data: pushPublicKey, encoding: .utf8)  else { return }
         let proxyServerPath = NCBrandOptions.shared.pushNotificationServerProxy

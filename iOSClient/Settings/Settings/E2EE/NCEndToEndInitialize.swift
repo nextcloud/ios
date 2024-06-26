@@ -63,7 +63,7 @@ class NCEndToEndInitialize: NSObject {
 
                 NCKeychain().setEndToEndCertificate(account: account, certificate: certificate)
 
-                self.extractedPublicKey = NCEndToEndEncryption.sharedManager().extractPublicKey(fromCertificate: certificate)
+                self.extractedPublicKey = NCEndToEndEncryption.shared().extractPublicKey(fromCertificate: certificate)
 
                 // Request PrivateKey chiper to Server
                 self.getPrivateKeyCipher()
@@ -77,7 +77,7 @@ class NCEndToEndInitialize: NSObject {
                     NCContentPresenter().messageNotification("E2E get publicKey", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, priority: .max)
 
                 case NCGlobal.shared.errorResourceNotFound:
-                    guard let csr = NCEndToEndEncryption.sharedManager().createCSR(self.appDelegate.userId, directory: self.utilityFileSystem.directoryUserData) else {
+                    guard let csr = NCEndToEndEncryption.shared().createCSR(self.appDelegate.userId, directory: self.utilityFileSystem.directoryUserData) else {
                         let error = NKError(errorCode: error.errorCode, errorDescription: "Error creating CSR")
                         NCContentPresenter().messageNotification("E2E Csr", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, priority: .max)
 
@@ -89,8 +89,8 @@ class NCEndToEndInitialize: NSObject {
                         if error == .success, account == self.appDelegate.account, let certificate {
 
                             // TEST publicKey
-                            let extractedPublicKey = NCEndToEndEncryption.sharedManager().extractPublicKey(fromCertificate: certificate)
-                            if extractedPublicKey != NCEndToEndEncryption.sharedManager().generatedPublicKey {
+                            let extractedPublicKey = NCEndToEndEncryption.shared().extractPublicKey(fromCertificate: certificate)
+                            if extractedPublicKey != NCEndToEndEncryption.shared().generatedPublicKey {
                                 let error = NKError(errorCode: error.errorCode, errorDescription: "error: the public key is incorrect")
                                 NCContentPresenter().messageNotification("E2E sign publicKey", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, priority: .max)
 
@@ -150,7 +150,7 @@ class NCEndToEndInitialize: NSObject {
 
                     let publicKey = NCKeychain().getEndToEndCertificate(account: self.appDelegate.account)
 
-                    if let privateKeyData = (NCEndToEndEncryption.sharedManager().decryptPrivateKey(privateKeyChiper, passphrase: passphrase, publicKey: publicKey, iterationCount: 1024)),
+                    if let privateKeyData = (NCEndToEndEncryption.shared().decryptPrivateKey(privateKeyChiper, passphrase: passphrase, publicKey: publicKey, iterationCount: 1024)),
                        let keyData = Data(base64Encoded: privateKeyData),
                        let privateKey = String(data: keyData, encoding: .utf8) {
                         NCKeychain().setEndToEndPrivateKey(account: self.appDelegate.account, privateKey: privateKey)
@@ -253,7 +253,7 @@ class NCEndToEndInitialize: NSObject {
 
         var privateKeyString: NSString?
 
-        guard let privateKeyCipher = NCEndToEndEncryption.sharedManager().encryptPrivateKey(self.appDelegate.userId, directory: utilityFileSystem.directoryUserData, passphrase: e2ePassphrase, privateKey: &privateKeyString, iterationCount: 1024) else {
+        guard let privateKeyCipher = NCEndToEndEncryption.shared().encryptPrivateKey(self.appDelegate.userId, directory: utilityFileSystem.directoryUserData, passphrase: e2ePassphrase, privateKey: &privateKeyString, iterationCount: 1024) else {
             let error = NKError(errorCode: error.errorCode, errorDescription: "Error creating private key cipher")
             NCContentPresenter().messageNotification("E2E privateKey", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, priority: .max)
             return

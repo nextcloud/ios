@@ -61,13 +61,13 @@
 @implementation NCEndToEndEncryption
 
 //Singleton
-+ (instancetype)sharedManager {
-    static NCEndToEndEncryption *NCEndToEndEncryption = nil;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        NCEndToEndEncryption = [self new];
++ (instancetype)shared {
+    static dispatch_once_t once;
+    static NCEndToEndEncryption *shared;
+    dispatch_once(&once, ^{
+        shared = [self new];
     });
-    return NCEndToEndEncryption;
+    return shared;
 }
 
 #
