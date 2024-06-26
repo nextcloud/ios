@@ -51,7 +51,7 @@ import Alamofire
  
    -------------------------------------------------------------------------------------------------------------------------------------------- */
 
-class FileProviderExtension: NSFileProviderExtension, NCNetworkingDelegate {
+class FileProviderExtension: NSFileProviderExtension {
 
     var outstandingSessionTasks: [URL: URLSessionTask] = [:]
     var outstandingOcIdTemp: [String: String] = [:]

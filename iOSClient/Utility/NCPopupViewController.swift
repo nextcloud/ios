@@ -161,7 +161,7 @@ public class NCPopupViewController: UIViewController {
         if borderEnabled {
             containerView.layer.cornerRadius = cornerRadius
             containerView.layer.borderWidth = 0.3
-            containerView.layer.borderColor = UIColor.gray.cgColor
+            containerView.layer.borderColor = NCBrandColor.shared.textColor2.cgColor
         }
     }
 

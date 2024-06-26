@@ -27,13 +27,11 @@ import Alamofire
 import Foundation
 
 class NCNetworkingE2EECreateFolder: NSObject {
-
     let networkingE2EE = NCNetworkingE2EE()
     let utilityFileSystem = NCUtilityFileSystem()
     let utility = NCUtility()
 
-    func createFolder(fileName: String, serverUrl: String, account: String, urlBase: String, userId: String, withPush: Bool) async -> NKError {
-
+    func createFolder(fileName: String, serverUrl: String, account: String, urlBase: String, userId: String, withPush: Bool, sceneIdentifier: String?) async -> NKError {
         var fileNameFolder = utility.removeForbiddenCharacters(fileName)
         if fileName != fileNameFolder {
             let errorDescription = String(format: NSLocalizedString("_forbidden_characters_", comment: ""), NCGlobal.shared.forbiddenCharacters.joined(separator: " "))
@@ -155,7 +153,7 @@ class NCNetworkingE2EECreateFolder: NSObject {
         NCManageDatabase.shared.addMetadata(metadata)
         NCManageDatabase.shared.addDirectory(e2eEncrypted: true, favorite: metadata.favorite, ocId: metadata.ocId, fileId: metadata.fileId, permissions: metadata.permissions, serverUrl: serverUrlFileName, account: metadata.account)
 
-        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterCreateFolder, userInfo: ["ocId": ocId, "serverUrl": serverUrl, "account": account, "withPush": withPush])
+        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterCreateFolder, userInfo: ["ocId": ocId, "serverUrl": serverUrl, "account": account, "withPush": withPush, "sceneIdentifier": sceneIdentifier as Any])
 
         return NKError()
     }

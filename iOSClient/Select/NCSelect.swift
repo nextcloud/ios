@@ -79,8 +79,9 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        self.navigationController?.navigationBar.prefersLargeTitles = true
-        self.navigationController?.presentationController?.delegate = self
+        navigationController?.navigationBar.prefersLargeTitles = true
+        navigationController?.presentationController?.delegate = self
+        navigationController?.navigationBar.tintColor = NCBrandColor.shared.iconImageColor
 
         view.backgroundColor = .systemBackground
         selectCommandViewSelect?.separatorView.backgroundColor = .separator
@@ -273,22 +274,13 @@ extension NCSelect: UICollectionViewDataSource {
                 if metadata.iconName.isEmpty {
                     (cell as? NCCellProtocol)?.filePreviewImageView?.image = NCImageCache.images.file
                 } else {
-                    (cell as? NCCellProtocol)?.filePreviewImageView?.image = UIImage(named: metadata.iconName)
+                    (cell as? NCCellProtocol)?.filePreviewImageView?.image = utility.loadImage(named: metadata.iconName, useTypeIconFile: true)
                 }
                 if metadata.hasPreview && metadata.status == NCGlobal.shared.metadataStatusNormal && (!utilityFileSystem.fileProviderStoragePreviewIconExists(metadata.ocId, etag: metadata.etag)) {
                     for case let operation as NCCollectionViewDownloadThumbnail in NCNetworking.shared.downloadThumbnailQueue.operations where operation.metadata.ocId == metadata.ocId { return }
                     NCNetworking.shared.downloadThumbnailQueue.addOperation(NCCollectionViewDownloadThumbnail(metadata: metadata, cell: (cell as? NCCellProtocol), collectionView: collectionView))
                 }
             }
-        }
-
-        // Avatar
-        if !metadata.ownerId.isEmpty,
-           metadata.ownerId != activeAccount.userId,
-           activeAccount.account == metadata.account,
-           let cell = cell as? NCCellProtocol {
-            let fileName = metadata.userBaseUrl + "-" + metadata.ownerId + ".png"
-            NCNetworking.shared.downloadAvatar(user: metadata.ownerId, dispalyName: metadata.ownerDisplayName, fileName: fileName, cell: cell, view: collectionView, cellImageView: cell.fileAvatarImageView)
         }
     }
 
@@ -319,7 +311,7 @@ extension NCSelect: UICollectionViewDataSource {
         cell.fileObjectId = metadata.ocId
         cell.fileUser = metadata.ownerId
         cell.labelTitle.text = metadata.fileNameView
-        cell.labelTitle.textColor = .label
+        cell.labelTitle.textColor = NCBrandColor.shared.textColor
 
         cell.imageSelect.image = nil
         cell.imageStatus.image = nil
@@ -405,11 +397,11 @@ extension NCSelect: UICollectionViewDataSource {
 
                 guard let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionHeaderEmptyData", for: indexPath) as? NCSectionHeaderEmptyData else { return NCSectionHeaderEmptyData() }
                 if self.dataSourceTask?.state == .running {
-                    header.emptyImage.image = UIImage(named: "networkInProgress")?.image(color: .gray, size: UIScreen.main.bounds.width)
+                    header.emptyImage.image = utility.loadImage(named: "wifi", colors: [NCBrandColor.shared.brandElement])
                     header.emptyTitle.text = NSLocalizedString("_request_in_progress_", comment: "")
                     header.emptyDescription.text = ""
                 } else {
-                    header.emptyImage.image = UIImage(named: "folder")?.image(color: NCBrandColor.shared.brandElement, size: UIScreen.main.bounds.width)
+                    header.emptyImage.image = NCImageCache.images.folder
                     if includeImages {
                         header.emptyTitle.text = NSLocalizedString("_files_no_files_", comment: "")
                     } else {
@@ -578,34 +570,34 @@ class NCSelectCommandView: UIView {
         separatorHeightConstraint.constant = 0.5
         separatorView.backgroundColor = .separator
 
-        overwriteSwitch?.onTintColor = NCBrandColor.shared.brand
+        overwriteSwitch?.onTintColor = NCBrandColor.shared.brandElement
         overwriteLabel?.text = NSLocalizedString("_overwrite_", comment: "")
 
         selectButton?.layer.cornerRadius = 15
         selectButton?.layer.masksToBounds = true
         selectButton?.setTitle(NSLocalizedString("_select_", comment: ""), for: .normal)
-        selectButton?.backgroundColor = NCBrandColor.shared.brand
+        selectButton?.backgroundColor = NCBrandColor.shared.brandElement
         selectButton?.setTitleColor(UIColor(white: 1, alpha: 0.3), for: .highlighted)
         selectButton?.setTitleColor(NCBrandColor.shared.brandText, for: .normal)
 
         createFolderButton?.layer.cornerRadius = 15
         createFolderButton?.layer.masksToBounds = true
         createFolderButton?.setTitle(NSLocalizedString("_create_folder_", comment: ""), for: .normal)
-        createFolderButton?.backgroundColor = NCBrandColor.shared.brand
+        createFolderButton?.backgroundColor = NCBrandColor.shared.brandElement
         createFolderButton?.setTitleColor(UIColor(white: 1, alpha: 0.3), for: .highlighted)
         createFolderButton?.setTitleColor(NCBrandColor.shared.brandText, for: .normal)
 
         copyButton?.layer.cornerRadius = 15
         copyButton?.layer.masksToBounds = true
         copyButton?.setTitle(NSLocalizedString("_copy_", comment: ""), for: .normal)
-        copyButton?.backgroundColor = NCBrandColor.shared.brand
+        copyButton?.backgroundColor = NCBrandColor.shared.brandElement
         copyButton?.setTitleColor(UIColor(white: 1, alpha: 0.3), for: .highlighted)
         copyButton?.setTitleColor(NCBrandColor.shared.brandText, for: .normal)
 
         moveButton?.layer.cornerRadius = 15
         moveButton?.layer.masksToBounds = true
         moveButton?.setTitle(NSLocalizedString("_move_", comment: ""), for: .normal)
-        moveButton?.backgroundColor = NCBrandColor.shared.brand
+        moveButton?.backgroundColor = NCBrandColor.shared.brandElement
         moveButton?.setTitleColor(UIColor(white: 1, alpha: 0.3), for: .highlighted)
         moveButton?.setTitleColor(NCBrandColor.shared.brandText, for: .normal)
     }

@@ -44,18 +44,19 @@ import MarkdownKit
         super.viewDidLoad()
 
         view.backgroundColor = .systemBackground
+        navigationController?.navigationBar.tintColor = NCBrandColor.shared.iconImageColor
         presentationController?.delegate = self
 
         let closeItem = UIBarButtonItem(title: NSLocalizedString("_back_", comment: ""), style: .plain, target: self, action: #selector(closeItemTapped(_:)))
         self.navigationItem.leftBarButtonItem = closeItem
 
-        let editItem = UIBarButtonItem(image: UIImage(named: "actionSheetModify"), style: UIBarButtonItem.Style.plain, target: self, action: #selector(editItemAction(_:)))
+        let editItem = UIBarButtonItem(image: NCUtility().loadImage(named: "square.and.pencil"), style: UIBarButtonItem.Style.plain, target: self, action: #selector(editItemAction(_:)))
         self.navigationItem.rightBarButtonItem = editItem
 
-        markdownParser = MarkdownParser(font: UIFont.systemFont(ofSize: 15), color: .label)
+        markdownParser = MarkdownParser(font: UIFont.systemFont(ofSize: 15), color: NCBrandColor.shared.textColor)
         markdownParser.header.font = UIFont.systemFont(ofSize: 25)
         textView.attributedText = markdownParser.parse(richWorkspaceText)
-        textViewColor = .label
+        textViewColor = NCBrandColor.shared.textColor
     }
 
     override func viewDidAppear(_ animated: Bool) {

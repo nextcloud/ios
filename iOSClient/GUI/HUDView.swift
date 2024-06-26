@@ -22,7 +22,6 @@
 //
 
 import SwiftUI
-import PreviewSnapshots
 
 struct HUDView: View {
 
@@ -55,7 +54,7 @@ struct Blur: UIViewRepresentable {
 
     func makeUIView(context: Context) -> UIVisualEffectView {
         let effectView = UIVisualEffectView(effect: UIBlurEffect(style: style))
-        effectView.backgroundColor = NCBrandColor.shared.brand
+        effectView.backgroundColor = NCBrandColor.shared.brandElement
         return effectView
     }
 
@@ -92,18 +91,6 @@ struct ContentView: View {
     }
 }
 
-struct HUDView_Previews: PreviewProvider {
-    static var previews: some View {
-        snapshots.previews.previewLayout(.sizeThatFits)
-    }
-
-    static var snapshots: PreviewSnapshots<String> {
-        PreviewSnapshots(
-            configurations: [
-                .init(name: NCGlobal.shared.defaultSnapshotConfiguration, state: "")
-            ],
-            configure: { _ in
-                ContentView().frameForPreview()
-            })
-    }
+#Preview {
+    ContentView()
 }

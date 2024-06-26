@@ -43,6 +43,7 @@ struct FilesData: Identifiable, Hashable {
     var title: String
     var subTitle: String
     var url: URL
+    var useTypeIconFile: Bool = false
 }
 
 let filesDatasTest: [FilesData] = [
@@ -79,9 +80,8 @@ func getTitleFilesWidget(account: tableAccount?) -> String {
 }
 
 func getFilesItems(displaySize: CGSize) -> Int {
-
-    let height = Int((displaySize.height - 100) / 50)
-    return height
+    let items = Int((displaySize.height - 90) / 55)
+    return items
 }
 
 func getFilesDataEntry(configuration: AccountIntent?, isPreview: Bool, displaySize: CGSize, completion: @escaping (_ entry: FilesDataEntry) -> Void) {
@@ -105,24 +105,6 @@ func getFilesDataEntry(configuration: AccountIntent?, isPreview: Bool, displaySi
 
     guard let account = account else {
         return completion(FilesDataEntry(date: Date(), datas: datasPlaceholder, isPlaceholder: true, isEmpty: false, userId: "", url: "", tile: getTitleFilesWidget(account: nil), footerImage: "xmark.icloud", footerText: NSLocalizedString("_no_active_account_", value: "No account found", comment: "")))
-    }
-
-    @Sendable func isLive(file: NKFile, files: [NKFile]) -> Bool {
-
-        let ext = (file.fileName as NSString).pathExtension.lowercased()
-        if ext != "mov" { return false }
-
-        let fileName = (file.fileName as NSString).deletingPathExtension.lowercased()
-        let fileNameViewMOV = fileName + ".mov"
-        let fileNameViewJPG = fileName + ".jpg"
-        let fileNameViewHEIC = fileName + ".heic"
-
-        let results = files.filter({ $0.fileName.lowercased() == fileNameViewJPG.lowercased() || $0.fileName.lowercased() == fileNameViewHEIC.lowercased() || $0.fileName.lowercased() == fileNameViewMOV.lowercased() })
-        if results.count == 2 {
-            return true
-        } else {
-            return false
-        }
     }
 
     // NETWORKING
@@ -181,7 +163,7 @@ func getFilesDataEntry(configuration: AccountIntent?, isPreview: Bool, displaySi
         </d:order>
     </d:orderby>
     <d:limit>
-        <d:nresults>50</d:nresults>
+        <d:nresults>25</d:nresults>
     </d:limit>
     </d:basicsearch>
     </d:searchrequest>
@@ -207,18 +189,20 @@ func getFilesDataEntry(configuration: AccountIntent?, isPreview: Bool, displaySi
         NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Start \(NCBrandOptions.shared.brand) widget session with level \(levelLog) " + versionNextcloudiOS)
     }
 
-    let options = NKRequestOptions(timeout: 90, queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
+    let options = NKRequestOptions(timeout: 30, queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
     NextcloudKit.shared.searchBodyRequest(serverUrl: account.urlBase, requestBody: requestBody, showHiddenFiles: NCKeychain().showHiddenFiles, options: options) { _, files, data, error in
         Task {
             var datas: [FilesData] = []
-            var imageRecent = UIImage(named: "file")!
             let title = getTitleFilesWidget(account: account)
             let files = files.sorted(by: { ($0.date as Date) > ($1.date as Date) })
 
             for file in files {
+                var image: UIImage?
+                var useTypeIconFile = false
 
-                guard !file.directory else { continue }
-                guard !isLive(file: file, files: files) else { continue }
+                if file.directory || (!file.livePhotoFile.isEmpty && file.classFile == NKCommon.TypeClassFile.video.rawValue) {
+                    continue
+                }
 
                 // SUBTITLE
                 let subTitle = utility.dateDiff(file.date as Date) + " · " + utilityFileSystem.transformedSize(file.size)
@@ -232,27 +216,28 @@ func getFilesDataEntry(configuration: AccountIntent?, isPreview: Bool, displaySi
                 guard let url = URL(string: urlString) else { continue }
 
                 // IMAGE
-                if !file.iconName.isEmpty {
-                    imageRecent = UIImage(named: file.iconName)!
-                }
-                if let image = utility.createFilePreviewImage(ocId: file.ocId, etag: file.etag, fileNameView: file.fileName, classFile: file.classFile, status: 0, createPreviewMedia: false) {
-                    imageRecent = image
+                if let result = utility.createFilePreviewImage(ocId: file.ocId, etag: file.etag, fileNameView: file.fileName, classFile: file.classFile, status: 0, createPreviewMedia: false) {
+                    image = result
                 } else if file.hasPreview {
                     let fileNamePathOrFileId = utilityFileSystem.getFileNamePath(file.fileName, serverUrl: file.serverUrl, urlBase: file.urlBase, userId: file.userId)
                     let fileNamePreviewLocalPath = utilityFileSystem.getDirectoryProviderStoragePreviewOcId(file.ocId, etag: file.etag)
                     let fileNameIconLocalPath = utilityFileSystem.getDirectoryProviderStorageIconOcId(file.ocId, etag: file.etag)
                     let sizePreview = NCUtility().getSizePreview(width: Int(file.width), height: Int(file.height))
                     let (_, _, imageIcon, _, _, _) = await NextcloudKit.shared.downloadPreview(fileNamePathOrFileId: fileNamePathOrFileId, fileNamePreviewLocalPath: fileNamePreviewLocalPath, widthPreview: Int(sizePreview.width), heightPreview: Int(sizePreview.height), fileNameIconLocalPath: fileNameIconLocalPath, sizeIcon: NCGlobal.shared.sizeIcon, options: options)
-                    if let image = imageIcon {
-                        imageRecent = image
+                    if let result = imageIcon {
+                         image = result
                     }
+                }
+                if image == nil {
+                    image = utility.loadImage(named: file.iconName, useTypeIconFile: true)
+                    useTypeIconFile = true
                 }
 
                 let isDirectoryE2EE = utilityFileSystem.isDirectoryE2EE(file: file)
                 let metadata = NCManageDatabase.shared.convertFileToMetadata(file, isDirectoryE2EE: isDirectoryE2EE)
 
                 // DATA
-                let data = FilesData(id: metadata.ocId, image: imageRecent, title: metadata.fileNameView, subTitle: subTitle, url: url)
+                let data = FilesData(id: metadata.ocId, image: image!, title: metadata.fileNameView, subTitle: subTitle, url: url, useTypeIconFile: useTypeIconFile)
                 datas.append(data)
                 if datas.count == filesItems { break}
             }

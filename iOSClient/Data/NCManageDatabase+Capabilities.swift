@@ -103,6 +103,7 @@ extension NCManageDatabase {
                         let external: External?
                         let groupfolders: GroupFolders?
                         let securityguard: SecurityGuard?
+                        let assistant: Assistant?
 
                         enum CodingKeys: String, CodingKey {
                             case filessharing = "files_sharing"
@@ -112,6 +113,7 @@ extension NCManageDatabase {
                             case userstatus = "user_status"
                             case external, groupfolders
                             case securityguard = "security_guard"
+                            case assistant
                         }
 
                         struct FilesSharing: Codable {
@@ -269,6 +271,11 @@ extension NCManageDatabase {
                         struct SecurityGuard: Codable {
                             let diagnostics: Bool?
                         }
+
+                        struct Assistant: Codable {
+                            let enabled: Bool?
+                            let version: String?
+                        }
                     }
                 }
             }
@@ -324,13 +331,15 @@ extension NCManageDatabase {
             global.capabilityE2EEEnabled = data.capabilities.endtoendencryption?.enabled ?? false
             global.capabilityE2EEApiVersion = data.capabilities.endtoendencryption?.apiversion ?? ""
 
-            global.capabilityRichdocumentsEnabled = json.ocs.data.capabilities.richdocuments?.directediting ?? false
-            global.capabilityRichdocumentsMimetypes.removeAll()
+            global.capabilityRichDocumentsEnabled = json.ocs.data.capabilities.richdocuments?.directediting ?? false
+            global.capabilityRichDocumentsMimetypes.removeAll()
             if let mimetypes = data.capabilities.richdocuments?.mimetypes {
                 for mimetype in mimetypes {
-                    global.capabilityRichdocumentsMimetypes.append(mimetype)
+                    global.capabilityRichDocumentsMimetypes.append(mimetype)
                 }
             }
+
+            global.capabilityAssistantEnabled = data.capabilities.assistant?.enabled ?? false
 
             global.capabilityActivity.removeAll()
             if let activities = data.capabilities.activity?.apiv2 {

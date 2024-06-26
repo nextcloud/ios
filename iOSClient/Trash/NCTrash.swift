@@ -73,10 +73,8 @@ class NCTrash: UIViewController, NCTrashListCellDelegate, NCTrashGridCellDelegat
 
         // Add Refresh Control
         collectionView.refreshControl = refreshControl
-        refreshControl.tintColor = .gray
+        refreshControl.tintColor = NCBrandColor.shared.textColor2
         refreshControl.addTarget(self, action: #selector(loadListingTrash), for: .valueChanged)
-
-        setNavigationRightItems()
 
         NotificationCenter.default.addObserver(self, selector: #selector(reloadDataSource), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterReloadDataSource), object: nil)
     }
@@ -94,18 +92,19 @@ class NCTrash: UIViewController, NCTrashListCellDelegate, NCTrashGridCellDelegat
             collectionView.collectionViewLayout = gridLayout
         }
 
+        isEditMode = false
+        setNavigationRightItems()
+
         reloadDataSource()
         loadListingTrash()
     }
 
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        appDelegate.activeViewController = self
-    }
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
 
-    override func viewDidDisappear(_ animated: Bool) {
-        super.viewDidDisappear(animated)
-        setEditMode(false)
+        // Cancel Queue & Retrieves Properties
+        NCNetworking.shared.downloadThumbnailTrashQueue.cancelAll()
+        dataSourceTask?.cancel()
     }
 
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
@@ -126,18 +125,17 @@ class NCTrash: UIViewController, NCTrashListCellDelegate, NCTrashGridCellDelegat
 
     // MARK: - Layout
 
-    func setNavigationRightItems(enableMenu: Bool = false) {
+    func setNavigationRightItems() {
         func createMenuActions() -> [UIMenuElement] {
             guard let layoutForView = NCManageDatabase.shared.getLayoutForView(account: appDelegate.account, key: layoutKey, serverUrl: "") else { return [] }
-
-            let select = UIAction(title: NSLocalizedString("_select_", comment: ""), image: .init(systemName: "checkmark.circle"), attributes: self.datasource.isEmpty ? .disabled : []) { _ in
+            let select = UIAction(title: NSLocalizedString("_select_", comment: ""), image: utility.loadImage(named: "checkmark.circle", colors: [NCBrandColor.shared.iconImageColor]), attributes: self.datasource.isEmpty ? .disabled : []) { _ in
                 self.setEditMode(true)
             }
-            let list = UIAction(title: NSLocalizedString("_list_", comment: ""), image: .init(systemName: "list.bullet"), state: layoutForView.layout == NCGlobal.shared.layoutList ? .on : .off) { _ in
+            let list = UIAction(title: NSLocalizedString("_list_", comment: ""), image: utility.loadImage(named: "list.bullet", colors: [NCBrandColor.shared.iconImageColor]), state: layoutForView.layout == NCGlobal.shared.layoutList ? .on : .off) { _ in
                 self.onListSelected()
                 self.setNavigationRightItems()
             }
-            let grid = UIAction(title: NSLocalizedString("_icons_", comment: ""), image: .init(systemName: "square.grid.2x2"), state: layoutForView.layout == NCGlobal.shared.layoutGrid ? .on : .off) { _ in
+            let grid = UIAction(title: NSLocalizedString("_icons_", comment: ""), image: utility.loadImage(named: "square.grid.2x2", colors: [NCBrandColor.shared.iconImageColor]), state: layoutForView.layout == NCGlobal.shared.layoutGrid ? .on : .off) { _ in
                 self.onGridSelected()
                 self.setNavigationRightItems()
             }
@@ -153,14 +151,12 @@ class NCTrash: UIViewController, NCTrashListCellDelegate, NCTrashGridCellDelegat
                 self.setEditMode(false)
             }
             navigationItem.rightBarButtonItems = [select]
-        } else {
+        } else if navigationItem.rightBarButtonItems == nil || (!isEditMode && !tabBarSelect.isHidden()) {
             tabBarSelect.hide()
-            if navigationItem.rightBarButtonItems == nil || enableMenu {
-                let menu = UIBarButtonItem(image: .init(systemName: "ellipsis.circle"), menu: UIMenu(children: createMenuActions()))
-                navigationItem.rightBarButtonItems = [menu]
-            } else {
-                navigationItem.rightBarButtonItems?.first?.menu = navigationItem.rightBarButtonItems?.first?.menu?.replacingChildren(createMenuActions())
-            }
+            let menu = UIBarButtonItem(image: utility.loadImage(named: "ellipsis.circle", colors: [NCBrandColor.shared.iconImageColor]), menu: UIMenu(children: createMenuActions()))
+            navigationItem.rightBarButtonItems = [menu]
+        } else {
+            navigationItem.rightBarButtonItems?.first?.menu = navigationItem.rightBarButtonItems?.first?.menu?.replacingChildren(createMenuActions())
         }
     }
 
@@ -207,8 +203,7 @@ class NCTrash: UIViewController, NCTrashListCellDelegate, NCTrashGridCellDelegat
 
     @objc func reloadDataSource(withQueryDB: Bool = true) {
 
-        layoutForView = NCManageDatabase.shared.getLayoutForView(account: appDelegate.account, key: NCGlobal.shared.layoutViewTrash, serverUrl: "")
-        datasource = NCManageDatabase.shared.getTrash(filePath: getFilePath(), sort: layoutForView?.sort, ascending: layoutForView?.ascending, account: appDelegate.account)
+        datasource = NCManageDatabase.shared.getTrash(filePath: getFilePath(), account: appDelegate.account)
         collectionView.reloadData()
         setNavigationRightItems()
 

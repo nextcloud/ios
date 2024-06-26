@@ -51,23 +51,15 @@ class NCViewerProviderContextMenu: UIViewController {
 
         if metadata.directory {
 
-            var imageFolder = UIImage(named: "folder")!.image(color: NCBrandColor.shared.brandElement, size: sizeIcon * 2)
-
-            if let image = self.image {
-                imageFolder = image.image(color: NCBrandColor.shared.brandElement, size: sizeIcon * 2)
-            }
-
-            imageView.image = imageFolder.colorizeFolder(metadata: metadata)
+            imageView.image = NCImageCache.images.folder.colorizeFolder(metadata: metadata)
             imageView.frame = resize(CGSize(width: sizeIcon, height: sizeIcon))
 
         } else {
 
             // ICON
-            if let image = UIImage(named: metadata.iconName)?.resizeImage(size: CGSize(width: sizeIcon * 2, height: sizeIcon * 2)) {
-
-                imageView.image = image
-                imageView.frame = resize(CGSize(width: sizeIcon, height: sizeIcon))
-            }
+            let image = NCUtility().loadImage(named: metadata.iconName, useTypeIconFile: true)
+            imageView.image = image
+            imageView.frame = resize(CGSize(width: sizeIcon, height: sizeIcon))
 
             // PREVIEW
             if utilityFileSystem.fileProviderStoragePreviewIconExists(metadata.ocId, etag: metadata.etag) {

@@ -20,14 +20,10 @@
 //
 
 import XCTest
+import NextcloudKit
+@testable import Nextcloud
 
 final class LoginUITests: BaseUIXCTestCase {
-    private let baseUrl = EnvVars.testServerUrl
-    private let user = EnvVars.testUser
-    private let userId = EnvVars.testUser
-    private let password = EnvVars.testAppPassword
-    private lazy var account = "\(userId) \(baseUrl)"
-
     let app = XCUIApplication()
 
     override func setUp() {
@@ -38,40 +34,42 @@ final class LoginUITests: BaseUIXCTestCase {
         app.launch()
 
         let loginButton = app.buttons["Log in"]
-        XCTAssert(loginButton.waitForExistence(timeout: timeoutSeconds))
+        XCTAssert(loginButton.waitForExistence(timeout: TestConstants.timeoutLong))
         loginButton.tap()
 
         let serverAddressHttpsTextField = app.textFields["Server address https:// …"]
         serverAddressHttpsTextField.tap()
-        serverAddressHttpsTextField.typeText(baseUrl)
-        let button = app.windows.children(matching: .other).element.children(matching: .other).element.children(matching: .other).element.children(matching: .other).element.children(matching: .other).element.children(matching: .other).element.children(matching: .button).element(boundBy: 0)
+        serverAddressHttpsTextField.typeText(TestConstants.server)
+        let button = app.children(matching: .window).element(boundBy: 0).children(matching: .other).element.children(matching: .other).element.children(matching: .other).element.children(matching: .other).element.children(matching: .other).element.children(matching: .button).element(boundBy: 0)
         button.tap()
 
         let webViewsQuery = app.webViews.webViews.webViews
         let loginButton2 = webViewsQuery/*@START_MENU_TOKEN@*/.buttons["Log in"]/*[[".otherElements.matching(identifier: \"Nextcloud\")",".otherElements[\"main\"].buttons[\"Log in\"]",".buttons[\"Log in\"]"],[[[-1,2],[-1,1],[-1,0,1]],[[-1,2],[-1,1]]],[0]]@END_MENU_TOKEN@*/
-        XCTAssert(loginButton2.waitForExistence(timeout: timeoutSeconds))
+        XCTAssert(loginButton2.waitForExistence(timeout: TestConstants.timeoutLong))
         waitForEnabledAndHittable(object: loginButton2)
         loginButton2.tap()
 
-        let element = webViewsQuery/*@START_MENU_TOKEN@*/.otherElements["main"]/*[[".otherElements[\"Login – Nextcloud\"].otherElements[\"main\"]",".otherElements[\"main\"]"],[[[-1,1],[-1,0]]],[0]]@END_MENU_TOKEN@*/.children(matching: .other).element(boundBy: 1)
-        let usernameTextField = element.children(matching: .other).element(boundBy: 2).children(matching: .textField).element
-        XCTAssert(usernameTextField.waitForExistence(timeout: timeoutSeconds))
+        let usernameTextField = webViewsQuery.textFields["Login with username or email"]
+        XCTAssert(usernameTextField.waitForExistence(timeout: TestConstants.timeoutLong))
         usernameTextField.tap()
-        usernameTextField.typeText(user)
-        let passwordTextField = element.children(matching: .other).element(boundBy: 4).children(matching: .secureTextField).element
+        usernameTextField.typeText(TestConstants.username)
+
+        let passwordTextField = webViewsQuery/*@START_MENU_TOKEN@*/.secureTextFields["Password"]/*[[".otherElements[\"Login – Nextcloud\"]",".otherElements[\"main\"].secureTextFields[\"Password\"]",".secureTextFields[\"Password\"]"],[[[-1,2],[-1,1],[-1,0,1]],[[-1,2],[-1,1]]],[0]]@END_MENU_TOKEN@*/
+        XCTAssert(passwordTextField.waitForExistence(timeout: TestConstants.timeoutLong))
         passwordTextField.tap()
-        passwordTextField.typeText(password)
+        passwordTextField.typeText(TestConstants.username)
+
         let loginButton3 = webViewsQuery/*@START_MENU_TOKEN@*/.buttons["Log in"]/*[[".otherElements[\"Login – Nextcloud\"]",".otherElements[\"main\"].buttons[\"Log in\"]",".buttons[\"Log in\"]"],[[[-1,2],[-1,1],[-1,0,1]],[[-1,2],[-1,1]]],[0]]@END_MENU_TOKEN@*/
-        XCTAssert(loginButton3.waitForExistence(timeout: timeoutSeconds))
+        XCTAssert(loginButton3.waitForExistence(timeout: TestConstants.timeoutLong))
         loginButton3.tap()
 
         let grantAccessButton = webViewsQuery/*@START_MENU_TOKEN@*/.buttons["Grant access"]/*[[".otherElements.matching(identifier: \"Nextcloud\")",".otherElements[\"main\"].buttons[\"Grant access\"]",".buttons[\"Grant access\"]"],[[[-1,2],[-1,1],[-1,0,1]],[[-1,2],[-1,1]]],[0]]@END_MENU_TOKEN@*/
-        XCTAssert(grantAccessButton.waitForExistence(timeout: timeoutSeconds))
+        XCTAssert(grantAccessButton.waitForExistence(timeout: TestConstants.timeoutLong))
         waitForEnabledAndHittable(object: grantAccessButton)
         grantAccessButton.tap()
 
         // Check if we are in the home screen
-        XCTAssert(app.navigationBars["Nextcloud"].waitForExistence(timeout: timeoutSeconds))
-        XCTAssert(app.tabBars["Tab Bar"].waitForExistence(timeout: timeoutSeconds))
+        XCTAssert(app.navigationBars["Nextcloud"].waitForExistence(timeout: TestConstants.timeoutLong))
+        XCTAssert(app.tabBars["Tab Bar"].waitForExistence(timeout: TestConstants.timeoutLong))
     }
 }
