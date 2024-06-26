@@ -41,7 +41,7 @@ class NCService: NSObject {
         let account = appDelegate.account
 
         NCManageDatabase.shared.clearAllAvatarLoaded()
-        NCPushNotification.shared().pushNotification()
+        NCPushNotification.shared.pushNotification()
 
         Task {
             addInternalTypeIdentifier()

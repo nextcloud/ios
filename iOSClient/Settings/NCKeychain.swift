@@ -494,7 +494,7 @@ import KeychainAccess
 
     // MARK: - PUSHNOTIFICATION
 
-    @objc func getPushNotificationPublicKey(account: String) -> Data? {
+    func getPushNotificationPublicKey(account: String) -> Data? {
         let key = "PNPublicKey" + account
         return try? keychain.getData(key)
     }
@@ -504,7 +504,7 @@ import KeychainAccess
         keychain[data: key] = data
     }
 
-    @objc func getPushNotificationPrivateKey(account: String) -> Data? {
+    func getPushNotificationPrivateKey(account: String) -> Data? {
         let key = "PNPrivateKey" + account
         return try? keychain.getData(key)
     }
@@ -514,47 +514,47 @@ import KeychainAccess
         keychain[data: key] = data
     }
 
-    @objc func getPushNotificationSubscribingPublicKey(account: String) -> String? {
+    func getPushNotificationSubscribingPublicKey(account: String) -> String? {
         let key = "PNSubscribingPublicKey" + account
         return try? keychain.get(key)
     }
 
-    @objc func setPushNotificationSubscribingPublicKey(account: String, publicKey: String?) {
+    func setPushNotificationSubscribingPublicKey(account: String, publicKey: String?) {
         let key = "PNSubscribingPublicKey" + account
         keychain[key] = publicKey
     }
 
-    @objc func getPushNotificationToken(account: String) -> String? {
+    func getPushNotificationToken(account: String) -> String? {
         let key = "PNToken" + account
         return try? keychain.get(key)
     }
 
-    @objc func setPushNotificationToken(account: String, token: String?) {
+    func setPushNotificationToken(account: String, token: String?) {
         let key = "PNToken" + account
         keychain[key] = token
     }
 
-    @objc func getPushNotificationDeviceIdentifier(account: String) -> String? {
+    func getPushNotificationDeviceIdentifier(account: String) -> String? {
         let key = "PNDeviceIdentifier" + account
         return try? keychain.get(key)
     }
 
-    @objc func setPushNotificationDeviceIdentifier(account: String, deviceIdentifier: String?) {
+    func setPushNotificationDeviceIdentifier(account: String, deviceIdentifier: String?) {
         let key = "PNDeviceIdentifier" + account
         keychain[key] = deviceIdentifier
     }
 
-    @objc func getPushNotificationDeviceIdentifierSignature(account: String) -> String? {
+    func getPushNotificationDeviceIdentifierSignature(account: String) -> String? {
         let key = "PNDeviceIdentifierSignature" + account
         return try? keychain.get(key)
     }
 
-    @objc func setPushNotificationDeviceIdentifierSignature(account: String, deviceIdentifierSignature: String?) {
+    func setPushNotificationDeviceIdentifierSignature(account: String, deviceIdentifierSignature: String?) {
         let key = "PNDeviceIdentifierSignature" + account
         keychain[key] = deviceIdentifierSignature
     }
 
-    @objc func clearAllKeysPushNotification(account: String) {
+    func clearAllKeysPushNotification(account: String) {
         setPushNotificationPublicKey(account: account, data: nil)
         setPushNotificationSubscribingPublicKey(account: account, publicKey: nil)
         setPushNotificationPrivateKey(account: account, data: nil)

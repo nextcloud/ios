@@ -299,13 +299,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
         NCNetworking.shared.checkPushNotificationServerProxyCertificateUntrusted(viewController: UIApplication.shared.firstWindow?.rootViewController) { error in
             if error == .success {
-                NCPushNotification.shared().registerForRemoteNotifications(withDeviceToken: deviceToken)
+                NCPushNotification.shared.registerForRemoteNotificationsWithDeviceToken(deviceToken)
             }
         }
     }
 
     func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable: Any], fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
-        NCPushNotification.shared().applicationdidReceiveRemoteNotification(userInfo) { result in
+        NCPushNotification.shared.applicationdidReceiveRemoteNotification(userInfo: userInfo) { result in
             completionHandler(result)
         }
     }
@@ -527,7 +527,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             NCManageDatabase.shared.setAccountUserProfile(account: account, userProfile: userProfile)
         }
 
-        NCPushNotification.shared().pushNotification()
+        NCPushNotification.shared.pushNotification()
 
         NCService().startRequestServicesServer()
 
@@ -542,7 +542,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         UIApplication.shared.allSceneSessionDestructionExceptFirst()
 
         if let account = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", account)) {
-            NCPushNotification.shared().unsubscribingNextcloudServerPushNotification(account.account, urlBase: account.urlBase, user: account.user, withSubscribing: false)
+            NCPushNotification.shared.unsubscribingNextcloudServerPushNotification(account: account.account, urlBase: account.urlBase, user: account.user, withSubscribing: false)
         }
 
         NextcloudKit.shared.deleteAppPassword(serverUrl: urlBase, username: userId, password: password) { _, error in

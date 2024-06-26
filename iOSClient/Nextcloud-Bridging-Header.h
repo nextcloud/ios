@@ -5,5 +5,4 @@
 #import "NCEndToEndEncryption.h"
 #import "NYMnemonic.h"
 #import "UIImage+animatedGIF.h"
-#import "NCPushNotification.h"
 #import "NCPushNotificationEncryption.h"
