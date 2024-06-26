@@ -1,11 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<<<<<<< HEAD
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="19455" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
-    <device id="retina4_7" orientation="portrait" appearance="light"/>
-    <dependencies>
-        <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="19454"/>
-=======
 <document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="22505" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina4_7" orientation="portrait" appearance="light"/>
     <dependencies>
@@ -13,7 +6,6 @@
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="22504"/>
         <capability name="Image references" minToolsVersion="12.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
->>>>>>> aa28af8228d8d3d97f2f5aa16076333e8c0faf95
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -93,9 +85,6 @@
                             <constraint firstAttribute="height" constant="20" id="G48-LB-BsD"/>
                             <constraint firstAttribute="width" constant="20" id="vLI-cJ-Jqx"/>
                         </constraints>
-<<<<<<< HEAD
-                        <state key="normal" image="shareMenu"/>
-=======
                         <state key="normal">
                             <imageReference key="image" image="ellipsis" catalog="system" renderingMode="hierarchical">
                                 <hierarchicalColors>
@@ -105,7 +94,6 @@
                                 </hierarchicalColors>
                             </imageReference>
                         </state>
->>>>>>> aa28af8228d8d3d97f2f5aa16076333e8c0faf95
                         <connections>
                             <action selector="touchUpInsideMenu:" destination="qJF-Yc-gKE" eventType="touchUpInside" id="NJn-zI-QQX"/>
                         </connections>
@@ -149,9 +137,6 @@
     </objects>
     <resources>
         <image name="arrowtriangle.down.fill" width="24" height="24"/>
-<<<<<<< HEAD
-        <image name="shareMenu" width="329" height="329"/>
-=======
         <image name="ellipsis" catalog="system" width="128" height="37"/>
         <systemColor name="labelColor">
             <color white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -162,6 +147,5 @@
         <systemColor name="tertiaryLabelColor">
             <color red="0.23529411764705882" green="0.23529411764705882" blue="0.2627450980392157" alpha="0.29803921568627451" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
->>>>>>> aa28af8228d8d3d97f2f5aa16076333e8c0faf95
     </resources>
 </document>

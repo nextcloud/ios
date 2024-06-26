@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="22505" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="32700.99.1234" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_0" orientation="landscape" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="22504"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="22685"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -90,11 +90,7 @@
                             <action selector="touchUpInsideShare:" destination="jxV-Pk-fPt" eventType="touchUpInside" id="UVA-XS-fRf"/>
                         </connections>
                     </button>
-<<<<<<< HEAD
-                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="jc6-Vg-TaS" userLabel="imageShared">
-=======
                     <imageView userInteractionEnabled="NO" contentMode="center" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="jc6-Vg-TaS" userLabel="imageShared">
->>>>>>> aa28af8228d8d3d97f2f5aa16076333e8c0faf95
                         <rect key="frame" x="589" y="59" width="30" height="30"/>
                         <constraints>
                             <constraint firstAttribute="height" constant="30" id="Cvy-nZ-zyD"/>
@@ -111,11 +107,7 @@
                             <action selector="touchUpInsideMore:" destination="jxV-Pk-fPt" eventType="touchUpInside" id="Mtu-LP-kuR"/>
                         </connections>
                     </button>
-<<<<<<< HEAD
-                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="dgL-g5-Nkc" userLabel="imageMore">
-=======
                     <imageView userInteractionEnabled="NO" contentMode="center" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="dgL-g5-Nkc" userLabel="imageMore">
->>>>>>> aa28af8228d8d3d97f2f5aa16076333e8c0faf95
                         <rect key="frame" x="636.66666666666663" y="61.666666666666657" width="25" height="25"/>
                         <constraints>
                             <constraint firstAttribute="width" constant="25" id="05P-NL-pd8"/>
@@ -134,7 +126,7 @@
                         </constraints>
                     </view>
                     <label hidden="YES" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="tag0" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="qnc-hI-Z9r" customClass="PaddedAndBorderedLabel" customModule="Nextcloud" customModuleProvider="target">
-                        <rect key="frame" x="107" y="122.66666666666667" width="36" height="16.333333333333329"/>
+                        <rect key="frame" x="107" y="124.66666666666667" width="26" height="14.333333333333329"/>
                         <fontDescription key="fontDescription" type="system" pointSize="12"/>
                         <color key="textColor" systemColor="systemGrayColor"/>
                         <nil key="highlightedColor"/>
@@ -163,7 +155,7 @@
                         </userDefinedRuntimeAttributes>
                     </label>
                     <label hidden="YES" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="tag1" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="jUe-8q-VJd" customClass="PaddedAndBorderedLabel" customModule="Nextcloud" customModuleProvider="target">
-                        <rect key="frame" x="148" y="122.66666666666667" width="34" height="16.333333333333329"/>
+                        <rect key="frame" x="138" y="124.66666666666667" width="24" height="14.333333333333329"/>
                         <fontDescription key="fontDescription" type="system" pointSize="12"/>
                         <color key="textColor" systemColor="systemGrayColor"/>
                         <nil key="highlightedColor"/>
@@ -263,10 +255,10 @@
     </objects>
     <designables>
         <designable name="jUe-8q-VJd">
-            <size key="intrinsicContentSize" width="34" height="16.333333333333336"/>
+            <size key="intrinsicContentSize" width="24" height="14.333333333333334"/>
         </designable>
         <designable name="qnc-hI-Z9r">
-            <size key="intrinsicContentSize" width="36" height="16.333333333333336"/>
+            <size key="intrinsicContentSize" width="26" height="14.333333333333334"/>
         </designable>
     </designables>
     <resources>
