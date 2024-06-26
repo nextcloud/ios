@@ -44,6 +44,7 @@ class NCActivity: UIViewController, NCSharePagingContent {
     let utility = NCUtility()
     var allItems: [DateCompareable] = []
     var sectionDates: [Date] = []
+    var dataSourceTask: URLSessionTask?
 
     var insets = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
     var didSelectItemEnable: Bool = true
@@ -102,9 +103,12 @@ class NCActivity: UIViewController, NCSharePagingContent {
         fetchAll(isInitial: true)
     }
 
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        appDelegate.activeViewController = self
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+
+        // Cancel Queue & Retrieves Properties
+        NCNetworking.shared.downloadThumbnailActivityQueue.cancelAll()
+        dataSourceTask?.cancel()
     }
 
     override func viewWillLayoutSubviews() {
@@ -123,7 +127,7 @@ class NCActivity: UIViewController, NCSharePagingContent {
 
         let label = UILabel()
         label.font = UIFont.systemFont(ofSize: 15)
-        label.textColor = UIColor.systemGray
+        label.textColor = NCBrandColor.shared.textColor2
         label.textAlignment = .center
         label.text = NSLocalizedString("_no_activity_footer_", comment: "")
         label.frame = CGRect(x: 0, y: 10, width: tableView.frame.width, height: 60)
@@ -156,7 +160,7 @@ extension NCActivity: UITableViewDelegate {
 
         let label = UILabel()
         label.font = UIFont.boldSystemFont(ofSize: 13)
-        label.textColor = .label
+        label.textColor = NCBrandColor.shared.textColor
         label.text = utility.getTitleFromDate(sectionDates[section])
         label.textAlignment = .center
         label.layer.cornerRadius = 11
@@ -209,16 +213,16 @@ extension NCActivity: UITableViewDataSource {
 
         // Image
         let fileName = appDelegate.userBaseUrl + "-" + comment.actorId + ".png"
-        NCNetworking.shared.downloadAvatar(user: comment.actorId, dispalyName: comment.actorDisplayName, fileName: fileName, cell: cell, view: tableView, cellImageView: cell.fileAvatarImageView)
+        NCNetworking.shared.downloadAvatar(user: comment.actorId, dispalyName: comment.actorDisplayName, fileName: fileName, cell: cell, view: tableView)
         // Username
         cell.labelUser.text = comment.actorDisplayName
-        cell.labelUser.textColor = .label
+        cell.labelUser.textColor = NCBrandColor.shared.textColor
         // Date
         cell.labelDate.text = utility.dateDiff(comment.creationDateTime as Date)
         cell.labelDate.textColor = .systemGray4
         // Message
         cell.labelMessage.text = comment.message
-        cell.labelMessage.textColor = .label
+        cell.labelMessage.textColor = NCBrandColor.shared.textColor
         // Button Menu
         if comment.actorId == appDelegate.userId {
             cell.buttonMenu.isHidden = false
@@ -242,7 +246,7 @@ extension NCActivity: UITableViewDataSource {
         cell.avatar.isHidden = true
         cell.subjectTrailingConstraint.constant = 10
         cell.didSelectItemEnable = self.didSelectItemEnable
-        cell.subject.textColor = .label
+        cell.subject.textColor = NCBrandColor.shared.textColor
         cell.viewController = self
 
         // icon
@@ -276,7 +280,7 @@ extension NCActivity: UITableViewDataSource {
 
             let fileName = appDelegate.userBaseUrl + "-" + activity.user + ".png"
 
-            NCNetworking.shared.downloadAvatar(user: activity.user, dispalyName: nil, fileName: fileName, cell: cell, view: tableView, cellImageView: cell.fileAvatarImageView)
+            NCNetworking.shared.downloadAvatar(user: activity.user, dispalyName: nil, fileName: fileName, cell: cell, view: tableView)
         }
 
         // subject
@@ -426,7 +430,9 @@ extension NCActivity {
             limit: 1,
             objectId: nil,
             objectType: objectType,
-            previews: true) { account, _, activityFirstKnown, activityLastGiven, _, error in
+            previews: true) { task in
+                self.dataSourceTask = task
+            } completion: { account, _, activityFirstKnown, activityLastGiven, _, error in
                 defer { disptachGroup.leave() }
 
                 let largestActivityId = max(activityFirstKnown, activityLastGiven)
@@ -453,7 +459,9 @@ extension NCActivity {
             limit: min(limit, 200),
             objectId: metadata?.fileId,
             objectType: objectType,
-            previews: true) { account, activities, activityFirstKnown, activityLastGiven, _, error in
+            previews: true) { task in
+                self.dataSourceTask = task
+            } completion: { account, activities, activityFirstKnown, activityLastGiven, _, error in
                 defer { disptachGroup.leave() }
                 guard error == .success,
                       account == self.appDelegate.account,
@@ -494,7 +502,7 @@ extension NCActivity: NCShareCommentsCellDelegate {
         actions.append(
             NCMenuAction(
                 title: NSLocalizedString("_edit_comment_", comment: ""),
-                icon: UIImage(named: "pencil")!.image(color: UIColor.systemGray, size: 50),
+                icon: utility.loadImage(named: "pencil", colors: [NCBrandColor.shared.iconImageColor]),
                 action: { _ in
                     guard let metadata = self.metadata, let tableComments = tableComments else { return }
 
@@ -525,7 +533,8 @@ extension NCActivity: NCShareCommentsCellDelegate {
         actions.append(
             NCMenuAction(
                 title: NSLocalizedString("_delete_comment_", comment: ""),
-                icon: utility.loadImage(named: "trash"),
+                destructive: true,
+                icon: utility.loadImage(named: "trash", colors: [.red]),
                 action: { _ in
                     guard let metadata = self.metadata, let tableComments = tableComments else { return }
 

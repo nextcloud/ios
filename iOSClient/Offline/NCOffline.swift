@@ -33,7 +33,7 @@ class NCOffline: NCCollectionViewCommon {
         layoutKey = NCGlobal.shared.layoutViewOffline
         enableSearchBar = false
         headerRichWorkspaceDisable = true
-        emptyImage = UIImage(named: "folder")?.image(color: NCBrandColor.shared.brandElement, size: UIScreen.main.bounds.width)
+        emptyImage = NCUtility().loadImage(named: "icloud.and.arrow.down", colors: [NCBrandColor.shared.brandElement])
         emptyTitle = "_files_no_files_"
         emptyDescription = "_tutorial_offline_view_"
         emptyDataPortaitOffset = 30
@@ -82,8 +82,8 @@ class NCOffline: NCCollectionViewCommon {
             searchResults: self.searchResults)
     }
 
-    override func reloadDataSourceNetwork() {
-        super.reloadDataSourceNetwork()
+    override func reloadDataSourceNetwork(withQueryDB: Bool = false) {
+        super.reloadDataSourceNetwork(withQueryDB: withQueryDB)
         reloadDataSource()
     }
 }

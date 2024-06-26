@@ -76,11 +76,11 @@ extension UIViewController {
                 action: nil)
 
             let actions = card.actions.map { action -> NCMenuAction in
-                var image = NCUtility().loadImage(named: "user", color: .label)
+                var image = NCUtility().loadImage(named: "user", colors: [NCBrandColor.shared.iconImageColor])
                 if let url = URL(string: action.icon),
                    let svgSource = SVGKSourceURL.source(from: url),
                    let svg = SVGKImage(source: svgSource) {
-                    image = svg.uiImage.withTintColor(.label, renderingMode: .alwaysOriginal)
+                    image = svg.uiImage.withTintColor(NCBrandColor.shared.iconImageColor, renderingMode: .alwaysOriginal)
                 }
                 return NCMenuAction(
                     title: action.title,
@@ -107,7 +107,7 @@ extension UIViewController {
         present(mail, animated: true)
     }
 
-    func presentMenu(with actions: [NCMenuAction], menuColor: UIColor = .systemBackground, textColor: UIColor = .label) {
+    func presentMenu(with actions: [NCMenuAction], menuColor: UIColor = .systemBackground, textColor: UIColor = NCBrandColor.shared.textColor) {
         guard !actions.isEmpty else { return }
         let actions = actions.sorted(by: { $0.order < $1.order })
         guard let menuViewController = NCMenu.makeNCMenu(with: actions, menuColor: menuColor, textColor: textColor) else {

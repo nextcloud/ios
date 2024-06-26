@@ -75,6 +75,7 @@
 "_overwrite_"               = "Overwrite";
 "_transfers_in_queue_"      = "Transfers in progress, please wait …";
 "_too_errors_upload_"       = "Too many errors, please verify the problem";
+"_create_"                  = "Create";
 "_create_folder_"           = "Create folder";
 "_create_folder_e2ee_"      = "Create encrypted folder";
 "_create_folder_on_"        = "Create folder on";
@@ -155,6 +156,7 @@
 "_current_"                 = "Current";
 "_buy_"                     = "Buy";
 "_disabled_"                = "Disabled";
+"_error_occurred_"           = "An error occurred, please try again";
 
 /* MARK: Files lock */
 
@@ -217,9 +219,9 @@
 "_replace_all_action_title_" = "Replace all";
 "_keep_both_for_all_action_title_" = "Keep both for all";
 "_more_action_title_" = "More Details";
-"_wait_file_preparation_" = "Please wait, upload file in preparation";
-"_wait_file_encryption_"  = "Please wait, file encryption";
-"_passcode_counter_fail_" = "Failed attempts, please wait";
+"_wait_file_preparation_" = "Please wait, preparing file upload…";
+"_wait_file_encryption_"  = "Please wait, encrypting file…";
+"_passcode_counter_fail_" = "Too many failed attempts, please wait before reattempting";
 "_seconds_"               = "seconds";
 
 /* Background of the file listing view */
@@ -383,7 +385,7 @@
 "_autoupload_background_"           = "Auto upload in the background";
 "_autoupload_photos_"               = "Auto upload photos";
 "_autoupload_videos_"               = "Auto upload videos";
-"_autoupload_description_"          = "New photos/videos will be automatically uploaded to your Nextcloud";
+"_autoupload_description_"          = "New photos/videos will be automatically uploaded to your server";
 "_autoupload_description_background_"  = "This option requires the use of GPS to trigger the detection of new photos/videos in the camera roll once the location changes significantly";
 "_autoupload_background_title_"     = "Limitations";
 "_autoupload_background_msg_"       = "Due to iOS restrictions, it is not yet possible to perform background processes, unless GPS services are activated. Once the cell in the cellular network is changed, the system wakes up for a short time and checks for new photos to upload to the cloud.";
@@ -412,7 +414,7 @@
 "_terms_"                       = "Terms of Service";
 "_privacy_"                     = "Privacy";
 "_privacy_policy_"              = "Privacy Policy";
-"_privacy_footer_"              = "Nextcloud iOS uses a service for the analysis of a crash. Your personal information is not sent with the report. If you want disable it, please change the setting \"Disable crash reporter\" to ON";
+"_privacy_footer_"              = "This app uses a service for the analysis of a crash. Your personal information is not sent with the report. If you want disable it, please change the setting \"Disable crash reporter\" to ON";
 "_crashservice_title_"          = "Disable crash reporter";
 "_crashservice_alert_"          = "This option requires a restart of the app to take effect";
 "_upload_mov_livephoto_"        = "Live Photo";
@@ -428,7 +430,7 @@
 "_server_is_trusted_"           = "Do you consider this server trusted?";
 "_connection_error_"            = "Connection error";
 "_serverstatus_error_"          = "Connection to server failure, verify your server address or network status";
-"_add_your_nextcloud_"          = "Add your Nextcloud account";
+"_add_your_nextcloud_"          = "Add your account";
 "_login_url_"                   = "Server address https:// …";
 "_login_bottom_label_"          = "Don't have a server yet?\nChoose one of the providers.";
 "_error_multidomain_"           = "Address not allowed, only the following domains are valid:";
@@ -814,7 +816,7 @@
 "_webdav_locked_"                       = "WebDAV Locked: Trying to access locked resource";
 "_error_user_not_available_"            = "The user is no longer available";
 "_server_response_error_"               = "Server response content error";
-"_no_nextcloud_found_"                  = "Nextcloud server not found";
+"_no_nextcloud_found_"                  = "Server not found";
 "_error_decompressing_"                 = "Error during decompressing. Unknown compression method or the file is corrupt";
 "_error_json_decoding_"                 = "Serious internal error in decoding metadata (The data couldn't be read because it isn't in the correct format.)";
 "_error_check_remote_user_"             = "Server responded with error, password re-entry is required";
@@ -899,7 +901,6 @@
 "_show_more_results_"       = "Show more results";
 "_waiting_for_"             = "Waiting for:";
 "_reachable_wifi_"          = "network reachable via Wi-Fi or cable";
-"_ITMS-90076_"              = "Due to a change in the Nextcloud application identifier, the settings and password for accessing your cloud are reset, so please re-enter your account data and check your Settings. We are sorry about that.";
 "_password_not_present_"    = "Please re-insert your credentials.";
 "_copy_passphrase_"         = "Copy passphrase";
 "_ok_copy_passphrase_"      = "OK and copy passphrase";
@@ -909,7 +910,7 @@
 "_description_fileswidget_" = "View your recent files and use the toolbar to speed up your operations.";
 "_description_toolbarwidget_"   = "A toolbar to speed up your operations.";
 "_no_data_available_"       = "No data available";
-"_widget_available_nc25_"   = "Widget only available starting with Nextcloud 25";
+"_widget_available_nc25_"   = "Widget only available starting with server version 25";
 "_keep_running_"            = "Keep the app running for a better user experience";
 "_recent_activity_"         = "Recent activity";
 "_title_lockscreenwidget_"  = "Status";
@@ -1043,3 +1044,21 @@
 "Mantis.Reset"                  = "Reset";
 "Mantis.Original"               = "Original";
 "Mantis.Square"                 = "Square";
+
+// MARK: Assistant
+"_assistant_task_unknown_"       = "Unknown";
+"_assistant_task_scheduled_"     = "Scheduled";
+"_assistant_task_in_progress_"   = "In Progress";
+"_assistant_task_completed_"     = "Completed";
+"_assistant_task_failed_"        = "Failed";
+"_all_"                          = "All";
+"_input_"                        = "Input";
+"_output_"                       = "Output";
+"_task_details_"                 = "Task details";
+"_assistant_"                    = "Assistant";
+"_new_task_"                     = "New %@ task";
+"_no_tasks_"                     = "No tasks in here";
+"_create_task_subtitle_"         = "Use the + button to create one";
+"_no_types_"                     = "No provider found";
+"_no_types_subtitle_"            = "AI Providers need to be installed to use the Assistant";
+

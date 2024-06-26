@@ -69,7 +69,12 @@ extension NCTrash: NCTrashSelectTabBarDelegate {
     func setEditMode(_ editMode: Bool) {
         isEditMode = editMode
         selectOcId.removeAll()
-        setNavigationRightItems(enableMenu: !editMode)
+
+        setNavigationRightItems()
+
+        navigationController?.interactivePopGestureRecognizer?.isEnabled = !editMode
+        navigationItem.hidesBackButton = editMode
         collectionView.reloadData()
+
     }
 }

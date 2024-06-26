@@ -50,19 +50,10 @@ extension NCNetworking {
                 return completion(account, nil, nil, 0, 0, error)
             }
 
-            NCManageDatabase.shared.convertFilesToMetadatas(files, useMetadataFolder: true) { metadataFolder, metadatasFolder, metadatas in
+            NCManageDatabase.shared.convertFilesToMetadatas(files, useFirstAsMetadataFolder: true) { metadataFolder, metadatas in
 
-                // Add metadata folder
-                NCManageDatabase.shared.addMetadata(tableMetadata.init(value: metadataFolder))
-
-                // Update directory
+                NCManageDatabase.shared.addMetadata(metadataFolder)
                 NCManageDatabase.shared.addDirectory(e2eEncrypted: metadataFolder.e2eEncrypted, favorite: metadataFolder.favorite, ocId: metadataFolder.ocId, fileId: metadataFolder.fileId, etag: metadataFolder.etag, permissions: metadataFolder.permissions, richWorkspace: metadataFolder.richWorkspace, serverUrl: serverUrl, account: metadataFolder.account)
-
-                // Update sub directories NO Update richWorkspace
-                for metadata in metadatasFolder {
-                    let serverUrl = metadata.serverUrl + "/" + metadata.fileName
-                    NCManageDatabase.shared.addDirectory(e2eEncrypted: metadata.e2eEncrypted, favorite: metadata.favorite, ocId: metadata.ocId, fileId: metadata.fileId, permissions: metadata.permissions, serverUrl: serverUrl, account: account)
-                }
 
 #if !EXTENSION
                 // Convert Live Photo
@@ -205,6 +196,7 @@ extension NCNetworking {
                       userId: String,
                       overwrite: Bool = false,
                       withPush: Bool,
+                      sceneIdentifier: String?,
                       completion: @escaping (_ error: NKError) -> Void) {
 
         let isDirectoryEncrypted = utilityFileSystem.isDirectoryE2EE(account: account, urlBase: urlBase, userId: userId, serverUrl: serverUrl)
@@ -213,12 +205,12 @@ extension NCNetworking {
         if isDirectoryEncrypted {
 #if !EXTENSION
             Task {
-                let error = await NCNetworkingE2EECreateFolder().createFolder(fileName: fileName, serverUrl: serverUrl, account: account, urlBase: urlBase, userId: userId, withPush: withPush)
+                let error = await NCNetworkingE2EECreateFolder().createFolder(fileName: fileName, serverUrl: serverUrl, account: account, urlBase: urlBase, userId: userId, withPush: withPush, sceneIdentifier: sceneIdentifier)
                 completion(error)
             }
 #endif
         } else {
-            createFolderPlain(fileName: fileName, serverUrl: serverUrl, account: account, urlBase: urlBase, overwrite: overwrite, withPush: withPush, completion: completion)
+            createFolderPlain(fileName: fileName, serverUrl: serverUrl, account: account, urlBase: urlBase, overwrite: overwrite, withPush: withPush, sceneIdentifier: sceneIdentifier, completion: completion)
         }
     }
 
@@ -228,6 +220,7 @@ extension NCNetworking {
                                    urlBase: String,
                                    overwrite: Bool,
                                    withPush: Bool,
+                                   sceneIdentifier: String?,
                                    completion: @escaping (_ error: NKError) -> Void) {
 
         var fileNameFolder = utility.removeForbiddenCharacters(fileName)
@@ -263,7 +256,7 @@ extension NCNetworking {
                         NCManageDatabase.shared.addDirectory(e2eEncrypted: metadata.e2eEncrypted, favorite: metadata.favorite, ocId: metadata.ocId, fileId: metadata.fileId, permissions: metadata.permissions, serverUrl: fileNameFolderUrl, account: account)
                     }
                     if let metadata = NCManageDatabase.shared.getMetadataFromOcId(metadataFolder?.ocId) {
-                        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterCreateFolder, userInfo: ["ocId": metadata.ocId, "serverUrl": metadata.serverUrl, "account": metadata.account, "withPush": withPush])
+                        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterCreateFolder, userInfo: ["ocId": metadata.ocId, "serverUrl": metadata.serverUrl, "account": metadata.account, "withPush": withPush, "sceneIdentifier": sceneIdentifier as Any])
                     }
                 }
                 completion(error)
@@ -271,13 +264,13 @@ extension NCNetworking {
         }
     }
 
-    func createFolder(assets: [PHAsset],
-                      selector: String,
+    func createFolder(assets: [PHAsset]?,
                       useSubFolder: Bool,
                       account: String,
                       urlBase: String,
                       userId: String,
-                      withPush: Bool) -> Bool {
+                      withPush: Bool,
+                      sceneIdentifier: String? = nil) -> Bool {
 
         let autoUploadPath = NCManageDatabase.shared.getAccountAutoUploadPath(urlBase: urlBase, userId: userId, account: account)
         let serverUrlBase = NCManageDatabase.shared.getAccountAutoUploadDirectory(urlBase: urlBase, userId: userId, account: account)
@@ -287,7 +280,7 @@ extension NCNetworking {
         func createFolder(fileName: String, serverUrl: String) -> Bool {
             var result: Bool = false
             let semaphore = DispatchSemaphore(value: 0)
-            NCNetworking.shared.createFolder(fileName: fileName, serverUrl: serverUrl, account: account, urlBase: urlBase, userId: userId, overwrite: true, withPush: withPush) { error in
+            NCNetworking.shared.createFolder(fileName: fileName, serverUrl: serverUrl, account: account, urlBase: urlBase, userId: userId, overwrite: true, withPush: withPush, sceneIdentifier: sceneIdentifier) { error in
                 if error == .success { result = true }
                 semaphore.signal()
             }
@@ -296,25 +289,13 @@ extension NCNetworking {
         }
 
         func createNameSubFolder() -> [String] {
-
             var datesSubFolder: [String] = []
-            let dateFormatter = DateFormatter()
-
-            for asset in assets {
-                let date = asset.creationDate ?? Date()
-                dateFormatter.dateFormat = "yyyy"
-                let year = dateFormatter.string(from: date)
-                dateFormatter.dateFormat = "MM"
-                let month = dateFormatter.string(from: date)
-                dateFormatter.dateFormat = "dd"
-                let day = dateFormatter.string(from: date)
-                if autoUploadSubfolderGranularity == NCGlobal.shared.subfolderGranularityYearly {
-                    datesSubFolder.append("\(year)")
-                } else if autoUploadSubfolderGranularity == NCGlobal.shared.subfolderGranularityDaily {
-                    datesSubFolder.append("\(year)/\(month)/\(day)")
-                } else {  // Month Granularity is default
-                    datesSubFolder.append("\(year)/\(month)")
+            if let assets {
+                for asset in assets {
+                    datesSubFolder.append(utilityFileSystem.createGranularityPath(asset: asset))
                 }
+            } else {
+                datesSubFolder.append(utilityFileSystem.createGranularityPath())
             }
 
             return Array(Set(datesSubFolder))
@@ -746,22 +727,11 @@ extension NCNetworking {
                                           showHiddenFiles: NCKeychain().showHiddenFiles,
                                           options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { task in
             taskHandler(task)
-        } completion: { account, files, _, error in
+        } completion: { _, files, _, error in
+            guard error == .success else { return completion(nil, error) }
 
-            guard error == .success else {
-                return completion(nil, error)
-            }
-
-            NCManageDatabase.shared.convertFilesToMetadatas(files, useMetadataFolder: false) { _, metadatasFolder, metadatas in
-
-                // Update sub directories
-                for folder in metadatasFolder {
-                    let serverUrl = folder.serverUrl + "/" + folder.fileName
-                    NCManageDatabase.shared.addDirectory(e2eEncrypted: folder.e2eEncrypted, favorite: folder.favorite, ocId: folder.ocId, fileId: folder.fileId, permissions: folder.permissions, serverUrl: serverUrl, account: account)
-                }
-
+            NCManageDatabase.shared.convertFilesToMetadatas(files, useFirstAsMetadataFolder: false) { _, metadatas in
                 NCManageDatabase.shared.addMetadatas(metadatas)
-                let metadatas = Array(metadatas.map(tableMetadata.init))
                 completion(metadatas, error)
             }
         }
@@ -932,7 +902,6 @@ extension NCNetworking {
     }
 
     func cancelDataTask() {
-
         let sessionManager = NextcloudKit.shared.sessionManager
         sessionManager.session.getTasksWithCompletionHandler { dataTasks, _, _ in
             dataTasks.forEach {
@@ -950,16 +919,14 @@ class NCOperationDownloadAvatar: ConcurrentOperation {
     var fileNameLocalPath: String
     var cell: NCCellProtocol!
     var view: UIView?
-    var cellImageView: UIImageView?
 
-    init(user: String, fileName: String, fileNameLocalPath: String, cell: NCCellProtocol, view: UIView?, cellImageView: UIImageView?) {
+    init(user: String, fileName: String, fileNameLocalPath: String, cell: NCCellProtocol, view: UIView?) {
         self.user = user
         self.fileName = fileName
         self.fileNameLocalPath = fileNameLocalPath
         self.cell = cell
         self.view = view
         self.etag = NCManageDatabase.shared.getTableAvatar(fileName: fileName)?.etag
-        self.cellImageView = cellImageView
     }
 
     override func start() {
@@ -973,14 +940,15 @@ class NCOperationDownloadAvatar: ConcurrentOperation {
                                            etag: self.etag,
                                            options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { _, imageAvatar, _, etag, error in
 
-            if error == .success, let imageAvatar = imageAvatar, let etag = etag {
-                NCManageDatabase.shared.addAvatar(fileName: self.fileName, etag: etag)
+            if error == .success, let imageAvatar {
+                NCManageDatabase.shared.addAvatar(fileName: self.fileName, etag: etag ?? "")
                 DispatchQueue.main.async {
-                    if self.user == self.cell.fileUser, let avatarImageView = self.cellImageView {
-                        UIView.transition(with: avatarImageView,
+                    if self.user == self.cell.fileUser, let cellFileAvatarImageView = self.cell.fileAvatarImageView {
+                        cellFileAvatarImageView.contentMode = .scaleAspectFill
+                        UIView.transition(with: cellFileAvatarImageView,
                                           duration: 0.75,
                                           options: .transitionCrossDissolve,
-                                          animations: { avatarImageView.image = imageAvatar },
+                                          animations: { cellFileAvatarImageView.image = imageAvatar },
                                           completion: nil)
                     } else {
                         if self.view is UICollectionView {

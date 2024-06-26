@@ -78,6 +78,11 @@ class NCTrashSelectTabBar: ObservableObject {
     func update(selectOcId: [String]) {
         isSelectedEmpty = selectOcId.isEmpty
     }
+
+    func isHidden() -> Bool {
+        guard let hostingController else { return false }
+        return hostingController.view.isHidden
+    }
 }
 
 struct NCTrashSelectTabBarView: View {
@@ -93,8 +98,10 @@ struct NCTrashSelectTabBarView: View {
                     tabBarSelect.delegate?.recover()
                 } label: {
                     Image(systemName: "arrow.circlepath")
+                        .font(Font.system(.body).weight(.light))
                         .imageScale(sizeClass == .compact ? .medium : .large)
                 }
+                .tint(Color(NCBrandColor.shared.iconImageColor))
                 .frame(maxWidth: .infinity)
                 .disabled(tabBarSelect.isSelectedEmpty)
 
@@ -102,9 +109,10 @@ struct NCTrashSelectTabBarView: View {
                     tabBarSelect.delegate?.delete()
                 } label: {
                     Image(systemName: "trash")
+                        .font(Font.system(.body).weight(.light))
                         .imageScale(sizeClass == .compact ? .medium : .large)
-                        .tint(.red)
                 }
+                .tint(.red)
                 .frame(maxWidth: .infinity)
                 .disabled(tabBarSelect.isSelectedEmpty)
 
@@ -112,8 +120,10 @@ struct NCTrashSelectTabBarView: View {
                     tabBarSelect.delegate?.selectAll()
                 } label: {
                     Image(systemName: "checkmark")
+                        .font(Font.system(.body).weight(.light))
                         .imageScale(sizeClass == .compact ? .medium : .large)
                 }
+                .tint(Color(NCBrandColor.shared.iconImageColor))
                 .frame(maxWidth: .infinity)
             }
         }

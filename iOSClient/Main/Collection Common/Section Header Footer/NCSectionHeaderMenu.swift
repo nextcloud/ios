@@ -63,12 +63,12 @@ class NCSectionHeaderMenu: UICollectionReusableView, UIGestureRecognizerDelegate
         tap.delegate = self
         viewRichWorkspace?.addGestureRecognizer(tap)
 
-        markdownParser = MarkdownParser(font: UIFont.systemFont(ofSize: 15), color: .label)
+        markdownParser = MarkdownParser(font: UIFont.systemFont(ofSize: 15), color: NCBrandColor.shared.textColor)
         markdownParser.header.font = UIFont.systemFont(ofSize: 25)
         if let richWorkspaceText = richWorkspaceText {
             textViewRichWorkspace.attributedText = markdownParser.parse(richWorkspaceText)
         }
-        textViewColor = .label
+        textViewColor = NCBrandColor.shared.textColor
 
         labelSection.text = ""
         viewSectionHeightConstraint.constant = 0
@@ -77,12 +77,12 @@ class NCSectionHeaderMenu: UICollectionReusableView, UIGestureRecognizerDelegate
         buttonTransfer.setImage(nil, for: .normal)
         buttonTransfer.layer.cornerRadius = 6
         buttonTransfer.layer.masksToBounds = true
-        imageButtonTransfer.image = UIImage(systemName: "stop.circle")
+        imageButtonTransfer.image = NCUtility().loadImage(named: "stop.circle")
         imageButtonTransfer.tintColor = .white
         labelTransfer.text = ""
         progressTransfer.progress = 0
-        progressTransfer.tintColor = NCBrandColor.shared.brand
-        progressTransfer.trackTintColor = NCBrandColor.shared.brand.withAlphaComponent(0.2)
+        progressTransfer.tintColor = NCBrandColor.shared.brandElement
+        progressTransfer.trackTintColor = NCBrandColor.shared.brandElement.withAlphaComponent(0.2)
         transferSeparatorBottom.backgroundColor = .separator
         transferSeparatorBottomHeightConstraint.constant = 0.5
     }
@@ -146,7 +146,7 @@ class NCSectionHeaderMenu: UICollectionReusableView, UIGestureRecognizerDelegate
                let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
                 image = utility.createFilePreviewImage(ocId: metadata.ocId, etag: metadata.etag, fileNameView: metadata.fileNameView, classFile: metadata.classFile, status: metadata.status, createPreviewMedia: true)?.darken()
                 if image == nil {
-                    image = UIImage(named: metadata.iconName)
+                    image = utility.loadImage(named: metadata.iconName, useTypeIconFile: true)
                     buttonTransfer.backgroundColor = .lightGray
                 } else {
                     buttonTransfer.backgroundColor = .clear
@@ -174,18 +174,6 @@ class NCSectionHeaderMenu: UICollectionReusableView, UIGestureRecognizerDelegate
 
     // MARK: - Action
 
-    @IBAction func touchUpInsideSwitch(_ sender: Any) {
-        delegate?.tapButtonSwitch(sender)
-    }
-
-    @IBAction func touchUpInsideOrder(_ sender: Any) {
-        delegate?.tapButtonOrder(sender)
-    }
-
-    @IBAction func touchUpInsideMore(_ sender: Any) {
-        delegate?.tapButtonMore(sender)
-    }
-
     @IBAction func touchUpTransfer(_ sender: Any) {
        delegate?.tapButtonTransfer(sender)
     }
@@ -196,18 +184,12 @@ class NCSectionHeaderMenu: UICollectionReusableView, UIGestureRecognizerDelegate
 }
 
 protocol NCSectionHeaderMenuDelegate: AnyObject {
-    func tapButtonSwitch(_ sender: Any)
-    func tapButtonOrder(_ sender: Any)
-    func tapButtonMore(_ sender: Any)
     func tapButtonTransfer(_ sender: Any)
     func tapRichWorkspace(_ sender: Any)
 }
 
 // optional func
 extension NCSectionHeaderMenuDelegate {
-    func tapButtonSwitch(_ sender: Any) {}
-    func tapButtonOrder(_ sender: Any) {}
-    func tapButtonMore(_ sender: Any) {}
     func tapButtonTransfer(_ sender: Any) {}
     func tapRichWorkspace(_ sender: Any) {}
 }
@@ -240,8 +222,8 @@ class NCSectionFooter: UICollectionReusableView, NCSectionFooterDelegate {
     override func awakeFromNib() {
         super.awakeFromNib()
 
-        self.backgroundColor = UIColor.clear
-        labelSection.textColor = UIColor.systemGray
+        self.backgroundColor = .clear
+        labelSection.textColor = NCBrandColor.shared.textColor2
         labelSection.text = ""
 
         separator.backgroundColor = .separator
@@ -249,7 +231,7 @@ class NCSectionFooter: UICollectionReusableView, NCSectionFooterDelegate {
 
         buttonIsHidden(true)
         activityIndicatorSection.isHidden = true
-        activityIndicatorSection.color = .label
+        activityIndicatorSection.color = NCBrandColor.shared.textColor
     }
 
     func setTitleLabel(directories: Int, files: Int, size: Int64) {

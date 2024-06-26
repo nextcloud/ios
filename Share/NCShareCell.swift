@@ -63,7 +63,11 @@ class NCShareCell: UITableViewCell {
         let fileSize = utilityFileSystem.getFileSize(filePath: (NSTemporaryDirectory() + fileName))
         sizeCell?.text = utilityFileSystem.transformedSize(fileSize)
 
+<<<<<<< HEAD
         moreButton?.setImage(utility.loadImage(named: "more").image(color: .label, size: 15), for: .normal)
+=======
+        moreButton?.setImage(NCImageCache.images.buttonMore, for: .normal)
+>>>>>>> aa28af8228d8d3d97f2f5aa16076333e8c0faf95
     }
 
     @IBAction func buttonTapped(_ sender: Any) {

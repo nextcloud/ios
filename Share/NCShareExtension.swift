@@ -100,14 +100,13 @@ class NCShareExtension: UIViewController {
         commandViewHeightConstraint.constant = heightCommandView
 
         createFolderView.layer.cornerRadius = 10
-        createFolderImage.image = utility.loadImage(named: "folder.badge.plus", color: .label)
+        createFolderImage.image = utility.loadImage(named: "folder.badge.plus", colors: [NCBrandColor.shared.iconImageColor])
         createFolderLabel.text = NSLocalizedString("_create_folder_", comment: "")
         let createFolderGesture = UITapGestureRecognizer(target: self, action: #selector(actionCreateFolder))
         createFolderView.addGestureRecognizer(createFolderGesture)
 
         uploadView.layer.cornerRadius = 10
 
-        // uploadImage.image = utility).loadImage(named: "square.and.arrow.up", color: .label)
         uploadLabel.text = NSLocalizedString("_upload_", comment: "")
         uploadLabel.textColor = .systemBlue
         let uploadGesture = UITapGestureRecognizer(target: self, action: #selector(actionUpload))
@@ -137,6 +136,7 @@ class NCShareExtension: UIViewController {
         hud.indicatorView = JGProgressHUDRingIndicatorView()
         if let indicatorView = hud.indicatorView as? JGProgressHUDRingIndicatorView {
             indicatorView.ringWidth = 1.5
+            indicatorView.ringColor = NCBrandColor.shared.brandElement
         }
 
         NotificationCenter.default.addObserver(self, selector: #selector(didCreateFolder(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterCreateFolder), object: nil)
@@ -160,8 +160,10 @@ class NCShareExtension: UIViewController {
             self.filesName = fileNames
             DispatchQueue.main.async { self.setCommandView() }
         }
-        NCPasscode.shared.presentPasscode(viewController: self, delegate: self) {
-            NCPasscode.shared.enableTouchFaceID()
+        if NCKeychain().presentPasscode {
+            NCPasscode.shared.presentPasscode(viewController: self, delegate: self) {
+                NCPasscode.shared.enableTouchFaceID()
+            }
         }
     }
 
@@ -383,6 +385,7 @@ extension NCShareExtension {
             }
         } else {
             hud.indicatorView = JGProgressHUDSuccessIndicatorView()
+            hud.indicatorView?.tintColor = NCBrandColor.shared.brandElement
             hud.textLabel.text = NSLocalizedString("_success_", comment: "")
             DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
                 self.extensionContext?.completeRequest(returningItems: self.extensionContext?.inputItems, completionHandler: nil)

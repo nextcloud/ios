@@ -33,7 +33,7 @@ class NCShares: NCCollectionViewCommon {
         layoutKey = NCGlobal.shared.layoutViewShares
         enableSearchBar = false
         headerRichWorkspaceDisable = true
-        emptyImage = UIImage(named: "share")?.image(color: .gray, size: UIScreen.main.bounds.width)
+        emptyImage = utility.loadImage(named: "person.fill.badge.plus", colors: [NCBrandColor.shared.brandElement])
         emptyTitle = "_list_shares_no_files_"
         emptyDescription = "_tutorial_list_shares_view_"
     }
@@ -97,7 +97,7 @@ class NCShares: NCCollectionViewCommon {
         reload()
     }
 
-    override func reloadDataSourceNetwork() {
+    override func reloadDataSourceNetwork(withQueryDB: Bool = false) {
         super.reloadDataSourceNetwork()
 
         NextcloudKit.shared.readShares(parameters: NKShareParameter()) { task in
@@ -112,7 +112,7 @@ class NCShares: NCCollectionViewCommon {
                 }
                 self.reloadDataSource()
             } else {
-                self.reloadDataSource(withQueryDB: false)
+                self.reloadDataSource(withQueryDB: withQueryDB)
             }
         }
     }

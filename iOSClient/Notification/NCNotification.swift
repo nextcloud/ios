@@ -65,8 +65,15 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate {
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        appDelegate.activeViewController = self
+
         getNetwokingNotification()
+    }
+
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+
+        // Cancel Queue & Retrieves Properties
+        dataSourceTask?.cancel()
     }
 
     @objc func viewClose() {
@@ -115,8 +122,6 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate {
 
         if let image = image {
             cell.icon.image = image.withTintColor(NCBrandColor.shared.brandElement, renderingMode: .alwaysOriginal)
-        } else {
-            cell.icon.image = utility.loadImage(named: "bell", color: NCBrandColor.shared.brandElement)
         }
 
         // Avatar
@@ -135,20 +140,20 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate {
                 cell.avatar.image = image
             } else if !FileManager.default.fileExists(atPath: fileNameLocalPath) {
                 cell.fileUser = user
-                NCNetworking.shared.downloadAvatar(user: user, dispalyName: json["user"]?["name"].string, fileName: fileName, cell: cell, view: tableView, cellImageView: cell.fileAvatarImageView)
+                NCNetworking.shared.downloadAvatar(user: user, dispalyName: json["user"]?["name"].string, fileName: fileName, cell: cell, view: tableView)
             }
         }
 
         cell.date.text = DateFormatter.localizedString(from: notification.date as Date, dateStyle: .medium, timeStyle: .medium)
         cell.notification = notification
         cell.date.text = utility.dateDiff(notification.date as Date)
-        cell.date.textColor = .gray
+        cell.date.textColor = NCBrandColor.shared.iconImageColor2
         cell.subject.text = notification.subject
-        cell.subject.textColor = .label
+        cell.subject.textColor = NCBrandColor.shared.textColor
         cell.message.text = notification.message.replacingOccurrences(of: "<br />", with: "\n")
-        cell.message.textColor = .gray
+        cell.message.textColor = NCBrandColor.shared.textColor2
 
-        cell.remove.setImage(UIImage(named: "xmark")!.image(color: .gray, size: 20), for: .normal)
+        cell.remove.setImage(utility.loadImage(named: "xmark", colors: [NCBrandColor.shared.iconImageColor]), for: .normal)
 
         cell.primary.isEnabled = false
         cell.primary.isHidden = true
@@ -172,9 +177,9 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate {
         cell.secondary.layer.cornerRadius = 15
         cell.secondary.layer.masksToBounds = true
         cell.secondary.layer.borderWidth = 1
-        cell.secondary.layer.borderColor = UIColor.systemGray.cgColor
+        cell.secondary.layer.borderColor = NCBrandColor.shared.iconImageColor2.cgColor
         cell.secondary.layer.backgroundColor = UIColor.secondarySystemBackground.cgColor
-        cell.secondary.setTitleColor(.gray, for: .normal)
+        cell.secondary.setTitleColor(NCBrandColor.shared.iconImageColor2, for: .normal)
 
         // Action
         if let actions = notification.actions,
@@ -294,7 +299,9 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate {
                let sortedListOfNotifications = (notifications! as NSArray).sortedArray(using: [NSSortDescriptor(key: "date", ascending: false)])
                for notification in sortedListOfNotifications {
                    if let icon = (notification as? NKNotifications)?.icon {
-                       self.utility.convertSVGtoPNGWriteToUserData(svgUrlString: icon, fileName: nil, width: 25, rewrite: false, account: self.appDelegate.account, completion: { _, _ in })
+                       self.utility.convertSVGtoPNGWriteToUserData(svgUrlString: icon, width: 25, rewrite: false, account: self.appDelegate.account) { _, _ in
+                           self.tableView.reloadData()
+                       }
                    }
                    if let notification = (notification as? NKNotifications) {
                        self.notifications.append(notification)

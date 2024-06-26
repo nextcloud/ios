@@ -67,14 +67,15 @@ class NCUserStatus: UIViewController {
     private var clearAtTimestamp: Double = 0     // Unix Timestamp representing the time to clear the status
 
     private let borderWidthButton: CGFloat = 1.5
-    private let borderColorButton: CGColor = NCBrandColor.shared.brand.cgColor
+    private let borderColorButton: CGColor = NCBrandColor.shared.brandElement.cgColor
 
     // MARK: - View Life Cycle
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        self.navigationItem.title = NSLocalizedString("_online_status_", comment: "")
+        navigationController?.navigationBar.tintColor = NCBrandColor.shared.iconImageColor
+        navigationItem.title = NSLocalizedString("_online_status_", comment: "")
 
         view.backgroundColor = .systemBackground
         tableView.backgroundColor = .systemBackground
@@ -87,7 +88,7 @@ class NCUserStatus: UIViewController {
         let onLine = utility.getUserStatus(userIcon: nil, userStatus: "online", userMessage: nil)
         onlineImage.image = onLine.onlineStatus
         onlineLabel.text = onLine.statusMessage
-        onlineLabel.textColor = .label
+        onlineLabel.textColor = NCBrandColor.shared.textColor
 
         awayButton.layer.cornerRadius = 10
         awayButton.layer.masksToBounds = true
@@ -95,7 +96,7 @@ class NCUserStatus: UIViewController {
         let away = utility.getUserStatus(userIcon: nil, userStatus: "away", userMessage: nil)
         awayImage.image = away.onlineStatus
         awayLabel.text = away.statusMessage
-        awayLabel.textColor = .label
+        awayLabel.textColor = NCBrandColor.shared.textColor
 
         dndButton.layer.cornerRadius = 10
         dndButton.layer.masksToBounds = true
@@ -103,7 +104,7 @@ class NCUserStatus: UIViewController {
         let dnd = utility.getUserStatus(userIcon: nil, userStatus: "dnd", userMessage: nil)
         dndImage.image = dnd.onlineStatus
         dndLabel.text = dnd.statusMessage
-        dndLabel.textColor = .label
+        dndLabel.textColor = NCBrandColor.shared.textColor
         dndDescrLabel.text = dnd.descriptionMessage
         dndDescrLabel.textColor = .darkGray
 
@@ -113,25 +114,25 @@ class NCUserStatus: UIViewController {
         let invisible = utility.getUserStatus(userIcon: nil, userStatus: "invisible", userMessage: nil)
         invisibleImage.image = invisible.onlineStatus
         invisibleLabel.text = invisible.statusMessage
-        invisibleLabel.textColor = .label
+        invisibleLabel.textColor = NCBrandColor.shared.textColor
         invisibleDescrLabel.text = invisible.descriptionMessage
         invisibleDescrLabel.textColor = .darkGray
 
         statusMessageLabel.text = NSLocalizedString("_status_message_", comment: "")
-        statusMessageLabel.textColor = .label
+        statusMessageLabel.textColor = NCBrandColor.shared.textColor
 
         statusMessageEmojiTextField.delegate = self
         statusMessageEmojiTextField.backgroundColor = .systemGray5
 
         statusMessageTextField.delegate = self
         statusMessageTextField.placeholder = NSLocalizedString("_status_message_placehorder_", comment: "")
-        statusMessageTextField.textColor = .label
+        statusMessageTextField.textColor = NCBrandColor.shared.textColor
 
         tableView.tableFooterView = UIView(frame: CGRect(x: 0, y: 0, width: tableView.frame.size.width, height: 1))
         tableView.separatorStyle = UITableViewCell.SeparatorStyle.none
 
         clearStatusMessageAfterLabel.text = NSLocalizedString("_clear_status_message_after_", comment: "")
-        clearStatusMessageAfterLabel.textColor = .label
+        clearStatusMessageAfterLabel.textColor = NCBrandColor.shared.textColor
 
         clearStatusMessageAfterText.layer.cornerRadius = 5
         clearStatusMessageAfterText.layer.masksToBounds = true
@@ -156,11 +157,11 @@ class NCUserStatus: UIViewController {
         clearStatusMessageButton.layer.borderColor = UIColor.darkGray.cgColor
         clearStatusMessageButton.backgroundColor = .systemGray5
         clearStatusMessageButton.setTitle(NSLocalizedString("_clear_status_message_", comment: ""), for: .normal)
-        clearStatusMessageButton.setTitleColor(.label, for: .normal)
+        clearStatusMessageButton.setTitleColor(NCBrandColor.shared.textColor, for: .normal)
 
         setStatusMessageButton.layer.cornerRadius = 20
         setStatusMessageButton.layer.masksToBounds = true
-        setStatusMessageButton.backgroundColor = NCBrandColor.shared.brand
+        setStatusMessageButton.backgroundColor = NCBrandColor.shared.brandElement
         setStatusMessageButton.setTitle(NSLocalizedString("_set_status_message_", comment: ""), for: .normal)
         setStatusMessageButton.setTitleColor(NCBrandColor.shared.brandText, for: .normal)
 

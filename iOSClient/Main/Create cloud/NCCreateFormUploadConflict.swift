@@ -98,9 +98,9 @@ class NCCreateFormUploadConflict: UIViewController {
             labelAlreadyExistingFiles.text = NSLocalizedString("_file_conflict_exists_", comment: "")
         }
 
-        switchNewFiles.onTintColor = NCBrandColor.shared.brand
+        switchNewFiles.onTintColor = NCBrandColor.shared.brandElement
         switchNewFiles.isOn = false
-        switchAlreadyExistingFiles.onTintColor = NCBrandColor.shared.brand
+        switchAlreadyExistingFiles.onTintColor = NCBrandColor.shared.brandElement
         switchAlreadyExistingFiles.isOn = false
 
         buttonCancel.layer.cornerRadius = 20
@@ -109,11 +109,11 @@ class NCCreateFormUploadConflict: UIViewController {
         buttonCancel.layer.borderColor = UIColor.darkGray.cgColor
         buttonCancel.backgroundColor = .systemGray5
         buttonCancel.setTitle(NSLocalizedString("_cancel_", comment: ""), for: .normal)
-        buttonCancel.setTitleColor(.label, for: .normal)
+        buttonCancel.setTitleColor(NCBrandColor.shared.textColor, for: .normal)
 
         buttonContinue.layer.cornerRadius = 20
         buttonContinue.layer.masksToBounds = true
-        buttonContinue.backgroundColor = NCBrandColor.shared.brand
+        buttonContinue.backgroundColor = NCBrandColor.shared.brandElement
         buttonContinue.setTitle(NSLocalizedString("_continue_", comment: ""), for: .normal)
         buttonContinue.isEnabled = false
         buttonContinue.setTitleColor(NCBrandColor.shared.brandText, for: .normal)
@@ -311,8 +311,8 @@ extension NCCreateFormUploadConflict: UITableViewDataSource {
         if let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath) as? NCCreateFormUploadConflictCell {
 
             cell.backgroundColor = tableView.backgroundColor
-            cell.switchNewFile.onTintColor = NCBrandColor.shared.brand
-            cell.switchAlreadyExistingFile.onTintColor = NCBrandColor.shared.brand
+            cell.switchNewFile.onTintColor = NCBrandColor.shared.brandElement
+            cell.switchAlreadyExistingFile.onTintColor = NCBrandColor.shared.brandElement
 
             let metadataNewFile = tableMetadata.init(value: metadatasUploadInConflict[indexPath.row])
 
@@ -338,7 +338,7 @@ extension NCCreateFormUploadConflict: UITableViewDataSource {
 
             } else {
                 if metadataAlreadyExists.iconName.isEmpty {
-                    cell.imageAlreadyExistingFile.image = UIImage(named: "file")
+                    cell.imageAlreadyExistingFile.image = NCImageCache.images.file
                 } else {
                     cell.imageAlreadyExistingFile.image = UIImage(named: metadataAlreadyExists.iconName)
                 }
@@ -354,7 +354,7 @@ extension NCCreateFormUploadConflict: UITableViewDataSource {
             // -----> New File
 
             if metadataNewFile.iconName.isEmpty {
-                cell.imageNewFile.image = UIImage(named: "file")
+                cell.imageNewFile.image = NCImageCache.images.file
             } else {
                 cell.imageNewFile.image = UIImage(named: metadataNewFile.iconName)
             }
@@ -502,10 +502,10 @@ extension NCCreateFormUploadConflict: NCCreateFormUploadConflictCellDelegate {
 
         if result {
             buttonContinue.isEnabled = true
-            buttonContinue.setTitleColor(.label, for: .normal)
+            buttonContinue.setTitleColor(NCBrandColor.shared.textColor, for: .normal)
         } else {
             buttonContinue.isEnabled = false
-            buttonContinue.setTitleColor(UIColor.systemGray, for: .normal)
+            buttonContinue.setTitleColor(NCBrandColor.shared.textColor2, for: .normal)
         }
     }
 }
