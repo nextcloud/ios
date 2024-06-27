@@ -739,7 +739,7 @@
 "_scans_document_"                  = "Scan document";
 "_scanned_images_"                  = "Scanned images";
 "_scan_document_pdf_page_"          = "Page";
-"_scan_label_document_zone_"        = "Drag images down for document creation";
+"_scan_label_document_zone_"        = "Tap or drag images down for document creation";
 "_filter_document_"                 = "Document";
 "_filter_original_"                 = "Original";
 "_filter_bn_"                       = "Black & White";

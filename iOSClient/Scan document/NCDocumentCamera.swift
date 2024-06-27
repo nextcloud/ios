@@ -31,7 +31,6 @@ class NCDocumentCamera: NSObject, VNDocumentCameraViewControllerDelegate {
         let instance = NCDocumentCamera()
         return instance
     }()
-
     var viewController: UIViewController?
     let utilityFileSystem = NCUtilityFileSystem()
     let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
@@ -46,7 +45,6 @@ class NCDocumentCamera: NSObject, VNDocumentCameraViewControllerDelegate {
     }
 
     func documentCameraViewController(_ controller: VNDocumentCameraViewController, didFinishWith scan: VNDocumentCameraScan) {
-
         for pageNumber in 0..<scan.pageCount {
             let fileName = utilityFileSystem.createFileName("scan.png",
                                                             fileDate: Date(),
