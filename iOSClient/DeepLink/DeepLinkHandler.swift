@@ -20,6 +20,8 @@
 //
 
 import Foundation
+import UIKit
+import SwiftUI
 
 enum ControllerConstants {
     static let filesIndex = 0
@@ -105,28 +107,22 @@ class DeepLinkHandler {
         navigationController.performSegue(withIdentifier: segue, sender: self)
     }
 
-    private func navigateToAutoUpload(controller: NCMainTabBarController) {
-        controller.selectedIndex = ControllerConstants.moreIndex
-        guard let navigationController = controller.viewControllers?[controller.selectedIndex] as? UINavigationController,
-              let moreViewController = navigationController.viewControllers.first,
-              let settingViewController = UIStoryboard(name: ControllerConstants.settingIdentifire, bundle: nil).instantiateInitialViewController() else { return }
-        /*
-        let manageAutoUploadVC = CCManageAutoUpload()
-        navigationController.viewControllers = navigationController.viewControllers.filter({$0.isKind(of: NCMore.self)})
-        navigationController.setViewControllers([settingViewController, manageAutoUploadVC], animated: true)
-        */
-    }
-
     private func navigateToSettings(controller: NCMainTabBarController) {
         controller.selectedIndex = ControllerConstants.moreIndex
-        guard let navigationController = controller.viewControllers?[controller.selectedIndex] as? UINavigationController,
-              let moreViewController = navigationController.viewControllers.first,
-              let settingViewController = UIStoryboard(name: ControllerConstants.settingIdentifire, bundle: nil).instantiateInitialViewController() else { return }
-        /*
-        let manageAutoUploadVC = CCManageAutoUpload()
-        navigationController.viewControllers = navigationController.viewControllers.filter({$0.isKind(of: NCMore.self)})
-        navigationController.setViewControllers([settingViewController, manageAutoUploadVC], animated: true)
-        */
+        guard let navigationController = controller.viewControllers?[controller.selectedIndex] as? UINavigationController else { return }
+
+        let settingsView = NCSettingsView(model: NCSettingsModel(controller: controller))
+        let settingsController = UIHostingController(rootView: settingsView)
+        navigationController.pushViewController(settingsController, animated: true)
+    }
+
+    private func navigateToAutoUpload(controller: NCMainTabBarController) {
+        controller.selectedIndex = ControllerConstants.moreIndex
+        guard let navigationController = controller.viewControllers?[controller.selectedIndex] as? UINavigationController else { return }
+
+        let autoUploadView = NCAutoUploadView(model: NCAutoUploadModel(controller: controller))
+        let autoUploadController = UIHostingController(rootView: autoUploadView)
+        navigationController.pushViewController(autoUploadController, animated: true)
     }
 
     private func navigateAppUpdate() {
