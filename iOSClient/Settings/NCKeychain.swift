@@ -384,7 +384,7 @@ import KeychainAccess
             if let value = try? keychain.get("fileNameType"), let result = Bool(value) {
                 return result
             }
-            return true
+            return false
         }
         set {
             keychain["fileNameType"] = String(newValue)
@@ -396,7 +396,7 @@ import KeychainAccess
             if let value = try? keychain.get("fileNameMask") {
                 return value
             }
-            return NCGlobal.shared.mediaLayoutRatio
+            return ""
         }
         set {
             keychain["fileNameMask"] = String(newValue)
