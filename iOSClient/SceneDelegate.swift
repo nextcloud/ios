@@ -326,7 +326,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             return
         } else if !account.isEmpty, let action {
             if DeepLink(rawValue: action) != nil {
-                DeepLinkHandler().parseDeepLink(url, controller: controller)
+                NCDeepLinkHandler().parseDeepLink(url, controller: controller)
             }
             return
         } else {

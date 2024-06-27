@@ -36,7 +36,7 @@ enum ControllerConstants {
     static let settingIdentifire = "NCSettings"
 }
 
-class DeepLinkHandler {
+class NCDeepLinkHandler {
     func parseDeepLink(_ url: URL, controller: NCMainTabBarController) {
         guard let action = url.host, let deepLink = DeepLink(rawValue: action) else { return }
         let params = getQueryParamsFromUrl(url: url)
