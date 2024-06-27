@@ -65,7 +65,7 @@
                                                         <constraint firstAttribute="width" constant="23" id="Wzd-bs-ACZ"/>
                                                     </constraints>
                                                     <state key="normal">
-                                                        <imageReference key="image" image="pencil" catalog="system" renderingMode="hierarchical" variableValue="1">
+                                                        <imageReference key="image" image="pencil.tip.crop.circle" catalog="system" renderingMode="hierarchical" variableValue="1">
                                                             <hierarchicalColors>
                                                                 <color systemColor="labelColor"/>
                                                                 <color systemColor="secondaryLabelColor"/>
@@ -294,7 +294,7 @@
     </scenes>
     <resources>
         <image name="add" width="25" height="25"/>
-        <image name="pencil" catalog="system" width="128" height="113"/>
+        <image name="pencil.tip.crop.circle" catalog="system" width="128" height="123"/>
         <image name="transferDown" width="330" height="330"/>
         <image name="xmark" catalog="system" width="128" height="113"/>
         <systemColor name="labelColor">
