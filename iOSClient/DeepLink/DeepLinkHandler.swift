@@ -5,6 +5,19 @@
 //  Created by Amrut Waghmare on 29/05/24.
 //  Copyright © 2024 Marino Faggiana. All rights reserved.
 //
+//  This program is free software: you can redistribute it and/or modify
+//  it under the terms of the GNU General Public License as published by
+//  the Free Software Foundation, either version 3 of the License, or
+//  (at your option) any later version.
+//
+//  This program is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//  GNU General Public License for more details.
+//
+//  You should have received a copy of the GNU General Public License
+//  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
 
 import Foundation
 
@@ -20,6 +33,7 @@ enum ControllerConstants {
     static let delete = "segueTrash"
     static let settingIdentifire = "NCSettings"
 }
+
 class DeepLinkHandler {
     func parseDeepLink(_ url: URL, controller: NCMainTabBarController) {
         guard let action = url.host, let deepLink = DeepLink(rawValue: action) else { return }
@@ -53,7 +67,7 @@ class DeepLinkHandler {
         case .openDeleted:
             navigateToMore(withSegue: ControllerConstants.delete, controller: controller)
         case .openSettings:
-            navigateToMore(withSegue: ControllerConstants.settings, controller: controller)
+            navigateToSettings(controller: controller)
         case .openAutoUpload:
             navigateToAutoUpload(controller: controller)
         case .openUrl:
@@ -92,6 +106,18 @@ class DeepLinkHandler {
     }
 
     private func navigateToAutoUpload(controller: NCMainTabBarController) {
+        controller.selectedIndex = ControllerConstants.moreIndex
+        guard let navigationController = controller.viewControllers?[controller.selectedIndex] as? UINavigationController,
+              let moreViewController = navigationController.viewControllers.first,
+              let settingViewController = UIStoryboard(name: ControllerConstants.settingIdentifire, bundle: nil).instantiateInitialViewController() else { return }
+        /*
+        let manageAutoUploadVC = CCManageAutoUpload()
+        navigationController.viewControllers = navigationController.viewControllers.filter({$0.isKind(of: NCMore.self)})
+        navigationController.setViewControllers([settingViewController, manageAutoUploadVC], animated: true)
+        */
+    }
+
+    private func navigateToSettings(controller: NCMainTabBarController) {
         controller.selectedIndex = ControllerConstants.moreIndex
         guard let navigationController = controller.viewControllers?[controller.selectedIndex] as? UINavigationController,
               let moreViewController = navigationController.viewControllers.first,
