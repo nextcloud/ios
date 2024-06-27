@@ -9,16 +9,16 @@
 import Foundation
 
 enum DeepLink: String {
-    case openFiles = "openFiles"                // nextcloud://openFiles
-    case openFavorites = "openFavorites"        // nextcloud://openFavorites
-    case openMedia = "openMedia"                // nextcloud://openMedia
-    case openShared = "openShared"              // nextcloud://openShared
-    case openOffline = "openOffline"            // nextcloud://openOffline
-    case openNotifications = "openNotifications"// nextcloud://openNotifications
-    case openDeleted = "openDeleted"            // nextcloud://openDeleted
-    case openSettings = "openSettings"          // nextcloud://openSettings
-    case openAutoUpload = "openAutoUpload"      // nextcloud://openAutoUpload
-    case openUrl = "openUrl"                    // nextcloud://openUrl?url=https://nextcloud.com
-    case createNew = "createNew"                // nextcloud://createNew
-    case checkAppUpdate = "checkAppUpdate"      // nextcloud://checkAppUpdate
+    case openFiles              // nextcloud://openFiles
+    case openFavorites          // nextcloud://openFavorites
+    case openMedia              // nextcloud://openMedia
+    case openShared             // nextcloud://openShared
+    case openOffline            // nextcloud://openOffline
+    case openNotifications      // nextcloud://openNotifications
+    case openDeleted            // nextcloud://openDeleted
+    case openSettings           // nextcloud://openSettings
+    case openAutoUpload         // nextcloud://openAutoUpload
+    case openUrl                // nextcloud://openUrl?url=https://nextcloud.com
+    case createNew              // nextcloud://createNew
+    case checkAppUpdate         // nextcloud://checkAppUpdate
 }
