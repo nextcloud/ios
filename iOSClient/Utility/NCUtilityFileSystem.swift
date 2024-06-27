@@ -427,7 +427,7 @@ class NCUtilityFileSystem: NSObject {
         return fileNamePath
     }
 
-    func createFileName(_ fileName: String, fileDate: Date, fileType: PHAssetMediaType) -> String {
+    func createFileName(_ fileName: String, fileDate: Date, fileType: PHAssetMediaType, notUseMask: Bool = false) -> String {
         var fileName = fileName
         let keychain = NCKeychain()
         let addFileNameType: Bool = keychain.fileNameType
@@ -460,7 +460,7 @@ class NCUtilityFileSystem: NSObject {
             fileNameType = NSLocalizedString("_unknown_", comment: "")
         }
 
-        if !keychain.fileNameMask.isEmpty {
+        if !keychain.fileNameMask.isEmpty, !notUseMask {
             fileName = keychain.fileNameMask
             if !fileName.isEmpty {
                 formatter.dateFormat = "dd"
