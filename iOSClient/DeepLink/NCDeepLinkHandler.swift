@@ -44,11 +44,9 @@ enum ControllerConstants {
     static let mediaIndex = 3
     static let moreIndex = 4
     static let notification = "NCNotification"
-    static let settings = "segueSettings"
     static let shares = "segueShares"
     static let offline = "segueOffline"
     static let delete = "segueTrash"
-    static let settingIdentifire = "NCSettings"
 }
 
 class NCDeepLinkHandler {
