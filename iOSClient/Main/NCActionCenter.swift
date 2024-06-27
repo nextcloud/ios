@@ -152,7 +152,6 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
     }
 
     func setMetadataAvalableOffline(_ metadata: tableMetadata, isOffline: Bool) {
-        guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else { return }
         let serverUrl = metadata.serverUrl + "/" + metadata.fileName
         if isOffline {
             if metadata.directory {
@@ -374,13 +373,7 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
 
     func saveAsScan(metadata: tableMetadata, controller: NCMainTabBarController?) {
         let fileNamePath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)
-        let fileNameDestination = utilityFileSystem.createFileName("scan.png",
-                                                                   fileDate: Date(),
-                                                                   fileType: PHAssetMediaType.image,
-                                                                   keyFileName: NCGlobal.shared.keyFileNameMask,
-                                                                   keyFileNameType: NCGlobal.shared.keyFileNameType,
-                                                                   keyFileNameOriginal: NCGlobal.shared.keyFileNameOriginal,
-                                                                   forcedNewFileName: true)
+        let fileNameDestination = utilityFileSystem.createFileName("", fileDate: Date(), fileType: PHAssetMediaType.image)
         let fileNamePathDestination = utilityFileSystem.directoryScan + "/" + fileNameDestination
 
         utilityFileSystem.copyFile(atPath: fileNamePath, toPath: fileNamePathDestination)

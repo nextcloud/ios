@@ -427,17 +427,13 @@ class NCUtilityFileSystem: NSObject {
         return fileNamePath
     }
 
-    func createFileName(_ fileName: String, fileDate: Date, fileType: PHAssetMediaType, keyFileName: String?, keyFileNameType: String, keyFileNameOriginal: String, forcedNewFileName: Bool) -> String {
+    func createFileName(_ fileName: String, fileDate: Date, fileType: PHAssetMediaType) -> String {
         var fileName = fileName
         let keychain = NCKeychain()
-        let addFileNameType: Bool = keychain.getFileNameType(key: keyFileNameType)
-        let useFileNameOriginal: Bool = keychain.getOriginalFileName(key: keyFileNameOriginal)
+        let addFileNameType: Bool = keychain.fileNameType
         var numberFileName: String = ""
         var fileNameType = ""
         let fileNameExt = (fileName as NSString).pathExtension.lowercased()
-
-        /// Original FileName
-        if useFileNameOriginal && !forcedNewFileName { return fileName }
 
         if fileName.count > 8 {
             let index = fileName.index(fileName.startIndex, offsetBy: 4)
@@ -464,8 +460,8 @@ class NCUtilityFileSystem: NSObject {
             fileNameType = NSLocalizedString("_unknown_", comment: "")
         }
 
-        if let keyFileName = keyFileName {
-            fileName = keychain.getFileNameMask(key: keyFileName)
+        if !keychain.fileNameMask.isEmpty {
+            fileName = keychain.fileNameMask
             if !fileName.isEmpty {
                 formatter.dateFormat = "dd"
                 let dayNumber = formatter.string(from: fileDate)

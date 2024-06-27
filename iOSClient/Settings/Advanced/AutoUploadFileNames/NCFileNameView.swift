@@ -1,12 +1,11 @@
 //
-//  NCAutoUploadFileNamesView.swift
+//  NCFileNameView.swift
 //  Nextcloud
 //
-//  Created by Aditya Tyagi on 10/03/24.
-//  Created by Marino Faggiana on 30/05/24.
+//  Created by Marino Faggiana on 26/06/24.
 //  Copyright © 2024 Marino Faggiana. All rights reserved.
 //
-//  Author Aditya Tyagi <adityagi02@yahoo.com>
+//  Author Marino Faggiana <marino.faggiana@nextcloud.com>
 //
 //  This program is free software: you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
@@ -24,20 +23,13 @@
 
 import SwiftUI
 
-struct NCAutoUploadFileNamesView: View {
-    @ObservedObject var model = NCAutoUploadFileNamesModel()
+struct NCFileNameView: View {
+    @ObservedObject var model = NCFileNameModel()
 
     var body: some View {
         Form {
             /// Specify Filename
             Section(header: Text(NSLocalizedString("_mode_filename_", comment: ""))) {
-                Toggle(NSLocalizedString("_maintain_original_filename_", comment: ""), isOn: $model.maintainFilename)
-                    .font(.system(size: 16))
-                    .tint(Color(NCBrandColor.shared.brandElement))
-                    .onChange(of: model.maintainFilename, perform: { newValue in
-                        model.toggleMaintainOriginalFilename(newValue: newValue)
-                        model.getFileName()
-                    })
                 /// Filename
                 if !model.maintainFilename {
                     Toggle(NSLocalizedString("_add_filenametype_", comment: ""), isOn: $model.specifyFilename)
@@ -76,11 +68,12 @@ struct NCAutoUploadFileNamesView: View {
                             model.submitChangedName()
                             model.getFileName()
                         })
+                        .autocapitalization(.none)
                         .font(.system(size: 15))
                         .multilineTextAlignment(.trailing)
                 }
                 .font(.system(size: 16))
-                Text("\(model.fileName)")
+                Text("\(model.fileNamePreview)")
                     .font(.system(size: 16))
                     .foregroundColor(Color(UIColor.lightGray))
             }, header: {
@@ -103,5 +96,5 @@ struct NCAutoUploadFileNamesView: View {
 }
 
 #Preview {
-    NCAutoUploadFileNamesView(model: NCAutoUploadFileNamesModel())
+    NCFileNameView(model: NCFileNameModel())
 }

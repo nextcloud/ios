@@ -50,10 +50,6 @@ class NCUploadAssetsModel: NSObject, ObservableObject, NCCreateFormUploadConflic
     @Published var useAutoUploadSubFolder = false
     @Published var showHUD = false
     @Published var uploadInProgress = false
-    @Published var fileName: String = NCKeychain().getFileNameMask(key: NCGlobal.shared.keyFileNameMask)
-    @Published var addFilenametype: Bool = NCKeychain().getFileNameType(key: NCGlobal.shared.keyFileNameType)
-    @Published var maintainOriginalFilename: Bool = NCKeychain().getOriginalFileName(key: NCGlobal.shared.keyFileNameOriginal)
-
     /// Root View Controller
     @Published var controller: NCMainTabBarController?
 
@@ -91,7 +87,6 @@ class NCUploadAssetsModel: NSObject, ObservableObject, NCCreateFormUploadConflic
     }
 
     func getOriginalFilenameForPreview() -> NSString {
-        NCKeychain().setOriginalFileName(key: NCGlobal.shared.keyFileNameOriginal, value: maintainOriginalFilename)
         if let asset = assets.first?.phAsset {
             return asset.originalFilename
         } else {
@@ -105,40 +100,6 @@ class NCUploadAssetsModel: NSObject, ObservableObject, NCCreateFormUploadConflic
         if previewStore.isEmpty {
             dismissView = true
         }
-    }
-
-    /// Submits the changed file name.
-    func submitChangedName() {
-        let fileNameWithoutForbiddenChars = NCUtility().removeForbiddenCharacters(fileName)
-        if fileName != fileNameWithoutForbiddenChars {
-            fileName = fileNameWithoutForbiddenChars
-            let errorDescription = String(format: NSLocalizedString("_forbidden_characters_", comment: ""), NCGlobal.shared.forbiddenCharacters.joined(separator: " "))
-            let error = NKError(errorCode: NCGlobal.shared.errorConflict, errorDescription: errorDescription)
-            NCContentPresenter().showInfo(error: error)
-        }
-    }
-
-    func setFileNameMaskForPreview(fileName: String?) -> String {
-        guard let asset = assets.first?.phAsset else { return "" }
-        var preview: String = ""
-        let creationDate = asset.creationDate ?? Date()
-
-        NCKeychain().setOriginalFileName(key: NCGlobal.shared.keyFileNameOriginal, value: maintainOriginalFilename)
-        NCKeychain().setFileNameType(key: NCGlobal.shared.keyFileNameType, prefix: addFilenametype)
-        NCKeychain().setFileNameMask(key: NCGlobal.shared.keyFileNameMask, mask: fileName)
-
-        preview = NCUtilityFileSystem().createFileName(getOriginalFilenameForPreview() as String,
-                                                       fileDate: creationDate,
-                                                       fileType: asset.mediaType,
-                                                       keyFileName: fileName.isEmptyOrNil ? nil : NCGlobal.shared.keyFileNameMask,
-                                                       keyFileNameType: NCGlobal.shared.keyFileNameType,
-                                                       keyFileNameOriginal: NCGlobal.shared.keyFileNameOriginal,
-                                                       forcedNewFileName: false
-        )
-
-        let trimmedPreview = preview.trimmingCharacters(in: .whitespacesAndNewlines)
-
-        return String(format: NSLocalizedString("_preview_filename_", comment: ""), "MM, MMM, DD, YY, YYYY, HH, hh, mm, ss, ampm") + ":" + "\n\n" + (trimmedPreview as NSString).deletingPathExtension
     }
 
     func presentedQuickLook(index: Int, fileNamePath: String) -> Bool {
@@ -233,13 +194,7 @@ class NCUploadAssetsModel: NSObject, ObservableObject, NCCreateFormUploadConflic
             let creationDate = asset.creationDate ?? Date()
             let ext = assetFileName.pathExtension.lowercased()
 
-            let fileName = previewStore.fileName.isEmpty ? utilityFileSystem.createFileName(assetFileName as String,
-                                                                                            fileDate: creationDate,
-                                                                                            fileType: asset.mediaType,
-                                                                                            keyFileName: NCGlobal.shared.keyFileNameMask,
-                                                                                            keyFileNameType: NCGlobal.shared.keyFileNameType,
-                                                                                            keyFileNameOriginal: NCGlobal.shared.keyFileNameOriginal,
-                                                                                            forcedNewFileName: false)
+            let fileName = previewStore.fileName.isEmpty ? utilityFileSystem.createFileName(assetFileName as String, fileDate: creationDate, fileType: asset.mediaType)
             : (previewStore.fileName + "." + ext)
 
             if previewStore.assetType == .livePhoto && NCKeychain().livePhoto && previewStore.data == nil {

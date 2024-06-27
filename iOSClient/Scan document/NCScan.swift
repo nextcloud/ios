@@ -289,12 +289,7 @@ class NCScan: UIViewController, NCScanCellCellDelegate {
         let pasteboard = UIPasteboard.general
         if pasteboard.hasImages {
             guard let image = pasteboard.image?.fixedOrientation() else { return }
-            let fileName = utilityFileSystem.createFileName("scan.png", fileDate: Date(),
-                                                            fileType: PHAssetMediaType.image,
-                                                            keyFileName: NCGlobal.shared.keyFileNameMask,
-                                                            keyFileNameType: NCGlobal.shared.keyFileNameType,
-                                                            keyFileNameOriginal: NCGlobal.shared.keyFileNameOriginal,
-                                                            forcedNewFileName: true)
+            let fileName = utilityFileSystem.createFileName("", fileDate: Date(), fileType: PHAssetMediaType.image)
             let fileNamePath = utilityFileSystem.directoryScan + "/" + fileName
 
             do {

@@ -44,6 +44,17 @@ struct NCSettingsAdvancedView: View {
                 }
                 .font(.system(size: 16))
             }, footer: { })
+            /// file name
+            Section(content: {
+               NavigationLink(destination: LazyView {
+                   NCFileNameView(model: NCFileNameModel())
+               }) {
+                   Text(NSLocalizedString("_filenamemask_", comment: ""))
+                       .font(.system(size: 16))
+               }
+            }, footer: {
+                Text(NSLocalizedString("_filenamemask_footer_", comment: ""))
+            })
             /// Most Compatible & Enable Live Photo
             Section(content: {
                 Toggle(NSLocalizedString("_format_compatibility_", comment: ""), isOn: $model.mostCompatible)

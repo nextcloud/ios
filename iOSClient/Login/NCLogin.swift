@@ -558,7 +558,7 @@ extension NCLogin: ClientCertificateDelegate, UIDocumentPickerDelegate {
         alertEnterPassword.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel, handler: nil))
 
         alertEnterPassword.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { _ in
-            let documentProviderMenu = UIDocumentPickerViewController(forOpeningContentTypes: [UTType.pkcs12])
+            // let documentProviderMenu = UIDocumentPickerViewController(forOpeningContentTypes: [UTType.pkcs12])
             NCNetworking.shared.p12Data = try? Data(contentsOf: urls[0])
             NCNetworking.shared.p12Password = alertEnterPassword.textFields?[0].text
 

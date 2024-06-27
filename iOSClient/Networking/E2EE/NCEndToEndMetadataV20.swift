@@ -116,7 +116,7 @@ extension NCEndToEndMetadata {
 
             guard let userId, let certificate else { return }
 
-            if let metadataKeyEncrypted = NCEndToEndEncryption.sharedManager().encryptAsymmetricData(key, certificate: certificate) {
+            if let metadataKeyEncrypted = NCEndToEndEncryption.shared().encryptAsymmetricData(key, certificate: certificate) {
                 let encryptedMetadataKey = metadataKeyEncrypted.base64EncodedString()
 
                 NCManageDatabase.shared.addE2EUsers(account: account, serverUrl: serverUrl, ocIdServerUrl: ocIdServerUrl, userId: userId, certificate: certificate, encryptedMetadataKey: encryptedMetadataKey, metadataKey: key)
@@ -125,7 +125,7 @@ extension NCEndToEndMetadata {
 
         if isDirectoryTop {
 
-            guard var key = NCEndToEndEncryption.sharedManager()?.generateKey() as? Data else {
+            guard var key = NCEndToEndEncryption.shared().generateKey() else {
                 return (nil, nil, 0, NKError(errorCode: NCGlobal.shared.errorUnexpectedResponseFromDB, errorDescription: "_e2e_error_"))
             }
             if let tableUserId = NCManageDatabase.shared.getE2EUser(account: account, ocIdServerUrl: directoryTop.ocId, userId: userId),
@@ -168,7 +168,7 @@ extension NCEndToEndMetadata {
                 if isDirectoryTop {
                     usersCodable.append(E2eeV20.Users(userId: user.userId, certificate: user.certificate, encryptedMetadataKey: user.encryptedMetadataKey))
                 }
-                if let hash = NCEndToEndEncryption.sharedManager().createSHA256(user.metadataKey) {
+                if let hash = NCEndToEndEncryption.shared().createSHA256(user.metadataKey) {
                     keyChecksums.append(hash)
                 }
             }
@@ -198,7 +198,7 @@ extension NCEndToEndMetadata {
             var initializationVector: NSString?
             let json = try JSONEncoder().encode(E2eeV20.Metadata.ciphertext(counter: counter, deleted: false, keyChecksums: keyChecksums, files: filesCodable, folders: folders))
             let jsonZip = try json.gzipped()
-            let ciphertextMetadata = NCEndToEndEncryption.sharedManager().encryptPayloadFile(jsonZip, key: metadataKey, initializationVector: &initializationVector, authenticationTag: &authenticationTag)
+            let ciphertextMetadata = NCEndToEndEncryption.shared().encryptPayloadFile(jsonZip, key: metadataKey, initializationVector: &initializationVector, authenticationTag: &authenticationTag)
             guard var ciphertextMetadata, let initializationVector = initializationVector as? String, let authenticationTag = authenticationTag as? String else {
                 return (nil, nil, counter, NKError(errorCode: NCGlobal.shared.errorE2EEEncryptPayloadFile, errorDescription: "_e2e_error_"))
             }
@@ -282,7 +282,7 @@ extension NCEndToEndMetadata {
                         var metadataKey: Data?
                         if let encryptedMetadataKey = user.encryptedMetadataKey {
                             let data = Data(base64Encoded: encryptedMetadataKey)
-                            if let decrypted = NCEndToEndEncryption.sharedManager().decryptAsymmetricData(data, privateKey: NCKeychain().getEndToEndPrivateKey(account: account)) {
+                            if let decrypted = NCEndToEndEncryption.shared().decryptAsymmetricData(data, privateKey: NCKeychain().getEndToEndPrivateKey(account: account)) {
                                 metadataKey = decrypted
                             }
                         }
@@ -317,9 +317,9 @@ extension NCEndToEndMetadata {
                     let authenticationTag = filedop.value.authenticationTag
                     for user in filedop.value.users where user.userId == userId {
                         let data = Data(base64Encoded: user.encryptedFiledropKey)
-                        if let decryptedFiledropKey = NCEndToEndEncryption.sharedManager().decryptAsymmetricData(data, privateKey: NCKeychain().getEndToEndPrivateKey(account: account)) {
+                        if let decryptedFiledropKey = NCEndToEndEncryption.shared().decryptAsymmetricData(data, privateKey: NCKeychain().getEndToEndPrivateKey(account: account)) {
                             let filedropKey = decryptedFiledropKey.base64EncodedString()
-                            guard let decryptedFiledrop = NCEndToEndEncryption.sharedManager().decryptPayloadFile(ciphertext, key: filedropKey, initializationVector: nonce, authenticationTag: authenticationTag),
+                            guard let decryptedFiledrop = NCEndToEndEncryption.shared().decryptPayloadFile(ciphertext, key: filedropKey, initializationVector: nonce, authenticationTag: authenticationTag),
                                   decryptedFiledrop.isGzipped else {
                                 return NKError(errorCode: NCGlobal.shared.errorE2EEKeyFiledropCiphertext, errorDescription: "_e2e_error_")
                             }
@@ -335,7 +335,7 @@ extension NCEndToEndMetadata {
 
             // CIPHERTEXT METADATA
             //
-            guard let decryptedMetadata = NCEndToEndEncryption.sharedManager().decryptPayloadFile(metadata.ciphertext, key: metadataKey, initializationVector: metadata.nonce, authenticationTag: metadata.authenticationTag),
+            guard let decryptedMetadata = NCEndToEndEncryption.shared().decryptPayloadFile(metadata.ciphertext, key: metadataKey, initializationVector: metadata.nonce, authenticationTag: metadata.authenticationTag),
                   decryptedMetadata.isGzipped else {
                 return NKError(errorCode: NCGlobal.shared.errorE2EEKeyCiphertext, errorDescription: "_e2e_error_")
             }
@@ -347,7 +347,7 @@ extension NCEndToEndMetadata {
             // CHECKSUM CHECK
             //
             if let keyChecksums = jsonCiphertextMetadata.keyChecksums {
-                guard let hash = NCEndToEndEncryption.sharedManager().createSHA256(decryptedMetadataKey),
+                guard let hash = NCEndToEndEncryption.shared().createSHA256(decryptedMetadataKey),
                       keyChecksums.contains(hash) else {
                     return NKError(errorCode: NCGlobal.shared.errorE2EEKeyChecksums, errorDescription: NSLocalizedString("_e2e_error_", comment: ""))
                 }
@@ -437,7 +437,7 @@ extension NCEndToEndMetadata {
             let decoded = try? JSONSerialization.data(withJSONObject: dataSerialization, options: [.sortedKeys, .withoutEscapingSlashes])
             let base64 = decoded!.base64EncodedString()
             if let base64Data = base64.data(using: .utf8),
-               let signatureData = NCEndToEndEncryption.sharedManager().generateSignatureCMS(base64Data, certificate: certificate, privateKey: NCKeychain().getEndToEndPrivateKey(account: account), userId: userId) {
+               let signatureData = NCEndToEndEncryption.shared().generateSignatureCMS(base64Data, certificate: certificate, privateKey: NCKeychain().getEndToEndPrivateKey(account: account), userId: userId) {
                 return signatureData.base64EncodedString()
             }
         } catch {
@@ -473,7 +473,7 @@ extension NCEndToEndMetadata {
                 let decodedSignatureCodable = try JSONSerialization.data(withJSONObject: dataSerialization, options: [.sortedKeys, .withoutEscapingSlashes])
                 let base64 = decodedSignatureCodable.base64EncodedString()
                 if let data = base64.data(using: .utf8), let signatureData = Data(base64Encoded: signature) {
-                    return NCEndToEndEncryption.sharedManager().verifySignatureCMS(signatureData, data: data, certificates: certificates)
+                    return NCEndToEndEncryption.shared().verifySignatureCMS(signatureData, data: data, certificates: certificates)
                 }
             }
 
