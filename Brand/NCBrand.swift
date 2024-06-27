@@ -46,6 +46,7 @@ let userAgent: String = {
     var privacy: String = "https://nextcloud.com/privacy"
     var sourceCode: String = "https://github.com/nextcloud/ios"
     var mobileconfig: String = "/remote.php/dav/provisioning/apple-provisioning.mobileconfig"
+    var appStoreUrl: String = "https://apps.apple.com/in/app/nextcloud/id1125420102"
 
     // Auto Upload default folder
     var folderDefaultAutoUpload: String = "Photos"
