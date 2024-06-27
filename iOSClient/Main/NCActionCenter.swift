@@ -250,12 +250,10 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
     // MARK: - Upload
 
     @objc func uploadedFile(_ notification: NSNotification) {
-
-        guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else { return }
         guard let userInfo = notification.userInfo as NSDictionary?,
               let error = userInfo["error"] as? NKError,
               let account = userInfo["account"] as? String,
-              account == appDelegate.account
+              account == self.appDelegate?.account
         else { return }
 
         if error != .success, error.errorCode != NSURLErrorCancelled, error.errorCode != NCGlobal.shared.errorRequestExplicityCancelled {
