@@ -29,7 +29,6 @@ class NCShareHeader: UIView {
     @IBOutlet weak var fileName: UILabel!
     @IBOutlet weak var info: UILabel!
     @IBOutlet weak var fullWidthImageView: UIImageView!
-    @IBOutlet weak var fileNameBottomConstraint: NSLayoutConstraint!
     @IBOutlet weak var tagListView: TagListView!
 
     func setupUI(with metadata: tableMetadata) {
