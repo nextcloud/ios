@@ -78,7 +78,7 @@ class NCShare: UIViewController, NCShareNetworkingDelegate, NCSharePagingContent
         tableView.delegate = self
         tableView.allowsSelection = false
         tableView.backgroundColor = .systemBackground
-//        tableView.contentInset = UIEdgeInsets(top: 8, left: 0, bottom: 0, right: 0)
+        tableView.contentInset = UIEdgeInsets(top: 8, left: 0, bottom: 10, right: 0)
 
         tableView.register(UINib(nibName: "NCShareLinkCell", bundle: nil), forCellReuseIdentifier: "cellLink")
         tableView.register(UINib(nibName: "NCShareUserCell", bundle: nil), forCellReuseIdentifier: "cellUser")
