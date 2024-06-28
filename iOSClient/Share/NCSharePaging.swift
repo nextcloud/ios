@@ -134,7 +134,7 @@ class NCSharePaging: UIViewController {
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         super.viewWillTransition(to: size, with: coordinator)
 
-        (pagingViewController.view as? NCSharePagingView)?.header?.calculateHeaderHeight()
+        (pagingViewController.view as? NCSharePagingView)?.header?.viewWillTransitionTo()
 
         coordinator.animate(alongsideTransition: nil) { _ in
             self.pagingViewController.menuItemSize = .fixed(
@@ -330,6 +330,7 @@ class NCSharePagingView: PagingView {
 //            NCSharePagingView.tagHeaderHeight = 130
 //        }
 
+        headerView.setupUI(with: metadata)
 
         addSubview(headerView)
 
@@ -355,10 +356,9 @@ class NCSharePagingView: PagingView {
             pageView.topAnchor.constraint(equalTo: topAnchor, constant: 10)
         ])
 
-        headerView.setupUI(with: metadata)
 
-        setNeedsLayout()
-        layoutIfNeeded()
+//        setNeedsLayout()
+//        layoutIfNeeded()
     }
 
 //    func recalculateHeaderHeight() {

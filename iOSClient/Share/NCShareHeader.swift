@@ -52,6 +52,7 @@ class NCShareHeader: UIView {
         if FileManager.default.fileExists(atPath: utilityFileSystem.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)) {
             fullWidthImageView.image = NCUtility().getImageMetadata(metadata, for: frame.height)
             fullWidthImageView.contentMode = .scaleAspectFill
+            imageView.image = fullWidthImageView.image
             imageView.isHidden = true
 //            heightWithImage.isActive = true
         } else {
@@ -64,7 +65,7 @@ class NCShareHeader: UIView {
             }
 
             fileNameTopConstraint.constant -= 45
-            heightWithImage.constant -= 45
+            heightWithImage.constant = 150
 //            heightWithoutImage.isActive = true
         }
         fileName.text = metadata.fileNameView
@@ -81,6 +82,21 @@ class NCShareHeader: UIView {
 
         setNeedsLayout()
         layoutIfNeeded()
+    }
+
+    func viewWillTransitionTo() {
+//        heightWithImage.constant -= 20
+
+        if traitCollection.verticalSizeClass == .compact {
+            heightWithImage.constant = fullWidthImageView.image != nil ? 230 : 150
+        } else {
+            heightWithImage.constant = 90
+        }
+
+        if fullWidthImageView.image != nil {
+            imageView.isHidden = traitCollection.verticalSizeClass == .compact
+        }
+
     }
 
     func calculateHeaderHeight() {

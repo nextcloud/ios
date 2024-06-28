@@ -13,7 +13,7 @@
         <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="wbW-yR-MZC" customClass="NCShareHeader" customModule="Nextcloud" customModuleProvider="target">
             <rect key="frame" x="0.0" y="0.0" width="414" height="230"/>
             <subviews>
-                <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="image1_b.png" translatesAutoresizingMaskIntoConstraints="NO" id="cki-Ql-o1I">
+                <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="cki-Ql-o1I">
                     <rect key="frame" x="0.0" y="0.0" width="414" height="140"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="140" id="xTr-ay-Wso"/>
@@ -78,19 +78,26 @@
                 <constraint firstItem="VaC-Fz-kHk" firstAttribute="leading" secondItem="pu4-Nd-M08" secondAttribute="leading" id="Ycb-wy-uL6"/>
                 <constraint firstItem="VaC-Fz-kHk" firstAttribute="top" secondItem="pu4-Nd-M08" secondAttribute="bottom" constant="1" id="Z5Q-L6-DMc"/>
                 <constraint firstItem="cki-Ql-o1I" firstAttribute="leading" secondItem="wbW-yR-MZC" secondAttribute="leading" id="ZlH-LU-x2x"/>
-                <constraint firstAttribute="height" constant="230" id="eIA-KE-jMG">
-                    <variation key="heightClass=compact" constant="50"/>
-                </constraint>
+                <constraint firstAttribute="height" constant="230" id="eIA-KE-jMG"/>
+                <constraint firstItem="pu4-Nd-M08" firstAttribute="top" secondItem="Dkw-QP-be6" secondAttribute="bottom" constant="10" id="knE-ki-nPr"/>
                 <constraint firstAttribute="trailing" secondItem="pu4-Nd-M08" secondAttribute="trailing" constant="16" id="pP5-G4-ey4"/>
                 <constraint firstItem="qpa-L5-mof" firstAttribute="bottom" secondItem="wbW-yR-MZC" secondAttribute="bottom" id="v3t-y8-sw0"/>
             </constraints>
             <nil key="simulatedTopBarMetrics"/>
             <nil key="simulatedBottomBarMetrics"/>
             <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
+            <variation key="default">
+                <mask key="constraints">
+                    <exclude reference="knE-ki-nPr"/>
+                </mask>
+            </variation>
             <variation key="heightClass=compact">
                 <mask key="subviews">
                     <exclude reference="cki-Ql-o1I"/>
                     <exclude reference="qpa-L5-mof"/>
+                </mask>
+                <mask key="constraints">
+                    <include reference="knE-ki-nPr"/>
                 </mask>
             </variation>
             <connections>
@@ -107,7 +114,6 @@
     </objects>
     <resources>
         <image name="directory" width="300" height="300"/>
-        <image name="image1_b.png" width="80" height="40"/>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>
