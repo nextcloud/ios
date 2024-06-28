@@ -29,7 +29,23 @@ class NCShareHeader: UIView {
     @IBOutlet weak var fileName: UILabel!
     @IBOutlet weak var info: UILabel!
     @IBOutlet weak var fullWidthImageView: UIImageView!
+    @IBOutlet weak var fileNameTopConstraint: NSLayoutConstraint!
     @IBOutlet weak var tagListView: TagListView!
+    @IBOutlet weak var heightWithImage: NSLayoutConstraint!
+//    @IBOutlet weak var heightWithoutImage: NSLayoutConstraint!
+
+    private var heightConstraintWithImage: NSLayoutConstraint?
+    private var heightConstraintWithoutImage: NSLayoutConstraint?
+
+    override func awakeFromNib() {
+        super.awakeFromNib()
+
+//        removeConstraint(heightWithImage)
+//        removeConstraint(heightWithoutImage)
+
+//        heightWithImage.isActive = false
+//        heightWithoutImage.isActive = false
+    }
 
     func setupUI(with metadata: tableMetadata) {
         let utilityFileSystem = NCUtilityFileSystem()
@@ -37,7 +53,7 @@ class NCShareHeader: UIView {
             fullWidthImageView.image = NCUtility().getImageMetadata(metadata, for: frame.height)
             fullWidthImageView.contentMode = .scaleAspectFill
             imageView.isHidden = true
-//            fileNameBottomConstraint.constant = 50
+//            heightWithImage.isActive = true
         } else {
             if metadata.directory {
                 imageView.image = metadata.e2eEncrypted ? NCImageCache.images.folderEncrypted : NCImageCache.images.folder
@@ -46,6 +62,10 @@ class NCShareHeader: UIView {
             } else {
                 imageView.image = NCImageCache.images.file
             }
+
+            fileNameTopConstraint.constant -= 45
+            heightWithImage.constant -= 45
+//            heightWithoutImage.isActive = true
         }
         fileName.text = metadata.fileNameView
         fileName.textColor = NCBrandColor.shared.textColor
@@ -53,5 +73,33 @@ class NCShareHeader: UIView {
         info.text = utilityFileSystem.transformedSize(metadata.size) + ", " + NCUtility().dateDiff(metadata.date as Date)
 
         tagListView.addTags(Array(metadata.tags))
+
+//        heightConstraintWithImage = heightAnchor.constraint(equalToConstant: heightWithImage.constant)
+//        heightConstraintWithoutImage = heightAnchor.constraint(equalToConstant: heightWithoutImage.constant)
+
+        calculateHeaderHeight()
+
+        setNeedsLayout()
+        layoutIfNeeded()
+    }
+
+    func calculateHeaderHeight() {
+//        if fullWidthImageView.image != nil {
+////            heightConstraintWithImage?.isActive = true
+////            heightConstraintWithoutImage?.isActive = false
+////            heightAnchor.constraint(equalToConstant: heightWithImage.constant).isActive = true
+//            heightWithoutImage.isActive = false
+//
+//            heightWithImage.isActive = true
+//        } else {
+////            heightConstraintWithoutImage?.isActive = true
+////            heightConstraintWithImage?.isActive = false
+//            heightWithImage.isActive = false
+////            heightAnchor.constraint(equalToConstant: heightWithoutImage.constant).isActive = true
+//            heightWithoutImage.isActive = true
+//        }
+
+//        setNeedsLayout()
+//        layoutIfNeeded()
     }
 }

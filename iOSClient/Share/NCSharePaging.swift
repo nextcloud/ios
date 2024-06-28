@@ -100,7 +100,7 @@ class NCSharePaging: UIViewController {
             pagingViewController.select(index: 0)
         }
 
-        (pagingViewController.view as? NCSharePagingView)?.setupConstraints()
+//        (pagingViewController.view as? NCSharePagingView)?.setupConstraints()
         pagingViewController.reloadMenu()
     }
 
@@ -133,6 +133,8 @@ class NCSharePaging: UIViewController {
 
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         super.viewWillTransition(to: size, with: coordinator)
+
+        (pagingViewController.view as? NCSharePagingView)?.header?.calculateHeaderHeight()
 
         coordinator.animate(alongsideTransition: nil) { _ in
             self.pagingViewController.menuItemSize = .fixed(
@@ -189,7 +191,7 @@ extension NCSharePaging: PagingViewControllerDataSource {
 
     func pagingViewController(_: PagingViewController, viewControllerAt index: Int) -> UIViewController {
 
-        let height = pagingViewController.options.menuHeight + NCSharePagingView.headerHeight + NCSharePagingView.tagHeaderHeight
+        let height = pagingViewController.options.menuHeight + ((pagingViewController.view as? NCSharePagingView)?.header?.heightWithImage.constant ?? 0)
 
         if pages[index] == .activity {
             guard let viewController = UIStoryboard(name: "NCActivity", bundle: nil).instantiateInitialViewController() as? NCActivity else {
@@ -251,13 +253,11 @@ class NCShareHeaderViewController: PagingViewController {
 }
 
 class NCSharePagingView: PagingView {
-
-    static let headerHeight: CGFloat = 90
-    static var tagHeaderHeight: CGFloat = 150
     var metadata = tableMetadata()
     let utilityFileSystem = NCUtilityFileSystem()
     let utility = NCUtility()
     public var headerHeightConstraint: NSLayoutConstraint?
+    var header: NCShareHeader?
 
     // MARK: - View Life Cycle
 
@@ -276,7 +276,7 @@ class NCSharePagingView: PagingView {
 //        guard let headerView = Bundle.main.loadNibNamed("NCShareHeaderView", owner: self, options: nil)?.first as? NCShareHeaderView else { return }
 
         guard let headerView = Bundle.main.loadNibNamed("NCShareHeader", owner: self, options: nil)?.first as? NCShareHeader else { return }
-
+        header = headerView
         headerView.backgroundColor = .systemBackground
 //        headerView.ocId = metadata.ocId
 
@@ -288,7 +288,6 @@ class NCSharePagingView: PagingView {
 //        if FileManager.default.fileExists(atPath: utilityFileSystem.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)) {
 //            headerView.imageView.image = UIImage(contentsOfFile: utilityFileSystem.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag))
 //        } else {
-            headerView.setupUI(with: metadata)
 //            print(metadata.iconName)
 //            if metadata.directory {
 //                let image = metadata.e2eEncrypted ? UIImage(named: "folderEncrypted") : UIImage(named: "folder")
@@ -331,8 +330,10 @@ class NCSharePagingView: PagingView {
 //            NCSharePagingView.tagHeaderHeight = 130
 //        }
 
+
         addSubview(headerView)
 
+//        recalculateHeaderHeight()
         collectionView.translatesAutoresizingMaskIntoConstraints = false
         headerView.translatesAutoresizingMaskIntoConstraints = false
         pageView.translatesAutoresizingMaskIntoConstraints = false
@@ -353,7 +354,27 @@ class NCSharePagingView: PagingView {
             pageView.bottomAnchor.constraint(equalTo: bottomAnchor),
             pageView.topAnchor.constraint(equalTo: topAnchor, constant: 10)
         ])
+
+        headerView.setupUI(with: metadata)
+
+        setNeedsLayout()
+        layoutIfNeeded()
     }
+
+//    func recalculateHeaderHeight() {
+//        guard let header else { return }
+//        // Deactivate existing height constraints
+//        for constraint in header.constraints {
+//                if constraint.firstAttribute == .height {
+//                    constraint.isActive = false
+//                }
+//            }
+//
+//        NSLayoutConstraint.activate([
+//            header.heightAnchor.constraint(equalToConstant: header.heightWithImage.constant)
+//        ])
+//
+//    }
 }
 
 class NCShareHeaderView: UIView {

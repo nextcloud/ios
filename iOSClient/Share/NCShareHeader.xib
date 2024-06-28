@@ -32,7 +32,7 @@
                     <nil key="highlightedColor"/>
                 </label>
                 <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" image="directory" translatesAutoresizingMaskIntoConstraints="NO" id="Dkw-QP-be6">
-                    <rect key="frame" x="15" y="51" width="96" height="96"/>
+                    <rect key="frame" x="15" y="0.0" width="96" height="96"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="96" id="TW7-8v-NRJ">
                             <variation key="heightClass=compact" constant="45"/>
@@ -73,7 +73,7 @@
                 <constraint firstItem="pu4-Nd-M08" firstAttribute="top" secondItem="cki-Ql-o1I" secondAttribute="bottom" constant="10" id="LGa-dZ-YWB"/>
                 <constraint firstAttribute="trailing" secondItem="qpa-L5-mof" secondAttribute="trailing" constant="10" id="SMV-fn-U36"/>
                 <constraint firstAttribute="trailing" secondItem="cki-Ql-o1I" secondAttribute="trailing" id="Wdl-Rb-Pjy"/>
-                <constraint firstItem="Dkw-QP-be6" firstAttribute="top" secondItem="wbW-yR-MZC" secondAttribute="top" constant="51" id="Wv8-wm-RAM"/>
+                <constraint firstItem="Dkw-QP-be6" firstAttribute="top" secondItem="wbW-yR-MZC" secondAttribute="top" id="Wv8-wm-RAM"/>
                 <constraint firstItem="qpa-L5-mof" firstAttribute="leading" secondItem="wbW-yR-MZC" secondAttribute="leading" constant="10" id="YSd-5w-XAH"/>
                 <constraint firstItem="VaC-Fz-kHk" firstAttribute="leading" secondItem="pu4-Nd-M08" secondAttribute="leading" id="Ycb-wy-uL6"/>
                 <constraint firstItem="VaC-Fz-kHk" firstAttribute="top" secondItem="pu4-Nd-M08" secondAttribute="bottom" constant="1" id="Z5Q-L6-DMc"/>
@@ -95,7 +95,9 @@
             </variation>
             <connections>
                 <outlet property="fileName" destination="pu4-Nd-M08" id="iLj-ya-6hM"/>
+                <outlet property="fileNameTopConstraint" destination="LGa-dZ-YWB" id="coJ-JB-oVJ"/>
                 <outlet property="fullWidthImageView" destination="cki-Ql-o1I" id="KYn-3Y-SZH"/>
+                <outlet property="heightWithImage" destination="eIA-KE-jMG" id="OrL-5R-H1p"/>
                 <outlet property="imageView" destination="Dkw-QP-be6" id="wzX-Sb-Ajt"/>
                 <outlet property="info" destination="VaC-Fz-kHk" id="n9O-6c-qsd"/>
                 <outlet property="tagListView" destination="qpa-L5-mof" id="XJL-YO-eAV"/>
