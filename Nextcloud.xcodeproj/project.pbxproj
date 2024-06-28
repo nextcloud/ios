@@ -2316,7 +2316,7 @@
 		F76882052C0DD1E7001CF441 /* Advanced */ = {
 			isa = PBXGroup;
 			children = (
-				F76882182C0DD1E7001CF441 /* AutoUploadFileNames */,
+				F76882182C0DD1E7001CF441 /* File Name */,
 				F76882062C0DD1E7001CF441 /* Capabilities */,
 				F76882092C0DD1E7001CF441 /* NCSettingsAdvancedView.swift */,
 				F768820A2C0DD1E7001CF441 /* NCSettingsAdvancedModel.swift */,
@@ -2362,13 +2362,13 @@
 			path = AutoUpload;
 			sourceTree = "<group>";
 		};
-		F76882182C0DD1E7001CF441 /* AutoUploadFileNames */ = {
+		F76882182C0DD1E7001CF441 /* File Name */ = {
 			isa = PBXGroup;
 			children = (
 				F76882192C0DD1E7001CF441 /* NCFileNameModel.swift */,
 				F768821A2C0DD1E7001CF441 /* NCFileNameView.swift */,
 			);
-			path = AutoUploadFileNames;
+			path = "File Name";
 			sourceTree = "<group>";
 		};
 		F768821C2C0DD1E7001CF441 /* Display */ = {
@@ -5348,7 +5348,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 7;
+				CURRENT_PROJECT_VERSION = 8;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = NKUJUXUJ3B;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -5414,7 +5414,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 7;
+				CURRENT_PROJECT_VERSION = 8;
 				DEVELOPMENT_TEAM = NKUJUXUJ3B;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
