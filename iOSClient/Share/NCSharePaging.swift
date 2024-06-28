@@ -191,7 +191,7 @@ extension NCSharePaging: PagingViewControllerDataSource {
 
     func pagingViewController(_: PagingViewController, viewControllerAt index: Int) -> UIViewController {
 
-        let height = pagingViewController.options.menuHeight + ((pagingViewController.view as? NCSharePagingView)?.header?.heightWithImage.constant ?? 0)
+        let height: CGFloat = 50
 
         if pages[index] == .activity {
             guard let viewController = UIStoryboard(name: "NCActivity", bundle: nil).instantiateInitialViewController() as? NCActivity else {
@@ -353,7 +353,7 @@ class NCSharePagingView: PagingView {
             pageView.leadingAnchor.constraint(equalTo: leadingAnchor),
             pageView.trailingAnchor.constraint(equalTo: trailingAnchor),
             pageView.bottomAnchor.constraint(equalTo: bottomAnchor),
-            pageView.topAnchor.constraint(equalTo: topAnchor, constant: 10)
+            pageView.topAnchor.constraint(equalTo: headerView.bottomAnchor)
         ])
 
 
