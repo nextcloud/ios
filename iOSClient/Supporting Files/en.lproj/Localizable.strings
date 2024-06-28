@@ -318,7 +318,7 @@
 "_clear_cache_"                 = "Clear cache";
 "_clear_cache_footer_"          = "Clear downloaded and offline files from the app";
 "_exit_"                        = "Reset application";
-"_exit_footer_"                 = "Remove all accounts and local data from the app";
+"_exit_footer_"                 = "Remove all accounts and local data from the app.";
 "_funct_not_enabled_"           = "Functionality not enabled";
 "_passcode_activate_"           = "Password lock on";
 "_disabling_passcode_"          = "Removing password lock";
@@ -377,7 +377,7 @@
 "_advanced_"                    = "Advanced";
 "_permissions_"                 = "Permissions";
 "_disable_files_app_"           = "Disable Files App integration";
-"_disable_files_app_footer_"    = "Do not permit the access of files via the iOS Files application";
+"_disable_files_app_footer_"    = "Do not permit the access of files via the iOS Files application.";
 "_trial_"                       = "Trial";
 "_trial_expired_day_"           = "Days remaining";
 "_time_remaining_"              = "%@ remaining";
@@ -389,7 +389,7 @@
 "_autoupload_background_"           = "Auto upload in the background";
 "_autoupload_photos_"               = "Auto upload photos";
 "_autoupload_videos_"               = "Auto upload videos";
-"_autoupload_description_"          = "New photos/videos will be automatically uploaded to your server";
+"_autoupload_description_"          = "New photos/videos will be automatically uploaded to your server.";
 "_autoupload_description_background_"  = "This option requires the use of GPS to trigger the detection of new photos/videos in the camera roll once the location changes significantly";
 "_autoupload_background_title_"     = "Limitations";
 "_autoupload_background_msg_"       = "Due to iOS restrictions, it is not yet possible to perform background processes, unless GPS services are activated. Once the cell in the cellular network is changed, the system wakes up for a short time and checks for new photos to upload to the cloud.";
@@ -400,12 +400,12 @@
 "_autoupload_not_select_home_"      = "Select a folder";
 "_autoupload_save_album_"           = "Copy photo or video into the photo album";
 "_autoupload_fullphotos_"           = "Upload the whole camera roll";
-"_autoupload_fullphotos_footer_"    = "Adjust the options above before uploading";
+"_autoupload_fullphotos_footer_"    = "Adjust the options above before uploading.";
 "_autoupload_create_subfolder_"     = "Use subfolders";
-"_autoupload_create_subfolder_footer_"  = "Store in subfolders based on year, month or daily";
+"_autoupload_create_subfolder_footer_"  = "Store in subfolders based on year, month or daily.";
 "_autoupload_subfolder_granularity_"    = "Subfolder Granularity";
 "_filenamemask_"                        = "Change filename mask";
-"_filenamemask_footer_"                 = "Change the automatic filename mask";
+"_filenamemask_footer_"                 = "By default, when a file is uploaded, it automatically gets the following format: yy-mm-dd hh-mm-ss plus a 4-digit counter. If you do not like this format, you can change it here except for the final 4-digit counter, which cannot be omitted.";
 "_autoupload_current_folder_"           = "Currently selected folder";
 "_help_tutorial_"               = "Tutorial";
 "_help_intro_"                  = "Introduction to Nextcloud";
@@ -418,7 +418,7 @@
 "_terms_"                       = "Terms of Service";
 "_privacy_"                     = "Privacy";
 "_privacy_policy_"              = "Privacy Policy";
-"_privacy_footer_"              = "This app uses a service for the analysis of a crash. Your personal information is not sent with the report. If you want disable it, please change the setting \"Disable crash reporter\" to ON";
+"_privacy_footer_"              = "This app uses a service for the analysis of a crash. Your personal information is not sent with the report. If you want disable it, please change the setting \"Disable crash reporter\" to ON.";
 "_crashservice_title_"          = "Disable crash reporter";
 "_crashservice_alert_"          = "This option requires a restart of the app to take effect";
 "_upload_mov_livephoto_"        = "Live Photo";
@@ -426,7 +426,7 @@
 "_view_capabilities_"           = "View the capabilities";
 "_capabilities_"                = "Capabilities";
 "_no_capabilities_found_"       = "Capabilities not found";
-"_capabilities_footer_"         = "Display the packages used by the app if they are installed and available on the server";
+"_capabilities_footer_"         = "Display the packages used by the app if they are installed and available on the server.";
 "_diagnostics_"                 = "Diagnostics";
 "_view_log_"                    = "View log file";
 "_clear_log_"                   = "Clear log file";
@@ -939,7 +939,7 @@
 "_password_ascii_"          = "The password cannot contain special characters";
 "_calendar_contacts_"       = "Calendar and Contacts";
 "_mobile_config_"           = "Download the configuration profile";
-"_calendar_contacts_footer_"    = "After the downloading you need to go to the Settings app to install it. If a profile is not installed within 8 minutes of downloading it, it is automatically deleted";
+"_calendar_contacts_footer_"    = "After the downloading you need to go to the Settings app to install it. If a profile is not installed within 8 minutes of downloading it, it is automatically deleted.";
 "_preview_"                 = "Preview";
 "_crop_"                    = "Crop";
 "_modify_image_desc_"       = "Tap the image for modify";
@@ -991,7 +991,7 @@
 "_use_system_style_"        = "Use system style";
 "_account_settings_"        = "Account settings";
 "_users_"                   = "Users";
-"_users_footer_"            = "Every time the app is reactivated, the account will be requested";
+"_users_footer_"            = "Every time the app is reactivated, the account will be requested.";
 
 // Video
 "_select_trace_"            = "Select the trace";
