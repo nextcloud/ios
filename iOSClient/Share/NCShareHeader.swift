@@ -65,9 +65,16 @@ class NCShareHeader: UIView {
             }
 
             fileNameTopConstraint.constant -= 45
-            heightWithImage.constant = 150
+//            heightWithImage.constant = 150
 //            heightWithoutImage.isActive = true
         }
+
+        if traitCollection.verticalSizeClass == .compact {
+            heightWithImage.constant = 90
+        } else {
+            heightWithImage.constant = fullWidthImageView.image == nil ? 150 : 230
+        }
+
         fileName.text = metadata.fileNameView
         fileName.textColor = NCBrandColor.shared.textColor
         info.textColor = NCBrandColor.shared.textColor2
@@ -84,18 +91,30 @@ class NCShareHeader: UIView {
         layoutIfNeeded()
     }
 
-    func viewWillTransitionTo() {
-//        heightWithImage.constant -= 20
-
-        if traitCollection.verticalSizeClass == .compact {
-            heightWithImage.constant = fullWidthImageView.image != nil ? 230 : 150
-        } else {
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        if traitCollection.verticalSizeClass == .compact { // if height is compact
             heightWithImage.constant = 90
+        } else {
+            heightWithImage.constant = fullWidthImageView.image == nil ? 150 : 230
         }
 
         if fullWidthImageView.image != nil {
-            imageView.isHidden = traitCollection.verticalSizeClass == .compact
+            imageView.isHidden = traitCollection.verticalSizeClass != .compact
         }
+    }
+
+    func viewWillTransitionTo() {
+//        heightWithImage.constant -= 20
+
+//        if traitCollection.verticalSizeClass == .compact {
+//            heightWithImage.constant = 90
+//        } else {
+//            heightWithImage.constant = fullWidthImageView.image == nil ? 150 : 230
+//        }
+//
+//        if fullWidthImageView.image != nil {
+//            imageView.isHidden = traitCollection.verticalSizeClass == .compact
+//        }
 
     }
 
