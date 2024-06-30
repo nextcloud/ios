@@ -43,7 +43,7 @@ extension NCNetworking {
         Task {
             let serverUrlfileNamePath = metadata.urlBase + metadata.path + metadata.fileName
             var livePhotoFile = metadata1.fileId
-            let results = await NextcloudKit.shared.setLivephoto(serverUrlfileNamePath: serverUrlfileNamePath, livePhotoFile: livePhotoFile)
+            let results = await setLivephoto(serverUrlfileNamePath: serverUrlfileNamePath, livePhotoFile: livePhotoFile)
             if results.error == .success {
                 NCManageDatabase.shared.setMetadataLivePhotoByServer(account: metadata.account, ocId: metadata.ocId, livePhotoFile: livePhotoFile)
             } else {
@@ -52,7 +52,7 @@ extension NCNetworking {
 
             let serverUrlfileNamePath1 = metadata1.urlBase + metadata1.path + metadata1.fileName
             livePhotoFile = metadata.fileId
-            let results1 = await NextcloudKit.shared.setLivephoto(serverUrlfileNamePath: serverUrlfileNamePath1, livePhotoFile: livePhotoFile)
+            let results1 = await setLivephoto(serverUrlfileNamePath: serverUrlfileNamePath1, livePhotoFile: livePhotoFile)
             if results1.error == .success {
                 NCManageDatabase.shared.setMetadataLivePhotoByServer(account: metadata1.account, ocId: metadata1.ocId, livePhotoFile: livePhotoFile)
             } else {

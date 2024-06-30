@@ -223,7 +223,7 @@ func getFilesDataEntry(configuration: AccountIntent?, isPreview: Bool, displaySi
                     let fileNamePreviewLocalPath = utilityFileSystem.getDirectoryProviderStoragePreviewOcId(file.ocId, etag: file.etag)
                     let fileNameIconLocalPath = utilityFileSystem.getDirectoryProviderStorageIconOcId(file.ocId, etag: file.etag)
                     let sizePreview = NCUtility().getSizePreview(width: Int(file.width), height: Int(file.height))
-                    let (_, _, imageIcon, _, _, _) = await NextcloudKit.shared.downloadPreview(fileId: file.fileId, fileNamePreviewLocalPath: fileNamePreviewLocalPath, fileNameIconLocalPath: fileNameIconLocalPath, widthPreview: Int(sizePreview.width), heightPreview: Int(sizePreview.height), sizeIcon: NCGlobal.shared.sizeIcon, options: options)
+                    let (_, _, imageIcon, _, _, _) = await NCNetworking.shared.downloadPreview(fileId: file.fileId, fileNamePreviewLocalPath: fileNamePreviewLocalPath, fileNameIconLocalPath: fileNameIconLocalPath, widthPreview: Int(sizePreview.width), heightPreview: Int(sizePreview.height), sizeIcon: NCGlobal.shared.sizeIcon, options: options)
                     if let result = imageIcon {
                          image = result
                     }
