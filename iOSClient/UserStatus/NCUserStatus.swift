@@ -422,13 +422,13 @@ class NCUserStatus: UIViewController {
         }
     }
 
-    func getPredefinedClearStatusText(clearAt: NSDate?, clearAtTime: String?, clearAtType: String?) -> String {
+    func getPredefinedClearStatusText(clearAt: Date?, clearAtTime: String?, clearAtType: String?) -> String {
 
         // Date
         if clearAt != nil {
 
             let from = Date()
-            let to = clearAt! as Date
+            let to = clearAt!
 
             let day = Calendar.current.dateComponents([.day], from: from, to: to).day ?? 0
             let hour = Calendar.current.dateComponents([.hour], from: from, to: to).hour ?? 0

@@ -122,7 +122,7 @@ extension NCNetworking {
     }
 
     func createFolder(serverUrlFileName: String,
-                      options: NKRequestOptions = NKRequestOptions()) async -> (account: String, ocId: String?, date: NSDate?, error: NKError) {
+                      options: NKRequestOptions = NKRequestOptions()) async -> (account: String, ocId: String?, date: Date?, error: NKError) {
         await withUnsafeContinuation({ continuation in
             NextcloudKit.shared.createFolder(serverUrlFileName: serverUrlFileName, options: options) { account, ocId, date, error in
                 continuation.resume(returning: (account: account, ocId: ocId, date: date, error: error))

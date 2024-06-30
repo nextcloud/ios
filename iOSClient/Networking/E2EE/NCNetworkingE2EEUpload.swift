@@ -211,7 +211,7 @@ class NCNetworkingE2EEUpload: NSObject {
             NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
             utilityFileSystem.moveFileInBackground(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId), toPath: utilityFileSystem.getDirectoryProviderStorageOcId(ocId))
 
-            metadata.date = resultsSendFile.date ?? NSDate()
+            metadata.date = (resultsSendFile.date as? NSDate) ?? NSDate()
             metadata.etag = resultsSendFile.etag ?? ""
             metadata.ocId = ocId
             metadata.chunk = 0
@@ -255,7 +255,7 @@ class NCNetworkingE2EEUpload: NSObject {
 
     // BRIDGE for chunk
     //
-    private func sendFile(metadata: tableMetadata, e2eToken: String, hud: JGProgressHUD?, uploadE2EEDelegate: uploadE2EEDelegate? = nil) async -> (ocId: String?, etag: String?, date: NSDate?, afError: AFError?, error: NKError) {
+    private func sendFile(metadata: tableMetadata, e2eToken: String, hud: JGProgressHUD?, uploadE2EEDelegate: uploadE2EEDelegate? = nil) async -> (ocId: String?, etag: String?, date: Date?, afError: AFError?, error: NKError) {
 
         if metadata.chunk > 0 {
 

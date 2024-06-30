@@ -294,18 +294,16 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate {
            self.dataSourceTask = task
            self.tableView.reloadData()
        } completion: { account, notifications, _, error in
-           if error == .success && account == self.appDelegate.account {
+           if error == .success, account == self.appDelegate.account, let notifications = notifications {
                self.notifications.removeAll()
-               let sortedListOfNotifications = (notifications! as NSArray).sortedArray(using: [NSSortDescriptor(key: "date", ascending: false)])
-               for notification in sortedListOfNotifications {
-                   if let icon = (notification as? NKNotifications)?.icon {
+               let sortedNotifications = notifications.sorted { $0.date > $1.date }
+               for notification in sortedNotifications {
+                   if let icon = notification.icon {
                        self.utility.convertSVGtoPNGWriteToUserData(svgUrlString: icon, width: 25, rewrite: false, account: self.appDelegate.account) { _, _ in
                            self.tableView.reloadData()
                        }
                    }
-                   if let notification = (notification as? NKNotifications) {
-                       self.notifications.append(notification)
-                   }
+                   self.notifications.append(notification)
                }
                self.refreshControl?.endRefreshing()
                self.tableView.reloadData()

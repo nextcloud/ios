@@ -58,7 +58,7 @@ extension NCManageDatabase {
                     let object = tableTrash()
                     object.account = account
                     object.contentType = trash.contentType
-                    object.date = trash.date
+                    object.date = trash.date as NSDate
                     object.directory = trash.directory
                     object.fileId = trash.fileId
                     object.fileName = trash.fileName
@@ -66,7 +66,7 @@ extension NCManageDatabase {
                     object.hasPreview = trash.hasPreview
                     object.iconName = trash.iconName
                     object.size = trash.size
-                    object.trashbinDeletionTime = trash.trashbinDeletionTime
+                    object.trashbinDeletionTime = trash.trashbinDeletionTime as NSDate
                     object.trashbinFileName = trash.trashbinFileName
                     object.trashbinOriginalLocation = trash.trashbinOriginalLocation
                     object.classFile = trash.classFile

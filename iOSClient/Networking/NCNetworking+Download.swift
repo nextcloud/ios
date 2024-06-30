@@ -108,7 +108,7 @@ extension NCNetworking {
         }) { _, etag, date, length, allHeaderFields, afError, error in
 
             var error = error
-            var dateLastModified: NSDate?
+            var dateLastModified: Date?
             self.downloadRequest.removeValue(forKey: fileNameLocalPath)
             // this delay was added because for small file the "taskHandler: { task" is not called, so this part of code is not executed
             NextcloudKit.shared.nkCommonInstance.backgroundQueue.asyncAfter(deadline: .now() + 0.5) {
@@ -183,8 +183,8 @@ extension NCNetworking {
     func downloadComplete(fileName: String,
                           serverUrl: String,
                           etag: String?,
-                          date: NSDate?,
-                          dateLastModified: NSDate?,
+                          date: Date?,
+                          dateLastModified: Date?,
                           length: Int64,
                           task: URLSessionTask,
                           error: NKError) {

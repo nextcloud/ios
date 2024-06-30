@@ -51,7 +51,7 @@ extension NCManageDatabase {
                 for userStatus in userStatuses {
                     let object = tableUserStatus()
                     object.account = account
-                    object.clearAt = userStatus.clearAt
+                    object.clearAt = userStatus.clearAt as? NSDate
                     object.clearAtTime = userStatus.clearAtTime
                     object.clearAtType = userStatus.clearAtType
                     object.icon = userStatus.icon

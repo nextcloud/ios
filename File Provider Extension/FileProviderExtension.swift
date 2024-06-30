@@ -238,7 +238,7 @@ class FileProviderExtension: NSFileProviderExtension {
             if error == .success {
 
                 metadata.status = NCGlobal.shared.metadataStatusNormal
-                metadata.date = date ?? NSDate()
+                metadata.date = (date as? NSDate) ?? NSDate()
                 metadata.etag = etag ?? ""
 
                 NCManageDatabase.shared.addLocalFile(metadata: metadata)

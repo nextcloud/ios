@@ -115,7 +115,7 @@ extension NCNetworking {
                     start: @escaping () -> Void = { },
                     requestHandler: @escaping (_ request: UploadRequest) -> Void = { _ in },
                     progressHandler: @escaping (_ totalBytesExpected: Int64, _ totalBytes: Int64, _ fractionCompleted: Double) -> Void = { _, _, _ in },
-                    completion: @escaping (_ account: String, _ ocId: String?, _ etag: String?, _ date: NSDate?, _ size: Int64, _ allHeaderFields: [AnyHashable: Any]?, _ afError: AFError?, _ error: NKError) -> Void) {
+                    completion: @escaping (_ account: String, _ ocId: String?, _ etag: String?, _ date: Date?, _ size: Int64, _ allHeaderFields: [AnyHashable: Any]?, _ afError: AFError?, _ error: NKError) -> Void) {
 
         let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
         let options = NKRequestOptions(customHeader: customHeaders, queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
@@ -308,7 +308,7 @@ extension NCNetworking {
                         serverUrl: String,
                         ocId: String?,
                         etag: String?,
-                        date: NSDate?,
+                        date: Date?,
                         size: Int64,
                         task: URLSessionTask,
                         error: NKError) {
@@ -320,7 +320,7 @@ extension NCNetworking {
     func uploadComplete(metadata: tableMetadata,
                         ocId: String?,
                         etag: String?,
-                        date: NSDate?,
+                        date: Date?,
                         size: Int64,
                         error: NKError) {
 
@@ -341,7 +341,7 @@ extension NCNetworking {
                     self.removeTransferInError(ocId: ocIdTemp)
 
                     let metadata = tableMetadata.init(value: metadata)
-                    metadata.uploadDate = date ?? NSDate()
+                    metadata.uploadDate = (date as? NSDate) ?? NSDate()
                     metadata.etag = etag ?? ""
                     metadata.ocId = ocId
                     metadata.chunk = 0

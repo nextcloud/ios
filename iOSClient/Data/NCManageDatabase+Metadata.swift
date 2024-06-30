@@ -306,12 +306,12 @@ extension NCManageDatabase {
         metadata.commentsUnread = file.commentsUnread
         metadata.contentType = file.contentType
         if let date = file.creationDate {
-            metadata.creationDate = date
+            metadata.creationDate = date as NSDate
         } else {
-            metadata.creationDate = file.date
+            metadata.creationDate = file.date as NSDate
         }
         metadata.dataFingerprint = file.dataFingerprint
-        metadata.date = file.date
+        metadata.date = file.date as NSDate
         metadata.directory = file.directory
         metadata.downloadURL = file.downloadURL
         metadata.e2eEncrypted = file.e2eEncrypted
@@ -360,9 +360,9 @@ extension NCManageDatabase {
             metadata.classFile = NKCommon.TypeClassFile.document.rawValue
         }
         if let date = file.uploadDate {
-            metadata.uploadDate = date
+            metadata.uploadDate = date as NSDate
         } else {
-            metadata.uploadDate = file.date
+            metadata.uploadDate = file.date as NSDate
         }
         metadata.urlBase = file.urlBase
         metadata.user = file.user

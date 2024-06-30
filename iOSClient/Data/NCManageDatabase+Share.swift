@@ -92,7 +92,7 @@ extension NCManageDatabase {
                     object.serverUrl = serverUrl
                     object.canEdit = share.canEdit
                     object.canDelete = share.canDelete
-                    object.date = share.date
+                    object.date = share.date as? NSDate
                     object.displaynameFileOwner = share.displaynameFileOwner
                     object.displaynameOwner = share.displaynameOwner
                     object.expirationDate = share.expirationDate
@@ -122,7 +122,7 @@ extension NCManageDatabase {
                     object.uidOwner = share.uidOwner
                     object.uidFileOwner = share.uidFileOwner
                     object.url = share.url
-                    object.userClearAt = share.userClearAt
+                    object.userClearAt = share.userClearAt as? NSDate
                     object.userIcon = share.userIcon
                     object.userMessage = share.userMessage
                     object.userStatus = share.userStatus
