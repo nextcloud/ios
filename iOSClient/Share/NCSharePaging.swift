@@ -134,8 +134,6 @@ class NCSharePaging: UIViewController {
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         super.viewWillTransition(to: size, with: coordinator)
 
-        (pagingViewController.view as? NCSharePagingView)?.header?.viewWillTransitionTo()
-
         coordinator.animate(alongsideTransition: nil) { _ in
             self.pagingViewController.menuItemSize = .fixed(
                 width: self.view.bounds.width / CGFloat(self.pages.count),

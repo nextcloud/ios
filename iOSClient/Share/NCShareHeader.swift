@@ -31,21 +31,9 @@ class NCShareHeader: UIView {
     @IBOutlet weak var fullWidthImageView: UIImageView!
     @IBOutlet weak var fileNameTopConstraint: NSLayoutConstraint!
     @IBOutlet weak var tagListView: TagListView!
-    @IBOutlet weak var heightWithImage: NSLayoutConstraint!
-//    @IBOutlet weak var heightWithoutImage: NSLayoutConstraint!
 
     private var heightConstraintWithImage: NSLayoutConstraint?
     private var heightConstraintWithoutImage: NSLayoutConstraint?
-
-    override func awakeFromNib() {
-        super.awakeFromNib()
-
-//        removeConstraint(heightWithImage)
-//        removeConstraint(heightWithoutImage)
-
-//        heightWithImage.isActive = false
-//        heightWithoutImage.isActive = false
-    }
 
     func setupUI(with metadata: tableMetadata) {
         let utilityFileSystem = NCUtilityFileSystem()
@@ -54,7 +42,6 @@ class NCShareHeader: UIView {
             fullWidthImageView.contentMode = .scaleAspectFill
             imageView.image = fullWidthImageView.image
             imageView.isHidden = true
-//            heightWithImage.isActive = true
         } else {
             if metadata.directory {
                 imageView.image = metadata.e2eEncrypted ? NCImageCache.images.folderEncrypted : NCImageCache.images.folder
@@ -65,14 +52,6 @@ class NCShareHeader: UIView {
             }
 
             fileNameTopConstraint.constant -= 45
-//            heightWithImage.constant = 150
-//            heightWithoutImage.isActive = true
-        }
-
-        if traitCollection.verticalSizeClass == .compact {
-            heightWithImage.constant = 90
-        } else {
-            heightWithImage.constant = fullWidthImageView.image == nil ? 150 : 230
         }
 
         fileName.text = metadata.fileNameView
@@ -82,59 +61,13 @@ class NCShareHeader: UIView {
 
         tagListView.addTags(Array(metadata.tags))
 
-//        heightConstraintWithImage = heightAnchor.constraint(equalToConstant: heightWithImage.constant)
-//        heightConstraintWithoutImage = heightAnchor.constraint(equalToConstant: heightWithoutImage.constant)
-
-        calculateHeaderHeight()
-
         setNeedsLayout()
         layoutIfNeeded()
     }
 
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
-        if traitCollection.verticalSizeClass == .compact { // if height is compact
-            heightWithImage.constant = 90
-        } else {
-            heightWithImage.constant = fullWidthImageView.image == nil ? 150 : 230
-        }
-
         if fullWidthImageView.image != nil {
             imageView.isHidden = traitCollection.verticalSizeClass != .compact
         }
-    }
-
-    func viewWillTransitionTo() {
-//        heightWithImage.constant -= 20
-
-//        if traitCollection.verticalSizeClass == .compact {
-//            heightWithImage.constant = 90
-//        } else {
-//            heightWithImage.constant = fullWidthImageView.image == nil ? 150 : 230
-//        }
-//
-//        if fullWidthImageView.image != nil {
-//            imageView.isHidden = traitCollection.verticalSizeClass == .compact
-//        }
-
-    }
-
-    func calculateHeaderHeight() {
-//        if fullWidthImageView.image != nil {
-////            heightConstraintWithImage?.isActive = true
-////            heightConstraintWithoutImage?.isActive = false
-////            heightAnchor.constraint(equalToConstant: heightWithImage.constant).isActive = true
-//            heightWithoutImage.isActive = false
-//
-//            heightWithImage.isActive = true
-//        } else {
-////            heightConstraintWithoutImage?.isActive = true
-////            heightConstraintWithImage?.isActive = false
-//            heightWithImage.isActive = false
-////            heightAnchor.constraint(equalToConstant: heightWithoutImage.constant).isActive = true
-//            heightWithoutImage.isActive = true
-//        }
-
-//        setNeedsLayout()
-//        layoutIfNeeded()
     }
 }

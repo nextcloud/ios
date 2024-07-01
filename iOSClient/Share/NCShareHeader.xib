@@ -45,6 +45,9 @@
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="qpa-L5-mof" customClass="TagListView" customModule="TagListView">
                     <rect key="frame" x="10" y="195" width="394" height="35"/>
                     <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                    <constraints>
+                        <constraint firstAttribute="height" relation="lessThanOrEqual" constant="35" id="QBZ-Si-8J9"/>
+                    </constraints>
                     <userDefinedRuntimeAttributes>
                         <userDefinedRuntimeAttribute type="number" keyPath="cornerRadius">
                             <real key="value" value="8"/>
@@ -78,7 +81,7 @@
                 <constraint firstItem="VaC-Fz-kHk" firstAttribute="leading" secondItem="pu4-Nd-M08" secondAttribute="leading" id="Ycb-wy-uL6"/>
                 <constraint firstItem="VaC-Fz-kHk" firstAttribute="top" secondItem="pu4-Nd-M08" secondAttribute="bottom" constant="1" id="Z5Q-L6-DMc"/>
                 <constraint firstItem="cki-Ql-o1I" firstAttribute="leading" secondItem="wbW-yR-MZC" secondAttribute="leading" id="ZlH-LU-x2x"/>
-                <constraint firstAttribute="height" constant="230" id="eIA-KE-jMG"/>
+                <constraint firstAttribute="height" constant="90" id="eIA-KE-jMG"/>
                 <constraint firstItem="pu4-Nd-M08" firstAttribute="top" secondItem="Dkw-QP-be6" secondAttribute="bottom" constant="10" id="knE-ki-nPr"/>
                 <constraint firstAttribute="trailing" secondItem="pu4-Nd-M08" secondAttribute="trailing" constant="16" id="pP5-G4-ey4"/>
                 <constraint firstItem="qpa-L5-mof" firstAttribute="bottom" secondItem="wbW-yR-MZC" secondAttribute="bottom" id="v3t-y8-sw0"/>
@@ -88,6 +91,7 @@
             <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
             <variation key="default">
                 <mask key="constraints">
+                    <exclude reference="eIA-KE-jMG"/>
                     <exclude reference="knE-ki-nPr"/>
                 </mask>
             </variation>
@@ -97,6 +101,7 @@
                     <exclude reference="qpa-L5-mof"/>
                 </mask>
                 <mask key="constraints">
+                    <include reference="eIA-KE-jMG"/>
                     <include reference="knE-ki-nPr"/>
                 </mask>
             </variation>
@@ -104,7 +109,6 @@
                 <outlet property="fileName" destination="pu4-Nd-M08" id="iLj-ya-6hM"/>
                 <outlet property="fileNameTopConstraint" destination="LGa-dZ-YWB" id="coJ-JB-oVJ"/>
                 <outlet property="fullWidthImageView" destination="cki-Ql-o1I" id="KYn-3Y-SZH"/>
-                <outlet property="heightWithImage" destination="eIA-KE-jMG" id="OrL-5R-H1p"/>
                 <outlet property="imageView" destination="Dkw-QP-be6" id="wzX-Sb-Ajt"/>
                 <outlet property="info" destination="VaC-Fz-kHk" id="n9O-6c-qsd"/>
                 <outlet property="tagListView" destination="qpa-L5-mof" id="XJL-YO-eAV"/>
