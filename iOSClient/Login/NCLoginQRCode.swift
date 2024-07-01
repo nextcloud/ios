@@ -29,11 +29,8 @@ import QRCodeReader
 }
 
 class NCLoginQRCode: NSObject, QRCodeReaderViewControllerDelegate {
-
     lazy var reader: QRCodeReader = QRCodeReader()
-
     weak var delegate: UIViewController?
-
     lazy var readerVC: QRCodeReaderViewController = {
         let builder = QRCodeReaderViewControllerBuilder {
             $0.reader = QRCodeReader(metadataObjectTypes: [.qr], captureDevicePosition: .back)
@@ -44,13 +41,10 @@ class NCLoginQRCode: NSObject, QRCodeReaderViewControllerDelegate {
 
             $0.reader.stopScanningWhenCodeIsFound = false
         }
-
         return QRCodeReaderViewController(builder: builder)
     }()
 
-    override init() {
-
-    }
+    override init() { }
 
     @objc public init(delegate: UIViewController) {
         self.delegate = delegate
@@ -101,13 +95,11 @@ class NCLoginQRCode: NSObject, QRCodeReaderViewControllerDelegate {
 
     func reader(_ reader: QRCodeReaderViewController, didScanResult result: QRCodeReaderResult) {
         reader.stopScanning()
-
         (self.delegate as? NCLoginQRCodeDelegate)?.dismissQRCode(result.value, metadataType: result.metadataType)
     }
 
     func readerDidCancel(_ reader: QRCodeReaderViewController) {
         reader.stopScanning()
-
         (self.delegate as? NCLoginQRCodeDelegate)?.dismissQRCode(nil, metadataType: nil)
     }
 }

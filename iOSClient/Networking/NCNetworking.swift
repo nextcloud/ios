@@ -31,6 +31,11 @@ import Queuer
 @objc protocol uploadE2EEDelegate: AnyObject { }
 #endif
 
+@objc protocol ClientCertificateDelegate {
+    func onIncorrectPassword()
+    func didAskForClientCertificate()
+}
+
 @objcMembers
 class NCNetworking: NSObject, NKCommonDelegate {
     public static let shared: NCNetworking = {
@@ -59,6 +64,11 @@ class NCNetworking: NSObject, NKCommonDelegate {
     let uploadMetadataInBackground = ThreadSafeDictionary<FileNameServerUrl, tableMetadata>()
     let downloadMetadataInBackground = ThreadSafeDictionary<FileNameServerUrl, tableMetadata>()
     var transferInForegorund: TransferInForegorund?
+    weak var delegate: ClientCertificateDelegate?
+
+    var p12Data: Data?
+    var p12Password: String?
+
     let transferInError = ThreadSafeDictionary<String, Int>()
 
     func transferInError(ocId: String) {
@@ -149,6 +159,12 @@ class NCNetworking: NSObject, NKCommonDelegate {
     override init() {
         super.init()
 
+        getActiveAccountCertificate()
+
+        NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeUser), object: nil, queue: nil) { _ in
+            self.getActiveAccountCertificate()
+        }
+
 #if EXTENSION
         print("Start Background Upload Extension: ", sessionUploadBackgroundExtension)
 #else
@@ -167,7 +183,6 @@ class NCNetworking: NSObject, NKCommonDelegate {
     // MARK: - Communication Delegate
 
     func networkReachabilityObserver(_ typeReachability: NKCommon.TypeReachability) {
-
         if typeReachability == NKCommon.TypeReachability.reachableCellular || typeReachability == NKCommon.TypeReachability.reachableEthernetOrWiFi {
             if !lastReachability {
 #if !EXTENSION
@@ -188,13 +203,29 @@ class NCNetworking: NSObject, NKCommonDelegate {
     func authenticationChallenge(_ session: URLSession,
                                  didReceive challenge: URLAuthenticationChallenge,
                                  completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
-        DispatchQueue.global().async {
-            self.checkTrustedChallenge(session, didReceive: challenge, completionHandler: completionHandler)
+        if challenge.protectionSpace.authenticationMethod == NSURLAuthenticationMethodClientCertificate {
+            DispatchQueue.main.async {
+                if let p12Data = self.p12Data,
+                   let cert = (p12Data, self.p12Password) as? UserCertificate,
+                   let pkcs12 = try? PKCS12(pkcs12Data: cert.data, password: cert.password, onIncorrectPassword: {
+                       self.delegate?.onIncorrectPassword()
+                   }) {
+                    let creds = PKCS12.urlCredential(for: pkcs12)
+
+                    completionHandler(URLSession.AuthChallengeDisposition.useCredential, creds)
+                } else {
+                    self.delegate?.didAskForClientCertificate()
+                    completionHandler(URLSession.AuthChallengeDisposition.performDefaultHandling, nil)
+                }
+            }
+        } else {
+            DispatchQueue.global().async {
+                self.checkTrustedChallenge(session, didReceive: challenge, completionHandler: completionHandler)
+            }
         }
     }
 
     func urlSessionDidFinishEvents(forBackgroundURLSession session: URLSession) {
-
 #if !EXTENSION
         if let appDelegate = UIApplication.shared.delegate as? AppDelegate, let completionHandler = appDelegate.backgroundSessionCompletionHandler {
             NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Called urlSessionDidFinishEvents for Background URLSession")
@@ -231,19 +262,20 @@ class NCNetworking: NSObject, NKCommonDelegate {
     public func checkTrustedChallenge(_ session: URLSession,
                                       didReceive challenge: URLAuthenticationChallenge,
                                       completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
-
         let protectionSpace: URLProtectionSpace = challenge.protectionSpace
         let directoryCertificate = utilityFileSystem.directoryCertificates
         let host = challenge.protectionSpace.host
         let certificateSavedPath = directoryCertificate + "/" + host + ".der"
         var isTrusted: Bool
 
-        if let serverTrust: SecTrust = protectionSpace.serverTrust, let certificate = SecTrustGetCertificateAtIndex(serverTrust, 0) {
+        if let trust: SecTrust = protectionSpace.serverTrust,
+           let certificates = (SecTrustCopyCertificateChain(trust) as? [SecCertificate]),
+           let certificate = certificates.first {
 
             // extarct certificate txt
             saveX509Certificate(certificate, host: host, directoryCertificate: directoryCertificate)
 
-            let isServerTrusted = SecTrustEvaluateWithError(serverTrust, nil)
+            let isServerTrusted = SecTrustEvaluateWithError(trust, nil)
             let certificateCopyData = SecCertificateCopyData(certificate)
             let data = CFDataGetBytePtr(certificateCopyData)
             let size = CFDataGetLength(certificateCopyData)
@@ -273,7 +305,6 @@ class NCNetworking: NSObject, NKCommonDelegate {
     }
 
     func writeCertificate(host: String) {
-
         let directoryCertificate = utilityFileSystem.directoryCertificates
         let certificateAtPath = directoryCertificate + "/" + host + ".tmp"
         let certificateToPath = directoryCertificate + "/" + host + ".der"
@@ -284,7 +315,6 @@ class NCNetworking: NSObject, NKCommonDelegate {
     }
 
     func saveX509Certificate(_ certificate: SecCertificate, host: String, directoryCertificate: String) {
-
         let certNamePathTXT = directoryCertificate + "/" + host + ".txt"
         let data: CFData = SecCertificateCopyData(certificate)
         let mem = BIO_new_mem_buf(CFDataGetBytePtr(data), Int32(CFDataGetLength(data)))
@@ -314,7 +344,6 @@ class NCNetworking: NSObject, NKCommonDelegate {
 
     func checkPushNotificationServerProxyCertificateUntrusted(viewController: UIViewController?,
                                                               completion: @escaping (_ error: NKError) -> Void) {
-
         guard let host = URL(string: NCBrandOptions.shared.pushNotificationServerProxy)?.host else { return }
 
         NextcloudKit.shared.checkServer(serverUrl: NCBrandOptions.shared.pushNotificationServerProxy) { error in
@@ -344,6 +373,12 @@ class NCNetworking: NSObject, NKCommonDelegate {
                 }))
                 viewController?.present(alertController, animated: true)
             }
+        }
+    }
+
+    private func getActiveAccountCertificate() {
+        if let account = NCManageDatabase.shared.getActiveAccount()?.account {
+            (self.p12Data, self.p12Password) = NCKeychain().getClientCertificate(account: account)
         }
     }
 }

@@ -20,7 +20,6 @@
 //
 
 import UIKit
-import OpenSSL
 import NextcloudKit
 import CFNetwork
 import Alamofire
@@ -69,7 +68,7 @@ class NCNetworkingE2EEUpload: NSObject {
 
             // ENCRYPT FILE
             //
-            if NCEndToEndEncryption.sharedManager()?.encryptFile(metadata.fileNameView, fileNameIdentifier: metadata.fileName, directory: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId), key: &key, initializationVector: &initializationVector, authenticationTag: &authenticationTag) == false {
+            if NCEndToEndEncryption.shared().encryptFile(metadata.fileNameView, fileNameIdentifier: metadata.fileName, directory: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId), key: &key, initializationVector: &initializationVector, authenticationTag: &authenticationTag) == false {
                 return NKError(errorCode: NCGlobal.shared.errorE2EEEncryptFile, errorDescription: NSLocalizedString("_e2e_error_", comment: ""))
             }
             guard let key = key as? String, let initializationVector = initializationVector as? String else {
@@ -93,7 +92,7 @@ class NCNetworkingE2EEUpload: NSObject {
                 object.metadataKey = results.metadataKey
                 object.metadataKeyIndex = results.metadataKeyIndex
             } else {
-                guard let key = NCEndToEndEncryption.sharedManager()?.generateKey() as NSData? else {
+                guard let key = NCEndToEndEncryption.shared().generateKey() as NSData? else {
                     return NKError(errorCode: NCGlobal.shared.errorE2EEGenerateKey, errorDescription: NSLocalizedString("_e2e_error_", comment: ""))
                 }
                 object.metadataKey = key.base64EncodedString()

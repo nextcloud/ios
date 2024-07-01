@@ -186,8 +186,7 @@ class NCManageDatabase: NSObject {
     // MARK: -
     // MARK: Utility Database
 
-    @objc func clearTable(_ table: Object.Type, account: String? = nil) {
-
+    func clearTable(_ table: Object.Type, account: String? = nil) {
         do {
             let realm = try Realm()
             try realm.write {
@@ -206,8 +205,7 @@ class NCManageDatabase: NSObject {
         }
     }
 
-    @objc func clearDatabase(account: String?, removeAccount: Bool) {
-
+    func clearDatabase(account: String?, removeAccount: Bool) {
         if removeAccount {
             self.clearTable(tableAccount.self, account: account)
         }
@@ -237,7 +235,6 @@ class NCManageDatabase: NSObject {
         self.clearTable(tableShare.self, account: account)
         self.clearTable(TableSecurityGuardDiagnostics.self, account: account)
         self.clearTable(tableTag.self, account: account)
-        self.clearTable(tableTip.self)
         self.clearTable(tableTrash.self, account: account)
         self.clearTable(tableUserStatus.self, account: account)
         self.clearTable(tableVideo.self, account: account)
@@ -286,5 +283,26 @@ class NCManageDatabase: NSObject {
         }
 
         return nil
+    }
+
+    // MARK: -
+    // MARK: SWIFTUI PREVIEW
+
+    func previewCreateDB() {
+        /// Account
+        let account = "marinofaggiana https://cloudtest.nextcloud.com"
+        let account2 = "mariorossi https://cloudtest.nextcloud.com"
+        NCManageDatabase.shared.addAccount(account, urlBase: "https://cloudtest.nextcloud.com", user: "marinofaggiana", userId: "marinofaggiana", password: "password")
+        NCManageDatabase.shared.addAccount(account2, urlBase: "https://cloudtest.nextcloud.com", user: "mariorossi", userId: "mariorossi", password: "password")
+        let userProfile = NKUserProfile()
+        userProfile.displayName = "Marino Faggiana"
+        userProfile.address = "Hirschstrasse 26, 70192 Stuttgart, Germany"
+        userProfile.phone = "+49 (711) 252 428 - 90"
+        userProfile.email = "cloudtest@nextcloud.com"
+        NCManageDatabase.shared.setAccountUserProfile(account: account, userProfile: userProfile)
+        let userProfile2 = NKUserProfile()
+        userProfile2.displayName = "Mario Rossi"
+        userProfile2.email = "cloudtest@nextcloud.com"
+        NCManageDatabase.shared.setAccountUserProfile(account: account2, userProfile: userProfile2)
     }
 }

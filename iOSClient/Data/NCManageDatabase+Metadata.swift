@@ -166,7 +166,7 @@ extension tableMetadata {
     }
 
     var isDocumentViewableOnly: Bool {
-        sharePermissionsCollaborationServices == NCGlobal.shared.permissionReadShare && classFile == NKCommon.TypeClassFile.document.rawValue
+        sharePermissionsCollaborationServices == NCPermissions().permissionReadShare && classFile == NKCommon.TypeClassFile.document.rawValue
     }
 
     var isAudioOrVideo: Bool {
@@ -991,18 +991,19 @@ extension NCManageDatabase {
     }
 
     func isMetadataShareOrMounted(metadata: tableMetadata, metadataFolder: tableMetadata?) -> Bool {
+        let permissions = NCPermissions()
         var isShare = false
         var isMounted = false
 
         if metadataFolder != nil {
 
-            isShare = metadata.permissions.contains(NCGlobal.shared.permissionShared) && !metadataFolder!.permissions.contains(NCGlobal.shared.permissionShared)
-            isMounted = metadata.permissions.contains(NCGlobal.shared.permissionMounted) && !metadataFolder!.permissions.contains(NCGlobal.shared.permissionMounted)
+            isShare = metadata.permissions.contains(permissions.permissionShared) && !metadataFolder!.permissions.contains(permissions.permissionShared)
+            isMounted = metadata.permissions.contains(permissions.permissionMounted) && !metadataFolder!.permissions.contains(permissions.permissionMounted)
 
         } else if let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", metadata.account, metadata.serverUrl)) {
 
-            isShare = metadata.permissions.contains(NCGlobal.shared.permissionShared) && !directory.permissions.contains(NCGlobal.shared.permissionShared)
-            isMounted = metadata.permissions.contains(NCGlobal.shared.permissionMounted) && !directory.permissions.contains(NCGlobal.shared.permissionMounted)
+            isShare = metadata.permissions.contains(permissions.permissionShared) && !directory.permissions.contains(permissions.permissionShared)
+            isMounted = metadata.permissions.contains(permissions.permissionMounted) && !directory.permissions.contains(permissions.permissionMounted)
         }
 
         if isShare || isMounted {
@@ -1146,17 +1147,5 @@ extension NCManageDatabase {
         }
 
         return nil
-    }
-
-    func getMetadata(from url: URL?) -> tableMetadata? {
-        guard let url,
-              var serverUrl = url.deletingLastPathComponent().absoluteString.removingPercentEncoding
-        else { return nil }
-        let fileName = url.lastPathComponent
-
-        if serverUrl.hasSuffix("/") {
-            serverUrl = String(serverUrl.dropLast())
-        }
-        return NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "serverUrl == %@ AND fileName == %@", serverUrl, fileName))
     }
 }

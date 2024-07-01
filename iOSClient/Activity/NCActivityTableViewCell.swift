@@ -199,7 +199,7 @@ extension NCActivityTableViewCell: UICollectionViewDataSource {
                         cell.fileId = fileId
                         if !FileManager.default.fileExists(atPath: fileNamePath) {
                             if NCNetworking.shared.downloadThumbnailActivityQueue.operations.filter({ ($0 as? NCOperationDownloadThumbnailActivity)?.fileId == fileId }).isEmpty {
-                                NCNetworking.shared.downloadThumbnailActivityQueue.addOperation(NCOperationDownloadThumbnailActivity(fileNamePathOrFileId: activityPreview.source, fileNamePreviewLocalPath: fileNamePath, fileId: fileId, cell: cell, collectionView: collectionView))
+                                NCNetworking.shared.downloadThumbnailActivityQueue.addOperation(NCOperationDownloadThumbnailActivity(fileId: fileId, fileNamePreviewLocalPath: fileNamePath, cell: cell, collectionView: collectionView))
                             }
                         }
                     }
@@ -231,12 +231,10 @@ class NCOperationDownloadThumbnailActivity: ConcurrentOperation {
 
     var cell: NCActivityCollectionViewCell?
     var collectionView: UICollectionView?
-    var fileNamePathOrFileId: String
     var fileNamePreviewLocalPath: String
     var fileId: String
 
-    init(fileNamePathOrFileId: String, fileNamePreviewLocalPath: String, fileId: String, cell: NCActivityCollectionViewCell?, collectionView: UICollectionView?) {
-        self.fileNamePathOrFileId = fileNamePathOrFileId
+    init(fileId: String, fileNamePreviewLocalPath: String, cell: NCActivityCollectionViewCell?, collectionView: UICollectionView?) {
         self.fileNamePreviewLocalPath = fileNamePreviewLocalPath
         self.fileId = fileId
         self.cell = cell
@@ -244,15 +242,9 @@ class NCOperationDownloadThumbnailActivity: ConcurrentOperation {
     }
 
     override func start() {
-
         guard !isCancelled else { return self.finish() }
-
-        NextcloudKit.shared.downloadPreview(fileNamePathOrFileId: fileNamePathOrFileId,
+        NextcloudKit.shared.downloadPreview(fileId: fileId,
                                             fileNamePreviewLocalPath: fileNamePreviewLocalPath,
-                                            widthPreview: 0,
-                                            heightPreview: 0,
-                                            etag: nil,
-                                            useInternalEndpoint: false,
                                             options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { _, imagePreview, _, _, _, error in
 
             if error == .success, let imagePreview = imagePreview {

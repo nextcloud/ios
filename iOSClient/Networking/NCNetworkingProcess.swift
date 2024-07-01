@@ -93,8 +93,8 @@ class NCNetworkingProcess: NSObject {
     @discardableResult
     func start(scene: UIScene?) async -> (counterDownloading: Int, counterUploading: Int) {
         self.pauseProcess = true
-        let hudView = await SceneManager.shared.getMainTabBarController(scene: scene)?.view
-        let applicationState = await UIApplication.shared.applicationState
+        let hudView = await SceneManager.shared.getController(scene: scene)?.view
+        let applicationState = await checkApplicationState()
         let maxConcurrentOperationDownload = NCBrandOptions.shared.maxConcurrentOperationDownload
         var maxConcurrentOperationUpload = NCBrandOptions.shared.maxConcurrentOperationUpload
         var filesNameLocalPath: [String] = []
@@ -224,6 +224,15 @@ class NCNetworkingProcess: NSObject {
 
         self.pauseProcess = false
         return (counterDownloading, counterUploading)
+    }
+
+    func checkApplicationState() async -> UIApplication.State {
+        await withCheckedContinuation { continuation in
+            DispatchQueue.main.async {
+                let appState = UIApplication.shared.applicationState
+                continuation.resume(returning: appState)
+            }
+        }
     }
 
     // MARK: -

@@ -11,6 +11,7 @@ import AVFoundation
 import MobileCoreServices
 import Photos
 import NextcloudKit
+import UniformTypeIdentifiers
 
 class NCLivePhoto {
 
@@ -157,27 +158,20 @@ class NCLivePhoto {
     }
 
     private func saveAssetResource(_ resource: PHAssetResource, to directory: URL, resourceData: Data) -> URL? {
-        let fileExtension = UTTypeCopyPreferredTagWithClass(resource.uniformTypeIdentifier as CFString, kUTTagClassFilenameExtension)?.takeRetainedValue()
-
-        guard let ext = fileExtension else {
-            return nil
-        }
-
+        guard let ext = UTType(tag: resource.uniformTypeIdentifier, tagClass: .filenameExtension, conformingTo: nil)?.identifier else { return nil }
         var fileUrl = directory.appendingPathComponent(NSUUID().uuidString)
         fileUrl = fileUrl.appendingPathExtension(ext as String)
-
         do {
             try resourceData.write(to: fileUrl, options: [Data.WritingOptions.atomic])
         } catch {
             print("Could not save resource \(resource) to filepath \(String(describing: fileUrl))")
             return nil
         }
-
         return fileUrl
     }
 
     func addAssetID(_ assetIdentifier: String, toImage imageURL: URL, saveTo destinationURL: URL) -> URL? {
-        guard let imageDestination = CGImageDestinationCreateWithURL(destinationURL as CFURL, kUTTypeJPEG, 1, nil),
+        guard let imageDestination = CGImageDestinationCreateWithURL(destinationURL as CFURL, UTType.jpeg.identifier as CFString, 1, nil),
             let imageSource = CGImageSourceCreateWithURL(imageURL as CFURL, nil),
             var imageProperties = CGImageSourceCopyPropertiesAtIndex(imageSource, 0, nil) as? [AnyHashable: Any] else { return nil }
         let assetIdentifierKey = "17"

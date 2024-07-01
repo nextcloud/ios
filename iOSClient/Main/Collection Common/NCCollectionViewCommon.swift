@@ -22,12 +22,13 @@
 //
 
 import UIKit
+import SwiftUI
 import Realm
 import NextcloudKit
 import EasyTipView
 import JGProgressHUD
 
-class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UISearchResultsUpdating, UISearchControllerDelegate, UISearchBarDelegate, NCListCellDelegate, NCGridCellDelegate, NCSectionHeaderMenuDelegate, NCSectionFooterDelegate, NCSectionHeaderEmptyDataDelegate, UIAdaptivePresentationControllerDelegate, UIContextMenuInteractionDelegate {
+class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UISearchResultsUpdating, UISearchControllerDelegate, UISearchBarDelegate, NCListCellDelegate, NCGridCellDelegate, NCSectionHeaderMenuDelegate, NCSectionFooterDelegate, NCSectionHeaderEmptyDataDelegate, NCAccountSettingsModelDelegate, UIAdaptivePresentationControllerDelegate, UIContextMenuInteractionDelegate {
 
     @IBOutlet weak var collectionView: UICollectionView!
 
@@ -89,7 +90,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        tabBarSelect = NCCollectionViewCommonSelectTabBar(tabBarController: tabBarController as? NCMainTabBarController, delegate: self)
+        tabBarSelect = NCCollectionViewCommonSelectTabBar(controller: tabBarController as? NCMainTabBarController, delegate: self)
         self.navigationController?.presentationController?.delegate = self
 
         // CollectionView & layout
@@ -599,7 +600,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
         let accounts = NCManageDatabase.shared.getAllAccountOrderAlias()
 
-        if !accounts.isEmpty, !NCBrandOptions.shared.disable_multiaccount, !NCBrandOptions.shared.disable_manage_account {
+        if !accounts.isEmpty, !NCBrandOptions.shared.disable_multiaccount {
             let accountActions: [UIAction] = accounts.map { account in
                 let image = utility.loadUserImage(for: account.user, displayName: account.displayName, userBaseUrl: account)
 
@@ -629,7 +630,14 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                 self.appDelegate.openLogin(selector: NCGlobal.shared.introLogin, openLoginWeb: false)
             }
 
-            let addAccountSubmenu = UIMenu(title: "", options: .displayInline, children: [addAccountAction])
+            let settingsAccountAction = UIAction(title: NSLocalizedString("_account_settings_", comment: ""), image: utility.loadImage(named: "gear", colors: [NCBrandColor.shared.iconImageColor])) { _ in
+                let accountSettingsModel = NCAccountSettingsModel(controller: self.tabBarController as? NCMainTabBarController, delegate: self)
+                let accountSettingsView = NCAccountSettingsView(model: accountSettingsModel)
+                let accountSettingsController = UIHostingController(rootView: accountSettingsView)
+                self.present(accountSettingsController, animated: true, completion: nil)
+            }
+
+            let addAccountSubmenu = UIMenu(title: "", options: .displayInline, children: [addAccountAction, settingsAccountAction])
 
             let menu = UIMenu(children: accountActions + [addAccountSubmenu])
 
@@ -771,13 +779,14 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     }
 
     func getNavigationTitle() -> String {
-
         let activeAccount = NCManageDatabase.shared.getActiveAccount()
         guard let userAlias = activeAccount?.alias, !userAlias.isEmpty else {
             return NCBrandOptions.shared.brand
         }
         return userAlias
     }
+
+    func accountSettingsDidDismiss(tableAccount: tableAccount?) { }
 
     // MARK: - SEARCH
 
@@ -959,7 +968,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             groupByField = "name"
         }
 
-        DispatchQueue.global().async {
+        DispatchQueue.global(qos: .userInteractive).async {
             if withQueryDB { self.queryDB() }
             DispatchQueue.main.async {
                 self.refreshControl.endRefreshing()
@@ -1192,6 +1201,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
         guard let metadata = dataSource.cellForItemAt(indexPath: indexPath),
               let cell = (cell as? NCCellProtocol) else { return }
+        let existsIcon = utilityFileSystem.fileProviderStoragePreviewIconExists(metadata.ocId, etag: metadata.etag)
 
         func downloadAvatar(fileName: String, user: String, dispalyName: String?) {
             if let image = NCManageDatabase.shared.getImageAvatarLoaded(fileName: fileName) {
@@ -1201,23 +1211,30 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                 NCNetworking.shared.downloadAvatar(user: user, dispalyName: dispalyName, fileName: fileName, cell: cell, view: collectionView)
             }
         }
-
+        /// CONTENT MODE
         cell.filePreviewImageView?.layer.borderWidth = 0
-        if metadata.isImage {
+        if existsIcon {
             cell.filePreviewImageView?.contentMode = .scaleAspectFill
         } else {
             cell.filePreviewImageView?.contentMode = .scaleAspectFit
         }
         cell.fileAvatarImageView?.contentMode = .center
 
-        // Thumbnail
+        /// THUMBNAIL
         if !metadata.directory {
             if metadata.hasPreviewBorder {
                 cell.filePreviewImageView?.layer.borderWidth = 0.2
                 cell.filePreviewImageView?.layer.borderColor = UIColor.lightGray.cgColor
             }
             if metadata.name == NCGlobal.shared.appName {
-                if let image = utility.createFilePreviewImage(ocId: metadata.ocId, etag: metadata.etag, fileNameView: metadata.fileNameView, classFile: metadata.classFile, status: metadata.status, createPreviewMedia: !metadata.hasPreview) {
+                if let image = NCImageCache.shared.getIconImage(ocId: metadata.ocId, etag: metadata.etag) {
+                    cell.filePreviewImageView?.image = image
+                } else if let image = utility.createFilePreviewImage(ocId: metadata.ocId, etag: metadata.etag, fileNameView: metadata.fileNameView, classFile: metadata.classFile, status: metadata.status, createPreviewMedia: !metadata.hasPreview) {
+                    let fileNamePathIcon = utilityFileSystem.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)
+                    let fileSizeIcon = self.utilityFileSystem.getFileSize(filePath: fileNamePathIcon)
+                    if NCImageCache.shared.hasIconImageEnoughSize(fileSizeIcon) {
+                        NCImageCache.shared.setIconImage(ocId: metadata.ocId, etag: metadata.etag, image: image)
+                    }
                     cell.filePreviewImageView?.image = image
                 } else {
                     if metadata.iconName.isEmpty {
@@ -1225,13 +1242,13 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                     } else {
                         cell.filePreviewImageView?.image = utility.loadImage(named: metadata.iconName, useTypeIconFile: true)
                     }
-                    if metadata.hasPreview && metadata.status == NCGlobal.shared.metadataStatusNormal && (!utilityFileSystem.fileProviderStoragePreviewIconExists(metadata.ocId, etag: metadata.etag)) {
+                    if metadata.hasPreview && metadata.status == NCGlobal.shared.metadataStatusNormal && !existsIcon {
                         for case let operation as NCCollectionViewDownloadThumbnail in NCNetworking.shared.downloadThumbnailQueue.operations where operation.metadata.ocId == metadata.ocId { return }
                         NCNetworking.shared.downloadThumbnailQueue.addOperation(NCCollectionViewDownloadThumbnail(metadata: metadata, cell: cell, collectionView: collectionView))
                     }
                 }
             } else {
-                // Unified search
+                /// APP NAME - UNIFIED SEARCH
                 switch metadata.iconName {
                 case let str where str.contains("contacts"):
                     cell.filePreviewImageView?.image = NCImageCache.images.iconContacts
@@ -1252,8 +1269,6 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                 default:
                     cell.filePreviewImageView?.image = NCImageCache.images.iconFile
                 }
-
-                // Avatar
                 if !metadata.iconUrl.isEmpty {
                     if let ownerId = getAvatarFromIconUrl(metadata: metadata) {
                         let fileName = metadata.userBaseUrl + "-" + ownerId + ".png"
@@ -1263,7 +1278,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             }
         }
 
-        // Avatar
+        /// AVATAR
         if !metadata.ownerId.isEmpty,
            metadata.ownerId != appDelegate.userId,
            appDelegate.account == metadata.account {
@@ -1290,8 +1305,8 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
     }
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-
         var cell: NCCellProtocol & UICollectionViewCell
+        let permissions = NCPermissions()
 
         // LAYOUT LIST
         if layoutForView?.layout == NCGlobal.shared.layoutList {
@@ -1318,8 +1333,8 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         var a11yValues: [String] = []
 
         if metadataFolder != nil {
-            isShare = metadata.permissions.contains(NCGlobal.shared.permissionShared) && !metadataFolder!.permissions.contains(NCGlobal.shared.permissionShared)
-            isMounted = metadata.permissions.contains(NCGlobal.shared.permissionMounted) && !metadataFolder!.permissions.contains(NCGlobal.shared.permissionMounted)
+            isShare = metadata.permissions.contains(permissions.permissionShared) && !metadataFolder!.permissions.contains(permissions.permissionShared)
+            isMounted = metadata.permissions.contains(permissions.permissionMounted) && !metadataFolder!.permissions.contains(permissions.permissionMounted)
         }
 
         cell.fileSelectImage?.image = nil
@@ -1365,9 +1380,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         }
 
         if metadata.directory {
-
             let tableDirectory = NCManageDatabase.shared.getTableDirectory(ocId: metadata.ocId)
-
             if metadata.e2eEncrypted {
                 cell.filePreviewImageView?.image = NCImageCache.images.folderEncrypted
             } else if isShare {
@@ -1741,31 +1754,30 @@ extension NCCollectionViewCommon: UICollectionViewDelegateFlowLayout {
 
 extension NCCollectionViewCommon: EasyTipViewDelegate {
     func showTip() {
-        if self is NCFiles,
-           self.view.window != nil,
-           !NCBrandOptions.shared.disable_multiaccount,
-           !NCBrandOptions.shared.disable_manage_account,
-           self.serverUrl == utilityFileSystem.getHomeServer(urlBase: appDelegate.urlBase, userId: appDelegate.userId),
-           let view = self.navigationItem.leftBarButtonItem?.customView {
-            if !NCManageDatabase.shared.tipExists(NCGlobal.shared.tipNCCollectionViewCommonAccountRequest), !NCManageDatabase.shared.getAllAccountOrderAlias().isEmpty {
-                var preferences = EasyTipView.Preferences()
-                preferences.drawing.foregroundColor = .white
-                preferences.drawing.backgroundColor = NCBrandColor.shared.nextcloud
-                preferences.drawing.textAlignment = .left
-                preferences.drawing.arrowPosition = .top
-                preferences.drawing.cornerRadius = 10
+        guard !appDelegate.account.isEmpty,
+              self is NCFiles,
+              self.view.window != nil,
+              !NCBrandOptions.shared.disable_multiaccount,
+              self.serverUrl == utilityFileSystem.getHomeServer(urlBase: appDelegate.urlBase, userId: appDelegate.userId),
+              let view = self.navigationItem.leftBarButtonItem?.customView,
+              !NCManageDatabase.shared.tipExists(NCGlobal.shared.tipNCCollectionViewCommonAccountRequest) else { return }
 
-                preferences.animating.dismissTransform = CGAffineTransform(translationX: 0, y: 100)
-                preferences.animating.showInitialTransform = CGAffineTransform(translationX: 0, y: -100)
-                preferences.animating.showInitialAlpha = 0
-                preferences.animating.showDuration = 1.5
-                preferences.animating.dismissDuration = 1.5
+        var preferences = EasyTipView.Preferences()
+        preferences.drawing.foregroundColor = .white
+        preferences.drawing.backgroundColor = NCBrandColor.shared.nextcloud
+        preferences.drawing.textAlignment = .left
+        preferences.drawing.arrowPosition = .top
+        preferences.drawing.cornerRadius = 10
 
-                if appDelegate.tipView == nil {
-                    appDelegate.tipView = EasyTipView(text: NSLocalizedString("_tip_accountrequest_", comment: ""), preferences: preferences, delegate: self)
-                    appDelegate.tipView?.show(forView: view)
-                }
-            }
+        preferences.animating.dismissTransform = CGAffineTransform(translationX: 0, y: 100)
+        preferences.animating.showInitialTransform = CGAffineTransform(translationX: 0, y: -100)
+        preferences.animating.showInitialAlpha = 0
+        preferences.animating.showDuration = 1.5
+        preferences.animating.dismissDuration = 1.5
+
+        if appDelegate.tipView == nil {
+            appDelegate.tipView = EasyTipView(text: NSLocalizedString("_tip_accountrequest_", comment: ""), preferences: preferences, delegate: self)
+            appDelegate.tipView?.show(forView: view)
         }
     }
 
@@ -1893,14 +1905,14 @@ extension NCCollectionViewCommon {
             for task in tasks.1 { // ([URLSessionDataTask], [URLSessionUploadTask], [URLSessionDownloadTask])
                 if task.taskIdentifier == metadata.sessionTaskIdentifier {
                     task.cancel()
-                    NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
-                    NotificationCenter.default.post(name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterUploadCancelFile),
-                                                    object: nil,
-                                                    userInfo: ["ocId": metadata.ocId,
-                                                               "serverUrl": metadata.serverUrl,
-                                                               "account": metadata.account])
                 }
             }
+            NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
+            NotificationCenter.default.post(name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterUploadCancelFile),
+                                            object: nil,
+                                            userInfo: ["ocId": metadata.ocId,
+                                                       "serverUrl": metadata.serverUrl,
+                                                       "account": metadata.account])
         }
     }
 }

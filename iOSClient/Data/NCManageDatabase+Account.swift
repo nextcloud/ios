@@ -26,7 +26,6 @@ import RealmSwift
 import NextcloudKit
 
 class tableAccount: Object, NCUserBaseUrl {
-
     @objc dynamic var account = ""
     @objc dynamic var active: Bool = false
     @objc dynamic var address = ""
@@ -44,10 +43,6 @@ class tableAccount: Object, NCUserBaseUrl {
     @objc dynamic var backend = ""
     @objc dynamic var backendCapabilitiesSetDisplayName: Bool = false
     @objc dynamic var backendCapabilitiesSetPassword: Bool = false
-    @objc dynamic var businessSize: String = ""
-    @objc dynamic var businessType = ""
-    @objc dynamic var city = ""
-    @objc dynamic var country = ""
     @objc dynamic var displayName = ""
     @objc dynamic var email = ""
     @objc dynamic var enabled: Bool = false
@@ -64,7 +59,6 @@ class tableAccount: Object, NCUserBaseUrl {
     @objc dynamic var quotaRelative: Double = 0
     @objc dynamic var quotaTotal: Int64 = 0
     @objc dynamic var quotaUsed: Int64 = 0
-    @objc dynamic var role = ""
     @objc dynamic var storageLocation = ""
     @objc dynamic var subadmin = ""
     @objc dynamic var twitter = ""
@@ -79,7 +73,6 @@ class tableAccount: Object, NCUserBaseUrl {
     @objc dynamic var userStatusStatus: String?
     @objc dynamic var userStatusStatusIsUserDefined: Bool = false
     @objc dynamic var website = ""
-    @objc dynamic var zip = ""
 
     override static func primaryKey() -> String {
         return "account"
@@ -96,15 +89,6 @@ extension NCManageDatabase {
                 let addObject = tableAccount()
 
                 addObject.account = account
-
-                // Brand
-                if NCBrandOptions.shared.use_default_auto_upload {
-
-                    addObject.autoUpload = true
-                    addObject.autoUploadImage = true
-                    addObject.autoUploadVideo = true
-                    addObject.autoUploadWWAnVideo = true
-                }
 
                 NCKeychain().setPassword(account: account, password: password)
 
@@ -148,7 +132,6 @@ extension NCManageDatabase {
 
         do {
             let realm = try Realm()
-            realm.refresh()
             guard let result = realm.objects(tableAccount.self).filter("active == true").first else { return nil }
             return tableAccount.init(value: result)
         } catch let error as NSError {
@@ -162,7 +145,6 @@ extension NCManageDatabase {
 
         do {
             let realm = try Realm()
-            realm.refresh()
             let results = realm.objects(tableAccount.self).sorted(byKeyPath: "account", ascending: true)
             if !results.isEmpty {
                 return Array(results.map { $0.account })
@@ -178,7 +160,6 @@ extension NCManageDatabase {
 
         do {
             let realm = try Realm()
-            realm.refresh()
             guard let result = realm.objects(tableAccount.self).filter(predicate).first else { return nil }
             return tableAccount.init(value: result)
         } catch let error as NSError {
@@ -192,7 +173,6 @@ extension NCManageDatabase {
 
         do {
             let realm = try Realm()
-            realm.refresh()
             let sorted = [SortDescriptor(keyPath: "active", ascending: false), SortDescriptor(keyPath: "user", ascending: true)]
             let results = realm.objects(tableAccount.self).sorted(by: sorted)
             return Array(results.map { tableAccount.init(value: $0) })
@@ -207,7 +187,6 @@ extension NCManageDatabase {
 
         do {
             let realm = try Realm()
-            realm.refresh()
             let sorted = [SortDescriptor(keyPath: "active", ascending: false), SortDescriptor(keyPath: "alias", ascending: true), SortDescriptor(keyPath: "user", ascending: true)]
             let results = realm.objects(tableAccount.self).sorted(by: sorted)
             return Array(results.map { tableAccount.init(value: $0) })
@@ -222,7 +201,6 @@ extension NCManageDatabase {
 
         do {
             let realm = try Realm()
-            realm.refresh()
             guard let result = realm.objects(tableAccount.self).filter("active == true").first else { return "" }
             if result.autoUploadFileName.isEmpty {
                 return NCBrandOptions.shared.folderDefaultAutoUpload
@@ -240,7 +218,6 @@ extension NCManageDatabase {
 
         do {
             let realm = try Realm()
-            realm.refresh()
             guard let result = realm.objects(tableAccount.self).filter("active == true").first else { return "" }
             if result.autoUploadDirectory.isEmpty {
                 return utilityFileSystem.getHomeServer(urlBase: urlBase, userId: userId)
@@ -272,7 +249,6 @@ extension NCManageDatabase {
 
         do {
             let realm = try Realm()
-            realm.refresh()
             guard let result = realm.objects(tableAccount.self).filter("active == true").first else { return NCGlobal.shared.subfolderGranularityMonthly }
             return result.autoUploadSubfolderGranularity
         } catch let error as NSError {
@@ -453,19 +429,14 @@ extension NCManageDatabase {
         }
     }
 
-    @objc func setAccountAlias(_ alias: String?) {
-
-        let alias = alias?.trimmingCharacters(in: .whitespacesAndNewlines)
+    @objc func setAccountAlias(_ account: String, alias: String) {
+        let alias = alias.trimmingCharacters(in: .whitespacesAndNewlines)
 
         do {
             let realm = try Realm()
             try realm.write {
-                if let result = realm.objects(tableAccount.self).filter("active == true").first {
-                    if let alias = alias {
-                        result.alias = alias
-                    } else {
-                        result.alias = ""
-                    }
+                if let result = realm.objects(tableAccount.self).filter("account == %@", account).first {
+                    result.alias = alias
                 }
             }
         } catch let error {

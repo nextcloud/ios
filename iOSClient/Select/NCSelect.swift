@@ -40,7 +40,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
     let utilityFileSystem = NCUtilityFileSystem()
     let utility = NCUtility()
 
-    @objc enum selectType: Int {
+    enum selectType: Int {
         case select
         case selectCreateFolder
         case copyMove
@@ -48,14 +48,14 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
     }
 
     // ------ external settings ------------------------------------
-    @objc weak var delegate: NCSelectDelegate?
-    @objc var typeOfCommandView: selectType = .select
+    weak var delegate: NCSelectDelegate?
+    var typeOfCommandView: selectType = .select
 
-    @objc var includeDirectoryE2EEncryption = false
-    @objc var includeImages = false
-    @objc var enableSelectFile = false
-    @objc var type = ""
-    @objc var items: [tableMetadata] = []
+    var includeDirectoryE2EEncryption = false
+    var includeImages = false
+    var enableSelectFile = false
+    var type = ""
+    var items: [tableMetadata] = []
 
     var titleCurrentFolder = NCBrandOptions.shared.brand
     var serverUrl = ""
@@ -297,14 +297,14 @@ extension NCSelect: UICollectionViewDataSource {
     }
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "listCell", for: indexPath) as? NCListCell,
               let metadata = dataSource.cellForItemAt(indexPath: indexPath) else { return UICollectionViewCell() }
         var isShare = false
         var isMounted = false
+        let permissions = NCPermissions()
 
-        isShare = metadata.permissions.contains(NCGlobal.shared.permissionShared) && !metadataFolder.permissions.contains(NCGlobal.shared.permissionShared)
-        isMounted = metadata.permissions.contains(NCGlobal.shared.permissionMounted) && !metadataFolder.permissions.contains(NCGlobal.shared.permissionMounted)
+        isShare = metadata.permissions.contains(permissions.permissionShared) && !metadataFolder.permissions.contains(permissions.permissionShared)
+        isMounted = metadata.permissions.contains(permissions.permissionMounted) && !metadataFolder.permissions.contains(permissions.permissionMounted)
 
         cell.listCellDelegate = self
 
@@ -647,13 +647,9 @@ struct NCSelectViewControllerRepresentable: UIViewControllerRepresentable {
 }
 
 struct SelectView: UIViewControllerRepresentable {
-
-    typealias UIViewControllerType = UINavigationController
-
     @Binding var serverUrl: String
 
     class Coordinator: NSObject, NCSelectDelegate {
-
         var parent: SelectView
 
         init(_ parent: SelectView) {
@@ -668,7 +664,6 @@ struct SelectView: UIViewControllerRepresentable {
     }
 
     func makeUIViewController(context: Context) -> UINavigationController {
-
         let storyboard = UIStoryboard(name: "NCSelect", bundle: nil)
         let navigationController = storyboard.instantiateInitialViewController() as? UINavigationController
         let viewController = navigationController?.topViewController as? NCSelect

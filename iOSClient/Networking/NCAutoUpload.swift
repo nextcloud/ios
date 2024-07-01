@@ -50,7 +50,7 @@ class NCAutoUpload: NSObject {
                 NCManageDatabase.shared.setAccountAutoUploadProperty("autoUpload", state: false)
                 return completion(0)
             }
-            DispatchQueue.global().async {
+            DispatchQueue.global(qos: .userInteractive).async {
                 self.uploadAssetsNewAndFull(viewController: viewController, selector: NCGlobal.shared.selectorUploadAutoUpload, log: "Init Auto Upload") { items in
                     completion(items)
                 }
@@ -75,7 +75,7 @@ class NCAutoUpload: NSObject {
             let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_create_full_upload_")
             NCContentPresenter().showWarning(error: error, priority: .max)
             NCActivityIndicator.shared.start()
-            DispatchQueue.global().async {
+            DispatchQueue.global(qos: .userInteractive).async {
                 self.uploadAssetsNewAndFull(viewController: viewController, selector: NCGlobal.shared.selectorUploadAutoUploadAll, log: log) { _ in
                     NCActivityIndicator.shared.stop()
                 }
@@ -115,7 +115,7 @@ class NCAutoUpload: NSObject {
                 let assetDate = asset.creationDate ?? Date()
                 let assetMediaType = asset.mediaType
                 var serverUrl: String = ""
-                let fileName = CCUtility.createFileName(asset.originalFilename as String, fileDate: assetDate, fileType: assetMediaType, keyFileName: NCGlobal.shared.keyFileNameAutoUploadMask, keyFileNameType: NCGlobal.shared.keyFileNameAutoUploadType, keyFileNameOriginal: NCGlobal.shared.keyFileNameOriginalAutoUpload, forcedNewFileName: false)!
+                let fileName = NCUtilityFileSystem().createFileName(asset.originalFilename as String, fileDate: assetDate, fileType: assetMediaType)
 
                 if account.autoUploadCreateSubfolder {
                     serverUrl = NCUtilityFileSystem().createGranularityPath(asset: asset, serverUrl: autoUploadPath)

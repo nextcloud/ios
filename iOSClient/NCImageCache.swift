@@ -26,15 +26,18 @@ import LRUCache
 import NextcloudKit
 import RealmSwift
 
-@objc class NCImageCache: NSObject {
-    @objc public static let shared: NCImageCache = {
+class NCImageCache: NSObject {
+    public static let shared: NCImageCache = {
         let instance = NCImageCache()
         return instance
     }()
 
     // MARK: -
 
-    private let limit: Int = 1000
+    private let limitCacheImagePreview: Int = 1000
+    private let limitSizeImagePreview: Int = 100000
+    private let limitSizeImageIcon: Int = 100000
+
     private var brandElementColor: UIColor?
     private var totalSize: Int64 = 0
 
@@ -51,14 +54,18 @@ import RealmSwift
         var date: Date
     }
 
-    private typealias ThumbnailImageLRUCache = LRUCache<String, imageInfo>
-    private typealias ThumbnailSizeLRUCache = LRUCache<String, CGSize?>
+    private typealias ThumbnailImagePreviewLRUCache = LRUCache<String, imageInfo>
+    private typealias ThumbnailImageIconLRUCache = LRUCache<String, UIImage>
+    private typealias ThumbnailSizePreviewLRUCache = LRUCache<String, CGSize?>
 
-    private lazy var cacheImage: ThumbnailImageLRUCache = {
-        return ThumbnailImageLRUCache(countLimit: limit)
+    private lazy var cacheImagePreview: ThumbnailImagePreviewLRUCache = {
+        return ThumbnailImagePreviewLRUCache(countLimit: limitCacheImagePreview)
     }()
-    private lazy var cacheSize: ThumbnailSizeLRUCache = {
-        return ThumbnailSizeLRUCache()
+    private lazy var cacheImageIcon: ThumbnailImageIconLRUCache = {
+        return ThumbnailImageIconLRUCache()
+    }()
+    private lazy var cacheSizePreview: ThumbnailSizePreviewLRUCache = {
+        return ThumbnailSizePreviewLRUCache()
     }()
     private var metadatasInfo: [String: metadataInfo] = [:]
     private var metadatas: ThreadSafeArray<tableMetadata>?
@@ -70,7 +77,10 @@ import RealmSwift
 
     override private init() {}
 
-    @objc func createMediaCache(account: String, withCacheSize: Bool) {
+    ///
+    /// MEDIA CACHE
+    ///
+    func createMediaCache(account: String, withCacheSize: Bool) {
         if createMediaCacheInProgress {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] ThumbnailLRUCache image process already in progress")
             return
@@ -80,7 +90,6 @@ import RealmSwift
         self.metadatasInfo.removeAll()
         self.metadatas = nil
         self.metadatas = getMediaMetadatas(account: account)
-        let ext = ".preview.ico"
         let manager = FileManager.default
         let resourceKeys = Set<URLResourceKey>([.nameKey, .pathKey, .fileSizeKey, .creationDateKey])
         struct FileInfo {
@@ -101,7 +110,7 @@ import RealmSwift
         }
 
         if let enumerator = manager.enumerator(at: URL(fileURLWithPath: NCUtilityFileSystem().directoryProviderStorage), includingPropertiesForKeys: [.isRegularFileKey], options: [.skipsHiddenFiles]) {
-            for case let fileURL as URL in enumerator where fileURL.lastPathComponent.hasSuffix(ext) {
+            for case let fileURL as URL in enumerator where fileURL.lastPathComponent.hasSuffix(NCGlobal.shared.storageExtPreview) {
                 let fileName = fileURL.lastPathComponent
                 let ocId = fileURL.deletingLastPathComponent().lastPathComponent
                 guard let resourceValues = try? fileURL.resourceValues(forKeys: resourceKeys),
@@ -112,16 +121,14 @@ import RealmSwift
                 if withCacheSize {
                     if let date = metadatasInfo[ocId]?.date,
                        let etag = metadatasInfo[ocId]?.etag,
-                       fileName == etag + ext {
+                       fileName == etag + NCGlobal.shared.storageExtPreview {
                         files.append(FileInfo(path: fileURL, ocIdEtag: ocId + etag, date: date as Date, fileSize: fileSize, width: width, height: height))
                     } else {
-                        let etag = fileName.replacingOccurrences(of: ".preview.ico", with: "")
+                        let etag = fileName.replacingOccurrences(of: NCGlobal.shared.storageExtPreview, with: "")
                         files.append(FileInfo(path: fileURL, ocIdEtag: ocId + etag, date: Date.distantPast, fileSize: fileSize, width: width, height: height))
                     }
-                } else if let date = metadatasInfo[ocId]?.date, let etag = metadatasInfo[ocId]?.etag, fileName == etag + ext {
+                } else if let date = metadatasInfo[ocId]?.date, let etag = metadatasInfo[ocId]?.etag, fileName == etag + NCGlobal.shared.storageExtPreview {
                     files.append(FileInfo(path: fileURL, ocIdEtag: ocId + etag, date: date as Date, fileSize: fileSize, width: width, height: height))
-                } else {
-                    print("Nothing")
                 }
             }
         }
@@ -132,31 +139,31 @@ import RealmSwift
             print("Last date: \(lastDate)")
         }
 
-        cacheImage.removeAllValues()
-        cacheSize.removeAllValues()
+        cacheImagePreview.removeAllValues()
+        cacheSizePreview.removeAllValues()
         var counter: Int = 0
         for file in files {
-            if !withCacheSize, counter > limit {
+            if !withCacheSize, counter > limitCacheImagePreview {
                 break
             }
             autoreleasepool {
                 if let image = UIImage(contentsOfFile: file.path.path) {
-                    if counter < limit {
-                        cacheImage.setValue(imageInfo(image: image, size: image.size, date: file.date), forKey: file.ocIdEtag)
+                    if counter < limitCacheImagePreview, file.fileSize > limitSizeImagePreview {
+                        cacheImagePreview.setValue(imageInfo(image: image, size: image.size, date: file.date), forKey: file.ocIdEtag)
                         totalSize = totalSize + Int64(file.fileSize)
+                        counter += 1
                     }
                     if file.width == 0, file.height == 0 {
-                        cacheSize.setValue(image.size, forKey: file.ocIdEtag)
+                        cacheSizePreview.setValue(image.size, forKey: file.ocIdEtag)
                     }
                 }
             }
-            counter += 1
         }
 
         let diffDate = Date().timeIntervalSinceReferenceDate - startDate.timeIntervalSinceReferenceDate
         NextcloudKit.shared.nkCommonInstance.writeLog("--------- ThumbnailLRUCache image process ---------")
-        NextcloudKit.shared.nkCommonInstance.writeLog("Counter cache image: \(cacheImage.count)")
-        NextcloudKit.shared.nkCommonInstance.writeLog("Counter cache size: \(cacheSize.count)")
+        NextcloudKit.shared.nkCommonInstance.writeLog("Counter cache image: \(cacheImagePreview.count)")
+        NextcloudKit.shared.nkCommonInstance.writeLog("Counter cache size: \(cacheSizePreview.count)")
         NextcloudKit.shared.nkCommonInstance.writeLog("Total size images process: " + NCUtilityFileSystem().transformedSize(totalSize))
         NextcloudKit.shared.nkCommonInstance.writeLog("Time process: \(diffDate)")
         NextcloudKit.shared.nkCommonInstance.writeLog("--------- ThumbnailLRUCache image process ---------")
@@ -170,27 +177,37 @@ import RealmSwift
         return self.metadatas
     }
 
+    ///
+    /// MEDIA PREVIEW CACHE
+    ///
     func setMediaImage(ocId: String, etag: String, image: UIImage, date: Date) {
-        cacheImage.setValue(imageInfo(image: image, size: image.size, date: date), forKey: ocId + etag)
+        cacheImagePreview.setValue(imageInfo(image: image, size: image.size, date: date), forKey: ocId + etag)
     }
 
     func getMediaImage(ocId: String, etag: String) -> UIImage? {
-        if let cache = cacheImage.value(forKey: ocId + etag) {
+        if let cache = cacheImagePreview.value(forKey: ocId + etag) {
             return cache.image
         }
         return nil
     }
 
     func hasMediaImageEnoughSpace() -> Bool {
-        return limit > cacheImage.count
+        return limitCacheImagePreview > cacheImagePreview.count
     }
 
+    func hasMediaImageEnoughSize(_ size: Int64) -> Bool {
+        return limitSizeImagePreview < size
+    }
+
+    ///
+    /// MEDIA SIZE CACHE
+    ///
     func setMediaSize(ocId: String, etag: String, size: CGSize) {
-        cacheSize.setValue(size, forKey: ocId + etag)
+        cacheSizePreview.setValue(size, forKey: ocId + etag)
     }
 
     func getMediaSize(ocId: String, etag: String) -> CGSize? {
-        return cacheSize.value(forKey: ocId + etag) ?? nil
+        return cacheSizePreview.value(forKey: ocId + etag) ?? nil
     }
 
     func getMediaMetadatas(account: String, predicate: NSPredicate? = nil) -> ThreadSafeArray<tableMetadata>? {
@@ -198,6 +215,21 @@ import RealmSwift
         let startServerUrl = NCUtilityFileSystem().getHomeServer(urlBase: tableAccount.urlBase, userId: tableAccount.userId) + tableAccount.mediaPath
         let predicateBoth = NSPredicate(format: showBothPredicateMediaString, account, startServerUrl)
         return NCManageDatabase.shared.getMediaMetadatas(predicate: predicate ?? predicateBoth)
+    }
+
+    ///
+    /// ICON CACHE
+    ///
+    func hasIconImageEnoughSize(_ size: Int64) -> Bool {
+        return limitSizeImageIcon < size
+    }
+
+    func setIconImage(ocId: String, etag: String, image: UIImage) {
+        cacheImageIcon.setValue(image, forKey: ocId + etag)
+    }
+
+    func getIconImage(ocId: String, etag: String) -> UIImage? {
+        return cacheImageIcon.value(forKey: ocId + etag)
     }
 
     // MARK: -

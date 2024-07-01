@@ -61,7 +61,7 @@ class NCShareUserCell: UITableViewCell, NCCellProtocol {
             name: NSLocalizedString("_show_profile_", comment: ""),
             target: self,
             selector: #selector(tapAvatarImage))]
-
+        let permissions = NCPermissions()
         labelTitle.text = tableShare.shareWithDisplayname
         labelTitle.textColor = NCBrandColor.shared.textColor
         isUserInteractionEnabled = true
@@ -72,7 +72,7 @@ class NCShareUserCell: UITableViewCell, NCCellProtocol {
         imageItem.image = NCShareCommon().getImageShareType(shareType: tableShare.shareType)
 
         let status = utility.getUserStatus(userIcon: tableShare.userIcon, userStatus: tableShare.userStatus, userMessage: tableShare.userMessage)
-        imageStatus.image = status.onlineStatus
+        imageStatus.image = status.statusImage
         self.status.text = status.statusMessage
 
         // If the initiator or the recipient is not the current user, show the list of sharees without any options to edit it.
@@ -87,11 +87,11 @@ class NCShareUserCell: UITableViewCell, NCCellProtocol {
         btnQuickStatus.setTitle("", for: .normal)
         btnQuickStatus.contentHorizontalAlignment = .left
 
-        if tableShare.permissions == NCGlobal.shared.permissionCreateShare {
+        if tableShare.permissions == permissions.permissionCreateShare {
             labelQuickStatus.text = NSLocalizedString("_share_file_drop_", comment: "")
         } else {
             // Read Only
-            if CCUtility.isAnyPermission(toEdit: tableShare.permissions) {
+            if permissions.isAnyPermissionToEdit(tableShare.permissions) {
                 labelQuickStatus.text = NSLocalizedString("_share_editing_", comment: "")
             } else {
                 labelQuickStatus.text = NSLocalizedString("_share_read_only_", comment: "")
@@ -157,7 +157,7 @@ class NCSearchUserDropDownCell: DropDownCell, NCCellProtocol {
         imageItem.image = NCShareCommon().getImageShareType(shareType: sharee.shareType)
         imageShareeType.image = NCShareCommon().getImageShareType(shareType: sharee.shareType)
         let status = utility.getUserStatus(userIcon: sharee.userIcon, userStatus: sharee.userStatus, userMessage: sharee.userMessage)
-        imageStatus.image = status.onlineStatus
+        imageStatus.image = status.statusImage
         self.status.text = status.statusMessage
         if self.status.text?.count ?? 0 > 0 {
             centerTitle.constant = -5

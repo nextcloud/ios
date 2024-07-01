@@ -121,7 +121,7 @@ class NCMedia: UIViewController {
 
         collectionView.refreshControl = refreshControl
         refreshControl.action(for: .valueChanged) { _ in
-            DispatchQueue.global().async {
+            DispatchQueue.global(qos: .userInteractive).async {
                 self.reloadDataSource()
             }
             self.refreshControl.endRefreshing()
@@ -171,7 +171,7 @@ class NCMedia: UIViewController {
             self.metadatas = metadatas
             self.collectionViewReloadData()
         } else {
-            DispatchQueue.global().async {
+            DispatchQueue.global(qos: .userInteractive).async {
                 self.reloadDataSource()
             }
         }
@@ -283,15 +283,11 @@ class NCMedia: UIViewController {
     // MARK: - Image
 
     func getImage(metadata: tableMetadata) -> UIImage? {
+        let fileNamePathPreview = utilityFileSystem.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)
 
         if let image = imageCache.getMediaImage(ocId: metadata.ocId, etag: metadata.etag) {
             return image
-        } else if FileManager().fileExists(atPath: utilityFileSystem.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)),
-                  let image = UIImage(contentsOfFile: utilityFileSystem.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)) {
-            imageCache.setMediaSize(ocId: metadata.ocId, etag: metadata.etag, size: image.size)
-            if imageCache.hasMediaImageEnoughSpace() {
-                imageCache.setMediaImage(ocId: metadata.ocId, etag: metadata.etag, image: image, date: metadata.date as Date)
-            }
+        } else if FileManager().fileExists(atPath: fileNamePathPreview), let image = UIImage(contentsOfFile: fileNamePathPreview) {
             return image
         } else if metadata.hasPreview && metadata.status == NCGlobal.shared.metadataStatusNormal,
                   (!utilityFileSystem.fileProviderStoragePreviewIconExists(metadata.ocId, etag: metadata.etag)),

@@ -22,6 +22,7 @@
 //
 
 import UIKit
+import UniformTypeIdentifiers
 import FileProvider
 import NextcloudKit
 import Alamofire
@@ -96,8 +97,7 @@ class FileProviderExtension: NSFileProviderExtension {
             // - for a directory, instantiate an enumerator of its subitems
             // - for a file, instantiate an enumerator that observes changes to the file
             let item = try self.item(for: containerItemIdentifier)
-
-            if item.typeIdentifier == kUTTypeFolder as String {
+            if item.contentType == UTType.folder {
                 maybeEnumerator = FileProviderEnumerator(enumeratedItemIdentifier: containerItemIdentifier)
             } else {
                 maybeEnumerator = FileProviderEnumerator(enumeratedItemIdentifier: containerItemIdentifier)

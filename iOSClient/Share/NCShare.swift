@@ -56,7 +56,7 @@ class NCShare: UIViewController, NCShareNetworkingDelegate, NCSharePagingContent
 
     var canReshare: Bool {
         guard let metadata = metadata else { return true }
-        return ((metadata.sharePermissionsCollaborationServices & NCGlobal.shared.permissionShareShare) != 0)
+        return ((metadata.sharePermissionsCollaborationServices & NCPermissions().permissionShareShare) != 0)
     }
 
     var shares: (firstShareLink: tableShare?, share: [tableShare]?) = (nil, nil)

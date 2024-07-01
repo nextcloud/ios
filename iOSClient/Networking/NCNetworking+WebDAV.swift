@@ -395,7 +395,7 @@ extension NCNetworking {
     func deleteMetadataPlain(_ metadata: tableMetadata, customHeader: [String: String]? = nil) async -> NKError {
 
         // verify permission
-        let permission = utility.permissionsContainsString(metadata.permissions, permissions: NCGlobal.shared.permissionCanDelete)
+        let permission = utility.permissionsContainsString(metadata.permissions, permissions: NCPermissions().permissionCanDelete)
         if !metadata.permissions.isEmpty && permission == false {
             return NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_no_permission_delete_file_")
         }
@@ -479,7 +479,7 @@ extension NCNetworking {
                                      indexPath: IndexPath,
                                      completion: @escaping (_ error: NKError) -> Void) {
 
-        let permission = utility.permissionsContainsString(metadata.permissions, permissions: NCGlobal.shared.permissionCanRename)
+        let permission = utility.permissionsContainsString(metadata.permissions, permissions: NCPermissions().permissionCanRename)
         if !metadata.permissions.isEmpty && !permission {
             return completion(NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_no_permission_modify_file_"))
         }
@@ -539,7 +539,7 @@ extension NCNetworking {
 
     private func moveMetadataPlain(_ metadata: tableMetadata, serverUrlTo: String, overwrite: Bool) async -> NKError {
 
-        let permission = utility.permissionsContainsString(metadata.permissions, permissions: NCGlobal.shared.permissionCanRename)
+        let permission = utility.permissionsContainsString(metadata.permissions, permissions: NCPermissions().permissionCanRename)
         if !metadata.permissions.isEmpty && !permission {
             return NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_no_permission_modify_file_")
         }
@@ -588,7 +588,7 @@ extension NCNetworking {
 
     private func copyMetadataPlain(_ metadata: tableMetadata, serverUrlTo: String, overwrite: Bool) async -> NKError {
 
-        let permission = utility.permissionsContainsString(metadata.permissions, permissions: NCGlobal.shared.permissionCanRename)
+        let permission = utility.permissionsContainsString(metadata.permissions, permissions: NCPermissions().permissionCanRename)
         if !metadata.permissions.isEmpty && !permission {
             return NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_no_permission_modify_file_")
         }
@@ -689,26 +689,6 @@ extension NCNetworking {
         await withUnsafeContinuation({ continuation in
             NextcloudKit.shared.getPreview(url: url, options: options) { account, data, error in
                 continuation.resume(returning: (account: account, data: data, error: error))
-            }
-        })
-    }
-
-    // MARK: - Download Preview
-
-    func downloadPreview(fileNamePathOrFileId: String,
-                         fileNamePreviewLocalPath: String,
-                         widthPreview: Int,
-                         heightPreview: Int,
-                         fileNameIconLocalPath: String? = nil,
-                         sizeIcon: Int = 0,
-                         etag: String? = nil,
-                         endpointTrashbin: Bool = false,
-                         useInternalEndpoint: Bool = true,
-                         options: NKRequestOptions = NKRequestOptions()) async -> (account: String, imagePreview: UIImage?, imageIcon: UIImage?, imageOriginal: UIImage?, etag: String?, error: NKError) {
-
-        await withUnsafeContinuation({ continuation in
-            NextcloudKit.shared.downloadPreview(fileNamePathOrFileId: fileNamePathOrFileId, fileNamePreviewLocalPath: fileNamePreviewLocalPath, widthPreview: widthPreview, heightPreview: heightPreview, fileNameIconLocalPath: fileNameIconLocalPath, sizeIcon: sizeIcon, etag: etag, options: options) { account, imagePreview, imageIcon, imageOriginal, etag, error in
-                continuation.resume(returning: (account: account, imagePreview: imagePreview, imageIcon: imageIcon, imageOriginal: imageOriginal, etag: etag, error: error))
             }
         })
     }

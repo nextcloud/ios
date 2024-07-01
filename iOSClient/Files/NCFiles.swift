@@ -161,21 +161,22 @@ class NCFiles: NCCollectionViewCommon {
         super.reloadDataSourceNetwork()
 
         networkReadFolder { tableDirectory, metadatas, metadatasDifferentCount, metadatasModified, error in
-            if error == .success {
-                for metadata in metadatas ?? [] where !metadata.directory && downloadMetadata(metadata) {
-                    if NCNetworking.shared.downloadQueue.operations.filter({ ($0 as? NCOperationDownload)?.metadata.ocId == metadata.ocId }).isEmpty {
-                        NCNetworking.shared.downloadQueue.addOperation(NCOperationDownload(metadata: metadata, selector: NCGlobal.shared.selectorDownloadFile))
+            DispatchQueue.global(qos: .userInteractive).async {
+                if error == .success {
+                    for metadata in metadatas ?? [] where !metadata.directory && downloadMetadata(metadata) {
+                        if NCNetworking.shared.downloadQueue.operations.filter({ ($0 as? NCOperationDownload)?.metadata.ocId == metadata.ocId }).isEmpty {
+                            NCNetworking.shared.downloadQueue.addOperation(NCOperationDownload(metadata: metadata, selector: NCGlobal.shared.selectorDownloadFile))
+                        }
                     }
-                }
-                self.richWorkspaceText = tableDirectory?.richWorkspace
-
-                if metadatasDifferentCount != 0 || metadatasModified != 0 {
-                    self.reloadDataSource()
+                    self.richWorkspaceText = tableDirectory?.richWorkspace
+                    if metadatasDifferentCount != 0 || metadatasModified != 0 {
+                        self.reloadDataSource()
+                    } else {
+                        self.reloadDataSource(withQueryDB: withQueryDB)
+                    }
                 } else {
                     self.reloadDataSource(withQueryDB: withQueryDB)
                 }
-            } else {
-                self.reloadDataSource(withQueryDB: withQueryDB)
             }
         }
     }
@@ -288,6 +289,19 @@ class NCFiles: NCCollectionViewCommon {
                     self.collectionView(self.collectionView, didSelectItemAt: indexPath)
                 }
             }
+        }
+    }
+
+    // MARK: - NCAccountSettingsModelDelegate
+
+    override func accountSettingsDidDismiss(tableAccount: tableAccount?) {
+        if NCManageDatabase.shared.getAllAccount().isEmpty {
+            appDelegate.openLogin(selector: NCGlobal.shared.introLogin, openLoginWeb: false)
+        } else if let account = tableAccount?.account, account != appDelegate.account {
+            appDelegate.changeAccount(account, userProfile: nil)
+        } else if isRoot {
+            titleCurrentFolder = getNavigationTitle()
+            navigationItem.title = titleCurrentFolder
         }
     }
 }

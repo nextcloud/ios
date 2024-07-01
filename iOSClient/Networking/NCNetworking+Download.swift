@@ -189,10 +189,9 @@ extension NCNetworking {
                           task: URLSessionTask,
                           error: NKError) {
 
-        DispatchQueue.global().async {
-
+        DispatchQueue.global(qos: .userInteractive).async {
             guard let url = task.currentRequest?.url,
-                  let metadata = NCManageDatabase.shared.getMetadata(from: url) else { return }
+                  let metadata = NCManageDatabase.shared.getMetadata(from: url, sessionTaskIdentifier: task.taskIdentifier) else { return }
 
             self.downloadMetadataInBackground.removeValue(forKey: FileNameServerUrl(fileName: fileName, serverUrl: serverUrl))
 
@@ -201,7 +200,7 @@ extension NCNetworking {
                 self.removeTransferInError(ocId: metadata.ocId)
 #if !EXTENSION
                 if let result = NCManageDatabase.shared.getE2eEncryption(predicate: NSPredicate(format: "fileNameIdentifier == %@ AND serverUrl == %@", metadata.fileName, metadata.serverUrl)) {
-                    NCEndToEndEncryption.sharedManager()?.decryptFile(metadata.fileName, fileNameView: metadata.fileNameView, ocId: metadata.ocId, key: result.key, initializationVector: result.initializationVector, authenticationTag: result.authenticationTag)
+                    NCEndToEndEncryption.shared().decryptFile(metadata.fileName, fileNameView: metadata.fileNameView, ocId: metadata.ocId, key: result.key, initializationVector: result.initializationVector, authenticationTag: result.authenticationTag)
                 }
 #endif
                 NCManageDatabase.shared.addLocalFile(metadata: metadata)
@@ -260,7 +259,6 @@ extension NCNetworking {
                           task: URLSessionTask) {
 
         DispatchQueue.global().async {
-
             var metadata: tableMetadata?
 
             if let metadataTmp = self.downloadMetadataInBackground[FileNameServerUrl(fileName: fileName, serverUrl: serverUrl)] {

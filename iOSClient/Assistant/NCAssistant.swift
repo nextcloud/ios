@@ -29,14 +29,19 @@ struct NCAssistant: View {
             }
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
-                    Button(NSLocalizedString("_close_", comment: "")) {
+                    Button(action: {
                         presentationMode.wrappedValue.dismiss()
+                    }) {
+                        Image(systemName: "xmark")
+                            .font(Font.system(.body).weight(.light))
+                            .foregroundStyle(Color(NCBrandColor.shared.iconImageColor))
                     }
                 }
                 ToolbarItem(placement: .topBarTrailing) {
                     NavigationLink(destination: NCAssistantCreateNewTask()) {
                         Image(systemName: "plus")
                             .font(Font.system(.body).weight(.light))
+                            .foregroundStyle(Color(NCBrandColor.shared.iconImageColor))
                     }
                     .disabled(model.selectedType == nil)
                 }

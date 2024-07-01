@@ -20,7 +20,6 @@
 //
 
 import UIKit
-import OpenSSL
 import NextcloudKit
 import CFNetwork
 import Alamofire
@@ -69,7 +68,7 @@ class NCNetworkingE2EECreateFolder: NSObject {
                 return errorDownloadMetadata
             }
 
-            NCEndToEndEncryption.sharedManager()?.encodedkey(&key, initializationVector: &initializationVector)
+            NCEndToEndEncryption.shared().encodedkey(&key, initializationVector: &initializationVector)
             guard let key = key as? String, let initializationVector = initializationVector as? String else {
                 return NKError(errorCode: NCGlobal.shared.errorE2EEEncodedKey, errorDescription: NSLocalizedString("_e2e_error_", comment: ""))
             }
@@ -80,7 +79,7 @@ class NCNetworkingE2EECreateFolder: NSObject {
                 object.metadataKey = results.metadataKey
                 object.metadataKeyIndex = results.metadataKeyIndex
             } else {
-                guard let key = NCEndToEndEncryption.sharedManager()?.generateKey() as NSData? else {
+                guard let key = NCEndToEndEncryption.shared().generateKey() as NSData? else {
                     return NKError(errorCode: NCGlobal.shared.errorE2EEGenerateKey, errorDescription: NSLocalizedString("_e2e_error_", comment: ""))
                 }
                 object.metadataKey = key.base64EncodedString()
