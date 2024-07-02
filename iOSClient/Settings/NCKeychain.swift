@@ -391,6 +391,18 @@ import KeychainAccess
         }
     }
 
+    var fileNameOriginal: Bool {
+        get {
+            if let value = try? keychain.get("fileNameOriginal"), let result = Bool(value) {
+                return result
+            }
+            return false
+        }
+        set {
+            keychain["fileNameOriginal"] = String(newValue)
+        }
+    }
+
     var fileNameMask: String {
         get {
             if let value = try? keychain.get("fileNameMask") {

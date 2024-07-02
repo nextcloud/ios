@@ -30,23 +30,31 @@ struct NCFileNameView: View {
         Form {
             /// Specify Filename
             Section(header: Text(NSLocalizedString("_mode_filename_", comment: ""))) {
+                ///
+                Toggle(NSLocalizedString("_maintain_original_filename_", comment: ""), isOn: $model.maintainFilenameOriginal)
+                    .font(.system(size: 16))
+                    .tint(Color(NCBrandColor.shared.brandElement))
+                    .onChange(of: model.maintainFilenameOriginal, perform: { newValue in
+                        model.toggleMaintainFilenameOriginal(newValue: newValue)
+                        model.getFileName()
+                    })
                 /// Filename
-                if !model.maintainFilename {
-                    Toggle(NSLocalizedString("_add_filenametype_", comment: ""), isOn: $model.specifyFilename)
+                if !model.maintainFilenameOriginal {
+                    Toggle(NSLocalizedString("_add_filenametype_", comment: ""), isOn: $model.addFileNameType)
                         .font(.system(size: 16))
                         .tint(Color(NCBrandColor.shared.brandElement))
-                        .onChange(of: model.specifyFilename, perform: { newValue in
+                        .onChange(of: model.addFileNameType, perform: { newValue in
                             model.toggleAddFilenameType(newValue: newValue)
                             model.getFileName()
                         })
                 }
             }
             .transition(.slide)
-            .animation(.easeInOut, value: model.maintainFilename)
+            .animation(.easeInOut, value: model.maintainFilenameOriginal)
 
             /// Filename Preview
             fileNamePreview
-                .animation(.easeInOut, value: model.specifyFilename)
+                .animation(.easeInOut, value: model.addFileNameType)
         }
         .navigationBarTitle(NSLocalizedString("_mode_filename_", comment: ""))
         .defaultViewModifier(model)
@@ -56,7 +64,7 @@ struct NCFileNameView: View {
 
     @ViewBuilder
     var fileNamePreview: some View {
-        if !model.maintainFilename {
+        if !model.maintainFilenameOriginal {
             Section(content: {
                 HStack {
                     Text(NSLocalizedString("_filename_", comment: ""))
