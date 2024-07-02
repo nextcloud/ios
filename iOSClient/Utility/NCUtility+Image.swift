@@ -410,7 +410,7 @@ extension NCUtility {
         return CGSize(width: widthPreview, height: heightPreview)
     }
 
-    func getUserStatus(userIcon: String?, userStatus: String?, userMessage: String?) -> (statusImage: UIImage?, statusMessage: String, descriptionMessage: String) {
+    func getUserStatus(userIcon: String?, userStatus: String?, userMessage: String?) -> (statusImage: UIImage, statusMessage: String, descriptionMessage: String) {
         var statusImage: UIImage?
         var statusMessage: String = ""
         var descriptionMessage: String = ""
@@ -446,6 +446,10 @@ extension NCUtility {
             statusMessage = messageUserDefined
         }
 
-        return(statusImage, statusMessage, descriptionMessage)
+        if let statusImage {
+            return(statusImage, statusMessage, descriptionMessage)
+        } else {
+            return(UIImage(), statusMessage, descriptionMessage)
+        }
     }
 }
