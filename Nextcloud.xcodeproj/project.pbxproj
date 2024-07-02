@@ -218,6 +218,10 @@
 		F711A4EB2AF9327D00095DD8 /* UIImage+animatedGIF.m in Sources */ = {isa = PBXBuildFile; fileRef = F713FEFF2472764100214AF6 /* UIImage+animatedGIF.m */; };
 		F711A4EF2AF932B900095DD8 /* SVGKitSwift in Frameworks */ = {isa = PBXBuildFile; productRef = F711A4EE2AF932B900095DD8 /* SVGKitSwift */; };
 		F711D63128F44801003F43C8 /* IntentHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7C9739428F17131002C43E2 /* IntentHandler.swift */; };
+		F713FBE52C31645200F10760 /* NCNetworking+AsyncAwait.swift in Sources */ = {isa = PBXBuildFile; fileRef = F713FBE42C31645200F10760 /* NCNetworking+AsyncAwait.swift */; };
+		F713FBE62C31646400F10760 /* NCNetworking+AsyncAwait.swift in Sources */ = {isa = PBXBuildFile; fileRef = F713FBE42C31645200F10760 /* NCNetworking+AsyncAwait.swift */; };
+		F713FBE72C31646500F10760 /* NCNetworking+AsyncAwait.swift in Sources */ = {isa = PBXBuildFile; fileRef = F713FBE42C31645200F10760 /* NCNetworking+AsyncAwait.swift */; };
+		F713FBE82C31646600F10760 /* NCNetworking+AsyncAwait.swift in Sources */ = {isa = PBXBuildFile; fileRef = F713FBE42C31645200F10760 /* NCNetworking+AsyncAwait.swift */; };
 		F713FF002472764100214AF6 /* UIImage+animatedGIF.m in Sources */ = {isa = PBXBuildFile; fileRef = F713FEFF2472764100214AF6 /* UIImage+animatedGIF.m */; };
 		F7145610296433C80038D028 /* NCDocumentCamera.swift in Sources */ = {isa = PBXBuildFile; fileRef = F714560F296433C80038D028 /* NCDocumentCamera.swift */; };
 		F7145A231D12E3B700CAFEEC /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = F7E70DE91A24DE4100E1B66A /* Localizable.strings */; };
@@ -1208,6 +1212,7 @@
 		F710D1F42405770F00A6033D /* NCViewerPDF.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCViewerPDF.swift; sourceTree = "<group>"; };
 		F710D2012405826100A6033D /* NCViewer+Menu.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NCViewer+Menu.swift"; sourceTree = "<group>"; };
 		F711A4DB2AF92CAD00095DD8 /* NCUtility+Date.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NCUtility+Date.swift"; sourceTree = "<group>"; };
+		F713FBE42C31645200F10760 /* NCNetworking+AsyncAwait.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NCNetworking+AsyncAwait.swift"; sourceTree = "<group>"; };
 		F713FEFE2472764000214AF6 /* UIImage+animatedGIF.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+animatedGIF.h"; sourceTree = "<group>"; };
 		F713FEFF2472764100214AF6 /* UIImage+animatedGIF.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+animatedGIF.m"; sourceTree = "<group>"; };
 		F714560F296433C80038D028 /* NCDocumentCamera.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCDocumentCamera.swift; sourceTree = "<group>"; };
@@ -2199,6 +2204,7 @@
 				F72CD63925C19EBF00F46F9A /* NCAutoUpload.swift */,
 				F77BC3EC293E528A005F2B08 /* NCConfigServer.swift */,
 				F75A9EE523796C6F0044CFCE /* NCNetworking.swift */,
+				F713FBE42C31645200F10760 /* NCNetworking+AsyncAwait.swift */,
 				F7327E1F2B73A42F00A462C7 /* NCNetworking+Download.swift */,
 				F7327E272B73A53400A462C7 /* NCNetworking+Upload.swift */,
 				F7327E2F2B73A86700A462C7 /* NCNetworking+WebDAV.swift */,
@@ -3987,6 +3993,7 @@
 				F7D57C8B26317BDE00DE301D /* NCAccountRequest.swift in Sources */,
 				F7C30DF7291BC0D30017149B /* NCNetworkingE2EEUpload.swift in Sources */,
 				F78A10C229322E8A008499B8 /* NCManageDatabase+Directory.swift in Sources */,
+				F713FBE72C31646500F10760 /* NCNetworking+AsyncAwait.swift in Sources */,
 				F79FFB272A97C24A0055EEA4 /* NCNetworkingE2EEMarkFolder.swift in Sources */,
 				F7D68FCE28CB9051009139F3 /* NCManageDatabase+DashboardWidget.swift in Sources */,
 				F73EF7B22B0224350087E6E9 /* NCManageDatabase+DirectEditing.swift in Sources */,
@@ -4025,6 +4032,7 @@
 				F359D8682A7D03420023F405 /* NCUtility+Exif.swift in Sources */,
 				F7346E1628B0EF5C006CE2D2 /* Widget.swift in Sources */,
 				F78302F828B4C3E100B84583 /* NCManageDatabase+Activity.swift in Sources */,
+				F713FBE62C31646400F10760 /* NCNetworking+AsyncAwait.swift in Sources */,
 				F711A4E92AF9327600095DD8 /* UIImage+animatedGIF.m in Sources */,
 				F73EF7D02B0225BA0087E6E9 /* NCManageDatabase+Tag.swift in Sources */,
 				F783030228B4C4B800B84583 /* NCUtility.swift in Sources */,
@@ -4096,6 +4104,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F713FBE82C31646600F10760 /* NCNetworking+AsyncAwait.swift in Sources */,
 				F36E64FC2B9733F20085ABB5 /* UIView+Extension.swift in Sources */,
 				F771E3F720E239B500AFB62D /* FileProviderExtension+Actions.swift in Sources */,
 				F7245926289BB59300474787 /* ThreadSafeDictionary.swift in Sources */,
@@ -4214,6 +4223,7 @@
 				F7B769A82B7A0B2000C1AAEB /* NCManageDatabase+Metadata+Session.swift in Sources */,
 				F79EDAA326B004980007D134 /* NCPlayerToolBar.swift in Sources */,
 				F7B934FE2BDCFE1E002B2FC9 /* NCDragDrop.swift in Sources */,
+				F713FBE52C31645200F10760 /* NCNetworking+AsyncAwait.swift in Sources */,
 				F77444F8222816D5000D5EB0 /* NCPickerViewController.swift in Sources */,
 				F77BB74A2899857B0090FC19 /* UINavigationController+Extension.swift in Sources */,
 				F7327E282B73A53400A462C7 /* NCNetworking+Upload.swift in Sources */,
@@ -5348,7 +5358,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 9;
+				CURRENT_PROJECT_VERSION = 0;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = NKUJUXUJ3B;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -5375,7 +5385,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 5.4.0;
+				MARKETING_VERSION = 5.5.0;
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_CFLAGS = "-v";
 				OTHER_LDFLAGS = "";
@@ -5414,7 +5424,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 9;
+				CURRENT_PROJECT_VERSION = 0;
 				DEVELOPMENT_TEAM = NKUJUXUJ3B;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
@@ -5438,7 +5448,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 5.4.0;
+				MARKETING_VERSION = 5.5.0;
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_CFLAGS = "-v";
 				OTHER_LDFLAGS = "";
@@ -5712,8 +5722,8 @@
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/nextcloud/NextcloudKit";
 			requirement = {
-				kind = exactVersion;
-				version = 3.0.2;
+				branch = develop;
+				kind = branch;
 			};
 		};
 		F788ECC5263AAAF900ADC67F /* XCRemoteSwiftPackageReference "MarkdownKit" */ = {

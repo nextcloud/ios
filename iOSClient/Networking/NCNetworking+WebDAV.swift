@@ -402,7 +402,7 @@ extension NCNetworking {
         let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
         let options = NKRequestOptions(customHeader: customHeader)
 
-        let result = await NextcloudKit.shared.deleteFileOrFolder(serverUrlFileName: serverUrlFileName, options: options)
+        let result = await NCNetworking.shared.deleteFileOrFolder(serverUrlFileName: serverUrlFileName, options: options)
         if result.error == .success || result.error.errorCode == NCGlobal.shared.errorResourceNotFound {
 
             do {
@@ -546,7 +546,7 @@ extension NCNetworking {
         let serverUrlFileNameSource = metadata.serverUrl + "/" + metadata.fileName
         let serverUrlFileNameDestination = serverUrlTo + "/" + metadata.fileName
 
-        let result = await NextcloudKit.shared.moveFileOrFolder(serverUrlFileNameSource: serverUrlFileNameSource, serverUrlFileNameDestination: serverUrlFileNameDestination, overwrite: overwrite)
+        let result = await NCNetworking.shared.moveFileOrFolder(serverUrlFileNameSource: serverUrlFileNameSource, serverUrlFileNameDestination: serverUrlFileNameDestination, overwrite: overwrite)
         if result.error == .success {
             if metadata.directory {
                 NCManageDatabase.shared.deleteDirectoryAndSubDirectory(serverUrl: utilityFileSystem.stringAppendServerUrl(metadata.serverUrl, addFileName: metadata.fileName), account: result.account)
@@ -595,7 +595,7 @@ extension NCNetworking {
         let serverUrlFileNameSource = metadata.serverUrl + "/" + metadata.fileName
         let serverUrlFileNameDestination = serverUrlTo + "/" + metadata.fileName
 
-        let result = await NextcloudKit.shared.copyFileOrFolder(serverUrlFileNameSource: serverUrlFileNameSource, serverUrlFileNameDestination: serverUrlFileNameDestination, overwrite: overwrite)
+        let result = await NCNetworking.shared.copyFileOrFolder(serverUrlFileNameSource: serverUrlFileNameSource, serverUrlFileNameDestination: serverUrlFileNameDestination, overwrite: overwrite)
         return result.error
     }
 
@@ -679,18 +679,6 @@ extension NCNetworking {
                 }
             }
         }
-    }
-
-    // MARK: - Get Preview
-
-    func getPreview(url: URL,
-                    options: NKRequestOptions = NKRequestOptions()) async -> (account: String, data: Data?, error: NKError) {
-
-        await withUnsafeContinuation({ continuation in
-            NextcloudKit.shared.getPreview(url: url, options: options) { account, data, error in
-                continuation.resume(returning: (account: account, data: data, error: error))
-            }
-        })
     }
 
     // MARK: - Search

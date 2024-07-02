@@ -94,7 +94,7 @@ class NCService: NSObject {
 
     private func requestServerStatus() async -> Bool {
 
-        switch await NextcloudKit.shared.getServerStatus(serverUrl: appDelegate.urlBase, options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) {
+        switch await NCNetworking.shared.getServerStatus(serverUrl: appDelegate.urlBase, options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) {
         case .success(let serverInfo):
             if serverInfo.maintenance {
                 let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_maintenance_mode_")
@@ -112,7 +112,7 @@ class NCService: NSObject {
             return false
         }
 
-        let resultUserProfile = await NextcloudKit.shared.getUserProfile(options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue))
+        let resultUserProfile = await NCNetworking.shared.getUserProfile(options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue))
         if resultUserProfile.error == .success, let userProfile = resultUserProfile.userProfile {
             NCManageDatabase.shared.setAccountUserProfile(account: resultUserProfile.account, userProfile: userProfile)
             return true
@@ -266,7 +266,7 @@ class NCService: NSObject {
                     NCManageDatabase.shared.addDashboardWidget(account: account, dashboardWidgets: dashboardWidgets)
                     for widget in dashboardWidgets {
                         if let url = URL(string: widget.iconUrl), let fileName = widget.iconClass {
-                            let (_, data, error) = await NextcloudKit.shared.getPreview(url: url)
+                            let (_, data, error) = await NCNetworking.shared.getPreview(url: url)
                             if error == .success {
                                 convertDataToImage(data: data, size: CGSize(width: 256, height: 256), fileNameToWrite: fileName)
                             }

@@ -116,7 +116,7 @@ extension NCManageDatabase {
                     addObjectActivity.account = account
                     addObjectActivity.idActivity = activity.idActivity
                     addObjectActivity.idPrimaryKey = account + String(activity.idActivity)
-                    addObjectActivity.date = activity.date
+                    addObjectActivity.date = activity.date as NSDate
                     addObjectActivity.app = activity.app
                     addObjectActivity.type = activity.type
                     addObjectActivity.user = activity.user

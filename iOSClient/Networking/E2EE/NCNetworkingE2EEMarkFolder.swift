@@ -28,10 +28,10 @@ class NCNetworkingE2EEMarkFolder: NSObject {
 
         let serverUrlFileName = serverUrl + "/" + fileName
 
-        let resultsReadFileOrFolder = await NextcloudKit.shared.readFileOrFolder(serverUrlFileName: serverUrlFileName, depth: "0")
+        let resultsReadFileOrFolder = await NCNetworking.shared.readFileOrFolder(serverUrlFileName: serverUrlFileName, depth: "0")
         guard resultsReadFileOrFolder.error == .success, let file = resultsReadFileOrFolder.files.first else { return resultsReadFileOrFolder.error }
 
-        let resultsMarkE2EEFolder = await NextcloudKit.shared.markE2EEFolder(fileId: file.fileId, delete: false, options: NCNetworkingE2EE().getOptions())
+        let resultsMarkE2EEFolder = await NCNetworking.shared.markE2EEFolder(fileId: file.fileId, delete: false, options: NCNetworkingE2EE().getOptions())
         guard resultsMarkE2EEFolder.error == .success else { return resultsMarkE2EEFolder.error }
 
         file.e2eEncrypted = true

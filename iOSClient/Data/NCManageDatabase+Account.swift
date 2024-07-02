@@ -409,13 +409,13 @@ extension NCManageDatabase {
         }
     }
 
-    @objc func setAccountUserStatus(userStatusClearAt: NSDate?, userStatusIcon: String?, userStatusMessage: String?, userStatusMessageId: String?, userStatusMessageIsPredefined: Bool, userStatusStatus: String?, userStatusStatusIsUserDefined: Bool, account: String) {
+    @objc func setAccountUserStatus(userStatusClearAt: Date?, userStatusIcon: String?, userStatusMessage: String?, userStatusMessageId: String?, userStatusMessageIsPredefined: Bool, userStatusStatus: String?, userStatusStatusIsUserDefined: Bool, account: String) {
 
         do {
             let realm = try Realm()
             try realm.write {
                 if let result = realm.objects(tableAccount.self).filter("account == %@", account).first {
-                    result.userStatusClearAt = userStatusClearAt
+                    result.userStatusClearAt = userStatusClearAt as? NSDate
                     result.userStatusIcon = userStatusIcon
                     result.userStatusMessage = userStatusMessage
                     result.userStatusMessageId = userStatusMessageId
