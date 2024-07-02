@@ -33,9 +33,9 @@ class NCFileNameModel: ObservableObject, ViewOnAppearHandling {
     /// A shared global instance for managing application-wide settings.
     private let globalKey = NCGlobal.shared
     /// A boolean indicating whether to maintain the original file name.
-    @Published var maintainFilename: Bool = false
+    @Published var maintainFilenameOriginal: Bool = NCKeychain().fileNameOriginal
     /// A boolean indicating whether to specify a custom file name.
-    @Published var specifyFilename: Bool = false
+    @Published var addFileNameType: Bool = NCKeychain().fileNameType
     /// The changed file name.
     @Published var changedName: String = ""
     /// The complete new file name.
@@ -61,6 +61,11 @@ class NCFileNameModel: ObservableObject, ViewOnAppearHandling {
     /// Toggles adding filename type.
     func toggleAddFilenameType(newValue: Bool) {
         keychain.fileNameType = newValue
+    }
+
+    /// Toggles maintain original asset filename.
+    func toggleMaintainFilenameOriginal(newValue: Bool) {
+        keychain.fileNameOriginal = newValue
     }
 
     /// Submits the changed file name.
