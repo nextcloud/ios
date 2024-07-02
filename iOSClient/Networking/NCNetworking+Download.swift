@@ -258,7 +258,7 @@ extension NCNetworking {
                           session: URLSession,
                           task: URLSessionTask) {
 
-        DispatchQueue.global().async {
+        DispatchQueue.global(qos: .userInteractive).async {
             var metadata: tableMetadata?
 
             if let metadataTmp = self.downloadMetadataInBackground[FileNameServerUrl(fileName: fileName, serverUrl: serverUrl)] {
