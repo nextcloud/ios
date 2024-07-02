@@ -37,7 +37,6 @@ extension NCNetworking {
                     forceReplaceMetadatas: Bool = false,
                     taskHandler: @escaping (_ task: URLSessionTask) -> Void = { _ in },
                     completion: @escaping (_ account: String, _ metadataFolder: tableMetadata?, _ metadatas: [tableMetadata]?, _ metadatasDifferentCount: Int, _ metadatasModified: Int, _ error: NKError) -> Void) {
-
         NextcloudKit.shared.readFileOrFolder(serverUrlFileName: serverUrl,
                                              depth: "1",
                                              showHiddenFiles: NCKeychain().showHiddenFiles,
@@ -45,16 +44,13 @@ extension NCNetworking {
                                              options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { task in
             taskHandler(task)
         } completion: { account, files, _, error in
-
             guard error == .success else {
                 return completion(account, nil, nil, 0, 0, error)
             }
 
             NCManageDatabase.shared.convertFilesToMetadatas(files, useFirstAsMetadataFolder: true) { metadataFolder, metadatas in
-
                 NCManageDatabase.shared.addMetadata(metadataFolder)
                 NCManageDatabase.shared.addDirectory(e2eEncrypted: metadataFolder.e2eEncrypted, favorite: metadataFolder.favorite, ocId: metadataFolder.ocId, fileId: metadataFolder.fileId, etag: metadataFolder.etag, permissions: metadataFolder.permissions, richWorkspace: metadataFolder.richWorkspace, serverUrl: serverUrl, account: metadataFolder.account)
-
 #if !EXTENSION
                 // Convert Live Photo
                 for metadata in metadatas {
@@ -63,7 +59,6 @@ extension NCNetworking {
                     }
                 }
 #endif
-
                 let predicate = NSPredicate(format: "account == %@ AND serverUrl == %@ AND status == %d", account, serverUrl, NCGlobal.shared.metadataStatusNormal)
 
                 if forceReplaceMetadatas {
@@ -82,7 +77,6 @@ extension NCNetworking {
                   queue: DispatchQueue = NextcloudKit.shared.nkCommonInstance.backgroundQueue,
                   taskHandler: @escaping (_ task: URLSessionTask) -> Void = { _ in },
                   completion: @escaping (_ account: String, _ metadata: tableMetadata?, _ error: NKError) -> Void) {
-
         let options = NKRequestOptions(queue: queue)
 
         NextcloudKit.shared.readFileOrFolder(serverUrlFileName: serverUrlFileName, depth: "0", showHiddenFiles: showHiddenFiles, options: options) { task in
@@ -92,7 +86,6 @@ extension NCNetworking {
                 completion(account, nil, error)
                 return
             }
-
             let isDirectoryE2EE = self.utilityFileSystem.isDirectoryE2EE(file: file)
             let metadata = NCManageDatabase.shared.convertFileToMetadata(file, isDirectoryE2EE: isDirectoryE2EE)
 
@@ -102,7 +95,6 @@ extension NCNetworking {
 
     func fileExists(serverUrlFileName: String,
                     completion: @escaping (_ account: String, _ exists: Bool?, _ file: NKFile?, _ error: NKError) -> Void) {
-
         let requestBody =
         """
         <?xml version=\"1.0\" encoding=\"UTF-8\"?>
@@ -115,7 +107,6 @@ extension NCNetworking {
                                              depth: "0",
                                              requestBody: requestBody.data(using: .utf8),
                                              options: NKRequestOptions(timeout: 10, queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { account, files, _, error in
-
             if error == .success, let file = files.first {
                 completion(account, true, file, error)
             } else if error.errorCode == NCGlobal.shared.errorResourceNotFound {
@@ -127,7 +118,6 @@ extension NCNetworking {
     }
 
     func fileExists(serverUrlFileName: String) async -> (account: String, exists: Bool?, file: NKFile?, error: NKError) {
-
         await withUnsafeContinuation({ continuation in
             fileExists(serverUrlFileName: serverUrlFileName) { account, exists, file, error in
                 continuation.resume(returning: (account, exists, file, error))
@@ -136,7 +126,6 @@ extension NCNetworking {
     }
 
     func createFileName(fileNameBase: String, account: String, serverUrl: String) async -> String {
-
         var exitLoop = false
         var resultFileName = fileNameBase
 
@@ -198,7 +187,6 @@ extension NCNetworking {
                       withPush: Bool,
                       sceneIdentifier: String?,
                       completion: @escaping (_ error: NKError) -> Void) {
-
         let isDirectoryEncrypted = utilityFileSystem.isDirectoryE2EE(account: account, urlBase: urlBase, userId: userId, serverUrl: serverUrl)
         let fileName = fileName.trimmingCharacters(in: .whitespacesAndNewlines)
 
@@ -222,14 +210,13 @@ extension NCNetworking {
                                    withPush: Bool,
                                    sceneIdentifier: String?,
                                    completion: @escaping (_ error: NKError) -> Void) {
-
         var fileNameFolder = utility.removeForbiddenCharacters(fileName)
+
         if fileName != fileNameFolder {
             let errorDescription = String(format: NSLocalizedString("_forbidden_characters_", comment: ""), NCGlobal.shared.forbiddenCharacters.joined(separator: " "))
             let error = NKError(errorCode: NCGlobal.shared.errorConflict, errorDescription: errorDescription)
             return completion(error)
         }
-
         if !overwrite {
             fileNameFolder = utilityFileSystem.createFileName(fileNameFolder, serverUrl: serverUrl, account: account)
         }
@@ -249,7 +236,6 @@ extension NCNetworking {
             }
 
             self.readFile(serverUrlFileName: fileNameFolderUrl) { account, metadataFolder, error in
-
                 if error == .success {
                     if let metadata = metadataFolder {
                         NCManageDatabase.shared.addMetadata(metadata)
@@ -271,7 +257,6 @@ extension NCNetworking {
                       userId: String,
                       withPush: Bool,
                       sceneIdentifier: String? = nil) -> Bool {
-
         let autoUploadPath = NCManageDatabase.shared.getAccountAutoUploadPath(urlBase: urlBase, userId: userId, account: account)
         let serverUrlBase = NCManageDatabase.shared.getAccountAutoUploadDirectory(urlBase: urlBase, userId: userId, account: account)
         let fileNameBase = NCManageDatabase.shared.getAccountAutoUploadFileName()
@@ -329,13 +314,10 @@ extension NCNetworking {
     // MARK: - Delete
 
     func deleteMetadata(_ metadata: tableMetadata, onlyLocalCache: Bool) async -> (NKError) {
-
         if onlyLocalCache {
-
 #if !EXTENSION
             NCActivityIndicator.shared.start()
 #endif
-
             func delete(metadata: tableMetadata) {
                 if let metadataLive = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata) {
                     NCManageDatabase.shared.deleteLocalFile(predicate: NSPredicate(format: "account == %@ AND ocId == %@", metadataLive.account, metadataLive.ocId))
@@ -356,7 +338,6 @@ extension NCNetworking {
             } else {
                 delete(metadata: metadata)
             }
-
 #if !EXTENSION
             NCActivityIndicator.shared.stop()
 #endif
@@ -393,7 +374,6 @@ extension NCNetworking {
     }
 
     func deleteMetadataPlain(_ metadata: tableMetadata, customHeader: [String: String]? = nil) async -> NKError {
-
         // verify permission
         let permission = utility.permissionsContainsString(metadata.permissions, permissions: NCPermissions().permissionCanDelete)
         if !metadata.permissions.isEmpty && permission == false {
@@ -401,10 +381,9 @@ extension NCNetworking {
         }
         let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
         let options = NKRequestOptions(customHeader: customHeader)
-
         let result = await NCNetworking.shared.deleteFileOrFolder(serverUrlFileName: serverUrlFileName, options: options)
-        if result.error == .success || result.error.errorCode == NCGlobal.shared.errorResourceNotFound {
 
+        if result.error == .success || result.error.errorCode == NCGlobal.shared.errorResourceNotFound {
             do {
                 try FileManager.default.removeItem(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId))
             } catch { }
@@ -437,7 +416,6 @@ extension NCNetworking {
                         indexPath: IndexPath,
                         viewController: UIViewController?,
                         completion: @escaping (_ error: NKError) -> Void) {
-
         let metadataLive = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata)
         let fileNameNew = fileNameNew.trimmingCharacters(in: .whitespacesAndNewlines)
         let fileNameNewLive = (fileNameNew as NSString).deletingPathExtension + ".mov"
@@ -478,7 +456,6 @@ extension NCNetworking {
                                      fileNameNew: String,
                                      indexPath: IndexPath,
                                      completion: @escaping (_ error: NKError) -> Void) {
-
         let permission = utility.permissionsContainsString(metadata.permissions, permissions: NCPermissions().permissionCanRename)
         if !metadata.permissions.isEmpty && !permission {
             return completion(NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_no_permission_modify_file_"))
@@ -525,7 +502,6 @@ extension NCNetworking {
     // MARK: - Move
 
     func moveMetadata(_ metadata: tableMetadata, serverUrlTo: String, overwrite: Bool) async -> NKError {
-
         if let metadataLive = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata), metadata.isNotFlaggedAsLivePhotoByServer {
             let error = await moveMetadataPlain(metadataLive, serverUrlTo: serverUrlTo, overwrite: overwrite)
             if error == .success {
@@ -538,7 +514,6 @@ extension NCNetworking {
     }
 
     private func moveMetadataPlain(_ metadata: tableMetadata, serverUrlTo: String, overwrite: Bool) async -> NKError {
-
         let permission = utility.permissionsContainsString(metadata.permissions, permissions: NCPermissions().permissionCanRename)
         if !metadata.permissions.isEmpty && !permission {
             return NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_no_permission_modify_file_")
@@ -574,7 +549,6 @@ extension NCNetworking {
     // MARK: - Copy
 
     func copyMetadata(_ metadata: tableMetadata, serverUrlTo: String, overwrite: Bool) async -> NKError {
-
         if let metadataLive = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata), metadata.isNotFlaggedAsLivePhotoByServer {
             let error = await copyMetadataPlain(metadataLive, serverUrlTo: serverUrlTo, overwrite: overwrite)
             if error == .success {
@@ -587,7 +561,6 @@ extension NCNetworking {
     }
 
     private func copyMetadataPlain(_ metadata: tableMetadata, serverUrlTo: String, overwrite: Bool) async -> NKError {
-
         let permission = utility.permissionsContainsString(metadata.permissions, permissions: NCPermissions().permissionCanRename)
         if !metadata.permissions.isEmpty && !permission {
             return NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_no_permission_modify_file_")
@@ -603,7 +576,6 @@ extension NCNetworking {
 
     func favoriteMetadata(_ metadata: tableMetadata,
                           completion: @escaping (_ error: NKError) -> Void) {
-
         if let metadataLive = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata) {
             favoriteMetadataPlain(metadataLive) { error in
                 if error == .success {
@@ -619,7 +591,6 @@ extension NCNetworking {
 
     private func favoriteMetadataPlain(_ metadata: tableMetadata,
                                        completion: @escaping (_ error: NKError) -> Void) {
-
         let fileName = utilityFileSystem.getFileNamePath(metadata.fileName, serverUrl: metadata.serverUrl, urlBase: metadata.urlBase, userId: metadata.userId)
         let favorite = !metadata.favorite
         let ocId = metadata.ocId
@@ -637,7 +608,6 @@ extension NCNetworking {
     // MARK: - Lock Files
 
     func lockUnlockFile(_ metadata: tableMetadata, shoulLock: Bool) {
-
         NextcloudKit.shared.lockUnlockFile(serverUrlFileName: metadata.serverUrl + "/" + metadata.fileName, shouldLock: shoulLock) { _, error in
             // 0: lock was successful; 412: lock did not change, no error, refresh
             guard error == .success || error.errorCode == NCGlobal.shared.errorPreconditionFailed else {
@@ -657,7 +627,6 @@ extension NCNetworking {
 
     func getVideoUrl(metadata: tableMetadata,
                      completition: @escaping (_ url: URL?, _ autoplay: Bool, _ error: NKError) -> Void) {
-
         if !metadata.url.isEmpty {
             if metadata.url.hasPrefix("/") {
                 completition(URL(fileURLWithPath: metadata.url), true, .success)
@@ -688,7 +657,6 @@ extension NCNetworking {
                      literal: String,
                      taskHandler: @escaping (_ task: URLSessionTask) -> Void = { _ in },
                      completion: @escaping (_ metadatas: [tableMetadata]?, _ error: NKError) -> Void) {
-
         NextcloudKit.shared.searchLiteral(serverUrl: urlBase.urlBase,
                                           depth: "infinity",
                                           literal: literal,
@@ -713,7 +681,6 @@ extension NCNetworking {
                             providers: @escaping (_ accout: String, _ searchProviders: [NKSearchProvider]?) -> Void,
                             update: @escaping (_ account: String, _ id: String, NKSearchResult?, [tableMetadata]?) -> Void,
                             completion: @escaping (_ account: String, _ error: NKError) -> Void) {
-
         let dispatchGroup = DispatchGroup()
         dispatchGroup.enter()
         dispatchGroup.notify(queue: .main) {
@@ -790,7 +757,6 @@ extension NCNetworking {
                                     limit: Int, cursor: Int,
                                     taskHandler: @escaping (_ task: URLSessionTask) -> Void = { _ in },
                                     completion: @escaping (_ account: String, _ searchResult: NKSearchResult?, _ metadatas: [tableMetadata]?, _ error: NKError) -> Void) {
-
         var metadatas: [tableMetadata] = []
 
         let request = NextcloudKit.shared.searchProvider(id, account: userBaseUrl.account, term: term, limit: limit, cursor: cursor, timeout: 60) { task in
@@ -857,8 +823,8 @@ extension NCNetworking {
                               filePath: String,
                               dispatchGroup: DispatchGroup? = nil,
                               completion: @escaping (String, tableMetadata, NKError) -> Void) {
-
         let urlPath = userBaseUrl.urlBase + "/remote.php/dav/files/" + userBaseUrl.user + filePath
+
         dispatchGroup?.enter()
         self.readFile(serverUrlFileName: urlPath) { account, metadata, error in
             defer { dispatchGroup?.leave() }
@@ -871,6 +837,7 @@ extension NCNetworking {
 
     func cancelDataTask() {
         let sessionManager = NextcloudKit.shared.sessionManager
+
         sessionManager.session.getTasksWithCompletionHandler { dataTasks, _, _ in
             dataTasks.forEach {
                 $0.cancel()
@@ -880,7 +847,6 @@ extension NCNetworking {
 }
 
 class NCOperationDownloadAvatar: ConcurrentOperation {
-
     var user: String
     var fileName: String
     var etag: String?
@@ -898,7 +864,6 @@ class NCOperationDownloadAvatar: ConcurrentOperation {
     }
 
     override func start() {
-
         guard !isCancelled else { return self.finish() }
 
         NextcloudKit.shared.downloadAvatar(user: user,
@@ -907,7 +872,6 @@ class NCOperationDownloadAvatar: ConcurrentOperation {
                                            avatarSizeRounded: NCGlobal.shared.avatarSizeRounded,
                                            etag: self.etag,
                                            options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { _, imageAvatar, _, etag, error in
-
             if error == .success, let imageAvatar {
                 NCManageDatabase.shared.addAvatar(fileName: self.fileName, etag: etag ?? "")
                 DispatchQueue.main.async {
