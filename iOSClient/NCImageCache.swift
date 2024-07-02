@@ -35,9 +35,6 @@ class NCImageCache: NSObject {
     // MARK: -
 
     private let limitCacheImagePreview: Int = 1000
-    private let limitSizeImagePreview: Int = 100000
-    private let limitSizeImageIcon: Int = 100000
-
     private var brandElementColor: UIColor?
     private var totalSize: Int64 = 0
 
@@ -148,7 +145,7 @@ class NCImageCache: NSObject {
             }
             autoreleasepool {
                 if let image = UIImage(contentsOfFile: file.path.path) {
-                    if counter < limitCacheImagePreview, file.fileSize > limitSizeImagePreview {
+                    if counter < limitCacheImagePreview {
                         cacheImagePreview.setValue(imageInfo(image: image, size: image.size, date: file.date), forKey: file.ocIdEtag)
                         totalSize = totalSize + Int64(file.fileSize)
                         counter += 1
@@ -195,10 +192,6 @@ class NCImageCache: NSObject {
         return limitCacheImagePreview > cacheImagePreview.count
     }
 
-    func hasMediaImageEnoughSize(_ size: Int64) -> Bool {
-        return limitSizeImagePreview < size
-    }
-
     ///
     /// MEDIA SIZE CACHE
     ///
@@ -220,9 +213,6 @@ class NCImageCache: NSObject {
     ///
     /// ICON CACHE
     ///
-    func hasIconImageEnoughSize(_ size: Int64) -> Bool {
-        return limitSizeImageIcon < size
-    }
 
     func setIconImage(ocId: String, etag: String, image: UIImage) {
         cacheImageIcon.setValue(image, forKey: ocId + etag)

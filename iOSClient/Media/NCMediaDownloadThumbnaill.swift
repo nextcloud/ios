@@ -76,10 +76,6 @@ class NCMediaDownloadThumbnaill: ConcurrentOperation {
                     }
                 }
                 NCImageCache.shared.setMediaSize(ocId: self.metadata.ocId, etag: self.metadata.etag, size: imagePreview.size)
-                let fileSizePreview = self.utilityFileSystem.getFileSize(filePath: self.fileNamePreviewLocalPath)
-                if NCImageCache.shared.hasMediaImageEnoughSize(fileSizePreview), NCImageCache.shared.hasMediaImageEnoughSpace() {
-                    NCImageCache.shared.setMediaImage(ocId: self.metadata.ocId, etag: self.metadata.etag, image: imagePreview, date: self.metadata.date as Date)
-                }
             }
             self.finish()
         }

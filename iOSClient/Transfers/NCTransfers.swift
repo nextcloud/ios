@@ -207,12 +207,14 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
         cell.labelPath.text = pathText
         cell.setButtonMore(named: NCGlobal.shared.buttonMoreStop, image: NCImageCache.images.buttonStop)
         cell.progressView.progress = 0.0
-        if let image = utility.createFilePreviewImage(ocId: metadata.ocId, etag: metadata.etag, fileNameView: metadata.fileNameView, classFile: metadata.classFile, status: metadata.status, createPreviewMedia: true) {
-            cell.imageItem.image = image
-        } else if !metadata.iconName.isEmpty {
-            cell.imageItem.image = utility.loadImage(named: metadata.iconName, useTypeIconFile: true)
-        } else {
-            cell.imageItem.image = NCImageCache.images.file
+        utility.createFilePreviewImage(ocId: metadata.ocId, etag: metadata.etag, fileNameView: metadata.fileNameView, classFile: metadata.classFile, status: metadata.status, createPreviewMedia: true) { image in
+            if let image {
+                cell.imageItem.image = image
+            } else if !metadata.iconName.isEmpty {
+                cell.imageItem.image = self.utility.loadImage(named: metadata.iconName, useTypeIconFile: true)
+            } else {
+                cell.imageItem.image = NCImageCache.images.file
+            }
         }
         cell.labelInfo.text = utility.dateDiff(metadata.date as Date) + " · " + utilityFileSystem.transformedSize(metadata.size)
         if metadata.status == NCGlobal.shared.metadataStatusDownloading || metadata.status == NCGlobal.shared.metadataStatusUploading {

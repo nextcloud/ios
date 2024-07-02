@@ -175,20 +175,22 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             }
             /// THUMBNAIL
             if metadata.name == NCGlobal.shared.appName {
-                if let image = utility.createFilePreviewImage(ocId: metadata.ocId, etag: metadata.etag, fileNameView: metadata.fileNameView, classFile: metadata.classFile, status: metadata.status, createPreviewMedia: !metadata.hasPreview) {
-                    cell.filePreviewImageView?.image = image
-                } else {
-                    let existsIcon = utilityFileSystem.fileProviderStoragePreviewIconExists(metadata.ocId, etag: metadata.etag)
-                    if metadata.iconName.isEmpty {
-                        cell.filePreviewImageView?.image = NCImageCache.images.file
+                utility.createFilePreviewImage(ocId: metadata.ocId, etag: metadata.etag, fileNameView: metadata.fileNameView, classFile: metadata.classFile, status: metadata.status, createPreviewMedia: !metadata.hasPreview) { image in
+                    if let image {
+                        cell.filePreviewImageView?.image = image
                     } else {
-                        cell.filePreviewImageView?.image = utility.loadImage(named: metadata.iconName, useTypeIconFile: true)
-                    }
-                    if metadata.hasPreview && metadata.status == NCGlobal.shared.metadataStatusNormal && !existsIcon {
-                        var foundDownloadThumbnail: Bool = false
-                        for case let operation as NCCollectionViewDownloadThumbnail in NCNetworking.shared.downloadThumbnailQueue.operations where operation.metadata.ocId == metadata.ocId { foundDownloadThumbnail = true }
-                        if !foundDownloadThumbnail {
-                            NCNetworking.shared.downloadThumbnailQueue.addOperation(NCCollectionViewDownloadThumbnail(metadata: metadata, cell: cell, collectionView: collectionView))
+                        let existsIcon = self.utilityFileSystem.fileProviderStoragePreviewIconExists(metadata.ocId, etag: metadata.etag)
+                        if metadata.iconName.isEmpty {
+                            cell.filePreviewImageView?.image = NCImageCache.images.file
+                        } else {
+                            cell.filePreviewImageView?.image = self.utility.loadImage(named: metadata.iconName, useTypeIconFile: true)
+                        }
+                        if metadata.hasPreview && metadata.status == NCGlobal.shared.metadataStatusNormal && !existsIcon {
+                            var foundDownloadThumbnail: Bool = false
+                            for case let operation as NCCollectionViewDownloadThumbnail in NCNetworking.shared.downloadThumbnailQueue.operations where operation.metadata.ocId == metadata.ocId { foundDownloadThumbnail = true }
+                            if !foundDownloadThumbnail {
+                                NCNetworking.shared.downloadThumbnailQueue.addOperation(NCCollectionViewDownloadThumbnail(metadata: metadata, cell: cell, collectionView: collectionView))
+                            }
                         }
                     }
                 }

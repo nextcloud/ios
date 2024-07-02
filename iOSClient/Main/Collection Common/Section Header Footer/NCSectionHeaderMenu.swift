@@ -133,7 +133,6 @@ class NCSectionHeaderMenu: UICollectionReusableView, UIGestureRecognizerDelegate
     // MARK: - Transfer
 
     func setViewTransfer(isHidden: Bool, ocId: String? = nil, text: String? = nil, progress: Float? = nil) {
-
         labelTransfer.text = text
         viewTransfer.isHidden = isHidden
         progressTransfer.progress = 0
@@ -141,17 +140,17 @@ class NCSectionHeaderMenu: UICollectionReusableView, UIGestureRecognizerDelegate
         if isHidden {
             viewTransferHeightConstraint.constant = 0
         } else {
-            var image: UIImage?
-            if let ocId,
-               let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
-                image = utility.createFilePreviewImage(ocId: metadata.ocId, etag: metadata.etag, fileNameView: metadata.fileNameView, classFile: metadata.classFile, status: metadata.status, createPreviewMedia: true)?.darken()
-                if image == nil {
-                    image = utility.loadImage(named: metadata.iconName, useTypeIconFile: true)
-                    buttonTransfer.backgroundColor = .lightGray
-                } else {
-                    buttonTransfer.backgroundColor = .clear
+            if let ocId, let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
+                utility.createFilePreviewImage(ocId: metadata.ocId, etag: metadata.etag, fileNameView: metadata.fileNameView, classFile: metadata.classFile, status: metadata.status, createPreviewMedia: true) { image in
+                    if let image = image?.darken() {
+                        self.buttonTransfer.backgroundColor = .clear
+                        self.buttonTransfer.setImage(image, for: .normal)
+                    } else {
+                        let image = self.utility.loadImage(named: metadata.iconName, useTypeIconFile: true)
+                        self.buttonTransfer.backgroundColor = .lightGray
+                        self.buttonTransfer.setImage(image, for: .normal)
+                    }
                 }
-                buttonTransfer.setImage(image, for: .normal)
             }
             viewTransferHeightConstraint.constant = NCGlobal.shared.heightHeaderTransfer
             if let progress {

@@ -197,7 +197,6 @@ func getFilesDataEntry(configuration: AccountIntent?, isPreview: Bool, displaySi
             let files = files.sorted(by: { ($0.date as Date) > ($1.date as Date) })
 
             for file in files {
-                var image: UIImage?
                 var useTypeIconFile = false
 
                 if file.directory || (!file.livePhotoFile.isEmpty && file.classFile == NKCommon.TypeClassFile.video.rawValue) {
@@ -216,17 +215,13 @@ func getFilesDataEntry(configuration: AccountIntent?, isPreview: Bool, displaySi
                 guard let url = URL(string: urlString) else { continue }
 
                 // IMAGE
-                if let result = utility.createFilePreviewImage(ocId: file.ocId, etag: file.etag, fileNameView: file.fileName, classFile: file.classFile, status: 0, createPreviewMedia: false) {
-                    image = result
-                } else if file.hasPreview {
-
+                var image = await createFilePreviewImage(ocId: file.ocId, etag: file.etag, fileNameView: file.fileName, classFile: file.classFile, status: 0, createPreviewMedia: false)
+                if image == nil, file.hasPreview {
                     let fileNamePreviewLocalPath = utilityFileSystem.getDirectoryProviderStoragePreviewOcId(file.ocId, etag: file.etag)
                     let fileNameIconLocalPath = utilityFileSystem.getDirectoryProviderStorageIconOcId(file.ocId, etag: file.etag)
                     let sizePreview = NCUtility().getSizePreview(width: Int(file.width), height: Int(file.height))
                     let (_, _, imageIcon, _, _, _) = await NCNetworking.shared.downloadPreview(fileId: file.fileId, fileNamePreviewLocalPath: fileNamePreviewLocalPath, fileNameIconLocalPath: fileNameIconLocalPath, widthPreview: Int(sizePreview.width), heightPreview: Int(sizePreview.height), sizeIcon: NCGlobal.shared.sizeIcon, options: options)
-                    if let result = imageIcon {
-                         image = result
-                    }
+                    image = imageIcon
                 }
                 if image == nil {
                     image = utility.loadImage(named: file.iconName, useTypeIconFile: true)
@@ -251,5 +246,18 @@ func getFilesDataEntry(configuration: AccountIntent?, isPreview: Bool, displaySi
                 completion(FilesDataEntry(date: Date(), datas: datas, isPlaceholder: false, isEmpty: datas.isEmpty, userId: account.userId, url: account.urlBase, tile: title, footerImage: "checkmark.icloud", footerText: footerText))
             }
         }
+    }
+
+    @Sendable func createFilePreviewImage(ocId: String,
+                                          etag: String,
+                                          fileNameView: String,
+                                          classFile: String,
+                                          status: Int,
+                                          createPreviewMedia: Bool) async -> UIImage? {
+        await withUnsafeContinuation({ continuation in
+            NCUtility().createFilePreviewImage(ocId: ocId, etag: etag, fileNameView: fileNameView, classFile: classFile, status: status, createPreviewMedia: createPreviewMedia) { image in
+                continuation.resume(returning: image)
+            }
+        })
     }
 }
