@@ -84,7 +84,6 @@ class NCSectionHeaderEmptyData: UICollectionReusableView {
     // MARK: - Transfer
 
     func setViewTransfer(isHidden: Bool, ocId: String? = nil, text: String? = nil, progress: Float? = nil) {
-
         labelTransfer.text = text
         viewTransfer.isHidden = isHidden
         progressTransfer.progress = 0
@@ -92,16 +91,15 @@ class NCSectionHeaderEmptyData: UICollectionReusableView {
         if isHidden {
             viewTransferHeightConstraint.constant = 0
         } else {
-            if let ocId, let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
-                NCUtility().createFilePreviewImage(ocId: metadata.ocId, etag: metadata.etag, fileNameView: metadata.fileNameView, classFile: metadata.classFile, status: metadata.status, createPreviewMedia: true) { image in
-                    if let image = image?.darken() {
-                        self.buttonTransfer.backgroundColor = .clear
-                        self.buttonTransfer.setImage(image, for: .normal)
-                    } else {
-                        let image = NCUtility().loadImage(named: metadata.iconName, useTypeIconFile: true)
-                        self.buttonTransfer.backgroundColor = .lightGray
-                        self.buttonTransfer.setImage(image, for: .normal)
-                    }
+            var image: UIImage?
+            if let ocId,
+               let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
+                image = NCUtility().createFilePreviewImage(ocId: metadata.ocId, etag: metadata.etag, fileNameView: metadata.fileNameView, classFile: metadata.classFile, status: metadata.status, createPreviewMedia: true)?.darken()
+                if image == nil {
+                    image = NCUtility().loadImage(named: metadata.iconName, useTypeIconFile: true)
+                    buttonTransfer.backgroundColor = .lightGray
+                } else {
+                    buttonTransfer.backgroundColor = .clear
                 }
             }
             viewTransferHeightConstraint.constant = NCGlobal.shared.heightHeaderTransfer

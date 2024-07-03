@@ -132,22 +132,15 @@ extension NCUtility {
         if classFile != NKCommon.TypeClassFile.image.rawValue && classFile != NKCommon.TypeClassFile.video.rawValue { return }
 
         if classFile == NKCommon.TypeClassFile.image.rawValue {
-
             originalImage = UIImage(contentsOfFile: fileNamePath)
-
             scaleImagePreview = originalImage?.resizeImage(size: CGSize(width: NCGlobal.shared.sizePreview, height: NCGlobal.shared.sizePreview))
             scaleImageIcon = originalImage?.resizeImage(size: CGSize(width: NCGlobal.shared.sizeIcon, height: NCGlobal.shared.sizeIcon))
-
             try? scaleImagePreview?.jpegData(compressionQuality: 0.7)?.write(to: URL(fileURLWithPath: fileNamePathPreview))
             try? scaleImageIcon?.jpegData(compressionQuality: 0.7)?.write(to: URL(fileURLWithPath: fileNamePathIcon))
-
         } else if classFile == NKCommon.TypeClassFile.video.rawValue {
-
             let videoPath = NSTemporaryDirectory() + "tempvideo.mp4"
             utilityFileSystem.linkItem(atPath: fileNamePath, toPath: videoPath)
-
             originalImage = imageFromVideo(url: URL(fileURLWithPath: videoPath), at: 0)
-
             try? originalImage?.jpegData(compressionQuality: 0.7)?.write(to: URL(fileURLWithPath: fileNamePathPreview))
             try? originalImage?.jpegData(compressionQuality: 0.7)?.write(to: URL(fileURLWithPath: fileNamePathIcon))
         }
@@ -235,50 +228,42 @@ extension NCUtility {
         }
     }
 
-    func createFilePreviewImage(ocId: String,
-                                etag: String,
-                                fileNameView: String,
-                                classFile: String,
-                                status: Int,
-                                createPreviewMedia: Bool,
-                                completion: @escaping (UIImage?) -> Void) {
-        DispatchQueue.global(qos: .userInitiated).async {
-            var imagePreview: UIImage?
-            let filePath = self.utilityFileSystem.getDirectoryProviderStorageOcId(ocId, fileNameView: fileNameView)
-            let iconImagePath = self.utilityFileSystem.getDirectoryProviderStorageIconOcId(ocId, etag: etag)
+    func createFilePreviewImage(ocId: String, etag: String, fileNameView: String, classFile: String, status: Int, createPreviewMedia: Bool) -> UIImage? {
+        var imagePreview: UIImage?
+        let filePath = self.utilityFileSystem.getDirectoryProviderStorageOcId(ocId, fileNameView: fileNameView)
+        let iconImagePath = self.utilityFileSystem.getDirectoryProviderStorageIconOcId(ocId, etag: etag)
 
-            if FileManager.default.fileExists(atPath: iconImagePath) {
-                imagePreview = UIImage(contentsOfFile: iconImagePath)
-            } else if !createPreviewMedia {
-                DispatchQueue.main.async { completion(nil) }
-            } else if createPreviewMedia && status >= NCGlobal.shared.metadataStatusNormal && classFile == NKCommon.TypeClassFile.image.rawValue && FileManager().fileExists(atPath: filePath) {
-                if let image = UIImage(contentsOfFile: filePath), let image = image.resizeImage(size: CGSize(width: NCGlobal.shared.sizeIcon, height: NCGlobal.shared.sizeIcon)), let data = image.jpegData(compressionQuality: 0.5) {
-                    do {
-                        try data.write(to: URL(fileURLWithPath: iconImagePath), options: .atomic)
-                        imagePreview = image
-                    } catch { }
-                }
-            } else if createPreviewMedia && status >= NCGlobal.shared.metadataStatusNormal && classFile == NKCommon.TypeClassFile.video.rawValue && FileManager().fileExists(atPath: filePath) {
-                if let image = self.imageFromVideo(url: URL(fileURLWithPath: filePath), at: 0), let image = image.resizeImage(size: CGSize(width: NCGlobal.shared.sizeIcon, height: NCGlobal.shared.sizeIcon)), let data = image.jpegData(compressionQuality: 0.5) {
-                    do {
-                        try data.write(to: URL(fileURLWithPath: iconImagePath), options: .atomic)
-                        imagePreview = image
-                    } catch { }
-                }
+        if FileManager.default.fileExists(atPath: iconImagePath) {
+            imagePreview = UIImage(contentsOfFile: iconImagePath)
+        } else if !createPreviewMedia {
+            return nil
+        } else if createPreviewMedia && status >= NCGlobal.shared.metadataStatusNormal && classFile == NKCommon.TypeClassFile.image.rawValue && FileManager().fileExists(atPath: filePath) {
+            if let image = UIImage(contentsOfFile: filePath), let image = image.resizeImage(size: CGSize(width: NCGlobal.shared.sizeIcon, height: NCGlobal.shared.sizeIcon)), let data = image.jpegData(compressionQuality: 0.5) {
+                do {
+                    try data.write(to: URL(fileURLWithPath: iconImagePath), options: .atomic)
+                    imagePreview = image
+                } catch { }
             }
-            // better to check that the size is NCGlobal.shared.sizeIcon isAspectRation true
-            if let size = imagePreview?.size {
-                if Int(size.width) > NCGlobal.shared.sizeIcon, Int(size.height) > NCGlobal.shared.sizeIcon {
-                    imagePreview = imagePreview?.resizeImage(size: CGSize(width: NCGlobal.shared.sizeIcon, height: NCGlobal.shared.sizeIcon))
-                    do {
-                        if let imagePreview, let data = imagePreview.jpegData(compressionQuality: 0.5) {
-                            try data.write(to: URL(fileURLWithPath: iconImagePath), options: .atomic)
-                        }
-                    } catch { }
-                }
+        } else if createPreviewMedia && status >= NCGlobal.shared.metadataStatusNormal && classFile == NKCommon.TypeClassFile.video.rawValue && FileManager().fileExists(atPath: filePath) {
+            if let image = self.imageFromVideo(url: URL(fileURLWithPath: filePath), at: 0), let image = image.resizeImage(size: CGSize(width: NCGlobal.shared.sizeIcon, height: NCGlobal.shared.sizeIcon)), let data = image.jpegData(compressionQuality: 0.5) {
+                do {
+                    try data.write(to: URL(fileURLWithPath: iconImagePath), options: .atomic)
+                    imagePreview = image
+                } catch { }
             }
-            DispatchQueue.main.async { completion(imagePreview) }
         }
+        // better to check that the size is NCGlobal.shared.sizeIcon isAspectRation true
+        if let size = imagePreview?.size {
+            if Int(size.width) > NCGlobal.shared.sizeIcon, Int(size.height) > NCGlobal.shared.sizeIcon {
+                imagePreview = imagePreview?.resizeImage(size: CGSize(width: NCGlobal.shared.sizeIcon, height: NCGlobal.shared.sizeIcon))
+                do {
+                    if let imagePreview, let data = imagePreview.jpegData(compressionQuality: 0.5) {
+                        try data.write(to: URL(fileURLWithPath: iconImagePath), options: .atomic)
+                    }
+                } catch { }
+            }
+        }
+        return imagePreview
     }
 
     @objc func pdfThumbnail(url: URL, width: CGFloat = 240) -> UIImage? {
