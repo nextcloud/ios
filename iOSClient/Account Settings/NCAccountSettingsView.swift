@@ -155,28 +155,30 @@ struct NCAccountSettingsView: View {
                     }
                     ///
                     /// User Status
-                    Button(action: {
-                        showUserStatus = true
-                    }, label: {
-                        HStack {
-                            Image(systemName: "moon.fill")
-                                .resizable()
-                                .scaledToFit()
-                                .font(Font.system(.body).weight(.light))
-                                .frame(width: 20, height: 20)
-                                .foregroundStyle(Color(NCBrandColor.shared.iconImageColor))
-                            Text(NSLocalizedString("_set_user_status_", comment: ""))
-                                .lineLimit(1)
-                                .truncationMode(.middle)
-                                .foregroundStyle(Color(NCBrandColor.shared.textColor))
-                                .padding(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 20))
+                    if NCGlobal.shared.capabilityUserStatusEnabled {
+                        Button(action: {
+                            showUserStatus = true
+                        }, label: {
+                            HStack {
+                                Image(systemName: "moon.fill")
+                                    .resizable()
+                                    .scaledToFit()
+                                    .font(Font.system(.body).weight(.light))
+                                    .frame(width: 20, height: 20)
+                                    .foregroundStyle(Color(NCBrandColor.shared.iconImageColor))
+                                Text(NSLocalizedString("_set_user_status_", comment: ""))
+                                    .lineLimit(1)
+                                    .truncationMode(.middle)
+                                    .foregroundStyle(Color(NCBrandColor.shared.textColor))
+                                    .padding(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 20))
+                            }
+                            .font(.system(size: 14))
+                        })
+                        .sheet(isPresented: $showUserStatus) {
+                            UserStatusView(showUserStatus: $showUserStatus)
                         }
-                        .font(.system(size: 14))
-                    })
-                    .sheet(isPresented: $showUserStatus) {
-                        UserStatusView(showUserStatus: $showUserStatus)
+                        .onChange(of: showUserStatus) { _ in }
                     }
-                    .onChange(of: showUserStatus) { _ in }
                     ///
                     /// Certificate server
                     Button(action: {
