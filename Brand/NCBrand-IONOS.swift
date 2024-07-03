@@ -13,7 +13,7 @@
         super.init()
         
         brand = "IONOS"
-        loginBaseUrl = "https://nextcloud.iocaste45.de"
+        loginBaseUrl = "https://nextcloud-aio.iocaste45.de"
 
         disable_intro = true
         disable_request_login_url = true
