@@ -131,7 +131,7 @@ class NCAccountSettingsModel: ObservableObject, ViewOnAppearHandling {
     }
 
     /// Function to update the user data
-    func getUserStatus() -> (statusImage: UIImage, statusMessage: String, descriptionMessage: String) {
+    func getUserStatus() -> (statusImage: UIImage?, statusMessage: String, descriptionMessage: String) {
         guard let activeAccount else { return (UIImage(), "", "") }
         if NCGlobal.shared.capabilityUserStatusEnabled,
            let tableAccount = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", activeAccount.account)) {
