@@ -114,9 +114,9 @@ class NCSharePaging: UIViewController {
             self.dismiss(animated: false, completion: nil)
         }
 
-        pagingViewController.menuItemSize = .fixed(
-            width: self.view.bounds.width / CGFloat(self.pages.count),
-            height: 40)
+//        pagingViewController.menuItemSize = .fixed(
+//            width: self.view.bounds.width / CGFloat(self.pages.count),
+//            height: 40)
     }
 
     override func viewWillDisappear(_ animated: Bool) {
@@ -132,13 +132,7 @@ class NCSharePaging: UIViewController {
 
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         super.viewWillTransition(to: size, with: coordinator)
-
-        coordinator.animate(alongsideTransition: nil) { _ in
-            self.pagingViewController.menuItemSize = .fixed(
-                width: self.view.bounds.width / CGFloat(self.pages.count),
-                height: 40)
-            self.currentVC?.textField?.resignFirstResponder()
-        }
+        self.currentVC?.textField?.resignFirstResponder()
     }
 
     // MARK: - NotificationCenter & Keyboard & TextField
