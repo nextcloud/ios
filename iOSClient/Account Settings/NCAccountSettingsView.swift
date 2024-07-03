@@ -56,7 +56,7 @@ struct NCAccountSettingsView: View {
                                         Circle()
                                             .fill(.white)
                                             .frame(width: 30, height: 30)
-                                        Image(uiImage: status.statusImage)
+                                        Image(uiImage: status.statusImage ?? UIImage())
                                             .resizable()
                                             .scaledToFit()
                                             .frame(width: 30, height: 30)
