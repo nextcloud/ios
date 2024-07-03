@@ -52,16 +52,18 @@ struct NCAccountSettingsView: View {
                                         .resizable()
                                         .scaledToFit()
                                         .frame(width: UIScreen.main.bounds.width, height: 75)
-                                    ZStack {
-                                        Circle()
-                                            .fill(.white)
-                                            .frame(width: 30, height: 30)
-                                        Image(uiImage: status.statusImage)
-                                            .resizable()
-                                            .scaledToFit()
-                                            .frame(width: 30, height: 30)
+                                    if let statusImage = status.statusImage {
+                                        ZStack {
+                                            Circle()
+                                                .fill(.white)
+                                                .frame(width: 30, height: 30)
+                                            Image(uiImage: statusImage)
+                                                .resizable()
+                                                .scaledToFit()
+                                                .frame(width: 30, height: 30)
                                         }
                                         .offset(x: 30, y: 30)
+                                    }
                                 }
                                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                                 Text(model.getUserName())
