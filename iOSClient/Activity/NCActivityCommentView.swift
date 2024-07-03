@@ -43,11 +43,11 @@ class NCActivityCommentView: UIView, UITextFieldDelegate {
         }
     }
 //
-//    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-//        textField.resignFirstResponder()
-//        completionHandler?(textField.text)
-//        return true
-//    }
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        textField.resignFirstResponder()
+        completionHandler?(textField.text)
+        return true
+    }
 }
 
 extension NCActivityCommentView: UISearchBarDelegate {

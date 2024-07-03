@@ -246,9 +246,7 @@ class NCShare: UIViewController, NCShareNetworkingDelegate, NCSharePagingContent
         let blurEffect = UIBlurEffect(style: .light) // You can choose .dark, .extraLight, or .light
         let blurEffectView = UIVisualEffectView(effect: blurEffect)
         blurEffectView.frame = CGRect(x: 0, y: 0, width: 500, height: 20)
-//        blurEffectView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
 
-//        appearance.addBlur(style: .dark)
         appearance.backgroundColor = .systemBackground
         appearance.cornerRadius = 10
         appearance.shadowColor = .black
@@ -276,9 +274,6 @@ class NCShare: UIViewController, NCShareNetworkingDelegate, NCSharePagingContent
             let sharee = sharees[index]
             cell.setupCell(sharee: sharee, baseUrl: appDelegate)
         }
-
-//        dropDown.insertSubview(blurEffectView, at: 0) // Insert at the bottom to ensure blur is behind other views//        appearance.setupMaskedCorners([.layerMaxXMaxYCorner, .layerMinXMaxYCorner])
-
 
         dropDown.selectionAction = { index, _ in
             let sharee = sharees[index]
@@ -416,7 +411,17 @@ extension NCShare: CNContactPickerDelegate {
 }
 
 extension NCShare: UISearchBarDelegate {
-    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        NSObject.cancelPreviousPerformRequests(withTarget: self, selector: #selector(searchSharees), object: nil)
+
+        if searchText.isEmpty {
+            dropDown.hide()
+        } else {
+            perform(#selector(searchSharees), with: nil, afterDelay: 0.5)
+        }
+    }
+
+    @objc private func searchSharees() {
         // https://stackoverflow.com/questions/25471114/how-to-validate-an-e-mail-address-in-swift
         func isValidEmail(_ email: String) -> Bool {
 
@@ -424,7 +429,7 @@ extension NCShare: UISearchBarDelegate {
             let emailPred = NSPredicate(format: "SELF MATCHES %@", emailRegEx)
             return emailPred.evaluate(with: email)
         }
-        guard let searchString = searchBar.text, !searchString.isEmpty else { return }
+        guard let searchString = searchField.text, !searchString.isEmpty else { return }
         if searchString.contains("@"), !isValidEmail(searchString) { return }
         networking?.getSharees(searchString: searchString)
     }

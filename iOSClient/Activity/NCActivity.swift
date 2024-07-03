@@ -130,9 +130,16 @@ class NCActivity: UIViewController, NCSharePagingContent {
         label.textColor = NCBrandColor.shared.textColor2
         label.textAlignment = .center
         label.text = NSLocalizedString("_no_activity_footer_", comment: "")
-        label.frame = CGRect(x: 0, y: 10, width: tableView.frame.width, height: 60)
+//        label.frame = CGRect(x: 0, y: 10, width: tableView.frame.width, height: 60)
 
         view.addSubview(label)
+
+        label.translatesAutoresizingMaskIntoConstraints = false
+
+        label.topAnchor.constraint(equalTo: view.topAnchor, constant: 20).isActive = true
+        label.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
+        label.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
+
         return view
     }
 }
@@ -140,18 +147,9 @@ class NCActivity: UIViewController, NCSharePagingContent {
 // MARK: - Table View
 
 extension NCActivity: UITableViewDelegate {
-
-//    func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
-//        return 120
-//    }
-
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
         return 50
     }
-
-//    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-//        return UITableView.automaticDimension
-//    }
 
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         let view = UIView(frame: CGRect(x: 0, y: 0, width: tableView.frame.width, height: 50))
@@ -162,18 +160,27 @@ extension NCActivity: UITableViewDelegate {
         label.textColor = NCBrandColor.shared.textColor
         label.text = utility.getTitleFromDate(sectionDates[section])
         label.textAlignment = .center
-        let widthFrame = label.intrinsicContentSize.width + 30
-        let xFrame = tableView.bounds.width / 2 - widthFrame / 2
-        label.frame = CGRect(x: xFrame, y: 10, width: widthFrame, height: 22)
 
         let blur = UIBlurEffect(style: .systemMaterial)
         let blurredEffectView = UIVisualEffectView(effect: blur)
-        blurredEffectView.frame = label.frame
         blurredEffectView.layer.cornerRadius = 11
         blurredEffectView.layer.masksToBounds = true
 
         view.addSubview(blurredEffectView)
         view.addSubview(label)
+
+        blurredEffectView.translatesAutoresizingMaskIntoConstraints = false
+        label.translatesAutoresizingMaskIntoConstraints = false
+
+        NSLayoutConstraint.activate([
+            blurredEffectView.topAnchor.constraint(equalTo: view.topAnchor),
+            blurredEffectView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            blurredEffectView.widthAnchor.constraint(equalToConstant: label.intrinsicContentSize.width + 30),
+            blurredEffectView.heightAnchor.constraint(equalToConstant: 22),
+            label.topAnchor.constraint(equalTo: view.topAnchor),
+            label.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            label.centerYAnchor.constraint(equalTo: blurredEffectView.centerYAnchor)
+        ])
 
         return view
     }

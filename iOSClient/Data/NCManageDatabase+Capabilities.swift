@@ -360,7 +360,7 @@ extension NCManageDatabase {
             global.capabilityFilesComments = data.capabilities.files?.comments ?? false
             global.capabilityFilesBigfilechunking = data.capabilities.files?.bigfilechunking ?? false
 
-            global.capabilityUserStatusEnabled = data.capabilities.files?.undelete ?? false
+            global.capabilityUserStatusEnabled = data.capabilities.userstatus?.enabled ?? false
             if data.capabilities.external != nil {
                 global.capabilityExternalSites = true
             }
