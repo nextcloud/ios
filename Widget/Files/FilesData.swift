@@ -131,6 +131,7 @@ func getFilesDataEntry(configuration: AccountIntent?, isPreview: Bool, displaySi
                 <d:resourcetype/>
                 <d:getcontentlength/>
                 <d:getlastmodified/>
+                <d:getetag/>
                 <id xmlns=\"http://owncloud.org/ns\"/>
                 <fileid xmlns=\"http://owncloud.org/ns\"/>
                 <size xmlns=\"http://owncloud.org/ns\"/>
@@ -163,7 +164,7 @@ func getFilesDataEntry(configuration: AccountIntent?, isPreview: Bool, displaySi
         </d:order>
     </d:orderby>
     <d:limit>
-        <d:nresults>25</d:nresults>
+        <d:nresults>50</d:nresults>
     </d:limit>
     </d:basicsearch>
     </d:searchrequest>
@@ -198,6 +199,7 @@ func getFilesDataEntry(configuration: AccountIntent?, isPreview: Bool, displaySi
 
             for file in files {
                 var useTypeIconFile = false
+                var image: UIImage?
 
                 if file.directory || (!file.livePhotoFile.isEmpty && file.classFile == NKCommon.TypeClassFile.video.rawValue) {
                     continue
@@ -215,10 +217,12 @@ func getFilesDataEntry(configuration: AccountIntent?, isPreview: Bool, displaySi
                 guard let url = URL(string: urlString) else { continue }
 
                 // IMAGE
-                var image = await createFilePreviewImage(ocId: file.ocId, etag: file.etag, fileNameView: file.fileName, classFile: file.classFile, status: 0, createPreviewMedia: false)
+                let fileNamePreviewLocalPath = utilityFileSystem.getDirectoryProviderStoragePreviewOcId(file.ocId, etag: file.etag)
+                let fileNameIconLocalPath = utilityFileSystem.getDirectoryProviderStorageIconOcId(file.ocId, etag: file.etag)
+                if FileManager.default.fileExists(atPath: fileNameIconLocalPath) {
+                    image = UIImage(contentsOfFile: fileNameIconLocalPath)
+                }
                 if image == nil, file.hasPreview {
-                    let fileNamePreviewLocalPath = utilityFileSystem.getDirectoryProviderStoragePreviewOcId(file.ocId, etag: file.etag)
-                    let fileNameIconLocalPath = utilityFileSystem.getDirectoryProviderStorageIconOcId(file.ocId, etag: file.etag)
                     let sizePreview = NCUtility().getSizePreview(width: Int(file.width), height: Int(file.height))
                     let (_, _, imageIcon, _, _, _) = await NCNetworking.shared.downloadPreview(fileId: file.fileId, fileNamePreviewLocalPath: fileNamePreviewLocalPath, fileNameIconLocalPath: fileNameIconLocalPath, widthPreview: Int(sizePreview.width), heightPreview: Int(sizePreview.height), sizeIcon: NCGlobal.shared.sizeIcon, options: options)
                     image = imageIcon
@@ -232,7 +236,7 @@ func getFilesDataEntry(configuration: AccountIntent?, isPreview: Bool, displaySi
                 let metadata = NCManageDatabase.shared.convertFileToMetadata(file, isDirectoryE2EE: isDirectoryE2EE)
 
                 // DATA
-                let data = FilesData(id: metadata.ocId, image: image!, title: metadata.fileNameView, subTitle: subTitle, url: url, useTypeIconFile: useTypeIconFile)
+                let data = FilesData(id: metadata.ocId, image: image ?? UIImage(), title: metadata.fileNameView, subTitle: subTitle, url: url, useTypeIconFile: useTypeIconFile)
                 datas.append(data)
                 if datas.count == filesItems { break}
             }
@@ -246,18 +250,5 @@ func getFilesDataEntry(configuration: AccountIntent?, isPreview: Bool, displaySi
                 completion(FilesDataEntry(date: Date(), datas: datas, isPlaceholder: false, isEmpty: datas.isEmpty, userId: account.userId, url: account.urlBase, tile: title, footerImage: "checkmark.icloud", footerText: footerText))
             }
         }
-    }
-
-    @Sendable func createFilePreviewImage(ocId: String,
-                                          etag: String,
-                                          fileNameView: String,
-                                          classFile: String,
-                                          status: Int,
-                                          createPreviewMedia: Bool) async -> UIImage? {
-        await withUnsafeContinuation({ continuation in
-            NCUtility().createFilePreviewImage(ocId: ocId, etag: etag, fileNameView: fileNameView, classFile: classFile, status: status, createPreviewMedia: createPreviewMedia) { image in
-                continuation.resume(returning: image)
-            }
-        })
     }
 }

@@ -235,7 +235,7 @@ extension NCManageDatabase {
                     directory.serverUrl = serverUrl
                     directory.offline = offline
                     addDirectory(directory: directory, metadata: metadata)
-                    realm.add(directory)
+                    realm.add(directory, update: .all)
                 }
             }
         } catch let error {

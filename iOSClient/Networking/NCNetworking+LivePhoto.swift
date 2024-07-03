@@ -28,9 +28,7 @@ import Alamofire
 import Queuer
 
 extension NCNetworking {
-
     func uploadLivePhoto(metadata: tableMetadata, userInfo aUserInfo: [AnyHashable: Any]) {
-
         guard let metadata1 = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND urlBase == %@ AND path == %@ AND fileName == %@", metadata.account, metadata.urlBase, metadata.path, metadata.livePhotoFile)) else {
             metadata.livePhotoFile = ""
             NCManageDatabase.shared.addMetadata(metadata)
@@ -69,9 +67,7 @@ extension NCNetworking {
     }
 
     func convertLivePhoto(metadata: tableMetadata) {
-
         guard metadata.status == NCGlobal.shared.metadataStatusNormal else { return }
-
         let account = metadata.account
         let livePhotoFile = metadata.livePhotoFile
         let serverUrlfileNamePath = metadata.urlBase + metadata.path + metadata.fileName
@@ -88,7 +84,6 @@ extension NCNetworking {
 }
 
 class NCOperationConvertLivePhoto: ConcurrentOperation {
-
     var serverUrlfileNamePath, livePhotoFile, account, ocId: String
 
     init(serverUrlfileNamePath: String, livePhotoFile: String, account: String, ocId: String) {
@@ -99,8 +94,10 @@ class NCOperationConvertLivePhoto: ConcurrentOperation {
     }
 
     override func start() {
+        guard !isCancelled else {
+            return self.finish()
+        }
 
-        guard !isCancelled else { return self.finish() }
         NextcloudKit.shared.setLivephoto(serverUrlfileNamePath: serverUrlfileNamePath, livePhotoFile: livePhotoFile, options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { _, error in
             if error == .success {
                 NCManageDatabase.shared.setMetadataLivePhotoByServer(account: self.account, ocId: self.ocId, livePhotoFile: self.livePhotoFile)

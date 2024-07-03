@@ -137,7 +137,7 @@ class NCAccountSettingsModel: ObservableObject, ViewOnAppearHandling {
            let tableAccount = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", activeAccount.account)) {
             return NCUtility().getUserStatus(userIcon: tableAccount.userStatusIcon, userStatus: tableAccount.userStatusStatus, userMessage: tableAccount.userStatusMessage)
         }
-        return (UIImage(), "", "")
+        return (nil, "", "")
     }
 
     /// Function to know the height of "account" data
