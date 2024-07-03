@@ -178,7 +178,6 @@ extension NCUtility {
         var image: UIImage?
 
         if utilityFileSystem.fileProviderStorageExists(metadata) && metadata.isImage {
-
             let previewPath = utilityFileSystem.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)
             let iconPath = utilityFileSystem.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)
             let imagePath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)
@@ -271,6 +270,11 @@ extension NCUtility {
             if let size = imagePreview?.size {
                 if Int(size.width) > NCGlobal.shared.sizeIcon, Int(size.height) > NCGlobal.shared.sizeIcon {
                     imagePreview = imagePreview?.resizeImage(size: CGSize(width: NCGlobal.shared.sizeIcon, height: NCGlobal.shared.sizeIcon))
+                    do {
+                        if let imagePreview, let data = imagePreview.jpegData(compressionQuality: 0.5) {
+                            try data.write(to: URL(fileURLWithPath: iconImagePath), options: .atomic)
+                        }
+                    } catch { }
                 }
             }
             DispatchQueue.main.async { completion(imagePreview) }
@@ -283,7 +287,6 @@ extension NCUtility {
         }
         let pageSize = page.bounds(for: .mediaBox)
         let pdfScale = width / pageSize.width
-
         // Apply if you're displaying the thumbnail on screen
         let scale = UIScreen.main.scale * pdfScale
         let screenSize = CGSize(width: pageSize.width * scale, height: pageSize.height * scale)
@@ -331,13 +334,9 @@ extension NCUtility {
         let imageNamePath = utilityFileSystem.directoryUserData + "/" + fileNamePNG
 
         if !FileManager.default.fileExists(atPath: imageNamePath) || rewrite == true {
-
             NextcloudKit.shared.downloadContent(serverUrl: iconURL.absoluteString) { _, data, error in
-
                 if error == .success && data != nil {
-
                     if let image = UIImage(data: data!) {
-
                         var newImage: UIImage = image
 
                         if width != nil {
@@ -352,17 +351,13 @@ extension NCUtility {
                                 image.draw(in: CGRect(x: 0, y: 0, width: newSize.width, height: newSize.height))
                             }
                         }
-
                         guard let pngImageData = newImage.pngData() else {
                             return completion(nil, id)
                         }
-
                         try? pngImageData.write(to: URL(fileURLWithPath: imageNamePath))
 
                         return completion(imageNamePath, id)
-
                     } else {
-
                         guard let svgImage: SVGKImage = SVGKImage(data: data) else {
                             return completion(nil, id)
                         }
@@ -371,7 +366,6 @@ extension NCUtility {
                             let scale = svgImage.size.height / svgImage.size.width
                             svgImage.size = CGSize(width: width!, height: width! * scale)
                         }
-
                         guard let image: UIImage = svgImage.uiImage else {
                             return completion(nil, id)
                         }

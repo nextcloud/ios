@@ -25,9 +25,7 @@ import UIKit
 import NextcloudKit
 
 class NCNetworkingCheckRemoteUser {
-
     func checkRemoteUser(account: String, error: NKError) {
-
         let token = NCKeychain().getPassword(account: account)
         guard let tableAccount = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", account)),
               !token.isEmpty,
@@ -36,18 +34,13 @@ class NCNetworkingCheckRemoteUser {
         NCNetworking.shared.cancelAllTask()
 
         if NCGlobal.shared.capabilityServerVersionMajor >= NCGlobal.shared.nextcloudVersion17 {
-
             NextcloudKit.shared.getRemoteWipeStatus(serverUrl: tableAccount.urlBase, token: token) { account, wipe, _, error in
-
                 if wipe {
-
                     appDelegate.deleteAccount(account, wipe: true)
                     let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_wipe_account_")
                     NCContentPresenter().messageNotification(tableAccount.user, error: error, delay: NCGlobal.shared.dismissAfterSecondLong, type: NCContentPresenter.messageType.error, priority: .max)
                     NextcloudKit.shared.setRemoteWipeCompletition(serverUrl: tableAccount.urlBase, token: token) { _, _ in print("wipe") }
-
                 } else {
-
                     if UIApplication.shared.applicationState == .active && NextcloudKit.shared.isNetworkReachable() {
                         let description = String.localizedStringWithFormat(NSLocalizedString("_error_check_remote_user_", comment: ""), tableAccount.user, tableAccount.urlBase)
                         let error = NKError(errorCode: error.errorCode, errorDescription: description)
@@ -57,9 +50,7 @@ class NCNetworkingCheckRemoteUser {
                     }
                 }
             }
-
         } else {
-
             if UIApplication.shared.applicationState == .active && NextcloudKit.shared.isNetworkReachable() {
                 let description = String.localizedStringWithFormat(NSLocalizedString("_error_check_remote_user_", comment: ""), tableAccount.user, tableAccount.urlBase)
                 let error = NKError(errorCode: error.errorCode, errorDescription: description)
