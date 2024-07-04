@@ -73,13 +73,13 @@ extension NCMedia {
             titleDate?.textColor = NCBrandColor.shared.textColor
             activityIndicator.color = NCBrandColor.shared.textColor
             selectOrCancelButton.setTitleColor(NCBrandColor.shared.textColor, for: .normal)
-            menuButton.setImage(NCUtility().loadImage(named: "ellipsis", colors: [NCBrandColor.shared.iconImageColor]), for: .normal)
+            menuButton.setImage(NCUtility().loadImage(named: "ellipsis", colors: [NCBrandColor.shared.textColor]), for: .normal)
             gradientView.isHidden = true
         } else {
             titleDate?.textColor = .white
             activityIndicator.color = .white
             selectOrCancelButton.setTitleColor(.white, for: .normal)
-            menuButton.setImage(NCUtility().loadImage(named: "ellipsis", colors: [NCBrandColor.shared.iconImageColor]), for: .normal)
+            menuButton.setImage(NCUtility().loadImage(named: "ellipsis", colors: [.white]), for: .normal)
             gradientView.isHidden = false
         }
     }
