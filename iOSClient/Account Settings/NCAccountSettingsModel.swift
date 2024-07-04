@@ -143,7 +143,7 @@ class NCAccountSettingsModel: ObservableObject, ViewOnAppearHandling {
     /// Function to know the height of "account" data
     func getTableViewHeight() -> CGFloat {
         guard let activeAccount else { return 0 }
-        var height: CGFloat = 190
+        var height: CGFloat = NCGlobal.shared.capabilityUserStatusEnabled ? 190 : 220
         if NCGlobal.shared.capabilityUserStatusEnabled,
            let tableAccount = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", activeAccount.account)) {
             if !tableAccount.email.isEmpty { height += 30 }
