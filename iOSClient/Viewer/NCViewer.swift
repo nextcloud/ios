@@ -178,6 +178,7 @@ class NCViewer: NSObject {
                 return
             }
         }
+
         // QLPreview
         let item = URL(fileURLWithPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView))
         if QLPreviewController.canPreview(item as QLPreviewItem) {
@@ -186,7 +187,7 @@ class NCViewer: NSObject {
             let viewerQuickLook = NCViewerQuickLook(with: URL(fileURLWithPath: fileNamePath), isEditingEnabled: false, metadata: metadata)
             viewController.present(viewerQuickLook, animated: true)
         } else {
-        // Document Interaction Controller
+            // Document Interaction Controller
             if let controller = viewController.tabBarController as? NCMainTabBarController {
                 NCActionCenter.shared.openDocumentController(metadata: metadata, controller: controller)
             }
