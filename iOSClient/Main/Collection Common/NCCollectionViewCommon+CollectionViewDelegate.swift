@@ -27,7 +27,7 @@ import NextcloudKit
 
 extension NCCollectionViewCommon: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        guard let metadata = dataSource.cellForItemAt(indexPath: indexPath) else { return }
+        guard let metadata = dataSource.cellForItemAt(indexPath: indexPath), !metadata.isInvalidated else { return }
 
         if isEditMode {
             if let index = selectOcId.firstIndex(of: metadata.ocId) {
@@ -55,9 +55,7 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
         }
 
         if metadata.directory {
-
             pushMetadata(metadata)
-
         } else {
             let imageIcon = UIImage(contentsOfFile: utilityFileSystem.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag))
 
