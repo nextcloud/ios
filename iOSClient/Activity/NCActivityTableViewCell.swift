@@ -40,14 +40,11 @@ class NCActivityCollectionViewCell: UICollectionViewCell {
 }
 
 class NCActivityTableViewCell: UITableViewCell, NCCellProtocol {
-
-    @IBOutlet weak var collectionView: UICollectionView!
     @IBOutlet weak var icon: UIImageView!
     @IBOutlet weak var avatar: UIImageView!
     @IBOutlet weak var subject: UILabel!
-    @IBOutlet weak var subjectTrailingConstraint: NSLayoutConstraint!
-    @IBOutlet weak var collectionViewHeightConstraint: NSLayoutConstraint!
-
+    @IBOutlet weak var subjectLeadingConstraint: NSLayoutConstraint!
+    
     private let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
     private var user: String = ""
     private var index = IndexPath()
@@ -73,8 +70,6 @@ class NCActivityTableViewCell: UITableViewCell, NCCellProtocol {
     override func awakeFromNib() {
         super.awakeFromNib()
 
-        collectionView.delegate = self
-        collectionView.dataSource = self
         let avatarRecognizer = UITapGestureRecognizer(target: self, action: #selector(tapAvatarImage))
         avatar.addGestureRecognizer(avatarRecognizer)
     }
@@ -215,11 +210,11 @@ extension NCActivityTableViewCell: UICollectionViewDataSource {
 extension NCActivityTableViewCell: UICollectionViewDelegateFlowLayout {
 
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        return CGSize(width: 50, height: 50)
+        return CGSize(width: 50, height: 30)
     }
 
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
-        return 20
+        return 0
     }
 
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {

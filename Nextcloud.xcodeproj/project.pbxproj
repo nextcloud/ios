@@ -53,9 +53,9 @@
 		AF8ED1FC2757821000B8DBC4 /* NextcloudUnitTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF8ED1FB2757821000B8DBC4 /* NextcloudUnitTests.swift */; };
 		AF93471227E2341B002537EE /* NCShare+Menu.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF93471127E2341B002537EE /* NCShare+Menu.swift */; };
 		AF93471927E2361E002537EE /* NCShareAdvancePermissionFooter.xib in Resources */ = {isa = PBXBuildFile; fileRef = AF93471427E2361E002537EE /* NCShareAdvancePermissionFooter.xib */; };
-		AF93471A27E2361E002537EE /* NCShareAdvancePermissionHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF93471527E2361E002537EE /* NCShareAdvancePermissionHeader.swift */; };
+		AF93471A27E2361E002537EE /* NCShareHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF93471527E2361E002537EE /* NCShareHeader.swift */; };
 		AF93471B27E2361E002537EE /* NCShareAdvancePermission.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF93471627E2361E002537EE /* NCShareAdvancePermission.swift */; };
-		AF93471C27E2361E002537EE /* NCShareAdvancePermissionHeader.xib in Resources */ = {isa = PBXBuildFile; fileRef = AF93471727E2361E002537EE /* NCShareAdvancePermissionHeader.xib */; };
+		AF93471C27E2361E002537EE /* NCShareHeader.xib in Resources */ = {isa = PBXBuildFile; fileRef = AF93471727E2361E002537EE /* NCShareHeader.xib */; };
 		AF93471D27E2361E002537EE /* NCShareAdvancePermissionFooter.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF93471827E2361E002537EE /* NCShareAdvancePermissionFooter.swift */; };
 		AF93474C27E34120002537EE /* NCUtility+Image.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF93474B27E34120002537EE /* NCUtility+Image.swift */; };
 		AF93474E27E3F212002537EE /* NCShareNewUserAddComment.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF93474D27E3F211002537EE /* NCShareNewUserAddComment.swift */; };
@@ -1099,9 +1099,9 @@
 		AF8ED1FB2757821000B8DBC4 /* NextcloudUnitTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NextcloudUnitTests.swift; sourceTree = "<group>"; };
 		AF93471127E2341B002537EE /* NCShare+Menu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NCShare+Menu.swift"; sourceTree = "<group>"; };
 		AF93471427E2361E002537EE /* NCShareAdvancePermissionFooter.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = NCShareAdvancePermissionFooter.xib; sourceTree = "<group>"; };
-		AF93471527E2361E002537EE /* NCShareAdvancePermissionHeader.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCShareAdvancePermissionHeader.swift; sourceTree = "<group>"; };
+		AF93471527E2361E002537EE /* NCShareHeader.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCShareHeader.swift; sourceTree = "<group>"; };
 		AF93471627E2361E002537EE /* NCShareAdvancePermission.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCShareAdvancePermission.swift; sourceTree = "<group>"; };
-		AF93471727E2361E002537EE /* NCShareAdvancePermissionHeader.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = NCShareAdvancePermissionHeader.xib; sourceTree = "<group>"; };
+		AF93471727E2361E002537EE /* NCShareHeader.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = NCShareHeader.xib; sourceTree = "<group>"; };
 		AF93471827E2361E002537EE /* NCShareAdvancePermissionFooter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCShareAdvancePermissionFooter.swift; sourceTree = "<group>"; };
 		AF93474B27E34120002537EE /* NCUtility+Image.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NCUtility+Image.swift"; sourceTree = "<group>"; };
 		AF93474D27E3F211002537EE /* NCShareNewUserAddComment.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCShareNewUserAddComment.swift; sourceTree = "<group>"; };
@@ -1908,8 +1908,6 @@
 				AF93471627E2361E002537EE /* NCShareAdvancePermission.swift */,
 				AF93471827E2361E002537EE /* NCShareAdvancePermissionFooter.swift */,
 				AF93471427E2361E002537EE /* NCShareAdvancePermissionFooter.xib */,
-				AF93471527E2361E002537EE /* NCShareAdvancePermissionHeader.swift */,
-				AF93471727E2361E002537EE /* NCShareAdvancePermissionHeader.xib */,
 				AFCE353627E4ED7B00FEA6C2 /* NCShareCells.swift */,
 				AF93474D27E3F211002537EE /* NCShareNewUserAddComment.swift */,
 			);
@@ -2135,6 +2133,8 @@
 				F774264822EB4D0000B23912 /* NCSearchUserDropDownCell.xib */,
 				F769453B22E9CFFF000A798A /* NCShareUserCell.xib */,
 				AF2D7C7D2742559100ADF566 /* NCShareUserCell.swift */,
+				AF93471727E2361E002537EE /* NCShareHeader.xib */,
+				AF93471527E2361E002537EE /* NCShareHeader.swift */,
 			);
 			path = Share;
 			sourceTree = "<group>";
@@ -2607,8 +2607,8 @@
 			isa = PBXGroup;
 			children = (
 				F7C9555221F0C4CA0024296E /* NCActivity.storyboard */,
-				AF56C1DB2784856200D8BAE2 /* NCActivityCommentView.xib */,
 				F7C9555421F0C5470024296E /* NCActivity.swift */,
+				AF56C1DB2784856200D8BAE2 /* NCActivityCommentView.xib */,
 				AFA2AC8427849604008E1EA7 /* NCActivityCommentView.swift */,
 				D5B6AA7727200C7200D49C24 /* NCActivityTableViewCell.swift */,
 			);
@@ -3690,7 +3690,7 @@
 				F7F4F10B27ECDBDB008676F9 /* Inconsolata-Light.ttf in Resources */,
 				F7CEE6002BA9A5C9003EFD89 /* NCTrashGridCell.xib in Resources */,
 				3704EB2A23D5A58400455C5B /* NCMenu.storyboard in Resources */,
-				AF93471C27E2361E002537EE /* NCShareAdvancePermissionHeader.xib in Resources */,
+				AF93471C27E2361E002537EE /* NCShareHeader.xib in Resources */,
 				F76032A0252F0F8E0015A421 /* NCTransferCell.xib in Resources */,
 				F7F4F10527ECDBDB008676F9 /* Inconsolata-SemiBold.ttf in Resources */,
 				F7A48415297028FC00BD1B49 /* Nextcloud Hub.png in Resources */,
@@ -4312,7 +4312,7 @@
 				F7E98C1627E0D0FC001F9F19 /* NCManageDatabase+Video.swift in Sources */,
 				F7F4F11227ECDC52008676F9 /* UIFont+Extension.swift in Sources */,
 				F76882222C0DD1E7001CF441 /* NCCapabilitiesView.swift in Sources */,
-				AF93471A27E2361E002537EE /* NCShareAdvancePermissionHeader.swift in Sources */,
+				AF93471A27E2361E002537EE /* NCShareHeader.swift in Sources */,
 				F7F878AE1FB9E3B900599E4F /* NCEndToEndMetadata.swift in Sources */,
 				F7A7FDDD2C2DBD6200E9A93A /* NCDeepLinkHandler.swift in Sources */,
 				3781B9B023DB2B7E006B4B1D /* AppDelegate+Menu.swift in Sources */,
@@ -5778,8 +5778,8 @@
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/1024jp/GzipSwift";
 			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 6.0.0;
+				kind = exactVersion;
+				version = 6.0.0;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */

@@ -105,7 +105,7 @@ class NCShareUserCell: UITableViewCell, NCCellProtocol {
         imageItem?.addGestureRecognizer(tapGesture)
 
         labelQuickStatus.textColor = NCBrandColor.shared.customer
-        imageDownArrow.image = utility.loadImage(named: "arrowtriangle.down.fill", colors: [NCBrandColor.shared.customer])
+        imageDownArrow.image = utility.loadImage(named: "arrowtriangle.down.circle", colors: [NCBrandColor.shared.customer])
     }
 
     @objc func tapAvatarImage(_ sender: UITapGestureRecognizer) {
@@ -157,7 +157,12 @@ class NCSearchUserDropDownCell: DropDownCell, NCCellProtocol {
         imageItem.image = NCShareCommon().getImageShareType(shareType: sharee.shareType)
         imageShareeType.image = NCShareCommon().getImageShareType(shareType: sharee.shareType)
         let status = utility.getUserStatus(userIcon: sharee.userIcon, userStatus: sharee.userStatus, userMessage: sharee.userMessage)
-        imageStatus.image = status.statusImage
+
+        if let statusImage = status.statusImage {
+            imageStatus.image = statusImage
+            imageStatus.makeCircularBackground(withColor: .systemBackground)
+        }
+
         self.status.text = status.statusMessage
         if self.status.text?.count ?? 0 > 0 {
             centerTitle.constant = -5

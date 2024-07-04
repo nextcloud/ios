@@ -31,7 +31,7 @@ class NCActivity: UIViewController, NCSharePagingContent {
     @IBOutlet weak var tableView: UITableView!
 
     var commentView: NCActivityCommentView?
-    var textField: UITextField? { commentView?.newCommentField }
+    var textField: UIView? { commentView?.newCommentField }
 
     @IBOutlet weak var viewContainerConstraint: NSLayoutConstraint!
     var height: CGFloat = 0
@@ -46,7 +46,7 @@ class NCActivity: UIViewController, NCSharePagingContent {
     var sectionDates: [Date] = []
     var dataSourceTask: URLSessionTask?
 
-    var insets = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
+    var insets = UIEdgeInsets(top: 8, left: 0, bottom: 0, right: 0)
     var didSelectItemEnable: Bool = true
     var objectType: String?
 
@@ -117,7 +117,7 @@ class NCActivity: UIViewController, NCSharePagingContent {
         tableView.tableHeaderView = commentView
         commentView?.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
         commentView?.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
-        viewContainerConstraint.constant = height
+        viewContainerConstraint.constant = height - 10
     }
 
     func makeTableFooterView() -> UIView {
@@ -130,9 +130,16 @@ class NCActivity: UIViewController, NCSharePagingContent {
         label.textColor = NCBrandColor.shared.textColor2
         label.textAlignment = .center
         label.text = NSLocalizedString("_no_activity_footer_", comment: "")
-        label.frame = CGRect(x: 0, y: 10, width: tableView.frame.width, height: 60)
+//        label.frame = CGRect(x: 0, y: 10, width: tableView.frame.width, height: 60)
 
         view.addSubview(label)
+
+        label.translatesAutoresizingMaskIntoConstraints = false
+
+        label.topAnchor.constraint(equalTo: view.topAnchor, constant: 20).isActive = true
+        label.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
+        label.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
+
         return view
     }
 }
@@ -140,22 +147,12 @@ class NCActivity: UIViewController, NCSharePagingContent {
 // MARK: - Table View
 
 extension NCActivity: UITableViewDelegate {
-
-    func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 120
-    }
-
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        return 60
-    }
-
-    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return UITableView.automaticDimension
+        return 50
     }
 
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-
-        let view = UIView(frame: CGRect(x: 0, y: 0, width: tableView.frame.width, height: 60))
+        let view = UIView(frame: CGRect(x: 0, y: 0, width: tableView.frame.width, height: 50))
         view.backgroundColor = .clear
 
         let label = UILabel()
@@ -163,14 +160,28 @@ extension NCActivity: UITableViewDelegate {
         label.textColor = NCBrandColor.shared.textColor
         label.text = utility.getTitleFromDate(sectionDates[section])
         label.textAlignment = .center
-        label.layer.cornerRadius = 11
-        label.layer.masksToBounds = true
-        label.layer.backgroundColor = UIColor(red: 152.0 / 255.0, green: 167.0 / 255.0, blue: 181.0 / 255.0, alpha: 0.8).cgColor
-        let widthFrame = label.intrinsicContentSize.width + 30
-        let xFrame = tableView.bounds.width / 2 - widthFrame / 2
-        label.frame = CGRect(x: xFrame, y: 10, width: widthFrame, height: 22)
 
+        let blur = UIBlurEffect(style: .systemMaterial)
+        let blurredEffectView = UIVisualEffectView(effect: blur)
+        blurredEffectView.layer.cornerRadius = 11
+        blurredEffectView.layer.masksToBounds = true
+
+        view.addSubview(blurredEffectView)
         view.addSubview(label)
+
+        blurredEffectView.translatesAutoresizingMaskIntoConstraints = false
+        label.translatesAutoresizingMaskIntoConstraints = false
+
+        NSLayoutConstraint.activate([
+            blurredEffectView.topAnchor.constraint(equalTo: view.topAnchor),
+            blurredEffectView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            blurredEffectView.widthAnchor.constraint(equalToConstant: label.intrinsicContentSize.width + 30),
+            blurredEffectView.heightAnchor.constraint(equalToConstant: 22),
+            label.topAnchor.constraint(equalTo: view.topAnchor),
+            label.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            label.centerYAnchor.constraint(equalTo: blurredEffectView.centerYAnchor)
+        ])
+
         return view
     }
 }
@@ -244,7 +255,6 @@ extension NCActivity: UITableViewDataSource {
         cell.indexPath = indexPath
         cell.avatar.image = nil
         cell.avatar.isHidden = true
-        cell.subjectTrailingConstraint.constant = 10
         cell.didSelectItemEnable = self.didSelectItemEnable
         cell.subject.textColor = NCBrandColor.shared.textColor
         cell.viewController = self
@@ -257,7 +267,7 @@ extension NCActivity: UITableViewDataSource {
 
             if FileManager.default.fileExists(atPath: fileNameLocalPath) {
                 if let image = UIImage(contentsOfFile: fileNameLocalPath) {
-                    cell.icon.image = image
+                    cell.icon.image = image.withTintColor(NCBrandColor.shared.textColor, renderingMode: .alwaysOriginal)
                 }
             } else {
                 NextcloudKit.shared.downloadContent(serverUrl: activity.icon) { _, data, error in
@@ -274,13 +284,15 @@ extension NCActivity: UITableViewDataSource {
         // avatar
         if !activity.user.isEmpty && activity.user != appDelegate.userId {
 
-            cell.subjectTrailingConstraint.constant = 50
             cell.avatar.isHidden = false
             cell.fileUser = activity.user
 
             let fileName = appDelegate.userBaseUrl + "-" + activity.user + ".png"
 
             NCNetworking.shared.downloadAvatar(user: activity.user, dispalyName: nil, fileName: fileName, cell: cell, view: tableView)
+            cell.subjectLeadingConstraint.constant = 15
+        } else {
+            cell.subjectLeadingConstraint.constant = -30
         }
 
         // subject
@@ -317,15 +329,6 @@ extension NCActivity: UITableViewDataSource {
             cell.subject.attributedText = subject.set(style: StyleGroup(base: normal, ["bold": bold, "date": date]))
         }
 
-        // CollectionView
-        cell.activityPreviews = NCManageDatabase.shared.getActivityPreview(account: activity.account, idActivity: activity.idActivity, orderKeysId: orderKeysId)
-        if cell.activityPreviews.isEmpty {
-            cell.collectionViewHeightConstraint.constant = 0
-        } else {
-            cell.collectionViewHeightConstraint.constant = 60
-        }
-        cell.collectionView.reloadData()
-
         return cell
     }
 }
@@ -354,7 +357,7 @@ extension NCActivity {
         if let mainTabBar = self.tabBarController?.tabBar as? NCMainTabBar {
             bottom = -mainTabBar.getHeight()
         }
-        NCActivityIndicator.shared.start(backgroundView: self.view, bottom: bottom - 5, style: .medium)
+        NCActivityIndicator.shared.start(backgroundView: self.view, bottom: bottom - 35, style: .medium)
 
         let dispatchGroup = DispatchGroup()
         loadComments(disptachGroup: dispatchGroup)

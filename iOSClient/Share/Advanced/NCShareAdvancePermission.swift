@@ -109,7 +109,7 @@ class NCShareAdvancePermission: UITableViewController, NCShareAdvanceFotterDeleg
     }
 
     func setupHeaderView() {
-        guard let headerView = (Bundle.main.loadNibNamed("NCShareAdvancePermissionHeader", owner: self, options: nil)?.first as? NCShareAdvancePermissionHeader) else { return }
+        guard let headerView = (Bundle.main.loadNibNamed("NCShareHeader", owner: self, options: nil)?.first as? NCShareHeader) else { return }
         headerView.setupUI(with: metadata)
 
         let container = UIView(frame: CGRect(x: 0, y: 0, width: view.frame.width, height: 220))

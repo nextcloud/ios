@@ -1,5 +1,5 @@
 //
-//  NCShareAdvancePermissionHeader.swift
+//  NCShareHeader.swift
 //  Nextcloud
 //
 //  Created by T-systems on 10/08/21.
@@ -22,18 +22,25 @@
 //
 
 import UIKit
+import TagListView
 
-class NCShareAdvancePermissionHeader: UIView {
+class NCShareHeader: UIView {
     @IBOutlet weak var imageView: UIImageView!
     @IBOutlet weak var fileName: UILabel!
     @IBOutlet weak var info: UILabel!
     @IBOutlet weak var fullWidthImageView: UIImageView!
+    @IBOutlet weak var fileNameTopConstraint: NSLayoutConstraint!
+    @IBOutlet weak var tagListView: TagListView!
+
+    private var heightConstraintWithImage: NSLayoutConstraint?
+    private var heightConstraintWithoutImage: NSLayoutConstraint?
 
     func setupUI(with metadata: tableMetadata) {
         let utilityFileSystem = NCUtilityFileSystem()
         if FileManager.default.fileExists(atPath: utilityFileSystem.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)) {
             fullWidthImageView.image = NCUtility().getImageMetadata(metadata, for: frame.height)
             fullWidthImageView.contentMode = .scaleAspectFill
+            imageView.image = fullWidthImageView.image
             imageView.isHidden = true
         } else {
             if metadata.directory {
@@ -43,10 +50,24 @@ class NCShareAdvancePermissionHeader: UIView {
             } else {
                 imageView.image = NCImageCache.images.file
             }
+
+            fileNameTopConstraint.constant -= 45
         }
+
         fileName.text = metadata.fileNameView
         fileName.textColor = NCBrandColor.shared.textColor
         info.textColor = NCBrandColor.shared.textColor2
         info.text = utilityFileSystem.transformedSize(metadata.size) + ", " + NCUtility().dateDiff(metadata.date as Date)
+
+        tagListView.addTags(Array(metadata.tags))
+
+        setNeedsLayout()
+        layoutIfNeeded()
+    }
+
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        if fullWidthImageView.image != nil {
+            imageView.isHidden = traitCollection.verticalSizeClass != .compact
+        }
     }
 }
