@@ -35,15 +35,12 @@ class NCViewer: NSObject {
     private var metadatas: [tableMetadata] = []
 
     func view(viewController: UIViewController, metadata: tableMetadata, metadatas: [tableMetadata], imageIcon: UIImage?, editor: String = "", isRichDocument: Bool = false) {
-
+        var editor = editor
         self.metadata = metadata
         self.metadatas = metadatas
 
-        var editor = editor
-
         // URL
         if metadata.classFile == NKCommon.TypeClassFile.url.rawValue {
-
             // nextcloudtalk://open-conversation?server={serverURL}&user={userId}&withRoomToken={roomToken}
             if metadata.name == NCGlobal.shared.talkName {
                 let pathComponents = metadata.url.components(separatedBy: "/")
@@ -58,7 +55,6 @@ class NCViewer: NSObject {
                     }
                 }
             }
-
             if let url = URL(string: metadata.url) {
                 UIApplication.shared.open(url)
             }
@@ -67,7 +63,6 @@ class NCViewer: NSObject {
 
         // IMAGE AUDIO VIDEO
         if metadata.isImage || metadata.isAudioOrVideo {
-
             if let navigationController = viewController.navigationController,
                let viewerMediaPageContainer: NCViewerMediaPage = UIStoryboard(name: "NCViewerMediaPage", bundle: nil).instantiateInitialViewController() as? NCViewerMediaPage {
                 var index = 0
@@ -82,82 +77,58 @@ class NCViewer: NSObject {
                 viewerMediaPageContainer.delegateViewController = viewController
                 navigationController.pushViewController(viewerMediaPageContainer, animated: true)
             }
-
             return
         }
 
         // DOCUMENTS
         if metadata.classFile == NKCommon.TypeClassFile.document.rawValue {
-
             // Set Last Opening Date
             NCManageDatabase.shared.setLastOpeningDate(metadata: metadata)
-
             // PDF
             if metadata.contentType == "application/pdf" || metadata.contentType == "com.adobe.pdf" {
-
                 if let navigationController = viewController.navigationController,
                    let viewController: NCViewerPDF = UIStoryboard(name: "NCViewerPDF", bundle: nil).instantiateInitialViewController() as? NCViewerPDF {
-
                     viewController.metadata = metadata
                     viewController.titleView = metadata.fileNameView
                     viewController.imageIcon = imageIcon
-
                     navigationController.pushViewController(viewController, animated: true)
                 }
                 return
             }
-
             // EDITORS
             let editors = utility.isDirectEditing(account: metadata.account, contentType: metadata.contentType)
             let availableRichDocument = utility.isRichDocument(metadata)
-
             // RichDocument: Collabora
             if (isRichDocument || (availableRichDocument && editors.isEmpty)) && NCGlobal.shared.capabilityRichDocumentsEnabled && NextcloudKit.shared.isNetworkReachable() {
-
                 if metadata.url.isEmpty {
-
                     NCActivityIndicator.shared.start(backgroundView: viewController.view)
                     NextcloudKit.shared.createUrlRichdocuments(fileID: metadata.fileId) { account, url, _, error in
-
                         NCActivityIndicator.shared.stop()
-
                         if error == .success && account == self.appDelegate.account && url != nil {
-
                             if let navigationController = viewController.navigationController,
                                let viewController: NCViewerRichDocument = UIStoryboard(name: "NCViewerRichdocument", bundle: nil).instantiateInitialViewController() as? NCViewerRichDocument {
-
                                 viewController.metadata = metadata
                                 viewController.link = url!
                                 viewController.imageIcon = imageIcon
-
                                 navigationController.pushViewController(viewController, animated: true)
                             }
-
                         } else if error != .success {
-
                             NCContentPresenter().showError(error: error)
                         }
                     }
-
                 } else {
-
                     if let navigationController = viewController.navigationController,
                        let viewController: NCViewerRichDocument = UIStoryboard(name: "NCViewerRichdocument", bundle: nil).instantiateInitialViewController() as? NCViewerRichDocument {
-
                         viewController.metadata = metadata
                         viewController.link = metadata.url
                         viewController.imageIcon = imageIcon
-
                         navigationController.pushViewController(viewController, animated: true)
                     }
                 }
-
                 return
             }
-
             // DirectEditing: Nextcloud Text - OnlyOffice
             if !editors.isEmpty, NextcloudKit.shared.isNetworkReachable() {
-
                 if editor.isEmpty {
                     if editors.contains(NCGlobal.shared.editorText) {
                         editor = NCGlobal.shared.editorText
@@ -165,67 +136,48 @@ class NCViewer: NSObject {
                         editor = NCGlobal.shared.editorOnlyoffice
                     }
                 }
-
                 if editor == NCGlobal.shared.editorText || editor == NCGlobal.shared.editorOnlyoffice {
-
                     if metadata.url.isEmpty {
-
                         let fileNamePath = utilityFileSystem.getFileNamePath(metadata.fileName, serverUrl: metadata.serverUrl, urlBase: metadata.urlBase, userId: metadata.userId)
-
                         var options = NKRequestOptions()
                         if editor == NCGlobal.shared.editorOnlyoffice {
                             options = NKRequestOptions(customUserAgent: utility.getCustomUserAgentOnlyOffice())
                         } else {
                             options = NKRequestOptions(customUserAgent: utility.getCustomUserAgentNCText())
                         }
-
                         NCActivityIndicator.shared.start(backgroundView: viewController.view)
                         NextcloudKit.shared.NCTextOpenFile(fileNamePath: fileNamePath, editor: editor, options: options) { account, url, _, error in
-
                             NCActivityIndicator.shared.stop()
-
                             if error == .success && account == self.appDelegate.account && url != nil {
-
                                 if let navigationController = viewController.navigationController,
                                    let viewController: NCViewerNextcloudText = UIStoryboard(name: "NCViewerNextcloudText", bundle: nil).instantiateInitialViewController() as? NCViewerNextcloudText {
-
                                     viewController.metadata = metadata
                                     viewController.editor = editor
                                     viewController.link = url!
                                     viewController.imageIcon = imageIcon
-
                                     navigationController.pushViewController(viewController, animated: true)
                                 }
-
                             } else if error != .success {
-
                                 NCContentPresenter().showError(error: error)
                             }
                         }
-
                     } else {
-
                         if let navigationController = viewController.navigationController,
                            let viewController: NCViewerNextcloudText = UIStoryboard(name: "NCViewerNextcloudText", bundle: nil).instantiateInitialViewController() as? NCViewerNextcloudText {
-
                             viewController.metadata = metadata
                             viewController.editor = editor
                             viewController.link = metadata.url
                             viewController.imageIcon = imageIcon
-
                             navigationController.pushViewController(viewController, animated: true)
                         }
                     }
-
                 } else {
                     let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_editor_unknown_")
                     NCContentPresenter().showError(error: error)
                 }
-
                 return
             }
         }
-
         // QLPreview
         let item = URL(fileURLWithPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView))
         if QLPreviewController.canPreview(item as QLPreviewItem) {
