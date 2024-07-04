@@ -46,7 +46,6 @@ class NCCollectionViewDownloadThumbnail: ConcurrentOperation {
 
     override func start() {
         guard !isCancelled else { return self.finish() }
-
         var etagResource: String?
         let sizePreview = NCUtility().getSizePreview(width: metadata.width, height: metadata.height)
 
@@ -62,7 +61,6 @@ class NCCollectionViewDownloadThumbnail: ConcurrentOperation {
                                             sizeIcon: NCGlobal.shared.sizeIcon,
                                             etag: etagResource,
                                             options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { _, _, imageIcon, _, etag, error in
-
             if error == .success, let imageIcon {
                 NCManageDatabase.shared.setMetadataEtagResource(ocId: self.metadata.ocId, etagResource: etag)
                 DispatchQueue.main.async {

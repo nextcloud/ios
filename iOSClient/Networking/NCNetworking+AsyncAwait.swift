@@ -78,10 +78,9 @@ extension NCNetworking {
                          heightPreview: Int = 512,
                          sizeIcon: Int = 512,
                          etag: String? = nil,
-                         mimeFallback: Int = 0,
                          options: NKRequestOptions = NKRequestOptions()) async -> (account: String, imagePreview: UIImage?, imageIcon: UIImage?, imageOriginal: UIImage?, etag: String?, error: NKError) {
         await withUnsafeContinuation({ continuation in
-            NextcloudKit.shared.downloadPreview(fileId: fileId, fileNamePreviewLocalPath: fileNamePreviewLocalPath, fileNameIconLocalPath: fileNameIconLocalPath, widthPreview: widthPreview, heightPreview: heightPreview, sizeIcon: sizeIcon, etag: etag, mimeFallback: mimeFallback, options: options) { account, imagePreview, imageIcon, imageOriginal, etag, error in
+            NextcloudKit.shared.downloadPreview(fileId: fileId, fileNamePreviewLocalPath: fileNamePreviewLocalPath, fileNameIconLocalPath: fileNameIconLocalPath, widthPreview: widthPreview, heightPreview: heightPreview, sizeIcon: sizeIcon, etag: etag, options: options) { account, imagePreview, imageIcon, imageOriginal, etag, error in
                 continuation.resume(returning: (account: account, imagePreview: imagePreview, imageIcon: imageIcon, imageOriginal: imageOriginal, etag: etag, error: error))
             }
         })
