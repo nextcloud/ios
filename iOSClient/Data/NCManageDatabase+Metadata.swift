@@ -232,8 +232,8 @@ extension tableMetadata {
             return false
         }
         let utility = NCUtility()
-        let editors = utility.isDirectEditing(account: account, contentType: contentType)
-        let isRichDocument = utility.isRichDocument(self)
+        let editors = utility.isTypeFileDirectEditing(account: account, contentType: contentType)
+        let isRichDocument = utility.isTypeFileRichDocument(self)
         return classFile == NKCommon.TypeClassFile.document.rawValue && editors.contains(NCGlobal.shared.editorText) && ((editors.contains(NCGlobal.shared.editorOnlyoffice) || isRichDocument))
     }
 
@@ -282,17 +282,36 @@ extension tableMetadata {
     }
 
     var isAvailableEditorView: Bool {
-        guard (classFile == NKCommon.TypeClassFile.document.rawValue) && NCGlobal.shared.capabilityRichDocumentsEnabled && NextcloudKit.shared.isNetworkReachable() else { return false }
+        guard (classFile == NKCommon.TypeClassFile.document.rawValue) && NextcloudKit.shared.isNetworkReachable() else { return false }
         let utility = NCUtility()
-        let editors = utility.isDirectEditing(account: account, contentType: contentType)
-        let availableRichDocument = utility.isRichDocument(self)
+        let directEditingEditors = utility.isTypeFileDirectEditing(account: account, contentType: contentType)
+        let richDocumentEditor = utility.isTypeFileRichDocument(self)
 
-        if availableRichDocument && editors.isEmpty {
+        if NCGlobal.shared.capabilityRichDocumentsEnabled && richDocumentEditor && directEditingEditors.isEmpty {
             // RichDocument: Collabora
             return true
-        } else if editors.contains(NCGlobal.shared.editorText) || editors.contains(NCGlobal.shared.editorOnlyoffice) {
+        } else if directEditingEditors.contains(NCGlobal.shared.editorText) || directEditingEditors.contains(NCGlobal.shared.editorOnlyoffice) {
             // DirectEditing: Nextcloud Text - OnlyOffice
            return true
+        }
+        return false
+    }
+
+    var isAvailableRichDocumentEditorView: Bool {
+        guard (classFile == NKCommon.TypeClassFile.document.rawValue) && NCGlobal.shared.capabilityRichDocumentsEnabled && NextcloudKit.shared.isNetworkReachable() else { return false }
+
+        if NCUtility().isTypeFileRichDocument(self) {
+            return true
+        }
+        return false
+    }
+
+    var isAvailableDirectEditingEditorView: Bool {
+        guard (classFile == NKCommon.TypeClassFile.document.rawValue) && NextcloudKit.shared.isNetworkReachable() else { return false }
+        let editors = NCUtility().isTypeFileDirectEditing(account: account, contentType: contentType)
+
+        if editors.contains(NCGlobal.shared.editorText) || editors.contains(NCGlobal.shared.editorOnlyoffice) {
+            return true
         }
         return false
     }

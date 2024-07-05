@@ -116,7 +116,7 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
             case NCGlobal.shared.selectorLoadFileView:
 
                 guard UIApplication.shared.applicationState == .active else { return }
-                if metadata.contentType.contains("opendocument") && !self.utility.isRichDocument(metadata) {
+                if metadata.contentType.contains("opendocument") && !self.utility.isTypeFileRichDocument(metadata) {
                     self.openDocumentController(metadata: metadata, controller: controller)
                 } else if metadata.classFile == NKCommon.TypeClassFile.compress.rawValue || metadata.classFile == NKCommon.TypeClassFile.unknow.rawValue {
                     self.openDocumentController(metadata: metadata, controller: controller)

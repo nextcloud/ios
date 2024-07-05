@@ -44,8 +44,8 @@ extension NCCollectionViewCommon {
             isOffline = localFile.offline
         }
 
-        let editors = utility.isDirectEditing(account: metadata.account, contentType: metadata.contentType)
-        let isRichDocument = utility.isRichDocument(metadata)
+        let editors = utility.isTypeFileDirectEditing(account: metadata.account, contentType: metadata.contentType)
+        let isRichDocument = utility.isTypeFileRichDocument(metadata)
         let applicationHandle = NCApplicationHandle()
 
         var iconHeader: UIImage!
@@ -247,7 +247,7 @@ extension NCCollectionViewCommon {
                         icon: icon!,
                         order: 70,
                         action: { _ in
-                            NCViewer().view(viewController: self, metadata: metadata, metadatas: [metadata], imageIcon: imageIcon, editor: editor, isRichDocument: isRichDocument)
+                            NCViewer().view(viewController: self, metadata: metadata, metadatas: [metadata], imageIcon: imageIcon)
                         }
                     )
                 )
