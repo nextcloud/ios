@@ -222,39 +222,6 @@ extension NCCollectionViewCommon {
         }
 
         //
-        // OPEN with external editor
-        //
-        if metadata.canOpenExternalEditor {
-
-            var editor = ""
-            var title = ""
-            var icon: UIImage?
-
-            if editors.contains(NCGlobal.shared.editorOnlyoffice) {
-                editor = NCGlobal.shared.editorOnlyoffice
-                title = NSLocalizedString("_open_in_onlyoffice_", comment: "")
-                icon = utility.loadImage(named: "onlyoffice", colors: [NCBrandColor.shared.iconImageColor])
-            } else if isRichDocument {
-                editor = NCGlobal.shared.editorCollabora
-                title = NSLocalizedString("_open_in_collabora_", comment: "")
-                icon = utility.loadImage(named: "collabora", colors: [NCBrandColor.shared.iconImageColor])
-            }
-
-            if !editor.isEmpty {
-                actions.append(
-                    NCMenuAction(
-                        title: title,
-                        icon: icon!,
-                        order: 70,
-                        action: { _ in
-                            NCViewer().view(viewController: self, metadata: metadata, metadatas: [metadata], imageIcon: imageIcon)
-                        }
-                    )
-                )
-            }
-        }
-
-        //
         // SHARE
         //
         if metadata.canShare {

@@ -227,16 +227,6 @@ extension tableMetadata {
         return !isDirectoryE2EE && directory && size == 0 && e2eEncrypted && NCKeychain().isEndToEndEnabled(account: account)
     }
 
-    var canOpenExternalEditor: Bool {
-        if isDocumentViewableOnly {
-            return false
-        }
-        let utility = NCUtility()
-        let editors = utility.isTypeFileDirectEditing(account: account, contentType: contentType)
-        let isRichDocument = utility.isTypeFileRichDocument(self)
-        return classFile == NKCommon.TypeClassFile.document.rawValue && editors.contains(NCGlobal.shared.editorText) && ((editors.contains(NCGlobal.shared.editorOnlyoffice) || isRichDocument))
-    }
-
     var isWaitingTransfer: Bool {
         status == NCGlobal.shared.metadataStatusWaitDownload || status == NCGlobal.shared.metadataStatusWaitUpload || status == NCGlobal.shared.metadataStatusUploadError
     }
