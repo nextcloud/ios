@@ -126,7 +126,7 @@ class NCViewer: NSObject {
             if metadata.isAvailableDirectEditingEditorView {
                 var options = NKRequestOptions()
                 var editor = ""
-                let editors = utility.isTypeFileDirectEditing(account: metadata.account, contentType: metadata.contentType)
+                let editors = utility.editorsDirectEditing(account: metadata.account, contentType: metadata.contentType)
                 if editors.contains(NCGlobal.shared.editorText) {
                     editor = NCGlobal.shared.editorText
                     options = NKRequestOptions(customUserAgent: utility.getCustomUserAgentNCText())

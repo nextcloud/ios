@@ -66,7 +66,7 @@ class NCUtility: NSObject {
         return false
     }
 
-    func isTypeFileDirectEditing(account: String, contentType: String) -> [String] {
+    func editorsDirectEditing(account: String, contentType: String) -> [String] {
         var editor: [String] = []
         guard let results = NCManageDatabase.shared.getDirectEditingEditors(account: account) else { return editor }
 

@@ -37,18 +37,14 @@ extension NCCollectionViewCommon {
         var actions = [NCMenuAction]()
         let serverUrl = metadata.serverUrl + "/" + metadata.fileName
         var isOffline: Bool = false
+        let applicationHandle = NCApplicationHandle()
+        var iconHeader: UIImage!
 
         if metadata.directory, let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", appDelegate.account, serverUrl)) {
             isOffline = directory.offline
         } else if let localFile = NCManageDatabase.shared.getTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId)) {
             isOffline = localFile.offline
         }
-
-        let editors = utility.isTypeFileDirectEditing(account: metadata.account, contentType: metadata.contentType)
-        let isRichDocument = utility.isTypeFileRichDocument(metadata)
-        let applicationHandle = NCApplicationHandle()
-
-        var iconHeader: UIImage!
 
         if imageIcon != nil {
             iconHeader = imageIcon!

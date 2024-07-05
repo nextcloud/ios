@@ -274,7 +274,7 @@ extension tableMetadata {
     var isAvailableEditorView: Bool {
         guard (classFile == NKCommon.TypeClassFile.document.rawValue) && NextcloudKit.shared.isNetworkReachable() else { return false }
         let utility = NCUtility()
-        let directEditingEditors = utility.isTypeFileDirectEditing(account: account, contentType: contentType)
+        let directEditingEditors = utility.editorsDirectEditing(account: account, contentType: contentType)
         let richDocumentEditor = utility.isTypeFileRichDocument(self)
 
         if NCGlobal.shared.capabilityRichDocumentsEnabled && richDocumentEditor && directEditingEditors.isEmpty {
@@ -298,7 +298,7 @@ extension tableMetadata {
 
     var isAvailableDirectEditingEditorView: Bool {
         guard (classFile == NKCommon.TypeClassFile.document.rawValue) && NextcloudKit.shared.isNetworkReachable() else { return false }
-        let editors = NCUtility().isTypeFileDirectEditing(account: account, contentType: contentType)
+        let editors = NCUtility().editorsDirectEditing(account: account, contentType: contentType)
 
         if editors.contains(NCGlobal.shared.editorText) || editors.contains(NCGlobal.shared.editorOnlyoffice) {
             return true
